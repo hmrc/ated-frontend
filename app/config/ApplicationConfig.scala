@@ -38,18 +38,18 @@ object ApplicationConfig extends ApplicationConfig with ServicesConfig {
   private def loadConfig(key: String) = configuration.getString(key).getOrElse(throw new Exception(s"Missing key: $key"))
 
   private val contactFrontendService = baseUrl("contact-frontend")
-  private val contactHost = configuration.getString(s"$env.contact-frontend.host").getOrElse("")
+  private val contactHost = configuration.getString(s"contact-frontend.host").getOrElse("")
 
   val contactFormServiceIdentifier = "ATED"
 
   override lazy val assetsPrefix: String = loadConfig(s"assets.url") + loadConfig(s"assets.version")
   override lazy val betaFeedbackUrl = s"$contactHost/contact/beta-feedback"
   override lazy val betaFeedbackUnauthenticatedUrl = s"$contactHost/contact/beta-feedback-unauthenticated"
-  override lazy val analyticsToken: Option[String] = configuration.getString(s"$env.google-analytics.token")
-  override lazy val analyticsHost: String = configuration.getString(s"$env.google-analytics.host").getOrElse("auto")
+  override lazy val analyticsToken: Option[String] = configuration.getString(s"google-analytics.token")
+  override lazy val analyticsHost: String = configuration.getString(s"google-analytics.host").getOrElse("auto")
   override lazy val reportAProblemPartialUrl = s"$contactHost/contact/problem_reports_ajax?service=$contactFormServiceIdentifier"
   override lazy val reportAProblemNonJSUrl = s"$contactHost/contact/problem_reports_nonjs?service=$contactFormServiceIdentifier"
-  override lazy val atedFrontendHost = configuration.getString(s"$env.microservice.services.ated-frontend.host").getOrElse("")
+  override lazy val atedFrontendHost = configuration.getString(s"microservice.services.ated-frontend.host").getOrElse("")
   override lazy val defaultTimeoutSeconds: Int = loadConfig("defaultTimeoutSeconds").toInt
   override lazy val timeoutCountdown: Int = loadConfig("timeoutCountdown").toInt
 }
