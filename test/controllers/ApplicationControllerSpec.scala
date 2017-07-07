@@ -101,7 +101,7 @@ class ApplicationControllerSpec extends PlaySpec with MockitoSugar with OneServe
 
       "be redirected to the login page" in {
         val result = controllers.ApplicationController.cancel().apply(FakeRequest())
-        redirectLocation(result).get must include("https://test.gov.uk/")
+        redirectLocation(result).get must include("https://www.gov.uk/")
       }
 
 
