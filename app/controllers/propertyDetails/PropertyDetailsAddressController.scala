@@ -42,9 +42,9 @@ trait PropertyDetailsAddressController extends PropertyDetailsHelpers with Clien
     implicit atedContext =>
       ensureClientContext {
         for {
-          changeLiabilityReturnOpt <- changeLiabilityReturnService.retrieveSubmittedLiabilityReturnAndCache(oldFormBundleNo, Some(true))
-          backLink <- currentBackLink
           answer <- dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn)
+          changeLiabilityReturnOpt <- changeLiabilityReturnService.retrieveSubmittedLiabilityReturnAndCache(oldFormBundleNo, answer)
+          backLink <- currentBackLink
         } yield {
           changeLiabilityReturnOpt match {
             case Some(x) =>
