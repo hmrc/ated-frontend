@@ -1,0 +1,50 @@
+@import models._
+@(id: String, periodKey: Int, propertyDetailsForm: Form[PeriodChooseRelief], backLink:Option[String])(implicit atedContext: AtedContext, messages: Messages)
+@import uk.gov.hmrc.play.views.html._
+@import uk.gov.hmrc.play.views.html.helpers._
+@import views.html.helpers._
+@import views.html.helpers.error._
+@import utils._
+
+@implicitFormInstance = @{ Some(propertyDetailsForm) }
+
+@pageScripts = {
+}
+
+@atedMain(title = Messages("ated.property-details-period.chooseRelief.title"), attorney = atedContext.user.authContext.attorney, pageScripts = Some(pageScripts)) {
+  @pageHeadersAndError(backLink, "pre-heading", Messages("ated.property-details.pre-header"),
+      Some(atedErrorSummary(propertyDetailsForm, "ated.property-details-period.chooseRelief.error")))
+  <div class="form-group">
+    <h1 class="heading-xlarge" id="property-details-header">
+      @Messages("ated.property-details-period.chooseRelief.header")
+    </h1>
+  </div>
+
+  @form(action=controllers.propertyDetails.routes.PeriodChooseReliefController.save(id, periodKey)) {
+
+      <div class="form-group">
+        @atedInputRadioGroupNew(propertyDetailsForm("reliefDescription"),
+        Seq(
+        ReliefsUtils.RentalBusinessDesc -> Messages("ated.choose-single-relief.rentalBusiness"),
+        ReliefsUtils.OpenToPublicDesc -> Messages("ated.choose-single-relief.openToPublic"),
+        ReliefsUtils.PropDevDesc -> Messages("ated.choose-single-relief.propertyDeveloper"),
+        ReliefsUtils.PropTradingDesc -> Messages("ated.choose-single-relief.propertyTrading"),
+        ReliefsUtils.LendingDesc -> Messages("ated.choose-single-relief.lending"),
+        ReliefsUtils.EmpOccDesc -> Messages("ated.choose-single-relief.employeeOccupation"),
+        ReliefsUtils.FarmHouseDesc -> Messages("ated.choose-single-relief.farmHouses"),
+        ReliefsUtils.SocialHouseDesc -> Messages("ated.choose-single-relief.socialHousing"),
+        ReliefsUtils.EquityReleaseDesc -> Messages("ated.choose-single-relief.equityRelease")
+        ),
+        '_legend ->"",
+        '_labelClass -> "block-label",
+        '_labelAfter -> true,
+        '_trackGA -> true
+        )
+      </div>
+
+      <button class="button" id="submit" type="submit">
+          @Messages("ated.save-and-continue")
+      </button>
+  }
+
+}

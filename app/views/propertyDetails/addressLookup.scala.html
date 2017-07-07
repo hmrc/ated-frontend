@@ -1,0 +1,57 @@
+@import models._
+@(id: Option[String], periodKey: Int, searchForm: Form[AddressLookup], mode: Option[String] = None, backLink: Option[String])(implicit atedContext: AtedContext, messages: Messages)
+@import uk.gov.hmrc.play.views.html._
+@import uk.gov.hmrc.play.views.html.helpers._
+@import views.html.helpers._
+@import views.html.helpers.error._
+@import utils._
+
+@implicitFormInstance = @{ Some(searchForm) }
+
+@pageScripts = {
+<script type="text/javascript" src='@controllers.routes.AssetsController.at("javascript/manualAddressEntryLink.js")'></script>
+}
+
+@atedMain(title = Messages("ated.address-lookup.title"), attorney = atedContext.user.authContext.attorney, pageScripts=Some(pageScripts)) {
+  @pageHeadersAndError(backLink, "pre-heading", AtedUtils.getPropertyDetailsPreHeader(mode),
+      Some(atedErrorSummary(searchForm, "ated.property-details-address-error.general")))
+  <h1 class="heading-xlarge" id="account-lookup-header">
+    @Messages("ated.address-lookup.header")
+  </h1>
+
+  @form(action=controllers.propertyDetails.routes.AddressLookupController.find(id, periodKey, mode)) {
+
+    <fieldset class="form-group">
+      <legend class="visuallyhidden">@Messages("ated.address-lookup.header")</legend>
+        <div class="form-field">
+          @atedInputNew(searchForm("houseName"),
+          '_label ->  Html(Messages("ated.address-lookup.house-name")),
+          '_labelClass -> "form-label-bold",
+          '_id -> "house-name",
+          '_inputClass -> "",
+          '_showConstraints -> false)
+        </div>
+
+        <div class="form-field">
+        @atedInputNew(searchForm("postcode"),
+          '_label ->  Html(Messages("ated.address-lookup.postcode")),
+          '_labelClass -> "form-label-bold",
+          '_id -> "postcode",
+          '_inputClass -> "input--normal",
+          '_showConstraints -> false)
+        </div>
+
+        <div class="form-field">
+          <a href="@controllers.propertyDetails.routes.AddressLookupController.manualAddressRedirect(id, periodKey, mode)"
+             id="enter-address-link"
+             data-journey-click="ated-fronted:click:manual-entry"
+             onkeyup='spaceBarHandler(event,"@controllers.propertyDetails.routes.AddressLookupController.manualAddressRedirect(id, periodKey, mode)")'
+             aria-label='@Messages("ated.address-lookup.no-postcode-link.title")'>@Messages("ated.address-lookup.no-postcode-link.title")</a>
+        </div>
+       <button class="button" id="submit" type="submit">@Messages("ated.address-lookup.find-button")</button>
+    </fieldset>
+
+
+}
+
+}

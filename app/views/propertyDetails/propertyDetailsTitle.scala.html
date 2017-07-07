@@ -1,0 +1,66 @@
+@import models._
+@(id: String, periodKey: Int, propertyDetailsForm: Form[PropertyDetailsTitle], mode: Option[String], backLink: Option[String])(implicit atedContext: AtedContext, messages: Messages)
+@import uk.gov.hmrc.play.views.html._
+@import uk.gov.hmrc.play.views.html.helpers._
+@import views.html.helpers._
+@import views.html.helpers.error._
+@import utils._
+
+@implicitFormInstance = @{ Some(propertyDetailsForm) }
+
+
+@atedMain(title = Messages("ated.property-details.title.title"), attorney = atedContext.user.authContext.attorney) {
+
+  @pageHeadersAndError(backLink, "pre-heading", AtedUtils.getPropertyDetailsPreHeader(mode),
+      Some(atedErrorSummary(propertyDetailsForm, "ated.property-details-address-error.general")))
+
+    <h1 class="heading-xlarge" id="property-details-header">
+      @Messages("ated.property-details.title.header")
+    </h1>
+
+  @form(action=controllers.propertyDetails.routes.PropertyDetailsTitleController.save(id, periodKey, mode)) {
+
+    <p id="title-text">@Messages("ated.property-details.references")</p>
+
+    <fieldset class="form-field">
+
+      <legend class="visuallyhidden">@Messages("ated.property-details.title.header")</legend>
+
+      <div id="title">
+        @atedInputNew(propertyDetailsForm("titleNumber"),
+          '_label -> "",
+          '_labelClass -> "form-label-bold",
+          '_hintText -> Messages("ated.propertyReference.titleNumber.hint"),
+          '_id -> "references.titleNumber",
+          '_showConstraints -> false)
+      </div>
+
+    </fieldset>
+
+      <details>
+        <summary>
+          <span id="titleNumber-reveal" class="summary">
+            @Messages("ated.property-details-titleNumber.reveal")
+          </span>
+        </summary>
+        <div class="panel-indent">
+          <p id="titleNumber-text">@Html(Messages("ated.property-details-titleNumber-reveal.text"))</p>
+        </div>
+      </details>
+
+
+    <div class="form-group">
+      <button class="button" id="submit" type="submit">@Messages("ated.save-and-continue")</button>
+    </div>
+
+    <div class="form-group">
+        @atedInputNew(propertyDetailsForm("id"),
+          '_label -> "id",
+          '_labelClass ->  "visuallyhidden",
+          '_id -> "id",
+          '_type -> "hidden")
+    </div>
+
+  }
+
+}

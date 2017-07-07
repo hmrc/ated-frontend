@@ -1,0 +1,56 @@
+@(title: String,
+  userLoggedIn: Boolean = true,
+  hasBanner: Boolean = false,
+  supportLinkEnabled: Boolean = true,
+  attorney: Option[uk.gov.hmrc.play.frontend.auth.Attorney] = None,
+  banner: Html = HtmlFormat.empty,
+  scriptElement: Option[Html] = None,
+  pageScripts: Option[Html] = None,
+  sidebarLinks: Option[Html] = None,
+  sidebarClass: Option[String] = None)(mainContent: Html)(implicit atedContext: AtedContext, messages: Messages)
+
+@import uk.gov.hmrc.play.views.html.{layouts => uiLayouts}
+@import uk.gov.hmrc.play.views.helpers.AttorneyRegime
+
+@scriptElement = {
+<script type="text/javascript" src='@controllers.routes.AssetsController.at("jquery/jquery-ui.min.js")'></script>
+  <script type="text/javascript" src='@controllers.routes.AssetsController.at("jquery/jquery-ui-1.12.1.min.js")'></script>
+  <script type="text/javascript" src='@controllers.routes.AssetsController.at("javascript/timeout-dialog.js")'></script>
+  <script type="text/javascript" src='@controllers.routes.AssetsController.at("javascript/details.polyfill.js")'></script>
+  @pageScripts
+  <script type="text/javascript" charset="utf-8">
+    @if(userLoggedIn) {
+        $.timeoutDialog({timeout: @config.ApplicationConfig.defaultTimeoutSeconds, countdown: @config.ApplicationConfig.timeoutCountdown, keep_alive_url: '@controllers.routes.ApplicationController.keepAlive', logout_url: '@controllers.routes.ApplicationController.logout', logout_redirect_url: '@controllers.routes.ApplicationController.logout', restart_on_yes: true, background_no_scroll: true});
+        var dialogOpen;
+    }
+  </script>
+}
+
+@linkElement = {
+  <link rel="stylesheet" href='@controllers.routes.AssetsController.at("stylesheets/main.css")'/>
+  <link rel="stylesheet" href='@controllers.routes.AssetsController.at("jquery/jquery-ui.min.css")'/>
+  <link rel="stylesheet" href='@controllers.routes.AssetsController.at("jquery/jquery-ui.structure.min.css")'/>
+}
+
+@mainBanner = {
+
+  @if(attorney.isDefined) {
+    @Some(uiLayouts.attorney_banner(name = Some(atedContext.user.name), returnLinkUrl = attorney.get.returnLink.url, regime = AttorneyRegime.pertax, customReturnLinkText = Some(attorney.get.returnLink.text), bannerContent = Some(Html(Messages("ated.agent.banner", atedContext.user.name)))))
+  } else {
+    @banner
+  }
+}
+
+@main(
+  applicationConfig = config.ApplicationConfig,
+  supportLinkEnabled = supportLinkEnabled,
+  title = title,
+  sidebarLinks = sidebarLinks,
+  sidebarClass = sidebarClass,
+  scriptElement = Some(scriptElement),
+  serviceInfoContent = None,
+  banner = Some(mainBanner),
+  userLoggedIn = userLoggedIn,
+  linkElement = Some(linkElement)) {
+    @mainContent
+  }

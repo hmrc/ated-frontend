@@ -1,0 +1,75 @@
+@import models._
+@(periodKey: Int, periodSummaries: Option[PeriodSummaryReturns],
+  organisationName: Option[String],
+  backLink: Option[String])(implicit atedContext: AtedContext, messages: Messages)
+@import uk.gov.hmrc.play.views.html._
+@import uk.gov.hmrc.play.views.html.helpers._
+@import views.html.helpers._
+@import views.html.helpers.error._
+@import utils.PeriodUtils._
+@import utils.AtedConstants._
+
+@atedMain(title = Messages("ated.period-summary.title",
+                            periodStartDate(periodKey).getYear.toString,
+                            periodEndDate(periodKey).getYear.toString), attorney = atedContext.user.authContext.attorney){
+
+@pageHeadersAndError(backLink, "period-summary-subheader", organisationName.getOrElse(""))
+<h1 class="heading-xlarge" id="period-summary-header">
+  @Messages("ated.period-summary.header",
+  periodStartDate(periodKey).toString(Messages("ated.date-format.summary")),
+  periodEndDate(periodKey).toString(Messages("ated.date-format.summary"))
+  )
+</h1>
+
+  <div class="form-group">
+    <ul class="ated-tabs">
+      <li id="current-returns" class="heading-small">
+        <a href="@controllers.routes.PeriodSummaryController.view(periodKey)" id="current-returns-link" data-journey-click="ated:click:current-returns">
+          @Messages("ated.period-summary.tabs.current-returns")
+        </a>
+      </li>
+      <li id="past-returns" class="selected heading-small">
+        @Messages("ated.period-summary.tabs.past-returns")
+      </li>
+    </ul>
+  </div>
+
+  <table id="returns-table">
+    <tr>
+      <th id="return-period-summary-th-return"class="field-1-3">@Messages("ated.period-summary-th.return")</th>
+      <th id="return-period-summary-th-status"class="field-1-3">@Messages("ated.period-summary-th.status")</th>
+      <th id="return-period-summary-th-action">@Messages("ated.period-summary-th.action")</th>
+    </tr>
+    @periodSummaries.map { data =>
+      @data.submittedReturns.map { b =>
+        @b.oldLiabilityReturns.zipWithIndex.map { t =>
+          <tr>
+            <td class="return-period-summary-td-return">
+              <span class="screen-reader-text">@Messages("ated.address")</span>
+              @t._1.description</td>
+            <td class="return-period-summary-td-status">
+              <span class="screen-reader-text">@Messages("ated.period-summary-th.status")</span>
+              @Messages("ated.submitted")</td>
+            <td class="return-period-summary-td-action">
+              <a id="liability-submitted-@t._2" href='@controllers.routes.FormBundleReturnController.view(t._1.formBundleNo,periodKey)'
+                 data-journey-click="ated-fronted:click:liability-submitted">
+                <span id="view-edit-@t._2">
+                  @if(t._1.changeAllowed) {
+                    @Messages("ated.period-summary.view-edit.button")
+                  } else {
+                    @Messages("ated.period-summary.view.button")
+                  }
+                </span>
+              </a>
+            </td>
+          </tr>
+        } @*liability-returns end*@
+      } @*all submitted returns end*@
+    }
+  </table>
+
+  <div class="form-group">
+    <a href="@controllers.routes.PeriodSummaryController.createReturn(periodKey)" id="create-return">@Messages("ated.account-summary.create-return.link")</a>
+  </div>
+
+}

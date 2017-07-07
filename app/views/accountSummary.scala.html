@@ -1,0 +1,86 @@
+@import models._
+@(summaryReturnsWithDrafts: SummaryReturnsModel, correspondence: Option[Address], organisationName: Option[String], clientBanner: Html)(implicit atedContext: AtedContext, messages: Messages)
+@import utils._
+@import utils.AtedUtils._
+@import controllers.auth.ExternalUrls
+@import views.html.helpers._
+
+
+@atedMain(title = Messages("ated.summary-return.title"), attorney = atedContext.user.authContext.attorney,
+  sidebarLinks = Some(_accountSummary_sideBar(summaryReturnsWithDrafts.atedBalance, correspondence, organisationName)),
+  sidebarClass = Some("related"),
+  banner = clientBanner) {
+
+  @pageHeadersAndError(None, "client-summary-subheader", organisationName.getOrElse(""))
+  <h1 class="heading-xlarge" id="account-summary-header">
+    @Messages("ated.summary-return.header")
+  </h1>
+
+  @if(summaryReturnsWithDrafts.allReturns.isEmpty) {
+  <p><span class="heading-medium" id="return-summary-no-returns">@Messages("ated.account-summary.agent.no-returns")</span></p>
+  } else {
+    <table id="returns-table">
+      <tr>
+        <th id="return-summary-th-period" class="td-summary-width">@Messages("ated.account-summary-th.period")</th>
+        <th id="return-summary-th-chargeable">@Messages("ated.account-summary-th.chargeable")</th>
+        <th id="return-summary-th-reliefs">@Messages("ated.account-summary-th.reliefs")</th>
+        <th id="return-summary-th-drafts">@Messages("ated.account-summary-th.drafts")</th>
+        <th id="return-summary-th-action" width="25%">@Messages("ated.period-summary-th.action")</th>
+      </tr>
+      @summaryReturnsWithDrafts.allReturns.zipWithIndex.map { case (periodSummaryWithDraft, i) =>
+        <tr>
+          <td class="return-summary-td-period">
+            <span class="screen-reader-text">@Messages("ated.account-summary-th.period")</span>
+            @periodSummaryWithDraft.periodKey to @(periodSummaryWithDraft.periodKey.toInt + 1)</td>
+          <td class="return-summary-td-chargeable">
+            <span class="screen-reader-text">@Messages("ated.account-summary-th.chargeable")</span>
+            @periodSummaryWithDraft.submittedReturns.fold(0)(a => a.currentLiabilityReturns.size + a.oldLiabilityReturns.size)</td>
+          <td class="return-summary-td-reliefs">
+            <span class="screen-reader-text">@Messages("ated.account-summary-th.reliefs")</span>
+            @periodSummaryWithDraft.submittedReturns.fold(0)(a => a.reliefReturns.size)</td>
+          <td class="return-summary-td-drafts">
+            <span class="screen-reader-text">@Messages("ated.account-summary-th.drafts")</span>
+            @(periodSummaryWithDraft.draftReturns.size)</td>
+          <td class="return-summary-td-action">
+            <a href="@controllers.routes.PeriodSummaryController.view(periodSummaryWithDraft.periodKey)" id="view-change-@i" data-journey-click="ated-fronted:click:view-change">@Messages("ated.account-summary.view-change-button")
+              <span class="screen-reader-text">@periodSummaryWithDraft.periodKey-@(periodSummaryWithDraft.periodKey.toInt + 1)</span>
+            </a>
+          </td>
+        </tr>
+      }
+    </table>
+  }
+
+  @if(!summaryReturnsWithDrafts.allReturns.isEmpty) {
+    <p class="text">
+      <a class="link" id="create-return" href="@controllers.routes.SelectPeriodController.view" data-journey-click="ated-fronted:click:create-return">@Messages("ated.account-summary.create-return.link")</a>
+    </p>
+  } else {
+    @if(atedContext.user.authContext.attorney.isDefined) {
+      <p class="text">
+        <a class="button" id="create-return" href="@controllers.routes.SelectPeriodController.view" data-journey-click="ated-fronted:click:create-return">@Messages("ated.account-summary.create-return.button")</a>
+      </p>
+    } else {
+      <div class="form-group">
+        <p class="text" id="return-summary-no-returns-appoint-agent">@Messages("ated.account-summary.agent-appoint.text")</p>
+        <p class="text" id="return-summary-no-returns-appoint-agent-info">@Messages("ated.account-summary.appoint-agent-info.text")</p>
+        <a class="link" id="create-return" href="@controllers.routes.SelectPeriodController.view" data-journey-click="ated-fronted:click:create-return">@Messages("ated.account-summary.create-return.link")</a>
+      </div>
+    }
+  }
+
+@if(atedContext.user.authContext.attorney.isEmpty && clientBanner == HtmlFormat.empty) {
+<p class="text">
+  <a class="link" id="appoint-agent" href="@ExternalUrls.clientApproveAgentMandate">
+    @Messages("ated.account-summary.appoint-agent.text")
+  </a>
+</p>
+}
+
+  <!--@if(atedContext.user.authContext.attorney.isDefined) {-->
+    <!--<div>-->
+      <!--<a href="@atedContext.user.authContext.attorney.get.returnLink.url" data-journey-click="ated-fronted:click:back-link" id="back-link" class="link-back">@Messages("ated.account-summary-back")</a>-->
+    <!--</div>-->
+  <!--}-->
+
+}

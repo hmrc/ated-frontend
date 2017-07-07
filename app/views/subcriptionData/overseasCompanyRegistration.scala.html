@@ -1,0 +1,59 @@
+@(overseasCompanyRegistrationForm: Form[models.OverseasCompanyRegistration], listOfIsoCode: List[(String, String)], backLink: Option[String])(implicit atedContext: AtedContext, messages: Messages)
+@import uk.gov.hmrc.play.views.html._
+@import uk.gov.hmrc.play.views.html.helpers._
+@import views.html.helpers._
+@import views.html.helpers.error._
+
+@pageScripts = {
+<script type="text/javascript" src='@controllers.routes.AssetsController.at("javascript/ated-country-auto-complete.js")'></script>
+<script>
+    $(document).ready(function() {
+      countryCodeAutoComplete("#countryCode")
+      var classOfSelect = $('#countryCode_').attr('class');
+      $("#countryCode").addClass(classOfSelect)
+      var labelText = $("#countryCode_field").text();
+      var divId = "countryCode_div"
+      var fieldId = "countryCode_"
+      createLabelForHiddenSelect(divId, fieldId, labelText);
+    });
+  </script>
+}
+
+@implicitFormInstance = @{ Some(overseasCompanyRegistrationForm) }
+
+@atedMain(title = Messages("ated.non-uk-reg.title"), attorney = atedContext.user.authContext.attorney, pageScripts = Some(pageScripts)) {
+    @pageHeadersAndError(backLink, "pre-heading", Messages("ated.non-uk-reg.subheader"),
+    Some(atedErrorSummary(overseasCompanyRegistrationForm, "ated.correspondence-address.error.general")))
+    <h1 class="heading-xlarge" id="overseas-company-registration-header">
+        @Messages("ated.non-uk-reg.header")
+    </h1>
+
+
+    @form(action = controllers.subscriptionData.routes.OverseasCompanyRegistrationController.submit) {
+
+        <div class="form-group" id="overseas-company-registration-form">
+
+            @atedInputNew(overseasCompanyRegistrationForm("businessUniqueId"),
+            '_label ->  Html(Messages("ated.non-uk-reg.businessUniqueId")),
+            '_labelClass -> "form-label-bold",
+            '_id -> "businessUniqueId",
+            '_showConstraints -> false)
+
+            @atedDropdown(overseasCompanyRegistrationForm("countryCode"),
+            elementOptions = listOfIsoCode,
+            displayEmptyValue = true,
+            '_emptyValueText -> Messages("ated.address.country.select"),
+            '_labelClass -> "form-label-bold",
+            '_label -> Html(Messages("ated.non-uk-reg.issuingCountry")))
+
+            @atedInputNew(overseasCompanyRegistrationForm("issuingInstitution"),
+            '_label ->  Html(Messages("ated.non-uk-reg.issuingInstitution")),
+            '_labelClass -> "form-label-bold",
+            '_id -> "issuingInstitution",
+            '_hintText -> Messages("ated.non-uk-reg.issuingInstitution.hint"),
+            '_showConstraints -> false)
+        </div>
+
+        <button class="button" id="submit" type="submit">@Messages("ated.save-changes")</button>
+    }
+}

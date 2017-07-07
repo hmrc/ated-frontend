@@ -1,0 +1,48 @@
+@(field: play.api.data.Field, args: (Symbol,Any)*)(implicit messages: Messages)
+
+@import play.api.i18n._
+@import views.html.helper._
+@import views.helpers._
+
+@elements = @{FieldElements(field.id, field, Html(""), args.toMap, messages)}
+@parentField = @{args.toMap.get('parentField).asInstanceOf[Option[Field]]}
+@errors = @{ FormHelpers.getErrors(field, parentField) }
+@parentElements = @{parentField.map(pf => FieldElements(pf.id, pf, Html(""), Map(), messages))}
+
+@labelAfter = @{ elements.args.getOrElse('_labelAfter, false).asInstanceOf[Boolean] }
+  <div class="form-group">
+    @if(errors.nonEmpty) {
+      <div class="@if(errors.nonEmpty|| (parentElements.isDefined && parentElements.get.hasErrors)) {form-field--error}">
+    }
+    <label for="@if( elements.args.get('id) ) {@elements.args.get('id)} else {@elements.field.name.replaceAll("""[\.\[\]]""", "-")}" class="@elements.args.get('_divClass) @if( elements.args.get('_labelClass) ){ @elements.args.get('_labelClass) }" id="@if( elements.args.get('id) ) {@elements.args.get('id)_field} else {@elements.field.name.replaceAll("""[\.\[\]]""", "-")_field}">
+      @if(!labelAfter && elements.args.contains('_label)) { @elements.label }
+    </label>
+
+    @if( elements.args.get('_info) ) { <p>@elements.args.get('_info)</p> }
+
+    @if(elements.args.contains('_inputHint) ){
+      <span class="form-hint" id="@if( elements.args.get('_id) ) {@elements.args.get('_id)_hint} else {@elements.field.name.replaceAll("""[\.\[\]]""", "-")_hint}">
+        @elements.args.get('_inputHint)
+      </span>
+    }
+
+          @commonHelper(field,errors)
+          @if(elements.args.contains('_symbol)) { <span class="inline-fields">@elements.args.get('_symbol)</span> }
+
+    <textarea type="text" @if( elements.args.get('_inputClass)){ class="@elements.args.get('_inputClass)" } name="@elements.field.name"
+      id="@if( elements.args.get('id) ) {@elements.args.get('id)} else {@elements.field.name.replaceAll("""[\.\[\]]""", "-")}"
+        @if(elements.args.get('maxlength)){ maxlength="@elements.args.get('maxlength)"}>@field.value</textarea>
+
+
+
+    @if(elements.args.get('maxlength)){ <span><span id="@elements.args.get('_id)_chars">@elements.args.get('maxlength)</span> @Messages("ated.characters-remaining")</span>}
+
+    @if(labelAfter && elements.args.contains('_label)) { @elements.label }
+
+    @if(elements.args.contains('_help)) { <span>@elements.infos</span> }
+
+    @if(errors.nonEmpty) {
+      </div>
+    }
+
+</div>

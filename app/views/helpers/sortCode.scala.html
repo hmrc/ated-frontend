@@ -1,0 +1,43 @@
+@import models._
+@(formObject: play.api.data.Form[BankDetails], fieldName: String, legend: String, args: (Symbol,Any)*)(implicit messages: Messages)
+
+@import play.api.i18n._
+@import views.html.helper._
+@import views.helpers._
+
+@elements = @{ new FieldElements(formObject(fieldName).id, formObject(fieldName), null, args.toMap, messages) }
+@parentField = @{args.toMap.get('parentField).asInstanceOf[Option[Field]]}
+@errors = @{ FormHelpers.getErrors(field, parentField) }
+@field = @{formObject(fieldName)}
+
+@if(errors.nonEmpty) {
+    <div class="form-field--error">
+}
+
+    <fieldset id="fieldset-@{elements.field.id}" class="sort-code">
+
+        <legend id="@{elements.field.id}">@legend</legend>
+        @commonHelper(field,errors)
+        <div>
+            @singleBox(s"$fieldName.firstElement")
+            @singleBox(s"$fieldName.secondElement")
+            @singleBox(s"$fieldName.thirdElement")
+        </div>
+    </fieldset>
+    &nbsp;
+
+    @singleBox(elementName: String)(implicit lang: play.api.i18n.Lang) = {
+        <span class="field-wrapper inline-fields">
+            <label class="visuallyhidden" for="@formObject(elementName).id">id</label>
+            <input type="text"
+                   class="text form-control input--xxsmall"
+                   id="@formObject(elementName).id"
+                   name="@formObject(elementName).name"
+                   maxlength="2"
+                   value="@formObject(elementName).value.getOrElse("")"
+            />
+        </span>
+    }
+@if(errors.nonEmpty) {
+    </div>
+}

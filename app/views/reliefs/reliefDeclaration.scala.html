@@ -1,0 +1,45 @@
+@import models._
+@(periodKey: Int, backLink: Option[String])(implicit atedContext: AtedContext, messages: Messages)
+@import uk.gov.hmrc.play.views.helpers.MoneyPounds
+@import uk.gov.hmrc.play.views.formatting.Money._
+@import uk.gov.hmrc.play.views.html._
+@import uk.gov.hmrc.play.views.html.helpers._
+@import views.html.helpers._
+@import org.joda.time.format.DateTimeFormat
+@import org.joda.time.LocalDate
+
+@atedMain(title = Messages("ated.relief-summary.declaration.title"), attorney = atedContext.user.authContext.attorney) {
+
+  @pageHeadersAndError(backLink, "pre-header", Messages("ated.choose-reliefs.subheader"))
+  <h1 class="heading-xlarge" id="relief-declaration-confirmation-header">
+    @Messages("ated.relief-summary.declaration.header")
+  </h1>
+
+  <div class="form-group">
+    <p id="relief-declaration-before-declaration-text">
+      @if(atedContext.user.authContext.attorney.isDefined) { @Messages("ated.relief-summary.before-declaration.agent")} else { @Messages("ated.relief-summary.before-declaration.client")}
+    </p>
+
+    <p id="relief-declaration-mid-declaration-text">@Messages("ated.relief-summary.mid-declaration.agent")</p>
+  </div>
+
+  <div class="form-group">
+     <span class="heading-medium" id="declare-or-confirm">
+      @if(atedContext.user.authContext.attorney.isDefined) { @Messages("ated.relief-summary.i-confirm-that.agent")} else { @Messages("ated.relief-summary.i-declare-that.client")}
+    </span>
+
+    <ul class="list-bullet">
+      <li id="declaration-confirmation-text">
+        @if(atedContext.user.authContext.attorney.isDefined) { @Messages("ated.relief-summary.i-confirm-that.bullet-text.agent")} else { @Messages("ated.relief-summary.i-declare-that.bullet-text.client")}
+      </li>
+    </ul>
+  </div>
+
+
+  @form(action=controllers.reliefs.routes.ReliefDeclarationController.submit(periodKey)) {
+
+
+  <button class="button" id="submit" type="submit">@Messages("ated.relief-summary.declaration.submit")</button>
+
+  }
+}

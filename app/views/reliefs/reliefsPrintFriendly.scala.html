@@ -1,0 +1,270 @@
+@(periodKey: Int, reliefsTaxAvoidance : Option[ReliefsTaxAvoidance], organisationName: Option[String])(implicit atedContext: AtedContext, messages: Messages)
+
+@import utils.PeriodUtils._
+@import services.SubscriptionDataService._
+
+@printFriendly(Messages("ated.relief-summary.title")) {
+
+<script type="text/javascript" src='@controllers.routes.AssetsController.at("javascript/printFriendly.js")'></script>
+
+  <p id="reliefs-print-ated-ref" class="font-xsmall">@Messages("ated.refNo", atedContext.user.atedReferenceNumber)</p>
+
+  <h1 class="heading-xlarge" id="property-details-summary-header">@Messages("ated.relief-summary.print.header", organisationName.getOrElse(""))</h1>
+
+  <p class="paragraph" id="details-text">@Messages("ated.relief-summary.details-text",
+    periodStartDate(periodKey).toString(Messages("ated.date-format")),
+    periodEndDate(periodKey).toString(Messages("ated.date-format")))
+  </p>
+
+  <table id="table-reliefs">
+    @reliefsTaxAvoidance.map { reliefData =>
+      @if(reliefData.reliefs.rentalBusiness) {
+        <tr>
+          <td class="ated-table-padding-top"><p class="heading-small" id="rentalBusiness">@Messages("ated.relief-summary-types.rentalBusiness")</p></td>
+          <td class="ated-table-padding-top"></td>
+        </tr>
+        <tr>
+          <td><p id="taxAvd-dateofrel-rb">@Messages("ated.relief-summary.datesOfRelief")</p></td>
+          <td id="dateFromTo-rb">
+            @reliefData.reliefs.rentalBusinessDate.getOrElse(reliefData.periodStartDate).toString(Messages("ated.date-format.short"))  @Messages("ated.relief-summary.relief-end-date")
+          </td>
+        </tr>
+        <tr>
+          <td><p id="tas-rp">@Messages("ated.relief-summary.avoidanceSchmRefNum")</p></td>
+          <td id="tas-rb-val">@reliefData.reliefs.isAvoidanceScheme.fold("None")(x=>reliefData.taxAvoidance.rentalBusinessScheme.fold("None")(a=>a))</td>
+        </tr>
+      <tr>
+        <td><p id="tas-promoter-rp">@Messages("ated.relief-summary.avoidanceSchmRefNum-promoter")</p></td>
+        <td id="tas-promoter-rb-val">@reliefData.taxAvoidance.rentalBusinessSchemePromoter.fold("None")(x=>reliefData.taxAvoidance.rentalBusinessSchemePromoter.fold("None")(a=>a))</td>
+      </tr>
+        <tr>
+          <td><p id="taxAvd-st">@Messages("ated.relief-summary.status")</p></td>
+          <td><p id="taxAvd-st-draft">@Messages("ated.relief-summary.draft")</p></td>
+        </tr>
+      }
+
+      @if(reliefData.reliefs.openToPublic) {
+        <tr>
+          <td class="ated-table-padding-top"><p class="heading-small" id="openToPublic">@Messages("ated.relief-summary-types.openToPublic")</p></td>
+          <td class="ated-table-padding-top"></td>
+        </tr>
+        <tr>
+          <td><p id="taxAvd-dateofrel-otp">@Messages("ated.relief-summary.datesOfRelief")</p></td>
+          <td id="dateFromTo-otp">
+            @reliefData.reliefs.openToPublicDate.getOrElse(reliefData.periodStartDate).toString(Messages("ated.date-format.short"))  @Messages("ated.relief-summary.relief-end-date")
+          </td>
+        </tr>
+        <tr>
+          <td><p id="tas-otp">@Messages("ated.relief-summary.avoidanceSchmRefNum")</p></td>
+          <td id="tas-otp-val">@reliefData.reliefs.isAvoidanceScheme.fold("None")(x=>reliefData.taxAvoidance.openToPublicScheme.fold("None")(a=>a))</td>
+        </tr>
+      <tr>
+        <td><p id="tas-promoter-otp">@Messages("ated.relief-summary.avoidanceSchmRefNum-promoter")</p></td>
+        <td id="tas-promoter-otp-val">@reliefData.taxAvoidance.openToPublicSchemePromoter.fold("None")(x=>reliefData.taxAvoidance.openToPublicSchemePromoter.fold("None")(a=>a))</td>
+      </tr>
+        <tr>
+          <td><p id="status-otp">@Messages("ated.relief-summary.status")</p></td>
+          <td><p id="status-otp-draft">@Messages("ated.relief-summary.draft")</p></td>
+        </tr>
+      }
+
+      @if(reliefData.reliefs.propertyDeveloper) {
+        <tr>
+          <td class="ated-table-padding-top"><p class="heading-small" id="propDev">@Messages("ated.relief-summary-types.propertyDeveloper")</p></td>
+          <td class="ated-table-padding-top"></td>
+        </tr>
+        <tr>
+          <td><p id="taxAvd-dateofrel-pd">@Messages("ated.relief-summary.datesOfRelief")</p></td>
+          <td id="dateFromTo-pd">
+            @reliefData.reliefs.propertyDeveloperDate.getOrElse(reliefData.periodStartDate).toString(Messages("ated.date-format.short"))  @Messages("ated.relief-summary.relief-end-date")
+          </td>
+        </tr>
+        <tr>
+          <td><p id="tas-pd">@Messages("ated.relief-summary.avoidanceSchmRefNum")</p></td>
+          <td id="tas-pd-val">@reliefData.reliefs.isAvoidanceScheme.fold("None")(x=>reliefData.taxAvoidance.propertyDeveloperScheme.fold("None")(a=>a))</td>
+        </tr>
+      <tr>
+        <td><p id="tas-promoter-pd">@Messages("ated.relief-summary.avoidanceSchmRefNum-promoter")</p></td>
+        <td id="tas-promoter-pd-val">@reliefData.taxAvoidance.propertyDeveloperSchemePromoter.fold("None")(x=>reliefData.taxAvoidance.propertyDeveloperSchemePromoter.fold("None")(a=>a))</td>
+      </tr>
+        <tr>
+          <td><p id="status-pd">@Messages("ated.relief-summary.status")</p></td>
+          <td><p id="status-pd-draft">@Messages("ated.relief-summary.draft")</p></td>
+        </tr>
+      }
+
+      @if(reliefData.reliefs.propertyTrading) {
+        <tr>
+          <td class="ated-table-padding-top"><p class="heading-small" id="propTrading">@Messages("ated.relief-summary-types.propertyTrading")</p></td>
+          <td class="ated-table-padding-top"></td>
+        </tr>
+        <tr>
+          <td><p id="taxAvd-dateofrel-pt">@Messages("ated.relief-summary.datesOfRelief")</p></td>
+          <td id="dateFromTo-pt">
+            @reliefData.reliefs.propertyTradingDate.getOrElse(reliefData.periodStartDate).toString(Messages("ated.date-format.short"))  @Messages("ated.relief-summary.relief-end-date")
+          </td>
+        </tr>
+        <tr>
+          <td><p id="tas-pt">@Messages("ated.relief-summary.avoidanceSchmRefNum")</p></td>
+          <td id="tas-pt-val">@reliefData.reliefs.isAvoidanceScheme.fold("None")(x=>reliefData.taxAvoidance.propertyTradingScheme.fold("None")(a=>a))</td>
+        </tr>
+        <tr>
+          <td><p id="tas-promoter-pt">@Messages("ated.relief-summary.avoidanceSchmRefNum-promoter")</p></td>
+          <td id="tas-promoter-pt-val">@reliefData.taxAvoidance.propertyTradingSchemePromoter.fold("None")(x=>reliefData.taxAvoidance.propertyTradingSchemePromoter.fold("None")(a=>a))</td>
+        </tr>
+        <tr>
+          <td><p id="status-pt">@Messages("ated.relief-summary.status")</p></td>
+          <td><p id="status-pt-draft">@Messages("ated.relief-summary.draft")</p></td>
+        </tr>
+      }
+
+      @if(reliefData.reliefs.lending) {
+        <tr>
+          <td class="ated-table-padding-top"><p class="heading-small" id="lending">@Messages("ated.relief-summary-types.lending")</p></td>
+          <td class="ated-table-padding-top"></td>
+        </tr>
+        <tr>
+          <td><p id="taxAvd-dateofrel-ln">@Messages("ated.relief-summary.datesOfRelief")</p></td>
+          <td id="dateFromTo-ln">
+            @reliefData.reliefs.lendingDate.getOrElse(reliefData.periodStartDate).toString(Messages("ated.date-format.short"))  @Messages("ated.relief-summary.relief-end-date")
+          </td>
+        </tr>
+        <tr>
+          <td><p id="tas-ln">@Messages("ated.relief-summary.avoidanceSchmRefNum")</p></td>
+          <td id="tas-ln-val">@reliefData.reliefs.isAvoidanceScheme.fold("None")(x=>reliefData.taxAvoidance.lendingScheme.fold("None")(a=>a))</td>
+        </tr>
+        <tr>
+          <td><p id="tas-promoter-ln">@Messages("ated.relief-summary.avoidanceSchmRefNum-promoter")</p></td>
+          <td id="tas-promoter-ln-val">@reliefData.taxAvoidance.lendingSchemePromoter.fold("None")(x=>reliefData.taxAvoidance.lendingSchemePromoter.fold("None")(a=>a))</td>
+        </tr>
+        <tr>
+          <td><p id="status-ln">@Messages("ated.relief-summary.status")</p></td>
+          <td><p id="status-ln-draft">@Messages("ated.relief-summary.draft")</p></td>
+        </tr>
+      }
+
+      @if(reliefData.reliefs.employeeOccupation) {
+        <tr>
+          <td class="ated-table-padding-top"><p class="heading-small" id="empOcc">@Messages("ated.relief-summary-types.employeeOccupation")</p></td>
+          <td class="ated-table-padding-top"></td>
+        </tr>
+        <tr>
+          <td><p id="taxAvd-dateofrel-eo">@Messages("ated.relief-summary.datesOfRelief")</p></td>
+          <td id="dateFromTo-eo">
+            @reliefData.reliefs.employeeOccupationDate.getOrElse(reliefData.periodStartDate).toString(Messages("ated.date-format.short"))  @Messages("ated.relief-summary.relief-end-date")
+          </td>
+        </tr>
+        <tr>
+          <td><p id="tas-eo">@Messages("ated.relief-summary.avoidanceSchmRefNum")</p></td>
+          <td id="tas-eo-val">@reliefData.reliefs.isAvoidanceScheme.fold("None")(x=>reliefData.taxAvoidance.employeeOccupationScheme.fold("None")(a=>a))</td>
+        </tr>
+        <tr>
+          <td><p id="tas-promoter-eo">@Messages("ated.relief-summary.avoidanceSchmRefNum-promoter")</p></td>
+          <td id="tas-promoter-eo-val">@reliefData.taxAvoidance.employeeOccupationSchemePromoter.fold("None")(x=>reliefData.taxAvoidance.employeeOccupationSchemePromoter.fold("None")(a=>a))</td>
+        </tr>
+        <tr>
+          <td><p id="status-eo">@Messages("ated.relief-summary.status")</p></td>
+          <td><p id="status-eo-draft">@Messages("ated.relief-summary.draft")</p></td>
+        </tr>
+      }
+
+      @if(reliefData.reliefs.farmHouses) {
+        <tr>
+          <td class="ated-table-padding-top"><p class="heading-small" id="farmHouses">@Messages("ated.relief-summary-types.farmHouses")</p></td>
+          <td class="ated-table-padding-top"></td>
+        </tr>
+        <tr>
+          <td><p id="taxAvd-dateofrel-fh">@Messages("ated.relief-summary.datesOfRelief")</p></td>
+          <td id="dateFromTo-fh">
+            @reliefData.reliefs.farmHousesDate.getOrElse(reliefData.periodStartDate).toString(Messages("ated.date-format.short"))  @Messages("ated.relief-summary.relief-end-date")
+          </td>
+        </tr>
+        <tr>
+          <td><p id="tas-fh">@Messages("ated.relief-summary.avoidanceSchmRefNum")</p></td>
+          <td id="tas-fh-val">@reliefData.reliefs.isAvoidanceScheme.fold("None")(x=>reliefData.taxAvoidance.farmHousesScheme.fold("None")(a=>a))</td>
+        </tr>
+        <tr>
+          <td><p id="tas-promoter-fh">@Messages("ated.relief-summary.avoidanceSchmRefNum-promoter")</p></td>
+          <td id="tas-promoter-fh-val">@reliefData.taxAvoidance.farmHousesSchemePromoter.fold("None")(x=>reliefData.taxAvoidance.farmHousesSchemePromoter.fold("None")(a=>a))</td>
+        </tr>
+        <tr>
+          <td><p id="status-fh">@Messages("ated.relief-summary.status")</p></td>
+          <td><p id="status-fh-draft">@Messages("ated.relief-summary.draft")</p></td>
+        </tr>
+      }
+
+      @if(reliefData.reliefs.socialHousing) {
+        <tr>
+          <td class="ated-table-padding-top"><p class="heading-small" id="socialHosuing">@Messages("ated.relief-summary-types.socialHousing")</p></td>
+          <td class="ated-table-padding-top"></td>
+        </tr>
+        <tr>
+          <td><p id="taxAvd-dateofrel-sh">@Messages("ated.relief-summary.datesOfRelief")</p></td>
+          <td id="dateFromTo-sh">
+            @reliefData.reliefs.socialHousingDate.getOrElse(reliefData.periodStartDate).toString(Messages("ated.date-format.short"))  @Messages("ated.relief-summary.relief-end-date")
+          </td>
+        </tr>
+        <tr>
+          <td><p id="tas-sh">@Messages("ated.relief-summary.avoidanceSchmRefNum")</p></td>
+          <td id="tas-sh-val">@reliefData.reliefs.isAvoidanceScheme.fold("None")(x=>reliefData.taxAvoidance.socialHousingScheme.fold("None")(a=>a))</td>
+        </tr>
+        <tr>
+          <td><p id="tas-promoter-sh">@Messages("ated.relief-summary.avoidanceSchmRefNum-promoter")</p></td>
+          <td id="tas-promoter-sh-val">@reliefData.taxAvoidance.socialHousingSchemePromoter.fold("None")(x=>reliefData.taxAvoidance.socialHousingSchemePromoter.fold("None")(a=>a))</td>
+        </tr>
+        <tr>
+          <td><p id="status-sh">@Messages("ated.relief-summary.status")</p></td>
+          <td><p id="status-sh-draft">@Messages("ated.relief-summary.draft")</p></td>
+        </tr>
+      }
+    @if(reliefData.reliefs.equityRelease) {
+    <tr>
+      <td class="ated-table-padding-top"><p class="heading-small" id="equityRlease">@Messages("ated.relief-summary-types.equityRelease")</p></td>
+      <td class="ated-table-padding-top"></td>
+    </tr>
+    <tr>
+      <td><p id="taxAvd-dateofrel-er">@Messages("ated.relief-summary.datesOfRelief")</p></td>
+      <td id="dateFromTo-er">
+        @reliefData.reliefs.equityReleaseDate.getOrElse(reliefData.periodStartDate).toString(Messages("ated.date-format.short"))  @Messages("ated.relief-summary.relief-end-date")
+      </td>
+    </tr>
+    <tr>
+      <td><p id="tas-er">@Messages("ated.relief-summary.avoidanceSchmRefNum")</p></td>
+      <td id="tas-er-val">@reliefData.reliefs.isAvoidanceScheme.fold("None")(x=>reliefData.taxAvoidance.equityReleaseScheme.fold("None")(a=>a))</td>
+    </tr>
+    <tr>
+      <td><p id="tas-promoter-er">@Messages("ated.relief-summary.avoidanceSchmRefNum-promoter")</p></td>
+      <td id="tas-promoter-er-val">@reliefData.taxAvoidance.equityReleaseSchemePromoter.fold("None")(x=>reliefData.taxAvoidance.equityReleaseSchemePromoter.fold("None")(a=>a))</td>
+    </tr>
+    <tr>
+      <td><p id="status-er">@Messages("ated.relief-summary.status")</p></td>
+      <td><p id="status-er-draft">@Messages("ated.relief-summary.draft")</p></td>
+    </tr>
+    }
+
+    }
+  </table>
+  
+  <p id="reliefs-print-charge-text">@Messages("ated.relief-summary.table.ated-charge.text")</p>
+
+  <p id="reliefs-print-charge-value" class="heading-xlarge">@Messages("ated.relief-summary.table.ated-charge.balance")</p>
+
+<div class="form-group">
+  <div class="confirmation-notice">
+    <div class="icon-important"></div>
+    <div class="ated-icon-important-text"><strong>@Messages("ated.choose-reliefs-further.information.text")</strong></div>
+  </div>
+</div>
+
+<div class="sign-labels">Sign here</div>
+<div class="sign-labels">Print name</div>
+<div class="sign-labels">Date</div>
+
+<div class="form-group">
+  <div class="sign-box"></div>
+  <div class="sign-box"></div>
+  <div class="sign-box"></div>
+</div>
+
+
+}

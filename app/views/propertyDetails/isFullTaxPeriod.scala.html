@@ -1,0 +1,45 @@
+@import models._
+@(id: String, periodKey: Int,
+  propertyDetailsForm: Form[PropertyDetailsFullTaxPeriod],
+  periodStartDate: org.joda.time.LocalDate,
+  periodEndDate: org.joda.time.LocalDate,
+  backLink: Option[String])(implicit atedContext: AtedContext, messages: Messages)
+@import uk.gov.hmrc.play.views.html._
+@import uk.gov.hmrc.play.views.html.helpers._
+@import views.html.helpers._
+@import views.html.helpers.error._
+@import utils._
+
+@implicitFormInstance = @{ Some(propertyDetailsForm) }
+
+@atedMain(title = Messages("ated.property-details-period.isFullPeriod.title"), attorney = atedContext.user.authContext.attorney) {
+  @pageHeadersAndError(backLink, "pre-heading", Messages("ated.property-details.pre-header"),
+    Some(atedErrorSummary(propertyDetailsForm, "ated.property-details-period-error.general")))
+  <div class="form-group">
+    <h1 class="heading-xlarge" id="property-details-header">
+      @Messages("ated.property-details-period.isFullPeriod.header")
+    </h1>
+  </div>
+
+  @form(action=controllers.propertyDetails.routes.IsFullTaxPeriodController.save(id, periodKey)) {
+
+    <div class="form-group" id="isFullPeriod">
+      @inputRadioGroup(propertyDetailsForm("isFullPeriod"),
+      Seq(
+        "true" -> Messages("ated.property-details-period.yes"),
+        "false" -> Messages("ated.property-details-period.no")),
+        '_legend -> Messages("ated.property-details-period.isFullPeriod.header"),
+        '_legendClass -> "visuallyhidden",
+        '_groupClass -> "inline",
+        '_labelClass -> "block-label",
+        '_labelAfter -> true,
+        '_trackGA -> true
+      )
+    </div>
+
+    <button class="button" id="submit" type="submit">@Messages("ated.save-and-continue")</button>
+
+
+  }
+
+}

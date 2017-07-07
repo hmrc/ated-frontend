@@ -1,0 +1,91 @@
+@import models._
+@(bankDetailsForm: Form[BankDetails], oldFormBundleNo: String, backLink: Option[String])(implicit atedContext: AtedContext, messages: Messages)
+@import uk.gov.hmrc.play.views.html._
+@import uk.gov.hmrc.play.views.html.helpers._
+@import views.html.helpers._
+@import views.html.helpers.error._
+
+@implicitFormInstance = @{ Some(bankDetailsForm) }
+
+@pageScripts = {
+<script type="text/javascript" src='@controllers.routes.AssetsController.at("javascript/bankDetails.js")'></script>
+}
+
+@atedMain(title = Messages("ated.bank-details.title"), attorney = atedContext.user.authContext.attorney, pageScripts = Some(pageScripts)) {
+  @pageHeadersAndError(backLink, "pre-heading", Messages("ated.property-details.pre-header-dispose"),
+      Some(atedErrorSummary(bankDetailsForm, "ated.bank-details.error-key")))
+    <h1 class="heading-xlarge" id="bank-details-header">
+      @Messages("ated.bank-details.header")
+    </h1>
+
+  @form(action=controllers.editLiability.routes.DisposeLiabilityBankDetailsController.save(oldFormBundleNo)) {
+    <div class="form-group" id="hasUKBankAccount-id">
+      @atedInputRadioGroupNew(
+      bankDetailsForm("hasUKBankAccount"),
+      Seq(
+      "true" -> Messages("ated.label.yes"),
+      "false" -> Messages("ated.label.no")
+      ),
+      '_legend -> Messages("ated.bank-details.header"),
+      '_legendClass -> "visuallyhidden",
+      '_labelClass -> "block-label",
+      '_groupClass -> "inline",
+      '_labelAfter -> true
+      )
+    </div>
+
+    <div class="form-group">
+
+      <div id="hidden-bank-details" class="panel-indent form-control-indent">
+        <fieldset>
+          <legend class="visuallyhidden">@Messages("ated.bank-details.legend")</legend>
+
+          <div id="name-of-person" class="form-field">
+            @atedInputNew(bankDetailsForm("accountName"),
+            '_label -> Messages("ated.bank-details.uk-bank-account.name.label"),
+            '_id -> "accountName",
+            '_showConstraints -> false)
+          </div>
+
+          <div id="hidden-bank-details-uk">
+            <div id="account-number" class="form-field">
+              @atedInputNew(bankDetailsForm("accountNumber"),
+              '_label -> Messages("ated.bank-details.uk-bank-account.number.label"),
+              '_id -> "accountNumber",
+              '_showConstraints -> false)
+            </div>
+
+            <div id="sort-code">
+              @sortCode(bankDetailsForm, "sortCode",
+              Messages("ated.bank-details.uk-bank-account.sort-code.label"))
+             </div>
+
+          </div>
+
+          <div id="hidden-bank-details-non-uk">
+            <div id="iban-code" class="form-field">
+              @atedInputNew(bankDetailsForm("iban"),
+              '_label -> Messages("ated.bank-details.non-uk-bank-account.iban.label"),
+              '_id -> "iban",
+              '_showConstraints -> false)
+            </div>
+
+            <div id="bic-swift-code">
+              @atedInputNew(bankDetailsForm("bicSwiftCode"),
+              '_label -> Messages("ated.bank-details.non-uk-bank-account.bic-swift-code.label"),
+              '_id -> "bicSwiftCode",
+              '_showConstraints -> false)
+            </div>
+
+          </div>
+
+        </fieldset>
+      </div>
+
+    </div>
+
+    <button class="button" id="submit" type="submit">@Messages("ated.save-and-continue")</button>
+
+  }
+
+}

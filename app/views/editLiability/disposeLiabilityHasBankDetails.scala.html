@@ -1,0 +1,49 @@
+@import models._
+@(bankDetailsForm: Form[HasBankDetails], oldFormBundleNo: String, backLink: Option[String])(implicit atedContext: AtedContext, messages: Messages)
+@import uk.gov.hmrc.play.views.html._
+@import uk.gov.hmrc.play.views.html.helpers._
+@import views.html.helpers._
+@import views.html.helpers.error._
+
+@implicitFormInstance = @{ Some(bankDetailsForm) }
+
+@pageScripts = {
+  <script type="text/javascript" src='@controllers.routes.AssetsController.at("javascript/bankDetails.js")'></script>
+}
+
+@atedMain(title = Messages("ated.bank-details.has-bank-details.title"), attorney = atedContext.user.authContext.attorney, pageScripts = Some(pageScripts)) {
+
+
+  @pageHeadersAndError(backLink, "pre-heading", Messages("ated.property-details.pre-header-dispose"),
+      Some(atedErrorSummary(bankDetailsForm, "ated.bank-details.error-key")))
+  <h1 class="heading-xlarge" id="bank-details-header">
+    @Messages("ated.bank-details.has-bank-details.header")
+  </h1>
+
+  <div class="form-group">
+    <span class="paragraph" id="has-bank-details-text">@Messages("ated.bank-details.has-bank-details.paragraph.text")</span>
+  </div>
+
+
+  @form(action=controllers.editLiability.routes.DisposeLiabilityHasBankDetailsController.save(oldFormBundleNo)) {
+
+    <div class="form-group" id="hasBankDetails-id">
+      @atedInputRadioGroupNew(
+      bankDetailsForm("hasBankDetails"),
+      Seq(
+      "true" -> Messages("ated.label.yes"),
+      "false" -> Messages("ated.label.no")
+      ),
+      '_legend -> Messages("ated.bank-details.has-bank-details.header"),
+      '_legendClass -> "visuallyhidden",
+      '_labelClass -> "block-label",
+      '_groupClass -> "inline",
+      '_labelAfter -> true,
+    '_trackGA -> true
+      )
+    </div>
+
+    <button class="button" id="submit" type="submit">@Messages("ated.save-and-continue")</button>
+  }
+
+}

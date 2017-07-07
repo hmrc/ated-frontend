@@ -1,0 +1,108 @@
+@(appConfig: config.ApplicationConfig,
+title: String,
+mainClass: Option[String] = None,
+mainDataAttributes: Option[Html] = None,
+bodyClasses: Option[String] = None,
+sidebar: Html = HtmlFormat.empty,
+contentHeader: Option[Html] = None,
+userLoggedIn: Boolean = true,
+mainContent: Html = HtmlFormat.empty,
+serviceInfoContent: Html = HtmlFormat.empty,
+scriptElem: Option[Html] = None,
+delegatedService: Option[String] = None)(implicit request: Request[_], messages: Messages)
+
+@import layouts.{govuk_template => hmrcGovUkTemplate}
+@import uk.gov.hmrc.play.views.html.{layouts => uiLayouts}
+@import uk.gov.hmrc.play.views.html.{helpers => uiHelpers}
+
+@linkElement = {
+<link rel="stylesheet" href='@controllers.routes.AssetsController.at("stylesheets/main.css")'/>
+}
+
+@head = {
+@uiLayouts.head(
+linkElem = Some(linkElement),
+headScripts = None)
+<meta name="format-detection" content="telephone=no" />
+}
+
+@headerNavLinks = {
+<li><a href="@routes.ApplicationController.logout" id="erorLogOutNavHref">@Messages("ated.sign-out")</a></li>
+}
+
+
+@scriptElement = {
+<script type="text/javascript" src='@controllers.routes.AssetsController.at("jquery/jquery-ui-1.12.1.min.js")'></script>
+<script type="text/javascript" src='@controllers.routes.AssetsController.at("javascript/timeout-dialog.js")'></script>
+<script type="text/javascript" charset="utf-8">
+  @if(userLoggedIn) {
+     $.timeoutDialog({timeout: @appConfig.defaultTimeoutSeconds, countdown: @appConfig.timeoutCountdown, keep_alive_url: '/ated/keep-alive', logout_url: '@routes.ApplicationController.logout', logout_redirect_url: '@routes.ApplicationController.logout', restart_on_yes: true, background_no_scroll: true});
+     var dialogOpen;
+  }
+  </script>
+@scriptElem
+}
+
+@article = {
+@uiLayouts.article(content = mainContent, includeGridWrapper = false, articleClasses = None)
+}
+
+@insideHeader = {
+@uiLayouts.header_nav(
+navTitle = delegatedService.map(Messages("ated.navTitle", _)),
+navTitleLink = None,
+showBetaLink = false,
+navLinks = Some(headerNavLinks))
+}
+
+@afterHeader = {}
+
+@bodyEnd = {
+@uiLayouts.footer(
+analyticsToken = appConfig.analyticsToken,
+analyticsHost = appConfig.analyticsHost,
+ssoUrl = None,
+scriptElem = Some(scriptElement),
+gaCalls = None)
+}
+
+@footerTop = {}
+@footerLinks = {}
+
+@betaBanner = {
+@uiLayouts.betaBanner(
+userLoggedIn = userLoggedIn,
+betaFeedbackUrl = appConfig.betaFeedbackUrl,
+betaFeedbackUnauthenticatedUrl = appConfig.betaFeedbackUnauthenticatedUrl,
+showFeedbackLinkInBetaBanner = true
+)
+}
+
+@serviceInfo = {
+@uiLayouts.serviceInfo(
+betaBanner = betaBanner,
+includeGridWrapper = false,
+serviceInfoContent = Some(serviceInfoContent),
+includeHMRCBranding = false)
+}
+
+@mainContentHeader = {
+@if(contentHeader.isDefined) {
+@uiLayouts.main_content_header(contentHeader = contentHeader.get)
+}
+}
+
+@getHelpForm = @{uiHelpers.reportAProblemLink(appConfig.reportAProblemPartialUrl, appConfig.reportAProblemNonJSUrl)}
+
+@content = {
+@uiLayouts.main_content(
+article = article,
+mainClass = mainClass,
+mainDataAttributes = mainDataAttributes,
+mainContentHeader = mainContentHeader,
+serviceInfo = serviceInfo,
+getHelpForm = getHelpForm,
+sidebar = sidebar)
+}
+
+@hmrcGovUkTemplate(Some(title), bodyClasses)(head, bodyEnd, insideHeader, afterHeader, footerTop, Some(uiLayouts.footer_links()), true)(content)

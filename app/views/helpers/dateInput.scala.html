@@ -1,0 +1,55 @@
+@(field: play.api.data.Field, args: (Symbol,Any)*)(implicit messages: Messages)
+
+@import play.api.i18n._
+@import views.html.helper._
+
+@elements = @{FieldElements(field.id, field, Html(""), args.toMap, messages)}
+@parentField = @{args.toMap.get('parentField).asInstanceOf[Option[Field]]}
+
+@parentElements = @{parentField.map(pf => FieldElements(pf.id, pf, Html(""), Map(), messages))}
+
+@value = @{ field.value match { case Some(x) => x case None => elements.args.get('_emptyValueText) }}
+
+@labelAfter = @{ elements.args.getOrElse('_labelAfter, false).asInstanceOf[Boolean] }
+@labelHighlight = @{ elements.args.getOrElse('_labelHighlight, false).asInstanceOf[Boolean] }
+
+<span class="field-wrapper @if( elements.args.get('_divClass) ){ @elements.args.get('_divClass) }">
+  <label for="@elements.field.name.replaceAll("""[\.\[\]]""", "-")"
+    class="@if( elements.args.get('_labelClass) ){ @elements.args.get('_labelClass) }
+    @if(elements.hasErrors || (parentElements.isDefined && parentElements.get.hasErrors)) {form-field--error}"
+    @if(elements.args.contains('_labelDataAttributes)){@elements.args.get('_labelDataAttributes)}
+  >
+
+    @elements.errors.map { error => <span class="error-notification">@Messages(error)</span>}
+
+    @if(parentElements.isDefined) {
+      @parentElements.get.errors.map { error => <span class="error-notification">@Messages(error)</span>}
+    }
+
+    @if(labelHighlight){<strong>}
+    @if(!labelAfter && elements.args.contains('_label)) {
+      <span @if(elements.args.contains('_labelTextClass)) { class="@elements.args.get('_labelTextClass)"} id="@(elements.field.name.replaceAll("""[\.\[\]]""", "-"))_field" >
+        @elements.label
+      </span>
+    }
+    @if(labelHighlight){</strong>}
+
+    <input
+      @if(elements.args.contains('_type)){type="@elements.args.get('_type)" }else{type="text" }
+      @if( elements.args.get('_inputClass) ){ class="@elements.args.get('_inputClass)" }
+      @if(elements.args.contains('_dataAttributes) ){ @elements.args.get('_dataAttributes)}
+      name="@elements.field.name"
+      id="@elements.field.name.replaceAll("""[\.\[\]]""", "-")"
+      value="@value"
+    />
+
+    @if(labelHighlight){<strong>}
+    @if(labelAfter && elements.args.contains('_label)) {
+      <span @if(elements.args.contains('_labelTextClass)) { class="@elements.args.get('_labelTextClass)"} id="@(elements.field.name.replaceAll("""[\.\[\]]""", "-"))_field" >
+        @elements.label
+      </span>
+    }
+    @if(labelHighlight){</strong>}
+
+  </label>
+</span>

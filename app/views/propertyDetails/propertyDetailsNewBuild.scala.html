@@ -1,0 +1,106 @@
+@import models._
+@(id: String, periodKey: Int, propertyDetailsForm: Form[PropertyDetailsNewBuild], mode: Option[String], backLink: Option[String])(implicit atedContext: AtedContext, messages: Messages)
+@import uk.gov.hmrc.play.views.html._
+@import uk.gov.hmrc.play.views.html.helpers._
+@import views.html.helpers._
+@import views.html.helpers.error._
+@import utils._
+
+@implicitFormInstance = @{
+  Some(propertyDetailsForm)
+}
+
+@pageScripts = {
+  <script type="text/javascript" src='@controllers.routes.AssetsController.at("javascript/propertyDetailsNewBuild.js")'></script>
+}
+
+
+@atedMain(title = Messages("ated.property-details-value.isNewBuild.title"), attorney = atedContext.user.authContext.attorney, pageScripts = Some(pageScripts)) {
+  @pageHeadersAndError(backLink, "pre-heading", AtedUtils.getPropertyDetailsPreHeader(mode),
+      Some(atedErrorSummary(propertyDetailsForm, "ated.property-details-value-error.general")))
+
+    <h1 class="heading-xlarge" id="property-details-header">
+      @Messages("ated.property-details-value.isNewBuild.header")
+    </h1>
+
+
+  @form(action = controllers.propertyDetails.routes.PropertyDetailsNewBuildController.save(id, periodKey, mode)) {
+
+    <div class="form-group">
+      <div id="isNewBuild">
+        @atedInputRadioGroupNew(
+        propertyDetailsForm("isNewBuild"),
+        Seq("true" -> Messages("ated.property-details-value.yes"),
+        "false" -> Messages("ated.property-details-value.no")),
+        '_legend -> Messages("ated.property-details-value.isNewBuild.header"),
+        '_legendClass -> "visuallyhidden",
+        '_groupClass -> "inline",
+        '_labelClass -> "block-label",
+        '_labelAfter -> true,
+        '_trackGA -> true
+        )
+      </div>
+    </div>
+
+      <div class="form-group">
+        <div id="isNewBuild-true-hidden" class="panel-indent">
+          @atedDateFieldsFree(
+          formItem = propertyDetailsForm,
+          fieldName = "newBuildDate",
+          label = Html(Messages("ated.property-details-value.newBuildDate")),
+          isNested = false,
+          defaultDateOption = None,
+          '_groupClass -> "form-group date-of-birth",
+          '_idName -> "newBuildDate"
+          )
+
+          @atedDateFieldsFree(
+          formItem = propertyDetailsForm,
+          fieldName = "localAuthRegDate",
+          label = Html(Messages("ated.property-details-value.localAuthRegDate")),
+          isNested = false,
+          defaultDateOption = None,
+          '_groupClass -> "form-group date-of-birth",
+          '_idName -> "localAuthRegDate"
+          )
+
+          @atedInputNew(propertyDetailsForm("newBuildValue"),
+          '_label -> Html(Messages("ated.property-details-value.newBuildValue")),
+          '_labelClass -> "form-label-bold",
+          '_inputClass -> "form-control-indent",
+          '_hintText -> Messages("ated.property-details-value.newBuildValue.hint"),
+          '_id -> "newBuildValue",
+          '_showConstraints -> false)
+        </div>
+
+
+
+        <div id="isNewBuild-false-hidden" class="panel-indent">
+          @atedDateFieldsFree(
+          formItem = propertyDetailsForm,
+          fieldName = "notNewBuildDate",
+          label = Html(Messages("ated.property-details-value.notNewBuildDate")),
+          isNested = false,
+          defaultDateOption = None,
+          '_hintText -> Messages("ated.property-details-value.notNewBuildDate.hint"),
+          '_groupClass -> "form-group date-of-birth",
+          '_idName -> "notNewBuildDate"
+          )
+
+          @atedInputNew(propertyDetailsForm("notNewBuildValue"),
+          '_label -> Html(Messages("ated.property-details-value.notNewBuildValue")),
+          '_labelClass -> "form-label-bold",
+          '_inputClass -> "form-control-indent",
+          '_hintText -> Messages("ated.property-details-value.notNewBuildValue.hint"),
+          '_id -> "notNewBuildValue",
+          '_showConstraints -> false)
+        </div>
+      </div>
+
+
+      <button class="button" id="submit" type="submit">@Messages("ated.save-and-continue")</button>
+
+
+  }
+
+}

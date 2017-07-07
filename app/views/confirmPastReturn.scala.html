@@ -1,0 +1,39 @@
+@import models._
+@import forms.AtedForms._
+@import uk.gov.hmrc.play.views.html._
+@import uk.gov.hmrc.play.views.html.helpers._
+@import org.joda.time.format.DateTimeFormat
+@import org.joda.time.LocalDate
+@import utils._
+@import views.html.helpers._
+@import views.html.helpers.error._
+
+@(confirmExistingReturn: Form[YesNoQuestion], periodKey: Int, returnType: String, backLink: Option[String])(implicit atedContext: AtedContext, messages: Messages)
+
+@atedMain(title = Messages("ated.confirm-past-return-question.title"), attorney = atedContext.user.authContext.attorney) {
+@pageHeadersAndError(backLink, "pre-header", Messages("ated.return-type.pre-header"),
+Some(atedErrorSummary(confirmExistingReturn, "ated.confirm-past-return-question.error.general")))
+    <h1 class="heading-xlarge" id="return-type-header">
+        @Messages("ated.confirm-past-return-question.header")
+    </h1>
+
+    @form(action = controllers.routes.ExistingReturnQuestionController.submit(periodKey, returnType)) {
+
+        <div class="form-group" id="pastReturn">
+        @atedInputRadioGroupNew(
+            confirmExistingReturn("yesNo"),
+            Seq("true" -> Messages("ated.label.yes"),
+                "false" -> Messages("ated.label.no")),
+            '_groupClass -> "inline",
+            '_legendClass -> "screen-reader-text",
+            '_legend -> Messages("ated.confirm-past-return-question.header"),
+            '_labelClass -> "block-label",
+            '_labelAfter -> true,
+            '_trackGA -> true
+        )
+        </div>
+
+        <button class="button" id="submit" type="submit">@Messages("ated.continue")</button>
+
+    }
+}

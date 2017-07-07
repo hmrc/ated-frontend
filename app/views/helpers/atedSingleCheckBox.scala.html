@@ -1,0 +1,22 @@
+@(field: play.api.data.Field, args: (Symbol,Any)*)(implicit messages: Messages)
+
+@import play.api.i18n._
+@import views.html.helper._
+
+@elements = @{FieldElements(field.id, field, Html(""), args.toMap, messages)}
+@value = @{ field.value match { case Some(x) => x case None => "false" case x => x }}
+
+@if(elements.errors.nonEmpty) {
+<div class="@if(elements.errors.nonEmpty){ form-field--error} " style="float:left;">
+}
+    @elements.errors.map { error =>
+    <span style="display: block" class="error-notification">@Messages(error)</span>
+    }
+    <label class="@if(elements.args.get('_labelClass)){@elements.args.get('_labelClass)}" for="@elements.id" id='@(elements.id)_field'>
+    <input type="checkbox" id="@elements.id"
+           @if( elements.args.get('_inputClass) ){ class="@elements.args.get('_inputClass)" }
+    name="@elements.field.name" value="true" @if(value=="true"){checked="checked"}/>
+        @elements.label</label>
+@if(elements.errors.nonEmpty) {
+</div>
+}

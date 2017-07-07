@@ -1,0 +1,39 @@
+@import models._
+@(id: String, backLink: Option[String])(implicit atedContext: AtedContext, messages: Messages)
+
+@import uk.gov.hmrc.play.views.helpers.MoneyPounds
+@import uk.gov.hmrc.play.views.formatting.Money._
+@import uk.gov.hmrc.play.views.html._
+@import uk.gov.hmrc.play.views.html.helpers._
+@import views.html.helpers._
+@import org.joda.time.format.DateTimeFormat
+@import org.joda.time.LocalDate
+
+@atedMain(title = Messages("ated.chargeable-return-declaration.title"), attorney = atedContext.user.authContext.attorney) {
+  @pageHeadersAndError(backLink, "pre-heading", Messages("ated.property-details.pre-header"))
+  <h1 class="heading-xlarge" id="chargeable-return-confirmation-header">
+    @Messages("ated.chargeable-return-declaration.header")
+  </h1>
+
+  <p id="chargeable-return-before-declaration-text">
+    @if(atedContext.user.authContext.attorney.isDefined) { @Messages("ated.chargeable-return-declaration.before-declaration.agent")} else { @Messages("ated.chargeable-return-declaration.before-declaration.client")}
+  </p>
+
+  <p><span class="heading-medium" id="declare-or-confirm">
+      @if(atedContext.user.authContext.attorney.isDefined) { @Messages("ated.chargeable-return-declaration.i-confirm-that.agent")} else { @Messages("ated.chargeable-return-declaration.i-declare-that.client")}
+    </span></p>
+
+  <ul class="list-bullet">
+    <li id="declaration-confirmation-text">
+      @if(atedContext.user.authContext.attorney.isDefined) { @Messages("ated.chargeable-return-declaration.i-confirm-that.bullet-text.agent")} else { @Messages("ated.chargeable-return-declaration.i-declare-that.bullet-text.client")}
+    </li>
+  </ul>
+
+
+  @form(action=controllers.propertyDetails.routes.PropertyDetailsDeclarationController.submit(id)) {
+
+  <button class="button" id="submit" type="submit">@Messages("ated.chargeable-return-declaration.submit")</button>
+
+  }
+}
+

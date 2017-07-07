@@ -1,0 +1,56 @@
+@(field: play.api.data.Field, args: (Symbol,Any)*)(implicit messages: Messages)
+
+@import play.api.i18n._
+@import views.html.helper._
+
+@elements = @{ FieldElements(field.id, field, Html(""), args.toMap, messages) }
+@parentField = @{args.toMap.get('parentField).asInstanceOf[Option[Field]]}
+
+@parentElements = @{parentField.map(pf => FieldElements(pf.id, pf, Html(""), Map(), messages) )}
+
+@value = @{ field.value match { case Some(x) => x case None => "" case x => x }}
+
+@labelAfter = @{ elements.args.getOrElse('_labelAfter, false).asInstanceOf[Boolean] }
+@labelHighlight = @{ elements.args.getOrElse('_labelHighlight, false).asInstanceOf[Boolean] }
+<div class="form-group">
+    @if(elements.hasErrors) {
+    <div class="@if(elements.hasErrors || (parentElements.isDefined && parentElements.get.hasErrors)) {form-field--error}">
+        }
+        <label for="@if( elements.args.get('_id) ) {@elements.args.get('_id)} else {@elements.field.name.replaceAll("""[\.\[\]]""", "-")}" class="@elements.args.get('_divClass) @if( elements.args.get('_labelClass) ){ @elements.args.get('_labelClass) }" @if(elements.args.contains('_labelDataAttributes)){@elements.args.get('_labelDataAttributes)} id="@if( elements.args.get('_id) ) {@elements.args.get('_id)_field} else {@elements.field.name.replaceAll("""[\.\[\]]""", "-")_field}">
+
+
+        @if(labelHighlight){<strong>}
+        @if(elements.args.contains('_label)) { @elements.label }
+        @if(labelHighlight){</strong>}
+
+        @elements.errors.map { error => <span class="error-notification">@Messages(error)</span>}
+        @if(parentElements.isDefined) {
+        @parentElements.get.errors.map { error => <span class="error-notification">@Messages(error)</span>}
+        }
+
+        @if(elements.args.contains('_hintText)) {
+        <span class="form-hint" id="@if( elements.args.get('_id) ) {@elements.args.get('_id)_hint} else {@elements.field.name.replaceAll("""[\.\[\]]""", "-")_hint}">
+        @elements.args.get('_hintText)
+        </span>
+        }
+
+        </label>
+
+        @if(elements.args.contains('_symbol)) { <span class="inline-fields">@elements.args.get('_symbol)</span> }
+
+        <input @if(elements.args.contains('_type)){type="@elements.args.get('_type)"}else{type="text"}
+        class="form-control @if( elements.args.get('_inputClass) ){ @elements.args.get('_inputClass) }" @if(elements.args.contains('_dataAttributes) ){ @elements.args.get('_dataAttributes)}
+        name="@elements.field.name"
+        id="@if( elements.args.get('_id) ) {@elements.args.get('_id)} else {@elements.field.name.replaceAll("""[\.\[\]]""", "-")}"
+        value="@value"
+        @if(elements.args.contains('_maxLength)) {maxlength = "@elements.args.get('_maxLength)"}
+        @if(elements.args.contains('_size)) {size = "@elements.args.get('_size)"}
+        />
+        @if(elements.args.contains('_nested)) {
+        @elements.args.get('_nested)
+        }
+
+        @if(elements.hasErrors) {
+    </div>
+    }
+</div>

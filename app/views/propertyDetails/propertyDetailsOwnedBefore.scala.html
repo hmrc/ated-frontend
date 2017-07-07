@@ -1,0 +1,64 @@
+@import models._
+@(id: String, periodKey: Int, propertyDetailsForm: Form[PropertyDetailsOwnedBefore],
+  mode: Option[String],
+  backLink: Option[String])(implicit atedContext: AtedContext, messages: Messages)
+@import uk.gov.hmrc.play.views.html._
+@import uk.gov.hmrc.play.views.html.helpers._
+@import views.html.helpers._
+@import views.html.helpers.error._
+@import utils._
+
+@implicitFormInstance = @{
+  Some(propertyDetailsForm)
+}
+
+@pageScripts = {
+  <script type="text/javascript" src='@controllers.routes.AssetsController.at("javascript/propertyDetailsOwnedBefore.js")'></script>
+}
+
+
+@atedMain(title = Messages("ated.property-details-value.isOwnedBefore2012.title"), attorney = atedContext.user.authContext.attorney, pageScripts = Some(pageScripts)) {
+  @pageHeadersAndError(backLink, "pre-heading", AtedUtils.getPropertyDetailsPreHeader(mode),
+      Some(atedErrorSummary(propertyDetailsForm, "ated.property-details-value-error.general")))
+  <div class="form-group">
+    <h1 class="heading-xlarge" id="property-details-header">
+      @Messages("ated.property-details-value.isOwnedBefore2012.header")
+    </h1>
+  </div>
+
+  @form(action = controllers.propertyDetails.routes.PropertyDetailsOwnedBeforeController.save(id, periodKey, mode)) {
+
+    <div class="form-group">
+      <div id="isOwnedBefore2012">
+        @atedInputRadioGroupNew(
+        propertyDetailsForm("isOwnedBefore2012"),
+        Seq("true" -> Messages("ated.property-details-value.yes"),
+        "false" -> Messages("ated.property-details-value.no")),
+        '_legend -> Messages("ated.property-details-value.isOwnedBefore2012.header"),
+        '_legendClass -> "visuallyhidden",
+        '_groupClass -> "inline",
+        '_labelClass -> "block-label",
+        '_labelAfter -> true,
+        '_trackGA -> true
+        )
+      </div>
+    </div>
+
+      <div class="form-group">
+        <div id="isOwnedBefore2012-true-hidden" class="panel-indent">
+          @atedInputNew(propertyDetailsForm("ownedBefore2012Value"),
+          '_label -> Html(Messages("ated.property-details-value.ownedBefore2012Value")),
+          '_labelClass -> "form-label-bold",
+          '_inputClass -> "form-control-indent",
+          '_hintText -> Messages("ated.property-details-value.ownedBefore2012Value.hint"),
+          '_id -> "ownedBefore2012Value",
+          '_showConstraints -> false)
+        </div>
+      </div>
+
+      <button class="button" id="submit" type="submit">@Messages("ated.save-and-continue")</button>
+
+
+  }
+
+}

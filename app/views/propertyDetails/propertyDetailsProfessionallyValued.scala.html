@@ -1,0 +1,50 @@
+@import models._
+@(id: String, periodKey: Int, propertyDetailsForm: Form[PropertyDetailsProfessionallyValued],
+  mode: Option[String],
+  backLink: Option[String])(implicit atedContext: AtedContext, messages: Messages)
+@import uk.gov.hmrc.play.views.html._
+@import uk.gov.hmrc.play.views.html.helpers._
+@import views.html.helpers._
+@import views.html.helpers.error._
+@import utils._
+
+@implicitFormInstance = @{
+  Some(propertyDetailsForm)
+}
+
+@pageScripts = {
+  <script type="text/javascript" src='@controllers.routes.AssetsController.at("javascript/propertyDetailsProfessionallyValued.js")'></script>
+}
+
+
+@atedMain(title = Messages("ated.property-details-value.isValuedByAgent.title"), attorney = atedContext.user.authContext.attorney, pageScripts = Some(pageScripts)) {
+
+  @pageHeadersAndError(backLink, "pre-heading", AtedUtils.getPropertyDetailsPreHeader(mode),
+      Some(atedErrorSummary(propertyDetailsForm, "ated.property-details-value-error.general")))
+  <div class="form-group">
+    <h1 class="heading-xlarge" id="property-details-header">
+      @Messages("ated.property-details-value.isValuedByAgent.header")
+    </h1>
+  </div>
+
+  @form(action = controllers.propertyDetails.routes.PropertyDetailsProfessionallyValuedController.save(id, periodKey, mode)) {
+
+      <div class="form-group" id="isValuedByAgent">
+        @atedInputRadioGroupNew(
+        propertyDetailsForm("isValuedByAgent"),
+        Seq("true" -> Messages("ated.property-details-value.yes"),
+        "false" -> Messages("ated.property-details-value.no")),
+        '_legend -> Messages("ated.property-details-value.isValuedByAgent.header"),
+        '_legendClass -> "visuallyhidden",
+        '_groupClass -> "inline",
+        '_labelClass -> "block-label",
+        '_labelAfter -> true,
+        '_trackGA -> true
+        )
+      </div>
+
+      <button class="button" id="submit" type="submit">@Messages("ated.save-and-continue")</button>
+
+  }
+
+}

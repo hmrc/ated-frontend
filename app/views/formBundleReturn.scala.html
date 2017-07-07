@@ -1,0 +1,194 @@
+@import models._
+@import utils.AtedUtils._
+
+@(periodKey: Int,
+  formBundleReturn: Option[FormBundleReturn],
+  formBundleNumber: String,
+  organisationName: Option[String],
+  changeAllowed: Boolean,
+  editAllowed: Boolean,
+  valuesToDisplay: Seq[LineItemValue],
+  periodsToDisplay: Seq[LineItem],
+  backLink: Option[String])(implicit atedContext: AtedContext, messages: Messages)
+@import uk.gov.hmrc.play.views.html._
+@import uk.gov.hmrc.play.views.html.helpers._
+@import views.html.helpers._
+@import views.html.helpers.error._
+@import utils._
+
+@pageScripts = {
+<script type="text/javascript" src='@controllers.routes.AssetsController.at("javascript/formBundleReturn.js")'></script>
+}
+
+@atedMain(title = Messages("ated.form-bundle.title"), attorney = atedContext.user.authContext.attorney,
+                            pageScripts = Some(pageScripts)) {
+
+  @pageHeadersAndError(backLink, "form-bundle-subheader", organisationName.getOrElse(""))
+
+  <h1 class="heading-xlarge" id="form-bundle-header">
+      @Messages("ated.form-bundle.header")
+  </h1>
+
+  <div class="paragraph" id="form-bundle-text">@Messages("ated.form-bundle.subheader",
+    PeriodUtils.periodStartDate(periodKey).toString(Messages("ated.date-format")),
+    PeriodUtils.periodEndDate(periodKey).toString(Messages("ated.date-format")))
+  </div>
+
+  @formBundleReturn.map { formBundleReturnObj =>
+    <table id="view-return-table">
+      <tr>
+        <td id="th-view-return-property" class="heading-small td-height">@Messages("ated.form-bundle.view.return.property")</td>
+        <td>&nbsp;</td>
+      </tr>
+      <tr>
+        <td id="th-view-return-property-address" class="td-top">@Messages("ated.form-bundle.view.return.address")</td>
+        <td id="td-view-return-property">
+          <span id="form-bundle-address-line-1">@formBundleReturnObj.propertyDetails.address.addressLine1</span>,<br>
+          <span id="form-bundle-address-line-2">@formBundleReturnObj.propertyDetails.address.addressLine2</span>,<br>
+          @if(formBundleReturnObj.propertyDetails.address.addressLine3.isDefined){<span id="address-line-3">@formBundleReturnObj.propertyDetails.address.addressLine3</span>,<br/>}
+          @if(formBundleReturnObj.propertyDetails.address.addressLine4.isDefined){<span id="address-line-4">@formBundleReturnObj.propertyDetails.address.addressLine4</span>,<br/>}
+          <span id="form-bundle-address-post-code">@formBundleReturnObj.propertyDetails.address.postalCode</span>
+        </td>
+      </tr>
+      <tr>
+        <td id="th-view-return-property-title-no">
+          @Messages("ated.form-bundle.view.return.property.title.no")
+        </td>
+        <td id="td-view-return-property-title-no">@formBundleReturnObj.propertyDetails.titleNumber</td>
+      </tr>
+      <tr>
+        <td id="th-view-return-property-value" class="heading-small td-height">@Messages("ated.form-bundle.view.return.value-title")</td>
+        <td>&nbsp;</td>
+      </tr>
+      @for((valueObj, index) <- valuesToDisplay.zipWithIndex) {
+        <tr>
+          <td id="th-view-return-value-@index">@PeriodUtils.getPeriodValueMessage(index, valuesToDisplay.size)</td>
+          <td id="td-view-return-value-@index">@formattedPounds(valueObj.propertyValue)</td>
+        </tr>
+        <tr>
+          <td id="th-view-return-property-valuation-date-@index">@PeriodUtils.getPeriodValueDateMessage(index, valuesToDisplay.size)</td>
+          <td id="td-view-return-property-valuation-date-@index">@valueObj.dateOfChange.toString(Messages("ated.date-format"))</td>
+        </tr>
+      }
+
+      <tr>
+        <td class="heading-small td-height" id="dates-of-liability-header">@Messages("ated.form-bundle.view.return.dates-of-liability.title")</td>
+        <td class="td-height"></td>
+      </tr>
+      @for((period, index) <- periodsToDisplay.zipWithIndex) {
+      <tr>
+        <td id="return-type-@index" class="td-top">@period.description</td>
+        <td id="period-@index" class="td-top">
+          @if(period.lineItemType.toLowerCase == AtedConstants.DisposeReturnType){
+            @period.startDate.toString(Messages("ated.date-format"))
+          }else {
+          @Messages("ated.property-details-summary.table.period.text", period.startDate.toString(Messages("ated.date-format")), period.endDate.toString(Messages("ated.date-format")))
+          }
+        </td>
+      </tr>
+      }
+      @formBundleReturnObj.taxAvoidanceScheme.map { taxAvoidanceScheme =>
+        <tr>
+          <td class="heading-small td-height" id="avoidance-scheme-header">@Messages("ated.form-bundle.view.return.avoidance-scheme.title")</td>
+          <td class="td-height"></td>
+        </tr>
+        <tr>
+          <td id="th-view-return-tax-avoidance">
+            @Messages("ated.form-bundle.view.return.tax-avoidance-scheme")
+          </td>
+          <td id="td-view-return-tax-avoidance">@taxAvoidanceScheme</td>
+        </tr>
+      }
+
+      @formBundleReturnObj.bankDetails.map { bankDetail =>
+      <tr>
+        <td class="heading-small td-height" id="bank-details-header">@Messages("ated.edit-liability.summary.bank-details.header")</td>
+        <td>&nbsp;</td>
+      </tr>
+      <tr>
+        <td id="account-holder-name-label">@Messages("ated.edit-liability.summary.bank-details.account-holder-name")</td>
+        <td id="account-holder-name-value">@bankDetail.accountName.getOrElse("")</td>
+      </tr>
+      @bankDetail.ukAccount.map { ukAcc =>
+      <tr>
+        <td id="account-number-label">@Messages("ated.edit-liability.summary.bank-details.account-number")</td>
+        <td id="account-number-value">@maskBankDetails(ukAcc.accountNumber, 4)</td>
+      </tr>
+      <tr>
+        <td id="sort-code-label">@Messages("ated.edit-liability.summary.bank-details.sort-code")</td>
+        <td id="sort-code-value">@maskSortCode(ukAcc.sortCode)</td>
+      </tr>
+      } @bankDetail.internationalAccount.map { intAcc =>
+      <tr>
+        <td id="iban-label">@Messages("ated.edit-liability.summary.bank-details.iban")</td>
+        <td id="iban-value">@maskBankDetails(intAcc.iban, 4)</td>
+      </tr>
+      <tr>
+        <td id="bic-swift-code-label">@Messages("ated.edit-liability.summary.bank-details.bic-swift-code")</td>
+        <td id="bic-swift-code-value">@maskBankDetails(intAcc.bicSwiftCode, 2)</td>
+      </tr>
+      }
+      }
+      @formBundleReturnObj.propertyDetails.additionalDetails.map { additionalDetails =>
+      <tr>
+        <td class="heading-small td-height" id="supporting-info-header">@Messages("ated.form-bundle.view.return.supporting-info.title")</td>
+        <td class="td-height"></td>
+      </tr>
+      <tr>
+        <td id="th-view-return-additional-info">
+          @Messages("ated.form-bundle.view.return.addition-info")
+        </td>
+        <td id="td-view-return-additional-info">@additionalDetails</td>
+      </tr>
+      }
+      @formBundleReturnObj.taxAvoidancePromoterReference.map { taxAvoidancePromoterReference =>
+        <tr>
+          <td id="th-view-return-promoter">
+            @Messages("ated.form-bundle.view.return.promoter")
+          </td>
+          <td id="td-view-return-promoter">@taxAvoidancePromoterReference</td>
+        </tr>
+      }
+
+      <tr>
+        <td class="heading-small td-height" id="return-status-header">@Messages("ated.form-bundle.view.return.return-status.title")</td>
+        <td class="td-height"></td>
+      </tr>
+      <tr>
+        <td id="th-view-return-payment">
+         @Messages("ated.form-bundle.view.return.payment-reference")
+        </td>
+        <td id="td-view-return-payment">@formBundleReturnObj.paymentReference</td>
+      </tr>
+      <tr>
+        <td id="th-view-return-date">
+          @Messages("ated.form-bundle.view.return.date")
+        </td>
+        <td id="td-view-return-date">@formBundleReturnObj.dateOfSubmission.toString(Messages("ated.date-format"))</td>
+      </tr>
+      <tr>
+        <td id="th-view-return-status">
+          @Messages("ated.form-bundle.view.return.status")
+        </td>
+        <td id="td-view-return-status">@Messages("ated.submitted")</td>
+      </tr>
+    </table>
+    <div class="form-group">
+      <p id="return-charge-text">@Messages("ated.form-bundle.view.return.ated.charge")</p>
+      <h1 class="heading-xlarge" id="return-charge">
+        @formattedPounds(formBundleReturnObj.liabilityAmount)
+      </h1>
+    </div>
+
+    <div class="form-group">
+        @if(changeAllowed) {
+          <a href="@controllers.editLiability.routes.EditLiabilityTypeController.editLiability(formBundleNumber, periodKey, editAllowed)"
+             class="button" id="submit"  onkeyup='spaceBarHandler(event,"@controllers.editLiability.routes.EditLiabilityTypeController.editLiability(formBundleNumber, periodKey, editAllowed)")'>
+            @Messages("ated.form-bundle.edit-return.button")
+          </a>
+        }
+    </div>
+
+  }
+
+}

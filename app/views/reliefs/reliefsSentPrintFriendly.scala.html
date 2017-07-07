@@ -1,0 +1,40 @@
+@import utils.AtedFeatureSwitches
+@(periodKey: Int, submittedReturnResponse: Option[SubmitReturnsResponse], organisationName: Option[String])(implicit atedContext: AtedContext, messages: Messages)
+
+@import models._
+@import uk.gov.hmrc.play.views.html._
+@import uk.gov.hmrc.play.views.html.helpers._
+@import views.html.helpers._
+@import views.html.helpers.error._
+@import org.joda.time.format.DateTimeFormat
+@import org.joda.time.LocalDate
+
+@printFriendly(Messages("ated.relief-sent.title")) {
+
+    <script type="text/javascript" src='@controllers.routes.AssetsController.at("javascript/printFriendly.js")'></script>
+
+    <h1 id="header">@Messages("ated.relief-sent.header")
+    @Messages("ated.relief-sent.header.date") @DateTimeFormat.forPattern("d MMMM yyyy").print(new LocalDate())
+    </h1>
+
+    <p id="completed-returns">@Messages("ated.reliefs-sent.completed-message")</p>
+    <p id="email-confirmation">@Messages("ated.reliefs-sent.email-message")<p>
+
+
+    <div class="divider--top--thick"></div>
+
+    <p id="receipt-message" class="heading-medium">@Messages("ated.reliefs-sent.charge-heading")</p>
+
+    <p id="amount-message">@Messages("ated.reliefs-sent.amount-message")</p>
+
+    @submittedReturnResponse.map { returnResponse =>
+    @returnResponse.reliefReturnResponse.map { reliefReturnResponse =>
+
+    <p id="reference-number">@Html(Messages("ated.reliefs-sent.reference-message",reliefReturnResponse.head.formBundleNumber))</p>
+
+    }
+    }
+    <p id="balance-message">@Messages("ated.reliefs-sent.balance-message")</p>
+
+
+}

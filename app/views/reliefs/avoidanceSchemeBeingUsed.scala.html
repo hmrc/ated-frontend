@@ -1,0 +1,55 @@
+@import models._
+@(periodKey: Int, isTaxAvoidanceForm: Form[IsTaxAvoidance], periodStartDate: org.joda.time.LocalDate, backLink: Option[String])(implicit atedContext: AtedContext, messages: Messages)
+
+@import uk.gov.hmrc.play.views.html._
+@import uk.gov.hmrc.play.views.html.helpers._
+@import views.html.helpers._
+@import views.html.helpers.error._
+@import utils._
+
+@formattedPeriodStartDate = @{periodStartDate.toString(Messages("ated.date-format.numeric"))}
+
+@pageScripts = {
+<script type="text/javascript" src='@controllers.routes.AssetsController.at("javascript/chooseReliefs.js")'></script>
+}
+
+@implicitFormInstance = @{ Some(isTaxAvoidanceForm) }
+
+@atedMain(title = Messages("ated.choose-reliefs.avoidance-title"), attorney = atedContext.user.authContext.attorney, pageScripts = Some(pageScripts)) {
+@pageHeadersAndError(backLink, "pre-header", Messages("ated.choose-reliefs.subheader"),
+    Some(atedErrorSummary(isTaxAvoidanceForm, "ated.choose-reliefs.error.general")))
+<h1 class="heading-xlarge" id="choose-reliefs-header">
+  @Messages("ated.choose-reliefs.avoidance-title")
+</h1>
+
+@form(action=controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.send(periodKey)) {
+
+<div id="isAvoidanceScheme">
+  @atedInputRadioGroupNew(isTaxAvoidanceForm("isAvoidanceScheme"),
+  Seq(
+  "true" -> Messages("ated.claim-relief.avoidance-scheme.yes"),
+  "false" -> Messages("ated.claim-relief.avoidance-scheme.no")),
+  '_fieldsetAttributesHelpQuestion -> "isAvoidanceScheme-help-question",
+  '_legend -> Messages("ated.choose-reliefs.avoidance-title"),
+  '_labelClass -> "block-label",
+  '_groupClass -> "form-group  inline",
+  '_legendClass -> "visuallyhidden",
+  '_labelAfter -> true,
+  '_trackGA -> true
+  )
+</div>
+
+<div class="form-group">
+  <button class="button" id="submit" type="submit">@Messages("ated.choose-reliefs.continue")</button>
+</div>
+
+<div class="form-group">
+  @atedInputNew(isTaxAvoidanceForm("periodKey"),
+  '_label -> "id",
+  '_labelClass ->  "visuallyhidden",
+  '_id -> "periodKey",
+  '_type -> "hidden")
+</div>
+
+}
+}

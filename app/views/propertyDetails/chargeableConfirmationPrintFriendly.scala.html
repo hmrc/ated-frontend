@@ -1,0 +1,49 @@
+@import utils.AtedFeatureSwitches
+@(submittedReturnResponse: Option[SubmitReturnsResponse], organisationName: Option[String])(implicit atedContext: AtedContext, messages: Messages)
+@import org.joda.time.format.DateTimeFormat
+@import org.joda.time.LocalDate
+
+@import models._
+@import uk.gov.hmrc.play.views.html._
+@import utils._
+@import views.html.helpers._
+@import views.html.helpers.error._
+
+@printFriendly(Messages("ated.relief-sent.title")) {
+
+    <script type="text/javascript" src='@controllers.routes.AssetsController.at("javascript/printFriendly.js")'></script>
+
+    <h1 id="header">
+        @Messages("ated.chargeable-return-confirmation.submitted.text") @Messages("ated.chargeable-return-confirmation.submitted.date.text", DateTimeFormat.forPattern("d MMM yyyy").print(new LocalDate()))
+    </h1>
+
+    <p id="completed-message">@Messages("ated.chargeable-return-confirmation.completed.message")</p>
+    <p id="email-message">@Messages("ated.chargeable-return-confirmation.email.message")</p>
+
+    <div class="divider--top--thick"></div>
+
+    <p><span id="receipt-message-title" class="heading-medium">@Messages("ated.chargeable-return-confirmation.charge.heading")</span></p>
+
+    <p id="adjusted-amount">@Messages("ated.chargeable-return-confirmation.amount.message")</p>
+
+    <div class="form-group">
+    <ul class="list-bullet">
+        @submittedReturnResponse.map { returnResponse =>
+
+        @returnResponse.liabilityReturnResponse.map { liabilityReturnResponse =>
+        <li id="owed-amount">@Html(Messages("ated.chargeable-return-confirmation.owe.text", formattedPounds(liabilityReturnResponse.head.liabilityAmount)))</li>
+        <li id="reference-text">@Html(Messages("ated.chargeable-return-confirmation.reference.text", liabilityReturnResponse.head.paymentReference.getOrElse("")))</li>
+        <li id="late-payment">@Html(Messages("ated.chargeable-return-late-payment-pf.text"))</li>
+        }
+        }
+    </ul>
+    </div>
+
+    <div class="form-group">
+        <p id="not-receive-email">
+            @Messages("ated.chargeable-return-confirmation.not-receive-text")
+        </p>
+    </div>
+
+}
+

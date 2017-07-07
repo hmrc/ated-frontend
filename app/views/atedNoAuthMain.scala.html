@@ -1,0 +1,23 @@
+@(title: String,
+    userLoggedIn: Boolean = true,
+    supportLinkEnabled: Boolean = true,
+    sidebarLinks: Option[Html] = None,
+    sidebarClass: Option[String] = None)(mainContent: Html)(implicit request: Request[_], messages: Messages)
+
+@import uk.gov.hmrc.play.views.html.layouts
+@import uk.gov.hmrc.play.frontend.auth.AuthContext
+
+@linkElement = {
+<link rel="stylesheet" href='@controllers.routes.AssetsController.at("stylesheets/main.css")'/>
+}
+
+@main(
+    applicationConfig = config.ApplicationConfig,
+    supportLinkEnabled = supportLinkEnabled,
+    title = title,
+    sidebarLinks = sidebarLinks,
+    sidebarClass = sidebarClass,
+    userLoggedIn = userLoggedIn,
+    linkElement = Some(linkElement)) {
+        @mainContent
+}

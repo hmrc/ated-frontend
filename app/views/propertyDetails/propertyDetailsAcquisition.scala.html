@@ -1,0 +1,60 @@
+@import models._
+@(id: String, periodKey: Int, propertyDetailsForm: Form[PropertyDetailsAcquisition],
+  mode: Option[String],
+  backLink: Option[String])(implicit atedContext: AtedContext, messages: Messages)
+@import uk.gov.hmrc.play.views.html._
+@import uk.gov.hmrc.play.views.html.helpers._
+@import views.html.helpers._
+@import views.html.helpers.error._
+@import utils._
+
+@implicitFormInstance = @{
+  Some(propertyDetailsForm)
+}
+
+
+@atedMain(title = Messages("ated.property-details-value.anAcquisition.title"), attorney = atedContext.user.authContext.attorney) {
+  @pageHeadersAndError(backLink, "pre-heading", AtedUtils.getPropertyDetailsPreHeader(mode),
+      Some(atedErrorSummary(propertyDetailsForm, "ated.property-details-value-error.general")))
+
+  <div class="form-group">
+    <h1 class="heading-xlarge" id="property-details-header">
+      @Messages("ated.property-details-value.anAcquisition.header")
+    </h1>
+  </div>
+
+  @form(action = controllers.propertyDetails.routes.PropertyDetailsAcquisitionController.save(id, periodKey, mode)) {
+
+
+      <div class="form-group" id="anAcquisition">
+      @atedInputRadioGroupNew(
+        propertyDetailsForm("anAcquisition"),
+        Seq("true" -> Messages("ated.property-details-value.yes"),
+          "false" -> Messages("ated.property-details-value.no")),
+        '_fieldsetAttributesHelpQuestion -> "anAcquisition-help-question",
+        '_legend -> Messages("ated.property-details-value.anAcquisition.header"),
+          '_legendClass -> "visuallyhidden",
+        '_groupClass -> "inline",
+        '_labelClass -> "block-label",
+        '_labelAfter -> true,
+        '_trackGA -> true
+      )
+      </div>
+
+      <details>
+        <summary>
+          <span id="anAcquisition-reveal" class="summary">
+            @Messages("ated.property-details-value.anAcquisition.what")
+          </span>
+        </summary>
+        <div class="panel-indent">
+          <p id="anAcquisition-text">@Html(Messages("ated.property-details-value.anAcquisition.what.text"))</p>
+        </div>
+      </details>
+
+      <button class="button" id="submit" type="submit">@Messages("ated.save-and-continue")</button>
+
+
+  }
+
+}

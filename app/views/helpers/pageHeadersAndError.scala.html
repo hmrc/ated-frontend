@@ -1,0 +1,10 @@
+@(backLink: Option[String], subHeaderId: String, subHeaderValue: String, errorDisplay: Option[Html] = None)(implicit lang: play.api.i18n.Lang, messages: Messages)
+
+@if(backLink.isDefined){
+  <a id="backLinkHref" class="link-back" href='@backLink'>@Messages("ated.back")</a>
+  @errorDisplay
+  <div class="heading-sub-no-margin" id=@subHeaderId> @subHeaderValue </div>
+} else {
+  @errorDisplay
+  <div class="heading-sub" id=@subHeaderId> @subHeaderValue </div>
+}

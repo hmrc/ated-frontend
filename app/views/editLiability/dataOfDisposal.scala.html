@@ -1,0 +1,46 @@
+@import models._
+@(disposeLiabilityForm: Form[DisposeLiability], oldFormBundleNo: String, backLink: Option[String])(implicit atedContext: AtedContext, messages: Messages)
+@import uk.gov.hmrc.play.views.html._
+@import uk.gov.hmrc.play.views.html.helpers._
+@import views.html.helpers._
+@import views.html.helpers.error._
+
+@implicitFormInstance = @{ Some(disposeLiabilityForm) }
+
+@atedMain(title = Messages("ated.dispose-property.disposal-date.title"), attorney = atedContext.user.authContext.attorney) {
+  @pageHeadersAndError(backLink, "pre-heading", Messages("ated.property-details.pre-header-dispose"),
+      Some(atedErrorSummary(disposeLiabilityForm, "ated.dispose-property.error.general")))
+  <h1 class="heading-xlarge" id="dispose-property-header">
+    @Messages("ated.dispose-property.disposal-date.header")
+  </h1>
+
+
+
+  @form(action=controllers.editLiability.routes.DisposePropertyController.save(oldFormBundleNo)) {
+
+    <div id="date-of-disposal">
+      @atedDateFieldsFree(
+      formItem = disposeLiabilityForm,
+      fieldName = "dateOfDisposal",
+      label = Html(""),
+      isNested = false,
+      defaultDateOption = None,
+      '_hintText -> Messages("ated.date.hint"),
+      '_groupClass -> "form-group date-of-birth",
+      '_idName -> "dateOfDisposal"
+      )
+
+    </div>
+
+    <div class="form-group">
+      <button class="button" id="submit" type="submit">@Messages("ated.save-and-continue")</button>
+      @atedInputNew(disposeLiabilityForm("periodKey"),
+      '_label -> "id",
+      '_labelClass ->  "visuallyhidden",
+      '_id -> "id",
+      '_type -> "hidden")
+    </div>
+
+  }
+
+}

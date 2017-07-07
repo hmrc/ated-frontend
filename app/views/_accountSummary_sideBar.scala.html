@@ -1,0 +1,19 @@
+@import models._
+@(balance: Option[BigDecimal], correspondence: Option[Address], organisationName: Option[String])(implicit atedContext: AtedContext, messages: Messages)
+@import views.html.helpers._
+@import utils._
+
+  <div class="service-info">
+    <h2 class="balance-display heading-medium" id="sidebar.balance-header">@Messages("ated.summary-return.sidebar.balance")</h2>
+
+    <p class="balance-display heading-large" id="sidebar.balance-content">@formattedPounds(balance.getOrElse(BigDecimal(0)).abs) @if(balance.getOrElse(BigDecimal(0)) > 0){<span class="heading-medium">debit </span>} @if(balance.getOrElse(BigDecimal(0)) < 0){<span class="heading-medium">credit</span>} </p>
+
+    <p id="sidebar.balance-info">@Messages("ated.summary-return.sidebar.balance-info")</p>
+
+    @if(balance.getOrElse(BigDecimal(0)) > 0){<p>@Html(Messages("ated.summary-return.sidebar.pay.link")) </p>} @if(balance.getOrElse(BigDecimal(0)) < 0){<p class="font-xsmall">@Html(Messages("ated.summary-return.sidebar.owed.link"))</p>}
+
+    @correspondence.map { _ =>
+    <p class="balance-display"><a href="@controllers.subscriptionData.routes.CompanyDetailsController.view" id="change-details-link">@Messages("ated.summary-return.company-details.link")</a></p>
+    }
+  </div>
+

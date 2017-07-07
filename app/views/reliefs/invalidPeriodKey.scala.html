@@ -1,0 +1,9 @@
+@()(implicit atedContext: AtedContext, messages: Messages)
+
+@atedMain(title = Messages("ated.reliefs.error.title"), attorney = atedContext.user.authContext.attorney) {
+
+  <h1 id="relief-error-title">@Messages("ated.reliefs.error.wrong-period")</h1>
+
+  <a href="@controllers.routes.HomeController.home()" id="relief-error-ated-home-link">@Messages("ated.reliefs.error.ated-home")</a>
+
+}

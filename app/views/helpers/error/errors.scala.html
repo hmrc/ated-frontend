@@ -1,0 +1,16 @@
+@(form: Form[_])(implicit messages: Messages)
+
+@if(form.hasGlobalErrors || form.hasErrors) {
+   <div id="errors" class="validation-summary">
+     <h2 class="heading-small">@Messages("ated.error.summaryHeader")</h2>
+     <ul>
+       @for(validationError <- form.errors) {
+         <li class="validation-message" id='#@validationError.key'>
+           <a href='#@validationError.key'>
+               @validationError.message
+             </a>
+        </li>
+       }
+     </ul>
+   </div>
+}

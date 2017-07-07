@@ -1,0 +1,42 @@
+@import models._
+@(periodKey: Int, formBundleNumber: String, editReliefForm: Form[EditRelief], backLink: Option[String])(implicit atedContext: AtedContext, messages: Messages)
+@import uk.gov.hmrc.play.views.html._
+@import uk.gov.hmrc.play.views.html.helpers._
+@import views.html.helpers._
+@import views.html.helpers.error._
+@import utils._
+
+@atedMain(title = Messages("ated.change-relief-return.title"), attorney = atedContext.user.authContext.attorney) {
+    @pageHeadersAndError(backLink, "pre-heading", Messages("ated.change-return.pre-header"),
+    Some(atedErrorSummary(editReliefForm, "ated.change-relief-return.error.empty.general")))
+  <div class="form-group">
+    <h1 class="heading-xlarge" id="relief-return-header">
+     @Messages("ated.change-relief-return.title")
+    </h1>
+  </div>
+
+  <p id="relief-return-change-text">@Messages("ated.change-relief-return.text")</p>
+
+  @form(action=controllers.reliefs.routes.ChangeReliefReturnController.submit(periodKey, formBundleNumber)) {
+    <div id="editReliefForm">
+      @atedInputRadioGroupNew(editReliefForm("changeRelief"),
+      Seq(
+      "changeDetails" -> Messages("ated.change-relief-return.select-change-details"),
+      "createChargeable" -> Messages("ated.change-relief-return.select-create-chargeable")
+      ),
+      '_legend -> Messages("ated.change-relief-return.title"),
+      '_labelClass -> "block-label",
+      '_legendClass -> "visuallyhidden",
+      '_groupClass -> "form-group",
+      '_labelAfter -> true,
+      '_trackGA -> true
+      )
+
+    </div>
+
+
+    <button class="button" id="submit" type="submit">@Messages("ated.change-relief-return.continue")</button>
+
+}
+
+}

@@ -1,0 +1,27 @@
+@import config.ApplicationConfig
+@(title: String)(content: Html)(implicit atedContext: AtedContext, messages: Messages)
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <title>@title</title>
+    <link href="@{s"${ApplicationConfig.assetsPrefix}/stylesheets/application.min.css"}" rel="stylesheet"  type="text/css">
+    <link href="@controllers.routes.AssetsController.at("stylesheets/main.css")" rel="stylesheet"  type="text/css">
+    <link href="@controllers.routes.AssetsController.at("stylesheets/print-friendly.css")" rel="stylesheet"  type="text/css">
+    <link rel="shortcut icon" href="@controllers.template.routes.Template.at("images/favicon.ico")" type="image/x-icon" />
+    <link href="@controllers.template.routes.Template.at("stylesheets/fonts.css")" media="all" rel="stylesheet" type="text/css" />
+  </head>
+  <body>
+
+    <div class="box">
+      <div class="logo">
+        <span class="organisation-logo organisation-logo-medium">HM Revenue &amp; Customs</span>
+      </div>
+
+      @content
+
+    </div>
+
+  </body>
+</html>

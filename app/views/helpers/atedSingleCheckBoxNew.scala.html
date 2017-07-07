@@ -1,0 +1,24 @@
+@(field: play.api.data.Field, checkboxText: String, args: (Symbol,Any)*)(implicit messages: Messages, formInstance: Option[Form[_]] = None)
+
+@import views.html.helper._
+@import views.helpers._
+
+@elements = @{FieldElements(field.id, field, Html(""), args.toMap, messages)}
+@parentField = @{args.toMap.get('parentField).asInstanceOf[Option[Field]]}
+@errors = @{ FormHelpers.getErrors(field, parentField) }
+
+@fieldsetClass = {@elements.args.get('_groupClass)@if(errors.nonEmpty){ form-field--error}}
+
+<fieldset class="@fieldsetClass" @if(elements.args.get('_fieldsetAttributes).isDefined) {@elements.args.get('_fieldsetAttributes)}>
+
+@commonHelper(field,errors)
+
+@input(field, args.map{ x => if(x._1 == '_label) '_name -> x._2 else x }:_*) { (id, name, value, htmlArgs) =>
+@defining(field.indexes.map( i => field("[%s]".format(i)).value ).flatten.toSet) { values =>
+<label for="@(id)" class="block-label" id='@(id)_field'>
+    <input type="checkbox" id="@(id)" name="@{name}" value="true" @if(elements.field.value.contains("true")){checked="checked"}/>
+    <div id="@(id)_label">@checkboxText</div>
+</label>
+}
+}
+</fieldset>

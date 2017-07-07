@@ -1,0 +1,51 @@
+@import models._
+@import org.joda.time.LocalDate
+@(formBundleNo: String, periodKey: Int, propertyDetailsForm: Form[PropertyDetailsDatesLiable], backLink: Option[String])(implicit atedContext: AtedContext, messages: Messages)
+@import uk.gov.hmrc.play.views.html._
+@import uk.gov.hmrc.play.views.html.helpers._
+@import views.html.helpers._
+@import views.html.helpers.error._
+@import utils._
+
+@implicitFormInstance = @{ Some(propertyDetailsForm) }
+
+@atedMain(title = Messages("ated.property-details-period.change-dates-liable.title"), attorney = atedContext.user.authContext.attorney) {
+  @pageHeadersAndError(backLink, "pre-heading", Messages("ated.property-details.pre-header-change"),
+      Some(atedErrorSummary(propertyDetailsForm, "ated.property-details-period.datesLiable.general.error")))
+    <h1 class="heading-xlarge" id="property-details-header">
+      @Messages("ated.property-details-period.change-dates-liable.header")
+    </h1>
+
+  @form(action=controllers.editLiability.routes.EditLiabilityDatesLiableController.save(formBundleNo, periodKey)) {
+
+    <div class="form-group">
+      @atedDateFieldsFree(
+        formItem = propertyDetailsForm,
+        fieldName = "startDate",
+        label = Html(Messages("ated.property-details-period.change-dates-liable.startDate")),
+        isNested = false,
+        defaultDateOption = None,
+        '_hintText -> Messages("ated.property-details-period.datesLiable.startDate.hint", PeriodUtils.periodStartDate(periodKey).toString(Messages("ated.date-format.numeric"))),
+        '_groupClass -> "form-group date-of-birth",
+        '_idName -> "startDate"
+      )
+
+      @atedDateFieldsFree(
+        formItem = propertyDetailsForm,
+        fieldName = "endDate",
+        label = Html(Messages("ated.property-details-period.change-dates-liable.endDate")),
+        isNested = false,
+        defaultDateOption = Some(PeriodUtils.periodEndDate(periodKey)),
+        '_hintText -> Messages("ated.property-details-period.datesLiable.endDate.hint", PeriodUtils.periodEndDate(periodKey).toString(Messages("ated.date-format.numeric"))),
+        '_groupClass -> "form-group date-of-birth",
+        '_idName -> "endDate"
+      )
+    </div>
+
+      <button class="button" id="submit" type="submit">
+          @Messages("ated.save-and-continue")
+      </button>
+
+  }
+
+}

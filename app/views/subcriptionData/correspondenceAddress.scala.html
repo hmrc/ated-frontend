@@ -1,0 +1,93 @@
+@(correspondenceAddressForm: Form[models.AddressDetails], listOfIsoCode: List[(String, String)], backLink: Option[String])(implicit atedContext: AtedContext, messages: Messages)
+@import uk.gov.hmrc.play.views.html._
+@import uk.gov.hmrc.play.views.html.helpers._
+@import views.html.helpers._
+@import views.html.helpers.error._
+
+@pageScripts = {
+  <script type="text/javascript" src='@controllers.routes.AssetsController.at("javascript/ated-country-auto-complete.js")'></script>
+  <script>
+    $(document).ready(function() {
+      countryCodeAutoComplete("#countryCode")
+      var classOfSelect = $('#countryCode_').attr('class');
+      $("#countryCode").addClass(classOfSelect)
+      var labelText = $("#countryCode_field").text();
+      var divId = "countryCode_div"
+      var fieldId = "countryCode_"
+      createLabelForHiddenSelect(divId, fieldId, labelText);
+    });
+  </script>
+}
+
+@implicitFormInstance = @{ Some(correspondenceAddressForm) }
+
+@atedMain(title = Messages("ated.correspondence-address.title"), attorney = atedContext.user.authContext.attorney, pageScripts = Some(pageScripts)) {
+  @pageHeadersAndError(backLink, "pre-heading", Messages("ated.correspondence-address.subheader"),
+      Some(atedErrorSummary(correspondenceAddressForm, "ated.correspondence-address.error.general")))
+  <h1 class="heading-xlarge" id="correspondence-address-header">
+    @Messages("ated.correspondence-address.header")
+  </h1>
+
+
+  @form(action = controllers.subscriptionData.routes.CorrespondenceAddressController.submit) {
+
+    <div class="form-group">
+
+      <div id="correspondence-address-form">
+
+        <div class="form-field">
+          @atedInputNew(correspondenceAddressForm("addressType"),
+          '_addressType -> "addressType",
+          '_label ->  Html(Messages("ated.correspondence-address.address-type")),
+          '_labelClass ->  "visuallyhidden",
+          '_type -> "hidden")
+
+          @atedInputNew(correspondenceAddressForm("addressLine1"),
+          '_label ->  Html(Messages("ated.address.address")),
+          '_labelClass -> "form-label-bold",
+          '_showConstraints -> false)
+
+          @atedInputNew(correspondenceAddressForm("addressLine2"),
+          '_label ->  Html(Messages("ated.address.line-2")),
+          '_labelClass ->  "visuallyhidden",
+          '_showConstraints -> false)
+
+          @atedInputNew(correspondenceAddressForm("addressLine3"),
+          '_label ->  Html(Messages("ated.address.line-3")),
+          '_labelClass ->  "visuallyhidden",
+          '_showConstraints -> false)
+
+          @atedInputNew(correspondenceAddressForm("addressLine4"),
+          '_label ->  Html(Messages("ated.address.line-4")),
+          '_labelClass ->  "visuallyhidden",
+          '_showConstraints -> false)
+        </div>
+
+        <div class="form-field">
+          @atedDropdown(correspondenceAddressForm("countryCode"),
+          elementOptions = listOfIsoCode,
+          displayEmptyValue = true,
+          '_emptyValueText -> Messages("ated.address.country.select"),
+          '_labelClass -> "form-label-bold",
+          '_label -> Html(Messages("ated.address.country")))
+        </div>
+
+        <div class="form-field">
+          @atedInputNew(correspondenceAddressForm("postalCode"),
+          '_label ->  Html(Messages("ated.address.postcode")),
+          '_labelClass -> "form-label-bold",
+          '_size ->  "10",
+          '_inputClass -> "field-1-4",
+          '_showConstraints -> false)
+        </div>
+
+      </div>
+
+    </div>
+
+    <button class="button" id="submit" type="submit">@Messages("ated.save-changes")</button>
+
+
+  }
+
+}

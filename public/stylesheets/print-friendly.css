@@ -1,0 +1,71 @@
+@media screen {
+
+  html, body {
+    padding: 20px;
+    background: #A9A9A9;
+    margin: 0;
+    height: 100%;
+  }
+
+  .box {
+    position: relative;
+    width: 600px;
+    padding: 50px;
+    margin: 0 auto;
+    background-color: #fff;
+    -moz-box-shadow: 0 0 4px rgba(0, 0, 0, 0.2), inset 0 0 50px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2), inset 0 0 50px rgba(0, 0, 0, 0.1);
+  }
+
+}
+
+@media print {
+
+  body {
+    padding: 20px;
+    background-color: #fff;
+  }
+
+  .box {
+    position: relative;
+    background-color: #fff;
+    width: 100%;
+    height: 100%;
+    page-break-after: always;
+  }
+
+  @page {
+    margin: 0.5cm;
+  }
+
+}
+
+.logo {
+  padding-bottom: 20px;
+}
+
+
+/*--print friendly --*/
+.sign-box{
+    float:left;
+    margin-right:10px;
+	width:30.0%;
+	height:70px;
+	border:1px solid #808080;
+	box-sizing:border-box;
+}
+
+.sign-labels {
+    float:left;
+    margin-right:10px;
+	width:30.0%;
+	height:24px;
+	box-sizing:border-box;
+	font-weight:bold;
+}
+
+.print-group {
+    width: 100%;
+    clear: both;
+    margin-bottom: 100px;
+}

@@ -1,0 +1,74 @@
+@(editContactDetailsEmailForm: Form[models.EditContactDetailsEmail], backLink:Option[String])(implicit atedContext: AtedContext, messages: Messages)
+@import uk.gov.hmrc.play.views.html._
+@import uk.gov.hmrc.play.views.html.helpers._
+@import views.html.helpers._
+@import views.html.helpers.error._
+@import utils._
+
+
+@implicitFormInstance = @{ Some(editContactDetailsEmailForm) }
+
+@pageScripts = {
+<script type="text/javascript" src='@controllers.routes.AssetsController.at("javascript/edit-contact-email.js")'></script>
+}
+
+@atedMain(title = Messages("ated.contact-details-edit-email.header"), attorney = atedContext.user.authContext.attorney, pageScripts = Some(pageScripts)) {
+    @pageHeadersAndError(backLink, "pre-header", Messages("ated.contact-details-edit-email.subheader"))
+
+    <h1 class="heading-xlarge" id="contact-details-email-header">
+        @Messages("ated.contact-details-edit-email.header")
+    </h1>
+
+    <p id="lede">@Messages("ated.contact-details-email-lede")</p>
+
+    <div class="form-group">
+        <div id = "email-consent-risk">
+
+            <details role="group">
+                <summary role="button" aria-controls="email-consent-content-0" tabindex="0">
+                    <span class="summary font-xsmall" id="email-risk-question">@Messages("ated.contact-details.email.risk.help.text")</span>
+                </summary>
+                <div id="email-consent-content-0" class="panel-indent font-xsmall">
+                    <p id="email-risk-ans">@Html(Messages("ated.contact-details.email.risk.help.answer"))</p>
+                </div>
+            </details>
+
+        </div>
+    </div>
+
+
+    @form(action = controllers.subscriptionData.routes.EditContactEmailController.submit) {
+
+    <div class="form-group">
+
+        <div class="form-group">
+
+            @atedInputRadioGroupNew(editContactDetailsEmailForm("emailConsent"),
+            Seq("true" -> Messages("ated.label.yes"),
+            "false" -> Messages("ated.label.no")),
+            '_legend -> Messages("ated.contact-details.email-consent.message"),
+            '_legendClass -> "screen-reader-text",
+            '_groupClass -> "inline",
+            '_labelClass -> "block-label",
+            '_labelAfter -> true,
+            '_trackGA -> true)
+
+        </div>
+
+        <div class="form-group panel-indent" id="contact-address-form">
+
+            @atedInputNew(editContactDetailsEmailForm("emailAddress"),
+            '_label -> Html(Messages("ated.contact-details.emailAddress")),
+            '_labelClass -> "form-label-bold",
+            '_inputClass -> "form-control-indent",
+            '_showConstraints -> false)
+
+        </div>
+
+    </div>
+
+    <button class="button" id="submit" type="submit">@Messages("ated.save-changes")</button>
+
+
+    }
+}

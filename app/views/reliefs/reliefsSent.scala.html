@@ -1,0 +1,52 @@
+@import utils.AtedFeatureSwitches
+@(periodKey: Int, returnResponse: SubmitReturnsResponse)(implicit atedContext: AtedContext, messages: Messages)
+
+@import models._
+@import uk.gov.hmrc.play.views.html._
+@import uk.gov.hmrc.play.views.html.helpers._
+@import views.html.helpers._
+@import views.html.helpers.error._
+@import org.joda.time.format.DateTimeFormat
+@import org.joda.time.LocalDate
+
+@atedMain(title = Messages("ated.relief-sent.title"), attorney = atedContext.user.authContext.attorney) {
+
+  <div id="banner" class="transaction-banner--complete">
+    <h1 id="header">@Messages("ated.relief-sent.header")</h1>
+    <p><span class="heading-small" id="date">@Messages("ated.relief-sent.header.date") @DateTimeFormat.forPattern("d MMMM yyyy").print(new LocalDate()) </span></p>
+  </div>
+
+  <div class="form-group">
+    <p id="completed-returns">@Messages("ated.reliefs-sent.completed-message")</p>
+    <p id="email-confirmation">@Messages("ated.reliefs-sent.email-message")<p>
+
+      <a href="@controllers.reliefs.routes.ReliefsSentController.viewPrintFriendlyReliefSent(periodKey)" class="print-link" id="print-friendly-relief-link" data-journey-click="ated-fronted:click:print-friendly-relief-link" target="_blank">
+        @Messages("ated.reliefs-sent.print-link")
+      </a>
+
+  </div>
+
+  <div class="divider--top--thick"></div>
+
+  <div class="form-group">
+
+    <span id="receipt-message" class="heading-medium">@Messages("ated.reliefs-sent.charge-heading")</span>
+
+    <p id="amount-message">@Messages("ated.reliefs-sent.amount-message")</p>
+
+    @returnResponse.reliefReturnResponse.map { reliefReturnResponse =>
+    <ul class="bullets" id="owed-amount">
+      <li>@Html(Messages("ated.reliefs-sent.reference-message",reliefReturnResponse.head.formBundleNumber))</li>
+    </ul>
+    }
+
+    <p id="balance-message">@Messages("ated.reliefs-sent.balance-message")</p>
+
+  </div>
+
+  <div class="form-field">
+    <a href="@controllers.routes.AccountSummaryController.view" id="account-link" class="button">@Messages("ated.reliefs-sent.client-link")</a>
+  </div>
+
+
+}

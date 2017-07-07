@@ -1,0 +1,34 @@
+@import models._
+@import forms.AtedForms._
+@import uk.gov.hmrc.play.views.html._
+@import uk.gov.hmrc.play.views.html.helpers._
+@import org.joda.time.format.DateTimeFormat
+@import org.joda.time.LocalDate
+@import utils._
+@import views.html.helpers._
+@import views.html.helpers.error._
+
+@(periodKey: Int, returnType: String, addressResultsForm: Form[AddressSelected], prevReturns: Seq[PreviousReturns], backLink: Option[String])(implicit atedContext: AtedContext, messages: Messages)
+
+@atedMain(title = Messages("ated.select-past-return.title"), attorney = atedContext.user.authContext.attorney) {
+@pageHeadersAndError(backLink, "pre-header", Messages("ated.return-type.pre-header"), None)
+<h1 class="heading-xlarge" id="header">
+    @Messages("ated.select-past-return.header")
+</h1>
+
+<div class="form-group">
+  @if(!prevReturns.isEmpty) {
+  @form(action=controllers.propertyDetails.routes.SelectExistingReturnAddressController.continue(periodKey, returnType)) {
+      @atedInputRadioGroupNew(addressResultsForm("selected"),
+        prevReturns map (result => result.formBundleNumber -> result.address),
+        '_legend -> Messages("ated.select-past-return.header"),
+        '_legendClass -> "visuallyhidden",
+        '_labelClass -> "block-label",
+        '_labelAfter -> true,
+        '_trackGA -> true
+      )
+</div>
+<button class="button" id="submit" type="submit">@Messages("ated.save-and-continue")</button>
+}
+}
+}

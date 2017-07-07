@@ -1,0 +1,58 @@
+@import models._
+@(id: String, periodKey: Int, propertyDetailsForm: Form[PropertyDetailsDatesInRelief], backLink: Option[String])(implicit atedContext: AtedContext, messages: Messages)
+@import uk.gov.hmrc.play.views.html._
+@import uk.gov.hmrc.play.views.html.helpers._
+@import views.html.helpers._
+@import views.html.helpers.error._
+@import utils._
+
+@implicitFormInstance = @{ Some(propertyDetailsForm) }
+
+@pageScripts = {
+}
+
+@atedMain(title = Messages("ated.property-details-period.datesInRelief.title"), attorney = atedContext.user.authContext.attorney, pageScripts = Some(pageScripts)) {
+@pageHeadersAndError(backLink, "pre-heading", Messages("ated.property-details.pre-header"),
+    Some(atedErrorSummary(propertyDetailsForm, "ated.property-details-period.datesInRelief.general.error")))
+<div class="form-group">
+    <h1 class="heading-xlarge" id="property-details-header">
+        @Messages("ated.property-details-period.datesInRelief.header")
+    </h1>
+</div>
+
+
+@form(action=controllers.propertyDetails.routes.PeriodInReliefDatesController.save(id, periodKey)) {
+
+
+<div class="form-group">
+    @atedDateFieldsFree(
+    formItem = propertyDetailsForm,
+    fieldName = "startDate",
+    label = Html(Messages("ated.property-details-period.datesInRelief.startDate")),
+    isNested = false,
+    defaultDateOption = None,
+    '_hintText -> Messages("ated.property-details-period.datesInRelief.startDate.hint",
+    PeriodUtils.periodStartDate(periodKey).toString(Messages("ated.date-format.numeric"))),
+    '_groupClass -> "form-group date-of-birth",
+    '_idName -> "startDate"
+    )
+
+    @atedDateFieldsFree(
+    formItem = propertyDetailsForm,
+    fieldName = "endDate",
+    label = Html(Messages("ated.property-details-period.datesInRelief.endDate")),
+    isNested = false,
+    defaultDateOption = None,
+    '_hintText -> Messages("ated.property-details-period.datesInRelief.endDate.hint",
+    PeriodUtils.periodEndDate(periodKey).toString(Messages("ated.date-format.numeric"))),
+    '_groupClass -> "form-group date-of-birth",
+    '_idName -> "endDate"
+    )
+</div>
+
+    <button class="button" id="submit" type="submit">@Messages("ated.add")</button>
+
+
+}
+
+}

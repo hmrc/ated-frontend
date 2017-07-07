@@ -1,0 +1,77 @@
+@import models._
+@(id: Option[String],
+  periodKey: Int,
+  addressResultsForm: Form[AddressSelected],
+  searchResults: AddressSearchResults,
+  mode: Option[String] = None,
+  backLink: Option[String])(implicit atedContext: AtedContext, messages: Messages)
+@import uk.gov.hmrc.play.views.html._
+@import uk.gov.hmrc.play.views.html.helpers._
+@import views.html.helpers._
+@import views.html.helpers.error._
+@import utils._
+
+@pageScripts = {
+<script type="text/javascript" src='@controllers.routes.AssetsController.at("javascript/manualAddressEntryLink.js")'></script>
+}
+
+@atedMain(title = Messages("ated.address-lookup.results.title"), attorney = atedContext.user.authContext.attorney, pageScripts=Some(pageScripts)) {
+  @pageHeadersAndError(backLink, "pre-heading", AtedUtils.getPropertyDetailsPreHeader(mode),
+      Some(atedErrorSummary(addressResultsForm, "ated.address-lookup.error.general")))
+  <h1 class="heading-xlarge" id="account-lookup-header">
+    @Messages("ated.address-lookup.results.header")
+  </h1>
+
+<div class="form-group">
+  <span class="heading-small" id="search-criteria-header">@Messages("ated.address-lookup.search-criteria.header")</span>
+  <p id="postcode">@searchResults.searchCriteria.postcode</p>
+      <p>
+      <a href="@controllers.propertyDetails.routes.AddressLookupController.view(id, periodKey)"
+         id="change-address-search-link"
+         data-journey-click="ated-fronted:click:change-address-search"
+         aria-label='@Messages("ated.address-lookup.search-criteria.change-label")'>@Messages("ated.address-lookup.search-criteria.change")
+      </a>
+      </p>
+
+</div>
+
+
+    <span class="heading-small" id="search-results-header">@Messages("ated.address-lookup.search-results.header")</span>
+
+    @if(searchResults.results.isEmpty){
+      <p id="no-address-found">@Messages("ated.address-lookup.no-address-found.text")</a></p>
+
+      <div class="form-group">
+        <a href="@controllers.propertyDetails.routes.AddressLookupController.manualAddressRedirect(id, periodKey, mode)"
+           id="enter-address-link"
+           data-journey-click="ated-fronted:click:manual-entry"
+           class="button"
+           onkeyup='spaceBarHandler(event,"@controllers.propertyDetails.routes.AddressLookupController.manualAddressRedirect(id, periodKey, mode)")'
+           aria-label='@Messages("ated.address-lookup.address-manual-entry-link.title")'>@Messages("ated.address-lookup.address-manual-entry-link.title")</a>
+      </div>
+
+    }else {
+      @form(action=controllers.propertyDetails.routes.AddressLookupController.save(id, periodKey)) {
+        <div class="form-group">
+          @atedInputRadioGroupNew(addressResultsForm("selected"),
+          searchResults.results map (result => result.id -> result.address.toString),
+          '_legend ->"",
+          '_labelClass -> "block-label",
+          '_labelAfter -> true,
+          '_trackGA -> true
+          )
+        </div>
+        <div class="form-group">
+          <a href="@controllers.propertyDetails.routes.AddressLookupController.manualAddressRedirect(id, periodKey, mode)"
+             id="enter-address-link"
+             data-journey-click="ated-fronted:click:manual-entry"
+             onkeyup='spaceBarHandler(event,"@controllers.propertyDetails.routes.AddressLookupController.manualAddressRedirect(id, periodKey, mode)")'
+             aria-label='@Messages("ated.address-lookup.address-not-in-list-link.title")'>@Messages("ated.address-lookup.address-not-in-list-link.title")</a>
+        </div>
+
+        <button class="button" id="submit" type="submit">@Messages("ated.save-and-continue")</button>
+
+      }
+    }
+
+}

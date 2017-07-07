@@ -1,0 +1,39 @@
+@import models._
+@import forms.AtedForms._
+@import uk.gov.hmrc.play.views.html._
+@import uk.gov.hmrc.play.views.html.helpers._
+@import org.joda.time.format.DateTimeFormat
+@import org.joda.time.LocalDate
+@import utils._
+@import views.html.helpers._
+@import views.html.helpers.error._
+
+@(deleteDraftForm: Form[YesNoQuestion], id: Option[String], periodKey: Int, returnType: String, backLink: Option[String])(implicit atedContext: AtedContext, messages: Messages)
+
+@atedMain(title = Messages("ated.delete-draft.title"), attorney = atedContext.user.authContext.attorney) {
+@pageHeadersAndError(backLink, "pre-header", Messages("ated.return-type.pre-header"),
+Some(atedErrorSummary(deleteDraftForm, "ated.delete-drafts.error.general")))
+    <h1 class="heading-xlarge" id="header">
+        @Messages("ated.delete-draft.header")
+    </h1>
+
+    @form(action = controllers.routes.DraftDeleteConfirmationController.submit(id, periodKey, returnType)) {
+
+        <div class="form-group" id="removeDraft">
+        @atedInputRadioGroupNew(
+            deleteDraftForm("yesNo"),
+            Seq("true" -> Messages("ated.label.yes"),
+                "false" -> Messages("ated.label.no")),
+            '_groupClass -> "inline",
+            '_legendClass -> "screen-reader-text",
+            '_legend -> Messages("ated.delete-draft.header"),
+            '_labelClass -> "block-label",
+            '_labelAfter -> true,
+            '_trackGA -> true
+        )
+        </div>
+
+        <button class="button" id="submit" type="submit">@Messages("ated.confirm")</button>
+
+    }
+}

@@ -1,0 +1,223 @@
+GET            /assets/*file                                                controllers.AssetsController.at(path="/public", file)
+
+->             /template                                                    template.Routes
+
+GET            /home                                                        controllers.HomeController.home
+GET            /summary                                                     controllers.HomeController.summary
+
+GET            /unauthorised                                                controllers.ApplicationController.unauthorised
+GET            /cancel                                                      controllers.ApplicationController.cancel
+GET            /keep-alive                                                  controllers.ApplicationController.keepAlive
+GET            /logout                                                      controllers.ApplicationController.logout
+
+GET            /account-summary                                             controllers.AccountSummaryController.view
+GET            /period/select                                               controllers.SelectPeriodController.view
+POST           /period/select                                               controllers.SelectPeriodController.submit
+
+GET            /return-type/:periodKey                                      controllers.ReturnTypeController.view(periodKey: Int)
+POST           /return-type                                                 controllers.ReturnTypeController.submit(periodKey: Int)
+
+## Reliefs ##
+GET            /reliefs/:periodKey/edit-summary                             controllers.reliefs.ChooseReliefsController.editFromSummary(periodKey: Int)
+GET            /reliefs/:periodKey/choose                                   controllers.reliefs.ChooseReliefsController.view(periodKey: Int)
+POST           /reliefs/:periodKey/send                                     controllers.reliefs.ChooseReliefsController.send(periodKey: Int)
+
+GET            /reliefs/:periodKey/avoidance-schemes-used                   controllers.reliefs.AvoidanceSchemeBeingUsedController.view(periodKey: Int)
+GET            /reliefs/:periodKey/avoidance-schemes-used/edit              controllers.reliefs.AvoidanceSchemeBeingUsedController.editFromSummary(periodKey: Int)
+POST           /reliefs/:periodKey/avoidance-schemes-used/send              controllers.reliefs.AvoidanceSchemeBeingUsedController.send(periodKey: Int)
+
+
+GET            /reliefs/:periodKey/avoidance-schemes                        controllers.reliefs.AvoidanceSchemesController.view(periodKey: Int)
+POST           /reliefs/:periodKey/submit-avoidance-schemes                 controllers.reliefs.AvoidanceSchemesController.submit(periodKey: Int)
+
+GET            /reliefs/:periodKey/relief-summary                           controllers.reliefs.ReliefsSummaryController.view(periodKey: Int)
+POST           /reliefs/:periodKey/relief-summary                           controllers.reliefs.ReliefsSummaryController.continue(periodKey: Int)
+
+GET            /reliefs/:periodKey/relief-declaration                       controllers.reliefs.ReliefDeclarationController.view(periodKey: Int)
+POST           /reliefs/:periodKey/submit-reliefs                           controllers.reliefs.ReliefDeclarationController.submit(periodKey: Int)
+
+GET            /reliefs/:periodKey/sent-reliefs                             controllers.reliefs.ReliefsSentController.view(periodKey: Int)
+
+GET            /reliefs/:periodKey/print                                    controllers.reliefs.ReliefsSummaryController.viewPrintFriendlyReliefReturn(periodKey: Int)
+GET            /reliefs/:periodKey/delete                                   controllers.reliefs.ReliefsSummaryController.deleteDraft(periodKey: Int)
+
+GET            /reliefs/:periodKey/change                                  controllers.reliefs.ChangeReliefReturnController.viewChangeReliefReturn(periodKey: Int, formBundleNo: String)
+POST           /reliefs/:periodKey/change-submit                           controllers.reliefs.ChangeReliefReturnController.submit(periodKey: Int, formBundleNo: String)
+
+GET            /reliefs/:periodKey/sent-reliefs-print                      controllers.reliefs.ReliefsSentController.viewPrintFriendlyReliefSent(periodKey: Int)
+
+
+## Feedback and sign-out ##
+GET            /signed-out                                                  controllers.QuestionnaireController.showQuestionnaire
+POST           /signed-out                                                  controllers.QuestionnaireController.submitQuestionnaire
+GET            /feedbackThankYou                                            controllers.QuestionnaireController.feedbackThankYou
+
+## Registration details ##
+GET            /company-details                                             controllers.subscriptionData.CompanyDetailsController.view
+GET            /back                                                        controllers.subscriptionData.CompanyDetailsController.back
+
+GET            /edit-contact                                                controllers.subscriptionData.EditContactDetailsController.edit
+POST           /contact-address                                             controllers.subscriptionData.EditContactDetailsController.submit
+
+GET            /edit-contact-email                                          controllers.subscriptionData.EditContactEmailController.edit
+POST           /edit-contact-email                                          controllers.subscriptionData.EditContactEmailController.submit
+
+GET            /correspondence-address                                      controllers.subscriptionData.CorrespondenceAddressController.editAddress
+POST           /correspondence-address                                      controllers.subscriptionData.CorrespondenceAddressController.submit
+
+GET            /registered-details                                          controllers.subscriptionData.RegisteredDetailsController.edit
+POST           /registered-details                                          controllers.subscriptionData.RegisteredDetailsController.submit
+
+GET            /overseas-company                                            controllers.subscriptionData.OverseasCompanyRegistrationController.edit
+POST           /overseas-company                                            controllers.subscriptionData.OverseasCompanyRegistrationController.submit
+
+## Period ##
+GET            /period-summary/:periodKey                                   controllers.PeriodSummaryController.view(periodKey: Int)
+GET            /period-summary/:periodKey/past                              controllers.PeriodSummaryController.viewPastReturns(periodKey: Int)
+GET            /period-summary/:periodKey/createReturn                      controllers.PeriodSummaryController.createReturn(periodKey: Int)
+GET            /period-summary/:periodKey/view-return                       controllers.PeriodSummaryController.viewReturn(periodKey: Int)
+GET            /period-summary/:periodKey/view-chargeable/:id               controllers.PeriodSummaryController.viewChargeable(periodKey: Int, id: String)
+GET            /period-summary/:periodKey/view-disposal/:id                 controllers.PeriodSummaryController.viewDisposal(periodKey: Int, id: String)
+
+GET           /form-bundle/:formBundleNumber/:periodKey                     controllers.FormBundleReturnController.view(formBundleNumber: String, periodKey: Int)
+
+## edit Liability return ##
+GET     /liability/:formBundleNo/edit/:periodKey                            controllers.editLiability.EditLiabilityTypeController.editLiability(formBundleNo: String, periodKey: Int, editAllowed: Boolean)
+POST    /liability/:formBundleNo/edit/:periodKey                            controllers.editLiability.EditLiabilityTypeController.continue(formBundleNo: String, periodKey: Int, editAllowed: Boolean)
+
+## edit-liability - change return journey ##
+GET     /liability/:formBundleNo/change/address                             controllers.propertyDetails.PropertyDetailsAddressController.editSubmittedReturn(formBundleNo: String)
+GET     /liability/:formBundleNo/change/dates-liable                        controllers.editLiability.EditLiabilityDatesLiableController.view(formBundleNo: String)
+POST    /liability/:formBundleNo/change/dates-liable/period/:periodKey      controllers.editLiability.EditLiabilityDatesLiableController.save(formBundleNo: String, periodKey: Int)
+
+
+GET     /liability/:formBundleNo/change/edit-summary                        controllers.editLiability.EditLiabilityHasValueChangedController.editFromSummary(formBundleNo: String)
+GET     /liability/:formBundleNo/change/value                               controllers.editLiability.EditLiabilityHasValueChangedController.view(formBundleNo: String)
+POST    /liability/:formBundleNo/change/value                               controllers.editLiability.EditLiabilityHasValueChangedController.save(formBundleNo: String)
+GET     /liability/:formBundleNo/change/has-bank-details/edit-summary       controllers.editLiability.HasBankDetailsController.editFromSummary(formBundleNo: String)
+GET     /liability/:formBundleNo/change/has-bank-details                    controllers.editLiability.HasBankDetailsController.view(formBundleNo: String)
+POST    /liability/:formBundleNo/change/has-bank-details                    controllers.editLiability.HasBankDetailsController.save(formBundleNo: String)
+GET     /liability/:formBundleNo/change/bank-details                        controllers.editLiability.BankDetailsController.view(formBundleNo: String)
+POST    /liability/:formBundleNo/change/bank-details                        controllers.editLiability.BankDetailsController.save(formBundleNo: String)
+GET     /liability/:formBundleNo/change/summary                             controllers.editLiability.EditLiabilitySummaryController.view(formBundleNo: String)
+POST    /liability/:formBundleNo/change/summary                             controllers.editLiability.EditLiabilitySummaryController.submit(formBundleNo: String)
+GET     /liability/:formBundleNo/change/view-summary                        controllers.editLiability.EditLiabilitySummaryController.viewSummary(formBundleNo: String)
+GET     /liability/:formBundleNo/change/summary/print                       controllers.editLiability.EditLiabilitySummaryController.viewPrintFriendlyEditLiabilityReturn(formBundleNo: String)
+GET     /liability/:formBundleNo/change/declaration                         controllers.editLiability.EditLiabilityDeclarationController.view(formBundleNo: String)
+POST    /liability/:formBundleNo/change/declaration                         controllers.editLiability.EditLiabilityDeclarationController.submit(formBundleNo: String)
+GET     /liability/:formBundleNo/change/sent                                controllers.editLiability.EditLiabilitySentController.view(formBundleNo: String)
+
+GET     /liability/:formBundleNo/confirmation-print                         controllers.editLiability.EditLiabilitySentController.viewPrintFriendlyEditLilabilitySent(formBundleNo: String)
+GET     /liability/:formBundleNo/confirmation-dipsose-print                 controllers.editLiability.DisposeLiabilitySentController.viewPrintFriendlyDisposeliabilitySent(formBundleNo: String)
+
+## edit-liability - dispose journey ##
+GET     /liability/:formBundleNo/dispose/edit-summary  controllers.editLiability.DisposePropertyController.editFromSummary(formBundleNo: String)
+GET     /liability/:formBundleNo/dispose  controllers.editLiability.DisposePropertyController.view(formBundleNo: String)
+POST    /liability/:formBundleNo/dispose  controllers.editLiability.DisposePropertyController.save(formBundleNo: String)
+GET     /liability/:formBundleNo/dispose/has-bank-details/edit-summary  controllers.editLiability.DisposeLiabilityHasBankDetailsController.editFromSummary(formBundleNo: String)
+GET     /liability/:formBundleNo/dispose/has-bank-details  controllers.editLiability.DisposeLiabilityHasBankDetailsController.view(formBundleNo: String)
+POST    /liability/:formBundleNo/dispose/has-bank-details  controllers.editLiability.DisposeLiabilityHasBankDetailsController.save(formBundleNo: String)
+GET     /liability/:formBundleNo/dispose/bank-details  controllers.editLiability.DisposeLiabilityBankDetailsController.view(formBundleNo: String)
+GET     /liability/:formBundleNo/dispose/bank-details/edit-summary  controllers.editLiability.DisposeLiabilityBankDetailsController.editFromSummary(formBundleNo: String)
+POST    /liability/:formBundleNo/dispose/bank-details  controllers.editLiability.DisposeLiabilityBankDetailsController.save(formBundleNo: String)
+GET     /liability/:formBundleNo/dispose/summary  controllers.editLiability.DisposeLiabilitySummaryController.view(formBundleNo: String)
+POST    /liability/:formBundleNo/dispose/summary  controllers.editLiability.DisposeLiabilitySummaryController.submit(formBundleNo: String)
+GET     /liability/:formBundleNo/dispose/summary/print  controllers.editLiability.DisposeLiabilitySummaryController.viewPrintFriendlyDisposeLiabilityReturn(formBundleNo: String)
+GET     /liability/:formBundleNo/dispose/declaration  controllers.editLiability.DisposeLiabilityDeclarationController.view(formBundleNo: String)
+POST    /liability/:formBundleNo/dispose/declaration  controllers.editLiability.DisposeLiabilityDeclarationController.submit(formBundleNo: String)
+GET     /liability/:formBundleNo/dispose/sent  controllers.editLiability.DisposeLiabilitySentController.view(formBundleNo: String)
+
+## property details pages ##
+GET      /liability/address-lookup/view/:periodKey                    controllers.propertyDetails.AddressLookupController.view(id: Option[String] ?=None, periodKey: Int, mode: Option[String] ?=None)
+POST     /liability/address-lookup/find/:periodKey                    controllers.propertyDetails.AddressLookupController.find(id: Option[String] ?=None, periodKey: Int, mode: Option[String] ?=None)
+POST     /liability/address-lookup/save/:periodKey                    controllers.propertyDetails.AddressLookupController.save(id: Option[String] ?=None, periodKey: Int, mode: Option[String] ?=None)
+GET      /liability/address-lookup/manual/:periodKey                  controllers.propertyDetails.AddressLookupController.manualAddressRedirect(id: Option[String] ?=None, periodKey: Int, mode: Option[String] ?=None)
+
+GET      /liability/create/address/edit-summary/:id                   controllers.propertyDetails.PropertyDetailsAddressController.editFromSummary(id: String)
+GET      /liability/create/address/view/:id                           controllers.propertyDetails.PropertyDetailsAddressController.view(id: String)
+POST     /liability/create/address/save/:periodKey                    controllers.propertyDetails.PropertyDetailsAddressController.save(id: Option[String] ?=None, periodKey: Int, mode: Option[String] ?=None)
+GET      /liability/create/address/:periodKey                         controllers.propertyDetails.PropertyDetailsAddressController.createNewDraft(periodKey: Int)
+GET      /liability/create/address/lookup/:periodKey                  controllers.propertyDetails.PropertyDetailsAddressController.addressLookupRedirect(id: Option[String] ?=None, periodKey: Int, mode: Option[String] ?=None)
+
+GET      /liability/create/title/view/:id                             controllers.propertyDetails.PropertyDetailsTitleController.view(id: String)
+GET      /liability/create/title/edit/:id                             controllers.propertyDetails.PropertyDetailsTitleController.editFromSummary(id: String)
+POST     /liability/create/title/save/:id/period/:periodKey           controllers.propertyDetails.PropertyDetailsTitleController.save(id: String, periodKey: Int, mode: Option[String] ?=None)
+
+GET      /liability/create/acquisition/edit-summary/:id               controllers.propertyDetails.PropertyDetailsAcquisitionController.editFromSummary(id: String)
+GET      /liability/create/acquisition/view/:id                       controllers.propertyDetails.PropertyDetailsAcquisitionController.view(id: String)
+POST     /liability/create/acquisition/save/:id/period/:periodKey     controllers.propertyDetails.PropertyDetailsAcquisitionController.save(id: String, periodKey: Int, mode: Option[String] ?=None)
+GET      /liability/create/revalued/view/:id                          controllers.propertyDetails.PropertyDetailsRevaluedController.view(id: String)
+POST     /liability/create/revalued/save/:id/period/:periodKey        controllers.propertyDetails.PropertyDetailsRevaluedController.save(id: String, periodKey: Int, mode: Option[String] ?=None)
+GET      /liability/create/owned-before/edit-summary/:id              controllers.propertyDetails.PropertyDetailsOwnedBeforeController.editFromSummary(id: String)
+GET      /liability/create/owned-before/view/:id                      controllers.propertyDetails.PropertyDetailsOwnedBeforeController.view(id: String)
+POST     /liability/create/owned-before/save/:id/period/:periodKey    controllers.propertyDetails.PropertyDetailsOwnedBeforeController.save(id: String, periodKey: Int, mode: Option[String] ?=None)
+GET      /liability/create/new-build/view/:id                         controllers.propertyDetails.PropertyDetailsNewBuildController.view(id: String)
+POST     /liability/create/new-build/save/:id/period/:periodKey       controllers.propertyDetails.PropertyDetailsNewBuildController.save(id: String, periodKey: Int, mode: Option[String] ?=None)
+GET      /liability/create/valued/view/:id                            controllers.propertyDetails.PropertyDetailsProfessionallyValuedController.view(id: String)
+GET      /liability/create/valued/edit/:id                            controllers.propertyDetails.PropertyDetailsProfessionallyValuedController.editFromSummary(id: String)
+
+POST     /liability/create/valued/save/:id/period/:periodKey          controllers.propertyDetails.PropertyDetailsProfessionallyValuedController.save(id: String, periodKey: Int, mode: Option[String] ?=None)
+
+GET      /liability/create/full-tax-period/edit-summary/:id           controllers.propertyDetails.IsFullTaxPeriodController.editFromSummary(id: String)
+GET      /liability/create/full-tax-period/view/:id                   controllers.propertyDetails.IsFullTaxPeriodController.view(id: String)
+POST     /liability/create/full-tax-period/save/:id/period/:periodKey controllers.propertyDetails.IsFullTaxPeriodController.save(id: String, periodKey: Int)
+
+GET      /liability/create/tax-avoidance/edit-summary/:id             controllers.propertyDetails.PropertyDetailsTaxAvoidanceController.editFromSummary(id: String)
+GET      /liability/create/tax-avoidance/view/:id                     controllers.propertyDetails.PropertyDetailsTaxAvoidanceController.view(id: String)
+POST     /liability/create/tax-avoidance/save/:id/period/:periodKey   controllers.propertyDetails.PropertyDetailsTaxAvoidanceController.save(id: String, periodKey: Int, mode: Option[String] ?=None)
+
+GET      /liability/create/supporting-info/edit-summary/:id            controllers.propertyDetails.PropertyDetailsSupportingInfoController.editFromSummary(id: String)
+GET      /liability/create/supporting-info/view/:id                    controllers.propertyDetails.PropertyDetailsSupportingInfoController.view(id: String)
+POST     /liability/create/supporting-info/save/:id/period/:periodKey  controllers.propertyDetails.PropertyDetailsSupportingInfoController.save(id: String, periodKey: Int, mode: Option[String] ?=None)
+
+GET      /liability/create/in-relief/view/:id                         controllers.propertyDetails.PropertyDetailsInReliefController.view(id: String)
+POST     /liability/create/in-relief/save/:id/period/:periodKey       controllers.propertyDetails.PropertyDetailsInReliefController.save(id: String, periodKey: Int, mode: Option[String] ?=None)
+
+GET      /liability/create/dates-liable/view/:id                      controllers.propertyDetails.PeriodDatesLiableController.view(id: String)
+GET      /liability/create/dates-liable/add/:id/period/:periodKey     controllers.propertyDetails.PeriodDatesLiableController.add(id: String, periodKey: Int)
+POST     /liability/create/dates-liable/save/:id/period/:periodKey    controllers.propertyDetails.PeriodDatesLiableController.save(id: String, periodKey: Int, mode: Option[String] ?= None)
+
+
+GET      /liability/create/in-relief/choose/add/:id/period/:periodKey     controllers.propertyDetails.PeriodChooseReliefController.add(id: String, periodKey: Int)
+POST     /liability/create/in-relief/choose/save/:id/period/:periodKey    controllers.propertyDetails.PeriodChooseReliefController.save(id: String, periodKey: Int)
+GET      /liability/create/in-relief/dates/add/:id/period/:periodKey     controllers.propertyDetails.PeriodInReliefDatesController.add(id: String, periodKey: Int)
+POST     /liability/create/in-relief/dates/save/:id/period/:periodKey    controllers.propertyDetails.PeriodInReliefDatesController.save(id: String, periodKey: Int)
+
+GET      /liability/create/periods-in-relief/view/:id                       controllers.propertyDetails.PeriodsInAndOutReliefController.view(id: String)
+POST     /liability/create/periods-in-relief/continue/:id/period/:periodKey controllers.propertyDetails.PeriodsInAndOutReliefController.continue(id: String, periodKey: Int)
+GET      /liability/create/periods-in-relief/delete/:id/period/:startDate   controllers.propertyDetails.PeriodsInAndOutReliefController.deletePeriod(id: String, startDate: org.joda.time.LocalDate)
+
+GET      /liability/create/summary/:id                          controllers.propertyDetails.PropertyDetailsSummaryController.view(id: String)
+POST     /liability/create/summary/:id                          controllers.propertyDetails.PropertyDetailsSummaryController.submit(id: String)
+GET      /liability/create/summary/:id/print                   controllers.propertyDetails.PropertyDetailsSummaryController.viewPrintFriendlyLiabilityReturn(id: String)
+GET      /liability/delete/draft/:id/:periodKey                controllers.propertyDetails.PropertyDetailsSummaryController.deleteDraft(id: String, periodKey: Int)
+
+GET      /liability/create/declaration/:id                      controllers.propertyDetails.PropertyDetailsDeclarationController.view(id: String)
+
+POST     /liability/create/submit/:id                           controllers.propertyDetails.PropertyDetailsDeclarationController.submit(id: String)
+
+GET      /liability/create/confirmation                         controllers.propertyDetails.ChargeableReturnConfirmationController.confirmation
+
+GET      /liability/create/create-confirmation-print                   controllers.propertyDetails.ChargeableReturnConfirmationController.viewPrintFriendlyChargeableConfirmation
+
+##  view Relief Returns ##
+GET     /view-relief-return/:periodKey/:formBundleNo                controllers.reliefs.ViewReliefReturnController.viewReliefReturn(periodKey: Int, formBundleNo: String)
+POST    /view-relief-return/submit:periodKey/:formBundleNumber      controllers.reliefs.ViewReliefReturnController.submit(periodKey: Int, formBundleNumber: String)
+
+# give feedback
+
+GET      /feedback                                                         controllers.LeaveFeedbackController.view(return: String)
+GET      /feedback/thanks                                                  controllers.LeaveFeedbackController.thanks(return: String)
+POST     /feedback/submit                                                  controllers.LeaveFeedbackController.submitFeedback(return: String)
+
+GET     /draft/delete/confirmation/view/:periodKey/:returnType           controllers.DraftDeleteConfirmationController.view(id: Option[String] ?=None, periodKey: Int, returnType: String)
+POST    /draft/delete/confirmation/submit/:periodKey/:returnType         controllers.DraftDeleteConfirmationController.submit(id: Option[String] ?=None, periodKey: Int, returnType: String)
+
+#select existing return
+
+GET     /existing-return/confirmation/:periodKey/:returnType                         controllers.ExistingReturnQuestionController.view(periodKey: Int, returnType: String)
+POST     /existing-return/confirmation/:periodKey/:returnType                        controllers.ExistingReturnQuestionController.submit(periodKey: Int, returnType: String)
+
+
+GET     /existing-return/select/:periodKey/:returnType                        controllers.propertyDetails.SelectExistingReturnAddressController.view(periodKey: Int, returnType: String)
+POST     /existing-return/select/:periodKey/:returnType                        controllers.propertyDetails.SelectExistingReturnAddressController.continue(periodKey: Int, returnType: String)

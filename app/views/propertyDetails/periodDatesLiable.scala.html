@@ -1,0 +1,61 @@
+@import models._
+@import org.joda.time.LocalDate
+@(id: String, periodKey: Int, propertyDetailsForm: Form[PropertyDetailsDatesLiable], title: String, mode: Option[String], backLink: Option[String])(implicit atedContext: AtedContext, messages: Messages)
+@import uk.gov.hmrc.play.views.html._
+@import uk.gov.hmrc.play.views.html.helpers._
+@import views.html.helpers._
+@import views.html.helpers.error._
+@import utils._
+
+@implicitFormInstance = @{ Some(propertyDetailsForm) }
+
+@pageScripts = {
+}
+
+@atedMain(title = title, attorney = atedContext.user.authContext.attorney, pageScripts = Some(pageScripts)) {
+  @pageHeadersAndError(backLink, "pre-heading", Messages("ated.property-details.pre-header"),
+      Some(atedErrorSummary(propertyDetailsForm, "ated.property-details-period.datesLiable.general.error")))
+  <div class="form-group">
+    <h1 class="heading-xlarge" id="property-details-header">
+      @title
+    </h1>
+  </div>
+
+  @form(action=controllers.propertyDetails.routes.PeriodDatesLiableController.save(id, periodKey, mode)) {
+
+
+    <div class="form-group">
+      @atedDateFieldsFree(
+        formItem = propertyDetailsForm,
+        fieldName = "startDate",
+        label = Html(Messages("ated.property-details-period.datesLiable.startDate")),
+        isNested = false,
+        defaultDateOption = None,
+        '_hintText -> Messages("ated.property-details-period.datesLiable.startDate.hint", PeriodUtils.periodStartDate(periodKey).toString(Messages("ated.date-format.numeric"))),
+        '_groupClass -> "form-group date-of-birth",
+        '_idName -> "startDate"
+      )
+
+      @atedDateFieldsFree(
+        formItem = propertyDetailsForm,
+        fieldName = "endDate",
+        label = Html(Messages("ated.property-details-period.datesLiable.endDate")),
+        isNested = false,
+        defaultDateOption = None,
+        '_hintText -> Messages("ated.property-details-period.datesLiable.endDate.hint", PeriodUtils.periodEndDate(periodKey).toString(Messages("ated.date-format.numeric"))),
+        '_groupClass -> "form-group date-of-birth",
+        '_idName -> "endDate"
+      )
+    </div>
+
+      <button class="button" id="submit" type="submit">
+        @if(mode == Some("add")){
+          @Messages("ated.add")
+        }else {
+          @Messages("ated.save-and-continue")
+        }
+      </button>
+
+  }
+
+}

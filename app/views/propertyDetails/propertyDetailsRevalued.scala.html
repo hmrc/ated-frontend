@@ -1,0 +1,104 @@
+@import models._
+@(id: String, periodKey: Int, propertyDetailsForm: Form[PropertyDetailsRevalued], mode: Option[String], backLink: Option[String])(implicit atedContext: AtedContext, messages: Messages)
+@import uk.gov.hmrc.play.views.html._
+@import uk.gov.hmrc.play.views.html.helpers._
+@import views.html.helpers._
+@import views.html.helpers.error._
+@import utils._
+
+@implicitFormInstance = @{
+  Some(propertyDetailsForm)
+}
+
+@pageScripts = {
+  <script type="text/javascript" src='@controllers.routes.AssetsController.at("javascript/propertyDetailsRevalued.js")'></script>
+}
+
+
+@atedMain(title = Messages("ated.property-details-value.isPropertyRevalued.title"), attorney = atedContext.user.authContext.attorney, pageScripts = Some(pageScripts)) {
+
+  @pageHeadersAndError(backLink, "pre-heading", AtedUtils.getPropertyDetailsPreHeader(mode),
+      Some(atedErrorSummary(propertyDetailsForm, "ated.property-details-value-error.general")))
+  <div class="form-group">
+    <h1 class="heading-xlarge" id="property-details-header">
+      @Messages("ated.property-details-value.isPropertyRevalued.header")
+    </h1>
+  </div>
+
+  @form(action = controllers.propertyDetails.routes.PropertyDetailsRevaluedController.save(id, periodKey, mode)) {
+
+
+      <div class="form-group" id="isPropertyRevalued">
+      @atedInputRadioGroupNew(
+        propertyDetailsForm("isPropertyRevalued"),
+        Seq("true" -> Messages("ated.property-details-value.yes"),
+          "false" -> Messages("ated.property-details-value.no")),
+        '_legend -> Messages("ated.property-details-value.isPropertyRevalued.header"),
+        '_legendClass -> "visuallyhidden",
+        '_groupClass -> "inline",
+        '_labelClass -> "block-label",
+        '_labelAfter -> true,
+        '_trackGA -> true
+      )
+      </div>
+
+      <div class="form-group">
+        <div id="isPropertyRevalued-true-hidden" class="panel-indent">
+          <div class="form-field">
+            @atedDateFieldsFree(
+            formItem = propertyDetailsForm,
+            fieldName = "partAcqDispDate",
+            label = Html(Messages("ated.property-details-value.partAcqDispDate")),
+            isNested = false,
+            defaultDateOption = None,
+            '_hintText -> Messages("ated.property-details-value.partAcqDispDate.hint", PeriodUtils.periodEndDate(periodKey).toString(Messages("ated.date-format.numeric"))),
+            '_groupClass -> "form-group date-of-birth",
+            '_idName -> "partAcqDispDate"
+            )
+          </div>
+
+            @atedInputNew(propertyDetailsForm("revaluedValue"),
+            '_label -> Html(Messages("ated.property-details-value.revaluedValue")),
+            '_labelClass -> "form-label-bold",
+            '_inputClass -> "form-control-indent",
+            '_hintText -> Messages("ated.property-details-value.revaluedValue.hint"),
+            '_id -> "revaluedValue",
+            '_showConstraints -> false)
+
+           <div class="form-field">
+            @atedDateFieldsFree(
+            formItem = propertyDetailsForm,
+            fieldName = "revaluedDate",
+            label = Html(Messages("ated.property-details-value.revaluedDate")),
+            isNested = false,
+            defaultDateOption = None,
+            '_hintText -> Messages("ated.property-details-value.revaluedDate.hint", PeriodUtils.periodEndDate(periodKey).toString(Messages("ated.date-format.numeric"))),
+            '_groupClass -> "form-group date-of-birth",
+            '_idName -> "revaluedDate"
+            )
+           </div>
+
+          </div>
+      </div>
+
+      <div id="isPropertyRevalued-false-hidden">
+
+        <div class="form-group">
+          <div class="confirmation-notice">
+            <div class="important-notice">@Messages("ated.property-details-value.isPropertyRevalued.no-text")</div>
+          </div>
+        </div>
+
+        <a class="button" id="back-to-ated" href="@controllers.routes.AccountSummaryController.view">@Messages("ated.company-details.back")</a>
+
+      </div>
+
+      <button class="button" id="submit" type="submit">@Messages("ated.save-and-continue")</button>
+
+
+
+
+
+  }
+
+}

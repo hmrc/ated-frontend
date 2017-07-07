@@ -1,0 +1,42 @@
+@import models._
+@(id: String, periodKey: Int, propertyDetailsForm: Form[PropertyDetailsInRelief], mode: Option[String], backLink: Option[String])(implicit atedContext: AtedContext, messages: Messages)
+@import uk.gov.hmrc.play.views.html._
+@import uk.gov.hmrc.play.views.html.helpers._
+@import views.html.helpers._
+@import views.html.helpers.error._
+@import utils._
+
+@implicitFormInstance = @{ Some(propertyDetailsForm) }
+
+
+@atedMain(title = Messages("ated.property-details-period.isInRelief.title"), attorney = atedContext.user.authContext.attorney) {
+  @pageHeadersAndError(backLink, "pre-heading", AtedUtils.getPropertyDetailsPreHeader(mode),
+      Some(atedErrorSummary(propertyDetailsForm, "ated.property-details-period-error.general")))
+  <div class="form-group">
+    <h1 class="heading-xlarge" id="property-details-header">
+      @Messages("ated.property-details-period.isInRelief.header")
+    </h1>
+  </div>
+
+  @form(action=controllers.propertyDetails.routes.PropertyDetailsInReliefController.save(id, periodKey, mode)) {
+
+    <div class="form-group" id="isInRelief">
+      @inputRadioGroup(propertyDetailsForm("isInRelief"),
+      Seq(
+        "true" -> Messages("ated.property-details-period.yes"),
+        "false" -> Messages("ated.property-details-period.no")),
+        '_legend -> Messages("ated.property-details-period.isInRelief.header"),
+        '_legendClass -> "visuallyhidden",
+        '_groupClass -> "inline",
+        '_labelClass -> "block-label",
+        '_labelAfter -> true,
+        '_trackGA -> true
+      )
+    </div>
+
+    <button class="button" id="submit" type="submit">@Messages("ated.save-and-continue")</button>
+
+
+  }
+
+}
