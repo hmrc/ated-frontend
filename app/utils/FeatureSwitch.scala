@@ -48,7 +48,7 @@ object FeatureSwitch extends RunMode {
     forName(name)
   }
 
-  def confPropertyName(name: String) = s"$env.features.$name"
+  def confPropertyName(name: String) = s"features.$name"
   def systemPropertyName(name: String) = s"features.$name"
 
   implicit val format = Json.format[FeatureSwitch]

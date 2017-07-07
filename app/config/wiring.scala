@@ -27,7 +27,7 @@ import uk.gov.hmrc.play.http.ws.{WSDelete, WSGet, WSPost, WSPut, WSPatch}
 import uk.gov.hmrc.play.partials.CachedStaticHtmlPartialRetriever
 
 object AtedFrontendAuditConnector extends Auditing with AppName with RunMode {
-  override lazy val auditingConfig = LoadAuditingConfig(s"$env.auditing")
+  override lazy val auditingConfig = LoadAuditingConfig(s"auditing")
 }
 
 object WSHttp extends WSGet with WSPut with WSPost with WSDelete with WSPatch {

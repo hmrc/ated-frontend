@@ -35,7 +35,7 @@ trait ApplicationController extends AtedFrontendAuthHelpers with RunMode {
   }
 
   def cancel = Action { implicit request =>
-    val serviceRedirectUrl: Option[String] = Play.configuration.getString(s"$env.cancelRedirectUrl")
+    val serviceRedirectUrl: Option[String] = Play.configuration.getString(s"cancelRedirectUrl")
     Redirect(serviceRedirectUrl.getOrElse("https://www.gov.uk/"))
   }
 
