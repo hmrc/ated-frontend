@@ -24,7 +24,6 @@ import controllers.reliefs.ChooseReliefsController
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
 import forms.AtedForms.returnTypeForm
 import models.ReturnType
-import utils.AtedFeatureSwitches._
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
 import services.SummaryReturnsService

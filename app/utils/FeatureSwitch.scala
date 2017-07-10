@@ -53,16 +53,3 @@ object FeatureSwitch extends RunMode {
 
   implicit val format = Json.format[FeatureSwitch]
 }
-
-object AtedFeatureSwitches {
-  def api11 = FeatureSwitch.forName("api_11")
-  def chargeableReturns = FeatureSwitch.forName("chargeable_returns")
-
-
-  def byName(name: String): Option[FeatureSwitch] = name match {
-    case "api_11" => Some(api11)
-    case "chargeable_returns" => Some(chargeableReturns)
-    case _ => None
-  }
-
-}

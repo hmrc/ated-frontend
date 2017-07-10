@@ -34,7 +34,7 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.SummaryReturnsService
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
-import utils.{AtedConstants, AtedFeatureSwitches, FeatureSwitch}
+import utils.AtedConstants
 
 import scala.concurrent.Future
 

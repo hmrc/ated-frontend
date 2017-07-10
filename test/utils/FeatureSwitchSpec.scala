@@ -58,13 +58,6 @@ class FeatureSwitchSpec extends PlaySpec with OneServerPerSuite with BeforeAndAf
       FeatureSwitch.disable(testFeatureSwitch)
       FeatureSwitch.forName("test").enabled must be(false)
     }
-
-    "AtedFeatureSwitches.byName should return Some(feature) or None" in {
-      AtedFeatureSwitches.byName("api_11") must be(Some(AtedFeatureSwitches.api11))
-      AtedFeatureSwitches.byName("chargeable_returns") must be(Some(AtedFeatureSwitches.chargeableReturns))
-      AtedFeatureSwitches.byName("xyz") must be(None)
-    }
-
   }
 
 }

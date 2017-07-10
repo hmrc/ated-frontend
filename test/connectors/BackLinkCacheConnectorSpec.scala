@@ -26,7 +26,6 @@ import play.api.libs.json.Json
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.cache.client.{CacheMap, SessionCache}
 import uk.gov.hmrc.play.http.HeaderCarrier
-import utils.{AtedFeatureSwitches, FeatureSwitch}
 
 import scala.concurrent.Future
 
@@ -58,7 +57,7 @@ class BackLinkCacheConnectorSpec extends PlaySpec with OneServerPerSuite with Mo
 
     "saveAndReturnBusinessDetails" must {
 
-      "save the back link with Feature Switch on" in {
+      "save the back link" in {
 
         implicit val hc: HeaderCarrier = HeaderCarrier()
         val backLink: BackLinkModel = BackLinkModel(Some("testBackLink"))
@@ -71,7 +70,7 @@ class BackLinkCacheConnectorSpec extends PlaySpec with OneServerPerSuite with Mo
 
     "clearBackLinks" must {
 
-      "clear the back links with Feature Switch on and we have links" in {
+      "clear the back links and we have links" in {
 
         implicit val hc: HeaderCarrier = HeaderCarrier()
         val backLink: BackLinkModel = BackLinkModel(Some("testBackLink"))
