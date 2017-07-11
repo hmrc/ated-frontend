@@ -1,7 +1,6 @@
 @(applicationConfig: config.ApplicationConfig = config.ApplicationConfig,
   supportLinkEnabled: Boolean = false,
   title: String,
-  serviceInfoContent: Option[Html] = None,
   banner: Option[Html] = Some(HtmlFormat.empty),
   sidebarLinks: Option[Html] = None,
   sidebarClass: Option[String] = None,
@@ -14,6 +13,8 @@
 @import layouts.{govuk_template => hmrcGovUkTemplate}
 @import uk.gov.hmrc.play.views.html.{layouts => uiLayouts}
 @import uk.gov.hmrc.play.views.html.{helpers => uiHelpers}
+@import controllers.auth.ExternalUrls
+@import utils.SessionUtils
 
 @head = {
   @uiLayouts.head(
@@ -71,11 +72,21 @@
     showFeedbackLinkInBetaBanner = true)
 }
 
+@btaLink = {
+<div class="bta-link">
+    <a id="btaNavHref" href=@ExternalUrls.businessTaxAccountPage>@Messages("ated.generic.bta_link")</a>
+</div>
+}
+
+@serviceInfoContent = {
+  @request.session.get(SessionUtils.sessionCallerId).map(x => btaLink)
+}
+
 @serviceInfo = {
   @uiLayouts.serviceInfo(
     betaBanner = betaBanner,
     includeGridWrapper = false,
-    serviceInfoContent = serviceInfoContent,
+    serviceInfoContent = Option(serviceInfoContent),
     includeHMRCBranding = false)
 }
 

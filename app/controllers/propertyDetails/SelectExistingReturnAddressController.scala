@@ -74,7 +74,7 @@ trait SelectExistingReturnAddressController extends PropertyDetailsHelpers with 
                   }
                 case None =>
                   Logger.warn(s"[SelectExistingReturnAddressController][continue] - form bundle return not found for form-bundle-no::$formBundleNum")
-                  Future.successful(Redirect(controllers.routes.AccountSummaryController.view))
+                  Future.successful(Redirect(controllers.routes.AccountSummaryController.view()))
               }
             } yield result
           }

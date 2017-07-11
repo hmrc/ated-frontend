@@ -85,6 +85,14 @@ class HomeControllerSpec extends PlaySpec with OneServerPerSuite with MockitoSug
             redirectLocation(result).get must include("/account-summary")
           }
         }
+
+        "be redirected to the Account Summary page with bta in session" in {
+          homeWithAuthorisedUserFromBTA { result =>
+            status(result) must be(SEE_OTHER)
+            redirectLocation(result).get must include("/account-summary")
+            session(result).data("callerId") must be("bta")
+          }
+        }
       }
 
       "Authenticated agents" must {
@@ -98,111 +106,54 @@ class HomeControllerSpec extends PlaySpec with OneServerPerSuite with MockitoSug
       }
     }
 
-    "Summary" must {
-
-      "not respond with NOT_FOUND" in {
-        val result = route(FakeRequest(GET, "/ated/summary"))
-        result.isDefined must be(true)
-        status(result.get) must not be NOT_FOUND
-      }
-
-      "unauthorised users" must {
-        "be redirected to the unauthorised page" in {
-          summaryWithUnAuthorisedUser { result =>
-            status(result) must be(SEE_OTHER)
-            redirectLocation(result).get must include("/ated/unauthorised")
-          }
-        }
-      }
-
-      "Authenticated users" must {
-
-        "be redirected to the Account Summary page " in {
-          summaryWithAuthorisedUser { result =>
-            status(result) must be(SEE_OTHER)
-            redirectLocation(result).get must include("/account-summary")
-          }
-        }
-      }
-
-      "Authenticated agents" must {
-
-        "be redirected to the Agent Client Summary page " in {
-          summaryWithAuthorisedAgent { result =>
-            status(result) must be(SEE_OTHER)
-            redirectLocation(result).get must include("/mandate/agent/service")
-          }
-        }
-      }
-    }
-
   }
 
 
   def homeWithAuthorisedAgent(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedAgent(userId, mockAuthConnector)
-    val result = TestHomeController.home.apply(SessionBuilder.buildRequestWithSession(userId))
+    val result = TestHomeController.home().apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
   def homeWithUnsubscribedUser(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockUnsubscribedUser(userId, mockAuthConnector)
-    val result = TestHomeController.home.apply(SessionBuilder.buildRequestWithSession(userId))
+    val result = TestHomeController.home().apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
   def homeWithUnsubscribedAgent(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockUnsubscribedAgent(userId, mockAuthConnector)
-    val result = TestHomeController.home.apply(SessionBuilder.buildRequestWithSession(userId))
+    val result = TestHomeController.home().apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
   def homeWithAuthorisedUser(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-    val result = TestHomeController.home.apply(SessionBuilder.buildRequestWithSession(userId))
+    val result = TestHomeController.home().apply(SessionBuilder.buildRequestWithSession(userId))
+    test(result)
+  }
+
+  def homeWithAuthorisedUserFromBTA(test: Future[Result] => Any) {
+    val userId = s"user-${UUID.randomUUID}"
+    AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
+    val result = TestHomeController.home(Some("bta")).apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
   def homeWithUnAuthorisedUser(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockUnAuthorisedUser(userId, mockAuthConnector)
-    val result = TestHomeController.home.apply(SessionBuilder.buildRequestWithSession(userId))
+    val result = TestHomeController.home().apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
   def homeWithUnAuthenticated(test: Future[Result] => Any) {
-    val result = TestHomeController.home.apply(SessionBuilder.buildRequestWithSessionNoUser)
+    val result = TestHomeController.home().apply(SessionBuilder.buildRequestWithSessionNoUser)
     test(result)
   }
 
-
-  def summaryWithAuthorisedAgent(test: Future[Result] => Any) {
-    val userId = s"user-${UUID.randomUUID}"
-    AuthBuilder.mockAuthorisedAgent(userId, mockAuthConnector)
-    val result = TestHomeController.summary().apply(SessionBuilder.buildRequestWithSession(userId))
-    test(result)
-  }
-
-  def summaryWithAuthorisedUser(test: Future[Result] => Any) {
-    val userId = s"user-${UUID.randomUUID}"
-    AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-    val result = TestHomeController.summary().apply(SessionBuilder.buildRequestWithSession(userId))
-    test(result)
-  }
-
-  def summaryWithUnAuthorisedUser(test: Future[Result] => Any) {
-    val userId = s"user-${UUID.randomUUID}"
-    AuthBuilder.mockUnAuthorisedUser(userId, mockAuthConnector)
-    val result = TestHomeController.summary().apply(SessionBuilder.buildRequestWithSession(userId))
-    test(result)
-  }
-
-  def summaryWithUnAuthenticated(test: Future[Result] => Any) {
-    val result = TestHomeController.summary().apply(SessionBuilder.buildRequestWithSessionNoUser)
-    test(result)
-  }
 }

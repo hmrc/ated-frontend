@@ -29,7 +29,7 @@ ated.cancel-authority = Cancel authority
 ated.details-for = details for
 ated.address = Address
 ated.sign-out = Sign out
-
+ated.generic.bta_link = Business tax account home
 ated.unknow-amount.text = £ Unknown
 
 ## Error Messages

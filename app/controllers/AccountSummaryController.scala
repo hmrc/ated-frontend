@@ -17,13 +17,12 @@
 package controllers
 
 import config.FrontendDelegationConnector
-import connectors.{AgentClientMandateFrontendConnector, DataCacheConnector}
+import connectors.AgentClientMandateFrontendConnector
 import controllers.auth.{AtedFrontendAuthHelpers, AtedRegime}
-import play.api.Logger
+import play.api.Play.current
+import play.api.i18n.Messages.Implicits._
 import services.{DetailsService, SubscriptionDataService, SummaryReturnsService}
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
-import play.api.i18n.Messages.Implicits._
-import play.api.Play.current
 
 trait AccountSummaryController extends AtedBaseController with AtedFrontendAuthHelpers with DelegationAwareActions {
 
@@ -36,7 +35,7 @@ trait AccountSummaryController extends AtedBaseController with AtedFrontendAuthH
   def detailsService: DetailsService
 
 
-  def view = AuthAction(AtedRegime) {
+  def view() = AuthAction(AtedRegime) {
     implicit atedContext =>
       for {
         _ <- detailsService.cacheClientReference(atedContext.user.atedReferenceNumber)
