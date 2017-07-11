@@ -206,6 +206,7 @@
       <button class="button" id="submit" type="submit">@Messages("ated.choose-reliefs.continue")</button>
     </div>
 
+
     <div class="form-group">
       @atedInputNew(reliefsForm("periodKey"),
         '_label -> "id",
@@ -216,7 +217,7 @@
       @atedInputNew(reliefsForm("isAvoidanceScheme"),
       '_label -> Messages("ated.claim-relief.avoidance-scheme.legend"),
       '_labelClass ->  "visuallyhidden",
-      '_id -> "periodKey",
+      '_id -> "periodKey-avoidance",
       '_type -> "hidden")
     </div>
 
