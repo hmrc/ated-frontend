@@ -99,6 +99,7 @@
           @Messages("ated.edit")
         </a>
       </div>
+    </div>
 
   } else {
   @for((valueObj, index) <- valuesToDisplay.zipWithIndex) {
@@ -137,7 +138,6 @@
       </a>
     </div>
   </div>
-
   }
   }
 
@@ -180,10 +180,11 @@
       </a>
     </div>
   </div>
-</div>
+
 
   }
   }
+</div>
 <div class="form-group">
   <div class="grid-wrapper">
     <h2 id="avoidance-scheme-header" class="heading-medium">@Messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.header")</h2>
@@ -229,11 +230,12 @@
   }
   case _ => {<div class="grid grid-1-3 cya-answer" id="tas-otp-val"><span class="status">@incomplete</span></div>}
   }
-  <div class="grid grid-1-3 cya-change">
-    <a href="@controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceController.editFromSummary(propertyDetails.id)" id="edit-promoter-scheme"
-       aria-label='@Messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.edit-link.title")'>@Messages("ated.edit")
-    </a>
-  </div>
+
+    <div class="grid grid-1-3 cya-change">
+      <a href="@controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceController.editFromSummary(propertyDetails.id)" id="edit-promoter-scheme"
+         aria-label='@Messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.edit-link.title")'>@Messages("ated.edit")
+      </a>
+    </div>
   </div>
 </div>
 
