@@ -16,29 +16,23 @@
 
 package controllers
 
-import controllers.auth.{AtedFrontendAuthHelpers, AtedRegime, AtedSubscriptionNotNeededRegime, ExternalUrls}
+import controllers.auth.{AtedFrontendAuthHelpers, AtedSubscriptionNotNeededRegime, ExternalUrls}
 import models.AtedContext
 import play.api.Logger
-import play.api.mvc.{Action, Result}
+import play.api.mvc.Result
 import uk.gov.hmrc.play.config.RunMode
-import play.api.i18n.Messages.Implicits._
-import play.api.Play.current
+import utils.SessionUtils
 
 import scala.concurrent.Future
 
 trait HomeController extends AtedBaseController with AtedFrontendAuthHelpers with RunMode {
 
-  def home = AuthAction(AtedSubscriptionNotNeededRegime) {
+  def home(callerId: Option[String] = None) = AuthAction(AtedSubscriptionNotNeededRegime) {
     implicit atedContext =>
       Future.successful {
-        if (isSubscribedUser) redirectSubscribedUser
+        if (isSubscribedUser) redirectSubscribedUser(callerId)
         else Redirect(ExternalUrls.subscriptionStartPage)
       }
-  }
-
-  def summary = AuthAction(AtedRegime) {
-    implicit atedContext =>
-      Future.successful(redirectSubscribedUser)
   }
 
   private def isSubscribedUser(implicit atedContext: AtedContext): Boolean = {
@@ -46,14 +40,17 @@ trait HomeController extends AtedBaseController with AtedFrontendAuthHelpers wit
     user.principal.accounts.agent.flatMap(_.agentBusinessUtr).isDefined || user.principal.accounts.ated.isDefined
   }
 
-  private def redirectSubscribedUser(implicit atedContext: AtedContext): Result = {
+  private def redirectSubscribedUser(callerId: Option[String])(implicit atedContext: AtedContext): Result = {
     if (atedContext.user.isAgent) {
       Logger.debug("agent redirected to mandate:" + atedContext)
       Redirect(ExternalUrls.agentRedirectedToMandate)
     }
     else {
       Logger.debug("user redirected to account summary:" + atedContext)
-      Redirect(controllers.routes.AccountSummaryController.view())
+      callerId match {
+        case Some(x) => Redirect(controllers.routes.AccountSummaryController.view()).addingToSession(SessionUtils.sessionCallerId -> x)
+        case None => Redirect(controllers.routes.AccountSummaryController.view())
+      }
     }
   }
 

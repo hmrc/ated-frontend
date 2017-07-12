@@ -40,7 +40,7 @@ trait ChargeableReturnConfirmationController extends AtedBaseController with Ate
             Ok(views.html.propertyDetails.chargeableReturnsConfirmation(submitResponse))
           case None =>
             Logger.warn("[ChargeableReturnConfirmationController][confirmation] - Return Response not found in cache")
-            Redirect(controllers.routes.AccountSummaryController.view)
+            Redirect(controllers.routes.AccountSummaryController.view())
         }
 
   }
