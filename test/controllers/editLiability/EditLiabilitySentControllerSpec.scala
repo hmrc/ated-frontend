@@ -213,7 +213,7 @@ class EditLiabilitySentControllerSpec extends PlaySpec with OneServerPerSuite wi
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
     implicit val user = createAtedContext(createUserAuthContext(userId, "name"))
     implicit val hc: HeaderCarrier = HeaderCarrier()
-    when(mockDataCacheConnector.fetchClientData[EditLiabilityReturnsResponseModel](Matchers.eq(SubmitEditedLiabilityReturnsResponseFormId))(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(x))
+    when(mockDataCacheConnector.fetchAndGetFormData[EditLiabilityReturnsResponseModel](Matchers.eq(SubmitEditedLiabilityReturnsResponseFormId))(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(x))
     val result = TestEditLiabilitySentController.view(formBundleNo1).apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
