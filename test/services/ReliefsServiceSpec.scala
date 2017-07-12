@@ -482,7 +482,7 @@ class ReliefsServiceSpec extends PlaySpec with OneServerPerSuite with MockitoSug
         val submittedReturns = SubmittedReturns(periodKey, Seq(submittedReliefReturns1), Seq(submittedLiabilityReturns1))
         val periodSummaryReturns = PeriodSummaryReturns(periodKey, Seq(), Some(submittedReturns))
         val data = SummaryReturnsModel(Some(BigDecimal(999.99)), Seq(periodSummaryReturns))
-        when(mockDataCacheConnector.fetchClientData[SummaryReturnsModel](Matchers.eq(RetrieveReturnsResponseId))
+        when(mockDataCacheConnector.fetchAndGetFormData[SummaryReturnsModel](Matchers.eq(RetrieveReturnsResponseId))
           (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(data)))
         val result = TestReliefsService.viewReliefReturn(periodKey, formBundleNo1)
         await(result) must be(Some(submittedReliefReturns1))
@@ -494,7 +494,7 @@ class ReliefsServiceSpec extends PlaySpec with OneServerPerSuite with MockitoSug
         val submittedReturns = SubmittedReturns(periodKey, Seq(), Seq(submittedLiabilityReturns1))
         val periodSummaryReturns = PeriodSummaryReturns(periodKey, Seq(), Some(submittedReturns))
         val data = SummaryReturnsModel(Some(BigDecimal(999.99)), Seq(periodSummaryReturns))
-        when(mockDataCacheConnector.fetchClientData[SummaryReturnsModel](Matchers.eq(RetrieveReturnsResponseId))
+        when(mockDataCacheConnector.fetchAndGetFormData[SummaryReturnsModel](Matchers.eq(RetrieveReturnsResponseId))
           (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(data)))
         val result = TestReliefsService.viewReliefReturn(periodKey, formBundleNo1)
         await(result) must be(None)
@@ -503,7 +503,7 @@ class ReliefsServiceSpec extends PlaySpec with OneServerPerSuite with MockitoSug
         implicit val hc = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
         val formBundleNo = "form-123"
         val data = SummaryReturnsModel(None, Nil)
-        when(mockDataCacheConnector.fetchClientData[SummaryReturnsModel](Matchers.eq(RetrieveReturnsResponseId))
+        when(mockDataCacheConnector.fetchAndGetFormData[SummaryReturnsModel](Matchers.eq(RetrieveReturnsResponseId))
           (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(data)))
         val result = TestReliefsService.viewReliefReturn(periodKey, formBundleNo)
         await(result) must be(None)
@@ -511,7 +511,7 @@ class ReliefsServiceSpec extends PlaySpec with OneServerPerSuite with MockitoSug
       "if no summary data is found in Cache, return None" in {
         implicit val hc = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
         val formBundleNo = "form-123"
-        when(mockDataCacheConnector.fetchClientData[SummaryReturnsModel](Matchers.eq(RetrieveReturnsResponseId))
+        when(mockDataCacheConnector.fetchAndGetFormData[SummaryReturnsModel](Matchers.eq(RetrieveReturnsResponseId))
           (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
         val result = TestReliefsService.viewReliefReturn(periodKey, formBundleNo)
         await(result) must be(None)

@@ -216,7 +216,7 @@ class EditLiabilityDatesLiableControllerSpec extends PlaySpec with OneServerPerS
   def getAuthorisedUserNone(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-    when(mockDataCacheConnector.fetchClientData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+    when(mockDataCacheConnector.fetchAndGetFormData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
     val result = TestPropertyDetailsPeriodController.view("1").apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
