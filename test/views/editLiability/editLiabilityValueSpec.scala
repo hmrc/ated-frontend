@@ -57,7 +57,7 @@ class editLiabilityValueSpec extends FeatureSpec with OneServerPerSuite with Moc
       assert(document.getElementById("old-value").text() === "£123")
 
       And("No data is populated")
-      assert(document.getElementById("hasValueChanged").text() === "Yes No")
+      assert(document.getElementById("hasValueChanged").text() === "Has the value of your property changed for the purposes of ATED? Yes No")
       assert(document.getElementById("hasValueChanged-true").text() === "")
       assert(document.getElementById("hasValueChanged-false").text() === "")
 
@@ -94,7 +94,7 @@ class editLiabilityValueSpec extends FeatureSpec with OneServerPerSuite with Moc
       assert(document.getElementById("old-value").text() === "£45,678")
 
       And("The data is populated for a property value set to true")
-      assert(document.getElementById("hasValueChanged").text() === "Yes No")
+      assert(document.getElementById("hasValueChanged").text() === "Has the value of your property changed for the purposes of ATED? Yes No")
       assert(document.getElementById("hasValueChanged-true").attr("checked") === "checked")
       assert(document.getElementById("hasValueChanged-false").attr("checked") === "")
 
