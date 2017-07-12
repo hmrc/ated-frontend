@@ -35,7 +35,7 @@ trait ChargeableReturnConfirmationController extends AtedBaseController with Ate
 
   def confirmation = AuthAction(AtedRegime) {
     implicit atedContext =>
-        dataCacheConnector.fetchClientData[SubmitReturnsResponse](SubmitReturnsResponseFormId) map {
+        dataCacheConnector.fetchAndGetFormData[SubmitReturnsResponse](SubmitReturnsResponseFormId) map {
           case Some(submitResponse) =>
             Ok(views.html.propertyDetails.chargeableReturnsConfirmation(submitResponse))
           case None =>
