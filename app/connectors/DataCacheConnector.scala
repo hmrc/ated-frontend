@@ -37,10 +37,6 @@ trait DataCacheConnector {
     }
   }
 
-  def fetchClientData[T](formId: String)(implicit atedContext: AtedContext, hc: HeaderCarrier, formats: Format[T]): Future[Option[T]] = {
-    sessionCache.fetchAndGetEntry[T](key = getKey(formId))
-  }
-
   def fetchAndGetFormData[T](formId: String)(implicit atedContext: AtedContext, hc: HeaderCarrier, formats: Format[T]): Future[Option[T]] = {
     sessionCache.fetchAndGetEntry[T](key = formId)
   }
@@ -53,9 +49,6 @@ trait DataCacheConnector {
     sessionCache.remove()
   }
 
-  private def getKey(formId: String)(implicit atedContext: AtedContext) = {
-    s"${atedContext.user.atedReferenceNumber}:$formId"
-  }
 }
 
 object DataCacheConnector extends DataCacheConnector {

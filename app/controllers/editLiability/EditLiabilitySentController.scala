@@ -53,7 +53,7 @@ trait EditLiabilitySentController extends AtedBaseController
   def viewPrintFriendlyEditLilabilitySent(oldFormBundleNo: String) = AuthAction(AtedRegime) {
     implicit atedContext =>
       for {
-        submittedResponse <- dataCacheConnector.fetchClientData[EditLiabilityReturnsResponseModel](SubmitEditedLiabilityReturnsResponseFormId)
+        submittedResponse <- dataCacheConnector.fetchAndGetFormData[EditLiabilityReturnsResponseModel](SubmitEditedLiabilityReturnsResponseFormId)
         organisationName <- subscriptionDataService.getOrganisationName
       } yield {
         val x = submittedResponse.get.liabilityReturnResponse.find(_.oldFormBundleNumber == oldFormBundleNo)

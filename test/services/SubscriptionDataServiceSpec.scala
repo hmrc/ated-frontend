@@ -74,7 +74,7 @@ class SubscriptionDataServiceSpec extends PlaySpec with OneServerPerSuite with M
       val successResponse: SubscriptionData = SubscriptionData("", "", address = Nil, emailConsent = Some(true))
       val successData = CachedData(successResponse)
 
-      when(mockDataCacheConnector.fetchClientData[CachedData](Matchers.eq(RetrieveSubscriptionDataId))
+      when(mockDataCacheConnector.fetchAndGetFormData[CachedData](Matchers.eq(RetrieveSubscriptionDataId))
         (Matchers.any(), Matchers.any(), Matchers.eq(CachedData.formats))).thenReturn(Future.successful(None))
 
       when(mockSubscriptionDataAdapterService.retrieveSubscriptionData(Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
@@ -101,7 +101,7 @@ class SubscriptionDataServiceSpec extends PlaySpec with OneServerPerSuite with M
       val successResponse: SubscriptionData = SubscriptionData("", "", address = Nil, emailConsent = Some(true))
       val successData = CachedData(successResponse)
 
-      when(mockDataCacheConnector.fetchClientData[CachedData](Matchers.eq(RetrieveSubscriptionDataId))
+      when(mockDataCacheConnector.fetchAndGetFormData[CachedData](Matchers.eq(RetrieveSubscriptionDataId))
         (Matchers.any(), Matchers.any(), Matchers.eq(CachedData.formats))).thenReturn(Future.successful(Some(successData)))
 
       val addressDetails = AddressDetails(addressType = "", addressLine1 = "", addressLine2 = "", countryCode = "GB")
@@ -121,7 +121,7 @@ class SubscriptionDataServiceSpec extends PlaySpec with OneServerPerSuite with M
       val successResponse: SubscriptionData = SubscriptionData("", "", address = Nil, emailConsent = Some(true))
       val successData = CachedData(successResponse)
 
-      when(mockDataCacheConnector.fetchClientData[CachedData](Matchers.eq(RetrieveSubscriptionDataId))
+      when(mockDataCacheConnector.fetchAndGetFormData[CachedData](Matchers.eq(RetrieveSubscriptionDataId))
         (Matchers.any(), Matchers.any(), Matchers.eq(CachedData.formats))).thenReturn(Future.successful(None))
 
 
@@ -152,7 +152,7 @@ class SubscriptionDataServiceSpec extends PlaySpec with OneServerPerSuite with M
       val successResponse: SubscriptionData = SubscriptionData("", "", address = Nil, emailConsent = Some(true))
       val successData = CachedData(successResponse)
 
-      when(mockDataCacheConnector.fetchClientData[CachedData](Matchers.eq(RetrieveSubscriptionDataId))
+      when(mockDataCacheConnector.fetchAndGetFormData[CachedData](Matchers.eq(RetrieveSubscriptionDataId))
         (Matchers.any(), Matchers.any(), Matchers.eq(CachedData.formats))).thenReturn(Future.successful(None))
 
       val addressDetails = AddressDetails(addressType = "", addressLine1 = "", addressLine2 = "", countryCode = "GB")
@@ -181,7 +181,7 @@ class SubscriptionDataServiceSpec extends PlaySpec with OneServerPerSuite with M
       val successResponse: SubscriptionData = SubscriptionData("", "", address = Nil, emailConsent = Some(true))
       val successData = CachedData(successResponse)
 
-      when(mockDataCacheConnector.fetchClientData[CachedData](Matchers.eq(RetrieveSubscriptionDataId))
+      when(mockDataCacheConnector.fetchAndGetFormData[CachedData](Matchers.eq(RetrieveSubscriptionDataId))
         (Matchers.any(), Matchers.any(), Matchers.eq(CachedData.formats))).thenReturn(Future.successful(None))
 
       val successSubscriptionData = SubscriptionData("", "", address = Seq(Address(Some("name1"), Some("name2"), addressDetails = addressDetails)), emailConsent = Some(true))
@@ -211,7 +211,7 @@ class SubscriptionDataServiceSpec extends PlaySpec with OneServerPerSuite with M
     "return None we have no data to update" in {
       val updatedContactDetails = ContactDetails()
 
-      when(mockDataCacheConnector.fetchClientData[CachedData](Matchers.eq(RetrieveSubscriptionDataId))
+      when(mockDataCacheConnector.fetchAndGetFormData[CachedData](Matchers.eq(RetrieveSubscriptionDataId))
         (Matchers.any(), Matchers.any(), Matchers.eq(CachedData.formats))).thenReturn(Future.successful(Some(cacheDataResponse)))
 
       when(mockDataCacheConnector.clearCache()(Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, None)))
@@ -230,7 +230,7 @@ class SubscriptionDataServiceSpec extends PlaySpec with OneServerPerSuite with M
 
       val updatedContactDetails = ContactDetails()
 
-      when(mockDataCacheConnector.fetchClientData[CachedData](Matchers.eq(RetrieveSubscriptionDataId))
+      when(mockDataCacheConnector.fetchAndGetFormData[CachedData](Matchers.eq(RetrieveSubscriptionDataId))
         (Matchers.any(), Matchers.any(), Matchers.eq(CachedData.formats))).thenReturn(Future.successful(Some(cacheDataResponse)))
 
       val updateRequest = UpdateSubscriptionDataRequest(true, ChangeIndicators(), Nil)
@@ -256,7 +256,7 @@ class SubscriptionDataServiceSpec extends PlaySpec with OneServerPerSuite with M
       registrationDetails = Some(RegistrationBuilder.getEtmpRegistrationForOrganisation("testName")))
 
     "save the data when we have no cached data" in {
-      when(mockDataCacheConnector.fetchClientData[CachedData](Matchers.eq(RetrieveSubscriptionDataId))
+      when(mockDataCacheConnector.fetchAndGetFormData[CachedData](Matchers.eq(RetrieveSubscriptionDataId))
         (Matchers.any(), Matchers.any(), Matchers.eq(CachedData.formats))).thenReturn(Future.successful(None))
 
       when(mockDetailsService.updateOrganisationRegisteredDetails(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
@@ -272,7 +272,7 @@ class SubscriptionDataServiceSpec extends PlaySpec with OneServerPerSuite with M
     "save the data when we have no registered detailsl" in {
       val cachedOrgNoRegistered = CachedData(SubscriptionData("XA0001234567899", "BusinessName", address = List(), emailConsent = Some(true)))
 
-      when(mockDataCacheConnector.fetchClientData[CachedData](Matchers.eq(RetrieveSubscriptionDataId))
+      when(mockDataCacheConnector.fetchAndGetFormData[CachedData](Matchers.eq(RetrieveSubscriptionDataId))
         (Matchers.any(), Matchers.any(), Matchers.eq(CachedData.formats))).thenReturn(Future.successful(Some(cachedOrgNoRegistered)))
 
       when(mockDetailsService.updateOrganisationRegisteredDetails(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
@@ -286,7 +286,7 @@ class SubscriptionDataServiceSpec extends PlaySpec with OneServerPerSuite with M
     }
 
     "save the data don't clear the cache if it was not successful" in {
-      when(mockDataCacheConnector.fetchClientData[CachedData](Matchers.eq(RetrieveSubscriptionDataId))
+      when(mockDataCacheConnector.fetchAndGetFormData[CachedData](Matchers.eq(RetrieveSubscriptionDataId))
         (Matchers.any(), Matchers.any(), Matchers.eq(CachedData.formats))).thenReturn(Future.successful(Some(cachedOrgResponse)))
 
       when(mockDetailsService.updateOrganisationRegisteredDetails(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
@@ -300,7 +300,7 @@ class SubscriptionDataServiceSpec extends PlaySpec with OneServerPerSuite with M
     }
 
     "save the data and clear the cache if it was successful" in {
-      when(mockDataCacheConnector.fetchClientData[CachedData](Matchers.eq(RetrieveSubscriptionDataId))
+      when(mockDataCacheConnector.fetchAndGetFormData[CachedData](Matchers.eq(RetrieveSubscriptionDataId))
         (Matchers.any(), Matchers.any(), Matchers.eq(CachedData.formats))).thenReturn(Future.successful(Some(cachedOrgResponse)))
 
       val updateDataResponse = RegistrationBuilder.getEtmpRegistrationUpdateRequest("testResonse")
@@ -322,7 +322,7 @@ class SubscriptionDataServiceSpec extends PlaySpec with OneServerPerSuite with M
     val cachedOrgNoRegistered = CachedData(SubscriptionData("XA0001234567899", "BusinessName", address = List(), emailConsent = Some(true)))
 
     "not update when can't retrieve data" in {
-      when(mockDataCacheConnector.fetchClientData[CachedData](Matchers.eq(RetrieveSubscriptionDataId))
+      when(mockDataCacheConnector.fetchAndGetFormData[CachedData](Matchers.eq(RetrieveSubscriptionDataId))
         (Matchers.any(), Matchers.any(), Matchers.eq(CachedData.formats))).thenReturn(Future.successful(Some(cachedOrgNoRegistered)))
 
       val updateDataResponse = RegistrationBuilder.getEtmpRegistrationUpdateRequest("testResonse")
@@ -343,7 +343,7 @@ class SubscriptionDataServiceSpec extends PlaySpec with OneServerPerSuite with M
       registrationDetails = Some(RegistrationBuilder.getEtmpRegistrationForOrganisation("testName")))
 
     "save the data when we have no cached data" in {
-      when(mockDataCacheConnector.fetchClientData[CachedData](Matchers.eq(RetrieveSubscriptionDataId))
+      when(mockDataCacheConnector.fetchAndGetFormData[CachedData](Matchers.eq(RetrieveSubscriptionDataId))
         (Matchers.any(), Matchers.any(), Matchers.eq(CachedData.formats))).thenReturn(Future.successful(Some(cachedOrgResponse)))
 
       val updateDataResponse = RegistrationBuilder.getEtmpRegistrationUpdateRequest("testResonse")
@@ -371,7 +371,7 @@ class SubscriptionDataServiceSpec extends PlaySpec with OneServerPerSuite with M
       nonUKIdentification = None)
     val cacheDataResponse = CachedData(SubscriptionData("XA0001234567899", "BusinessName", address = List(), emailConsent = Some(true)), Some(etmpRegDetails))
     "retrieve cached data and return organisation name" in {
-      when(mockDataCacheConnector.fetchClientData[CachedData](Matchers.eq(RetrieveSubscriptionDataId))
+      when(mockDataCacheConnector.fetchAndGetFormData[CachedData](Matchers.eq(RetrieveSubscriptionDataId))
         (Matchers.any(), Matchers.any(), Matchers.eq(CachedData.formats))).thenReturn(Future.successful(Some(cacheDataResponse)))
       when(mockSubscriptionDataAdapterService.getOrganisationName(Matchers.any())).thenReturn(Some("BusinessName"))
       val response = TestSubscriptionDataService.getOrganisationName
@@ -384,7 +384,7 @@ class SubscriptionDataServiceSpec extends PlaySpec with OneServerPerSuite with M
     implicit val hc = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
     val cacheDataResponse = CachedData(SubscriptionData("XA0001234567899", "BusinessName", address = List(), emailConsent = Some(true)))
     "retrieve cached data and return safe id" in {
-      when(mockDataCacheConnector.fetchClientData[CachedData](Matchers.eq(RetrieveSubscriptionDataId))
+      when(mockDataCacheConnector.fetchAndGetFormData[CachedData](Matchers.eq(RetrieveSubscriptionDataId))
         (Matchers.any(), Matchers.any(), Matchers.eq(CachedData.formats))).thenReturn(Future.successful(Some(cacheDataResponse)))
       when(mockSubscriptionDataAdapterService.getSafeId(Matchers.any())).thenReturn(Some(cacheDataResponse.subscriptionData.safeId))
       val response = TestSubscriptionDataService.getSafeId
@@ -397,7 +397,7 @@ class SubscriptionDataServiceSpec extends PlaySpec with OneServerPerSuite with M
     implicit val hc = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
     val cacheDataResponse = CachedData(SubscriptionData("XA0001234567899", "BusinessName", address = List(), emailConsent = Some(true)))
     "returns info from cache" in {
-      when(mockDataCacheConnector.fetchClientData[CachedData](Matchers.any())
+      when(mockDataCacheConnector.fetchAndGetFormData[CachedData](Matchers.any())
         (Matchers.any(), Matchers.any(), Matchers.eq(CachedData.formats))).thenReturn(Future.successful(None))
       val successSubscriptionData = SubscriptionData("", "", address = Seq(Address(Some("name1"), Some("name2"), addressDetails = addressDetails)), emailConsent = Some(true))
       when(mockSubscriptionDataAdapterService.retrieveSubscriptionData(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(successSubscriptionData)))
@@ -412,7 +412,7 @@ class SubscriptionDataServiceSpec extends PlaySpec with OneServerPerSuite with M
     "return true, if emailConsent is true in cached data" in {
       implicit val hc = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
       val cacheDataResponse = CachedData(SubscriptionData("XA0001234567899", "BusinessName", address = List(), emailConsent = Some(true)))
-      when(mockDataCacheConnector.fetchClientData[CachedData](Matchers.eq(RetrieveSubscriptionDataId))
+      when(mockDataCacheConnector.fetchAndGetFormData[CachedData](Matchers.eq(RetrieveSubscriptionDataId))
         (Matchers.any(), Matchers.any(), Matchers.eq(CachedData.formats))).thenReturn(Future.successful(Some(cacheDataResponse)))
       val response = TestSubscriptionDataService.getEmailConsent
       await(response) must be (true)
@@ -420,7 +420,7 @@ class SubscriptionDataServiceSpec extends PlaySpec with OneServerPerSuite with M
 
     "return false, if no cached data is found" in {
       implicit val hc = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
-      when(mockDataCacheConnector.fetchClientData[CachedData](Matchers.eq(RetrieveSubscriptionDataId))
+      when(mockDataCacheConnector.fetchAndGetFormData[CachedData](Matchers.eq(RetrieveSubscriptionDataId))
         (Matchers.any(), Matchers.any(), Matchers.eq(CachedData.formats))).thenReturn(Future.successful(None))
       val successSubscriptionData = None
       when(mockSubscriptionDataAdapterService.retrieveSubscriptionData(Matchers.any(), Matchers.any())).thenReturn(Future.successful(successSubscriptionData))
@@ -436,7 +436,7 @@ class SubscriptionDataServiceSpec extends PlaySpec with OneServerPerSuite with M
       implicit val hc = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
 
       //Setup Cache
-      when(mockDataCacheConnector.fetchClientData[CachedData](Matchers.eq(RetrieveSubscriptionDataId))
+      when(mockDataCacheConnector.fetchAndGetFormData[CachedData](Matchers.eq(RetrieveSubscriptionDataId))
         (Matchers.any(), Matchers.any(), Matchers.eq(CachedData.formats))).thenReturn(Future.successful(None))
       val successSubscriptionData = None
       when(mockSubscriptionDataAdapterService.retrieveSubscriptionData(Matchers.any(), Matchers.any())).thenReturn(Future.successful(successSubscriptionData))
@@ -452,7 +452,7 @@ class SubscriptionDataServiceSpec extends PlaySpec with OneServerPerSuite with M
       implicit val hc = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
       //Setup Cache
       val cacheDataResponse = CachedData(SubscriptionData("XA0001234567899", "BusinessName", address = List(), emailConsent = Some(true)))
-      when(mockDataCacheConnector.fetchClientData[CachedData](Matchers.eq(RetrieveSubscriptionDataId))
+      when(mockDataCacheConnector.fetchAndGetFormData[CachedData](Matchers.eq(RetrieveSubscriptionDataId))
         (Matchers.any(), Matchers.any(), Matchers.eq(CachedData.formats))).thenReturn(Future.successful(Some(cacheDataResponse)))
 
       when(mockSubscriptionDataAdapterService.getCorrespondenceAddress(Matchers.any())).thenReturn(None)
@@ -465,7 +465,7 @@ class SubscriptionDataServiceSpec extends PlaySpec with OneServerPerSuite with M
       implicit val hc = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
       //Setup Cache
       val cacheDataResponse = CachedData(SubscriptionData("XA0001234567899", "BusinessName", address = List(), emailConsent = Some(true)))
-      when(mockDataCacheConnector.fetchClientData[CachedData](Matchers.eq(RetrieveSubscriptionDataId))
+      when(mockDataCacheConnector.fetchAndGetFormData[CachedData](Matchers.eq(RetrieveSubscriptionDataId))
         (Matchers.any(), Matchers.any(), Matchers.eq(CachedData.formats))).thenReturn(Future.successful(Some(cacheDataResponse)))
 
       val successAddress = Some(Address(Some("name1"), Some("name2"),
@@ -485,7 +485,7 @@ class SubscriptionDataServiceSpec extends PlaySpec with OneServerPerSuite with M
 
     "return None we have no data to edit" in {
 
-      when(mockDataCacheConnector.fetchClientData[CachedData](Matchers.eq(RetrieveSubscriptionDataId))
+      when(mockDataCacheConnector.fetchAndGetFormData[CachedData](Matchers.eq(RetrieveSubscriptionDataId))
         (Matchers.any(), Matchers.any(), Matchers.eq(CachedData.formats))).thenReturn(Future.successful(Some(cacheDataResponse)))
 
       when(mockDataCacheConnector.clearCache()(Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, None)))
@@ -501,7 +501,7 @@ class SubscriptionDataServiceSpec extends PlaySpec with OneServerPerSuite with M
     }
 
     "save the data and clear the cache if it was successful" in {
-      when(mockDataCacheConnector.fetchClientData[CachedData](Matchers.eq(RetrieveSubscriptionDataId))
+      when(mockDataCacheConnector.fetchAndGetFormData[CachedData](Matchers.eq(RetrieveSubscriptionDataId))
         (Matchers.any(), Matchers.any(), Matchers.eq(CachedData.formats))).thenReturn(Future.successful(Some(cacheDataResponse)))
 
       val updateRequest = UpdateSubscriptionDataRequest(true, ChangeIndicators(), Nil)
@@ -529,7 +529,7 @@ class SubscriptionDataServiceSpec extends PlaySpec with OneServerPerSuite with M
 
     "return None we have no data to edit" in {
 
-      when(mockDataCacheConnector.fetchClientData[CachedData](Matchers.eq(RetrieveSubscriptionDataId))
+      when(mockDataCacheConnector.fetchAndGetFormData[CachedData](Matchers.eq(RetrieveSubscriptionDataId))
         (Matchers.any(), Matchers.any(), Matchers.eq(CachedData.formats))).thenReturn(Future.successful(Some(cacheDataResponse)))
 
       when(mockDataCacheConnector.clearCache()(Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, None)))
@@ -545,7 +545,7 @@ class SubscriptionDataServiceSpec extends PlaySpec with OneServerPerSuite with M
     }
 
     "save the data and clear the cache if it was successful" in {
-      when(mockDataCacheConnector.fetchClientData[CachedData](Matchers.eq(RetrieveSubscriptionDataId))
+      when(mockDataCacheConnector.fetchAndGetFormData[CachedData](Matchers.eq(RetrieveSubscriptionDataId))
         (Matchers.any(), Matchers.any(), Matchers.eq(CachedData.formats))).thenReturn(Future.successful(Some(cacheDataResponse)))
 
       val updateRequest = UpdateSubscriptionDataRequest(true, ChangeIndicators(), Nil)

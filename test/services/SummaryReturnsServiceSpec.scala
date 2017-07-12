@@ -84,7 +84,7 @@ class SummaryReturnsServiceSpec extends PlaySpec with OneServerPerSuite with Moc
 
           "connector returns OK as response, then Return SummaryReturnsModel after filtering out errant period" in {
 
-            when(mockDataCacheConnector.fetchClientData[SummaryReturnsModel](Matchers.eq(RetrieveReturnsResponseId))(Matchers.any(), Matchers.any(), Matchers.any()))
+            when(mockDataCacheConnector.fetchAndGetFormData[SummaryReturnsModel](Matchers.eq(RetrieveReturnsResponseId))(Matchers.any(), Matchers.any(), Matchers.any()))
               .thenReturn(Future.successful(None))
             when(mockDataCacheConnector.saveFormData[SummaryReturnsModel](Matchers.eq(RetrieveReturnsResponseId), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
               .thenReturn(Future.successful(data))
@@ -95,7 +95,7 @@ class SummaryReturnsServiceSpec extends PlaySpec with OneServerPerSuite with Moc
 
           "connector returns NON-OK as response, then throw exception" in {
 
-            when(mockDataCacheConnector.fetchClientData[SummaryReturnsModel](Matchers.eq(RetrieveReturnsResponseId))(Matchers.any(), Matchers.any(), Matchers.any()))
+            when(mockDataCacheConnector.fetchAndGetFormData[SummaryReturnsModel](Matchers.eq(RetrieveReturnsResponseId))(Matchers.any(), Matchers.any(), Matchers.any()))
               .thenReturn(Future.successful(None))
             when(mockDataCacheConnector.saveFormData[SummaryReturnsModel](Matchers.eq(RetrieveReturnsResponseId), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
               .thenReturn(Future.successful(data))
@@ -114,7 +114,7 @@ class SummaryReturnsServiceSpec extends PlaySpec with OneServerPerSuite with Moc
           "connector returns OK as response, then Return SummaryReturnsModel" in {
 
             val dataCached = data.copy(allReturns = data.allReturns.map(_.copy(draftReturns = Nil)))
-            when(mockDataCacheConnector.fetchClientData[SummaryReturnsModel](Matchers.eq(RetrieveReturnsResponseId))(Matchers.any(), Matchers.any(), Matchers.any()))
+            when(mockDataCacheConnector.fetchAndGetFormData[SummaryReturnsModel](Matchers.eq(RetrieveReturnsResponseId))(Matchers.any(), Matchers.any(), Matchers.any()))
               .thenReturn(Future.successful(Some(dataCached)))
             when(mockAtedConnector.getPartialSummaryReturns(Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(json2))))
             val result = TestSummaryReturnsService.getSummaryReturns
@@ -126,7 +126,7 @@ class SummaryReturnsServiceSpec extends PlaySpec with OneServerPerSuite with Moc
           "connector returns NON-OK as response, then throw exception" in {
 
             val dataCached = data.copy(allReturns = data.allReturns.map(_.copy(draftReturns = Nil)))
-            when(mockDataCacheConnector.fetchClientData[SummaryReturnsModel](Matchers.eq(RetrieveReturnsResponseId))(Matchers.any(), Matchers.any(), Matchers.any()))
+            when(mockDataCacheConnector.fetchAndGetFormData[SummaryReturnsModel](Matchers.eq(RetrieveReturnsResponseId))(Matchers.any(), Matchers.any(), Matchers.any()))
               .thenReturn(Future.successful(Some(dataCached)))
             when(mockAtedConnector.getPartialSummaryReturns(Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, Some(json2))))
             val result = TestSummaryReturnsService.getSummaryReturns
@@ -153,7 +153,7 @@ class SummaryReturnsServiceSpec extends PlaySpec with OneServerPerSuite with Moc
       "return Some(PeriodSummaryReturns), if that period is found in SummaryReturnsModel" in {
         when(mockDataCacheConnector.saveFormData[SummaryReturnsModel](Matchers.eq(RetrieveReturnsResponseId), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(data))
-        when(mockDataCacheConnector.fetchClientData[SummaryReturnsModel](Matchers.eq(RetrieveReturnsResponseId))(Matchers.any(), Matchers.any(), Matchers.any()))
+        when(mockDataCacheConnector.fetchAndGetFormData[SummaryReturnsModel](Matchers.eq(RetrieveReturnsResponseId))(Matchers.any(), Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(None))
         when(mockDataCacheConnector.saveFormData[SummaryReturnsModel](Matchers.eq(RetrieveReturnsResponseId), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(data))
@@ -163,7 +163,7 @@ class SummaryReturnsServiceSpec extends PlaySpec with OneServerPerSuite with Moc
       }
 
       "return None, if that period is not-found in SummaryReturnsModel" in {
-        when(mockDataCacheConnector.fetchClientData[SummaryReturnsModel](Matchers.eq(RetrieveReturnsResponseId))(Matchers.any(), Matchers.any(), Matchers.any()))
+        when(mockDataCacheConnector.fetchAndGetFormData[SummaryReturnsModel](Matchers.eq(RetrieveReturnsResponseId))(Matchers.any(), Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(None))
         when(mockDataCacheConnector.saveFormData[SummaryReturnsModel](Matchers.eq(RetrieveReturnsResponseId), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(data))
@@ -187,7 +187,7 @@ class SummaryReturnsServiceSpec extends PlaySpec with OneServerPerSuite with Moc
       val pastReturnDetails = Seq(prevReturn)
 
       "save and return past submitted liabilities for a valid user" in {
-        when(mockDataCacheConnector.fetchClientData[PreviousReturns](Matchers.eq(RetrieveReturnsResponseId))(Matchers.any(), Matchers.any(), Matchers.any()))
+        when(mockDataCacheConnector.fetchAndGetFormData[PreviousReturns](Matchers.eq(RetrieveReturnsResponseId))(Matchers.any(), Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(None))
         when(mockAtedConnector.getFullSummaryReturns(Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(json1))))
         when(mockDataCacheConnector.saveFormData[SummaryReturnsModel](Matchers.eq(RetrieveReturnsResponseId), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))

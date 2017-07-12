@@ -36,7 +36,7 @@ trait DisposeLiabilitySentController extends AtedBaseController
 
   def view(oldFormBundleNo: String) = AuthAction(AtedRegime) {
     implicit atedContext =>
-      dataCacheConnector.fetchClientData[EditLiabilityReturnsResponseModel](SubmitEditedLiabilityReturnsResponseFormId) map {
+      dataCacheConnector.fetchAndGetFormData[EditLiabilityReturnsResponseModel](SubmitEditedLiabilityReturnsResponseFormId) map {
         case Some(submitResponse) =>
           submitResponse.liabilityReturnResponse.find(_.oldFormBundleNumber == oldFormBundleNo) match {
             case Some(r) => Ok(views.html.editLiability.disposeLiabilitySent(oldFormBundleNo, r.amountDueOrRefund, r.liabilityAmount, r.paymentReference))
@@ -50,7 +50,7 @@ trait DisposeLiabilitySentController extends AtedBaseController
   def viewPrintFriendlyDisposeliabilitySent(oldFormBundleNo: String) = AuthAction(AtedRegime) {
     implicit atedContext =>
       for {
-        submittedResponse <- dataCacheConnector.fetchClientData[EditLiabilityReturnsResponseModel](SubmitEditedLiabilityReturnsResponseFormId)
+        submittedResponse <- dataCacheConnector.fetchAndGetFormData[EditLiabilityReturnsResponseModel](SubmitEditedLiabilityReturnsResponseFormId)
         organisationName <- subscriptionDataService.getOrganisationName
       } yield {
         val x = submittedResponse.get.liabilityReturnResponse.find(_.oldFormBundleNumber == oldFormBundleNo)

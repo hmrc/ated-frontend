@@ -211,7 +211,7 @@ class EditLiabilitySummaryControllerSpec extends PlaySpec with OneServerPerSuite
     val userId = s"user-${UUID.randomUUID}"
     implicit val user = createAtedContext(createUserAuthContext(userId, "name"))
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-    when(mockDataCacheConnector.fetchClientData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+    when(mockDataCacheConnector.fetchAndGetFormData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
     val result = TestChangeLiabilitySummaryController.submit("12345678901").apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)

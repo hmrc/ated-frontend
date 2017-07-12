@@ -71,7 +71,7 @@ class DataCacheConnectorSpec extends PlaySpec with OneServerPerSuite with Mockit
         val appointAgent = AppointAgent(agentReferenceNumber = "JARN1234567")
         implicit val hc: HeaderCarrier = HeaderCarrier()
         when(mockSessionCache.fetchAndGetEntry[AppointAgent](Matchers.contains("form-id"))(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(appointAgent)))
-        val result = TestDataCacheConnector.fetchClientData[AppointAgent]("form-id")
+        val result = TestDataCacheConnector.fetchAndGetFormData[AppointAgent]("form-id")
         await(result) must be(Some(appointAgent))
       }
     }
