@@ -59,6 +59,7 @@
         <a href="@controllers.propertyDetails.routes.PropertyDetailsTitleController.editFromSummary(propertyDetails.id)" id="edit-property-title-details" title='@Messages("ated.property-details-summary.table.property-details-edit-link.title")'>
           @Messages("ated.edit")
         </a>
+        <span class="screen-reader-text">@Messages("ated.property-details-summary.table.property-details-edit-link.title.screen-reader")</span>
       </div>
     </div>
   </div>
@@ -82,6 +83,7 @@
         <a href="@controllers.propertyDetails.routes.PropertyDetailsOwnedBeforeController.editFromSummary(propertyDetails.id)" id="edit-property-value-incomplete" data-journey-click="ated-fronted:click:edit-property-value"
            aria-label='@Messages("ated.property-details-summary.table.property-value-edit-link.title")'>@Messages("ated.edit")
         </a>
+        <span class="screen-reader-text">@Messages("ated.property-details-summary.table.property-value-edit-link.title.screen-reader")</span>
       </div>
     </div>
 
@@ -98,6 +100,7 @@
         <a href="@controllers.propertyDetails.routes.PropertyDetailsProfessionallyValuedController.view(propertyDetails.id)" id="edit-property-professionally-valued-details-incomplete" title='@Messages("ated.property-details-summary.table.property-details-edit-link.title")'>
           @Messages("ated.edit")
         </a>
+        <span class="screen-reader-text">@Messages("ated.property-details-summary.table.property-details-prof-valued-edit-link.title.screen-reader")</span>
       </div>
     </div>
 
@@ -231,11 +234,12 @@
   case _ => {<div class="grid grid-1-3 cya-answer" id="tas-otp-val"><span class="status">@incomplete</span></div>}
   }
 
-    <div class="grid grid-1-3 cya-change">
-      <a href="@controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceController.editFromSummary(propertyDetails.id)" id="edit-promoter-scheme"
-         aria-label='@Messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.edit-link.title")'>@Messages("ated.edit")
-      </a>
-    </div>
+  <div class="grid grid-1-3 cya-change">
+    <a href="@controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceController.editFromSummary(propertyDetails.id)" id="edit-promoter-scheme">@Messages("ated.edit")
+    </a>
+    <span class="screen-reader-text">@Messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.edit-link.title")</span>
+  </div>
+
   </div>
 </div>
 
