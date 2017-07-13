@@ -36,11 +36,11 @@
       @reliefData.reliefs.openToPublicDate.getOrElse(reliefData.periodStartDate).toString(Messages("ated.date-format.short"))  @Messages("ated.relief-summary.relief-end-date")
     </div>
 
-    <div id="edit-reliefs-rp" class="grid grid-1-3 cya-change">
-      <a href="@controllers.reliefs.routes.ChooseReliefsController.editFromSummary(periodKey)" data-journey-click="ated-fronted:click:edit-reliefs-rp">
+    <div class="grid grid-1-3 cya-change">
+      <a href="@controllers.reliefs.routes.ChooseReliefsController.editFromSummary(periodKey)" id="edit-reliefs-rp" data-journey-click="ated-fronted:click:edit-reliefs-rp">
         @Messages("ated.edit")
       </a>
-      <span class="screen-reader-text">@Messages("ated.relief-summary.table.edit-relief-link.rental")</span>
+      <span class="visuallyhidden">@Messages("ated.relief-summary.table.edit-relief-link.rental")</span>
     </div>
   </div>
 
@@ -54,11 +54,11 @@
       @if(canSubmit){ <span>@reliefData.taxAvoidance.rentalBusinessScheme</span> } else { <span class="status">@Messages("ated.label.incomplete")</span> }
     </div>
 
-    <div id="tas-edit-rp" class="grid grid-1-3 cya-change">
-      <a href="@controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.editFromSummary(periodKey)" data-journey-click="ated-fronted:click:edit-reliefs-rp">
+    <div class="grid grid-1-3 cya-change">
+      <a href="@controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.editFromSummary(periodKey)" id="tas-edit-rp" data-journey-click="ated-fronted:click:edit-reliefs-rp">
         @Messages("ated.edit")
       </a>
-      <span class="screen-reader-text">@Messages("ated.relief-summary.table.edit-relief-link.rental")</span>
+      <span class="visuallyhidden">@Messages("ated.relief-summary.table.edit-relief-link.rental")</span>
     </div>
   </div>
 
@@ -72,10 +72,10 @@
     </div>
 
     <div class="grid grid-1-3 cya-change" id="tas-edit-rp">
-      <a href="@controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.editFromSummary(periodKey)" data-journey-click="ated-fronted:click:edit-reliefs-rp">
+      <a href="@controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.editFromSummary(periodKey)" id="tas-edit-rp" data-journey-click="ated-fronted:click:edit-reliefs-rp">
         @Messages("ated.edit")
       </a>
-      <span class="screen-reader-text">@Messages("ated.relief-summary.table.edit-relief-link.rental")</span>
+      <span class="visuallyhidden">@Messages("ated.relief-summary.table.edit-relief-link.rental")</span>
     </div>
   </div>
 
@@ -105,11 +105,11 @@
     </div>
 
 
-    <div class="grid grid-1-3 cya-change" id="edit-reliefs-rp">
-      <a href="@controllers.reliefs.routes.ChooseReliefsController.editFromSummary(periodKey)" data-journey-click="ated-fronted:click:edit-reliefs-rp">
+    <div class="grid grid-1-3 cya-change">
+      <a href="@controllers.reliefs.routes.ChooseReliefsController.editFromSummary(periodKey)" id="edit-reliefs-rp" data-journey-click="ated-fronted:click:edit-reliefs-rp">
         @Messages("ated.edit")
       </a>
-      <span class="screen-reader-text">@Messages("ated.relief-summary.table.edit-relief-link.rental")</span>
+      <span class="visuallyhidden">@Messages("ated.relief-summary.table.edit-relief-link.rental")</span>
     </div>
   </div>
 
@@ -123,11 +123,11 @@
     </div>
 
 
-    <div id="tas-edit-rp" class="grid grid-1-3 cya-change">
-      <a href="@controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.editFromSummary(periodKey)" data-journey-click="ated-fronted:click:edit-reliefs-rp">
+    <div class="grid grid-1-3 cya-change">
+      <a href="@controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.editFromSummary(periodKey)" id="tas-edit-rp" data-journey-click="ated-fronted:click:edit-reliefs-rp">
         @Messages("ated.edit")
       </a>
-      <span class="screen-reader-text">@Messages("ated.relief-summary.table.edit-relief-link.rental")</span>
+      <span class="visuallyhidden">@Messages("ated.relief-summary.table.edit-relief-link.rental")</span>
     </div>
   </div>
 
@@ -142,10 +142,10 @@
 
 
     <div class="grid grid-1-3 cya-change" id="tas-edit-rp">
-      <a href="@controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.editFromSummary(periodKey)" data-journey-click="ated-fronted:click:edit-reliefs-rp">
+      <a href="@controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.editFromSummary(periodKey)" id="tas-edit-rp" data-journey-click="ated-fronted:click:edit-reliefs-rp">
         @Messages("ated.edit")
       </a>
-      <span class="screen-reader-text">@Messages("ated.relief-summary.table.edit-relief-link.rental")</span>
+      <span class="visuallyhidden">@Messages("ated.relief-summary.table.edit-relief-link.rental")</span>
     </div>
   </div>
 
@@ -175,11 +175,11 @@
         @reliefData.reliefs.propertyDeveloperDate.getOrElse(reliefData.periodStartDate).toString(Messages("ated.date-format.short"))  @Messages("ated.relief-summary.relief-end-date")
       </div>
 
-      <div class="grid grid-1-3 cya-change" id="edit-reliefs-pd">
-        <a href="@controllers.reliefs.routes.ChooseReliefsController.editFromSummary(periodKey)" data-journey-click="ated-fronted:click:edit-reliefs-pd">
+      <div class="grid grid-1-3 cya-change">
+        <a href="@controllers.reliefs.routes.ChooseReliefsController.editFromSummary(periodKey)" id="edit-reliefs-pd" data-journey-click="ated-fronted:click:edit-reliefs-pd">
           @Messages("ated.edit")
         </a>
-        <span class="screen-reader-text">@Messages("ated.relief-summary.table.edit-relief-link.propertyDeveloper")</span>
+        <span class="visuallyhidden">@Messages("ated.relief-summary.table.edit-relief-link.propertyDeveloper")</span>
       </div>
     </div>
 
@@ -192,11 +192,11 @@
         @if(canSubmit){ <span>@reliefData.taxAvoidance.propertyDeveloperScheme</span> } else { <span class="status">@Messages("ated.label.incomplete")</span> }
       </div>
 
-      <div id="tas-edit-pd" class="grid grid-1-3 cya-change">
-        <a href="@controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.editFromSummary(periodKey)" data-journey-click="ated-fronted:click:edit-reliefs-rp">
+      <div class="grid grid-1-3 cya-change">
+        <a href="@controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.editFromSummary(periodKey)" id="tas-edit-pd" data-journey-click="ated-fronted:click:edit-reliefs-rp">
           @Messages("ated.edit")
         </a>
-        <span class="screen-reader-text">@Messages("ated.relief-summary.table.edit-relief-link.rental")</span>
+        <span class="visuallyhidden">@Messages("ated.relief-summary.table.edit-relief-link.rental")</span>
       </div>
     </div>
 
@@ -209,11 +209,11 @@
         @if(canSubmit){ <span>@reliefData.taxAvoidance.rentalBusinessScheme</span> } else { <span class="status">@Messages("ated.label.incomplete")</span> }
       </div>
 
-      <div class="grid grid-1-3 cya-change" id="prn-edit-pd">
-        <a href="@controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.editFromSummary(periodKey)" data-journey-click="ated-fronted:click:edit-reliefs-rp">
+      <div class="grid grid-1-3 cya-change">
+        <a href="@controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.editFromSummary(periodKey)" id="prn-edit-pd" data-journey-click="ated-fronted:click:edit-reliefs-rp">
           @Messages("ated.edit")
         </a>
-        <span class="screen-reader-text">@Messages("ated.relief-summary.table.edit-relief-link.rental")</span>
+        <span class="visuallyhidden">@Messages("ated.relief-summary.table.edit-relief-link.rental")</span>
       </div>
     </div>
 
@@ -243,11 +243,11 @@
       @reliefData.reliefs.propertyTradingDate.getOrElse(reliefData.periodStartDate).toString(Messages("ated.date-format.short"))  @Messages("ated.relief-summary.relief-end-date")
     </div>
 
-    <div class="grid grid-1-3 cya-change" id="edit-reliefs-pt">
-      <a href="@controllers.reliefs.routes.ChooseReliefsController.editFromSummary(periodKey)" data-journey-click="ated-fronted:click:edit-reliefs-pt">
+    <div class="grid grid-1-3 cya-change">
+      <a href="@controllers.reliefs.routes.ChooseReliefsController.editFromSummary(periodKey)" id="edit-reliefs-pt" data-journey-click="ated-fronted:click:edit-reliefs-pt">
         @Messages("ated.edit")
       </a>
-      <span class="screen-reader-text">@Messages("ated.relief-summary.table.edit-relief-link.propTrading")</span>
+      <span class="visuallyhidden">@Messages("ated.relief-summary.table.edit-relief-link.propTrading")</span>
     </div>
   </div>
 
@@ -260,11 +260,11 @@
       @if(canSubmit){ <span>@reliefData.taxAvoidance.propertyTradingScheme</span> } else { <span class="status">@Messages("ated.label.incomplete")</span> }
     </div>
 
-    <div id="tas-edit-pt" class="grid grid-1-3 cya-change">
-      <a href="@controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.editFromSummary(periodKey)" data-journey-click="ated-fronted:click:edit-reliefs-rp">
+    <div class="grid grid-1-3 cya-change">
+      <a href="@controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.editFromSummary(periodKey)" id="tas-edit-pt" data-journey-click="ated-fronted:click:edit-reliefs-rp">
         @Messages("ated.edit")
       </a>
-      <span class="screen-reader-text">@Messages("ated.relief-summary.table.edit-relief-link.rental")</span>
+      <span class="visuallyhidden">@Messages("ated.relief-summary.table.edit-relief-link.rental")</span>
     </div>
   </div>
 
@@ -277,11 +277,11 @@
       @if(canSubmit){ <span>@reliefData.taxAvoidance.propertyTradingSchemePromoter</span> } else { <span class="status">@Messages("ated.label.incomplete")</span> }
     </div>
 
-    <div class="grid grid-1-3 cya-change" id="prn-edit-pd">
-      <a href="@controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.editFromSummary(periodKey)" data-journey-click="ated-fronted:click:edit-reliefs-rp">
+    <div class="grid grid-1-3 cya-change">
+      <a href="@controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.editFromSummary(periodKey)" id="prn-edit-pd" data-journey-click="ated-fronted:click:edit-reliefs-rp">
         @Messages("ated.edit")
       </a>
-      <span class="screen-reader-text">@Messages("ated.relief-summary.table.edit-relief-link.rental")</span>
+      <span class="visuallyhidden">@Messages("ated.relief-summary.table.edit-relief-link.rental")</span>
     </div>
   </div>
 
@@ -311,11 +311,11 @@
       @reliefData.reliefs.lendingDate.getOrElse(reliefData.periodStartDate).toString(Messages("ated.date-format.short"))  @Messages("ated.relief-summary.relief-end-date")
     </div>
 
-    <div class="grid grid-1-3 cya-change" id="edit-reliefs-ln">
-      <a href="@controllers.reliefs.routes.ChooseReliefsController.editFromSummary(periodKey)" data-journey-click="ated-fronted:click:edit-reliefs-ln">
+    <div class="grid grid-1-3 cya-change">
+      <a href="@controllers.reliefs.routes.ChooseReliefsController.editFromSummary(periodKey)" id="edit-reliefs-ln" data-journey-click="ated-fronted:click:edit-reliefs-ln">
         @Messages("ated.edit")
       </a>
-      <span class="screen-reader-text">@Messages("ated.relief-summary.table.edit-relief-link.lending")</span>
+      <span class="visuallyhidden">@Messages("ated.relief-summary.table.edit-relief-link.lending")</span>
     </div>
   </div>
 
@@ -328,11 +328,11 @@
       @if(canSubmit){ <span>@reliefData.taxAvoidance.lendingScheme</span> } else { <span class="status">@Messages("ated.label.incomplete")</span> }
     </div>
 
-    <div id="tas-edit-pt" class="grid grid-1-3 cya-change">
-      <a href="@controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.editFromSummary(periodKey)" data-journey-click="ated-fronted:click:edit-reliefs-rp">
+    <div class="grid grid-1-3 cya-change">
+      <a href="@controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.editFromSummary(periodKey)" id="tas-edit-pt" data-journey-click="ated-fronted:click:edit-reliefs-rp">
         @Messages("ated.edit")
       </a>
-      <span class="screen-reader-text">@Messages("ated.relief-summary.table.edit-relief-link.rental")</span>
+      <span class="visuallyhidden">@Messages("ated.relief-summary.table.edit-relief-link.rental")</span>
     </div>
   </div>
 
@@ -345,11 +345,11 @@
       @if(canSubmit){ <span>@reliefData.taxAvoidance.lendingSchemePromoter</span> } else { <span class="status">@Messages("ated.label.incomplete")</span> }
     </div>
 
-    <div class="grid grid-1-3 cya-change" id="prn-edit-ln">
-      <a href="@controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.editFromSummary(periodKey)" data-journey-click="ated-fronted:click:edit-reliefs-rp">
+    <div class="grid grid-1-3 cya-change">
+      <a href="@controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.editFromSummary(periodKey)" id="prn-edit-ln" data-journey-click="ated-fronted:click:edit-reliefs-rp">
         @Messages("ated.edit")
       </a>
-      <span class="screen-reader-text">@Messages("ated.relief-summary.table.edit-relief-link.rental")</span>
+      <span class="visuallyhidden">@Messages("ated.relief-summary.table.edit-relief-link.rental")</span>
     </div>
   </div>
 
@@ -379,11 +379,11 @@
       @reliefData.reliefs.employeeOccupationDate.getOrElse(reliefData.periodStartDate).toString(Messages("ated.date-format.short"))  @Messages("ated.relief-summary.relief-end-date")
     </div>
 
-    <div class="grid grid-1-3 cya-change" id="edit-reliefs-eo">
-      <a href="@controllers.reliefs.routes.ChooseReliefsController.editFromSummary(periodKey)" data-journey-click="ated-fronted:click:edit-reliefs-eo">
+    <div class="grid grid-1-3 cya-change">
+      <a href="@controllers.reliefs.routes.ChooseReliefsController.editFromSummary(periodKey)" id="edit-reliefs-eo" data-journey-click="ated-fronted:click:edit-reliefs-eo">
         @Messages("ated.edit")
       </a>
-      <span class="screen-reader-text">@Messages("ated.relief-summary.table.edit-relief-link.eo")</span>
+      <span class="visuallyhidden">@Messages("ated.relief-summary.table.edit-relief-link.eo")</span>
     </div>
   </div>
 
@@ -396,11 +396,11 @@
       @if(canSubmit){ <span>@reliefData.taxAvoidance.employeeOccupationScheme</span> } else { <span class="status">@Messages("ated.label.incomplete")</span> }
     </div>
 
-    <div id="tas-edit-pt" class="grid grid-1-3 cya-change">
-      <a href="@controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.editFromSummary(periodKey)" data-journey-click="ated-fronted:click:edit-reliefs-rp">
+    <div class="grid grid-1-3 cya-change">
+      <a href="@controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.editFromSummary(periodKey)" id="tas-edit-pt" data-journey-click="ated-fronted:click:edit-reliefs-rp">
         @Messages("ated.edit")
       </a>
-      <span class="screen-reader-text">@Messages("ated.relief-summary.table.edit-relief-link.rental")</span>
+      <span class="visuallyhidden">@Messages("ated.relief-summary.table.edit-relief-link.rental")</span>
     </div>
   </div>
 
@@ -413,11 +413,11 @@
       @if(canSubmit){ <span>@reliefData.taxAvoidance.employeeOccupationSchemePromoter</span> } else { <span class="status">@Messages("ated.label.incomplete")</span> }
     </div>
 
-    <div class="grid grid-1-3 cya-change" id="prn-edit-eo">
-      <a href="@controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.editFromSummary(periodKey)" data-journey-click="ated-fronted:click:edit-reliefs-rp">
+    <div class="grid grid-1-3 cya-change">
+      <a href="@controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.editFromSummary(periodKey)" id="prn-edit-eo" data-journey-click="ated-fronted:click:edit-reliefs-rp">
         @Messages("ated.edit")
       </a>
-      <span class="screen-reader-text">@Messages("ated.relief-summary.table.edit-relief-link.rental")</span>
+      <span class="visuallyhidden">@Messages("ated.relief-summary.table.edit-relief-link.rental")</span>
     </div>
   </div>
 
@@ -447,11 +447,11 @@
       @reliefData.reliefs.farmHousesDate.getOrElse(reliefData.periodStartDate).toString(Messages("ated.date-format.short"))  @Messages("ated.relief-summary.relief-end-date")
     </div>
 
-    <div class="grid grid-1-3 cya-change" id="edit-reliefs-fh">
-      <a href="@controllers.reliefs.routes.ChooseReliefsController.editFromSummary(periodKey)" data-journey-click="ated-fronted:click:edit-reliefs-fh">
+    <div class="grid grid-1-3 cya-change">
+      <a href="@controllers.reliefs.routes.ChooseReliefsController.editFromSummary(periodKey)" id="edit-reliefs-fh" data-journey-click="ated-fronted:click:edit-reliefs-fh">
         @Messages("ated.edit")
       </a>
-      <span class="screen-reader-text">@Messages("ated.relief-summary.table.edit-relief-link.farmHouses")</span>
+      <span class="visuallyhidden">@Messages("ated.relief-summary.table.edit-relief-link.farmHouses")</span>
     </div>
   </div>
 
@@ -464,11 +464,11 @@
       @if(canSubmit){ <span>@reliefData.taxAvoidance.farmHousesScheme</span> } else { <span class="status">@Messages("ated.label.incomplete")</span> }
     </div>
 
-    <div id="tas-edit-fh" class="grid grid-1-3 cya-change">
-      <a href="@controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.editFromSummary(periodKey)" data-journey-click="ated-fronted:click:edit-reliefs-rp">
+    <div class="grid grid-1-3 cya-change">
+      <a href="@controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.editFromSummary(periodKey)" id="tas-edit-fh" data-journey-click="ated-fronted:click:edit-reliefs-rp">
         @Messages("ated.edit")
       </a>
-      <span class="screen-reader-text">@Messages("ated.relief-summary.table.edit-relief-link.rental")</span>
+      <span class="visuallyhidden">@Messages("ated.relief-summary.table.edit-relief-link.rental")</span>
     </div>
   </div>
 
@@ -481,11 +481,11 @@
       @if(canSubmit){ <span>@reliefData.taxAvoidance.farmHousesScheme</span> } else { <span class="status">@Messages("ated.label.incomplete")</span> }
     </div>
 
-    <div class="grid grid-1-3 cya-change" id="prn-edit-fh">
-      <a href="@controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.editFromSummary(periodKey)" data-journey-click="ated-fronted:click:edit-reliefs-rp">
+    <div class="grid grid-1-3 cya-change">
+      <a href="@controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.editFromSummary(periodKey)" id="prn-edit-fh" data-journey-click="ated-fronted:click:edit-reliefs-rp">
         @Messages("ated.edit")
       </a>
-      <span class="screen-reader-text">@Messages("ated.relief-summary.table.edit-relief-link.rental")</span>
+      <span class="visuallyhidden">@Messages("ated.relief-summary.table.edit-relief-link.rental")</span>
     </div>
   </div>
 
@@ -519,7 +519,7 @@
       <a href="@controllers.reliefs.routes.ChooseReliefsController.editFromSummary(periodKey)" data-journey-click="ated-fronted:click:edit-reliefs-fh">
         @Messages("ated.edit")
       </a>
-      <span class="screen-reader-text">@Messages("ated.relief-summary.table.edit-relief-link.farmHouses")</span>
+      <span class="visuallyhidden">@Messages("ated.relief-summary.table.edit-relief-link.farmHouses")</span>
     </div>
   </div>
 
@@ -536,7 +536,7 @@
       <a href="@controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.editFromSummary(periodKey)" data-journey-click="ated-fronted:click:edit-reliefs-rp">
         @Messages("ated.edit")
       </a>
-      <span class="screen-reader-text">@Messages("ated.relief-summary.table.edit-relief-link.rental")</span>
+      <span class="visuallyhidden">@Messages("ated.relief-summary.table.edit-relief-link.rental")</span>
     </div>
   </div>
 
@@ -553,7 +553,7 @@
       <a href="@controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.editFromSummary(periodKey)" data-journey-click="ated-fronted:click:edit-reliefs-rp">
         @Messages("ated.edit")
       </a>
-      <span class="screen-reader-text">@Messages("ated.relief-summary.table.edit-relief-link.rental")</span>
+      <span class="visuallyhidden">@Messages("ated.relief-summary.table.edit-relief-link.rental")</span>
     </div>
   </div>
 
@@ -587,7 +587,7 @@
       <a href="@controllers.reliefs.routes.ChooseReliefsController.editFromSummary(periodKey)" data-journey-click="ated-fronted:click:edit-reliefs-sh">
         @Messages("ated.edit")
       </a>
-      <span class="screen-reader-text">@Messages("ated.relief-summary.table.edit-relief-link.equityRelease")</span>
+      <span class="visuallyhidden">@Messages("ated.relief-summary.table.edit-relief-link.equityRelease")</span>
     </div>
   </div>
 
@@ -604,7 +604,7 @@
       <a href="@controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.editFromSummary(periodKey)" data-journey-click="ated-fronted:click:edit-reliefs-rp">
         @Messages("ated.edit")
       </a>
-      <span class="screen-reader-text">@Messages("ated.relief-summary.table.edit-relief-link.rental")</span>
+      <span class="visuallyhidden">@Messages("ated.relief-summary.table.edit-relief-link.rental")</span>
     </div>
   </div>
 
@@ -621,7 +621,7 @@
       <a href="@controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.editFromSummary(periodKey)" data-journey-click="ated-fronted:click:edit-reliefs-rp">
         @Messages("ated.edit")
       </a>
-      <span class="screen-reader-text">@Messages("ated.relief-summary.table.edit-relief-link.rental")</span>
+      <span class="visuallyhidden">@Messages("ated.relief-summary.table.edit-relief-link.rental")</span>
     </div>
   </div>
 
