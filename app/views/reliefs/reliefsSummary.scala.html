@@ -87,7 +87,7 @@
 }
 
 @if(reliefData.reliefs.rentalBusiness) {
-<div class="form-group">
+<div class="form-group" id="table-rp">
   <div class="grid-wrapper">
     <h2 id="rentalBusiness" class="heading-medium">@Messages("ated.relief-summary-types.rentalBusiness")</h2>
   </div>
@@ -101,8 +101,8 @@
       @reliefData.reliefs.rentalBusinessDate.getOrElse(reliefData.periodStartDate).toString(Messages("ated.date-format.short"))  @Messages("ated.relief-summary.relief-end-date")
     </div>
 
-    <div class="grid grid-1-3 cya-change" id="edit-reliefs-rp">
-      <a href="@controllers.reliefs.routes.ChooseReliefsController.editFromSummary(periodKey)" data-journey-click="ated-fronted:click:edit-reliefs-rp" aria-label='@Messages("ated.relief-summary.table.edit-relief-link.rental")'>
+    <div class="grid grid-1-3 cya-change">
+      <a href="@controllers.reliefs.routes.ChooseReliefsController.editFromSummary(periodKey)" id="edit-reliefs-rp" data-journey-click="ated-fronted:click:edit-reliefs-rp" aria-label='@Messages("ated.relief-summary.table.edit-relief-link.rental")'>
         @Messages("ated.edit")
       </a>
     </div>
@@ -117,8 +117,8 @@
       @if(canSubmit){ <span>@reliefData.taxAvoidance.rentalBusinessScheme</span> } else { <span class="status">@Messages("ated.label.incomplete")</span> }
     </div>
 
-    <div id="tas-edit-rp" class="grid grid-1-3 cya-change">
-      <a href="@controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.editFromSummary(periodKey)" data-journey-click="ated-fronted:click:edit-reliefs-rp" aria-label='@Messages("ated.relief-summary.table.edit-relief-link.rental")'>
+    <div  class="grid grid-1-3 cya-change">
+      <a href="@controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.editFromSummary(periodKey)" id="tas-edit-rp" data-journey-click="ated-fronted:click:edit-reliefs-rp" aria-label='@Messages("ated.relief-summary.table.edit-relief-link.rental")'>
         @Messages("ated.edit")
       </a>
     </div>
@@ -133,8 +133,8 @@
       @if(canSubmit){ <span>@reliefData.taxAvoidance.rentalBusinessScheme</span> } else { <span class="status">@Messages("ated.label.incomplete")</span> }
     </div>
 
-    <div class="grid grid-1-3 cya-change" id="tas-edit-rp">
-      <a href="@controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.editFromSummary(periodKey)" data-journey-click="ated-fronted:click:edit-reliefs-rp" aria-label='@Messages("ated.relief-summary.table.edit-relief-link.rental")'>
+    <div class="grid grid-1-3 cya-change">
+      <a href="@controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.editFromSummary(periodKey)" id="tas-edit-rp" data-journey-click="ated-fronted:click:edit-reliefs-rp" aria-label='@Messages("ated.relief-summary.table.edit-relief-link.rental")'>
         @Messages("ated.edit")
       </a>
     </div>
