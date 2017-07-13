@@ -35,7 +35,7 @@ trait ReliefsSentController extends AtedBaseController with AtedFrontendAuthHelp
 
   def view(periodKey: Int) = AuthAction(AtedRegime) {
     implicit atedContext =>
-      dataCacheConnector.fetchClientData[SubmitReturnsResponse](SubmitReturnsResponseFormId) map {
+      dataCacheConnector.fetchAndGetFormData[SubmitReturnsResponse](SubmitReturnsResponseFormId) map {
         case Some(submitResponse) =>
           Ok(views.html.reliefs.reliefsSent(periodKey, submitResponse))
         case None =>
@@ -47,7 +47,7 @@ trait ReliefsSentController extends AtedBaseController with AtedFrontendAuthHelp
   def viewPrintFriendlyReliefSent(periodKey: Int) = AuthAction(AtedRegime) {
     implicit atedContext =>
       for {
-        submitedResponse <- dataCacheConnector.fetchClientData[SubmitReturnsResponse](SubmitReturnsResponseFormId)
+        submitedResponse <- dataCacheConnector.fetchAndGetFormData[SubmitReturnsResponse](SubmitReturnsResponseFormId)
         organisationName <- subscriptionDataService.getOrganisationName
       } yield {
         Ok(views.html.reliefs.reliefsSentPrintFriendly(periodKey, submitedResponse, organisationName))

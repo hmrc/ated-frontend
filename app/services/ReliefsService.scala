@@ -142,7 +142,7 @@ trait ReliefsService {
   def viewReliefReturn(periodKey: Int, formBundleNo: String)
                       (implicit atedContext: AtedContext, hc: HeaderCarrier): Future[Option[SubmittedReliefReturns]] = {
     for {
-      cachedReturns <- dataCacheConnector.fetchClientData[SummaryReturnsModel](RetrieveReturnsResponseId)
+      cachedReturns <- dataCacheConnector.fetchAndGetFormData[SummaryReturnsModel](RetrieveReturnsResponseId)
     } yield {
       cachedReturns match {
         case Some(x) =>

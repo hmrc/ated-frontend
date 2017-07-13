@@ -33,7 +33,7 @@ trait SubscriptionDataService {
   def detailsDataService: DetailsService
 
   private def retrieveCachedData(implicit atedContext: AtedContext, hc: HeaderCarrier): Future[Option[CachedData]] = {
-    dataCacheConnector.fetchClientData[CachedData](RetrieveSubscriptionDataId)
+    dataCacheConnector.fetchAndGetFormData[CachedData](RetrieveSubscriptionDataId)
   }
 
   private def retrieveAndCacheData(implicit atedContext: AtedContext, hc: HeaderCarrier): Future[Option[CachedData]] = {

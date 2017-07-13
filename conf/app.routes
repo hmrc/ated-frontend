@@ -2,8 +2,7 @@ GET            /assets/*file                                                cont
 
 ->             /template                                                    template.Routes
 
-GET            /home                                                        controllers.HomeController.home
-GET            /summary                                                     controllers.HomeController.summary
+GET            /home                                                        controllers.HomeController.home(callerId: Option[String] ?=None)
 
 GET            /unauthorised                                                controllers.ApplicationController.unauthorised
 GET            /cancel                                                      controllers.ApplicationController.cancel

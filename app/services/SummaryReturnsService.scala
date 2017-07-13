@@ -44,7 +44,7 @@ trait SummaryReturnsService {
     }
 
     for {
-      cachedReturns <- dataCacheConnector.fetchClientData[SummaryReturnsModel](RetrieveReturnsResponseId)
+      cachedReturns <- dataCacheConnector.fetchAndGetFormData[SummaryReturnsModel](RetrieveReturnsResponseId)
       summaryReturns: SummaryReturnsModel <- {
         cachedReturns match {
           case Some(x) => atedConnector.getPartialSummaryReturns map {

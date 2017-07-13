@@ -149,7 +149,7 @@ class ChargeableReturnConfirmationControllerSpec extends PlaySpec with OneServer
     val liabilityReturnResponse = LiabilityReturnResponse(mode = "Post", propertyKey = "1",
       liabilityAmount = BigDecimal("123"), paymentReference = Some("Payment-123"), formBundleNumber = "form-bundle-123")
     val submitReturnsResponse = SubmitReturnsResponse(processingDate = DateTime.now().toString, None, liabilityReturnResponse = Some(Seq(liabilityReturnResponse)))
-    when(mockDataCacheConnector.fetchClientData[SubmitReturnsResponse](Matchers.eq(SubmitReturnsResponseFormId))
+    when(mockDataCacheConnector.fetchAndGetFormData[SubmitReturnsResponse](Matchers.eq(SubmitReturnsResponseFormId))
       (Matchers.any(), Matchers.any(), Matchers.eq(SubmitReturnsResponse.formats))).thenReturn(Future.successful(Some(submitReturnsResponse)))
     val result = TestChargeableReturnConfirmationController.confirmation.apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
@@ -159,7 +159,7 @@ class ChargeableReturnConfirmationControllerSpec extends PlaySpec with OneServer
     val userId = s"user-${UUID.randomUUID}"
     implicit val user = createAtedContext(createUserAuthContext(userId, "name"))
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-    when(mockDataCacheConnector.fetchClientData[SubmitReturnsResponse](Matchers.eq(SubmitReturnsResponseFormId))
+    when(mockDataCacheConnector.fetchAndGetFormData[SubmitReturnsResponse](Matchers.eq(SubmitReturnsResponseFormId))
       (Matchers.any(), Matchers.any(), Matchers.eq(SubmitReturnsResponse.formats))).thenReturn(Future.successful(None))
     val result = TestChargeableReturnConfirmationController.confirmation.apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
@@ -184,7 +184,7 @@ class ChargeableReturnConfirmationControllerSpec extends PlaySpec with OneServer
     val liabilityReturnResponse = LiabilityReturnResponse(mode = "Post", propertyKey = "1",
       liabilityAmount = BigDecimal("123"), paymentReference = Some("Payment-123"), formBundleNumber = "form-bundle-123")
     val submitReturnsResponse = SubmitReturnsResponse(processingDate = DateTime.now().toString, None, liabilityReturnResponse = Some(Seq(liabilityReturnResponse)))
-    when(mockDataCacheConnector.fetchClientData[SubmitReturnsResponse](Matchers.eq(SubmitReturnsResponseFormId))
+    when(mockDataCacheConnector.fetchAndGetFormData[SubmitReturnsResponse](Matchers.eq(SubmitReturnsResponseFormId))
       (Matchers.any(), Matchers.any(), Matchers.eq(SubmitReturnsResponse.formats))).thenReturn(Future.successful(Some(submitReturnsResponse)))
     when(mockSubscriptionDataService.getOrganisationName(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(organisationName)))
 
