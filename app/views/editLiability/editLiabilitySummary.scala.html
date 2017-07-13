@@ -291,12 +291,10 @@
   <p id="ated-charge-text-changed">@Messages("ated.property-details-summary.table.revised-ated-charge-changed.text")</p>
   }
 
-  </p>
-
-
   <span id="ated-charge-value" class="heading-xlarge">
-      @changeLiability.calculated.flatMap(x=>x.liabilityAmount.map(y=>formattedPounds(y)))
-    </span>
+    @changeLiability.calculated.flatMap(x=>x.liabilityAmount.map(y=>formattedPounds(y)))
+  </span>
+
 </div>
 
 <div class="form-group"><span class="panel-indent">@Messages("ated.property-details-summary.saved-draft.text")</span></div>
