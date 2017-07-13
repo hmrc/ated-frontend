@@ -213,7 +213,7 @@ class EditLiabilitySentControllerSpec extends PlaySpec with OneServerPerSuite wi
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
     implicit val user = createAtedContext(createUserAuthContext(userId, "name"))
     implicit val hc: HeaderCarrier = HeaderCarrier()
-    when(mockDataCacheConnector.fetchClientData[EditLiabilityReturnsResponseModel](Matchers.eq(SubmitEditedLiabilityReturnsResponseFormId))(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(x))
+    when(mockDataCacheConnector.fetchAndGetFormData[EditLiabilityReturnsResponseModel](Matchers.eq(SubmitEditedLiabilityReturnsResponseFormId))(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(x))
     val result = TestEditLiabilitySentController.view(formBundleNo1).apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
@@ -225,7 +225,7 @@ class EditLiabilitySentControllerSpec extends PlaySpec with OneServerPerSuite wi
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
     val liabilityReturnResponse = LiabilityReturnResponse(mode = "Post", propertyKey = "1",
       liabilityAmount = BigDecimal("123"), paymentReference = Some("Payment-123"), formBundleNumber = "form-bundle-123")
-    when(mockDataCacheConnector.fetchClientData[EditLiabilityReturnsResponseModel](Matchers.eq(SubmitEditedLiabilityReturnsResponseFormId))(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(x))
+    when(mockDataCacheConnector.fetchAndGetFormData[EditLiabilityReturnsResponseModel](Matchers.eq(SubmitEditedLiabilityReturnsResponseFormId))(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(x))
     when(mockSubscriptionDataService.getOrganisationName(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(organisationName)))
 
     val result = TestEditLiabilitySentController.viewPrintFriendlyEditLilabilitySent(formBundleNo1).apply(SessionBuilder.buildRequestWithSession(userId))

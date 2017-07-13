@@ -163,7 +163,7 @@
   </div>
 
   <div class="form-group">
-    <a href="@controllers.routes.AccountSummaryController.view" id="saved-returns-link">@Messages("ated.dispose-property.summary.save-as-draft-link")</a>
+    <a href="@controllers.routes.AccountSummaryController.view()" id="saved-returns-link">@Messages("ated.dispose-property.summary.save-as-draft-link")</a>
   </div>
 
   @form(action=controllers.editLiability.routes.DisposeLiabilitySummaryController.submit(disposeLiability.id.toString)) {

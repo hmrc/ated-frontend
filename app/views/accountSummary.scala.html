@@ -69,18 +69,12 @@
     }
   }
 
-@if(atedContext.user.authContext.attorney.isEmpty && clientBanner == HtmlFormat.empty) {
-<p class="text">
-  <a class="link" id="appoint-agent" href="@ExternalUrls.clientApproveAgentMandate">
-    @Messages("ated.account-summary.appoint-agent.text")
-  </a>
-</p>
-}
-
-  <!--@if(atedContext.user.authContext.attorney.isDefined) {-->
-    <!--<div>-->
-      <!--<a href="@atedContext.user.authContext.attorney.get.returnLink.url" data-journey-click="ated-fronted:click:back-link" id="back-link" class="link-back">@Messages("ated.account-summary-back")</a>-->
-    <!--</div>-->
-  <!--}-->
+  @if(atedContext.user.authContext.attorney.isEmpty && clientBanner == HtmlFormat.empty) {
+  <p class="text">
+    <a class="link" id="appoint-agent" href="@ExternalUrls.clientApproveAgentMandate">
+      @Messages("ated.account-summary.appoint-agent.text")
+    </a>
+  </p>
+  }
 
 }

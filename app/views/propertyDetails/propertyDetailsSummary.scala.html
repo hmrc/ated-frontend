@@ -102,6 +102,7 @@
         </a>
         <span class="screen-reader-text">@Messages("ated.property-details-summary.table.property-details-prof-valued-edit-link.title.screen-reader")</span>
       </div>
+    </div>
 
   } else {
   @for((valueObj, index) <- valuesToDisplay.zipWithIndex) {
@@ -111,7 +112,7 @@
     </div>
 
     <div class="grid grid-1-3 cya-answer">
-      <span id="property-value-label-@index">@formattedPounds(valueObj.propertyValue)</span>
+      <span id="property-value-value-@index">@formattedPounds(valueObj.propertyValue)</span>
     </div>
 
     <div class="grid grid-1-3 cya-change">
@@ -140,7 +141,6 @@
       </a>
     </div>
   </div>
-
   }
   }
 
@@ -153,7 +153,7 @@
   @if(PeriodUtils.isListEmpty(periods)) {
   <div class="grid-wrapper row-border">
     <div class="grid grid-1-3 cya-question">
-      <span id="period-date-label" class="heading-small">@Messages("ated.property-details-period.liability.return-type")</span> asdfasdf
+      <span id="period-date-label" class="heading-small">@Messages("ated.property-details-period.liability.return-type")</span>
     </div>
 
     <div class="grid grid-1-3 cya-answer">
@@ -183,10 +183,11 @@
       </a>
     </div>
   </div>
-</div>
+
 
   }
   }
+</div>
 <div class="form-group">
   <div class="grid-wrapper">
     <h2 id="avoidance-scheme-header" class="heading-medium">@Messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.header")</h2>
@@ -232,12 +233,13 @@
   }
   case _ => {<div class="grid grid-1-3 cya-answer" id="tas-otp-val"><span class="status">@incomplete</span></div>}
   }
+
   <div class="grid grid-1-3 cya-change">
-    <a href="@controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceController.editFromSummary(propertyDetails.id)" id="edit-promoter-scheme"
-       aria-label='@Messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.edit-link.title")'>@Messages("ated.edit")
+    <a href="@controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceController.editFromSummary(propertyDetails.id)" id="edit-promoter-scheme">@Messages("ated.edit")
     </a>
-    <span class="screen-reader-text">@Messages("ated.property-details-summary.table.property-ated-details.promoter-ref.edit-link.title.screen-reader")</span>
+    <span class="screen-reader-text">@Messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.edit-link.title")</span>
   </div>
+
   </div>
 </div>
 
@@ -251,7 +253,7 @@
       <span class="heading-small" id="additional-information-label">@Messages("ated.property-details-summary.table.property-ated-details.additional-information.label")</span>
     </div>
 
-    <div class="grid grid-1-3 cya-answer">
+    <div class="grid grid-1-3 cya-answer" id="additional-information-value">
       @propertyDetails.period.map(v => v.supportingInfo.fold("")(x=>x))
     </div>
 
@@ -301,7 +303,7 @@
     </a>
   </div>
 
-  <div class="form-group"><a href="@controllers.routes.AccountSummaryController.view" id="saved-returns-link" data-journey-click="ated-fronted:click:saved-returns-link">@Messages("ated.property-details-summary.saved-returns.link.text")</a></div>
+  <div class="form-group"><a href="@controllers.routes.AccountSummaryController.view()" id="saved-returns-link" data-journey-click="ated-fronted:click:saved-returns-link">@Messages("ated.property-details-summary.saved-returns.link.text")</a></div>
 
   <div class="form-group">
     <a href="@controllers.propertyDetails.routes.PropertyDetailsSummaryController.deleteDraft(propertyDetails.id, propertyDetails.periodKey)" id="delete-draft" data-journey-click="ated-fronted:click:delete-draft">

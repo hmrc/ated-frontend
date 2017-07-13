@@ -40,21 +40,18 @@ trait ChargeableReturnConfirmationController extends AtedBaseController with Ate
             Ok(views.html.propertyDetails.chargeableReturnsConfirmation(submitResponse))
           case None =>
             Logger.warn("[ChargeableReturnConfirmationController][confirmation] - Return Response not found in cache")
-            Redirect(controllers.routes.AccountSummaryController.view)
+            Redirect(controllers.routes.AccountSummaryController.view())
         }
-
   }
-
 
   def viewPrintFriendlyChargeableConfirmation = AuthAction(AtedRegime) {
     implicit atedContext =>
       for {
-        submitedResponse <- dataCacheConnector.fetchClientData[SubmitReturnsResponse](SubmitReturnsResponseFormId)
+        submitedResponse <- dataCacheConnector.fetchAndGetFormData[SubmitReturnsResponse](SubmitReturnsResponseFormId)
         organisationName <- subscriptionDataService.getOrganisationName
       } yield {
         Ok(views.html.propertyDetails.chargeableConfirmationPrintFriendly(submitedResponse, organisationName))
       }
-
   }
 
 }

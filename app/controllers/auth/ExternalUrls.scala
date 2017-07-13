@@ -32,4 +32,5 @@ object ExternalUrls extends RunMode {
     .getOrElse("/ated-subscription/start")
   val clientApproveAgentMandate = Play.configuration.getString(s"microservice.services.agent-client-mandate-frontend.atedClientApproveAgentUri").getOrElse("/mandate/client/email")
   val agentRedirectedToMandate = Play.configuration.getString(s"microservice.services.agent-client-mandate-frontend.atedAgentJourneyStartUri").getOrElse("/mandate/agent/service")
+  val businessTaxAccountPage = s"${Play.configuration.getString(s"microservice.services.auth.business-tax-account.serviceRedirectUrl").getOrElse("")}"
 }
