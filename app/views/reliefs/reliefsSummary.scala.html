@@ -24,7 +24,7 @@
 @if(reliefData.reliefs.openToPublic) {
 <div class="form-group">
   <div class="grid-wrapper">
-      <h2 class="heading-medium">@Messages("ated.relief-summary-types.openToPublic")</h2>
+      <h2 id="openToPublic" class="heading-medium">@Messages("ated.relief-summary-types.openToPublic")</h2>
   </div>
 
   <div class="grid-wrapper row-border">
@@ -37,25 +37,25 @@
     </div>
 
     <div class="grid grid-1-3 cya-change">
-      <a href="@controllers.reliefs.routes.ChooseReliefsController.editFromSummary(periodKey)" id="edit-reliefs-rp" data-journey-click="ated-fronted:click:edit-reliefs-rp">
+      <a href="@controllers.reliefs.routes.ChooseReliefsController.editFromSummary(periodKey)" id="edit-reliefs-otp" data-journey-click="ated-fronted:click:edit-reliefs-rp">
         @Messages("ated.edit")
       </a>
-      <span class="visuallyhidden">@Messages("ated.relief-summary.table.edit-relief-link.rental")</span>
+      <span class="visuallyhidden">@Messages("ated.relief-summary.table.edit-relief-link.openToPublic")</span>
     </div>
   </div>
 
 <div class="form-group">
   <div class="grid-wrapper row-border">
-    <div id="tas-rp" class="grid grid-1-3 cya-question">
+    <div id="tas-otp" class="grid grid-1-3 cya-question">
       <span class="heading-small">@Messages("ated.relief-summary.avoidanceSchmRefNum")</span>
     </div>
 
-    <div class="grid grid-1-3 cya-answer" id="tas-status-rp">
-      @if(canSubmit){ <span>@reliefData.taxAvoidance.rentalBusinessScheme</span> } else { <span class="status">@Messages("ated.label.incomplete")</span> }
+    <div class="grid grid-1-3 cya-answer" id="tas-status-otp">
+      @if(canSubmit){ <span>@reliefData.taxAvoidance.openToPublicScheme</span> } else { <span class="status">@Messages("ated.label.incomplete")</span> }
     </div>
 
     <div class="grid grid-1-3 cya-change">
-      <a href="@controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.editFromSummary(periodKey)" id="tas-edit-rp" data-journey-click="ated-fronted:click:edit-reliefs-rp">
+      <a href="@controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.editFromSummary(periodKey)" id="tas-edit-otp" data-journey-click="ated-fronted:click:edit-reliefs-rp">
         @Messages("ated.edit")
       </a>
       <span class="visuallyhidden">@Messages("ated.relief-summary.table.edit-relief-link.rental")</span>
@@ -64,7 +64,7 @@
 
   <div class="grid-wrapper row-border">
     <div class="grid grid-1-3 cya-question">
-      <span class="heading-small" id="tas-rp">@Messages("ated.relief-summary.avoidanceSchmRefNum-promoter")</span>
+      <span class="heading-small" id="tas-otp">@Messages("ated.relief-summary.avoidanceSchmRefNum-promoter")</span>
     </div>
 
     <div id="tas-status-rp" class="grid grid-1-3 cya-answer">
