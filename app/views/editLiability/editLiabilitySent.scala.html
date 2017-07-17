@@ -14,21 +14,21 @@
     @if(returnType == "F"){
 
     <h1 id="header"><img class="tick" alt="tick" src="@controllers.routes.AssetsController.at("images/tick.png")"/>@Messages("ated.edit-liability.sent.header.further")</h1>
-      <p class="heading-medium">@Messages("ated.edit-liability.sent.header.date") @DateTimeFormat.forPattern("d MMMM yyyy").print(new LocalDate())</p>
+      <span class="heading-medium">@Messages("ated.edit-liability.sent.header.date") @DateTimeFormat.forPattern("d MMMM yyyy").print(new LocalDate())</span>
 
     }
 
     @if(returnType == "A"){
 
     <h1 id="header"><img class="tick" alt="tick" src="@controllers.routes.AssetsController.at("images/tick.png")"/> @Messages("ated.edit-liability.sent.header.amend")</h1>
-    <p class="heading-medium">@Messages("ated.edit-liability.sent.header.date") @DateTimeFormat.forPattern("d MMMM yyyy").print(new LocalDate())</p>
+    <span class="heading-medium">@Messages("ated.edit-liability.sent.header.date") @DateTimeFormat.forPattern("d MMMM yyyy").print(new LocalDate())</span>
 
     }
 
     @if(returnType == "C"){
 
     <h1 id="header"><img class="tick" alt="tick" src="@controllers.routes.AssetsController.at("images/tick.png")"/> @Messages("ated.edit-liability.sent.header.change")</h1>
-    <p class="heading-medium">@Messages("ated.edit-liability.sent.header.date") @DateTimeFormat.forPattern("d MMMM yyyy").print(new LocalDate())</p>
+    <span class="heading-medium">@Messages("ated.edit-liability.sent.header.date") @DateTimeFormat.forPattern("d MMMM yyyy").print(new LocalDate())</span>
 
     }
 
