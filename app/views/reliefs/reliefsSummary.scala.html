@@ -32,30 +32,29 @@
       <span class="heading-small">@Messages("ated.relief-summary.datesOfRelief")</span>
     </div>
 
-    <div class="grid grid-1-3 cya-answer">
+    <div class="grid grid-1-3 cya-answer" id="dates-otp">
       @reliefData.reliefs.openToPublicDate.getOrElse(reliefData.periodStartDate).toString(Messages("ated.date-format.short"))  @Messages("ated.relief-summary.relief-end-date")
     </div>
 
     <div class="grid grid-1-3 cya-change">
-      <a href="@controllers.reliefs.routes.ChooseReliefsController.editFromSummary(periodKey)" id="edit-reliefs-otp" data-journey-click="ated-fronted:click:edit-reliefs-rp">
+      <a href="@controllers.reliefs.routes.ChooseReliefsController.editFromSummary(periodKey)" id="dates-edit-otp" data-journey-click="ated-fronted:click:dates-edit-otp">
         @Messages("ated.edit")
       </a>
       <span class="visuallyhidden">@Messages("ated.relief-summary.table.edit-relief-link.openToPublic")</span>
     </div>
   </div>
 
-<div class="form-group">
   <div class="grid-wrapper row-border">
-    <div id="tas-otp" class="grid grid-1-3 cya-question">
+    <div class="grid grid-1-3 cya-question">
       <span class="heading-small">@Messages("ated.relief-summary.avoidanceSchmRefNum")</span>
     </div>
 
-    <div class="grid grid-1-3 cya-answer" id="tas-status-otp">
+    <div class="grid grid-1-3 cya-answer" id="tas-otp">
       @if(canSubmit){ <span>@reliefData.taxAvoidance.openToPublicScheme</span> } else { <span class="status">@Messages("ated.label.incomplete")</span> }
     </div>
 
     <div class="grid grid-1-3 cya-change">
-      <a href="@controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.editFromSummary(periodKey)" id="tas-edit-otp" data-journey-click="ated-fronted:click:edit-reliefs-rp">
+      <a href="@controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.editFromSummary(periodKey)" id="tas-edit-otp" data-journey-click="ated-fronted:click:tas-edit-otp">
         @Messages("ated.edit")
       </a>
       <span class="visuallyhidden">@Messages("ated.relief-summary.table.edit-relief-link.rental")</span>
@@ -64,15 +63,15 @@
 
   <div class="grid-wrapper row-border">
     <div class="grid grid-1-3 cya-question">
-      <span class="heading-small" id="tas-otp">@Messages("ated.relief-summary.avoidanceSchmRefNum-promoter")</span>
+      <span class="heading-small">@Messages("ated.relief-summary.avoidanceSchmRefNum-promoter")</span>
     </div>
 
-    <div id="tas-status-rp" class="grid grid-1-3 cya-answer">
+    <div id="tasp-otp" class="grid grid-1-3 cya-answer">
       @if(canSubmit){ <span>@reliefData.taxAvoidance.openToPublicScheme</span> } else { <span class="status">@Messages("ated.label.incomplete")</span> }
     </div>
 
-    <div class="grid grid-1-3 cya-change" id="tas-edit-rp">
-      <a href="@controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.editFromSummary(periodKey)" id="tas-edit-rp" data-journey-click="ated-fronted:click:edit-reliefs-rp">
+    <div class="grid grid-1-3 cya-change" id="tasp-edit-otp">
+      <a href="@controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.editFromSummary(periodKey)" data-journey-click="ated-fronted:click:tasp-edit-otp">
         @Messages("ated.edit")
       </a>
       <span class="visuallyhidden">@Messages("ated.relief-summary.table.edit-relief-link.rental")</span>
@@ -80,103 +79,104 @@
   </div>
 
   <div class="grid-wrapper row-border">
-    <div class="grid grid-1-3 cya-question id="status-rp">
-      <span class="heading-small" id="tas-rp">
-        @Messages("ated.relief-summary.status")</div>
-    <div class="grid grid-1-3 cya-answer" id="status-draft-rp" colspan="2">@Messages("ated.relief-summary.draft")</div>
+    <div class="grid grid-1-3 cya-question">
+        <span class="heading-small" id="status-otp">@Messages("ated.relief-summary.status")</span>
+    </div>
+    <div class="grid grid-1-3 cya-answer">
+        <span id="status-draft-otp">@Messages("ated.relief-summary.draft")</span>
+    </div>
   </div>
-
 </div>
 }
 
 @if(reliefData.reliefs.rentalBusiness) {
-<div class="form-group" id="table-rp">
-  <div class="grid-wrapper">
-    <h2 id="rentalBusiness" class="heading-medium">@Messages("ated.relief-summary-types.rentalBusiness")</h2>
-  </div>
+    <div class="form-group">
+      <div class="grid-wrapper">
+        <h2 id="rentalBusiness" class="heading-medium">@Messages("ated.relief-summary-types.rentalBusiness")</h2>
+      </div>
 
-  <div class="grid-wrapper row-border">
-    <div class="grid grid-1-3 cya-question">
-      <span id="dates-relief-rp" class="heading-small">@Messages("ated.relief-summary.datesOfRelief")</span>
+      <div class="grid-wrapper row-border">
+        <div class="grid grid-1-3 cya-question">
+          <span class="heading-small">@Messages("ated.relief-summary.datesOfRelief")</span>
+        </div>
+
+        <div id="dates-rb" class="grid grid-1-3 cya-answer">
+          @reliefData.reliefs.rentalBusinessDate.getOrElse(reliefData.periodStartDate).toString(Messages("ated.date-format.short"))  @Messages("ated.relief-summary.relief-end-date")
+        </div>
+
+
+        <div class="grid grid-1-3 cya-change">
+          <a href="@controllers.reliefs.routes.ChooseReliefsController.editFromSummary(periodKey)" id="dates-edit-rb" data-journey-click="ated-fronted:click:dates-edit-rb">
+            @Messages("ated.edit")
+          </a>
+          <span class="visuallyhidden">@Messages("ated.relief-summary.table.edit-relief-link.rental")</span>
+        </div>
+      </div>
+
+      <div class="grid-wrapper row-border">
+        <div class="grid grid-1-3 cya-question">
+          <span class="heading-small">@Messages("ated.relief-summary.avoidanceSchmRefNum")</span>
+        </div>
+
+        <div class="grid grid-1-3 cya-answer" id="tas-rb">
+          @if(canSubmit){ <span>@reliefData.taxAvoidance.rentalBusinessScheme</span> } else { <span class="status">@Messages("ated.label.incomplete")</span> }
+        </div>
+
+
+        <div class="grid grid-1-3 cya-change">
+          <a href="@controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.editFromSummary(periodKey)" id="tas-edit-rb" data-journey-click="ated-fronted:click:tas-edit-rb">
+            @Messages("ated.edit")
+          </a>
+          <span class="visuallyhidden">@Messages("ated.relief-summary.table.edit-relief-link.rental")</span>
+        </div>
+      </div>
+
+      <div class="grid-wrapper row-border">
+        <div class="grid grid-1-3 cya-question">
+          <span class="heading-small">@Messages("ated.relief-summary.avoidanceSchmRefNum-promoter")</span>
+        </div>
+
+        <div id="tasp-rb" class="grid grid-1-3 cya-answer">
+          @if(canSubmit){ <span>@reliefData.taxAvoidance.rentalBusinessScheme</span> } else { <span class="status">@Messages("ated.label.incomplete")</span> }
+        </div>
+
+
+        <div class="grid grid-1-3 cya-change" id="tasp-edit-rb">
+          <a href="@controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.editFromSummary(periodKey)" id="tas-edit-rp" data-journey-click="ated-fronted:click:tasp-edit-rb">
+            @Messages("ated.edit")
+          </a>
+          <span class="visuallyhidden">@Messages("ated.relief-summary.table.edit-relief-link.rental")</span>
+        </div>
+      </div>
+
+      <div class="grid-wrapper row-border">
+        <div class="grid grid-1-3 cya-question">
+          <span class="heading-small" id="status-rb">@Messages("ated.relief-summary.status")</span>
+        </div>
+        <div class="grid grid-1-3 cya-answer">
+          <span id="status-draft-rb">@Messages("ated.relief-summary.draft")</span>
+        </div>
+      </div>
     </div>
+}
 
-    <div id="date-from-to-rp" class="grid grid-1-3 cya-answer">
-      @reliefData.reliefs.rentalBusinessDate.getOrElse(reliefData.periodStartDate).toString(Messages("ated.date-format.short"))  @Messages("ated.relief-summary.relief-end-date")
-    </div>
-
-
-    <div class="grid grid-1-3 cya-change">
-      <a href="@controllers.reliefs.routes.ChooseReliefsController.editFromSummary(periodKey)" id="edit-reliefs-rp" data-journey-click="ated-fronted:click:edit-reliefs-rp">
-        @Messages("ated.edit")
-      </a>
-      <span class="visuallyhidden">@Messages("ated.relief-summary.table.edit-relief-link.rental")</span>
-    </div>
-  </div>
-
-  <div class="grid-wrapper row-border">
-    <div id="tas-rp" class="grid grid-1-3 cya-question">
-      <span class="heading-small">@Messages("ated.relief-summary.avoidanceSchmRefNum")</span>
-    </div>
-
-    <div class="grid grid-1-3 cya-answer" id="tas-status-rp">
-      @if(canSubmit){ <span>@reliefData.taxAvoidance.rentalBusinessScheme</span> } else { <span class="status">@Messages("ated.label.incomplete")</span> }
-    </div>
-
-
-    <div class="grid grid-1-3 cya-change">
-      <a href="@controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.editFromSummary(periodKey)" id="tas-edit-rp" data-journey-click="ated-fronted:click:edit-reliefs-rp">
-        @Messages("ated.edit")
-      </a>
-      <span class="visuallyhidden">@Messages("ated.relief-summary.table.edit-relief-link.rental")</span>
-    </div>
-  </div>
-
-  <div class="grid-wrapper row-border">
-    <div class="grid grid-1-3 cya-question">
-      <span class="heading-small" id="tas-rp">@Messages("ated.relief-summary.avoidanceSchmRefNum-promoter")</span>
-    </div>
-
-    <div id="tas-status-rp" class="grid grid-1-3 cya-answer">
-      @if(canSubmit){ <span>@reliefData.taxAvoidance.rentalBusinessScheme</span> } else { <span class="status">@Messages("ated.label.incomplete")</span> }
-    </div>
-
-
-    <div class="grid grid-1-3 cya-change" id="tas-edit-rp">
-      <a href="@controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.editFromSummary(periodKey)" id="tas-edit-rp" data-journey-click="ated-fronted:click:edit-reliefs-rp">
-        @Messages("ated.edit")
-      </a>
-      <span class="visuallyhidden">@Messages("ated.relief-summary.table.edit-relief-link.rental")</span>
-    </div>
-  </div>
-
-  <div class="grid-wrapper row-border">
-    <div class="grid grid-1-3 cya-question">
-      <span class="heading-small" id="status-rp">@Messages("ated.relief-summary.status")</span>
-    </div>
-    <div class="grid grid-1-3 cya-answer">
-      <span id="status-draft-rp">@Messages("ated.relief-summary.draft")</span>
-    </div>
-  </div>
-</div>
-  }
-
-  @if(reliefData.reliefs.propertyDeveloper) {
-<div class="form-group">
+@if(reliefData.reliefs.propertyDeveloper) {
+  <div class="form-group">
     <div class="grid-wrapper">
       <h2 id="property-developer" class="heading-medium">@Messages("ated.relief-summary-types.propertyDeveloper")</h2>
     </div>
 
     <div class="grid-wrapper row-border">
       <div class="grid grid-1-3 cya-question">
-        <span id="dates-relief-pd" class="heading-small">@Messages("ated.relief-summary.datesOfRelief")</span>
+        <span class="heading-small">@Messages("ated.relief-summary.datesOfRelief")</span>
       </div>
 
-      <div id="date-from-to-pd" class="grid grid-1-3 cya-answer">
+      <div id="dates-pd" class="grid grid-1-3 cya-answer">
         @reliefData.reliefs.propertyDeveloperDate.getOrElse(reliefData.periodStartDate).toString(Messages("ated.date-format.short"))  @Messages("ated.relief-summary.relief-end-date")
       </div>
 
       <div class="grid grid-1-3 cya-change">
-        <a href="@controllers.reliefs.routes.ChooseReliefsController.editFromSummary(periodKey)" id="edit-reliefs-pd" data-journey-click="ated-fronted:click:edit-reliefs-pd">
+        <a href="@controllers.reliefs.routes.ChooseReliefsController.editFromSummary(periodKey)" id="dates-edit-pd" data-journey-click="ated-fronted:click:dates-edit-pd">
           @Messages("ated.edit")
         </a>
         <span class="visuallyhidden">@Messages("ated.relief-summary.table.edit-relief-link.propertyDeveloper")</span>
@@ -184,16 +184,16 @@
     </div>
 
     <div class="grid-wrapper row-border">
-      <div id="tas-rp" class="grid grid-1-3 cya-question">
+      <div class="grid grid-1-3 cya-question">
         <span class="heading-small">@Messages("ated.relief-summary.avoidanceSchmRefNum")</span>
       </div>
 
-      <div class="grid grid-1-3 cya-answer" id="tas-status-pd">
+      <div class="grid grid-1-3 cya-answer" id="tas-pd">
         @if(canSubmit){ <span>@reliefData.taxAvoidance.propertyDeveloperScheme</span> } else { <span class="status">@Messages("ated.label.incomplete")</span> }
       </div>
 
       <div class="grid grid-1-3 cya-change">
-        <a href="@controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.editFromSummary(periodKey)" id="tas-edit-pd" data-journey-click="ated-fronted:click:edit-reliefs-rp">
+        <a href="@controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.editFromSummary(periodKey)" id="tas-edit-pd" data-journey-click="ated-fronted:click:tas-edit-pd">
           @Messages("ated.edit")
         </a>
         <span class="visuallyhidden">@Messages("ated.relief-summary.table.edit-relief-link.rental")</span>
@@ -202,15 +202,15 @@
 
     <div class="grid-wrapper row-border">
       <div class="grid grid-1-3 cya-question">
-        <span class="heading-small" id="prn-pd">@Messages("ated.relief-summary.avoidanceSchmRefNum-promoter")</span>
+        <span class="heading-small">@Messages("ated.relief-summary.avoidanceSchmRefNum-promoter")</span>
       </div>
 
-      <div id="prn-status-pd" class="grid grid-1-3 cya-answer">
+      <div id="tasp-pd" class="grid grid-1-3 cya-answer">
         @if(canSubmit){ <span>@reliefData.taxAvoidance.rentalBusinessScheme</span> } else { <span class="status">@Messages("ated.label.incomplete")</span> }
       </div>
 
       <div class="grid grid-1-3 cya-change">
-        <a href="@controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.editFromSummary(periodKey)" id="prn-edit-pd" data-journey-click="ated-fronted:click:edit-reliefs-rp">
+        <a href="@controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.editFromSummary(periodKey)" id="tasp-edit-pd" data-journey-click="ated-fronted:click:tasp-edit-pd">
           @Messages("ated.edit")
         </a>
         <span class="visuallyhidden">@Messages("ated.relief-summary.table.edit-relief-link.rental")</span>
@@ -225,415 +225,415 @@
         <span id="status-draft-pd">@Messages("ated.relief-summary.draft")</span>
       </div>
     </div>
-</div>
-  }
-
-  @if(reliefData.reliefs.propertyTrading) {
-<div class="form-group">
-  <div class="grid-wrapper">
-    <h2 id="property-trading" class="heading-medium">@Messages("ated.relief-summary-types.propertyTrading")</h2>
   </div>
+}
 
-  <div class="grid-wrapper row-border">
-    <div class="grid grid-1-3 cya-question">
-      <span id="dates-relief-pt" class="heading-small">@Messages("ated.relief-summary.datesOfRelief")</span>
-    </div>
+@if(reliefData.reliefs.propertyTrading) {
+  <div class="form-group">
+      <div class="grid-wrapper">
+        <h2 id="property-trading" class="heading-medium">@Messages("ated.relief-summary-types.propertyTrading")</h2>
+      </div>
 
-    <div id="date-from-to-pt" class="grid grid-1-3 cya-answer">
-      @reliefData.reliefs.propertyTradingDate.getOrElse(reliefData.periodStartDate).toString(Messages("ated.date-format.short"))  @Messages("ated.relief-summary.relief-end-date")
-    </div>
+      <div class="grid-wrapper row-border">
+        <div class="grid grid-1-3 cya-question">
+          <span class="heading-small">@Messages("ated.relief-summary.datesOfRelief")</span>
+        </div>
 
-    <div class="grid grid-1-3 cya-change">
-      <a href="@controllers.reliefs.routes.ChooseReliefsController.editFromSummary(periodKey)" id="edit-reliefs-pt" data-journey-click="ated-fronted:click:edit-reliefs-pt">
-        @Messages("ated.edit")
-      </a>
-      <span class="visuallyhidden">@Messages("ated.relief-summary.table.edit-relief-link.propTrading")</span>
-    </div>
+        <div id="dates-pt" class="grid grid-1-3 cya-answer">
+          @reliefData.reliefs.propertyTradingDate.getOrElse(reliefData.periodStartDate).toString(Messages("ated.date-format.short"))  @Messages("ated.relief-summary.relief-end-date")
+        </div>
+
+        <div class="grid grid-1-3 cya-change">
+          <a href="@controllers.reliefs.routes.ChooseReliefsController.editFromSummary(periodKey)" id="dates-edit-pt" data-journey-click="ated-fronted:click:dates-edit-pt">
+            @Messages("ated.edit")
+          </a>
+          <span class="visuallyhidden">@Messages("ated.relief-summary.table.edit-relief-link.propTrading")</span>
+        </div>
+      </div>
+
+      <div class="grid-wrapper row-border">
+        <div id="tas-rp" class="grid grid-1-3 cya-question">
+          <span class="heading-small">@Messages("ated.relief-summary.avoidanceSchmRefNum")</span>
+        </div>
+
+        <div class="grid grid-1-3 cya-answer" id="tas-pt">
+          @if(canSubmit){ <span>@reliefData.taxAvoidance.propertyTradingScheme</span> } else { <span class="status">@Messages("ated.label.incomplete")</span> }
+        </div>
+
+        <div class="grid grid-1-3 cya-change">
+          <a href="@controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.editFromSummary(periodKey)" id="tas-edit-pt" data-journey-click="ated-fronted:click:dates-edit-pt">
+            @Messages("ated.edit")
+          </a>
+          <span class="visuallyhidden">@Messages("ated.relief-summary.table.edit-relief-link.rental")</span>
+        </div>
+      </div>
+
+      <div class="grid-wrapper row-border">
+        <div class="grid grid-1-3 cya-question">
+          <span class="heading-small">@Messages("ated.relief-summary.avoidanceSchmRefNum-promoter")</span>
+        </div>
+
+        <div id="tasp-pt" class="grid grid-1-3 cya-answer">
+          @if(canSubmit){ <span>@reliefData.taxAvoidance.propertyTradingSchemePromoter</span> } else { <span class="status">@Messages("ated.label.incomplete")</span> }
+        </div>
+
+        <div class="grid grid-1-3 cya-change">
+          <a href="@controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.editFromSummary(periodKey)" id="tasp-edit-pt" data-journey-click="ated-fronted:click:tasp-edit-pt">
+            @Messages("ated.edit")
+          </a>
+          <span class="visuallyhidden">@Messages("ated.relief-summary.table.edit-relief-link.rental")</span>
+        </div>
+      </div>
+
+      <div class="grid-wrapper row-border">
+        <div class="grid grid-1-3 cya-question">
+          <span class="heading-small" id="status-pt">@Messages("ated.relief-summary.status")</span>
+        </div>
+        <div class="grid grid-1-3 cya-answer">
+          <span id="status-draft-pt">@Messages("ated.relief-summary.draft")</span>
+        </div>
+      </div>
   </div>
+}
 
-  <div class="grid-wrapper row-border">
-    <div id="tas-rp" class="grid grid-1-3 cya-question">
-      <span class="heading-small">@Messages("ated.relief-summary.avoidanceSchmRefNum")</span>
-    </div>
+@if(reliefData.reliefs.lending) {
+    <div class="form-group">
+      <div class="grid-wrapper">
+        <h2 id="lending" class="heading-medium">@Messages("ated.relief-summary-types.lending")</h2>
+      </div>
 
-    <div class="grid grid-1-3 cya-answer" id="tas-status-pt">
-      @if(canSubmit){ <span>@reliefData.taxAvoidance.propertyTradingScheme</span> } else { <span class="status">@Messages("ated.label.incomplete")</span> }
-    </div>
+      <div class="grid-wrapper row-border">
+        <div class="grid grid-1-3 cya-question">
+          <span class="heading-small">@Messages("ated.relief-summary.datesOfRelief")</span>
+        </div>
 
-    <div class="grid grid-1-3 cya-change">
-      <a href="@controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.editFromSummary(periodKey)" id="tas-edit-pt" data-journey-click="ated-fronted:click:edit-reliefs-rp">
-        @Messages("ated.edit")
-      </a>
-      <span class="visuallyhidden">@Messages("ated.relief-summary.table.edit-relief-link.rental")</span>
-    </div>
-  </div>
+        <div id="dates-ln" class="grid grid-1-3 cya-answer">
+          @reliefData.reliefs.lendingDate.getOrElse(reliefData.periodStartDate).toString(Messages("ated.date-format.short"))  @Messages("ated.relief-summary.relief-end-date")
+        </div>
 
-  <div class="grid-wrapper row-border">
-    <div class="grid grid-1-3 cya-question">
-      <span class="heading-small" id="prn-pt">@Messages("ated.relief-summary.avoidanceSchmRefNum-promoter")</span>
-    </div>
+        <div class="grid grid-1-3 cya-change">
+          <a href="@controllers.reliefs.routes.ChooseReliefsController.editFromSummary(periodKey)" id="dates-edit-ln" data-journey-click="ated-fronted:click:dates-edit-ln">
+            @Messages("ated.edit")
+          </a>
+          <span class="visuallyhidden">@Messages("ated.relief-summary.table.edit-relief-link.lending")</span>
+        </div>
+      </div>
 
-    <div id="prn-status-pt" class="grid grid-1-3 cya-answer">
-      @if(canSubmit){ <span>@reliefData.taxAvoidance.propertyTradingSchemePromoter</span> } else { <span class="status">@Messages("ated.label.incomplete")</span> }
-    </div>
+      <div class="grid-wrapper row-border">
+        <div class="grid grid-1-3 cya-question">
+          <span class="heading-small">@Messages("ated.relief-summary.avoidanceSchmRefNum")</span>
+        </div>
 
-    <div class="grid grid-1-3 cya-change">
-      <a href="@controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.editFromSummary(periodKey)" id="prn-edit-pd" data-journey-click="ated-fronted:click:edit-reliefs-rp">
-        @Messages("ated.edit")
-      </a>
-      <span class="visuallyhidden">@Messages("ated.relief-summary.table.edit-relief-link.rental")</span>
-    </div>
-  </div>
+        <div class="grid grid-1-3 cya-answer" id="tas-ln">
+          @if(canSubmit){ <span>@reliefData.taxAvoidance.lendingScheme</span> } else { <span class="status">@Messages("ated.label.incomplete")</span> }
+        </div>
 
-  <div class="grid-wrapper row-border">
-    <div class="grid grid-1-3 cya-question">
-      <span class="heading-small" id="status-pt">@Messages("ated.relief-summary.status")</span>
-    </div>
-    <div class="grid grid-1-3 cya-answer">
-      <span id="status-draft-pt">@Messages("ated.relief-summary.draft")</span>
-    </div>
-  </div>
-</div>
-  }
+        <div class="grid grid-1-3 cya-change">
+          <a href="@controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.editFromSummary(periodKey)" id="tas-edit-ln" data-journey-click="ated-fronted:click:tas-edit-ln">
+            @Messages("ated.edit")
+          </a>
+          <span class="visuallyhidden">@Messages("ated.relief-summary.table.edit-relief-link.rental")</span>
+        </div>
+      </div>
 
-  @if(reliefData.reliefs.lending) {
-<div class="form-group">
-  <div class="grid-wrapper">
-    <h2 id="lending" class="heading-medium">@Messages("ated.relief-summary-types.lending")</h2>
-  </div>
+      <div class="grid-wrapper row-border">
+        <div class="grid grid-1-3 cya-question">
+          <span class="heading-small" id="prn-ln">@Messages("ated.relief-summary.avoidanceSchmRefNum-promoter")</span>
+        </div>
 
-  <div class="grid-wrapper row-border">
-    <div class="grid grid-1-3 cya-question">
-      <span id="dates-relief-pt" class="heading-small">@Messages("ated.relief-summary.datesOfRelief")</span>
-    </div>
+        <div id="tasp-ln" class="grid grid-1-3 cya-answer">
+          @if(canSubmit){ <span>@reliefData.taxAvoidance.lendingSchemePromoter</span> } else { <span class="status">@Messages("ated.label.incomplete")</span> }
+        </div>
 
-    <div id="date-from-to-ln" class="grid grid-1-3 cya-answer">
-      @reliefData.reliefs.lendingDate.getOrElse(reliefData.periodStartDate).toString(Messages("ated.date-format.short"))  @Messages("ated.relief-summary.relief-end-date")
-    </div>
+        <div class="grid grid-1-3 cya-change">
+          <a href="@controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.editFromSummary(periodKey)" id="tasp-edit-ln" data-journey-click="ated-fronted:click:tasp-edit-ln">
+            @Messages("ated.edit")
+          </a>
+          <span class="visuallyhidden">@Messages("ated.relief-summary.table.edit-relief-link.rental")</span>
+        </div>
+      </div>
 
-    <div class="grid grid-1-3 cya-change">
-      <a href="@controllers.reliefs.routes.ChooseReliefsController.editFromSummary(periodKey)" id="edit-reliefs-ln" data-journey-click="ated-fronted:click:edit-reliefs-ln">
-        @Messages("ated.edit")
-      </a>
-      <span class="visuallyhidden">@Messages("ated.relief-summary.table.edit-relief-link.lending")</span>
+      <div class="grid-wrapper row-border">
+        <div class="grid grid-1-3 cya-question">
+          <span class="heading-small" id="status-ln">@Messages("ated.relief-summary.status")</span>
+        </div>
+        <div class="grid grid-1-3 cya-answer">
+          <span id="status-draft-ln">@Messages("ated.relief-summary.draft")</span>
+        </div>
+      </div>
     </div>
-  </div>
+}
 
-  <div class="grid-wrapper row-border">
-    <div id="tas-ln" class="grid grid-1-3 cya-question">
-      <span class="heading-small">@Messages("ated.relief-summary.avoidanceSchmRefNum")</span>
-    </div>
+@if(reliefData.reliefs.employeeOccupation) {
+    <div class="form-group">
+      <div class="grid-wrapper">
+        <h2 id="employee-occupation" class="heading-medium">@Messages("ated.relief-summary-types.employeeOccupation")</h2>
+      </div>
 
-    <div class="grid grid-1-3 cya-answer" id="tas-status-ln">
-      @if(canSubmit){ <span>@reliefData.taxAvoidance.lendingScheme</span> } else { <span class="status">@Messages("ated.label.incomplete")</span> }
-    </div>
+      <div class="grid-wrapper row-border">
+        <div class="grid grid-1-3 cya-question">
+          <span class="heading-small">@Messages("ated.relief-summary.datesOfRelief")</span>
+        </div>
 
-    <div class="grid grid-1-3 cya-change">
-      <a href="@controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.editFromSummary(periodKey)" id="tas-edit-pt" data-journey-click="ated-fronted:click:edit-reliefs-rp">
-        @Messages("ated.edit")
-      </a>
-      <span class="visuallyhidden">@Messages("ated.relief-summary.table.edit-relief-link.rental")</span>
-    </div>
-  </div>
+        <div id="dates-eo" class="grid grid-1-3 cya-answer">
+          @reliefData.reliefs.employeeOccupationDate.getOrElse(reliefData.periodStartDate).toString(Messages("ated.date-format.short"))  @Messages("ated.relief-summary.relief-end-date")
+        </div>
 
-  <div class="grid-wrapper row-border">
-    <div class="grid grid-1-3 cya-question">
-      <span class="heading-small" id="prn-ln">@Messages("ated.relief-summary.avoidanceSchmRefNum-promoter")</span>
-    </div>
+        <div class="grid grid-1-3 cya-change">
+          <a href="@controllers.reliefs.routes.ChooseReliefsController.editFromSummary(periodKey)" id="dates-edit-eo" data-journey-click="ated-fronted:click:dates-edit-eo">
+            @Messages("ated.edit")
+          </a>
+          <span class="visuallyhidden">@Messages("ated.relief-summary.table.edit-relief-link.eo")</span>
+        </div>
+      </div>
 
-    <div id="prn-status-ln" class="grid grid-1-3 cya-answer">
-      @if(canSubmit){ <span>@reliefData.taxAvoidance.lendingSchemePromoter</span> } else { <span class="status">@Messages("ated.label.incomplete")</span> }
-    </div>
+      <div class="grid-wrapper row-border">
+        <div class="grid grid-1-3 cya-question">
+          <span class="heading-small">@Messages("ated.relief-summary.avoidanceSchmRefNum")</span>
+        </div>
 
-    <div class="grid grid-1-3 cya-change">
-      <a href="@controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.editFromSummary(periodKey)" id="prn-edit-ln" data-journey-click="ated-fronted:click:edit-reliefs-rp">
-        @Messages("ated.edit")
-      </a>
-      <span class="visuallyhidden">@Messages("ated.relief-summary.table.edit-relief-link.rental")</span>
-    </div>
-  </div>
+        <div class="grid grid-1-3 cya-answer" id="tas-eo">
+          @if(canSubmit){ <span>@reliefData.taxAvoidance.employeeOccupationScheme</span> } else { <span class="status">@Messages("ated.label.incomplete")</span> }
+        </div>
 
-  <div class="grid-wrapper row-border">
-    <div class="grid grid-1-3 cya-question">
-      <span class="heading-small" id="status-ln">@Messages("ated.relief-summary.status")</span>
-    </div>
-    <div class="grid grid-1-3 cya-answer">
-      <span id="status-draft-ln">@Messages("ated.relief-summary.draft")</span>
-    </div>
-  </div>
-</div>
-  }
+        <div class="grid grid-1-3 cya-change">
+          <a href="@controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.editFromSummary(periodKey)" id="tas-edit-eo" data-journey-click="ated-fronted:click:tas-edit-eo">
+            @Messages("ated.edit")
+          </a>
+          <span class="visuallyhidden">@Messages("ated.relief-summary.table.edit-relief-link.rental")</span>
+        </div>
+      </div>
 
-  @if(reliefData.reliefs.employeeOccupation) {
-<div class="form-group">
-  <div class="grid-wrapper">
-    <h2 id="employee-occupation" class="heading-medium">@Messages("ated.relief-summary-types.employeeOccupation")</h2>
-  </div>
+      <div class="grid-wrapper row-border">
+        <div class="grid grid-1-3 cya-question">
+          <span class="heading-small" id="prn-eo">@Messages("ated.relief-summary.avoidanceSchmRefNum-promoter")</span>
+        </div>
 
-  <div class="grid-wrapper row-border">
-    <div class="grid grid-1-3 cya-question">
-      <span id="dates-relief-pt" class="heading-small">@Messages("ated.relief-summary.datesOfRelief")</span>
-    </div>
+        <div id="tasp-eo" class="grid grid-1-3 cya-answer">
+          @if(canSubmit){ <span>@reliefData.taxAvoidance.employeeOccupationSchemePromoter</span> } else { <span class="status">@Messages("ated.label.incomplete")</span> }
+        </div>
 
-    <div id="date-from-to-ln" class="grid grid-1-3 cya-answer">
-      @reliefData.reliefs.employeeOccupationDate.getOrElse(reliefData.periodStartDate).toString(Messages("ated.date-format.short"))  @Messages("ated.relief-summary.relief-end-date")
-    </div>
+        <div class="grid grid-1-3 cya-change">
+          <a href="@controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.editFromSummary(periodKey)" id="tasp-edit-eo" data-journey-click="ated-fronted:click:tasp=edit-eo">
+            @Messages("ated.edit")
+          </a>
+          <span class="visuallyhidden">@Messages("ated.relief-summary.table.edit-relief-link.rental")</span>
+        </div>
+      </div>
 
-    <div class="grid grid-1-3 cya-change">
-      <a href="@controllers.reliefs.routes.ChooseReliefsController.editFromSummary(periodKey)" id="edit-reliefs-eo" data-journey-click="ated-fronted:click:edit-reliefs-eo">
-        @Messages("ated.edit")
-      </a>
-      <span class="visuallyhidden">@Messages("ated.relief-summary.table.edit-relief-link.eo")</span>
+      <div class="grid-wrapper row-border">
+        <div class="grid grid-1-3 cya-question">
+          <span class="heading-small" id="status-eo">@Messages("ated.relief-summary.status")</span>
+        </div>
+        <div class="grid grid-1-3 cya-answer">
+          <span id="status-draft-eo">@Messages("ated.relief-summary.draft")</span>
+        </div>
+      </div>
     </div>
-  </div>
+}
 
-  <div class="grid-wrapper row-border">
-    <div id="tas-eo" class="grid grid-1-3 cya-question">
-      <span class="heading-small">@Messages("ated.relief-summary.avoidanceSchmRefNum")</span>
-    </div>
+@if(reliefData.reliefs.farmHouses) {
+    <div class="form-group">
+      <div class="grid-wrapper">
+        <h2 id="farm-houses" class="heading-medium">@Messages("ated.relief-summary-types.farmHouses")</h2>
+      </div>
 
-    <div class="grid grid-1-3 cya-answer" id="tas-status-ln">
-      @if(canSubmit){ <span>@reliefData.taxAvoidance.employeeOccupationScheme</span> } else { <span class="status">@Messages("ated.label.incomplete")</span> }
-    </div>
+      <div class="grid-wrapper row-border">
+        <div class="grid grid-1-3 cya-question">
+          <span class="heading-small">@Messages("ated.relief-summary.datesOfRelief")</span>
+        </div>
 
-    <div class="grid grid-1-3 cya-change">
-      <a href="@controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.editFromSummary(periodKey)" id="tas-edit-pt" data-journey-click="ated-fronted:click:edit-reliefs-rp">
-        @Messages("ated.edit")
-      </a>
-      <span class="visuallyhidden">@Messages("ated.relief-summary.table.edit-relief-link.rental")</span>
-    </div>
-  </div>
+        <div id="dates-fh" class="grid grid-1-3 cya-answer">
+          @reliefData.reliefs.farmHousesDate.getOrElse(reliefData.periodStartDate).toString(Messages("ated.date-format.short"))  @Messages("ated.relief-summary.relief-end-date")
+        </div>
 
-  <div class="grid-wrapper row-border">
-    <div class="grid grid-1-3 cya-question">
-      <span class="heading-small" id="prn-eo">@Messages("ated.relief-summary.avoidanceSchmRefNum-promoter")</span>
-    </div>
+        <div class="grid grid-1-3 cya-change">
+          <a href="@controllers.reliefs.routes.ChooseReliefsController.editFromSummary(periodKey)" id="dates-edit-fh" data-journey-click="ated-fronted:click:dates-edit-fh">
+            @Messages("ated.edit")
+          </a>
+          <span class="visuallyhidden">@Messages("ated.relief-summary.table.edit-relief-link.farmHouses")</span>
+        </div>
+      </div>
 
-    <div id="prn-status-eo" class="grid grid-1-3 cya-answer">
-      @if(canSubmit){ <span>@reliefData.taxAvoidance.employeeOccupationSchemePromoter</span> } else { <span class="status">@Messages("ated.label.incomplete")</span> }
-    </div>
+      <div class="grid-wrapper row-border">
+        <div class="grid grid-1-3 cya-question">
+          <span class="heading-small">@Messages("ated.relief-summary.avoidanceSchmRefNum")</span>
+        </div>
 
-    <div class="grid grid-1-3 cya-change">
-      <a href="@controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.editFromSummary(periodKey)" id="prn-edit-eo" data-journey-click="ated-fronted:click:edit-reliefs-rp">
-        @Messages("ated.edit")
-      </a>
-      <span class="visuallyhidden">@Messages("ated.relief-summary.table.edit-relief-link.rental")</span>
-    </div>
-  </div>
+        <div class="grid grid-1-3 cya-answer" id="tas-fh">
+          @if(canSubmit){ <span>@reliefData.taxAvoidance.farmHousesScheme</span> } else { <span class="status">@Messages("ated.label.incomplete")</span> }
+        </div>
 
-  <div class="grid-wrapper row-border">
-    <div class="grid grid-1-3 cya-question">
-      <span class="heading-small" id="status-eo">@Messages("ated.relief-summary.status")</span>
-    </div>
-    <div class="grid grid-1-3 cya-answer">
-      <span id="status-draft-eo">@Messages("ated.relief-summary.draft")</span>
-    </div>
-  </div>
-</div>
-  }
+        <div class="grid grid-1-3 cya-change">
+          <a href="@controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.editFromSummary(periodKey)" id="tas-edit-fh" data-journey-click="ated-fronted:click:tas-edit-fh">
+            @Messages("ated.edit")
+          </a>
+          <span class="visuallyhidden">@Messages("ated.relief-summary.table.edit-relief-link.rental")</span>
+        </div>
+      </div>
 
-  @if(reliefData.reliefs.farmHouses) {
-<div class="form-group">
-  <div class="grid-wrapper">
-    <h2 id="farm-houses" class="heading-medium">@Messages("ated.relief-summary-types.farmHouses")</h2>
-  </div>
+      <div class="grid-wrapper row-border">
+        <div class="grid grid-1-3 cya-question">
+          <span class="heading-small">@Messages("ated.relief-summary.avoidanceSchmRefNum-promoter")</span>
+        </div>
 
-  <div class="grid-wrapper row-border">
-    <div class="grid grid-1-3 cya-question">
-      <span id="dates-relief-fh" class="heading-small">@Messages("ated.relief-summary.datesOfRelief")</span>
-    </div>
+        <div id="tasp-fh" class="grid grid-1-3 cya-answer">
+          @if(canSubmit){ <span>@reliefData.taxAvoidance.farmHousesScheme</span> } else { <span class="status">@Messages("ated.label.incomplete")</span> }
+        </div>
 
-    <div id="date-from-to-fh" class="grid grid-1-3 cya-answer">
-      @reliefData.reliefs.farmHousesDate.getOrElse(reliefData.periodStartDate).toString(Messages("ated.date-format.short"))  @Messages("ated.relief-summary.relief-end-date")
-    </div>
+        <div class="grid grid-1-3 cya-change">
+          <a href="@controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.editFromSummary(periodKey)" id="tasp-edit-fh" data-journey-click="ated-fronted:click:tasp-edit-fh">
+            @Messages("ated.edit")
+          </a>
+          <span class="visuallyhidden">@Messages("ated.relief-summary.table.edit-relief-link.rental")</span>
+        </div>
+      </div>
 
-    <div class="grid grid-1-3 cya-change">
-      <a href="@controllers.reliefs.routes.ChooseReliefsController.editFromSummary(periodKey)" id="edit-reliefs-fh" data-journey-click="ated-fronted:click:edit-reliefs-fh">
-        @Messages("ated.edit")
-      </a>
-      <span class="visuallyhidden">@Messages("ated.relief-summary.table.edit-relief-link.farmHouses")</span>
+      <div class="grid-wrapper row-border">
+        <div class="grid grid-1-3 cya-question">
+          <span class="heading-small" id="status-fh">@Messages("ated.relief-summary.status")</span>
+        </div>
+        <div class="grid grid-1-3 cya-answer">
+          <span id="status-draft-fh">@Messages("ated.relief-summary.draft")</span>
+        </div>
+      </div>
     </div>
-  </div>
+}
 
-  <div class="grid-wrapper row-border">
-    <div id="tas-fh" class="grid grid-1-3 cya-question">
-      <span class="heading-small">@Messages("ated.relief-summary.avoidanceSchmRefNum")</span>
-    </div>
+@if(reliefData.reliefs.socialHousing) {
+    <div class="form-group">
+      <div class="grid-wrapper">
+        <h2 id="social-housing" class="heading-medium">@Messages("ated.relief-summary-types.socialHousing")</h2>
+      </div>
 
-    <div class="grid grid-1-3 cya-answer" id="tas-status-fh">
-      @if(canSubmit){ <span>@reliefData.taxAvoidance.farmHousesScheme</span> } else { <span class="status">@Messages("ated.label.incomplete")</span> }
-    </div>
+      <div class="grid-wrapper row-border">
+        <div class="grid grid-1-3 cya-question">
+          <span class="heading-small">@Messages("ated.relief-summary.datesOfRelief")</span>
+        </div>
 
-    <div class="grid grid-1-3 cya-change">
-      <a href="@controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.editFromSummary(periodKey)" id="tas-edit-fh" data-journey-click="ated-fronted:click:edit-reliefs-rp">
-        @Messages("ated.edit")
-      </a>
-      <span class="visuallyhidden">@Messages("ated.relief-summary.table.edit-relief-link.rental")</span>
-    </div>
-  </div>
+        <div id="dates-sh" class="grid grid-1-3 cya-answer">
+          @reliefData.reliefs.socialHousingDate.getOrElse(reliefData.periodStartDate).toString(Messages("ated.date-format.short"))  @Messages("ated.relief-summary.relief-end-date")
+        </div>
 
-  <div class="grid-wrapper row-border">
-    <div class="grid grid-1-3 cya-question">
-      <span class="heading-small" id="prn-fh">@Messages("ated.relief-summary.avoidanceSchmRefNum-promoter")</span>
-    </div>
+        <div class="grid grid-1-3 cya-change" id="dates-edit-sh">
+          <a href="@controllers.reliefs.routes.ChooseReliefsController.editFromSummary(periodKey)" data-journey-click="ated-fronted:click:dates-edit-sh">
+            @Messages("ated.edit")
+          </a>
+          <span class="visuallyhidden">@Messages("ated.relief-summary.table.edit-relief-link.farmHouses")</span>
+        </div>
+      </div>
 
-    <div id="prn-status-eo" class="grid grid-1-3 cya-answer">
-      @if(canSubmit){ <span>@reliefData.taxAvoidance.farmHousesScheme</span> } else { <span class="status">@Messages("ated.label.incomplete")</span> }
-    </div>
+      <div class="grid-wrapper row-border">
+        <div class="grid grid-1-3 cya-question">
+          <span class="heading-small">@Messages("ated.relief-summary.avoidanceSchmRefNum")</span>
+        </div>
 
-    <div class="grid grid-1-3 cya-change">
-      <a href="@controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.editFromSummary(periodKey)" id="prn-edit-fh" data-journey-click="ated-fronted:click:edit-reliefs-rp">
-        @Messages("ated.edit")
-      </a>
-      <span class="visuallyhidden">@Messages("ated.relief-summary.table.edit-relief-link.rental")</span>
-    </div>
-  </div>
+        <div class="grid grid-1-3 cya-answer" id="tas-sh">
+          @if(canSubmit){ <span>@reliefData.taxAvoidance.socialHousingScheme</span> } else { <span class="status">@Messages("ated.label.incomplete")</span> }
+        </div>
 
-  <div class="grid-wrapper row-border">
-    <div class="grid grid-1-3 cya-question">
-      <span class="heading-small" id="status-fh">@Messages("ated.relief-summary.status")</span>
-    </div>
-    <div class="grid grid-1-3 cya-answer">
-      <span id="status-draft-fh">@Messages("ated.relief-summary.draft")</span>
-    </div>
-  </div>
-</div>
-  }
+        <div id="tas-edit-sh" class="grid grid-1-3 cya-change">
+          <a href="@controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.editFromSummary(periodKey)" data-journey-click="ated-fronted:click:tas-edit-sh">
+            @Messages("ated.edit")
+          </a>
+          <span class="visuallyhidden">@Messages("ated.relief-summary.table.edit-relief-link.rental")</span>
+        </div>
+      </div>
 
-  @if(reliefData.reliefs.socialHousing) {
-<div class="form-group">
-  <div class="grid-wrapper">
-    <h2 id="farm-houses" class="heading-medium">@Messages("ated.relief-summary-types.socialHousing")</h2>
-  </div>
+      <div class="grid-wrapper row-border">
+        <div class="grid grid-1-3 cya-question">
+          <span class="heading-small">@Messages("ated.relief-summary.avoidanceSchmRefNum-promoter")</span>
+        </div>
 
-  <div class="grid-wrapper row-border">
-    <div class="grid grid-1-3 cya-question">
-      <span id="dates-relief-sh" class="heading-small">@Messages("ated.relief-summary.datesOfRelief")</span>
-    </div>
+        <div id="tasp-sh" class="grid grid-1-3 cya-answer">
+          @if(canSubmit){ <span>@reliefData.taxAvoidance.socialHousingSchemePromoter</span> } else { <span class="status">@Messages("ated.label.incomplete")</span> }
+        </div>
 
-    <div id="date-from-to-sh" class="grid grid-1-3 cya-answer">
-      @reliefData.reliefs.socialHousingDate.getOrElse(reliefData.periodStartDate).toString(Messages("ated.date-format.short"))  @Messages("ated.relief-summary.relief-end-date")
-    </div>
+        <div class="grid grid-1-3 cya-change" id="tasp-edit-sh">
+          <a href="@controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.editFromSummary(periodKey)" data-journey-click="ated-fronted:click:tasp-edit-sh">
+            @Messages("ated.edit")
+          </a>
+          <span class="visuallyhidden">@Messages("ated.relief-summary.table.edit-relief-link.rental")</span>
+        </div>
+      </div>
 
-    <div class="grid grid-1-3 cya-change" id="edit-reliefs-sh">
-      <a href="@controllers.reliefs.routes.ChooseReliefsController.editFromSummary(periodKey)" data-journey-click="ated-fronted:click:edit-reliefs-fh">
-        @Messages("ated.edit")
-      </a>
-      <span class="visuallyhidden">@Messages("ated.relief-summary.table.edit-relief-link.farmHouses")</span>
+      <div class="grid-wrapper row-border">
+        <div class="grid grid-1-3 cya-question">
+          <span class="heading-small" id="status-sh">@Messages("ated.relief-summary.status")</span>
+        </div>
+        <div class="grid grid-1-3 cya-answer">
+          <span id="status-draft-sh">@Messages("ated.relief-summary.draft")</span>
+        </div>
+      </div>
     </div>
-  </div>
-
-  <div class="grid-wrapper row-border">
-    <div id="tas-fh" class="grid grid-1-3 cya-question">
-      <span class="heading-small">@Messages("ated.relief-summary.avoidanceSchmRefNum")</span>
-    </div>
-
-    <div class="grid grid-1-3 cya-answer" id="tas-status-sh">
-      @if(canSubmit){ <span>@reliefData.taxAvoidance.socialHousingScheme</span> } else { <span class="status">@Messages("ated.label.incomplete")</span> }
-    </div>
-
-    <div id="tas-edit-fh" class="grid grid-1-3 cya-change">
-      <a href="@controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.editFromSummary(periodKey)" data-journey-click="ated-fronted:click:edit-reliefs-rp">
-        @Messages("ated.edit")
-      </a>
-      <span class="visuallyhidden">@Messages("ated.relief-summary.table.edit-relief-link.rental")</span>
-    </div>
-  </div>
-
-  <div class="grid-wrapper row-border">
-    <div class="grid grid-1-3 cya-question">
-      <span class="heading-small" id="prn-sh">@Messages("ated.relief-summary.avoidanceSchmRefNum-promoter")</span>
-    </div>
-
-    <div id="prn-status-sh" class="grid grid-1-3 cya-answer">
-      @if(canSubmit){ <span>@reliefData.taxAvoidance.socialHousingSchemePromoter</span> } else { <span class="status">@Messages("ated.label.incomplete")</span> }
-    </div>
-
-    <div class="grid grid-1-3 cya-change" id="prn-edit-sh">
-      <a href="@controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.editFromSummary(periodKey)" data-journey-click="ated-fronted:click:edit-reliefs-rp">
-        @Messages("ated.edit")
-      </a>
-      <span class="visuallyhidden">@Messages("ated.relief-summary.table.edit-relief-link.rental")</span>
-    </div>
-  </div>
-
-  <div class="grid-wrapper row-border">
-    <div class="grid grid-1-3 cya-question">
-      <span class="heading-small" id="status-sh">@Messages("ated.relief-summary.status")</span>
-    </div>
-    <div class="grid grid-1-3 cya-answer">
-      <span id="status-draft-sh">@Messages("ated.relief-summary.draft")</span>
-    </div>
-  </div>
-</div>
-  }
+}
 
 @if(reliefData.reliefs.equityRelease) {
-<div class="form-group">
-  <div class="grid-wrapper">
-    <h2 id="equity-release" class="heading-medium">@Messages("ated.relief-summary-types.equityRelease")</h2>
-  </div>
+    <div class="form-group">
+      <div class="grid-wrapper">
+        <h2 id="equity-release" class="heading-medium">@Messages("ated.relief-summary-types.equityRelease")</h2>
+      </div>
 
-  <div class="grid-wrapper row-border">
-    <div class="grid grid-1-3 cya-question">
-      <span id="dates-relief-er" class="heading-small">@Messages("ated.relief-summary.datesOfRelief")</span>
-    </div>
+      <div class="grid-wrapper row-border">
+        <div class="grid grid-1-3 cya-question">
+          <span class="heading-small">@Messages("ated.relief-summary.datesOfRelief")</span>
+        </div>
 
-    <div id="date-from-to-er" class="grid grid-1-3 cya-answer">
-      @reliefData.reliefs.equityReleaseDate.getOrElse(reliefData.periodStartDate).toString(Messages("ated.date-format.short"))  @Messages("ated.relief-summary.relief-end-date")
-    </div>
+        <div id="dates-er" class="grid grid-1-3 cya-answer">
+          @reliefData.reliefs.equityReleaseDate.getOrElse(reliefData.periodStartDate).toString(Messages("ated.date-format.short"))  @Messages("ated.relief-summary.relief-end-date")
+        </div>
 
-    <div class="grid grid-1-3 cya-change" id="edit-reliefs-er">
-      <a href="@controllers.reliefs.routes.ChooseReliefsController.editFromSummary(periodKey)" data-journey-click="ated-fronted:click:edit-reliefs-sh">
-        @Messages("ated.edit")
-      </a>
-      <span class="visuallyhidden">@Messages("ated.relief-summary.table.edit-relief-link.equityRelease")</span>
-    </div>
-  </div>
+        <div class="grid grid-1-3 cya-change" id="dates-edit-er">
+          <a href="@controllers.reliefs.routes.ChooseReliefsController.editFromSummary(periodKey)" data-journey-click="ated-fronted:click:dates-edit-er">
+            @Messages("ated.edit")
+          </a>
+          <span class="visuallyhidden">@Messages("ated.relief-summary.table.edit-relief-link.equityRelease")</span>
+        </div>
+      </div>
 
-  <div class="grid-wrapper row-border">
-    <div id="tas-fh" class="grid grid-1-3 cya-question">
-      <span class="heading-small">@Messages("ated.relief-summary.avoidanceSchmRefNum")</span>
-    </div>
+      <div class="grid-wrapper row-border">
+        <div class="grid grid-1-3 cya-question">
+          <span class="heading-small">@Messages("ated.relief-summary.avoidanceSchmRefNum")</span>
+        </div>
 
-    <div class="grid grid-1-3 cya-answer" id="tas-status-er">
-      @if(canSubmit){ <span>@reliefData.taxAvoidance.equityReleaseScheme</span> } else { <span class="status">@Messages("ated.label.incomplete")</span> }
-    </div>
+        <div class="grid grid-1-3 cya-answer" id="tas-er">
+          @if(canSubmit){ <span>@reliefData.taxAvoidance.equityReleaseScheme</span> } else { <span class="status">@Messages("ated.label.incomplete")</span> }
+        </div>
 
-    <div id="tas-edit-er" class="grid grid-1-3 cya-change">
-      <a href="@controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.editFromSummary(periodKey)" data-journey-click="ated-fronted:click:edit-reliefs-rp">
-        @Messages("ated.edit")
-      </a>
-      <span class="visuallyhidden">@Messages("ated.relief-summary.table.edit-relief-link.rental")</span>
-    </div>
-  </div>
+        <div id="tas-edit-er" class="grid grid-1-3 cya-change">
+          <a href="@controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.editFromSummary(periodKey)" data-journey-click="ated-fronted:click:tas-edit-er">
+            @Messages("ated.edit")
+          </a>
+          <span class="visuallyhidden">@Messages("ated.relief-summary.table.edit-relief-link.rental")</span>
+        </div>
+      </div>
 
-  <div class="grid-wrapper row-border">
-    <div class="grid grid-1-3 cya-question">
-      <span class="heading-small" id="prn-er">@Messages("ated.relief-summary.avoidanceSchmRefNum-promoter")</span>
-    </div>
+      <div class="grid-wrapper row-border">
+        <div class="grid grid-1-3 cya-question">
+          <span class="heading-small">@Messages("ated.relief-summary.avoidanceSchmRefNum-promoter")</span>
+        </div>
 
-    <div id="prn-status-er" class="grid grid-1-3 cya-answer">
-      @if(canSubmit){ <span>@reliefData.taxAvoidance.equityReleaseSchemePromoter</span> } else { <span class="status">@Messages("ated.label.incomplete")</span> }
-    </div>
+        <div id="tasp-er" class="grid grid-1-3 cya-answer">
+          @if(canSubmit){ <span>@reliefData.taxAvoidance.equityReleaseSchemePromoter</span> } else { <span class="status">@Messages("ated.label.incomplete")</span> }
+        </div>
 
-    <div class="grid grid-1-3 cya-change" id="prn-edit-er">
-      <a href="@controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.editFromSummary(periodKey)" data-journey-click="ated-fronted:click:edit-reliefs-rp">
-        @Messages("ated.edit")
-      </a>
-      <span class="visuallyhidden">@Messages("ated.relief-summary.table.edit-relief-link.rental")</span>
-    </div>
-  </div>
+        <div class="grid grid-1-3 cya-change" id="tasp-edit-er">
+          <a href="@controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.editFromSummary(periodKey)" data-journey-click="ated-fronted:click:tasp-edit-er">
+            @Messages("ated.edit")
+          </a>
+          <span class="visuallyhidden">@Messages("ated.relief-summary.table.edit-relief-link.rental")</span>
+        </div>
+      </div>
 
-  <div class="grid-wrapper row-border">
-    <div class="grid grid-1-3 cya-question">
-      <span class="heading-small" id="status-er">@Messages("ated.relief-summary.status")</span>
+      <div class="grid-wrapper row-border">
+        <div class="grid grid-1-3 cya-question">
+          <span class="heading-small" id="status-er">@Messages("ated.relief-summary.status")</span>
+        </div>
+        <div class="grid grid-1-3 cya-answer">
+          <span id="status-draft-er">@Messages("ated.relief-summary.draft")</span>
+        </div>
+      </div>
     </div>
-    <div class="grid grid-1-3 cya-answer">
-      <span id="status-draft-er">@Messages("ated.relief-summary.draft")</span>
-    </div>
-  </div>
-</div>
 }
 
 }
