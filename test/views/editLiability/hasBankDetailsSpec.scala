@@ -58,7 +58,7 @@ class hasBankDetailsSpec extends FeatureSpec with OneServerPerSuite with Mockito
 
       Then("The date fields should have the correct titles")
       And("No data is populated")
-      assert(document.getElementById("hasBankDetails-id").text() === "Yes No")
+      assert(document.getElementById("hasBankDetails-id").text() === "Do you have the bank details for a repayment? Yes No")
       assert(document.getElementById("hasBankDetails-true").text() === "")
       assert(document.getElementById("hasBankDetails-false").text() === "")
 
