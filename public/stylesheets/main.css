@@ -484,6 +484,7 @@ li.inactive {
 
 .form-field--error .error-notification {
     font-weight: 700;
+    
 }
 
 
@@ -493,6 +494,7 @@ li.inactive {
 
 .form-field--error .error-notification {
    font-size: 19px;
+    color: #b10e1e;
 }
 
 
