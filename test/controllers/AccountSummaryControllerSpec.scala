@@ -125,7 +125,7 @@ class AccountSummaryControllerSpec extends PlaySpec with OneServerPerSuite with 
               document.getElementById("sidebar.link-text").text() must be("Deadlines and ways to pay")
               document.getElementById("sidebar.balance-info").text() must be("There can be a 24 hour delay before you see any updates to your balance")
               document.getElementById("sidebar.link-text").text() must be("Deadlines and ways to pay")
-              document.getElementById("sidebar.link-text").attr("href") must be("https://www.gov.uk/government/publications/stld-annual-tax-on-enveloped-dwellings-ated/annual-tax-on-enveloped-dwellings-returns-guidance#bank-details-doesnt-apply-to-a-relief-declaration-return")
+              document.getElementById("sidebar.link-text").attr("href") must be("https://www.gov.uk/guidance/pay-annual-tax-on-enveloped-dwellings")
               document.title() must be("Your ATED online service")
               document.getElementById("change-details-link").text() must be("View your ATED details")
 
@@ -165,7 +165,7 @@ class AccountSummaryControllerSpec extends PlaySpec with OneServerPerSuite with 
               document.getElementById("sidebar.balance-content").text() must be("£1,000 credit")
               document.getElementById("sidebar.balance-info").text() must be("There can be a 24 hour delay before you see any updates to your balance")
               document.getElementById("sidebar.link-text").text() must be("Ways to be paid")
-              document.getElementById("sidebar.link-text").attr("href") must be("https://www.gov.uk/government/publications/stld-annual-tax-on-enveloped-dwellings-ated/annual-tax-on-enveloped-dwellings-returns-guidance#bank-details-doesnt-apply-to-a-relief-declaration-return")
+              document.getElementById("sidebar.link-text").attr("href") must be("https://www.gov.uk/guidance/pay-annual-tax-on-enveloped-dwellings")
               document.title() must be("Your ATED online service")
               document.getElementById("account-summary-header").text() must be("Your ATED online service")
               document.getElementById("return-summary-th-period").text() must be("Period")

@@ -432,8 +432,8 @@ ated.summary-return.chargeable = Chargeable return
 ated.summary-return.relief-return = Relief return
 ated.summary-return.sidebar.balance = Your balance
 ated.summary-return.sidebar.correspondence-address = Correspondence Address
-ated.summary-return.sidebar.pay.link = <a id="sidebar.link-text" href = "https://www.gov.uk/government/publications/stld-annual-tax-on-enveloped-dwellings-ated/annual-tax-on-enveloped-dwellings-returns-guidance#bank-details-doesnt-apply-to-a-relief-declaration-return" data-journey-click="ated-fronted:click:sidebar.link-text">Deadlines and ways to pay </a>
-ated.summary-return.sidebar.owed.link = <a id="sidebar.link-text" href = "https://www.gov.uk/government/publications/stld-annual-tax-on-enveloped-dwellings-ated/annual-tax-on-enveloped-dwellings-returns-guidance#bank-details-doesnt-apply-to-a-relief-declaration-return" data-journey-click="ated-fronted:click:sidebar.link-text">Ways to be paid </a>
+ated.summary-return.sidebar.pay.link = <a id="sidebar.link-text" href = "https://www.gov.uk/guidance/pay-annual-tax-on-enveloped-dwellings" data-journey-click="ated-fronted:click:sidebar.link-text">Deadlines and ways to pay </a>
+ated.summary-return.sidebar.owed.link = <a id="sidebar.link-text" href = "https://www.gov.uk/guidance/pay-annual-tax-on-enveloped-dwellings" data-journey-click="ated-fronted:click:sidebar.link-text">Ways to be paid </a>
 ated.summary-return.sidebar.question = What does this balance include
 ated.summary-return.sidebar.answer = It can include penalties. It does not include any balance you may have from previous paper returns.
 ated.account-summary.no-returns.text = No returns have been created yet
