@@ -75,9 +75,10 @@ trait DisposePropertyController extends BackLinkController
   def save(oldFormBundleNo: String) = AuthAction(AtedRegime) {
     implicit atedContext =>
       ensureClientContext {
-        AtedForms.validateDisposedProperty(disposeLiabilityForm.bindFromRequest).fold(
-          formWithErrors =>
-            currentBackLink.map(backLink => BadRequest(views.html.editLiability.dataOfDisposal(formWithErrors, oldFormBundleNo, backLink))),
+        disposeLiabilityForm.bindFromRequest.fold(
+          formWithErrors => {
+            currentBackLink.map(backLink => BadRequest(views.html.editLiability.dataOfDisposal(formWithErrors, oldFormBundleNo, backLink)))
+          },
           disposalDate => disposeLiabilityReturnService.cacheDisposeLiabilityReturnDate(oldFormBundleNo, disposalDate) flatMap {
             response =>
               RedirectWithBackLink(
