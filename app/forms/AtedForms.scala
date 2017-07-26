@@ -290,8 +290,6 @@ object AtedForms {
 
   def validateDisposedProperty(periodKey: Int, disposalDate: Option[LocalDate]): ValidationResult = {
 
-    Logger.debug("XXXXXXXXXXX periodKey: " + periodKey)
-    Logger.debug("XXXXXXXXXXX disposalDate: " + disposalDate)
     if (disposalDate.isEmpty) {
       Invalid(Messages("ated.dispose-property.dateOfDisposal.error.empty"), "dateOfDisposal")
     } else if (isPeriodTooEarly(periodKey, disposalDate)) {
