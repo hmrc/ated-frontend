@@ -274,6 +274,9 @@ object AtedForms {
     "editLiabilityType" -> optional(text).verifying(Messages("ated.edit-liability.edit-return-type.error"), editReturnType => editReturnType.isDefined)
   )(EditLiabilityReturnType.apply)(EditLiabilityReturnType.unapply))
 
+  val disposalDateConstraint: Constraint[DisposeLiability] = Constraint("dateOfDisposal"){
+    model => validateDisposedProperty(model.periodKey, model.dateOfDisposal)
+  }
 
   val disposeLiabilityForm = {
     Form(
@@ -285,12 +288,10 @@ object AtedForms {
     )
   }
 
-  val disposalDateConstraint: Constraint[DisposeLiability] = Constraint("dateOfDisposal")({
-    model => validateDisposedProperty(model.periodKey, model.dateOfDisposal)
-  })
-
   def validateDisposedProperty(periodKey: Int, disposalDate: Option[LocalDate]): ValidationResult = {
 
+    Logger.debug("XXXXXXXXXXX periodKey: " + periodKey)
+    Logger.debug("XXXXXXXXXXX disposalDate: " + disposalDate)
     if (disposalDate.isEmpty) {
       Invalid(Messages("ated.dispose-property.dateOfDisposal.error.empty"), "dateOfDisposal")
     } else if (isPeriodTooEarly(periodKey, disposalDate)) {
