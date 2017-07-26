@@ -18,18 +18,19 @@ package forms
 
 import models._
 import org.joda.time.LocalDate
-import play.api.data.{Form, FormError}
+import play.api.Logger
+import play.api.Play.current
 import play.api.data.Forms._
+import play.api.data.validation.{Constraint, Invalid, Valid, ValidationResult}
+import play.api.data.{Form, FormError}
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
-import play.api.Play.current
 import play.api.libs.json.Json
-import utils.AtedUtils
 import uk.gov.hmrc.play.mappers.DateTuple._
+import utils.AtedUtils
 import utils.PeriodUtils._
 
 import scala.annotation.tailrec
-import scala.util.Try
 
 
 object AtedForms {
@@ -273,13 +274,35 @@ object AtedForms {
     "editLiabilityType" -> optional(text).verifying(Messages("ated.edit-liability.edit-return-type.error"), editReturnType => editReturnType.isDefined)
   )(EditLiabilityReturnType.apply)(EditLiabilityReturnType.unapply))
 
+  val disposalDateConstraint: Constraint[DisposeLiability] = Constraint("dateOfDisposal"){
+    model => validateDisposedProperty(model.periodKey, model.dateOfDisposal)
+  }
 
-  val disposeLiabilityForm = Form(
-    mapping(
-      "dateOfDisposal" -> dateTuple,
-      "periodKey" -> number
-    )(DisposeLiability.apply)(DisposeLiability.unapply)
-  )
+  val disposeLiabilityForm = {
+    Form(
+      mapping(
+        "dateOfDisposal" -> dateTuple,
+        "periodKey" -> number
+      )(DisposeLiability.apply)(DisposeLiability.unapply)
+        .verifying(disposalDateConstraint)
+    )
+  }
+
+  def validateDisposedProperty(periodKey: Int, disposalDate: Option[LocalDate]): ValidationResult = {
+
+    if (disposalDate.isEmpty) {
+      Invalid(Messages("ated.dispose-property.dateOfDisposal.error.empty"), "dateOfDisposal")
+    } else if (isPeriodTooEarly(periodKey, disposalDate)) {
+      Invalid(Messages("ated.dispose-property.period.dateOfDisposal.date-before-period"), "dateOfDisposal")
+    } else if (isPeriodTooLate(periodKey, disposalDate)) {
+      Invalid(Messages("ated.dispose-property.period.dateOfDisposal.date-after-period"), "dateOfDisposal")
+    } else if (isAfterPresentDay(disposalDate)) {
+      Invalid(Messages("ated.dispose-property.period.dateOfDisposal.date-after-today"), "dateOfDisposal")
+    }
+    else {
+      Valid
+    }
+  }
 
   val removeClientConfirmationForm = Form(
     mapping(
@@ -292,33 +315,6 @@ object AtedForms {
       "areYouSure" -> optional(boolean).verifying("ated.agent.reject.empty-error", areYouSure => areYouSure.isDefined)
     )(RejectClientConfirmation.apply)(RejectClientConfirmation.unapply)
   )
-
-  def validateDisposedProperty(form: Form[DisposeLiability]): Form[DisposeLiability] = {
-
-    val periodKey = form.data.getOrElse("periodKey", throw new RuntimeException("periodKey not found in form")).toInt
-
-    def validateDateField: Seq[Option[FormError]] = {
-      val day = form.data.getOrElse("dateOfDisposal.day", "")
-      val month = form.data.getOrElse("dateOfDisposal.month", "")
-      val year = form.data.getOrElse("dateOfDisposal.year", "")
-      if (day.trim.length == 0 && month.trim.length == 0 && year.trim.length == 0) {
-        Seq(Some(FormError("dateOfDisposal", Messages(s"ated.dispose-property.dateOfDisposal.error.empty"))))
-      } else if (Try(new LocalDate(year.toInt, month.toInt, day.toInt)).isSuccess) {
-        val date = new LocalDate(year.toInt, month.toInt, day.toInt)
-        if (isPeriodTooEarly(periodKey, Some(date))) {
-          Seq(Some(FormError("dateOfDisposal", Messages("ated.dispose-property.period.dateOfDisposal.date-before-period"))))
-        } else if (isPeriodTooLate(periodKey, Some(date))) {
-          Seq(Some(FormError("dateOfDisposal", Messages("ated.dispose-property.period.dateOfDisposal.date-after-period"))))
-        } else if (isAfterPresentDay(Some(date))) {
-          Seq(Some(FormError("dateOfDisposal", Messages(s"ated.dispose-property.period.dateOfDisposal.date-after-today"))))
-        }
-        else Seq(None)
-      } else Seq(None)
-    }
-
-    val formErrors = validateDateField.flatten
-    addErrorsToForm(form, formErrors)
-  }
 
   private def addErrorsToForm[A](form: Form[A], formErrors: Seq[FormError]): Form[A] = {
     @tailrec
