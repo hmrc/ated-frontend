@@ -106,7 +106,7 @@ class PropertyDetailsNewBuildControllerSpec extends PlaySpec with OneServerPerSu
               document.getElementById("property-details-header").text() must be("Was the property a new build, or a new dwelling produced from other dwellings, in this chargeable period?")
 
               document.getElementById("isNewBuild").text() contains ("Yes No")
-              document.getElementById("notNewBuildDate").text() must be("What date was the property acquired? For example, 31 3 2012 Day Month Year")
+              document.getElementById("notNewBuildDate").text() must be("What date was the property acquired? For example, 31 3 2013 Day Month Year")
               document.getElementById("notNewBuildValue_field").text() must be("What was the value of the property on the date it was acquired, in GBP? For example, 1500000")
               document.getElementById("newBuildDate").text() must be("What was the date the property was first occupied? Day Month Year")
               document.getElementById("localAuthRegDate").text() must be("What was the date the local council registered the property for council tax? Day Month Year")
