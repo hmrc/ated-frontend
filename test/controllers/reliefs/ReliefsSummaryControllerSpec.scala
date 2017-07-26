@@ -156,7 +156,7 @@ class ReliefsSummaryControllerSpec extends PlaySpec with OneServerPerSuite with 
               document.title() must be("Check your details are correct")
               document.getElementById("property-details-summary-header").text() must be("Check your details are correct")
               document.getElementById("details-text").text() must be("For the ATED period from 1 April 2015 to 31 March 2016.")
-              document.getElementById("ated-charge-value").text() must be("£ Unknown")
+              document.getElementById("ated-charge-value").text() must be("Not yet calculated")
           }
         }
 
@@ -171,7 +171,7 @@ class ReliefsSummaryControllerSpec extends PlaySpec with OneServerPerSuite with 
               document.title() must be("Check your details are correct")
               document.getElementById("property-details-summary-header").text() must be("Check your details are correct")
               document.getElementById("details-text").text() must be("For the ATED period from 1 April 2015 to 31 March 2016.")
-              document.getElementById("ated-charge-value").text() must be("£ Unknown")
+              document.getElementById("ated-charge-value").text() must be("Not yet calculated")
           }
         }
 

@@ -30,7 +30,7 @@ ated.details-for = details for
 ated.address = Address
 ated.sign-out = Sign out
 ated.generic.bta_link = Business tax account home
-ated.unknow-amount.text = £ Unknown
+ated.unknow-amount.text = Not yet calculated
 
 ## Error Messages
 # --- Errors
@@ -611,7 +611,7 @@ ated.property-details-value.notNewBuildValue.error.empty = You must enter a prop
 ated.property-details-value.notNewBuildValue.error.too-low = The property value cannot be below the lowest band
 ated.property-details-value.notNewBuildValue.error.too-high = The property value must be less than 14 characters
 ated.property-details-value.notNewBuildDate = What date was the property acquired?
-ated.property-details-value.notNewBuildDate.hint = For example, 31 3 2012
+ated.property-details-value.notNewBuildDate.hint = For example, 31 3 2013
 ated.property-details-value.notNewBuildDate.error.empty = You must enter a property acquired date
 ated.property-details-value.notNewBuildDate.error.too-early = The property acquired date cannot be before 1 April 2012
 ated.property-details-value.notNewBuildDate.error.too-late = The property acquired date cannot be in the future
