@@ -694,3 +694,12 @@ table th {
     display:inline-block;
     float: left;
 }
+
+/*Create additional grid unit*/
+
+.grid-1-6 {
+    width: 16.666667%;
+}
+.grid-2-6 {
+    width: 33.333334%;
+}
