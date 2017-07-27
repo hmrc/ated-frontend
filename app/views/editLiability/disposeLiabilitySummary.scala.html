@@ -13,11 +13,12 @@
       @Messages("ated.property-details-summary.header")
     </h1>
 
+<div id="property-summary">
   <div class="form-group">
     <span class="paragraph" id="details-text">@Messages("ated.property-details-summary.details-text", periodStartDate(disposeLiability.formBundleReturn.periodKey.toInt).toString(Messages("ated.date-format")), periodEndDate(disposeLiability.formBundleReturn.periodKey.toInt).toString(Messages("ated.date-format")))</span>
   </div>
 
-<div class="form-group" id="property-summary">
+  <div class="form-group">
   <div class="grid-wrapper">
     <h2 id="edit-liability-header" class="heading-medium">@Messages("ated.property-details-summary.table.property-details.header")</h2>
   </div>
@@ -27,9 +28,9 @@
       <span class="heading-small" id="property-address-label">@Messages("ated.property-details-summary.table.property-details.address.label")</span>
     </div>
 
-    <div class="grid grid-1-3 cya-answer">
+    <div id="property-address-value" class="grid grid-1-3 cya-answer">
       <span id="address-line-1">@disposeLiability.formBundleReturn.propertyDetails.address.addressLine1</span>,<br>
-      <span id="address-line-2">@disposeLiability.formBundleReturn.propertyDetails.address.addressLine2</span>,<br>
+      <span id="address-line-2">@disposeLiability.formBundleReturn.propertyDetails.address.addressLine2</span><br>
       @if(disposeLiability.formBundleReturn.propertyDetails.address.postalCode.isDefined){<span id="address-postcode">@disposeLiability.formBundleReturn.propertyDetails.address.postalCode</span>}
     </div>
 
@@ -263,7 +264,7 @@
   </div>
 
   <div class="form-group">
-    <a href="@controllers.editLiability.routes.DisposeLiabilitySummaryController.viewPrintFriendlyDisposeLiabilityReturn(disposeLiability.id.toString)" class="print-link" id="print-friendly-edit-liability-link" target="_blank">
+    <a href="@controllers.editLiability.routes.DisposeLiabilitySummaryController.viewPrintFriendlyDisposeLiabilityReturn(disposeLiability.id.toString)" id="print-friendly-edit-liability-link" target="_blank">
       @Messages("ated.dispose-property.summary.print.view")
     </a>
   </div>
@@ -277,3 +278,4 @@
   }
 
 }
+</div>
