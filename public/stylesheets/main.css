@@ -700,6 +700,13 @@ table th {
 .grid-1-6 {
     width: 16.666667%;
 }
+
 .grid-2-6 {
     width: 33.333334%;
+}
+
+@media screen and (max-width: 640px) {
+    .grid-1-6, .grid-2-6 {
+        width:100%;
+    }
 }

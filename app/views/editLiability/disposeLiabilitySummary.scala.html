@@ -24,11 +24,11 @@
   </div>
 
   <div class="grid-wrapper row-border">
-    <div class="grid grid-1-3 cya-question">
+    <div class="grid grid-2-6 cya-question">
       <span class="heading-small" id="property-address-label">@Messages("ated.property-details-summary.table.property-details.address.label")</span>
     </div>
 
-    <div id="property-address-value" class="grid grid-1-3 cya-answer">
+    <div id="property-address-value" class="grid grid-1-2 cya-answer">
       <span id="address-line-1">@disposeLiability.formBundleReturn.propertyDetails.address.addressLine1</span>,<br>
       <span id="address-line-2">@disposeLiability.formBundleReturn.propertyDetails.address.addressLine2</span><br>
       @if(disposeLiability.formBundleReturn.propertyDetails.address.postalCode.isDefined){<span id="address-postcode">@disposeLiability.formBundleReturn.propertyDetails.address.postalCode</span>}
@@ -37,15 +37,15 @@
   </div>
 
   <div class="grid-wrapper row-border">
-    <div class="grid grid-1-3 cya-question">
+    <div class="grid grid-2-6 cya-question">
       <span class="heading-small" id="property-title-disposal-date-label">@Messages("ated.dispose-property.summary.disposal-date-label")</span>
     </div>
 
-    <div class="grid grid-1-3 cya-answer">
+    <div class="grid grid-1-2 cya-answer">
       <span id="property-title-disposal-date">@disposeLiability.disposeLiability.flatMap(x => x.dateOfDisposal.map(y => y.toString(Messages("ated.date-format"))))</span>
     </div>
 
-    <div class="grid grid-1-3 cya-change">
+    <div class="grid grid-1-6 cya-change">
       <a href="@controllers.editLiability.routes.DisposePropertyController.editFromSummary(disposeLiability.id.toString)" id="edit-property-disposal-date" aria-label='@Messages("ated.dispose-property.summary.edit-disposal-date-link.title")' data-journey-click="ated-frontend:click:edit-property-disposal-date">
         @Messages("ated.edit")
       </a>
@@ -64,15 +64,15 @@
   @if(!disposeLiability.bankDetails.flatMap(_.bankDetails).isDefined) {
 
   <div class="grid-wrapper row-border">
-    <div class="grid grid-1-3 cya-question">
+    <div class="grid grid-2-6 cya-question">
       <span class="heading-small" id="type-of-account-label">@Messages("ated.edit-liability.summary.bank-details.type-of-account")</span>
     </div>
 
-    <div class="grid grid-1-3 cya-answer">
+    <div class="grid grid-1-2 cya-answer">
       <span id="type-of-account-value" class="status">@Messages("ated.label.incomplete")</span>
     </div>
 
-    <div class="grid grid-1-3 cya-change">
+    <div class="grid grid-1-6 cya-change">
       <a href="@controllers.editLiability.routes.DisposePropertyController.editFromSummary(disposeLiability.id.toString)" id="edit-property-disposal-date" aria-label='@Messages("ated.dispose-property.summary.edit-disposal-date-link.title")' data-journey-click="ated-frontend:click:edit-property-disposal-date">
         @Messages("ated.edit")
       </a>
@@ -85,60 +85,60 @@
   @if(disposeLiability.bankDetails.flatMap(_.bankDetails.flatMap(_.hasUKBankAccount)) == Some(true)){
 
   <div class="grid-wrapper row-border">
-    <div class="grid grid-1-3 cya-question">
+    <div class="grid grid-2-6 cya-question">
       <span class="heading-small" id="type-of-account-label">@Messages("ated.edit-liability.summary.bank-details.type-of-account")</span>
     </div>
 
-    <div class="grid grid-1-3 cya-answer">
+    <div class="grid grid-1-2 cya-answer">
       <span id="type-of-account-label-value">@Messages("ated.label-bank-account-type.uk")</span>
     </div>
 
-    <div class="grid grid-1-3 cya-change">
+    <div class="grid grid-1-6 cya-change">
       <a href="@controllers.editLiability.routes.DisposeLiabilityBankDetailsController.editFromSummary(disposeLiability.id.toString)" id="edit-bank-details" aria-label='@Messages("ated.edit-liability.summary.bank-details.edit-link.title")' data-journey-click="ated-frontend:click:edit-bank-details"> @Messages("ated.edit")
       </a>
     </div>
   </div>
 
   <div class="grid-wrapper row-border">
-    <div class="grid grid-1-3 cya-question">
+    <div class="grid grid-2-6 cya-question">
       <span class="heading-small" id="account-holder-name-label">@Messages("ated.edit-liability.summary.bank-details.account-holder-name")</span>
     </div>
 
-    <div class="grid grid-1-3 cya-answer">
+    <div class="grid grid-1-2 cya-answer">
       <span id="account-holder-name-value">@disposeLiability.bankDetails.flatMap(_.bankDetails.map(_.accountName))</span>
     </div>
 
-    <div class="grid grid-1-3 cya-change">
+    <div class="grid grid-1-6 cya-change">
       <a href="@controllers.editLiability.routes.DisposeLiabilityBankDetailsController.editFromSummary(disposeLiability.id.toString)" id="edit-bank-details" aria-label='@Messages("ated.edit-liability.summary.bank-details.edit-link.title")' data-journey-click="ated-frontend:click:edit-bank-details"> @Messages("ated.edit")
       </a>
     </div>
   </div>
 
   <div class="grid-wrapper row-border">
-    <div class="grid grid-1-3 cya-question">
+    <div class="grid grid-2-6 cya-question">
       <span class="heading-small" id="account-number-label">@Messages("ated.edit-liability.summary.bank-details.account-number")</span>
     </div>
 
-    <div class="grid grid-1-3 cya-answer">
+    <div class="grid grid-1-2 cya-answer">
       <span id="account-number-value">@disposeLiability.bankDetails.flatMap(_.bankDetails.map(_.accountNumber))</span>
     </div>
 
-    <div class="grid grid-1-3 cya-change">
+    <div class="grid grid-1-6 cya-change">
       <a href="@controllers.editLiability.routes.DisposeLiabilityBankDetailsController.editFromSummary(disposeLiability.id.toString)" id="edit-bank-details" aria-label='@Messages("ated.edit-liability.summary.bank-details.edit-link.title")' data-journey-click="ated-frontend:click:edit-bank-details"> @Messages("ated.edit")
       </a>
     </div>
   </div>
 
   <div class="grid-wrapper row-border">
-    <div class="grid grid-1-3 cya-question">
+    <div class="grid grid-2-6 cya-question">
       <span class="heading-small" id="sort-code-label">@Messages("ated.edit-liability.summary.bank-details.sort-code")</span>
     </div>
 
-    <div class="grid grid-1-3 cya-answer">
+    <div class="grid grid-1-2 cya-answer">
       <span id="sort-code-value">@disposeLiability.bankDetails.flatMap(_.bankDetails.map(_.sortCode))</span>
     </div>
 
-    <div class="grid grid-1-3 cya-change">
+    <div class="grid grid-1-6 cya-change">
       <a href="@controllers.editLiability.routes.DisposeLiabilityBankDetailsController.editFromSummary(disposeLiability.id.toString)" id="edit-bank-details" aria-label='@Messages("ated.edit-liability.summary.bank-details.edit-link.title")' data-journey-click="ated-frontend:click:edit-bank-details"> @Messages("ated.edit")
       </a>
     </div>
@@ -146,60 +146,60 @@
 </div>
   }else {
   <div class="grid-wrapper row-border">
-    <div class="grid grid-1-3 cya-question">
+    <div class="grid grid-2-6 cya-question">
       <span class="heading-small" id="type-of-account-label">@Messages("ated.edit-liability.summary.bank-details.type-of-account")</span>
     </div>
 
-    <div class="grid grid-1-3 cya-answer">
+    <div class="grid grid-1-2 cya-answer">
       <span id="type-of-account-label-value">@Messages("ated.label-bank-account-type.overseas")</span>
     </div>
 
-    <div class="grid grid-1-3 cya-change">
+    <div class="grid grid-1-6 cya-change">
       <a href="@controllers.editLiability.routes.DisposeLiabilityBankDetailsController.editFromSummary(disposeLiability.id.toString)" id="edit-bank-details" aria-label='@Messages("ated.edit-liability.summary.bank-details.edit-link.title")' data-journey-click="ated-frontend:click:edit-bank-details"> @Messages("ated.edit")
       </a>
     </div>
   </div>
 
   <div class="grid-wrapper row-border">
-    <div class="grid grid-1-3 cya-question">
+    <div class="grid grid-2-6 cya-question">
       <span class="heading-small" id="account-holder-name-label">@Messages("ated.edit-liability.summary.bank-details.account-holder-name")</span>
     </div>
 
-    <div class="grid grid-1-3 cya-answer">
+    <div class="grid grid-1-2 cya-answer">
       <span id="account-holder-name-value">@disposeLiability.bankDetails.flatMap(_.bankDetails.map(_.accountName))</span>
     </div>
 
-    <div class="grid grid-1-3 cya-change">
+    <div class="grid grid-1-6 cya-change">
       <a href="@controllers.editLiability.routes.DisposeLiabilityBankDetailsController.editFromSummary(disposeLiability.id.toString)" id="edit-bank-details" aria-label='@Messages("ated.edit-liability.summary.bank-details.edit-link.title")' data-journey-click="ated-frontend:click:edit-bank-details"> @Messages("ated.edit")
       </a>
     </div>
   </div>
 
   <div class="grid-wrapper row-border">
-    <div class="grid grid-1-3 cya-question">
+    <div class="grid grid-2-6 cya-question">
       <span class="heading-small" id="iban-number-label">@Messages("ated.edit-liability.summary.bank-details.iban")</span>
     </div>
 
-    <div class="grid grid-1-3 cya-answer">
+    <div class="grid grid-1-2 cya-answer">
       <span id="iban-number-value">@disposeLiability.bankDetails.flatMap(_.bankDetails.map(_.iban))</span>
     </div>
 
-    <div class="grid grid-1-3 cya-change">
+    <div class="grid grid-1-6 cya-change">
       <a href="@controllers.editLiability.routes.DisposeLiabilityBankDetailsController.editFromSummary(disposeLiability.id.toString)" id="edit-bank-details" aria-label='@Messages("ated.edit-liability.summary.bank-details.edit-link.title")' data-journey-click="ated-frontend:click:edit-bank-details"> @Messages("ated.edit")
       </a>
     </div>
   </div>
 
   <div class="grid-wrapper row-border">
-    <div class="grid grid-1-3 cya-question">
+    <div class="grid grid-2-6 cya-question">
       <span class="heading-small" id="bicSwiftCode-code-label">@Messages("ated.edit-liability.summary.bank-details.bic-swift-code")</span>
     </div>
 
-    <div class="grid grid-1-3 cya-answer">
+    <div class="grid grid-1-2 cya-answer">
       <span id="bicSwiftCode-code-value">@disposeLiability.bankDetails.flatMap(_.bankDetails.map(_.bicSwiftCode))</span>
     </div>
 
-    <div class="grid grid-1-3 cya-change">
+    <div class="grid grid-1-6 cya-change">
       <a href="@controllers.editLiability.routes.DisposeLiabilityBankDetailsController.editFromSummary(disposeLiability.id.toString)" id="edit-bank-details" aria-label='@Messages("ated.edit-liability.summary.bank-details.edit-link.title")' data-journey-click="ated-frontend:click:edit-bank-details"> @Messages("ated.edit")
       </a>
     </div>
@@ -215,15 +215,15 @@
   </div>
 
   <div class="grid-wrapper row-border">
-    <div class="grid grid-1-3 cya-question">
+    <div class="grid grid-2-6 cya-question">
       <span class="heading-small" id="supply-bank-label">@Messages("ated.edit-liability.summary.bank-details.supply-bank-details")</span>
     </div>
 
-    <div class="grid grid-1-3 cya-answer">
+    <div class="grid grid-1-2 cya-answer">
       <span id="supply-bank-value" class="status">@Messages("ated.label.incomplete")</span>
     </div>
 
-    <div class="grid grid-1-3 cya-change">
+    <div class="grid grid-1-6 cya-change">
       <a href="@controllers.editLiability.routes.DisposeLiabilityHasBankDetailsController.editFromSummary(disposeLiability.id.toString)" id="edit-bank-details" aria-label='@Messages("ated.edit-liability.summary.bank-details.edit-link.title")' data-journey-click="ated-frontend:click:edit-bank-details"> @Messages("ated.edit")
       </a>
     </div>
@@ -239,11 +239,11 @@
   </div>
 
   <div class="grid-wrapper row-border">
-    <div class="grid grid-1-3 cya-question">
+    <div class="grid grid-2-6 cya-question">
       <span class="heading-small" id="return-status-label">@Messages("ated.edit-liability.summary.bank-details.return-status.label")</span>
     </div>
 
-    <div class="grid grid-1-3 cya-question">
+    <div class="grid grid-2-6 cya-question">
       <span id="return-status-value">@Messages("ated.property-details-summary.status.text")</span>
     </div>
 
