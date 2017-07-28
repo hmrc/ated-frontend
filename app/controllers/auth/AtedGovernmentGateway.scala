@@ -21,4 +21,6 @@ import uk.gov.hmrc.play.frontend.auth.GovernmentGateway
 object AtedGovernmentGateway extends GovernmentGateway {
   override def loginURL = ExternalUrls.loginURL
   override def continueURL = ExternalUrls.continueURL
+
+  override val defaultTimeoutSeconds = 1800
 }
