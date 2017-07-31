@@ -70,11 +70,6 @@ class periodSummaryPastReturnsSpec extends FeatureSpec with OneServerPerSuite wi
       assert(document.getElementById("current-returns").text() === "Current returns")
       assert(document.getElementById("past-returns").text() === "Past returns")
 
-      Then("The table titles should be correct")
-      assert(document.getElementById("return-period-summary-th-return").text() === "Return")
-      assert(document.getElementById("return-period-summary-th-status").text() === "Status")
-      assert(document.getElementById("return-period-summary-th-action").text() === "Action")
-
       Then("The table should have no data")
       assert(document.getElementById("view-edit-0") === null)
       assert(document.getElementById("liability-submitted-0") === null)
@@ -104,12 +99,6 @@ class periodSummaryPastReturnsSpec extends FeatureSpec with OneServerPerSuite wi
       assert(document.getElementById("current-returns").text() === "Current returns")
       assert(document.getElementById("past-returns").text() === "Past returns")
 
-
-      Then("The table titles should be correct")
-      assert(document.getElementById("return-period-summary-th-return").text() === "Return")
-      assert(document.getElementById("return-period-summary-th-status").text() === "Status")
-      assert(document.getElementById("return-period-summary-th-action").text() === "Action")
-
       Then("The table should have data")
       assert(document.getElementById("view-edit-0") === null)
       assert(document.getElementById("liability-submitted-0") === null)
@@ -136,11 +125,6 @@ class periodSummaryPastReturnsSpec extends FeatureSpec with OneServerPerSuite wi
       Then("We should only have the current tab")
       assert(document.getElementById("current-returns").text() === "Current returns")
       assert(document.getElementById("past-returns").text() === "Past returns")
-
-      Then("The table titles should be correct")
-      assert(document.getElementById("return-period-summary-th-return").text() === "Return")
-      assert(document.getElementById("return-period-summary-th-status").text() === "Status")
-      assert(document.getElementById("return-period-summary-th-action").text() === "Action")
 
       Then("The table should have data")
       assert(document.getElementById("view-edit-0").text() === "View or change")
