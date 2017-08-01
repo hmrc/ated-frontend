@@ -19,42 +19,77 @@
     </div>
   </div>
 
-  <table id="view-relief-return-table">
-    <tr>
-      <td id="th-view-relief-return-table-header" class="heading-small">@submittedReliefReturn.reliefType</td>
-      <td colspan="2">&nbsp;</td>
-    </tr>
-    <tr>
-      <td id="th-view-relief-return-from-date-label">@Messages("ated.view-relief-return.date.from")</td>
-      <td></td>
-      <td id="td-view-relief-from-date">@submittedReliefReturn.dateFrom.toString(Messages("ated.date-format"))</td>
-    </tr>
-    <tr>
-      <td id="th-view-relief-date-to-label">@Messages("ated.view-relief-return.date.to")</td>
-      <td></td>
-      <td id="td-view-relief-date-to">@submittedReliefReturn.dateTo.toString(Messages("ated.date-format"))</td>
-    </tr>
-    <tr>
-      <td id="th-view-relief-avoidance-label">@Messages("ated.view-relief-return.avoidance.no")</td>
-      <td></td>
-      <td id="td-view-relief-avoidance">@submittedReliefReturn.avoidanceSchemeNumber</td>
-    </tr>
-    <tr>
-      <td id="th-view-relief-avoidance-promoter-label">@Messages("ated.view-relief-return.promoter.no")</td>
-      <td></td>
-      <td id="td-view-relief-avoidance-promoter">@submittedReliefReturn.promoterReferenceNumber</td>
-    </tr>
-    <tr>
-      <td id="th-view-relief-status-label">@Messages("ated.view-relief-return.status")</td>
-      <td></td>
-      <td id="td-view-relief-status">@Messages("ated.view-relief-return.status.submitted")</td>
-    </tr>
-    <tr>
-      <td id="th-view-relief-submission-date-label">@Messages("ated.view-relief-return.submission-date")</td>
-      <td></td>
-      <td id="td-view-relief-submission-date">@submittedReliefReturn.dateOfSubmission.toString(Messages("ated.date-format"))</td>
-    </tr>
-  </table>
+
+<div class="form-group">
+  <div class="grid-wrapper">
+    <h2 id="th-view-relief-return-table-header" class="heading-medium">@submittedReliefReturn.reliefType</h2>
+  </div>
+
+  <div class="grid-wrapper row-border">
+    <div class="grid grid-3-4 cya-question">
+      <span class="heading-small" id="th-view-relief-return-from-date-label">@Messages("ated.view-relief-return.date.from")</span>
+    </div>
+
+    <div class="grid grid-1-4 cya-answer" id="td-view-relief-from-date">
+      @submittedReliefReturn.dateFrom.toString(Messages("ated.date-format"))
+    </div>
+  </div>
+
+
+  <div class="grid-wrapper row-border">
+    <div class="grid grid-3-4 cya-question">
+      <span class="heading-small" id="th-view-relief-date-to-label">@Messages("ated.view-relief-return.date.to")</span>
+    </div>
+
+    <div class="grid grid-1-4 cya-answer" id="td-view-relief-from-date">
+      <span id="td-view-relief-date-to">@submittedReliefReturn.dateTo.toString(Messages("ated.date-format"))
+    </div>
+  </div>
+
+
+  <div class="grid-wrapper row-border">
+    <div class="grid grid-3-4 cya-question">
+      <span id="th-view-relief-avoidance-label" class="heading-small">@Messages("ated.view-relief-return.avoidance.no")</span>
+    </div>
+
+    <div class="grid grid-1-4 cya-answer" id="td-view-relief-from-date">
+      <span id="td-view-relief-avoidance">@submittedReliefReturn.avoidanceSchemeNumber</span>
+    </div>
+  </div>
+
+  <div class="grid-wrapper row-border">
+    <div class="grid grid-3-4 cya-question">
+      <span id="th-view-relief-avoidance-promoter-label" class="heading-small">@Messages("ated.view-relief-return.promoter.no")</span>
+    </div>
+
+    <div class="grid grid-1-4 cya-answer" id="td-view-relief-from-date">
+      <span id="td-view-relief-avoidance-promoter">@submittedReliefReturn.promoterReferenceNumber</span>
+    </div>
+  </div>
+
+
+  <div class="grid-wrapper row-border">
+    <div class="grid grid-3-4 cya-question">
+      <span class="heading-small" id="th-view-relief-status-label">@Messages("ated.view-relief-return.status")</span>
+    </div>
+
+    <div class="grid grid-1-4 cya-answer" id="td-view-relief-from-date">
+      <span id="td-view-relief-status">@Messages("ated.view-relief-return.status.submitted")</span>
+    </div>
+  </div>
+
+
+  <div class="grid-wrapper row-border">
+    <div class="grid grid-3-4 cya-question">
+      <span id="th-view-relief-submission-date-label" class="heading-small">@Messages("ated.view-relief-return.submission-date")</span>
+    </div>
+
+    <div class="grid grid-1-4 cya-answer" id="td-view-relief-from-date">
+      <span id="td-view-relief-submission-date">@submittedReliefReturn.dateOfSubmission.toString(Messages("ated.date-format"))</span>
+    </div>
+  </div>
+
+</div>
 
     <div class="form-group">
       <div id="return-charge-text">@Messages("ated.form-bundle.view.return.ated.charge")</div>
