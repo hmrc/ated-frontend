@@ -39,11 +39,13 @@
   </ul>
 </div>
 
-  <div class="form-group">
-    <div class="grid-wrapper">
+
+
 
   @periodSummaries.map { data =>
+
     @data.submittedReturns.map { b =>
+
       @b.currentLiabilityReturns.zipWithIndex.map { t =>
 
   <div class="grid-wrapper row-border">
@@ -70,7 +72,11 @@
       </a>
     </div>
   </div>
+
+
+
  } @*liability-returns end*@
+<div class="form-group">
       @b.reliefReturns.zipWithIndex.map { t =>
         <div class="grid-wrapper row-border">
           <div class="grid grid-1-2 psp-return">
@@ -89,7 +95,9 @@
            </a>
           </div>
         </div>
+
   } @*relief-returns end*@
+<div class="form-group">
   } @*all submitted returns end*@
 
    @data.draftReturns.zipWithIndex.map { t =>
@@ -127,10 +135,11 @@
          }
        }
      </div>
-   </div>
+</div>
    } @*all drafts end*@
-  }
 
+    }
+</div>
   <div class="form-group">
     <a href="@controllers.routes.PeriodSummaryController.createReturn(periodKey)" id="create-return">@Messages("ated.account-summary.create-return.link")</a>
   </div>
