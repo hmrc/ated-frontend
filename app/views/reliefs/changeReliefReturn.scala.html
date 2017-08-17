@@ -7,13 +7,8 @@
 @import utils._
 
 @atedMain(title = Messages("ated.change-relief-return.title"), attorney = atedContext.user.authContext.attorney) {
-    @pageHeadersAndError(backLink, "pre-heading", Messages("ated.change-return.pre-header"),
+    @pageHeadersAndError(backLink, "pre-heading", Messages("ated.change-return.pre-header"), "relief-return-header", Messages("ated.change-relief-return.title"),
     Some(atedErrorSummary(editReliefForm, "ated.change-relief-return.error.empty.general")))
-  <div class="form-group">
-    <h1 class="heading-xlarge" id="relief-return-header">
-     @Messages("ated.change-relief-return.title")
-    </h1>
-  </div>
 
   <p id="relief-return-change-text">@Messages("ated.change-relief-return.text")</p>
 

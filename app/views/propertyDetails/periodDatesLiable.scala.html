@@ -13,13 +13,8 @@
 }
 
 @atedMain(title = title, attorney = atedContext.user.authContext.attorney, pageScripts = Some(pageScripts)) {
-  @pageHeadersAndError(backLink, "pre-heading", Messages("ated.property-details.pre-header"),
+  @pageHeadersAndError(backLink, "pre-heading", Messages("ated.property-details.pre-header"), "property-details-header", title,
       Some(atedErrorSummary(propertyDetailsForm, "ated.property-details-period.datesLiable.general.error")))
-  <div class="form-group">
-    <h1 class="heading-xlarge" id="property-details-header">
-      @title
-    </h1>
-  </div>
 
   @form(action=controllers.propertyDetails.routes.PeriodDatesLiableController.save(id, periodKey, mode)) {
 

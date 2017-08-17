@@ -22,12 +22,8 @@
 @implicitFormInstance = @{ Some(overseasCompanyRegistrationForm) }
 
 @atedMain(title = Messages("ated.non-uk-reg.title"), attorney = atedContext.user.authContext.attorney, pageScripts = Some(pageScripts)) {
-    @pageHeadersAndError(backLink, "pre-heading", Messages("ated.non-uk-reg.subheader"),
+    @pageHeadersAndError(backLink, "pre-heading", Messages("ated.non-uk-reg.subheader"), "overseas-company-registration-header", Messages("ated.non-uk-reg.header"),
     Some(atedErrorSummary(overseasCompanyRegistrationForm, "ated.correspondence-address.error.general")))
-    <h1 class="heading-xlarge" id="overseas-company-registration-header">
-        @Messages("ated.non-uk-reg.header")
-    </h1>
-
 
     @form(action = controllers.subscriptionData.routes.OverseasCompanyRegistrationController.submit) {
 

@@ -13,13 +13,8 @@
 
 @atedMain(title = Messages("ated.bank-details.title"), attorney = atedContext.user.authContext.attorney, pageScripts = Some(pageScripts)) {
 
-  @pageHeadersAndError(backLink, "pre-heading", Messages("ated.property-details.pre-header-change"),
+  @pageHeadersAndError(backLink, "pre-heading", Messages("ated.property-details.pre-header-change"), "bank-details-header", Messages("ated.property-details.pre-header-change"),
       Some(atedErrorSummary(bankDetailsForm, "ated.bank-details.error-key")))
-    <h1 class="heading-xlarge" id="bank-details-header">
-      @Messages("ated.bank-details.title")
-    </h1>
-
-
 
   @form(action=controllers.editLiability.routes.BankDetailsController.save(oldFormBundleNo)) {
     <div class="form-group" id="hasUKBankAccount-id">

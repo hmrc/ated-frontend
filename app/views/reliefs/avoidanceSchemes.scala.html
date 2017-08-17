@@ -34,9 +34,8 @@
 
 
 @atedMain(title = Messages("ated.avoidance-schemes.title"), attorney = atedContext.user.authContext.attorney) {
-  @pageHeadersAndError(backLink, "pre-header", Messages("ated.avoidance-schemes.pre-header"),
+  @pageHeadersAndError(backLink, "pre-header", Messages("ated.avoidance-schemes.pre-header"), "ated-avoidance-header", Messages("ated.avoidance-schemes.header"),
         Some(atedErrorSummary(taxAvoidanceForm, "ated.avoidance-scheme-error.general", maxErrorsToShow = 1)))
-  <h1 class="heading-xlarge" id="ated-avoidance-header">@Messages("ated.avoidance-schemes.header")</h1>
 
     <div id="empty">
 

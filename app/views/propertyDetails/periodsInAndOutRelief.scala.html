@@ -16,15 +16,8 @@
 }
 
 @atedMain(title = Messages("ated.property-details-period.peroidsInRelief.title"), attorney = atedContext.user.authContext.attorney, pageScripts = Some(pageScripts)) {
-  @pageHeadersAndError(backLink, "pre-heading", AtedUtils.getPropertyDetailsPreHeader(mode),
+  @pageHeadersAndError(backLink, "pre-heading", AtedUtils.getPropertyDetailsPreHeader(mode), "property-details-header", Messages("ated.property-details-period.peroidsInRelief.header"),
       Some(atedErrorSummary(propertyDetailsForm, "ated.property-details-period-error.general")))
-  <div class="form-group">
-      <h1 class="heading-xlarge" id="property-details-header">
-        @Messages("ated.property-details-period.peroidsInRelief.header")
-      </h1>
-  </div>
-
-
 
   @if(periods.isEmpty){
     <p><span class="heading-medium" id="no-periods">@Messages("ated.property-details-period.periodsInRelief.no-periods")</span></p>

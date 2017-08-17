@@ -8,10 +8,7 @@
 
 @atedMain(title = Messages("ated.property-details-summary.title"), attorney = atedContext.user.authContext.attorney) {
 
-  @pageHeadersAndError(backLink, "pre-heading", Messages("ated.property-details.pre-header-change"))
-    <h1 class="heading-xlarge" id="edit-liability-summary-header">
-      @Messages("ated.property-details-summary.header")
-    </h1>
+  @pageHeadersAndError(backLink, "pre-heading", Messages("ated.property-details.pre-header-change"), "edit-liability-summary-header", Messages("ated.property-details-summary.header"))
 
     <div class="form-group">
       <p id="details-text">@Messages("ated.property-details-summary.details-text", PeriodUtils.periodStartDate(changeLiability.periodKey).toString(Messages("ated.date-format")), PeriodUtils.periodEndDate(changeLiability.periodKey).toString(Messages("ated.date-format")))</p>

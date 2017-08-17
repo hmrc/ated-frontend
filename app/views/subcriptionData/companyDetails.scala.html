@@ -11,8 +11,7 @@
 
 @atedMain(title = Messages("ated.company-details.title"), attorney = atedContext.user.authContext.attorney,
 pageScripts = Some(pageScripts)) {
-  @pageHeadersAndError(backLink, "pre-header", Messages("ated.company-details.preheader"))
-  <h1 class="heading-xlarge" id="company-details-header">@Messages("ated.company-details.header")</h1>
+  @pageHeadersAndError(backLink, "pre-header", Messages("ated.company-details.preheader"), "company-details-header", Messages("ated.company-details.header"))
 
   <table>
     <tr>

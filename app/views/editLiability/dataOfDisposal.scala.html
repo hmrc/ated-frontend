@@ -8,13 +8,8 @@
 @implicitFormInstance = @{ Some(disposeLiabilityForm) }
 
 @atedMain(title = Messages("ated.dispose-property.disposal-date.title"), attorney = atedContext.user.authContext.attorney) {
-  @pageHeadersAndError(backLink, "pre-heading", Messages("ated.property-details.pre-header-dispose"),
+  @pageHeadersAndError(backLink, "pre-heading", Messages("ated.property-details.pre-header-dispose"), "dispose-property-header", Messages("ated.dispose-property.disposal-date.header"),
       Some(atedErrorSummary(disposeLiabilityForm, "ated.dispose-property.error.general")))
-  <h1 class="heading-xlarge" id="dispose-property-header">
-    @Messages("ated.dispose-property.disposal-date.header")
-  </h1>
-
-
 
   @form(action=controllers.editLiability.routes.DisposePropertyController.save(oldFormBundleNo)) {
 

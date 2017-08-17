@@ -16,11 +16,8 @@
 @implicitFormInstance = @{ Some(reliefsForm) }
 
 @atedMain(title = Messages("ated.choose-reliefs.title"), attorney = atedContext.user.authContext.attorney, pageScripts = Some(pageScripts)) {
-    @pageHeadersAndError(backLink, "pre-header", Messages("ated.choose-reliefs.subheader"),
+    @pageHeadersAndError(backLink, "pre-header", Messages("ated.choose-reliefs.subheader"), "choose-reliefs-header", Messages("ated.choose-reliefs.header"),
       Some(atedErrorSummary(reliefsForm, "ated.choose-reliefs.error.general")))
-    <h1 class="heading-xlarge" id="choose-reliefs-header">
-      @Messages("ated.choose-reliefs.header")
-    </h1>
 
     <div class="form-group" id="choose-reliefs-info">
       <p id="lede-text">@Messages("ated.choose-reliefs.info")</p>

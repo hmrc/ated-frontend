@@ -9,10 +9,7 @@
 
 
 @atedMain(title = Messages(printHeaderMsg(returnType)), attorney = atedContext.user.authContext.attorney) {
-  @pageHeadersAndError(backLink, "pre-heading", Messages("ated.property-details.pre-header-change"))
-    <h1 class="heading-xlarge" id="relief-declaration-confirmation-header">
-      @Messages(printHeaderMsg(returnType))
-    </h1>
+  @pageHeadersAndError(backLink, "pre-heading", Messages("ated.property-details.pre-header-change"), "relief-declaration-confirmation-header", Messages(printHeaderMsg(returnType)))
 
   <p id="relief-declaration-before-declaration-text">
     @if(atedContext.user.authContext.attorney.isDefined) { @Messages("ated.edit-liability.before-declaration.agent")} else { @Messages("ated.edit-liability.before-declaration.client")}

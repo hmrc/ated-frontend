@@ -14,11 +14,8 @@
 @atedMain(title = Messages("ated.bank-details.has-bank-details.title"), attorney = atedContext.user.authContext.attorney, pageScripts = Some(pageScripts)) {
 
 
-  @pageHeadersAndError(backLink, "pre-heading", Messages("ated.property-details.pre-header-dispose"),
+  @pageHeadersAndError(backLink, "pre-heading", Messages("ated.property-details.pre-header-dispose"), "bank-details-header", Messages("ated.bank-details.has-bank-details.header"),
       Some(atedErrorSummary(bankDetailsForm, "ated.bank-details.error-key")))
-  <h1 class="heading-xlarge" id="bank-details-header">
-    @Messages("ated.bank-details.has-bank-details.header")
-  </h1>
 
   <div class="form-group">
     <span class="paragraph" id="has-bank-details-text">@Messages("ated.bank-details.has-bank-details.paragraph.text")</span>

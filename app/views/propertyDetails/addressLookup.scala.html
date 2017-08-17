@@ -13,11 +13,8 @@
 }
 
 @atedMain(title = Messages("ated.address-lookup.title"), attorney = atedContext.user.authContext.attorney, pageScripts=Some(pageScripts)) {
-  @pageHeadersAndError(backLink, "pre-heading", AtedUtils.getPropertyDetailsPreHeader(mode),
+  @pageHeadersAndError(backLink, "pre-heading", AtedUtils.getPropertyDetailsPreHeader(mode), "account-lookup-header", Messages("ated.address-lookup.header"),
       Some(atedErrorSummary(searchForm, "ated.property-details-address-error.general")))
-  <h1 class="heading-xlarge" id="account-lookup-header">
-    @Messages("ated.address-lookup.header")
-  </h1>
 
   @form(action=controllers.propertyDetails.routes.AddressLookupController.find(id, periodKey, mode)) {
 

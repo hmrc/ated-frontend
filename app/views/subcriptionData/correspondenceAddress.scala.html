@@ -22,12 +22,8 @@
 @implicitFormInstance = @{ Some(correspondenceAddressForm) }
 
 @atedMain(title = Messages("ated.correspondence-address.title"), attorney = atedContext.user.authContext.attorney, pageScripts = Some(pageScripts)) {
-  @pageHeadersAndError(backLink, "pre-heading", Messages("ated.correspondence-address.subheader"),
+  @pageHeadersAndError(backLink, "pre-heading", Messages("ated.correspondence-address.subheader"), "correspondence-address-header", Messages("ated.correspondence-address.header"),
       Some(atedErrorSummary(correspondenceAddressForm, "ated.correspondence-address.error.general")))
-  <h1 class="heading-xlarge" id="correspondence-address-header">
-    @Messages("ated.correspondence-address.header")
-  </h1>
-
 
   @form(action = controllers.subscriptionData.routes.CorrespondenceAddressController.submit) {
 

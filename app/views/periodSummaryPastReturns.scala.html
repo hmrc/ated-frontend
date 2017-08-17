@@ -13,13 +13,10 @@
                             periodStartDate(periodKey).getYear.toString,
                             periodEndDate(periodKey).getYear.toString), attorney = atedContext.user.authContext.attorney){
 
-@pageHeadersAndError(backLink, "period-summary-subheader", organisationName.getOrElse(""))
-<h1 class="heading-xlarge" id="period-summary-header">
-  @Messages("ated.period-summary.header",
-  periodStartDate(periodKey).toString(Messages("ated.date-format.summary")),
-  periodEndDate(periodKey).toString(Messages("ated.date-format.summary"))
-  )
-</h1>
+@pageHeadersAndError(backLink, "period-summary-subheader", organisationName.getOrElse(""), "period-summary-header", Messages("ated.period-summary.header",
+periodStartDate(periodKey).toString(Messages("ated.date-format.summary")),
+periodEndDate(periodKey).toString(Messages("ated.date-format.summary"))
+))
 
   <div class="form-group">
     <ul class="ated-tabs">

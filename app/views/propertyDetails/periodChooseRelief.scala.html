@@ -12,13 +12,8 @@
 }
 
 @atedMain(title = Messages("ated.property-details-period.chooseRelief.title"), attorney = atedContext.user.authContext.attorney, pageScripts = Some(pageScripts)) {
-  @pageHeadersAndError(backLink, "pre-heading", Messages("ated.property-details.pre-header"),
+  @pageHeadersAndError(backLink, "pre-heading", Messages("ated.property-details.pre-header"), "property-details-header", Messages("ated.property-details-period.chooseRelief.header"),
       Some(atedErrorSummary(propertyDetailsForm, "ated.property-details-period.chooseRelief.error")))
-  <div class="form-group">
-    <h1 class="heading-xlarge" id="property-details-header">
-      @Messages("ated.property-details-period.chooseRelief.header")
-    </h1>
-  </div>
 
   @form(action=controllers.propertyDetails.routes.PeriodChooseReliefController.save(id, periodKey)) {
 

@@ -10,10 +10,7 @@
 @import org.joda.time.LocalDate
 
 @atedMain(title = Messages("ated.chargeable-return-declaration.title"), attorney = atedContext.user.authContext.attorney) {
-  @pageHeadersAndError(backLink, "pre-heading", Messages("ated.property-details.pre-header"))
-  <h1 class="heading-xlarge" id="chargeable-return-confirmation-header">
-    @Messages("ated.chargeable-return-declaration.header")
-  </h1>
+  @pageHeadersAndError(backLink, "pre-heading", Messages("ated.property-details.pre-header"), "chargeable-return-confirmation-header", Messages("ated.chargeable-return-declaration.header"))
 
   <p id="chargeable-return-before-declaration-text">
     @if(atedContext.user.authContext.attorney.isDefined) { @Messages("ated.chargeable-return-declaration.before-declaration.agent")} else { @Messages("ated.chargeable-return-declaration.before-declaration.client")}
