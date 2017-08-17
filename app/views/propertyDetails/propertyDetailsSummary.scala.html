@@ -199,15 +199,15 @@
     </div>
 
     @propertyDetails.period match {
-    case Some(p) => {
-    @{p.taxAvoidanceScheme match {
-    case Some(schemeNum) if (PeriodUtils.isBlank(schemeNum)) => {<div class="grid grid-1-2 cya-answer" id="tas-otp-val"></div>}
-    case Some(schemeNum) => { <div class="grid grid-1-2 cya-answer" id="avoidance-scheme-value">{schemeNum}</div> }
-    case _ => {<div class="grid grid-1-2 cya-answer" id="tas-otp-val"></div>}
+      case Some(p) => {
+        @{p.taxAvoidanceScheme match {
+          case Some(schemeNum) if (PeriodUtils.isBlank(schemeNum)) => {<div class="grid grid-1-2 cya-answer" id="avoidance-scheme-value"></div>}
+          case Some(schemeNum) => { <div class="grid grid-1-2 cya-answer" id="avoidance-scheme-value">{schemeNum}</div> }
+          case _ => {<div class="grid grid-1-2 cya-answer" id="avoidance-scheme-value"></div>}
+        }
+      }
     }
-    }
-    }
-    case _ => {<div class="grid grid-1-2 cya-answer" id="tas-otp-val"><span class="status">@incomplete</span></div>}
+    case _ => {<div class="grid grid-1-2 cya-answer" id="avoidance-scheme-value"><span class="status">@incomplete</span></div>}
     }
 
     <div class="grid grid-1-6 cya-change">
@@ -225,13 +225,13 @@
   @propertyDetails.period match {
   case Some(p) => {
   @{p.taxAvoidancePromoterReference match {
-  case Some(schemeNum) if (PeriodUtils.isBlank(schemeNum)) => {<div class="grid grid-1-2 cya-answer" id="tas-otp-val-pr"></div>}
+  case Some(schemeNum) if (PeriodUtils.isBlank(schemeNum)) => {<div class="grid grid-1-2 cya-answer" id="prom-scheme-value"></div>}
   case Some(schemeNum) => { <div class="grid grid-1-2 cya-answer" id="prom-scheme-value">{schemeNum}</div> }
-  case _ => {<div class="grid grid-1-2 cya-answer" id="tas-otp-val"></div>}
+  case _ => {<div class="grid grid-1-2 cya-answer" id="prom-scheme-value"></div>}
   }
   }
   }
-  case _ => {<div class="grid grid-1-2 cya-answer" id="tas-otp-val"><span class="status">@incomplete</span></div>}
+  case _ => {<div class="grid grid-1-2 cya-answer" id="prom-scheme-value"><span class="status">@incomplete</span></div>}
   }
 
   <div class="grid grid-1-6 cya-change">
