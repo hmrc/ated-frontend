@@ -91,11 +91,15 @@
 
     <div class="grid-wrapper row-border">
       <div class="grid grid-2-6 cya-question">
-        <span id="th-view-return-property-valuation-date-@index" class="heading-small">@PeriodUtils.getPeriodValueDateMessage(index, valuesToDisplay.size)</span>
+        <span id="th-view-return-property-valuation-date-@index" class="heading-small">@Messages("ated.form-bundle.view.isValuedByAgent.message")</span>
       </div>
 
       <div class="grid grid-1-2 cya-answer">
-        <span id="td-view-return-property-valuation-date-@index">@valueObj.dateOfChange.toString(Messages("ated.date-format"))</span>
+        @if(formBundleReturnObj.professionalValuation){
+          <span id="td-view-return-property-valuation-date-@index">@Messages("ated.form-bundle.view.isValuedByAgent.yes")</span>
+        } else {
+          <span id="td-view-return-property-valuation-date-@index">@Messages("ated.form-bundle.view.isValuedByAgent.no")</span>
+        }
       </div>
     </div>
 
