@@ -93,7 +93,7 @@ class DisposeLiabilityHasBankDetailsControllerSpec extends PlaySpec with OneServ
             status(result) must be(OK)
             val doc = Jsoup.parse(contentAsString(result))
             doc.title() must be("Do you have the bank details for a repayment?")
-            doc.getElementById("pre-heading").text() must be("Change return")
+            doc.getElementById("pre-heading").text() must be("This section is: Change return")
 
         }
       }

@@ -94,7 +94,7 @@ class DisposeLiabilityBankDetailsControllerSpec extends PlaySpec with OneServerP
             status(result) must be(OK)
             val doc = Jsoup.parse(contentAsString(result))
             doc.title() must be("Are your bank details for a UK bank account?")
-            doc.getElementById("pre-heading").text() must be("Change return")
+            doc.getElementById("pre-heading").text() must be("This section is: Change return")
         }
       }
 

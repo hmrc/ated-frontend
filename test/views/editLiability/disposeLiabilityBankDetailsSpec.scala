@@ -51,7 +51,7 @@ class disposeLiabilityBankDetailsSpec extends FeatureSpec with OneServerPerSuite
       assert(document.select("h1").text === "Are your bank details for a UK bank account?")
 
       Then("The subheader should be - Change return")
-      assert(document.getElementById("pre-heading").text() === "Change return")
+      assert(document.getElementById("pre-heading").text() === "This section is: Change return")
 
       Then("The fields should have the correct titles")
       And("No data is populated")

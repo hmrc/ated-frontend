@@ -51,7 +51,7 @@ class editLiabilityDatesLiableSpec extends FeatureSpec with OneServerPerSuite wi
       assert(document.select("h1").text === "Enter the dates this change applies to")
 
       Then("The subheader should be - Change return")
-      assert(document.getElementById("pre-heading").text() === "Change return")
+      assert(document.getElementById("pre-heading").text() === "This section is: Change return")
 
       Then("The date fields should have the correct titles")
       assert(document.getElementById("startDate").text === "What was the first date, in this chargeable period, that this change applies to? For example, 1 4 2015 Day Month Year")

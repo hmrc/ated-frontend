@@ -64,7 +64,7 @@ class propertyDetailsSummarySpec extends FeatureSpec with OneServerPerSuite with
       assert(document.getElementById("property-details-summary-header").text === "Check your details are correct")
 
       Then("The subheader should be - Create return")
-      assert(document.getElementById("pre-heading").text() === "Create return")
+      assert(document.getElementById("pre-heading").text() === "This section is: Create return")
       
       assert(document.getElementById("details-text").text() === s"For the ATED period from ${formatDate(periodStartDate(calculatePeriod()))} to ${formatDate(periodEndDate(calculatePeriod()))}.")
       assert(document.getElementById("property-details-header").text() === "Property details")
@@ -106,7 +106,7 @@ class propertyDetailsSummarySpec extends FeatureSpec with OneServerPerSuite with
       assert(document.getElementById("property-details-summary-header").text === "Check your details are correct")
 
       Then("The subheader should be - Create return")
-      assert(document.getElementById("pre-heading").text() === "Create return")
+      assert(document.getElementById("pre-heading").text() === "This section is: Create return")
 
       assert(document.getElementById("details-text").text() === s"For the ATED period from ${formatDate(periodStartDate(calculatePeriod()))} to ${formatDate(periodEndDate(calculatePeriod()))}.")
       assert(document.getElementById("property-details-header").text() === "Property details")

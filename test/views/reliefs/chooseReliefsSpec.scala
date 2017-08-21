@@ -55,7 +55,7 @@ class chooseReliefsSpec extends FeatureSpec with OneServerPerSuite with MockitoS
       assert(document.select("h1").text === "What reliefs are you claiming?")
 
       Then("The subheader should be - Create return")
-      assert(document.getElementById("pre-header").text() === "Create return")
+      assert(document.getElementById("pre-header").text() === "This section is: Create return")
 
       Then("The the text on the screen should be correct")
       assert(document.getElementById("lede-text").text() === "You can select more than one relief code. A single relief code can cover 1 or more properties.")
@@ -121,7 +121,7 @@ class chooseReliefsSpec extends FeatureSpec with OneServerPerSuite with MockitoS
       assert(document.select("h1").text === "What reliefs are you claiming?")
 
       Then("The subheader should be - Create return")
-      assert(document.getElementById("pre-header").text() === "Create return")
+      assert(document.getElementById("pre-header").text() === "This section is: Create return")
 
       Then("The the text on the screen should be correct")
       assert(document.getElementById("lede-text").text() === "You can select more than one relief code. A single relief code can cover 1 or more properties.")

@@ -51,7 +51,7 @@ class editLiabilitySpec extends FeatureSpec with OneServerPerSuite with MockitoS
       assert(document.title() === "Edit your ATED return")
 
 
-      assert(document.getElementById("pre-heading").text() === "Change return")
+      assert(document.getElementById("pre-heading").text() === "This section is: Change return")
 
       assert(document.getElementById("editliability-text").text() === "Select the type of changes you want to make to your return")
 
@@ -85,7 +85,7 @@ class editLiabilitySpec extends FeatureSpec with OneServerPerSuite with MockitoS
       Then("the page title : Edit your ATED return")
       assert(document.title() === "Edit your ATED return")
 
-      assert(document.getElementById("pre-heading").text() === "Change return")
+      assert(document.getElementById("pre-heading").text() === "This section is: Change return")
 
       assert(document.getElementById("editliability-text").text() === "Your original return is too complex to edit online. To make any changes contact Customer Support.")
 

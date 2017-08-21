@@ -55,7 +55,7 @@ class periodChooseReliefSpec extends FeatureSpec with OneServerPerSuite with Moc
       assert(document.select("h1").text === "Select the type of relief")
 
       Then("The subheader should be - Create return")
-      assert(document.getElementById("pre-heading").text() === "Create return")
+      assert(document.getElementById("pre-heading").text() === "This section is: Create return")
 
       assert(document.getElementById("reliefDescription-property_rental_businesses_field").text() === "Rental business")
       assert(document.getElementById("reliefDescription-property_rental_businesses").attr("checked") === "")
@@ -98,7 +98,7 @@ class periodChooseReliefSpec extends FeatureSpec with OneServerPerSuite with Moc
       assert(document.select("h1").text === "Select the type of relief")
 
       Then("The subheader should be - Create return")
-      assert(document.getElementById("pre-heading").text() === "Create return")
+      assert(document.getElementById("pre-heading").text() === "This section is: Create return")
 
       assert(document.getElementById("reliefDescription-property_rental_businesses").attr("checked") === "checked")
       assert(document.getElementById("reliefDescription-dwellings_opened_to_the_public").attr("checked") === "")

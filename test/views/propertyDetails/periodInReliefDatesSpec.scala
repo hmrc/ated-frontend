@@ -50,7 +50,7 @@ class periodInReliefDatesSpec extends FeatureSpec with OneServerPerSuite with Mo
       assert(document.select("h1").text === "Add the dates when the property was in relief and was not liable for an ATED charge")
 
       Then("The subheader should be - Create return")
-      assert(document.getElementById("pre-heading").text() === "Create return")
+      assert(document.getElementById("pre-heading").text() === "This section is: Create return")
       Then("The date fields should have the correct titles")
       assert(document.getElementById("startDate").text === "What was the start date in this current period, when the relief started? For example, 1 4 2015 Day Month Year")
       assert(document.getElementById("endDate").text === "What was the end date in this current period, when the relief ended? For example, 31 3 2016 Day Month Year")

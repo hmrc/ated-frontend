@@ -51,7 +51,7 @@ class hasBankDetailsSpec extends FeatureSpec with OneServerPerSuite with Mockito
       assert(document.select("h1").text === "Do you have the bank details for a repayment?")
 
       Then("The subheader should be - Change return")
-      assert(document.getElementById("pre-heading").text() === "Change return")
+      assert(document.getElementById("pre-heading").text() === "This section is: Change return")
 
       Then("The text should be - We need bank details for the payment of any refunds that may be due.")
       assert(document.getElementById("has-bank-details-text").text() === "We need bank details for the payment of any refunds that may be due.")

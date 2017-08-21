@@ -51,7 +51,7 @@ class addressLookupSpec extends FeatureSpec with OneServerPerSuite with MockitoS
       assert(document.getElementById("account-lookup-header").text === "Find the property's address")
 
       Then("The subheader should be - Create return")
-      assert(document.getElementById("pre-heading").text() === "Create return")
+      assert(document.getElementById("pre-heading").text() === "This section is: Create return")
 
       Then("The fields should have the correct names")
       assert(document.getElementById("house-name_field").text() === "House name or number (optional)")
@@ -84,7 +84,7 @@ class addressLookupSpec extends FeatureSpec with OneServerPerSuite with MockitoS
       assert(document.getElementById("account-lookup-header").text === "Find the property's address")
 
       Then("The subheader should be - Change return")
-      assert(document.getElementById("pre-heading").text() === "Change return")
+      assert(document.getElementById("pre-heading").text() === "This section is: Change return")
 
       Then("The fields should have the correct names")
       assert(document.getElementById("house-name_field").text() === "House name or number (optional)")
