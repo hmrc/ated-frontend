@@ -1,10 +1,16 @@
-@(backLink: Option[String], subHeaderId: String, subHeaderValue: String, errorDisplay: Option[Html] = None)(implicit lang: play.api.i18n.Lang, messages: Messages)
+@(backLink: Option[String], subHeaderId: String, subHeaderValue: String, headerId: String, headerValue: String, errorDisplay: Option[Html] = None)(implicit lang: play.api.i18n.Lang, messages: Messages)
 
 @if(backLink.isDefined){
-  <a id="backLinkHref" class="link-back" href='@backLink'>@Messages("ated.back")</a>
-  @errorDisplay
-  <div class="heading-sub-no-margin" id=@subHeaderId> @subHeaderValue </div>
+<a id="backLinkHref" class="link-back" href='@backLink'>@Messages("ated.back")</a>
+@errorDisplay
+<header class="page-header">
+  <h1 id=@headerId class="heading-xlarge">@headerValue</h1>
+  <p id=@subHeaderId class="heading-secondary"><span class="visuallyhidden">@Messages("ated.screen-reader.section") </span>@subHeaderValue</p>
+</header>
 } else {
-  @errorDisplay
-  <div class="heading-sub" id=@subHeaderId> @subHeaderValue </div>
+@errorDisplay
+<header class="page-header page-header-margin">
+  <h1 id=@headerId class="heading-xlarge">@headerValue</h1>
+  <p id=@subHeaderId class="heading-secondary"><span class="visuallyhidden">@Messages("ated.screen-reader.section") </span>@subHeaderValue</p>
+</header>
 }

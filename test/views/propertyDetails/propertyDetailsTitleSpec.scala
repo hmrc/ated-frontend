@@ -52,7 +52,7 @@ class propertyDetailsTitleSpec extends FeatureSpec with OneServerPerSuite with M
       assert(document.select("h1").text === "What is the property's title number?")
 
       Then("The subheader should be - Create return")
-      assert(document.getElementById("pre-heading").text() === "Create return")
+      assert(document.getElementById("pre-heading").text() === "This section is: Create return")
 
 
       Then("The text fields should match")
@@ -84,7 +84,7 @@ class propertyDetailsTitleSpec extends FeatureSpec with OneServerPerSuite with M
       assert(document.select("h1").text === "What is the property's title number?")
 
       Then("The subheader should be - Change return")
-      assert(document.getElementById("pre-heading").text() === "Change return")
+      assert(document.getElementById("pre-heading").text() === "This section is: Change return")
 
       Then("The text fields should match")
       assert(document.getElementById("title-text").text() === "You can find the property's title number on the title deeds for the property.")

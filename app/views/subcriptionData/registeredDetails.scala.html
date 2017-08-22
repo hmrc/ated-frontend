@@ -25,9 +25,8 @@
 @atedMain(title = Messages("ated.registered-details.title"), attorney = atedContext.user.authContext.attorney, pageScripts = Some(pageScripts)) {
 
 
-  @pageHeadersAndError(backLink, "pre-header", Messages("ated.company-details.preheader"),
+  @pageHeadersAndError(backLink, "pre-header", Messages("ated.company-details.preheader"), "registered-details-header", Messages("ated.registered-details.header"),
       Some(atedErrorSummary(registeredDetailsForm, "ated.registered-address.error.general")))
-  <h1 class="heading-xlarge" id="registered-details-header">@Messages("ated.registered-details.header")</h1>
 
   @form(action = controllers.subscriptionData.routes.RegisteredDetailsController.submit) {
     <div class="form-group">

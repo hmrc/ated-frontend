@@ -10,10 +10,7 @@
 
 @atedMain(title = Messages("ated.relief-summary.declaration.title"), attorney = atedContext.user.authContext.attorney) {
 
-  @pageHeadersAndError(backLink, "pre-header", Messages("ated.choose-reliefs.subheader"))
-  <h1 class="heading-xlarge" id="relief-declaration-confirmation-header">
-    @Messages("ated.relief-summary.declaration.header")
-  </h1>
+  @pageHeadersAndError(backLink, "pre-header", Messages("ated.choose-reliefs.subheader"), "relief-declaration-confirmation-header", Messages("ated.relief-summary.declaration.header"))
 
   <div class="form-group">
     <p id="relief-declaration-before-declaration-text">

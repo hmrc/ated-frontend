@@ -16,13 +16,8 @@
 
 
 @atedMain(title = Messages("ated.property-details-value.isNewBuild.title"), attorney = atedContext.user.authContext.attorney, pageScripts = Some(pageScripts)) {
-  @pageHeadersAndError(backLink, "pre-heading", AtedUtils.getPropertyDetailsPreHeader(mode),
+  @pageHeadersAndError(backLink, "pre-heading", AtedUtils.getPropertyDetailsPreHeader(mode), "property-details-header", Messages("ated.property-details-value.isNewBuild.header"),
       Some(atedErrorSummary(propertyDetailsForm, "ated.property-details-value-error.general")))
-
-    <h1 class="heading-xlarge" id="property-details-header">
-      @Messages("ated.property-details-value.isNewBuild.header")
-    </h1>
-
 
   @form(action = controllers.propertyDetails.routes.PropertyDetailsNewBuildController.save(id, periodKey, mode)) {
 

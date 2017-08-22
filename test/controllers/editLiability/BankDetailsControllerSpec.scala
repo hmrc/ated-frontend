@@ -91,7 +91,7 @@ class BankDetailsControllerSpec extends PlaySpec with OneServerPerSuite with Moc
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
             document.title() must be("Are your bank details for a UK bank account?")
-            document.getElementById("pre-heading").text() must be("Change return")
+            document.getElementById("pre-heading").text() must be("This section is: Change return")
         }
       }
 

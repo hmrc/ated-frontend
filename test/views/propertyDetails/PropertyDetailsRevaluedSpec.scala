@@ -54,7 +54,7 @@ class PropertyDetailsRevaluedSpec extends FeatureSpec with OneServerPerSuite wit
       assert(document.title() === "Have you had the property revalued since you made the £40,000 or more change?")
 
       Then("The subheader should be - Create return")
-      assert(document.getElementById("pre-heading").text() === "Create return")
+      assert(document.getElementById("pre-heading").text() === "This section is: Create return")
       
       And("No data is populated")
       assert(document.getElementById("isPropertyRevalued").text() === "Have you had the property revalued since you made the £40,000 or more change? Yes No")
@@ -106,7 +106,7 @@ class PropertyDetailsRevaluedSpec extends FeatureSpec with OneServerPerSuite wit
       assert(document.title() === "Have you had the property revalued since you made the £40,000 or more change?")
 
       Then("The subheader should be - Change return")
-      assert(document.getElementById("pre-heading").text() === "Change return")
+      assert(document.getElementById("pre-heading").text() === "This section is: Change return")
 
       And("The data is populated for a property value set to true")
       assert(document.getElementById("isPropertyRevalued").text() === "Have you had the property revalued since you made the £40,000 or more change? Yes No")

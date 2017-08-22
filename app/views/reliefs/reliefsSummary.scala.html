@@ -7,10 +7,7 @@
 @import utils.PeriodUtils.{periodStartDate, periodEndDate}
 
 @atedMain(title = Messages("ated.relief-summary.title"), attorney = atedContext.user.authContext.attorney) {
-  @pageHeadersAndError(backLink, "pre-header", Messages("ated.choose-reliefs.subheader"))
-  <h1 class="heading-xlarge" id="property-details-summary-header">
-    @Messages("ated.relief-summary.header")
-  </h1>
+  @pageHeadersAndError(backLink, "pre-header", Messages("ated.choose-reliefs.subheader"), "property-details-summary-header", Messages("ated.relief-summary.header"))
 
   <div class="form-group">
     <p id="details-text">@Messages("ated.relief-summary.details-text",

@@ -51,7 +51,7 @@ class editLiabilityValueSpec extends FeatureSpec with OneServerPerSuite with Moc
       Then("the page title : Has the value of your property changed for the purposes of ATED?")
       assert(document.title() === "Has the value of your property changed for the purposes of ATED?")
 
-      assert(document.getElementById("pre-heading").text() === "Create return")
+      assert(document.getElementById("pre-heading").text() === "This section is: Create return")
 
       assert(document.getElementById("value-text").text() === "Based on the information you have previously given us the value of your property for the purposes of ATED is")
       assert(document.getElementById("old-value").text() === "£123")
@@ -88,7 +88,7 @@ class editLiabilityValueSpec extends FeatureSpec with OneServerPerSuite with Moc
       Then("the page title : Has the value of your property changed for the purposes of ATED?")
       assert(document.title() === "Has the value of your property changed for the purposes of ATED?")
 
-      assert(document.getElementById("pre-heading").text() === "Create return")
+      assert(document.getElementById("pre-heading").text() === "This section is: Create return")
 
       assert(document.getElementById("value-text").text() === "Based on the information you have previously given us the value of your property for the purposes of ATED is")
       assert(document.getElementById("old-value").text() === "£45,678")

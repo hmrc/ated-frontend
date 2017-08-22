@@ -53,7 +53,7 @@ class periodsInAndOutReliefSpec extends FeatureSpec with OneServerPerSuite with 
       assert(document.select("h1").text === "Add periods when the property was in relief and when it was liable for an ATED charge")
 
       Then("The subheader should be - Create return")
-      assert(document.getElementById("pre-heading").text() === "Create return")
+      assert(document.getElementById("pre-heading").text() === "This section is: Create return")
 
       Then("Text should read No periods of relief or charge have been added yet")
       assert(document.getElementById("no-periods").text() === "No periods of relief or charge have been added yet")
@@ -90,7 +90,7 @@ class periodsInAndOutReliefSpec extends FeatureSpec with OneServerPerSuite with 
       assert(document.select("h1").text === "Add periods when the property was in relief and when it was liable for an ATED charge")
 
       Then("The subheader should be - Change return")
-      assert(document.getElementById("pre-heading").text() === "Change return")
+      assert(document.getElementById("pre-heading").text() === "This section is: Change return")
 
       Then("Text should read No periods of relief or charge have been added yet")
       assert(document.getElementById("no-periods") === null)

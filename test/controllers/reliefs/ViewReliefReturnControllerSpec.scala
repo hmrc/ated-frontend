@@ -114,7 +114,7 @@ class ViewReliefReturnControllerSpec extends PlaySpec with OneServerPerSuite wit
             result =>
               status(result) must be(OK)
               val doc = Jsoup.parse(contentAsString(result))
-              doc.getElementById("relief-return-subheader").text() must be(organisationName)
+              doc.getElementById("relief-return-subheader").text() must be("This section is: " + organisationName)
               doc.getElementById("relief-return-text").text() must be("For the ATED period from 1 April 2015 to 31 March 2016.")
               doc.getElementById("relief-return-header").text() must be("View return")
               doc.getElementById("submit").text() must be("Change return")

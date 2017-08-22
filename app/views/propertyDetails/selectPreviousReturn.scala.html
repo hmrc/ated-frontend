@@ -11,10 +11,7 @@
 @(periodKey: Int, returnType: String, addressResultsForm: Form[AddressSelected], prevReturns: Seq[PreviousReturns], backLink: Option[String])(implicit atedContext: AtedContext, messages: Messages)
 
 @atedMain(title = Messages("ated.select-past-return.title"), attorney = atedContext.user.authContext.attorney) {
-@pageHeadersAndError(backLink, "pre-header", Messages("ated.return-type.pre-header"), None)
-<h1 class="heading-xlarge" id="header">
-    @Messages("ated.select-past-return.header")
-</h1>
+@pageHeadersAndError(backLink, "pre-header", Messages("ated.return-type.pre-header"), "header", Messages("ated.select-past-return.header"),  None)
 
 <div class="form-group">
   @if(!prevReturns.isEmpty) {

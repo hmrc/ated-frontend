@@ -8,10 +8,7 @@
 
 @atedMain(title = Messages("ated.property-details-summary.title"), attorney = atedContext.user.authContext.attorney) {
 
-  @pageHeadersAndError(backLink, "pre-heading", Messages("ated.property-details.pre-header-dispose"))
-    <h1 class="heading-xlarge" id="edit-liability-summary-header">
-      @Messages("ated.property-details-summary.header")
-    </h1>
+  @pageHeadersAndError(backLink, "pre-heading", Messages("ated.property-details.pre-header-dispose"), "edit-liability-summary-header", Messages("ated.property-details-summary.header"))
 
 <div id="property-summary">
   <div class="form-group">

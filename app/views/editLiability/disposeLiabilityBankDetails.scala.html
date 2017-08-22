@@ -12,11 +12,8 @@
 }
 
 @atedMain(title = Messages("ated.bank-details.title"), attorney = atedContext.user.authContext.attorney, pageScripts = Some(pageScripts)) {
-  @pageHeadersAndError(backLink, "pre-heading", Messages("ated.property-details.pre-header-dispose"),
+  @pageHeadersAndError(backLink, "pre-heading", Messages("ated.property-details.pre-header-dispose"), "bank-details-header", Messages("ated.bank-details.header"),
       Some(atedErrorSummary(bankDetailsForm, "ated.bank-details.error-key")))
-    <h1 class="heading-xlarge" id="bank-details-header">
-      @Messages("ated.bank-details.header")
-    </h1>
 
   @form(action=controllers.editLiability.routes.DisposeLiabilityBankDetailsController.save(oldFormBundleNo)) {
     <div class="form-group" id="hasUKBankAccount-id">

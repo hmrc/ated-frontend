@@ -18,13 +18,8 @@
 
 
 @atedMain(title = Messages("ated.property-details-value.isOwnedBefore2012.title"), attorney = atedContext.user.authContext.attorney, pageScripts = Some(pageScripts)) {
-  @pageHeadersAndError(backLink, "pre-heading", AtedUtils.getPropertyDetailsPreHeader(mode),
+  @pageHeadersAndError(backLink, "pre-heading", AtedUtils.getPropertyDetailsPreHeader(mode), "property-details-header", Messages("ated.property-details-value.isOwnedBefore2012.header"),
       Some(atedErrorSummary(propertyDetailsForm, "ated.property-details-value-error.general")))
-  <div class="form-group">
-    <h1 class="heading-xlarge" id="property-details-header">
-      @Messages("ated.property-details-value.isOwnedBefore2012.header")
-    </h1>
-  </div>
 
   @form(action = controllers.propertyDetails.routes.PropertyDetailsOwnedBeforeController.save(id, periodKey, mode)) {
 

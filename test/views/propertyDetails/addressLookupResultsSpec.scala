@@ -55,7 +55,7 @@ class addressLookupResultsSpec extends FeatureSpec with OneServerPerSuite with M
       assert(document.getElementById("account-lookup-header").text === "Select the address of the property")
 
       Then("The subheader should be - Create return")
-      assert(document.getElementById("pre-heading").text() === "Create return")
+      assert(document.getElementById("pre-heading").text() === "This section is: Create return")
 
       Then("The search criteria header should be - Postcode")
       assert(document.getElementById("search-criteria-header").text() === "Postcode")
@@ -100,7 +100,7 @@ class addressLookupResultsSpec extends FeatureSpec with OneServerPerSuite with M
       assert(document.getElementById("account-lookup-header").text === "Select the address of the property")
 
       Then("The subheader should be - Change return")
-      assert(document.getElementById("pre-heading").text() === "Change return")
+      assert(document.getElementById("pre-heading").text() === "This section is: Change return")
 
       Then("The search criteria header should be - Postcode")
       assert(document.getElementById("search-criteria-header").text() === "Postcode")

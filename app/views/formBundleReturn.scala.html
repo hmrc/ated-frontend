@@ -23,11 +23,7 @@
 @atedMain(title = Messages("ated.form-bundle.title"), attorney = atedContext.user.authContext.attorney,
                             pageScripts = Some(pageScripts)) {
 
-  @pageHeadersAndError(backLink, "form-bundle-subheader", organisationName.getOrElse(""))
-
-  <h1 class="heading-xlarge" id="form-bundle-header">
-      @Messages("ated.form-bundle.header")
-  </h1>
+  @pageHeadersAndError(backLink, "form-bundle-subheader", organisationName.getOrElse(""), "form-bundle-header", Messages("ated.form-bundle.header"))
 
   <div class="form-group" id="form-bundle-text">@Messages("ated.form-bundle.subheader",
     PeriodUtils.periodStartDate(periodKey).toString(Messages("ated.date-format")),

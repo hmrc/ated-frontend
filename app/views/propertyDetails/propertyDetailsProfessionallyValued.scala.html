@@ -19,13 +19,8 @@
 
 @atedMain(title = Messages("ated.property-details-value.isValuedByAgent.title"), attorney = atedContext.user.authContext.attorney, pageScripts = Some(pageScripts)) {
 
-  @pageHeadersAndError(backLink, "pre-heading", AtedUtils.getPropertyDetailsPreHeader(mode),
+  @pageHeadersAndError(backLink, "pre-heading", AtedUtils.getPropertyDetailsPreHeader(mode), "property-details-header", Messages("ated.property-details-value.isValuedByAgent.header"),
       Some(atedErrorSummary(propertyDetailsForm, "ated.property-details-value-error.general")))
-  <div class="form-group">
-    <h1 class="heading-xlarge" id="property-details-header">
-      @Messages("ated.property-details-value.isValuedByAgent.header")
-    </h1>
-  </div>
 
   @form(action = controllers.propertyDetails.routes.PropertyDetailsProfessionallyValuedController.save(id, periodKey, mode)) {
 

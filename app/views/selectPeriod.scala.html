@@ -8,11 +8,8 @@
 @import utils.AtedUtils._
 
 @atedMain(title = Messages("ated.select-period.title"), attorney = atedContext.user.authContext.attorney) {
-  @pageHeadersAndError(backLink, "pre-heading", Messages("ated.return-type.pre-header"),
+  @pageHeadersAndError(backLink, "pre-heading", Messages("ated.return-type.pre-header"), "header", Messages("ated.select-period.header"),
     Some(atedErrorSummary(selectPeriodForm, "ated.select-period.error.general")))
-  <h1 class="heading-xlarge" id="header">
-    @Messages("ated.select-period.header")
-  </h1>
 
   <p id="details-text">@Messages("ated.select-period.text")</p>
 

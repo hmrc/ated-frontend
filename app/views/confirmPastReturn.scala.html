@@ -11,11 +11,8 @@
 @(confirmExistingReturn: Form[YesNoQuestion], periodKey: Int, returnType: String, backLink: Option[String])(implicit atedContext: AtedContext, messages: Messages)
 
 @atedMain(title = Messages("ated.confirm-past-return-question.title"), attorney = atedContext.user.authContext.attorney) {
-@pageHeadersAndError(backLink, "pre-header", Messages("ated.return-type.pre-header"),
+@pageHeadersAndError(backLink, "pre-header", Messages("ated.return-type.pre-header"), "return-type-header", Messages("ated.confirm-past-return-question.header"),
 Some(atedErrorSummary(confirmExistingReturn, "ated.confirm-past-return-question.error.general")))
-    <h1 class="heading-xlarge" id="return-type-header">
-        @Messages("ated.confirm-past-return-question.header")
-    </h1>
 
     @form(action = controllers.routes.ExistingReturnQuestionController.submit(periodKey, returnType)) {
 

@@ -63,7 +63,7 @@ class editLiabilitySummarySpec extends FeatureSpec with OneServerPerSuite with M
       assert(document.getElementById("edit-liability-summary-header").text === "Check your details are correct")
 
       Then("The subheader should be - Change return")
-      assert(document.getElementById("pre-heading").text() === "Change return")
+      assert(document.getElementById("pre-heading").text() === "This section is: Change return")
       
       assert(document.getElementById("details-text").text() === s"For the ATED period from ${formatDate(periodStartDate(calculatePeriod()))} to ${formatDate(periodEndDate(calculatePeriod()))}.")
       assert(document.getElementById("edit-liability-header").text() === "Property details")
@@ -112,7 +112,7 @@ class editLiabilitySummarySpec extends FeatureSpec with OneServerPerSuite with M
       assert(document.getElementById("edit-liability-summary-header").text === "Check your details are correct")
 
       Then("The subheader should be - Change return")
-      assert(document.getElementById("pre-heading").text() === "Change return")
+      assert(document.getElementById("pre-heading").text() === "This section is: Change return")
 
       assert(document.getElementById("details-text").text() === s"For the ATED period from ${formatDate(periodStartDate(calculatePeriod()))} to ${formatDate(periodEndDate(calculatePeriod()))}.")
       assert(document.getElementById("edit-liability-header").text() === "Property details")
@@ -160,7 +160,7 @@ class editLiabilitySummarySpec extends FeatureSpec with OneServerPerSuite with M
       assert(document.getElementById("edit-liability-summary-header").text === "Check your details are correct")
 
       Then("The subheader should be - Change return")
-      assert(document.getElementById("pre-heading").text() === "Change return")
+      assert(document.getElementById("pre-heading").text() === "This section is: Change return")
 
       assert(document.getElementById("details-text").text() === s"For the ATED period from ${formatDate(periodStartDate(calculatePeriod()))} to ${formatDate(periodEndDate(calculatePeriod()))}.")
       assert(document.getElementById("edit-liability-header").text() === "Property details")
