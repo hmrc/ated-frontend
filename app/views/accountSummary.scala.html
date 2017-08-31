@@ -40,7 +40,7 @@
             @(periodSummaryWithDraft.draftReturns.size)</td>
           <td class="return-summary-td-action">
             <a href="@controllers.routes.PeriodSummaryController.view(periodSummaryWithDraft.periodKey)" id="view-change-@i" data-journey-click="ated-fronted:click:view-change">@Messages("ated.account-summary.view-change-button")
-              <span class="screen-reader-text">@periodSummaryWithDraft.periodKey-@(periodSummaryWithDraft.periodKey.toInt + 1)</span>
+              <span class="screen-reader-text">@Messages("ated.account-summary-screen-reader") @periodSummaryWithDraft.periodKey to @(periodSummaryWithDraft.periodKey.toInt + 1)</span>
             </a>
           </td>
         </tr>
