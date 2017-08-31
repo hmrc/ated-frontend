@@ -13,39 +13,79 @@
 
   @pageHeadersAndError(None, "client-summary-subheader", organisationName.getOrElse(""), "account-summary-header", Messages("ated.summary-return.header"))
 
+<style>
+  .grid-23-100 {
+    width: 25%;
+  }
+
+  .grid-15-100 {
+    width: 12%;
+  }
+
+</style>
+
+
   @if(summaryReturnsWithDrafts.allReturns.isEmpty) {
   <p><span class="heading-medium" id="return-summary-no-returns">@Messages("ated.account-summary.agent.no-returns")</span></p>
   } else {
-    <table id="returns-table">
-      <tr>
-        <th id="return-summary-th-period" class="td-summary-width">@Messages("ated.account-summary-th.period")</th>
-        <th id="return-summary-th-chargeable">@Messages("ated.account-summary-th.chargeable")</th>
-        <th id="return-summary-th-reliefs">@Messages("ated.account-summary-th.reliefs")</th>
-        <th id="return-summary-th-drafts">@Messages("ated.account-summary-th.drafts")</th>
-        <th id="return-summary-th-action" width="25%">@Messages("ated.period-summary-th.action")</th>
-      </tr>
-      @summaryReturnsWithDrafts.allReturns.zipWithIndex.map { case (periodSummaryWithDraft, i) =>
-        <tr>
-          <td class="return-summary-td-period">
-            <span class="screen-reader-text">@Messages("ated.account-summary-th.period")</span>
-            @periodSummaryWithDraft.periodKey to @(periodSummaryWithDraft.periodKey.toInt + 1)</td>
-          <td class="return-summary-td-chargeable">
-            <span class="screen-reader-text">@Messages("ated.account-summary-th.chargeable")</span>
-            @periodSummaryWithDraft.submittedReturns.fold(0)(a => a.currentLiabilityReturns.size + a.oldLiabilityReturns.size)</td>
-          <td class="return-summary-td-reliefs">
-            <span class="screen-reader-text">@Messages("ated.account-summary-th.reliefs")</span>
-            @periodSummaryWithDraft.submittedReturns.fold(0)(a => a.reliefReturns.size)</td>
-          <td class="return-summary-td-drafts">
-            <span class="screen-reader-text">@Messages("ated.account-summary-th.drafts")</span>
-            @(periodSummaryWithDraft.draftReturns.size)</td>
-          <td class="return-summary-td-action">
-            <a href="@controllers.routes.PeriodSummaryController.view(periodSummaryWithDraft.periodKey)" id="view-change-@i" data-journey-click="ated-fronted:click:view-change">@Messages("ated.account-summary.view-change-button")
-              <span class="screen-reader-text">@periodSummaryWithDraft.periodKey-@(periodSummaryWithDraft.periodKey.toInt + 1)</span>
-            </a>
-          </td>
-        </tr>
-      }
-    </table>
+
+<div class="form-group">
+  <div class="grid-wrapper row-border">
+    <div class="grid grid-23-100">
+      <span id="return-summary-th-period" class="heading-small">@Messages("ated.account-summary-th.period")</span>
+    </div>
+
+    <div class="grid grid-23-100 ">
+      <span id="return-summary-th-chargeable" class="heading-small">@Messages("ated.account-summary-th.chargeable")</span>
+    </div>
+
+    <div class="grid grid-15-100">
+      <span id="return-summary-th-reliefs" class="heading-small">@Messages("ated.account-summary-th.reliefs")</span>
+    </div>
+
+    <div class="grid grid-15-100">
+      <span id="return-summary-th-drafts" class="heading-small">@Messages("ated.account-summary-th.drafts")</span>
+    </div>
+
+    <div class="grid grid-23-100">
+      <span id="return-summary-th-action" class="heading-small">@Messages("ated.period-summary-th.action")</span>
+    </div>
+  </div>
+
+  @summaryReturnsWithDrafts.allReturns.zipWithIndex.map { case (periodSummaryWithDraft, i) =>
+
+  <div class="form-group">
+    <div class="grid-wrapper row-border">
+      <div class="grid grid-23-100">
+        <span class="screen-reader-text">@Messages("ated.account-summary-th.period")</span>
+        <p>@periodSummaryWithDraft.periodKey to @(periodSummaryWithDraft.periodKey.toInt + 1)</p>
+      </div>
+
+      <div class="grid grid-23-100">
+        <span class="screen-reader-text">@Messages("ated.account-summary-th.chargeable")</span>
+        <p>@periodSummaryWithDraft.submittedReturns.fold(0)(a => a.currentLiabilityReturns.size + a.oldLiabilityReturns.size)</p>
+      </div>
+
+      <div class="grid grid-15-100">
+        <span class="screen-reader-text">@Messages("ated.account-summary-th.reliefs")</span>
+        <p>@periodSummaryWithDraft.submittedReturns.fold(0)(a => a.reliefReturns.size)</p>
+      </div>
+
+      <div class="grid grid-15-100">
+        <span class="screen-reader-text">@Messages("ated.account-summary-th.drafts")</span>
+        <p>@(periodSummaryWithDraft.draftReturns.size)</p>
+      </div>
+
+      <div class="grid grid-23-100">
+        <p><a href="@controllers.routes.PeriodSummaryController.view(periodSummaryWithDraft.periodKey)" id="view-change-@i" data-journey-click="ated-fronted:click:view-change">@Messages("ated.account-summary.view-change-button")
+          <span class="screen-reader-text">@periodSummaryWithDraft.periodKey-@(periodSummaryWithDraft.periodKey.toInt + 1)</span>
+        </a></p>
+      </div>
+
+    </div>
+
+
+  }
   }
 
   @if(!summaryReturnsWithDrafts.allReturns.isEmpty) {
