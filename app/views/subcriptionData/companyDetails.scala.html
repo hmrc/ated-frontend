@@ -45,7 +45,7 @@ pageScripts = Some(pageScripts)) {
       <td class="td-top">
         @registrationDetails.map{ regDetails=>
           @if(regDetails.isEditable){
-            <a href='@controllers.subscriptionData.routes.RegisteredDetailsController.edit' id="registered-edit" aria-label='@Messages("ated.company-details.registered-address.edit.title")'>@Messages("ated.company-details.registered-address.edit")</a></td>
+            <a href='@controllers.subscriptionData.routes.RegisteredDetailsController.edit' id="registered-edit">@Messages("ated.company-details.registered-address.edit") <span class="visuallyhidden">@Messages("ated.company-details.registered-address")</span></a></td>
           }
         }
     </tr>
@@ -62,7 +62,7 @@ pageScripts = Some(pageScripts)) {
           <td class="td-top">
             @registrationDetails.map{ regDetails=>
               @if(regDetails.isEditable){
-                <a href='@controllers.subscriptionData.routes.OverseasCompanyRegistrationController.edit' id="registered-edit" aria-label='@Messages("ated.company-details.registered-address.edit.title")'>@Messages("ated.company-details.registered-address.edit")</a></td>
+                <a href='@controllers.subscriptionData.routes.OverseasCompanyRegistrationController.edit' id="registered-edit">@Messages("ated.company-details.registered-address.edit") <span class="visuallyhidden">@Messages("ated.company-details.overseas_reg_number")</span></a></td>
               }
             }
         </tr>
@@ -87,7 +87,7 @@ pageScripts = Some(pageScripts)) {
           }
         </div>
       </td>
-      <td class="td-top"><a href='@controllers.subscriptionData.routes.CorrespondenceAddressController.editAddress' id="correspondence-edit" aria-label='@Messages("ated.correspondence-address.edit.title")'>@Messages("ated.company-details.correspondence-address.edit")</a></td>
+      <td class="td-top"><a href='@controllers.subscriptionData.routes.CorrespondenceAddressController.editAddress' id="correspondence-edit">@Messages("ated.company-details.correspondence-address.edit") <span class="visuallyhidden">@Messages("ated.company-details.correspondence-address")</span></a></td>
     </tr>
     <tr>
       <td class="text-bold td-top" id="contact-details-label">@Messages("ated.company-details.contact-address")</td>
@@ -108,7 +108,7 @@ pageScripts = Some(pageScripts)) {
           }
         </div>
       </td>
-      <td class="td-top"><a href='@controllers.subscriptionData.routes.EditContactDetailsController.edit' id="contactdetails-edit" aria-label='@Messages("ated.contact-address.edit.title")'>@Messages("ated.contact-address.edit")</a></td>
+      <td class="td-top"><a href='@controllers.subscriptionData.routes.EditContactDetailsController.edit' id="contactdetails-edit">@Messages("ated.contact-address.edit") <span class="visuallyhidden">@Messages("ated.company-details.contact-address")</span></a></td>
     </tr>
     <tr>
       <td class="text-bold td-top" id="contact-pref-label">@Messages("ated.company-details.contact-preference.label")</td>
@@ -117,7 +117,7 @@ pageScripts = Some(pageScripts)) {
           @correspondence.map(_.contactDetails.map(_.emailAddress))
         }
       </td>
-      <td><a href='@controllers.subscriptionData.routes.EditContactEmailController.edit' id="contactemail-edit" aria-label='@Messages("ated.contact-address.edit.title")'>@Messages("ated.contact-address.edit")</a></td>
+      <td><a href='@controllers.subscriptionData.routes.EditContactEmailController.edit' id="contactemail-edit">@Messages("ated.contact-address.edit") <span class="visuallyhidden">@Messages("ated.company-details.contact-preference.label")</span></a></td>
     </tr>
     @clientDetails.map { details =>
       <tr>
@@ -125,14 +125,14 @@ pageScripts = Some(pageScripts)) {
         <td id="appointed-agent-val">
           @details.agentName
         </td>
-        <td><a href='@details.changeAgentLink' id="appointed-agent-link" aria-label='@Messages("ated.contact-address.edit.title")'>@Messages("ated.contact-address.edit")</a></td>
+        <td><a href='@details.changeAgentLink' id="appointed-agent-link">@Messages("ated.contact-address.edit") <span class="visuallyhidden">@Messages("ated.company-details.appointed_agent")</span></a></td>
       </tr>
       <tr>
         <td class="text-bold td-top" id="email-label">@Messages("ated.company-details.mandate_email")</td>
         <td id="email-val">
           @details.email
         </td>
-        <td><a href='@details.changeEmailLink' id="email-link" aria-label='@Messages("ated.contact-address.edit.title")'>@Messages("ated.contact-address.edit")</a></td>
+        <td><a href='@details.changeEmailLink' id="email-link">@Messages("ated.contact-address.edit") <span class="visuallyhidden">@Messages("ated.company-details.mandate_email")</span></a></td>
       </tr>
     }
   </table>

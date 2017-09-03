@@ -38,7 +38,7 @@
 
       <div class="grid grid-1-6 cya-change">
         <a href="@controllers.propertyDetails.routes.PropertyDetailsAddressController.editFromSummary(propertyDetails.id)" id="edit-property-address-details" data-journey-click="ated-fronted:click:edit-property-address-details"
-           aria-label='@Messages("ated.property-details-summary.table.property-details-edit-link.title")'>@Messages("ated.edit")
+           aria-label='@Messages("ated.property-details-summary.table.property-details-edit-link.title")'>@Messages("ated.edit") <span class="visuallyhidden">@Messages("ated.property-details-summary.table.property-details.address.label")</span>
         </a>
       </div>
     </div>
@@ -54,9 +54,8 @@
 
       <div class="grid grid-1-6 cya-change">
         <a href="@controllers.propertyDetails.routes.PropertyDetailsTitleController.editFromSummary(propertyDetails.id)" id="edit-property-title-details" title='@Messages("ated.property-details-summary.table.property-details-edit-link.title")'>
-          @Messages("ated.edit")
+          @Messages("ated.edit") <span class="visuallyhidden">@Messages("ated.property-details-summary.table.property-details.title-number.label")</span>
         </a>
-        <span class="visuallyhidden">@Messages("ated.property-details-summary.table.property-details-edit-link.title.screen-reader")</span>
       </div>
     </div>
   </div>
@@ -78,9 +77,8 @@
 
       <div class="grid grid-1-6 cya-change">
         <a href="@controllers.propertyDetails.routes.PropertyDetailsOwnedBeforeController.editFromSummary(propertyDetails.id)" id="edit-property-value-incomplete" data-journey-click="ated-fronted:click:edit-property-value"
-           aria-label='@Messages("ated.property-details-summary.table.property-value-edit-link.title")'>@Messages("ated.edit")
+           aria-label='@Messages("ated.property-details-summary.table.property-value-edit-link.title")'>@Messages("ated.edit") <span class="visuallyhidden">@Messages("ated.form-bundle.view.return.value.only")</span>
         </a>
-        <span class="visuallyhidden">@Messages("ated.property-details-summary.table.property-value-edit-link.title.screen-reader")</span>
       </div>
     </div>
 
@@ -95,9 +93,8 @@
 
       <div class="grid grid-1-6 cya-change">
         <a href="@controllers.propertyDetails.routes.PropertyDetailsProfessionallyValuedController.view(propertyDetails.id)" id="edit-property-professionally-valued-details-incomplete" title='@Messages("ated.property-details-summary.table.property-details-edit-link.title")'>
-          @Messages("ated.edit")
+          @Messages("ated.edit") <span class="visuallyhidden">@Messages("ated.form-bundle.view.isValuedByAgent.message")</span>
         </a>
-        <span class="visuallyhidden">@Messages("ated.property-details-summary.table.property-details-prof-valued-edit-link.title.screen-reader")</span>
       </div>
     </div>
 
@@ -114,7 +111,7 @@
 
     <div class="grid grid-1-6 cya-change">
       <a href="@controllers.propertyDetails.routes.PropertyDetailsProfessionallyValuedController.editFromSummary(propertyDetails.id)" id="edit-property-professionally-value" title='@Messages("ated.property-details-summary.table.property-details-edit-link.title")'>
-        @Messages("ated.edit")
+        @Messages("ated.edit") <span class="visuallyhidden">@PeriodUtils.getPeriodValueMessage(index, valuesToDisplay.size)</span>
       </a>
     </div>
   </div>
@@ -134,7 +131,7 @@
     }
     <div class="grid grid-1-6 cya-change">
       <a href="@controllers.propertyDetails.routes.PropertyDetailsProfessionallyValuedController.editFromSummary(propertyDetails.id)" id="edit-property-professionally-valued-details" title='@Messages("ated.property-details-summary.table.property-details-edit-link.title")'>
-        @Messages("ated.edit")
+        @Messages("ated.edit") <span class="visuallyhidden">@Messages("ated.form-bundle.view.isValuedByAgent.message")</span>
       </a>
     </div>
   </div>
@@ -159,7 +156,7 @@
 
     <div class="grid grid-1-6 cya-change">
       <a href="@controllers.propertyDetails.routes.IsFullTaxPeriodController.editFromSummary(propertyDetails.id)" id="edit-dates-of-liablity-incomplete"
-         aria-label='@Messages("ated.property-details-summary.table.dates-of-liability.edit-link.title")'>@Messages("ated.edit")
+         aria-label='@Messages("ated.property-details-summary.table.dates-of-liability.edit-link.title")'>@Messages("ated.edit") <span class="visuallyhidden">@Messages("ated.property-details-period.liability.return-type")</span>
       </a>
     </div>
   </div>
@@ -176,7 +173,7 @@
 
     <div class="grid grid-1-6 cya-change">
       <a href="@controllers.propertyDetails.routes.IsFullTaxPeriodController.editFromSummary(propertyDetails.id)" id="edit-dates-of-liablity"
-         aria-label='@Messages("ated.property-details-summary.table.dates-of-liability.edit-link.title")'>@Messages("ated.edit")
+         aria-label='@Messages("ated.property-details-summary.table.dates-of-liability.edit-link.title")'>@Messages("ated.edit") <span class="visuallyhidden">@period.description</span>
       </a>
     </div>
   </div>
@@ -209,7 +206,7 @@
 
     <div class="grid grid-1-6 cya-change">
       <a href="@controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceController.editFromSummary(propertyDetails.id)" id="edit-avoidance-scheme"
-         aria-label='@Messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.edit-link.title")'>@Messages("ated.edit")
+         aria-label='@Messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.edit-link.title")'>@Messages("ated.edit") <span class="visuallyhidden">@Messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.label")</span>
       </a>
     </div>
   </div>
@@ -232,9 +229,8 @@
   }
 
   <div class="grid grid-1-6 cya-change">
-    <a href="@controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceController.editFromSummary(propertyDetails.id)" id="edit-promoter-scheme">@Messages("ated.edit")
+    <a href="@controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceController.editFromSummary(propertyDetails.id)" id="edit-promoter-scheme">@Messages("ated.edit") <span class="visuallyhidden">@Messages("ated.property-details-summary.table.property-ated-details.promoter-reference.label")</span>
     </a>
-    <span class="visuallyhidden">@Messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.edit-link.title")</span>
   </div>
 
   </div>
@@ -256,7 +252,7 @@
 
     <div class="grid grid-1-6 cya-change">
       <a href="@controllers.propertyDetails.routes.PropertyDetailsSupportingInfoController.editFromSummary(propertyDetails.id)" id="edit-supporting-details"
-         aria-label='@Messages("ated.property-details-summary.table.supporting-info.edit-link.title")'>@Messages("ated.edit")</a>
+         aria-label='@Messages("ated.property-details-summary.table.supporting-info.edit-link.title")'>@Messages("ated.edit") <span class="visuallyhidden">@Messages("ated.property-details-summary.table.property-ated-details.additional-information.label")</span></a>
     </div>
   </div>
 </div>
@@ -296,7 +292,7 @@
 
   <div class="form-group">
     <a href="@controllers.propertyDetails.routes.PropertyDetailsSummaryController.viewPrintFriendlyLiabilityReturn(propertyDetails.id)" id="print-friendly-liability-link" data-journey-click="ated-fronted:click:print-friendly-liability-link" target="_blank">
-      @Messages("ated.property-details-summary.print.view")
+      @Messages("ated.property-details-summary.print.view") @Messages("ated.property-details-summary.table.property-ated-details.additional-information.label")
     </a>
   </div>
 
