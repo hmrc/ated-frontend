@@ -82,14 +82,14 @@ class CompanyDetailsSpec extends FeatureSpec with OneServerPerSuite with Mockito
       assert(document.getElementById("registered-edit").attr("href") === "/ated/registered-details")
 
       assert(document.getElementById("correspondence-address-label").text() === "Correspondence address")
-      assert(document.getElementById("correspondence-edit").text() === "Edit")
-      assert(document.getElementById("contactdetails-edit").text() === "Edit")
+      assert(document.getElementById("correspondence-edit").text() === "Edit Correspondence address")
+      assert(document.getElementById("contactdetails-edit").text() === "Edit ATED contact details")
 
       assert(document.getElementById("correspondence-edit").attr("href") === "/ated/correspondence-address")
       assert(document.getElementById("contactdetails-edit").attr("href") === "/ated/edit-contact")
 
       assert(document.getElementById("contact-details-label").text() === "ATED contact details")
-      assert(document.getElementById("contactdetails-edit").text() === "Edit")
+      assert(document.getElementById("contactdetails-edit").text() === "Edit ATED contact details")
       assert(document.getElementById("contact-pref-label").text() === "Contact Email address")
       assert(document.getElementById("contact-pref-val").text() === "a@b.c")
       assert(document.getElementById("back").text() === "Back to your ATED online service")
@@ -124,14 +124,14 @@ class CompanyDetailsSpec extends FeatureSpec with OneServerPerSuite with Mockito
       assert(Option(document.getElementById("registered-edit")) === None)
 
       assert(document.getElementById("correspondence-address-label").text() === "Correspondence address")
-      assert(document.getElementById("correspondence-edit").text() === "Edit")
-      assert(document.getElementById("contactdetails-edit").text() === "Edit")
+      assert(document.getElementById("correspondence-edit").text() === "Edit Correspondence address")
+      assert(document.getElementById("contactdetails-edit").text() === "Edit ATED contact details")
 
       assert(document.getElementById("correspondence-edit").attr("href") === "/ated/correspondence-address")
       assert(document.getElementById("contactdetails-edit").attr("href") === "/ated/edit-contact")
 
       assert(document.getElementById("contact-details-label").text() === "ATED contact details")
-      assert(document.getElementById("contactdetails-edit").text() === "Edit")
+      assert(document.getElementById("contactdetails-edit").text() === "Edit ATED contact details")
       assert(document.getElementById("contact-pref-label").text() === "Contact Email address")
       assert(document.getElementById("contact-pref-val").text() === "a@b.c")
       assert(document.getElementById("back").text() === "Back to your ATED online service")
@@ -156,7 +156,7 @@ class CompanyDetailsSpec extends FeatureSpec with OneServerPerSuite with Mockito
       And("The pre-header text is - Your ATED details")
       assert(document.getElementById("company-details-header").text() === "Your ATED details")
 
-      assert(document.getElementById("contactdetails-edit").text() === "Edit")
+      assert(document.getElementById("contactdetails-edit").text() === "Edit ATED contact details")
       assert(document.getElementById("contact-pref-label").text() === "Contact Email address")
       assert(document.getElementById("contact-pref-val").text() === "")
 
