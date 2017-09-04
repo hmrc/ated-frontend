@@ -58,7 +58,7 @@ class propertyDetailsTitleSpec extends FeatureSpec with OneServerPerSuite with M
       Then("The text fields should match")
       assert(document.getElementById("title-text").text() === "You can find the property's title number on the title deeds for the property.")
       assert(document.getElementById("references.titleNumber").attr("value") === "")
-      assert(document.getElementById("references.titleNumber_hint").text() === "For example, SF420121, CS72532 (optional)")
+      assert(document.getElementById("references.titleNumber_hint").text() === "For example, CS72532 (optional)")
       assert(document.getElementById("titleNumber-reveal").text() === "I don't know my property's title number")
 
 
@@ -89,7 +89,7 @@ class propertyDetailsTitleSpec extends FeatureSpec with OneServerPerSuite with M
       Then("The text fields should match")
       assert(document.getElementById("title-text").text() === "You can find the property's title number on the title deeds for the property.")
       assert(document.getElementById("references.titleNumber").attr("value") === "")
-      assert(document.getElementById("references.titleNumber_hint").text() === "For example, SF420121, CS72532 (optional)")
+      assert(document.getElementById("references.titleNumber_hint").text() === "For example, CS72532 (optional)")
       assert(document.getElementById("titleNumber-reveal").text() === "I don't know my property's title number")
 
 
