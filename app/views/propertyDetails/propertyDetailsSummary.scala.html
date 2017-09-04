@@ -277,14 +277,14 @@
   <div class="form-group">
      <p id="ated-charge-text">
       @Messages("ated.property-details-summary.table.ated-charge.text")
-    </p>
-    <span id="ated-charge-value" class="heading-xlarge form-group">
+       <span id="ated-charge-value" class="heading-xlarge form-group">
       @if(propertyDetails.calculated.isEmpty) {
       @Messages("ated.unknow-amount.text")
       } else {
       @propertyDetails.calculated.flatMap(x=>x.liabilityAmount.map(y=>formattedPounds(y)))
       }
     </span>
+    </p>
    </div>
 
 

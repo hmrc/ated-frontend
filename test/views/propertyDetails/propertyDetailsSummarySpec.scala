@@ -87,7 +87,7 @@ class propertyDetailsSummarySpec extends FeatureSpec with OneServerPerSuite with
       assert(document.getElementById("avoidance-scheme-label").text() === "Avoidance scheme reference number")
       assert(document.getElementById("return-status-header").text() === "Return status")
       assert(document.getElementById("return-status-label").text() === "Status")
-      assert(document.getElementById("ated-charge-text").text() === "Based on the information you have given us your ATED charge is")
+      assert(document.getElementById("ated-charge-text").text() === "Based on the information you have given us your ATED charge is £1,000")
       assert(document.getElementById("ated-charge-value").text() === "£1,000")
     }
 
@@ -125,7 +125,7 @@ class propertyDetailsSummarySpec extends FeatureSpec with OneServerPerSuite with
       assert(document.getElementById("avoidance-scheme-label").text() === "Avoidance scheme reference number")
       assert(document.getElementById("return-status-header").text() === "Return status")
       assert(document.getElementById("return-status-label").text() === "Status")
-      assert(document.getElementById("ated-charge-text").text() === "Based on the information you have given us your ATED charge is")
+      assert(document.getElementById("ated-charge-text").text() === "Based on the information you have given us your ATED charge is £1,000")
       assert(document.getElementById("ated-charge-value").text() === "£1,000")
       assert(document.getElementById("submit-disabled-text").text() == "You can not submit returns until after the 1 April.")
     }
