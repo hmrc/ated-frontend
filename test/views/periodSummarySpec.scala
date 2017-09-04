@@ -102,12 +102,12 @@ class periodSummarySpec extends FeatureSpec with OneServerPerSuite with MockitoS
       assert(document.getElementById("past-returns") === null)
 
       Then("The table should have data")
-      assert(document.getElementById("view-edit-0").text() === "View or change")
+      assert(document.getElementById("view-edit-0").text() === "View or change addr1+2")
       assert(document.getElementById("liability-submitted-0").attr("href") === "/ated/form-bundle/123456789013/2015")
 
-      assert(document.getElementById("relief-submitted-0").text() === "View")
-      assert(document.getElementById("draft-liability-0").text() === "View or change")
-      assert(document.getElementById("draft-relief-1").text() === "View or change")
+      assert(document.getElementById("relief-submitted-0").text() === "View some relief")
+      assert(document.getElementById("draft-liability-0").text() === "View or change desc")
+      assert(document.getElementById("draft-relief-1").text() === "View or change some relief")
 
       assert(document.getElementById("backLinkHref").text() === "Back")
       assert(document.getElementById("backLinkHref").attr("href") === "http://backlink")
@@ -130,12 +130,12 @@ class periodSummarySpec extends FeatureSpec with OneServerPerSuite with MockitoS
       assert(document.getElementById("past-returns").text() === "Past returns")
 
       Then("The table should have data")
-      assert(document.getElementById("view-edit-0").text() === "View or change")
+      assert(document.getElementById("view-edit-0").text() === "View or change addr1+2")
       assert(document.getElementById("liability-submitted-0").attr("href") === "/ated/form-bundle/123456789013/2015")
 
-      assert(document.getElementById("relief-submitted-0").text() === "View")
-      assert(document.getElementById("draft-liability-0").text() === "View or change")
-      assert(document.getElementById("draft-relief-1").text() === "View or change")
+      assert(document.getElementById("relief-submitted-0").text() === "View some relief")
+      assert(document.getElementById("draft-liability-0").text() === "View or change desc")
+      assert(document.getElementById("draft-relief-1").text() === "View or change some relief")
 
       Then("Show the back link")
       assert(document.getElementById("backLinkHref").text() === "Back")
