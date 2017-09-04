@@ -55,9 +55,9 @@ periodEndDate(periodKey).toString(Messages("ated.date-format.summary"))
               data-journey-click="ated-fronted:click:liability-submitted">
                 <span id="view-edit-@t._2">
                 @if(t._1.changeAllowed) {
-                  @Messages("ated.period-summary.view-edit.button")
+                  @Messages("ated.period-summary.view-edit.button") <span class="visuallyhidden">@t._1.description</span>
                 } else {
-                  @Messages("ated.period-summary.view.button")
+                  @Messages("ated.period-summary.view.button") <span class="visuallyhidden">@t._1.description</span>
                 }
                 </span>
               </a>
