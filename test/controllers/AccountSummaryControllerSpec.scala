@@ -136,9 +136,9 @@ class AccountSummaryControllerSpec extends PlaySpec with OneServerPerSuite with 
               document.getElementById("return-summary-th-reliefs").text() must be("Relief")
               document.getElementById("return-summary-th-drafts").text() must be("Draft")
               document.getElementById("return-summary-th-action").text() must be("Action")
-              document.getElementsByClass("return-summary-td-chargeable").text() must be("Chargeable 1")
-              document.getElementsByClass("return-summary-td-reliefs").text() must be("Relief 1")
-              document.getElementsByClass("return-summary-td-drafts").text() must be("Draft 2")
+              document.getElementsByClass("return-summary-td-chargeable").text() must be("1")
+              document.getElementsByClass("return-summary-td-reliefs").text() must be("1")
+              document.getElementsByClass("return-summary-td-drafts").text() must be("2")
               document.getElementById("view-change-0").text() must include("View or change")
               document.getElementById("create-return").text() must be("Create a new return")
 
@@ -169,9 +169,9 @@ class AccountSummaryControllerSpec extends PlaySpec with OneServerPerSuite with 
               document.title() must be("Your ATED online service")
               document.getElementById("account-summary-header").text() must be("Your ATED online service")
               document.getElementById("return-summary-th-period").text() must be("Period")
-              document.getElementsByClass("return-summary-td-chargeable").text() must be("Chargeable 1")
-              document.getElementsByClass("return-summary-td-reliefs").text() must be("Relief 1")
-              document.getElementsByClass("return-summary-td-drafts").text() must be("Draft 2")
+              document.getElementsByClass("return-summary-td-chargeable").text() must be("1")
+              document.getElementsByClass("return-summary-td-reliefs").text() must be("1")
+              document.getElementsByClass("return-summary-td-drafts").text() must be("2")
 
               Option(document.getElementById("return-summary-no-returns")) must be(None)
           }
@@ -200,9 +200,9 @@ class AccountSummaryControllerSpec extends PlaySpec with OneServerPerSuite with 
               document.getElementById("account-summary-header").text() must be("Your ATED online service")
 
               document.getElementById("return-summary-th-period").text() must be("Period")
-              document.getElementsByClass("return-summary-td-chargeable").text() must be("Chargeable 1")
-              document.getElementsByClass("return-summary-td-reliefs").text() must be("Relief 1")
-              document.getElementsByClass("return-summary-td-drafts").text() must be("Draft 2")
+              document.getElementsByClass("return-summary-td-chargeable").text() must be("1")
+              document.getElementsByClass("return-summary-td-reliefs").text() must be("1")
+              document.getElementsByClass("return-summary-td-drafts").text() must be("2")
 
               Option(document.getElementById("return-summary-no-returns")) must be(None)
           }

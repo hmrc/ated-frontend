@@ -27,20 +27,16 @@
       @summaryReturnsWithDrafts.allReturns.zipWithIndex.map { case (periodSummaryWithDraft, i) =>
         <tr>
           <td class="return-summary-td-period">
-            <span class="screen-reader-text">@Messages("ated.account-summary-th.period")</span>
             @periodSummaryWithDraft.periodKey to @(periodSummaryWithDraft.periodKey.toInt + 1)</td>
           <td class="return-summary-td-chargeable">
-            <span class="screen-reader-text">@Messages("ated.account-summary-th.chargeable")</span>
             @periodSummaryWithDraft.submittedReturns.fold(0)(a => a.currentLiabilityReturns.size + a.oldLiabilityReturns.size)</td>
           <td class="return-summary-td-reliefs">
-            <span class="screen-reader-text">@Messages("ated.account-summary-th.reliefs")</span>
             @periodSummaryWithDraft.submittedReturns.fold(0)(a => a.reliefReturns.size)</td>
           <td class="return-summary-td-drafts">
-            <span class="screen-reader-text">@Messages("ated.account-summary-th.drafts")</span>
             @(periodSummaryWithDraft.draftReturns.size)</td>
           <td class="return-summary-td-action">
             <a href="@controllers.routes.PeriodSummaryController.view(periodSummaryWithDraft.periodKey)" id="view-change-@i" data-journey-click="ated-fronted:click:view-change">@Messages("ated.account-summary.view-change-button")
-              <span class="screen-reader-text">@Messages("ated.account-summary-screen-reader") @periodSummaryWithDraft.periodKey to @(periodSummaryWithDraft.periodKey.toInt + 1)</span>
+              <span class="visuallyhidden">@Messages("ated.account-summary-screen-reader") @periodSummaryWithDraft.periodKey to @(periodSummaryWithDraft.periodKey.toInt + 1)</span>
             </a>
           </td>
         </tr>
