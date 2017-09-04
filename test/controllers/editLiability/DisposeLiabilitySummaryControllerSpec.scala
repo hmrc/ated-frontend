@@ -100,7 +100,7 @@ class DisposeLiabilitySummaryControllerSpec extends PlaySpec with OneServerPerSu
             document.getElementById("details-text").text() must be("For the ATED period from 1 April 2015 to 31 March 2016.")
             document.getElementById("property-summary").text() must include("Bank details Supply bank details INCOMPLETE Edit")
             document.getElementById("edit-liability-header").text() must be("Property details")
-            document.getElementById("edit-property-disposal-date").text() must be("Edit")
+            document.getElementById("edit-property-disposal-date").text() must be("Edit Date disposed property")
             document.getElementById("property-address-label").text() must be("Address")
             document.getElementById("property-address-value").text() must be("line1, line2")
             document.getElementById("address-line-1").text() must be("line1")

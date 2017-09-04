@@ -107,7 +107,7 @@ class CompanyDetailsControllerSpec extends PlaySpec with OneServerPerSuite with 
             document.title() must be("Your ATED details")
             document.getElementById("company-details-header").text() must be("Your ATED details")
 
-            document.getElementById("registered-edit").text() must be("Edit")
+            document.getElementById("registered-edit").text() must be("Edit Registered address")
             document.getElementById("registered-edit").attr("href") must be("/ated/registered-details")
         }
       }

@@ -8,6 +8,7 @@
 
 @atedMain(title = Messages("ated.view-relief-return.title"), attorney = atedContext.user.authContext.attorney) {
   @pageHeadersAndError(backLink, "relief-return-subheader", organisationName.getOrElse(""), "relief-return-header", Messages("ated.view-relief-return.header"))
+
   <div class="form-group">
     @form(action=controllers.reliefs.routes.ViewReliefReturnController.submit(periodKey: Int, formBundleNumber: String)) {
     <div class="paragraph" id="relief-return-text">@Messages("ated.view-relief-return.subheader",
@@ -15,8 +16,6 @@
       PeriodUtils.periodEndDate(periodKey).toString(Messages("ated.date-format")))
     </div>
   </div>
-
-
 <div class="form-group">
   <div class="grid-wrapper">
     <h2 id="th-view-relief-return-table-header" class="heading-medium">@submittedReliefReturn.reliefType</h2>
@@ -28,6 +27,7 @@
     </div>
 
     <div class="grid grid-1-4 cya-answer" id="td-view-relief-from-date">
+      <span class="visuallyhidden">@Messages("ated.view-relief-return.date.from")</span>
       @submittedReliefReturn.dateFrom.toString(Messages("ated.date-format"))
     </div>
   </div>
@@ -39,7 +39,7 @@
     </div>
 
     <div class="grid grid-1-4 cya-answer" id="td-view-relief-from-date">
-      <span id="td-view-relief-date-to">@submittedReliefReturn.dateTo.toString(Messages("ated.date-format"))
+      <span id="td-view-relief-date-to"> <span class="visuallyhidden">@Messages("ated.view-relief-return.date.to")</span> @submittedReliefReturn.dateTo.toString(Messages("ated.date-format"))
     </div>
   </div>
 
@@ -50,7 +50,7 @@
     </div>
 
     <div class="grid grid-1-4 cya-answer" id="td-view-relief-from-date">
-      <span id="td-view-relief-avoidance">@submittedReliefReturn.avoidanceSchemeNumber</span>
+      <span id="td-view-relief-avoidance">  <span class="visuallyhidden">@Messages("ated.view-relief-return.avoidance.no")</span> @submittedReliefReturn.avoidanceSchemeNumber</span>
     </div>
   </div>
 
@@ -60,7 +60,8 @@
     </div>
 
     <div class="grid grid-1-4 cya-answer" id="td-view-relief-from-date">
-      <span id="td-view-relief-avoidance-promoter">@submittedReliefReturn.promoterReferenceNumber</span>
+
+      <span id="td-view-relief-avoidance-promoter"> <span class="visuallyhidden">@Messages("ated.view-relief-return.promoter.no")</span> @submittedReliefReturn.promoterReferenceNumber</span>
     </div>
   </div>
 
@@ -71,7 +72,8 @@
     </div>
 
     <div class="grid grid-1-4 cya-answer" id="td-view-relief-from-date">
-      <span id="td-view-relief-status">@Messages("ated.view-relief-return.status.submitted")</span>
+
+      <span id="td-view-relief-status"> <span class="visuallyhidden">@Messages("ated.view-relief-return.status")</span> @Messages("ated.view-relief-return.status.submitted")</span>
     </div>
   </div>
 
@@ -82,7 +84,7 @@
     </div>
 
     <div class="grid grid-1-4 cya-answer" id="td-view-relief-from-date">
-      <span id="td-view-relief-submission-date">@submittedReliefReturn.dateOfSubmission.toString(Messages("ated.date-format"))</span>
+      <span id="td-view-relief-submission-date"> <span class="visuallyhidden">@Messages("ated.view-relief-return.submission-date")</span> @submittedReliefReturn.dateOfSubmission.toString(Messages("ated.date-format"))</span>
     </div>
   </div>
 
