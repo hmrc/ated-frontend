@@ -116,6 +116,7 @@ ated.account-summary.logout-button = Finish and sign out
 ated.account-summary.relief-text = From 1 April 2016 you will be able to use this service to submit an ATED return and/or claim relief.
 ated.account-summary.view-change-button = View or change
 ated.account-summary-back = Back to all your clients
+ated.account-summary-screen-reader = the period
 
 ## select-period
 ated.select-period.title = Select an ATED period
