@@ -78,8 +78,8 @@
     <div class="grid grid-2-6 cya-question">
         <span class="heading-small" id="status-otp">@Messages("ated.relief-summary.status")</span>
     </div>
-    <div class="grid grid-1-2 cya-answer">
-        <span id="status-draft-otp">@Messages("ated.relief-summary.draft")</span>
+    <div class="grid grid-1-2 cya-answer" id="status-draft-otp">
+        <span class="visuallyhidden">@Messages("ated.relief-summary-types.openToPublic") @Messages("ated.relief-summary.status") </span>@Messages("ated.relief-summary.draft")
     </div>
   </div>
 </div>
@@ -97,7 +97,7 @@
         </div>
 
         <div id="dates-rb" class="grid grid-1-2 cya-answer">
-          @reliefData.reliefs.rentalBusinessDate.getOrElse(reliefData.periodStartDate).toString(Messages("ated.date-format.short"))  @Messages("ated.relief-summary.relief-end-date")
+          @reliefData.reliefs.rentalBusinessDate.getOrElse(reliefData.periodStartDate).toString(Messages("ated.date-format.short")) @Messages("ated.relief-summary.relief-end-date")
         </div>
 
         <div class="grid grid-1-6 cya-change">
@@ -144,8 +144,8 @@
         <div class="grid grid-2-6 cya-question">
           <span class="heading-small" id="status-rb">@Messages("ated.relief-summary.status")</span>
         </div>
-        <div class="grid grid-1-2 cya-answer">
-          <span id="status-draft-rb">@Messages("ated.relief-summary.draft")</span>
+        <div class="grid grid-1-2 cya-answer" id="status-draft-rb">
+          <span class="visuallyhidden">@Messages("ated.relief-summary-types.rentalBusiness") @Messages("ated.relief-summary.status")</span> @Messages("ated.relief-summary.draft")
         </div>
       </div>
     </div>
@@ -209,8 +209,8 @@
       <div class="grid grid-2-6 cya-question">
         <span class="heading-small" id="status-pd">@Messages("ated.relief-summary.status")</span>
       </div>
-      <div class="grid grid-1-2 cya-answer">
-        <span id="status-draft-pd">@Messages("ated.relief-summary.draft")</span>
+      <div class="grid grid-1-2 cya-answer" id="status-draft-pd">
+        <span class="visuallyhidden">@Messages("ated.relief-summary-types.propertyDeveloper") @Messages("ated.relief-summary.status") </span>@Messages("ated.relief-summary.draft")
       </div>
     </div>
   </div>
@@ -274,8 +274,8 @@
         <div class="grid grid-2-6 cya-question">
           <span class="heading-small" id="status-pt">@Messages("ated.relief-summary.status")</span>
         </div>
-        <div class="grid grid-1-2 cya-answer">
-          <span id="status-draft-pt">@Messages("ated.relief-summary.draft")</span>
+        <div class="grid grid-1-2 cya-answer" id="status-draft-pt">
+          <span class="visuallyhidden">@Messages("ated.relief-summary-types.propertyTrading") @Messages("ated.relief-summary.status")</span> @Messages("ated.relief-summary.draft")
         </div>
       </div>
   </div>
@@ -339,8 +339,8 @@
         <div class="grid grid-2-6 cya-question">
           <span class="heading-small" id="status-ln">@Messages("ated.relief-summary.status")</span>
         </div>
-        <div class="grid grid-1-2 cya-answer">
-          <span id="status-draft-ln">@Messages("ated.relief-summary.draft")</span>
+        <div class="grid grid-1-2 cya-answer" id="status-draft-ln">
+          <span class="visuallyhidden">@Messages("ated.relief-summary-types.lending") @Messages("ated.relief-summary.status")</span> @Messages("ated.relief-summary.draft")
         </div>
       </div>
     </div>
@@ -404,8 +404,8 @@
         <div class="grid grid-2-6 cya-question">
           <span class="heading-small" id="status-eo">@Messages("ated.relief-summary.status")</span>
         </div>
-        <div class="grid grid-1-2 cya-answer">
-          <span id="status-draft-eo">@Messages("ated.relief-summary.draft")</span>
+        <div class="grid grid-1-2 cya-answer" id="status-draft-eo">
+          <span class="visuallyhidden">@Messages("ated.relief-summary-types.employeeOccupation") @Messages("ated.relief-summary.status") </span>@Messages("ated.relief-summary.draft")
         </div>
       </div>
     </div>
@@ -469,8 +469,8 @@
         <div class="grid grid-2-6 cya-question">
           <span class="heading-small" id="status-fh">@Messages("ated.relief-summary.status")</span>
         </div>
-        <div class="grid grid-1-2 cya-answer">
-          <span id="status-draft-fh">@Messages("ated.relief-summary.draft")</span>
+        <div class="grid grid-1-2 cya-answer" id="status-draft-fh">
+          <span class="visuallyhidden">@Messages("ated.relief-summary-types.farmHouses") @Messages("ated.relief-summary.status") </span>@Messages("ated.relief-summary.draft")
         </div>
       </div>
     </div>
@@ -534,8 +534,8 @@
         <div class="grid grid-2-6 cya-question">
           <span class="heading-small" id="status-sh">@Messages("ated.relief-summary.status")</span>
         </div>
-        <div class="grid grid-1-2 cya-answer">
-          <span id="status-draft-sh">@Messages("ated.relief-summary.draft")</span>
+        <div class="grid grid-1-2 cya-answer" id="status-draft-sh">
+          <span class="visuallyhidden">@Messages("ated.relief-summary-types.socialHousing") @Messages("ated.relief-summary.status") </span>@Messages("ated.relief-summary.draft")
         </div>
       </div>
     </div>
@@ -599,8 +599,8 @@
         <div class="grid grid-2-6 cya-question">
           <span class="heading-small" id="status-er">@Messages("ated.relief-summary.status")</span>
         </div>
-        <div class="grid grid-1-2 cya-answer">
-          <span id="status-draft-er">@Messages("ated.relief-summary.draft")</span>
+        <div class="grid grid-1-2 cya-answer" id="status-draft-er">
+          <span class="visuallyhidden">@Messages("ated.relief-summary-types.equityRelease") @Messages("ated.relief-summary.status") </span>@Messages("ated.relief-summary.draft")
         </div>
       </div>
     </div>
