@@ -940,6 +940,9 @@ ated.period-summary-th.action = Action
 ated.period-summary.view-edit.button = View or change
 ated.period-summary.view.button = View
 ated.period-summary.back = Back
+ated.period-summary.sr.relieftype = relief type,
+ated.period-summary.sr.address = address,
+ated.period-summary.sr.return = return,
 
 
 

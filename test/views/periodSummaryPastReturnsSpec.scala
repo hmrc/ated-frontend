@@ -127,7 +127,7 @@ class periodSummaryPastReturnsSpec extends FeatureSpec with OneServerPerSuite wi
       assert(document.getElementById("past-returns").text() === "Past returns")
 
       Then("The table should have data")
-      assert(document.getElementById("view-edit-0").text() === "View or change addr1+2")
+      assert(document.getElementById("view-edit-0").text() === "View or change return, addr1+2")
       assert(document.getElementById("liability-submitted-0").attr("href") === "/ated/form-bundle/123456789014/2015")
 
       assert(document.getElementById("backLinkHref").text() === "Back")
