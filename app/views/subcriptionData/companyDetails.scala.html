@@ -13,129 +13,200 @@
 pageScripts = Some(pageScripts)) {
   @pageHeadersAndError(backLink, "pre-header", Messages("ated.company-details.preheader"), "company-details-header", Messages("ated.company-details.header"))
 
-  <table>
-    <tr>
-      <td id="company-name-header" class="text-bold">@Messages("ated.company-details.name")</td>
-      <td id="company-name-val" colspan="2">@registrationDetails.map(_.name)</td>
-    </tr>
-    <tr>
-      <td class="text-bold" id="ated-reference-number">@Messages("ated.company-details.ated-reference-number")</td>
-      <td id="ated-reference-number-val" colspan="2">@atedContext.user.atedReferenceNumber</td>
-    </tr>
-    <tr>
-      <td class="text-bold td-top" id="registered-address-label">@Messages("ated.company-details.registered-address")</td>
-      <td id="registered-address">
-        <div class="form-group">
-          @registrationDetails.map { regDetails =>
-            <div id="registered-address-line-1">@regDetails.addressDetails.addressLine1</div>
-            <div id="registered-address-line-2">@regDetails.addressDetails.addressLine2</div>
-            @regDetails.addressDetails.addressLine3.map{ addressLine3=>
-              <div id="registered-address-line-3">@addressLine3</div>
-            }
-            @regDetails.addressDetails.addressLine4.map{ addressLine4=>
-              <div id="egistered-address-line-4">@addressLine4</div>
-            }
-            @regDetails.addressDetails.postalCode.map{ postcode=>
-              <div id="registered-postcode">@postcode</div>
-            }
-            <div id="registered-country">@CountryCodeUtils.getSelectedCountry(regDetails.addressDetails.countryCode)</div>
-          }
-        </div>
-      </td>
-      <td class="td-top">
-        @registrationDetails.map{ regDetails=>
-          @if(regDetails.isEditable){
-            <a href='@controllers.subscriptionData.routes.RegisteredDetailsController.edit' id="registered-edit">@Messages("ated.company-details.registered-address.edit") <span class="visuallyhidden">@Messages("ated.company-details.registered-address")</span></a></td>
-          }
-        }
-    </tr>
-      @if(overseasCompanyRegistration.isDefined){
-        <tr>
-          <td class="text-bold td-top" id="non-uk-company-registration-label">@Messages("ated.company-details.overseas_reg_number")</td>
-          <td id="non-uk-company-registration">
-            <div class="form-group">
-                <div id="reg_number">@overseasCompanyRegistration.get.idNumber</div>
-                <div id="reg_country">@CountryCodeUtils.getSelectedCountry(overseasCompanyRegistration.get.issuingCountryCode)</div>
-                <div id="reg_issuer">@overseasCompanyRegistration.get.issuingInstitution</div>
-            </div>
-          </td>
-          <td class="td-top">
-            @registrationDetails.map{ regDetails=>
-              @if(regDetails.isEditable){
-                <a href='@controllers.subscriptionData.routes.OverseasCompanyRegistrationController.edit' id="registered-edit">@Messages("ated.company-details.registered-address.edit") <span class="visuallyhidden">@Messages("ated.company-details.overseas_reg_number")</span></a></td>
-              }
-            }
-        </tr>
-      }
-    <tr>
-      <td class="text-bold td-top" id="correspondence-address-label">@Messages("ated.company-details.correspondence-address")</td>
-      <td class="td-top" id="correspondence-address">
-        <div class="form-group">
-          @correspondence.map { correspondenceData =>
-            <div id="line_1">@correspondenceData.addressDetails.addressLine1</div>
-            <div id="line_2">@correspondenceData.addressDetails.addressLine2</div>
-            @correspondenceData.addressDetails.addressLine3.map{ addressLine3=>
-              <div id="line_3">@addressLine3</div>
-            }
-            @correspondenceData.addressDetails.addressLine4.map{ addressLine4=>
-              <div id="line_4">@addressLine4</div>
-            }
-            @correspondenceData.addressDetails.postalCode.map{ postcode=>
-              <div id="postcode">@postcode</div>
-            }
-            <div id="countryCode">@CountryCodeUtils.getSelectedCountry(correspondenceData.addressDetails.countryCode)</div>
-          }
-        </div>
-      </td>
-      <td class="td-top"><a href='@controllers.subscriptionData.routes.CorrespondenceAddressController.editAddress' id="correspondence-edit">@Messages("ated.company-details.correspondence-address.edit") <span class="visuallyhidden">@Messages("ated.company-details.correspondence-address")</span></a></td>
-    </tr>
-    <tr>
-      <td class="text-bold td-top" id="contact-details-label">@Messages("ated.company-details.contact-address")</td>
-      <td id="contact-details">
-        <div class="form-group">
-          @correspondence.map { correspondenceData =>
-            @correspondenceData.contactDetails.map { contactDetailsData =>
-              @correspondenceData.name1.map { firstName =>
-                <div id="firstName">@firstName</div>
-              }
-              @correspondenceData.name2.map { lastName =>
-                <div id="lastName">@lastName</div>
-              }
-              @contactDetailsData.phoneNumber.map { phoneNumber =>
-                <div id="phoneNumber">@phoneNumber</div>
-              }
-            }
-          }
-        </div>
-      </td>
-      <td class="td-top"><a href='@controllers.subscriptionData.routes.EditContactDetailsController.edit' id="contactdetails-edit">@Messages("ated.contact-address.edit") <span class="visuallyhidden">@Messages("ated.company-details.contact-address")</span></a></td>
-    </tr>
-    <tr>
-      <td class="text-bold td-top" id="contact-pref-label">@Messages("ated.company-details.contact-preference.label")</td>
-      <td id="contact-pref-val">
-        @if(emailConsent) {
-          @correspondence.map(_.contactDetails.map(_.emailAddress))
-        }
-      </td>
-      <td><a href='@controllers.subscriptionData.routes.EditContactEmailController.edit' id="contactemail-edit">@Messages("ated.contact-address.edit") <span class="visuallyhidden">@Messages("ated.company-details.contact-preference.label")</span></a></td>
-    </tr>
-    @clientDetails.map { details =>
-      <tr>
-        <td class="text-bold td-top" id="appointed-agent-label">@Messages("ated.company-details.appointed_agent")</td>
-        <td id="appointed-agent-val">
-          @details.agentName
-        </td>
-        <td><a href='@details.changeAgentLink' id="appointed-agent-link">@Messages("ated.contact-address.edit") <span class="visuallyhidden">@Messages("ated.company-details.appointed_agent")</span></a></td>
-      </tr>
-      <tr>
-        <td class="text-bold td-top" id="email-label">@Messages("ated.company-details.mandate_email")</td>
-        <td id="email-val">
-          @details.email
-        </td>
-        <td><a href='@details.changeEmailLink' id="email-link">@Messages("ated.contact-address.edit") <span class="visuallyhidden">@Messages("ated.company-details.mandate_email")</span></a></td>
-      </tr>
+
+<div class="form-group">
+
+  <div class="grid-wrapper row-border">
+    <div class="grid grid-2-6 cya-question">
+      <span id="company-name-header" class="heading-small">@Messages("ated.company-details.name")</span>
+    </div>
+
+    <div id="company-name-val" class="grid grid-1-2 cya-answer">
+      @registrationDetails.map(_.name)
+    </div>
+
+    <div class="grid grid-1-6 cya-change">
+    </div>
+  </div>
+
+<div class="grid-wrapper row-border">
+  <div class="grid grid-2-6 cya-question">
+    <span id="ated-reference-number" class="heading-small">@Messages("ated.company-details.ated-reference-number")</span>
+  </div>
+
+  <div id="ated-reference-number-val" class="grid grid-1-2 cya-answer">
+    @atedContext.user.atedReferenceNumber
+  </div>
+
+  <div class="grid grid-1-6 cya-change">
+  </div>
+</div>
+
+<div class="grid-wrapper row-border">
+  <div class="grid grid-2-6 cya-question">
+    <span id="registered-address-label" class="heading-small">@Messages("ated.company-details.registered-address")</span>
+  </div>
+
+  <div id="registered-address" class="grid grid-1-2 cya-answer">
+    @registrationDetails.map { regDetails =>
+    <div id="registered-address-line-1">@regDetails.addressDetails.addressLine1</div>
+    <div id="registered-address-line-2">@regDetails.addressDetails.addressLine2</div>
+    @regDetails.addressDetails.addressLine3.map{ addressLine3=>
+    <div id="registered-address-line-3">@addressLine3</div>
     }
-  </table>
+    @regDetails.addressDetails.addressLine4.map{ addressLine4=>
+    <div id="egistered-address-line-4">@addressLine4</div>
+    }
+    @regDetails.addressDetails.postalCode.map{ postcode=>
+    <div id="registered-postcode">@postcode</div>
+    }
+    <div id="registered-country">@CountryCodeUtils.getSelectedCountry(regDetails.addressDetails.countryCode)</div>
+    }
+  </div>
+
+  <div class="grid grid-1-6 cya-change">
+    @registrationDetails.map{ regDetails=>
+    @if(regDetails.isEditable){
+    <a href='@controllers.subscriptionData.routes.RegisteredDetailsController.edit' id="registered-edit">@Messages("ated.company-details.registered-address.edit") <span class="visuallyhidden">@Messages("ated.company-details.registered-address")</span></a></td>
+    }
+    }
+  </div>
+</div>
+
+@if(overseasCompanyRegistration.isDefined){
+
+<div class="grid-wrapper row-border">
+  <div class="grid grid-2-6 cya-question">
+    <span id="non-uk-company-registration-label" class="heading-small">@Messages("ated.company-details.overseas_reg_number")</span>
+  </div>
+
+  <div id="registered-address" class="grid grid-1-2 cya-answer">
+    <div id="non-uk-company-registration">
+      <div class="form-group">
+        <div id="reg_number">@overseasCompanyRegistration.get.idNumber</div>
+        <div id="reg_country">@CountryCodeUtils.getSelectedCountry(overseasCompanyRegistration.get.issuingCountryCode)</div>
+        <div id="reg_issuer">@overseasCompanyRegistration.get.issuingInstitution</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid grid-1-6 cya-change">
+    @registrationDetails.map{ regDetails=>
+      @if(regDetails.isEditable){
+        <a href='@controllers.subscriptionData.routes.OverseasCompanyRegistrationController.edit' id="registered-edit">@Messages("ated.company-details.registered-address.edit") <span class="visuallyhidden">@Messages("ated.company-details.overseas_reg_number")</span></a></td>
+      }
+    }
+  </div>
+</div>
+}
+
+<div class="grid-wrapper row-border">
+  <div class="grid grid-2-6 cya-question">
+    <span id="correspondence-address-label" class="heading-small">@Messages("ated.company-details.correspondence-address")</span>
+  </div>
+
+  <div  id="correspondence-address" class="grid grid-1-2 cya-answer">
+    @correspondence.map { correspondenceData =>
+    <div id="line_1">@correspondenceData.addressDetails.addressLine1</div>
+    <div id="line_2">@correspondenceData.addressDetails.addressLine2</div>
+    @correspondenceData.addressDetails.addressLine3.map{ addressLine3=>
+    <div id="line_3">@addressLine3</div>
+    }
+    @correspondenceData.addressDetails.addressLine4.map{ addressLine4=>
+    <div id="line_4">@addressLine4</div>
+    }
+    @correspondenceData.addressDetails.postalCode.map{ postcode=>
+    <div id="postcode">@postcode</div>
+    }
+    <div id="countryCode">@CountryCodeUtils.getSelectedCountry(correspondenceData.addressDetails.countryCode)</div>
+    }
+  </div>
+
+  <div class="grid grid-1-6 cya-change">
+   <a href='@controllers.subscriptionData.routes.CorrespondenceAddressController.editAddress' id="correspondence-edit">@Messages("ated.company-details.correspondence-address.edit") <span class="visuallyhidden">@Messages("ated.company-details.correspondence-address")</span></a></td>
+  </div>
+</div>
+
+<div class="grid-wrapper row-border">
+  <div class="grid grid-2-6 cya-question">
+    <span id="contact-details-label" class="heading-small">@Messages("ated.company-details.contact-address")</span>
+  </div>
+
+  <div id="registered-address" class="grid grid-1-2 cya-answer">
+    <div id="contact-details">
+      <div class="form-group">
+        @correspondence.map { correspondenceData =>
+        @correspondenceData.contactDetails.map { contactDetailsData =>
+        @correspondenceData.name1.map { firstName =>
+        <div id="firstName">@firstName</div>
+        }
+        @correspondenceData.name2.map { lastName =>
+        <div id="lastName">@lastName</div>
+        }
+        @contactDetailsData.phoneNumber.map { phoneNumber =>
+        <div id="phoneNumber">@phoneNumber</div>
+        }
+        }
+        }
+      </div>
+    </div>
+  </div>
+
+  <div class="grid grid-1-6 cya-change">
+    <a href='@controllers.subscriptionData.routes.EditContactDetailsController.edit' id="contactdetails-edit">@Messages("ated.contact-address.edit") <span class="visuallyhidden">@Messages("ated.company-details.contact-address")</span></a>
+  </div>
+</div>
+
+<div class="grid-wrapper row-border">
+  <div class="grid grid-2-6 cya-question">
+    <span id="contact-pref-label" class="heading-small">@Messages("ated.company-details.contact-preference.label")</span>
+  </div>
+
+  <div id="contact-pref-val" class="grid grid-1-2 cya-answer">
+    @if(emailConsent) {
+    @correspondence.map(_.contactDetails.map(_.emailAddress))
+    }
+  </div>
+
+  <div class="grid grid-1-6 cya-change">
+    <a href='@controllers.subscriptionData.routes.EditContactEmailController.edit' id="contactemail-edit">@Messages("ated.contact-address.edit") <span class="visuallyhidden">@Messages("ated.company-details.contact-preference.label")</span></a>
+  </div>
+</div>
+@clientDetails.map { details =>
+<div class="grid-wrapper row-border">
+  <div class="grid grid-2-6 cya-question">
+    <span id="appointed-agent-label" class="heading-small">@Messages("ated.company-details.appointed_agent")</span>
+  </div>
+
+  <div id="appointed-agent-val" class="grid grid-1-2 cya-answer">
+    @details.agentName
+  </div>
+
+  <div id="email-link" class="grid grid-1-6 cya-change">
+    <a href='@details.changeAgentLink' id="appointed-agent-link">@Messages("ated.contact-address.edit") <span class="visuallyhidden">@Messages("ated.company-details.appointed_agent")</span></a>
+  </div>
+</div>
+
+
+
+
+<div class="grid-wrapper row-border">
+  <div class="grid grid-2-6 cya-question">
+    <span id="email-label" class="heading-small">@Messages("ated.company-details.mandate_email")</span>
+  </div>
+
+  <div id="email-val" class="grid grid-1-2 cya-answer">
+    @details.agentName
+  </div>
+
+  <div id="email-link" class="grid grid-1-6 cya-change">
+    <a href='@details.changeEmailLink' id="email-link">@Messages("ated.contact-address.edit") <span class="visuallyhidden">@Messages("ated.company-details.mandate_email")</span></a>
+  </div>
+</div>
+
+}
+
+</div>
 
   <div class="form-group">
     <a class="button" href="@controllers.routes.AccountSummaryController.view()" class="link-back" id="back" onkeyup='spaceBarHandler(event,"@controllers.routes.AccountSummaryController.view()")'>@Messages("ated.company-details.back")</a>
