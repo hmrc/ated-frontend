@@ -27,15 +27,18 @@ function showHideOwnedBefore2012() {
 
     if(yesSelected.is(':checked')) {
         displayTrueDiv.show();
+        yesSelected.attr('aria-expanded', 'true')
     }
     if(noSelected.is(':checked')) {
         displayFalseDiv.show();
     }
     $('input[type=radio][name=isOwnedBefore2012]').change(function(){
         if(this.value == 'true') {
+            yesSelected.attr('aria-expanded', 'true')
             displayTrueDiv.show();
             displayFalseDiv.hide();
         } else {
+            noSelected.attr('aria-expanded', 'false')
             displayTrueDiv.hide();
             displayFalseDiv.show();
             ownedBefore2012Value.val("");

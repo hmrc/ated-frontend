@@ -15,9 +15,11 @@ function showHideRevalued() {
     displayFalseDiv.hide();
 
     if(yesSelected.is(':checked')) {
+        yesSelected.attr('aria-expanded', 'true')
         displayTrueDiv.show();
     }
     if(noSelected.is(':checked')) {
+        ynoSelected.attr('aria-expanded', 'true')
         displayFalseDiv.show();
         continueButton.hide();
     }
