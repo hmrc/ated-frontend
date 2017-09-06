@@ -261,15 +261,15 @@
       <span id="return-status-label" class="heading-small">@Messages("ated.property-details-summary.table.property-ated-details.return-status.label")</span>
     </div>
 
-    <div class="grid grid-1-2 cya-answer">
-      <span id="return-status-value">@Messages("ated.property-details-summary.status.text")</span>
+    <div class="grid grid-1-2 cya-answer" id="return-status-value">
+      <span class="visuallyhidden">@Messages("ated.property-details-summary.table.property-ated-details.return-status.header")</span>
+      @Messages("ated.property-details-summary.status.text")
     </div>
-
   </div>
 </div>
 
   <div class="form-group">
-     <p id="ated-charge-text">
+     <p class="text" id="ated-charge-text">
       @Messages("ated.property-details-summary.table.ated-charge.text")
        <span id="ated-charge-value" class="heading-xlarge form-group">
       @if(propertyDetails.calculated.isEmpty) {
