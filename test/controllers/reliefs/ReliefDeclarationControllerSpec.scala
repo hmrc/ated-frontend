@@ -111,7 +111,7 @@ class ReliefDeclarationControllerSpec extends PlaySpec with OneServerPerSuite wi
               document.getElementById("relief-declaration-before-declaration-text").text() must be("Before you can submit your return to HMRC you must read and agree to the following statement. If you give false information you may have to pay financial penalties and face prosecution.")
               document.getElementById("relief-declaration-mid-declaration-text").text() must be("Each type of relief claimed is an individual ATED return.")
               document.getElementById("declare-or-confirm").text() must be("I declare that:")
-              document.getElementById("declaration-confirmation-text").text() must be("the information I have given on this return (or each of these returns) is correct and complete to the best of my knowledge and belief and confirm I am eligible for the reliefs claimed")
+              document.getElementById("declaration-confirmation-text").text() must be("the information I have given on this return (or each of these returns) is correct")
               document.getElementById("submit").text() must be("Agree and submit returns")
           }
         }
@@ -124,8 +124,8 @@ class ReliefDeclarationControllerSpec extends PlaySpec with OneServerPerSuite wi
               document.title() must be("Returns declaration")
               document.getElementById("relief-declaration-before-declaration-text").text() must be("Before your client's return or returns can be submitted to HMRC, you must read and agree to the following statement. Your client's approval may be in electronic or non-electronic form. If your client gives false information, they may have to pay financial penalties and face prosecution.")
               document.getElementById("relief-declaration-mid-declaration-text").text() must be("Each type of relief claimed is an individual ATED return.")
-              document.getElementById("declare-or-confirm").text() must be("I confirm that:")
-              document.getElementById("declaration-confirmation-text").text() must be("my client has approved the information contained in this return (or each of these returns) as being correct and complete to the best of their knowledge and belief and confirms they are eligible for the reliefs claimed")
+              document.getElementById("declare-or-confirm").text() must be("I confirm that my client has:")
+              document.getElementById("declaration-confirmation-text").text() must be("approved the information contained in this return (or each of these returns) as being correct")
               document.getElementById("submit").text() must be("Agree and submit returns")
           }
         }
