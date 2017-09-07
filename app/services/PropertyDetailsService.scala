@@ -375,7 +375,7 @@ trait PropertyDetailsService {
     retrieveDraftPropertyDetails(id).map {
       case PropertyDetailsCacheSuccessResponse(propertDetailsDraft) =>
         propertDetailsDraft.value match {
-          case Some(propVal) =>   propVal.isValuedByAgent.isDefined
+          case Some(propVal) =>  propVal.isValuedByAgent.isDefined
           case None =>  false
         }
     }
