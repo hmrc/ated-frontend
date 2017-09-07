@@ -53,17 +53,14 @@
 
     @if(returnType == "F"){
 
-      <span id="already-paid-title" class="text-bold">@Messages("ated.edit.liability.sent.amount-already-paid.title")</span>
+      <span id="already-paid-title-further" class="text-bold">@Messages("ated.edit.liability.sent.amount-already-paid.title-further")</span>
 
       <ul class="list-bullet">
         <li id="already-paid-text">@Html(Messages("ated.edit.liability.sent.amount-already-paid", formattedPounds(amountDueOrRefund)))</li>
+        <li id="not-paid-title-further">@Html(Messages("ated.edit.liability.sent.amount-not-paid.title-further", formattedPounds(liabilityAmount)))</li>
       </ul>
 
-      <span id="not-paid-title" class="text-bold">@Messages("ated.edit.liability.sent.amount-not-paid.title")</span>
 
-      <ul class="list-bullet">
-        <li id="not-paid-text">@Html(Messages("ated.edit.liability.sent.amount-already-paid", formattedPounds(liabilityAmount)))</li>
-      </ul>
 
     <p id="payment-reference">@Html(Messages("ated.edit-liabilty.sent.payment-reference", paymentReference.getOrElse("")))</p>
     <p id="late-payment">@Html(Messages("ated.edit-liabilty.sent.late-payment"))</p>
