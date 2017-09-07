@@ -240,7 +240,7 @@ class AtedConnectorSpec extends PlaySpec with OneServerPerSuite with MockitoSuga
         implicit val user = createAtedContext(createUserAuthContext("User-Id", "name"))
         when(mockWSHttp.GET[HttpResponse](Matchers.any())(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(HttpResponse(OK, None)))
-        val result = TestAtedConnector.retrieveAndCachePreviousLiabilityReturn("1")
+        val result = TestAtedConnector.retrieveAndCachePreviousLiabilityReturn("1", periodKey)
         val response = await(result)
         response.status must be(OK)
       }

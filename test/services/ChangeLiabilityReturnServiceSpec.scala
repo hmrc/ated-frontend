@@ -18,7 +18,7 @@ package services
 
 import builders.{AuthBuilder, ChangeLiabilityReturnBuilder, PropertyDetailsBuilder}
 import connectors.{AtedConnector, DataCacheConnector}
-import models.{BankDetails, EditLiabilityReturnsResponseModel, PropertyDetailsTitle}
+import models.{BankDetails, EditLiabilityReturnsResponseModel, PropertyDetailsTitle, SelectPeriod}
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
@@ -86,16 +86,16 @@ class ChangeLiabilityReturnServiceSpec extends PlaySpec with OneServerPerSuite w
 
       "for valid form-bundle-number and previous return is selected" must {
         "return Some(ChangeLiabilityReturn), if data is found in cache/ETMP, i.e. for status-code OK" in {
-          when(mockAtedConnector.retrieveAndCachePreviousLiabilityReturn(Matchers.any())(Matchers.any(), Matchers.any()))
+          when(mockAtedConnector.retrieveAndCachePreviousLiabilityReturn(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
             .thenReturn(Future.successful(HttpResponse(OK, responseJson = Some(changeLiabilityReturnJson))))
-          val result = await(TestChangeLiabilityReturnService.retrieveSubmittedLiabilityReturnAndCache(formBundleNo1, Some(true)))
+          val result = await(TestChangeLiabilityReturnService.retrieveSubmittedLiabilityReturnAndCache(formBundleNo1, Some(true), Some(SelectPeriod(Some("2015")))))
           result must be(Some(changeLiabilityReturn))
         }
 
         "return None, if data is not-found in cache/ETMP, i.e. for any other status-code" in {
-          when(mockAtedConnector.retrieveAndCachePreviousLiabilityReturn(Matchers.any())(Matchers.any(), Matchers.any()))
+          when(mockAtedConnector.retrieveAndCachePreviousLiabilityReturn(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
             .thenReturn(Future.successful(HttpResponse(NOT_FOUND, responseJson = None)))
-          val result = await(TestChangeLiabilityReturnService.retrieveSubmittedLiabilityReturnAndCache(formBundleNo2, Some(true)))
+          val result = await(TestChangeLiabilityReturnService.retrieveSubmittedLiabilityReturnAndCache(formBundleNo2, Some(true), Some(SelectPeriod(Some("2015")))))
           result must be(None)
         }
       }

@@ -38,21 +38,11 @@ trait PeriodsInAndOutReliefController extends PropertyDetailsHelpers with Client
           case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
             currentBackLink.flatMap { backLink =>
               dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
-                isPrevReturn match {
-                  case Some(true) =>
-                    Future.successful(Ok(views.html.propertyDetails.periodsInAndOutRelief(id, propertyDetails.periodKey,
-                      periodsInAndOutReliefForm,
-                      Nil,
-                      AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn),
-                      backLink))
-                    )
-                  case _ =>
-                    Future.successful(Ok(views.html.propertyDetails.periodsInAndOutRelief(id, propertyDetails.periodKey,
-                      periodsInAndOutReliefForm,
-                      PeriodUtils.getDisplayPeriods(propertyDetails.period),
-                      AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn),
-                      backLink)))
-                }
+                  Future.successful(Ok(views.html.propertyDetails.periodsInAndOutRelief(id, propertyDetails.periodKey,
+                    periodsInAndOutReliefForm,
+                    PeriodUtils.getDisplayPeriods(propertyDetails.period),
+                    AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn),
+                    backLink)))
               }
             }
         }

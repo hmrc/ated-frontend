@@ -22,7 +22,7 @@ import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.{AtedRegime, ClientHelper}
 import forms.PropertyDetailsForms
 import forms.PropertyDetailsForms._
-import models.PropertyDetailsAddress
+import models.{PropertyDetailsAddress, SelectPeriod}
 import services._
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
@@ -43,7 +43,8 @@ trait PropertyDetailsAddressController extends PropertyDetailsHelpers with Clien
       ensureClientContext {
         for {
           answer <- dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn)
-          changeLiabilityReturnOpt <- changeLiabilityReturnService.retrieveSubmittedLiabilityReturnAndCache(oldFormBundleNo, answer)
+          periodKey <- dataCacheConnector.fetchAndGetFormData[SelectPeriod](RetrieveSelectPeriodFormId)
+          changeLiabilityReturnOpt <- changeLiabilityReturnService.retrieveSubmittedLiabilityReturnAndCache(oldFormBundleNo, answer, periodKey)
           backLink <- currentBackLink
         } yield {
           changeLiabilityReturnOpt match {
