@@ -281,7 +281,7 @@ class PropertyDetailsAddressControllerSpec extends PlaySpec with OneServerPerSui
     when(mockBackLinkCache.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
     when(mockDataCacheConnector.fetchAndGetFormData[Boolean](Matchers.any())
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
-    when(mockChangeService.retrieveSubmittedLiabilityReturnAndCache(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(propertyDetails))
+    when(mockChangeService.retrieveSubmittedLiabilityReturnAndCache(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(propertyDetails))
     val result = TestPropertyDetailsController.editSubmittedReturn(id).apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }

@@ -138,7 +138,7 @@ class BankDetailsControllerSpec extends PlaySpec with OneServerPerSuite with Moc
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
     when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-    when(mockChangeLiabilityReturnService.retrieveSubmittedLiabilityReturnAndCache(Matchers.eq("12345678901"), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(changeLiabilityReturnOpt))
+    when(mockChangeLiabilityReturnService.retrieveSubmittedLiabilityReturnAndCache(Matchers.eq("12345678901"), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(changeLiabilityReturnOpt))
     when(mockBackLinkCache.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
     val result = TestBankDetailsController.view("12345678901").apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)

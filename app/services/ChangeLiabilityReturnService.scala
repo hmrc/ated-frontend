@@ -33,11 +33,11 @@ trait ChangeLiabilityReturnService {
 
   def dataCacheConnector: DataCacheConnector
 
-  def retrieveSubmittedLiabilityReturnAndCache(oldFormBundleNo: String, fromSelectedPastReturn: Option[Boolean] = None)
+  def retrieveSubmittedLiabilityReturnAndCache(oldFormBundleNo: String, fromSelectedPastReturn: Option[Boolean] = None, periodKey: Option[SelectPeriod] = None)
                              (implicit atedContext: AtedContext, hc: HeaderCarrier): Future[Option[PropertyDetails]] = {
-    fromSelectedPastReturn match {
-      case Some(true) =>
-        atedConnector.retrieveAndCachePreviousLiabilityReturn(oldFormBundleNo) map {
+    (fromSelectedPastReturn, periodKey) match {
+      case (Some(true), Some(x)) =>
+        atedConnector.retrieveAndCachePreviousLiabilityReturn(oldFormBundleNo, x.period.get.toInt) map {
           response => response.status match {
             case OK => response.json.asOpt[PropertyDetails]
             case status =>

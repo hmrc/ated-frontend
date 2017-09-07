@@ -124,9 +124,9 @@ trait AtedConnector extends ServicesConfig with RawResponseReads {
     http.GET[HttpResponse](getUrl)
   }
 
-  def retrieveAndCachePreviousLiabilityReturn(oldFormBundleNo: String)(implicit atedContext: AtedContext, hc: HeaderCarrier): Future[HttpResponse] = {
+  def retrieveAndCachePreviousLiabilityReturn(oldFormBundleNo: String, periodKey: Int)(implicit atedContext: AtedContext, hc: HeaderCarrier): Future[HttpResponse] = {
     val userLink = atedContext.user.userLink
-    val getUrl = s"""$serviceURL$userLink/$retrievePreviousLiabilityReturn/$oldFormBundleNo"""
+    val getUrl = s"""$serviceURL$userLink/$retrievePreviousLiabilityReturn/$oldFormBundleNo/$periodKey"""
     http.GET[HttpResponse](getUrl)
   }
 
