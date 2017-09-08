@@ -80,12 +80,18 @@
 
   <div class="grid-wrapper row-border">
     <div class="grid grid-2-6 cya-question">
-    <span id="property-date-of-valuation-label-@index" class="heading-small">@PeriodUtils.getPeriodValueDateMessage(index, valuesToDisplay.size)</span>
+    <span id="property-date-of-valuation-label-@index" class="heading-small">@Messages("ated.form-bundle.view.isValuedByAgent.message")</span>
     </div>
 
+    @if(changeLiability.value.map(x=>x.isValuedByAgent.getOrElse()) == Some(true)) {
     <div class="grid grid-1-2 cya-answer">
-      <span id="property-date-of-valuation-@index">@valueObj.dateOfChange.toString(Messages("ated.date-format"))</span>
+      <span id="property-is-Valued-by-agent-yes-@index">@Messages("ated.form-bundle.view.isValuedByAgent.yes")</span>
     </div>
+    }else{
+    <div class="grid grid-1-2 cya-answer">
+      <span id="property-is-Valued-by-agent-no-@index">@Messages("ated.form-bundle.view.isValuedByAgent.no")</span>
+    </div>
+    }
 
     <div class="grid grid-1-6 cya-change">
       <a href="@controllers.propertyDetails.routes.PropertyDetailsProfessionallyValuedController.view(changeLiability.id)" id="edit-property-professionally-valued-details">
