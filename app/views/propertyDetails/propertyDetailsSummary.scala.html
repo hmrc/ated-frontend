@@ -71,7 +71,11 @@
       </div>
 
       <div class="grid grid-1-2 cya-answer">
-        <span class="status">@Messages("ated.label.incomplete")</span>
+        @if(propertyDetails.formBundleReturn) {
+        <span>@PeriodUtils.getValueForPurpose(propertyDetails.formBundleReturn)</span>
+        } else {
+        <span class="status">@incomplete</span>
+        }
       </div>
 
       <div class="grid grid-1-6 cya-change">
@@ -86,7 +90,11 @@
       </div>
 
       <div class="grid grid-1-2 cya-answer">
-        <span id="property-date-of-valuation-incomplete" class="status">@Messages("ated.label.incomplete")</span>
+        @if(propertyDetails.formBundleReturn) {
+        <span>@PeriodUtils.getProfessionallyValuedMessage(propertyDetails.formBundleReturn)</span>
+        } else {
+        <span class="status">@incomplete</span>
+        }
       </div>
 
       <div class="grid grid-1-6 cya-change">
