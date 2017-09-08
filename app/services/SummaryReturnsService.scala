@@ -93,9 +93,9 @@ trait SummaryReturnsService {
     }
   }
 
-  def getPreviousSubmittedLiabilityDetails(implicit atedContext: AtedContext, hc: HeaderCarrier): Future[Seq[PreviousReturns]] = getSummaryReturns.flatMap { returnSummary =>
+  def getPreviousSubmittedLiabilityDetails(selectedPeriodKey: Int)(implicit atedContext: AtedContext, hc: HeaderCarrier): Future[Seq[PreviousReturns]] = getSummaryReturns.flatMap { returnSummary =>
     val periodSummaryReturns = returnSummary.allReturns
-    val submittedReturns = periodSummaryReturns.flatMap(x => x.submittedReturns)
+    val submittedReturns = periodSummaryReturns.flatMap(x => x.submittedReturns).filter(_.periodKey == selectedPeriodKey - 1)
     val oldLiabilityReturns = submittedReturns.flatMap(x => x.oldLiabilityReturns)
     val newLiabilityReturns = submittedReturns.flatMap(x => x.currentLiabilityReturns)
     val pastReturnDetails = (oldLiabilityReturns ++ newLiabilityReturns) map (r => PreviousReturns(r.description, r.formBundleNo))

@@ -61,7 +61,7 @@ trait ReturnTypeController extends BackLinkController
           returnTypeData => {
             dataCacheConnector.saveFormData[ReturnType](RetrieveReturnTypeFormId, returnTypeData)
             val returnUrl = Some(routes.ReturnTypeController.view(periodKey).url)
-            summaryReturnService.getPreviousSubmittedLiabilityDetails.flatMap { pastReturns =>
+            summaryReturnService.getPreviousSubmittedLiabilityDetails(periodKey).flatMap { pastReturns =>
               (returnTypeData.returnType, pastReturns) match {
                 case (Some("CR"), Nil) =>
                   RedirectWithBackLink(
