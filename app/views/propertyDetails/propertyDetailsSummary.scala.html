@@ -1,8 +1,8 @@
 @(propertyDetails: models.PropertyDetails,
- periods : Seq[models.LineItem],
- canSubmit: Boolean,
- valuesToDisplay: Seq[models.LineItemValue],
- backLink: Option[String])(implicit atedContext: AtedContext, messages: Messages)
+periods : Seq[models.LineItem],
+canSubmit: Boolean,
+valuesToDisplay: Seq[models.LineItemValue],
+backLink: Option[String])(implicit atedContext: AtedContext, messages: Messages)
 
 @import uk.gov.hmrc.play.views.html.helpers._
 @import utils.PeriodUtils
@@ -12,52 +12,52 @@
 
 @atedMain(title = Messages("ated.property-details-summary.title"), attorney = atedContext.user.authContext.attorney) {
 
-  @pageHeadersAndError(backLink, "pre-heading", Messages("ated.property-details.pre-header"), "property-details-summary-header", Messages("ated.property-details-summary.header"))
+@pageHeadersAndError(backLink, "pre-heading", Messages("ated.property-details.pre-header"), "property-details-summary-header", Messages("ated.property-details-summary.header"))
 
-  <div class="form-group">
-    <p id="details-text">@Messages("ated.property-details-summary.details-text", PeriodUtils.periodStartDate(propertyDetails.periodKey).toString(Messages("ated.date-format")), PeriodUtils.periodEndDate(propertyDetails.periodKey).toString(Messages("ated.date-format")))</p>
+<div class="form-group">
+  <p id="details-text">@Messages("ated.property-details-summary.details-text", PeriodUtils.periodStartDate(propertyDetails.periodKey).toString(Messages("ated.date-format")), PeriodUtils.periodEndDate(propertyDetails.periodKey).toString(Messages("ated.date-format")))</p>
+</div>
+
+<div class="form-group">
+  <div class="grid-wrapper">
+    <h2 id="property-details-header" class="heading-medium">@Messages("ated.property-details-summary.table.property-details.header")</h2>
   </div>
 
-  <div class="form-group">
-    <div class="grid-wrapper">
-      <h2 id="property-details-header" class="heading-medium">@Messages("ated.property-details-summary.table.property-details.header")</h2>
+  <div class="grid-wrapper row-border">
+    <div class="grid grid-2-6 cya-question">
+      <span class="heading-small" id="property-address-label">@Messages("ated.property-details-summary.table.property-details.address.label")</span>
     </div>
 
-    <div class="grid-wrapper row-border">
-      <div class="grid grid-2-6 cya-question">
-        <span class="heading-small" id="property-address-label">@Messages("ated.property-details-summary.table.property-details.address.label")</span>
-      </div>
-
-      <div class="grid grid-1-2 cya-answer">
-        <span id="address-line-1">@propertyDetails.addressProperty.line_1</span>,<br>
-        <span id="address-line-2">@propertyDetails.addressProperty.line_2</span>,<br>
-        @if(propertyDetails.addressProperty.line_3.isDefined){<span id="address-line-3">@propertyDetails.addressProperty.line_3</span>,<br/>}
-        @if(propertyDetails.addressProperty.line_4.isDefined){<span id="address-line-4">@propertyDetails.addressProperty.line_4</span>,<br/>}
-        @if(propertyDetails.addressProperty.postcode.isDefined){<span id="address-postcode">@propertyDetails.addressProperty.postcode</span>}
-      </div>
-
-      <div class="grid grid-1-6 cya-change">
-        <a href="@controllers.propertyDetails.routes.PropertyDetailsAddressController.editFromSummary(propertyDetails.id)" id="edit-property-address-details" data-journey-click="ated-fronted:click:edit-property-address-details">@Messages("ated.edit") <span class="visuallyhidden">@Messages("ated.property-details-summary.table.property-details.address.label")</span>
-        </a>
-      </div>
+    <div class="grid grid-1-2 cya-answer">
+      <span id="address-line-1">@propertyDetails.addressProperty.line_1</span>,<br>
+      <span id="address-line-2">@propertyDetails.addressProperty.line_2</span>,<br>
+      @if(propertyDetails.addressProperty.line_3.isDefined){<span id="address-line-3">@propertyDetails.addressProperty.line_3</span>,<br/>}
+      @if(propertyDetails.addressProperty.line_4.isDefined){<span id="address-line-4">@propertyDetails.addressProperty.line_4</span>,<br/>}
+      @if(propertyDetails.addressProperty.postcode.isDefined){<span id="address-postcode">@propertyDetails.addressProperty.postcode</span>}
     </div>
 
-    <div class="grid-wrapper row-border">
-      <div class="grid grid-2-6 cya-question">
-        <span id="property-title-number-label" class="heading-small">@Messages("ated.property-details-summary.table.property-details.title-number.label")</span>
-      </div>
-
-      <div class="grid grid-1-2 cya-answer">
-        <span id="property-title-number">@propertyDetails.title.map(_.titleNumber).getOrElse("")</span>
-      </div>
-
-      <div class="grid grid-1-6 cya-change">
-        <a href="@controllers.propertyDetails.routes.PropertyDetailsTitleController.editFromSummary(propertyDetails.id)" id="edit-property-title-details">
-          @Messages("ated.edit") <span class="visuallyhidden">@Messages("ated.property-details-summary.table.property-details.title-number.label")</span>
-        </a>
-      </div>
+    <div class="grid grid-1-6 cya-change">
+      <a href="@controllers.propertyDetails.routes.PropertyDetailsAddressController.editFromSummary(propertyDetails.id)" id="edit-property-address-details" data-journey-click="ated-fronted:click:edit-property-address-details">@Messages("ated.edit") <span class="visuallyhidden">@Messages("ated.property-details-summary.table.property-details.address.label")</span>
+      </a>
     </div>
   </div>
+
+  <div class="grid-wrapper row-border">
+    <div class="grid grid-2-6 cya-question">
+      <span id="property-title-number-label" class="heading-small">@Messages("ated.property-details-summary.table.property-details.title-number.label")</span>
+    </div>
+
+    <div class="grid grid-1-2 cya-answer">
+      <span id="property-title-number">@propertyDetails.title.map(_.titleNumber).getOrElse("")</span>
+    </div>
+
+    <div class="grid grid-1-6 cya-change">
+      <a href="@controllers.propertyDetails.routes.PropertyDetailsTitleController.editFromSummary(propertyDetails.id)" id="edit-property-title-details">
+        @Messages("ated.edit") <span class="visuallyhidden">@Messages("ated.property-details-summary.table.property-details.title-number.label")</span>
+      </a>
+    </div>
+  </div>
+</div>
 
 <div class="form-group">
   <div class="grid-wrapper">
@@ -65,44 +65,36 @@
   </div>
 
   @if(PeriodUtils.isListEmpty(valuesToDisplay)) {
-    <div class="grid-wrapper row-border">
-      <div class="grid grid-2-6 cya-question">
-        <span id="property-title-number-label" class="heading-small">@Messages("ated.form-bundle.view.return.value.only")</span>
-      </div>
-
-      <div class="grid grid-1-2 cya-answer">
-        @if(propertyDetails.formBundleReturn) {
-        <span>@PeriodUtils.getValueForPurpose(propertyDetails.formBundleReturn)</span>
-        } else {
-        <span class="status">@incomplete</span>
-        }
-      </div>
-
-      <div class="grid grid-1-6 cya-change">
-        <a href="@controllers.propertyDetails.routes.PropertyDetailsOwnedBeforeController.editFromSummary(propertyDetails.id)" id="edit-property-value-incomplete" data-journey-click="ated-fronted:click:edit-property-value">@Messages("ated.edit") <span class="visuallyhidden">@Messages("ated.form-bundle.view.return.value.only")</span>
-        </a>
-      </div>
+  <div class="grid-wrapper row-border">
+    <div class="grid grid-2-6 cya-question">
+      <span id="property-title-number-label" class="heading-small">@Messages("ated.form-bundle.view.return.value.only")</span>
     </div>
 
-    <div class="grid-wrapper row-border">
-      <div class="grid grid-2-6 cya-question">
-        <span id="property-date-label" class="heading-small">@Messages("ated.form-bundle.view.isValuedByAgent.message")</span>
-      </div>
-
-      <div class="grid grid-1-2 cya-answer">
-        @if(propertyDetails.formBundleReturn) {
-        <span>@PeriodUtils.getProfessionallyValuedMessage(propertyDetails.formBundleReturn)</span>
-        } else {
-        <span class="status">@incomplete</span>
-        }
-      </div>
-
-      <div class="grid grid-1-6 cya-change">
-        <a href="@controllers.propertyDetails.routes.PropertyDetailsProfessionallyValuedController.view(propertyDetails.id)" id="edit-property-professionally-valued-details-incomplete">
-          @Messages("ated.edit") <span class="visuallyhidden">@Messages("ated.form-bundle.view.isValuedByAgent.message")</span>
-        </a>
-      </div>
+    <div class="grid grid-1-2 cya-answer">
+      <span class="status">@Messages("ated.label.incomplete")</span>
     </div>
+
+    <div class="grid grid-1-6 cya-change">
+      <a href="@controllers.propertyDetails.routes.PropertyDetailsOwnedBeforeController.editFromSummary(propertyDetails.id)" id="edit-property-value-incomplete" data-journey-click="ated-fronted:click:edit-property-value">@Messages("ated.edit") <span class="visuallyhidden">@Messages("ated.form-bundle.view.return.value.only")</span>
+      </a>
+    </div>
+  </div>
+
+  <div class="grid-wrapper row-border">
+    <div class="grid grid-2-6 cya-question">
+      <span id="property-date-label" class="heading-small">@Messages("ated.form-bundle.view.isValuedByAgent.message")</span>
+    </div>
+
+    <div class="grid grid-1-2 cya-answer">
+      <span id="property-date-of-valuation-incomplete" class="status">@Messages("ated.label.incomplete")</span>
+    </div>
+
+    <div class="grid grid-1-6 cya-change">
+      <a href="@controllers.propertyDetails.routes.PropertyDetailsProfessionallyValuedController.view(propertyDetails.id)" id="edit-property-professionally-valued-details-incomplete">
+        @Messages("ated.edit") <span class="visuallyhidden">@Messages("ated.form-bundle.view.isValuedByAgent.message")</span>
+      </a>
+    </div>
+  </div>
 
   } else {
   @for((valueObj, index) <- valuesToDisplay.zipWithIndex) {
@@ -127,13 +119,13 @@
       <span id="property-is-Valued-by-agent-label-@index" class="heading-small">@Messages("ated.form-bundle.view.isValuedByAgent.message")</span>
     </div>
     @if(propertyDetails.value.map(x=>x.isValuedByAgent.getOrElse()) == Some(true)) {
-      <div class="grid grid-1-2 cya-answer">
-        <span id="property-is-Valued-by-agent-yes-@index">@Messages("ated.form-bundle.view.isValuedByAgent.yes")</span>
-      </div>
+    <div class="grid grid-1-2 cya-answer">
+      <span id="property-is-Valued-by-agent-yes-@index">@Messages("ated.form-bundle.view.isValuedByAgent.yes")</span>
+    </div>
     }else{
-      <div class="grid grid-1-2 cya-answer">
-        <span id="property-is-Valued-by-agent-no-@index">@Messages("ated.form-bundle.view.isValuedByAgent.no")</span>
-      </div>
+    <div class="grid grid-1-2 cya-answer">
+      <span id="property-is-Valued-by-agent-no-@index">@Messages("ated.form-bundle.view.isValuedByAgent.no")</span>
+    </div>
     }
     <div class="grid grid-1-6 cya-change">
       <a href="@controllers.propertyDetails.routes.PropertyDetailsProfessionallyValuedController.editFromSummary(propertyDetails.id)" id="edit-property-professionally-valued-details">
@@ -197,13 +189,13 @@
     </div>
 
     @propertyDetails.period match {
-      case Some(p) => {
-        @{p.taxAvoidanceScheme match {
-          case Some(schemeNum) if (PeriodUtils.isBlank(schemeNum)) => {<div class="grid grid-1-2 cya-answer" id="avoidance-scheme-value"></div>}
-          case Some(schemeNum) => { <div class="grid grid-1-2 cya-answer" id="avoidance-scheme-value">{schemeNum}</div> }
-          case _ => {<div class="grid grid-1-2 cya-answer" id="avoidance-scheme-value"></div>}
-        }
-      }
+    case Some(p) => {
+    @{p.taxAvoidanceScheme match {
+    case Some(schemeNum) if (PeriodUtils.isBlank(schemeNum)) => {<div class="grid grid-1-2 cya-answer" id="avoidance-scheme-value"></div>}
+    case Some(schemeNum) => { <div class="grid grid-1-2 cya-answer" id="avoidance-scheme-value">{schemeNum}</div> }
+    case _ => {<div class="grid grid-1-2 cya-answer" id="avoidance-scheme-value"></div>}
+    }
+    }
     }
     case _ => {<div class="grid grid-1-2 cya-answer" id="avoidance-scheme-value"><span class="status">@incomplete</span></div>}
     }
@@ -219,29 +211,29 @@
       <span id="promoter-reference-label" class="heading-small">@Messages("ated.property-details-summary.table.property-ated-details.promoter-reference.label")</span>
     </div>
 
-  @propertyDetails.period match {
-  case Some(p) => {
-  @{p.taxAvoidancePromoterReference match {
-  case Some(schemeNum) if (PeriodUtils.isBlank(schemeNum)) => {<div class="grid grid-1-2 cya-answer" id="prom-scheme-value"></div>}
-  case Some(schemeNum) => { <div class="grid grid-1-2 cya-answer" id="prom-scheme-value">{schemeNum}</div> }
-  case _ => {<div class="grid grid-1-2 cya-answer" id="prom-scheme-value"></div>}
-  }
-  }
-  }
-  case _ => {<div class="grid grid-1-2 cya-answer" id="prom-scheme-value"><span class="status">@incomplete</span></div>}
-  }
+    @propertyDetails.period match {
+    case Some(p) => {
+    @{p.taxAvoidancePromoterReference match {
+    case Some(schemeNum) if (PeriodUtils.isBlank(schemeNum)) => {<div class="grid grid-1-2 cya-answer" id="prom-scheme-value"></div>}
+    case Some(schemeNum) => { <div class="grid grid-1-2 cya-answer" id="prom-scheme-value">{schemeNum}</div> }
+    case _ => {<div class="grid grid-1-2 cya-answer" id="prom-scheme-value"></div>}
+    }
+    }
+    }
+    case _ => {<div class="grid grid-1-2 cya-answer" id="prom-scheme-value"><span class="status">@incomplete</span></div>}
+    }
 
-  <div class="grid grid-1-6 cya-change">
-    <a href="@controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceController.editFromSummary(propertyDetails.id)" id="edit-promoter-scheme">@Messages("ated.edit") <span class="visuallyhidden">@Messages("ated.property-details-summary.table.property-ated-details.promoter-reference.label")</span>
-    </a>
-  </div>
+    <div class="grid grid-1-6 cya-change">
+      <a href="@controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceController.editFromSummary(propertyDetails.id)" id="edit-promoter-scheme">@Messages("ated.edit") <span class="visuallyhidden">@Messages("ated.property-details-summary.table.property-ated-details.promoter-reference.label")</span>
+      </a>
+    </div>
 
   </div>
 </div>
 
 <div class="form-group">
   <div class="grid-wrapper">
-      <h2 class="heading-medium" id="supporting-info-header">@Messages("ated.property-details-summary.table.supporting-info.header")</h2>
+    <h2 class="heading-medium" id="supporting-info-header">@Messages("ated.property-details-summary.table.supporting-info.header")</h2>
   </div>
 
   <div class="grid-wrapper row-border">
@@ -276,48 +268,48 @@
   </div>
 </div>
 
-  <div class="form-group">
-     <p class="text" id="ated-charge-text">
-      @Messages("ated.property-details-summary.table.ated-charge.text")
-       <span id="ated-charge-value" class="heading-xlarge form-group">
+<div class="form-group">
+  <p class="text" id="ated-charge-text">
+    @Messages("ated.property-details-summary.table.ated-charge.text")
+    <span id="ated-charge-value" class="heading-xlarge form-group">
       @if(propertyDetails.calculated.isEmpty) {
       @Messages("ated.unknow-amount.text")
       } else {
       @propertyDetails.calculated.flatMap(x=>x.liabilityAmount.map(y=>formattedPounds(y)))
       }
     </span>
-    </p>
-   </div>
+  </p>
+</div>
 
 
-  <div class="form-group"><span class="panel-indent">@Messages("ated.property-details-summary.saved-draft.text")</span></div>
+<div class="form-group"><span class="panel-indent">@Messages("ated.property-details-summary.saved-draft.text")</span></div>
 
-  <div class="form-group">
-    <a href="@controllers.propertyDetails.routes.PropertyDetailsSummaryController.viewPrintFriendlyLiabilityReturn(propertyDetails.id)" id="print-friendly-liability-link" data-journey-click="ated-fronted:click:print-friendly-liability-link" target="_blank">
-      @Messages("ated.property-details-summary.print.view")
-    </a>
-  </div>
+<div class="form-group">
+  <a href="@controllers.propertyDetails.routes.PropertyDetailsSummaryController.viewPrintFriendlyLiabilityReturn(propertyDetails.id)" id="print-friendly-liability-link" data-journey-click="ated-fronted:click:print-friendly-liability-link" target="_blank">
+    @Messages("ated.property-details-summary.print.view")
+  </a>
+</div>
 
-  <div class="form-group"><a href="@controllers.routes.AccountSummaryController.view()" id="saved-returns-link" data-journey-click="ated-fronted:click:saved-returns-link">@Messages("ated.property-details-summary.saved-returns.link.text")</a></div>
+<div class="form-group"><a href="@controllers.routes.AccountSummaryController.view()" id="saved-returns-link" data-journey-click="ated-fronted:click:saved-returns-link">@Messages("ated.property-details-summary.saved-returns.link.text")</a></div>
 
-  <div class="form-group">
-    <a href="@controllers.propertyDetails.routes.PropertyDetailsSummaryController.deleteDraft(propertyDetails.id, propertyDetails.periodKey)" id="delete-draft" data-journey-click="ated-fronted:click:delete-draft">
-      @Messages("ated.property-details-summary.delete-draft.link.text")
-    </a>
-  </div>
+<div class="form-group">
+  <a href="@controllers.propertyDetails.routes.PropertyDetailsSummaryController.deleteDraft(propertyDetails.id, propertyDetails.periodKey)" id="delete-draft" data-journey-click="ated-fronted:click:delete-draft">
+    @Messages("ated.property-details-summary.delete-draft.link.text")
+  </a>
+</div>
 
-  @form(action=controllers.propertyDetails.routes.PropertyDetailsSummaryController.submit(propertyDetails.id)) {
-    <div class="form-group">
-      @if(propertyDetails.calculated.isEmpty){
-      } else {
-      @if(canSubmit && propertyDetails.period.isDefined && !PeriodUtils.isListEmpty(valuesToDisplay) && !PeriodUtils.isListEmpty(periods)) {
-        <button class="button" id="submit" type="submit">@Messages("ated.confirm-and-continue")</button>
-      } else {
-        <p id="submit-disabled-text">@Messages("ated.property-details-summary.submit-disabled-text")</p>
-        <button class="button" id="submit" type="submit" disabled>@Messages("ated.confirm-and-continue")</button>
-      }
-      }
-    </div>
+@form(action=controllers.propertyDetails.routes.PropertyDetailsSummaryController.submit(propertyDetails.id)) {
+<div class="form-group">
+  @if(propertyDetails.calculated.isEmpty){
+  } else {
+  @if(canSubmit && propertyDetails.period.isDefined && !PeriodUtils.isListEmpty(valuesToDisplay) && !PeriodUtils.isListEmpty(periods)) {
+  <button class="button" id="submit" type="submit">@Messages("ated.confirm-and-continue")</button>
+  } else {
+  <p id="submit-disabled-text">@Messages("ated.property-details-summary.submit-disabled-text")</p>
+  <button class="button" id="submit" type="submit" disabled>@Messages("ated.confirm-and-continue")</button>
   }
+  }
+</div>
+}
 
 }
