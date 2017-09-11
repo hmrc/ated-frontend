@@ -172,18 +172,6 @@ object PeriodUtils {
     }
   }
 
-  def getProfessionallyValuedMessage(formBundleReturn: Option[FormBundleReturn]) = {
-    formBundleReturn match {
-      case Some(x) if x.professionalValuation => Messages("ated.label.yes")
-      case Some(x) if !x.professionalValuation => Messages("ated.label.no")
-    }
-  }
-
-  def getValueForPurpose(formBundleReturn: Option[FormBundleReturn]) = {
-    formBundleReturn match {
-      case Some(x) => x.valueAtAcquisition.getOrElse(0)
-    }
-  }
   def isListEmpty[T](list: Seq[T]): Boolean = list == Nil || list.isEmpty
 
   def isBlank(str: String): Boolean = str.isEmpty
