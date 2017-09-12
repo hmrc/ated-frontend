@@ -31,8 +31,8 @@ ated.address = Address
 ated.sign-out = Sign out
 ated.generic.bta_link = Business tax account home
 ated.unknow-amount.text = Not yet calculated
+ated.screen-reader.section-name = You have logged in as:
 ated.screen-reader.section = This section is:
-ated.screen-reader.name = this is for:
 
 ## Error Messages
 # --- Errors
@@ -854,7 +854,6 @@ ated.address.country.select = Select one country
 ated.address.country.instruction = The ISO country code is internationally recognised and identifies a specific country e.g. United States = ''US''; Germany = ''DE''
 ated.correspondence-address.save = Save
 ated.correspondence-address.save.error = Something has gone wrong, try again later.
-ated.correspondence-address.edit.title = Edit correspondence address
 ated.correspondence-address.error.general.addressLine1 = There is a problem with address line 1
 ated.correspondence-address.error.general.addressLine2 = There is a problem with address line 2
 ated.correspondence-address.error.general.addressLine3 = There is a problem with address line 3
@@ -1019,7 +1018,6 @@ ated.form-bundle.view.return.return-status.title = Return status
 ated.form-bundle.view.return.status = Status
 ated.form-bundle.view.return.date = Return date
 ated.form-bundle.view.return.ated.charge = Based on the information you have given us your ATED charge is
-ated.form-bundle.edit-return.button = Change return
 
 ated.form-bundle.back = Back
 
@@ -1102,7 +1100,6 @@ ated.property-details-summary.details-text = For the ATED period from {0} to {1}
 ated.property-details-summary.table.property-details.header = Property details
 ated.property-details-summary.table.property-details-edit-link.title = property address details
 ated.property-details-summary.table.property-details-prof-valued-edit-link.title.screen-reader = property title number
-ated.property-details-summary.table.property-value-edit-link.title.screen-reader = value for the purposes of ATED
 ated.property-details-summary.table.property-value-edit-link.title.screen-reader = professionally valued question
 ated.property-details-summary.table.property-ated-details.promoter-ref.edit-link.title.screen-reader = promoter reference number
 ated.property-details-summary.table.property-details.address.label = Address
