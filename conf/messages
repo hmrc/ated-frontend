@@ -33,7 +33,6 @@ ated.generic.bta_link = Business tax account home
 ated.unknow-amount.text = Not yet calculated
 ated.screen-reader.section-name = You have logged in as:
 ated.screen-reader.section = This section is:
-ated.screen-reader.name = this is for:
 
 ## Error Messages
 # --- Errors
