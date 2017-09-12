@@ -99,7 +99,7 @@ trait AddressLookupController extends PropertyDetailsHelpers with ClientHelper w
             }
           },
           searchCriteria => {
-            addressLookupService.findById(searchCriteria.selected).flatMap(foundProperty =>
+            addressLookupService.findById(searchCriteria.selected.get).flatMap(foundProperty =>
               (id, foundProperty) match {
                 case (Some(x), Some(found)) =>
                   propertyDetailsService.saveDraftPropertyDetailsAddress(x, found).flatMap(
