@@ -211,7 +211,7 @@ class AddressLookupControllerSpec extends PlaySpec with OneServerPerSuite with M
       "submitting an invalid request should fail and return to the search results page" in {
         val searchCriteria = AddressLookup("XX1 1XX", None)
         val searchResults =  AddressSearchResults(searchCriteria, Nil)
-        saveWithAuthorisedUser(None, 2015, Json.toJson(AddressSelected("")), Some(searchResults), None) {
+        saveWithAuthorisedUser(None, 2015, Json.toJson(AddressSelected(None)), Some(searchResults), None) {
           result =>
             status(result) must be(BAD_REQUEST)
             val document = Jsoup.parse(contentAsString(result))
@@ -223,7 +223,7 @@ class AddressLookupControllerSpec extends PlaySpec with OneServerPerSuite with M
       "submitting an invalid request should fail and return to the search results page even with no cached data" in {
         val searchCriteria = AddressLookup("XX1 1XX", None)
         val searchResults =  AddressSearchResults(searchCriteria, Nil)
-        saveWithAuthorisedUser(None, 2015, Json.toJson(AddressSelected("")), None, None) {
+        saveWithAuthorisedUser(None, 2015, Json.toJson(AddressSelected(None)), None, None) {
           result =>
             status(result) must be(BAD_REQUEST)
             val document = Jsoup.parse(contentAsString(result))
@@ -236,7 +236,7 @@ class AddressLookupControllerSpec extends PlaySpec with OneServerPerSuite with M
         val searchCriteria = AddressLookup("XX1 1XX", None)
         val results = AddressSearchResults(searchCriteria,List(address1, address2, address3))
 
-        saveWithAuthorisedUser(None, 2015, Json.toJson(AddressSelected("1")), Some(results), None) {
+        saveWithAuthorisedUser(None, 2015, Json.toJson(AddressSelected(Some("1"))), Some(results), None) {
           result =>
             status(result) must be(BAD_REQUEST)
             val document = Jsoup.parse(contentAsString(result))
@@ -249,7 +249,7 @@ class AddressLookupControllerSpec extends PlaySpec with OneServerPerSuite with M
         val searchCriteria = AddressLookup("XX1 1XX", None)
         val results = AddressSearchResults(searchCriteria,List(address1, address2, address3))
 
-        saveWithAuthorisedUser(None, 2015, Json.toJson(AddressSelected("1")), None, None) {
+        saveWithAuthorisedUser(None, 2015, Json.toJson(AddressSelected(Some("1"))), None, None) {
           result =>
             status(result) must be(BAD_REQUEST)
             val document = Jsoup.parse(contentAsString(result))
@@ -265,7 +265,7 @@ class AddressLookupControllerSpec extends PlaySpec with OneServerPerSuite with M
         when(mockPropertyDetailsService.createDraftPropertyDetailsAddress(Matchers.eq(2015), Matchers.eq(foundProperty))(Matchers.any(), Matchers.any())).thenReturn(Future.successful("newId"))
         when(mockBackLinkCache.saveBackLink(Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
 
-        saveWithAuthorisedUser(None, 2015, Json.toJson(AddressSelected("1")), None, Some(foundProperty)) {
+        saveWithAuthorisedUser(None, 2015, Json.toJson(AddressSelected(Some("1"))), None, Some(foundProperty)) {
           result =>
             status(result) must be(SEE_OTHER)
             redirectLocation(result).get must include("/ated/liability/create/title/view/newId")
@@ -277,7 +277,7 @@ class AddressLookupControllerSpec extends PlaySpec with OneServerPerSuite with M
         when(mockPropertyDetailsService.saveDraftPropertyDetailsAddress(Matchers.any(), Matchers.eq(foundProperty))(Matchers.any(), Matchers.any())).thenReturn(Future.successful("1"))
         when(mockBackLinkCache.saveBackLink(Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
 
-        saveWithAuthorisedUser(Some("1"), 2015, Json.toJson(AddressSelected("1")), None, Some(foundProperty)) {
+        saveWithAuthorisedUser(Some("1"), 2015, Json.toJson(AddressSelected(Some("1"))), None, Some(foundProperty)) {
           result =>
             status(result) must be(SEE_OTHER)
             redirectLocation(result).get must include("/ated/liability/create/title/view/1")

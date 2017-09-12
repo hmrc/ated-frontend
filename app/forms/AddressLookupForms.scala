@@ -35,14 +35,8 @@ object AddressLookupForms {
     )(AddressLookup.apply)(AddressLookup.unapply)
   )
 
-  lazy val mandatoryRadio = optional(text)
-    .verifying("ated.address-lookup.error.non-selected.field", _.isDefined)
-    .transform({ s: Option[String] => s.getOrElse("") }, { v: String => Some(v) })
+  val addressSelectedForm = Form(mapping(
+      "selected" -> optional(text).verifying(Messages("ated.address-lookup.error.non-selected.field"), _.isDefined)
+    )(AddressSelected.apply)(AddressSelected.unapply))
 
-  val addressSelectedForm = Form(
-
-    mapping(
-      "selected" -> mandatoryRadio
-    )(AddressSelected.apply)(AddressSelected.unapply)
-  )
 }

@@ -30,7 +30,7 @@ object AddressLookup {
   implicit val formats = Json.format[AddressLookup]
 }
 
-case class AddressSelected(selected: String)
+case class AddressSelected(selected: Option[String])
 
 object AddressSelected {
   implicit val formats = Json.format[AddressSelected]

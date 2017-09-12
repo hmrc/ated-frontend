@@ -142,7 +142,7 @@ class SelectExistingReturnAddressControllerSpec extends PlaySpec with OneServerP
 
 
       "submitting an invalid request should fail and return to the search results page" in {
-        saveWithAuthorisedUser(None, prevReturns, Json.toJson(AddressSelected(""))) {
+        saveWithAuthorisedUser(None, prevReturns, Json.toJson(AddressSelected(None))) {
           result =>
             status(result) must be(BAD_REQUEST)
             val document = Jsoup.parse(contentAsString(result))
@@ -151,7 +151,7 @@ class SelectExistingReturnAddressControllerSpec extends PlaySpec with OneServerP
       }
 
       "submitting an invalid request should fail and return to the search results page even with cached data" in {
-        saveWithAuthorisedUser(None, prevReturns, Json.toJson(AddressSelected(""))) {
+        saveWithAuthorisedUser(None, prevReturns, Json.toJson(AddressSelected(None))) {
           result =>
             status(result) must be(BAD_REQUEST)
             val document = Jsoup.parse(contentAsString(result))
@@ -161,7 +161,7 @@ class SelectExistingReturnAddressControllerSpec extends PlaySpec with OneServerP
       }
 
       "submitting an invalid request should fail and return to the search results page even with no cached data" in {
-        saveWithAuthorisedUser(None, None, Json.toJson(AddressSelected(""))) {
+        saveWithAuthorisedUser(None, None, Json.toJson(AddressSelected(None))) {
           result =>
             status(result) must be(BAD_REQUEST)
             val document = Jsoup.parse(contentAsString(result))
@@ -177,14 +177,14 @@ class SelectExistingReturnAddressControllerSpec extends PlaySpec with OneServerP
         val formBundlePropertyDetails = FormBundlePropertyDetails(Some("title here"), formBundleAddress, Some("additional details"))
         val viewReturn = FormBundleReturn("2014", formBundlePropertyDetails, Some(new LocalDate("2013-10-10")), Some(BigDecimal(100)), Some("ABCdefgh"), Some("PromABCdefgh"), Some("1234"), true, true, new LocalDate("2015-05-10"), BigDecimal(9324), "1234567891", List(formBundleProp))
 
-        saveWithAuthorisedUser(Some(viewReturn), prevReturns, Json.toJson(AddressSelected("12345678"))) {
+        saveWithAuthorisedUser(Some(viewReturn), prevReturns, Json.toJson(AddressSelected(Some("12345678")))) {
           result =>
             status(result) must be(SEE_OTHER)
         }
       }
 
       "submitting an invalid form bundle number request should redirect to Account Summary Page" in {
-        saveWithAuthorisedUser(formBundleReturn = None, prevReturns, Json.toJson(AddressSelected("12345678"))) {
+        saveWithAuthorisedUser(formBundleReturn = None, prevReturns, Json.toJson(AddressSelected(Some("12345678")))) {
           result =>
             status(result) must be(SEE_OTHER)
         }

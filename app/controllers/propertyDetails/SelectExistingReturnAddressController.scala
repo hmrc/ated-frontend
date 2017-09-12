@@ -57,11 +57,11 @@ trait SelectExistingReturnAddressController extends PropertyDetailsHelpers with 
           formWithError => {
             summaryReturnService.retrieveCachedPreviousReturnAddressList.map { prevReturns =>
               val addressList = prevReturns.getOrElse(Nil)
-              BadRequest(views.html.propertyDetails.selectPreviousReturn(periodKey, returnType, addressSelectedForm, addressList, getBackLink(periodKey, returnType)))
+              BadRequest(views.html.propertyDetails.selectPreviousReturn(periodKey, returnType, formWithError, addressList, getBackLink(periodKey, returnType)))
             }
           },
           addressSelectForm => {
-            val formBundleNum = addressSelectForm.selected
+            val formBundleNum = addressSelectForm.selected.get
             for {
               formBundleReturnOpt <- formBundleReturnService.getFormBundleReturns(formBundleNum)
               result <- formBundleReturnOpt match {
