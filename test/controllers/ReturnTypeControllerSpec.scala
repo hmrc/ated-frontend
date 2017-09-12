@@ -213,7 +213,7 @@ class ReturnTypeControllerSpec extends PlaySpec with OneServerPerSuite with Mock
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
     when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-    when(mockSummaryReturnsService.getPreviousSubmittedLiabilityDetails(Matchers.any(), Matchers.any())).thenReturn(Future.successful(prevReturns))
+    when(mockSummaryReturnsService.getPreviousSubmittedLiabilityDetails(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(prevReturns))
     when(mockBackLinkCache.clearBackLinks(Matchers.any())(Matchers.any())).thenReturn(Future.successful(Nil))
     when(mockBackLinkCache.saveBackLink(Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
     val result = TestReturnTypeController.submit(2015).apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))

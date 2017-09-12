@@ -198,7 +198,7 @@ class SelectExistingReturnAddressControllerSpec extends PlaySpec with OneServerP
     val prevReturns = Seq(PreviousReturns("1, addressLine1", "12345678"))
     when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-    when(mockSummaryReturnsService.getPreviousSubmittedLiabilityDetails(Matchers.any(), Matchers.any())).thenReturn(Future.successful(prevReturns))
+    when(mockSummaryReturnsService.getPreviousSubmittedLiabilityDetails(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(prevReturns))
     when(mockBackLinkCache.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
     val result = TestSelectExistingReturnAddressController.view(2015, returnTypeCharge).apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
