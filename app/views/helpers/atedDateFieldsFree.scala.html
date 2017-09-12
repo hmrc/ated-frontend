@@ -25,7 +25,15 @@
     data-validation-children="day month year"
   >
 
-    <legend id="@elements.args.get('_idName)_legend" class="form-label-bold ">@label</legend>
+    <legend id="@elements.args.get('_idName)_legend" class="form-label-bold ">@label
+
+      @if(elements.args.get('_hintText).isDefined) {
+      <div class="form-hint" id="@if( elements.args.get('_idName) ) {@elements.args.get('_idName)_hint} else {@(fieldName)_hint}">
+        @elements.args.get('_hintText)
+      </div>
+      }
+
+    </legend>
 
     @if(elements.args.get('_fieldsetQuestion).isDefined) {
       <details role="group">
@@ -40,12 +48,6 @@
           </span>
         </div>
       </details>
-    }
-
-    @if(elements.args.get('_hintText).isDefined) {
-      <div class="form-hint" id="@if( elements.args.get('_idName) ) {@elements.args.get('_idName)_hint} else {@(fieldName)_hint}">
-        @elements.args.get('_hintText)
-      </div>
     }
 
     @commonHelper(field,errors)
