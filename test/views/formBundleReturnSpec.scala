@@ -89,7 +89,7 @@ class formBundleReturnSpec extends FeatureSpec with OneServerPerSuite with Mocki
       assert(document.getElementById("form-bundle-header").text === "View return")
 
       Then("The subheader should be - ACME Ltd")
-      assert(document.getElementById("form-bundle-subheader").text() === "This section is: ACME Ltd")
+      assert(document.getElementById("form-bundle-subheader").text() === "You have logged in as: ACME Ltd")
 
       Then("The text should be - From the ATED period from 1 April 2015 to 31 March 2016")
       assert(document.getElementById("form-bundle-text").text() === "From the ATED period from 1 April 2015 to 31 March 2016")
@@ -118,7 +118,7 @@ class formBundleReturnSpec extends FeatureSpec with OneServerPerSuite with Mocki
       assert(document.getElementById("form-bundle-header").text === "View return")
 
       Then("The subheader should be - ''")
-      assert(document.getElementById("form-bundle-subheader").text() === "This section is:")
+      assert(document.getElementById("form-bundle-subheader").text() === "You have logged in as:")
 
       Then("The text should be - From the ATED period from 1 April 2015 to 31 March 2016")
       assert(document.getElementById("form-bundle-text").text() === "From the ATED period from 1 April 2015 to 31 March 2016")
@@ -189,7 +189,7 @@ class formBundleReturnSpec extends FeatureSpec with OneServerPerSuite with Mocki
       assert(document.getElementById("form-bundle-header").text === "View return")
 
       Then("The subheader should be - ACME Ltd")
-      assert(document.getElementById("form-bundle-subheader").text() === "This section is: ACME Ltd")
+      assert(document.getElementById("form-bundle-subheader").text() === "You have logged in as: ACME Ltd")
 
       Then("The text should be - From the ATED period from 1 April 2015 to 31 March 2016")
       assert(document.getElementById("form-bundle-text").text() === "From the ATED period from 1 April 2015 to 31 March 2016")
@@ -257,7 +257,7 @@ class formBundleReturnSpec extends FeatureSpec with OneServerPerSuite with Mocki
       assert(document.getElementById("form-bundle-header").text === "View return")
 
       Then("The subheader should be - ACME Ltd")
-      assert(document.getElementById("form-bundle-subheader").text() === "This section is: ACME Ltd")
+      assert(document.getElementById("form-bundle-subheader").text() === "You have logged in as: ACME Ltd")
 
       Then("The text should be - From the ATED period from 1 April 2015 to 31 March 2016")
       assert(document.getElementById("form-bundle-text").text() === "From the ATED period from 1 April 2015 to 31 March 2016")
@@ -332,7 +332,7 @@ class formBundleReturnSpec extends FeatureSpec with OneServerPerSuite with Mocki
       assert(document.getElementById("form-bundle-header").text === "View return")
 
       Then("The subheader should be - ACME Ltd")
-      assert(document.getElementById("form-bundle-subheader").text() === "This section is: ACME Ltd")
+      assert(document.getElementById("form-bundle-subheader").text() === "You have logged in as: ACME Ltd")
 
       Then("The text should be - From the ATED period from 1 April 2015 to 31 March 2016")
       assert(document.getElementById("form-bundle-text").text() === "From the ATED period from 1 April 2015 to 31 March 2016")

@@ -15,8 +15,7 @@
 
 @pageHeadersAndError(backLink, "period-summary-subheader", organisationName.getOrElse(""), "period-summary-header", Messages("ated.period-summary.header",
 periodStartDate(periodKey).toString(Messages("ated.date-format.summary")),
-periodEndDate(periodKey).toString(Messages("ated.date-format.summary"))
-))
+periodEndDate(periodKey).toString(Messages("ated.date-format.summary"))), subHeaderPrefix = Some(Messages("ated.screen-reader.section-name")))
 
   <div class="form-group">
     <ul class="ated-tabs">
