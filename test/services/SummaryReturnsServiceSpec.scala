@@ -196,7 +196,7 @@ class SummaryReturnsServiceSpec extends PlaySpec with OneServerPerSuite with Moc
         when(mockDataCacheConnector.saveFormData[Seq[PreviousReturns]](Matchers.eq(PreviousReturnsDetailsList), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(pastReturnDetails))
 
-        val result = TestSummaryReturnsService.getPreviousSubmittedLiabilityDetails(2015)
+        val result = TestSummaryReturnsService.getPreviousSubmittedLiabilityDetails(2016)
         await(result) must be(pastReturnDetails)
       }
     }
