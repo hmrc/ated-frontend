@@ -15,7 +15,7 @@
   sidebarClass = Some("related"),
   banner = clientBanner) {
 
-  @pageHeadersAndError(None, "client-summary-subheader", organisationName.getOrElse(""), "account-summary-header", Messages("ated.summary-return.header"))
+  @pageHeadersAndError(None, "client-summary-subheader", organisationName.getOrElse(""), "account-summary-header", Messages("ated.summary-return.header"), subHeaderPrefix = Some(Messages("ated.screen-reader.section-name")))
 
   @if(summaryReturnsWithDrafts.allReturns.isEmpty) {
   <p><span class="heading-medium" id="return-summary-no-returns">@Messages("ated.account-summary.agent.no-returns")</span></p>
