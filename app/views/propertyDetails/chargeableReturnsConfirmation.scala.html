@@ -11,13 +11,12 @@
 
 @atedMain(title = Messages("ated.chargeable-return-confirmation.title"), attorney = atedContext.user.authContext.attorney) {
 
-
-  <div id="banner" class="transaction-banner--complete">
-    <h1 id="header">
+  <div id="banner" class="transaction-banner--complete form-group">
+    <span class="heading-large" id="value-text">
       @Messages("ated.chargeable-return-confirmation.submitted.text")
-    </h1>
-    <span  class="heading-small" id="date">
-      @Messages("ated.chargeable-return-confirmation.submitted.date.text", DateTimeFormat.forPattern("d MMM yyyy").print(new LocalDate()))
+      <span class="heading-small form group" id="date">
+        @Messages("ated.chargeable-return-confirmation.submitted.date.text", DateTimeFormat.forPattern("d MMM yyyy").print(new LocalDate()))
+      </span>
     </span>
   </div>
 
