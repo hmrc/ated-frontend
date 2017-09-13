@@ -18,29 +18,14 @@
       Some(atedErrorSummary(liabilityValueDetailsForm, "ated.change-property-value-error.general")))
 
     <div class="form-group">
-        <p class="paragraph display-block" id="value-text">
-            @Messages("ated.change-liability.value.previous-value-text")
-            <span class="heading-xlarge form group" id="old-value">
-            @oldLiabilityAmount.map(formattedPounds(_))
-            </span>
-        </p>
-    </div>
-
-    <div class="form-group">
-        <span class="display-block" id="return-charge-text">
-            @Messages("ated.change-liability.value.previous-value-text")
-            <span class="heading-large form group" id="return-charge">
-            @oldLiabilityAmount.map(formattedPounds(_))
-            </span>
+      <span class="display-block ated-line-height" id="value-text">
+        @Messages("ated.change-liability.value.previous-value-text")
+        <span class="heading-large form group" id="return-charge">
+        @oldLiabilityAmount.map(formattedPounds(_))
         </span>
+      </span>
     </div>
 
-    <div class="form-group">
-    <p>
-        <span class="paragraph display-block" id="value-text">@Messages("ated.change-liability.value.previous-value-text")</span>
-        <span class="heading-large" id="old-value">@oldLiabilityAmount.map(formattedPounds(_))</span>
-    </p>
-    </div>
   @form(action = controllers.editLiability.routes.EditLiabilityHasValueChangedController.save(oldFormBundleNo)) {
 
       <div id="hasValueChanged" class="form-group">
@@ -57,7 +42,6 @@
       </div>
 
       <button class="button" id="submit" type="submit">@Messages("ated.save-and-continue")</button>
-
 
   }
 

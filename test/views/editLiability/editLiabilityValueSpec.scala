@@ -35,7 +35,6 @@ class editLiabilityValueSpec extends FeatureSpec with OneServerPerSuite with Moc
   implicit val messages : play.api.i18n.Messages = play.api.i18n.Messages.Implicits.applicationMessages
 
   feature("The user can view an edit liability value page") {
-
     info("as a user I want to view the correct page content")
 
     scenario("user has visited the page for the first time") {
@@ -53,8 +52,7 @@ class editLiabilityValueSpec extends FeatureSpec with OneServerPerSuite with Moc
 
       assert(document.getElementById("pre-heading").text() === "This section is: Create return")
 
-      assert(document.getElementById("value-text").text() === "Based on the information you have previously given us the value of your property for the purposes of ATED is")
-      assert(document.getElementById("old-value").text() === "£123")
+      assert(document.getElementById("value-text").text() === "Based on the information you have previously given us the value of your property for the purposes of ATED is £123")
 
       And("No data is populated")
       assert(document.getElementById("hasValueChanged").text() === "Has the value of your property changed for the purposes of ATED? Yes No")
@@ -90,8 +88,7 @@ class editLiabilityValueSpec extends FeatureSpec with OneServerPerSuite with Moc
 
       assert(document.getElementById("pre-heading").text() === "This section is: Create return")
 
-      assert(document.getElementById("value-text").text() === "Based on the information you have previously given us the value of your property for the purposes of ATED is")
-      assert(document.getElementById("old-value").text() === "£45,678")
+      assert(document.getElementById("value-text").text() === "Based on the information you have previously given us the value of your property for the purposes of ATED is £45,678")
 
       And("The data is populated for a property value set to true")
       assert(document.getElementById("hasValueChanged").text() === "Has the value of your property changed for the purposes of ATED? Yes No")

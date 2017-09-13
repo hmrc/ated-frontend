@@ -767,9 +767,6 @@ table th {
   }
 }
 
-.abc {
-    font-family: "nta", Arial, sans-serif;
-    font-size: 19px;
-    font-weight: 400;
-    text-transform: none;
+.ated-line-height {
+    line-height: 0.5em;
 }
