@@ -17,10 +17,30 @@
   @pageHeadersAndError(backLink, "pre-heading", AtedUtils.getPropertyDetailsPreHeader(mode), "property-details-header", Messages("ated.property-details-value.header"),
       Some(atedErrorSummary(liabilityValueDetailsForm, "ated.change-property-value-error.general")))
 
-  <p class="paragraph" id="value-text">@Messages("ated.change-liability.value.previous-value-text")</p>
+    <div class="form-group">
+        <p class="paragraph display-block" id="value-text">
+            @Messages("ated.change-liability.value.previous-value-text")
+            <span class="heading-xlarge form group" id="old-value">
+            @oldLiabilityAmount.map(formattedPounds(_))
+            </span>
+        </p>
+    </div>
 
-  <p><span class="heading-large" id="old-value">@oldLiabilityAmount.map(formattedPounds(_))</span></p>
+    <div class="form-group">
+        <span class="display-block" id="return-charge-text">
+            @Messages("ated.change-liability.value.previous-value-text")
+            <span class="heading-large form group" id="return-charge">
+            @oldLiabilityAmount.map(formattedPounds(_))
+            </span>
+        </span>
+    </div>
 
+    <div class="form-group">
+    <p>
+        <span class="paragraph display-block" id="value-text">@Messages("ated.change-liability.value.previous-value-text")</span>
+        <span class="heading-large" id="old-value">@oldLiabilityAmount.map(formattedPounds(_))</span>
+    </p>
+    </div>
   @form(action = controllers.editLiability.routes.EditLiabilityHasValueChangedController.save(oldFormBundleNo)) {
 
       <div id="hasValueChanged" class="form-group">

@@ -13,8 +13,10 @@ function showHideCheckBoxDates(checkBoxName, dateName) {
      $('input[type=checkBox][name=' + checkBoxName + ']').change(function(){
          if(this.checked) {
              displayDiv.show();
+             checkBoxValue.attr('aria-expanded', 'true')
          } else {
              displayDiv.hide();
+             checkBoxValue.attr('aria-expanded', 'false')
          }
      });
 }

@@ -161,7 +161,7 @@ class formBundleReturnSpec extends FeatureSpec with OneServerPerSuite with Mocki
       assert(document.getElementById("td-view-return-date").text() === "10 May 2015")
 
 
-      assert(document.getElementById("return-charge-text").text() === "Based on the information you have given us your ATED charge is")
+      assert(document.getElementById("return-charge-text").text() === "Based on the information you have given us your ATED charge is £9,324")
       assert(document.getElementById("return-charge").text() === "£9,324")
 
       assert(document.getElementById("submit") === null)
@@ -232,7 +232,7 @@ class formBundleReturnSpec extends FeatureSpec with OneServerPerSuite with Mocki
       assert(document.getElementById("td-view-return-date").text() === "10 May 2015")
 
 
-      assert(document.getElementById("return-charge-text").text() === "Based on the information you have given us your ATED charge is")
+      assert(document.getElementById("return-charge-text").text() === "Based on the information you have given us your ATED charge is £9,324")
       assert(document.getElementById("return-charge").text() === "£9,324")
 
       assert(document.getElementById("submit").text() === "Change return")
@@ -307,7 +307,7 @@ class formBundleReturnSpec extends FeatureSpec with OneServerPerSuite with Mocki
       assert(document.getElementById("td-view-return-date").text() === "10 May 2015")
 
 
-      assert(document.getElementById("return-charge-text").text() === "Based on the information you have given us your ATED charge is")
+      assert(document.getElementById("return-charge-text").text() === "Based on the information you have given us your ATED charge is £9,324")
       assert(document.getElementById("return-charge").text() === "£9,324")
 
       assert(document.getElementById("submit").text() === "Change return")
@@ -379,7 +379,7 @@ class formBundleReturnSpec extends FeatureSpec with OneServerPerSuite with Mocki
       assert(document.getElementById("td-view-return-date").text() === "10 May 2015")
 
 
-      assert(document.getElementById("return-charge-text").text() === "Based on the information you have given us your ATED charge is")
+      assert(document.getElementById("return-charge-text").text() === "Based on the information you have given us your ATED charge is £9,324")
       assert(document.getElementById("return-charge").text() === "£9,324")
 
       assert(document.getElementById("submit") === null)
