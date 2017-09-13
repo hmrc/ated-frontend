@@ -1192,7 +1192,7 @@ ated.relief-summary.declaration.submit = Agree and submit returns
 ated.relief-return.confirm.error = Please confirm that you want to submit this
 
 # change-liability-return Value page
-ated.change-liability.value.previous-value-text = Based on the information you have previously given us the value of your property for the purposes of ATED is
+ated.change-liability.value.previous-value-text = Based on the information you have previously given us the value of your property for the purposes of ATED is 
 
 # change-liability-return Period page
 ated.change-liability.period.isTaxAvoidance.label = Is a tax avoidance scheme being used?
