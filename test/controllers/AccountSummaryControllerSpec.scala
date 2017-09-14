@@ -20,7 +20,7 @@ import java.util.UUID
 
 import builders.{AuthBuilder, SessionBuilder}
 import config.FrontendDelegationConnector
-import connectors.{AgentClientMandateFrontendConnector, DataCacheConnector}
+import connectors.AgentClientMandateFrontendConnector
 import models._
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
@@ -38,7 +38,6 @@ import uk.gov.hmrc.play.frontend.auth.DummyDelegationData
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.http.{HeaderCarrier, UserId}
 import uk.gov.hmrc.play.partials.HtmlPartial
-import utils.AtedConstants
 import utils.AtedConstants._
 
 import scala.concurrent.Future
@@ -135,7 +134,7 @@ class AccountSummaryControllerSpec extends PlaySpec with OneServerPerSuite with 
               document.getElementById("return-summary-th-chargeable").text() must be("Chargeable")
               document.getElementById("return-summary-th-reliefs").text() must be("Relief")
               document.getElementById("return-summary-th-drafts").text() must be("Draft")
-              document.getElementById("return-summary-th-action").text() must be("Action")
+              document.getElementById("return-summary-th-action").text() must be("")
               document.getElementsByClass("return-summary-td-chargeable").text() must be("1")
               document.getElementsByClass("return-summary-td-reliefs").text() must be("1")
               document.getElementsByClass("return-summary-td-drafts").text() must be("2")
@@ -187,7 +186,7 @@ class AccountSummaryControllerSpec extends PlaySpec with OneServerPerSuite with 
           val submittedReturns = SubmittedReturns(2015, Seq(submittedReliefReturns1), Seq(submittedLiabilityReturns1))
           val periodSummaryReturns = PeriodSummaryReturns(2015, Seq(draftReturns1, draftReturns2), Some(submittedReturns))
           val data = SummaryReturnsModel(Some(BigDecimal(0)), Seq(periodSummaryReturns))
-          getWithAuthorisedUser(data, Some(address), None) {
+          getWithAuthorisedUser(data, Some(address)) {
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
@@ -211,7 +210,7 @@ class AccountSummaryControllerSpec extends PlaySpec with OneServerPerSuite with 
 
         "show the create a return and appoint an agent link if there are no returns and no delegation" in {
           val data = SummaryReturnsModel(None, Seq())
-          getWithAuthorisedUser(data, None, None) {
+          getWithAuthorisedUser(data, None) {
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
@@ -224,7 +223,7 @@ class AccountSummaryControllerSpec extends PlaySpec with OneServerPerSuite with 
 
         "show the create a return button and no appoint an agent link if there are no returns and there is delegation" in {
           val data = SummaryReturnsModel(None, Seq())
-          getWithAuthorisedDelegatedUser(data, None, None) {
+          getWithAuthorisedDelegatedUser(data, None) {
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
@@ -260,7 +259,7 @@ class AccountSummaryControllerSpec extends PlaySpec with OneServerPerSuite with 
           val submittedReturns = SubmittedReturns(2015, Seq(submittedReliefReturns1), Seq(submittedLiabilityReturns1))
           val periodSummaryReturns = PeriodSummaryReturns(2015, Seq(draftReturns1, draftReturns2), Some(submittedReturns))
           val data = SummaryReturnsModel(Some(BigDecimal(0)), Seq(periodSummaryReturns))
-          getWithAuthorisedDelegatedUser(data, None, None) {
+          getWithAuthorisedDelegatedUser(data, None) {
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
@@ -276,8 +275,7 @@ class AccountSummaryControllerSpec extends PlaySpec with OneServerPerSuite with 
 
 
   def getWithAuthorisedUser(returnsSummaryWithDraft: SummaryReturnsModel,
-                            correspondence: Option[Address] = None,
-                            clientsAgent: Option[ClientsAgent] = None)(test: Future[Result] => Any) {
+                            correspondence: Option[Address] = None)(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
     implicit val user = createAtedContext(createUserAuthContext(userId, "name"))
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
@@ -294,8 +292,7 @@ class AccountSummaryControllerSpec extends PlaySpec with OneServerPerSuite with 
   }
 
   def getWithAuthorisedDelegatedUser(returnsSummaryWithDraft: SummaryReturnsModel,
-                                     correspondence: Option[Address] = None,
-                                     clientsAgent: Option[ClientsAgent] = None)(test: Future[Result] => Any) {
+                                     correspondence: Option[Address] = None)(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
     implicit val user = createAtedContext(createDelegatedAuthContext(userId, "company name|display name"))
     implicit val hc: HeaderCarrier = HeaderCarrier(userId = Some(UserId(userId)))
