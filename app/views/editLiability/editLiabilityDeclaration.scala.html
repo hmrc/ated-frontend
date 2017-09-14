@@ -15,15 +15,13 @@
     @if(atedContext.user.authContext.attorney.isDefined) { @Messages("ated.edit-liability.before-declaration.agent")} else { @Messages("ated.edit-liability.before-declaration.client")}
   </p>
 
-  <span class="heading-medium" id="declare-or-confirm">
-    @if(atedContext.user.authContext.attorney.isDefined) { @Messages("ated.edit-liability.i-confirm-that.agent")} else { @Messages("ated.edit-liability.i-declare-that.client")}
-  </span>
 
-  <ul class="list-bullet">
-    <li id="declaration-confirmation-text">
-      @if(atedContext.user.authContext.attorney.isDefined) { @Messages("ated.edit-liability.i-confirm-that.bullet-text.agent")} else { @Messages("ated.edit-liability.i-declare-that.bullet-text.client")}
-    </li>
-  </ul>
+
+  <p>
+    <span class="text-bold"  id="declaration-confirmation-text">
+         @if(atedContext.user.authContext.attorney.isDefined) { @Messages("ated.edit-liability.i-confirm-that.bullet-text.agent")} else { @Messages("ated.edit-liability.i-declare-that.bullet-text.client")}
+    </span>
+  </p>
 
   @form(action=controllers.editLiability.routes.EditLiabilityDeclarationController.submit(oldFormBundleNum)) {
 

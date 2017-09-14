@@ -33,9 +33,9 @@
     <p id="amount-message">@Messages("ated.reliefs-sent.amount-message")</p>
 
     @returnResponse.reliefReturnResponse.map { reliefReturnResponse =>
-    <ul class="bullets" id="owed-amount">
-      <li>@Html(Messages("ated.reliefs-sent.reference-message",reliefReturnResponse.head.formBundleNumber))</li>
-    </ul>
+    <p id="owed-amount">
+      @Html(Messages("ated.reliefs-sent.reference-message",reliefReturnResponse.head.formBundleNumber))
+    </p>
     }
 
     <p id="balance-message">@Messages("ated.reliefs-sent.balance-message")</p>
