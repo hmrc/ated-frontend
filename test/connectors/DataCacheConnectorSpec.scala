@@ -17,7 +17,7 @@
 package connectors
 
 import builders.AuthBuilder
-import models.AppointAgent
+import models.ReturnType
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
@@ -42,46 +42,35 @@ class DataCacheConnectorSpec extends PlaySpec with OneServerPerSuite with Mockit
     reset()
   }
 
+  val returnType = ReturnType(Some("CR"))
+
   "DataCacheConnector" must {
     import AuthBuilder._
 
     implicit val user = createAtedContext(createUserAuthContext("User-Id", "name"))
-    "saveClientData" must {
-      "save data in keystore for a particular client" in {
-        val appointAgent = AppointAgent(agentReferenceNumber = "JARN1234567")
-        implicit val hc: HeaderCarrier = HeaderCarrier()
-        val returnedCacheMap = CacheMap("form-id", Map("data" -> Json.toJson(appointAgent)))
-        when(mockSessionCache.cache[AppointAgent](Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(returnedCacheMap))
-        val result = TestDataCacheConnector.saveFormData[AppointAgent]("form-id", appointAgent)
-        await(result) must be(appointAgent)
-      }
-    }
+
     "saveFormData" must {
       "save form data in keystore" in {
-        val appointAgent = AppointAgent(agentReferenceNumber = "JARN1234567")
         implicit val hc: HeaderCarrier = HeaderCarrier()
-        val returnedCacheMap = CacheMap("form-id", Map("data" -> Json.toJson(appointAgent)))
-        when(mockSessionCache.cache[AppointAgent](Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(returnedCacheMap))
-        val result = TestDataCacheConnector.saveFormData[AppointAgent]("form-id", appointAgent)
-        await(result) must be(appointAgent)
+        val returnedCacheMap = CacheMap("form-id", Map("data" -> Json.toJson(returnType)))
+        when(mockSessionCache.cache[ReturnType](Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(returnedCacheMap))
+        await(TestDataCacheConnector.saveFormData[ReturnType]("form-id", returnType)) must be(returnType)
+        val result = TestDataCacheConnector.saveFormData[ReturnType]("form-id", returnType)
+        await(result) must be(returnType)
       }
     }
-    "fetchClientData" must {
-      "fetch client data from Keystore" in {
-        val appointAgent = AppointAgent(agentReferenceNumber = "JARN1234567")
-        implicit val hc: HeaderCarrier = HeaderCarrier()
-        when(mockSessionCache.fetchAndGetEntry[AppointAgent](Matchers.contains("form-id"))(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(appointAgent)))
-        val result = TestDataCacheConnector.fetchAndGetFormData[AppointAgent]("form-id")
-        await(result) must be(Some(appointAgent))
-      }
-    }
+//    "fetchClientData" must {
+//      "fetch client data from Keystore" in {
+//        implicit val hc: HeaderCarrier = HeaderCarrier()
+//        when(mockSessionCache.fetchAndGetEntry[ReturnType](Matchers.contains("form-id"))(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(returnType)))
+//        await(TestDataCacheConnector.fetchAndGetFormData[ReturnType]("form-id")) must be(Some(returnType))
+//      }
+//    }
     "fetchAndGetFormData" must {
       "fetch data from Keystore" in {
-        val appointAgent = AppointAgent(agentReferenceNumber = "JARN1234567")
         implicit val hc: HeaderCarrier = HeaderCarrier()
-        when(mockSessionCache.fetchAndGetEntry[AppointAgent](Matchers.contains("form-id"))(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(appointAgent)))
-        val result = TestDataCacheConnector.fetchAndGetFormData[AppointAgent]("form-id")
-        await(result) must be(Some(appointAgent))
+        when(mockSessionCache.fetchAndGetEntry[ReturnType](Matchers.contains("form-id"))(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(returnType)))
+        await(TestDataCacheConnector.fetchAndGetFormData[ReturnType]("form-id")) must be(Some(returnType))
       }
     }
     "clear the data" must {
@@ -95,19 +84,9 @@ class DataCacheConnectorSpec extends PlaySpec with OneServerPerSuite with Mockit
         response.json must be(successResponse)
       }
     }
-    "saveAtedRefData" must {
-      "save data in keystore for a particular client" in {
-        val appointAgent = AppointAgent(agentReferenceNumber = "JARN1234567")
-        implicit val hc: HeaderCarrier = HeaderCarrier()
-        val returnedCacheMap = CacheMap("form-id", Map("data" -> Json.toJson("XN1200000100001")))
-        when(mockSessionCache.cache[String](Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(returnedCacheMap))
-        val result = TestDataCacheConnector.saveFormData[String]("form-id", "XN1200000100001")
-        await(result) must be("XN1200000100001")
-      }
-    }
+
     "fetchAtedRefData" must {
       "fetch data from Keystore" in {
-        val appointAgent = AppointAgent(agentReferenceNumber = "JARN1234567")
         implicit val hc: HeaderCarrier = HeaderCarrier()
         when(mockSessionCache.fetchAndGetEntry[String](Matchers.contains("XN1200000100001"))(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
         val result = TestDataCacheConnector.fetchAtedRefData[String]("XN1200000100001")

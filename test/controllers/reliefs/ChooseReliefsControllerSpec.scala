@@ -21,7 +21,7 @@ import java.util.UUID
 import builders.{AuthBuilder, ReliefBuilder, SessionBuilder}
 import config.FrontendDelegationConnector
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
-import models.{ClientDetails, Reliefs, ReliefsTaxAvoidance, TaxAvoidance}
+import models.{Reliefs, ReliefsTaxAvoidance, TaxAvoidance}
 import org.jsoup.Jsoup
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -57,7 +57,6 @@ class ChooseReliefsControllerSpec extends PlaySpec with OneServerPerSuite with M
     TaxAvoidance(rentalBusinessScheme = Some("avoid1"))
   )
 
-  val testClientDetails = ClientDetails("ATED-123")
 
   object TestChooseReliefsController extends ChooseReliefsController {
     override val authConnector = mockAuthConnector

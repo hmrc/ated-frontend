@@ -56,15 +56,6 @@ object AtedForms {
   val postCodeRegex = """^[A-Z]{1,2}[0-9R][0-9A-Z]? [0-9][ABD-HJLNP-UW-Z]{2}$""".r
   val addressLineRegex = """^([A-Za-z0-9\s\&\-\,\@\#\.\'])*$""".r
 
-  val appointAgentForm = Form(mapping(
-    "agentReferenceNumber" -> text
-      .verifying(Messages("ated.appoint-agent.form.agentReferenceNumber.empty.error"), x => checkBlankFieldLength(x))
-      .verifying(Messages("ated.appoint-agent.form.agentReferenceNumber.length.error", ELEVEN), x => x.trim.isEmpty || (x.nonEmpty && x.length <= ELEVEN))
-      .verifying(Messages("ated.appoint-agent.form.agentReferenceNumber.invalid.error"),
-        arn => AtedUtils.isValidARN(arn) || arn.length == 0 || arn.length > ELEVEN)
-  )(AppointAgent.apply)(AppointAgent.unapply))
-
-
   val registeredDetailsForm = Form(
     mapping(
       "isEditable" -> boolean,
@@ -186,15 +177,6 @@ object AtedForms {
     } else f
   }
 
-
-  val editClientNameForm = Form(
-    mapping(
-      "atedReferenceNo" -> text,
-      "clientName" -> text.verifying(Messages("ated.agent.edit-client.display.name.empty.error"), x => x.length > ZERO)
-    )(EditClientName.apply)(EditClientName.unapply)
-  )
-
-
   val editReliefForm = Form(
     mapping(
       "changeRelief" -> optional(text).verifying(Messages("ated.change-relief-return.error.empty"), returnType => returnType.isDefined)
@@ -304,17 +286,6 @@ object AtedForms {
     }
   }
 
-  val removeClientConfirmationForm = Form(
-    mapping(
-      "areYouSure" -> optional(boolean).verifying("ated.agent.remove.empty-error", areYouSure => areYouSure.isDefined)
-    )(RemoveClientConfirmation.apply)(RemoveClientConfirmation.unapply)
-  )
-
-  val rejectClientConfirmationForm = Form(
-    mapping(
-      "areYouSure" -> optional(boolean).verifying("ated.agent.reject.empty-error", areYouSure => areYouSure.isDefined)
-    )(RejectClientConfirmation.apply)(RejectClientConfirmation.unapply)
-  )
 
   private def addErrorsToForm[A](form: Form[A], formErrors: Seq[FormError]): Form[A] = {
     @tailrec
@@ -325,18 +296,6 @@ object AtedForms {
 
     y(form, formErrors)
   }
-
-  val wantToChangeAgentForm = Form(
-    mapping(
-      "wantToChange" -> optional(boolean).verifying(Messages("ated.change-agent.wantToChange.not-selected-error"), a => a.isDefined)
-    )(WantToChangeAgent.apply)(WantToChangeAgent.unapply)
-  )
-
-  val wantToAppointAgentForm = Form(
-    mapping(
-      "wantToAppoint" -> optional(boolean).verifying(Messages("ated.want-to-appoint-agent.wantToAppoint.not-selected-error"), a => a.isDefined)
-    )(WantToAppointAgent.apply)(WantToAppointAgent.unapply)
-  )
 
   case class YesNoQuestion(yesNo: Option[Boolean] = None)
 

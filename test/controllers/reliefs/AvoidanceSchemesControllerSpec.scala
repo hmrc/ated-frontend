@@ -21,7 +21,7 @@ import java.util.UUID
 import builders.{AuthBuilder, ReliefBuilder, SessionBuilder}
 import config.FrontendDelegationConnector
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
-import models.{ClientDetails, Reliefs, ReliefsTaxAvoidance, TaxAvoidance}
+import models.{Reliefs, ReliefsTaxAvoidance, TaxAvoidance}
 import org.jsoup.Jsoup
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -50,7 +50,6 @@ class AvoidanceSchemesControllerSpec extends PlaySpec with OneServerPerSuite wit
   val testAvoidanceScheme = ReliefBuilder.reliefTaxAvoidance(periodKey,
     Reliefs(periodKey = periodKey, rentalBusiness = true),
     TaxAvoidance(rentalBusinessScheme = Some("text")))
-  val testClientDetails = ClientDetails("ATED-123")
 
   object TestTaxAvoidanceController extends AvoidanceSchemesController {
     override val authConnector = mockAuthConnector
