@@ -112,8 +112,7 @@ class PropertyDetailsDeclarationControllerSpec extends PlaySpec with OneServerPe
               val document = Jsoup.parse(contentAsString(result))
               document.title() must be("Returns declaration")
               document.getElementById("chargeable-return-before-declaration-text").text() must be("Before you can submit your return to HMRC you must read and agree to the following statement. If you give false information you may have to pay financial penalties and face prosecution.")
-              document.getElementById("declare-or-confirm").text() must be("I declare that:")
-              document.getElementById("declaration-confirmation-text").text() must be("the information I have given on this return is correct and complete to the best of my knowledge and belief")
+              document.getElementById("declaration-confirmation-text").text() must be("I declare that the information I have given on this return is correct and complete.")
               document.getElementById("submit").text() must be("Agree and submit return")
           }
         }
@@ -124,8 +123,7 @@ class PropertyDetailsDeclarationControllerSpec extends PlaySpec with OneServerPe
               val document = Jsoup.parse(contentAsString(result))
               document.title() must be("Returns declaration")
               document.getElementById("chargeable-return-before-declaration-text").text() must be("Before your client's return can be submitted to HMRC, you must read and agree to the following statement. Your client's approval may be in electronic or non-electronic form. If your client gives false information, they may have to pay financial penalties and face prosecution.")
-              document.getElementById("declare-or-confirm").text() must be("I confirm that:")
-              document.getElementById("declaration-confirmation-text").text() must be("my client has approved the information contained in this return as being correct and complete to the best of their knowledge and belief")
+              document.getElementById("declaration-confirmation-text").text() must be("I confirm that my client has approved the information contained in this return as being correct and complete to the best of their knowledge and belief.")
               document.getElementById("submit").text() must be("Agree and submit return")
           }
         }

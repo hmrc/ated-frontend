@@ -688,10 +688,8 @@ ated.chargeable-return-declaration.header = Returns declaration
 ated.chargeable-return-declaration.before-declaration.client = Before you can submit your return to HMRC you must read and agree to the following statement. If you give false information you may have to pay financial penalties and face prosecution.
 ated.chargeable-return-declaration.before-declaration.agent = Before your client''s return can be submitted to HMRC, you must read and agree to the following statement. Your client''s approval may be in electronic or non-electronic form. If your client gives false information, they may have to pay financial penalties and face prosecution.
 
-ated.chargeable-return-declaration.i-confirm-that.agent = I confirm that:
-ated.chargeable-return-declaration.i-confirm-that.bullet-text.agent = my client has approved the information contained in this return as being correct and complete to the best of their knowledge and belief
-ated.chargeable-return-declaration.i-declare-that.client = I declare that:
-ated.chargeable-return-declaration.i-declare-that.bullet-text.client = the information I have given on this return is correct and complete to the best of my knowledge and belief
+ated.chargeable-return-declaration.i-confirm-that.bullet-text.agent = I confirm that my client has approved the information contained in this return as being correct and complete to the best of their knowledge and belief. 
+ated.chargeable-return-declaration.i-declare-that.bullet-text.client = I declare that the information I have given on this return is correct and complete.
 ated.chargeable-return-declaration.return = Return
 ated.chargeable-return-declaration.value = Value
 ated.chargeable-return-declaration.tax = ATED tax
@@ -1114,10 +1112,8 @@ ated.edit-liability-details-period-error.general.isTaxAvoidance = There is a pro
 # edit-liability-declaration page
 ated.edit-liability.before-declaration.agent = Before your client''s return can be submitted to HMRC, you must read and agree to the following statement. Your client''s approval may be in electronic or non-electronic form. If your client gives false information, they may have to pay financial penalties and face prosecution.
 ated.edit-liability.before-declaration.client = Before you can submit your return to HMRC you must read and agree to the following statement . If you give false information you may have to pay financial penalties and face prosecution.
-ated.edit-liability.i-confirm-that.agent = I confirm that:
-ated.edit-liability.i-declare-that.client = I declare that:
-ated.edit-liability.i-confirm-that.bullet-text.agent = my client has approved the information contained in this return as being correct and complete to the best of their knowledge and belief
-ated.edit-liability.i-declare-that.bullet-text.client = the information I have given on this return is correct and complete to the best of my knowledge and belief
+ated.edit-liability.i-confirm-that.bullet-text.agent = I confirm that my client has approved the information contained in this return as being correct and complete to the best of their knowledge and belief.
+ated.edit-liability.i-declare-that.bullet-text.client =  I declare that the information I have given on this return is correct and complete.
 ated.edit-liability.declaration.header.further = Further return declaration
 ated.edit-liability.declaration.header.amend = Amended return declaration
 ated.edit-liability.declaration.header.change = Change in details declaration

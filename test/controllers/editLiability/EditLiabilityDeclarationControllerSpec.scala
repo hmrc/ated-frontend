@@ -110,8 +110,7 @@ class EditLiabilityDeclarationControllerSpec extends PlaySpec with OneServerPerS
             document.title() must be("Amended return declaration")
             document.getElementById("relief-declaration-confirmation-header").text() must be("Amended return declaration")
             document.getElementById("relief-declaration-before-declaration-text").text() must be("Before you can submit your return to HMRC you must read and agree to the following statement . If you give false information you may have to pay financial penalties and face prosecution.")
-            document.getElementById("declare-or-confirm").text() must be("I declare that:")
-            document.getElementById("declaration-confirmation-text").text() must be("the information I have given on this return is correct and complete to the best of my knowledge and belief")
+            document.getElementById("declaration-confirmation-text").text() must be("I declare that the information I have given on this return is correct and complete.")
             document.getElementById("submit").text() must be("Agree and submit amended return")
           }
         }
@@ -126,8 +125,7 @@ class EditLiabilityDeclarationControllerSpec extends PlaySpec with OneServerPerS
             document.title() must be("Further return declaration")
             document.getElementById("relief-declaration-confirmation-header").text() must be("Further return declaration")
             document.getElementById("relief-declaration-before-declaration-text").text() must be("Before you can submit your return to HMRC you must read and agree to the following statement . If you give false information you may have to pay financial penalties and face prosecution.")
-            document.getElementById("declare-or-confirm").text() must be("I declare that:")
-            document.getElementById("declaration-confirmation-text").text() must be("the information I have given on this return is correct and complete to the best of my knowledge and belief")
+            document.getElementById("declaration-confirmation-text").text() must be("I declare that the information I have given on this return is correct and complete.")
             document.getElementById("submit").text() must be("Agree and submit further return")
           }
         }
@@ -142,8 +140,7 @@ class EditLiabilityDeclarationControllerSpec extends PlaySpec with OneServerPerS
             document.title() must be("Change in details declaration")
             document.getElementById("relief-declaration-confirmation-header").text() must be("Change in details declaration")
             document.getElementById("relief-declaration-before-declaration-text").text() must be("Before you can submit your return to HMRC you must read and agree to the following statement . If you give false information you may have to pay financial penalties and face prosecution.")
-            document.getElementById("declare-or-confirm").text() must be("I declare that:")
-            document.getElementById("declaration-confirmation-text").text() must be("the information I have given on this return is correct and complete to the best of my knowledge and belief")
+            document.getElementById("declaration-confirmation-text").text() must be("I declare that the information I have given on this return is correct and complete.")
             document.getElementById("submit").text() must be("Agree and submit")
           }
         }
@@ -167,8 +164,7 @@ class EditLiabilityDeclarationControllerSpec extends PlaySpec with OneServerPerS
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
             document.getElementById("relief-declaration-before-declaration-text").text() must be("Before your client's return can be submitted to HMRC, you must read and agree to the following statement. Your client's approval may be in electronic or non-electronic form. If your client gives false information, they may have to pay financial penalties and face prosecution.")
-            document.getElementById("declare-or-confirm").text() must be("I confirm that:")
-            document.getElementById("declaration-confirmation-text").text() must be("my client has approved the information contained in this return as being correct and complete to the best of their knowledge and belief")
+            document.getElementById("declaration-confirmation-text").text() must be("I confirm that my client has approved the information contained in this return as being correct and complete to the best of their knowledge and belief.")
             document.getElementById("submit").text() must be("Agree and submit")
           }
         }
