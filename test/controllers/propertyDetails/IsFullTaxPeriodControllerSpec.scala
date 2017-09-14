@@ -103,7 +103,7 @@ class IsFullTaxPeriodControllerSpec extends PlaySpec with OneServerPerSuite with
 
           val propertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode")).copy(period = None)
 
-          def formatDate(date: LocalDate): String = DateTimeFormat.forPattern("d MMMM y").withZone(DateTimeZone.forID("Europe/London")).print(date)
+          def formatDate(date: LocalDate): String = DateTimeFormat.forPattern("d MMMM yyyy").withZone(DateTimeZone.forID("Europe/London")).print(date)
 
           val startDate = periodStartDate(periodKey)
           val endDate = periodEndDate(periodKey)
@@ -148,7 +148,7 @@ class IsFullTaxPeriodControllerSpec extends PlaySpec with OneServerPerSuite with
 
           val propertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode")).copy(period = None)
 
-          def formatDate(date: LocalDate): String = DateTimeFormat.forPattern("d MMMM y").withZone(DateTimeZone.forID("Europe/London")).print(date)
+          def formatDate(date: LocalDate): String = DateTimeFormat.forPattern("d MMMM yyyy").withZone(DateTimeZone.forID("Europe/London")).print(date)
 
           val startDate = periodStartDate(periodKey)
           val endDate = periodEndDate(periodKey)

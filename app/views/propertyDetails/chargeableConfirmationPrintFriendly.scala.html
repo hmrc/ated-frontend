@@ -13,7 +13,7 @@
     <script type="text/javascript" src='@controllers.routes.AssetsController.at("javascript/printFriendly.js")'></script>
 
     <h1 id="header">
-        @Messages("ated.chargeable-return-confirmation.submitted.text") @Messages("ated.chargeable-return-confirmation.submitted.date.text", DateTimeFormat.forPattern("d MMM yyyy").print(new LocalDate()))
+        @Messages("ated.chargeable-return-confirmation.submitted.text") @Messages("ated.chargeable-return-confirmation.submitted.date.text", DateTimeFormat.forPattern("d MMMM yyyy").print(new LocalDate()))
     </h1>
 
     <p id="completed-message">@Messages("ated.chargeable-return-confirmation.completed.message")</p>
