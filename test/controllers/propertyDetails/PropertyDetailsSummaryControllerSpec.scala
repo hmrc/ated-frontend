@@ -101,7 +101,7 @@ class PropertyDetailsSummaryControllerSpec extends PlaySpec with OneServerPerSui
         "status should be OK when we have a valid property details" in {
           import utils.AtedUtils._
 
-          def formatDate(date: LocalDate): String = DateTimeFormat.forPattern("d MMMM y").withZone(DateTimeZone.forID("Europe/London")).print(date)
+          def formatDate(date: LocalDate): String = DateTimeFormat.forPattern("d MMMM yyyy").withZone(DateTimeZone.forID("Europe/London")).print(date)
           val propertyDetails = PropertyDetailsBuilder.getFullPropertyDetails(id = "1", postCode = Some("123456"), liabilityAmount = Some(BigDecimal(1000.20)))
           getWithAuthorisedUser(propertyDetails) {
             result =>

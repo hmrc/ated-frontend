@@ -42,7 +42,7 @@ class propertyDetailsPrintFriendlySpec extends FeatureSpec with OneServerPerSuit
   val nextYear = thisYear + 1
 
 
-  def formatDate(date: LocalDate): String = DateTimeFormat.forPattern("d MMMM y").withZone(DateTimeZone.forID("Europe/London")).print(date)
+  def formatDate(date: LocalDate): String = DateTimeFormat.forPattern("d MMMM yyyy").withZone(DateTimeZone.forID("Europe/London")).print(date)
   feature("The user can view their property details summary before they submit it") {
 
     info("as a client i want to be my property details summary")
