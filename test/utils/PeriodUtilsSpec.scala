@@ -364,4 +364,13 @@ class PeriodUtilsSpec extends PlaySpec with OneServerPerSuite with ReliefConstan
       PeriodUtils.getCalculatedPeriodValues(Some(new PropertyDetailsCalculated())).isEmpty must be (true)
     }
   }
+
+  "isBlank" must {
+    "return true, if the string is blank" in {
+      PeriodUtils.isBlank("") must be (true)
+    }
+    "return false, if the string is NOT blank" in {
+      PeriodUtils.isBlank("hello") must be (false)
+    }
+  }
 }

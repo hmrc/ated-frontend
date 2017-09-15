@@ -18,6 +18,86 @@
 
 @reliefsTaxAvoidance.map { reliefData =>
 
+@if(reliefData.reliefs.rentalBusiness) {
+<div class="form-group">
+  <div class="grid-wrapper">
+    <h2 id="rentalBusiness" class="heading-medium">@Messages("ated.relief-summary-types.rentalBusiness")</h2>
+  </div>
+
+  <div class="grid-wrapper row-border">
+    <div class="grid grid-2-6 cya-question">
+      <span class="heading-small">@Messages("ated.relief-summary.datesOfRelief")</span>
+    </div>
+
+    <div id="dates-rb" class="grid grid-1-2 cya-answer">
+      @reliefData.reliefs.rentalBusinessDate.getOrElse(reliefData.periodStartDate).toString(Messages("ated.date-format.short")) @Messages("ated.relief-summary.relief-end-date")
+    </div>
+
+    <div class="grid grid-1-6 cya-change">
+      <a href="@controllers.reliefs.routes.ChooseReliefsController.editFromSummary(periodKey)" id="dates-edit-rb" data-journey-click="ated-fronted:click:dates-edit-rb">
+        @Messages("ated.edit") <span class="visuallyhidden">@Messages("ated.relief-summary.datesOfRelief")</span>
+      </a>
+    </div>
+  </div>
+
+  @if(reliefData.taxAvoidance.rentalBusinessScheme.isDefined) {
+  <div class="grid-wrapper row-border">
+    <div class="grid grid-2-6 cya-question">
+      <span class="heading-small">@Messages("ated.relief-summary.avoidanceSchmRefNum")</span>
+    </div>
+
+    <div class="grid grid-1-2 cya-answer" id="tas-rb">
+      @if(canSubmit){ <span>@reliefData.taxAvoidance.rentalBusinessScheme</span> } else { <span class="status">@Messages("ated.label.incomplete")</span> }
+    </div>
+
+    <div class="grid grid-1-6 cya-change">
+      <a href="@controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.editFromSummary(periodKey)" id="tas-edit-rb" data-journey-click="ated-fronted:click:tas-edit-rb">
+        @Messages("ated.edit") <span class="visuallyhidden">@Messages("ated.relief-summary.avoidanceSchmRefNum")</span>
+      </a>
+    </div>
+  </div>
+
+  <div class="grid-wrapper row-border">
+    <div class="grid grid-2-6 cya-question">
+      <span class="heading-small">@Messages("ated.relief-summary.avoidanceSchmRefNum-promoter")</span>
+    </div>
+
+    <div id="tasp-rb" class="grid grid-1-2 cya-answer">
+      @if(canSubmit){ <span>@reliefData.taxAvoidance.rentalBusinessSchemePromoter</span> } else { <span class="status">@Messages("ated.label.incomplete")</span> }
+    </div>
+
+    <div class="grid grid-1-6 cya-change" id="tasp-edit-rb">
+      <a href="@controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.editFromSummary(periodKey)" id="tas-edit-rp" data-journey-click="ated-fronted:click:tasp-edit-rb">
+        @Messages("ated.edit") <span class="visuallyhidden">@Messages("ated.relief-summary.avoidanceSchmRefNum-promoter")</span>
+      </a>
+
+    </div>
+  </div>
+  } else {
+  <div class="grid-wrapper row-border">
+    <div class="grid grid-2-6 cya-question">
+      <span class="heading-small">@Messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.header")</span>
+    </div>
+    <div class="grid grid-1-2 cya-answer" id="avoidance-scheme-header-rentalBusinessScheme-value-not-provided">@Messages("ated.property-details-summary.field-blank")</div>
+    <div class="grid grid-1-6 cya-change">
+      <a href="@controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.editFromSummary(periodKey)" id="tas-edit" data-journey-click="ated-fronted:click:tasp-edit-rb">
+        @Messages("ated.edit") <span class="visuallyhidden">@Messages("ated.relief-summary.avoidanceSchmRefNum-promoter")</span>
+      </a>
+    </div>
+  </div>
+  }
+
+  <div class="grid-wrapper row-border">
+    <div class="grid grid-2-6 cya-question">
+      <span class="heading-small" id="status-rb">@Messages("ated.relief-summary.status")</span>
+    </div>
+    <div class="grid grid-1-2 cya-answer" id="status-draft-rb">
+      <span class="visuallyhidden">@Messages("ated.relief-summary-types.rentalBusiness") @Messages("ated.relief-summary.status")</span> @Messages("ated.relief-summary.draft")
+    </div>
+  </div>
+</div>
+}
+
 @if(reliefData.reliefs.openToPublic) {
 <div class="form-group">
   <div class="grid-wrapper">
@@ -40,7 +120,7 @@
 
     </div>
   </div>
-
+  @if(reliefData.taxAvoidance.openToPublicScheme.isDefined) {
   <div class="grid-wrapper row-border">
     <div class="grid grid-2-6 cya-question">
       <span class="heading-small">@Messages("ated.relief-summary.avoidanceSchmRefNum")</span>
@@ -63,16 +143,28 @@
     </div>
 
     <div id="tasp-otp" class="grid grid-1-2 cya-answer">
-      @if(canSubmit){ <span>@reliefData.taxAvoidance.openToPublicScheme</span> } else { <span class="status">@Messages("ated.label.incomplete")</span> }
+      @if(canSubmit){ <span>@reliefData.taxAvoidance.openToPublicSchemePromoter</span> } else { <span class="status">@Messages("ated.label.incomplete")</span> }
     </div>
 
     <div class="grid grid-1-6 cya-change" id="tasp-edit-otp">
       <a href="@controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.editFromSummary(periodKey)" data-journey-click="ated-fronted:click:tasp-edit-otp">
         @Messages("ated.edit") <span class="visuallyhidden">@Messages("ated.relief-summary.avoidanceSchmRefNum-promoter")</span>
       </a>
-
     </div>
   </div>
+  } else {
+  <div class="grid-wrapper row-border">
+    <div class="grid grid-2-6 cya-question">
+      <span class="heading-small">@Messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.header")</span>
+    </div>
+    <div class="grid grid-1-2 cya-answer" id="avoidance-scheme-header-openToPublicScheme-value-not-provided">@Messages("ated.property-details-summary.field-blank")</div>
+    <div class="grid grid-1-6 cya-change">
+      <a href="@controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.editFromSummary(periodKey)" id="tas-edit-rp" data-journey-click="ated-fronted:click:tasp-edit-rb">
+        @Messages("ated.edit") <span class="visuallyhidden">@Messages("ated.relief-summary.avoidanceSchmRefNum-promoter")</span>
+      </a>
+    </div>
+  </div>
+  }
 
   <div class="grid-wrapper row-border">
     <div class="grid grid-2-6 cya-question">
@@ -83,72 +175,6 @@
     </div>
   </div>
 </div>
-}
-
-@if(reliefData.reliefs.rentalBusiness) {
-    <div class="form-group">
-      <div class="grid-wrapper">
-        <h2 id="rentalBusiness" class="heading-medium">@Messages("ated.relief-summary-types.rentalBusiness")</h2>
-      </div>
-
-      <div class="grid-wrapper row-border">
-        <div class="grid grid-2-6 cya-question">
-          <span class="heading-small">@Messages("ated.relief-summary.datesOfRelief")</span>
-        </div>
-
-        <div id="dates-rb" class="grid grid-1-2 cya-answer">
-          @reliefData.reliefs.rentalBusinessDate.getOrElse(reliefData.periodStartDate).toString(Messages("ated.date-format.short")) @Messages("ated.relief-summary.relief-end-date")
-        </div>
-
-        <div class="grid grid-1-6 cya-change">
-          <a href="@controllers.reliefs.routes.ChooseReliefsController.editFromSummary(periodKey)" id="dates-edit-rb" data-journey-click="ated-fronted:click:dates-edit-rb">
-            @Messages("ated.edit") <span class="visuallyhidden">@Messages("ated.relief-summary.datesOfRelief")</span>
-          </a>
-        </div>
-      </div>
-
-      <div class="grid-wrapper row-border">
-        <div class="grid grid-2-6 cya-question">
-          <span class="heading-small">@Messages("ated.relief-summary.avoidanceSchmRefNum")</span>
-        </div>
-
-        <div class="grid grid-1-2 cya-answer" id="tas-rb">
-          @if(canSubmit){ <span>@reliefData.taxAvoidance.rentalBusinessScheme</span> } else { <span class="status">@Messages("ated.label.incomplete")</span> }
-        </div>
-
-        <div class="grid grid-1-6 cya-change">
-          <a href="@controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.editFromSummary(periodKey)" id="tas-edit-rb" data-journey-click="ated-fronted:click:tas-edit-rb">
-            @Messages("ated.edit") <span class="visuallyhidden">@Messages("ated.relief-summary.avoidanceSchmRefNum")</span>
-          </a>
-        </div>
-      </div>
-
-      <div class="grid-wrapper row-border">
-        <div class="grid grid-2-6 cya-question">
-          <span class="heading-small">@Messages("ated.relief-summary.avoidanceSchmRefNum-promoter")</span>
-        </div>
-
-        <div id="tasp-rb" class="grid grid-1-2 cya-answer">
-          @if(canSubmit){ <span>@reliefData.taxAvoidance.rentalBusinessScheme</span> } else { <span class="status">@Messages("ated.label.incomplete")</span> }
-        </div>
-
-        <div class="grid grid-1-6 cya-change" id="tasp-edit-rb">
-          <a href="@controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.editFromSummary(periodKey)" id="tas-edit-rp" data-journey-click="ated-fronted:click:tasp-edit-rb">
-            @Messages("ated.edit") <span class="visuallyhidden">@Messages("ated.relief-summary.avoidanceSchmRefNum-promoter")</span>
-          </a>
-
-        </div>
-      </div>
-
-      <div class="grid-wrapper row-border">
-        <div class="grid grid-2-6 cya-question">
-          <span class="heading-small" id="status-rb">@Messages("ated.relief-summary.status")</span>
-        </div>
-        <div class="grid grid-1-2 cya-answer" id="status-draft-rb">
-          <span class="visuallyhidden">@Messages("ated.relief-summary-types.rentalBusiness") @Messages("ated.relief-summary.status")</span> @Messages("ated.relief-summary.draft")
-        </div>
-      </div>
-    </div>
 }
 
 @if(reliefData.reliefs.propertyDeveloper) {
@@ -172,7 +198,7 @@
         </a>
       </div>
     </div>
-
+    @if(reliefData.taxAvoidance.propertyDeveloperScheme.isDefined) {
     <div class="grid-wrapper row-border">
       <div class="grid grid-2-6 cya-question">
         <span class="heading-small">@Messages("ated.relief-summary.avoidanceSchmRefNum")</span>
@@ -195,7 +221,7 @@
       </div>
 
       <div id="tasp-pd" class="grid grid-1-2 cya-answer">
-        @if(canSubmit){ <span>@reliefData.taxAvoidance.rentalBusinessScheme</span> } else { <span class="status">@Messages("ated.label.incomplete")</span> }
+        @if(canSubmit){ <span>@reliefData.taxAvoidance.propertyDeveloperSchemePromoter</span> } else { <span class="status">@Messages("ated.label.incomplete")</span> }
       </div>
 
       <div class="grid grid-1-6 cya-change">
@@ -204,7 +230,19 @@
         </a>
       </div>
     </div>
-
+   } else {
+    <div class="grid-wrapper row-border">
+      <div class="grid grid-2-6 cya-question">
+        <span class="heading-small">@Messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.header")</span>
+      </div>
+      <div class="grid grid-1-2 cya-answer" id="avoidance-scheme-header-propertyDeveloperScheme-value-not-provided">@Messages("ated.property-details-summary.field-blank")</div>
+      <div class="grid grid-1-6 cya-change">
+        <a href="@controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.editFromSummary(periodKey)" id="tas-edit-rp" data-journey-click="ated-fronted:click:tasp-edit-rb">
+          @Messages("ated.edit") <span class="visuallyhidden">@Messages("ated.relief-summary.avoidanceSchmRefNum-promoter")</span>
+        </a>
+      </div>
+    </div>
+    }
     <div class="grid-wrapper row-border">
       <div class="grid grid-2-6 cya-question">
         <span class="heading-small" id="status-pd">@Messages("ated.relief-summary.status")</span>
@@ -237,7 +275,7 @@
           </a>
         </div>
       </div>
-
+    @if(reliefData.taxAvoidance.propertyTradingScheme.isDefined) {
       <div class="grid-wrapper row-border">
         <div id="tas-rp" class="grid grid-2-6 cya-question">
           <span class="heading-small">@Messages("ated.relief-summary.avoidanceSchmRefNum")</span>
@@ -269,7 +307,19 @@
           </a>
         </div>
       </div>
-
+      } else {
+    <div class="grid-wrapper row-border">
+      <div class="grid grid-2-6 cya-question">
+        <span class="heading-small">@Messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.header")</span>
+      </div>
+      <div class="grid grid-1-2 cya-answer" id="avoidance-scheme-header-propertyTradingScheme-value-not-provided">@Messages("ated.property-details-summary.field-blank")</div>
+      <div class="grid grid-1-6 cya-change">
+        <a href="@controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.editFromSummary(periodKey)" id="tas-edit-rp" data-journey-click="ated-fronted:click:tasp-edit-rb">
+          @Messages("ated.edit") <span class="visuallyhidden">@Messages("ated.relief-summary.avoidanceSchmRefNum-promoter")</span>
+        </a>
+      </div>
+    </div>
+    }
       <div class="grid-wrapper row-border">
         <div class="grid grid-2-6 cya-question">
           <span class="heading-small" id="status-pt">@Messages("ated.relief-summary.status")</span>
@@ -302,7 +352,7 @@
           </a>
         </div>
       </div>
-
+      @if(reliefData.taxAvoidance.lendingScheme.isDefined) {
       <div class="grid-wrapper row-border">
         <div class="grid grid-2-6 cya-question">
           <span class="heading-small">@Messages("ated.relief-summary.avoidanceSchmRefNum")</span>
@@ -334,7 +384,19 @@
           </a>
         </div>
       </div>
-
+      } else {
+      <div class="grid-wrapper row-border">
+        <div class="grid grid-2-6 cya-question">
+          <span class="heading-small">@Messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.header")</span>
+        </div>
+        <div class="grid grid-1-2 cya-answer" id="avoidance-scheme-header-lendingScheme-value-not-provided">@Messages("ated.property-details-summary.field-blank")</div>
+        <div class="grid grid-1-6 cya-change">
+          <a href="@controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.editFromSummary(periodKey)" id="tas-edit-rp" data-journey-click="ated-fronted:click:tasp-edit-rb">
+            @Messages("ated.edit") <span class="visuallyhidden">@Messages("ated.relief-summary.avoidanceSchmRefNum-promoter")</span>
+          </a>
+        </div>
+      </div>
+      }
       <div class="grid-wrapper row-border">
         <div class="grid grid-2-6 cya-question">
           <span class="heading-small" id="status-ln">@Messages("ated.relief-summary.status")</span>
@@ -367,7 +429,7 @@
           </a>
         </div>
       </div>
-
+      @if(reliefData.taxAvoidance.employeeOccupationScheme.isDefined) {
       <div class="grid-wrapper row-border">
         <div class="grid grid-2-6 cya-question">
           <span class="heading-small">@Messages("ated.relief-summary.avoidanceSchmRefNum")</span>
@@ -399,7 +461,19 @@
           </a>
         </div>
       </div>
-
+      } else {
+      <div class="grid-wrapper row-border">
+        <div class="grid grid-2-6 cya-question">
+          <span class="heading-small">@Messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.header")</span>
+        </div>
+        <div class="grid grid-1-2 cya-answer" id="avoidance-scheme-header-employeeOccupationScheme-value-not-provided">@Messages("ated.property-details-summary.field-blank")</div>
+        <div class="grid grid-1-6 cya-change">
+          <a href="@controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.editFromSummary(periodKey)" id="tas-edit-rp" data-journey-click="ated-fronted:click:tasp-edit-rb">
+            @Messages("ated.edit") <span class="visuallyhidden">@Messages("ated.relief-summary.avoidanceSchmRefNum-promoter")</span>
+          </a>
+        </div>
+      </div>
+      }
       <div class="grid-wrapper row-border">
         <div class="grid grid-2-6 cya-question">
           <span class="heading-small" id="status-eo">@Messages("ated.relief-summary.status")</span>
@@ -432,7 +506,7 @@
           </a>
         </div>
       </div>
-
+      @if(reliefData.taxAvoidance.farmHousesScheme.isDefined) {
       <div class="grid-wrapper row-border">
         <div class="grid grid-2-6 cya-question">
           <span class="heading-small">@Messages("ated.relief-summary.avoidanceSchmRefNum")</span>
@@ -455,7 +529,7 @@
         </div>
 
         <div id="tasp-fh" class="grid grid-1-2 cya-answer">
-          @if(canSubmit){ <span>@reliefData.taxAvoidance.farmHousesScheme</span> } else { <span class="status">@Messages("ated.label.incomplete")</span> }
+          @if(canSubmit){ <span>@reliefData.taxAvoidance.farmHousesSchemePromoter</span> } else { <span class="status">@Messages("ated.label.incomplete")</span> }
         </div>
 
         <div class="grid grid-1-6 cya-change">
@@ -464,7 +538,19 @@
           </a>
         </div>
       </div>
-
+      } else {
+      <div class="grid-wrapper row-border">
+        <div class="grid grid-2-6 cya-question">
+          <span class="heading-small">@Messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.header")</span>
+        </div>
+        <div class="grid grid-1-2 cya-answer" id="avoidance-scheme-header-farmHousesScheme-value-not-provided">@Messages("ated.property-details-summary.field-blank")</div>
+        <div class="grid grid-1-6 cya-change">
+          <a href="@controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.editFromSummary(periodKey)" id="tas-edit-rp" data-journey-click="ated-fronted:click:tasp-edit-rb">
+            @Messages("ated.edit") <span class="visuallyhidden">@Messages("ated.relief-summary.avoidanceSchmRefNum-promoter")</span>
+          </a>
+        </div>
+      </div>
+      }
       <div class="grid-wrapper row-border">
         <div class="grid grid-2-6 cya-question">
           <span class="heading-small" id="status-fh">@Messages("ated.relief-summary.status")</span>
@@ -497,7 +583,7 @@
           </a>
         </div>
       </div>
-
+      @if(reliefData.taxAvoidance.socialHousingScheme.isDefined) {
       <div class="grid-wrapper row-border">
         <div class="grid grid-2-6 cya-question">
           <span class="heading-small">@Messages("ated.relief-summary.avoidanceSchmRefNum")</span>
@@ -529,7 +615,19 @@
           </a>
         </div>
       </div>
-
+      } else {
+      <div class="grid-wrapper row-border">
+        <div class="grid grid-2-6 cya-question">
+          <span class="heading-small">@Messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.header")</span>
+        </div>
+        <div class="grid grid-1-2 cya-answer" id="avoidance-scheme-header-socialHousingScheme-value-not-provided">@Messages("ated.property-details-summary.field-blank")</div>
+        <div class="grid grid-1-6 cya-change">
+          <a href="@controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.editFromSummary(periodKey)" id="tas-edit-rp" data-journey-click="ated-fronted:click:tasp-edit-rb">
+            @Messages("ated.edit") <span class="visuallyhidden">@Messages("ated.relief-summary.avoidanceSchmRefNum-promoter")</span>
+          </a>
+        </div>
+      </div>
+      }
       <div class="grid-wrapper row-border">
         <div class="grid grid-2-6 cya-question">
           <span class="heading-small" id="status-sh">@Messages("ated.relief-summary.status")</span>
@@ -562,7 +660,7 @@
           </a>
         </div>
       </div>
-
+      @if(reliefData.taxAvoidance.equityReleaseScheme.isDefined) {
       <div class="grid-wrapper row-border">
         <div class="grid grid-2-6 cya-question">
           <span class="heading-small">@Messages("ated.relief-summary.avoidanceSchmRefNum")</span>
@@ -594,7 +692,19 @@
           </a>
         </div>
       </div>
-
+      } else {
+      <div class="grid-wrapper row-border">
+        <div class="grid grid-2-6 cya-question">
+          <span class="heading-small">@Messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.header")</span>
+        </div>
+        <div class="grid grid-1-2 cya-answer" id="avoidance-scheme-header-equityReleaseScheme-value-not-provided">@Messages("ated.property-details-summary.field-blank")</div>
+        <div class="grid grid-1-6 cya-change">
+          <a href="@controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.editFromSummary(periodKey)" id="tas-edit-rp" data-journey-click="ated-fronted:click:tasp-edit-rb">
+            @Messages("ated.edit") <span class="visuallyhidden">@Messages("ated.relief-summary.avoidanceSchmRefNum-promoter")</span>
+          </a>
+        </div>
+      </div>
+      }
       <div class="grid-wrapper row-border">
         <div class="grid grid-2-6 cya-question">
           <span class="heading-small" id="status-er">@Messages("ated.relief-summary.status")</span>

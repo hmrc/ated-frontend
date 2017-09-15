@@ -138,7 +138,7 @@ class ReliefsSummaryControllerSpec extends PlaySpec with OneServerPerSuite with 
               document.title() must be("Check your details are correct")
               document.getElementById("property-details-summary-header").text() must be("Check your details are correct")
               document.getElementById("details-text").text() must be("For the ATED period from 1 April 2015 to 31 March 2016.")
-              document.getElementById("tas-er").text() must be("")
+              document.getElementById("tas-er").text() must be("11111111")
               document.getElementById("ated-charge-value").text() must be("£0")
               document.getElementById("submit").text() must be("Confirm and continue")
               document.getElementById("submit-disabled-text") must be (null)
