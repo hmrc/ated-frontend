@@ -678,8 +678,26 @@ table th {
     box-sizing:border-box;
 }
 
+.cya-header-ans {
+    padding-top: 0.7em;
+    box-sizing:border-box;
+}
+
+.cya-header-change {
+    padding: 0.7em 1em 0em 0em;
+    box-sizing:border-box;
+}
+
 @media (min-width: 641px) {
     .cya-change {
+        text-align: right;
+    }
+
+    .cya-header-ans {
+        text-align: left;
+    }
+
+    .cya-header-change {
         text-align: right;
     }
 

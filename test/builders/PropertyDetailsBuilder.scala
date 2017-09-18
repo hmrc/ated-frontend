@@ -89,6 +89,7 @@ object PropertyDetailsBuilder {
       reliefPeriods = reliefPeriods,
       isTaxAvoidance =  Some(true),
       taxAvoidanceScheme =  Some("taxAvoidanceScheme"),
+      taxAvoidancePromoterReference = Some("taxAvoidancePromoterReference"),
       supportingInfo = Some("supportingInfo"),
       isInRelief =  Some(true)
     ))
