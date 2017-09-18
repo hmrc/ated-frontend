@@ -679,12 +679,12 @@ table th {
 }
 
 .cya-header-ans {
-    padding-top: 0.7em;
+    padding-top: 1em;
     box-sizing:border-box;
 }
 
 .cya-header-change {
-    padding: 0.7em 1em 0em 0em;
+    padding: 1em 1em 0em 0em;
     box-sizing:border-box;
 }
 

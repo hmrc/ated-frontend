@@ -71,7 +71,7 @@ backLink: Option[String])(implicit atedContext: AtedContext, messages: Messages)
     </div>
 
     <div class="grid grid-1-2 cya-answer">
-      <span class="status">@Messages("ated.label.incomplete")</span>
+      <div class="status">@Messages("ated.label.incomplete")</div>
     </div>
 
     <div class="grid grid-1-6 cya-change">
@@ -86,7 +86,7 @@ backLink: Option[String])(implicit atedContext: AtedContext, messages: Messages)
     </div>
 
     <div class="grid grid-1-2 cya-answer">
-      <span id="property-date-of-valuation-incomplete" class="status">@Messages("ated.label.incomplete")</span>
+      <div id="property-date-of-valuation-incomplete" class="status">@Messages("ated.label.incomplete")</div>
     </div>
 
     <div class="grid grid-1-6 cya-change">
@@ -180,9 +180,15 @@ backLink: Option[String])(implicit atedContext: AtedContext, messages: Messages)
 <div class="form-group">
   @propertyDetails.period match {
     case Some(p) if(p.taxAvoidanceScheme.isEmpty && p.taxAvoidancePromoterReference.isEmpty) => {
-      <div class="grid-wrapper">
-        <h2 id="avoidance-scheme-header-not-provided" class="heading-medium grid grid-1-3">@Messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.header")</h2>
-        <div class="grid grid-1-2 cya-header-ans" id="avoidance-scheme-header-value-not-provided">@Messages("ated.property-details-summary.field-blank")</div>
+      <div class="grid-wrapper row-border">
+        <div class="grid grid-2-6 cya-question">
+          <h2 id="avoidance-scheme-header-not-provided" class="heading-medium">@Messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.header")</h2>
+        </div>
+
+        <div class="grid grid-1-2 cya-header-ans" id="avoidance-scheme-header-value-not-provided">
+          @Messages("ated.property-details-summary.field-blank")
+        </div>
+
         <div class="grid grid-1-6 cya-header-change">
           <a href="@controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceController.editFromSummary(propertyDetails.id)" id="edit-avoidance-scheme-header-not-provided">@Messages("ated.edit") <span class="visuallyhidden">@Messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.label")</span>
           </a>
@@ -216,13 +222,20 @@ backLink: Option[String])(implicit atedContext: AtedContext, messages: Messages)
       </div>
     }
     case _ => {
-      <div class="grid-wrapper">
-        <h2 id="avoidance-scheme-header-incomplete" class="heading-medium grid grid-1-3">@Messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.header")</h2>
-        <div class="status grid grid-1-2 cya-header-ans" id="avoidance-scheme-header-value-incomplete">@incomplete</div>
+      <div class="grid-wrapper row-border">
+        <div class="grid grid-2-6 cya-question">
+          <h2 id="avoidance-scheme-header-incomplete" class="heading-medium">@Messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.header")</h2>
+        </div>
+
+          <div class="grid grid-1-2 cya-header-ans" id="avoidance-scheme-header-value-incomplete">
+            <div class="status">@incomplete</div>
+          </div>
+
         <div class="grid grid-1-6 cya-header-change">
           <a href="@controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceController.editFromSummary(propertyDetails.id)" id="edit-avoidance-scheme-header-incomplete">@Messages("ated.edit") <span class="visuallyhidden">@Messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.label")</span>
           </a>
         </div>
+
       </div>
     }
   }
