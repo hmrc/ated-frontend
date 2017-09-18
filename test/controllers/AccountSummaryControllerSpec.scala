@@ -134,7 +134,7 @@ class AccountSummaryControllerSpec extends PlaySpec with OneServerPerSuite with 
               document.getElementById("return-summary-th-chargeable").text() must be("Chargeable")
               document.getElementById("return-summary-th-reliefs").text() must be("Relief")
               document.getElementById("return-summary-th-drafts").text() must be("Draft")
-              document.getElementById("return-summary-th-action").text() must be("")
+              document.getElementById("return-summary-th-action").text() must be("hidden text for empty th")
               document.getElementsByClass("return-summary-td-chargeable").text() must be("1")
               document.getElementsByClass("return-summary-td-reliefs").text() must be("1")
               document.getElementsByClass("return-summary-td-drafts").text() must be("2")
