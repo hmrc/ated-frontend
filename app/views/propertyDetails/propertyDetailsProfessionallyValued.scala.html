@@ -12,12 +12,10 @@
   Some(propertyDetailsForm)
 }
 
-@pageScripts = {
-  <script type="text/javascript" src='@controllers.routes.AssetsController.at("javascript/propertyDetailsProfessionallyValued.js")'></script>
-}
 
 
-@atedMain(title = Messages("ated.property-details-value.isValuedByAgent.title"), attorney = atedContext.user.authContext.attorney, pageScripts = Some(pageScripts)) {
+
+@atedMain(title = Messages("ated.property-details-value.isValuedByAgent.title"), attorney = atedContext.user.authContext.attorney) {
 
   @pageHeadersAndError(backLink, "pre-heading", AtedUtils.getPropertyDetailsPreHeader(mode), "property-details-header", Messages("ated.property-details-value.isValuedByAgent.header"),
       Some(atedErrorSummary(propertyDetailsForm, "ated.property-details-value-error.general")))
