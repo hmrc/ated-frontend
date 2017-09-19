@@ -24,24 +24,19 @@ function showHideIsNewBuild() {
 
     if(yesSelected.is(':checked')) {
         displayTrueDiv.show();
-        yesSelected.attr('aria-expanded', 'true')
     }
     if(noSelected.is(':checked')) {
         displayFalseDiv.show();
-        noSelected.attr('aria-expanded', 'true')
     }
     $('input[type=radio][name=isNewBuild]').change(function(){
         if(this.value == 'true') {
-            yesSelected.attr('aria-expanded', 'true')
             displayTrueDiv.show();
             displayFalseDiv.hide();
             clearInputFields(notNewBuildFields)
         } else {
-            noSelected.attr('aria-expanded', 'true')
             displayTrueDiv.hide();
             displayFalseDiv.show();
             clearInputFields(newBuildFields)
-            noSelected.attr('aria-expanded', 'true')
         }
     });
 }
