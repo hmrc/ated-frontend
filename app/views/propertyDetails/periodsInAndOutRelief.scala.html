@@ -38,8 +38,8 @@
         <td id="return-type-value-@index">@period.description</td>
         <td id="action-@index">
           <a href="@controllers.propertyDetails.routes.PeriodsInAndOutReliefController.deletePeriod(id, period.startDate)"
-                            id="delete-period-@index" aria-label='@Messages("ated.property-details-period.periodsInRelief.delete")'>
-            @Messages("ated.property-details-period.periodsInRelief.delete") <span class="screen-reader-text">@period.description @period.startDate.toString(Messages("ated.date-format"))</span>
+                            id="delete-period-@index">
+            @Messages("ated.property-details-period.periodsInRelief.delete") <span class="visuallyhidden">@period.description @period.startDate.toString(Messages("ated.date-format"))</span>
           </a>
         </td>
       </tr>
