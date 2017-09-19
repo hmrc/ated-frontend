@@ -9,15 +9,12 @@ function showHideAvoidanceScheme() {
 
     if(yesSelected.is(':checked')) {
         displayTrueDiv.show();
-        yesSelected.attr('aria-expanded', 'true')
     }
     $('input[type=radio][name=isTaxAvoidance]').change(function(){
         if(this.value == 'true') {
-        yesSelected.attr('aria-expanded', 'true')
             displayTrueDiv.show();
 
         } else {
-        noSelected.attr('aria-expanded', 'false')
             displayTrueDiv.hide();
             avoidanceRefNumber.val("");
             promoterRefNumber.val("");

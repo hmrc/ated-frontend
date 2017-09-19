@@ -12,16 +12,13 @@ function showHideValuedByAgent() {
     displayTrueDiv.hide();
 
     if (yesSelected.is(':checked')) {
-        yesSelected.attr('aria-expanded', 'true')
         displayTrueDiv.show();
     }
 
     $('input[type=radio][name=isValuedByAgent]').change(function () {
         if (this.value == 'true') {
-            yesSelected.attr('aria-expanded', 'true')
             displayTrueDiv.show();
         } else {
-            yesSelected.attr('aria-expanded', 'false')
             displayTrueDiv.hide();
             clearInputFields(fieldsArray)
         }
