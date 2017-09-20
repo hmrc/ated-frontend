@@ -9,7 +9,7 @@
 @implicitFormInstance = @{ Some(propertyDetailsForm) }
 
 @pageScripts = {
-<script type="text/javascript" src='@controllers.routes.AssetsController.at("javascript/propertyDetailsTaxAvoidance.js")'></script>
+<script src='@controllers.routes.AssetsController.at("javascript/propertyDetailsTaxAvoidance.js")'></script>
 }
 
 @atedMain(title = Messages("ated.property-details-period.isTaxAvoidance.title"), attorney = atedContext.user.authContext.attorney, pageScripts = Some(pageScripts)) {

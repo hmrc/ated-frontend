@@ -15,8 +15,6 @@
     @if(atedContext.user.authContext.attorney.isDefined) { @Messages("ated.edit-liability.before-declaration.agent")} else { @Messages("ated.edit-liability.before-declaration.client")}
   </p>
 
-
-
   <p>
     <span class="text-bold"  id="declaration-confirmation-text">
          @if(atedContext.user.authContext.attorney.isDefined) { @Messages("ated.edit-liability.i-confirm-that.bullet-text.agent")} else { @Messages("ated.edit-liability.i-declare-that.bullet-text.client")}

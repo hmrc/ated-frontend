@@ -12,7 +12,7 @@
 @import utils._
 
 @pageScripts = {
-<script type="text/javascript" src='@controllers.routes.AssetsController.at("javascript/manualAddressEntryLink.js")'></script>
+<script src='@controllers.routes.AssetsController.at("javascript/manualAddressEntryLink.js")'></script>
 }
 
 @atedMain(title = Messages("ated.address-lookup.results.title"), attorney = atedContext.user.authContext.attorney, pageScripts=Some(pageScripts)) {
