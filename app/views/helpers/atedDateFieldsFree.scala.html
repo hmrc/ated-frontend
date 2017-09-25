@@ -28,9 +28,9 @@
     <legend id="@elements.args.get('_idName)_legend" class="form-label-bold ">@label
 
       @if(elements.args.get('_hintText).isDefined) {
-      <div class="form-hint" id="@if( elements.args.get('_idName) ) {@elements.args.get('_idName)_hint} else {@(fieldName)_hint}">
+      <span class="form-hint" id="@if( elements.args.get('_idName) ) {@elements.args.get('_idName)_hint} else {@(fieldName)_hint}">
         @elements.args.get('_hintText)
-      </div>
+      </span>
       }
 
     </legend>
@@ -65,7 +65,7 @@
       '_emptyValueText -> defaultDateOption.map(_.getDayOfMonth.toString).getOrElse(""),
       '_type -> "number",
       '_validationName -> "day",
-      '_dataAttributes -> "min=1 max=31 pattern=[0-9]*"
+      '_dataAttributes -> "min=1 max=31"
       )
 
       @monthElem = @{fieldName + "." + month}
@@ -78,7 +78,7 @@
       '_emptyValueText -> defaultDateOption.map(_.getMonthOfYear.toString).getOrElse(""),
       '_type -> "number",
       '_validationName -> "month",
-      '_dataAttributes -> "min=1 max=12 pattern=[0-9]*"
+      '_dataAttributes -> "min=1 max=12"
       )
 
       @yearElem = @{fieldName + "." + year}
@@ -91,7 +91,7 @@
       '_emptyValueText -> defaultDateOption.map(_.getYear.toString).getOrElse(""),
       '_type -> "number",
       '_validationName -> "year",
-      '_dataAttributes -> "min=1700 pattern=[0-9]*"
+      '_dataAttributes -> "min=1700"
       )
       <div class="clearfix"></div>
     </div>

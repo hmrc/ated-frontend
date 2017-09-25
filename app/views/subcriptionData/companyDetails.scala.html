@@ -6,7 +6,7 @@
 @import utils._
 
 @pageScripts = {
-<script type="text/javascript" src='@controllers.routes.AssetsController.at("javascript/companyDetails.js")'></script>
+<script src='@controllers.routes.AssetsController.at("javascript/companyDetails.js")'></script>
 }
 
 @atedMain(title = Messages("ated.company-details.title"), attorney = atedContext.user.authContext.attorney,
@@ -47,7 +47,7 @@ pageScripts = Some(pageScripts)) {
     <span id="registered-address-label" class="heading-small">@Messages("ated.company-details.registered-address")</span>
   </div>
 
-  <div id="registered-address" class="grid grid-1-2 cya-answer">
+  <div class="grid grid-1-2 cya-answer">
     @registrationDetails.map { regDetails =>
     <div id="registered-address-line-1">@regDetails.addressDetails.addressLine1</div>
     <div id="registered-address-line-2">@regDetails.addressDetails.addressLine2</div>
@@ -80,7 +80,7 @@ pageScripts = Some(pageScripts)) {
     <span id="non-uk-company-registration-label" class="heading-small">@Messages("ated.company-details.overseas_reg_number")</span>
   </div>
 
-  <div id="registered-address" class="grid grid-1-2 cya-answer">
+  <div class="grid grid-1-2 cya-answer">
     <div id="non-uk-company-registration">
       <div class="form-group">
         <div id="reg_number">@overseasCompanyRegistration.get.idNumber</div>
@@ -132,7 +132,7 @@ pageScripts = Some(pageScripts)) {
     <span id="contact-details-label" class="heading-small">@Messages("ated.company-details.contact-address")</span>
   </div>
 
-  <div id="registered-address" class="grid grid-1-2 cya-answer">
+  <div class="grid grid-1-2 cya-answer">
     <div id="contact-details">
       <div class="form-group">
         @correspondence.map { correspondenceData =>
@@ -182,7 +182,7 @@ pageScripts = Some(pageScripts)) {
     @details.agentName
   </div>
 
-  <div id="email-link" class="grid grid-1-6 cya-change">
+  <div class="grid grid-1-6 cya-change">
     <a href='@details.changeAgentLink' id="appointed-agent-link">@Messages("ated.contact-address.edit") <span class="visuallyhidden">@Messages("ated.company-details.appointed_agent")</span></a>
   </div>
 </div>
@@ -199,7 +199,7 @@ pageScripts = Some(pageScripts)) {
     @details.agentName
   </div>
 
-  <div id="email-link" class="grid grid-1-6 cya-change">
+  <div class="grid grid-1-6 cya-change">
     <a href='@details.changeEmailLink' id="email-link">@Messages("ated.contact-address.edit") <span class="visuallyhidden">@Messages("ated.company-details.mandate_email")</span></a>
   </div>
 </div>

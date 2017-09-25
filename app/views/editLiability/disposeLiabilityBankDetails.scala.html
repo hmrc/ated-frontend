@@ -8,7 +8,7 @@
 @implicitFormInstance = @{ Some(bankDetailsForm) }
 
 @pageScripts = {
-<script type="text/javascript" src='@controllers.routes.AssetsController.at("javascript/bankDetails.js")'></script>
+<script src='@controllers.routes.AssetsController.at("javascript/bankDetails.js")'></script>
 }
 
 @atedMain(title = Messages("ated.bank-details.title"), attorney = atedContext.user.authContext.attorney, pageScripts = Some(pageScripts)) {

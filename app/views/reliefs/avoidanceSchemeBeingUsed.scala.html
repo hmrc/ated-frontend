@@ -10,7 +10,7 @@
 @formattedPeriodStartDate = @{periodStartDate.toString(Messages("ated.date-format.numeric"))}
 
 @pageScripts = {
-<script type="text/javascript" src='@controllers.routes.AssetsController.at("javascript/chooseReliefs.js")'></script>
+<script src='@controllers.routes.AssetsController.at("javascript/chooseReliefs.js")'></script>
 }
 
 @implicitFormInstance = @{ Some(isTaxAvoidanceForm) }
