@@ -169,7 +169,7 @@ backLink: Option[String])(implicit atedContext: AtedContext, messages: Messages)
     </div>
 
     <div class="grid grid-1-6 cya-change">
-      <a href="@controllers.propertyDetails.routes.IsFullTaxPeriodController.editFromSummary(propertyDetails.id)" id="edit-dates-of-liablity">@Messages("ated.edit") <span class="visuallyhidden">@period.description</span>
+      <a href="@controllers.propertyDetails.routes.IsFullTaxPeriodController.editFromSummary(propertyDetails.id)" id="edit-dates-of-liablity-@index">@Messages("ated.edit") <span class="visuallyhidden">@period.description</span>
       </a>
     </div>
   </div>
