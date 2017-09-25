@@ -11,8 +11,9 @@
 @atedMain(title = Messages("ated.relief-sent.title"), attorney = atedContext.user.authContext.attorney) {
 
   <div id="banner" class="transaction-banner--complete">
-    <h1 id="header">@Messages("ated.relief-sent.header")</h1>
-    <p><span class="heading-small" id="date">@Messages("ated.relief-sent.header.date") @DateTimeFormat.forPattern("d MMMM yyyy").print(new LocalDate()) </span></p>
+    <h1 id="header">@Messages("ated.relief-sent.header")
+    <span class="heading-small form group" id="date">@Messages("ated.relief-sent.header.date") @DateTimeFormat.forPattern("d MMMM yyyy").print(new LocalDate()) </span>
+    </h1>
   </div>
 
   <div class="form-group">
@@ -28,7 +29,7 @@
 
   <div class="form-group">
 
-    <span id="receipt-message" class="heading-medium">@Messages("ated.reliefs-sent.charge-heading")</span>
+    <h2 id="receipt-message" class="heading-medium">@Messages("ated.reliefs-sent.charge-heading")</h2>
 
     <p id="amount-message">@Messages("ated.reliefs-sent.amount-message")</p>
 
