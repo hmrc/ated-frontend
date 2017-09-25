@@ -59,6 +59,7 @@ class EditContactEmailSpec extends FeatureSpec with OneServerPerSuite with Mocki
       assert(document.getElementById("emailConsent-true_field").text() === "Yes")
       assert(document.getElementById("emailConsent-false_field").text() === "No")
       assert(document.getElementById("emailAddress_field").text() === "Email")
+      assert(document.getElementById("emailAddress").attr("type") === "email")
 
       And("The consent text is correct")
       assert(document.getElementById("lede").text() === "If we can use email rather than letter there will be less delays in dealing with enquiries.")

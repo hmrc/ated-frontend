@@ -61,6 +61,7 @@ class bankDetailsSpec extends FeatureSpec with OneServerPerSuite with MockitoSug
 
       assert(document.getElementById("hidden-bank-details-uk").text() === "Account number Sort code id id id  ")
       assert(document.getElementById("account-number").text() === "Account number")
+      assert(document.getElementById("accountNumber").attr("type") === "number")
       assert(document.getElementById("sort-code").text() === "Sort code id id id  ")
 
       assert(document.getElementById("hidden-bank-details-non-uk").text() === "IBAN SWIFT code")

@@ -29,7 +29,7 @@
     @singleBox(elementName: String)(implicit lang: play.api.i18n.Lang) = {
         <span class="field-wrapper inline-fields">
             <label class="visuallyhidden" for="@formObject(elementName).id">id</label>
-            <input type="text"
+            <input type="number"
                    class="text form-control input--xxsmall"
                    id="@formObject(elementName).id"
                    name="@formObject(elementName).name"
