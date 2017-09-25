@@ -18,20 +18,14 @@
 
     <p id="title-text">@Messages("ated.property-details.references")</p>
 
-    <fieldset class="form-field">
-
-      <legend class="visuallyhidden">@Messages("ated.property-details.title.header")</legend>
-
       <div id="title">
         @atedInputNew(propertyDetailsForm("titleNumber"),
-          '_label -> "",
+          '_label -> Messages("ated.propertyReference.titleNumber"),
           '_labelClass -> "form-label-bold",
           '_hintText -> Messages("ated.propertyReference.titleNumber.hint"),
           '_id -> "references.titleNumber",
           '_showConstraints -> false)
       </div>
-
-    </fieldset>
 
       <details>
         <summary>

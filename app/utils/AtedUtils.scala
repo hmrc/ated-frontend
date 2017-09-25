@@ -140,4 +140,6 @@ object AtedUtils {
   }
   // $COVERAGE-ON$
 
+  def replaceUnderScoreWithBlank(str: String) = str.replaceAll("_", " ")
+
 }

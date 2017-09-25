@@ -16,9 +16,6 @@
     }
     <label for="@if( elements.args.get('id) ) {@elements.args.get('id)} else {@elements.field.name.replaceAll("""[\.\[\]]""", "-")}" class="@elements.args.get('_divClass) @if( elements.args.get('_labelClass) ){ @elements.args.get('_labelClass) }" id="@if( elements.args.get('id) ) {@elements.args.get('id)_field} else {@elements.field.name.replaceAll("""[\.\[\]]""", "-")_field}">
       @if(!labelAfter && elements.args.contains('_label)) { @elements.label }
-      <span class="form-hint" id="@if( elements.args.get('_id) ) {@elements.args.get('_id)_hint} else {@elements.field.name.replaceAll("""[\.\[\]]""", "-")_hint}">
-      @elements.args.get('_inputHint)
-      </span>
     </label>
 
     @if( elements.args.get('_info) ) { <p>@elements.args.get('_info)</p> }
