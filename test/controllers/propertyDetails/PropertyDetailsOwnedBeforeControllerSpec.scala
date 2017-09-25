@@ -106,6 +106,7 @@ class PropertyDetailsOwnedBeforeControllerSpec extends PlaySpec with OneServerPe
 
               document.getElementById("isOwnedBefore2012").text() must be("Did the company own this property on or before 1 April 2012? Yes No")
               document.getElementById("ownedBefore2012Value_field").text() must be("What was the value of the property on the 1 April 2012? For example, 1500000")
+              document.getElementById("ownedBefore2012Value").attr("type") must be("number")
               document.getElementById("isOwnedBefore2012-true").attr("checked") must be("")
               document.getElementById("isOwnedBefore2012-false").attr("checked") must be("")
 
