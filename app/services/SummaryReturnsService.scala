@@ -44,6 +44,7 @@ trait SummaryReturnsService {
     }
 
     for {
+      _ <- dataCacheConnector.clearCache()
       cachedReturns <- dataCacheConnector.fetchAndGetFormData[SummaryReturnsModel](RetrieveReturnsResponseId)
       summaryReturns: SummaryReturnsModel <- {
         cachedReturns match {

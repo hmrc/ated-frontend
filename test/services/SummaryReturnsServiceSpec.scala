@@ -84,6 +84,7 @@ class SummaryReturnsServiceSpec extends PlaySpec with OneServerPerSuite with Moc
 
           "connector returns OK as response, then Return SummaryReturnsModel after filtering out errant period" in {
 
+            when(mockDataCacheConnector.clearCache()).thenReturn(Future.successful(HttpResponse(200)))
             when(mockDataCacheConnector.fetchAndGetFormData[SummaryReturnsModel](Matchers.eq(RetrieveReturnsResponseId))(Matchers.any(), Matchers.any(), Matchers.any()))
               .thenReturn(Future.successful(None))
             when(mockDataCacheConnector.saveFormData[SummaryReturnsModel](Matchers.eq(RetrieveReturnsResponseId), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
@@ -95,6 +96,7 @@ class SummaryReturnsServiceSpec extends PlaySpec with OneServerPerSuite with Moc
 
           "connector returns NON-OK as response, then throw exception" in {
 
+            when(mockDataCacheConnector.clearCache()).thenReturn(Future.successful(HttpResponse(200)))
             when(mockDataCacheConnector.fetchAndGetFormData[SummaryReturnsModel](Matchers.eq(RetrieveReturnsResponseId))(Matchers.any(), Matchers.any(), Matchers.any()))
               .thenReturn(Future.successful(None))
             when(mockDataCacheConnector.saveFormData[SummaryReturnsModel](Matchers.eq(RetrieveReturnsResponseId), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
@@ -113,6 +115,7 @@ class SummaryReturnsServiceSpec extends PlaySpec with OneServerPerSuite with Moc
 
           "connector returns OK as response, then Return SummaryReturnsModel" in {
 
+            when(mockDataCacheConnector.clearCache()).thenReturn(Future.successful(HttpResponse(200)))
             val dataCached = data.copy(allReturns = data.allReturns.map(_.copy(draftReturns = Nil)))
             when(mockDataCacheConnector.fetchAndGetFormData[SummaryReturnsModel](Matchers.eq(RetrieveReturnsResponseId))(Matchers.any(), Matchers.any(), Matchers.any()))
               .thenReturn(Future.successful(Some(dataCached)))
@@ -125,6 +128,7 @@ class SummaryReturnsServiceSpec extends PlaySpec with OneServerPerSuite with Moc
 
           "connector returns NON-OK as response, then throw exception" in {
 
+            when(mockDataCacheConnector.clearCache()).thenReturn(Future.successful(HttpResponse(200)))
             val dataCached = data.copy(allReturns = data.allReturns.map(_.copy(draftReturns = Nil)))
             when(mockDataCacheConnector.fetchAndGetFormData[SummaryReturnsModel](Matchers.eq(RetrieveReturnsResponseId))(Matchers.any(), Matchers.any(), Matchers.any()))
               .thenReturn(Future.successful(Some(dataCached)))
@@ -151,6 +155,7 @@ class SummaryReturnsServiceSpec extends PlaySpec with OneServerPerSuite with Moc
       val json = Json.toJson(data)
 
       "return Some(PeriodSummaryReturns), if that period is found in SummaryReturnsModel" in {
+        when(mockDataCacheConnector.clearCache()).thenReturn(Future.successful(HttpResponse(200)))
         when(mockDataCacheConnector.saveFormData[SummaryReturnsModel](Matchers.eq(RetrieveReturnsResponseId), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(data))
         when(mockDataCacheConnector.fetchAndGetFormData[SummaryReturnsModel](Matchers.eq(RetrieveReturnsResponseId))(Matchers.any(), Matchers.any(), Matchers.any()))
@@ -163,6 +168,7 @@ class SummaryReturnsServiceSpec extends PlaySpec with OneServerPerSuite with Moc
       }
 
       "return None, if that period is not-found in SummaryReturnsModel" in {
+        when(mockDataCacheConnector.clearCache()).thenReturn(Future.successful(HttpResponse(200)))
         when(mockDataCacheConnector.fetchAndGetFormData[SummaryReturnsModel](Matchers.eq(RetrieveReturnsResponseId))(Matchers.any(), Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(None))
         when(mockDataCacheConnector.saveFormData[SummaryReturnsModel](Matchers.eq(RetrieveReturnsResponseId), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
@@ -187,6 +193,7 @@ class SummaryReturnsServiceSpec extends PlaySpec with OneServerPerSuite with Moc
       val pastReturnDetails = Seq(prevReturn)
 
       "save and return past submitted liabilities for a valid user" in {
+        when(mockDataCacheConnector.clearCache()).thenReturn(Future.successful(HttpResponse(200)))
         when(mockDataCacheConnector.fetchAndGetFormData[PreviousReturns](Matchers.eq(RetrieveReturnsResponseId))(Matchers.any(), Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(None))
         when(mockAtedConnector.getFullSummaryReturns(Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(json1))))
