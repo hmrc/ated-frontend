@@ -27,7 +27,9 @@
 
 <fieldset class="form-group">
 
-  <legend class="h3-heading" id="choose-reliefs-label">@Messages("ated.choose-reliefs.label")</legend>
+  <legend id="choose-reliefs-legend" class="visuallyhidden">@Messages("ated.choose-reliefs.header")</legend>
+
+  <span class="h3-heading" id="choose-reliefs-label">@Messages("ated.choose-reliefs.label")</span>
 
     <div id="reliefs">
       @atedSingleCheckBox(reliefsForm("rentalBusiness"),
