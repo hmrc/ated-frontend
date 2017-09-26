@@ -20,7 +20,7 @@ import java.util.UUID
 
 import builders.{AuthBuilder, SessionBuilder}
 import config.FrontendDelegationConnector
-import connectors.AgentClientMandateFrontendConnector
+import connectors.{AgentClientMandateFrontendConnector, DataCacheConnector}
 import models._
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
@@ -36,7 +36,7 @@ import play.twirl.api.Html
 import services.{DetailsService, SubscriptionDataService, SummaryReturnsService}
 import uk.gov.hmrc.play.frontend.auth.DummyDelegationData
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
-import uk.gov.hmrc.play.http.{HeaderCarrier, UserId}
+import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse, UserId}
 import uk.gov.hmrc.play.partials.HtmlPartial
 import utils.AtedConstants._
 
@@ -52,11 +52,13 @@ class AccountSummaryControllerSpec extends PlaySpec with OneServerPerSuite with 
   val mockDelegationConnector = mock[DelegationConnector]
   val mockDetailsService = mock[DetailsService]
   val mockAgentClientMandateFrontendConnector = mock[AgentClientMandateFrontendConnector]
+  val mockDataCacheConnector = mock[DataCacheConnector]
   val organisationName = "OrganisationName"
   val formBundleNo1 = "123456789012"
   val formBundleNo2 = "123456789013"
 
   implicit def atedContext2AuthContext(implicit atedContext: AtedContext) = atedContext.user.authContext
+  implicit val hc: HeaderCarrier = HeaderCarrier()
 
   object TestAccountSummaryController extends AccountSummaryController {
     override val authConnector = mockAuthConnector
@@ -65,6 +67,7 @@ class AccountSummaryControllerSpec extends PlaySpec with OneServerPerSuite with 
     override val delegationConnector = mockDelegationConnector
     override val mandateFrontendConnector = mockAgentClientMandateFrontendConnector
     override val detailsService = mockDetailsService
+    override val dataCacheConnector = mockDataCacheConnector
   }
 
   override def beforeEach(): Unit = {
@@ -72,6 +75,9 @@ class AccountSummaryControllerSpec extends PlaySpec with OneServerPerSuite with 
     reset(mockReturnSummaryService)
     reset(mockSubscriptionDataService)
     reset(mockDelegationConnector)
+    reset(mockAgentClientMandateFrontendConnector)
+    reset(mockDetailsService)
+    reset(mockDataCacheConnector)
   }
 
   "AccountSummaryController" must {
@@ -240,8 +246,10 @@ class AccountSummaryControllerSpec extends PlaySpec with OneServerPerSuite with 
           implicit val user = createAtedContext(createUserAuthContext(userId, "name"))
           AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
 
+          when(mockDataCacheConnector.clearCache()(Matchers.any())).thenReturn(Future.successful(HttpResponse(200)))
           when(mockReturnSummaryService.getSummaryReturns(Matchers.any(), Matchers.any())).thenReturn(Future.successful(data))
           when(mockSubscriptionDataService.getCorrespondenceAddress(Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
+          when(mockDetailsService.cacheClientReference(Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful("XN1200000100001"))
           when(mockSubscriptionDataService.getOrganisationName(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(organisationName)))
           when(mockSubscriptionDataService.getSafeId(Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
           when(mockAgentClientMandateFrontendConnector.getClientBannerPartial(Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(HtmlPartial.Success(Some("thepartial"), Html(""))))
@@ -280,6 +288,7 @@ class AccountSummaryControllerSpec extends PlaySpec with OneServerPerSuite with 
     implicit val user = createAtedContext(createUserAuthContext(userId, "name"))
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
 
+    when(mockDataCacheConnector.clearCache()(Matchers.any())).thenReturn(Future.successful(HttpResponse(200)))
     when(mockReturnSummaryService.getSummaryReturns(Matchers.any(), Matchers.any())).thenReturn(Future.successful(returnsSummaryWithDraft))
     when(mockSubscriptionDataService.getCorrespondenceAddress(Matchers.any(), Matchers.any())).thenReturn(Future.successful(correspondence))
     when(mockSubscriptionDataService.getOrganisationName(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(organisationName)))
@@ -298,6 +307,7 @@ class AccountSummaryControllerSpec extends PlaySpec with OneServerPerSuite with 
     implicit val hc: HeaderCarrier = HeaderCarrier(userId = Some(UserId(userId)))
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
 
+    when(mockDataCacheConnector.clearCache()(Matchers.any())).thenReturn(Future.successful(HttpResponse(200)))
     when(mockReturnSummaryService.getSummaryReturns(Matchers.any(), Matchers.any())).thenReturn(Future.successful(returnsSummaryWithDraft))
     when(mockSubscriptionDataService.getCorrespondenceAddress(Matchers.any(), Matchers.any())).thenReturn(Future.successful(correspondence))
     when(mockSubscriptionDataService.getOrganisationName(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(organisationName)))

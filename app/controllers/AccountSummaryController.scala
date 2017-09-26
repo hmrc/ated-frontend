@@ -17,7 +17,7 @@
 package controllers
 
 import config.FrontendDelegationConnector
-import connectors.AgentClientMandateFrontendConnector
+import connectors.{AgentClientMandateFrontendConnector, DataCacheConnector}
 import controllers.auth.{AtedFrontendAuthHelpers, AtedRegime}
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
@@ -34,12 +34,15 @@ trait AccountSummaryController extends AtedBaseController with AtedFrontendAuthH
 
   def detailsService: DetailsService
 
+  def dataCacheConnector: DataCacheConnector
+
 
   def view() = AuthAction(AtedRegime) {
     implicit atedContext =>
       for {
-        _ <- detailsService.cacheClientReference(atedContext.user.atedReferenceNumber)
+        _ <- dataCacheConnector.clearCache()
         allReturns <- summaryReturnsService.getSummaryReturns
+        _ <- detailsService.cacheClientReference(atedContext.user.atedReferenceNumber)
         correspondenceAddress <- subscriptionDataService.getCorrespondenceAddress
         organisationName <- subscriptionDataService.getOrganisationName
         safeId <- subscriptionDataService.getSafeId
@@ -57,4 +60,5 @@ object AccountSummaryController extends AccountSummaryController {
   val subscriptionDataService = SubscriptionDataService
   val mandateFrontendConnector = AgentClientMandateFrontendConnector
   val detailsService = DetailsService
+  val dataCacheConnector = DataCacheConnector
 }
