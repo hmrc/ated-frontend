@@ -39,10 +39,6 @@
       <td class="heading-small" id="property-value-label-@index">@PeriodUtils.getPeriodValueMessage(index, valuesToDisplay.size)</td>
       <td id="property-value-value-@index">@formattedPounds(valueObj.propertyValue)</td>
     </tr>
-    <tr>
-      <td class="heading-small" id="property-date-of-valuation-label-@index">@PeriodUtils.getPeriodValueDateMessage(index, valuesToDisplay.size)</td>
-      <td id="property-date-of-valuation-@index">@valueObj.dateOfChange.toString(Messages("ated.date-format"))</td>
-    </tr>
     }
     <tr>
       <td class="heading-medium ated-table-padding-top" id="dates-of-liability-header">@Messages("ated.property-details-summary.table.dates-of-liability.header")</td>
