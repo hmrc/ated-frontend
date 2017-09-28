@@ -20,12 +20,12 @@ periodEndDate(periodKey).toString(Messages("ated.date-format.summary"))), subHea
 
 
 <div class="form-group">
-  <ul class="ated-tabs">
-    <li id="current-returns" class="selected heading-small">
+  <ul class="ated-tabs" role="tablist">
+    <li id="current-returns" class="selected heading-small" role="tab">
       @Messages("ated.period-summary.tabs.current-returns")
     </li>
     @if(periodSummaries.flatMap(_.submittedReturns.map(_.oldLiabilityReturns.isEmpty)) == Some(false)) {
-    <li id="past-returns" class="heading-small">
+    <li id="past-returns" class="heading-small" role="tab">
       <a href="@controllers.routes.PeriodSummaryController.viewPastReturns(periodKey)" id="past-returns-link" data-journey-click="ated:click:past-returns">
         @Messages("ated.period-summary.tabs.past-returns")
       </a>
@@ -34,6 +34,7 @@ periodEndDate(periodKey).toString(Messages("ated.date-format.summary"))), subHea
   </ul>
 </div>
 
+<section id="current-returns-tab" tabindex="-1">
 
   @periodSummaries.map { data =>
 
@@ -139,7 +140,10 @@ periodEndDate(periodKey).toString(Messages("ated.date-format.summary"))), subHea
   <div class="form-group">
     <a href="@controllers.routes.PeriodSummaryController.createReturn(periodKey)" id="create-return">@Messages("ated.account-summary.create-return.link")</a>
   </div>
+</div>
+</section>
 
+<script src='@controllers.routes.AssetsController.at("javascript/periodSummary.js")'></script>
 
 }
 

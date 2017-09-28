@@ -786,3 +786,7 @@ table th {
 .ated-line-height {
     line-height: 0.5em;
 }
+
+#tab-past-returns:focus, #current-returns-tab:focus {
+    outline: 0px solid transparent;
+}
