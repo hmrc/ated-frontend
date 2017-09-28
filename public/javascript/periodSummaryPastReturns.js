@@ -1,0 +1,1 @@
+document.getElementById('tab-past-returns').focus();

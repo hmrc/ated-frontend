@@ -9,6 +9,7 @@
 @import utils.PeriodUtils._
 @import utils.AtedConstants._
 
+
 @atedMain(title = Messages("ated.period-summary.title",
                             periodStartDate(periodKey).getYear.toString,
                             periodEndDate(periodKey).getYear.toString), attorney = atedContext.user.authContext.attorney){
@@ -17,19 +18,21 @@
 periodStartDate(periodKey).toString(Messages("ated.date-format.summary")),
 periodEndDate(periodKey).toString(Messages("ated.date-format.summary"))), subHeaderPrefix = Some(Messages("ated.screen-reader.section-name")))
 
+
   <div class="form-group">
-    <ul class="ated-tabs">
-      <li id="current-returns" class="heading-small">
+    <ul class="ated-tabs" role="tablist">
+      <li id="current-returns" class="heading-small" role="tab">
         <a href="@controllers.routes.PeriodSummaryController.view(periodKey)" id="current-returns-link" data-journey-click="ated:click:current-returns">
           @Messages("ated.period-summary.tabs.current-returns")
         </a>
       </li>
-      <li id="past-returns" class="selected heading-small">
+      <li id="past-returns" class="selected heading-small" role="tab">
         @Messages("ated.period-summary.tabs.past-returns")
       </li>
     </ul>
   </div>
 
+<section id="tab-past-returns" tabindex="-1">
 
   <div class="form-group">
     <div class="grid-wrapper">
@@ -49,7 +52,7 @@ periodEndDate(periodKey).toString(Messages("ated.date-format.summary"))), subHea
                 @Messages("ated.submitted")
             </div>
 
-            <div class="grid grid-1-4 psp-action" tabindex="1">
+            <div class="grid grid-1-4 psp-action">
               <a id="liability-submitted-@t._2" href='@controllers.routes.FormBundleReturnController.view(t._1.formBundleNo,periodKey)'
               data-journey-click="ated-fronted:click:liability-submitted">
                 <span id="view-edit-@t._2">
@@ -73,5 +76,9 @@ periodEndDate(periodKey).toString(Messages("ated.date-format.summary"))), subHea
   <div class="form-group">
     <a href="@controllers.routes.PeriodSummaryController.createReturn(periodKey)" id="create-return">@Messages("ated.account-summary.create-return.link")</a>
   </div>
+
+</section>
+
+<script src='@controllers.routes.AssetsController.at("javascript/periodSummaryPastReturns.js")'></script>
 
 }
