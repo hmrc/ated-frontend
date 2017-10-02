@@ -36,10 +36,10 @@ import play.api.test.Helpers._
 import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService}
 import uk.gov.hmrc.play.frontend.auth.DummyDelegationData
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
-import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse, UserId}
 import utils.AtedConstants
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.{ HeaderCarrier, HttpResponse, UserId }
 
 class PropertyDetailsDeclarationControllerSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
   import AuthBuilder._
@@ -200,7 +200,7 @@ class PropertyDetailsDeclarationControllerSpec extends PlaySpec with OneServerPe
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
     when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-    when(mockDelegationConnector.getDelegationData(Matchers.any())(Matchers.any())).thenReturn(Future.successful(Some(DummyDelegationData.returnData)))
+    when(mockDelegationConnector.getDelegationData(Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(Some(DummyDelegationData.returnData)))
     when(mockService.retrieveDraftPropertyDetails(Matchers.any())(Matchers.any(), Matchers.any())) thenReturn {
       Future.successful(PropertyDetailsCacheSuccessResponse(PropertyDetailsBuilder.getPropertyDetails("1")))
     }

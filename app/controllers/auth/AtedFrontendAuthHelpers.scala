@@ -21,7 +21,6 @@ import controllers.AtedBaseController
 import models._
 import play.api.mvc.{Action, AnyContent, Result}
 import uk.gov.hmrc.play.frontend.auth.TaxRegime
-import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
 

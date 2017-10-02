@@ -26,9 +26,9 @@ import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
 import play.api.libs.json.Json
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.cache.client.{CacheMap, SessionCache}
-import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.{ HeaderCarrier, HttpResponse }
 
 class DataCacheConnectorSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
 
@@ -53,7 +53,7 @@ class DataCacheConnectorSpec extends PlaySpec with OneServerPerSuite with Mockit
       "save form data in keystore" in {
         implicit val hc: HeaderCarrier = HeaderCarrier()
         val returnedCacheMap = CacheMap("form-id", Map("data" -> Json.toJson(returnType)))
-        when(mockSessionCache.cache[ReturnType](Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(returnedCacheMap))
+        when(mockSessionCache.cache[ReturnType](Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(returnedCacheMap))
         await(TestDataCacheConnector.saveFormData[ReturnType]("form-id", returnType)) must be(returnType)
         val result = TestDataCacheConnector.saveFormData[ReturnType]("form-id", returnType)
         await(result) must be(returnType)
@@ -69,7 +69,7 @@ class DataCacheConnectorSpec extends PlaySpec with OneServerPerSuite with Mockit
     "fetchAndGetFormData" must {
       "fetch data from Keystore" in {
         implicit val hc: HeaderCarrier = HeaderCarrier()
-        when(mockSessionCache.fetchAndGetEntry[ReturnType](Matchers.contains("form-id"))(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(returnType)))
+        when(mockSessionCache.fetchAndGetEntry[ReturnType](Matchers.contains("form-id"))(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(returnType)))
         await(TestDataCacheConnector.fetchAndGetFormData[ReturnType]("form-id")) must be(Some(returnType))
       }
     }
@@ -77,7 +77,7 @@ class DataCacheConnectorSpec extends PlaySpec with OneServerPerSuite with Mockit
       "clear data from Keystore" in {
         implicit val hc: HeaderCarrier = HeaderCarrier()
         val successResponse = Json.parse("""{"processingDate": "2001-12-17T09:30:47Z"}""")
-        when(mockSessionCache.remove()(Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+        when(mockSessionCache.remove()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
         val result = TestDataCacheConnector.clearCache()
         val response = await(result)
         response.status must be(OK)
@@ -88,7 +88,7 @@ class DataCacheConnectorSpec extends PlaySpec with OneServerPerSuite with Mockit
     "fetchAtedRefData" must {
       "fetch data from Keystore" in {
         implicit val hc: HeaderCarrier = HeaderCarrier()
-        when(mockSessionCache.fetchAndGetEntry[String](Matchers.contains("XN1200000100001"))(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
+        when(mockSessionCache.fetchAndGetEntry[String](Matchers.contains("XN1200000100001"))(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
         val result = TestDataCacheConnector.fetchAtedRefData[String]("XN1200000100001")
         await(result) must be(Some("XN1200000100001"))
       }

@@ -20,10 +20,10 @@ import connectors.AtedConnector
 import models._
 import play.api.Logger
 import play.api.http.Status._
-import uk.gov.hmrc.play.http.{BadRequestException, HeaderCarrier, InternalServerException}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import uk.gov.hmrc.http.{ BadRequestException, HeaderCarrier, InternalServerException }
 
 trait FormBundleReturnsService {
   val atedConnector: AtedConnector

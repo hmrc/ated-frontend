@@ -24,11 +24,11 @@ import forms.PropertyDetailsForms._
 import models._
 import play.api.i18n.Messages
 import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService}
-import uk.gov.hmrc.play.http.HeaderCarrier
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.HeaderCarrier
 
 trait PeriodDatesLiableController extends PropertyDetailsHelpers with ClientHelper {
 

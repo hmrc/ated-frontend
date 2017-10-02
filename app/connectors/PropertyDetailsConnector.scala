@@ -20,8 +20,9 @@ import config.WSHttp
 import models._
 import org.joda.time.LocalDate
 import play.api.libs.json.{JsValue, Json}
+import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.config.ServicesConfig
-import uk.gov.hmrc.play.http.{HeaderCarrier, _}
+import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
 import scala.concurrent.Future
 
@@ -60,7 +61,7 @@ trait PropertyDetailsConnector extends ServicesConfig with RawResponseReads {
   val saveDraftPropertyDetailsValuedURI = "property-details/valued"
 
 
-  def http: HttpGet with HttpPost with HttpDelete
+  def http: CoreGet with CorePost with CoreDelete
 
   def createDraftPropertyDetails(periodKey: Int, propertyDetails: PropertyDetailsAddress)
                                         (implicit atedContext: AtedContext, headerCarrier: HeaderCarrier): Future[HttpResponse] = {

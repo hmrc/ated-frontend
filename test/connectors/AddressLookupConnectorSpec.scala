@@ -25,25 +25,19 @@ import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
-import play.api.libs.json.{JsValue, Json}
 import play.api.test.Helpers._
-import uk.gov.hmrc.play.http._
-import uk.gov.hmrc.play.http.logging.SessionId
-import uk.gov.hmrc.play.http.ws.{WSDelete, WSGet, WSPost}
-import utils.AtedConstants
+import uk.gov.hmrc.http._
+import uk.gov.hmrc.http.logging.SessionId
 
 import scala.concurrent.Future
 
 class AddressLookupConnectorSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
 
-  class MockHttp extends WSGet with WSPost with WSDelete {
-    override val hooks = NoneRequired
-  }
-
-  val mockWSHttp = mock[MockHttp]
+  trait MockedVerbs extends CoreGet with CorePost with CoreDelete
+  val mockWSHttp: CoreGet with CorePost with CoreDelete = mock[MockedVerbs]
 
   object TestAtedConnector extends AddressLookupConnector {
-    override val http: HttpGet with HttpPost with HttpDelete = mockWSHttp
+    override val http: CoreGet with CorePost with CoreDelete = mockWSHttp
     override val serviceURL = baseUrl("address-lookup")
   }
 
@@ -65,7 +59,7 @@ class AddressLookupConnectorSpec extends PlaySpec with OneServerPerSuite with Mo
         implicit val user = createAtedContext(createUserAuthContext("User-Id", "name"))
         when(mockWSHttp.GET[List[AddressLookupRecord]]
           (Matchers.any())
-          (Matchers.any(), Matchers.any())).thenReturn(Future.successful(response))
+          (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(response))
 
         val result = TestAtedConnector.findByPostcode(AddressLookup("postCode", None))
         await(result).headOption must be(Some(addressLookupRecord))
@@ -78,7 +72,7 @@ class AddressLookupConnectorSpec extends PlaySpec with OneServerPerSuite with Mo
         implicit val user = createAtedContext(createUserAuthContext("User-Id", "name"))
         when(mockWSHttp.GET[List[AddressLookupRecord]]
           (Matchers.any())
-          (Matchers.any(), Matchers.any())).thenReturn(Future.failed(new Exception("")))
+          (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.failed(new Exception("")))
 
         val result = TestAtedConnector.findByPostcode(AddressLookup("postCode", Some("houseName")))
         await(result).isEmpty must be(true)
@@ -94,7 +88,7 @@ class AddressLookupConnectorSpec extends PlaySpec with OneServerPerSuite with Mo
         implicit val user = createAtedContext(createUserAuthContext("User-Id", "name"))
         when(mockWSHttp.GET[Option[AddressLookupRecord]]
           (Matchers.any())
-          (Matchers.any(), Matchers.any())).thenReturn(Future.successful(response))
+          (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(response))
 
         val result = TestAtedConnector.findById("1")
         await(result) must be(Some(addressLookupRecord))
@@ -107,7 +101,7 @@ class AddressLookupConnectorSpec extends PlaySpec with OneServerPerSuite with Mo
         implicit val user = createAtedContext(createUserAuthContext("User-Id", "name"))
         when(mockWSHttp.GET[Option[AddressLookupRecord]]
           (Matchers.any())
-          (Matchers.any(), Matchers.any())).thenReturn(Future.failed(new NotFoundException("")))
+          (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.failed(new NotFoundException("")))
 
         val result = TestAtedConnector.findById("1")
         await(result).isDefined must be(false)

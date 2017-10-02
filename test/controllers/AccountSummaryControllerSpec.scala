@@ -36,11 +36,11 @@ import play.twirl.api.Html
 import services.{DetailsService, SubscriptionDataService, SummaryReturnsService}
 import uk.gov.hmrc.play.frontend.auth.DummyDelegationData
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
-import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse, UserId}
 import uk.gov.hmrc.play.partials.HtmlPartial
 import utils.AtedConstants._
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.{ HeaderCarrier, HttpResponse, UserId }
 
 class AccountSummaryControllerSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
 
@@ -311,7 +311,7 @@ class AccountSummaryControllerSpec extends PlaySpec with OneServerPerSuite with 
     when(mockReturnSummaryService.getSummaryReturns(Matchers.any(), Matchers.any())).thenReturn(Future.successful(returnsSummaryWithDraft))
     when(mockSubscriptionDataService.getCorrespondenceAddress(Matchers.any(), Matchers.any())).thenReturn(Future.successful(correspondence))
     when(mockSubscriptionDataService.getOrganisationName(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(organisationName)))
-    when(mockDelegationConnector.getDelegationData(Matchers.any())(Matchers.any())).thenReturn(Future.successful(Some(DummyDelegationData.returnData)))
+    when(mockDelegationConnector.getDelegationData(Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(Some(DummyDelegationData.returnData)))
     when(mockSubscriptionDataService.getSafeId(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("safeId")))
     when(mockAgentClientMandateFrontendConnector.getClientBannerPartial(Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(HtmlPartial.Success(Some("thepartial"), Html(""))))
     when(mockDetailsService.cacheClientReference(Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful("XN1200000100001"))

@@ -30,22 +30,20 @@ import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
 import play.api.libs.json.{JsValue, Json}
 import play.api.test.Helpers._
 import uk.gov.hmrc.play.http._
-import uk.gov.hmrc.play.http.logging.SessionId
 import uk.gov.hmrc.play.http.ws.{WSDelete, WSGet, WSPost}
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http._
+import uk.gov.hmrc.http.logging.SessionId
 
 class PropertyDetailsConnectorSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
 
-  class MockHttp extends WSGet with WSPost with WSDelete {
-    override val hooks = NoneRequired
-  }
-
-  val mockWSHttp = mock[MockHttp]
+  trait MockedVerbs extends CoreGet with CorePost with CoreDelete
+  val mockWSHttp: CoreGet with CorePost with CoreDelete = mock[MockedVerbs]
 
   object TestAtedConnector extends PropertyDetailsConnector {
     override val serviceURL = baseUrl("ated")
-    override val http: HttpGet with HttpPost with HttpDelete = mockWSHttp
+    override val http: CoreGet with CorePost with CoreDelete = mockWSHttp
   }
 
   override def beforeEach = {
@@ -64,7 +62,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with OneServerPerSuite with 
         implicit val user = createAtedContext(createUserAuthContext("User-Id", "name"))
         when(mockWSHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
-          (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+          (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
 
 
         val result = TestAtedConnector.createDraftPropertyDetails(2015, propertyDetails)
@@ -79,7 +77,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with OneServerPerSuite with 
         implicit val user = createAtedContext(createUserAuthContext("User-Id", "name"))
         when(mockWSHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
-          (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
+          (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
         val result = TestAtedConnector.saveDraftPropertyDetailsAddressRef("1", propertyDetails)
         val response = await(result)
         response.status must be(BAD_REQUEST)
@@ -96,7 +94,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with OneServerPerSuite with 
         implicit val user = createAtedContext(createUserAuthContext("User-Id", "name"))
         when(mockWSHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
-          (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+          (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
 
 
         val result = TestAtedConnector.saveDraftPropertyDetailsAddressRef("1", propertyDetails)
@@ -111,7 +109,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with OneServerPerSuite with 
         implicit val user = createAtedContext(createUserAuthContext("User-Id", "name"))
         when(mockWSHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
-          (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
+          (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
         val result = TestAtedConnector.saveDraftPropertyDetailsAddressRef("1", propertyDetails)
         val response = await(result)
         response.status must be(BAD_REQUEST)
@@ -128,7 +126,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with OneServerPerSuite with 
         implicit val user = createAtedContext(createUserAuthContext("User-Id", "name"))
         when(mockWSHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
-          (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+          (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
 
         val result = TestAtedConnector.saveDraftHasValueChanged("1", true)
         val response = await(result)
@@ -142,7 +140,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with OneServerPerSuite with 
         implicit val user = createAtedContext(createUserAuthContext("User-Id", "name"))
         when(mockWSHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
-          (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
+          (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
 
         val result = TestAtedConnector.saveDraftHasValueChanged("1", true)
         val response = await(result)
@@ -160,7 +158,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with OneServerPerSuite with 
         implicit val user = createAtedContext(createUserAuthContext("User-Id", "name"))
         when(mockWSHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
-          (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+          (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
 
         val result = TestAtedConnector.saveDraftPropertyDetailsTitle("1", propertyDetails)
         val response = await(result)
@@ -174,7 +172,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with OneServerPerSuite with 
         implicit val user = createAtedContext(createUserAuthContext("User-Id", "name"))
         when(mockWSHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
-          (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
+          (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
 
         val result = TestAtedConnector.saveDraftPropertyDetailsTitle("1", propertyDetails)
         val response = await(result)
@@ -190,7 +188,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with OneServerPerSuite with 
 
         when(mockWSHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
-          (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+          (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
 
         val result = TestAtedConnector.saveDraftPropertyDetailsAcquisition("1", true)
         val response = await(result)
@@ -202,7 +200,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with OneServerPerSuite with 
         implicit val user = createAtedContext(createUserAuthContext("User-Id", "name"))
         when(mockWSHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
-          (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
+          (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
 
         val result = TestAtedConnector.saveDraftPropertyDetailsAcquisition("1", true)
         val response = await(result)
@@ -220,7 +218,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with OneServerPerSuite with 
 
         when(mockWSHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
-          (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+          (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
 
         val result = TestAtedConnector.saveDraftPropertyDetailsRevalued("1", propertyDetails)
         val response = await(result)
@@ -230,7 +228,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with OneServerPerSuite with 
       "for an unsuccessful save, return an empty object" in {
         when(mockWSHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
-          (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
+          (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
 
         val result = TestAtedConnector.saveDraftPropertyDetailsRevalued("1", propertyDetails)
         val response = await(result)
@@ -248,7 +246,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with OneServerPerSuite with 
         implicit val user = createAtedContext(createUserAuthContext("User-Id", "name"))
         when(mockWSHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
-          (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+          (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
 
         val result = TestAtedConnector.saveDraftPropertyDetailsOwnedBefore("1", propertyDetails)
         val response = await(result)
@@ -262,7 +260,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with OneServerPerSuite with 
         implicit val user = createAtedContext(createUserAuthContext("User-Id", "name"))
         when(mockWSHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
-          (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
+          (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
 
         val result = TestAtedConnector.saveDraftPropertyDetailsOwnedBefore("1", propertyDetails)
         val response = await(result)
@@ -279,7 +277,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with OneServerPerSuite with 
         val successResponse = Json.toJson(propertyDetails)
         when(mockWSHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
-          (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+          (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
 
         val result = TestAtedConnector.saveDraftPropertyDetailsProfessionallyValued("1", propertyDetails)
         val response = await(result)
@@ -289,7 +287,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with OneServerPerSuite with 
       "for an unsuccessful save, return an empty object" in {
         when(mockWSHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
-          (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
+          (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
 
         val result = TestAtedConnector.saveDraftPropertyDetailsProfessionallyValued("1", propertyDetails)
         val response = await(result)
@@ -306,7 +304,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with OneServerPerSuite with 
         val successResponse = Json.toJson(propertyDetails)
         when(mockWSHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
-          (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+          (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
 
         val result = TestAtedConnector.saveDraftPropertyDetailsNewBuild("1", propertyDetails)
         val response = await(result)
@@ -316,7 +314,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with OneServerPerSuite with 
       "for an unsuccessful save, return an empty object" in {
         when(mockWSHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
-          (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
+          (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
 
         val result = TestAtedConnector.saveDraftPropertyDetailsNewBuild("1", propertyDetails)
         val response = await(result)
@@ -333,7 +331,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with OneServerPerSuite with 
         val successResponse = Json.toJson(propertyDetails)
         when(mockWSHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
-          (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+          (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
 
         val result = TestAtedConnector.saveDraftIsFullTaxPeriod("1", propertyDetails)
         val response = await(result)
@@ -343,7 +341,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with OneServerPerSuite with 
       "for an unsuccessful save, return an empty object" in {
         when(mockWSHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
-          (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
+          (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
 
         val result = TestAtedConnector.saveDraftIsFullTaxPeriod("1", propertyDetails)
         val response = await(result)
@@ -360,7 +358,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with OneServerPerSuite with 
         val successResponse = Json.toJson(propertyDetails)
         when(mockWSHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
-          (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+          (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
 
         val result = TestAtedConnector.saveDraftPropertyDetailsInRelief("1", propertyDetails)
         val response = await(result)
@@ -370,7 +368,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with OneServerPerSuite with 
       "for an unsuccessful save, return an empty object" in {
         when(mockWSHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
-          (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
+          (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
 
         val result = TestAtedConnector.saveDraftPropertyDetailsInRelief("1", propertyDetails)
         val response = await(result)
@@ -387,7 +385,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with OneServerPerSuite with 
         val successResponse = Json.toJson(propertyDetails)
         when(mockWSHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
-          (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+          (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
 
         val result = TestAtedConnector.saveDraftPropertyDetailsTaxAvoidance("1", propertyDetails)
         val response = await(result)
@@ -397,7 +395,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with OneServerPerSuite with 
       "for an unsuccessful save, return an empty object" in {
         when(mockWSHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
-          (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
+          (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
 
         val result = TestAtedConnector.saveDraftPropertyDetailsTaxAvoidance("1", propertyDetails)
         val response = await(result)
@@ -414,7 +412,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with OneServerPerSuite with 
         val successResponse = Json.toJson(propertyDetails)
         when(mockWSHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
-          (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+          (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
 
         val result = TestAtedConnector.saveDraftPropertyDetailsDatesLiable("1", propertyDetails)
         val response = await(result)
@@ -424,7 +422,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with OneServerPerSuite with 
       "for an unsuccessful save, return an empty object" in {
         when(mockWSHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
-          (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
+          (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
 
         val result = TestAtedConnector.saveDraftPropertyDetailsDatesLiable("1", propertyDetails)
         val response = await(result)
@@ -443,7 +441,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with OneServerPerSuite with 
         val successResponse = Json.toJson(propertyDetails)
         when(mockWSHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
-          (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+          (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
 
         val result = TestAtedConnector.addDraftPropertyDetailsDatesLiable("1", propertyDetails)
         val response = await(result)
@@ -453,7 +451,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with OneServerPerSuite with 
       "for an unsuccessful add, return an empty object" in {
         when(mockWSHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
-          (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
+          (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
 
         val result = TestAtedConnector.addDraftPropertyDetailsDatesLiable("1", propertyDetails)
         val response = await(result)
@@ -472,7 +470,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with OneServerPerSuite with 
         val successResponse = Json.toJson(propertyDetails)
         when(mockWSHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
-          (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+          (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
 
         val result = TestAtedConnector.deleteDraftPropertyDetailsPeriod("1", propertyDetails.startDate)
         val response = await(result)
@@ -482,7 +480,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with OneServerPerSuite with 
       "for an unsuccessful delete, return an empty object" in {
         when(mockWSHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
-          (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
+          (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
 
         val result = TestAtedConnector.deleteDraftPropertyDetailsPeriod("1", propertyDetails.startDate)
         val response = await(result)
@@ -501,7 +499,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with OneServerPerSuite with 
         val successResponse = Json.toJson(propertyDetails)
         when(mockWSHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
-          (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+          (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
 
         val result = TestAtedConnector.addDraftPropertyDetailsDatesInRelief("1", propertyDetails)
         val response = await(result)
@@ -511,7 +509,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with OneServerPerSuite with 
       "for an unsuccessful add, return an empty object" in {
         when(mockWSHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
-          (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
+          (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
 
         val result = TestAtedConnector.addDraftPropertyDetailsDatesInRelief("1", propertyDetails)
         val response = await(result)
@@ -529,7 +527,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with OneServerPerSuite with 
         val successResponse = Json.toJson(propertyDetails)
         when(mockWSHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
-          (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+          (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
 
         val result = TestAtedConnector.saveDraftPropertyDetailsSupportingInfo("1", propertyDetails)
         val response = await(result)
@@ -539,7 +537,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with OneServerPerSuite with 
       "for an unsuccessful save, return an empty object" in {
         when(mockWSHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
-          (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
+          (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
 
         val result = TestAtedConnector.saveDraftPropertyDetailsSupportingInfo("1", propertyDetails)
         val response = await(result)
@@ -555,7 +553,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with OneServerPerSuite with 
         implicit val user = createAtedContext(createUserAuthContext("User-Id", "name"))
         when(mockWSHttp.GET[HttpResponse]
           (Matchers.any())
-          (Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+          (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
 
 
         val result = TestAtedConnector.calculateDraftPropertyDetails("1")
@@ -572,7 +570,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with OneServerPerSuite with 
         implicit val user = createAtedContext(createUserAuthContext("User-Id", "name"))
         when(mockWSHttp.GET[HttpResponse]
           (Matchers.any())
-          (Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+          (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
 
 
         val result = TestAtedConnector.calculateDraftChangeLiability("1")
@@ -589,7 +587,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with OneServerPerSuite with 
         implicit val user = createAtedContext(createUserAuthContext("User-Id", "name"))
         when(mockWSHttp.GET[HttpResponse]
           (Matchers.any())
-          (Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+          (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
 
 
         val result = TestAtedConnector.retrieveDraftPropertyDetails("1")
@@ -605,7 +603,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with OneServerPerSuite with 
         implicit val user = createAtedContext(createUserAuthContext("User-Id", "name"))
         when(mockWSHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
-          (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+          (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
 
 
         val result = TestAtedConnector.submitDraftPropertyDetails("1")
@@ -619,7 +617,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with OneServerPerSuite with 
         implicit val user = createAtedContext(createUserAuthContext("User-Id", "name"))
         when(mockWSHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
-          (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
+          (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
 
 
         val result = TestAtedConnector.submitDraftPropertyDetails("1")
@@ -635,7 +633,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with OneServerPerSuite with 
         implicit val user = createAtedContext(createUserAuthContext("User-Id", "name"))
         when(mockWSHttp.DELETE[HttpResponse]
           (Matchers.any())
-          (Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+          (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
         val result = TestAtedConnector.deleteDraftChargeable("ABC12345")
         val response = await(result)
         response.status must be(OK)
@@ -646,7 +644,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with OneServerPerSuite with 
         implicit val user = createAtedContext(createUserAuthContext("User-Id", "name"))
         when(mockWSHttp.DELETE[HttpResponse]
           (Matchers.any())
-          (Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
+          (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
         val result = TestAtedConnector.deleteDraftChargeable("XYZ123456")
         val response = await(result)
         response.status must be(BAD_REQUEST)

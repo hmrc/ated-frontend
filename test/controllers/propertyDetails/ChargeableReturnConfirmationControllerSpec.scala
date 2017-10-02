@@ -35,7 +35,6 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.SubscriptionDataService
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
-import uk.gov.hmrc.play.http.HttpResponse
 import utils.AtedConstants
 import utils.AtedConstants._
 

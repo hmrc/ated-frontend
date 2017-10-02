@@ -20,11 +20,10 @@ import config.AtedSessionCache
 import models.AtedContext
 import play.api.libs.json.Format
 import uk.gov.hmrc.http.cache.client.SessionCache
-import uk.gov.hmrc.play.http.HeaderCarrier
-import uk.gov.hmrc.play.http.HttpResponse
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import uk.gov.hmrc.http.{ HeaderCarrier, HttpResponse }
 
 trait DataCacheConnector {
 

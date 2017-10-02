@@ -18,10 +18,10 @@ package connectors
 
 import config.WSHttp
 import models._
-import play.api.Logger
 import play.api.libs.json.{JsValue, Json}
+import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.config.ServicesConfig
-import uk.gov.hmrc.play.http.{HeaderCarrier, _}
+import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
 import scala.concurrent.Future
 
@@ -61,7 +61,7 @@ trait AtedConnector extends ServicesConfig with RawResponseReads {
   val cacheDraftSelectRelief = "update-relief"
   val submit = "submit"
 
-  def http: HttpGet with HttpPost with HttpDelete
+  def http: CoreGet with CorePost with CoreDelete
 
   def saveDraftReliefs(accountRef: String, reliefs: ReliefsTaxAvoidance)
                       (implicit atedContext: AtedContext, hc: HeaderCarrier): Future[HttpResponse] = {

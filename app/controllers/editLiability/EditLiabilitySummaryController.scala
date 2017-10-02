@@ -25,10 +25,10 @@ import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
 import services.{PropertyDetailsService, SubscriptionDataService}
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
-import uk.gov.hmrc.play.http.HeaderCarrier
 import utils.PeriodUtils
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.HeaderCarrier
 
 trait EditLiabilitySummaryController extends BackLinkController
   with AtedFrontendAuthHelpers with DelegationAwareActions with ClientHelper {

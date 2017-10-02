@@ -21,12 +21,12 @@ import config.AtedFrontendAuditConnector
 import models.Questionnaire
 import play.api.Logger
 import play.api.mvc.{Action, AnyContent}
-import uk.gov.hmrc.play.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.model.{EventTypes, Audit}
 import uk.gov.hmrc.play.config.AppName
 import uk.gov.hmrc.play.frontend.controller.{FrontendController, UnauthorisedAction}
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
+import uk.gov.hmrc.http.HeaderCarrier
 
 trait QuestionnaireController extends FrontendController with Auditable {
 
