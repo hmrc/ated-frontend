@@ -33,10 +33,10 @@ import play.api.mvc.Result
 import play.api.test.Helpers._
 import services.SubscriptionDataService
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
-import uk.gov.hmrc.play.http.HeaderCarrier
 import utils.AtedConstants._
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.HeaderCarrier
 
 class EditLiabilitySentControllerSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
 

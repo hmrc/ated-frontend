@@ -18,9 +18,10 @@ package connectors
 
 import config.{ApplicationConfig, WSHttp}
 import play.api.mvc.Request
+import uk.gov.hmrc.http.{CoreGet, HttpResponse}
 import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.frontend.filters.SessionCookieCryptoFilter
-import uk.gov.hmrc.play.http.{HttpGet, HttpResponse}
+import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 import uk.gov.hmrc.play.partials.{HeaderCarrierForPartialsConverter, HtmlPartial}
 
 import scala.concurrent.Future
@@ -29,7 +30,7 @@ trait AgentClientMandateFrontendConnector extends ServicesConfig with RawRespons
 
   def serviceUrl: String = baseUrl("agent-client-mandate-frontend")
   def returnUrlHost: String = ApplicationConfig.atedFrontendHost
-  def http: HttpGet
+  val http: CoreGet = WSHttp
   val clientBannerPartialUri = "mandate/client/partial-banner"
   val clientDetailsUri = "mandate/client/details"
 
@@ -48,6 +49,5 @@ trait AgentClientMandateFrontendConnector extends ServicesConfig with RawRespons
 object AgentClientMandateFrontendConnector extends AgentClientMandateFrontendConnector{
   // $COVERAGE-OFF$Trivial and never going to be called by a test that uses it's own object implementation
   override val crypto = SessionCookieCryptoFilter.encrypt _
-  val http = WSHttp
   // $COVERAGE-ON$
 }

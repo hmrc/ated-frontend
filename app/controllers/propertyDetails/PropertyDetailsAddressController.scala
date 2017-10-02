@@ -28,11 +28,11 @@ import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
 import uk.gov.hmrc.play.audit.model.Audit
 import uk.gov.hmrc.play.config.AppName
-import uk.gov.hmrc.play.http.HeaderCarrier
 import utils.AtedUtils
 import utils.AtedConstants._
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.HeaderCarrier
 
 trait PropertyDetailsAddressController extends PropertyDetailsHelpers with ClientHelper with Auditable {
 

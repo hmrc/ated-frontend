@@ -21,13 +21,13 @@ import controllers.AtedBaseController
 import models.AtedContext
 import play.api.Logger
 import play.api.mvc.Result
-import uk.gov.hmrc.play.http.HeaderCarrier
 import utils.AtedConstants._
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
 import play.api.i18n.Messages
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.HeaderCarrier
 
 trait ClientHelper extends AtedBaseController{
 

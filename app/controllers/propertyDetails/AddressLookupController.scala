@@ -32,9 +32,9 @@ import utils.AtedUtils
 import audit.Auditable
 import uk.gov.hmrc.play.audit.model.{Audit, EventTypes}
 import uk.gov.hmrc.play.config.AppName
-import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.HeaderCarrier
 
 trait AddressLookupController extends PropertyDetailsHelpers with ClientHelper with Auditable{
 

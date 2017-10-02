@@ -36,10 +36,10 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService}
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
-import uk.gov.hmrc.play.http.HttpResponse
 import utils.{AtedConstants, AtedUtils, PeriodUtils}
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.HttpResponse
 
 class PropertyDetailsSupportingInfoControllerSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
 

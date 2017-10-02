@@ -34,9 +34,9 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers.{contentAsString, _}
 import services.SubscriptionDataService
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
-import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.HeaderCarrier
 
 class EditContactEmailControllerSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
 

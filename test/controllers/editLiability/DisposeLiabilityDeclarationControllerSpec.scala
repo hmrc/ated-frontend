@@ -36,10 +36,10 @@ import play.api.test.Helpers._
 import services.DisposeLiabilityReturnService
 import uk.gov.hmrc.play.frontend.auth.DummyDelegationData
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
-import uk.gov.hmrc.play.http.{HeaderCarrier, UserId}
 import utils.AtedConstants
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.{ HeaderCarrier, UserId }
 
 class DisposeLiabilityDeclarationControllerSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
 
@@ -166,7 +166,7 @@ class DisposeLiabilityDeclarationControllerSpec extends PlaySpec with OneServerP
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
     when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-    when(mockDelegationConnector.getDelegationData(Matchers.any())(Matchers.any())).thenReturn(Future.successful(Some(DummyDelegationData.returnData)))
+    when(mockDelegationConnector.getDelegationData(Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(Some(DummyDelegationData.returnData)))
     when(mockBackLinkCache.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
     val result = TestDisposeLiabilityDeclarationController.view(oldFormBundleNum).apply(SessionBuilder.buildRequestWithSessionDelegation(userId))
     test(result)

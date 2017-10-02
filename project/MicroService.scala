@@ -58,6 +58,7 @@ trait MicroService {
     .settings(defaultSettings(): _*)
     .settings(playSettings ++ scoverageSettings: _*)
     .settings(
+      scalaVersion := "2.11.11",
       libraryDependencies ++= appDependencies,
       retrieveManaged := true,
       evictionWarningOptions in update := EvictionWarningOptions.default.withWarnScalaVersionEviction(false),

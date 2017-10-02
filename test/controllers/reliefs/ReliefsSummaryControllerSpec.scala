@@ -34,10 +34,10 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.{ReliefsService, SubscriptionDataService}
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
-import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
 import utils.{AtedConstants, AtedUtils, PeriodUtils}
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.{ HeaderCarrier, HttpResponse }
 
 class ReliefsSummaryControllerSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
   import AuthBuilder._

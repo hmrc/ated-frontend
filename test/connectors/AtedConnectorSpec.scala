@@ -27,24 +27,21 @@ import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
 import play.api.libs.json.{JsValue, Json}
 import play.api.test.Helpers._
-import uk.gov.hmrc.play.http._
-import uk.gov.hmrc.play.http.logging.SessionId
-import uk.gov.hmrc.play.http.ws.{WSDelete, WSGet, WSPost}
+import uk.gov.hmrc.http.logging.SessionId
+import uk.gov.hmrc.http.{CoreDelete, _}
 import utils.AtedConstants
 
 import scala.concurrent.Future
 
 class AtedConnectorSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
 
-  class MockHttp extends WSGet with WSPost with WSDelete {
-    override val hooks = NoneRequired
-  }
+  trait MockedVerbs extends CoreGet with CorePost with CoreDelete
+  val mockWSHttp: CoreGet with CorePost with CoreDelete = mock[MockedVerbs]
 
-  val mockWSHttp = mock[MockHttp]
   val periodKey = "2015"
 
   object TestAtedConnector extends AtedConnector {
-    override val http: HttpGet with HttpPost with HttpDelete = mockWSHttp
+    override val http: CoreGet with CorePost with CoreDelete = mockWSHttp
     override val serviceURL = baseUrl("ated")
   }
 
@@ -67,7 +64,7 @@ class AtedConnectorSpec extends PlaySpec with OneServerPerSuite with MockitoSuga
         implicit val user = createAtedContext(createUserAuthContext("User-Id", "name"))
         when(mockWSHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
-          (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+          (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
 
 
         val result = TestAtedConnector.saveDraftReliefs("ATED-123", reliefData)
@@ -82,7 +79,7 @@ class AtedConnectorSpec extends PlaySpec with OneServerPerSuite with MockitoSuga
         implicit val user = createAtedContext(createAgentAuthContext("User-Id", "name"))
         when(mockWSHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
-          (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+          (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
 
 
         val result = TestAtedConnector.saveDraftReliefs("ATED-123", reliefData)
@@ -97,7 +94,7 @@ class AtedConnectorSpec extends PlaySpec with OneServerPerSuite with MockitoSuga
       implicit val user = createAtedContext(createUserAuthContext("User-Id", "name"))
       when(mockWSHttp.GET[Option[ReliefsTaxAvoidance]]
         (Matchers.any())
-        (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(reliefData)))
+        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(reliefData)))
 
       val result = TestAtedConnector.retrievePeriodDraftReliefs("ATED-123", periodKey)
       await(result) must be(Some(reliefData))
@@ -110,7 +107,7 @@ class AtedConnectorSpec extends PlaySpec with OneServerPerSuite with MockitoSuga
       implicit val user = createAtedContext(createAgentAuthContext("User-Id", "name"))
       when(mockWSHttp.GET[Option[ReliefsTaxAvoidance]]
         (Matchers.any())
-        (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(reliefData)))
+        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(reliefData)))
 
       val result = TestAtedConnector.retrievePeriodDraftReliefs("ATED-123", periodKey)
       await(result) must be(Some(reliefData))
@@ -121,7 +118,7 @@ class AtedConnectorSpec extends PlaySpec with OneServerPerSuite with MockitoSuga
       implicit val user = createAtedContext(createUserAuthContext("User-Id", "name"))
       when(mockWSHttp.GET[HttpResponse]
         (Matchers.any())
-        (Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK)))
+        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK)))
 
       val result = TestAtedConnector.submitDraftReliefs("ATED-123", periodKey)
       await(result).status must be(OK)
@@ -132,7 +129,7 @@ class AtedConnectorSpec extends PlaySpec with OneServerPerSuite with MockitoSuga
       implicit val user = createAtedContext(createAgentAuthContext("User-Id", "name"))
       when(mockWSHttp.GET[HttpResponse]
         (Matchers.any())
-        (Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK)))
+        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK)))
 
       val result = TestAtedConnector.submitDraftReliefs("ATED-123", periodKey)
       await(result).status must be(OK)
@@ -142,19 +139,19 @@ class AtedConnectorSpec extends PlaySpec with OneServerPerSuite with MockitoSuga
       "GET agent details from ETMP for a user" in {
         implicit val hc = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
         implicit val user = createAtedContext(createUserAuthContext("User-Id", "name"))
-        when(mockWSHttp.GET[HttpResponse](Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK)))
+        when(mockWSHttp.GET[HttpResponse](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK)))
         val result = TestAtedConnector.getDetails("AARN1234567", AtedConstants.IdentifierArn)
         await(result).status must be(OK)
-        verify(mockWSHttp, times(1)).GET[HttpResponse](Matchers.any())(Matchers.any(), Matchers.any())
+        verify(mockWSHttp, times(1)).GET[HttpResponse](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())
       }
 
       "GET user details from ETMP for an agent" in {
         implicit val hc = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
         implicit val user = createAtedContext(createAgentAuthContext("User-Id", "name"))
-        when(mockWSHttp.GET[HttpResponse](Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK)))
+        when(mockWSHttp.GET[HttpResponse](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK)))
         val result = TestAtedConnector.getDetails("XN1200000100001", AtedConstants.IdentifierSafeId)
         await(result).status must be(OK)
-        verify(mockWSHttp, times(1)).GET[HttpResponse](Matchers.any())(Matchers.any(), Matchers.any())
+        verify(mockWSHttp, times(1)).GET[HttpResponse](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())
       }
     }
 
@@ -165,7 +162,7 @@ class AtedConnectorSpec extends PlaySpec with OneServerPerSuite with MockitoSuga
         val successResponse = Json.parse( """{}""")
         when(mockWSHttp.GET[HttpResponse]
           (Matchers.any())
-          (Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+          (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
 
         val result = TestAtedConnector.retrieveSubscriptionData()
         await(result).json must be(successResponse)
@@ -182,7 +179,7 @@ class AtedConnectorSpec extends PlaySpec with OneServerPerSuite with MockitoSuga
         val successResponse = Json.parse( """{}""")
         when(mockWSHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
-          (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+          (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
 
 
         val result = TestAtedConnector.updateSubscriptionData(updatedData)
@@ -199,7 +196,7 @@ class AtedConnectorSpec extends PlaySpec with OneServerPerSuite with MockitoSuga
         val successResponse = Json.parse( """{}""")
         when(mockWSHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
-          (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+          (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
 
 
         val result = TestAtedConnector.updateRegistrationDetails("SAFE_123", updateDetails)
@@ -214,7 +211,7 @@ class AtedConnectorSpec extends PlaySpec with OneServerPerSuite with MockitoSuga
         val successResponse = Json.parse( """{}""")
         when(mockWSHttp.GET[HttpResponse]
           (Matchers.any())
-          (Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+          (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
 
         val result = TestAtedConnector.retrieveFormBundleReturns("formbundle123456")
         await(result).json must be(successResponse)
@@ -226,7 +223,7 @@ class AtedConnectorSpec extends PlaySpec with OneServerPerSuite with MockitoSuga
       "return HttpResponse" in {
         implicit val hc = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
         implicit val user = createAtedContext(createUserAuthContext("User-Id", "name"))
-        when(mockWSHttp.GET[HttpResponse](Matchers.any())(Matchers.any(), Matchers.any()))
+        when(mockWSHttp.GET[HttpResponse](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(HttpResponse(OK, None)))
         val result = TestAtedConnector.retrieveAndCacheLiabilityReturn("1")
         val response = await(result)
@@ -238,7 +235,7 @@ class AtedConnectorSpec extends PlaySpec with OneServerPerSuite with MockitoSuga
       "return HttpResponse" in {
         implicit val hc = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
         implicit val user = createAtedContext(createUserAuthContext("User-Id", "name"))
-        when(mockWSHttp.GET[HttpResponse](Matchers.any())(Matchers.any(), Matchers.any()))
+        when(mockWSHttp.GET[HttpResponse](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(HttpResponse(OK, None)))
         val result = TestAtedConnector.retrieveAndCachePreviousLiabilityReturn("1", periodKey)
         val response = await(result)
@@ -252,7 +249,7 @@ class AtedConnectorSpec extends PlaySpec with OneServerPerSuite with MockitoSuga
         implicit val user = createAtedContext(createUserAuthContext("User-Id", "name"))
         when(mockWSHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
-          (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, None)))
+          (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, None)))
         val result = TestAtedConnector.cacheDraftChangeLiabilityReturnHasBank("1", true)
         val response = await(result)
         response.status must be(OK)
@@ -266,7 +263,7 @@ class AtedConnectorSpec extends PlaySpec with OneServerPerSuite with MockitoSuga
         implicit val user = createAtedContext(createUserAuthContext("User-Id", "name"))
         when(mockWSHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
-          (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, None)))
+          (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, None)))
         val bankDetails = BankDetails()
         val result = TestAtedConnector.cacheDraftChangeLiabilityReturnBank("1", bankDetails)
         val response = await(result)
@@ -281,7 +278,7 @@ class AtedConnectorSpec extends PlaySpec with OneServerPerSuite with MockitoSuga
         val successResponse = Json.parse( """{}""")
         when(mockWSHttp.GET[HttpResponse]
           (Matchers.any())
-          (Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+          (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
 
         val result = TestAtedConnector.calculateDraftDisposal("1")
         val response = await(result)
@@ -296,7 +293,7 @@ class AtedConnectorSpec extends PlaySpec with OneServerPerSuite with MockitoSuga
         implicit val user = createAtedContext(createUserAuthContext("User-Id", "name"))
         when(mockWSHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
-          (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, None)))
+          (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, None)))
         val result = TestAtedConnector.submitDraftChangeLiabilityReturn("1")
         val response = await(result)
         response.status must be(OK)
@@ -307,7 +304,7 @@ class AtedConnectorSpec extends PlaySpec with OneServerPerSuite with MockitoSuga
       "return HttpResponse" in {
         implicit val hc = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
         implicit val user = createAtedContext(createUserAuthContext("User-Id", "name"))
-        when(mockWSHttp.GET[HttpResponse](Matchers.any())(Matchers.any(), Matchers.any()))
+        when(mockWSHttp.GET[HttpResponse](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(HttpResponse(OK, None)))
         val result = TestAtedConnector.retrieveAndCacheDisposeLiability("1")
         val response = await(result)
@@ -321,7 +318,7 @@ class AtedConnectorSpec extends PlaySpec with OneServerPerSuite with MockitoSuga
         implicit val user = createAtedContext(createUserAuthContext("User-Id", "name"))
         when(mockWSHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
-          (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, None)))
+          (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, None)))
         val updatedDate = DisposeLiabilityReturnBuilder.generateDisposalDate(periodKey)
         val result = TestAtedConnector.cacheDraftDisposeLiabilityReturnDate("1", updatedDate)
         val response = await(result)
@@ -335,7 +332,7 @@ class AtedConnectorSpec extends PlaySpec with OneServerPerSuite with MockitoSuga
         implicit val user = createAtedContext(createUserAuthContext("User-Id", "name"))
         when(mockWSHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
-          (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, None)))
+          (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, None)))
         val result = TestAtedConnector.cacheDraftDisposeLiabilityReturnHasBank("1", true)
         val response = await(result)
         response.status must be(OK)
@@ -349,7 +346,7 @@ class AtedConnectorSpec extends PlaySpec with OneServerPerSuite with MockitoSuga
         implicit val user = createAtedContext(createUserAuthContext("User-Id", "name"))
         when(mockWSHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
-          (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, None)))
+          (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, None)))
         val bankDetails = BankDetails()
         val result = TestAtedConnector.cacheDraftDisposeLiabilityReturnBank("1", bankDetails)
         val response = await(result)
@@ -363,7 +360,7 @@ class AtedConnectorSpec extends PlaySpec with OneServerPerSuite with MockitoSuga
         implicit val user = createAtedContext(createUserAuthContext("User-Id", "name"))
         when(mockWSHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
-          (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, None)))
+          (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, None)))
         val result = TestAtedConnector.submitDraftDisposeLiabilityReturn("1")
         val response = await(result)
         response.status must be(OK)
@@ -374,7 +371,7 @@ class AtedConnectorSpec extends PlaySpec with OneServerPerSuite with MockitoSuga
       "return HttpResponse" in {
         implicit val hc = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
         implicit val user = createAtedContext(createUserAuthContext("User-Id", "name"))
-        when(mockWSHttp.GET[HttpResponse](Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, None)))
+        when(mockWSHttp.GET[HttpResponse](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, None)))
         val result = TestAtedConnector.getFullSummaryReturns
         val response = await(result)
         response.status must be(OK)
@@ -385,7 +382,7 @@ class AtedConnectorSpec extends PlaySpec with OneServerPerSuite with MockitoSuga
       "return HttpResponse" in {
         implicit val hc = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
         implicit val user = createAtedContext(createUserAuthContext("User-Id", "name"))
-        when(mockWSHttp.GET[HttpResponse](Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, None)))
+        when(mockWSHttp.GET[HttpResponse](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, None)))
         val result = TestAtedConnector.getPartialSummaryReturns
         val response = await(result)
         response.status must be(OK)
@@ -398,7 +395,7 @@ class AtedConnectorSpec extends PlaySpec with OneServerPerSuite with MockitoSuga
         implicit val user = createAtedContext(createUserAuthContext("User-Id", "name"))
         when(mockWSHttp.DELETE[HttpResponse]
           (Matchers.any())
-          (Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, None)))
+          (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, None)))
         val result = TestAtedConnector.deleteDraftReliefs
         val response = await(result)
         response.status must be(OK)
@@ -413,7 +410,7 @@ class AtedConnectorSpec extends PlaySpec with OneServerPerSuite with MockitoSuga
         implicit val user = createAtedContext(createUserAuthContext("User-Id", "name"))
         when(mockWSHttp.DELETE[HttpResponse]
           (Matchers.any())
-          (Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+          (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
         val result = TestAtedConnector.deleteDraftReliefsByYear(2017)
         val response = await(result)
         response.status must be(OK)
@@ -424,7 +421,7 @@ class AtedConnectorSpec extends PlaySpec with OneServerPerSuite with MockitoSuga
         implicit val user = createAtedContext(createUserAuthContext("User-Id", "name"))
         when(mockWSHttp.DELETE[HttpResponse]
           (Matchers.any())
-          (Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
+          (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
         val result = TestAtedConnector.deleteDraftReliefsByYear(4012)
         val response = await(result)
         response.status must be(BAD_REQUEST)

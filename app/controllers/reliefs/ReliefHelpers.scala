@@ -20,12 +20,12 @@ import models.AtedContext
 import play.api.mvc.Result
 import play.api.mvc.Results._
 import services.ReliefsService
-import uk.gov.hmrc.play.http.HeaderCarrier
 import utils.{PeriodUtils, AtedUtils}
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import uk.gov.hmrc.http.HeaderCarrier
 
 trait ReliefHelpers {
 

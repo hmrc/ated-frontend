@@ -16,27 +16,29 @@
 
 package config
 
+import uk.gov.hmrc.http.{HttpDelete, HttpGet, HttpPost, HttpPut}
 import uk.gov.hmrc.http.cache.client.SessionCache
-import uk.gov.hmrc.play.audit.http.config.LoadAuditingConfig
+import uk.gov.hmrc.http.hooks.HttpHooks
 import uk.gov.hmrc.play.audit.http.connector.{AuditConnector => Auditing}
-import uk.gov.hmrc.play.config.{ServicesConfig, AppName, RunMode}
-import uk.gov.hmrc.play.frontend.auth.connectors.{DelegationConnector, AuthConnector}
-import uk.gov.hmrc.play.http.{HttpGet, HttpDelete, HttpPut}
+import uk.gov.hmrc.play.config.{AppName, RunMode, ServicesConfig}
+import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.audit.http.HttpAuditing
-import uk.gov.hmrc.play.http.ws.{WSDelete, WSGet, WSPost, WSPut, WSPatch}
+import uk.gov.hmrc.play.http.ws.{WSDelete, WSGet, WSPost, WSPut}
 import uk.gov.hmrc.play.partials.CachedStaticHtmlPartialRetriever
+import uk.gov.hmrc.play.frontend.config.LoadAuditingConfig
 
 object AtedFrontendAuditConnector extends Auditing with AppName with RunMode {
   override lazy val auditingConfig = LoadAuditingConfig(s"auditing")
 }
 
-object WSHttp extends WSGet with WSPut with WSPost with WSDelete with WSPatch {
+trait WSHttp extends HttpGet with WSGet with HttpPut with WSPut with HttpPost with WSPost with HttpDelete with WSDelete with AppName
+
+object WSHttp extends WSHttp {
   override val hooks = NoneRequired
 }
-
-object WSHttpWithAudit extends WSGet with WSPut with WSPost with WSDelete with AppName with HttpAuditing with RunMode {
+object WSHttpWithAudit extends WSHttp with HttpHooks with HttpAuditing {
   override val hooks = Seq(AuditingHook)
-  override val auditConnector = AtedFrontendAuditConnector
+  override lazy val auditConnector: Auditing = AtedFrontendAuditConnector
 }
 
 

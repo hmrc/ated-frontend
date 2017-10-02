@@ -34,10 +34,10 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.DisposeLiabilityReturnService
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
-import uk.gov.hmrc.play.http.HeaderCarrier
 import utils.AtedConstants
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.HeaderCarrier
 
 class DisposeLiabilityHasBankDetailsControllerSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
 

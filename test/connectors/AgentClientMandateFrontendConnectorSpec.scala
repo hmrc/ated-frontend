@@ -23,9 +23,8 @@ import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.frontend.filters.SessionCookieCryptoFilter
-import uk.gov.hmrc.play.http.ws.WSGet
-import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.play.partials.HeaderCarrierForPartials
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -33,20 +32,16 @@ import scala.concurrent.Future
 
 class AgentClientMandateFrontendConnectorSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
 
-  class MockHttp extends WSGet {
-
-    override val hooks = Nil
-  }
-
-  val mockHttp = mock[MockHttp]
+  trait MockedVerbs extends CoreGet
+  val mockWSHttp: CoreGet = mock[MockedVerbs]
 
   object TestAgentClientMandateFrontendConnector extends AgentClientMandateFrontendConnector {
     val crypto = SessionCookieCryptoFilter.encrypt _
-    override val http = mockHttp
+    override val http = mockWSHttp
   }
 
   override def beforeEach = {
-    reset(mockHttp)
+    reset(mockWSHttp)
   }
 
   "AgentClientMandateFrontendConnector" must {
@@ -55,7 +50,7 @@ class AgentClientMandateFrontendConnectorSpec extends PlaySpec with OneServerPer
       implicit val hc = HeaderCarrier()
       implicit val hcwc = HeaderCarrierForPartials(hc,"")
       val html = "<h1>helloworld</h1>"
-      when(mockHttp.GET[HttpResponse](Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(200, responseString = Some(html))))
+      when(mockWSHttp.GET[HttpResponse](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(200, responseString = Some(html))))
       TestAgentClientMandateFrontendConnector.getClientBannerPartial("clientId", "ated").map {
         response => response.successfulContentOrEmpty must equal(html)
       }
@@ -65,7 +60,7 @@ class AgentClientMandateFrontendConnectorSpec extends PlaySpec with OneServerPer
       implicit val request = FakeRequest()
       implicit val hc = HeaderCarrier()
       implicit val hcwc = HeaderCarrierForPartials(hc,"")
-      when(mockHttp.GET[HttpResponse](Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(200, responseString = Some(""))))
+      when(mockWSHttp.GET[HttpResponse](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(200, responseString = Some(""))))
       val result = TestAgentClientMandateFrontendConnector.getClientDetails("clientId", "ated")
       await(result).status must be(OK)
     }

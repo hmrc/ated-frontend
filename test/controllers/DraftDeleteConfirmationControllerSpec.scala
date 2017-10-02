@@ -38,12 +38,12 @@ import play.twirl.api.Html
 import services._
 import uk.gov.hmrc.play.frontend.auth.DummyDelegationData
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
-import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse, UserId}
 import uk.gov.hmrc.play.partials.HtmlPartial
 import utils.AtedConstants
 import utils.AtedConstants._
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.HttpResponse
 
 class DraftDeleteConfirmationControllerSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
 

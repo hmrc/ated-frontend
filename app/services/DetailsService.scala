@@ -21,11 +21,11 @@ import models._
 import play.api.Logger
 import play.api.mvc.Request
 import play.mvc.Http.Status._
-import uk.gov.hmrc.play.http.{BadRequestException, HeaderCarrier, InternalServerException}
 import utils.AtedConstants
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import uk.gov.hmrc.http.{ BadRequestException, HeaderCarrier, InternalServerException }
 
 trait DetailsService {
 

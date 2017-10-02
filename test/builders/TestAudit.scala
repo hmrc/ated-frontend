@@ -21,7 +21,7 @@ import java.util.concurrent.ConcurrentLinkedQueue
 import config.AtedFrontendAuditConnector
 import uk.gov.hmrc.play.audit.model.Audit._
 import uk.gov.hmrc.play.audit.model.{Audit, AuditAsMagnet, DataEvent}
-import uk.gov.hmrc.play.http.HeaderCarrier
+import uk.gov.hmrc.http.HeaderCarrier
 
 class TestAudit extends Audit("test", AtedFrontendAuditConnector) {
 

@@ -36,10 +36,10 @@ import play.api.test.Helpers.{contentAsString, _}
 import services.ReliefsService
 import uk.gov.hmrc.play.frontend.auth.DummyDelegationData
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
-import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse, UserId}
 import utils.AtedConstants
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.{ HeaderCarrier, HttpResponse, UserId }
 
 class ReliefDeclarationControllerSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
   import AuthBuilder._
@@ -262,7 +262,7 @@ class ReliefDeclarationControllerSpec extends PlaySpec with OneServerPerSuite wi
     when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
     when(mockBackLinkCache.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
-    when(mockDelegationConnector.getDelegationData(Matchers.any())(Matchers.any())).thenReturn(Future.successful(Some(DummyDelegationData.returnData)))
+    when(mockDelegationConnector.getDelegationData(Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(Some(DummyDelegationData.returnData)))
     val result = TestReliefDeclarationController.view(periodKey).apply(SessionBuilder.buildRequestWithSessionDelegation(userId))
     test(result)
   }

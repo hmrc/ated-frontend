@@ -19,15 +19,15 @@ package connectors
 import java.net.URLEncoder
 
 import config.WSHttp
-import models.{AddressLookup, AtedContext, AddressLookupRecord}
+import models.{AddressLookup, AddressLookupRecord, AtedContext}
+import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.config.ServicesConfig
-import uk.gov.hmrc.play.http._
-import scala.concurrent.ExecutionContext.Implicits.global
+import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
+
 import scala.concurrent.Future
 
 object AddressLookupConnector extends AddressLookupConnector {
   val serviceURL = baseUrl("address-lookup")
-  val http = WSHttp
 }
 
 trait AddressLookupConnector extends ServicesConfig with RawResponseReads {
@@ -37,7 +37,7 @@ trait AddressLookupConnector extends ServicesConfig with RawResponseReads {
   private val POSTCODE_LOOKUP = s"$BASE_URL?postcode="
   private val ID_LOOKUP = s"$BASE_URL/"
 
-  def http: HttpGet with HttpPost with HttpDelete
+  val http: CoreGet with CorePost with CoreDelete = WSHttp
 
   def findByPostcode(addressLookup: AddressLookup)
                     (implicit atedContext: AtedContext, hc: HeaderCarrier):Future[List[AddressLookupRecord]] = {

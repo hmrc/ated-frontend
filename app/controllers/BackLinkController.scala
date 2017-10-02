@@ -19,9 +19,9 @@ package controllers
 import connectors.BackLinkCacheConnector
 import models.AtedContext
 import play.api.mvc.{Call, Result}
-import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.HeaderCarrier
 
 trait BackLinkController extends AtedBaseController {
 

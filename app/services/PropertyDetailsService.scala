@@ -22,11 +22,11 @@ import org.joda.time.LocalDate
 import play.api.Logger
 import play.api.http.Status._
 import play.mvc.Http.Status.OK
-import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse, InternalServerException}
 import utils.AtedConstants.SubmitReturnsResponseFormId
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import uk.gov.hmrc.http.{ HeaderCarrier, HttpResponse, InternalServerException }
 
 sealed trait PropertyDetailsCacheResponse
 
