@@ -76,6 +76,7 @@ GET            /period-summary/:periodKey/past                              cont
 GET            /period-summary/:periodKey/createReturn                      controllers.PeriodSummaryController.createReturn(periodKey: Int)
 GET            /period-summary/:periodKey/view-return                       controllers.PeriodSummaryController.viewReturn(periodKey: Int)
 GET            /period-summary/:periodKey/view-chargeable/:id               controllers.PeriodSummaryController.viewChargeable(periodKey: Int, id: String)
+GET            /period-summary/:periodKey/view-chargeable-edit/:id               controllers.PeriodSummaryController.viewChargeableEdit(periodKey: Int, id: String)
 GET            /period-summary/:periodKey/view-disposal/:id                 controllers.PeriodSummaryController.viewDisposal(periodKey: Int, id: String)
 
 GET           /form-bundle/:formBundleNumber/:periodKey                     controllers.FormBundleReturnController.view(formBundleNumber: String, periodKey: Int)

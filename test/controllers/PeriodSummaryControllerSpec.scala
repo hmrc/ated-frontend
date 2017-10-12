@@ -132,6 +132,14 @@ class PeriodSummaryControllerSpec extends PlaySpec with OneServerPerSuite with M
           }
         }
 
+        "view chargeable in draft from submitted return" in {
+
+          viewChargeableEditWithAuthorisedUser() { result =>
+            status(result) must be(SEE_OTHER)
+            redirectLocation(result).get must include("ated/liability/1/change/summary")
+          }
+        }
+
         "view disposal" in {
 
           viewDisposalWithAuthorisedUser() { result =>
@@ -210,6 +218,17 @@ class PeriodSummaryControllerSpec extends PlaySpec with OneServerPerSuite with M
     when(mockBackLinkCache.saveBackLink(Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
     when(mockBackLinkCache.clearBackLinks(Matchers.any())(Matchers.any())).thenReturn(Future.successful(Nil))
     val result = TestPeriodSummaryController.viewChargeable(2015, "1").apply(SessionBuilder.buildRequestWithSession(userId))
+    test(result)
+  }
+
+  def viewChargeableEditWithAuthorisedUser()(test: Future[Result] => Any) {
+    val userId = s"user-${UUID.randomUUID}"
+    implicit val user = createAtedContext(createUserAuthContext(userId, "name"))
+    AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
+
+    when(mockBackLinkCache.saveBackLink(Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
+    when(mockBackLinkCache.clearBackLinks(Matchers.any())(Matchers.any())).thenReturn(Future.successful(Nil))
+    val result = TestPeriodSummaryController.viewChargeableEdit(2015, "1").apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 

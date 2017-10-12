@@ -16,7 +16,7 @@
   @form(action=controllers.propertyDetails.routes.PropertyDetailsInReliefController.save(id, periodKey, mode)) {
 
     <div class="form-group" id="isInRelief">
-      @inputRadioGroup(propertyDetailsForm("isInRelief"),
+      @atedInputRadioGroupNew(propertyDetailsForm("isInRelief"),
       Seq(
         "true" -> Messages("ated.property-details-period.yes"),
         "false" -> Messages("ated.property-details-period.no")),

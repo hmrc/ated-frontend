@@ -19,7 +19,7 @@
   @form(action=controllers.propertyDetails.routes.IsFullTaxPeriodController.save(id, periodKey)) {
 
     <div class="form-group" id="isFullPeriod">
-      @inputRadioGroup(propertyDetailsForm("isFullPeriod"),
+      @atedInputRadioGroupNew(propertyDetailsForm("isFullPeriod"),
       Seq(
         "true" -> Messages("ated.property-details-period.yes"),
         "false" -> Messages("ated.property-details-period.no")),
