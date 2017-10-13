@@ -40,24 +40,14 @@
     box-sizing:border-box;
 }
 
-.avoidance-table-h1 {
-    width:10%;
-}
-
-.avoidance-table-h2 {
-    width:20%;
-}
-
-.avoidance-table-h3 {
-    width:20%;
-}
-
 .form-control.avoidanceSchemeInp {
     width:100%;
     box-sizing: border-box;
 }
 
-
+form .grid-1-3 .form-field {
+    width: auto;
+}
 
 .logged-out-page textarea {
   width: 100%;

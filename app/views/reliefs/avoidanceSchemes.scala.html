@@ -8,109 +8,132 @@
 
 @taxAvoidanceAndPromoter(id: String, isVisible: Boolean, reliefCode: String, schemeFormValue: Field, promoterValue : Field) = {
     @if(isVisible) {
-        <tr>
-            <td>
-              <span class="font-xsmall">
-              @Messages(reliefCode)
-              </span>
-            </td>
-            <td id="@{id}-p">
-                @atedInputNew(schemeFormValue,
-                '_label -> Html(Messages("ated.avoidance-schemes.reliefs.text")),
-                '_labelClass -> "screen-reader-text",
-                '_inputClass -> "avoidanceSchemeInp",
-                '_showConstraints -> false)
-            </td>
-            <td id="@{id}Promoter-p">
-                @atedInputNew(promoterValue,
-                '_label -> Html(Messages("ated.avoidance-schemes.avoidance-scheme.text")),
-                '_labelClass -> "screen-reader-text",
-                '_inputClass -> "avoidanceSchemeInp",
-                '_showConstraints -> false)
-            </td>
-        </tr>
+        <div class="grid row-border">
+            <div class="grid grid-1-3">
+                <span class="font-xsmall">@Messages(reliefCode)</span>
+            </div>
+            <div class="grid grid-1-3" id="@{id}-p">
+                @atedInputNew(
+                    schemeFormValue,
+                    '_label -> Html(Messages("ated.avoidance-schemes.reliefs.text")),
+                    '_labelClass -> "screen-reader-text",
+                    '_inputClass -> "avoidanceSchemeInp",
+                    '_showConstraints -> false
+                )
+            </div>
+            <div class="grid grid-1-3" id="@{id}Promoter-p">
+                @atedInputNew(
+                    promoterValue,
+                    '_label -> Html(Messages("ated.avoidance-schemes.avoidance-scheme.text")),
+                    '_labelClass -> "screen-reader-text",
+                    '_inputClass -> "avoidanceSchemeInp",
+                    '_showConstraints -> false
+                )
+            </div>
+        </div>
     }
 }
 
-
 @atedMain(title = Messages("ated.avoidance-schemes.title"), attorney = atedContext.user.authContext.attorney) {
-  @pageHeadersAndError(backLink, "pre-header", Messages("ated.avoidance-schemes.pre-header"), "ated-avoidance-header", Messages("ated.avoidance-schemes.header"),
-        Some(atedErrorSummary(taxAvoidanceForm, "ated.avoidance-scheme-error.general", maxErrorsToShow = 1)))
+    @pageHeadersAndError(
+        backLink,
+        "pre-header",
+        Messages("ated.avoidance-schemes.pre-header"),
+        "ated-avoidance-header",
+        Messages("ated.avoidance-schemes.header"),
+        Some(atedErrorSummary(
+            taxAvoidanceForm,
+            "ated.avoidance-scheme-error.general",
+            maxErrorsToShow = 1))
+    )
 
-    <div id="empty">
+    @form(action=controllers.reliefs.routes.AvoidanceSchemesController.submit(periodKey)) {
+        <div class="grid row-border">
+            <div class="grid grid-1-3 form-label-bold" id="relief-summary-text">@Messages("ated.avoidance-schemes.reliefs.text")</div>
+            <div class="grid grid-1-3 form-label-bold" id="relief-summary-scheme-text">@Messages("ated.avoidance-schemes.avoidance-scheme.text")</div>
+            <div class="grid grid-1-3 form-label-bold" id="relief-summary-scheme-promoter-text">@Messages("ated.avoidance-schemes.avoidance-scheme-promoter.text")</div>
+        </div>
 
-      @form(action=controllers.reliefs.routes.AvoidanceSchemesController.submit(periodKey)) {
-        <table>
-          <thead>
-            <tr>
-              <th id="relief-summary-text" class="avoidance-table-h1">@Messages("ated.avoidance-schemes.reliefs.text")</th>
-              <th id="relief-summary-scheme-text" class="avoidance-table-h2">@Messages("ated.avoidance-schemes.avoidance-scheme.text")</th>
-              <th id="relief-summary-scheme-promoter-text" class="avoidance-table-h3">@Messages("ated.avoidance-schemes.avoidance-scheme-promoter.text")</th>
-            </tr>
-          </thead>
-          <tbody>
-          @reliefsTaxAvoidance.map { reliefData =>
-            @taxAvoidanceAndPromoter("rentalBusinessScheme", reliefData.reliefs.rentalBusiness,
-                          "ated.choose-reliefs.rentalBusiness",
-                          taxAvoidanceForm("rentalBusinessScheme"),
-                          taxAvoidanceForm("rentalBusinessSchemePromoter"))
-            @taxAvoidanceAndPromoter("openToPublicScheme", reliefData.reliefs.openToPublic,
-                          "ated.choose-reliefs.openToPublic",
-                          taxAvoidanceForm("openToPublicScheme"),
-                          taxAvoidanceForm("openToPublicSchemePromoter"))
-          @taxAvoidanceAndPromoter("propertyDeveloperScheme", reliefData.reliefs.propertyDeveloper,
-                          "ated.choose-reliefs.propertyDeveloper",
-                          taxAvoidanceForm("propertyDeveloperScheme"),
-                          taxAvoidanceForm("propertyDeveloperSchemePromoter"))
-          @taxAvoidanceAndPromoter("propertyTradingScheme", reliefData.reliefs.propertyTrading,
-                          "ated.choose-reliefs.propertyTrading",
-                          taxAvoidanceForm("propertyTradingScheme"),
-                          taxAvoidanceForm("propertyTradingSchemePromoter"))
-          @taxAvoidanceAndPromoter("lendingScheme", reliefData.reliefs.lending,
-                          "ated.choose-reliefs.lending",
-                          taxAvoidanceForm("lendingScheme"),
-                          taxAvoidanceForm("lendingSchemePromoter"))
-          @taxAvoidanceAndPromoter("employeeOccupationScheme", reliefData.reliefs.employeeOccupation,
-                          "ated.choose-reliefs.employeeOccupation",
-                          taxAvoidanceForm("employeeOccupationScheme"),
-                          taxAvoidanceForm("employeeOccupationSchemePromoter"))
-          @taxAvoidanceAndPromoter("farmHousesScheme", reliefData.reliefs.farmHouses,
-                          "ated.choose-reliefs.farmHouses",
-                          taxAvoidanceForm("farmHousesScheme"),
-                          taxAvoidanceForm("farmHousesSchemePromoter"))
-          @taxAvoidanceAndPromoter("socialHousingScheme", reliefData.reliefs.socialHousing,
-                          "ated.choose-reliefs.socialHousing",
-                          taxAvoidanceForm("socialHousingScheme"),
-                          taxAvoidanceForm("socialHousingSchemePromoter"))
-          @taxAvoidanceAndPromoter("equityReleaseScheme", reliefData.reliefs.equityRelease,
-                          "ated.choose-reliefs.equityRelease",
-                          taxAvoidanceForm("equityReleaseScheme"),
-                          taxAvoidanceForm("equityReleaseSchemePromoter"))
-          }
-
-        </table>
+        @reliefsTaxAvoidance.map { reliefData =>
+            @taxAvoidanceAndPromoter(
+                "rentalBusinessScheme",
+                reliefData.reliefs.rentalBusiness,
+                "ated.choose-reliefs.rentalBusiness",
+                taxAvoidanceForm("rentalBusinessScheme"),
+                taxAvoidanceForm("rentalBusinessSchemePromoter")
+            )
+            @taxAvoidanceAndPromoter(
+                "openToPublicScheme",
+                reliefData.reliefs.openToPublic,
+                "ated.choose-reliefs.openToPublic",
+                taxAvoidanceForm("openToPublicScheme"),
+                taxAvoidanceForm("openToPublicSchemePromoter")
+            )
+            @taxAvoidanceAndPromoter(
+                "propertyDeveloperScheme",
+                reliefData.reliefs.propertyDeveloper,
+                "ated.choose-reliefs.propertyDeveloper",
+                taxAvoidanceForm("propertyDeveloperScheme"),
+                taxAvoidanceForm("propertyDeveloperSchemePromoter")
+            )
+            @taxAvoidanceAndPromoter(
+                "propertyTradingScheme",
+                reliefData.reliefs.propertyTrading,
+                "ated.choose-reliefs.propertyTrading",
+                taxAvoidanceForm("propertyTradingScheme"),
+                taxAvoidanceForm("propertyTradingSchemePromoter")
+            )
+            @taxAvoidanceAndPromoter(
+                "lendingScheme",
+                reliefData.reliefs.lending,
+                "ated.choose-reliefs.lending",
+                taxAvoidanceForm("lendingScheme"),
+                taxAvoidanceForm("lendingSchemePromoter")
+            )
+            @taxAvoidanceAndPromoter(
+                "employeeOccupationScheme",
+                reliefData.reliefs.employeeOccupation,
+                "ated.choose-reliefs.employeeOccupation",
+                taxAvoidanceForm("employeeOccupationScheme"),
+                taxAvoidanceForm("employeeOccupationSchemePromoter")
+            )
+            @taxAvoidanceAndPromoter(
+                "farmHousesScheme",
+                reliefData.reliefs.farmHouses,
+                "ated.choose-reliefs.farmHouses",
+                taxAvoidanceForm("farmHousesScheme"),
+                taxAvoidanceForm("farmHousesSchemePromoter")
+            )
+            @taxAvoidanceAndPromoter(
+                "socialHousingScheme",
+                reliefData.reliefs.socialHousing,
+                "ated.choose-reliefs.socialHousing",
+                taxAvoidanceForm("socialHousingScheme"),
+                taxAvoidanceForm("socialHousingSchemePromoter")
+            )
+            @taxAvoidanceAndPromoter(
+                "equityReleaseScheme",
+                reliefData.reliefs.equityRelease,
+                "ated.choose-reliefs.equityRelease",
+                taxAvoidanceForm("equityReleaseScheme"),
+                taxAvoidanceForm("equityReleaseSchemePromoter")
+            )
+        }
 
         <div class="form-group  inline" id="isAvoidanceScheme">
             @atedInputRadioGroupNew(taxAvoidanceForm("isAvoidanceScheme"),
-            Seq(),
-            '_fieldsetAttributesHelpQuestion -> "isAvoidanceScheme-help-question",
-            '_legend ->"",
-            '_fieldsetQuestion -> Messages("ated.choose-reliefs.avoidance-question"),
-            '_HelpQuestionAnswer -> Html(Messages("ated.choose-reliefs.avoidance-answer")),
-            '_labelClass -> "block-label",
-            '_legendClass -> "heading-small",
-            '_labelAfter -> true,
-            '_trackGA -> true
+                Seq(),
+                '_fieldsetAttributesHelpQuestion -> "isAvoidanceScheme-help-question",
+                '_legend ->"",
+                '_fieldsetQuestion -> Messages("ated.choose-reliefs.avoidance-question"),
+                '_HelpQuestionAnswer -> Html(Messages("ated.choose-reliefs.avoidance-answer")),
+                '_labelClass -> "block-label",
+                '_legendClass -> "heading-small",
+                '_labelAfter -> true,
+                '_trackGA -> true
             )
         </div>
 
-    </div>
-
-
-<button class="button" id="submit" type="submit">@Messages("ated.avoidance-schemes.continue")</button>
-
-
-}
-
-
+        <button id="submit" type="submit">@Messages("ated.avoidance-schemes.continue")</button>
+    }
 }
