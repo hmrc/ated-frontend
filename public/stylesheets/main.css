@@ -47,6 +47,7 @@
 
 form .grid-1-3 .form-field {
     width: auto;
+    margin-bottom: 0.2em;
 }
 
 .logged-out-page textarea {
