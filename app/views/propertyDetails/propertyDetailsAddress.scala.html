@@ -10,8 +10,15 @@
 
 @implicitFormInstance = @{ Some(propertyDetailsForm) }
 
+@analyticsJs = {
+  ga('set', 'page', document.location.pathname);
+  ga('set', 'location', document.URL.split("?")[0]);
+}
 
-@atedMain(title = Messages("ated.property-details.title"), attorney = atedContext.user.authContext.attorney) {
+@atedMain(title = Messages("ated.property-details.title"),
+          attorney = atedContext.user.authContext.attorney,
+          analyticsAdditionalJs = Some(analyticsJs)) {
+
   @pageHeadersAndError(backLink, "pre-heading", AtedUtils.getPropertyDetailsPreHeader(mode), "property-details-header", Messages("ated.property-details.header"),
       Some(atedErrorSummary(propertyDetailsForm, "ated.property-details-address-error.general")))
 

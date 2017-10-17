@@ -10,10 +10,16 @@
   Some(liabilityValueDetailsForm)
 }
 
-@pageScripts = {
+@analyticsJs = {
+  var id = "@oldFormBundleNo";
+  var page = document.location.pathname.replace('/' + id, '');
+  ga('set', 'page', page);
 }
 
-@atedMain(title = Messages("ated.property-details-value.title"), attorney = atedContext.user.authContext.attorney, pageScripts = Some(pageScripts)) {
+@atedMain(title = Messages("ated.property-details-value.title"),
+          attorney = atedContext.user.authContext.attorney,
+          analyticsAdditionalJs = Some(analyticsJs)) {
+
   @pageHeadersAndError(backLink, "pre-heading", AtedUtils.getPropertyDetailsPreHeader(mode), "property-details-header", Messages("ated.property-details-value.header"),
       Some(atedErrorSummary(liabilityValueDetailsForm, "ated.change-property-value-error.general")))
 

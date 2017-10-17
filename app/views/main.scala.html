@@ -7,7 +7,8 @@
   contentHeader: Option[Html] = None,
   userLoggedIn: Boolean = false,
   scriptElement: Option[Html] = None,
-  linkElement : Option[Html] = None
+  linkElement : Option[Html] = None,
+  analyticsJs: Option[Html] = None
   )(mainContent: Html = HtmlFormat.empty)(implicit request : Request[_], messages: Messages)
 
 @import layouts.{govuk_template => hmrcGovUkTemplate}
@@ -55,7 +56,8 @@
     analyticsHost = applicationConfig.analyticsHost,
     ssoUrl = None,
     scriptElem = scriptElement,
-    gaCalls = None)
+    gaCalls = None,
+    analyticsAdditionalJs = analyticsJs)
 }
 
 @footerTop = {

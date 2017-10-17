@@ -120,7 +120,6 @@ trait DetailsService {
     for {
       returnedJsValue <- getDetails(safeId, AtedConstants.IdentifierSafeId)
     } yield {
-      Logger.debug("getRegisteredDetailsFromSafeId: " + returnedJsValue)
       returnedJsValue
     }
   }

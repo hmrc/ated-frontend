@@ -9,10 +9,14 @@
 @import utils.PeriodUtils._
 @import utils.AtedConstants._
 
+@analyticsJs = {
+  ga('set', 'page', document.location.pathname);
+  ga('set', 'location', document.URL.split("?")[0]);
+}
 
-@atedMain(title = Messages("ated.period-summary.title",
-                            periodStartDate(periodKey).getYear.toString,
-                            periodEndDate(periodKey).getYear.toString), attorney = atedContext.user.authContext.attorney){
+@atedMain(title = Messages("ated.period-summary.title", periodStartDate(periodKey).getYear.toString, periodEndDate(periodKey).getYear.toString),
+          attorney = atedContext.user.authContext.attorney,
+          analyticsAdditionalJs = Some(analyticsJs)){
 
 @pageHeadersAndError(backLink, "period-summary-subheader", organisationName.getOrElse(""), "period-summary-header", Messages("ated.period-summary.header",
 periodStartDate(periodKey).toString(Messages("ated.date-format.summary")),

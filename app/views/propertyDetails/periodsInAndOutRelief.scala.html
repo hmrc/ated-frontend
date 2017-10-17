@@ -12,10 +12,15 @@
 
 @implicitFormInstance = @{ Some(propertyDetailsForm) }
 
-@pageScripts = {
+@analyticsJs = {
+  var id = "@id";
+  var page = document.location.pathname.replace('/' + id, '');
+  ga('set', 'page', page);
 }
 
-@atedMain(title = Messages("ated.property-details-period.peroidsInRelief.title"), attorney = atedContext.user.authContext.attorney, pageScripts = Some(pageScripts)) {
+@atedMain(title = Messages("ated.property-details-period.peroidsInRelief.title"),
+          attorney = atedContext.user.authContext.attorney,
+          analyticsAdditionalJs = Some(analyticsJs)) {
   @pageHeadersAndError(backLink, "pre-heading", AtedUtils.getPropertyDetailsPreHeader(mode), "property-details-header", Messages("ated.property-details-period.peroidsInRelief.header"),
       Some(atedErrorSummary(propertyDetailsForm, "ated.property-details-period-error.general")))
 

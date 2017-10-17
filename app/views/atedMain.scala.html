@@ -7,7 +7,8 @@
   scriptElement: Option[Html] = None,
   pageScripts: Option[Html] = None,
   sidebarLinks: Option[Html] = None,
-  sidebarClass: Option[String] = None)(mainContent: Html)(implicit atedContext: AtedContext, messages: Messages)
+  sidebarClass: Option[String] = None,
+  analyticsAdditionalJs: Option[Html] = None)(mainContent: Html)(implicit atedContext: AtedContext, messages: Messages)
 
 @import uk.gov.hmrc.play.views.html.{layouts => uiLayouts}
 @import uk.gov.hmrc.play.views.helpers.AttorneyRegime
@@ -50,6 +51,7 @@
   scriptElement = Some(scriptElement),
   banner = Some(mainBanner),
   userLoggedIn = userLoggedIn,
-  linkElement = Some(linkElement)) {
+  linkElement = Some(linkElement),
+  analyticsJs = analyticsAdditionalJs) {
     @mainContent
   }
