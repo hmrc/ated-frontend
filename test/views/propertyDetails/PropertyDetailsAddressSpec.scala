@@ -93,7 +93,7 @@ class PropertyDetailsAddressSpec extends FeatureSpec with OneServerPerSuite with
 
       And("The the link to the lookup pages text is - Lookup address")
       assert(document.getElementById("lookup-address-link").text() === "Lookup address")
-      assert(document.getElementById("lookup-address-link").attr("href") === "/ated/liability/create/address/lookup/2015?id=1&mode=editSubmitted")
+      assert(document.getElementById("lookup-address-link").attr("href") === "/ated/liability/create/address/lookup/2015?propertyKey=1&mode=editSubmitted")
 
       assert(document.getElementById("property-details-address").text() === "Property address")
       assert(document.getElementById("line_1").attr("value") === "addr1")
