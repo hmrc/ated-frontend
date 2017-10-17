@@ -39,10 +39,10 @@ trait PropertyDetailsSummaryController extends BackLinkController
 
   def subscriptionDataService: SubscriptionDataService
 
-  def view(id: String) = AuthAction(AtedRegime) {
+  def view(propertyKey: String) = AuthAction(AtedRegime) {
     implicit atedContext =>
       ensureClientContext {
-        propertyDetailsCacheResponse(id) {
+        propertyDetailsCacheResponse(propertyKey) {
           case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
             currentBackLink.flatMap(backLink =>
               Future.successful(Ok(views.html.propertyDetails.propertyDetailsSummary(propertyDetails,
@@ -55,21 +55,21 @@ trait PropertyDetailsSummaryController extends BackLinkController
       }
   }
 
-  def submit(id: String) = AuthAction(AtedRegime) {
+  def submit(propertyKey: String) = AuthAction(AtedRegime) {
     implicit atedContext =>
       ensureClientContext(RedirectWithBackLink(
         PropertyDetailsDeclarationController.controllerId,
-        controllers.propertyDetails.routes.PropertyDetailsDeclarationController.view(id),
-        Some(controllers.propertyDetails.routes.PropertyDetailsSummaryController.view(id).url)
+        controllers.propertyDetails.routes.PropertyDetailsDeclarationController.view(propertyKey),
+        Some(controllers.propertyDetails.routes.PropertyDetailsSummaryController.view(propertyKey).url)
       ))
   }
 
 
-  def viewPrintFriendlyLiabilityReturn(id: String) = AuthAction(AtedRegime) {
+  def viewPrintFriendlyLiabilityReturn(propertyKey: String) = AuthAction(AtedRegime) {
     implicit atedContext =>
       ensureClientContext {
         for {
-          calculateDraft <- propertyDetailsService.calculateDraftPropertyDetails(id)
+          calculateDraft <- propertyDetailsService.calculateDraftPropertyDetails(propertyKey)
           organisationName <- subscriptionDataService.getOrganisationName
         }
           yield {
@@ -84,10 +84,10 @@ trait PropertyDetailsSummaryController extends BackLinkController
   }
 
 
-  def deleteDraft(id: String, periodKey: Int) = AuthAction(AtedRegime) {
+  def deleteDraft(propertyKey: String, periodKey: Int) = AuthAction(AtedRegime) {
     implicit atedContext =>
       ensureClientContext {
-        Future.successful(Redirect(controllers.routes.DraftDeleteConfirmationController.view(Some(id), periodKey, "charge")))
+        Future.successful(Redirect(controllers.routes.DraftDeleteConfirmationController.view(Some(propertyKey), periodKey, "charge")))
       }
   }
 }

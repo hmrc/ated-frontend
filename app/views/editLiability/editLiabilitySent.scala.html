@@ -8,28 +8,30 @@
 @import org.joda.time.LocalDate
 @import utils.AtedUtils._
 
-@atedMain(title = Messages(printTitleConf(returnType)), attorney = atedContext.user.authContext.attorney) {
+@analyticsJs = {
+  var id = "@formBundleNum";
+  var page = document.location.pathname.replace('/' + id, '');
+  ga('set', 'page', page);
+}
+
+@atedMain(title = Messages(printTitleConf(returnType)),
+          attorney = atedContext.user.authContext.attorney,
+          analyticsAdditionalJs = Some(analyticsJs)) {
 
   <div id="banner" class="greenBanner form-field">
     @if(returnType == "F"){
-
-    <h1 id="header">@Messages("ated.edit-liability.sent.header.further")</h1>
+      <h1 id="header">@Messages("ated.edit-liability.sent.header.further")</h1>
       <span class="heading-medium">@Messages("ated.edit-liability.sent.header.date") @DateTimeFormat.forPattern("d MMMM yyyy").print(new LocalDate())</span>
-
     }
 
     @if(returnType == "A"){
-
-    <h1 id="header">@Messages("ated.edit-liability.sent.header.amend")</h1>
-    <span class="heading-medium">@Messages("ated.edit-liability.sent.header.date") @DateTimeFormat.forPattern("d MMMM yyyy").print(new LocalDate())</span>
-
+      <h1 id="header">@Messages("ated.edit-liability.sent.header.amend")</h1>
+      <span class="heading-medium">@Messages("ated.edit-liability.sent.header.date") @DateTimeFormat.forPattern("d MMMM yyyy").print(new LocalDate())</span>
     }
 
     @if(returnType == "C"){
-
-    <h1 id="header"> @Messages("ated.edit-liability.sent.header.change")</h1>
-    <span class="heading-medium">@Messages("ated.edit-liability.sent.header.date") @DateTimeFormat.forPattern("d MMMM yyyy").print(new LocalDate())</span>
-
+      <h1 id="header"> @Messages("ated.edit-liability.sent.header.change")</h1>
+      <span class="heading-medium">@Messages("ated.edit-liability.sent.header.date") @DateTimeFormat.forPattern("d MMMM yyyy").print(new LocalDate())</span>
     }
 
   </div>

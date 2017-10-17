@@ -9,7 +9,14 @@
 @import views.html.helpers._
 @import views.html.helpers.error._
 
-@atedMain(title = Messages("ated.chargeable-return-confirmation.title"), attorney = atedContext.user.authContext.attorney) {
+@analyticsJs = {
+  ga('set', 'page', document.location.pathname);
+  ga('set', 'location', document.URL.split("?")[0]);
+}
+
+@atedMain(title = Messages("ated.chargeable-return-confirmation.title"),
+          attorney = atedContext.user.authContext.attorney,
+          analyticsAdditionalJs = Some(analyticsJs)) {
 
   <div id="banner" class="transaction-banner--complete form-group">
     <h1 class="heading-large" id="value-text">

@@ -5,15 +5,22 @@
 @import controllers.auth.ExternalUrls
 @import views.html.helpers._
 
+@analyticsJs = {
+  ga('set', 'page', document.location.pathname);
+  ga('set', 'location', document.URL.split("?")[0]);
+}
 
 @pageScripts = {
   <script src='@controllers.routes.AssetsController.at("javascript/accountSummary.js")'></script>
 }
 
-@atedMain(title = Messages("ated.summary-return.title"), attorney = atedContext.user.authContext.attorney,pageScripts = Some(pageScripts),
-  sidebarLinks = Some(_accountSummary_sideBar(summaryReturnsWithDrafts.atedBalance, correspondence, organisationName)),
-  sidebarClass = Some("related"),
-  banner = clientBanner) {
+@atedMain(title = Messages("ated.summary-return.title"),
+          attorney = atedContext.user.authContext.attorney,
+          pageScripts = Some(pageScripts),
+          sidebarLinks = Some(_accountSummary_sideBar(summaryReturnsWithDrafts.atedBalance, correspondence, organisationName)),
+          sidebarClass = Some("related"),
+          banner = clientBanner,
+          analyticsAdditionalJs = Some(analyticsJs)) {
 
   @pageHeadersAndError(None, "client-summary-subheader", organisationName.getOrElse(""), "account-summary-header", Messages("ated.summary-return.header"), subHeaderPrefix = Some(Messages("ated.screen-reader.section-name")))
 

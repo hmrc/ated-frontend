@@ -9,7 +9,16 @@
 
 @implicitFormInstance = @{ Some(propertyDetailsForm) }
 
-@atedMain(title = Messages("ated.property-details-period.change-dates-liable.title"), attorney = atedContext.user.authContext.attorney) {
+@analyticsJs = {
+  var id = "@formBundleNo";
+  var page = document.location.pathname.replace('/' + id, '');
+  ga('set', 'page', page);
+}
+
+@atedMain(title = Messages("ated.property-details-period.change-dates-liable.title"),
+          attorney = atedContext.user.authContext.attorney,
+          analyticsAdditionalJs = Some(analyticsJs)) {
+
   @pageHeadersAndError(backLink, "pre-heading", Messages("ated.property-details.pre-header-change"), "property-details-header", Messages("ated.property-details-period.change-dates-liable.header"),
       Some(atedErrorSummary(propertyDetailsForm, "ated.property-details-period.datesLiable.general.error")))
 

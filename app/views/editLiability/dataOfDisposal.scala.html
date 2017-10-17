@@ -7,7 +7,16 @@
 
 @implicitFormInstance = @{ Some(disposeLiabilityForm) }
 
-@atedMain(title = Messages("ated.dispose-property.disposal-date.title"), attorney = atedContext.user.authContext.attorney) {
+@analyticsJs = {
+  var id = "@oldFormBundleNo";
+  var page = document.location.pathname.replace('/' + id, '');
+  ga('set', 'page', page);
+}
+
+@atedMain(title = Messages("ated.dispose-property.disposal-date.title"),
+          attorney = atedContext.user.authContext.attorney,
+          analyticsAdditionalJs = Some(analyticsJs)) {
+
   @pageHeadersAndError(backLink, "pre-heading", Messages("ated.property-details.pre-header-dispose"), "dispose-property-header", Messages("ated.dispose-property.disposal-date.header"),
       Some(atedErrorSummary(disposeLiabilityForm, "ated.dispose-property.error.general")))
 

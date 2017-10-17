@@ -6,7 +6,14 @@
 
 @incomplete = {@Messages("ated.label.incomplete")}
 
-@atedMain(title = Messages("ated.property-details-summary.title"), attorney = atedContext.user.authContext.attorney) {
+@analyticsJs = {
+  ga('set', 'page', document.location.pathname);
+  ga('set', 'location', document.URL.split("?")[0]);
+}
+
+@atedMain(title = Messages("ated.property-details-summary.title"),
+          attorney = atedContext.user.authContext.attorney,
+          analyticsAdditionalJs = Some(analyticsJs)) {
 
   @pageHeadersAndError(backLink, "pre-heading", Messages("ated.property-details.pre-header-change"), "edit-liability-summary-header", Messages("ated.property-details-summary.header"))
 

@@ -11,7 +11,16 @@
   <script src='@controllers.routes.AssetsController.at("javascript/bankDetails.js")'></script>
 }
 
-@atedMain(title = Messages("ated.bank-details.title"), attorney = atedContext.user.authContext.attorney, pageScripts = Some(pageScripts)) {
+@analyticsJs = {
+  var id = "@oldFormBundleNo";
+  var page = document.location.pathname.replace('/' + id, '');
+  ga('set', 'page', page);
+}
+
+@atedMain(title = Messages("ated.bank-details.title"),
+          attorney = atedContext.user.authContext.attorney,
+          pageScripts = Some(pageScripts),
+          analyticsAdditionalJs = Some(analyticsJs)) {
 
   @pageHeadersAndError(backLink, "pre-heading", Messages("ated.property-details.pre-header-change"), "bank-details-header", Messages("ated.bank-details.title"),
       Some(atedErrorSummary(bankDetailsForm, "ated.bank-details.error-key")))

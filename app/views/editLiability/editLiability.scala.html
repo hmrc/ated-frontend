@@ -7,7 +7,15 @@
 
 @implicitFormInstance = @{ Some(editLiabilityReturnTypeForm) }
 
-@atedMain(title = Messages("ated.edit-liability.title"), attorney = atedContext.user.authContext.attorney) {
+@analyticsJs = {
+  var id = "@oldFormBundleNo";
+  var page = document.location.pathname.replace('/' + id, '');
+  ga('set', 'page', page);
+}
+
+@atedMain(title = Messages("ated.edit-liability.title"),
+          attorney = atedContext.user.authContext.attorney,
+          analyticsAdditionalJs = Some(analyticsJs)) {
 
   @pageHeadersAndError(backLink, "pre-heading", Messages("ated.edit-liability.change-return.header"), "edit-liability-header", Messages("ated.edit-liability.header"),
       Some(atedErrorSummary(editLiabilityReturnTypeForm, "ated.edit-liability.error.general")))

@@ -5,7 +5,15 @@
 @import views.html.helpers.error._
 @import utils._
 
-@atedMain(title = Messages("ated.return-type.title"), attorney = atedContext.user.authContext.attorney) {
+@analyticsJs = {
+  ga('set', 'page', document.location.pathname);
+  ga('set', 'location', document.URL.split("?")[0]);
+}
+
+@atedMain(title = Messages("ated.return-type.title"),
+          attorney = atedContext.user.authContext.attorney,
+          analyticsAdditionalJs = Some(analyticsJs)) {
+
   @pageHeadersAndError(backLink, "pre-heading", Messages("ated.return-type.pre-header"), "return-type-header", Messages("ated.return-type.header"),
     Some(atedErrorSummary(returnTypeForm, "ated.return-type.error.general")))
 

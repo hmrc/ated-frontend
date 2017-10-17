@@ -6,7 +6,16 @@
 @import views.html.helpers.error._
 @import utils._
 
-@atedMain(title = Messages("ated.view-relief-return.title"), attorney = atedContext.user.authContext.attorney) {
+@analyticsJs = {
+  var id = "@formBundleNumber";
+  var page = document.location.pathname.replace('/' + id, '');
+  ga('set', 'page', page);
+}
+
+@atedMain(title = Messages("ated.view-relief-return.title"),
+          attorney = atedContext.user.authContext.attorney,
+          analyticsAdditionalJs = Some(analyticsJs)) {
+
   @pageHeadersAndError(backLink, "relief-return-subheader", organisationName.getOrElse(""), "relief-return-header", Messages("ated.view-relief-return.header"))
 
   <div class="form-group">
