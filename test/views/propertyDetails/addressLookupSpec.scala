@@ -94,7 +94,7 @@ class addressLookupSpec extends FeatureSpec with OneServerPerSuite with MockitoS
 
       Then("The no post code link should be - I don't have a postcode")
       assert(document.getElementById("enter-address-link").text() === "Enter address manually")
-      assert(document.getElementById("enter-address-link").attr("href") === "/ated/liability/address-lookup/manual/2015?id=123456&mode=editSubmitted")
+      assert(document.getElementById("enter-address-link").attr("href") === "/ated/liability/address-lookup/manual/2015?propertyKey=123456&mode=editSubmitted")
 
       Then("The submit button should be - Find address")
       assert(document.getElementById("submit").text() === "Find address")

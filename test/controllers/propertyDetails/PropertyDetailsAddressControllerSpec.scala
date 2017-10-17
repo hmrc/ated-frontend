@@ -180,7 +180,7 @@ class PropertyDetailsAddressControllerSpec extends PlaySpec with OneServerPerSui
         addressLookupRedirect(Some("1")) {
           result =>
             status(result) must be(SEE_OTHER)
-            redirectLocation(result).get must include("/ated/liability/address-lookup/view/2015?id=1")
+            redirectLocation(result).get must include("/ated/liability/address-lookup/view/2015?propertyKey=1")
         }
       }
 

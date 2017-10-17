@@ -106,7 +106,7 @@ class addressLookupResultsSpec extends FeatureSpec with OneServerPerSuite with M
       assert(document.getElementById("search-criteria-header").text() === "Postcode")
       assert(document.getElementById("postcode").text() === "XX1 1XX")
       assert(document.getElementById("change-address-search-link").text() === "Change")
-      assert(document.getElementById("change-address-search-link").attr("href") === "/ated/liability/address-lookup/view/2015?id=123456")
+      assert(document.getElementById("change-address-search-link").attr("href") === "/ated/liability/address-lookup/view/2015?propertyKey=123456")
 
       Then("The search criteria results header should be - Property address")
       assert(document.getElementById("search-results-header").text() === "Property address")
@@ -118,7 +118,7 @@ class addressLookupResultsSpec extends FeatureSpec with OneServerPerSuite with M
       assert(document.getElementById("no-address-found") === null)
 
       assert(document.getElementById("enter-address-link").text() === "I can't find my address in the list")
-      assert(document.getElementById("enter-address-link").attr("href") === "/ated/liability/address-lookup/manual/2015?id=123456&mode=editSubmitted")
+      assert(document.getElementById("enter-address-link").attr("href") === "/ated/liability/address-lookup/manual/2015?propertyKey=123456&mode=editSubmitted")
 
       Then("The submit button should be - Save and continue")
       assert(document.getElementById("submit").text() === "Save and continue")
