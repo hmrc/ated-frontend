@@ -347,7 +347,7 @@ ated.account-summary.agent.no-returns = You have no returns
 ated.account-summary.agent-appoint.text = You can appoint an agent to act on your behalf or create your own returns.
 ated.account-summary.appoint-agent-info.text = If you want to appoint an agent you need to re-authorise your agent as the 64-8 and the ATED 1 does not cover the new online service.
 
-ated.summary-return.sidebar.balance-info= There can be a 24 hour delay before you see any updates to your balance
+ated.summary-return.sidebar.balance-info= There can be a 24-hour delay before you see any updates to your balance.
 ated.summary-return.sidebar.ated-reference.text = ATED reference
 ated.summary-return.button = Continue
 ated.summary-return.success = Your ATED account has been created successfully

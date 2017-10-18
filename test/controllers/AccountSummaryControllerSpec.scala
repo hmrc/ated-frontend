@@ -128,7 +128,7 @@ class AccountSummaryControllerSpec extends PlaySpec with OneServerPerSuite with 
               document.getElementById("sidebar.balance-header").text() must be("Your balance")
               document.getElementById("sidebar.balance-content").text() must be("£1,000 debit")
               document.getElementById("sidebar.link-text").text() must be("Deadlines and ways to pay")
-              document.getElementById("sidebar.balance-info").text() must be("There can be a 24 hour delay before you see any updates to your balance")
+              document.getElementById("sidebar.balance-info").text() must be("There can be a 24-hour delay before you see any updates to your balance.")
               document.getElementById("sidebar.link-text").text() must be("Deadlines and ways to pay")
               document.getElementById("sidebar.link-text").attr("href") must be("https://www.gov.uk/guidance/pay-annual-tax-on-enveloped-dwellings")
               document.title() must be("Your ATED online service")
@@ -136,14 +136,13 @@ class AccountSummaryControllerSpec extends PlaySpec with OneServerPerSuite with 
 
               document.title() must be("Your ATED online service")
               document.getElementById("account-summary-header").text() must be("Your ATED online service")
-              document.getElementById("return-summary-th-period").text() must be("Period")
-              document.getElementById("return-summary-th-chargeable").text() must be("Chargeable")
-              document.getElementById("return-summary-th-reliefs").text() must be("Relief")
-              document.getElementById("return-summary-th-drafts").text() must be("Draft")
-              document.getElementById("return-summary-th-action").text() must be("hidden text for empty th")
-              document.getElementsByClass("return-summary-td-chargeable").text() must be("1")
-              document.getElementsByClass("return-summary-td-reliefs").text() must be("1")
-              document.getElementsByClass("return-summary-td-drafts").text() must be("2")
+              document.getElementById("return-summary-period-heading").text() must be("Period")
+              document.getElementById("return-summary-chargeable-heading").text() must be("Chargeable")
+              document.getElementById("return-summary-reliefs-heading").text() must be("Relief")
+              document.getElementById("return-summary-drafts-heading").text() must be("Draft")
+              document.getElementById("return-summary-chargeable-data-0").text() must be("1")
+              document.getElementById("return-summary-reliefs-data-0").text() must be("1")
+              document.getElementById("return-summary-drafts-data-0").text() must be("2")
               document.getElementById("view-change-0").text() must include("View or change")
               document.getElementById("create-return").text() must be("Create a new return")
 
@@ -168,15 +167,15 @@ class AccountSummaryControllerSpec extends PlaySpec with OneServerPerSuite with 
 
               document.getElementById("sidebar.balance-header").text() must be("Your balance")
               document.getElementById("sidebar.balance-content").text() must be("£1,000 credit")
-              document.getElementById("sidebar.balance-info").text() must be("There can be a 24 hour delay before you see any updates to your balance")
+              document.getElementById("sidebar.balance-info").text() must be("There can be a 24-hour delay before you see any updates to your balance.")
               document.getElementById("sidebar.link-text").text() must be("Ways to be paid")
               document.getElementById("sidebar.link-text").attr("href") must be("https://www.gov.uk/guidance/pay-annual-tax-on-enveloped-dwellings")
               document.title() must be("Your ATED online service")
               document.getElementById("account-summary-header").text() must be("Your ATED online service")
-              document.getElementById("return-summary-th-period").text() must be("Period")
-              document.getElementsByClass("return-summary-td-chargeable").text() must be("1")
-              document.getElementsByClass("return-summary-td-reliefs").text() must be("1")
-              document.getElementsByClass("return-summary-td-drafts").text() must be("2")
+              document.getElementById("return-summary-period-heading").text() must be("Period")
+              document.getElementById("return-summary-chargeable-data-0").text() must be("1")
+              document.getElementById("return-summary-reliefs-data-0").text() must be("1")
+              document.getElementById("return-summary-drafts-data-0").text() must be("2")
 
               Option(document.getElementById("return-summary-no-returns")) must be(None)
           }
@@ -204,10 +203,10 @@ class AccountSummaryControllerSpec extends PlaySpec with OneServerPerSuite with 
               document.title() must be("Your ATED online service")
               document.getElementById("account-summary-header").text() must be("Your ATED online service")
 
-              document.getElementById("return-summary-th-period").text() must be("Period")
-              document.getElementsByClass("return-summary-td-chargeable").text() must be("1")
-              document.getElementsByClass("return-summary-td-reliefs").text() must be("1")
-              document.getElementsByClass("return-summary-td-drafts").text() must be("2")
+              document.getElementById("return-summary-period-heading").text() must be("Period")
+              document.getElementById("return-summary-chargeable-data-0").text() must be("1")
+              document.getElementById("return-summary-reliefs-data-0").text() must be("1")
+              document.getElementById("return-summary-drafts-data-0").text() must be("2")
 
               Option(document.getElementById("return-summary-no-returns")) must be(None)
           }
@@ -221,9 +220,9 @@ class AccountSummaryControllerSpec extends PlaySpec with OneServerPerSuite with 
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
               document.title() must be("Your ATED online service")
-              document.getElementById("create-return").hasClass("link") must be(true)
-              document.getElementById("create-return").hasClass("button") must be(false)
-              document.getElementById("appoint-agent").hasClass("link") must be(true)
+              document.getElementById("create-return") != null
+              document.getElementById("create-return") == null
+              document.getElementById("appoint-agent") != null
           }
         }
 
@@ -235,7 +234,7 @@ class AccountSummaryControllerSpec extends PlaySpec with OneServerPerSuite with 
               val document = Jsoup.parse(contentAsString(result))
               document.title() must be("Your ATED online service")
               document.getElementById("create-return").hasClass("link") must be(false)
-              document.getElementById("create-return").hasClass("button") must be(true)
+              document.getElementById("create-return") != null
               Option(document.getElementById("appoint-agent")) must be(None)
           }
         }
@@ -272,7 +271,7 @@ class AccountSummaryControllerSpec extends PlaySpec with OneServerPerSuite with 
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
               document.title() must be("Your ATED online service")
-              document.getElementById("create-return").hasClass("link") must be(true)
+              document.getElementById("create-return") != null
               document.getElementById("create-return").hasClass("button") must be(false)
               Option(document.getElementById("appoint-agent")) must be(None)
           }

@@ -6,81 +6,115 @@
 @import views.html.helpers._
 
 @analyticsJs = {
-  ga('set', 'page', document.location.pathname);
-  ga('set', 'location', document.URL.split("?")[0]);
+    ga('set', 'page', document.location.pathname);
+    ga('set', 'location', document.URL.split("?")[0]);
 }
 
 @pageScripts = {
-  <script src='@controllers.routes.AssetsController.at("javascript/accountSummary.js")'></script>
+    <script src='@controllers.routes.AssetsController.at("javascript/accountSummary.js")'></script>
 }
 
-@atedMain(title = Messages("ated.summary-return.title"),
-          attorney = atedContext.user.authContext.attorney,
-          pageScripts = Some(pageScripts),
-          sidebarLinks = Some(_accountSummary_sideBar(summaryReturnsWithDrafts.atedBalance, correspondence, organisationName)),
-          sidebarClass = Some("related"),
-          banner = clientBanner,
-          analyticsAdditionalJs = Some(analyticsJs)) {
+@atedMain(
+    title = Messages("ated.summary-return.title"),
+    attorney = atedContext.user.authContext.attorney,
+    pageScripts = Some(pageScripts),
+    sidebarLinks = Some(_accountSummary_sideBar(summaryReturnsWithDrafts.atedBalance, correspondence, organisationName)),
+    sidebarClass = Some("related"),
+    banner = clientBanner,
+    analyticsAdditionalJs = Some(analyticsJs)
+) {
 
-  @pageHeadersAndError(None, "client-summary-subheader", organisationName.getOrElse(""), "account-summary-header", Messages("ated.summary-return.header"), subHeaderPrefix = Some(Messages("ated.screen-reader.section-name")))
+    @pageHeadersAndError(None,
+        "client-summary-subheader",
+        organisationName.getOrElse(""),
+        "account-summary-header",
+        Messages("ated.summary-return.header"),
+        subHeaderPrefix = Some(Messages("ated.screen-reader.section-name"))
+    )
 
-  @if(summaryReturnsWithDrafts.allReturns.isEmpty) {
-  <p><span class="heading-medium" id="return-summary-no-returns">@Messages("ated.account-summary.agent.no-returns")</span></p>
-  } else {
-    <table id="returns-table">
-      <tr>
-        <th id="return-summary-th-period" class="td-summary-width">@Messages("ated.account-summary-th.period")</th>
-        <th id="return-summary-th-chargeable">@Messages("ated.account-summary-th.chargeable")</th>
-        <th id="return-summary-th-reliefs">@Messages("ated.account-summary-th.reliefs")</th>
-        <th id="return-summary-th-drafts">@Messages("ated.account-summary-th.drafts")</th>
-        <th id="return-summary-th-action"><span class="hidden">hidden text for empty th</span></th>
-      </tr>
-      @summaryReturnsWithDrafts.allReturns.zipWithIndex.map { case (periodSummaryWithDraft, i) =>
-        <tr>
-          <td class="return-summary-td-period">
-            @periodSummaryWithDraft.periodKey to @(periodSummaryWithDraft.periodKey.toInt + 1)</td>
-          <td class="return-summary-td-chargeable">
-            @periodSummaryWithDraft.submittedReturns.fold(0)(a => a.currentLiabilityReturns.size + a.oldLiabilityReturns.size)</td>
-          <td class="return-summary-td-reliefs">
-            @periodSummaryWithDraft.submittedReturns.fold(0)(a => a.reliefReturns.size)</td>
-          <td class="return-summary-td-drafts">
-            @(periodSummaryWithDraft.draftReturns.size)</td>
-          <td class="return-summary-td-action">
-            <a href="@controllers.routes.PeriodSummaryController.view(periodSummaryWithDraft.periodKey)" id="view-change-@i" data-journey-click="ated-fronted:click:view-change">@Messages("ated.account-summary.view-change-button")
-              <span class="visuallyhidden">@Messages("ated.account-summary-screen-reader") @periodSummaryWithDraft.periodKey to @(periodSummaryWithDraft.periodKey.toInt + 1)</span>
-            </a>
-          </td>
-        </tr>
-      }
-    </table>
-  }
-
-  @if(!summaryReturnsWithDrafts.allReturns.isEmpty) {
-    <p class="text">
-      <a class="link" id="create-return" role="button" onkeyup='spaceBarHandler(event,"@controllers.routes.SelectPeriodController.view")' href="@controllers.routes.SelectPeriodController.view" data-journey-click="ated-fronted:click:create-return">@Messages("ated.account-summary.create-return.link")</a>
-    </p>
-  } else {
-    @if(atedContext.user.authContext.attorney.isDefined) {
-      <p class="text">
-        <a class="button"  id="create-return" role="button" onkeyup='spaceBarHandler(event,"@controllers.routes.SelectPeriodController.view")' href="@controllers.routes.SelectPeriodController.view" data-journey-click="ated-fronted:click:create-return">@Messages("ated.account-summary.create-return.button")</a>
-      </p>
-
-
+    @if(summaryReturnsWithDrafts.allReturns.isEmpty) {
+        <h2 class="heading-small" id="return-summary-no-returns">@Messages("ated.account-summary.agent.no-returns")</h2>
     } else {
-      <div class="form-group">
-        <p class="text" id="return-summary-no-returns-appoint-agent">@Messages("ated.account-summary.agent-appoint.text")</p>
-        <p class="text" id="return-summary-no-returns-appoint-agent-info">@Messages("ated.account-summary.appoint-agent-info.text")</p>
-        <a class="link" id="create-return" href="@controllers.routes.SelectPeriodController.view" data-journey-click="ated-fronted:click:create-return">@Messages("ated.account-summary.create-return.link")</a>
-      </div>
+        <div class="grid grid-wrapper row-border" id="returns-table">
+            <div class="grid grid-1-5 form-label-bold" id="return-summary-period-heading" class="td-summary-width">
+                @Messages("ated.account-summary-th.period")
+            </div>
+            <div class="grid grid-1-5 form-label-bold" id="return-summary-chargeable-heading">
+                @Messages("ated.account-summary-th.chargeable")
+            </div>
+            <div class="grid grid-1-5 form-label-bold" id="return-summary-reliefs-heading">
+                @Messages("ated.account-summary-th.reliefs")
+            </div>
+            <div class="grid grid-2-5 form-label-bold" id="return-summary-drafts-heading">
+                @Messages("ated.account-summary-th.drafts")
+            </div>
+        </div>
+        <div class="grid grid-wrapper form-group">
+            @summaryReturnsWithDrafts.allReturns.zipWithIndex.map { case (periodSummaryWithDraft, i) =>
+                <div class="grid grid-1-5 row-border" id="return-summary-period-data-@i">
+                    @periodSummaryWithDraft.periodKey to @(periodSummaryWithDraft.periodKey.toInt + 1)
+                </div>
+                <div class="grid grid-1-5 row-border" id="return-summary-chargeable-data-@i">
+                    @periodSummaryWithDraft.submittedReturns.fold(0)(a => a.currentLiabilityReturns.size + a.oldLiabilityReturns.size)
+                </div>
+                <div class="grid grid-1-5 row-border" id="return-summary-reliefs-data-@i">
+                    @periodSummaryWithDraft.submittedReturns.fold(0)(a => a.reliefReturns.size)
+                </div>
+                <div class="grid grid-1-5 row-border" id="return-summary-drafts-data-@i">
+                    @periodSummaryWithDraft.draftReturns.size
+                </div>
+                <div class="grid grid-1-5 row-border" id="return-summary-">
+                    <a href="@controllers.routes.PeriodSummaryController.view(periodSummaryWithDraft.periodKey)"
+                        id="view-change-@i"
+                        data-journey-click="ated-fronted:click:view-change">
+                            @Messages("ated.account-summary.view-change-button")
+                            <span class="visuallyhidden">
+                                @Messages("ated.account-summary-screen-reader") @periodSummaryWithDraft.periodKey to @(periodSummaryWithDraft.periodKey.toInt + 1)
+                            </span>
+                    </a>
+                </div>
+            }
+        </div>
     }
-  }
 
-  @if(atedContext.user.authContext.attorney.isEmpty && clientBanner == HtmlFormat.empty) {
-  <p class="text">
-    <a class="link" id="appoint-agent" href="@ExternalUrls.clientApproveAgentMandate">
-      @Messages("ated.account-summary.appoint-agent.text")
-    </a>
-  </p>
-  }
+    @if(summaryReturnsWithDrafts.allReturns.nonEmpty) {
+        <p>
+            <a id="create-return"
+                role="button"
+                onkeyup='spaceBarHandler(event,"@controllers.routes.SelectPeriodController.view")'
+                href="@controllers.routes.SelectPeriodController.view"
+                data-journey-click="ated-fronted:click:create-return">
+                    @Messages("ated.account-summary.create-return.link")
+            </a>
+        </p>
+    } else {
+        @if(atedContext.user.authContext.attorney.isDefined) {
+            <p>
+                <a id="create-return"
+                    role="button"
+                    onkeyup='spaceBarHandler(event,"@controllers.routes.SelectPeriodController.view")'
+                    href="@controllers.routes.SelectPeriodController.view"
+                    data-journey-click="ated-fronted:click:create-return">
+                        @Messages("ated.account-summary.create-return.button")
+                </a>
+            </p>
+        } else {
+            <div class="form-group">
+                <p id="return-summary-no-returns-appoint-agent">@Messages("ated.account-summary.agent-appoint.text")</p>
+                <p id="return-summary-no-returns-appoint-agent-info">@Messages("ated.account-summary.appoint-agent-info.text")</p>
+                <a id="create-return" href="@controllers.routes.SelectPeriodController.view" data-journey-click="ated-fronted:click:create-return">
+                    @Messages("ated.account-summary.create-return.link")
+                </a>
+            </div>
+        }
+    }
+
+    @if(atedContext.user.authContext.attorney.isEmpty && clientBanner == HtmlFormat.empty) {
+        <p>
+            <a id="appoint-agent" href="@ExternalUrls.clientApproveAgentMandate">
+                @Messages("ated.account-summary.appoint-agent.text")
+            </a>
+        </p>
+    }
 
 }
