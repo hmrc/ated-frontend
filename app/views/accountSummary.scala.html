@@ -36,7 +36,8 @@
         <h2 class="heading-small" id="return-summary-no-returns">@Messages("ated.account-summary.agent.no-returns")</h2>
     } else {
         <div class="grid grid-wrapper row-border" id="returns-table">
-            <div class="grid grid-1-5 form-label-bold" id="return-summary-period-heading" class="td-summary-width">
+            <span class="visuallyhidden">@Messages("ated.summary-return.table.screen-reader.headings-help")</span>
+            <div class="grid grid-1-5 form-label-bold" id="return-summary-period-heading">
                 @Messages("ated.account-summary-th.period")
             </div>
             <div class="grid grid-1-5 form-label-bold" id="return-summary-chargeable-heading">
@@ -52,24 +53,29 @@
         <div class="grid grid-wrapper form-group">
             @summaryReturnsWithDrafts.allReturns.zipWithIndex.map { case (periodSummaryWithDraft, i) =>
                 <div class="grid grid-1-5 row-border" id="return-summary-period-data-@i">
+                    <span class="visuallyhidden">@Messages("ated.summary-return.table.screen-reader.period-from")</span>
                     @periodSummaryWithDraft.periodKey to @(periodSummaryWithDraft.periodKey.toInt + 1)
                 </div>
                 <div class="grid grid-1-5 row-border" id="return-summary-chargeable-data-@i">
+                    <span class="visuallyhidden">@Messages("ated.summary-return.table.screen-reader.number-of") @Messages("ated.account-summary-th.chargeable")</span>
                     @periodSummaryWithDraft.submittedReturns.fold(0)(a => a.currentLiabilityReturns.size + a.oldLiabilityReturns.size)
                 </div>
                 <div class="grid grid-1-5 row-border" id="return-summary-reliefs-data-@i">
+                    <span class="visuallyhidden">@Messages("ated.summary-return.table.screen-reader.number-of") @Messages("ated.account-summary-th.reliefs")</span>
                     @periodSummaryWithDraft.submittedReturns.fold(0)(a => a.reliefReturns.size)
                 </div>
                 <div class="grid grid-1-5 row-border" id="return-summary-drafts-data-@i">
+                    <span class="visuallyhidden">@Messages("ated.summary-return.table.screen-reader.number-of") @Messages("ated.account-summary-th.drafts")</span>
                     @periodSummaryWithDraft.draftReturns.size
                 </div>
-                <div class="grid grid-1-5 row-border" id="return-summary-">
+                <div class="grid grid-1-5 row-border">
                     <a href="@controllers.routes.PeriodSummaryController.view(periodSummaryWithDraft.periodKey)"
                         id="view-change-@i"
                         data-journey-click="ated-fronted:click:view-change">
                             @Messages("ated.account-summary.view-change-button")
                             <span class="visuallyhidden">
-                                @Messages("ated.account-summary-screen-reader") @periodSummaryWithDraft.periodKey to @(periodSummaryWithDraft.periodKey.toInt + 1)
+                                @Messages("ated.account-summary-screen-reader")
+                                @periodSummaryWithDraft.periodKey to @(periodSummaryWithDraft.periodKey.toInt + 1)
                             </span>
                     </a>
                 </div>
@@ -80,7 +86,6 @@
     @if(summaryReturnsWithDrafts.allReturns.nonEmpty) {
         <p>
             <a id="create-return"
-                role="button"
                 onkeyup='spaceBarHandler(event,"@controllers.routes.SelectPeriodController.view")'
                 href="@controllers.routes.SelectPeriodController.view"
                 data-journey-click="ated-fronted:click:create-return">
@@ -91,7 +96,6 @@
         @if(atedContext.user.authContext.attorney.isDefined) {
             <p>
                 <a id="create-return"
-                    role="button"
                     onkeyup='spaceBarHandler(event,"@controllers.routes.SelectPeriodController.view")'
                     href="@controllers.routes.SelectPeriodController.view"
                     data-journey-click="ated-fronted:click:create-return">

@@ -360,7 +360,9 @@ ated.account-summary.create-relief.text.indent = You can''t view returns you''ve
 ated.account-summary.create-return.button = Create a return
 ated.summary-return.correspondence-address.heading = Correspondence address
 ated.summary-return.no-return.text = You can create a return where an ATED charge is due or a relief return where no ATED charge is due.
-
+ated.summary-return.table.screen-reader.headings-help = You are on the ATED table, column headings are as follows
+ated.summary-return.table.screen-reader.number-of = number of
+ated.summary-return.table.screen-reader.period-from = period from
 ## return type
 ated.return-type.title = Select a type of return
 ated.return-type.pre-header = Create return
