@@ -716,8 +716,8 @@ ated.company-details.correspondence-address = Correspondence address
 ated.company-details.contact-address = ATED contact details
 ated.company-details.back = Back to your ATED online service
 ated.company-details.correspondence-address.edit = Edit
-ated.company-details.contact-preference.label = Contact Email address
-ated.company-details.appointed_agent = Appointed Agent
+ated.company-details.contact-preference.label = Email address
+ated.company-details.appointed_agent = Appointed agent
 ated.company-details.mandate_email = Email address
 ated.company-details.overseas_reg_number = Overseas company registration number
 
