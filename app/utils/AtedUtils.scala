@@ -142,4 +142,6 @@ object AtedUtils {
 
   def replaceUnderScoreWithBlank(str: String) = str.replaceAll("_", " ")
 
+  def printNotProvidedIfEmpty(str: String) = if(str == "") Messages("ated.property-details-summary.field-blank") else str
+
 }
