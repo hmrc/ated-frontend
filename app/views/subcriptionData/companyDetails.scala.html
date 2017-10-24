@@ -157,7 +157,7 @@ pageScripts = Some(pageScripts)) {
     <div class="grid grid-1-2 cya-answer">
       <span id="contact-pref-val">
         @if(emailConsent) {
-          @correspondence.map(_.contactDetails.map(_.emailAddress)))
+          @correspondence.map(_.contactDetails.map(_.emailAddress))
         } else {
           @Messages("ated.property-details-summary.field-blank")
         }
