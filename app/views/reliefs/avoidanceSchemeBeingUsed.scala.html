@@ -20,6 +20,17 @@
     Some(atedErrorSummary(isTaxAvoidanceForm, "ated.choose-reliefs.error.general")))
 
 @form(action=controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.send(periodKey)) {
+  <div id="whatIsTaxAvoidanceScheme">
+    <details role="group">
+      <summary role="button" aria-controls="whatIsTaxAvoidanceScheme-0" tabindex="0">
+        <span class="summary font-small" id="whatIsTaxAvoidanceSchemeQuestion">@Messages("ated.choose-reliefs.avoidance-question")</span>
+      </summary>
+      <div id="whatIsTaxAvoidanceScheme-0" class="panel-indent font-xsmall">
+        <p id="whatIsTaxAvoidanceSchemeAnser">@Html(Messages("ated.choose-reliefs.avoidance-answer"))</p>
+      </div>
+    </details>
+
+  </div>
 
 <div id="isAvoidanceScheme">
   @atedInputRadioGroupNew(isTaxAvoidanceForm("isAvoidanceScheme"),

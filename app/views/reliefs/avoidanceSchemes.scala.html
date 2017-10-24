@@ -120,20 +120,6 @@
             )
         }
 
-        <div class="form-group  inline" id="isAvoidanceScheme">
-            @atedInputRadioGroupNew(taxAvoidanceForm("isAvoidanceScheme"),
-                Seq(),
-                '_fieldsetAttributesHelpQuestion -> "isAvoidanceScheme-help-question",
-                '_legend ->"",
-                '_fieldsetQuestion -> Messages("ated.choose-reliefs.avoidance-question"),
-                '_HelpQuestionAnswer -> Html(Messages("ated.choose-reliefs.avoidance-answer")),
-                '_labelClass -> "block-label",
-                '_legendClass -> "heading-small",
-                '_labelAfter -> true,
-                '_trackGA -> true
-            )
-        </div>
-
-        <button id="submit" type="submit">@Messages("ated.avoidance-schemes.continue")</button>
+        <button id="submit" type="submit" class="subsection">@Messages("ated.avoidance-schemes.continue")</button>
     }
 }
