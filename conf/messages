@@ -119,8 +119,8 @@ ated.account-summary-back = Back to all your clients
 ated.account-summary-screen-reader = the period
 
 ## select-period
-ated.select-period.title = Select an ATED period
-ated.select-period.header = Select an ATED period
+ated.select-period.title = Select an ATED chargeable period
+ated.select-period.header = Select an ATED chargeable period
 ated.select-period.text = The chargeable period for a year runs from the 1 April to 31 March.
 ated.select-period.error.general.period = There is a problem with the period option
 ated.select-period.more-years = I want to submit a return before 2015

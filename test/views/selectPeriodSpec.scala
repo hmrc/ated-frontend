@@ -51,7 +51,7 @@ class selectPeriodSpec extends FeatureSpec with OneServerPerSuite with MockitoSu
       val document = Jsoup.parse(html.toString())
 
       Then("The header should match - Select an ATED period")
-      assert(document.getElementById("header").text === "Select an ATED period")
+      assert(document.getElementById("header").text === "Select an ATED chargeable period")
 
       Then("The subheader should be - Create relief return")
       assert(document.getElementById("pre-heading").text() === "This section is: Create return")
