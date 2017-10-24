@@ -194,7 +194,7 @@ class AvoidanceSchemesControllerSpec extends PlaySpec with OneServerPerSuite wit
             when(mockBackLinkCache.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
             submitWithAuthorisedUser(formInput) { result =>
               status(result) must be(BAD_REQUEST)
-              contentAsString(result) must include("There is a problem with the reference numbers. Check the number and try again.")
+              contentAsString(result) must include("There is a problem with rental business avoidance scheme reference number. Check the number and try again.")
             }
           }
 

@@ -10,13 +10,13 @@
     @if(isVisible) {
         <div class="grid row-border">
             <div class="grid grid-1-3">
-                <span class="font-xsmall">@Messages(reliefCode)</span>
+                <span class="font-small">@Messages(reliefCode)</span>
             </div>
             <div class="grid grid-1-3" id="@{id}-p">
                 @atedInputNew(
                     schemeFormValue,
-                    '_label -> Html(Messages("ated.avoidance-schemes.reliefs.text")),
-                    '_labelClass -> "screen-reader-text",
+                    '_label -> Html(Messages("ated.avoidance-schemes.avoidance-scheme.text", Messages(reliefCode))),
+                    '_labelClass -> "visuallyhidden",
                     '_inputClass -> "avoidanceSchemeInp",
                     '_showConstraints -> false
                 )
@@ -24,8 +24,8 @@
             <div class="grid grid-1-3" id="@{id}Promoter-p">
                 @atedInputNew(
                     promoterValue,
-                    '_label -> Html(Messages("ated.avoidance-schemes.avoidance-scheme.text")),
-                    '_labelClass -> "screen-reader-text",
+                    '_label -> Html(Messages("ated.avoidance-schemes.avoidance-scheme-promoter.text", Messages(reliefCode))),
+                    '_labelClass -> "visuallyhidden",
                     '_inputClass -> "avoidanceSchemeInp",
                     '_showConstraints -> false
                 )
@@ -50,8 +50,8 @@
     @form(action=controllers.reliefs.routes.AvoidanceSchemesController.submit(periodKey)) {
         <div class="grid row-border">
             <div class="grid grid-1-3 form-label-bold" id="relief-summary-text">@Messages("ated.avoidance-schemes.reliefs.text")</div>
-            <div class="grid grid-1-3 form-label-bold" id="relief-summary-scheme-text">@Messages("ated.avoidance-schemes.avoidance-scheme.text")</div>
-            <div class="grid grid-1-3 form-label-bold" id="relief-summary-scheme-promoter-text">@Messages("ated.avoidance-schemes.avoidance-scheme-promoter.text")</div>
+            <div class="grid grid-1-3 form-label-bold" id="relief-summary-scheme-text">@Messages("ated.avoidance-schemes.avoidance-scheme.header")</div>
+            <div class="grid grid-1-3 form-label-bold" id="relief-summary-scheme-promoter-text">@Messages("ated.avoidance-schemes.avoidance-scheme-promoter.header")</div>
         </div>
 
         @reliefsTaxAvoidance.map { reliefData =>
