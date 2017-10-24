@@ -70,6 +70,7 @@ trait ChooseReliefsController extends BackLinkController
   def send(periodKey: Int) = AuthAction(AtedRegime) {
     implicit atedContext =>
       ensureClientContext {
+        println(s"-------------------------------${reliefsForm.data}")
         validatePeriodKey(periodKey) {
           reliefsForm.bindFromRequest.fold(
             formWithError =>

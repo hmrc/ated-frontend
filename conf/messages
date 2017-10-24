@@ -130,7 +130,7 @@ ated.select-period.more-years.answer = Any ATED returns before these periods nee
 ated.choose-reliefs.title = What reliefs are you claiming?
 ated.choose-reliefs.subheader = Create return
 ated.choose-reliefs.header = What reliefs are you claiming?
-ated.choose-reliefs.info = You can select more than one relief code. A single relief code can cover 1 or more properties.
+ated.choose-reliefs.info = You can select more than one relief code. A single relief code can cover one or more properties.
 ated.choose-reliefs.label = Select all reliefs that apply
 
 ated.choose-reliefs.question = What are ATED relief codes?
@@ -171,7 +171,7 @@ ated.choose-reliefs-further.information.text = We don’t need any further infor
 
 ated.choose-reliefs.error = You must select at least one relief
 ated.choose-reliefs.continue = Save and continue
-ated.choose-reliefs.date = What was the relief start date?
+ated.choose-reliefs.date = When did the {0} start?
 ated.choose-reliefs.error.general.isAvoidanceScheme = There is a problem with the avoidance scheme question
 ated.choose-reliefs.error.general.reliefs = You must select at least one relief
 ated.choose-reliefs.error.general.rentalBusinessDate = There is a problem with the rental businesses start date
