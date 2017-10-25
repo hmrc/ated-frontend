@@ -24,14 +24,15 @@
 
   @form(action=controllers.propertyDetails.routes.PropertyDetailsAddressController.save(id, periodKey, mode)) {
 
-    <div class="form-group">
+
       <p>
         <span class="heading-small form-group" id="property-details-address">
         @Messages("ated.property-details.property-address")
         </span>
       </p>
 
-    <fieldset>
+
+
       <legend class="visuallyhidden">@Messages("ated.property-details.header")</legend>
 
           @atedInputNew(propertyDetailsForm("line_1"),
@@ -42,19 +43,19 @@
 
           @atedInputNew(propertyDetailsForm("line_2"),
             '_label ->  Html(Messages("ated.addressProperty.line_2")),
-            '_labelClass ->  "visuallyhidden",
+            '_labelClass ->  "form-label-bold",
             '_id -> "line_2",
             '_showConstraints -> false)
 
           @atedInputNew(propertyDetailsForm("line_3"),
             '_label ->  Html(Messages("ated.addressProperty.line_3")),
-            '_labelClass ->  "visuallyhidden",
+            '_labelClass ->  "form-label-bold",
             '_id -> "line_3",
             '_showConstraints -> false)
 
           @atedInputNew(propertyDetailsForm("line_4"),
             '_label ->  Html(Messages("ated.addressProperty.line_4")),
-            '_labelClass ->  "visuallyhidden",
+            '_labelClass ->  "form-label-bold",
             '_id -> "line_4",
             '_showConstraints -> false)
 
@@ -65,8 +66,8 @@
             '_inputClass -> "input--normal",
             '_showConstraints -> false)
 
-    </fieldset>
-    </div>
+
+    
 
   <div class="form-group">
     <a href="@controllers.propertyDetails.routes.PropertyDetailsAddressController.addressLookupRedirect(id, periodKey, mode)"
