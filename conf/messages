@@ -935,7 +935,7 @@ ated.address-lookup.search-results.header = Property address
 ated.address-lookup.no-address-found.text = No addresses were found for this postcode
 ated.address-lookup.address-not-in-list-link.title = I can''t find my address in the list
 ated.address-lookup.address-manual-entry-link.title = Manually enter the address
-ated.address-lookup.error.non-selected.field = You must select an address
+ated.address-lookup.error.non-selected.field = You must select a previous return
 ated.address-lookup.error.general.selected = There is something wrong with the address
 ated.address-lookup.error.general.selected-address = There''s something wrong with the selected address
 
@@ -1350,6 +1350,6 @@ ated.confirm-past-return-question.error.general.yesNo = There is a problem with 
 ated.confirm-past-return.error = existing return
 yes-no.error.mandatory = The {0} question must be answered
 
-ated.select-past-return.title = Select the previous return that this new return relates to
-ated.select-past-return.header = Select the previous return that this new return relates to
-ated.select-past-return.general.selected = There is a problem with the address option
+ated.select-past-return.title = Select the previous return this new return relates to
+ated.select-past-return.header = Select the previous return this new return relates to
+ated.select-past-return.general.selected = There is a problem with the previous return question
