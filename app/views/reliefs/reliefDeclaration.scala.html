@@ -12,18 +12,18 @@
 
   @pageHeadersAndError(backLink, "pre-header", Messages("ated.choose-reliefs.subheader"), "relief-declaration-confirmation-header", Messages("ated.relief-summary.declaration.header"))
 
-  <div class="form-group">
+
     <p id="relief-declaration-before-declaration-text">
       @if(atedContext.user.authContext.attorney.isDefined) { @Messages("ated.relief-summary.before-declaration.agent")} else { @Messages("ated.relief-summary.before-declaration.client")}
     </p>
 
     <p id="relief-declaration-mid-declaration-text">@Messages("ated.relief-summary.mid-declaration.agent")</p>
-  </div>
 
-  <div class="form-group">
-     <span class="heading-medium" id="declare-or-confirm">
+
+
+     <p id="declare-or-confirm">
       @if(atedContext.user.authContext.attorney.isDefined) { @Messages("ated.relief-summary.i-confirm-that.agent")} else { @Messages("ated.relief-summary.i-declare-that.client")}
-    </span>
+    </p>
     @if(atedContext.user.authContext.attorney.isDefined) {
     <ul class="list-bullet">
       <li id="declaration-confirmation-text">
@@ -47,7 +47,7 @@
         @Messages("ated.relief-summary.i-declare-that.bulletb-text.client")
       </li>
     </ul>
-  </div>
+  
 }
 
   @form(action=controllers.reliefs.routes.ReliefDeclarationController.submit(periodKey)) {
