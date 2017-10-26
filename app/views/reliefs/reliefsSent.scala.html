@@ -11,19 +11,19 @@
 @atedMain(title = Messages("ated.relief-sent.title"), attorney = atedContext.user.authContext.attorney) {
 
   <div id="banner" class="transaction-banner--complete">
-    <h1 id="header">@Messages("ated.relief-sent.header")
-    <span class="heading-small form group" id="date">@Messages("ated.relief-sent.header.date") @DateTimeFormat.forPattern("d MMMM yyyy").print(new LocalDate()) </span>
-    </h1>
+    <h1 id="banner-text">
+        @Messages("ated.relief-sent.banner-text", DateTimeFormat.forPattern("d MMMM yyyy").print(new LocalDate()))
+        </h1>
   </div>
 
-  <div class="form-group">
+
     <p id="completed-returns">@Messages("ated.reliefs-sent.completed-message")</p>
     <p id="email-confirmation">@Messages("ated.reliefs-sent.email-message")<p>
 
       <a href="@controllers.reliefs.routes.ReliefsSentController.viewPrintFriendlyReliefSent(periodKey)" id="print-friendly-relief-link" data-journey-click="ated-fronted:click:print-friendly-relief-link" target="_blank">
         @Messages("ated.reliefs-sent.print-link")
       </a>
-  </div>
+
 
   <div class="divider--top--thick"></div>
 
