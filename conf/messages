@@ -430,12 +430,13 @@ ated.property-details-value.header = Has the value of your property changed for 
 ated.property-details-value.yes = Yes
 ated.property-details-value.no = No
 
-ated.property-details-value.anAcquisition.title = Since the date of acquisition, have you bought or sold land, or extended an existing lease on this property, for £40,000 or more?
-ated.property-details-value.anAcquisition.header = Since the date of acquisition, have you bought or sold land, or extended an existing lease on this property, for £40,000 or more?
+ated.property-details-value.anAcquisition.title = Have you spent £40,000 or more on this property since you bought it?
+ated.property-details-value.anAcquisition.header = Have you spent £40,000 or more on this property since you bought it?
+ated.property-details-value.anAcquisition.lede = The money must have been to update the property by buying land, selling land or extending an existing lease.
 ated.property-details-value.anAcquisition.error-field-name = You must answer this question
-ated.property-details-value.anAcquisition.legend =  Since the date of acquisition, have you bought or sold land, or extended an existing lease on this property, for £40,000 or more?
+ated.property-details-value.anAcquisition.legend =  Have you spent £40,000 or more on this property since you bought it?
 ated.property-details-value.anAcquisition.what = Why is the £40,000 level important?
-ated.property-details-value.anAcquisition.what.text =  <p>Buying land or extending an existing lease for £40,000 or more (acquisition) would trigger a revaluation. If the property moves into a higher property band this mean you have to pay more tax.</p>Selling any land connected to the property for £40,000 or more (disposal) would trigger a revaluation. If the property moves into a lower property band this mean you have to pay less tax.<p></p><p>Further information on this can be found in the <a href="https://www.gov.uk/government/uploads/system/uploads/attachment_data/file/375750/ated-tech-guide.pdf"data-journey-click="ated-fronted:click:technical-guidance-link">technical guidance.</a></p>
+ated.property-details-value.anAcquisition.what.text = <p>If the value of the property changes by £40,000 or more, you may have to pay more or less tax. See the <a href="https://www.gov.uk/government/publications/annual-tax-on-enveloped-dwellings-technical-guidance">ATED technical guidance</a> for more information.</p>
 
 ated.property-details-value.propertyDetailsValue.newBuildDate.error.empty = You must enter a property build date
 ated.property-details-value.propertyDetailsValue.notNewBuildDate.error.empty = You must enter a property acquired date
