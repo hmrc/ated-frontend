@@ -60,7 +60,7 @@ class addressLookupResultsSpec extends FeatureSpec with OneServerPerSuite with M
       Then("The search criteria header should be - Postcode")
       assert(document.getElementById("search-criteria-header").text() === "Postcode")
       assert(document.getElementById("postcode").text() === "XX1 1XX")
-      assert(document.getElementById("change-address-search-link").text() === "Change")
+      assert(document.getElementById("change-address-search-link").text() === "Change postcode")
       assert(document.getElementById("change-address-search-link").attr("href") === "/ated/liability/address-lookup/view/2015")
 
       Then("The search criteria results header should be - Property address")
@@ -105,7 +105,7 @@ class addressLookupResultsSpec extends FeatureSpec with OneServerPerSuite with M
       Then("The search criteria header should be - Postcode")
       assert(document.getElementById("search-criteria-header").text() === "Postcode")
       assert(document.getElementById("postcode").text() === "XX1 1XX")
-      assert(document.getElementById("change-address-search-link").text() === "Change")
+      assert(document.getElementById("change-address-search-link").text() === "Change postcode")
       assert(document.getElementById("change-address-search-link").attr("href") === "/ated/liability/address-lookup/view/2015?propertyKey=123456")
 
       Then("The search criteria results header should be - Property address")
