@@ -106,7 +106,7 @@ class SelectExistingReturnAddressControllerSpec extends PlaySpec with OneServerP
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
-              document.title() must be("Select the previous return that this new return relates to")
+              document.title() must be("Select the previous return this new return relates to")
           }
         }
 
@@ -115,7 +115,7 @@ class SelectExistingReturnAddressControllerSpec extends PlaySpec with OneServerP
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
-              document.title() must be("Select the previous return that this new return relates to")
+              document.title() must be("Select the previous return this new return relates to")
           }
         }
 
@@ -146,7 +146,7 @@ class SelectExistingReturnAddressControllerSpec extends PlaySpec with OneServerP
           result =>
             status(result) must be(BAD_REQUEST)
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be("Select the previous return that this new return relates to")
+            document.title() must be("Select the previous return this new return relates to")
         }
       }
 
@@ -155,7 +155,7 @@ class SelectExistingReturnAddressControllerSpec extends PlaySpec with OneServerP
           result =>
             status(result) must be(BAD_REQUEST)
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be("Select the previous return that this new return relates to")
+            document.title() must be("Select the previous return this new return relates to")
 
         }
       }
@@ -165,7 +165,7 @@ class SelectExistingReturnAddressControllerSpec extends PlaySpec with OneServerP
           result =>
             status(result) must be(BAD_REQUEST)
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be("Select the previous return that this new return relates to")
+            document.title() must be("Select the previous return this new return relates to")
 
         }
       }
