@@ -667,19 +667,18 @@ ated.chargeable-return-confirmation.title = Chargeable return confirmation
 ated.chargeable-return-confirmation.completed.message = You can view your completed returns, payment references and ways to pay in the ATED online service.
 ated.chargeable-return-confirmation.email.message = You will not receive an email confirmation.
 ated.chargeable-return-confirmation.charge.heading = Charges for this return
-ated.chargeable-return-confirmation.amount.message = This amount does not reflect any payments you have already made, or penalties that have been issued.
+ated.chargeable-return-confirmation.amount.message = This amount does not reflect any payments you have already made or penalties that have been issued.
 
-ated.chargeable-return-confirmation.owe.text = The charges for this return are {0}
-ated.chargeable-return-confirmation.reference.text = The reference to make this payment is {0}
+ated.chargeable-return-confirmation.owe.text = The charges for this return are {0}.
+ated.chargeable-return-confirmation.reference.text = The reference to make this payment is {0}.
 
-ated.chargeable-return-late-payment.text = Late payment penalties can be issued when ATED is unpaid. Find out about <a href="https://www.gov.uk/guidance/pay-annual-tax-on-enveloped-dwellings" data-journey-click="ated-fronted:click:late-penalties-link">how to pay and payment deadlines</a>
-ated.chargeable-return-late-payment-pf.text = Late payment penalties can be issued when ATED is unpaid. Find out about how to pay and payment deadlines at https://www.gov.uk/guidance/pay-annual-tax-on-enveloped-dwellings
+ated.chargeable-return-late-payment.text = Late payment penalties can be issued when ATED is unpaid. Find out about <a href="https://www.gov.uk/guidance/pay-annual-tax-on-enveloped-dwellings" data-journey-click="ated-fronted:click:late-penalties-link">how to pay and payment deadlines</a>.
+ated.chargeable-return-late-payment-pf.text = Late payment penalties can be issued when ATED is unpaid. Find out about how to pay and payment deadlines at https://www.gov.uk/guidance/pay-annual-tax-on-enveloped-dwellings .
 
-ated.chargeable-return-confirmation.submitted.text = Your return has been successfully submitted
-ated.chargeable-return-confirmation.submitted.date.text = on {0}
+ated.chargeable-return-confirmation.submitted.text = Your return has been successfully submitted on {0}
 ated.chargeable-return-confirmation.ated-charge = The ATED charge is {0}
 ated.chargeable-return-confirmation.payment-reference-number = Payment reference number {0}
-ated.chargeable-return-confirmation.not-receive-text = You can view your balance in your ATED online service. There can be a 24 hour delay before you see any updates.
+ated.chargeable-return-confirmation.not-receive-text = You can view your balance in your ATED online service. There can be a 24-hour delay before you see any updates.
 ated.chargeable-return-confirmation.ways-to-pay-link.text = Ways to pay your ATED charge
 ated.chargeable-return-confirmation.ways-to-pay-link.link = https://www.gov.uk/guidance/pay-taxes-penalties-and-enquiry-settlements
 ated.chargeable-return-confirmation.back-to-ated-link.text = Your ATED online service
