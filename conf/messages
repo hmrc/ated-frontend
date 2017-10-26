@@ -921,7 +921,7 @@ ated.form-bundle.back = Back
 # address lookup
 ated.address-lookup.title = Find the property''s address
 ated.address-lookup.header = Find the property''s address
-ated.address-lookup.postcode = Postcode
+ated.address-lookup.postcode = POSTCODE
 ated.address-lookup.house-name = House name or number (optional)
 ated.address-lookup.no-postcode-link.title = Enter address manually
 ated.address-lookup.find-button = Find address
