@@ -28,6 +28,7 @@ import utils.{AtedUtils, PeriodUtils}
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
 
+import scala.collection.mutable.ArrayBuffer
 import scala.concurrent.Future
 
 trait AvoidanceSchemeBeingUsedController extends BackLinkController
@@ -73,7 +74,8 @@ trait AvoidanceSchemeBeingUsedController extends BackLinkController
     implicit atedContext =>
       ensureClientContext {
         validatePeriodKey(periodKey) {
-          isTaxAvoidanceForm.bindFromRequest.fold(
+          val data = AtedUtils.addParamsToRequest(atedContext, Map("periodKey" -> ArrayBuffer(periodKey.toString)))
+          isTaxAvoidanceForm.bindFromRequest(data.get).fold(
             formWithError =>
               currentBackLink.map(backLink =>
                 BadRequest(views.html.reliefs.avoidanceSchemeBeingUsed(periodKey, formWithError, PeriodUtils.periodStartDate(periodKey), backLink))
