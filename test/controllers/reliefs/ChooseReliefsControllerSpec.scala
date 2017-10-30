@@ -201,16 +201,17 @@ class ChooseReliefsControllerSpec extends PlaySpec with OneServerPerSuite with M
               status(result) must be(BAD_REQUEST)
           }
         }
- /*       "for respective relief selected, respective dates become mandatory, so give BAD_REQUEST" in {
+      "for respective relief selected, respective dates become mandatory, so give BAD_REQUEST" in {
           val reliefs = Reliefs(periodKey = 2015, rentalBusiness = true, openToPublic = true, propertyDeveloper = true)
           val json = Json.toJson(reliefs)
           when(mockBackLinkCache.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
-          submitWithAuthorisedUser(FakeRequest().withJsonBody(json)) {
+          submitWithAuthorisedUser(FakeRequest().withFormUrlEncodedBody()) {
             result =>
               status(result) must be(BAD_REQUEST)
-              contentAsString(result) must include("There is a problem with the rental businesses start date")
+              contentAsString(result) must include("There is a problem with the page")
           }
         }
+
         "for all/any dates too early than period, return BAD_REQUEST" in {
           val inputJsonOne = Json.parse(
             """{"periodKey": 2015,
@@ -220,10 +221,10 @@ class ChooseReliefsControllerSpec extends PlaySpec with OneServerPerSuite with M
               |"rentalBusinessDate.day": "01",
               |"isAvoidanceScheme": true }""".stripMargin)
           when(mockBackLinkCache.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
-          submitWithAuthorisedUser(FakeRequest().withJsonBody(inputJsonOne)) {
+          submitWithAuthorisedUser(FakeRequest().withFormUrlEncodedBody()) {
             result =>
               status(result) must be(BAD_REQUEST)
-              contentAsString(result) must include("The rental businesses date must be in this chargeable period")
+              contentAsString(result) must include("There is a problem with the page")
           }
         }
         "for all/any dates too late than period, return BAD_REQUEST" in {
@@ -235,20 +236,26 @@ class ChooseReliefsControllerSpec extends PlaySpec with OneServerPerSuite with M
               |"rentalBusinessDate.day": "01",
               |"isAvoidanceScheme": true }""".stripMargin)
           when(mockBackLinkCache.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
-          submitWithAuthorisedUser(FakeRequest().withJsonBody(inputJsonOne)) {
+          submitWithAuthorisedUser(FakeRequest().withFormUrlEncodedBody()) {
             result =>
               status(result) must be(BAD_REQUEST)
-              contentAsString(result) must include("The rental businesses date must be in this chargeable period")
+              contentAsString(result) must include("There is a problem with the page")
           }
         }
         "for valid data, return OK" in {
-          val inputJson = Json.parse( """{"periodKey": 2015, "rentalBusiness": true, "isAvoidanceScheme": true, "rentalBusinessDate.year": "2015", "rentalBusinessDate.month": "05", "rentalBusinessDate.day": "01" }""")
+          val formBody = List(
+            ("periodKey", "2015"),
+            ("rentalBusiness", "true"),
+            ("isAvoidanceScheme", "true"),
+            ("rentalBusinessDate.year", "2015"),
+            ("rentalBusinessDate.month", "05"),
+            ("rentalBusinessDate.day", "01"))
           when(mockBackLinkCache.saveBackLink(Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
-          submitWithAuthorisedUser(FakeRequest().withJsonBody(inputJson)) {
+          submitWithAuthorisedUser(FakeRequest().withFormUrlEncodedBody(formBody: _*)) {
             result =>
               status(result) must be(SEE_OTHER)
           }
-        }*/
+        }
       }
     }
   }
