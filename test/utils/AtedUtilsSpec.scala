@@ -16,11 +16,16 @@
 
 package utils
 
-import builders.{ChangeLiabilityReturnBuilder, PropertyDetailsBuilder}
+import builders.AuthBuilder.createUserAuthContext
+import builders.{AuthBuilder, ChangeLiabilityReturnBuilder, PropertyDetailsBuilder}
+import controllers.auth.AtedAgentRegime.isAuthorised
 import models._
 import org.joda.time.LocalDate
+import org.mockito.Mockito.when
 import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
 import play.twirl.api.Html
+
+import scala.collection.mutable.ArrayBuffer
 
 class AtedUtilsSpec extends PlaySpec with OneServerPerSuite {
 
@@ -162,7 +167,6 @@ class AtedUtilsSpec extends PlaySpec with OneServerPerSuite {
 
   }
 
-
   "masking the bank account details" must {
 
     "fail and return blank" when {
@@ -183,7 +187,11 @@ class AtedUtilsSpec extends PlaySpec with OneServerPerSuite {
         AtedUtils.maskBankDetails("123456", 2) must be("XXXX56")
       }
     }
+  }
 
+  "adds the new parameter in the request data" in {
+    val testAtedContextWithNoBody = AuthBuilder.createAtedContext(createUserAuthContext("User-Id", "name"))
+    AtedUtils.addParamsToRequest(testAtedContextWithNoBody, Map("periodKey" -> ArrayBuffer("2017"))) must be(None)
   }
 
   "print Not Provided" when {
