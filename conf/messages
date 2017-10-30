@@ -454,7 +454,7 @@ ated.property-details-value.isPropertyRevalued.error.non-selected = You must ans
 
 ated.property-details-value.incorrect-format = You must enter a correct value.
 ated.property-details-value.revaluedValue = What is the new valuation of the property in GBP?
-ated.property-details-value.revaluedValue.hint = For example, 1500000
+ated.property-details-value.revaluedValue.hint = For example, 1,500,000
 ated.property-details-value.revaluedValue.error.empty = You must enter a valid property value
 ated.property-details-value.revaluedValue.error.too-low = The property value cannot be less than the lowest band
 ated.property-details-value.revaluedValue.error.too-high = The property value must be less than 14 characters
