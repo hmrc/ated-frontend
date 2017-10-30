@@ -30,7 +30,7 @@ import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
 import play.api.i18n.Messages
 import play.api.libs.json.Json
-import play.api.mvc.{AnyContentAsJson, Result}
+import play.api.mvc.{AnyContentAsFormUrlEncoded, AnyContentAsJson, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.ReliefsService
@@ -127,7 +127,7 @@ class AvoidanceSchemeBeingUsedControllerSpec extends PlaySpec with OneServerPerS
       "show an error if radio button is not selected" in {
         val inputJson = Json.parse( """{"periodKey":2015,"isAvoidanceScheme": "" }""")
         when(mockBackLinkCache.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
-        submitWithAuthorisedUser(FakeRequest().withJsonBody(inputJson)) {
+        submitWithAuthorisedUser(FakeRequest().withFormUrlEncodedBody()) {
           result =>
             status(result) must be(BAD_REQUEST)
             contentAsString(result) must include("There is a problem with the avoidance scheme question")
@@ -161,14 +161,16 @@ class AvoidanceSchemeBeingUsedControllerSpec extends PlaySpec with OneServerPerS
         "for invalid data, return BAD_REQUEST" in {
           val inputJson = Json.parse( """{"periodKey": 2015,"isAvoidanceScheme": ""}""")
           when(mockBackLinkCache.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
-          submitWithAuthorisedUser(FakeRequest().withJsonBody(inputJson)) {
+          submitWithAuthorisedUser(FakeRequest().withFormUrlEncodedBody()) {
             result =>
               status(result) must be(BAD_REQUEST)
           }
         }
         "for valid data, redirect to Avoidance scheme page" in {
-          val inputJson = Json.parse( """{"periodKey": 2015,"isAvoidanceScheme": true}""")
-          submitWithAuthorisedUser(FakeRequest().withJsonBody(inputJson)) {
+          val formBody = List(
+            ("periodKey", "2015"),
+            ("isAvoidanceScheme", "true"))
+          submitWithAuthorisedUser(FakeRequest().withFormUrlEncodedBody(formBody: _*)) {
             result =>
               status(result) must be(SEE_OTHER)
               redirectLocation(result).get must include("/ated/reliefs/2015/avoidance-schemes")
@@ -237,7 +239,7 @@ class AvoidanceSchemeBeingUsedControllerSpec extends PlaySpec with OneServerPerS
     test(result)
   }
 
-  def submitWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsJson])(test: Future[Result] => Any) {
+  def submitWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
     implicit val user = createAtedContext(createUserAuthContext(userId, "name"))
     when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
@@ -246,7 +248,7 @@ class AvoidanceSchemeBeingUsedControllerSpec extends PlaySpec with OneServerPerS
     when(mockBackLinkCache.saveBackLink(Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
 
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-    val result = TestAvoidanceSchemeBeingUsedController.send(periodKey).apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
+    val result = TestAvoidanceSchemeBeingUsedController.send(periodKey).apply(SessionBuilder.updateRequestFormWithSession(fakeRequest, userId))
 
     test(result)
   }

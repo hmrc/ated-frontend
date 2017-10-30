@@ -102,12 +102,11 @@ class ReliefsSentControllerSpec extends PlaySpec with OneServerPerSuite with Moc
 
             val document = Jsoup.parse(contentAsString(result))
             document.title() must be("Your returns have been successfully submitted")
-            document.getElementById("header").text() must be(s"Your returns have been successfully submitted on $submittedDate")
-            document.getElementById("date").text() must include("on")
+            document.getElementById("banner-text").text() must be(s"Your returns have been successfully submitted on $submittedDate")
             document.getElementById("completed-returns").text() must be("You can view your completed returns, payment references and ways to pay in the ATED online service.")
             document.getElementById("email-confirmation").text() must be("You will not receive an email confirmation.")
-            document.getElementById("receipt-message").text() must be("There is no liability for these returns")
-            document.getElementById("amount-message").text() must be("This amount does not reflect any payments you have already made, or penalties that have been issued.")
+            document.getElementById("receipt-message").text() must be("The ATED charge for these returns is £0")
+            document.getElementById("amount-message").text() must be("This amount does not reflect any payments you have already made or penalties that have been issued.")
 
           }
         }
@@ -121,8 +120,8 @@ class ReliefsSentControllerSpec extends PlaySpec with OneServerPerSuite with Moc
             document.getElementById("header").text() must be(s"Your returns have been successfully submitted on $submittedDate")
             document.getElementById("completed-returns").text() must be("You can view your completed returns, payment references and ways to pay in the ATED online service.")
             document.getElementById("email-confirmation").text() must be("You will not receive an email confirmation.")
-            document.getElementById("receipt-message").text() must be("There is no liability for these returns")
-            document.getElementById("amount-message").text() must be("This amount does not reflect any payments you have already made, or penalties that have been issued.")
+            document.getElementById("receipt-message").text() must be("The ATED charge for these returns is £0")
+            document.getElementById("amount-message").text() must be("This amount does not reflect any payments you have already made or penalties that have been issued.")
 
           }
         }

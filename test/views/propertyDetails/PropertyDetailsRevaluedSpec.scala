@@ -68,7 +68,7 @@ class PropertyDetailsRevaluedSpec extends FeatureSpec with OneServerPerSuite wit
       assert(document.getElementById("partAcqDispDate-year").attr("value") === "")
 
       And("the revalued date is setup correctly")
-      assert(document.getElementById("revaluedValue_field").text() === "What is the new valuation of the property in GBP? For example, 1500000")
+      assert(document.getElementById("revaluedValue_field").text() === "What is the new valuation of the property in GBP? For example, 1,500,000")
       assert(document.getElementById("revaluedDate_legend").text() === "What date did you get the property revalued? For example, 31 3 2016")
       assert(document.getElementById("revaluedValue").attr("value") === "")
 
