@@ -221,9 +221,9 @@ object PropertyDetailsForms {
   //scalastyle:off cyclomatic.complexity
   def validatePropertyDetailsRevalued(periodKey: Int, f: Form[PropertyDetailsRevalued]): Form[PropertyDetailsRevalued] = {
     if (!f.hasErrors) {
-      val formErrors = (PropertyDetailsFormsValidation.checkRevaluedDate(periodKey, f.get.isPropertyRevalued, f.get.revaluedDate)
-        ++ PropertyDetailsFormsValidation.checkPartAcqDispDate(periodKey, f.get.isPropertyRevalued,  f.get.partAcqDispDate)
+      val formErrors = (PropertyDetailsFormsValidation.checkPartAcqDispDate(periodKey, f.get.isPropertyRevalued,  f.get.partAcqDispDate)
         ++ validateValue(f.get.isPropertyRevalued == Some(true), "revaluedValue", f.get.revaluedValue, f)
+        ++ PropertyDetailsFormsValidation.checkRevaluedDate(periodKey, f.get.isPropertyRevalued, f.get.revaluedDate)
         ).flatten
       addErrorsToForm(f, formErrors)
     } else f
