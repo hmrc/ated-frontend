@@ -56,7 +56,7 @@ class addressLookupSpec extends FeatureSpec with OneServerPerSuite with MockitoS
       Then("The fields should have the correct names")
       assert(document.getElementById("house-name_field").text() === "House name or number (optional)")
       assert(document.getElementById("house-name").attr("value") === "")
-      assert(document.getElementById("postcode_field").text() === "POSTCODE")
+      assert(document.getElementById("postcode_field").text() === "Postcode")
       assert(document.getElementById("postcode").attr("value") === "")
 
       Then("The no post code link should be - I don't have a postcode")
@@ -89,7 +89,7 @@ class addressLookupSpec extends FeatureSpec with OneServerPerSuite with MockitoS
       Then("The fields should have the correct names")
       assert(document.getElementById("house-name_field").text() === "House name or number (optional)")
       assert(document.getElementById("house-name").attr("value") === "")
-      assert(document.getElementById("postcode_field").text() === "POSTCODE")
+      assert(document.getElementById("postcode_field").text() === "Postcode")
       assert(document.getElementById("postcode").attr("value") === "")
 
       Then("The no post code link should be - I don't have a postcode")

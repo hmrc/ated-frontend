@@ -789,3 +789,7 @@ table th {
 #tab-past-returns:focus, #current-returns-tab:focus {
     outline: 0px solid transparent;
 }
+
+.uppercase {
+   text-transform: uppercase;
+}
