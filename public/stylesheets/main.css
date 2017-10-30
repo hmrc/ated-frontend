@@ -793,3 +793,9 @@ table th {
 .uppercase {
    text-transform: uppercase;
 }
+
+/*  -- Vertical Spacing - https://v4-alpha.getbootstrap.com/utilities/spacing/ -- */
+
+.marginbottom-1 {
+  margin-bottom: 30px;
+}

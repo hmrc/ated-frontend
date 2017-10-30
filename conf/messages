@@ -1037,7 +1037,7 @@ ated.property-details-summary.field-blank = Not Provided
 # relief-summary page
 ated.relief-summary.title = Check your details are correct
 ated.relief-summary.header = Check your details are correct
-ated.relief-summary.details-text = For the ATED period from {0} to {1}.
+ated.relief-summary.details-text = For the ATED chargeable period from {0} to {1}.
 ated.relief-summary-types.rentalBusiness =Rental property
 ated.relief-summary-types.openToPublic = Open to the public
 ated.relief-summary-types.propertyDeveloper = Property developers
