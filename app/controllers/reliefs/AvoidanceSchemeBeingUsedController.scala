@@ -75,7 +75,7 @@ trait AvoidanceSchemeBeingUsedController extends BackLinkController
       ensureClientContext {
         validatePeriodKey(periodKey) {
           val data = AtedUtils.addParamsToRequest(atedContext, Map("periodKey" -> ArrayBuffer(periodKey.toString)))
-          isTaxAvoidanceForm.bindFromRequest.fold(
+          isTaxAvoidanceForm.bindFromRequest(data.get).fold(
             formWithError =>
               currentBackLink.map(backLink =>
                 BadRequest(views.html.reliefs.avoidanceSchemeBeingUsed(periodKey, formWithError, PeriodUtils.periodStartDate(periodKey), backLink))
