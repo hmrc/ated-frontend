@@ -12,14 +12,22 @@
 
 @implicitFormInstance = @{ Some(propertyDetailsForm) }
 
-@atedMain(title = Messages("ated.property-details-period.isFullPeriod.title"), attorney = atedContext.user.authContext.attorney) {
+@analyticsJs = {
+  var id = "@id";
+  var page = document.location.pathname.replace('/' + id, '');
+  ga('set', 'page', page);
+}
+
+@atedMain(title = Messages("ated.property-details-period.isFullPeriod.title"),
+          attorney = atedContext.user.authContext.attorney,
+          analyticsAdditionalJs = Some(analyticsJs)) {
   @pageHeadersAndError(backLink, "pre-heading", Messages("ated.property-details.pre-header"), "property-details-header", Messages("ated.property-details-period.isFullPeriod.header"),
     Some(atedErrorSummary(propertyDetailsForm, "ated.property-details-period-error.general")))
 
   @form(action=controllers.propertyDetails.routes.IsFullTaxPeriodController.save(id, periodKey)) {
 
     <div class="form-group" id="isFullPeriod">
-      @inputRadioGroup(propertyDetailsForm("isFullPeriod"),
+      @atedInputRadioGroupNew(propertyDetailsForm("isFullPeriod"),
       Seq(
         "true" -> Messages("ated.property-details-period.yes"),
         "false" -> Messages("ated.property-details-period.no")),

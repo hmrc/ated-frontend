@@ -10,7 +10,15 @@ backLink: Option[String])(implicit atedContext: AtedContext, messages: Messages)
 
 @incomplete = {@Messages("ated.label.incomplete")}
 
-@atedMain(title = Messages("ated.property-details-summary.title"), attorney = atedContext.user.authContext.attorney) {
+@analyticsJs = {
+  var id = "@{propertyDetails.id}";
+  var page = document.location.pathname.replace('/' + id, '');
+  ga('set', 'page', page);
+}
+
+@atedMain(title = Messages("ated.property-details-summary.title"),
+          attorney = atedContext.user.authContext.attorney,
+          analyticsAdditionalJs = Some(analyticsJs)) {
 
 @pageHeadersAndError(backLink, "pre-heading", Messages("ated.property-details.pre-header"), "property-details-summary-header", Messages("ated.property-details-summary.header"))
 

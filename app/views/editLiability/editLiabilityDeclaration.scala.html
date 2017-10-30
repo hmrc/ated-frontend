@@ -7,8 +7,15 @@
 @import org.joda.time.LocalDate
 @import utils.AtedUtils._
 
+@analyticsJs = {
+  var id = "@oldFormBundleNum";
+  var page = document.location.pathname.replace('/' + id, '');
+  ga('set', 'page', page);
+}
 
-@atedMain(title = Messages(printHeaderMsg(returnType)), attorney = atedContext.user.authContext.attorney) {
+@atedMain(title = Messages(printHeaderMsg(returnType)),
+          attorney = atedContext.user.authContext.attorney,
+          analyticsAdditionalJs = Some(analyticsJs)) {
   @pageHeadersAndError(backLink, "pre-heading", Messages("ated.property-details.pre-header-change"), "relief-declaration-confirmation-header", Messages(printHeaderMsg(returnType)))
 
   <p id="relief-declaration-before-declaration-text">

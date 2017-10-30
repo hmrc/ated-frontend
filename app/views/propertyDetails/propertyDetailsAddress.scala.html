@@ -10,14 +10,21 @@
 
 @implicitFormInstance = @{ Some(propertyDetailsForm) }
 
+@analyticsJs = {
+  ga('set', 'page', document.location.pathname);
+  ga('set', 'location', document.URL.split("?")[0]);
+}
 
-@atedMain(title = Messages("ated.property-details.title"), attorney = atedContext.user.authContext.attorney) {
+@atedMain(title = Messages("ated.property-details.title"),
+          attorney = atedContext.user.authContext.attorney,
+          analyticsAdditionalJs = Some(analyticsJs)) {
+
   @pageHeadersAndError(backLink, "pre-heading", AtedUtils.getPropertyDetailsPreHeader(mode), "property-details-header", Messages("ated.property-details.header"),
       Some(atedErrorSummary(propertyDetailsForm, "ated.property-details-address-error.general")))
 
   @form(action=controllers.propertyDetails.routes.PropertyDetailsAddressController.save(id, periodKey, mode)) {
 
-    <div class="form-group">
+
       <p>
         <span class="heading-small form-group" id="property-details-address">
         @Messages("ated.property-details.property-address")
@@ -25,6 +32,7 @@
       </p>
 
     <fieldset>
+
       <legend class="visuallyhidden">@Messages("ated.property-details.header")</legend>
 
           @atedInputNew(propertyDetailsForm("line_1"),
@@ -35,19 +43,19 @@
 
           @atedInputNew(propertyDetailsForm("line_2"),
             '_label ->  Html(Messages("ated.addressProperty.line_2")),
-            '_labelClass ->  "visuallyhidden",
+            '_labelClass ->  "form-label-bold",
             '_id -> "line_2",
             '_showConstraints -> false)
 
           @atedInputNew(propertyDetailsForm("line_3"),
             '_label ->  Html(Messages("ated.addressProperty.line_3")),
-            '_labelClass ->  "visuallyhidden",
+            '_labelClass ->  "form-label-bold",
             '_id -> "line_3",
             '_showConstraints -> false)
 
           @atedInputNew(propertyDetailsForm("line_4"),
             '_label ->  Html(Messages("ated.addressProperty.line_4")),
-            '_labelClass ->  "visuallyhidden",
+            '_labelClass ->  "form-label-bold",
             '_id -> "line_4",
             '_showConstraints -> false)
 
@@ -58,8 +66,8 @@
             '_inputClass -> "input--normal",
             '_showConstraints -> false)
 
+
     </fieldset>
-    </div>
 
   <div class="form-group">
     <a href="@controllers.propertyDetails.routes.PropertyDetailsAddressController.addressLookupRedirect(id, periodKey, mode)"

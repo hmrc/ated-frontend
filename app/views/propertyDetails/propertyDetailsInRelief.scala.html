@@ -8,15 +8,23 @@
 
 @implicitFormInstance = @{ Some(propertyDetailsForm) }
 
+@analyticsJs = {
+  var id = "@id";
+  var page = document.location.pathname.replace('/' + id, '');
+  ga('set', 'page', page);
+}
 
-@atedMain(title = Messages("ated.property-details-period.isInRelief.title"), attorney = atedContext.user.authContext.attorney) {
+@atedMain(title = Messages("ated.property-details-period.isInRelief.title"),
+          attorney = atedContext.user.authContext.attorney,
+          analyticsAdditionalJs = Some(analyticsJs)) {
+
   @pageHeadersAndError(backLink, "pre-heading", AtedUtils.getPropertyDetailsPreHeader(mode), "property-details-header", Messages("ated.property-details-period.isInRelief.header"),
       Some(atedErrorSummary(propertyDetailsForm, "ated.property-details-period-error.general")))
 
   @form(action=controllers.propertyDetails.routes.PropertyDetailsInReliefController.save(id, periodKey, mode)) {
 
     <div class="form-group" id="isInRelief">
-      @inputRadioGroup(propertyDetailsForm("isInRelief"),
+      @atedInputRadioGroupNew(propertyDetailsForm("isInRelief"),
       Seq(
         "true" -> Messages("ated.property-details-period.yes"),
         "false" -> Messages("ated.property-details-period.no")),

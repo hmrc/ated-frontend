@@ -10,7 +10,15 @@
 
 @(deleteDraftForm: Form[YesNoQuestion], id: Option[String], periodKey: Int, returnType: String, backLink: Option[String])(implicit atedContext: AtedContext, messages: Messages)
 
-@atedMain(title = Messages("ated.delete-draft.title"), attorney = atedContext.user.authContext.attorney) {
+@analyticsJs = {
+  ga('set', 'page', document.location.pathname);
+  ga('set', 'location', document.URL.split("?")[0]);
+}
+
+@atedMain(title = Messages("ated.delete-draft.title"),
+          attorney = atedContext.user.authContext.attorney,
+          analyticsAdditionalJs = Some(analyticsJs)) {
+
 @pageHeadersAndError(backLink, "pre-header", Messages("ated.return-type.pre-header"), "header", Messages("ated.delete-draft.header"),
 Some(atedErrorSummary(deleteDraftForm, "ated.delete-drafts.error.general")))
 

@@ -12,10 +12,28 @@
 <script src='@controllers.routes.AssetsController.at("javascript/propertyDetailsTaxAvoidance.js")'></script>
 }
 
-@atedMain(title = Messages("ated.property-details-period.isTaxAvoidance.title"), attorney = atedContext.user.authContext.attorney, pageScripts = Some(pageScripts)) {
+@analyticsJs = {
+  var id = "@id";
+  var page = document.location.pathname.replace('/' + id, '');
+  ga('set', 'page', page);
+}
+
+@atedMain(title = Messages("ated.property-details-period.isTaxAvoidance.title"),
+          attorney = atedContext.user.authContext.attorney,
+          pageScripts = Some(pageScripts),
+          analyticsAdditionalJs = Some(analyticsJs)) {
 
   @pageHeadersAndError(backLink, "pre-heading", AtedUtils.getPropertyDetailsPreHeader(mode), "property-details-header", Messages("ated.property-details-period.isTaxAvoidance.header"),
       Some(atedErrorSummary(propertyDetailsForm, "ated.property-details-period-error.general")))
+
+  <details>
+    <summary><span id="isTaxAvoidance-what-is-this" class="summary">@Messages("ated.property-details-period.isTaxAvoidance.what")</span>
+    </summary>
+    <div class="panel-indent">
+      <span id="isTaxAvoidance-text">@Html(Messages("ated.property-details-period.isTaxAvoidance.what.text"))</span>
+    </div>
+  </details>
+
 
   @form(action=controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceController.save(id, periodKey, mode)) {
     <div class="form-group" id="isTaxAvoidance">
@@ -48,13 +66,6 @@
         '_showConstraints -> false)
       </div>
     </div>
-    <details>
-      <summary><span id="isTaxAvoidance-what-is-this" class="summary">@Messages("ated.property-details-period.isTaxAvoidance.what")</span>
-      </summary>
-      <div class="panel-indent">
-        <span id="isTaxAvoidance-text">@Html(Messages("ated.property-details-period.isTaxAvoidance.what.text"))</span>
-      </div>
-    </details>
 
     <button class="button" id="submit" type="submit">@Messages("ated.save-and-continue")</button>
 

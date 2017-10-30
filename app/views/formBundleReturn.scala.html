@@ -20,8 +20,16 @@
 <script src='@controllers.routes.AssetsController.at("javascript/formBundleReturn.js")'></script>
 }
 
-@atedMain(title = Messages("ated.form-bundle.title"), attorney = atedContext.user.authContext.attorney,
-                            pageScripts = Some(pageScripts)) {
+@analyticsJs = {
+  var id = "@formBundleNumber";
+  var page = document.location.pathname.replace('/' + id, '');
+  ga('set', 'page', page);
+}
+
+@atedMain(title = Messages("ated.form-bundle.title"),
+          attorney = atedContext.user.authContext.attorney,
+          pageScripts = Some(pageScripts),
+          analyticsAdditionalJs = Some(analyticsJs)) {
 
   @pageHeadersAndError(backLink, "form-bundle-subheader", organisationName.getOrElse(""), "form-bundle-header", Messages("ated.form-bundle.header"), subHeaderPrefix = Some(Messages("ated.screen-reader.section-name")))
 

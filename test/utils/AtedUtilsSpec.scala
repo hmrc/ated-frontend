@@ -193,4 +193,18 @@ class AtedUtilsSpec extends PlaySpec with OneServerPerSuite {
     val testAtedContextWithNoBody = AuthBuilder.createAtedContext(createUserAuthContext("User-Id", "name"))
     AtedUtils.addParamsToRequest(testAtedContextWithNoBody, Map("periodKey" -> ArrayBuffer("2017"))) must be(None)
   }
+
+  "print Not Provided" when {
+
+    "string is blank/empty" in {
+      AtedUtils.printNotProvidedIfEmpty("") must be("Not Provided")
+    }
+  }
+
+   "print the string" when {
+
+     "string is not blank/empty" in {
+       AtedUtils.printNotProvidedIfEmpty("abc") must be("abc")
+     }
+   }
 }

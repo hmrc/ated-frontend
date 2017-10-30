@@ -15,7 +15,15 @@
 <script src='@controllers.routes.AssetsController.at("javascript/manualAddressEntryLink.js")'></script>
 }
 
-@atedMain(title = Messages("ated.address-lookup.results.title"), attorney = atedContext.user.authContext.attorney, pageScripts=Some(pageScripts)) {
+@analyticsJs = {
+  ga('set', 'page', document.location.pathname);
+  ga('set', 'location', document.URL.split("?")[0]);
+}
+
+@atedMain(title = Messages("ated.address-lookup.results.title"),
+          attorney = atedContext.user.authContext.attorney,
+          pageScripts=Some(pageScripts),
+          analyticsAdditionalJs = Some(analyticsJs)) {
   @pageHeadersAndError(backLink, "pre-heading", AtedUtils.getPropertyDetailsPreHeader(mode), "account-lookup-header", Messages("ated.address-lookup.results.header"),
       Some(atedErrorSummary(addressResultsForm, "ated.address-lookup.error.general")))
 
@@ -45,7 +53,7 @@
            role="button"
            class="button"
            onkeyup='spaceBarHandler(event,"@controllers.propertyDetails.routes.AddressLookupController.manualAddressRedirect(id, periodKey, mode)")'
-           aria-label='@Messages("ated.address-lookup.address-manual-entry-link.title")'>@Messages("ated.address-lookup.address-manual-entry-link.title")</a>
+            >@Messages("ated.address-lookup.address-manual-entry-link.title")</a>
       </div>
 
     }else {
@@ -53,8 +61,9 @@
         <div class="form-group">
           @atedInputRadioGroupNew(addressResultsForm("selected"),
           searchResults.results map (result => result.id -> result.address.toString),
-          '_legend ->"",
-          '_labelClass -> "block-label",
+              '_legend -> Messages("ated.address-lookup.results.title"),
+              '_legendClass -> "visuallyhidden",
+              '_labelClass -> "block-label",
           '_labelAfter -> true,
           '_trackGA -> true
           )
@@ -64,7 +73,7 @@
              id="enter-address-link"
              data-journey-click="ated-fronted:click:manual-entry"
              onkeyup='spaceBarHandler(event,"@controllers.propertyDetails.routes.AddressLookupController.manualAddressRedirect(id, periodKey, mode)")'
-             aria-label='@Messages("ated.address-lookup.address-not-in-list-link.title")'>@Messages("ated.address-lookup.address-not-in-list-link.title")</a>
+             @Messages("ated.address-lookup.address-not-in-list-link.title")'>@Messages("ated.address-lookup.address-not-in-list-link.title")</a>
         </div>
 
         <button class="button" id="submit" type="submit">@Messages("ated.save-and-continue")</button>

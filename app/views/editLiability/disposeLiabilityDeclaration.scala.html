@@ -7,15 +7,21 @@
 @import org.joda.time.LocalDate
 @import utils.AtedUtils._
 
-@atedMain(title = Messages("ated.edit-liability.declaration.header.amend"), attorney = atedContext.user.authContext.attorney) {
+@analyticsJs = {
+  var id = "@oldFormBundleNum";
+  var page = document.location.pathname.replace('/' + id, '');
+  ga('set', 'page', page);
+}
 
+@atedMain(title = Messages("ated.edit-liability.declaration.header.amend"),
+          attorney = atedContext.user.authContext.attorney,
+          analyticsAdditionalJs = Some(analyticsJs)) {
 
   @pageHeadersAndError(backLink, "pre-heading", Messages("ated.property-details.pre-header-dispose"), "dispose-liability-declaration-confirmation-header", Messages("ated.edit-liability.declaration.header.amend"))
 
   <p id="dispose-liability-declaration-before-declaration-text">
     @if(atedContext.user.authContext.attorney.isDefined) { @Messages("ated.edit-liability.before-declaration.agent")} else { @Messages("ated.edit-liability.before-declaration.client")}
   </p>
-
 
    <p>
     <span class="text-bold" id="declaration-confirmation-text">

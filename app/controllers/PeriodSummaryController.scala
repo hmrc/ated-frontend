@@ -68,19 +68,28 @@ trait PeriodSummaryController extends BackLinkController with AtedFrontendAuthHe
       )
   }
 
-  def viewChargeable(periodKey: Int, id: String) = AuthAction(AtedRegime) {
+  def viewChargeable(periodKey: Int, propertyKey: String) = AuthAction(AtedRegime) {
     implicit atedContext =>
       RedirectWithBackLink(PropertyDetailsSummaryController.controllerId,
-        controllers.propertyDetails.routes.PropertyDetailsSummaryController.view(id),
+        controllers.propertyDetails.routes.PropertyDetailsSummaryController.view(propertyKey),
         Some(routes.PeriodSummaryController.view(periodKey).url),
         List(AddressLookupController.controllerId)
       )
   }
 
-  def viewDisposal(periodKey: Int, id: String) = AuthAction(AtedRegime) {
+  def viewChargeableEdit(periodKey: Int, propertyKey: String) = AuthAction(AtedRegime) {
+    implicit atedContext =>
+      RedirectWithBackLink(PropertyDetailsSummaryController.controllerId,
+        controllers.editLiability.routes.EditLiabilitySummaryController.view(propertyKey),
+        Some(routes.PeriodSummaryController.view(periodKey).url),
+        List(AddressLookupController.controllerId)
+      )
+  }
+
+  def viewDisposal(periodKey: Int, propertyKey: String) = AuthAction(AtedRegime) {
     implicit atedContext =>
       RedirectWithBackLink(DisposePropertyController.controllerId,
-        controllers.editLiability.routes.DisposeLiabilitySummaryController.view(id),
+        controllers.editLiability.routes.DisposeLiabilitySummaryController.view(propertyKey),
         Some(routes.PeriodSummaryController.view(periodKey).url)
       )
   }

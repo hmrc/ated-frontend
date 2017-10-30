@@ -7,7 +7,15 @@
 @import org.joda.time.format.DateTimeFormat
 @import org.joda.time.LocalDate
 
-@atedMain(title = Messages("ated.edit-liability.sent.amend.title"), attorney = atedContext.user.authContext.attorney) {
+@analyticsJs = {
+  var id = "@formBundleNum";
+  var page = document.location.pathname.replace('/' + id, '');
+  ga('set', 'page', page);
+}
+
+@atedMain(title = Messages("ated.edit-liability.sent.amend.title"),
+          attorney = atedContext.user.authContext.attorney,
+          analyticsAdditionalJs = Some(analyticsJs)) {
 
   <div id="banner" class="greenBanner form-field">
     <h1 id="header">@Messages("ated.edit-liability.sent.header.dispose")</h1>

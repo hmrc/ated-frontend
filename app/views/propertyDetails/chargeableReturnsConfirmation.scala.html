@@ -9,14 +9,18 @@
 @import views.html.helpers._
 @import views.html.helpers.error._
 
-@atedMain(title = Messages("ated.chargeable-return-confirmation.title"), attorney = atedContext.user.authContext.attorney) {
+@analyticsJs = {
+  ga('set', 'page', document.location.pathname);
+  ga('set', 'location', document.URL.split("?")[0]);
+}
+
+@atedMain(title = Messages("ated.chargeable-return-confirmation.title"),
+          attorney = atedContext.user.authContext.attorney,
+          analyticsAdditionalJs = Some(analyticsJs)) {
 
   <div id="banner" class="transaction-banner--complete form-group">
     <h1 class="heading-large" id="value-text">
-      @Messages("ated.chargeable-return-confirmation.submitted.text")
-      <span class="heading-small form group" id="date">
-        @Messages("ated.chargeable-return-confirmation.submitted.date.text", DateTimeFormat.forPattern("d MMMM yyyy").print(new LocalDate()))
-      </span>
+      @Messages("ated.chargeable-return-confirmation.submitted.text" , DateTimeFormat.forPattern("d MMMM yyyy").print(new LocalDate()))
     </h1>
   </div>
 
@@ -31,21 +35,19 @@
 
   <div class="divider--top--thick"></div>
 
-  <div class="form-group">
+
 
     <h2 id="receipt-message-title" class="heading-medium">@Messages("ated.chargeable-return-confirmation.charge.heading")</h2>
 
     <p id="adjusted-amount">@Messages("ated.chargeable-return-confirmation.amount.message")</p>
 
-    <ul class="list-bullet">
-      @returnResponse.liabilityReturnResponse.map { liabilityReturnResponse =>
-        <li id="owed-amount">@Html(Messages("ated.chargeable-return-confirmation.owe.text", formattedPounds(liabilityReturnResponse.head.liabilityAmount)))</li>
-        <li id="reference-text">@Html(Messages("ated.chargeable-return-confirmation.reference.text", liabilityReturnResponse.head.paymentReference.getOrElse("")))</li>
-        <li id="late-payment">@Html(Messages("ated.chargeable-return-late-payment.text"))</li>
-      }
-    </ul>
 
-  </div>
+      @returnResponse.liabilityReturnResponse.map { liabilityReturnResponse =>
+        <p id="owed-amount">@Html(Messages("ated.chargeable-return-confirmation.owe.text", formattedPounds(liabilityReturnResponse.head.liabilityAmount)))</p>
+        <p id="reference-text">@Html(Messages("ated.chargeable-return-confirmation.reference.text", liabilityReturnResponse.head.paymentReference.getOrElse("")))</p>
+        <p id="late-payment">@Html(Messages("ated.chargeable-return-late-payment.text"))</p>
+      }
+
 
   <div class="form-group">
     <p id="not-receive-email">

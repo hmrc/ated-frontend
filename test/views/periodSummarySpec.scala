@@ -42,7 +42,7 @@ class periodSummarySpec extends FeatureSpec with OneServerPerSuite with MockitoS
   val formBundleNo2 = "123456789013"
   val formBundleNo3 = "123456789014"
 
-  val draftReturns1 = DraftReturns(2015, "1", "desc", Some(BigDecimal(100.00)), TypeChangeLiabilityDraft)
+  val draftReturns1 = DraftReturns(2015, "1", "desc", Some(BigDecimal(100.00)), TypeLiabilityDraft)
   val draftReturns2 = DraftReturns(2015, "", "some relief", None, TypeReliefDraft)
   val submittedReliefReturns1 = SubmittedReliefReturns(formBundleNo1, "some relief", new LocalDate("2015-05-05"), new LocalDate("2015-05-05"), new LocalDate("2015-05-05"))
   val submittedLiabilityReturns1 = SubmittedLiabilityReturns(formBundleNo2, "addr1+2", BigDecimal(1234.00), new LocalDate("2015-05-05"), new LocalDate("2015-05-05"), new LocalDate("2015-05-05"), true, "payment-ref-01")

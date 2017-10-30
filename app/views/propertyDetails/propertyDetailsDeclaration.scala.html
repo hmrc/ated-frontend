@@ -9,7 +9,16 @@
 @import org.joda.time.format.DateTimeFormat
 @import org.joda.time.LocalDate
 
-@atedMain(title = Messages("ated.chargeable-return-declaration.title"), attorney = atedContext.user.authContext.attorney) {
+@analyticsJs = {
+  var id = "@id";
+  var page = document.location.pathname.replace('/' + id, '');
+  ga('set', 'page', page);
+}
+
+@atedMain(title = Messages("ated.chargeable-return-declaration.title"),
+          attorney = atedContext.user.authContext.attorney,
+          analyticsAdditionalJs = Some(analyticsJs)) {
+
   @pageHeadersAndError(backLink, "pre-heading", Messages("ated.property-details.pre-header"), "chargeable-return-confirmation-header", Messages("ated.chargeable-return-declaration.header"))
 
   <p id="chargeable-return-before-declaration-text">

@@ -16,8 +16,16 @@
   <script src='@controllers.routes.AssetsController.at("javascript/propertyDetailsOwnedBefore.js")'></script>
 }
 
+@analyticsJs = {
+  var id = "@id";
+  var page = document.location.pathname.replace('/' + id, '');
+  ga('set', 'page', page);
+}
 
-@atedMain(title = Messages("ated.property-details-value.isOwnedBefore2012.title"), attorney = atedContext.user.authContext.attorney, pageScripts = Some(pageScripts)) {
+@atedMain(title = Messages("ated.property-details-value.isOwnedBefore2012.title"),
+          attorney = atedContext.user.authContext.attorney,
+          pageScripts = Some(pageScripts),
+          analyticsAdditionalJs = Some(analyticsJs)) {
   @pageHeadersAndError(backLink, "pre-heading", AtedUtils.getPropertyDetailsPreHeader(mode), "property-details-header", Messages("ated.property-details-value.isOwnedBefore2012.header"),
       Some(atedErrorSummary(propertyDetailsForm, "ated.property-details-value-error.general")))
 
@@ -48,7 +56,7 @@
           '_hintText -> Messages("ated.property-details-value.ownedBefore2012Value.hint"),
           '_id -> "ownedBefore2012Value",
           '_showConstraints -> false,
-          '_type -> "number")
+          '_type -> "text")
         </div>
       </div>
 

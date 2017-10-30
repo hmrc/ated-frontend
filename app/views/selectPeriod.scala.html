@@ -7,7 +7,15 @@
 @import views.html.helpers.error._
 @import utils.AtedUtils._
 
-@atedMain(title = Messages("ated.select-period.title"), attorney = atedContext.user.authContext.attorney) {
+@analyticsJs = {
+  ga('set', 'page', document.location.pathname);
+  ga('set', 'location', document.URL.split("?")[0]);
+}
+
+@atedMain(title = Messages("ated.select-period.title"),
+          attorney = atedContext.user.authContext.attorney,
+          analyticsAdditionalJs = Some(analyticsJs)) {
+
   @pageHeadersAndError(backLink, "pre-heading", Messages("ated.return-type.pre-header"), "header", Messages("ated.select-period.header"),
     Some(atedErrorSummary(selectPeriodForm, "ated.select-period.error.general")))
 
