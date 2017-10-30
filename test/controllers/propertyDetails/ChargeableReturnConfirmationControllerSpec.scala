@@ -103,10 +103,10 @@ class ChargeableReturnConfirmationControllerSpec extends PlaySpec with OneServer
               document.getElementById("completed-message").text() must be("You can view your completed returns, payment references and ways to pay in the ATED online service.")
               document.getElementById("email-message").text() must include("You will not receive an email confirmation.")
               document.getElementById("receipt-message-title").text() must include("Charges for this return")
-              document.getElementById("adjusted-amount").text() must include("This amount does not reflect any payments you have already made, or penalties that have been issued.")
+              document.getElementById("adjusted-amount").text() must include("This amount does not reflect any payments you have already made or penalties that have been issued.")
               document.getElementById("owed-amount").text() must include("The charges for this return are")
               document.getElementById("reference-text").text() must include("The reference to make this payment is")
-              document.getElementById("not-receive-email").text() must be("You can view your balance in your ATED online service. There can be a 24 hour delay before you see any updates.")
+              document.getElementById("not-receive-email").text() must be("You can view your balance in your ATED online service. There can be a 24-hour delay before you see any updates.")
               document.getElementById("submit").text() must be("Your ATED online service")
               document.getElementById("submit").attr("href") must be("/ated/account-summary")
           }
@@ -121,10 +121,10 @@ class ChargeableReturnConfirmationControllerSpec extends PlaySpec with OneServer
               document.getElementById("completed-message").text() must be("You can view your completed returns, payment references and ways to pay in the ATED online service.")
               document.getElementById("email-message").text() must include("You will not receive an email confirmation.")
               document.getElementById("receipt-message-title").text() must include("Charges for this return")
-              document.getElementById("adjusted-amount").text() must include("This amount does not reflect any payments you have already made, or penalties that have been issued.")
+              document.getElementById("adjusted-amount").text() must include("This amount does not reflect any payments you have already made or penalties that have been issued.")
               document.getElementById("owed-amount").text() must include("The charges for this return are")
               document.getElementById("reference-text").text() must include("The reference to make this payment is")
-              document.getElementById("not-receive-email").text() must be("You can view your balance in your ATED online service. There can be a 24 hour delay before you see any updates.")
+              document.getElementById("not-receive-email").text() must be("You can view your balance in your ATED online service. There can be a 24-hour delay before you see any updates.")
 
           }
         }

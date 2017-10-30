@@ -130,7 +130,7 @@ ated.select-period.more-years.answer = Any ATED returns before these periods nee
 ated.choose-reliefs.title = What reliefs are you claiming?
 ated.choose-reliefs.subheader = Create return
 ated.choose-reliefs.header = What reliefs are you claiming?
-ated.choose-reliefs.info = You can select more than one relief code. A single relief code can cover 1 or more properties.
+ated.choose-reliefs.info = You can select more than one relief code. A single relief code can cover one or more properties.
 ated.choose-reliefs.label = Select all reliefs that apply
 
 ated.choose-reliefs.question = What are ATED relief codes?
@@ -171,7 +171,7 @@ ated.choose-reliefs-further.information.text = We don’t need any further infor
 
 ated.choose-reliefs.error = You must select at least one relief
 ated.choose-reliefs.continue = Save and continue
-ated.choose-reliefs.date = What was the relief start date?
+ated.choose-reliefs.date = When did the {0} start?
 ated.choose-reliefs.error.general.isAvoidanceScheme = There is a problem with the avoidance scheme question
 ated.choose-reliefs.error.general.reliefs = You must select at least one relief
 ated.choose-reliefs.error.general.rentalBusinessDate = There is a problem with the rental businesses start date
@@ -219,16 +219,16 @@ ated.avoidance-schemes.avoidance-scheme-promoter.text = Promoter reference numbe
 
 ## relief sent
 ated.relief-sent.title = Your returns have been successfully submitted
-ated.relief-sent.header = Your returns have been successfully submitted
-ated.relief-sent.header.date = on
+ated.relief-sent.banner-text = Your returns have been successfully submitted on {0}
+ated.relief-sent.header = Your returns have been successfully submitted on {0}
 ated.reliefs-sent.button = Finish and sign out
 ated.reliefs-sent.client-link = Your ATED online service
 ated.reliefs-sent.completed-message = You can view your completed returns, payment references and ways to pay in the ATED online service.
 ated.reliefs-sent.email-message = You will not receive an email confirmation.
-ated.reliefs-sent.charge-heading = There is no liability for these returns
-ated.reliefs-sent.amount-message = This amount does not reflect any payments you have already made, or penalties that have been issued.
-ated.reliefs-sent.balance-message = You can view your balance in your ATED online service. There can be a 24 hour delay before you see any updates.
-ated.reliefs-sent.reference-message = Your reference for these returns are  {0}
+ated.reliefs-sent.charge-heading = The ATED charge for these returns is £0
+ated.reliefs-sent.amount-message = This amount does not reflect any payments you have already made or penalties that have been issued.
+ated.reliefs-sent.balance-message = You can view your balance in your ATED online service. There can be a 24-hour delay before you see any updates.
+ated.reliefs-sent.reference-message = Your reference for these returns are  {0}.
 ated.reliefs-sent.print-link = Print confirmation
 
 ##feedback
@@ -430,12 +430,13 @@ ated.property-details-value.header = Has the value of your property changed for 
 ated.property-details-value.yes = Yes
 ated.property-details-value.no = No
 
-ated.property-details-value.anAcquisition.title = Since the date of acquisition, have you bought or sold land, or extended an existing lease on this property, for £40,000 or more?
-ated.property-details-value.anAcquisition.header = Since the date of acquisition, have you bought or sold land, or extended an existing lease on this property, for £40,000 or more?
+ated.property-details-value.anAcquisition.title = Have you spent £40,000 or more on this property since you bought it?
+ated.property-details-value.anAcquisition.header = Have you spent £40,000 or more on this property since you bought it?
+ated.property-details-value.anAcquisition.lede = The money must have been to update the property by buying land, selling land or extending an existing lease.
 ated.property-details-value.anAcquisition.error-field-name = You must answer this question
-ated.property-details-value.anAcquisition.legend =  Since the date of acquisition, have you bought or sold land, or extended an existing lease on this property, for £40,000 or more?
+ated.property-details-value.anAcquisition.legend =  Have you spent £40,000 or more on this property since you bought it?
 ated.property-details-value.anAcquisition.what = Why is the £40,000 level important?
-ated.property-details-value.anAcquisition.what.text =  <p>Buying land or extending an existing lease for £40,000 or more (acquisition) would trigger a revaluation. If the property moves into a higher property band this mean you have to pay more tax.</p>Selling any land connected to the property for £40,000 or more (disposal) would trigger a revaluation. If the property moves into a lower property band this mean you have to pay less tax.<p></p><p>Further information on this can be found in the <a href="https://www.gov.uk/government/uploads/system/uploads/attachment_data/file/375750/ated-tech-guide.pdf"data-journey-click="ated-fronted:click:technical-guidance-link">technical guidance.</a></p>
+ated.property-details-value.anAcquisition.what.text = <p>If the value of the property changes by £40,000 or more, you may have to pay more or less tax. See the <a href="https://www.gov.uk/government/publications/annual-tax-on-enveloped-dwellings-technical-guidance">ATED technical guidance</a> for more information.</p>
 
 ated.property-details-value.propertyDetailsValue.newBuildDate.error.empty = You must enter a property build date
 ated.property-details-value.propertyDetailsValue.notNewBuildDate.error.empty = You must enter a property acquired date
@@ -453,7 +454,7 @@ ated.property-details-value.isPropertyRevalued.error.non-selected = You must ans
 
 ated.property-details-value.incorrect-format = You must enter a correct value.
 ated.property-details-value.revaluedValue = What is the new valuation of the property in GBP?
-ated.property-details-value.revaluedValue.hint = For example, 1500000
+ated.property-details-value.revaluedValue.hint = For example, 1,500,000
 ated.property-details-value.revaluedValue.error.empty = You must enter a valid property value
 ated.property-details-value.revaluedValue.error.too-low = The property value cannot be less than the lowest band
 ated.property-details-value.revaluedValue.error.too-high = The property value must be less than 14 characters
@@ -475,7 +476,7 @@ ated.property-details-value.isOwnedBefore2012.header = Did the company own this 
 ated.property-details-value.isOwnedBefore2012 = Did the company own this property on or before 1 April 2012?
 ated.property-details-value.isOwnedBefore2012.error.non-selected = You must answer this question.
 ated.property-details-value.ownedBefore2012Value = What was the value of the property on the 1 April 2012?
-ated.property-details-value.ownedBefore2012Value.hint = For example, 1500000
+ated.property-details-value.ownedBefore2012Value.hint = For example, 1,500,000
 ated.property-details-value.ownedBefore2012Value.error.empty = You must enter a valid property value
 ated.property-details-value.ownedBefore2012Value.error.non-selected = You must answer the property owned before 1 April 2012 question.
 ated.property-details-value.ownedBefore2012Value.error.too-low = The property value cannot be below the lowest band
@@ -502,13 +503,13 @@ ated.property-details-value.localAuthRegDate.error.too-early = The property loca
 ated.property-details-value.localAuthRegDate.error.too-late = The property local council registered date cannot be in the future.
 
 ated.property-details-value.newBuildValue = What was the value of the property in GBP at this date?
-ated.property-details-value.newBuildValue.hint = For example, 1500000
+ated.property-details-value.newBuildValue.hint = For example, 1,500,000
 ated.property-details-value.newBuildValue.error = You must enter a date within the chargeable period
 ated.property-details-value.newBuildValue.error.empty = You must enter a property value
 ated.property-details-value.newBuildValue.error.too-low = The property value cannot be below the lowest band
 ated.property-details-value.newBuildValue.error.too-high = The property value must be less than 14 characters.
 ated.property-details-value.notNewBuildValue = What was the value of the property on the date it was acquired, in GBP?
-ated.property-details-value.notNewBuildValue.hint = For example, 1500000
+ated.property-details-value.notNewBuildValue.hint = For example, 1,500,000
 ated.property-details-value.notNewBuildValue.error.empty = You must enter a property value
 ated.property-details-value.notNewBuildValue.error.too-low = The property value cannot be below the lowest band
 ated.property-details-value.notNewBuildValue.error.too-high = The property value must be less than 14 characters
@@ -636,7 +637,7 @@ ated.property-details-period.isTaxAvoidance.title = Is a tax avoidance scheme be
 ated.property-details-period.isTaxAvoidance.header = Is a tax avoidance scheme being used?
 ated.property-details-period.isTaxAvoidance = Is an avoidance scheme being used?
 ated.property-details-period.isTaxAvoidance.what = What is an avoidance scheme?
-ated.property-details-period.isTaxAvoidance.what.text = <p>HMRC never approves tax avoidance schemes. You must tell us if you are using a tax avoidance scheme that falls within the Disclosure of Tax Avoidance Schemes (DOTAS).</p><p>You will have received your scheme reference number (SRN) or promoter reference number (PRN):</p><ul class="bullets"><li>from your scheme provider on form AAG6 Disclosure of avoidance scheme – Notification of scheme reference number</li><li>direct from HMRC</li></ul><p>If you have both reference numbers, enter both numbers in this box.</p><p>For more information on avoidance schemes, go to <a href="https://www.gov.uk/disclosure-of-tax-avoidance-schemes-overview" data-journey-click="ated-fronted:click:tax-avoidance-link">www.gov.uk/disclosure-of-tax-avoidance-schemes-overview</a>.</p>
+ated.property-details-period.isTaxAvoidance.what.text = <p>HMRC never approves tax avoidance schemes. You must tell us if you are using a tax avoidance scheme that falls within the Disclosure of Tax Avoidance Schemes (DOTAS).</p><p>You will have received your scheme reference number (SRN) and promoter reference number (PRN):</p><ul class="bullets"><li>from your scheme provider on form AAG6 Disclosure of avoidance scheme – Notification of scheme reference number</li><li>direct from HMRC</li></ul><p>If you have both reference numbers, enter both numbers in this box.</p><p>More information on <a href="www.gov.uk/disclosure-of-tax-avoidance-schemes-overview data-journey-click="ated-fronted:click:tax-avoidance-link"> tax avoidance schemes</a>.</p>
 ated.property-details-period.isTaxAvoidance.error-field-name = You must answer the question
 ated.property-details-period.taxAvoidanceScheme = Avoidance scheme reference number
 ated.property-details-period.taxAvoidanceScheme.error.empty = You must enter a valid avoidance scheme reference number
@@ -666,19 +667,18 @@ ated.chargeable-return-confirmation.title = Chargeable return confirmation
 ated.chargeable-return-confirmation.completed.message = You can view your completed returns, payment references and ways to pay in the ATED online service.
 ated.chargeable-return-confirmation.email.message = You will not receive an email confirmation.
 ated.chargeable-return-confirmation.charge.heading = Charges for this return
-ated.chargeable-return-confirmation.amount.message = This amount does not reflect any payments you have already made, or penalties that have been issued.
+ated.chargeable-return-confirmation.amount.message = This amount does not reflect any payments you have already made or penalties that have been issued.
 
-ated.chargeable-return-confirmation.owe.text = The charges for this return are {0}
-ated.chargeable-return-confirmation.reference.text = The reference to make this payment is {0}
+ated.chargeable-return-confirmation.owe.text = The charges for this return are {0}.
+ated.chargeable-return-confirmation.reference.text = The reference to make this payment is {0}.
 
-ated.chargeable-return-late-payment.text = Late payment penalties can be issued when ATED is unpaid. Find out about <a href="https://www.gov.uk/guidance/pay-annual-tax-on-enveloped-dwellings" data-journey-click="ated-fronted:click:late-penalties-link">how to pay and payment deadlines</a>
-ated.chargeable-return-late-payment-pf.text = Late payment penalties can be issued when ATED is unpaid. Find out about how to pay and payment deadlines at https://www.gov.uk/guidance/pay-annual-tax-on-enveloped-dwellings
+ated.chargeable-return-late-payment.text = Late payment penalties can be issued when ATED is unpaid. Find out about <a href="https://www.gov.uk/guidance/pay-annual-tax-on-enveloped-dwellings" data-journey-click="ated-fronted:click:late-penalties-link">how to pay and payment deadlines</a>.
+ated.chargeable-return-late-payment-pf.text = Late payment penalties can be issued when ATED is unpaid. Find out about how to pay and payment deadlines at https://www.gov.uk/guidance/pay-annual-tax-on-enveloped-dwellings .
 
-ated.chargeable-return-confirmation.submitted.text = Your return has been successfully submitted
-ated.chargeable-return-confirmation.submitted.date.text = on {0}
+ated.chargeable-return-confirmation.submitted.text = Your return has been successfully submitted on {0}
 ated.chargeable-return-confirmation.ated-charge = The ATED charge is {0}
 ated.chargeable-return-confirmation.payment-reference-number = Payment reference number {0}
-ated.chargeable-return-confirmation.not-receive-text = You can view your balance in your ATED online service. There can be a 24 hour delay before you see any updates.
+ated.chargeable-return-confirmation.not-receive-text = You can view your balance in your ATED online service. There can be a 24-hour delay before you see any updates.
 ated.chargeable-return-confirmation.ways-to-pay-link.text = Ways to pay your ATED charge
 ated.chargeable-return-confirmation.ways-to-pay-link.link = https://www.gov.uk/guidance/pay-taxes-penalties-and-enquiry-settlements
 ated.chargeable-return-confirmation.back-to-ated-link.text = Your ATED online service
@@ -929,13 +929,13 @@ ated.address-lookup.find-button = Find address
 ated.address-lookup.results.title = Select the address of the property
 ated.address-lookup.results.header = Select the address of the property
 ated.address-lookup.search-criteria.header = Postcode
-ated.address-lookup.search-criteria.change = Change
+ated.address-lookup.search-criteria.change = Change postcode
 ated.address-lookup.search-criteria.change-label = Change postcode
 ated.address-lookup.search-results.header = Property address
 ated.address-lookup.no-address-found.text = No addresses were found for this postcode
 ated.address-lookup.address-not-in-list-link.title = I can''t find my address in the list
 ated.address-lookup.address-manual-entry-link.title = Manually enter the address
-ated.address-lookup.error.non-selected.field = You must select an address
+ated.address-lookup.error.non-selected.field = You must select a previous return
 ated.address-lookup.error.general.selected = There is something wrong with the address
 ated.address-lookup.error.general.selected-address = There''s something wrong with the selected address
 
@@ -1350,6 +1350,6 @@ ated.confirm-past-return-question.error.general.yesNo = There is a problem with 
 ated.confirm-past-return.error = existing return
 yes-no.error.mandatory = The {0} question must be answered
 
-ated.select-past-return.title = Select the previous return that this new return relates to
-ated.select-past-return.header = Select the previous return that this new return relates to
-ated.select-past-return.general.selected = There is a problem with the address option
+ated.select-past-return.title = Select the previous return this new return relates to
+ated.select-past-return.header = Select the previous return this new return relates to
+ated.select-past-return.general.selected = There is a problem with the previous return question
