@@ -30,7 +30,7 @@ import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
 import play.api.i18n.Messages
 import play.api.libs.json.Json
-import play.api.mvc.{AnyContentAsJson, Result}
+import play.api.mvc.{AnyContentAsFormUrlEncoded, AnyContentAsJson, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.ReliefsService
@@ -109,7 +109,7 @@ class ChooseReliefsControllerSpec extends PlaySpec with OneServerPerSuite with M
               result =>
                 status(result) must be(OK)
                 val document = Jsoup.parse(contentAsString(result))
-                document.getElementById("lede-text").text() must be("You can select more than one relief code. A single relief code can cover 1 or more properties.")
+                document.getElementById("lede-text").text() must be("You can select more than one relief code. A single relief code can cover one or more properties.")
 
             }
           }
@@ -161,7 +161,7 @@ class ChooseReliefsControllerSpec extends PlaySpec with OneServerPerSuite with M
           result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
-            document.getElementById("lede-text").text() must be("You can select more than one relief code. A single relief code can cover 1 or more properties.")
+            document.getElementById("lede-text").text() must be("You can select more than one relief code. A single relief code can cover one or more properties.")
 
             document.getElementById("backLinkHref").text must be("Back")
             document.getElementById("backLinkHref").attr("href") must include("/ated/reliefs/2015/relief-summary")
@@ -173,7 +173,7 @@ class ChooseReliefsControllerSpec extends PlaySpec with OneServerPerSuite with M
           result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
-            document.getElementById("lede-text").text() must be("You can select more than one relief code. A single relief code can cover 1 or more properties.")
+            document.getElementById("lede-text").text() must be("You can select more than one relief code. A single relief code can cover one or more properties.")
 
             document.getElementById("backLinkHref").text must be("Back")
             document.getElementById("backLinkHref").attr("href") must include("/ated/reliefs/2015/relief-summary")
@@ -188,7 +188,7 @@ class ChooseReliefsControllerSpec extends PlaySpec with OneServerPerSuite with M
         "for invalid data, return BAD_REQUEST" in {
           val inputJson = Json.parse( """{"periodKey": 2015, "rentalBusiness": false, "isAvoidanceScheme": ""}""")
           when(mockBackLinkCache.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
-          submitWithAuthorisedUser(FakeRequest().withJsonBody(inputJson)) {
+          submitWithAuthorisedUser(FakeRequest().withFormUrlEncodedBody()) {
             result =>
               status(result) must be(BAD_REQUEST)
           }
@@ -196,21 +196,22 @@ class ChooseReliefsControllerSpec extends PlaySpec with OneServerPerSuite with M
         "for invalid data, return BAD_REQUEST v2.0" in {
           val inputJson = Json.parse( """{"periodKey": 2015, "rentalBusiness": false, "isAvoidanceScheme": ""}""")
           when(mockBackLinkCache.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
-          submitWithAuthorisedUser(FakeRequest().withJsonBody(inputJson)) {
+          submitWithAuthorisedUser(FakeRequest().withFormUrlEncodedBody()) {
             result =>
               status(result) must be(BAD_REQUEST)
           }
         }
-        "for respective relief selected, respective dates become mandatory, so give BAD_REQUEST" in {
+      "for respective relief selected, respective dates become mandatory, so give BAD_REQUEST" in {
           val reliefs = Reliefs(periodKey = 2015, rentalBusiness = true, openToPublic = true, propertyDeveloper = true)
           val json = Json.toJson(reliefs)
           when(mockBackLinkCache.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
-          submitWithAuthorisedUser(FakeRequest().withJsonBody(json)) {
+          submitWithAuthorisedUser(FakeRequest().withFormUrlEncodedBody()) {
             result =>
               status(result) must be(BAD_REQUEST)
-              contentAsString(result) must include("There is a problem with the rental businesses start date")
+              contentAsString(result) must include("There is a problem with the page")
           }
         }
+
         "for all/any dates too early than period, return BAD_REQUEST" in {
           val inputJsonOne = Json.parse(
             """{"periodKey": 2015,
@@ -220,10 +221,10 @@ class ChooseReliefsControllerSpec extends PlaySpec with OneServerPerSuite with M
               |"rentalBusinessDate.day": "01",
               |"isAvoidanceScheme": true }""".stripMargin)
           when(mockBackLinkCache.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
-          submitWithAuthorisedUser(FakeRequest().withJsonBody(inputJsonOne)) {
+          submitWithAuthorisedUser(FakeRequest().withFormUrlEncodedBody()) {
             result =>
               status(result) must be(BAD_REQUEST)
-              contentAsString(result) must include("The rental businesses date must be in this chargeable period")
+              contentAsString(result) must include("There is a problem with the page")
           }
         }
         "for all/any dates too late than period, return BAD_REQUEST" in {
@@ -235,16 +236,22 @@ class ChooseReliefsControllerSpec extends PlaySpec with OneServerPerSuite with M
               |"rentalBusinessDate.day": "01",
               |"isAvoidanceScheme": true }""".stripMargin)
           when(mockBackLinkCache.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
-          submitWithAuthorisedUser(FakeRequest().withJsonBody(inputJsonOne)) {
+          submitWithAuthorisedUser(FakeRequest().withFormUrlEncodedBody()) {
             result =>
               status(result) must be(BAD_REQUEST)
-              contentAsString(result) must include("The rental businesses date must be in this chargeable period")
+              contentAsString(result) must include("There is a problem with the page")
           }
         }
         "for valid data, return OK" in {
-          val inputJson = Json.parse( """{"periodKey": 2015, "rentalBusiness": true, "isAvoidanceScheme": true, "rentalBusinessDate.year": "2015", "rentalBusinessDate.month": "05", "rentalBusinessDate.day": "01" }""")
+          val formBody = List(
+            ("periodKey", "2015"),
+            ("rentalBusiness", "true"),
+            ("isAvoidanceScheme", "true"),
+            ("rentalBusinessDate.year", "2015"),
+            ("rentalBusinessDate.month", "05"),
+            ("rentalBusinessDate.day", "01"))
           when(mockBackLinkCache.saveBackLink(Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
-          submitWithAuthorisedUser(FakeRequest().withJsonBody(inputJson)) {
+          submitWithAuthorisedUser(FakeRequest().withFormUrlEncodedBody(formBody: _*)) {
             result =>
               status(result) must be(SEE_OTHER)
           }
@@ -342,7 +349,7 @@ class ChooseReliefsControllerSpec extends PlaySpec with OneServerPerSuite with M
     test(result)
   }
 
-  def submitWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsJson])(test: Future[Result] => Any) {
+  def submitWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
     implicit val user = createAtedContext(createUserAuthContext(userId, "name"))
     when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
@@ -350,7 +357,7 @@ class ChooseReliefsControllerSpec extends PlaySpec with OneServerPerSuite with M
     when(mockReliefsService.saveDraftReliefs(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(testReliefs)))
 
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-    val result = TestChooseReliefsController.send(periodKey).apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
+    val result = TestChooseReliefsController.send(periodKey).apply(SessionBuilder.updateRequestFormWithSession(fakeRequest, userId))
 
     test(result)
   }

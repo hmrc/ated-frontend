@@ -44,16 +44,16 @@ pageScripts = Some(pageScripts)) {
 
     <div class="grid grid-1-2 cya-answer">
       @registrationDetails.map { regDetails =>
-        <span id="registered-address-line-1">@regDetails.addressDetails.addressLine1</span>
-        <span id="registered-address-line-2">@regDetails.addressDetails.addressLine2</span>
+        <div id="registered-address-line-1">@regDetails.addressDetails.addressLine1</div>
+        <div id="registered-address-line-2">@regDetails.addressDetails.addressLine2</div>
           @regDetails.addressDetails.addressLine3.map{ addressLine3=>
-            <span id="registered-address-line-3">@addressLine3</span>
+            <div id="registered-address-line-3">@addressLine3</div>
           }
           @regDetails.addressDetails.addressLine4.map{ addressLine4=>
-            <span id="egistered-address-line-4">@addressLine4</span>
+            <div id="egistered-address-line-4">@addressLine4</div>
           }
           @regDetails.addressDetails.postalCode.map{ postcode=>
-            <span id="registered-postcode">@postcode</span>
+            <div id="registered-postcode">@postcode</div>
           }
         <span id="registered-country">@CountryCodeUtils.getSelectedCountry(regDetails.addressDetails.countryCode)</span>
       }
@@ -76,11 +76,11 @@ pageScripts = Some(pageScripts)) {
       </div>
 
       <div class="grid grid-1-2 cya-answer">
-        <span id="non-uk-company-registration">
-          <span id="reg_number">@overseasCompanyRegistration.get.idNumber</span>
-          <span id="reg_country">@CountryCodeUtils.getSelectedCountry(overseasCompanyRegistration.get.issuingCountryCode)</span>
-          <span id="reg_issuer">@overseasCompanyRegistration.get.issuingInstitution</span>
-        </span>
+        <div id="non-uk-company-registration">
+          <div id="reg_number">@overseasCompanyRegistration.get.idNumber</div>
+          <div id="reg_country">@CountryCodeUtils.getSelectedCountry(overseasCompanyRegistration.get.issuingCountryCode)</div>
+          <div id="reg_issuer">@overseasCompanyRegistration.get.issuingInstitution</div>
+        </div>
       </div>
 
       <div class="grid grid-1-6 cya-change">
@@ -100,18 +100,18 @@ pageScripts = Some(pageScripts)) {
 
   <div id="correspondence-address" class="grid grid-1-2 cya-answer">
     @correspondence.map { correspondenceData =>
-      <span id="line_1">@correspondenceData.addressDetails.addressLine1</span>
-      <span id="line_2">@correspondenceData.addressDetails.addressLine2</span>
+      <div id="line_1">@correspondenceData.addressDetails.addressLine1</div>
+      <div id="line_2">@correspondenceData.addressDetails.addressLine2</div>
       @correspondenceData.addressDetails.addressLine3.map{ addressLine3=>
-        <span id="line_3">@addressLine3</span>
+        <div id="line_3">@addressLine3</div>
       }
       @correspondenceData.addressDetails.addressLine4.map{ addressLine4=>
-        <span id="line_4">@addressLine4</span>
+        <div id="line_4">@addressLine4</div>
       }
       @correspondenceData.addressDetails.postalCode.map{ postcode=>
-        <span id="postcode">@postcode</span>
+        <div id="postcode">@postcode</div>
       }
-      <span id="countryCode">@CountryCodeUtils.getSelectedCountry(correspondenceData.addressDetails.countryCode)</span>
+      <div id="countryCode">@CountryCodeUtils.getSelectedCountry(correspondenceData.addressDetails.countryCode)</div>
     }
   </div>
 
@@ -126,21 +126,21 @@ pageScripts = Some(pageScripts)) {
      </div>
 
      <div class="grid grid-1-2 cya-answer">
-       <span id="contact-details">
+       <div id="contact-details">
          @correspondence.map { correspondenceData =>
            @correspondenceData.contactDetails.map { contactDetailsData =>
              @correspondenceData.name1.map { firstName =>
-               <span id="firstName">@firstName</span>
+               <div id="firstName">@firstName</div>
              }
              @correspondenceData.name2.map { lastName =>
-               <span id="lastName">@lastName</span>
+               <div id="lastName">@lastName</div>
              }
              @contactDetailsData.phoneNumber.map { phoneNumber =>
-               <span id="phoneNumber">@phoneNumber</span>
+               <div id="phoneNumber">@phoneNumber</div>
              }
            }
          }
-       </span>
+       </div>
      </div>
 
      <div class="grid grid-1-6 cya-change">
