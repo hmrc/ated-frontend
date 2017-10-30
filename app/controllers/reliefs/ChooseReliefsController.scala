@@ -27,6 +27,9 @@ import play.api.i18n.Messages.Implicits._
 import services.ReliefsService
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
 import utils.PeriodUtils
+import utils.AtedUtils._
+
+import scala.collection.mutable.ArrayBuffer
 
 trait ChooseReliefsController extends BackLinkController
   with AtedFrontendAuthHelpers with ReliefHelpers with DelegationAwareActions  with ClientHelper {
@@ -70,13 +73,13 @@ trait ChooseReliefsController extends BackLinkController
   def send(periodKey: Int) = AuthAction(AtedRegime) {
     implicit atedContext =>
       ensureClientContext {
-        println(s"-------------------------------${reliefsForm.data}")
         validatePeriodKey(periodKey) {
-          reliefsForm.bindFromRequest.fold(
+         val data = addParamsToRequest(atedContext, Map("periodKey" -> ArrayBuffer(periodKey.toString)))
+          reliefsForm.bindFromRequest(data.get).fold(
             formWithError =>
-              currentBackLink.map(backLink =>
+              currentBackLink.map { backLink =>
                 BadRequest(views.html.reliefs.chooseReliefs(periodKey, formWithError, PeriodUtils.periodStartDate(periodKey), backLink))
-              ),
+              },
             reliefs => {
               for {
                 savedData <- reliefsService.saveDraftReliefs(atedContext.user.atedReferenceNumber, periodKey, reliefs)

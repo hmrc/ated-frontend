@@ -21,10 +21,10 @@
 
   <p id="lede-text">@Messages("ated.choose-reliefs.info")</p>
 
-  <div class="confirmation-notice">
-    <div class="icon-important"></div>
-    <div class="ated-icon-important-text"><strong>@Messages("ated.choose-reliefs-further.information.text")</strong></div>
-  </div>
+  <p class="confirmation-notice">
+    <span class="icon-important"></span>
+    <span class="ated-icon-important-text"><strong>@Messages("ated.choose-reliefs-further.information.text")</strong></span>
+  </p>
 
   @form(action=controllers.reliefs.routes.ChooseReliefsController.send(periodKey)) {
 
@@ -32,7 +32,7 @@
 
   <legend id="choose-reliefs-legend" class="visuallyhidden">@Messages("ated.choose-reliefs.header")</legend>
 
-  <div id="choose-reliefs-label">@Messages("ated.choose-reliefs.label")</div>
+  <p id="choose-reliefs-label">@Messages("ated.choose-reliefs.label")</p>
 
     <div id="reliefs">
       @atedSingleCheckBox(reliefsForm("rentalBusiness"),
