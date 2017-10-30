@@ -129,7 +129,7 @@ class formBundleReturnSpec extends FeatureSpec with OneServerPerSuite with Mocki
       assert(document.getElementById("td-view-return-property-address").text().contains("100 addressLine1"))
       assert(document.getElementById("td-view-return-property-address").text().contains("addressLine2"))
       assert(document.getElementById("td-view-return-property-address").text().contains("XX11XX"))
-      assert(document.getElementById("th-view-return-property-title-no").text() === "Property's title number")
+      assert(document.getElementById("th-view-return-property-title-no").text() === "Property’s title number")
       assert(document.getElementById("td-view-return-property-title-no").text() === "title here")
 
       assert(document.getElementById("th-view-return-property-value").text() === "Value of the property")
@@ -200,7 +200,7 @@ class formBundleReturnSpec extends FeatureSpec with OneServerPerSuite with Mocki
       assert(document.getElementById("td-view-return-property-address").text().contains("100 addressLine1"))
       assert(document.getElementById("td-view-return-property-address").text().contains("addressLine2"))
       assert(document.getElementById("td-view-return-property-address").text().contains("XX11XX"))
-      assert(document.getElementById("th-view-return-property-title-no").text() === "Property's title number")
+      assert(document.getElementById("th-view-return-property-title-no").text() === "Property’s title number")
       assert(document.getElementById("td-view-return-property-title-no").text() === "title here")
 
       assert(document.getElementById("th-view-return-property-value").text() === "Value of the property")
@@ -268,7 +268,7 @@ class formBundleReturnSpec extends FeatureSpec with OneServerPerSuite with Mocki
       assert(document.getElementById("td-view-return-property-address").text().contains("100 addressLine1"))
       assert(document.getElementById("td-view-return-property-address").text().contains("addressLine1"))
       assert(document.getElementById("td-view-return-property-address").text().contains("XX11XX"))
-      assert(document.getElementById("th-view-return-property-title-no").text() === "Property's title number")
+      assert(document.getElementById("th-view-return-property-title-no").text() === "Property’s title number")
       assert(document.getElementById("td-view-return-property-title-no").text() === "title here")
 
       assert(document.getElementById("th-view-return-property-value").text() === "Value of the property")
@@ -343,7 +343,7 @@ class formBundleReturnSpec extends FeatureSpec with OneServerPerSuite with Mocki
       assert(document.getElementById("td-view-return-property-address").text().contains("100 addressLine1"))
       assert(document.getElementById("td-view-return-property-address").text().contains("addressLine2"))
       assert(document.getElementById("td-view-return-property-address").text().contains("XX11XX"))
-      assert(document.getElementById("th-view-return-property-title-no").text() === "Property's title number")
+      assert(document.getElementById("th-view-return-property-title-no").text() === "Property’s title number")
       assert(document.getElementById("td-view-return-property-title-no").text() === "title here")
 
       assert(document.getElementById("th-view-return-property-value").text() === "Value of the property")

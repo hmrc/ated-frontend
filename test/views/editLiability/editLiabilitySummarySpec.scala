@@ -69,7 +69,7 @@ class editLiabilitySummarySpec extends FeatureSpec with OneServerPerSuite with M
       assert(document.getElementById("edit-liability-header").text() === "Property details")
 
       assert(document.getElementById("property-address-label").text() === "Address")
-      assert(document.getElementById("property-title-number-label").text() === "Property's title number")
+      assert(document.getElementById("property-title-number-label").text() === "Property’s title number")
       assert(document.getElementById("property-value-header").text() === "Value of the property")
       assert(document.getElementById("property-value-label-0").text() === "Value for the purposes of ATED")
       assert(document.getElementById("property-date-of-valuation-label-0").text() === "Professionally valued")
@@ -118,7 +118,7 @@ class editLiabilitySummarySpec extends FeatureSpec with OneServerPerSuite with M
       assert(document.getElementById("edit-liability-header").text() === "Property details")
 
       assert(document.getElementById("property-address-label").text() === "Address")
-      assert(document.getElementById("property-title-number-label").text() === "Property's title number")
+      assert(document.getElementById("property-title-number-label").text() === "Property’s title number")
       assert(document.getElementById("property-value-header").text() === "Value of the property")
       assert(document.getElementById("property-value-label-0").text() === "Value for the purposes of ATED")
       assert(document.getElementById("property-date-of-valuation-label-0").text() === "Professionally valued")
@@ -166,7 +166,7 @@ class editLiabilitySummarySpec extends FeatureSpec with OneServerPerSuite with M
       assert(document.getElementById("edit-liability-header").text() === "Property details")
 
       assert(document.getElementById("property-address-label").text() === "Address")
-      assert(document.getElementById("property-title-number-label").text() === "Property's title number")
+      assert(document.getElementById("property-title-number-label").text() === "Property’s title number")
       assert(document.getElementById("property-value-header").text() === "Value of the property")
       assert(document.getElementById("property-value-label-0").text() === "Value for the purposes of ATED")
       assert(document.getElementById("property-date-of-valuation-label-0").text() === "Professionally valued")
