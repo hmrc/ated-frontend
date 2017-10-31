@@ -112,7 +112,8 @@ class ReliefsSummaryControllerSpec extends PlaySpec with OneServerPerSuite with 
                 employeeOccupationScheme = Some("12345678"),
                 farmHousesScheme = Some("12345678"),
                 socialHousingScheme = Some("12345678"),
-                equityReleaseScheme = Some("12345678"), equityReleaseSchemePromoter = Some("12345678"))
+                equityReleaseScheme = Some("12345678"),
+                equityReleaseSchemePromoter = Some("12345678"))
             ))) {
             result =>
               status(result) must be(OK)
