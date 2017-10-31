@@ -117,7 +117,7 @@ class addressLookupResultsSpec extends FeatureSpec with OneServerPerSuite with M
       Then("The address link should be - I can't find my address in the list")
       assert(document.getElementById("no-address-found") === null)
 
-      assert(document.getElementById("enter-address-link").text() === "I can't find my address in the list")
+      assert(document.getElementById("enter-address-link").text() === "I can’t find my address in the list")
       assert(document.getElementById("enter-address-link").attr("href") === "/ated/liability/address-lookup/manual/2015?propertyKey=123456&mode=editSubmitted")
 
       Then("The submit button should be - Save and continue")

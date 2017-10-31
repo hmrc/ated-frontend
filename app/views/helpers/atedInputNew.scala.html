@@ -33,15 +33,13 @@
             </div>
         </details>
         }
-
-        @if(elements.args.contains('_hintText)) {
-            <span class="form-hint" id="@if( elements.args.get('_id) ) {@elements.args.get('_id)_hint} else {@elements.field.name.replaceAll("""[\.\[\]]""", "-")_hint}">
-                @elements.args.get('_hintText)
-            </span>
-        }
-
         </label>
 
+        @if(elements.args.contains('_hintText)) {
+        <span class="form-hint" id="@if( elements.args.get('_id) ) {@elements.args.get('_id)_hint} else {@elements.field.name.replaceAll("""[\.\[\]]""", "-")_hint}">
+        @elements.args.get('_hintText)
+        </span>
+        }
 
         @commonHelper(field,errors)
         @if(elements.args.contains('_symbol)) { <span class="inline-fields">@elements.args.get('_symbol)</span> }
