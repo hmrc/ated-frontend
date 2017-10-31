@@ -213,8 +213,10 @@ ated.avoidance-schemes.header = Enter your avoidance scheme number
 ated.avoidance-schemes.question =  What is an avoidance scheme?
 ated.avoidance-schemes.answer = <p>HMRC never approves tax avoidance schemes. You must tell us if you are using a tax avoidance scheme that falls within the Disclosure of Tax Avoidance Schemes (DOTAS).</p><p>You will have received your scheme reference number (SRN) or promoter reference number (PRN):</p><ul class="bullets"><li>from your scheme provider on form AAG6 Disclosure of avoidance scheme – Notification of scheme reference number</li><li>direct from HMRC</li></ul><p>If you have both reference numbers, enter both numbers in this box.</p><p>For more information on avoidance schemes, go to <a href="https://www.gov.uk/disclosure-of-tax-avoidance-schemes-overview" data-journey-click="ated-fronted:click:tax-avoidance-link">www.gov.uk/disclosure-of-tax-avoidance-schemes-overview</a>.</p>
 ated.avoidance-schemes.reliefs.text = Reliefs claimed
-ated.avoidance-schemes.avoidance-scheme.text = Avoidance scheme reference number
-ated.avoidance-schemes.avoidance-scheme-promoter.text = Promoter reference number
+ated.avoidance-schemes.avoidance-scheme.header = Avoidance scheme reference number
+ated.avoidance-schemes.avoidance-scheme.text = {0} Avoidance scheme reference number
+ated.avoidance-schemes.avoidance-scheme-promoter.header = Promoter reference number
+ated.avoidance-schemes.avoidance-scheme-promoter.text = {0} Promoter reference number
 
 
 ## relief sent
@@ -305,24 +307,24 @@ ated.avoidance-schemes.promoter.wrong-length = The promoter reference number mus
 ated.avoidance-scheme.cancel = Cancel
 ated.relief-declaration.saveInfo = This draft is saved for up to 28 days.
 ated.avoidance-scheme-error.general.empty = You must enter a reference number
-ated.avoidance-scheme-error.general.rentalBusinessScheme = There is a problem with the reference numbers. Check the number and try again.
-ated.avoidance-scheme-error.general.rentalBusinessSchemePromoter = There is a problem with the reference numbers. Check the number and try again.
-ated.avoidance-scheme-error.general.openToPublicScheme = There is a problem with the reference numbers. Check the number and try again.
-ated.avoidance-scheme-error.general.openToPublicSchemePromoter = There is a problem with the reference numbers. Check the number and try again.
-ated.avoidance-scheme-error.general.propertyDeveloperScheme = There is a problem with the reference numbers. Check the number and try again.
-ated.avoidance-scheme-error.general.propertyDeveloperSchemePromoter = There is a problem with the reference numbers. Check the number and try again.
-ated.avoidance-scheme-error.general.propertyTradingScheme = There is a problem with the reference numbers. Check the number and try again.
-ated.avoidance-scheme-error.general.propertyTradingSchemePromoter = There is a problem with the reference numbers. Check the number and try again.
-ated.avoidance-scheme-error.general.lendingScheme = There is a problem with the reference numbers. Check the number and try again.
-ated.avoidance-scheme-error.general.lendingSchemePromoter = There is a problem with the reference numbers. Check the number and try again.
-ated.avoidance-scheme-error.general.employeeOccupationScheme = There is a problem with the reference numbers. Check the number and try again.
-ated.avoidance-scheme-error.general.employeeOccupationSchemePromoter = There is a problem with the reference numbers. Check the number and try again.
-ated.avoidance-scheme-error.general.farmHousesScheme = There is a problem with the reference numbers. Check the number and try again.
-ated.avoidance-scheme-error.general.farmHousesSchemePromoter = There is a problem with the reference numbers. Check the number and try again.
-ated.avoidance-scheme-error.general.socialHousingScheme = There is a problem with the reference numbers. Check the number and try again.
-ated.avoidance-scheme-error.general.socialHousingSchemePromoter = There is a problem with the reference numbers. Check the number and try again.
-ated.avoidance-scheme-error.general.equityReleaseScheme = There is a problem with the reference numbers. Check the number and try again.
-ated.avoidance-scheme-error.general.equityReleaseSchemePromoter = There is a problem with the reference numbers. Check the number and try again.
+ated.avoidance-scheme-error.general.rentalBusinessScheme = There is a problem with rental business avoidance scheme reference number. Check the number and try again.
+ated.avoidance-scheme-error.general.rentalBusinessSchemePromoter = There is a problem with rental business promoter reference number. Check the number and try again.
+ated.avoidance-scheme-error.general.openToPublicScheme = There is a problem with open to public avoidance scheme reference number. Check the number and try again.
+ated.avoidance-scheme-error.general.openToPublicSchemePromoter = There is a problem with open to public  promoter reference number. Check the number and try again.
+ated.avoidance-scheme-error.general.propertyDeveloperScheme = There is a problem with property developer avoidance scheme reference number. Check the number and try again.
+ated.avoidance-scheme-error.general.propertyDeveloperSchemePromoter = There is a problem with property developer promoter reference number. Check the number and try again.
+ated.avoidance-scheme-error.general.propertyTradingScheme = There is a problem with property trading avoidance scheme reference number. Check the number and try again.
+ated.avoidance-scheme-error.general.propertyTradingSchemePromoter = There is a problem with property trading promoter reference number. Check the number and try again.
+ated.avoidance-scheme-error.general.lendingScheme = There is a problem with lending avoidance scheme reference number. Check the number and try again.
+ated.avoidance-scheme-error.general.lendingSchemePromoter = There is a problem with lending promoter reference number. Check the number and try again.
+ated.avoidance-scheme-error.general.employeeOccupationScheme = There is a problem with employee occupation avoidance scheme reference number. Check the number and try again.
+ated.avoidance-scheme-error.general.employeeOccupationSchemePromoter = There is a problem with employee occupation promoter reference number. Check the number and try again.
+ated.avoidance-scheme-error.general.farmHousesScheme = There is a problem with farmhouses avoidance scheme reference number. Check the number and try again.
+ated.avoidance-scheme-error.general.farmHousesSchemePromoter = There is a problem with farmhouses promoter reference number. Check the number and try again.
+ated.avoidance-scheme-error.general.socialHousingScheme = There is a problem with social housing avoidance scheme reference number. Check the number and try again.
+ated.avoidance-scheme-error.general.socialHousingSchemePromoter = There is a problem with social housing promoter reference number. Check the number and try again.
+ated.avoidance-scheme-error.general.equityReleaseScheme = There is a problem with equity release avoidance scheme reference number. Check the number and try again.
+ated.avoidance-scheme-error.general.equityReleaseSchemePromoter = There is a problem with equity release promoter reference number. Check the number and try again.
 
 ## summary return
 ated.summary-return.title = Your ATED online service
