@@ -791,5 +791,19 @@ table th {
 }
 
 .uppercase {
-   text-transform: uppercase;
+   text-transform: lowercase;
+}
+
+/*  -- Vertical Spacing -- */
+
+.margin-bottom-default {
+  margin-bottom: 30px;
+}
+
+p.margin-bottom-default {
+  margin-bottom: 30px !important;
+}
+
+.relief-type {
+  margin-bottom: 30px;
 }
