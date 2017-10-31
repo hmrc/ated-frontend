@@ -106,7 +106,7 @@ class AddressLookupControllerSpec extends PlaySpec with OneServerPerSuite with M
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
-              document.title() must be("Find the property's address")
+              document.title() must be("Find the property’s address")
           }
         }
       }
@@ -136,7 +136,7 @@ class AddressLookupControllerSpec extends PlaySpec with OneServerPerSuite with M
           result =>
             status(result) must be(BAD_REQUEST)
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be("Find the property's address")
+            document.title() must be("Find the property’s address")
 
         }
       }

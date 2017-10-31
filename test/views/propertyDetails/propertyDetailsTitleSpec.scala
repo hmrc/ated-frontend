@@ -48,18 +48,18 @@ class propertyDetailsTitleSpec extends FeatureSpec with OneServerPerSuite with M
       val document = Jsoup.parse(html.toString())
 
       Then("The header and title should match - What is the property title number?")
-      assert(document.title() === "What is the property's title number?")
-      assert(document.select("h1").text === "What is the property's title number?")
+      assert(document.title() === "What is the property’s title number? (optional)")
+      assert(document.select("h1").text === "What is the property’s title number? (optional)")
 
       Then("The subheader should be - Create return")
       assert(document.getElementById("pre-heading").text() === "This section is: Create return")
 
 
       Then("The text fields should match")
-      assert(document.getElementById("title-text").text() === "You can find the property's title number on the title deeds for the property.")
+      assert(document.getElementById("title-text").text() === "You can find the property’s title number on the title deeds for the property.")
       assert(document.getElementById("references.titleNumber").attr("value") === "")
-      assert(document.getElementById("references.titleNumber_hint").text() === "For example, CS72532 (optional)")
-      assert(document.getElementById("titleNumber-reveal").text() === "I don't know my property's title number")
+      assert(document.getElementById("references.titleNumber_hint").text() === "For example, CS72532")
+      assert(document.getElementById("titleNumber-reveal").text() === "I don’t know my property’s title number")
 
 
       Then("The submit button should have the correct name")
@@ -80,17 +80,17 @@ class propertyDetailsTitleSpec extends FeatureSpec with OneServerPerSuite with M
       val document = Jsoup.parse(html.toString())
 
       Then("The header and title should match - What is the property title number?")
-      assert(document.title() === "What is the property's title number?")
-      assert(document.select("h1").text === "What is the property's title number?")
+      assert(document.title() === "What is the property’s title number? (optional)")
+      assert(document.select("h1").text === "What is the property’s title number? (optional)")
 
       Then("The subheader should be - Change return")
       assert(document.getElementById("pre-heading").text() === "This section is: Change return")
 
       Then("The text fields should match")
-      assert(document.getElementById("title-text").text() === "You can find the property's title number on the title deeds for the property.")
+      assert(document.getElementById("title-text").text() === "You can find the property’s title number on the title deeds for the property.")
       assert(document.getElementById("references.titleNumber").attr("value") === "")
-      assert(document.getElementById("references.titleNumber_hint").text() === "For example, CS72532 (optional)")
-      assert(document.getElementById("titleNumber-reveal").text() === "I don't know my property's title number")
+      assert(document.getElementById("references.titleNumber_hint").text() === "For example, CS72532")
+      assert(document.getElementById("titleNumber-reveal").text() === "I don’t know my property’s title number")
 
 
       Then("The submit button should have the correct name")

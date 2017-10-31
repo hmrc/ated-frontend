@@ -256,11 +256,11 @@ label.satisfied = Satisfied
 label.neutral = Neutral
 label.dissatisfied = Dissatisfied
 label.limit_is_1200_characters=(Limit is 1200 characters)
-label.please_dont_include_any_personal_or_financial_information=Please don''t include any personal or financial information, for example your National Insurance or credit card numbers.
+label.please_dont_include_any_personal_or_financial_information=Please don’t include any personal or financial information, for example your National Insurance or credit card numbers.
 label.send_feedback=Send feedback
 label.signed_out=ATED feedback questionnaire
 label.thanks_for_your_feedback=Thanks for your feedback
-label.youre_signed_out=You''re signed out
+label.youre_signed_out=You’re signed out
 label.youre_now_signed_out_of_your_ated_account=You’'re now signed out of your ATED account.
 label.explore_gov_uk=Explore GOV.UK
 title.satisfied=Satisfied
@@ -356,7 +356,7 @@ ated.summary-return.return-type.error = Select an option for type of return
 ated.account-summary.create-return.link = Create a new return
 ated.summary-return.contact.details.heading = Contact details
 ated.account-summary.create-relief.text = You can create a relief declaration return where no tax is due.
-ated.account-summary.create-relief.text.indent = You can''t view returns you''ve previously submitted using this service.
+ated.account-summary.create-relief.text.indent = You can’t view returns you’ve previously submitted using this service.
 ated.account-summary.create-return.button = Create a return
 ated.summary-return.correspondence-address.heading = Correspondence address
 ated.summary-return.no-return.text = You can create a return where an ATED charge is due or a relief return where no ATED charge is due.
@@ -385,18 +385,18 @@ ated.property-details.title = Enter the address of the property manually
 ated.property-details.header = Enter the address of the property manually
 ated.property-details.property-address.lookup.title = Lookup address
 ated.property-details.property-address = Property address
-ated.property-details.title.title =  What is the property''s title number?
-ated.property-details.title.header =  What is the property''s title number?
+ated.property-details.title.title =  What is the property’s title number? (optional)
+ated.property-details.title.header =  What is the property’s title number? (optional)
 ated.property-details.address = Address
-ated.property-details.references = You can find the property''s title number on the title deeds for the property.
-ated.property-details-titleNumber.reveal =  I don''t know my property''s title number
+ated.property-details.references = You can find the property’s title number on the title deeds for the property.
+ated.property-details-titleNumber.reveal =  I don’t know my property’s title number
 ated.property-details-titleNumber-reveal.text = <p>This is a number issued by the Land Registry when land is first registered. If you do not have a copy of the title deeds for the property you can find it by doing a <a href="http://www.landregistry-titledeeds.co.uk/">Land Registry search</a>.</p>
 ated.property-details.references.localAuthorityNumber = Local authority number
-ated.property-details-localAuthorityNumber-reveal = I don''t know my local authority number
+ated.property-details-localAuthorityNumber-reveal = I don’t know my local authority number
 ated.property-details-localAuthorityNumber.text = <p>Enter the number of the local authority in the area where the lead property is situated. If a property falls between more than one local authority boundary enter the code for either, preferably the authority into whose area most of the property falls.</p><a href="https://www.gov.uk/hmrc-internal-manuals/stamp-duty-land-tax-manual/sdltm62320">Find your local authority number</a>
 ated.property-title.yes = Yes
 ated.property-title.no = No
-ated.property-title.error-field-name = You must select an option for the property''s title number
+ated.property-title.error-field-name = You must select an option for the property’s title number
 ated.property-lan.yes = Yes
 ated.property-lan.no = No
 ated.property-details.continue = Continue
@@ -405,10 +405,10 @@ ated.addressProperty.line_2 = Address line 2
 ated.addressProperty.line_3 = Address line 3 (optional)
 ated.addressProperty.line_4 = Address line 4 (optional)
 ated.addressProperty.postcode = Postcode (optional)
-ated.propertyReference.titleNumber = Property''s title number
-ated.propertyReference.titleNumber.hint = For example, CS72532 (optional)
-ated.propertyReference.titleNumber.error =You must enter the property''s title number.
-ated.propertyReference.titleNumber.error.length = Property''s title number cannot be more than 40 characters.
+ated.propertyReference.titleNumber = What is the property’s title number? (optional)
+ated.propertyReference.titleNumber.hint = For example, CS72532
+ated.propertyReference.titleNumber.error = You must enter the property’s title number.
+ated.propertyReference.titleNumber.error.length = Property’s title number cannot be more than 40 characters.
 ated.property-details.back.link = Back
 ated.property-details-address-error.general.line_1 = There is a problem with address line 1
 ated.property-details-address-error.general.line_2 = There is a problem with address line 2
@@ -420,7 +420,7 @@ ated.property-details-address-error.general.addressProperty.line_2 = There is a 
 ated.property-details-address-error.general.addressProperty.line_3 = There is a problem with address line 3
 ated.property-details-address-error.general.addressProperty.line_4 = There is a problem with address line 4
 ated.property-details-address-error.general.addressProperty.postcode = There is a problem with the postcode
-ated.property-details-address-error.general.titleNumber = There is a problem with property''s title number
+ated.property-details-address-error.general.titleNumber = There is a problem with property’s title number
 
 
 ## property details value
@@ -688,7 +688,7 @@ ated.chargeable-return-declaration.title = Returns declaration
 ated.chargeable-return-declaration.header = Returns declaration
 #ated.chargeable-return-declaration.warning = This draft will be saved for 28 days or until it is submitted.
 ated.chargeable-return-declaration.before-declaration.client = Before you can submit your return to HMRC you must read and agree to the following statement. If you give false information you may have to pay financial penalties and face prosecution.
-ated.chargeable-return-declaration.before-declaration.agent = Before your client''s return can be submitted to HMRC, you must read and agree to the following statement. Your client''s approval may be in electronic or non-electronic form. If your client gives false information, they may have to pay financial penalties and face prosecution.
+ated.chargeable-return-declaration.before-declaration.agent = Before your client’s return can be submitted to HMRC, you must read and agree to the following statement. Your client’s approval may be in electronic or non-electronic form. If your client gives false information, they may have to pay financial penalties and face prosecution.
 
 ated.chargeable-return-declaration.i-confirm-that.bullet-text.agent = I confirm that my client has approved the information contained in this return as being correct and complete to the best of their knowledge and belief. 
 ated.chargeable-return-declaration.i-declare-that.bullet-text.client = I declare that the information I have given on this return is correct and complete.
@@ -882,7 +882,7 @@ ated.form-bundle.header = View return
 ated.form-bundle.subheader = From the ATED period from {0} to {1}
 ated.form-bundle.view.return.property = Property
 ated.form-bundle.view.return.address = Address
-ated.form-bundle.view.return.property.title.no = Property''s title number
+ated.form-bundle.view.return.property.title.no = Property’s title number
 ated.change-return.button = Change return
 
 ated.form-bundle.view.return.value-title = Value of the property
@@ -919,8 +919,8 @@ ated.form-bundle.view.return.ated.charge = Based on the information you have giv
 ated.form-bundle.back = Back
 
 # address lookup
-ated.address-lookup.title = Find the property''s address
-ated.address-lookup.header = Find the property''s address
+ated.address-lookup.title = Find the property’s address
+ated.address-lookup.header = Find the property’s address
 ated.address-lookup.postcode = Postcode
 ated.address-lookup.house-name = House name or number (optional)
 ated.address-lookup.no-postcode-link.title = Enter address manually
@@ -933,11 +933,11 @@ ated.address-lookup.search-criteria.change = Change postcode
 ated.address-lookup.search-criteria.change-label = Change postcode
 ated.address-lookup.search-results.header = Property address
 ated.address-lookup.no-address-found.text = No addresses were found for this postcode
-ated.address-lookup.address-not-in-list-link.title = I can''t find my address in the list
+ated.address-lookup.address-not-in-list-link.title = I can’t find my address in the list
 ated.address-lookup.address-manual-entry-link.title = Manually enter the address
 ated.address-lookup.error.non-selected.field = You must select a previous return
 ated.address-lookup.error.general.selected = There is something wrong with the address
-ated.address-lookup.error.general.selected-address = There''s something wrong with the selected address
+ated.address-lookup.error.general.selected-address = There’s something wrong with the selected address
 
 # edit liability return
 ated.edit-liability.change-return.header = Change return
@@ -1000,7 +1000,7 @@ ated.property-details-summary.table.property-details-prof-valued-edit-link.title
 ated.property-details-summary.table.property-value-edit-link.title.screen-reader = professionally valued question
 ated.property-details-summary.table.property-ated-details.promoter-ref.edit-link.title.screen-reader = promoter reference number
 ated.property-details-summary.table.property-details.address.label = Address
-ated.property-details-summary.table.property-details.title-number.label = Property''s title number
+ated.property-details-summary.table.property-details.title-number.label = Property’s title number
 ated.property-details-summary.table.property-value.header = Value of the property
 ated.property-details-summary.table.property-value-edit-link.title =  property value details
 ated.property-details-summary.table.property-value.property-value.label = Value for the purposes of ATED
@@ -1076,7 +1076,7 @@ ated.relief-summary.submit-disabled-text = You can not submit returns until afte
 ated.relief-summary.declaration.title = Returns declaration
 ated.relief-summary.declaration.header = Returns declaration
 ated.relief-summary.mid-declaration.agent = Each type of relief claimed is an individual ATED return.
-ated.relief-summary.before-declaration.agent = Before your client''s return or returns can be submitted to HMRC, you must read and agree to the following statement. Your client''s approval may be in electronic or non-electronic form. If your client gives false information, they may have to pay financial penalties and face prosecution.
+ated.relief-summary.before-declaration.agent = Before your client’s return or returns can be submitted to HMRC, you must read and agree to the following statement. Your client’s approval may be in electronic or non-electronic form. If your client gives false information, they may have to pay financial penalties and face prosecution.
 ated.relief-summary.i-confirm-that.agent = I confirm that my client has:
 ated.relief-summary.i-confirm-that.bullet-text.agent = approved the information contained in this return (or each of these returns) as being correct
 ated.relief-summary.i-confirm-that.bulletb-text.agent = confirmed it is complete to the best of their knowledge and belief
@@ -1113,7 +1113,7 @@ ated.edit-liability-details-period-error.general.isTaxAvoidance = There is a pro
 
 
 # edit-liability-declaration page
-ated.edit-liability.before-declaration.agent = Before your client''s return can be submitted to HMRC, you must read and agree to the following statement. Your client''s approval may be in electronic or non-electronic form. If your client gives false information, they may have to pay financial penalties and face prosecution.
+ated.edit-liability.before-declaration.agent = Before your client’s return can be submitted to HMRC, you must read and agree to the following statement. Your client’s approval may be in electronic or non-electronic form. If your client gives false information, they may have to pay financial penalties and face prosecution.
 ated.edit-liability.before-declaration.client = Before you can submit your return to HMRC you must read and agree to the following statement . If you give false information you may have to pay financial penalties and face prosecution.
 ated.edit-liability.i-confirm-that.bullet-text.agent = I confirm that my client has approved the information contained in this return as being correct and complete to the best of their knowledge and belief.
 ated.edit-liability.i-declare-that.bullet-text.client =  I declare that the information I have given on this return is correct and complete.

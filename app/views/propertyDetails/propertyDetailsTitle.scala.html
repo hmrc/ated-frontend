@@ -26,25 +26,24 @@
     <p id="title-text">@Messages("ated.property-details.references")</p>
 
       <div id="title">
+        <details>
+          <summary>
+          <span id="titleNumber-reveal" class="summary">
+            @Messages("ated.property-details-titleNumber.reveal")
+          </span>
+          </summary>
+          <div class="panel-indent">
+            <p id="titleNumber-text">@Html(Messages("ated.property-details-titleNumber-reveal.text"))</p>
+          </div>
+        </details>
+
         @atedInputNew(propertyDetailsForm("titleNumber"),
           '_label -> Messages("ated.propertyReference.titleNumber"),
-          '_labelClass -> "form-label-bold",
+          '_labelClass -> "visuallyhidden",
           '_hintText -> Messages("ated.propertyReference.titleNumber.hint"),
           '_id -> "references.titleNumber",
           '_showConstraints -> false)
       </div>
-
-      <details>
-        <summary>
-          <span id="titleNumber-reveal" class="summary">
-            @Messages("ated.property-details-titleNumber.reveal")
-          </span>
-        </summary>
-        <div class="panel-indent">
-          <p id="titleNumber-text">@Html(Messages("ated.property-details-titleNumber-reveal.text"))</p>
-        </div>
-      </details>
-
 
     <div class="form-group">
       <button class="button" id="submit" type="submit">@Messages("ated.save-and-continue")</button>

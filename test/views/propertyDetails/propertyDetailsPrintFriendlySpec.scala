@@ -71,7 +71,7 @@ class propertyDetailsPrintFriendlySpec extends FeatureSpec with OneServerPerSuit
       assert(document.getElementById("property-details-header").text() === "Property details")
 
       assert(document.getElementById("property-address-label").text() === "Address")
-      assert(document.getElementById("property-title-number-label").text() === "Property's title number")
+      assert(document.getElementById("property-title-number-label").text() === "Property’s title number")
       assert(document.getElementById("property-value-header").text() === "Value of the property")
       assert(document.getElementById("property-value-label-0").text() === "Value for the purposes of ATED")
       assert(document.getElementById("dates-of-liability-header").text() === "Dates of liability")
@@ -110,7 +110,7 @@ class propertyDetailsPrintFriendlySpec extends FeatureSpec with OneServerPerSuit
       assert(document.getElementById("property-details-header").text() === "Property details")
 
       assert(document.getElementById("property-address-label").text() === "Address")
-      assert(document.getElementById("property-title-number-label").text() === "Property's title number")
+      assert(document.getElementById("property-title-number-label").text() === "Property’s title number")
       assert(document.getElementById("property-value-header").text() === "Value of the property")
       assert(document.getElementById("property-value-label-0").text() === "Value for the purposes of ATED")
       assert(document.getElementById("dates-of-liability-header").text() === "Dates of liability")

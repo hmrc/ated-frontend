@@ -104,7 +104,7 @@ class PropertyDetailsRevaluedControllerSpec extends PlaySpec with OneServerPerSu
               document.getElementById("property-details-header").text() must be("Have you had the property revalued since you made the £40,000 or more change?")
 
               document.getElementById("isPropertyRevalued").text() contains ("Yes No")
-              document.getElementById("revaluedValue_field").text() must be("What is the new valuation of the property in GBP? For example, 1,500,000")
+              document.getElementById("revaluedValue_field").text() must be("What is the new valuation of the property in GBP?")
               document.getElementById("revaluedValue").attr("type") must be("text")
               document.getElementById("revaluedDate_legend").text() must be("What date did you get the property revalued? For example, 31 3 2018")
               document.getElementById("isPropertyRevalued-true").attr("checked") must be("")
