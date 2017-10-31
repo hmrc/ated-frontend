@@ -800,6 +800,10 @@ table th {
   margin-bottom: 30px;
 }
 
+p.margin-bottom-default {
+  margin-bottom: 30px !important;
+}
+
 .relief-type {
   margin-bottom: 30px;
 }
