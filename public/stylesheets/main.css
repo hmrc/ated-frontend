@@ -796,6 +796,6 @@ table th {
 
 /*  -- Vertical Spacing - https://v4-alpha.getbootstrap.com/utilities/spacing/ -- */
 
-.marginbottom-1 {
+.margin-bottom-default {
   margin-bottom: 30px;
 }

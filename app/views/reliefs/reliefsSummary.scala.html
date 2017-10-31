@@ -59,8 +59,7 @@
     </div>
 
     <div class="grid grid-1-2 cya-answer" id="tas-rb">
-      @if(canSubmit){ <span>@reliefData.taxAvoidance.rentalBusinessScheme</span> }
-      else { <span class="status">@Messages("ated.label.incomplete")</span> }
+      @if(canSubmit){ <span>@reliefData.taxAvoidance.rentalBusinessScheme</span> } else { <span class="status">@Messages("ated.label.incomplete")</span> }
     </div>
 
     <div class="grid grid-1-6 cya-change">
@@ -158,7 +157,7 @@
     </div>
 
     <div id="tasp-otp" class="grid grid-1-2 cya-answer">
-      @if(canSubmit){ <span>@reliefData.taxAvoidance.openToPublicSchemePromoter</span> } else { <span class="status">@Messages("ated.label.incomplete")</span> }
+      @if(canSubmit) { <span>@reliefData.taxAvoidance.openToPublicSchemePromoter</span> } else { <span class="status">@Messages("ated.label.incomplete")</span> }
     </div>
 
     <div class="grid grid-1-6 cya-change" id="tasp-edit-otp">
@@ -430,6 +429,7 @@
       </div>
 
       <div class="grid-wrapper row-border">
+
         <div class="grid grid-2-6 cya-question">
           <span class="heading-small">@Messages("ated.relief-summary.datesOfRelief")</span>
         </div>
@@ -444,6 +444,7 @@
           </a>
         </div>
       </div>
+      
       @if(reliefData.taxAvoidance.employeeOccupationScheme.isDefined) {
       <div class="grid-wrapper row-border">
         <div class="grid grid-2-6 cya-question">
@@ -752,21 +753,21 @@
 </div>
 
 
-<div class="form-group">
+<p class="margin-bottom-default">
   <a href="@controllers.reliefs.routes.ReliefsSummaryController.viewPrintFriendlyReliefReturn(periodKey)" id="print-friendly-relief-link" data-journey-click="ated-fronted:click:print-friendly-relief-link" target="_blank">
     @Messages("ated.relief-summary.print.view")
   </a>
-</div>
+</p>
 
-<div class="form-group">
+<p class="margin-bottom-default">
   <a href="@controllers.routes.AccountSummaryController.view()" id="saved-returns-link" data-journey-click="ated-fronted:click:saved-returns-link">@Messages("ated.property-details-summary.saved-returns.link.text")</a>
-</div>
+</p>
 
-<div class="form-group">
+<p class="margin-bottom-default">
   <a href="@controllers.reliefs.routes.ReliefsSummaryController.deleteDraft(periodKey)" id="delete-draft" data-journey-click="ated-fronted:click:delete-draft">
       @Messages("ated.property-details-summary.delete-draft.link.text")
   </a>
-</div>
+</p>
 
   @form(action=controllers.reliefs.routes.ReliefsSummaryController.continue(periodKey)) {
       @if(!isComplete){

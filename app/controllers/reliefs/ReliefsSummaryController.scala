@@ -43,6 +43,9 @@ trait ReliefsSummaryController extends BackLinkController
             backLink <- currentBackLink
             retrievedData <- reliefsService.retrieveDraftReliefs(atedContext.user.atedReferenceNumber, periodKey)
           } yield {
+            println("*********************************")
+            println(retrievedData.toString)
+            println("*********************************")
             val canSubmit = AtedUtils.canSubmit(periodKey, LocalDate.now)
             Ok(views.html.reliefs.reliefsSummary(retrievedData.map(_.periodKey).getOrElse(periodKey),
               retrievedData, canSubmit,
