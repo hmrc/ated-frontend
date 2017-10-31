@@ -119,7 +119,7 @@ class ReliefsSummaryControllerSpec extends PlaySpec with OneServerPerSuite with 
               val document = Jsoup.parse(contentAsString(result))
               document.title() must be("Check your details are correct")
               document.getElementById("property-details-summary-header").text() must be("Check your details are correct")
-              document.getElementById("details-text").text() must be("For the ATED period from 1 April 2015 to 31 March 2016.")
+              document.getElementById("details-text").text() must be("For the ATED chargeable period from 1 April 2015 to 31 March 2016.")
               document.getElementById("tas-er").text() must be("12345678")
               document.getElementById("ated-charge-value").text() must be("£0")
               document.getElementById("submit").text() must be("Confirm and continue")
@@ -137,7 +137,7 @@ class ReliefsSummaryControllerSpec extends PlaySpec with OneServerPerSuite with 
               val document = Jsoup.parse(contentAsString(result))
               document.title() must be("Check your details are correct")
               document.getElementById("property-details-summary-header").text() must be("Check your details are correct")
-              document.getElementById("details-text").text() must be("For the ATED period from 1 April 2015 to 31 March 2016.")
+              document.getElementById("details-text").text() must be("For the ATED chargeable period from 1 April 2015 to 31 March 2016.")
               document.getElementById("tas-er").text() must be("11111111")
               document.getElementById("ated-charge-value").text() must be("£0")
               document.getElementById("submit").text() must be("Confirm and continue")
@@ -155,7 +155,7 @@ class ReliefsSummaryControllerSpec extends PlaySpec with OneServerPerSuite with 
               val document = Jsoup.parse(contentAsString(result))
               document.title() must be("Check your details are correct")
               document.getElementById("property-details-summary-header").text() must be("Check your details are correct")
-              document.getElementById("details-text").text() must be("For the ATED period from 1 April 2015 to 31 March 2016.")
+              document.getElementById("details-text").text() must be("For the ATED chargeable period from 1 April 2015 to 31 March 2016.")
               document.getElementById("ated-charge-value").text() must be("Not yet calculated")
           }
         }
@@ -170,7 +170,7 @@ class ReliefsSummaryControllerSpec extends PlaySpec with OneServerPerSuite with 
               val document = Jsoup.parse(contentAsString(result))
               document.title() must be("Check your details are correct")
               document.getElementById("property-details-summary-header").text() must be("Check your details are correct")
-              document.getElementById("details-text").text() must be("For the ATED period from 1 April 2015 to 31 March 2016.")
+              document.getElementById("details-text").text() must be("For the ATED chargeable period from 1 April 2015 to 31 March 2016.")
               document.getElementById("ated-charge-value").text() must be("Not yet calculated")
           }
         }
@@ -223,7 +223,7 @@ class ReliefsSummaryControllerSpec extends PlaySpec with OneServerPerSuite with 
               val document = Jsoup.parse(contentAsString(result))
               document.title() must be("Check your details are correct")
               document.getElementById("property-details-summary-header").text() must be("Relief returns for ACME Limited")
-              document.getElementById("details-text").text() must be("For the ATED period from 1 April 2015 to 31 March 2016.")
+              document.getElementById("details-text").text() must be("For the ATED chargeable period from 1 April 2015 to 31 March 2016.")
               document.getElementById("tas-otp-val").text() must be("12345678")
               document.getElementById("reliefs-print-charge-value").text() must be("£0")
           }
