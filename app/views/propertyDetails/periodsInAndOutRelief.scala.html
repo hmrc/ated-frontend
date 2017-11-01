@@ -4,6 +4,7 @@
  periods : Seq[models.LineItem],
  mode: Option[String],
  backLink: Option[String])(implicit atedContext: AtedContext, messages: Messages)
+
 @import uk.gov.hmrc.play.views.html._
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
@@ -21,11 +22,16 @@
 @atedMain(title = Messages("ated.property-details-period.peroidsInRelief.title"),
           attorney = atedContext.user.authContext.attorney,
           analyticsAdditionalJs = Some(analyticsJs)) {
-  @pageHeadersAndError(backLink, "pre-heading", AtedUtils.getPropertyDetailsPreHeader(mode), "property-details-header", Messages("ated.property-details-period.peroidsInRelief.header"),
-      Some(atedErrorSummary(propertyDetailsForm, "ated.property-details-period-error.general")))
+          @pageHeadersAndError(backLink,
+            "pre-heading",
+            AtedUtils.getPropertyDetailsPreHeader(mode),
+            "property-details-header",
+            Messages("ated.property-details-period.peroidsInRelief.header"),
+            Some(atedErrorSummary(propertyDetailsForm, "ated.property-details-period-error.general")
+          ))
 
   @if(periods.isEmpty){
-    <p><span class="heading-medium" id="no-periods">@Messages("ated.property-details-period.periodsInRelief.no-periods")</span></p>
+    <p id="no-periods">@Messages("ated.property-details-period.periodsInRelief.no-periods")</p>
     <div class="divider--top--thick"></div>
   }else {
     <table id="period-summary">
@@ -42,8 +48,7 @@
         <td id="date-to-value-@index">@period.endDate.toString(Messages("ated.date-format"))</td>
         <td id="return-type-value-@index">@period.description</td>
         <td id="action-@index">
-          <a href="@controllers.propertyDetails.routes.PeriodsInAndOutReliefController.deletePeriod(id, period.startDate)"
-                            id="delete-period-@index">
+          <a href="@controllers.propertyDetails.routes.PeriodsInAndOutReliefController.deletePeriod(id, period.startDate)" id="delete-period-@index">
             @Messages("ated.property-details-period.periodsInRelief.delete") <span class="visuallyhidden">@period.description @period.startDate.toString(Messages("ated.date-format"))</span>
           </a>
         </td>
@@ -52,14 +57,14 @@
     </table>
   }
 
-  <div class="form-group">
+  <div class="margin-bottom-default">
     <a href="@controllers.propertyDetails.routes.PeriodDatesLiableController.add(id, periodKey)"
-       id="add-period-charge" aria-label='@Messages("ated.property-details-period.periodsInRelief.add-charge")' class="button button--secondary btn-margin">
+       id="add-period-charge" class="button button--secondary btn-margin">
       @Messages("ated.property-details-period.periodsInRelief.add-charge")
     </a>
 
     <a href="@controllers.propertyDetails.routes.PeriodChooseReliefController.add(id, periodKey)"
-       id="add-period-in-relief" aria-label='@Messages("ated.property-details-period.periodsInRelief.add-relief")' class="button button--secondary btn-margin">
+       id="add-period-in-relief" class="button button--secondary btn-margin">
       @Messages("ated.property-details-period.periodsInRelief.add-relief")
     </a>
   </div>
@@ -68,9 +73,6 @@
 
    <button class="button" id="submit" type="submit">@Messages("ated.save-and-continue")</button>
 
-
   }
-
-
 
 }
