@@ -30,7 +30,7 @@ object AddressLookupForms {
     mapping(
       "postcode" -> text
         .verifying(Messages("ated.error.address.postalcode.format", Messages("ated.address.postcode.field")),
-          x => AtedForms.validatePostCodeFormat(Some(x))),
+          x => AtedForms.validatePostCodeFormat(Some(x.toUpperCase))),
       "houseName" -> optional(text)
     )(AddressLookup.apply)(AddressLookup.unapply)
   )

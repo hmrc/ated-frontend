@@ -791,7 +791,7 @@ table th {
 }
 
 .uppercase {
-   text-transform: lowercase;
+   text-transform: uppercase;
 }
 
 /*  -- Vertical Spacing -- */
