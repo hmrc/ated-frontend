@@ -1,0 +1,99 @@
+@(periodKey: Int,
+reliefData: ReliefsTaxAvoidance,
+canSubmit: Boolean,
+reliefType: String,
+reliefTypeDate: Option[org.joda.time.LocalDate],
+taxAvoidanceBusinessScheme: Option[String],
+taxAvoidanceSchemePromoter: Option[String]
+)(implicit messages: Messages)
+
+
+<section class="relief-type">
+
+  <h2 id="@reliefType" class="heading-medium">@Messages(s"ated.relief-summary-types.$reliefType")</h2>
+
+  <div class="grid-wrapper row-border">
+
+    <div class="grid grid-2-6 cya-question">
+      <span class="heading-small">@Messages("ated.relief-summary.datesOfRelief")</span>
+    </div>
+
+    <div id="@(reliefType)-dates-rb" class="grid grid-1-2 cya-answer">
+      @reliefTypeDate.getOrElse(reliefData.periodStartDate).toString(Messages("ated.date-format.short")) @Messages("ated.relief-summary.relief-end-date")
+    </div>
+
+    <div class="grid grid-1-6 cya-change">
+      <a href="@controllers.reliefs.routes.ChooseReliefsController.editFromSummary(periodKey)" id="@(reliefType)-dates-edit-rb" data-journey-click="ated-fronted:click:dates-edit-rb">
+        @Messages("ated.edit") <span class="visuallyhidden">@Messages(s"ated.relief-summary-types.$reliefType") @Messages("ated.relief-summary.datesOfRelief")</span>
+      </a>
+    </div>
+
+  </div>
+
+  @if(taxAvoidanceBusinessScheme.isDefined) {
+  <div class="grid-wrapper row-border">
+
+    <div class="grid grid-2-6 cya-question">
+      <span class="heading-small">@Messages("ated.relief-summary.avoidanceSchmRefNum")</span>
+    </div>
+
+    <div class="grid grid-1-2 cya-answer" id="@(reliefType)-tas-rb">
+      @if(canSubmit){ <span>@taxAvoidanceBusinessScheme</span> } else { <span class="status">@Messages("ated.label.incomplete")</span> }
+    </div>
+
+    <div class="grid grid-1-6 cya-change">
+      <a href="@controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.editFromSummary(periodKey)" id="@(reliefType)-tas-edit-rb" data-journey-click="ated-fronted:click:tas-edit-rb">
+        @Messages("ated.edit") <span class="visuallyhidden">@Messages(s"ated.relief-summary-types.$reliefType") @Messages("ated.relief-summary.avoidanceSchmRefNum")</span>
+      </a>
+    </div>
+
+  </div>
+
+  <div class="grid-wrapper row-border">
+
+    <div class="grid grid-2-6 cya-question">
+      <span class="heading-small">@Messages("ated.relief-summary.avoidanceSchmRefNum-promoter")</span>
+    </div>
+
+    <div id="@(reliefType)-tasp-rb" class="grid grid-1-2 cya-answer">
+      @if(canSubmit){ <span>@taxAvoidanceSchemePromoter</span> } else { <span class="status">@Messages("ated.label.incomplete")</span> }
+    </div>
+
+    <div class="grid grid-1-6 cya-change" id="@(reliefType)-tasp-edit-rb">
+      <a href="@controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.editFromSummary(periodKey)" id="@(reliefType)-tas-edit-rp" data-journey-click="ated-fronted:click:tasp-edit-rb">
+        @Messages("ated.edit") <span class="visuallyhidden">@Messages(s"ated.relief-summary-types.$reliefType") @Messages("ated.relief-summary.avoidanceSchmRefNum-promoter")</span>
+      </a>
+    </div>
+  </div>
+
+  } else {
+    <div class="grid-wrapper row-border">
+
+      <div class="grid grid-2-6 cya-question">
+        <span class="heading-small">@Messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.header")</span>
+      </div>
+
+      <div class="grid grid-1-2 cya-answer" id="avoidance-scheme-header-@(reliefType)Scheme-value-not-provided">@Messages("ated.property-details-summary.field-blank")</div>
+
+      <div class="grid grid-1-6 cya-change">
+        <a href="@controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.editFromSummary(periodKey)" id="@(reliefType)-tas-edit" data-journey-click="ated-fronted:click:tasp-edit-rb">
+          @Messages("ated.edit") <span class="visuallyhidden">@Messages(s"ated.relief-summary-types.$reliefType") @Messages("ated.relief-summary.avoidanceSchmRefNum-promoter")</span>
+        </a>
+      </div>
+
+    </div>
+  }
+
+  <div class="grid-wrapper row-border">
+
+    <div class="grid grid-2-6 cya-question">
+      <span class="heading-small" id="@(reliefType)-status-rb">@Messages("ated.relief-summary.status")</span>
+    </div>
+
+    <div class="grid grid-1-2 cya-answer" id="@(reliefType)-status-draft-rb">
+      <span class="visuallyhidden">@Messages(s"ated.relief-summary-types.$reliefType") @Messages("ated.relief-summary.status")</span> @Messages("ated.relief-summary.draft")
+    </div>
+
+  </div>
+
+</section>
