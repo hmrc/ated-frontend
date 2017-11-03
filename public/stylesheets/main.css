@@ -812,4 +812,10 @@ p.margin-bottom-default {
   margin-bottom: 30px;
 }
 
+.inline-heading-style {
+  display: block;
+  margin-top: 0;
+  line-height: normal;
+}
+
 
