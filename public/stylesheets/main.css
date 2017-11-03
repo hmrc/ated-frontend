@@ -800,6 +800,10 @@ table th {
   margin-bottom: 30px;
 }
 
+.margin-top-default {
+  margin-top: 30px;
+}
+
 p.margin-bottom-default {
   margin-bottom: 30px !important;
 }
@@ -807,3 +811,11 @@ p.margin-bottom-default {
 .relief-type {
   margin-bottom: 30px;
 }
+
+.inline-heading-style {
+  display: block;
+  margin-top: 0;
+  line-height: normal;
+}
+
+

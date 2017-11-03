@@ -25,7 +25,10 @@
 
     <p id="title-text">@Messages("ated.property-details.references")</p>
 
-      <div id="title">
+      <fieldset id="title">
+
+        <legend class="visuallyhidden">@Messages("ated.property-details.title.header")</legend>
+
         <details>
           <summary>
           <span id="titleNumber-reveal" class="summary">
@@ -43,19 +46,9 @@
           '_hintText -> Messages("ated.propertyReference.titleNumber.hint"),
           '_id -> "references.titleNumber",
           '_showConstraints -> false)
-      </div>
+      </fieldset>
 
-    <div class="form-group">
       <button class="button" id="submit" type="submit">@Messages("ated.save-and-continue")</button>
-    </div>
-
-    <div class="form-group">
-        @atedInputNew(propertyDetailsForm("id"),
-          '_label -> "id",
-          '_labelClass ->  "visuallyhidden",
-          '_id -> "id",
-          '_type -> "hidden")
-    </div>
 
   }
 
