@@ -54,7 +54,7 @@ trait PropertyDetailsAddressController extends PropertyDetailsHelpers with Clien
                 x.periodKey,
                 propertyDetailsAddressForm.fill(x.addressProperty),
                 AtedUtils.getEditSubmittedMode(x, answer),
-                backLink))
+                backLink, oldFormBundleNo = Some(oldFormBundleNo)))
             case None => Redirect(controllers.routes.AccountSummaryController.view())
           }
         }
