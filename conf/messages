@@ -166,7 +166,11 @@ ated.choose-reliefs.relief-answer = For example, if you have 5 properties in rel
 
 ated.choose-reliefs.avoidance-title = Is an avoidance scheme being used for any of these reliefs?
 ated.choose-reliefs.avoidance-question = What is an avoidance scheme?
-ated.choose-reliefs.avoidance-answer = <p>HMRC never approves tax avoidance schemes. You must tell us if you are using a tax avoidance scheme that falls within the Disclosure of Tax Avoidance Schemes (DOTAS).</p><p>You will have received your scheme reference number (SRN) and promoter reference number (PRN):</p><ul class="bullets"><li>from your scheme provider on form AAG6 Disclosure of avoidance scheme – Notification of scheme reference number</li><li>direct from HMRC</li></ul><p>More information on tax avoidance schemes <a href="www.gov.uk/disclosure-of-tax-avoidance-schemes-overview data-journey-click="ated-fronted:click:tax-avoidance-link"> tax avoidance schemes</a>.</p>
+ated.choose-reliefs.avoidance-reveal-line-1 = HMRC never approves tax avoidance schemes. You must tell us if you are using a tax avoidance scheme that falls within the Disclosure of Tax Avoidance Schemes (DOTAS).
+ated.choose-reliefs.avoidance-reveal-line-2 = You will have received your scheme reference number (SRN) and promoter reference number (PRN)
+ated.choose-reliefs.avoidance-info-line-1 = from your scheme provider on form AAG6 Disclosure of avoidance scheme – Notification of scheme reference number
+ated.choose-reliefs.avoidance-info-line-2 = direct from HMRC
+ated.choose-reliefs.avoidance-more-info = <a href="https://www.gov.uk/guidance/disclosure-of-tax-avoidance-schemes-overview" data-journey-click="ated-fronted:click:tax-avoidance-link">More information on tax avoidance schemes</a>
 ated.choose-reliefs-further.information.text = We don’t need any further information or property details, but you must keep information about them to support your claim to relief.
 
 ated.choose-reliefs.error = You must select at least one relief
