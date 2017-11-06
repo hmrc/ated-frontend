@@ -6,7 +6,12 @@
 @import views.html.helpers.error._
 @import utils._
 
-@atedMain(title = Messages("ated.change-relief-return.title"), attorney = atedContext.user.authContext.attorney) {
+@analyticsJs = {
+ga('set', 'page', document.location.pathname);
+ga('set', 'location', document.URL.split("?")[0]);
+}
+
+@atedMain(title = Messages("ated.change-relief-return.title"),attorney = atedContext.user.authContext.attorney, analyticsAdditionalJs = Some(analyticsJs)) {
     @pageHeadersAndError(backLink, "pre-heading", Messages("ated.change-return.pre-header"), "relief-return-header", Messages("ated.change-relief-return.title"),
     Some(atedErrorSummary(editReliefForm, "ated.change-relief-return.error.empty.general")))
 
