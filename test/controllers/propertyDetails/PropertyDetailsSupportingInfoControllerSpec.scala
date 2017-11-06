@@ -112,7 +112,7 @@ class PropertyDetailsSupportingInfoControllerSpec extends PlaySpec with OneServe
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
-              document.title() must be("Do you have any supporting information to add?")
+              document.title() must be("Do you have any supporting information to add? (optional)")
               
               document.getElementById("supportingInfo").attr("value") must be("")
 
@@ -156,7 +156,7 @@ class PropertyDetailsSupportingInfoControllerSpec extends PlaySpec with OneServe
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
-              document.title() must be("Do you have any supporting information to add?")
+              document.title() must be("Do you have any supporting information to add? (optional)")
 
               document.getElementById("backLinkHref").text must be("Back")
               document.getElementById("backLinkHref").attr("href") must include("/ated/liability/create/summary")

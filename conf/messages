@@ -658,10 +658,10 @@ ated.property-details-period-error.general.isTaxAvoidance = There is a problem w
 ated.property-details-period-error.general.taxAvoidanceScheme = There is a problem with the avoidance scheme reference number
 ated.property-details-period-error.general.taxAvoidancePromoterReference = There is a problem with the promoter reference number
 
-ated.property-details-period.supportingInfo.title = Do you have any supporting information to add?
-ated.property-details-period.supportingInfo.header = Do you have any supporting information to add?
+ated.property-details-period.supportingInfo.title = Do you have any supporting information to add? (optional)
+ated.property-details-period.supportingInfo.header = Do you have any supporting information to add? (optional)
 ated.property-details-period.supportingInfo = Supporting information (optional)
-ated.property-details-period.supportingInfo.hint = This is optional information. See the <a href="https://www.gov.uk/government/publications/stld-annual-tax-on-enveloped-dwellings-ated/annual-tax-on-enveloped-dwellings-returns-guidance#sec5" data-journey-click="ated-fronted:click:returns-guidance-link">guidance for more information</a>.
+ated.property-details-period.supportingInfo.hint = See the <a href="https://www.gov.uk/government/publications/stld-annual-tax-on-enveloped-dwellings-ated/annual-tax-on-enveloped-dwellings-returns-guidance#sec5" data-journey-click="ated-fronted:click:returns-guidance-link">guidance for more information</a>.
 ated.property-details-period-error.supportingInfo = You cannot enter more than 200 characters in supporting information
 ated.property-details-period-error.supportingInfo.invalid = You cannot enter special characters. For example £, or @.
 ated.property-details-period-error.general.supportingInfo = There is a problem with your supporting information
