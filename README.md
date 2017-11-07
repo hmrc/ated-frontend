@@ -20,7 +20,7 @@ This service is designed for users who have subscribed to ATED (clients and agen
 Requirements
 ------------
 
-This service is written in [Scala] and [Play], so needs at least a [JRE] to run.
+This service is written in [Scala] and [Play], so needs the latest [JRE] to run.
 
 
 Authentication
