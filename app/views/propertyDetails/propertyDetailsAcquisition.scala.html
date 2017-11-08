@@ -26,8 +26,6 @@
   @pageHeadersAndError(backLink, "pre-heading", AtedUtils.getPropertyDetailsPreHeader(mode), "property-details-header", Messages("ated.property-details-value.anAcquisition.header"),
       Some(atedErrorSummary(propertyDetailsForm, "ated.property-details-value-error.general")))
 
-    <p id="lede-text">@Messages("ated.property-details-value.anAcquisition.lede")</p>
-
     <details>
         <summary>
             <span id="anAcquisition-reveal" class="summary">
@@ -35,7 +33,9 @@
             </span>
         </summary>
         <div class="panel-indent">
-            <p id="anAcquisition-text">@Html(Messages("ated.property-details-value.anAcquisition.what.text"))</p>
+            <p id="anAcquisition-text-1">@Html(Messages("ated.property-details-value.anAcquisition.what.text1"))</p>
+            <p id="anAcquisition-text-2">@Html(Messages("ated.property-details-value.anAcquisition.what.text2"))</p>
+            <p id="anAcquisition-text-3">@Html(Messages("ated.property-details-value.anAcquisition.what.text3"))</p>
         </div>
     </details>
 
