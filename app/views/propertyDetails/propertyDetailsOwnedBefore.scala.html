@@ -13,7 +13,15 @@
 }
 
 @pageScripts = {
-  <script src='@controllers.routes.AssetsController.at("javascript/propertyDetailsOwnedBefore.js")'></script>
+  <script src='@controllers.routes.AssetsController.at("javascript/show-hide-content.js")'></script>
+  <script>
+    $(document).ready(function() {
+     // Where .multiple-choice uses the data-target attribute
+      // to toggle hidden content
+      var showHideContent = new GOVUK.ShowHideContent()
+      showHideContent.init()
+    });
+  </script>
 }
 
 @analyticsJs = {
@@ -33,10 +41,10 @@
 
     <div class="form-group">
       <div id="isOwnedBefore2012">
-        @atedInputRadioGroupNew(
+        @atedInputRadioGroupReveal(
         propertyDetailsForm("isOwnedBefore2012"),
-        Seq("true" -> Messages("ated.property-details-value.yes"),
-        "false" -> Messages("ated.property-details-value.no")),
+        Seq("true" -> (Messages("ated.property-details-value.yes"), Some("valueOfProperty2012")),
+        "false" -> (Messages("ated.property-details-value.no"), None)),
         '_legend -> Messages("ated.property-details-value.isOwnedBefore2012.header"),
         '_legendClass -> "visuallyhidden",
         '_groupClass -> "inline",
@@ -47,9 +55,9 @@
       </div>
     </div>
 
-      <div class="form-group">
-        <div id="isOwnedBefore2012-true-hidden" class="panel-indent">
-          @atedInputNew(propertyDetailsForm("ownedBefore2012Value"),
+    <div class="form-group">
+      <div id="valueOfProperty2012" class="panel-indent js-hidden">
+        @atedInputNew(propertyDetailsForm("ownedBefore2012Value"),
           '_label -> Html(Messages("ated.property-details-value.ownedBefore2012Value")),
           '_labelClass -> "form-label-bold",
           '_inputClass -> "form-control-indent",
@@ -57,11 +65,10 @@
           '_id -> "ownedBefore2012Value",
           '_showConstraints -> false,
           '_type -> "text")
-        </div>
       </div>
+     </div>
 
-      <button class="button" id="submit" type="submit">@Messages("ated.save-and-continue")</button>
-
+    <button class="button" id="submit" type="submit">@Messages("ated.save-and-continue")</button>
 
   }
 
