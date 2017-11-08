@@ -1,16 +1,16 @@
 
 function showHideIsNewBuild() {
-    var displayTrueDiv = $('#isNewBuild-true-hidden');
-    var displayFalseDiv = $('#isNewBuild-false-hidden');
-    var yesSelected = $('#isNewBuild-true');
-    var noSelected = $('#isNewBuild-false');
 
     var newBuildFields = [
         $('#newBuildDate-day'),
         $('#newBuildDate-month'),
         $('#newBuildDate-year'),
+        $('#localAuthRegDate-day'),
+        $('#localAuthRegDate-month'),
+        $('#localAuthRegDate-year'),
         $('#newBuildValue')
     ];
+
 
     var notNewBuildFields = [
         $('#notNewBuildDate-day'),
@@ -19,26 +19,19 @@ function showHideIsNewBuild() {
         $('#notNewBuildValue')
     ]
 
-    displayTrueDiv.hide();
-    displayFalseDiv.hide();
-
-    if(yesSelected.is(':checked')) {
-        displayTrueDiv.show();
-    }
-    if(noSelected.is(':checked')) {
-        displayFalseDiv.show();
-    }
     $('input[type=radio][name=isNewBuild]').change(function(){
         if(this.value == 'true') {
-            displayTrueDiv.show();
-            displayFalseDiv.hide();
-            clearInputFields(notNewBuildFields)
+            clearInputFields(notNewBuildFields);
         } else {
-            displayTrueDiv.hide();
-            displayFalseDiv.show();
-            clearInputFields(newBuildFields)
+            clearInputFields(newBuildFields);
         }
     });
+}
+
+function clearInputFields(fieldsArray) {
+    for (var i = 0; i < fieldsArray.length; i++) {
+        fieldsArray[i].val("");
+    }
 }
 
 $(document).ready(function(){

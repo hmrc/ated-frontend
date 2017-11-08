@@ -41,7 +41,6 @@ trait AddressLookupConnector extends ServicesConfig with RawResponseReads {
 
   def findByPostcode(addressLookup: AddressLookup)
                     (implicit atedContext: AtedContext, hc: HeaderCarrier):Future[List[AddressLookupRecord]] = {
-
     val filter = addressLookup.houseName.map(fi => "&filter=" + enc(fi)).getOrElse("")
     http.GET[List[AddressLookupRecord]](serviceURL + POSTCODE_LOOKUP + addressLookup.postcode + filter).recover {
       case e => Nil

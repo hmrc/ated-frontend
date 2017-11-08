@@ -842,8 +842,6 @@ ated.period-summary.sr.relieftype = relief type,
 ated.period-summary.sr.address = address,
 ated.period-summary.sr.return = return,
 
-
-
 ## Edit Client Name
 
 ated.agent.edit-client.header = Change the display name for {0}
