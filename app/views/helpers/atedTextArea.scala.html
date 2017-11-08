@@ -29,7 +29,7 @@
           @commonHelper(field,errors)
           @if(elements.args.contains('_symbol)) { <span class="inline-fields">@elements.args.get('_symbol)</span> }
 
-    <textarea type="text" @if( elements.args.get('_inputClass)){ class="@elements.args.get('_inputClass)" } name="@elements.field.name"
+    <textarea @if( elements.args.get('_inputClass)){ class="@elements.args.get('_inputClass)" } name="@elements.field.name"
       id="@if( elements.args.get('id) ) {@elements.args.get('id)} else {@elements.field.name.replaceAll("""[\.\[\]]""", "-")}"
         @if(elements.args.get('maxlength)){ maxlength="@elements.args.get('maxlength)"}>@field.value</textarea>
 

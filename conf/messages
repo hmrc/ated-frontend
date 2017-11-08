@@ -166,7 +166,11 @@ ated.choose-reliefs.relief-answer = For example, if you have 5 properties in rel
 
 ated.choose-reliefs.avoidance-title = Is an avoidance scheme being used for any of these reliefs?
 ated.choose-reliefs.avoidance-question = What is an avoidance scheme?
-ated.choose-reliefs.avoidance-answer = <p>HMRC never approves tax avoidance schemes. You must tell us if you are using a tax avoidance scheme that falls within the Disclosure of Tax Avoidance Schemes (DOTAS).</p><p>You will have received your scheme reference number (SRN) and promoter reference number (PRN):</p><ul class="bullets"><li>from your scheme provider on form AAG6 Disclosure of avoidance scheme – Notification of scheme reference number</li><li>direct from HMRC</li></ul><p>More information on tax avoidance schemes <a href="www.gov.uk/disclosure-of-tax-avoidance-schemes-overview data-journey-click="ated-fronted:click:tax-avoidance-link"> tax avoidance schemes</a>.</p>
+ated.choose-reliefs.avoidance-reveal-line-1 = HMRC never approves tax avoidance schemes. You must tell us if you are using a tax avoidance scheme that falls within the Disclosure of Tax Avoidance Schemes (DOTAS).
+ated.choose-reliefs.avoidance-reveal-line-2 = You will have received your scheme reference number (SRN) and promoter reference number (PRN)
+ated.choose-reliefs.avoidance-info-line-1 = from your scheme provider on form AAG6 Disclosure of avoidance scheme – Notification of scheme reference number
+ated.choose-reliefs.avoidance-info-line-2 = direct from HMRC
+ated.choose-reliefs.avoidance-more-info = <a href="https://www.gov.uk/guidance/disclosure-of-tax-avoidance-schemes-overview" data-journey-click="ated-fronted:click:tax-avoidance-link">More information on tax avoidance schemes</a>
 ated.choose-reliefs-further.information.text = We don’t need any further information or property details, but you must keep information about them to support your claim to relief.
 
 ated.choose-reliefs.error = You must select at least one relief
@@ -456,7 +460,7 @@ ated.property-details-value.isPropertyRevalued.error.non-selected = You must ans
 
 ated.property-details-value.incorrect-format = You must enter a correct value.
 ated.property-details-value.revaluedValue = What is the new valuation of the property in GBP?
-ated.property-details-value.revaluedValue.hint = For example, 1,500,000
+ated.property-details-value.revaluedValue.hint = For example, £1,500,000
 ated.property-details-value.revaluedValue.error.empty = You must enter a valid property value
 ated.property-details-value.revaluedValue.error.too-low = The property value cannot be less than the lowest band
 ated.property-details-value.revaluedValue.error.too-high = The property value must be less than 14 characters
@@ -478,7 +482,7 @@ ated.property-details-value.isOwnedBefore2012.header = Did the company own this 
 ated.property-details-value.isOwnedBefore2012 = Did the company own this property on or before 1 April 2012?
 ated.property-details-value.isOwnedBefore2012.error.non-selected = You must answer this question.
 ated.property-details-value.ownedBefore2012Value = What was the value of the property on the 1 April 2012?
-ated.property-details-value.ownedBefore2012Value.hint = For example, 1,500,000
+ated.property-details-value.ownedBefore2012Value.hint = For example, £1,500,000
 ated.property-details-value.ownedBefore2012Value.error.empty = You must enter a valid property value
 ated.property-details-value.ownedBefore2012Value.error.non-selected = You must answer the property owned before 1 April 2012 question.
 ated.property-details-value.ownedBefore2012Value.error.too-low = The property value cannot be below the lowest band
@@ -505,13 +509,13 @@ ated.property-details-value.localAuthRegDate.error.too-early = The property loca
 ated.property-details-value.localAuthRegDate.error.too-late = The property local council registered date cannot be in the future.
 
 ated.property-details-value.newBuildValue = What was the value of the property in GBP at this date?
-ated.property-details-value.newBuildValue.hint = For example, 1,500,000
+ated.property-details-value.newBuildValue.hint = For example, £1,500,000
 ated.property-details-value.newBuildValue.error = You must enter a date within the chargeable period
 ated.property-details-value.newBuildValue.error.empty = You must enter a property value
 ated.property-details-value.newBuildValue.error.too-low = The property value cannot be below the lowest band
 ated.property-details-value.newBuildValue.error.too-high = The property value must be less than 14 characters.
 ated.property-details-value.notNewBuildValue = What was the value of the property on the date it was acquired, in GBP?
-ated.property-details-value.notNewBuildValue.hint = For example, 1,500,000
+ated.property-details-value.notNewBuildValue.hint = For example, £1,500,000
 ated.property-details-value.notNewBuildValue.error.empty = You must enter a property value
 ated.property-details-value.notNewBuildValue.error.too-low = The property value cannot be below the lowest band
 ated.property-details-value.notNewBuildValue.error.too-high = The property value must be less than 14 characters
@@ -654,10 +658,10 @@ ated.property-details-period-error.general.isTaxAvoidance = There is a problem w
 ated.property-details-period-error.general.taxAvoidanceScheme = There is a problem with the avoidance scheme reference number
 ated.property-details-period-error.general.taxAvoidancePromoterReference = There is a problem with the promoter reference number
 
-ated.property-details-period.supportingInfo.title = Do you have any supporting information to add?
-ated.property-details-period.supportingInfo.header = Do you have any supporting information to add?
+ated.property-details-period.supportingInfo.title = Do you have any supporting information to add? (optional)
+ated.property-details-period.supportingInfo.header = Do you have any supporting information to add? (optional)
 ated.property-details-period.supportingInfo = Supporting information (optional)
-ated.property-details-period.supportingInfo.hint = This is optional information. See the <a href="https://www.gov.uk/government/publications/stld-annual-tax-on-enveloped-dwellings-ated/annual-tax-on-enveloped-dwellings-returns-guidance#sec5" data-journey-click="ated-fronted:click:returns-guidance-link">guidance for more information</a>.
+ated.property-details-period.supportingInfo.hint = See the <a href="https://www.gov.uk/government/publications/stld-annual-tax-on-enveloped-dwellings-ated/annual-tax-on-enveloped-dwellings-returns-guidance#sec5" data-journey-click="ated-fronted:click:returns-guidance-link">guidance for more information</a>.
 ated.property-details-period-error.supportingInfo = You cannot enter more than 200 characters in supporting information
 ated.property-details-period-error.supportingInfo.invalid = You cannot enter special characters. For example £, or @.
 ated.property-details-period-error.general.supportingInfo = There is a problem with your supporting information
