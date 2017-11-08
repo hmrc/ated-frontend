@@ -438,7 +438,7 @@ ated.property-details-value.anAcquisition.lede = The money must have been to upd
 ated.property-details-value.anAcquisition.error-field-name = You must answer this question
 ated.property-details-value.anAcquisition.legend =  Have you spent £40,000 or more on this property since you bought it?
 ated.property-details-value.anAcquisition.what = Why is the £40,000 level important?
-ated.property-details-value.anAcquisition.what.text = <p>If the value of the property changes by £40,000 or more, you may have to pay more or less tax. See the <a href="https://www.gov.uk/government/publications/annual-tax-on-enveloped-dwellings-technical-guidance">ATED technical guidance</a> for more information.</p>
+ated.property-details-value.anAcquisition.what.text = If the value of the property changes by £40,000 or more, you may have to pay more or less tax. See the <a href="https://www.gov.uk/government/publications/annual-tax-on-enveloped-dwellings-technical-guidance">ATED technical guidance</a> for more information.
 
 ated.property-details-value.propertyDetailsValue.newBuildDate.error.empty = You must enter a property build date
 ated.property-details-value.propertyDetailsValue.notNewBuildDate.error.empty = You must enter a property acquired date
