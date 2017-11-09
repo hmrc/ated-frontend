@@ -11,7 +11,16 @@
 }
 
 @pageScripts = {
+  <script src='@controllers.routes.AssetsController.at("javascript/show-hide-content.js")'></script>
   <script src='@controllers.routes.AssetsController.at("javascript/propertyDetailsRevalued.js")'></script>
+  <script>
+    $(document).ready(function() {
+     // Where .multiple-choice uses the data-target attribute
+      // to toggle hidden content
+      var showHideContent = new GOVUK.ShowHideContent()
+      showHideContent.init()
+    });
+  </script>
 }
 
 @analyticsJs = {
@@ -32,10 +41,10 @@
 
 
       <div class="form-group" id="isPropertyRevalued">
-      @atedInputRadioGroupNew(
+      @atedInputRadioGroupReveal(
         propertyDetailsForm("isPropertyRevalued"),
-        Seq("true" -> Messages("ated.property-details-value.yes"),
-          "false" -> Messages("ated.property-details-value.no")),
+        Seq("true" -> (Messages("ated.property-details-value.yes"), Some("revalued")),
+          "false" -> (Messages("ated.property-details-value.no"), Some("notRevalued"))),
         '_legend -> Messages("ated.property-details-value.isPropertyRevalued.header"),
         '_legendClass -> "visuallyhidden",
         '_groupClass -> "inline",
@@ -46,7 +55,7 @@
       </div>
 
       <div class="form-group">
-        <div id="isPropertyRevalued-true-hidden" class="panel-indent">
+        <div id="revalued" class="panel-indent js-hidden">
           <div class="form-field">
             @atedDateFieldsFree(
             formItem = propertyDetailsForm,
@@ -60,7 +69,7 @@
             )
           </div>
 
-            @atedInputNew(propertyDetailsForm("revaluedValue"),
+            @atedInputValue(propertyDetailsForm("revaluedValue"),
             '_label -> Html(Messages("ated.property-details-value.revaluedValue")),
             '_labelClass -> "form-label-bold",
             '_inputClass -> "form-control-indent",
@@ -85,7 +94,7 @@
           </div>
       </div>
 
-      <div id="isPropertyRevalued-false-hidden">
+      <div id="notRevalued" class="panel-indent js-hidden">
 
         <div class="form-group">
           <div class="confirmation-notice">
@@ -93,15 +102,10 @@
           </div>
         </div>
 
-        <a class="button" id="back-to-ated" href="@controllers.routes.AccountSummaryController.view()">@Messages("ated.company-details.back")</a>
-
       </div>
 
-      <button class="button" id="submit" type="submit">@Messages("ated.save-and-continue")</button>
-
-
-
-
+     <p id="back-to-ated"><a class="button " id="back-to-ated-link" href="@controllers.routes.AccountSummaryController.view()">@Messages("ated.company-details.back")</a></p>
+     <button class="button" id="submit" type="submit">@Messages("ated.save-and-continue")</button>
 
   }
 
