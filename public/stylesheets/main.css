@@ -794,6 +794,10 @@ table th {
    text-transform: uppercase;
 }
 
+.input--left-padding {
+    padding-left: 1em;
+}
+
 /*  -- Vertical Spacing -- */
 
 .margin-bottom-default {
