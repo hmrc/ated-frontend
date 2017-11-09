@@ -54,7 +54,6 @@ trait PropertyDetailsDeclarationController extends PropertyDetailsHelpers with C
           }
         }
       }
-
   }
 }
 

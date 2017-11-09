@@ -11,8 +11,15 @@
 
 @implicitFormInstance = @{ Some(propertyDetailsForm) }
 
+@idAppearing = @{
+id match {
+case Some(x) => x
+case _ => oldFormBundleNo.getOrElse("")
+}
+}
+
 @analyticsJs = {
-  var id = "@oldFormBundleNo";
+  var id = "@idAppearing";
   var page = document.location.pathname.replace('/' + id, '');
   ga('set', 'page', page);
 }
