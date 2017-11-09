@@ -215,7 +215,7 @@ ated.avoidance-schemes.title = Enter your avoidance scheme number
 ated.avoidance-schemes.pre-header = Create return
 ated.avoidance-schemes.header = Enter your avoidance scheme number
 ated.avoidance-schemes.question =  What is an avoidance scheme?
-ated.avoidance-schemes.answer = <p>HMRC never approves tax avoidance schemes. You must tell us if you are using a tax avoidance scheme that falls within the Disclosure of Tax Avoidance Schemes (DOTAS).</p><p>You will have received your scheme reference number (SRN) and promoter reference number (PRN):</p><ul class="bullets"><li>from your scheme provider on form AAG6 Disclosure of avoidance scheme – Notification of scheme reference number</li><li>direct from HMRC</li></ul><p>More information on tax avoidance schemes <a href="www.gov.uk/disclosure-of-tax-avoidance-schemes-overview data-journey-click="ated-fronted:click:tax-avoidance-link"> tax avoidance schemes</a>.</p>
+ated.avoidance-schemes.answer = <p>HMRC never approves tax avoidance schemes. You must tell us if you are using a tax avoidance scheme that falls within the Disclosure of Tax Avoidance Schemes (DOTAS).</p><p>You will have received your scheme reference number (SRN) and promoter reference number (PRN):</p><ul class="bullets"><li>from your scheme provider on form AAG6 Disclosure of avoidance scheme – Notification of scheme reference number</li><li>direct from HMRC</li></ul><p>More information on tax avoidance schemes <a href="https://www.gov.uk/disclosure-of-tax-avoidance-schemes-overview" data-journey-click="ated-fronted:click:tax-avoidance-link"> tax avoidance schemes</a>.</p>
 ated.avoidance-schemes.reliefs.text = Reliefs claimed
 ated.avoidance-schemes.avoidance-scheme.header = Avoidance scheme reference number
 ated.avoidance-schemes.avoidance-scheme.text = {0} Avoidance scheme reference number
@@ -643,7 +643,7 @@ ated.property-details-period.isTaxAvoidance.title = Is a tax avoidance scheme be
 ated.property-details-period.isTaxAvoidance.header = Is a tax avoidance scheme being used?
 ated.property-details-period.isTaxAvoidance = Is an avoidance scheme being used?
 ated.property-details-period.isTaxAvoidance.what = What is an avoidance scheme?
-ated.property-details-period.isTaxAvoidance.what.text = <p>HMRC never approves tax avoidance schemes. You must tell us if you are using a tax avoidance scheme that falls within the Disclosure of Tax Avoidance Schemes (DOTAS).</p><p>You will have received your scheme reference number (SRN) and promoter reference number (PRN):</p><ul class="bullets"><li>from your scheme provider on form AAG6 Disclosure of avoidance scheme – Notification of scheme reference number</li><li>direct from HMRC</li></ul><p>More information on tax avoidance schemes <a href="www.gov.uk/disclosure-of-tax-avoidance-schemes-overview data-journey-click="ated-fronted:click:tax-avoidance-link"> tax avoidance schemes</a>.</p>
+ated.property-details-period.isTaxAvoidance.what.text = <p>HMRC never approves tax avoidance schemes. You must tell us if you are using a tax avoidance scheme that falls within the Disclosure of Tax Avoidance Schemes (DOTAS).</p><p>You will have received your scheme reference number (SRN) and promoter reference number (PRN):</p><ul class="bullets"><li>from your scheme provider on form AAG6 Disclosure of avoidance scheme – Notification of scheme reference number</li><li>direct from HMRC</li></ul><p>More information on tax avoidance schemes <a href="https://www.gov.uk/disclosure-of-tax-avoidance-schemes-overview" data-journey-click="ated-fronted:click:tax-avoidance-link"> tax avoidance schemes</a>.</p>
 ated.property-details-period.isTaxAvoidance.error-field-name = You must answer the question
 ated.property-details-period.taxAvoidanceScheme = Avoidance scheme reference number
 ated.property-details-period.taxAvoidanceScheme.error.empty = You must enter a valid avoidance scheme reference number
@@ -1328,7 +1328,7 @@ ated.change-agent-confirmation.what-next.info-2 = you can appoint another agent 
 #wrong client error message
 ated.selected-client-error.wrong.client.header = There is a problem with your sign in details
 ated.selected-client-error.wrong.client.title = There is a problem with your sign in details
-ated.selected-client-error.wrong.client.message = There are one or more people from your organisation signed in with the same Government Gateway details. You should <a href=“https://myaccount.gateway.gov.uk/Pages/Credentials/View.aspx” target="_blank">set up Administrators and Assistants</a> rather than sharing credentials.
+ated.selected-client-error.wrong.client.message = There are one or more people from your organisation signed in with the same Government Gateway details. You should <a href="https://myaccount.gateway.gov.uk/Pages/Credentials/View.aspx” target="_blank">set up Administrators and Assistants</a> rather than sharing credentials.
 
 
 ated.client-problem.title = There was a problem when you set up this client
