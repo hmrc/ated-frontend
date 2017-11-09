@@ -66,7 +66,6 @@ trait AddressLookupController extends PropertyDetailsHelpers with ClientHelper w
               Future.successful(Ok(views.html.propertyDetails.addressLookupResults(id, periodKey, addressSelectedForm, results, mode, backToViewLink)))
             }
           }
-
         )
       }
   }
