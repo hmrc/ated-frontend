@@ -789,3 +789,37 @@ table th {
 #tab-past-returns:focus, #current-returns-tab:focus {
     outline: 0px solid transparent;
 }
+
+.uppercase {
+   text-transform: uppercase;
+}
+
+.input--left-padding {
+    padding-left: 1em;
+}
+
+/*  -- Vertical Spacing -- */
+
+.margin-bottom-default {
+  margin-bottom: 30px;
+}
+
+.margin-top-default {
+  margin-top: 30px;
+}
+
+p.margin-bottom-default {
+  margin-bottom: 30px !important;
+}
+
+.relief-type {
+  margin-bottom: 30px;
+}
+
+.inline-heading-style {
+  display: block;
+  margin-top: 0;
+  line-height: normal;
+}
+
+

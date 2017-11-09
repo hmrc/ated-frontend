@@ -79,7 +79,7 @@ class ReliefDeclarationSpec extends FeatureSpec with OneServerPerSuite with Mock
 
       And("The pre-header text is - Create relief return")
       assert(document.getElementById("relief-declaration-confirmation-header").text() === "Returns declaration")
-      assert(document.getElementById("relief-declaration-before-declaration-text").text() === "Before your client's return or returns can be submitted to HMRC, you must read and agree to the following statement. Your client's approval may be in electronic or non-electronic form. If your client gives false information, they may have to pay financial penalties and face prosecution.")
+      assert(document.getElementById("relief-declaration-before-declaration-text").text() === "Before your client’s return or returns can be submitted to HMRC, you must read and agree to the following statement. Your client’s approval may be in electronic or non-electronic form. If your client gives false information, they may have to pay financial penalties and face prosecution.")
       assert(document.getElementById("relief-declaration-mid-declaration-text").text() === "Each type of relief claimed is an individual ATED return.")
       assert(document.getElementById("declare-or-confirm").text() === "I confirm that my client has:")
       assert(document.getElementById("declaration-confirmation-text").text() === "approved the information contained in this return (or each of these returns) as being correct")

@@ -16,6 +16,7 @@
   var id = "@id";
   var page = document.location.pathname.replace('/' + id, '');
   ga('set', 'page', page);
+  ga('set', 'location', document.URL.split("?")[0]);
 }
 
 @atedMain(title = Messages("ated.property-details-value.anAcquisition.title"),

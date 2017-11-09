@@ -22,19 +22,19 @@
 @pageHeadersAndError(backLink, "pre-header", Messages("ated.return-type.pre-header"), "header", Messages("ated.select-past-return.header"),
     Some(atedErrorSummary(addressResultsForm, "ated.select-past-return.general")))
 
-<div class="form-group">
-  @if(!prevReturns.isEmpty) {
-  @form(action=controllers.propertyDetails.routes.SelectExistingReturnAddressController.continue(periodKey, returnType)) {
-      @atedInputRadioGroupNew(addressResultsForm("selected"),
-        prevReturns map (result => result.formBundleNumber -> result.address),
-        '_legend -> Messages("ated.select-past-return.header"),
-        '_legendClass -> "visuallyhidden",
-        '_labelClass -> "block-label",
-        '_labelAfter -> true,
-        '_trackGA -> true
-      )
-</div>
-<button class="button" id="submit" type="submit">@Messages("ated.save-and-continue")</button>
-}
-}
+    @if(!prevReturns.isEmpty) {
+      @form(action=controllers.propertyDetails.routes.SelectExistingReturnAddressController.continue(periodKey, returnType)) {
+        @atedInputRadioGroupNew(addressResultsForm("selected"),
+          prevReturns map (result => result.formBundleNumber -> result.address),
+          '_legend -> Messages("ated.select-past-return.header"),
+          '_legendClass -> "visuallyhidden",
+          '_labelClass -> "block-label",
+          '_labelAfter -> true,
+          '_trackGA -> true
+        )
+
+      <button class="button margin-top-default" id="submit" type="submit">@Messages("ated.save-and-continue")</button>
+    }
+
+  }
 }

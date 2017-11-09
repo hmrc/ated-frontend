@@ -7,7 +7,7 @@
 @incomplete = {@Messages("ated.label.incomplete")}
 
 @analyticsJs = {
-  ga('set', 'page', document.location.pathname);
+  ga('set', 'page', document.location.pathname.replace(/[0-9]/g ,'').replace(/\/\//g, '/'));
   ga('set', 'location', document.URL.split("?")[0]);
 }
 

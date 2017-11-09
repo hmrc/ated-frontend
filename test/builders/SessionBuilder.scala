@@ -34,6 +34,7 @@ object SessionBuilder {
       SessionKeys.userId -> userId)
   }
 
+
   def updateRequestFormWithSession(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded], userId: String): FakeRequest[AnyContentAsFormUrlEncoded] = {
     val sessionId = s"session-${UUID.randomUUID}"
     fakeRequest.withSession(

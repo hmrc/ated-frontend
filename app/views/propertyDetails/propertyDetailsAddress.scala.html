@@ -1,7 +1,8 @@
 @import models._
 @(id: Option[String], periodKey: Int, propertyDetailsForm: Form[PropertyDetailsAddress],
   mode: Option[String] = None,
-  backLink: Option[String])(implicit atedContext: AtedContext, messages: Messages)
+  backLink: Option[String],
+  oldFormBundleNo: Option[String] = None)(implicit atedContext: AtedContext, messages: Messages)
 @import uk.gov.hmrc.play.views.html._
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
@@ -10,9 +11,17 @@
 
 @implicitFormInstance = @{ Some(propertyDetailsForm) }
 
+@idAppearing = @{
+id match {
+case Some(x) => x
+case _ => oldFormBundleNo.getOrElse("")
+}
+}
+
 @analyticsJs = {
-  ga('set', 'page', document.location.pathname);
-  ga('set', 'location', document.URL.split("?")[0]);
+  var id = "@idAppearing";
+  var page = document.location.pathname.replace('/' + id, '');
+  ga('set', 'page', page);
 }
 
 @atedMain(title = Messages("ated.property-details.title"),
@@ -24,12 +33,11 @@
 
   @form(action=controllers.propertyDetails.routes.PropertyDetailsAddressController.save(id, periodKey, mode)) {
 
-
-      <p>
-        <span class="heading-small form-group" id="property-details-address">
-        @Messages("ated.property-details.property-address")
-        </span>
-      </p>
+    <p>
+      <span class="heading-small form-group" id="property-details-address">
+      @Messages("ated.property-details.property-address")
+      </span>
+    </p>
 
     <fieldset>
 

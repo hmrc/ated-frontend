@@ -43,7 +43,7 @@
           '_label ->  Html(Messages("ated.address-lookup.postcode")),
           '_labelClass -> "form-label-bold",
           '_id -> "postcode",
-          '_inputClass -> "input--normal",
+          '_inputClass -> "input--normal uppercase",
           '_showConstraints -> false)
         </div>
 
@@ -51,13 +51,12 @@
           <a href="@controllers.propertyDetails.routes.AddressLookupController.manualAddressRedirect(id, periodKey, mode)"
              id="enter-address-link"
              data-journey-click="ated-fronted:click:manual-entry"
-             onkeyup='spaceBarHandler(event,"@controllers.propertyDetails.routes.AddressLookupController.manualAddressRedirect(id, periodKey, mode)")'
-             aria-label='@Messages("ated.address-lookup.no-postcode-link.title")'>@Messages("ated.address-lookup.no-postcode-link.title")</a>
+             onkeyup='spaceBarHandler(event,"@controllers.propertyDetails.routes.AddressLookupController.manualAddressRedirect(id, periodKey, mode)")'>
+            @Messages("ated.address-lookup.no-postcode-link.title")</a>
         </div>
        <button class="button" id="submit" type="submit">@Messages("ated.address-lookup.find-button")</button>
     </fieldset>
 
-
-}
+  }
 
 }

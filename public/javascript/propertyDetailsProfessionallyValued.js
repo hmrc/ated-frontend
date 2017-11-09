@@ -20,7 +20,7 @@ function showHideValuedByAgent() {
             displayTrueDiv.show();
         } else {
             displayTrueDiv.hide();
-            clearInputFields(fieldsArray)
+            clearInputFields(fieldsArray);
         }
     });
 }

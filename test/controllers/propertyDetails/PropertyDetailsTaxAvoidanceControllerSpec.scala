@@ -121,8 +121,8 @@ class PropertyDetailsTaxAvoidanceControllerSpec extends PlaySpec with OneServerP
 
               document.getElementById("taxAvoidanceScheme").attr("value") must be("")
 
-              document.getElementById("isTaxAvoidance-what-is-this").text() must be("What is an avoidance scheme?")
-              document.getElementById("isTaxAvoidance-text").text() must include("HMRC never approves tax avoidance schemes. You must tell us if you are using a tax avoidance scheme that falls within the Disclosure of Tax Avoidance Schemes (DOTAS). You will have received your scheme reference number (SRN) or promoter reference number (PRN): from your scheme provider on form AAG6 Disclosure of avoidance scheme – Notification of scheme reference number direct from HMRC If you have both reference numbers, enter both numbers in this box. For more information on avoidance schemes, go to www.gov.uk/disclosure-of-tax-avoidance-schemes-overview.")
+              document.getElementById("taxAvoidanceReveal-p1").text() must be("HMRC never approves tax avoidance schemes. You must tell us if you are using a tax avoidance scheme that falls within the Disclosure of Tax Avoidance Schemes (DOTAS).")
+              document.getElementById("taxAvoidanceReveal-p2").text() must be("You will have received your scheme reference number (SRN) and promoter reference number (PRN)")
 
               document.getElementById("submit").text() must be("Save and continue")
           }

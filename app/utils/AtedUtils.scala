@@ -23,6 +23,8 @@ import play.api.Play.current
 import play.api.i18n.Messages
 import utils.AtedConstants._
 
+import scala.collection.mutable.ArrayBuffer
+
 
 object AtedUtils {
 
@@ -143,5 +145,9 @@ object AtedUtils {
   def replaceUnderScoreWithBlank(str: String) = str.replaceAll("_", " ")
 
   def printNotProvidedIfEmpty(str: String) = if(str == "") Messages("ated.property-details-summary.field-blank") else str
+
+  def addParamsToRequest(atedContext: AtedContext, params: Map[String, Seq[String]]): Option[Map[String, Seq[String]]] = {
+    atedContext.request.body.asFormUrlEncoded.map(c => c  ++ params)
+  }
 
 }

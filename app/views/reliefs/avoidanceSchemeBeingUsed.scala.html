@@ -19,34 +19,43 @@
 @pageHeadersAndError(backLink, "pre-header", Messages("ated.choose-reliefs.subheader"), "choose-reliefs-header", Messages("ated.choose-reliefs.avoidance-title"),
     Some(atedErrorSummary(isTaxAvoidanceForm, "ated.choose-reliefs.error.general")))
 
-@form(action=controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.send(periodKey)) {
+  @form(action=controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.send(periodKey)) {
+    <div id="whatIsTaxAvoidanceScheme">
+      <details>
+        <summary role="button" aria-controls="whatIsTaxAvoidanceScheme-0" tabindex="0">
+          <span class="summary font-small" id="whatIsTaxAvoidanceSchemeQuestion">@Messages("ated.choose-reliefs.avoidance-question")</span>
+        </summary>
+        <div id="whatIsTaxAvoidanceScheme-0" class="panel-indent font-xsmall">
+          <p id="taxAvoidanceReveal-p1">@Messages("ated.choose-reliefs.avoidance-reveal-line-1")</p>
+          <p id="taxAvoidanceReveal-p2">@Messages("ated.choose-reliefs.avoidance-reveal-line-2")</p>
+          <ul class="bullets">
+            <li>@Messages("ated.choose-reliefs.avoidance-info-line-1")</li>
+            <li>@Messages("ated.choose-reliefs.avoidance-info-line-2")</li>
+          </ul>
+          <p id="moreINfoOnTaxAvoidance">@Html(Messages("ated.choose-reliefs.avoidance-more-info"))</p>
+        </div>
+      </details>
+    </div>
 
-<div id="isAvoidanceScheme">
-  @atedInputRadioGroupNew(isTaxAvoidanceForm("isAvoidanceScheme"),
-  Seq(
-  "true" -> Messages("ated.claim-relief.avoidance-scheme.yes"),
-  "false" -> Messages("ated.claim-relief.avoidance-scheme.no")),
-  '_fieldsetAttributesHelpQuestion -> "isAvoidanceScheme-help-question",
-  '_legend -> Messages("ated.choose-reliefs.avoidance-title"),
-  '_labelClass -> "block-label",
-  '_groupClass -> "form-group  inline",
-  '_legendClass -> "visuallyhidden",
-  '_labelAfter -> true,
-  '_trackGA -> true
-  )
-</div>
+    <div id="isAvoidanceScheme">
+      @atedInputRadioGroupNew(isTaxAvoidanceForm("isAvoidanceScheme"),
+        Seq(
+          "true" -> Messages("ated.claim-relief.avoidance-scheme.yes"),
+          "false" -> Messages("ated.claim-relief.avoidance-scheme.no")),
+          '_fieldsetAttributesHelpQuestion -> "isAvoidanceScheme-help-question",
+          '_legend -> Messages("ated.choose-reliefs.avoidance-title"),
+          '_labelClass -> "block-label",
+          '_groupClass -> "form-group  inline",
+          '_legendClass -> "visuallyhidden",
+          '_labelAfter -> true,
+          '_trackGA -> true
+        )
+    </div>
 
-<div class="form-group">
-  <button class="button" id="submit" type="submit">@Messages("ated.choose-reliefs.continue")</button>
-</div>
+    <div class="form-group">
+      <button class="button" id="submit" type="submit">@Messages("ated.choose-reliefs.continue")</button>
+    </div>
 
-<div class="form-group">
-  @atedInputNew(isTaxAvoidanceForm("periodKey"),
-  '_label -> "id",
-  '_labelClass ->  "visuallyhidden",
-  '_id -> "periodKey",
-  '_type -> "hidden")
-</div>
 
-}
+  }
 }

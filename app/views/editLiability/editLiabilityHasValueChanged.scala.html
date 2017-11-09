@@ -23,33 +23,30 @@
   @pageHeadersAndError(backLink, "pre-heading", AtedUtils.getPropertyDetailsPreHeader(mode), "property-details-header", Messages("ated.property-details-value.header"),
       Some(atedErrorSummary(liabilityValueDetailsForm, "ated.change-property-value-error.general")))
 
-
     <p class="display-block ated-line-height" id="value-text">
       @Messages("ated.change-liability.value.previous-value-text")
-      <span class="heading-large form group" id="return-charge">
+      <span class="heading-large inline-heading-style" id="return-charge">
       @oldLiabilityAmount.map(formattedPounds(_))
       </span>
     </p>
 
-
   @form(action = controllers.editLiability.routes.EditLiabilityHasValueChangedController.save(oldFormBundleNo)) {
 
-      <div id="hasValueChanged" class="form-group">
-        @atedInputRadioGroupNew(liabilityValueDetailsForm("hasValueChanged"),
-          Seq("true" -> Messages("ated.property-details-value.yes"),
+    <div id="hasValueChanged" class="form-group">
+      @atedInputRadioGroupNew(liabilityValueDetailsForm("hasValueChanged"),
+        Seq("true" -> Messages("ated.property-details-value.yes"),
           "false" -> Messages("ated.property-details-value.no")),
-        '_legend -> Messages("ated.property-details-value.header"),
-        '_legendClass -> "visuallyhidden",
-        '_groupClass -> "inline",
-        '_labelClass -> "block-label",
-        '_labelAfter -> true,
+          '_legend -> Messages("ated.property-details-value.header"),
+          '_legendClass -> "visuallyhidden",
+          '_groupClass -> "inline",
+          '_labelClass -> "block-label",
+          '_labelAfter -> true,
           '_trackGA -> true
         )
-      </div>
+    </div>
 
-      <button class="button" id="submit" type="submit">@Messages("ated.save-and-continue")</button>
+    <button class="button" id="submit" type="submit">@Messages("ated.save-and-continue")</button>
 
   }
-
 
 }

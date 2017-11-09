@@ -44,15 +44,15 @@
         @commonHelper(field,errors)
         @if(elements.args.contains('_symbol)) { <span class="inline-fields">@elements.args.get('_symbol)</span> }
 
-        <input @if(elements.args.contains('_type)){type="@elements.args.get('_type)"}else{type="text"}
-        class="form-control @if(errors.nonEmpty){error } @if( elements.args.get('_inputClass) ){ @elements.args.get('_inputClass) }"
+        <span class="input-currency"><input @if(elements.args.contains('_type)){type="@elements.args.get('_type)"}else{type="text"}
+        class="form-control input--left-padding @if(errors.nonEmpty){error } @if( elements.args.get('_inputClass) ){ @elements.args.get('_inputClass) }"
         @if(elements.args.contains('_dataAttributes) ){ @elements.args.get('_dataAttributes)}
         name="@elements.field.name"
         id="@if( elements.args.get('_id) ) {@elements.args.get('_id)} else {@elements.field.name.replaceAll("""[\.\[\]]""", "-")}"
         value="@value"
         @if(elements.args.contains('_maxLength)){ maxlength="@elements.args.get('_maxLength)"}
         @if(elements.args.contains('_size)) { size = "@elements.args.get('_size)"}
-        />
+        /></span>
         @if(elements.args.contains('_nested)) {
         @elements.args.get('_nested)
         }
