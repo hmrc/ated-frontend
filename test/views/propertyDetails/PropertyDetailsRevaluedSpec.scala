@@ -75,7 +75,7 @@ class PropertyDetailsRevaluedSpec extends FeatureSpec with OneServerPerSuite wit
       And("the save button is correct")
       assert(document.getElementById("submit").text() === "Save and continue")
 
-      assert(document.getElementById("isPropertyRevalued-false-hidden").text() === "The property must be revalued before you can submit this chargeable return Back to your ATED online service")
+      assert(document.getElementById("notRevalued").text() === "The property must be revalued before you can submit this chargeable return")
 
       Then("The back link is correct")
       assert(document.getElementById("backLinkHref") === null)
@@ -121,13 +121,12 @@ class PropertyDetailsRevaluedSpec extends FeatureSpec with OneServerPerSuite wit
       assert(document.getElementById("revaluedValue").attr("value") === "123456.34")
 
       assert(document.getElementById("submit").text() === "Save and continue")
-      assert(document.getElementById("isPropertyRevalued-false-hidden").text() === "The property must be revalued before you can submit this chargeable return Back to your ATED online service")
+      assert(document.getElementById("notRevalued").text() === "The property must be revalued before you can submit this chargeable return")
 
       Then("The back link is correct")
       assert(document.getElementById("backLinkHref").text === "Back")
       assert(document.getElementById("backLinkHref").attr("href") === "http://backLink")
     }
-
   }
 
   feature("The user can edit a property revalue page where they previously said it was NOT revalued") {
@@ -166,7 +165,7 @@ class PropertyDetailsRevaluedSpec extends FeatureSpec with OneServerPerSuite wit
 
         assert(document.getElementById("submit").text() === "Save and continue")
 
-        assert(document.getElementById("isPropertyRevalued-false-hidden").text() === "The property must be revalued before you can submit this chargeable return Back to your ATED online service")
+        assert(document.getElementById("notRevalued").text() === "The property must be revalued before you can submit this chargeable return")
 
         Then("The back link is correct")
         assert(document.getElementById("backLinkHref") === null)
