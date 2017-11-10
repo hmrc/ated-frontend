@@ -1161,8 +1161,8 @@ ated.edit.liability.sent.you-owe-change-in-details = You owe HMRC {0} for this c
 ated.edit.liability.sent.button = Your ATED online service
 
 #bank details page
-ated.bank-details.has-bank-details.title = Do you have the bank details for a repayment?
-ated.bank-details.has-bank-details.header = Do you have the bank details for a repayment?
+ated.bank-details.has-bank-details.title = Do you have a bank account where we could pay a refund?
+ated.bank-details.has-bank-details.header = Do you have a bank account where we could pay a refund?
 ated.bank-details.has-bank-details.paragraph.text = We need bank details for the payment of any refunds that may be due.
 
 ated.bank-details.title = Are your bank details for a UK bank account?

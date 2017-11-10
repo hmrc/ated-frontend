@@ -91,7 +91,7 @@ class HasBankDetailsControllerSpec extends PlaySpec with OneServerPerSuite with 
           result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be("Do you have the bank details for a repayment?")
+            document.title() must be("Do you have a bank account where we could pay a refund?")
             document.getElementById("pre-heading").text() must be("This section is: Change return")
 
         }
@@ -116,7 +116,7 @@ class HasBankDetailsControllerSpec extends PlaySpec with OneServerPerSuite with 
           result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be("Do you have the bank details for a repayment?")
+            document.title() must be("Do you have a bank account where we could pay a refund?")
 
             document.getElementById("backLinkHref").text must be("Back")
             document.getElementById("backLinkHref").attr("href") must include("/ated/liability/12345678901/change/summary")
