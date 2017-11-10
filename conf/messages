@@ -883,7 +883,7 @@ ated.agent.reject.error.general.areYouSure = There is a problem with client reje
 
 ated.form-bundle.title = View return
 ated.form-bundle.header = View return
-ated.form-bundle.subheader = From the ATED period from {0} to {1}
+ated.form-bundle.subheader = From the ATED chargeable period from {0} to {1}.
 ated.form-bundle.view.return.property = Property
 ated.form-bundle.view.return.address = Address
 ated.form-bundle.view.return.property.title.no = Property’s title number

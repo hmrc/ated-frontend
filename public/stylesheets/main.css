@@ -712,6 +712,10 @@ table th {
     width: 33.333334%;
 }
 
+.grid-3-6 {
+    width: 50%;
+}
+
 .grid-1-5 {
     width: 20%;
 }
@@ -721,7 +725,7 @@ table th {
 }
 
 @media screen and (max-width: 640px) {
-    .grid-1-6, .grid-2-6 {
+    .grid-1-6, .grid-2-6, .grid-3-6 {
         width:100%;
     }
 }
