@@ -78,8 +78,8 @@ class EditLiabilityTypeControllerSpec extends PlaySpec with OneServerPerSuite wi
           result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
-            document.title must be("Edit your ATED return")
-            document.getElementById("edit-liability-header").text() must be("Edit your ATED return")
+            document.title must be("How do you want to change your ATED return?")
+            document.getElementById("edit-liability-header").text() must be("How do you want to change your ATED return?")
         }
       }
     }
