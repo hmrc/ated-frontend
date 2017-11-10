@@ -33,11 +33,6 @@ case _ => oldFormBundleNo.getOrElse("")
 
   @form(action=controllers.propertyDetails.routes.PropertyDetailsAddressController.save(id, periodKey, mode)) {
 
-    <p>
-      <span class="heading-small form-group" id="property-details-address">
-      @Messages("ated.property-details.property-address")
-      </span>
-    </p>
 
     <fieldset>
 
@@ -45,7 +40,7 @@ case _ => oldFormBundleNo.getOrElse("")
 
           @atedInputNew(propertyDetailsForm("line_1"),
             '_label ->  Html(Messages("ated.addressProperty.line_1")),
-            '_labelClass ->  "visuallyhidden",
+            '_labelClass ->  "form-label-bold",
             '_id -> "line_1",
             '_showConstraints -> false)
 
