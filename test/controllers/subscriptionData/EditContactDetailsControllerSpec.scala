@@ -18,7 +18,7 @@ package controllers.subscriptionData
 
 import java.util.UUID
 
-import builders.{AuthBuilder, SessionBuilder}
+import builders.{AuthBuilder, SessionBuilder, TitleBuilder}
 import config.FrontendDelegationConnector
 import models.{Address, AddressDetails, ContactDetails, EditContactDetails}
 import org.jsoup.Jsoup
@@ -88,7 +88,7 @@ class EditContactDetailsControllerSpec extends PlaySpec with OneServerPerSuite w
           result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be("Edit your ATED contact details")
+            document.title() must be (TitleBuilder.buildTitle("Edit your ATED contact details"))
 
             document.getElementById("phoneNumber").attr("value") must be("")
 

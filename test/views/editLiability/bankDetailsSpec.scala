@@ -47,7 +47,7 @@ class bankDetailsSpec extends FeatureSpec with OneServerPerSuite with MockitoSug
       val document = Jsoup.parse(html.toString())
 
       Then("The header should match - Are your bank details for a UK bank account?")
-      assert(document.title() === "Are your bank details for a UK bank account?")
+      assert(document.title() === "Are your bank details for a UK bank account? - GOV.UK")
       assert(document.select("h1").text === "Are your bank details for a UK bank account?")
 
       Then("The subheader should be - Change return")

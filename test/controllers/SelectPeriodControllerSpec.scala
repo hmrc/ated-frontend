@@ -18,7 +18,7 @@ package controllers
 
 import java.util.UUID
 
-import builders.{AuthBuilder, SessionBuilder}
+import builders.{AuthBuilder, SessionBuilder, TitleBuilder}
 import config.FrontendDelegationConnector
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import models.SelectPeriod
@@ -83,7 +83,7 @@ class SelectPeriodControllerSpec extends PlaySpec with OneServerPerSuite with Mo
         getWithAuthorisedUser { result =>
           status(result) must be(OK)
           val document = Jsoup.parse(contentAsString(result))
-          document.title() must be("Select an ATED chargeable period")
+          document.title() must be(TitleBuilder.buildTitle("Select an ATED chargeable period"))
           document.getElementById("header").text() must include("Select an ATED chargeable period")
           document.getElementById("details-text").text() must be("The chargeable period for a year runs from the 1 April to 31 March.")
           document.getElementById("period-2015_field").text() must be("2015 to 2016")
@@ -96,7 +96,7 @@ class SelectPeriodControllerSpec extends PlaySpec with OneServerPerSuite with Mo
         getWithAuthorisedUserWithSavedData { result =>
           status(result) must be(OK)
           val document = Jsoup.parse(contentAsString(result))
-          document.title() must be("Select an ATED chargeable period")
+          document.title() must be(TitleBuilder.buildTitle("Select an ATED chargeable period"))
           document.getElementById("header").text() must include("Select an ATED chargeable period")
           document.getElementById("details-text").text() must be("The chargeable period for a year runs from the 1 April to 31 March.")
           document.getElementById("period-2015_field").text() must be("2015 to 2016")

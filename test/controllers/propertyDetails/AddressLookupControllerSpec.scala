@@ -18,7 +18,7 @@ package controllers.propertyDetails
 
 import java.util.UUID
 
-import builders.{AuthBuilder, PropertyDetailsBuilder, SessionBuilder, TestAudit}
+import builders._
 import config.FrontendDelegationConnector
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import models._
@@ -106,7 +106,7 @@ class AddressLookupControllerSpec extends PlaySpec with OneServerPerSuite with M
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
-              document.title() must be("Find the property’s address")
+              document.title() must be(TitleBuilder.buildTitle("Find the property’s address"))
           }
         }
       }
@@ -136,7 +136,7 @@ class AddressLookupControllerSpec extends PlaySpec with OneServerPerSuite with M
           result =>
             status(result) must be(BAD_REQUEST)
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be("Find the property’s address")
+            document.title() must be(TitleBuilder.buildTitle("Find the property’s address"))
 
         }
       }
@@ -148,7 +148,7 @@ class AddressLookupControllerSpec extends PlaySpec with OneServerPerSuite with M
           result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be("Select the address of the property")
+            document.title() must be(TitleBuilder.buildTitle("Select the address of the property"))
 
             document.getElementById("no-address-found").text() must be("No addresses were found for this postcode")
         }
@@ -162,7 +162,7 @@ class AddressLookupControllerSpec extends PlaySpec with OneServerPerSuite with M
           result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be("Select the address of the property")
+            document.title() must be(TitleBuilder.buildTitle("Select the address of the property"))
 
             document.getElementById("no-address-found") must be(null)
         }
@@ -215,7 +215,7 @@ class AddressLookupControllerSpec extends PlaySpec with OneServerPerSuite with M
           result =>
             status(result) must be(BAD_REQUEST)
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be("Select the address of the property")
+            document.title() must be(TitleBuilder.buildTitle("Select the address of the property"))
 
         }
       }
@@ -227,7 +227,7 @@ class AddressLookupControllerSpec extends PlaySpec with OneServerPerSuite with M
           result =>
             status(result) must be(BAD_REQUEST)
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be("Select the address of the property")
+            document.title() must be(TitleBuilder.buildTitle("Select the address of the property"))
 
         }
       }
@@ -240,7 +240,7 @@ class AddressLookupControllerSpec extends PlaySpec with OneServerPerSuite with M
           result =>
             status(result) must be(BAD_REQUEST)
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be("Select the address of the property")
+            document.title() must be(TitleBuilder.buildTitle("Select the address of the property"))
 
         }
       }
@@ -253,7 +253,7 @@ class AddressLookupControllerSpec extends PlaySpec with OneServerPerSuite with M
           result =>
             status(result) must be(BAD_REQUEST)
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be("Select the address of the property")
+            document.title() must be(TitleBuilder.buildTitle("Select the address of the property"))
 
         }
       }

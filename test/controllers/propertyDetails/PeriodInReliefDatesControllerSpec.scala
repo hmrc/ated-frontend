@@ -18,7 +18,7 @@ package controllers.propertyDetails
 
 import java.util.UUID
 
-import builders.{AuthBuilder, PropertyDetailsBuilder, SessionBuilder}
+import builders.{AuthBuilder, PropertyDetailsBuilder, SessionBuilder, TitleBuilder}
 import config.FrontendDelegationConnector
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import models._
@@ -112,7 +112,7 @@ class PeriodInReliefDatesControllerSpec extends PlaySpec with OneServerPerSuite 
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
-              document.title() must be("Add the dates when the property was in relief and was not liable for an ATED charge")
+              document.title() must be (TitleBuilder.buildTitle("Add the dates when the property was in relief and was not liable for an ATED charge"))
           }
         }
       }

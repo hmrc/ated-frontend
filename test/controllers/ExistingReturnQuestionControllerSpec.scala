@@ -18,7 +18,7 @@ package controllers
 
 import java.util.UUID
 
-import builders.{AuthBuilder, SessionBuilder}
+import builders.{AuthBuilder, SessionBuilder, TitleBuilder}
 import config.FrontendDelegationConnector
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import models.ReturnType
@@ -97,7 +97,7 @@ class ExistingReturnQuestionControllerSpec extends PlaySpec with OneServerPerSui
           getWithAuthorisedUser { result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be("Does this new return relate to one of your existing returns in the last chargeable period?")
+            document.title() must be(TitleBuilder.buildTitle("Does this new return relate to one of your existing returns in the last chargeable period?"))
             document.getElementById("return-type-header").text() must be("Does this new return relate to one of your existing returns in the last chargeable period?")
           }
         }
@@ -105,7 +105,7 @@ class ExistingReturnQuestionControllerSpec extends PlaySpec with OneServerPerSui
           getWithAuthorisedUserWithSomeData { result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be("Does this new return relate to one of your existing returns in the last chargeable period?")
+            document.title() must be(TitleBuilder.buildTitle("Does this new return relate to one of your existing returns in the last chargeable period?"))
             document.getElementById("return-type-header").text() must be("Does this new return relate to one of your existing returns in the last chargeable period?")
           }
         }

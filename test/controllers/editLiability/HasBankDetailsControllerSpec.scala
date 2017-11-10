@@ -18,7 +18,7 @@ package controllers.editLiability
 
 import java.util.UUID
 
-import builders.{AuthBuilder, ChangeLiabilityReturnBuilder, PropertyDetailsBuilder, SessionBuilder}
+import builders._
 import config.FrontendDelegationConnector
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import models.{BankDetailsModel, HasBankDetails, PropertyDetails, SortCode}
@@ -91,7 +91,7 @@ class HasBankDetailsControllerSpec extends PlaySpec with OneServerPerSuite with 
           result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be("Do you have the bank details for a repayment?")
+            document.title() must be(TitleBuilder.buildTitle("Do you have the bank details for a repayment?"))
             document.getElementById("pre-heading").text() must be("This section is: Change return")
 
         }
@@ -116,7 +116,7 @@ class HasBankDetailsControllerSpec extends PlaySpec with OneServerPerSuite with 
           result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be("Do you have the bank details for a repayment?")
+            document.title() must be(TitleBuilder.buildTitle("Do you have the bank details for a repayment?"))
 
             document.getElementById("backLinkHref").text must be("Back")
             document.getElementById("backLinkHref").attr("href") must include("/ated/liability/12345678901/change/summary")

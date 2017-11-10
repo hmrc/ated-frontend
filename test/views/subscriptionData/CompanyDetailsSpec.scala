@@ -67,7 +67,7 @@ class CompanyDetailsSpec extends FeatureSpec with OneServerPerSuite with Mockito
 
       val document = Jsoup.parse(html.toString())
       Then("Your ATED details")
-      assert(document.title() === "Your ATED details")
+      assert(document.title() === "Your ATED details - GOV.UK")
 
       And("The pre-header text is - Your ATED details")
       assert(document.getElementById("company-details-header").text() === "Your ATED details")
@@ -109,7 +109,7 @@ class CompanyDetailsSpec extends FeatureSpec with OneServerPerSuite with Mockito
 
       val document = Jsoup.parse(html.toString())
       Then("Your ATED details")
-      assert(document.title() === "Your ATED details")
+      assert(document.title() === "Your ATED details - GOV.UK")
 
       And("The pre-header text is - Your ATED details")
       assert(document.getElementById("company-details-header").text() === "Your ATED details")
@@ -151,7 +151,7 @@ class CompanyDetailsSpec extends FeatureSpec with OneServerPerSuite with Mockito
 
       val document = Jsoup.parse(html.toString())
       Then("Your ATED details")
-      assert(document.title() === "Your ATED details")
+      assert(document.title() === "Your ATED details - GOV.UK")
 
       And("The pre-header text is - Your ATED details")
       assert(document.getElementById("company-details-header").text() === "Your ATED details")

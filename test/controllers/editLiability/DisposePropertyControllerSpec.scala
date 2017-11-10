@@ -93,7 +93,7 @@ class DisposePropertyControllerSpec extends PlaySpec with OneServerPerSuite with
           result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be("When did you dispose of the property?")
+            document.title() must be(TitleBuilder.buildTitle("When did you dispose of the property?"))
             document.getElementById("dispose-property-header").text() must be("When did you dispose of the property?")
             document.getElementById("date-of-disposal").text() must be("For example, 31 3 2017 Day Month Year")
             document.getElementById("submit").text() must be("Save and continue")
@@ -112,7 +112,7 @@ class DisposePropertyControllerSpec extends PlaySpec with OneServerPerSuite with
           result =>
             status(result) must be(OK)
             val doc = Jsoup.parse(contentAsString(result))
-            doc.title() must be("When did you dispose of the property?")
+            doc.title() must be("When did you dispose of the property? - GOV.UK")
         }
       }
 
@@ -147,7 +147,7 @@ class DisposePropertyControllerSpec extends PlaySpec with OneServerPerSuite with
           result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be("When did you dispose of the property?")
+            document.title() must be(TitleBuilder.buildTitle("When did you dispose of the property?"))
 
             document.getElementById("backLinkHref").text must be("Back")
             document.getElementById("backLinkHref").attr("href") must include("/ated/liability/123456789012/dispose/summary")

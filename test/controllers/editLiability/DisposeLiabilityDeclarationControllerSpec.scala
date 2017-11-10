@@ -94,7 +94,7 @@ class DisposeLiabilityDeclarationControllerSpec extends PlaySpec with OneServerP
         viewWithAuthorisedUser { result =>
           status(result) must be(OK)
           val document = Jsoup.parse(contentAsString(result))
-          document.title must be("Amended return declaration")
+          document.title must be("Amended return declaration - GOV.UK")
           document.getElementById("dispose-liability-declaration-confirmation-header").text() must be("Amended return declaration")
           document.getElementById("dispose-liability-declaration-before-declaration-text").text() must be("Before you can submit your return to HMRC you must read and agree to the following statement . If you give false information you may have to pay financial penalties and face prosecution.")
           document.getElementById("declaration-confirmation-text").text() must be("I declare that the information I have given on this return is correct and complete.")
@@ -106,7 +106,7 @@ class DisposeLiabilityDeclarationControllerSpec extends PlaySpec with OneServerP
         viewWithAuthorisedDelegatedUser { result =>
           status(result) must be(OK)
           val document = Jsoup.parse(contentAsString(result))
-          document.title must be("Amended return declaration")
+          document.title must be("Amended return declaration - GOV.UK")
           document.getElementById("dispose-liability-declaration-confirmation-header").text() must be("Amended return declaration")
           document.getElementById("dispose-liability-declaration-before-declaration-text").text() must be("Before your client’s return can be submitted to HMRC, you must read and agree to the following statement. Your client’s approval may be in electronic or non-electronic form. If your client gives false information, they may have to pay financial penalties and face prosecution.")
           document.getElementById("declaration-confirmation-text").text() must be("I confirm that my client has approved the information contained in this return as being correct and complete to the best of their knowledge and belief.")

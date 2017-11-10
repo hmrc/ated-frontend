@@ -18,10 +18,9 @@ package controllers.propertyDetails
 
 import java.util.UUID
 
+import builders._
 import builders.{AuthBuilder, DisposeLiabilityReturnBuilder, PropertyDetailsBuilder, SessionBuilder}
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
-import builders.{AuthBuilder, DisposeLiabilityReturnBuilder, PropertyDetailsBuilder, SessionBuilder}
-import connectors.BackLinkCacheConnector
 import models.PropertyDetails
 import org.joda.time.{DateTimeZone, LocalDate}
 import org.joda.time.format.DateTimeFormat
@@ -40,7 +39,7 @@ import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConne
 import utils.AtedConstants
 
 import scala.concurrent.Future
-import uk.gov.hmrc.http.{ HeaderCarrier, HttpResponse }
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 
 class PropertyDetailsSummaryControllerSpec extends PlaySpec with OneServerPerSuite with BeforeAndAfterEach with MockitoSugar {
 
@@ -107,7 +106,7 @@ class PropertyDetailsSummaryControllerSpec extends PlaySpec with OneServerPerSui
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
-              document.title() must be("Check your details are correct")
+              document.title() must be(TitleBuilder.buildTitle("Check your details are correct"))
           }
         }
 
@@ -119,7 +118,7 @@ class PropertyDetailsSummaryControllerSpec extends PlaySpec with OneServerPerSui
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
-              document.title() must be("Check your details are correct")
+              document.title() must be(TitleBuilder.buildTitle("Check your details are correct"))
               document.getElementById("address-line-1").text() must be("addr1")
               document.getElementById("address-line-2").text() must be("addr2")
               document.getElementById("address-line-3").text() must be("addr3")

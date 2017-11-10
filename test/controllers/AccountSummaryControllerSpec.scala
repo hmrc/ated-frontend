@@ -18,7 +18,7 @@ package controllers
 
 import java.util.UUID
 
-import builders.{AuthBuilder, SessionBuilder}
+import builders.{AuthBuilder, SessionBuilder, TitleBuilder}
 import config.FrontendDelegationConnector
 import connectors.{AgentClientMandateFrontendConnector, DataCacheConnector}
 import models._
@@ -40,7 +40,7 @@ import uk.gov.hmrc.play.partials.HtmlPartial
 import utils.AtedConstants._
 
 import scala.concurrent.Future
-import uk.gov.hmrc.http.{ HeaderCarrier, HttpResponse, UserId }
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, UserId}
 
 class AccountSummaryControllerSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
 
@@ -131,10 +131,10 @@ class AccountSummaryControllerSpec extends PlaySpec with OneServerPerSuite with 
               document.getElementById("sidebar.balance-info").text() must be("There can be a 24-hour delay before you see any updates to your balance.")
               document.getElementById("sidebar.link-text").text() must be("Deadlines and ways to pay")
               document.getElementById("sidebar.link-text").attr("href") must be("https://www.gov.uk/guidance/pay-annual-tax-on-enveloped-dwellings")
-              document.title() must be("Your ATED online service")
+              document.title() must be(TitleBuilder.buildTitle("Your ATED online service"))
               document.getElementById("change-details-link").text() must be("View your ATED details")
 
-              document.title() must be("Your ATED online service")
+              document.title() must be(TitleBuilder.buildTitle("Your ATED online service"))
               document.getElementById("account-summary-header").text() must be("Your ATED online service")
               document.getElementById("return-summary-period-heading").text() must be("Period")
               document.getElementById("return-summary-chargeable-heading").text() must be("Chargeable")
@@ -170,7 +170,7 @@ class AccountSummaryControllerSpec extends PlaySpec with OneServerPerSuite with 
               document.getElementById("sidebar.balance-info").text() must be("There can be a 24-hour delay before you see any updates to your balance.")
               document.getElementById("sidebar.link-text").text() must be("Ways to be paid")
               document.getElementById("sidebar.link-text").attr("href") must be("https://www.gov.uk/guidance/pay-annual-tax-on-enveloped-dwellings")
-              document.title() must be("Your ATED online service")
+              document.title() must be(TitleBuilder.buildTitle("Your ATED online service"))
               document.getElementById("account-summary-header").text() must be("Your ATED online service")
               document.getElementById("return-summary-period-heading").text() must be("Period")
               document.getElementById("return-summary-chargeable-data-0").text().toLowerCase() must be("number of chargeable 1")
@@ -200,7 +200,7 @@ class AccountSummaryControllerSpec extends PlaySpec with OneServerPerSuite with 
               document.getElementById("sidebar.balance-content").text() must be("£0")
 
 
-              document.title() must be("Your ATED online service")
+              document.title() must be(TitleBuilder.buildTitle("Your ATED online service"))
               document.getElementById("account-summary-header").text() must be("Your ATED online service")
 
               document.getElementById("return-summary-period-heading").text() must be("Period")
@@ -219,7 +219,7 @@ class AccountSummaryControllerSpec extends PlaySpec with OneServerPerSuite with 
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
-              document.title() must be("Your ATED online service")
+              document.title() must be(TitleBuilder.buildTitle("Your ATED online service"))
               document.getElementById("create-return") != null
               document.getElementById("create-return") == null
               document.getElementById("appoint-agent") != null
@@ -232,7 +232,7 @@ class AccountSummaryControllerSpec extends PlaySpec with OneServerPerSuite with 
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
-              document.title() must be("Your ATED online service")
+              document.title() must be(TitleBuilder.buildTitle("Your ATED online service"))
               document.getElementById("create-return").hasClass("link") must be(false)
               document.getElementById("create-return") != null
               Option(document.getElementById("appoint-agent")) must be(None)
@@ -270,7 +270,7 @@ class AccountSummaryControllerSpec extends PlaySpec with OneServerPerSuite with 
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
-              document.title() must be("Your ATED online service")
+              document.title() must be(TitleBuilder.buildTitle("Your ATED online service"))
               document.getElementById("create-return") != null
               document.getElementById("create-return").hasClass("button") must be(false)
               Option(document.getElementById("appoint-agent")) must be(None)

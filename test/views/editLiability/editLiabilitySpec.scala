@@ -48,7 +48,7 @@ class editLiabilitySpec extends FeatureSpec with OneServerPerSuite with MockitoS
 
       val document = Jsoup.parse(html.toString())
       Then("the page title : Edit your ATED return")
-      assert(document.title() === "Edit your ATED return")
+      assert(document.title() === "Edit your ATED return - GOV.UK")
 
 
       assert(document.getElementById("pre-heading").text() === "This section is: Change return")
@@ -83,7 +83,7 @@ class editLiabilitySpec extends FeatureSpec with OneServerPerSuite with MockitoS
 
       val document = Jsoup.parse(html.toString())
       Then("the page title : Edit your ATED return")
-      assert(document.title() === "Edit your ATED return")
+      assert(document.title() === "Edit your ATED return - GOV.UK")
 
       assert(document.getElementById("pre-heading").text() === "This section is: Change return")
 

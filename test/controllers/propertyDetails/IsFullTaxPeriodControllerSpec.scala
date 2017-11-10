@@ -18,7 +18,7 @@ package controllers.propertyDetails
 
 import java.util.UUID
 
-import builders.{AuthBuilder, PropertyDetailsBuilder, SessionBuilder}
+import builders.{AuthBuilder, PropertyDetailsBuilder, SessionBuilder, TitleBuilder}
 import config.FrontendDelegationConnector
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import models._
@@ -112,7 +112,7 @@ class IsFullTaxPeriodControllerSpec extends PlaySpec with OneServerPerSuite with
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
-              document.title() must be("Is the ATED charge for the full chargeable period?")
+              document.title() must be(TitleBuilder.buildTitle("Is the ATED charge for the full chargeable period?"))
 
               document.getElementById("isFullPeriod").text() must be("Is the ATED charge for the full chargeable period? Yes No")
               document.getElementById("isFullPeriod-true").attr("checked") must be("")
@@ -157,7 +157,7 @@ class IsFullTaxPeriodControllerSpec extends PlaySpec with OneServerPerSuite with
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
-              document.title() must be("Is the ATED charge for the full chargeable period?")
+              document.title() must be(TitleBuilder.buildTitle("Is the ATED charge for the full chargeable period?"))
 
               document.getElementById("backLinkHref").text must be("Back")
               document.getElementById("backLinkHref").attr("href") must include("/ated/liability/create/summary")

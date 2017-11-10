@@ -19,7 +19,7 @@ package controllers
 import java.util.UUID
 
 import builders.AuthBuilder._
-import builders.{AuthBuilder, SessionBuilder, TestAudit}
+import builders.{AuthBuilder, SessionBuilder, TestAudit, TitleBuilder}
 import org.jsoup.Jsoup
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mock.MockitoSugar
@@ -57,7 +57,7 @@ class LeaveFeedbackControllerSpec extends PlaySpec with MockitoSugar with OneSer
         result =>
           status(result) must be(OK)
           val document = Jsoup.parse(contentAsString(result))
-          document.title() must be("Leave Feedback")
+          document.title() must be(TitleBuilder.buildTitle("Leave Feedback"))
           document.getElementById("feedback-header").text() must be("Leave Feedback")
           document.getElementById("feedback-txt").text() must be("You won’t get a reply to any feedback. If you want to raise a technical problem or get a response use the get help with this page link. Do not include any personal or financial information.")
           document.getElementById("summaryInfo_field").text() must be("What were you trying to do today?")
@@ -74,7 +74,7 @@ class LeaveFeedbackControllerSpec extends PlaySpec with MockitoSugar with OneSer
         result =>
           status(result) must be(BAD_REQUEST)
           val document = Jsoup.parse(contentAsString(result))
-          document.title() must be("Leave Feedback")
+          document.title() must be(TitleBuilder.buildTitle("Leave Feedback"))
           document.getElementById("feedback-header").text() must be("Leave Feedback")
           document.getElementById("summaryInfo-error").text() must be("There is a problem with the what were you trying to do question")
           document.getElementById("moreInfo-error").text() must be("There is a problem with the what would you like to tell us question")
@@ -99,7 +99,7 @@ class LeaveFeedbackControllerSpec extends PlaySpec with MockitoSugar with OneSer
         result =>
           status(result) must be(OK)
           val document = Jsoup.parse(contentAsString(result))
-          document.title() must be("Thank you")
+          document.title() must be(TitleBuilder.buildTitle("Thank you"))
           document.getElementById("feedback-thanks-header").text() must be("Thank you")
       }
     }

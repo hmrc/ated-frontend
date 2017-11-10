@@ -18,7 +18,7 @@ package controllers.reliefs
 
 import java.util.UUID
 
-import builders.{AuthBuilder, PropertyDetailsBuilder, ReliefBuilder, SessionBuilder}
+import builders._
 import config.FrontendDelegationConnector
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import models.{Reliefs, ReliefsTaxAvoidance, TaxAvoidance}
@@ -37,7 +37,7 @@ import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConne
 import utils.{AtedConstants, AtedUtils, PeriodUtils}
 
 import scala.concurrent.Future
-import uk.gov.hmrc.http.{ HeaderCarrier, HttpResponse }
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 
 class ReliefsSummaryControllerSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
   import AuthBuilder._
@@ -117,7 +117,7 @@ class ReliefsSummaryControllerSpec extends PlaySpec with OneServerPerSuite with 
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
-              document.title() must be("Check your details are correct")
+              document.title() must be(TitleBuilder.buildTitle("Check your details are correct"))
               document.getElementById("property-details-summary-header").text() must be("Check your details are correct")
               document.getElementById("details-text").text() must be("For the ATED period from 1 April 2015 to 31 March 2016.")
               document.getElementById("tas-er").text() must be("12345678")
@@ -135,7 +135,7 @@ class ReliefsSummaryControllerSpec extends PlaySpec with OneServerPerSuite with 
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
-              document.title() must be("Check your details are correct")
+              document.title() must be(TitleBuilder.buildTitle("Check your details are correct"))
               document.getElementById("property-details-summary-header").text() must be("Check your details are correct")
               document.getElementById("details-text").text() must be("For the ATED period from 1 April 2015 to 31 March 2016.")
               document.getElementById("tas-er").text() must be("11111111")
@@ -153,7 +153,7 @@ class ReliefsSummaryControllerSpec extends PlaySpec with OneServerPerSuite with 
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
-              document.title() must be("Check your details are correct")
+              document.title() must be(TitleBuilder.buildTitle("Check your details are correct"))
               document.getElementById("property-details-summary-header").text() must be("Check your details are correct")
               document.getElementById("details-text").text() must be("For the ATED period from 1 April 2015 to 31 March 2016.")
               document.getElementById("ated-charge-value").text() must be("Not yet calculated")
@@ -168,7 +168,7 @@ class ReliefsSummaryControllerSpec extends PlaySpec with OneServerPerSuite with 
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
-              document.title() must be("Check your details are correct")
+              document.title() must be(TitleBuilder.buildTitle("Check your details are correct"))
               document.getElementById("property-details-summary-header").text() must be("Check your details are correct")
               document.getElementById("details-text").text() must be("For the ATED period from 1 April 2015 to 31 March 2016.")
               document.getElementById("ated-charge-value").text() must be("Not yet calculated")
@@ -185,7 +185,7 @@ class ReliefsSummaryControllerSpec extends PlaySpec with OneServerPerSuite with 
             result =>
               status(result) must be(BAD_REQUEST)
               val document = Jsoup.parse(contentAsString(result))
-              document.title() must be("There is a problem with your ATED return")
+              document.title() must be(TitleBuilder.buildTitle("There is a problem with your ATED return"))
               document.getElementById("relief-error-title").text() must be("There is a problem with your ATED return. No details have been saved so you must return to your account summary and start again.")
               document.getElementById("relief-error-ated-home-link").text() must be("ATED Account Summary")
           }

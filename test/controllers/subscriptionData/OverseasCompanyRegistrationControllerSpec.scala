@@ -18,7 +18,7 @@ package controllers.subscriptionData
 
 import java.util.UUID
 
-import builders.{AuthBuilder, SessionBuilder}
+import builders.{AuthBuilder, SessionBuilder, TitleBuilder}
 import config.FrontendDelegationConnector
 import models.{EditContactDetailsEmail, Identification}
 import org.jsoup.Jsoup
@@ -81,7 +81,7 @@ class OverseasCompanyRegistrationControllerSpec extends PlaySpec with OneServerP
           result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be("Edit your overseas company registration number")
+            document.title() must be (TitleBuilder.buildTitle("Edit your overseas company registration number"))
             document.getElementById("businessUniqueId").attr("value") must be("")
             document.getElementById("issuingInstitution").attr("value") must be("")
         }

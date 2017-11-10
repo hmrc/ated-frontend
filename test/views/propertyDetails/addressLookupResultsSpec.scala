@@ -49,7 +49,7 @@ class addressLookupResultsSpec extends FeatureSpec with OneServerPerSuite with M
 
       val document = Jsoup.parse(html.toString())
       Then("Select the address of the property")
-      assert(document.title() === "Select the address of the property")
+      assert(document.title() === "Select the address of the property - GOV.UK")
 
       Then("The header should match - Select the address of the property")
       assert(document.getElementById("account-lookup-header").text === "Select the address of the property")
@@ -94,7 +94,7 @@ class addressLookupResultsSpec extends FeatureSpec with OneServerPerSuite with M
 
       val document = Jsoup.parse(html.toString())
       Then("Select the address of the property")
-      assert(document.title() === "Select the address of the property")
+      assert(document.title() === "Select the address of the property - GOV.UK")
 
       Then("The header should match - Select the address of the property")
       assert(document.getElementById("account-lookup-header").text === "Select the address of the property")

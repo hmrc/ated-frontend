@@ -18,7 +18,7 @@ package controllers.propertyDetails
 
 import java.util.UUID
 
-import builders.{AuthBuilder, SessionBuilder}
+import builders.{AuthBuilder, SessionBuilder, TitleBuilder}
 import config.FrontendDelegationConnector
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import models._
@@ -106,7 +106,7 @@ class SelectExistingReturnAddressControllerSpec extends PlaySpec with OneServerP
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
-              document.title() must be("Select the previous return this new return relates to")
+              document.title() must be (TitleBuilder.buildTitle("Select the previous return this new return relates to"))
           }
         }
 
@@ -115,7 +115,7 @@ class SelectExistingReturnAddressControllerSpec extends PlaySpec with OneServerP
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
-              document.title() must be("Select the previous return this new return relates to")
+              document.title() must be (TitleBuilder.buildTitle("Select the previous return this new return relates to"))
           }
         }
 
@@ -146,7 +146,7 @@ class SelectExistingReturnAddressControllerSpec extends PlaySpec with OneServerP
           result =>
             status(result) must be(BAD_REQUEST)
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be("Select the previous return this new return relates to")
+            document.title() must be (TitleBuilder.buildTitle("Select the previous return this new return relates to"))
         }
       }
 
@@ -155,7 +155,7 @@ class SelectExistingReturnAddressControllerSpec extends PlaySpec with OneServerP
           result =>
             status(result) must be(BAD_REQUEST)
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be("Select the previous return this new return relates to")
+            document.title() must be(TitleBuilder.buildTitle("Select the previous return this new return relates to"))
 
         }
       }
@@ -165,7 +165,7 @@ class SelectExistingReturnAddressControllerSpec extends PlaySpec with OneServerP
           result =>
             status(result) must be(BAD_REQUEST)
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be("Select the previous return this new return relates to")
+            document.title() must be(TitleBuilder.buildTitle("Select the previous return this new return relates to"))
 
         }
       }

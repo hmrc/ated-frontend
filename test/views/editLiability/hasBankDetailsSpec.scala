@@ -47,7 +47,7 @@ class hasBankDetailsSpec extends FeatureSpec with OneServerPerSuite with Mockito
       val document = Jsoup.parse(html.toString())
 
       Then("The header should match - Do you want to provide bank details at this time?")
-      assert(document.title() === "Do you have the bank details for a repayment?")
+      assert(document.title() === "Do you have the bank details for a repayment? - GOV.UK")
       assert(document.select("h1").text === "Do you have the bank details for a repayment?")
 
       Then("The subheader should be - Change return")

@@ -46,7 +46,7 @@ class ReliefDeclarationSpec extends FeatureSpec with OneServerPerSuite with Mock
 
       val document = Jsoup.parse(html.toString())
       Then("Returns declaration")
-      assert(document.title() === "Returns declaration")
+      assert(document.title() === "Returns declaration - GOV.UK")
 
       And("The pre-header text is - Create relief return")
       assert(document.getElementById("relief-declaration-confirmation-header").text() === "Returns declaration")
@@ -75,7 +75,7 @@ class ReliefDeclarationSpec extends FeatureSpec with OneServerPerSuite with Mock
 
       val document = Jsoup.parse(html.toString())
       Then("Returns declaration")
-      assert(document.title() === "Returns declaration")
+      assert(document.title() === "Returns declaration - GOV.UK")
 
       And("The pre-header text is - Create relief return")
       assert(document.getElementById("relief-declaration-confirmation-header").text() === "Returns declaration")

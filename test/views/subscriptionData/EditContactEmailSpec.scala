@@ -49,7 +49,7 @@ class EditContactEmailSpec extends FeatureSpec with OneServerPerSuite with Mocki
 
       val document = Jsoup.parse(html.toString())
       Then("Edit your ATED email address")
-      assert(document.title() === "Edit your ATED email address")
+      assert(document.title() === "Edit your ATED email address - GOV.UK")
       assert(document.getElementById("contact-details-email-header").text() === "Edit your ATED email address")
 
       And("The pre-header text is - Manage your ATED service")

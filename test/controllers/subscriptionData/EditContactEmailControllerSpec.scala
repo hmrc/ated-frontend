@@ -19,7 +19,7 @@ package controllers.subscriptionData
 import java.util.UUID
 
 import builders.AuthBuilder.{createAtedContext, createDelegatedAuthContext}
-import builders.{AuthBuilder, SessionBuilder}
+import builders.{AuthBuilder, SessionBuilder, TitleBuilder}
 import config.FrontendDelegationConnector
 import models._
 import org.jsoup.Jsoup
@@ -84,7 +84,7 @@ class EditContactEmailControllerSpec extends PlaySpec with OneServerPerSuite wit
           result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be("Edit your ATED email address")
+            document.title() must be (TitleBuilder.buildTitle("Edit your ATED email address"))
             document.getElementById("emailConsent-true").attr("checked") must be("")
             document.getElementById("emailConsent-false").attr("checked") must be("")
             document.getElementById("emailAddress").attr("value") must be("")

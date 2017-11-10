@@ -34,6 +34,7 @@ import play.api.test.Helpers._
 import services.{ReliefsService, SubscriptionDataService}
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import utils.AtedConstants
+import builders.TitleBuilder
 
 import scala.concurrent.Future
 
@@ -60,6 +61,7 @@ class ChangeReliefReturnControllerSpec extends PlaySpec with OneServerPerSuite w
     reset(mockAuthConnector)
     reset(mockBackLinkCache)
   }
+
 
   "ReturnTypeController" must {
 
@@ -95,7 +97,7 @@ class ChangeReliefReturnControllerSpec extends PlaySpec with OneServerPerSuite w
           getWithAuthorisedUser { result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be("Change your ATED return")
+            document.title() must be("Change your ATED return - GOV.UK")
             document.getElementById("relief-return-header").text() must be("Change your ATED return")
           }
         }

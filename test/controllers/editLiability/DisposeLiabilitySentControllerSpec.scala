@@ -85,7 +85,7 @@ class DisposeLiabilitySentControllerSpec extends PlaySpec with OneServerPerSuite
           result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be("Amended return confirmation")
+            document.title() must be(TitleBuilder.buildTitle("Amended return confirmation"))
             document.getElementById("header").text() must be("Your amended return has been successfully submitted")
             document.getElementById("view-message").text() must be("You can view your completed returns, overall balance, payment references and ways to pay in the ATED online service.")
             document.getElementById("email-message").text() must be("You will not receive an email confirmation.")
@@ -158,7 +158,7 @@ class DisposeLiabilitySentControllerSpec extends PlaySpec with OneServerPerSuite
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
-              document.title() must be("Amended return confirmation")
+              document.title() must be(TitleBuilder.buildTitle("Amended return confirmation"))
           }
         }
 
@@ -169,7 +169,7 @@ class DisposeLiabilitySentControllerSpec extends PlaySpec with OneServerPerSuite
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
-              document.title() must be("Amended return confirmation")
+              document.title() must be (TitleBuilder.buildTitle("Amended return confirmation"))
           }
         }
 

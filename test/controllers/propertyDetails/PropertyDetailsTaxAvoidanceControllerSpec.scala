@@ -18,7 +18,7 @@ package controllers.propertyDetails
 
 import java.util.UUID
 
-import builders.{AuthBuilder, PropertyDetailsBuilder, SessionBuilder}
+import builders.{AuthBuilder, PropertyDetailsBuilder, SessionBuilder, TitleBuilder}
 import config.FrontendDelegationConnector
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import models._
@@ -112,7 +112,7 @@ class PropertyDetailsTaxAvoidanceControllerSpec extends PlaySpec with OneServerP
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
-              document.title() must be("Is a tax avoidance scheme being used?")
+              document.title() must be(TitleBuilder.buildTitle("Is a tax avoidance scheme being used?"))
 
 
               document.getElementById("isTaxAvoidance").text() must be("Is a tax avoidance scheme being used? Yes No")
@@ -167,7 +167,7 @@ class PropertyDetailsTaxAvoidanceControllerSpec extends PlaySpec with OneServerP
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
-              document.title() must be("Is a tax avoidance scheme being used?")
+              document.title() must be(TitleBuilder.buildTitle("Is a tax avoidance scheme being used?"))
 
               document.getElementById("backLinkHref").text must be("Back")
               document.getElementById("backLinkHref").attr("href") must include("/ated/liability/create/summary")

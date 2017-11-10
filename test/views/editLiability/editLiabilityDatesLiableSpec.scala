@@ -47,7 +47,7 @@ class editLiabilityDatesLiableSpec extends FeatureSpec with OneServerPerSuite wi
       val document = Jsoup.parse(html.toString())
 
       Then("The header should match - Enter the dates this change applies to")
-      assert(document.title() === "Enter the dates this change applies to")
+      assert(document.title() === "Enter the dates this change applies to - GOV.UK")
       assert(document.select("h1").text === "Enter the dates this change applies to")
 
       Then("The subheader should be - Change return")

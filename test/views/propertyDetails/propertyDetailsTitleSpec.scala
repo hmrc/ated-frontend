@@ -48,7 +48,7 @@ class propertyDetailsTitleSpec extends FeatureSpec with OneServerPerSuite with M
       val document = Jsoup.parse(html.toString())
 
       Then("The header and title should match - What is the property title number?")
-      assert(document.title() === "What is the property’s title number? (optional)")
+      assert(document.title() === "What is the property’s title number? (optional) - GOV.UK")
       assert(document.select("h1").text === "What is the property’s title number? (optional)")
 
       Then("The subheader should be - Create return")
@@ -80,7 +80,7 @@ class propertyDetailsTitleSpec extends FeatureSpec with OneServerPerSuite with M
       val document = Jsoup.parse(html.toString())
 
       Then("The header and title should match - What is the property title number?")
-      assert(document.title() === "What is the property’s title number? (optional)")
+      assert(document.title() === "What is the property’s title number? (optional) - GOV.UK")
       assert(document.select("h1").text === "What is the property’s title number? (optional)")
 
       Then("The subheader should be - Change return")

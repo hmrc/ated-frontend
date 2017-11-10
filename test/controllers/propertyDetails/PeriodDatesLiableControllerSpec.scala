@@ -18,7 +18,7 @@ package controllers.propertyDetails
 
 import java.util.UUID
 
-import builders.{AuthBuilder, PropertyDetailsBuilder, SessionBuilder}
+import builders.{AuthBuilder, PropertyDetailsBuilder, SessionBuilder, TitleBuilder}
 import config.FrontendDelegationConnector
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import models._
@@ -113,7 +113,7 @@ class PeriodDatesLiableControllerSpec extends PlaySpec with OneServerPerSuite wi
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
-              document.title() must be("Enter the dates the property was liable for an ATED charge")
+              document.title() must be(TitleBuilder.buildTitle("Enter the dates the property was liable for an ATED charge"))
           }
         }
 
@@ -155,7 +155,7 @@ class PeriodDatesLiableControllerSpec extends PlaySpec with OneServerPerSuite wi
           result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be("Add the dates the property was liable for an ATED charge")
+            document.title() must be(TitleBuilder.buildTitle("Add the dates the property was liable for an ATED charge"))
         }
       }
     }

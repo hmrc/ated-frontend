@@ -18,7 +18,7 @@ package controllers.editLiability
 
 import java.util.UUID
 
-import builders.{AuthBuilder, PropertyDetailsBuilder, SessionBuilder}
+import builders.{AuthBuilder, PropertyDetailsBuilder, SessionBuilder, TitleBuilder}
 import config.FrontendDelegationConnector
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import models._
@@ -113,7 +113,7 @@ class EditLiabilityDatesLiableControllerSpec extends PlaySpec with OneServerPerS
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
-              document.title() must be("Enter the dates this change applies to")
+              document.title() must be(TitleBuilder.buildTitle("Enter the dates this change applies to"))
           }
         }
 
