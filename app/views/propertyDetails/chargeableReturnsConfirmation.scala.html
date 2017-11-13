@@ -9,6 +9,8 @@
 @import views.html.helpers._
 @import views.html.helpers.error._
 
+@import uk.gov.hmrc.play.views.helpers.MoneyPounds
+
 @analyticsJs = {
   ga('set', 'page', document.location.pathname);
   ga('set', 'location', document.URL.split("?")[0]);
@@ -43,7 +45,7 @@
 
 
       @returnResponse.liabilityReturnResponse.map { liabilityReturnResponse =>
-        <p id="owed-amount">@Html(Messages("ated.chargeable-return-confirmation.owe.text", formattedPounds(liabilityReturnResponse.head.liabilityAmount)))</p>
+        <p id="owed-amount">@Messages("ated.chargeable-return-confirmation.owe.text", MoneyPounds(liabilityReturnResponse.head.liabilityAmount, 2).quantity)</p>
         <p id="reference-text">@Html(Messages("ated.chargeable-return-confirmation.reference.text", liabilityReturnResponse.head.paymentReference.getOrElse("")))</p>
         <p id="late-payment">@Html(Messages("ated.chargeable-return-late-payment.text"))</p>
       }
