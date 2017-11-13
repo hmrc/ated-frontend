@@ -47,27 +47,29 @@
   </div>
 
   <div class="grid-wrapper row-border">
-    <div class="grid grid-2-6 cya-question">
+    <div class="grid grid-3-6 cya-question">
       <span id="th-view-return-property-address" class="heading-small">@Messages("ated.form-bundle.view.return.address")</span>
     </div>
 
-    <div id="td-view-return-property-address" class="grid grid-1-2 cya-answer">
-      <span id="form-bundle-address-line-1">@formBundleReturnObj.propertyDetails.address.addressLine1</span>,<br>
-      <span id="form-bundle-address-line-2">@formBundleReturnObj.propertyDetails.address.addressLine2</span>,<br>
-      @if(formBundleReturnObj.propertyDetails.address.addressLine3.isDefined){<span id="address-line-3">@formBundleReturnObj.propertyDetails.address.addressLine3</span>,<br/>}
-      @if(formBundleReturnObj.propertyDetails.address.addressLine4.isDefined){<span id="address-line-4">@formBundleReturnObj.propertyDetails.address.addressLine4</span>,<br/>}
+    <div id="td-view-return-property-address" class="grid grid-3-6 cya-answer">
+      <span id="form-bundle-address-line-1">@formBundleReturnObj.propertyDetails.address.addressLine1</span><br>
+      <span id="form-bundle-address-line-2">@formBundleReturnObj.propertyDetails.address.addressLine2</span><br>
+      @if(formBundleReturnObj.propertyDetails.address.addressLine3.isDefined){
+        <span id="address-line-3">@formBundleReturnObj.propertyDetails.address.addressLine3</span><br/>}
+      @if(formBundleReturnObj.propertyDetails.address.addressLine4.isDefined){
+        <span id="address-line-4">@formBundleReturnObj.propertyDetails.address.addressLine4</span><br/>}
       <span id="form-bundle-address-post-code">@formBundleReturnObj.propertyDetails.address.postalCode</span>
     </div>
 
   </div>
 
   <div class="grid-wrapper row-border">
-    <div class="grid grid-2-6 cya-question">
+    <div class="grid grid-3-6 cya-question">
       <span class="heading-small" id="th-view-return-property-title-no">@Messages("ated.form-bundle.view.return.property.title.no")</span>
     </div>
 
-    <div class="grid grid-1-2 cya-answer">
-      <span id="td-view-return-property" id="td-view-return-property-title-no">@formBundleReturnObj.propertyDetails.titleNumber</span>
+    <div class="grid grid-3-6 cya-answer">
+      <span id="td-view-return-property-title-no">@formBundleReturnObj.propertyDetails.titleNumber</span>
     </div>
 
   </div>
@@ -84,21 +86,21 @@
   @for((valueObj, index) <- valuesToDisplay.zipWithIndex) {
 
     <div class="grid-wrapper row-border">
-      <div class="grid grid-2-6 cya-question">
+      <div class="grid grid-3-6 cya-question">
         <span id="th-view-return-value-@index" class="heading-small">@PeriodUtils.getPeriodValueMessage(index, valuesToDisplay.size)</span>
       </div>
 
-      <div class="grid grid-1-2 cya-answer">
+      <div class="grid grid-3-6 cya-answer">
         <span id="td-view-return-value-@index">@formattedPounds(valueObj.propertyValue)</span>
       </div>
     </div>
 
     <div class="grid-wrapper row-border">
-      <div class="grid grid-2-6 cya-question">
+      <div class="grid grid-3-6 cya-question">
         <span id="th-view-return-property-valuation-date-@index" class="heading-small">@Messages("ated.form-bundle.view.isValuedByAgent.message")</span>
       </div>
 
-      <div class="grid grid-1-2 cya-answer">
+      <div class="grid grid-3-6 cya-answer">
         @if(formBundleReturnObj.professionalValuation){
           <span id="td-view-return-property-valuation-date-@index">@Messages("ated.form-bundle.view.isValuedByAgent.yes")</span>
         } else {
@@ -117,11 +119,11 @@
 
   @for((period, index) <- periodsToDisplay.zipWithIndex) {
   <div class="grid-wrapper row-border">
-    <div class="grid grid-2-6 cya-question">
+    <div class="grid grid-3-6 cya-question">
       <span id="return-type-@index" class="heading-small">@period.description</span>
     </div>
 
-    <div class="grid grid-1-2 cya-answer">
+    <div class="grid grid-3-6 cya-answer">
       <span id="period-@index">
       @if(period.lineItemType.toLowerCase == AtedConstants.DisposeReturnType){
       @period.startDate.toString(Messages("ated.date-format"))
@@ -141,11 +143,11 @@
 
 
   <div class="grid-wrapper row-border">
-    <div class="grid grid-2-6 cya-question">
+    <div class="grid grid-3-6 cya-question">
       <span id="th-view-return-tax-avoidance" class="heading-small">@Messages("ated.form-bundle.view.return.tax-avoidance-scheme")</span>
     </div>
 
-    <div class="grid grid-1-2 cya-answer">
+    <div class="grid grid-3-6 cya-answer">
       <span id="td-view-return-tax-avoidance">@taxAvoidanceScheme</span>
     </div>
 
@@ -163,11 +165,11 @@
   </div>
 
   <div class="grid-wrapper row-border">
-    <div class="grid grid-2-6 cya-question">
+    <div class="grid grid-3-6 cya-question">
       <span id="account-holder-name-label" class="heading-small">@Messages("ated.edit-liability.summary.bank-details.account-holder-name")</span>
     </div>
 
-    <div class="grid grid-1-2 cya-answer">
+    <div class="grid grid-3-6 cya-answer">
       <span id="account-holder-name-value" class="heading-small">@bankDetail.accountName.getOrElse("")</span>
     </div>
   </div>
@@ -175,21 +177,21 @@
   @bankDetail.ukAccount.map { ukAcc =>
 
   <div class="grid-wrapper row-border">
-    <div class="grid grid-2-6 cya-question">
+    <div class="grid grid-3-6 cya-question">
       <span id="account-number-label" class="heading-small">@Messages("ated.edit-liability.summary.bank-details.account-number")</span>
     </div>
 
-    <div class="grid grid-1-2 cya-answer">
+    <div class="grid grid-3-6 cya-answer">
       <span id="account-number-value" class="heading-small">@maskBankDetails(ukAcc.accountNumber, 4)</span>
     </div>
   </div>
 
   <div class="grid-wrapper row-border">
-    <div class="grid grid-2-6 cya-question">
+    <div class="grid grid-3-6 cya-question">
       <span id="sort-code-label" class="heading-small">@Messages("ated.edit-liability.summary.bank-details.sort-code")</span>
     </div>
 
-    <div class="grid grid-1-2 cya-answer">
+    <div class="grid grid-3-6 cya-answer">
       <span id="sort-code-value">@maskSortCode(ukAcc.sortCode)</span>
     </div>
   </div>
@@ -197,21 +199,21 @@
   } @bankDetail.internationalAccount.map { intAcc =>
 
   <div class="grid-wrapper row-border">
-    <div class="grid grid-2-6 cya-question">
+    <div class="grid grid-3-6 cya-question">
       <span id="iban-label" class="heading-small">@Messages("ated.edit-liability.summary.bank-details.iban")</span>
     </div>
 
-    <div class="grid grid-1-2 cya-answer">
+    <div class="grid grid-3-6 cya-answer">
       <span id="iban-value">@maskBankDetails(intAcc.iban, 4)</span>
     </div>
   </div>
 
   <div class="grid-wrapper row-border">
-    <div class="grid grid-2-6 cya-question">
+    <div class="grid grid-3-6 cya-question">
       <span id="bic-swift-code-label" class="heading-small">@Messages("ated.edit-liability.summary.bank-details.bic-swift-code")</span>
     </div>
 
-    <div class="grid grid-1-2 cya-answer">
+    <div class="grid grid-3-6 cya-answer">
       <span id="bic-swift-code-value">@maskBankDetails(intAcc.bicSwiftCode, 2)</span>
     </div>
   </div>
@@ -228,22 +230,22 @@
 
 
   <div class="grid-wrapper row-border">
-    <div class="grid grid-2-6 cya-question">
+    <div class="grid grid-3-6 cya-question">
       <span id="th-view-return-additional-info" class="heading-small">@Messages("ated.form-bundle.view.return.addition-info")</span>
     </div>
 
-    <div class="grid grid-1-2 cya-answer">
+    <div class="grid grid-3-6 cya-answer">
       <span id="td-view-return-additional-info">@additionalDetails</span>
     </div>
   </div>
   }
   @formBundleReturnObj.taxAvoidancePromoterReference.map { taxAvoidancePromoterReference =>
   <div class="grid-wrapper row-border">
-    <div class="grid grid-2-6 cya-question">
+    <div class="grid grid-3-6 cya-question">
       <span id="th-view-return-promoter" class="heading-small">@Messages("ated.form-bundle.view.return.promoter")</span>
     </div>
 
-    <div class="grid grid-1-2 cya-answer">
+    <div class="grid grid-3-6 cya-answer">
       <span id="td-view-return-promoter">@taxAvoidancePromoterReference</span>
     </div>
   </div>
@@ -252,35 +254,35 @@
 
   <div class="form-group">
     <div class="grid-wrapper">
-      <h2 id="return-status-header"class="heading-medium">@Messages("ated.form-bundle.view.return.return-status.title")</h2>
+      <h2 id="return-status-header" class="heading-medium">@Messages("ated.form-bundle.view.return.return-status.title")</h2>
     </div>
 
     <div class="grid-wrapper row-border">
-      <div class="grid grid-2-6 cya-question">
+      <div class="grid grid-3-6 cya-question">
         <span id="th-view-return-payment" class="heading-small">@Messages("ated.form-bundle.view.return.payment-reference")</span>
       </div>
 
-      <div class="grid grid-1-2 cya-answer">
+      <div class="grid grid-3-6 cya-answer">
         <span id="td-view-return-payment">@formBundleReturnObj.paymentReference</span>
       </div>
     </div>
 
     <div class="grid-wrapper row-border">
-      <div class="grid grid-2-6 cya-question">
+      <div class="grid grid-3-6 cya-question">
         <span id="th-view-return-date" class="heading-small">@Messages("ated.form-bundle.view.return.date")</span>
       </div>
 
-      <div class="grid grid-1-2 cya-answer">
+      <div class="grid grid-3-6 cya-answer">
         <span id="td-view-return-date">@formBundleReturnObj.dateOfSubmission.toString(Messages("ated.date-format"))</span>
       </div>
     </div>
 
     <div class="grid-wrapper row-border">
-      <div class="grid grid-2-6 cya-question">
+      <div class="grid grid-3-6 cya-question">
         <span id="th-view-return-status" class="heading-small">@Messages("ated.form-bundle.view.return.status")</span>
       </div>
 
-      <div class="grid grid-1-2 cya-answer">
+      <div class="grid grid-3-6 cya-answer">
         <span id="td-view-return-status">@Messages("ated.submitted")</span>
       </div>
     </div>
