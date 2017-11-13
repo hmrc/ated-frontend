@@ -76,7 +76,7 @@ object AtedUtils {
   }
 
   def formatPostCode(postCode: Option[String]) = {
-    postCode.map (formatMandatoryPostCode(_))
+    postCode.map(formatMandatoryPostCode(_))
   }
 
   def formatMandatoryPostCode(postCode: String) = {
@@ -89,26 +89,25 @@ object AtedUtils {
   val EDIT_SUBMITTED = "editSubmitted"
   val EDIT_PREV_RETURN = "editPrevReturn"
 
-  def getEditSubmittedMode(propertyDetails: PropertyDetails, isFromPrevReturn: Option[Boolean] = None) = isFromPrevReturn match {
-    case Some(true) =>  Some(EDIT_PREV_RETURN)
-    case _ => propertyDetails.formBundleReturn.map(x => EDIT_SUBMITTED)
+  def getEditSubmittedMode(propertyDetails: PropertyDetails, isFromPrevReturn: Option[Boolean] = None) = {
+    isFromPrevReturn match {
+      case Some(true) => Some(EDIT_PREV_RETURN)
+      case _ => propertyDetails.formBundleReturn.map(x => EDIT_SUBMITTED)
+    }
   }
 
-  def isEditSubmitted(propertyDetails: PropertyDetails) = {
-    propertyDetails.formBundleReturn.isDefined
-  }
+  def isEditSubmitted(propertyDetails: PropertyDetails): Boolean = propertyDetails.formBundleReturn.isDefined
 
-  def isEditSubmittedMode(mode: Option[String]) = {
-    mode == Some(EDIT_SUBMITTED) || mode == Some(EDIT_PREV_RETURN)
-  }
+  def isEditSubmittedMode(mode: Option[String]): Boolean = mode == Some(EDIT_SUBMITTED) || mode == Some(EDIT_PREV_RETURN)
 
-  def getSummaryBackLink(id: String, mode: Option[String]) :Option[String] = {
-    if (isEditSubmittedMode(mode)) {
+  def isEditReturn(mode: Option[String]): Boolean = mode.contains(EDIT_SUBMITTED)
+
+  def getSummaryBackLink(id: String, mode: Option[String]): Option[String] =
+    if (isEditReturn(mode)) {
       Some(controllers.editLiability.routes.EditLiabilitySummaryController.view(id).url)
     } else {
       Some(controllers.propertyDetails.routes.PropertyDetailsSummaryController.view(id).url)
     }
-  }
 
   def getPropertyDetailsPreHeader(mode: Option[String] = None): String = {
     mode match {
@@ -118,7 +117,7 @@ object AtedUtils {
   }
 
   def canSubmit(periodKey: Int, currentDate: LocalDate): Boolean = {
-    val currentYear = if (currentDate.getMonthOfYear >= 4) currentDate.getYear else currentDate.getYear-1
+    val currentYear = if (currentDate.getMonthOfYear >= 4) currentDate.getYear else currentDate.getYear - 1
     periodKey <= currentYear
   }
 
@@ -140,14 +139,15 @@ object AtedUtils {
   def createDraftId: String = {
     java.util.UUID.randomUUID.toString.take(8).toUpperCase()
   }
+
   // $COVERAGE-ON$
 
   def replaceUnderScoreWithBlank(str: String) = str.replaceAll("_", " ")
 
-  def printNotProvidedIfEmpty(str: String) = if(str == "") Messages("ated.property-details-summary.field-blank") else str
+  def printNotProvidedIfEmpty(str: String) = if (str == "") Messages("ated.property-details-summary.field-blank") else str
 
   def addParamsToRequest(atedContext: AtedContext, params: Map[String, Seq[String]]): Option[Map[String, Seq[String]]] = {
-    atedContext.request.body.asFormUrlEncoded.map(c => c  ++ params)
+    atedContext.request.body.asFormUrlEncoded.map(c => c ++ params)
   }
 
 }
