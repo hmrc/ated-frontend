@@ -675,7 +675,7 @@ ated.chargeable-return-confirmation.email.message = You will not receive an emai
 ated.chargeable-return-confirmation.charge.heading = Charges for this return
 ated.chargeable-return-confirmation.amount.message = This amount does not reflect any payments you have already made or penalties that have been issued.
 
-ated.chargeable-return-confirmation.owe.text = The charges for this return are {0}.
+ated.chargeable-return-confirmation.owe.text = The charges for this return are £{0}.
 ated.chargeable-return-confirmation.reference.text = The reference to make this payment is {0}.
 
 ated.chargeable-return-late-payment.text = Late payment penalties can be issued when ATED is unpaid. Find out about <a href="https://www.gov.uk/guidance/pay-annual-tax-on-enveloped-dwellings" data-journey-click="ated-fronted:click:late-penalties-link">how to pay and payment deadlines</a>.
