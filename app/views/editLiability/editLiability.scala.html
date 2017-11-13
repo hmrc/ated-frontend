@@ -21,9 +21,7 @@
       Some(atedErrorSummary(editLiabilityReturnTypeForm, "ated.edit-liability.error.general")))
 
   <p class="paragraph" id="editliability-text">
-    @if(editAllowed){
-      @Messages("ated.edit-liability.return-type.legend")
-    }else {
+    @if(!editAllowed){
       @Messages("ated.edit-liability.return-type.no-edit-legend")
     }
   </p>
@@ -39,7 +37,7 @@
         "CR" -> Messages("ated.edit-liability.change-return-details.label"),
         "DP" -> Messages("ated.edit-liability.dispose-property.label")
         ),
-        '_legend -> Messages("ated.edit-liability.return-type.legend"),
+        '_legend -> Messages("ated.edit-liability.header"),
         '_labelClass -> "block-label",
         '_legendClass -> "visuallyhidden",
         '_groupClass -> "form-group",
@@ -52,7 +50,7 @@
         Seq(
         "DP" -> Messages("ated.edit-liability.dispose-property.label")
         ),
-        '_legend -> Messages("ated.edit-liability.return-type.legend"),
+        '_legend -> Messages("ated.edit-liability.header"),
         '_labelClass -> "block-label",
         '_legendClass -> "visuallyhidden",
         '_groupClass -> "form-group",
