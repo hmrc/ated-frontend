@@ -58,28 +58,29 @@
       <fieldset>
         <legend class="visuallyhidden">@Messages("ated.bank-details.legend")</legend>
 
-          <div id="uk-name-of-person" class="form-field">
+          <div id="name-of-person" class="form-field">
             @atedInputNew(bankDetailsForm("accountName"),
             '_label -> Messages("ated.bank-details.uk-bank-account.name.label"),
-            '_id -> "uk-accountName",
+            '_id -> "accountName",
             '_showConstraints -> false)
           </div>
 
-          <div id="uk-account-number" class="form-field">
+          <div id="account-number" class="form-field">
             @atedInputNew(bankDetailsForm("accountNumber"),
             '_label -> Messages("ated.bank-details.uk-bank-account.number.label"),
-            '_id -> "uk-accountNumber",
+            '_id -> "accountNumber",
             '_maxLength -> 18,
             '_showConstraints -> false,
             '_type -> "number")
           </div>
 
-          <div id="uk-sort-code">
-            @sortCode(bankDetailsForm, "uk-sortCode",
+          <div id="sort-code">
+            @sortCode(bankDetailsForm, "sortCode",
             Messages("ated.bank-details.uk-bank-account.sort-code.label"))
           </div>
 
       </fieldset>
+
     </div>
 
     <div id="hidden-bank-details-non-uk" class="panel-indent js-hidden">
@@ -94,26 +95,24 @@
           '_showConstraints -> false)
         </div>
 
-        <div id="non-uk-iban-code" class="form-field">
+        <div id="iban-code" class="form-field">
           @atedInputNew(bankDetailsForm("iban"),
           '_label -> Messages("ated.bank-details.non-uk-bank-account.iban.label"),
-          '_id -> "non-uk-iban",
+          '_id -> "iban",
           '_showConstraints -> false)
         </div>
 
-        <div id="non-uk-bic-swift-code">
+        <div id="bic-swift-code">
           @atedInputNew(bankDetailsForm("bicSwiftCode"),
           '_label -> Messages("ated.bank-details.non-uk-bank-account.bic-swift-code.label"),
-          '_id -> "non-uk-bicSwiftCode",
+          '_id -> "bicSwiftCode",
           '_showConstraints -> false)
         </div>
 
       </fieldset>
-    </div>
-
   </div>
 
-  <button class="button" id="submit" type="submit">@Messages("ated.save-and-continue")</button>
+  <button class="button margin-top-default" id="submit" type="submit">@Messages("ated.save-and-continue")</button>
   }
 
 }
