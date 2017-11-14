@@ -91,7 +91,7 @@ GET     /liability/:formBundleNo/change/dates-liable                        cont
 POST    /liability/:formBundleNo/change/dates-liable/period/:periodKey      controllers.editLiability.EditLiabilityDatesLiableController.save(formBundleNo: String, periodKey: Int)
 
 
-GET     /liability/:formBundleNo/change/edit-summary                        controllers.editLiability.EditLiabilityHasValueChangedController.editFromSummary(formBundleNo: String)
+GET     /liability/:formBundleNo/change/edit-summary                        controllers.editLiability.EditLiabilityHasValueChangedController.editFromSummary(formBundleNo: String, isPrevReturn: Option[Boolean] ?=None)
 GET     /liability/:formBundleNo/change/value                               controllers.editLiability.EditLiabilityHasValueChangedController.view(formBundleNo: String)
 POST    /liability/:formBundleNo/change/value                               controllers.editLiability.EditLiabilityHasValueChangedController.save(formBundleNo: String)
 GET     /liability/:formBundleNo/change/has-bank-details/edit-summary       controllers.editLiability.HasBankDetailsController.editFromSummary(formBundleNo: String)

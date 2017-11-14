@@ -50,18 +50,16 @@ trait EditLiabilityHasValueChangedController extends PropertyDetailsHelpers
       }
   }
 
-  def editFromSummary(oldFormBundleNo: String) = AuthAction(AtedRegime) {
+  def editFromSummary(oldFormBundleNo: String, isPrevReturn: Option[Boolean] = None) = AuthAction(AtedRegime) {
     implicit atedContext =>
       ensureClientContext {
         propertyDetailsCacheResponse(oldFormBundleNo) {
           case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
-            dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
-              Future.successful {
-                val mode = AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn)
-                val filledForm = hasValueChangedForm.fill(HasValueChanged(propertyDetails.value.flatMap(_.hasValueChanged)))
-                val previousValue = propertyDetails.formBundleReturn.map(_.lineItem.head.propertyValue)
-                Ok(views.html.editLiability.editLiabilityHasValueChanged(previousValue, oldFormBundleNo, filledForm, mode, AtedUtils.getSummaryBackLink(oldFormBundleNo, mode)))
-              }
+            Future.successful {
+              val mode = AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn)
+              val filledForm = hasValueChangedForm.fill(HasValueChanged(propertyDetails.value.flatMap(_.hasValueChanged)))
+              val previousValue = propertyDetails.formBundleReturn.map(_.lineItem.head.propertyValue)
+              Ok(views.html.editLiability.editLiabilityHasValueChanged(previousValue, oldFormBundleNo, filledForm, mode, AtedUtils.getSummaryBackLink(oldFormBundleNo, mode)))
             }
         }
       }
