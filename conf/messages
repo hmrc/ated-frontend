@@ -1118,9 +1118,9 @@ ated.edit-liability-details-period-error.general.isTaxAvoidance = There is a pro
 
 # edit-liability-declaration page
 ated.edit-liability.before-declaration.agent = Before your client’s return can be submitted to HMRC, you must read and agree to the following statement. Your client’s approval may be in electronic or non-electronic form. If your client gives false information, they may have to pay financial penalties and face prosecution.
-ated.edit-liability.before-declaration.client = Before you can submit your return to HMRC you must read and agree to the following statement . If you give false information you may have to pay financial penalties and face prosecution.
+ated.edit-liability.before-declaration.client = Before you can submit your return to HMRC you must read and agree to the following statement. If you give false information you may have to pay financial penalties and face prosecution.
 ated.edit-liability.i-confirm-that.bullet-text.agent = I confirm that my client has approved the information contained in this return as being correct and complete to the best of their knowledge and belief.
-ated.edit-liability.i-declare-that.bullet-text.client =  I declare that the information I have given on this return is correct and complete.
+ated.edit-liability.i-declare-that.bullet-text.client = I declare that the information I have given on this return is correct and complete.
 ated.edit-liability.declaration.header.further = Further return declaration
 ated.edit-liability.declaration.header.amend = Amended return declaration
 ated.edit-liability.declaration.header.change = Change in details declaration
@@ -1135,12 +1135,12 @@ ated.edit-liability.sent.change.title = Change in details return confirmation
 ated.edit-liabilty.sent.view-message = You can view your completed returns, overall balance, payment references and ways to pay in the ATED online service.
 ated.edit-liabilty.sent.receipt-message = You will not receive an email confirmation.
 ated.edit-liabilty.sent.charges-heading = Charges for this return
-ated.edit-liabilty.sent.new-amount = Your new adjusted amount does not reflect any payments you have already made, or penalties that have been issued.
+ated.edit-liabilty.sent.new-amount = Your new adjusted amount does not reflect any payments you have already made or penalties that have been issued.
 ated.edit-liabilty.sent.late-payment = Late payment penalties can be issued when ATED is unpaid. Find out about <a href="https://www.gov.uk/guidance/pay-annual-tax-on-enveloped-dwellings" data-journey-click="ated-fronted:click:late-penalties-link">how to pay and payment deadlines.</a>
 ated.edit-liabilty.sent.late-payment-pf = Late payment penalties can be issued when ATED is unpaid. Find out about at https://www.gov.uk/guidance/pay-annual-tax-on-enveloped-dwellings how to pay and payment deadlines.
 
-ated.edit-liabilty.sent.view-balance = You can view your balance in your ATED online service. There can be a 24 hour delay before you see any updates.
-ated.edit-liabilty.sent.payment-reference = The reference to make this payment is {0}
+ated.edit-liabilty.sent.view-balance = You can view your balance in your ATED online service. There can be a 24-hour delay before you see any updates.
+ated.edit-liabilty.sent.payment-reference = The reference to make this payment is {0}.
 ated.edit.liability.sent.amount-already-paid.title = If you have already paid your previous ATED liability
 ated.edit.liability.sent.amount-already-paid.title-further = Your previous ATED liability
 ated.edit.liability.sent.amount-already-paid = If you have already paid you owe HMRC {0} for this further return
@@ -1148,11 +1148,11 @@ ated.edit.liability.sent.amount-not-paid.title = If you have not paid your previ
 ated.edit.liability.sent.amount-not-paid.title-further = If you have not already paid you owe HMRC {0} for this further return
 ated.edit-liability.sent.header.change = Your change in details has been successfully submitted
 ated.edit-liability.sent.header.further = Your further return has been successfully submitted
-ated.edit-liability.sent.header.dispose = Your amended return has been successfully submitted
+ated.edit-liability.sent.header.dispose = Your amended return has been successfully submitted on {0}
 ated.edit-liability.sent.header.date = on the
 ated.edit-liability.sent.header.amend = Your amended return has been successfully submitted
-ated.edit.liability.sent.liable-for = If you have sold the property you may be liable for <a href="https://www.gov.uk/guidance/capital-gains-tax-on-high-value-residential-property" data-journey-click="ated-fronted:click:capatial-gains-link">ATED capital gains tax.</a>
-ated.edit.liability.sent.liable-for-pf = If you have sold the property you may be liable for ATED capital gains tax
+ated.edit.liability.sent.liable-for = If you have sold the property you may be liable for <a href="https://www.gov.uk/guidance/capital-gains-tax-on-high-value-residential-property" data-journey-click="ated-fronted:click:capatial-gains-link">ATED-related Capital Gains Tax</a>.
+ated.edit.liability.sent.liable-for-pf = If you have sold the property you may be liable for ATED-related Capital Gains Tax
 
 ated.edit.liability.sent.owe-you = HMRC owe you {0} for this amended return.
 ated.edit.liability.sent.repayments = Any repayments will be paid into your nominated bank account. We will contact you if you have a non-UK bank account.

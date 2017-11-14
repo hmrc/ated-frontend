@@ -84,15 +84,15 @@ class EditLiabilitySentControllerSpec extends PlaySpec with OneServerPerSuite wi
             document.getElementById("view-message").text() must be("You can view your completed returns, overall balance, payment references and ways to pay in the ATED online service.")
             document.getElementById("email-message").text() must be("You will not receive an email confirmation.")
             document.getElementById("charges-heading").text() must be("Charges for this return")
-            document.getElementById("new-amount").text() must be("Your new adjusted amount does not reflect any payments you have already made, or penalties that have been issued.")
+            document.getElementById("new-amount").text() must be("Your new adjusted amount does not reflect any payments you have already made or penalties that have been issued.")
             document.getElementById("already-paid-title").text() must be("If you have already paid your previous ATED liability")
             document.getElementById("owe-you").text() must be("HMRC owe you £500 for this amended return.")
             document.getElementById("repayments").text() must be("Any repayments will be paid into your nominated bank account. We will contact you if you have a non-UK bank account.")
             document.getElementById("not-paid-title").text() must be("If you have not paid your previous ATED liability")
             document.getElementById("you-owe").text() must be("You owe HMRC £1,235 for this amended return.")
-            document.getElementById("payment-reference").text() must be("The reference to make this payment is payment-ref-01")
+            document.getElementById("payment-reference").text() must be("The reference to make this payment is payment-ref-01.")
             document.getElementById("late-payment").text() must be("Late payment penalties can be issued when ATED is unpaid. Find out about how to pay and payment deadlines.")
-            document.getElementById("view-balance").text() must be("You can view your balance in your ATED online service. There can be a 24 hour delay before you see any updates.")
+            document.getElementById("view-balance").text() must be("You can view your balance in your ATED online service. There can be a 24-hour delay before you see any updates.")
         }
       }
 
@@ -108,13 +108,13 @@ class EditLiabilitySentControllerSpec extends PlaySpec with OneServerPerSuite wi
             document.getElementById("view-message").text() must be("You can view your completed returns, overall balance, payment references and ways to pay in the ATED online service.")
             document.getElementById("email-message").text() must be("You will not receive an email confirmation.")
             document.getElementById("charges-heading").text() must be("Charges for this return")
-            document.getElementById("new-amount").text() must be("Your new adjusted amount does not reflect any payments you have already made, or penalties that have been issued.")
+            document.getElementById("new-amount").text() must be("Your new adjusted amount does not reflect any payments you have already made or penalties that have been issued.")
             document.getElementById("already-paid-title-further").text() must be("Your previous ATED liability")
             document.getElementById("already-paid-text").text() must be("If you have already paid you owe HMRC £500 for this further return")
             document.getElementById("not-paid-title-further").text() must be("If you have not already paid you owe HMRC £1,235 for this further return")
-            document.getElementById("payment-reference").text() must be("The reference to make this payment is payment-ref-01")
+            document.getElementById("payment-reference").text() must be("The reference to make this payment is payment-ref-01.")
             document.getElementById("late-payment").text() must be("Late payment penalties can be issued when ATED is unpaid. Find out about how to pay and payment deadlines.")
-            document.getElementById("view-balance").text() must be("You can view your balance in your ATED online service. There can be a 24 hour delay before you see any updates.")
+            document.getElementById("view-balance").text() must be("You can view your balance in your ATED online service. There can be a 24-hour delay before you see any updates.")
         }
       }
 
@@ -130,14 +130,14 @@ class EditLiabilitySentControllerSpec extends PlaySpec with OneServerPerSuite wi
             document.getElementById("view-message").text() must be("You can view your completed returns, overall balance, payment references and ways to pay in the ATED online service.")
             document.getElementById("email-message").text() must be("You will not receive an email confirmation.")
             document.getElementById("charges-heading").text() must be("Charges for this return")
-            document.getElementById("new-amount").text() must be("Your new adjusted amount does not reflect any payments you have already made, or penalties that have been issued.")
+            document.getElementById("new-amount").text() must be("Your new adjusted amount does not reflect any payments you have already made or penalties that have been issued.")
             document.getElementById("already-paid-title").text() must be("If you have already paid your previous ATED liability")
             document.getElementById("owe-you").text() must be("You owe HMRC £0 for this changed return.")
             document.getElementById("not-paid-title").text() must be("If you have not paid your previous ATED liability")
             document.getElementById("you-owe").text() must be("You owe HMRC £1,235 for this changed return.")
-            document.getElementById("payment-reference").text() must be("The reference to make this payment is payment-ref-01")
+            document.getElementById("payment-reference").text() must be("The reference to make this payment is payment-ref-01.")
             document.getElementById("late-payment").text() must be("Late payment penalties can be issued when ATED is unpaid. Find out about how to pay and payment deadlines.")
-            document.getElementById("view-balance").text() must be("You can view your balance in your ATED online service. There can be a 24 hour delay before you see any updates.")
+            document.getElementById("view-balance").text() must be("You can view your balance in your ATED online service. There can be a 24-hour delay before you see any updates.")
         }
       }
 
@@ -153,10 +153,10 @@ class EditLiabilitySentControllerSpec extends PlaySpec with OneServerPerSuite wi
             document.getElementById("view-message").text() must be("You can view your completed returns, overall balance, payment references and ways to pay in the ATED online service.")
             document.getElementById("email-message").text() must be("You will not receive an email confirmation.")
             document.getElementById("charges-heading").text() must be("Charges for this return")
-            document.getElementById("new-amount").text() must be("Your new adjusted amount does not reflect any payments you have already made, or penalties that have been issued.")
+            document.getElementById("new-amount").text() must be("Your new adjusted amount does not reflect any payments you have already made or penalties that have been issued.")
             document.getElementById("already-paid-title").text() must be("If you have already paid your previous ATED liability")
             document.getElementById("owe-you").text() must be("HMRC owe you £500 for this amended return.")
-            document.getElementById("payment-reference").text() must be("The reference to make this payment is payment-ref-01")
+            document.getElementById("payment-reference").text() must be("The reference to make this payment is payment-ref-01.")
             document.getElementById("you-owe").text() must be("You owe HMRC £1,235 for this amended return.")
 
         }
