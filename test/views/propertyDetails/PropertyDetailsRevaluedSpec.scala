@@ -69,7 +69,7 @@ class PropertyDetailsRevaluedSpec extends FeatureSpec with OneServerPerSuite wit
 
       And("the revalued date is setup correctly")
       assert(document.getElementById("revaluedValue_field").text() === "What is the new valuation of the property in GBP?")
-      assert(document.getElementById("revaluedDate_legend").text() === "What date did you get the property revalued? For example, 31 3 2016")
+      assert(document.getElementById("revaluedDate_legend").text() === "What date did you get the property revalued?")
       assert(document.getElementById("revaluedValue").attr("value") === "")
 
       And("the save button is correct")
