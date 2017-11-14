@@ -20,17 +20,23 @@
   @pageHeadersAndError(backLink, "pre-heading", Messages("ated.property-details.pre-header-dispose"), "dispose-liability-declaration-confirmation-header", Messages("ated.edit-liability.declaration.header.amend"))
 
   <p id="dispose-liability-declaration-before-declaration-text">
-    @if(atedContext.user.authContext.attorney.isDefined) { @Messages("ated.edit-liability.before-declaration.agent")} else { @Messages("ated.edit-liability.before-declaration.client")}
+    @if(atedContext.user.authContext.attorney.isDefined) {
+      @Messages("ated.edit-liability.before-declaration.agent")
+    } else {
+      @Messages("ated.edit-liability.before-declaration.client")
+    }
   </p>
 
-   <p>
-    <span class="text-bold" id="declaration-confirmation-text">
-      @if(atedContext.user.authContext.attorney.isDefined) { @Messages("ated.edit-liability.i-confirm-that.bullet-text.agent")} else { @Messages("ated.edit-liability.i-declare-that.bullet-text.client")}
-    </span>
+   <p class="text-bold" id="declaration-confirmation-text">
+     @if(atedContext.user.authContext.attorney.isDefined) {
+      @Messages("ated.edit-liability.i-confirm-that.bullet-text.agent")
+     } else {
+      @Messages("ated.edit-liability.i-declare-that.bullet-text.client")
+     }
   </p>
 
   @form(action=controllers.editLiability.routes.DisposeLiabilityDeclarationController.submit(oldFormBundleNum)) {
-  <button class="button" id="submit" type="submit">@Messages("ated.edit-liability.declaration.submit.amend")</button>
+    <button class="button" id="submit" type="submit">@Messages("ated.edit-liability.declaration.submit.amend")</button>
 
   }
 }
