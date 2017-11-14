@@ -34,6 +34,7 @@ trait EditLiabilitySentController extends AtedBaseController
   def dataCacheConnector: DataCacheConnector
   def subscriptionDataService: SubscriptionDataService
 
+
   def view(oldFormBundleNo: String) = AuthAction(AtedRegime) {
     implicit atedContext =>
       dataCacheConnector.fetchAndGetFormData[EditLiabilityReturnsResponseModel](SubmitEditedLiabilityReturnsResponseFormId) map {

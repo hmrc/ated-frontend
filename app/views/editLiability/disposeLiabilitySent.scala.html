@@ -37,11 +37,11 @@
 
   <p id="new-amount">@Messages("ated.edit-liabilty.sent.new-amount")</p>
 
-  <h3 id="already-paid-title" class="text-bold">@Messages("ated.edit.liability.sent.amount-already-paid.title")</h3>
+  <h3 id="already-paid-title" class="heading-medium">@Messages("ated.edit.liability.sent.amount-already-paid.title")</h3>
   <p id="owe-you">@Html(Messages("ated.edit.liability.sent.owe-you", formattedPounds(amountDueOrRefund.abs)))</p>
   <p id="repayments">@Messages("ated.edit.liability.sent.repayments")</p>
 
-  <h3 id="not-paid-title" class="text-bold">@Messages("ated.edit.liability.sent.amount-not-paid.title")</h3>
+  <h3 id="not-paid-title" class="heading-medium">@Messages("ated.edit.liability.sent.amount-not-paid.title")</h3>
   <p id="you-owe">@Html(Messages("ated.edit.liability.sent.you-owe", formattedPounds(liabilityAmount)))</p>
   <p id="payment-reference">@Html(Messages("ated.edit-liabilty.sent.payment-reference", paymentReference.getOrElse("")))</p>
 
