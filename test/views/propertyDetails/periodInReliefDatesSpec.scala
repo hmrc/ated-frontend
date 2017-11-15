@@ -64,7 +64,7 @@ class periodInReliefDatesSpec extends FeatureSpec with OneServerPerSuite with Mo
       assert( document.getElementById("endDate-year").attr("value") === "")
 
       Then("The submit button should have the correct name")
-      assert(document.getElementById("submit").text() === "Add")
+      assert(document.getElementById("submit").text() === "Save and continue")
 
       Then("The back link is correct")
       assert(document.getElementById("backLinkHref").text === "Back")

@@ -1,43 +1,34 @@
 
 function showHideRevalued() {
-    var displayTrueDiv = $('#isPropertyRevalued-true-hidden');
-    var displayFalseDiv = $('#isPropertyRevalued-false-hidden');
-    var yesSelected = $('#isPropertyRevalued-true');
-    var noSelected = $('#isPropertyRevalued-false');
-    var continueButton = $('#submit');
-
     var revaluedDateDay = $('#revaluedDate-day');
     var revaluedDateMonth = $('#revaluedDate-month');
     var revaluedDateYear = $('#revaluedDate-year');
+    var partAcqDispDateDay = $('#partAcqDispDate-day');
+    var partAcqDispDateMonth = $('#partAcqDispDate-month');
+    var partAcqDispDateYear = $('#partAcqDispDate-year');
     var revaluedValue = $('#revaluedValue');
+    var continueButton = $('#submit');
+    var backToAtedButton = $('#back-to-ated');
 
-    displayTrueDiv.hide();
-    displayFalseDiv.hide();
+     backToAtedButton.hide();
 
-    if(yesSelected.is(':checked')) {
-        displayTrueDiv.show();
-    }
-    if(noSelected.is(':checked')) {
-        displayFalseDiv.show();
-        continueButton.hide();
-    }
     $('input[type=radio][name=isPropertyRevalued]').change(function(){
         if(this.value == 'true') {
-            displayTrueDiv.show();
-            displayFalseDiv.hide();
             continueButton.show();
+            backToAtedButton.hide();
         } else {
-            displayTrueDiv.hide();
-            displayFalseDiv.show();
             revaluedDateDay.val("");
             revaluedDateMonth.val("");
             revaluedDateYear.val("");
             revaluedValue.val("");
+            partAcqDispDateDay.val("");
+            partAcqDispDateMonth.val("");
+            partAcqDispDateYear.val("");
             continueButton.hide();
+            backToAtedButton.show();
         }
     });
 }
-
 $(document).ready(function(){
     showHideRevalued();
 });

@@ -96,7 +96,7 @@ class DisposeLiabilityDeclarationControllerSpec extends PlaySpec with OneServerP
           val document = Jsoup.parse(contentAsString(result))
           document.title must be("Amended return declaration - GOV.UK")
           document.getElementById("dispose-liability-declaration-confirmation-header").text() must be("Amended return declaration")
-          document.getElementById("dispose-liability-declaration-before-declaration-text").text() must be("Before you can submit your return to HMRC you must read and agree to the following statement . If you give false information you may have to pay financial penalties and face prosecution.")
+          document.getElementById("dispose-liability-declaration-before-declaration-text").text() must be("Before you can submit your return to HMRC you must read and agree to the following statement. If you give false information you may have to pay financial penalties and face prosecution.")
           document.getElementById("declaration-confirmation-text").text() must be("I declare that the information I have given on this return is correct and complete.")
           document.getElementById("submit").text() must be("Agree and submit amended return")
         }

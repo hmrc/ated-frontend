@@ -91,8 +91,8 @@ class formBundleReturnSpec extends FeatureSpec with OneServerPerSuite with Mocki
       Then("The subheader should be - ACME Ltd")
       assert(document.getElementById("form-bundle-subheader").text() === "You have logged in as: ACME Ltd")
 
-      Then("The text should be - From the ATED period from 1 April 2015 to 31 March 2016")
-      assert(document.getElementById("form-bundle-text").text() === "From the ATED period from 1 April 2015 to 31 March 2016")
+      Then("The text should be - From the ATED chargeable period from 1 April 2015 to 31 March 2016.")
+      assert(document.getElementById("form-bundle-text").text() === "From the ATED chargeable period from 1 April 2015 to 31 March 2016.")
 
       Then("The the fields should be correct")
       assert(document.getElementById("th-view-return-property") === null)
@@ -120,8 +120,8 @@ class formBundleReturnSpec extends FeatureSpec with OneServerPerSuite with Mocki
       Then("The subheader should be - ''")
       assert(document.getElementById("form-bundle-subheader").text() === "You have logged in as:")
 
-      Then("The text should be - From the ATED period from 1 April 2015 to 31 March 2016")
-      assert(document.getElementById("form-bundle-text").text() === "From the ATED period from 1 April 2015 to 31 March 2016")
+      Then("The text should be - From the ATED chargeable period from 1 April 2015 to 31 March 2016.")
+      assert(document.getElementById("form-bundle-text").text() === "From the ATED chargeable period from 1 April 2015 to 31 March 2016.")
 
       Then("The the fields should be correct")
       assert(document.getElementById("th-view-return-property").text() === "Property")
@@ -191,8 +191,8 @@ class formBundleReturnSpec extends FeatureSpec with OneServerPerSuite with Mocki
       Then("The subheader should be - ACME Ltd")
       assert(document.getElementById("form-bundle-subheader").text() === "You have logged in as: ACME Ltd")
 
-      Then("The text should be - From the ATED period from 1 April 2015 to 31 March 2016")
-      assert(document.getElementById("form-bundle-text").text() === "From the ATED period from 1 April 2015 to 31 March 2016")
+      Then("The text should be - From the ATED chargeable period from 1 April 2015 to 31 March 2016.")
+      assert(document.getElementById("form-bundle-text").text() === "From the ATED chargeable period from 1 April 2015 to 31 March 2016.")
 
       Then("The the fields should be correct")
       assert(document.getElementById("th-view-return-property").text() === "Property")
@@ -259,8 +259,8 @@ class formBundleReturnSpec extends FeatureSpec with OneServerPerSuite with Mocki
       Then("The subheader should be - ACME Ltd")
       assert(document.getElementById("form-bundle-subheader").text() === "You have logged in as: ACME Ltd")
 
-      Then("The text should be - From the ATED period from 1 April 2015 to 31 March 2016")
-      assert(document.getElementById("form-bundle-text").text() === "From the ATED period from 1 April 2015 to 31 March 2016")
+      Then("The text should be - From the ATED chargeable period from 1 April 2015 to 31 March 2016.")
+      assert(document.getElementById("form-bundle-text").text() === "From the ATED chargeable period from 1 April 2015 to 31 March 2016.")
 
       Then("The the fields should be correct")
       assert(document.getElementById("th-view-return-property").text() === "Property")
@@ -334,8 +334,8 @@ class formBundleReturnSpec extends FeatureSpec with OneServerPerSuite with Mocki
       Then("The subheader should be - ACME Ltd")
       assert(document.getElementById("form-bundle-subheader").text() === "You have logged in as: ACME Ltd")
 
-      Then("The text should be - From the ATED period from 1 April 2015 to 31 March 2016")
-      assert(document.getElementById("form-bundle-text").text() === "From the ATED period from 1 April 2015 to 31 March 2016")
+      Then("The text should be - From the ATED chargeable period from 1 April 2015 to 31 March 2016.")
+      assert(document.getElementById("form-bundle-text").text() === "From the ATED chargeable period from 1 April 2015 to 31 March 2016.")
 
       Then("The the fields should be correct")
       assert(document.getElementById("th-view-return-property").text() === "Property")

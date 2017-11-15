@@ -440,9 +440,12 @@ ated.property-details-value.anAcquisition.title = Have you spent £40,000 or mor
 ated.property-details-value.anAcquisition.header = Have you spent £40,000 or more on this property since you bought it?
 ated.property-details-value.anAcquisition.lede = The money must have been to update the property by buying land, selling land or extending an existing lease.
 ated.property-details-value.anAcquisition.error-field-name = You must answer this question
-ated.property-details-value.anAcquisition.legend =  Have you spent £40,000 or more on this property since you bought it?
+ated.property-details-value.anAcquisition.legend = Since the date of acquisition, have you bought or sold land, or extended an existing lease on this property, for £40,000 or more?
 ated.property-details-value.anAcquisition.what = Why is the £40,000 level important?
-ated.property-details-value.anAcquisition.what.text = If the value of the property changes by £40,000 or more, you may have to pay more or less tax. See the <a href="https://www.gov.uk/government/publications/annual-tax-on-enveloped-dwellings-technical-guidance">ATED technical guidance</a> for more information.
+
+ated.property-details-value.anAcquisition.what.text1 = Buying land or extending an existing lease for £40,00 or more (acquistion) would trigger a revaluation. If the property moves into a higher property band this mean you have to pay more tax.
+ated.property-details-value.anAcquisition.what.text2 = Selling any land connected to the property for £40,00 or more (disposal) would trigger a revaluation. If the property moves into a lower property band this mean you have to pay less tax.
+ated.property-details-value.anAcquisition.what.text3 = Further information on this can be found in the <a href="https://www.gov.uk/government/publications/annual-tax-on-enveloped-dwellings-technical-guidance">ATED technical guidance</a>.
 
 ated.property-details-value.propertyDetailsValue.newBuildDate.error.empty = You must enter a property build date
 ated.property-details-value.propertyDetailsValue.notNewBuildDate.error.empty = You must enter a property acquired date
@@ -675,7 +678,7 @@ ated.chargeable-return-confirmation.email.message = You will not receive an emai
 ated.chargeable-return-confirmation.charge.heading = Charges for this return
 ated.chargeable-return-confirmation.amount.message = This amount does not reflect any payments you have already made or penalties that have been issued.
 
-ated.chargeable-return-confirmation.owe.text = The charges for this return are {0}.
+ated.chargeable-return-confirmation.owe.text = The charges for this return are £{0}.
 ated.chargeable-return-confirmation.reference.text = The reference to make this payment is {0}.
 
 ated.chargeable-return-late-payment.text = Late payment penalties can be issued when ATED is unpaid. Find out about <a href="https://www.gov.uk/guidance/pay-annual-tax-on-enveloped-dwellings" data-journey-click="ated-fronted:click:late-penalties-link">how to pay and payment deadlines</a>.
@@ -883,7 +886,7 @@ ated.agent.reject.error.general.areYouSure = There is a problem with client reje
 
 ated.form-bundle.title = View return
 ated.form-bundle.header = View return
-ated.form-bundle.subheader = From the ATED period from {0} to {1}
+ated.form-bundle.subheader = From the ATED chargeable period from {0} to {1}.
 ated.form-bundle.view.return.property = Property
 ated.form-bundle.view.return.address = Address
 ated.form-bundle.view.return.property.title.no = Property’s title number
@@ -945,8 +948,8 @@ ated.address-lookup.error.general.selected-address = There’s something wrong w
 
 # edit liability return
 ated.edit-liability.change-return.header = Change return
-ated.edit-liability.title = Edit your ATED return
-ated.edit-liability.header = Edit your ATED return
+ated.edit-liability.title = How do you want to change your ATED return?
+ated.edit-liability.header = How do you want to change your ATED return?
 ated.edit-liability.return-type.legend = Select the type of changes you want to make to your return
 ated.edit-liability.return-type.no-edit-legend = Your original return is too complex to edit online. To make any changes contact Customer Support.
 ated.edit-liability.change-return-details.label = Change return details
@@ -1118,9 +1121,9 @@ ated.edit-liability-details-period-error.general.isTaxAvoidance = There is a pro
 
 # edit-liability-declaration page
 ated.edit-liability.before-declaration.agent = Before your client’s return can be submitted to HMRC, you must read and agree to the following statement. Your client’s approval may be in electronic or non-electronic form. If your client gives false information, they may have to pay financial penalties and face prosecution.
-ated.edit-liability.before-declaration.client = Before you can submit your return to HMRC you must read and agree to the following statement . If you give false information you may have to pay financial penalties and face prosecution.
+ated.edit-liability.before-declaration.client = Before you can submit your return to HMRC you must read and agree to the following statement. If you give false information you may have to pay financial penalties and face prosecution.
 ated.edit-liability.i-confirm-that.bullet-text.agent = I confirm that my client has approved the information contained in this return as being correct and complete to the best of their knowledge and belief.
-ated.edit-liability.i-declare-that.bullet-text.client =  I declare that the information I have given on this return is correct and complete.
+ated.edit-liability.i-declare-that.bullet-text.client = I declare that the information I have given on this return is correct and complete.
 ated.edit-liability.declaration.header.further = Further return declaration
 ated.edit-liability.declaration.header.amend = Amended return declaration
 ated.edit-liability.declaration.header.change = Change in details declaration
@@ -1135,12 +1138,12 @@ ated.edit-liability.sent.change.title = Change in details return confirmation
 ated.edit-liabilty.sent.view-message = You can view your completed returns, overall balance, payment references and ways to pay in the ATED online service.
 ated.edit-liabilty.sent.receipt-message = You will not receive an email confirmation.
 ated.edit-liabilty.sent.charges-heading = Charges for this return
-ated.edit-liabilty.sent.new-amount = Your new adjusted amount does not reflect any payments you have already made, or penalties that have been issued.
+ated.edit-liabilty.sent.new-amount = Your new adjusted amount does not reflect any payments you have already made or penalties that have been issued.
 ated.edit-liabilty.sent.late-payment = Late payment penalties can be issued when ATED is unpaid. Find out about <a href="https://www.gov.uk/guidance/pay-annual-tax-on-enveloped-dwellings" data-journey-click="ated-fronted:click:late-penalties-link">how to pay and payment deadlines.</a>
 ated.edit-liabilty.sent.late-payment-pf = Late payment penalties can be issued when ATED is unpaid. Find out about at https://www.gov.uk/guidance/pay-annual-tax-on-enveloped-dwellings how to pay and payment deadlines.
 
-ated.edit-liabilty.sent.view-balance = You can view your balance in your ATED online service. There can be a 24 hour delay before you see any updates.
-ated.edit-liabilty.sent.payment-reference = The reference to make this payment is {0}
+ated.edit-liabilty.sent.view-balance = You can view your balance in your ATED online service. There can be a 24-hour delay before you see any updates.
+ated.edit-liabilty.sent.payment-reference = The reference to make this payment is {0}.
 ated.edit.liability.sent.amount-already-paid.title = If you have already paid your previous ATED liability
 ated.edit.liability.sent.amount-already-paid.title-further = Your previous ATED liability
 ated.edit.liability.sent.amount-already-paid = If you have already paid you owe HMRC {0} for this further return
@@ -1148,11 +1151,11 @@ ated.edit.liability.sent.amount-not-paid.title = If you have not paid your previ
 ated.edit.liability.sent.amount-not-paid.title-further = If you have not already paid you owe HMRC {0} for this further return
 ated.edit-liability.sent.header.change = Your change in details has been successfully submitted
 ated.edit-liability.sent.header.further = Your further return has been successfully submitted
-ated.edit-liability.sent.header.dispose = Your amended return has been successfully submitted
+ated.edit-liability.sent.header.dispose = Your amended return has been successfully submitted on {0}
 ated.edit-liability.sent.header.date = on the
 ated.edit-liability.sent.header.amend = Your amended return has been successfully submitted
-ated.edit.liability.sent.liable-for = If you have sold the property you may be liable for <a href="https://www.gov.uk/guidance/capital-gains-tax-on-high-value-residential-property" data-journey-click="ated-fronted:click:capatial-gains-link">ATED capital gains tax.</a>
-ated.edit.liability.sent.liable-for-pf = If you have sold the property you may be liable for ATED capital gains tax
+ated.edit.liability.sent.liable-for = If you have sold the property you may be liable for <a href="https://www.gov.uk/guidance/capital-gains-tax-on-high-value-residential-property" data-journey-click="ated-fronted:click:capatial-gains-link">ATED-related Capital Gains Tax</a>.
+ated.edit.liability.sent.liable-for-pf = If you have sold the property you may be liable for ATED-related Capital Gains Tax
 
 ated.edit.liability.sent.owe-you = HMRC owe you {0} for this amended return.
 ated.edit.liability.sent.repayments = Any repayments will be paid into your nominated bank account. We will contact you if you have a non-UK bank account.
@@ -1161,8 +1164,8 @@ ated.edit.liability.sent.you-owe-change-in-details = You owe HMRC {0} for this c
 ated.edit.liability.sent.button = Your ATED online service
 
 #bank details page
-ated.bank-details.has-bank-details.title = Do you have the bank details for a repayment?
-ated.bank-details.has-bank-details.header = Do you have the bank details for a repayment?
+ated.bank-details.has-bank-details.title = Do you have a bank account where we could pay a refund?
+ated.bank-details.has-bank-details.header = Do you have a bank account where we could pay a refund?
 ated.bank-details.has-bank-details.paragraph.text = We need bank details for the payment of any refunds that may be due.
 
 ated.bank-details.title = Are your bank details for a UK bank account?

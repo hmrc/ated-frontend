@@ -21,11 +21,8 @@ trait MicroService {
   lazy val plugins : Seq[Plugins] = Seq(play.sbt.PlayScala)
   lazy val playSettings : Seq[Setting[_]] = Seq.empty
 
-  def makeExcludedFiles(rootDir:File):Seq[String] = {
-    val excluded = findPlayConfFiles(rootDir) ++ findSbtFiles(rootDir)
-    println(s"[auto-code-review] excluding the following files: ${excluded.mkString(",")}")
-    excluded
-  }
+  def makeExcludedFiles(rootDir:File):Seq[String] = findPlayConfFiles(rootDir) ++ findSbtFiles(rootDir)
+
   def findSbtFiles(rootDir: File): Seq[String] = {
     if(rootDir.getName == "project") {
       rootDir.listFiles().map(_.getName).toSeq

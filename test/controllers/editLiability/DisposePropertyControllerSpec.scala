@@ -95,7 +95,7 @@ class DisposePropertyControllerSpec extends PlaySpec with OneServerPerSuite with
             val document = Jsoup.parse(contentAsString(result))
             document.title() must be(TitleBuilder.buildTitle("When did you dispose of the property?"))
             document.getElementById("dispose-property-header").text() must be("When did you dispose of the property?")
-            document.getElementById("date-of-disposal").text() must be("For example, 31 3 2017 Day Month Year")
+            document.getElementById("dateOfDisposal_hint").text() must be("For example, 31 3 2017")
             document.getElementById("submit").text() must be("Save and continue")
         }
       }

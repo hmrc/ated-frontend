@@ -4,4 +4,4 @@
 
 @(value: BigDecimal, decimalPlaces: Int=0)(implicit messages: Messages)
 
-@pounds(value.setScale(decimalPlaces, RoundingMode.HALF_UP), decimalPlaces)
+@pounds(value.setScale(decimalPlaces, RoundingMode.HALF_UP).toInt, decimalPlaces)

@@ -57,7 +57,6 @@ class PropertyDetailsAddressSpec extends FeatureSpec with OneServerPerSuite with
       assert(document.getElementById("lookup-address-link").text() === "Lookup address")
       assert(document.getElementById("lookup-address-link").attr("href") === "/ated/liability/create/address/lookup/2015")
 
-      assert(document.getElementById("property-details-address").text() === "Property address")
       assert(document.getElementById("line_1_field").text() === "Address line 1")
       assert(document.getElementById("line_1").attr("value") === "")
       assert(document.getElementById("line_2_field").text() === "Address line 2")
@@ -95,7 +94,6 @@ class PropertyDetailsAddressSpec extends FeatureSpec with OneServerPerSuite with
       assert(document.getElementById("lookup-address-link").text() === "Lookup address")
       assert(document.getElementById("lookup-address-link").attr("href") === "/ated/liability/create/address/lookup/2015?propertyKey=1&mode=editSubmitted")
 
-      assert(document.getElementById("property-details-address").text() === "Property address")
       assert(document.getElementById("line_1").attr("value") === "addr1")
       assert(document.getElementById("line_2").attr("value") === "addr2")
       assert(document.getElementById("line_3").attr("value") === "addr3")

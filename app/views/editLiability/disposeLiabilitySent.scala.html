@@ -13,52 +13,43 @@
   ga('set', 'page', page);
 }
 
-@atedMain(title = Messages("ated.edit-liability.sent.amend.title"),
+@today = {
+  @DateTimeFormat.forPattern("d MMMM yyyy").print(new LocalDate())
+}
+
+@atedMain(title = Messages("ated.edit-liability.sent.header.dispose", today),
           attorney = atedContext.user.authContext.attorney,
           analyticsAdditionalJs = Some(analyticsJs)) {
 
-  <div id="banner" class="greenBanner form-field">
-    <h1 id="header">@Messages("ated.edit-liability.sent.header.dispose")</h1>
-    <span  class="heading-medium" id="date"> @Messages("ated.edit-liability.sent.header.date") @DateTimeFormat.forPattern("d MMMM yyyy").print(new LocalDate()) </span>
+  <div id="banner" class="transaction-banner--complete">
+    <h1 id="header">@Messages("ated.edit-liability.sent.header.dispose", today)</h1>
   </div>
 
-  <div class="form-group">
-    <p id="view-message">@Messages("ated.edit-liabilty.sent.view-message")</p>
-    <p id="email-message">@Messages("ated.edit-liabilty.sent.receipt-message")</p>
+  <p id="view-message">@Messages("ated.edit-liabilty.sent.view-message")</p>
+  <p id="email-message">@Messages("ated.edit-liabilty.sent.receipt-message")</p>
 
-  <a href="@controllers.editLiability.routes.DisposeLiabilitySentController.viewPrintFriendlyDisposeliabilitySent(formBundleNum)" id="print-friendly-edit-liability-link" data-journey-click="ated-fronted:click:print-friendly-edit-liability-link" target="_blank">
-    @Messages("ated.reliefs-sent.print-link")
-  </a>
+  <p>
+    <a href="@controllers.editLiability.routes.DisposeLiabilitySentController.viewPrintFriendlyDisposeliabilitySent(formBundleNum)" id="print-friendly-edit-liability-link" data-journey-click="ated-fronted:click:print-friendly-edit-liability-link" target="_blank"> @Messages("ated.reliefs-sent.print-link")
+    </a>
+  </p>
 
-  </div>
+  <h2 class="heading-large divider--top--thick" id="charges-heading">@Messages("ated.edit-liabilty.sent.charges-heading")</h2>
 
-  <div class="divider--top--thick"></div>
+  <p id="new-amount">@Messages("ated.edit-liabilty.sent.new-amount")</p>
 
-  <div class="form-group">
-    <span class="heading-large" id="charges-heading">@Messages("ated.edit-liabilty.sent.charges-heading")</span>
-    <p id="new-amount">@Messages("ated.edit-liabilty.sent.new-amount")</p>
+  <h3 id="already-paid-title" class="text-bold">@Messages("ated.edit.liability.sent.amount-already-paid.title")</h3>
+  <p id="owe-you">@Html(Messages("ated.edit.liability.sent.owe-you", formattedPounds(amountDueOrRefund.abs)))</p>
+  <p id="repayments">@Messages("ated.edit.liability.sent.repayments")</p>
 
-    <span id="already-paid-title" class="text-bold">@Messages("ated.edit.liability.sent.amount-already-paid.title")</span>
+  <h3 id="not-paid-title" class="text-bold">@Messages("ated.edit.liability.sent.amount-not-paid.title")</h3>
+  <p id="you-owe">@Html(Messages("ated.edit.liability.sent.you-owe", formattedPounds(liabilityAmount)))</p>
+  <p id="payment-reference">@Html(Messages("ated.edit-liabilty.sent.payment-reference", paymentReference.getOrElse("")))</p>
 
-    <ul class="list-bullet">
-      <li id="owe-you">@Html(Messages("ated.edit.liability.sent.owe-you", formattedPounds(amountDueOrRefund.abs)))</li>
-      <li id="repayments">@Messages("ated.edit.liability.sent.repayments")</li>
-    </ul>
+  <p id="liable-for">@Html(Messages("ated.edit.liability.sent.liable-for"))</p>
 
-    <span id="not-paid-title" class="text-bold">@Messages("ated.edit.liability.sent.amount-not-paid.title")</span>
+  <p id="view-balance">@Html(Messages("ated.edit-liabilty.sent.view-balance"))</p>
 
-    <ul class="list-bullet">
-      <li id="you-owe">@Html(Messages("ated.edit.liability.sent.you-owe", formattedPounds(liabilityAmount)))</li>
-      <li id="payment-reference">@Html(Messages("ated.edit-liabilty.sent.payment-reference", paymentReference.getOrElse("")))</li>
-    </ul>
-
-    <p id="liable-for">@Html(Messages("ated.edit.liability.sent.liable-for"))</p>
-
-    <p id="view-balance">@Html(Messages("ated.edit-liabilty.sent.view-balance"))</p>
-
-  </div>
-
-    <a href="@controllers.routes.AccountSummaryController.view()" id="submit" class="button"> @Messages("ated.edit.liability.sent.button") </a>
+  <a href="@controllers.routes.AccountSummaryController.view()" id="submit" class="button margin-top-default"> @Messages("ated.edit.liability.sent.button") </a>
 
 
 }

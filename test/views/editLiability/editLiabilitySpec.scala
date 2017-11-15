@@ -47,15 +47,13 @@ class editLiabilitySpec extends FeatureSpec with OneServerPerSuite with MockitoS
       val html = views.html.editLiability.editLiability(editLiabilityReturnTypeForm, "formBundleNo", 2015, true, None)
 
       val document = Jsoup.parse(html.toString())
-      Then("the page title : Edit your ATED return")
-      assert(document.title() === "Edit your ATED return - GOV.UK")
+      Then("the page title : How do you want to change your ATED return?")
+      assert(document.title() === "How do you want to change your ATED return? - GOV.UK")
 
 
       assert(document.getElementById("pre-heading").text() === "This section is: Change return")
 
-      assert(document.getElementById("editliability-text").text() === "Select the type of changes you want to make to your return")
-
-      assert(document.getElementById("editLiabilityType").text() === "Select the type of changes you want to make to your return Change return details Dispose of the property")
+      assert(document.getElementById("editLiabilityType_legend").text() === "How do you want to change your ATED return?")
       assert(document.getElementById("editLiabilityType-cr").text() === "")
       assert(document.getElementById("editLiabilityType-dp").text() === "")
 
@@ -82,14 +80,14 @@ class editLiabilitySpec extends FeatureSpec with OneServerPerSuite with MockitoS
       val html = views.html.editLiability.editLiability(editLiabilityReturnTypeForm, "formBundleNo", 2015, false, Some("http://backLink"))
 
       val document = Jsoup.parse(html.toString())
-      Then("the page title : Edit your ATED return")
-      assert(document.title() === "Edit your ATED return - GOV.UK")
+      Then("the page title : How do you want to change your ATED return?")
+      assert(document.title() === "How do you want to change your ATED return? - GOV.UK")
 
       assert(document.getElementById("pre-heading").text() === "This section is: Change return")
 
       assert(document.getElementById("editliability-text").text() === "Your original return is too complex to edit online. To make any changes contact Customer Support.")
 
-      assert(document.getElementById("editLiabilityType").text() === "Select the type of changes you want to make to your return Dispose of the property")
+      assert(document.getElementById("editLiabilityType_legend").text() === "How do you want to change your ATED return?")
       assert(document.getElementById("editLiabilityType-cr") === null)
       assert(document.getElementById("editLiabilityType-dp").text() === "")
 

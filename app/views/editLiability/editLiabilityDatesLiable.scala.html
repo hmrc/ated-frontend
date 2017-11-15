@@ -20,9 +20,9 @@
           analyticsAdditionalJs = Some(analyticsJs)) {
 
   @pageHeadersAndError(backLink, "pre-heading", Messages("ated.property-details.pre-header-change"), "property-details-header", Messages("ated.property-details-period.change-dates-liable.header"),
-      Some(atedErrorSummary(propertyDetailsForm, "ated.property-details-period.datesLiable.general.error")))
+    Some(atedErrorSummary(propertyDetailsForm, "ated.property-details-period.datesLiable.general.error")))
 
-  @form(action=controllers.editLiability.routes.EditLiabilityDatesLiableController.save(formBundleNo, periodKey)) {
+  @form(action = controllers.editLiability.routes.EditLiabilityDatesLiableController.save(formBundleNo, periodKey)) {
 
     <div class="form-group">
       @atedDateFieldsFree(
@@ -48,10 +48,10 @@
       )
     </div>
 
-      <button class="button" id="submit" type="submit">
-          @Messages("ated.save-and-continue")
-      </button>
+    <button class="button" id="submit" type="submit">
+    @Messages("ated.save-and-continue")
+    </button>
 
   }
-
 }
+
