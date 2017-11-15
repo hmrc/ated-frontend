@@ -18,7 +18,7 @@ package controllers.propertyDetails
 
 import java.util.UUID
 
-import builders.{AuthBuilder, PropertyDetailsBuilder, SessionBuilder, TestAudit}
+import builders._
 import config.FrontendDelegationConnector
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import models._
@@ -111,7 +111,7 @@ class PropertyDetailsAddressControllerSpec extends PlaySpec with OneServerPerSui
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
-              document.title() must be("Enter the address of the property manually")
+              document.title() must be(TitleBuilder.buildTitle("Enter the address of the property manually"))
 
               document.getElementById("line_1_field").attr("value") must be("")
               document.getElementById("submit").text() must be("Save and continue")
@@ -123,7 +123,7 @@ class PropertyDetailsAddressControllerSpec extends PlaySpec with OneServerPerSui
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
-              document.title() must be("Enter the address of the property manually")
+              document.title() must be(TitleBuilder.buildTitle("Enter the address of the property manually"))
 
               document.getElementById("line_1").attr("value") must be("addr1")
               document.getElementById("line_2").attr("value") must be("addr2")
@@ -142,7 +142,7 @@ class PropertyDetailsAddressControllerSpec extends PlaySpec with OneServerPerSui
           result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be("Enter the address of the property manually")
+            document.title() must be(TitleBuilder.buildTitle("Enter the address of the property manually"))
 
             document.getElementById("line_1").attr("value") must be("addr1")
             document.getElementById("line_2").attr("value") must be("addr2")
@@ -167,7 +167,7 @@ class PropertyDetailsAddressControllerSpec extends PlaySpec with OneServerPerSui
           result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be("Enter the address of the property manually")
+            document.title() must be(TitleBuilder.buildTitle("Enter the address of the property manually"))
 
             document.getElementById("backLinkHref").text must be("Back")
             document.getElementById("backLinkHref").attr("href") must include("/ated/liability/create/summary")

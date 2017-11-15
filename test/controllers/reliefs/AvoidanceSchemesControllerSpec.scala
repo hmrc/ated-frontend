@@ -18,7 +18,7 @@ package controllers.reliefs
 
 import java.util.UUID
 
-import builders.{AuthBuilder, ReliefBuilder, SessionBuilder}
+import builders.{AuthBuilder, ReliefBuilder, SessionBuilder, TitleBuilder}
 import config.FrontendDelegationConnector
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import models.{Reliefs, ReliefsTaxAvoidance, TaxAvoidance}
@@ -125,7 +125,7 @@ class AvoidanceSchemesControllerSpec extends PlaySpec with OneServerPerSuite wit
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
-              document.title() must be("Enter your avoidance scheme number")
+              document.title() must be(TitleBuilder.buildTitle("Enter your avoidance scheme number"))
               document.getElementById("ated-avoidance-header").text() must be("Enter your avoidance scheme number")
               document.getElementById("relief-summary-text").text() must be("Reliefs claimed")
               document.getElementById("relief-summary-scheme-text").text() must be("Avoidance scheme reference number")

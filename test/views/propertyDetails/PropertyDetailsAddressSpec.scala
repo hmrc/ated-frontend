@@ -19,7 +19,7 @@ package views.propertyDetails
 import java.util.UUID
 
 import builders.AuthBuilder._
-import builders.PropertyDetailsBuilder
+import builders.{PropertyDetailsBuilder, TitleBuilder}
 import forms.PropertyDetailsForms._
 import org.jsoup.Jsoup
 import org.scalatest.mock.MockitoSugar
@@ -48,7 +48,7 @@ class PropertyDetailsAddressSpec extends FeatureSpec with OneServerPerSuite with
 
       val document = Jsoup.parse(html.toString())
       Then("Enter your property details")
-      assert(document.title() === "Enter the address of the property manually")
+      assert(document.title() === TitleBuilder.buildTitle("Enter the address of the property manually"))
 
       And("The pre-header text is - Manage your ATED service")
       assert(document.getElementById("property-details-header").text() === "Enter the address of the property manually")
@@ -85,7 +85,7 @@ class PropertyDetailsAddressSpec extends FeatureSpec with OneServerPerSuite with
 
       val document = Jsoup.parse(html.toString())
       Then("Enter your property details")
-      assert(document.title() === "Enter the address of the property manually")
+      assert(document.title() === TitleBuilder.buildTitle("Enter the address of the property manually"))
 
       And("The pre-header text is - Manage your ATED service")
       assert(document.getElementById("property-details-header").text() === "Enter the address of the property manually")

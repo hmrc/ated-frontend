@@ -64,7 +64,7 @@ class periodSummaryPastReturnsSpec extends FeatureSpec with OneServerPerSuite wi
       val document = Jsoup.parse(html.toString())
 
       Then("The header should match - Your ATED returns for 2015 to 2016")
-      assert(document.title() === "Your ATED returns for 2015 to 2016")
+      assert(document.title() === "Your ATED returns for 2015 to 2016 - GOV.UK")
 
       Then("We should only have the current tab")
       assert(document.getElementById("current-returns").text() === "Current returns")
@@ -93,7 +93,7 @@ class periodSummaryPastReturnsSpec extends FeatureSpec with OneServerPerSuite wi
       val document = Jsoup.parse(html.toString())
 
       Then("The header should match - Your ATED returns for 2015 to 2016")
-      assert(document.title() === "Your ATED returns for 2015 to 2016")
+      assert(document.title() === "Your ATED returns for 2015 to 2016 - GOV.UK")
 
       Then("We should only have the current tab")
       assert(document.getElementById("current-returns").text() === "Current returns")
@@ -120,7 +120,7 @@ class periodSummaryPastReturnsSpec extends FeatureSpec with OneServerPerSuite wi
       val document = Jsoup.parse(html.toString())
 
       Then("The header should match - Your ATED returns for 2015 to 2016")
-      assert(document.title() === "Your ATED returns for 2015 to 2016")
+      assert(document.title() === "Your ATED returns for 2015 to 2016 - GOV.UK")
 
       Then("We should only have the current tab")
       assert(document.getElementById("current-returns").text() === "Current returns")

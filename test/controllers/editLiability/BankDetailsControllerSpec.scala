@@ -18,7 +18,7 @@ package controllers.editLiability
 
 import java.util.UUID
 
-import builders.{AuthBuilder, ChangeLiabilityReturnBuilder, PropertyDetailsBuilder, SessionBuilder}
+import builders._
 import config.FrontendDelegationConnector
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import models.{BankDetails, BankDetailsModel, PropertyDetails, SortCode}
@@ -90,7 +90,7 @@ class BankDetailsControllerSpec extends PlaySpec with OneServerPerSuite with Moc
           result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be("Are your bank details for a UK bank account?")
+            document.title() must be(TitleBuilder.buildTitle("Are your bank details for a UK bank account?"))
             document.getElementById("pre-heading").text() must be("This section is: Change return")
         }
       }

@@ -18,7 +18,7 @@ package controllers.propertyDetails
 
 import java.util.UUID
 
-import builders.{AuthBuilder, ChangeLiabilityReturnBuilder, PropertyDetailsBuilder, SessionBuilder}
+import builders._
 import config.FrontendDelegationConnector
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import models._
@@ -112,7 +112,7 @@ class PropertyDetailsInReliefControllerSpec extends PlaySpec with OneServerPerSu
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
-              document.title() must be("Was the property in relief for any part of the ATED chargeable period?")
+              document.title() must be(TitleBuilder.buildTitle("Was the property in relief for any part of the ATED chargeable period?"))
 
               document.getElementById("isInRelief").text() must be(s"Was the property in relief for any part of the ATED chargeable period? Yes No")
               document.getElementById("isInRelief-true").attr("checked") must be("")

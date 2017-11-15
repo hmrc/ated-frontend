@@ -18,7 +18,7 @@ package controllers.subscriptionData
 
 import java.util.UUID
 
-import builders.{AuthBuilder, SessionBuilder}
+import builders.{AuthBuilder, SessionBuilder, TitleBuilder}
 import config.FrontendDelegationConnector
 import models._
 import org.jsoup.Jsoup
@@ -104,7 +104,7 @@ class CompanyDetailsControllerSpec extends PlaySpec with OneServerPerSuite with 
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
 
-            document.title() must be("Your ATED details")
+            document.title() must be (TitleBuilder.buildTitle("Your ATED details"))
             document.getElementById("company-details-header").text() must be("Your ATED details")
 
             document.getElementById("registered-edit").text() must be("Edit Registered address")
@@ -129,7 +129,7 @@ class CompanyDetailsControllerSpec extends PlaySpec with OneServerPerSuite with 
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
 
-            document.title() must be("Your ATED details")
+            document.title() must be (TitleBuilder.buildTitle("Your ATED details"))
             document.getElementById("company-details-header").text() must be("Your ATED details")
 
             document.getElementById("registered-address-label").text() must be("Registered address")

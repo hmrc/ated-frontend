@@ -18,7 +18,7 @@ package controllers.subscriptionData
 
 import java.util.UUID
 
-import builders.{AuthBuilder, SessionBuilder}
+import builders.{AuthBuilder, SessionBuilder, TitleBuilder}
 import config.FrontendDelegationConnector
 import models._
 import org.jsoup.Jsoup
@@ -32,7 +32,7 @@ import play.api.mvc.{AnyContentAsJson, Result}
 import play.api.test.FakeRequest
 import services.SubscriptionDataService
 import play.api.test.Helpers._
-import uk.gov.hmrc.play.frontend.auth.connectors.{DelegationConnector, AuthConnector}
+import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 
 import scala.concurrent.Future
 import uk.gov.hmrc.http.HeaderCarrier
@@ -94,7 +94,7 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with OneServerPerSuit
             result =>
               val document = Jsoup.parse(contentAsString(result))
 
-              document.title() must be("Edit your correspondence address")
+              document.title() must be (TitleBuilder.buildTitle("Edit your correspondence address"))
               document.getElementById("correspondence-address-header").text() must include("Edit your correspondence address")
               document.getElementById("addressLine1").attr("value") must be("")
               document.getElementById("addressLine2").attr("value") must be("")
@@ -116,7 +116,7 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with OneServerPerSuit
             result =>
               val document = Jsoup.parse(contentAsString(result))
 
-              document.title() must be("Edit your correspondence address")
+              document.title() must be (TitleBuilder.buildTitle("Edit your correspondence address"))
               document.getElementById("correspondence-address-header").text() must include("Edit your correspondence address")
               document.getElementById("addressType").attr("value") must be("Correspondence")
               document.getElementById("addressLine1").attr("value") must be("  ")
@@ -137,7 +137,7 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with OneServerPerSuit
             result =>
               val document = Jsoup.parse(contentAsString(result))
 
-              document.title() must be("Edit your correspondence address")
+              document.title() must be (TitleBuilder.buildTitle("Edit your correspondence address"))
               document.getElementById("correspondence-address-header").text() must include("Edit your correspondence address")
               document.getElementById("addressType").attr("value") must be("Correspondence")
               document.getElementById("addressLine1").attr("value") must be("line_1")

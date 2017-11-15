@@ -18,7 +18,7 @@ package controllers.propertyDetails
 
 import java.util.UUID
 
-import builders.{AuthBuilder, PropertyDetailsBuilder, SessionBuilder}
+import builders.{AuthBuilder, PropertyDetailsBuilder, SessionBuilder, TitleBuilder}
 import config.FrontendDelegationConnector
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import models._
@@ -123,7 +123,7 @@ class PropertyDetailsAcquisitionControllerSpec extends PlaySpec with OneServerPe
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
-              document.title() must be("Have you spent £40,000 or more on this property since you bought it?")
+              document.title() must be("Have you spent £40,000 or more on this property since you bought it? - GOV.UK")
               document.getElementById("backLinkHref").text must be("Back")
               document.getElementById("backLinkHref").attr("href") must include("/ated/liability/create/summary")
 

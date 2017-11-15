@@ -18,7 +18,7 @@ package controllers
 
 import java.util.UUID
 
-import builders.{AuthBuilder, PropertyDetailsBuilder, SessionBuilder}
+import builders.{AuthBuilder, PropertyDetailsBuilder, SessionBuilder, TitleBuilder}
 import config.FrontendDelegationConnector
 import connectors.{AgentClientMandateFrontendConnector, DataCacheConnector}
 import forms.AtedForms.YesNoQuestion
@@ -111,7 +111,7 @@ class DraftDeleteConfirmationControllerSpec extends PlaySpec with OneServerPerSu
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
-              document.title() must be("Are you sure you want to delete this draft return?")
+              document.title() must be(TitleBuilder.buildTitle("Are you sure you want to delete this draft return?"))
           }
         }
 
@@ -121,7 +121,7 @@ class DraftDeleteConfirmationControllerSpec extends PlaySpec with OneServerPerSu
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
-              document.title() must be("Are you sure you want to delete this draft return?")
+              document.title() must be(TitleBuilder.buildTitle("Are you sure you want to delete this draft return?"))
           }
         }
 
@@ -143,7 +143,7 @@ class DraftDeleteConfirmationControllerSpec extends PlaySpec with OneServerPerSu
           result =>
             status(result) must be(BAD_REQUEST)
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be("Are you sure you want to delete this draft return?")
+            document.title() must be(TitleBuilder.buildTitle("Are you sure you want to delete this draft return?"))
         }
       }
 

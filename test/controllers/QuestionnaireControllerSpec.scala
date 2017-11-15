@@ -18,7 +18,7 @@ package controllers
 
 import java.util.UUID
 
-import builders.{SessionBuilder, TestAudit}
+import builders.{SessionBuilder, TestAudit, TitleBuilder}
 import org.jsoup.Jsoup
 import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
 import play.api.libs.json.Json
@@ -48,7 +48,7 @@ class QuestionnaireControllerSpec extends PlaySpec with OneServerPerSuite {
         result =>
           status(result) must be(OK)
           val document = Jsoup.parse(contentAsString(result))
-          document.title() must be("ATED feedback questionnaire") //Questionnaire title
+          document.title() must be(TitleBuilder.buildTitle("ATED feedback questionnaire")) //Questionnaire title
           document.getElementsByClass("heading-xlarge").text() must be("You’re signed out")
           document.getElementById("signed-out-text").text() must be("You’re now signed out of your ATED account.")
           document.getElementById("satisfaction-survey-heading").text() must be("Satisfaction survey")
@@ -86,7 +86,7 @@ class QuestionnaireControllerSpec extends PlaySpec with OneServerPerSuite {
           status(result) must be(400)
           val document = Jsoup.parse(contentAsString(result))
 
-          document.title() must be("ATED feedback questionnaire") //Questionnaire title
+          document.title() must be(TitleBuilder.buildTitle("ATED feedback questionnaire")) //Questionnaire title
       }
 
     }
@@ -105,7 +105,7 @@ class QuestionnaireControllerSpec extends PlaySpec with OneServerPerSuite {
         result =>
           status(result) must be(OK)
           val document = Jsoup.parse(contentAsString(result))
-          document.title() must be("Thanks for your feedback") //Questionnaire Thankyou title
+          document.title() must be(TitleBuilder.buildTitle("Thanks for your feedback")) //Questionnaire Thankyou title
 
       }
     }

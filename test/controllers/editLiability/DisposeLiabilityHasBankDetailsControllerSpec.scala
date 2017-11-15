@@ -92,7 +92,7 @@ class DisposeLiabilityHasBankDetailsControllerSpec extends PlaySpec with OneServ
           result =>
             status(result) must be(OK)
             val doc = Jsoup.parse(contentAsString(result))
-            doc.title() must be("Do you have a bank account where we could pay a refund?")
+            doc.title() must be("Do you have a bank account where we could pay a refund? - GOV.UK")
             doc.getElementById("pre-heading").text() must be("This section is: Change return")
 
         }
@@ -115,7 +115,7 @@ class DisposeLiabilityHasBankDetailsControllerSpec extends PlaySpec with OneServ
           result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be("Do you have a bank account where we could pay a refund?")
+            document.title() must be(TitleBuilder.buildTitle("Do you have a bank account where we could pay a refund?"))
 
             document.getElementById("backLinkHref").text must be("Back")
             document.getElementById("backLinkHref").attr("href") must include("/ated/liability/123456789012/dispose/summary")

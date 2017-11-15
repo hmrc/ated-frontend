@@ -51,7 +51,7 @@ class PropertyDetailsRevaluedSpec extends FeatureSpec with OneServerPerSuite wit
 
       val document = Jsoup.parse(html.toString())
       Then("the page title : Have you had the property revalued since you made the £40,000 change?")
-      assert(document.title() === "Have you had the property revalued since you made the £40,000 or more change?")
+      assert(document.title() === "Have you had the property revalued since you made the £40,000 or more change? - GOV.UK")
 
       Then("The subheader should be - Create return")
       assert(document.getElementById("pre-heading").text() === "This section is: Create return")
@@ -103,7 +103,7 @@ class PropertyDetailsRevaluedSpec extends FeatureSpec with OneServerPerSuite wit
 
       val document = Jsoup.parse(html.toString())
       Then("the page title : Have you had the property revalued since you made the £40,000 change?")
-      assert(document.title() === "Have you had the property revalued since you made the £40,000 or more change?")
+      assert(document.title() === "Have you had the property revalued since you made the £40,000 or more change? - GOV.UK")
 
       Then("The subheader should be - Change return")
       assert(document.getElementById("pre-heading").text() === "This section is: Change return")
@@ -149,7 +149,7 @@ class PropertyDetailsRevaluedSpec extends FeatureSpec with OneServerPerSuite wit
 
         val document = Jsoup.parse(html.toString())
         Then("the page title : Have you had the property revalued since you made the £40,000 change?")
-        assert(document.title() === "Have you had the property revalued since you made the £40,000 or more change?")
+        assert(document.title() === "Have you had the property revalued since you made the £40,000 or more change? - GOV.UK")
 
         And("The data is populated for a property value set to false")
         assert(document.getElementById("isPropertyRevalued").text() === "Have you had the property revalued since you made the £40,000 or more change? Yes No")

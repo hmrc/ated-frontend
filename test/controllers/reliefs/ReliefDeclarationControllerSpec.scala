@@ -18,7 +18,7 @@ package controllers.reliefs
 
 import java.util.UUID
 
-import builders.{AuthBuilder, SessionBuilder}
+import builders.{AuthBuilder, SessionBuilder, TitleBuilder}
 import config.FrontendDelegationConnector
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import models.{AtedContext, SubmitReturnsResponse}
@@ -39,7 +39,7 @@ import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConne
 import utils.AtedConstants
 
 import scala.concurrent.Future
-import uk.gov.hmrc.http.{ HeaderCarrier, HttpResponse, UserId }
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, UserId}
 
 class ReliefDeclarationControllerSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
   import AuthBuilder._
@@ -107,7 +107,7 @@ class ReliefDeclarationControllerSpec extends PlaySpec with OneServerPerSuite wi
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
-              document.title() must be("Returns declaration")
+              document.title() must be(TitleBuilder.buildTitle("Returns declaration"))
               document.getElementById("relief-declaration-before-declaration-text").text() must be("Before you can submit your return to HMRC you must read and agree to the following statement. If you give false information you may have to pay financial penalties and face prosecution.")
               document.getElementById("relief-declaration-mid-declaration-text").text() must be("Each type of relief claimed is an individual ATED return.")
               document.getElementById("declare-or-confirm").text() must be("I declare that:")
@@ -121,7 +121,7 @@ class ReliefDeclarationControllerSpec extends PlaySpec with OneServerPerSuite wi
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
-              document.title() must be("Returns declaration")
+              document.title() must be(TitleBuilder.buildTitle("Returns declaration"))
               document.getElementById("relief-declaration-before-declaration-text").text() must be("Before your client’s return or returns can be submitted to HMRC, you must read and agree to the following statement. Your client’s approval may be in electronic or non-electronic form. If your client gives false information, they may have to pay financial penalties and face prosecution.")
               document.getElementById("relief-declaration-mid-declaration-text").text() must be("Each type of relief claimed is an individual ATED return.")
               document.getElementById("declare-or-confirm").text() must be("I confirm that my client has:")

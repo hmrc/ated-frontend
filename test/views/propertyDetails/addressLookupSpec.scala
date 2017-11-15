@@ -47,7 +47,7 @@ class addressLookupSpec extends FeatureSpec with OneServerPerSuite with MockitoS
 
       val document = Jsoup.parse(html.toString())
       Then("The title and header should match - Find the property's address")
-      assert(document.title() === "Find the property’s address")
+      assert(document.title() === "Find the property’s address - GOV.UK")
       assert(document.getElementById("account-lookup-header").text === "Find the property’s address")
 
       Then("The subheader should be - Create return")
@@ -80,7 +80,7 @@ class addressLookupSpec extends FeatureSpec with OneServerPerSuite with MockitoS
 
       val document = Jsoup.parse(html.toString())
       Then("The title and header should match - Find the property's address")
-      assert(document.title() === "Find the property’s address")
+      assert(document.title() === "Find the property’s address - GOV.UK")
       assert(document.getElementById("account-lookup-header").text === "Find the property’s address")
 
       Then("The subheader should be - Change return")

@@ -85,8 +85,8 @@ class DisposeLiabilitySentControllerSpec extends PlaySpec with OneServerPerSuite
           result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must include("Your amended return has been successfully submitted")
-            document.getElementById("header").text() must include("Your amended return has been successfully submitted")
+            document.title() must include(TitleBuilder.buildTitle("Your amended return has been successfully submitted on 15 November 2017"))
+            document.getElementById("header").text() must be("Your amended return has been successfully submitted on 15 November 2017")
             document.getElementById("view-message").text() must be("You can view your completed returns, overall balance, payment references and ways to pay in the ATED online service.")
             document.getElementById("email-message").text() must be("You will not receive an email confirmation.")
             document.getElementById("charges-heading").text() must be("Charges for this return")
@@ -158,7 +158,7 @@ class DisposeLiabilitySentControllerSpec extends PlaySpec with OneServerPerSuite
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
-              document.title() must include("Your amended return has been successfully submitted")
+              document.title() must be(TitleBuilder.buildTitle("Your amended return has been successfully submitted on 15 November 2017"))
           }
         }
 
@@ -169,7 +169,7 @@ class DisposeLiabilitySentControllerSpec extends PlaySpec with OneServerPerSuite
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
-              document.title() must include("Your amended return has been successfully submitted")
+              document.title() must be (TitleBuilder.buildTitle("Your amended return has been successfully submitted on 15 November 2017"))
           }
         }
 

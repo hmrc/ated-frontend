@@ -18,7 +18,7 @@ package controllers.propertyDetails
 
 import java.util.UUID
 
-import builders.{AuthBuilder, PropertyDetailsBuilder, SessionBuilder}
+import builders.{AuthBuilder, PropertyDetailsBuilder, SessionBuilder, TitleBuilder}
 import config.FrontendDelegationConnector
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import models._
@@ -102,7 +102,7 @@ class PropertyDetailsTitleControllerSpec extends PlaySpec with OneServerPerSuite
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
-              document.title() must be("What is the property’s title number? (optional)")
+              document.title() must be(TitleBuilder.buildTitle("What is the property’s title number? (optional)"))
           }
         }
       }
@@ -115,7 +115,7 @@ class PropertyDetailsTitleControllerSpec extends PlaySpec with OneServerPerSuite
           result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be("What is the property’s title number? (optional)")
+            document.title() must be(TitleBuilder.buildTitle("What is the property’s title number? (optional)"))
         }
       }
     }

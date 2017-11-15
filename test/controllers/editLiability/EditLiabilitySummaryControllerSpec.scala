@@ -18,7 +18,7 @@ package controllers.editLiability
 
 import java.util.UUID
 
-import builders.{AuthBuilder, PropertyDetailsBuilder, SessionBuilder}
+import builders.{AuthBuilder, PropertyDetailsBuilder, SessionBuilder, TitleBuilder}
 import config.FrontendDelegationConnector
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import models.{PropertyDetails, PropertyDetailsCalculated}
@@ -86,7 +86,7 @@ class EditLiabilitySummaryControllerSpec extends PlaySpec with OneServerPerSuite
           result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be("Check your details are correct")
+            document.title() must be (TitleBuilder.buildTitle("Check your details are correct"))
         }
       }
 
@@ -116,7 +116,7 @@ class EditLiabilitySummaryControllerSpec extends PlaySpec with OneServerPerSuite
           result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be("Check your details are correct")
+            document.title() must be (TitleBuilder.buildTitle("Check your details are correct"))
             document.getElementById("address-line-1").text() must be("addr1")
             document.getElementById("address-line-2").text() must be("addr2")
             document.getElementById("address-line-3").text() must be("addr3")
@@ -134,7 +134,7 @@ class EditLiabilitySummaryControllerSpec extends PlaySpec with OneServerPerSuite
           result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be("Check your details are correct")
+            document.title() must be (TitleBuilder.buildTitle("Check your details are correct"))
         }
       }
 
@@ -145,7 +145,7 @@ class EditLiabilitySummaryControllerSpec extends PlaySpec with OneServerPerSuite
           result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be("Check your details are correct")
+            document.title() must be (TitleBuilder.buildTitle("Check your details are correct"))
         }
       }
     }
@@ -171,15 +171,12 @@ class EditLiabilitySummaryControllerSpec extends PlaySpec with OneServerPerSuite
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
-              document.title() must be("Check your details are correct")
+              document.title() must be ("Check your details are correct")
               document.getElementById("edit-liability-summary-header").text() must be("Further return for ACME Limited")
           }
         }
-
       }
-
     }
-
   }
 
   def viewWithAuthorisedUser(propertyDetails: PropertyDetails)(test: Future[Result] => Any) {

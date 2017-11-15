@@ -118,7 +118,7 @@ class ViewReliefReturnControllerSpec extends PlaySpec with OneServerPerSuite wit
               doc.getElementById("relief-return-text").text() must be("For the ATED period from 1 April 2015 to 31 March 2016.")
               doc.getElementById("relief-return-header").text() must be("View return")
               doc.getElementById("submit").text() must be("Change return")
-              doc.title() must be("View return")
+              doc.title() must be("View return - GOV.UK")
           }
         }
 

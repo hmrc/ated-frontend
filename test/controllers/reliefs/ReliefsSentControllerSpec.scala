@@ -18,12 +18,12 @@ package controllers.reliefs
 
 import java.util.UUID
 
-import builders.{AuthBuilder, SessionBuilder}
+import builders.{AuthBuilder, SessionBuilder, TitleBuilder}
 import config.FrontendDelegationConnector
 import connectors.DataCacheConnector
-import models.{LiabilityReturnResponse, ReliefReturnResponse, SubmitReturnsResponse}
-import org.joda.time.{DateTime, LocalDate}
+import models.{ReliefReturnResponse, SubmitReturnsResponse}
 import org.joda.time.format.DateTimeFormat
+import org.joda.time.{DateTime, LocalDate}
 import org.jsoup.Jsoup
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -34,12 +34,12 @@ import play.api.mvc.Result
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.{ReliefsService, SubscriptionDataService}
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.logging.SessionId
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import utils.AtedConstants._
 
 import scala.concurrent.Future
-import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.http.logging.SessionId
 
 class ReliefsSentControllerSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
   import AuthBuilder._
@@ -77,7 +77,7 @@ class ReliefsSentControllerSpec extends PlaySpec with OneServerPerSuite with Moc
       "not respond with NOT_FOUND" in {
         val result = route(FakeRequest(GET, s"/ated/reliefs/$periodKey/sent-reliefs"))
         result.isDefined must be(true)
-        status(result.get) must not be(NOT_FOUND)
+        status(result.get) must not be NOT_FOUND
       }
 
       "unauthorised users" must {
@@ -101,7 +101,7 @@ class ReliefsSentControllerSpec extends PlaySpec with OneServerPerSuite with Moc
             status(result) must be(OK)
 
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be("Your returns have been successfully submitted")
+            document.title() must be (TitleBuilder.buildTitle("Your returns have been successfully submitted"))
             document.getElementById("banner-text").text() must be(s"Your returns have been successfully submitted on $submittedDate")
             document.getElementById("completed-returns").text() must be("You can view your completed returns, payment references and ways to pay in the ATED online service.")
             document.getElementById("email-confirmation").text() must be("You will not receive an email confirmation.")

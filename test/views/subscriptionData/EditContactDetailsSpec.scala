@@ -54,7 +54,7 @@ class EditContactDetailsSpec extends FeatureSpec with OneServerPerSuite with Moc
 
       val document = Jsoup.parse(html.toString())
       Then("Edit your ATED contact details")
-      assert(document.title() === "Edit your ATED contact details")
+      assert(document.title() === "Edit your ATED contact details - GOV.UK")
       assert(document.getElementById("contact-details-header").text() === "Edit your ATED contact details")
 
       And("The pre-header text is - Manage your ATED service")

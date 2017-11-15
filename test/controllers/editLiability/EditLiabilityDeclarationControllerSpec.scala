@@ -18,7 +18,7 @@ package controllers.editLiability
 
 import java.util.UUID
 
-import builders.{AuthBuilder, ChangeLiabilityReturnBuilder, PropertyDetailsBuilder, SessionBuilder}
+import builders._
 import config.FrontendDelegationConnector
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import models._
@@ -39,7 +39,7 @@ import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConne
 import utils.AtedConstants
 
 import scala.concurrent.Future
-import uk.gov.hmrc.http.{ HeaderCarrier, UserId }
+import uk.gov.hmrc.http.{HeaderCarrier, UserId}
 
 class EditLiabilityDeclarationControllerSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
 
@@ -107,7 +107,7 @@ class EditLiabilityDeclarationControllerSpec extends PlaySpec with OneServerPerS
           viewWithAuthorisedUser(Some(cL2)) { result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be("Amended return declaration")
+            document.title() must be(TitleBuilder.buildTitle("Amended return declaration"))
             document.getElementById("relief-declaration-confirmation-header").text() must be("Amended return declaration")
             document.getElementById("relief-declaration-before-declaration-text").text() must be("Before you can submit your return to HMRC you must read and agree to the following statement. If you give false information you may have to pay financial penalties and face prosecution.")
             document.getElementById("declaration-confirmation-text").text() must be("I declare that the information I have given on this return is correct and complete.")
@@ -122,7 +122,7 @@ class EditLiabilityDeclarationControllerSpec extends PlaySpec with OneServerPerS
           viewWithAuthorisedUser(Some(cL2)) { result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be("Further return declaration")
+            document.title() must be(TitleBuilder.buildTitle("Further return declaration"))
             document.getElementById("relief-declaration-confirmation-header").text() must be("Further return declaration")
             document.getElementById("relief-declaration-before-declaration-text").text() must be("Before you can submit your return to HMRC you must read and agree to the following statement. If you give false information you may have to pay financial penalties and face prosecution.")
             document.getElementById("declaration-confirmation-text").text() must be("I declare that the information I have given on this return is correct and complete.")
@@ -137,7 +137,7 @@ class EditLiabilityDeclarationControllerSpec extends PlaySpec with OneServerPerS
           viewWithAuthorisedUser(Some(cL2)) { result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be("Change in details declaration")
+            document.title() must be(TitleBuilder.buildTitle("Change in details declaration"))
             document.getElementById("relief-declaration-confirmation-header").text() must be("Change in details declaration")
             document.getElementById("relief-declaration-before-declaration-text").text() must be("Before you can submit your return to HMRC you must read and agree to the following statement. If you give false information you may have to pay financial penalties and face prosecution.")
             document.getElementById("declaration-confirmation-text").text() must be("I declare that the information I have given on this return is correct and complete.")
@@ -152,7 +152,7 @@ class EditLiabilityDeclarationControllerSpec extends PlaySpec with OneServerPerS
           viewWithAuthorisedUser(Some(cL2)) { result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be("Change in details declaration")
+            document.title() must be(TitleBuilder.buildTitle("Change in details declaration"))
           }
         }
 

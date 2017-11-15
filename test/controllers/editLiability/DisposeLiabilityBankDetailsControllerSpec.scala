@@ -93,7 +93,7 @@ class DisposeLiabilityBankDetailsControllerSpec extends PlaySpec with OneServerP
           result =>
             status(result) must be(OK)
             val doc = Jsoup.parse(contentAsString(result))
-            doc.title() must be("Are your bank details for a UK bank account?")
+            doc.title() must be("Are your bank details for a UK bank account? - GOV.UK")
             doc.getElementById("pre-heading").text() must be("This section is: Change return")
         }
       }
@@ -116,7 +116,7 @@ class DisposeLiabilityBankDetailsControllerSpec extends PlaySpec with OneServerP
           result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be("Are your bank details for a UK bank account?")
+            document.title() must be(TitleBuilder.buildTitle("Are your bank details for a UK bank account?"))
 
             document.getElementById("backLinkHref").text must be("Back")
             document.getElementById("backLinkHref").attr("href") must include("/ated/liability/123456789012/dispose/summary")

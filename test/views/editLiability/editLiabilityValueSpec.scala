@@ -48,7 +48,7 @@ class editLiabilityValueSpec extends FeatureSpec with OneServerPerSuite with Moc
 
       val document = Jsoup.parse(html.toString())
       Then("the page title : Has the value of your property changed for the purposes of ATED?")
-      assert(document.title() === "Has the value of your property changed for the purposes of ATED?")
+      assert(document.title() === "Has the value of your property changed for the purposes of ATED? - GOV.UK")
 
       assert(document.getElementById("pre-heading").text() === "This section is: Create return")
 
@@ -84,7 +84,7 @@ class editLiabilityValueSpec extends FeatureSpec with OneServerPerSuite with Moc
 
       val document = Jsoup.parse(html.toString())
       Then("the page title : Has the value of your property changed for the purposes of ATED?")
-      assert(document.title() === "Has the value of your property changed for the purposes of ATED?")
+      assert(document.title() === "Has the value of your property changed for the purposes of ATED? - GOV.UK")
 
       assert(document.getElementById("pre-heading").text() === "This section is: Create return")
 

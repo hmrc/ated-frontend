@@ -113,4 +113,4 @@
     getHelpForm = getHelpForm)
 }
 
-@hmrcGovUkTemplate(Some(title), None)(head, bodyEnd, insideHeader, afterHeader, footerTop, Some(uiLayouts.footer_links()), true)(content)
+@hmrcGovUkTemplate(Some(s"$title - GOV.UK"), None)(head, bodyEnd, insideHeader, afterHeader, footerTop, Some(uiLayouts.footer_links()), true)(content)

@@ -18,7 +18,7 @@ package controllers
 
 import java.util.UUID
 
-import builders.{AuthBuilder, SessionBuilder}
+import builders.{AuthBuilder, SessionBuilder, TitleBuilder}
 import config.FrontendDelegationConnector
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import models.{PreviousReturns, ReturnType}
@@ -95,7 +95,7 @@ class ReturnTypeControllerSpec extends PlaySpec with OneServerPerSuite with Mock
           getWithAuthorisedUser { result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be("Select a type of return")
+            document.title() must be(TitleBuilder.buildTitle("Select a type of return"))
             document.getElementById("return-type-header").text() must be("Select a type of return")
             document.getElementById("returnType-rr_field").text() must be("For a property or properties in relief where no ATED charge is due")
           }
@@ -104,7 +104,7 @@ class ReturnTypeControllerSpec extends PlaySpec with OneServerPerSuite with Mock
           getWithAuthorisedUserWithSomeData { result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be("Select a type of return")
+            document.title() must be(TitleBuilder.buildTitle("Select a type of return"))
             document.getElementById("return-type-header").text() must be("Select a type of return")
             document.getElementById("returnType-rr_field").text() must be("For a property or properties in relief where no ATED charge is due")
             document.getElementById("returnType-rr").attr("checked") must be("checked")

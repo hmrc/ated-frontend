@@ -18,7 +18,7 @@ package controllers.editLiability
 
 import java.util.UUID
 
-import builders.{AuthBuilder, SessionBuilder}
+import builders.{AuthBuilder, SessionBuilder, TitleBuilder}
 import config.FrontendDelegationConnector
 import connectors.DataCacheConnector
 import models.{EditLiabilityReturnsResponse, EditLiabilityReturnsResponseModel, LiabilityReturnResponse}
@@ -79,7 +79,7 @@ class EditLiabilitySentControllerSpec extends PlaySpec with OneServerPerSuite wi
           result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be("Amended return confirmation")
+            document.title() must be(TitleBuilder.buildTitle("Amended return confirmation"))
             document.getElementById("header").text() must be("Your amended return has been successfully submitted")
             document.getElementById("view-message").text() must be("You can view your completed returns, overall balance, payment references and ways to pay in the ATED online service.")
             document.getElementById("email-message").text() must be("You will not receive an email confirmation.")
@@ -103,7 +103,7 @@ class EditLiabilitySentControllerSpec extends PlaySpec with OneServerPerSuite wi
           result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be("Further return confirmation")
+            document.title() must be(TitleBuilder.buildTitle("Further return confirmation"))
             document.getElementById("header").text() must be("Your further return has been successfully submitted")
             document.getElementById("view-message").text() must be("You can view your completed returns, overall balance, payment references and ways to pay in the ATED online service.")
             document.getElementById("email-message").text() must be("You will not receive an email confirmation.")
@@ -125,7 +125,7 @@ class EditLiabilitySentControllerSpec extends PlaySpec with OneServerPerSuite wi
           result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be("Change in details return confirmation")
+            document.title() must be(TitleBuilder.buildTitle("Change in details return confirmation"))
             document.getElementById("header").text() must be("Your change in details has been successfully submitted")
             document.getElementById("view-message").text() must be("You can view your completed returns, overall balance, payment references and ways to pay in the ATED online service.")
             document.getElementById("email-message").text() must be("You will not receive an email confirmation.")

@@ -95,7 +95,7 @@ class DisposeLiabilitySummaryControllerSpec extends PlaySpec with OneServerPerSu
           result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
-            document.title must be("Check your details are correct")
+            document.title must be("Check your details are correct - GOV.UK")
             document.getElementById("edit-liability-summary-header").text() must be("Check your details are correct")
             document.getElementById("details-text").text() must be("For the ATED period from 1 April 2015 to 31 March 2016.")
             document.getElementById("property-summary").text() must include("Bank details Supply bank details INCOMPLETE Edit")
