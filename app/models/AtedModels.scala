@@ -18,6 +18,7 @@ package models
 
 import org.joda.time.LocalDate
 import play.api.libs.json.Json
+import play.twirl.api.Html
 
 
 case class EditRelief(changeRelief: Option[String] = None)
@@ -64,3 +65,11 @@ case class DisposeLiabilityReturn(id: String,
 object DisposeLiabilityReturn {
   implicit val formats = Json.format[DisposeLiabilityReturn]
 }
+
+case class CyaRow(
+                   cyaQuestion: String,
+                   cyaQuestionId: String,
+                   cyaAnswer: Html,
+                   cyaAnswerId: String,
+                   cyaChange: Option[Html]
+                 )
