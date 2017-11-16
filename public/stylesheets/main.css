@@ -657,6 +657,11 @@ table th {
 }
 
 /* check your answers */
+
+.cya-wrapper {
+  margin-bottom: 30px;
+}
+
 .row-border {
     border-bottom: 1px solid #bfc1c3;
     padding: 0.6em 0em 0.5em 0em;
@@ -665,6 +670,10 @@ table th {
 .cya-change, .cya-question, .cya-answer {
     padding: 0.3em 1em 0.3em 0em;
     box-sizing:border-box;
+}
+
+.cya-question .heading-small {
+  margin-top: 0;
 }
 
 .cya-header-ans {

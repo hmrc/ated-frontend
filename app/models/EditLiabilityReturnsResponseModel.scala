@@ -18,6 +18,7 @@ package models
 
 import org.joda.time.DateTime
 import play.api.libs.json.{Json, Reads, Writes}
+import play.twirl.api.Html
 
 case class EditLiabilityReturnsResponse(mode: String,
                                         oldFormBundleNumber: String,
@@ -41,3 +42,12 @@ object EditLiabilityReturnsResponseModel {
   implicit val yourJodaDateReads = Reads.jodaDateReads("yyyy-MM-dd'T'HH:mm:ss'Z'") // DateTime
   implicit val formats = Json.format[EditLiabilityReturnsResponseModel]
 }
+
+
+case class CyaRow(
+                 cyaQuestion: String,
+                 cyaQuestionId: String,
+                 cyaAnswer: Html,
+                 cyaAnswerId: String,
+                 cyaChange: Option[Html]
+               )
