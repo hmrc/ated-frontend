@@ -38,6 +38,9 @@ import utils.AtedConstants._
 import scala.concurrent.Future
 import uk.gov.hmrc.http.HeaderCarrier
 
+import org.joda.time.format.DateTimeFormat
+import org.joda.time.LocalDate
+
 class EditLiabilitySentControllerSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
 
   import AuthBuilder._
@@ -49,6 +52,8 @@ class EditLiabilitySentControllerSpec extends PlaySpec with OneServerPerSuite wi
   val organisationName = "ACME Limited"
   val formBundleNo1 = "123456789012"
   val formBundleNo2 = "123456789011"
+
+  val today = DateTimeFormat.forPattern("d MMMM yyyy").print(new LocalDate())
 
   object TestEditLiabilitySentController extends EditLiabilitySentController {
     override val authConnector = mockAuthConnector
@@ -79,8 +84,8 @@ class EditLiabilitySentControllerSpec extends PlaySpec with OneServerPerSuite wi
           result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be(TitleBuilder.buildTitle("Amended return confirmation"))
-            document.getElementById("header").text() must be("Your amended return has been successfully submitted")
+            document.title() must be(TitleBuilder.buildTitle("Your amended return has been successfully submitted on " + today))
+            document.getElementById("header").text() must be("Your amended return has been successfully submitted on " + today)
             document.getElementById("view-message").text() must be("You can view your completed returns, overall balance, payment references and ways to pay in the ATED online service.")
             document.getElementById("email-message").text() must be("You will not receive an email confirmation.")
             document.getElementById("charges-heading").text() must be("Charges for this return")
@@ -103,8 +108,8 @@ class EditLiabilitySentControllerSpec extends PlaySpec with OneServerPerSuite wi
           result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be(TitleBuilder.buildTitle("Further return confirmation"))
-            document.getElementById("header").text() must be("Your further return has been successfully submitted")
+            document.title() must be(TitleBuilder.buildTitle("Your further return has been successfully submitted on " + today))
+            document.getElementById("header").text() must be("Your further return has been successfully submitted on " + today)
             document.getElementById("view-message").text() must be("You can view your completed returns, overall balance, payment references and ways to pay in the ATED online service.")
             document.getElementById("email-message").text() must be("You will not receive an email confirmation.")
             document.getElementById("charges-heading").text() must be("Charges for this return")
@@ -125,8 +130,8 @@ class EditLiabilitySentControllerSpec extends PlaySpec with OneServerPerSuite wi
           result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be(TitleBuilder.buildTitle("Change in details return confirmation"))
-            document.getElementById("header").text() must be("Your change in details has been successfully submitted")
+            document.title() must be(TitleBuilder.buildTitle("Your change in details has been successfully submitted on " + today))
+            document.getElementById("header").text() must be("Your change in details has been successfully submitted on " + today)
             document.getElementById("view-message").text() must be("You can view your completed returns, overall balance, payment references and ways to pay in the ATED online service.")
             document.getElementById("email-message").text() must be("You will not receive an email confirmation.")
             document.getElementById("charges-heading").text() must be("Charges for this return")
