@@ -67,9 +67,12 @@
           '_type -> "number")
         </div>
         <div id="sort-code">
-          @sortCode(bankDetailsForm, "sortCode",
-          Messages("ated.bank-details.uk-bank-account.sort-code.label"),
-          '_label -> Messages("ated.bank-details.uk-bank-account.number.label"))
+          @sortCode(
+            bankDetailsForm,
+            "sortCode",
+            Messages("ated.bank-details.uk-bank-account.sort-code.label"),
+            '_label -> Messages("ated.bank-details.uk-bank-account.number.label")
+          )
         </div>
 
       </fieldset>
@@ -80,9 +83,9 @@
         <legend class="visuallyhidden">@Messages("ated.bank-details.legend")</legend>
 
         <div id="non-uk-name-of-person" class="form-field">
-          @atedInputNew(bankDetailsForm("accountName"),
+          @atedInputNew(bankDetailsForm("non-uk-accountName"),
           '_label -> Messages("ated.bank-details.uk-bank-account.name.label"),
-          '_id -> "accountName",
+          '_id -> "non-uk-accountName",
           '_showConstraints -> false)
         </div>
 
