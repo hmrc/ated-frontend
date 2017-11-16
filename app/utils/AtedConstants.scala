@@ -53,10 +53,6 @@ object AtedConstants {
   lazy val AmendedReturnSub =  Messages("ated.edit-liability.declaration.submit.amend")
   lazy val ChangedReturnSub =  Messages("ated.edit-liability.declaration.submit.change")
 
-  lazy val FurtherReturnConf = Messages("ated.edit-liability.sent.further.title")
-  lazy val AmendedReturnConf = Messages("ated.edit-liability.sent.amend.title")
-  lazy val ChangedReturnConf = Messages("ated.edit-liability.sent.change.title")
-
   val TypeReliefDraft = "Relief"
   val TypeLiabilityDraft = "Liability"
   val TypeChangeLiabilityDraft = "Change_Liability"
