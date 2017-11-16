@@ -1168,8 +1168,8 @@ ated.bank-details.has-bank-details.title = Do you have a bank account where we c
 ated.bank-details.has-bank-details.header = Do you have a bank account where we could pay a refund?
 ated.bank-details.has-bank-details.paragraph.text = We need bank details for the payment of any refunds that may be due.
 
-ated.bank-details.title = Are your bank details for a UK bank account?
-ated.bank-details.header = Are your bank details for a UK bank account?
+ated.bank-details.title = Is the bank account in the UK?
+ated.bank-details.header = Is the bank account in the UK?
 ated.bank-details.legend = Bank details
 
 ated.bank-details.have-uk-bank-account.legend = Do you have a UK bank account?

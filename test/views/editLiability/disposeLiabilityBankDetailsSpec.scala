@@ -46,9 +46,9 @@ class disposeLiabilityBankDetailsSpec extends FeatureSpec with OneServerPerSuite
 
       val document = Jsoup.parse(html.toString())
 
-      Then("The header should match - Are your bank details for a UK bank account?")
-      assert(document.title() === "Are your bank details for a UK bank account? - GOV.UK")
-      assert(document.select("h1").text === "Are your bank details for a UK bank account?")
+      Then("The header should match - Is the bank account in the UK?")
+      assert(document.title() === "Is the bank account in the UK? - GOV.UK")
+      assert(document.select("h1").text === "Is the bank account in the UK?")
 
       Then("The subheader should be - Change return")
       assert(document.getElementById("pre-heading").text() === "This section is: Change return")
@@ -56,14 +56,14 @@ class disposeLiabilityBankDetailsSpec extends FeatureSpec with OneServerPerSuite
       Then("The fields should have the correct titles")
       And("No data is populated")
 
-      assert(document.getElementById("hasUKBankAccount-id").text() === "Are your bank details for a UK bank account? Yes No")
+      assert(document.getElementById("hasUKBankAccount-id").text() === "Is the bank account in the UK? Yes No")
       assert(document.getElementById("name-of-person").text() === "Name of bank account holder")
 
-      assert(document.getElementById("hidden-bank-details-uk").text() === "Account number Sort code sortCode firstElement sortCode secondElement sortCode thirdElement  ")
+      assert(document.getElementById("hidden-bank-details-uk").text() === "Bank details Name of bank account holder Account number Sort code sortCode firstElement sortCode secondElement sortCode thirdElement  ")
       assert(document.getElementById("account-number").text() === "Account number")
       assert(document.getElementById("sort-code").text() === "Sort code sortCode firstElement sortCode secondElement sortCode thirdElement  ")
 
-      assert(document.getElementById("hidden-bank-details-non-uk").text() === "IBAN SWIFT code")
+      assert(document.getElementById("hidden-bank-details-non-uk").text() === "Bank details Name of bank account holder IBAN SWIFT code")
       assert(document.getElementById("iban-code").text() === "IBAN")
       assert(document.getElementById("bic-swift-code").text() === "SWIFT code")
 
