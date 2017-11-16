@@ -67,14 +67,6 @@ object AtedUtils {
     }
   }
 
-  def printTitleConf(returnType: String): String = {
-    returnType match {
-      case "F" => FurtherReturnConf
-      case "A" => AmendedReturnConf
-      case "C" => ChangedReturnConf
-    }
-  }
-
   def formatPostCode(postCode: Option[String]) = {
     postCode.map(formatMandatoryPostCode(_))
   }
