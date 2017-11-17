@@ -24,17 +24,19 @@ function clearBankDetails() {
 function showHideBankDetails() {
   var bankDetailsUK = $('#hidden-bank-details-uk');
   var bankDetailsNonUK = $('#hidden-bank-details-non-uk');
-  var ele = $('input[type=radio]:checked')[0]["id"];
+  var ele = $('input[type=radio]:checked');
 
-  switch(ele) {
-    case "hasUKBankAccount-true":
-      bankDetailsUK.show();
-      bankDetailsNonUK.hide();
-      break;
-    case "hasUKBankAccount-false":
-      bankDetailsUK.hide();
-      bankDetailsNonUK.show();
-      break;
+  if(ele[0] !== undefined) {
+    switch(ele[0]["id"]) {
+      case "hasUKBankAccount-true":
+        bankDetailsUK.show();
+        bankDetailsNonUK.hide();
+        break;
+      case "hasUKBankAccount-false":
+        bankDetailsUK.hide();
+        bankDetailsNonUK.show();
+        break;
+    }
   }
 }
 
