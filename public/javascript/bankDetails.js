@@ -1,12 +1,13 @@
 $(document).ready(function(){
     showHideBankDetails();
+    clearBankDetails();
 });
 
-function showHideBankDetails() {
+function clearBankDetails() {
 
     $('input[type=radio][name=hasUKBankAccount]').change(function(){
         if(this.value == 'true') {
-            $('#non-uk-accountName').val("");
+            $('#accountName').val("");
             $('#iban').val("");
             $('#bicSwiftCode').val("");
         } else {
@@ -19,3 +20,24 @@ function showHideBankDetails() {
     });
 
 }
+
+function showHideBankDetails() {
+  var bankDetailsUK = $('#hidden-bank-details-uk');
+  var bankDetailsNonUK = $('#hidden-bank-details-non-uk');
+  var ele = $('input[type=radio]:checked')[0]["id"];
+
+  switch(ele) {
+    case "hasUKBankAccount-true":
+      bankDetailsUK.show();
+      bankDetailsNonUK.hide();
+      break;
+    case "hasUKBankAccount-false":
+      bankDetailsUK.hide();
+      bankDetailsNonUK.show();
+      break;
+  }
+}
+
+$('#hasUKBankAccount-id').on('click', showHideBankDetails)
+
+
