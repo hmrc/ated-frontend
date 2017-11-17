@@ -158,7 +158,7 @@ class CompanyDetailsSpec extends FeatureSpec with OneServerPerSuite with Mockito
 
       assert(document.getElementById("contactdetails-edit").text() === "Edit ATED contact details")
       assert(document.getElementById("contact-pref-label").text() === "Email address")
-      assert(document.getElementById("contact-pref-val").text() === "Not Provided")
+      assert(document.getElementById("contact-pref-val").text() === "Not provided")
 
       Then("The back link is correct")
       assert(document.getElementById("backLinkHref") === null)
