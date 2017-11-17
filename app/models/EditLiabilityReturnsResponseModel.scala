@@ -18,6 +18,7 @@ package models
 
 import org.joda.time.DateTime
 import play.api.libs.json.{Json, Reads, Writes}
+import play.twirl.api.Html
 
 case class EditLiabilityReturnsResponse(mode: String,
                                         oldFormBundleNumber: String,

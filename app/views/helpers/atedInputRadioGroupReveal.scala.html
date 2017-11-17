@@ -47,7 +47,7 @@ id="@elements.field.name.replaceAll("""[\.\[\]]""", "-")_legend" >
         value="@value"
         @elements.args.get('_inputClass).map{ inputClass => class="@inputClass" }
 @if(elements.args.contains('_dataAttributes) ){ @elements.args.get('_dataAttributes) }
-@if(trackGA){data-journey-click=“ated-frontend:click:@inputId”}
+@if(trackGA){data-journey-click="ated-frontend:click:@inputId"}
 @field.value.filter( _ == value).map{ _ => checked="checked" }
 />
 

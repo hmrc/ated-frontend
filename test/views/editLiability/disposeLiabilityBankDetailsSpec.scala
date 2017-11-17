@@ -59,11 +59,11 @@ class disposeLiabilityBankDetailsSpec extends FeatureSpec with OneServerPerSuite
       assert(document.getElementById("hasUKBankAccount-id").text() === "Is the bank account in the UK? Yes No")
       assert(document.getElementById("name-of-person").text() === "Name of bank account holder")
 
-      assert(document.getElementById("hidden-bank-details-uk").text() === "Bank details Name of bank account holder Account number Sort code sortCode firstElement sortCode secondElement sortCode thirdElement  ")
+      assert(document.getElementById("hidden-bank-details-uk").text() === "Account number Sort code sortCode firstElement sortCode secondElement sortCode thirdElement  ")
       assert(document.getElementById("account-number").text() === "Account number")
       assert(document.getElementById("sort-code").text() === "Sort code sortCode firstElement sortCode secondElement sortCode thirdElement  ")
 
-      assert(document.getElementById("hidden-bank-details-non-uk").text() === "Bank details Name of bank account holder IBAN SWIFT code")
+      assert(document.getElementById("hidden-bank-details-non-uk").text() === "IBAN SWIFT code")
       assert(document.getElementById("iban-code").text() === "IBAN")
       assert(document.getElementById("bic-swift-code").text() === "SWIFT code")
 
