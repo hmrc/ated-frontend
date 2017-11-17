@@ -1037,7 +1037,7 @@ ated.property-details-summary.delete-draft.link.text = Delete this draft
 ated.property-details-summary.status.text = Draft
 ated.property-details-summary.print.header = Chargeable return for {0}
 ated.property-details-summary.submit-disabled-text = You can not submit returns until after the 1 April.
-ated.property-details-summary.field-blank = Not Provided
+ated.property-details-summary.field-blank = Not provided
 
 # relief-summary page
 ated.relief-summary.title = Check your details are correct
