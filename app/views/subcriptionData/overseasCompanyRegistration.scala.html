@@ -5,16 +5,14 @@
 @import views.html.helpers.error._
 
 @pageScripts = {
-<script src='@controllers.routes.AssetsController.at("javascript/ated-country-auto-complete.js")'></script>
-<script>
+  <script src='@controllers.routes.AssetsController.at("javascript/accessible-autocomplete.min.js")'></script>
+  <script>
     $(document).ready(function() {
-      countryCodeAutoComplete("#countryCode")
-      var classOfSelect = $('#countryCode_').attr('class');
-      $("#countryCode").addClass(classOfSelect)
-      var labelText = $("#countryCode_field").text();
-      var divId = "countryCode_div"
-      var fieldId = "countryCode_"
-      createLabelForHiddenSelect(divId, fieldId, labelText);
+
+      accessibleAutocomplete.enhanceSelectElement({
+        selectElement: document.querySelector('#countryCode')
+      })
+
     });
   </script>
 }
@@ -35,12 +33,13 @@
             '_id -> "businessUniqueId",
             '_showConstraints -> false)
 
-            @atedDropdown(overseasCompanyRegistrationForm("countryCode"),
-            elementOptions = listOfIsoCode,
-            displayEmptyValue = true,
-            '_emptyValueText -> Messages("ated.address.country.select"),
-            '_labelClass -> "form-label-bold",
-            '_label -> Html(Messages("ated.non-uk-reg.issuingCountry")))
+            @atedDropdown(
+                overseasCompanyRegistrationForm("countryCode"),
+                elementOptions = listOfIsoCode,
+                displayEmptyValue = false,
+                '_id -> "countryCode",
+                '_labelClass -> "form-label-bold",
+                '_label -> Html(Messages("ated.non-uk-reg.issuingCountry")))
 
             @atedInputNew(overseasCompanyRegistrationForm("issuingInstitution"),
             '_label ->  Html(Messages("ated.non-uk-reg.issuingInstitution")),

@@ -4,20 +4,17 @@
 @import views.html.helpers._
 @import views.html.helpers.error._
 
-
 @pageScripts = {
-    <script src='@controllers.routes.AssetsController.at("javascript/ated-country-auto-complete.js")'></script>
-    <script>
-        $(document).ready(function() {
-            countryCodeAutoComplete("#registered-country")
-            var classOfSelect = $('#registered-country_').attr('class');
-            $("#registered-country").addClass(classOfSelect)
-            var labelText = $("#registered-country_field").text();
-            var divId = "registered-country_div"
-            var fieldId = "registered-country_"
-            createLabelForHiddenSelect(divId, fieldId, labelText);
-        });
-    </script>
+<script src='@controllers.routes.AssetsController.at("javascript/accessible-autocomplete.min.js")'></script>
+<script>
+    $(document).ready(function() {
+
+      accessibleAutocomplete.enhanceSelectElement({
+        selectElement: document.querySelector('#countryCode')
+      })
+
+    });
+  </script>
 }
 
 @implicitFormInstance = @{ Some(registeredDetailsForm) }
@@ -63,11 +60,11 @@
           '_labelClass ->  "visuallyhidden",
           '_showConstraints -> false)
 
-        @atedDropdown(registeredDetailsForm("addressDetails.countryCode"),
+        @atedDropdown(
+          registeredDetailsForm("addressDetails.countryCode"),
           elementOptions = listOfIsoCode,
-          displayEmptyValue = true,
+          displayEmptyValue = false,
           '_id -> "registered-country",
-          '_emptyValueText -> Messages("ated.address.country.select"),
           '_labelClass -> "form-label-bold",
           '_label -> Html(Messages("ated.address.country")))
 
