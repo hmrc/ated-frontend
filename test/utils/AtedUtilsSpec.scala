@@ -197,7 +197,7 @@ class AtedUtilsSpec extends PlaySpec with OneServerPerSuite {
   "print Not Provided" when {
 
     "string is blank/empty" in {
-      AtedUtils.printNotProvidedIfEmpty("") must be("Not Provided")
+      AtedUtils.printNotProvidedIfEmpty("") must be("Not provided")
     }
   }
 
