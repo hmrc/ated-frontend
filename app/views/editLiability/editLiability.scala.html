@@ -20,11 +20,11 @@
   @pageHeadersAndError(backLink, "pre-heading", Messages("ated.edit-liability.change-return.header"), "edit-liability-header", Messages("ated.edit-liability.header"),
       Some(atedErrorSummary(editLiabilityReturnTypeForm, "ated.edit-liability.error.general")))
 
+  @if(!editAllowed){
   <p class="paragraph" id="editliability-text">
-    @if(!editAllowed){
-      @Messages("ated.edit-liability.return-type.no-edit-legend")
-    }
+    @Messages("ated.edit-liability.return-type.no-edit-legend")
   </p>
+  }
 
   @form(action=controllers.editLiability.routes.EditLiabilityTypeController.continue(oldFormBundleNo, periodKey, editAllowed)) {
     <div id="editLiabilityType">
