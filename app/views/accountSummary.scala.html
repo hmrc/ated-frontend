@@ -50,25 +50,27 @@
                 @Messages("ated.account-summary-th.drafts")
             </div>
         </div>
-        <div class="grid grid-wrapper form-group">
+
+        <div class="grid grid-wrapper form-group" id="returns-table-data">
             @summaryReturnsWithDrafts.allReturns.zipWithIndex.map { case (periodSummaryWithDraft, i) =>
-                <div class="grid grid-1-5 row-border" id="return-summary-period-data-@i">
+            <section>
+                <div class="grid grid-1-5" id="return-summary-period-data-@i">
                     <span class="visuallyhidden">@Messages("ated.summary-return.table.screen-reader.period-from")</span>
                     @periodSummaryWithDraft.periodKey to @(periodSummaryWithDraft.periodKey.toInt + 1)
                 </div>
-                <div class="grid grid-1-5 row-border" id="return-summary-chargeable-data-@i">
+                <div class="grid grid-1-5" id="return-summary-chargeable-data-@i">
                     <span class="visuallyhidden">@Messages("ated.summary-return.table.screen-reader.number-of") @Messages("ated.account-summary-th.chargeable")</span>
                     @periodSummaryWithDraft.submittedReturns.fold(0)(a => a.currentLiabilityReturns.size + a.oldLiabilityReturns.size)
                 </div>
-                <div class="grid grid-1-5 row-border" id="return-summary-reliefs-data-@i">
+                <div class="grid grid-1-5" id="return-summary-reliefs-data-@i">
                     <span class="visuallyhidden">@Messages("ated.summary-return.table.screen-reader.number-of") @Messages("ated.account-summary-th.reliefs")</span>
                     @periodSummaryWithDraft.submittedReturns.fold(0)(a => a.reliefReturns.size)
                 </div>
-                <div class="grid grid-1-5 row-border" id="return-summary-drafts-data-@i">
+                <div class="grid grid-1-5" id="return-summary-drafts-data-@i">
                     <span class="visuallyhidden">@Messages("ated.summary-return.table.screen-reader.number-of") @Messages("ated.account-summary-th.drafts")</span>
                     @periodSummaryWithDraft.draftReturns.size
                 </div>
-                <div class="grid grid-1-5 row-border">
+                <div class="grid grid-1-5">
                     <a href="@controllers.routes.PeriodSummaryController.view(periodSummaryWithDraft.periodKey)"
                         id="view-change-@i"
                         data-journey-click="ated-fronted:click:view-change">
@@ -79,6 +81,7 @@
                             </span>
                     </a>
                 </div>
+            </section>
             }
         </div>
     }
