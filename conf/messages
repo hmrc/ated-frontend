@@ -436,8 +436,8 @@ ated.property-details-value.header = Has the value of your property changed for 
 ated.property-details-value.yes = Yes
 ated.property-details-value.no = No
 
-ated.property-details-value.anAcquisition.title = Have you spent £40,000 or more on this property since you bought it?
-ated.property-details-value.anAcquisition.header = Have you spent £40,000 or more on this property since you bought it?
+ated.property-details-value.anAcquisition.title = Since the date of acquisition, have you bought or sold land, or extended an existing lease on this property, for £40,000 or more?
+ated.property-details-value.anAcquisition.header = Since the date of acquisition, have you bought or sold land, or extended an existing lease on this property, for £40,000 or more?
 ated.property-details-value.anAcquisition.lede = The money must have been to update the property by buying land, selling land or extending an existing lease.
 ated.property-details-value.anAcquisition.error-field-name = You must answer this question
 ated.property-details-value.anAcquisition.legend = Since the date of acquisition, have you bought or sold land, or extended an existing lease on this property, for £40,000 or more?
