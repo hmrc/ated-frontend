@@ -854,3 +854,47 @@ p.margin-bottom-default {
 .autocomplete__option {
     margin: 0;
 }
+
+/* -- Summary table -- */
+
+#returns-table-data section {
+  float: left;
+  width: 100%;
+  border-bottom: 1px solid #bfc1c3;
+}
+
+#returns-table-data section div {
+  padding: 0.5em 0;
+}
+@media screen and (max-width: 855px) {
+
+  #returns-table-data .grid-1-5 {
+    width: 100%;
+  }
+
+  #returns-table-data div > span.visuallyhidden {
+    display: inline-block;
+    position: relative;
+    width: 50%;
+    height: 100%;
+    overflow: inherit;
+    font-weight: bold;
+    left: 0;
+  }
+
+  #returns-table {
+    position: absolute;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    height: 1px;
+    width: 1px;
+    margin: -1px;
+    padding: 0;
+    border: 0;
+  }
+
+  #returns-table-data section {
+    margin-bottom: 30px;
+  }
+
+}
