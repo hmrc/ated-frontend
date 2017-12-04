@@ -207,4 +207,20 @@ class AtedUtilsSpec extends PlaySpec with OneServerPerSuite {
        AtedUtils.printNotProvidedIfEmpty("abc") must be("abc")
      }
    }
+
+  "createLables" should {
+
+    "create a legitimate labels" when {
+
+      "correct form label is passed" in {
+        AtedUtils.createLabel("sortCode.firstElement") must be("First two numbers")
+        AtedUtils.createLabel("sortCode.secondElement") must be("Second two numbers")
+        AtedUtils.createLabel("sortCode.thirdElement") must be("Third two numbers")
+      }
+
+      "create no label for incorrect form labels" in {
+        AtedUtils.createLabel("hello") must be("")
+      }
+    }
+  }
 }

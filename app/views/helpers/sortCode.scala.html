@@ -29,7 +29,7 @@
 
     @singleBox(elementName: String)(implicit lang: play.api.i18n.Lang) = {
         <span class="field-wrapper inline-fields">
-            <label class="visuallyhidden" for="@formObject(elementName).id">@AtedUtils.replaceUnderScoreWithBlank(formObject(elementName).id)</label>
+            <label class="visuallyhidden" for="@formObject(elementName).id">@AtedUtils.createLabel(formObject(elementName).name)</label>
             <input type="number"
                    class="text form-control input--xxsmall"
                    id="@formObject(elementName).id"

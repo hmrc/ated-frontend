@@ -134,7 +134,14 @@ object AtedUtils {
 
   // $COVERAGE-ON$
 
-  def replaceUnderScoreWithBlank(str: String) = str.replaceAll("_", " ")
+  def createLabel(str: String) = {
+    str match {
+      case "sortCode.firstElement" => "First two numbers"
+      case "sortCode.secondElement" => "Second two numbers"
+      case "sortCode.thirdElement" => "Third two numbers"
+      case _ => ""
+    }
+  }
 
   def printNotProvidedIfEmpty(str: String) = if (str == "") Messages("ated.property-details-summary.field-blank") else str
 
