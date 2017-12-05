@@ -21,6 +21,7 @@ import play.api.Play.current
 import uk.gov.hmrc.play.config.RunMode
 
 object ExternalUrls extends RunMode {
+
   val companyAuthHost = s"${Play.configuration.getString("microservice.services.auth.company-auth.host").getOrElse("")}"
   val loginCallback = Play.configuration.getString("microservice.services.auth.login-callback.url").getOrElse("/ated/home")
   val loginPath = s"${Play.configuration.getString("microservice.services.auth.login-path").getOrElse("sign-in")}"
@@ -33,4 +34,5 @@ object ExternalUrls extends RunMode {
   val clientApproveAgentMandate = Play.configuration.getString("microservice.services.agent-client-mandate-frontend.atedClientApproveAgentUri").getOrElse("/mandate/client/email")
   val agentRedirectedToMandate = Play.configuration.getString("microservice.services.agent-client-mandate-frontend.atedAgentJourneyStartUri").getOrElse("/mandate/agent/service")
   val businessTaxAccountPage = s"${Play.configuration.getString("microservice.services.auth.business-tax-account.serviceRedirectUrl").getOrElse("")}"
+  
 }
