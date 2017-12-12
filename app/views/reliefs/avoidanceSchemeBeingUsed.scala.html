@@ -19,23 +19,23 @@
 @pageHeadersAndError(backLink, "pre-header", Messages("ated.choose-reliefs.subheader"), "choose-reliefs-header", Messages("ated.choose-reliefs.avoidance-title"),
     Some(atedErrorSummary(isTaxAvoidanceForm, "ated.choose-reliefs.error.general")))
 
-  @form(action=controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.send(periodKey)) {
-    <div id="whatIsTaxAvoidanceScheme">
-      <details>
+
+    <details id="whatIsTaxAvoidanceScheme">
         <summary role="button" aria-controls="whatIsTaxAvoidanceScheme-0" tabindex="0" class="summary font-small" id="whatIsTaxAvoidanceSchemeQuestion">
-          @Messages("ated.choose-reliefs.avoidance-question")
+            @Messages("ated.choose-reliefs.avoidance-question")
         </summary>
         <div id="whatIsTaxAvoidanceScheme-0" class="panel-indent font-xsmall">
-          <p id="taxAvoidanceReveal-p1">@Messages("ated.choose-reliefs.avoidance-reveal-line-1")</p>
-          <p id="taxAvoidanceReveal-p2">@Messages("ated.choose-reliefs.avoidance-reveal-line-2")</p>
-          <ul class="bullets">
-            <li>@Messages("ated.choose-reliefs.avoidance-info-line-1")</li>
-            <li>@Messages("ated.choose-reliefs.avoidance-info-line-2")</li>
-          </ul>
-          <p id="moreINfoOnTaxAvoidance">@Html(Messages("ated.choose-reliefs.avoidance-more-info"))</p>
+            <p id="taxAvoidanceReveal-p1">@Messages("ated.choose-reliefs.avoidance-reveal-line-1")</p>
+            <p id="taxAvoidanceReveal-p2">@Messages("ated.choose-reliefs.avoidance-reveal-line-2")</p>
+            <ul class="list list-bullet">
+                <li>@Messages("ated.choose-reliefs.avoidance-info-line-1")</li>
+                <li>@Messages("ated.choose-reliefs.avoidance-info-line-2")</li>
+            </ul>
+            <p id="moreINfoOnTaxAvoidance">@Html(Messages("ated.choose-reliefs.avoidance-more-info"))</p>
         </div>
-      </details>
-    </div>
+    </details>
+
+    @form(action=controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.send(periodKey)) {
 
     <div id="isAvoidanceScheme">
       @atedInputRadioGroupNew(isTaxAvoidanceForm("isAvoidanceScheme"),

@@ -19,39 +19,32 @@
     @pageHeadersAndError(backLink, "pre-header", Messages("ated.choose-reliefs.subheader"), "choose-reliefs-header", Messages("ated.choose-reliefs.header"),
       Some(atedErrorSummary(reliefsForm, "ated.choose-reliefs.error.general")))
 
-  <p id="lede-text">@Messages("ated.choose-reliefs.info")</p>
+        <p id="lede-text">@Messages("ated.choose-reliefs.info")</p>
+        <p id="choose-reliefs-label">@Messages("ated.choose-reliefs.label")</p>
 
-  <p class="confirmation-notice">
-    <span class="icon-important"></span>
-    <span class="ated-icon-important-text"><strong>@Messages("ated.choose-reliefs-further.information.text")</strong></span>
-  </p>
+        @form(action=controllers.reliefs.routes.ChooseReliefsController.send(periodKey)) {
 
-  @form(action=controllers.reliefs.routes.ChooseReliefsController.send(periodKey)) {
+        <fieldset class="form-group">
+            <legend id="choose-reliefs-legend" class="visuallyhidden">@Messages("ated.choose-reliefs.header")</legend>
 
-<fieldset class="form-group">
+            <div id="reliefs">
+                @atedSingleCheckBox(reliefsForm("rentalBusiness"),
+                    '_label -> Messages("ated.choose-reliefs.rentalBusiness"),
+                    '_labelClass -> "block-label")
 
-  <legend id="choose-reliefs-legend" class="visuallyhidden">@Messages("ated.choose-reliefs.header")</legend>
-
-  <p id="choose-reliefs-label">@Messages("ated.choose-reliefs.label")</p>
-
-    <div id="reliefs">
-      @atedSingleCheckBox(reliefsForm("rentalBusiness"),
-        '_label -> Messages("ated.choose-reliefs.rentalBusiness"),
-        '_labelClass -> "block-label")
-
-      <div id="hidden-rentalBusiness-date" class="panel-indent">
-        @atedDateFieldsFree(
-          formItem = reliefsForm,
-          fieldName = "rentalBusinessDate",
-          label = Html(Messages("ated.choose-reliefs.date", Messages("ated.choose-single-relief.rentalBusiness"))),
-          isNested = false,
-          defaultDateOption = Some(periodStartDate),
-          '_fieldsetAttributesHelpQuestion -> "rentalBusiness-help-question",
-          '_hintText -> Messages("ated.choose-reliefs.relief-hint", formattedPeriodStartDate),
-          '_groupClass -> "form-group date-of-birth",
-          '_idName -> "rentalBusinessDate"
-        )
-      </div>
+                    <div id="hidden-rentalBusiness-date" class="panel-indent">
+                        @atedDateFieldsFree(
+                          formItem = reliefsForm,
+                          fieldName = "rentalBusinessDate",
+                          label = Html(Messages("ated.choose-reliefs.date", Messages("ated.choose-single-relief.rentalBusiness"))),
+                          isNested = false,
+                          defaultDateOption = Some(periodStartDate),
+                          '_fieldsetAttributesHelpQuestion -> "rentalBusiness-help-question",
+                          '_hintText -> Messages("ated.choose-reliefs.relief-hint", formattedPeriodStartDate),
+                          '_groupClass -> "form-group date-of-birth",
+                          '_idName -> "rentalBusinessDate"
+                        )
+                    </div>
 
       @atedSingleCheckBox(reliefsForm("openToPublic"),
         '_label -> Messages("ated.choose-reliefs.openToPublic"),
@@ -196,6 +189,13 @@
     </div>
 
 </fieldset>
+
+    <div class="form-group">
+        <p class="confirmation-notice">
+            <span class="icon-important"></span>
+            <span class="ated-icon-important-text"><strong>@Messages("ated.choose-reliefs-further.information.text")</strong></span>
+        </p>
+    </div>
 
     <div class="form-group">
       <button class="button" id="submit" type="submit">@Messages("ated.choose-reliefs.continue")</button>
