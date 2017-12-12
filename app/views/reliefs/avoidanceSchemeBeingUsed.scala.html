@@ -22,8 +22,8 @@
   @form(action=controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.send(periodKey)) {
     <div id="whatIsTaxAvoidanceScheme">
       <details>
-        <summary role="button" aria-controls="whatIsTaxAvoidanceScheme-0" tabindex="0">
-          <span class="summary font-small" id="whatIsTaxAvoidanceSchemeQuestion">@Messages("ated.choose-reliefs.avoidance-question")</span>
+        <summary role="button" aria-controls="whatIsTaxAvoidanceScheme-0" tabindex="0" class="summary font-small" id="whatIsTaxAvoidanceSchemeQuestion">
+          @Messages("ated.choose-reliefs.avoidance-question")
         </summary>
         <div id="whatIsTaxAvoidanceScheme-0" class="panel-indent font-xsmall">
           <p id="taxAvoidanceReveal-p1">@Messages("ated.choose-reliefs.avoidance-reveal-line-1")</p>
