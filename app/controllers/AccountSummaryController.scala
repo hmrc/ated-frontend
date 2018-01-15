@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 HM Revenue & Customs
+ * Copyright 2018 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,7 +46,7 @@ trait AccountSummaryController extends AtedBaseController with AtedFrontendAuthH
         correspondenceAddress <- subscriptionDataService.getCorrespondenceAddress
         organisationName <- subscriptionDataService.getOrganisationName
         safeId <- subscriptionDataService.getSafeId
-        clientBannerPartial <- mandateFrontendConnector.getClientBannerPartial(safeId.getOrElse(throw new RuntimeException("Could not get safeId")), "ATED")
+        clientBannerPartial <- mandateFrontendConnector.getClientBannerPartial(safeId.getOrElse(throw new RuntimeException("Could not get safeId")), "ated")
       } yield {
         Ok(views.html.accountSummary(allReturns, correspondenceAddress, organisationName, clientBannerPartial.successfulContentOrEmpty))
       }
