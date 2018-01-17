@@ -41,9 +41,8 @@ trait CompanyDetailsController extends AtedBaseController with AtedFrontendAuthH
         registeredDetails <- subscriptionDataService.getRegisteredDetails
         safeId <- subscriptionDataService.getSafeId
         overseasCompanyRegistration <- subscriptionDataService.getOverseasCompanyRegistration
-        clientMandateDetails <- detailsDataService.getClientMandateDetails(safeId.getOrElse(throw new RuntimeException("Could not get safeId")), "ATED")
+        clientMandateDetails <- detailsDataService.getClientMandateDetails(safeId.getOrElse(throw new RuntimeException("Could not get safeId")), "ated")
       } yield {
-        Logger.debug("overseasCompanyRegistration:" + overseasCompanyRegistration)
         Ok(views.html.subcriptionData.companyDetails(correspondenceAddress,
           registeredDetails,
           emailConsent,
