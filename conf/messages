@@ -131,7 +131,7 @@ ated.choose-reliefs.title = What reliefs are you claiming?
 ated.choose-reliefs.subheader = Create return
 ated.choose-reliefs.header = What reliefs are you claiming?
 ated.choose-reliefs.info = You can select more than one relief code. A single relief code can cover one or more properties.
-ated.choose-reliefs.label = Select all reliefs that apply
+ated.choose-reliefs.label = Select all that apply
 
 ated.choose-reliefs.question = What are ATED relief codes?
 ated.choose-reliefs.answer = More detailed information on relief codes can be found on <a href="https://www.tax.service.gov.uk/information/help?helpcategory=shortform&helpid=ATEDReliefCode" data-journey-click="ated-fronted:click:relief-code-link">HMRC help.</a>
@@ -699,7 +699,7 @@ ated.chargeable-return-declaration.header = Returns declaration
 ated.chargeable-return-declaration.before-declaration.client = Before you can submit your return to HMRC you must read and agree to the following statement. If you give false information you may have to pay financial penalties and face prosecution.
 ated.chargeable-return-declaration.before-declaration.agent = Before your client’s return can be submitted to HMRC, you must read and agree to the following statement. Your client’s approval may be in electronic or non-electronic form. If your client gives false information, they may have to pay financial penalties and face prosecution.
 
-ated.chargeable-return-declaration.i-confirm-that.bullet-text.agent = I confirm that my client has approved the information contained in this return as being correct and complete to the best of their knowledge and belief. 
+ated.chargeable-return-declaration.i-confirm-that.bullet-text.agent = I confirm that my client has approved the information contained in this return as being correct and complete to the best of their knowledge and belief.
 ated.chargeable-return-declaration.i-declare-that.bullet-text.client = I declare that the information I have given on this return is correct and complete.
 ated.chargeable-return-declaration.return = Return
 ated.chargeable-return-declaration.value = Value
@@ -1097,7 +1097,7 @@ ated.relief-summary.declaration.submit = Agree and submit returns
 ated.relief-return.confirm.error = Please confirm that you want to submit this
 
 # change-liability-return Value page
-ated.change-liability.value.previous-value-text = Based on the information you have previously given us the value of your property for the purposes of ATED is 
+ated.change-liability.value.previous-value-text = Based on the information you have previously given us the value of your property for the purposes of ATED is
 
 # change-liability-return Period page
 ated.change-liability.period.isTaxAvoidance.label = Is a tax avoidance scheme being used?

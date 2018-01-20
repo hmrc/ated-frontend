@@ -25,8 +25,8 @@
 
         @if(elements.args.get('_fieldsetQuestion).isDefined) {
         <details role="group">
-            <summary role="button" aria-controls="details-content-0" tabindex="0">
-                <span class="summary" id="@if(elements.args.get('_fieldsetAttributesHelpQuestion).isDefined) {@elements.args.get('_fieldsetAttributesHelpQuestion)}">@elements.args.get('_fieldsetQuestion)</span>
+            <summary role="button" aria-controls="details-content-0" tabindex="0" class="summary" id="@if(elements.args.get('_fieldsetAttributesHelpQuestion).isDefined) {@elements.args.get('_fieldsetAttributesHelpQuestion)}">
+                @elements.args.get('_fieldsetQuestion)
             </summary>
             <div id="details-content-0" class="panel-indent">
                 <span id="@if(elements.args.get('_fieldsetAttributesHelpQuestion).isDefined) {@elements.args.get('_fieldsetAttributesHelpQuestion)}Answer">@if(elements.args.get('_HelpQuestionAnswer).isDefined) {@elements.args.get('_HelpQuestionAnswer)}</span>
