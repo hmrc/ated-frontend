@@ -76,10 +76,8 @@ id="@elements.field.name.replaceAll("""[\.\[\]]""", "-")_legend" >
 
 @if(elements.args.get('_fieldsetQuestion).isDefined) {
 <details role="group">
-    <summary role="button" aria-controls="details-content-0" tabindex="0">
-        <span class="summary" id="@if(elements.args.get('_fieldsetAttributesHelpQuestion).isDefined) {@elements.args.get('_fieldsetAttributesHelpQuestion)}">
+    <summary role="button" aria-controls="details-content-0" tabindex="0" class="summary" id="@if(elements.args.get('_fieldsetAttributesHelpQuestion).isDefined) {@elements.args.get('_fieldsetAttributesHelpQuestion)}">
           @elements.args.get('_fieldsetQuestion)
-        </span>
     </summary>
     <div class="panel-indent" id="details-content-0">
         <span id="@if(elements.args.get('_fieldsetAttributesHelpQuestion).isDefined) {@elements.args.get('_fieldsetAttributesHelpQuestion)}Answer">
