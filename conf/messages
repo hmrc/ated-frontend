@@ -396,7 +396,7 @@ ated.property-details.title.header =  What is the property’s title number? (op
 ated.property-details.address = Address
 ated.property-details.references = You can find the property’s title number on the title deeds for the property.
 ated.property-details-titleNumber.reveal =  I don’t know my property’s title number
-ated.property-details-titleNumber-reveal.text = This is a number issued by the Land Registry when land is first registered. If you do not have a copy of the title deeds for the property you can find it by doing a <a href="http://www.landregistry-titledeeds.co.uk/">Land Registry search</a>.
+ated.property-details-titleNumber-reveal.text = This is a number issued by the Land Registry when land is first registered. If you do not have a copy of the title deeds for the property you can find it by doing a <a href="https://www.gov.uk/search-property-information-land-registry">Land Registry search</a>.
 ated.property-details.references.localAuthorityNumber = Local authority number
 ated.property-details-localAuthorityNumber-reveal = I don’t know my local authority number
 ated.property-details-localAuthorityNumber.text = <p>Enter the number of the local authority in the area where the lead property is situated. If a property falls between more than one local authority boundary enter the code for either, preferably the authority into whose area most of the property falls.</p><a href="https://www.gov.uk/hmrc-internal-manuals/stamp-duty-land-tax-manual/sdltm62320">Find your local authority number</a>
