@@ -1,6 +1,7 @@
 @(title: String,
   userLoggedIn: Boolean = true,
   hasBanner: Boolean = false,
+  showUrBanner:Option[Boolean] = Some(false),
   supportLinkEnabled: Boolean = true,
   attorney: Option[uk.gov.hmrc.play.frontend.auth.Attorney] = None,
   banner: Html = HtmlFormat.empty,
@@ -17,6 +18,7 @@
 <script src='@controllers.routes.AssetsController.at("jquery/jquery-ui.min.js")'></script>
   <script src='@controllers.routes.AssetsController.at("jquery/jquery-ui-1.12.1.min.js")'></script>
   <script src='@controllers.routes.AssetsController.at("javascript/timeout-dialog.js")'></script>
+  <script src='@controllers.routes.AssetsController.at("javascript/urBanner.js")'></script>
   @pageScripts
   <script>
     @if(userLoggedIn) {
@@ -28,6 +30,7 @@
 
 @linkElement = {
   <link rel="stylesheet" href='@controllers.routes.AssetsController.at("stylesheets/main.css")'/>
+  <link rel="stylesheet" href='@controllers.routes.AssetsController.at("stylesheets/urBanner.css")'/>
   <link rel="stylesheet" href='@controllers.routes.AssetsController.at("jquery/jquery-ui.min.css")'/>
   <link rel="stylesheet" href='@controllers.routes.AssetsController.at("jquery/jquery-ui.structure.min.css")'/>
 }
@@ -51,6 +54,6 @@
   banner = Some(mainBanner),
   userLoggedIn = userLoggedIn,
   linkElement = Some(linkElement),
-  analyticsJs = analyticsAdditionalJs) {
+  analyticsJs = analyticsAdditionalJs, isUserResearchBannerVisible = showUrBanner.getOrElse(false)) {
     @mainContent
   }
