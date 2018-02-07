@@ -211,6 +211,27 @@ class AccountSummaryControllerSpec extends PlaySpec with OneServerPerSuite with 
               Option(document.getElementById("return-summary-no-returns")) must be(None)
           }
         }
+
+        "show the account summary view with UR banner" in {
+          val address = Address(addressDetails = AddressDetails(AddressTypeCorrespondence, "addrLine1", "addrLine2", None, None, None, "GB"))
+
+          val draftReturns1 = DraftReturns(2015, "1", "desc", Some(BigDecimal(100.00)), TypeChangeLiabilityDraft)
+          val draftReturns2 = DraftReturns(2015, "", "some relief", None, TypeReliefDraft)
+          val submittedReliefReturns1 = SubmittedReliefReturns(formBundleNo1, "some relief", new LocalDate("2015-05-05"), new LocalDate("2015-05-05"), new LocalDate("2015-05-05"))
+          val submittedLiabilityReturns1 = SubmittedLiabilityReturns(formBundleNo2, "addr1+2", BigDecimal(1234.00), new LocalDate("2015-05-05"), new LocalDate("2015-05-05"), new LocalDate("2015-05-05"), true, "payment-ref-01")
+          val submittedReturns = SubmittedReturns(2015, Seq(submittedReliefReturns1), Seq(submittedLiabilityReturns1))
+          val periodSummaryReturns = PeriodSummaryReturns(2015, Seq(draftReturns1, draftReturns2), Some(submittedReturns))
+          val data = SummaryReturnsModel(Some(BigDecimal(0)), Seq(periodSummaryReturns))
+          getWithAuthorisedUser(data, Some(address)) {
+            result =>
+              status(result) must be(OK)
+              val document = Jsoup.parse(contentAsString(result))
+
+              document.getElementById("ur-panel") must not be(null)
+              document.getElementById("ur-panel").text() must be ("Help improve digital services by joining the HMRC user panel (opens in new window) No thanks")
+              document.getElementsByClass("banner-panel__close").text() must be("No thanks")
+          }
+        }
         
 
         "show the create a return and appoint an agent link if there are no returns and no delegation" in {
