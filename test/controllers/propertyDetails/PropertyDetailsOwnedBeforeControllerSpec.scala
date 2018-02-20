@@ -35,7 +35,6 @@ import play.api.test.Helpers._
 import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService}
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import utils.AtedConstants
-import config.ApplicationConfig.valuationYear
 
 import scala.concurrent.Future
 

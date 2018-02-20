@@ -175,4 +175,19 @@ object PeriodUtils {
   def isListEmpty[T](list: Seq[T]): Boolean = list == Nil || list.isEmpty
 
   def isBlank(str: String): Boolean = str.isEmpty
+
+  def getValuationDate(periodKey : Int) = {
+
+    println("**************************************************************** in getValuationDate page" +periodKey )
+    if(periodKey >= 2018 && periodKey <= 2023){
+      "2017"
+    }
+    else if(periodKey <= 2017){
+      "2012"
+    }
+    else{
+      (periodKey - 1).toString
+    }
+
+  }
 }
