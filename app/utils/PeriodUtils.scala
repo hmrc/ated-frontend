@@ -178,7 +178,6 @@ object PeriodUtils {
 
   def getValuationDate(periodKey : Int) = {
 
-    println("**************************************************************** in getValuationDate page" +periodKey )
     if(periodKey >= 2018 && periodKey <= 2023){
       "2017"
     }
