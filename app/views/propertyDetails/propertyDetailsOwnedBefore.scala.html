@@ -59,7 +59,7 @@
     <div class="form-group">
       <div id="valueOfProperty2012" class="panel-indent js-hidden">
         @atedInputValue(propertyDetailsForm("ownedBefore2012Value"),
-          '_label -> Html(Messages("ated.property-details-value.ownedBefore2012Value")),
+          '_label -> Html(Messages("ated.property-details-value.ownedBefore2012Value",PeriodUtils.getValuationDate(periodKey) )),
           '_labelClass -> "form-label-bold",
           '_inputClass -> "form-control-indent",
           '_hintText -> Messages("ated.property-details-value.ownedBefore2012Value.hint"),
