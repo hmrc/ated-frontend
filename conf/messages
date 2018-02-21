@@ -480,13 +480,10 @@ ated.property-details-value.partAcqDispDate.error.too-early = The date when you 
 ated.property-details-value.partAcqDispDate.error.too-late = The date when you made the £40,000 or more change must be in this chargeable period
 ated.property-details-value.partAcqDispDate.error.in-future = The date when you made the £40,000 or more change cannot be in the future
 
-ated.property-details-value.isOwnedBefore2012.title = Did the company own this property on or before 1 April {0}?
-ated.property-details-value.isOwnedBefore2012.error.non-selected = You must answer this question.
-ated.property-details-value.ownedBefore2012Value = What was the value of the property on the 1 April {0}?
-ated.property-details-value.ownedBefore2012Value.hint = For example, £1,500,000
-ated.property-details-value.ownedBefore2012Value.error.empty = You must enter a valid property value
-ated.property-details-value.ownedBefore2012Value.error.too-low = The property value cannot be below the lowest band
-ated.property-details-value.ownedBefore2012Value.error.too-high = The property value must be less than 14 characters.
+ated.property-details-value.isOwnedBeforeValuationYear.title = Did the company own this property on or before 1 April {0}?
+ated.property-details-value.isOwnedBeforeValuationYear.error.non-selected = You must answer this question.
+ated.property-details-value.ownedBeforevaluationYear.Value = What was the value of the property on the 1 April {0}?
+ated.property-details-value.ownedBeforevaluationYear.hint = For example, £1,500,000
 
 ated.property-details-value.isNewBuild.title = Was the property a new build, or a new dwelling produced from other dwellings, in this chargeable period?
 ated.property-details-value.isNewBuild.header = Was the property a new build, or a new dwelling produced from other dwellings, in this chargeable period?

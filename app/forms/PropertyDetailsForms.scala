@@ -111,7 +111,7 @@ object PropertyDetailsForms {
 
   val propertyDetailsOwnedBeforeForm = Form(
     mapping(
-      "isOwnedBefore2012" -> optional(boolean).verifying(Messages("ated.property-details-value.isOwnedBefore2012.error.non-selected"), x => x.isDefined),
+      "isOwnedBefore2012" -> optional(boolean).verifying(Messages("ated.property-details-value.isOwnedBeforeValuationYear.error.non-selected"), x => x.isDefined),
       "ownedBefore2012Value" -> valueValidation
     )(PropertyDetailsOwnedBefore.apply)(PropertyDetailsOwnedBefore.unapply))
 

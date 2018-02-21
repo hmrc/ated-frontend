@@ -30,12 +30,12 @@
   ga('set', 'page', page);
 }
 
-@atedMain(title = Html(Messages("ated.property-details-value.isOwnedBefore2012.title", PeriodUtils.getValuationDate(periodKey))).toString,
+@atedMain(title = Html(Messages("ated.property-details-value.isOwnedBeforeValuationYear.title", PeriodUtils.getValuationDate(periodKey))).toString,
           attorney = atedContext.user.authContext.attorney,
           pageScripts = Some(pageScripts),
           analyticsAdditionalJs = Some(analyticsJs)) {
   @pageHeadersAndError(backLink, "pre-heading", AtedUtils.getPropertyDetailsPreHeader(mode), "property-details-header",
-                        Messages("ated.property-details-value.isOwnedBefore2012.title", PeriodUtils.getValuationDate(periodKey)).toString,
+                        Messages("ated.property-details-value.isOwnedBeforeValuationYear.title", PeriodUtils.getValuationDate(periodKey)).toString,
       Some(atedErrorSummary(propertyDetailsForm, "ated.property-details-value-error.general")))
 
   @form(action = controllers.propertyDetails.routes.PropertyDetailsOwnedBeforeController.save(id, periodKey, mode)) {
@@ -46,7 +46,7 @@
         propertyDetailsForm("isOwnedBefore2012"),
         Seq("true" -> (Messages("ated.property-details-value.yes"), Some("valueOfProperty2012")),
         "false" -> (Messages("ated.property-details-value.no"), None)),
-        '_legend -> Messages("ated.property-details-value.isOwnedBefore2012.title", PeriodUtils.getValuationDate(periodKey)),
+        '_legend -> Messages("ated.property-details-value.isOwnedBeforeValuationYear.title", PeriodUtils.getValuationDate(periodKey)),
         '_legendClass -> "visuallyhidden",
         '_groupClass -> "inline",
         '_labelClass -> "block-label",
@@ -59,10 +59,10 @@
     <div class="form-group">
       <div id="valueOfProperty2012" class="panel-indent js-hidden">
         @atedInputValue(propertyDetailsForm("ownedBefore2012Value"),
-          '_label -> Html(Messages("ated.property-details-value.ownedBefore2012Value",PeriodUtils.getValuationDate(periodKey) )),
+          '_label -> Html(Messages("ated.property-details-value.ownedBeforevaluationYear.Value",PeriodUtils.getValuationDate(periodKey) )),
           '_labelClass -> "form-label-bold",
           '_inputClass -> "form-control-indent",
-          '_hintText -> Messages("ated.property-details-value.ownedBefore2012Value.hint"),
+          '_hintText -> Messages("ated.property-details-value.ownedBeforevaluationYear.hint"),
           '_id -> "ownedBefore2012Value",
           '_showConstraints -> false,
           '_type -> "text")
