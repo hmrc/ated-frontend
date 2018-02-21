@@ -177,16 +177,10 @@ object PeriodUtils {
   def isBlank(str: String): Boolean = str.isEmpty
 
   def getValuationDate(periodKey : Int) = {
-
-    if(periodKey >= 2018 && periodKey <= 2023){
-      "2017"
+    periodKey match {
+      case p if periodKey >= 2018 && periodKey <= 2023 => "2017"
+      case p if periodKey <= 2017 => "2012"
+      case _ => throw new RuntimeException("Incorrect period")
     }
-    else if(periodKey <= 2017){
-      "2012"
-    }
-    else{
-      (periodKey - 1).toString
-    }
-
   }
 }
