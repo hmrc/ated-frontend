@@ -175,4 +175,13 @@ object PeriodUtils {
   def isListEmpty[T](list: Seq[T]): Boolean = list == Nil || list.isEmpty
 
   def isBlank(str: String): Boolean = str.isEmpty
+
+/* function needs to be updated after every five years according to busines logic*/
+  def getValuationYear(periodKey : Int) = {
+    periodKey match {
+      case p if periodKey >= 2018 && periodKey <= 2023 => "2017"
+      case p if periodKey <= 2017 => "2012"
+      case _ => throw new RuntimeException("Incorrect period")
+    }
+  }
 }

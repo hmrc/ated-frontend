@@ -480,16 +480,10 @@ ated.property-details-value.partAcqDispDate.error.too-early = The date when you 
 ated.property-details-value.partAcqDispDate.error.too-late = The date when you made the £40,000 or more change must be in this chargeable period
 ated.property-details-value.partAcqDispDate.error.in-future = The date when you made the £40,000 or more change cannot be in the future
 
-ated.property-details-value.isOwnedBefore2012.title = Did the company own this property on or before 1 April 2012?
-ated.property-details-value.isOwnedBefore2012.header = Did the company own this property on or before 1 April 2012?
-ated.property-details-value.isOwnedBefore2012 = Did the company own this property on or before 1 April 2012?
-ated.property-details-value.isOwnedBefore2012.error.non-selected = You must answer this question.
-ated.property-details-value.ownedBefore2012Value = What was the value of the property on the 1 April 2012?
-ated.property-details-value.ownedBefore2012Value.hint = For example, £1,500,000
-ated.property-details-value.ownedBefore2012Value.error.empty = You must enter a valid property value
-ated.property-details-value.ownedBefore2012Value.error.non-selected = You must answer the property owned before 1 April 2012 question.
-ated.property-details-value.ownedBefore2012Value.error.too-low = The property value cannot be below the lowest band
-ated.property-details-value.ownedBefore2012Value.error.too-high = The property value must be less than 14 characters.
+ated.property-details-value.isOwnedBeforeValuationYear.title = Did the company own this property on or before 1 April {0}?
+ated.property-details-value.isOwnedBeforeValuationYear.error.non-selected = You must answer this question.
+ated.property-details-value.ownedBeforevaluationYear.Value = What was the value of the property on the 1 April {0}?
+ated.property-details-value.ownedBeforevaluationYear.hint = For example, £1,500,000
 
 ated.property-details-value.isNewBuild.title = Was the property a new build, or a new dwelling produced from other dwellings, in this chargeable period?
 ated.property-details-value.isNewBuild.header = Was the property a new build, or a new dwelling produced from other dwellings, in this chargeable period?
@@ -525,7 +519,6 @@ ated.property-details-value.notNewBuildValue.error.too-high = The property value
 ated.property-details-value.notNewBuildDate = What date was the property acquired?
 ated.property-details-value.notNewBuildDate.hint = For example, 31 3 2013
 ated.property-details-value.notNewBuildDate.error.empty = You must enter a property acquired date
-ated.property-details-value.notNewBuildDate.error.too-early = The property acquired date cannot be before 1 April 2012
 ated.property-details-value.notNewBuildDate.error.too-late = The property acquired date cannot be in the future
 
 ated.property-details-value.isValuedByAgent.title = Was the property professionally valued?
@@ -535,7 +528,6 @@ ated.property-details-value.isValuedByAgent.error.non-selected = You must answer
 ated.property-details-value.valuationDate = What was the date of the valuation?
 ated.property-details-value.valuationDate.hint = For example, 31 3 2012
 ated.property-details-value.valuationDate.error.empty = You must enter a date of valuation
-ated.property-details-value.valuationDate.error.too-early = The valuation date cannot be before 1 April 2012
 ated.property-details-value.valuationDate.error.too-late = The valuation date cannot be in the future
 ated.property-details-value-error.general.anAcquisition = There is a problem with this question
 ated.property-details-value-error.general.isPropertyRevalued = There is a problem with this question
@@ -912,8 +904,6 @@ ated.form-bundle.view.return.promoter = Promoter reference number
 ated.form-bundle.view.return.payment-reference = Payment reference
 
 
-ated.form-bundle.view.return.property.owned = Property owned on or before 1st April 2012
-ated.form-bundle.view.return.property.build = Property built after 1st April 2012
 ated.form-bundle.view.return.property.firts.occ = Date property was first occupied
 ated.form-bundle.view.return.property.comp = Date of completion on property
 
@@ -1279,8 +1269,6 @@ ated.change-liability.period.propertyDetailsValue.newBuildDate.date-after-period
 ated.change-liability.period.propertyDetailsValue.notNewBuildDate.date-before-period = The property acquired date must be in this chargeable period
 ated.change-liability.period.propertyDetailsValue.notNewBuildDate.date-after-period = The property acquired date must be in this chargeable period
 
-ated.change-liability.period.propertyDetailsValue.notNewBuildDate.before-ated-start-2012 = The property acquired date cannot be before 1 April 2012.
-ated.change-liability.period.propertyDetailsValue.valuationDate.before-ated-start-2012 = The property valuation date cannot be before 1 April 2012.
 
 ated.change-liability.period.propertyDetailsValue.newBuildDate.after-today = The occupied date cannot be in the future.
 ated.change-liability.period.propertyDetailsValue.valuationDate.after-today = The valuation date cannot be in the future.
@@ -1364,3 +1352,15 @@ ated.select-past-return.general.selected = There is a problem with the previous 
 
 urbanner.message.text = Help improve digital services by joining the HMRC user panel (opens in new window)
 urbanner.message.reject = No thanks
+
+ated.property-details-value.ownedBefore2012Value.error.non-selected = You must answer the property owned before 1 April {0} question.
+ated.property-details-value.notNewBuildDate.error.too-early = The property acquired date cannot be before 1 April {0}
+ated.property-details-value.valuationDate.error.too-early = The property valuation date cannot be before 1 April {0}
+#ated.form-bundle.view.return.property.owned = Property owned on or before 1st April {0}
+#ated.form-bundle.view.return.property.build = Property built after 1st April {0}
+#ated.change-liability.period.propertyDetailsValue.notNewBuildDate.before-ated-start-2012 = The property acquired date cannot be before 1 April {0}.
+#ated.change-liability.period.propertyDetailsValue.valuationDate.before-ated-start-2012 = The property valuation date cannot be before 1 April {0}.
+#ated.property-details-value.ownedBefore2012Value.error.non-selected = You must answer the property owned before 1 April {0} question.
+ated.property-details-value.ownedBefore2012Value.error.empty = You must enter a valid property value
+ated.property-details-value.ownedBefore2012Value.error.too-low = The property value cannot be below the lowest band
+ated.property-details-value.ownedBefore2012Value.error.too-high = The property value must be less than 14 characters.

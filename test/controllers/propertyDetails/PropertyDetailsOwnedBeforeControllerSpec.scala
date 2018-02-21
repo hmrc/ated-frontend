@@ -34,7 +34,8 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService}
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
-import utils.AtedConstants
+import utils.{AtedConstants, PeriodUtils}
+import utils.PeriodUtils.calculatePeriod
 
 import scala.concurrent.Future
 
@@ -46,6 +47,8 @@ class PropertyDetailsOwnedBeforeControllerSpec extends PlaySpec with OneServerPe
   val mockDelegationConnector = mock[DelegationConnector]
   val mockBackLinkCache = mock[BackLinkCacheConnector]
   val mockDataCacheConnector = mock[DataCacheConnector]
+  val periodKey: Int = calculatePeriod()
+  val valuationPeriod = PeriodUtils.getValuationYear(periodKey)
 
 
   object TestPropertyDetailsController extends PropertyDetailsOwnedBeforeController {
@@ -102,13 +105,13 @@ class PropertyDetailsOwnedBeforeControllerSpec extends PlaySpec with OneServerPe
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
-              document.getElementById("property-details-header").text() must be("Did the company own this property on or before 1 April 2012?")
+              document.getElementById("property-details-header").text() must be (s"Did the company own this property on or before 1 April $valuationPeriod?")
 
-              document.getElementById("isOwnedBefore2012").text() must be("Did the company own this property on or before 1 April 2012? Yes No")
-              document.getElementById("ownedBefore2012Value_field").text() must be("What was the value of the property on the 1 April 2012?")
-              document.getElementById("ownedBefore2012Value").attr("type") must be("text")
-              document.getElementById("isOwnedBefore2012-true").attr("checked") must be("")
-              document.getElementById("isOwnedBefore2012-false").attr("checked") must be("")
+              document.getElementById("isOwnedBefore2012").text() must be (s"Did the company own this property on or before 1 April $valuationPeriod? Yes No")
+              document.getElementById("ownedBefore2012Value_field").text() must be (s"What was the value of the property on the 1 April $valuationPeriod?")
+              document.getElementById("ownedBefore2012Value").attr("type") must be ("text")
+              document.getElementById("isOwnedBefore2012-true").attr("checked") must be ("")
+              document.getElementById("isOwnedBefore2012-false").attr("checked") must be ("")
 
           }
         }
@@ -125,7 +128,7 @@ class PropertyDetailsOwnedBeforeControllerSpec extends PlaySpec with OneServerPe
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
-              document.getElementById("property-details-header").text() must be("Did the company own this property on or before 1 April 2012?")
+              document.getElementById("property-details-header").text() must be (s"Did the company own this property on or before 1 April $valuationPeriod?")
 
               document.getElementById("backLinkHref").text must be("Back")
               document.getElementById("backLinkHref").attr("href") must include("/ated/liability/create/summary")
