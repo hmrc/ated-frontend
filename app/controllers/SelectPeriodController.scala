@@ -37,7 +37,7 @@ trait SelectPeriodController extends BackLinkController
   def view = AuthAction(AtedRegime) {
     implicit atedContext =>
       ensureClientContext {
-        val periods = PeriodUtils.getPeriods(new LocalDate(2015, 4, 1), new LocalDate(2018, 3, 1))
+        val periods = PeriodUtils.getPeriods(new LocalDate(2015, 4, 1), LocalDate.now())
         dataCacheConnector.fetchAndGetFormData[SelectPeriod](RetrieveSelectPeriodFormId) map {
           case Some(data) => Ok(views.html.selectPeriod(selectPeriodForm.fill(data), periods, getBackLink))
           case _ => Ok(views.html.selectPeriod(selectPeriodForm, periods, getBackLink))
