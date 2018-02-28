@@ -27,7 +27,7 @@
 
 @headerNavLinks = {
   @if(userLoggedIn){
-    <li><a id="logOutNavHref" href="@routes.ApplicationController.logout">Sign out</a></li>
+    <li><a id="logOutNavHref" href="@routes.ApplicationController.logout">@Messages("ated.sign-out")</a></li>
   }
 }
 
