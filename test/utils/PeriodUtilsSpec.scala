@@ -373,4 +373,18 @@ class PeriodUtilsSpec extends PlaySpec with OneServerPerSuite with ReliefConstan
       PeriodUtils.isBlank("hello") must be (false)
     }
   }
+
+  "getValuationYear" must {
+    "return 2017, if periodKey is greater than or equal to 2018 or lesser than or equal 2023" in {
+      PeriodUtils.getValuationYear(2018) must be ("2017")
+    }
+    "return 2012, if periodKey is lesser than 2017" in {
+      PeriodUtils.getValuationYear(2015) must be ("2012")
+    }
+    "throw an exception, if period is incorrect" in {
+      val thrown = the[RuntimeException] thrownBy PeriodUtils.getValuationYear(2070)
+      thrown.getMessage must be("[PeriodUtils][getValuationYear] - Incorrect period")
+    }
+  }
+
 }
