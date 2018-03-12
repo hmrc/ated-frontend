@@ -1319,7 +1319,7 @@ ated.change-agent-confirmation.what-next.info-2 = you can appoint another agent 
 #wrong client error message
 ated.selected-client-error.wrong.client.header = There is a problem with your sign in details
 ated.selected-client-error.wrong.client.title = There is a problem with your sign in details
-ated.selected-client-error.wrong.client.message = There are one or more people from your organisation signed in with the same Government Gateway details. You should <a href=“https://myaccount.gateway.gov.uk/Pages/Credentials/View.aspx” target="_blank">set up Administrators and Assistants</a> rather than sharing credentials.
+ated.selected-client-error.wrong.client.message = There are one or more people from your organisation signed in with the same Government Gateway details. You should <a href="https://myaccount.gateway.gov.uk/Pages/Credentials/View.aspx" target="_blank">set up Administrators and Assistants</a> rather than sharing credentials.
 
 
 ated.client-problem.title = There was a problem when you set up this client
