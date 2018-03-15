@@ -6,7 +6,7 @@
   <div class="service-info">
     <h2 class="balance-display heading-medium" id="sidebar.balance-header">@Messages("ated.summary-return.sidebar.balance")</h2>
 
-    <p class="balance-display heading-large" id="sidebar.balance-content">@formattedPounds(balance.getOrElse(BigDecimal(0)).abs) @if(balance.getOrElse(BigDecimal(0)) > 0){<span class="heading-medium">debit </span>} @if(balance.getOrElse(BigDecimal(0)) < 0){<span class="heading-medium">credit</span>} </p>
+    <p class="balance-display heading-large" id="sidebar.balance-content">@formattedPounds(balance.getOrElse(BigDecimal(0)).abs) @if(balance.getOrElse(BigDecimal(0)) > 0){<span class="heading-medium">@Messages("ated.debit") </span>} @if(balance.getOrElse(BigDecimal(0)) < 0){<span class="heading-medium">@Messages("ated.credit")</span>} </p>
 
     <p id="sidebar.balance-info">@Messages("ated.summary-return.sidebar.balance-info")</p>
 
@@ -16,4 +16,3 @@
     <p class="balance-display"><a href="@controllers.subscriptionData.routes.CompanyDetailsController.view" id="change-details-link">@Messages("ated.summary-return.company-details.link")</a></p>
     }
   </div>
-
