@@ -8,7 +8,8 @@
   userLoggedIn: Boolean = false,
   scriptElement: Option[Html] = None,
   linkElement : Option[Html] = None,
-  analyticsJs: Option[Html] = None
+  analyticsJs: Option[Html] = None,
+  isUserResearchBannerVisible:Boolean = false
   )(mainContent: Html = HtmlFormat.empty)(implicit request : Request[_], messages: Messages)
 
 @import layouts.{govuk_template => hmrcGovUkTemplate}
@@ -26,7 +27,7 @@
 
 @headerNavLinks = {
   @if(userLoggedIn){
-    <li><a id="logOutNavHref" href="@routes.ApplicationController.logout">Sign out</a></li>
+    <li><a id="logOutNavHref" href="@routes.ApplicationController.logout">@Messages("ated.sign-out")</a></li>
   }
 }
 
@@ -47,7 +48,18 @@
     navLinks = Some(headerNavLinks))
 }
 
-@afterHeader = {}
+@afterHeader = @{
+  if(isUserResearchBannerVisible && applicationConfig.urBannerToggle) {
+      helpers.fullWidthBanner(
+      Some(helpers.fullWidthBannerContentUr(
+        messages("urbanner.message.text"),
+        applicationConfig.urBannerLink,
+        externalLinkWarning = None
+      ))
+    )
+  }
+  else HtmlFormat.empty
+}
 
 @bodyEnd = {
   @uiLayouts.footer(

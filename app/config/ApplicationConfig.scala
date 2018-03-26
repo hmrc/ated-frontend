@@ -31,6 +31,8 @@ trait ApplicationConfig {
   val atedFrontendHost: String
   val defaultTimeoutSeconds: Int
   val timeoutCountdown: Int
+  val urBannerToggle:Boolean
+  val urBannerLink: String
 }
 
 object ApplicationConfig extends ApplicationConfig with ServicesConfig {
@@ -51,4 +53,6 @@ object ApplicationConfig extends ApplicationConfig with ServicesConfig {
   override lazy val atedFrontendHost = configuration.getString(s"microservice.services.ated-frontend.host").getOrElse("")
   override lazy val defaultTimeoutSeconds: Int = loadConfig("defaultTimeoutSeconds").toInt
   override lazy val timeoutCountdown: Int = loadConfig("timeoutCountdown").toInt
+  override lazy val urBannerToggle:Boolean = loadConfig("urBanner.toggle").toBoolean
+  override lazy val urBannerLink: String = loadConfig("urBanner.link")
 }

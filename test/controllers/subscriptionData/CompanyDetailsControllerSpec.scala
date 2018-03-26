@@ -112,6 +112,29 @@ class CompanyDetailsControllerSpec extends PlaySpec with OneServerPerSuite with 
         }
       }
 
+      "return contact details view with UR banner" in {
+        val addressDetails = AddressDetails(addressType = "", addressLine1 = "", addressLine2 = "", countryCode = "GB")
+        val correspondence = Address(Some("name1"), Some("name2"), addressDetails = addressDetails)
+        val businessPartnerDetails = RegisteredDetails(true, "testName",
+          RegisteredAddressDetails(addressLine1 = "bpline1",
+            addressLine2 = "bpline2",
+            addressLine3 = Some("bpline3"),
+            addressLine4 = Some("bpline4"),
+            postalCode = Some("postCode"),
+            countryCode = "GB"))
+
+        getWithAuthorisedUser(Some(correspondence), Some(businessPartnerDetails)) {
+          result =>
+            status(result) must be(OK)
+            val document = Jsoup.parse(contentAsString(result))
+
+            document.title() must be(TitleBuilder.buildTitle("Your ATED details"))
+            document.getElementById("ur-panel") must not be (null)
+            document.getElementById("ur-panel").text() must be("Help improve digital services by joining the HMRC user panel (opens in new window) No thanks")
+            document.getElementsByClass("banner-panel__close").text() must be("No thanks")
+        }
+      }
+
       "return contact details view with NO editable address" in {
         val addressDetails = AddressDetails(addressType = "", addressLine1 = "", addressLine2 = "", countryCode = "GB")
         val contactDetails = ContactDetails(emailAddress = Some("a@b.c"))

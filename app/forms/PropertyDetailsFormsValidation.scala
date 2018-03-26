@@ -142,9 +142,10 @@ object PropertyDetailsFormsValidation {
                    mustBeInChargeablePeriod: Boolean = false,
                    isMandatory: Boolean = false): Seq[Option[FormError]] = {
     val date = formDate2Option(dateField, f)
+   val valuationYear = PeriodUtils.getValuationYear(periodKey)
 
-    if (date.right.exists(a => new LocalDate(a).isBefore(new LocalDate("2012-4-1")) && !noDateTooEarly)) {
-      Seq(Some(FormError(dateField, Messages(s"ated.property-details-value.$dateField.error.too-early"))))
+    if (date.right.exists(a => new LocalDate(a).isBefore(new LocalDate(s"$valuationYear-4-1")) && !noDateTooEarly)) {
+      Seq(Some(FormError(dateField, Messages(s"ated.property-details-value.$dateField.error.too-early", valuationYear))))
     } else if (date.right.exists(a => new LocalDate(a).isAfter(new LocalDate()))) {
       Seq(Some(FormError(dateField, Messages(s"ated.property-details-value.$dateField.error.too-late"))))
     } else if (mustBeInChargeablePeriod && date.right.exists(a => PeriodUtils.isPeriodTooEarly(periodKey, Some(a)) ||

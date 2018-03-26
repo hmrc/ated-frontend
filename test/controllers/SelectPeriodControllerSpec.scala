@@ -88,6 +88,7 @@ class SelectPeriodControllerSpec extends PlaySpec with OneServerPerSuite with Mo
           document.getElementById("details-text").text() must be("The chargeable period for a year runs from the 1 April to 31 March.")
           document.getElementById("period-2015_field").text() must be("2015 to 2016")
           document.getElementById("period-2016_field").text() must be("2016 to 2017")
+          document.getElementById("period-2017_field").text() must be("2017 to 2018")
           document.getElementById("submit").text() must be("Continue")
         }
       }
@@ -102,6 +103,7 @@ class SelectPeriodControllerSpec extends PlaySpec with OneServerPerSuite with Mo
           document.getElementById("period-2015_field").text() must be("2015 to 2016")
           document.getElementById("period-2015").attr("checked") must be("checked")
           document.getElementById("period-2016_field").text() must be("2016 to 2017")
+          document.getElementById("period-2017_field").text() must be("2017 to 2018")
           document.getElementById("submit").text() must be("Continue")
         }
       }
@@ -138,6 +140,15 @@ class SelectPeriodControllerSpec extends PlaySpec with OneServerPerSuite with Mo
             result =>
               status(result) must be(SEE_OTHER)
               redirectLocation(result).get must be("/ated/return-type/2016")
+          }
+        }
+
+        "with period=2017 - Redirect to select return type page" in {
+          val inputJson = Json.parse( """{"period": "2017"}""")
+          submitWithAuthorisedUser(FakeRequest().withJsonBody(inputJson), Some("XN1200000100001")) {
+            result =>
+              status(result) must be(SEE_OTHER)
+              redirectLocation(result).get must be("/ated/return-type/2017")
           }
         }
 
