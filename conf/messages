@@ -115,7 +115,7 @@ ated.choose-reliefs.title = What reliefs are you claiming?
 ated.choose-reliefs.subheader = Create return
 ated.choose-reliefs.header = What reliefs are you claiming?
 ated.choose-reliefs.info = You can select more than one relief code. A single relief code can cover one or more properties.
-ated.choose-reliefs.label = Select all that apply
+ated.choose-reliefs.label = Select all reliefs that apply
 
 ated.choose-reliefs.question = What are ATED relief codes?
 ated.choose-reliefs.answer = More detailed information on relief codes can be found on <a href="https://www.tax.service.gov.uk/information/help?helpcategory=shortform&helpid=ATEDReliefCode" data-journey-click="ated-fronted:click:relief-code-link">HMRC help.</a>
@@ -262,6 +262,7 @@ ated.leave-feedback.moreInfo = What would you like to tell us?
 ated.leave-feedback.experience-level.label = Overall, how do you feel about your experience using the service today?
 ated.leave-feedback.submit.button = Send feedback
 
+ated.leave-feedback.moreInfo-error.general.experienceLevel = There is a problem with the your experience question
 ated.leave-feedback.moreInfo-error.general.summaryInfo = There is a problem with the what were you trying to do question
 ated.leave-feedback.moreInfo-error.general.moreInfo = There is a problem with the what would you like to tell us question
 ated.leave-feedback.experience-error = Select an option for this question
