@@ -59,7 +59,7 @@ class chooseReliefsSpec extends FeatureSpec with OneServerPerSuite with MockitoS
 
       Then("The the text on the screen should be correct")
       assert(document.getElementById("lede-text").text() === "You can select more than one relief code. A single relief code can cover one or more properties.")
-      assert(document.getElementById("choose-reliefs-label").text() === "Select all that apply")
+      assert(document.getElementById("choose-reliefs-label").text() === "Select all reliefs that apply")
       assert(document.getElementById("rentalBusiness_field").text() === "Rental businesses")
       assert(document.getElementById("rentalBusinessDate_legend").text() === "When did the Rental business start?")
       assert(document.getElementById("rentalBusinessDate_hint").text() ===s"For example, ${PeriodUtils.periodStartDate(periodKey).toString(Messages("ated.date-format.numeric"))}")
