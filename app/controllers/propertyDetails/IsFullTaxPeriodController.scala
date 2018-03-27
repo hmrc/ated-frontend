@@ -27,7 +27,6 @@ import utils.{AtedUtils, PeriodUtils}
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
 import utils.AtedConstants._
-
 import scala.concurrent.Future
 
 trait IsFullTaxPeriodController extends PropertyDetailsHelpers with ClientHelper {
