@@ -6,12 +6,12 @@ ated.back = Back
 ated.edit = Edit
 ated.navTitle = Submit and view your ATED returns
 ated.refNo = ATED reference number {0}
-ated.agent.acting.on.behalf.of=acting on behalf of
-ated.date-format=d MMMMM yyyy
-ated.date-format.summary= yyyy
-ated.date-format.numeric=d M yyyy
+ated.agent.acting.on.behalf.of = acting on behalf of
+ated.date-format = d MMMMM yyyy
+ated.date-format.summary = yyyy
+ated.date-format.numeric = d M yyyy
 ated.date-format.short = d MMMM
-ated.characters-remaining=characters remaining
+ated.characters-remaining = characters remaining
 ated.draft = Draft
 ated.submitted = Submitted
 ated.label.yes = Yes
@@ -40,8 +40,8 @@ ated.credit = credit
 
 ##### ERROR MESSAGES
 
-error.invalid=Invalid value
-error.required=You must answer this question
+error.invalid = Invalid value
+error.required = You must answer this question
 
 ated.error.no-account-ref = No Account Reference Defined for this user
 ated.error.summaryHeader = There is a problem with the page
@@ -95,7 +95,7 @@ ated.account.title = ATED account
 ated.account.header = ATED account
 ated.account-summary.title = ATED account summary
 ated.account-summary.header = ATED account summary
-ated.account-summary.ated-reference.text= Your ATED account reference is
+ated.account-summary.ated-reference.text = Your ATED account reference is
 ated.account-summary.next-steps.heading = Next steps
 ated.account-summary.claim-reliefs.text = Claim reliefs for ATED
 ated.account-summary.appoint-agent.text = Appoint an agent
@@ -229,35 +229,35 @@ ated.reliefs-sent.print-link = Print confirmation
 
 ##### FEEDBACK
 
-label.feedback=Feedback
-label.satisfaction_survey=Satisfaction survey
-label.very_easy=Very easy
-label.easy=Easy
-label.neither_easy_or_difficult=Neither easy or difficult
-label.difficult=Difficult
-label.very_difficult=Very difficult
-label.how_easy_was_the_service_to_use=How easy was the service to use?
-label.yes=Yes
-label.no=No
-label.how_satisfied_were_you_with_the_service=How satisfied were you with the service?
-label.what_else_would_you_like_to_see_in_the_service=What else would you like to see in the service?
-label.very_satisfied=Very satisfied
-label.neither_satisfied_or_dissatisfied=Neither satisfied or dissatisfied
-label.very_dissatisfied=Very dissatisfied
+label.feedback = Feedback
+label.satisfaction_survey = Satisfaction survey
+label.very_easy = Very easy
+label.easy = Easy
+label.neither_easy_or_difficult = Neither easy or difficult
+label.difficult = Difficult
+label.very_difficult = Very difficult
+label.how_easy_was_the_service_to_use = How easy was the service to use?
+label.yes = Yes
+label.no = No
+label.how_satisfied_were_you_with_the_service = How satisfied were you with the service?
+label.what_else_would_you_like_to_see_in_the_service = What else would you like to see in the service?
+label.very_satisfied = Very satisfied
+label.neither_satisfied_or_dissatisfied = Neither satisfied or dissatisfied
+label.very_dissatisfied = Very dissatisfied
 label.satisfied = Satisfied
 label.neutral = Neutral
 label.dissatisfied = Dissatisfied
-label.limit_is_1200_characters=(Limit is 1200 characters)
-label.please_dont_include_any_personal_or_financial_information=Please don’t include any personal or financial information, for example your National Insurance or credit card numbers.
-label.send_feedback=Send feedback
-label.signed_out=ATED feedback questionnaire
-label.thanks_for_your_feedback=Thanks for your feedback
-label.youre_signed_out=You’re signed out
-label.youre_now_signed_out_of_your_ated_account=You’'re now signed out of your ATED account.
-label.explore_gov_uk=Explore GOV.UK
-title.satisfied=Satisfied
-title.dissatisfied=Dissatisfied
-feedback.redirect-startpage= Please return to start page
+label.limit_is_1200_characters = (Limit is 1200 characters)
+label.please_dont_include_any_personal_or_financial_information = Please don’t include any personal or financial information, for example your National Insurance or credit card numbers.
+label.send_feedback = Send feedback
+label.signed_out = ATED feedback questionnaire
+label.thanks_for_your_feedback = Thanks for your feedback
+label.youre_signed_out = You’re signed out
+label.youre_now_signed_out_of_your_ated_account = You’'re now signed out of your ATED account.
+label.explore_gov_uk = Explore GOV.UK
+title.satisfied = Satisfied
+title.dissatisfied = Dissatisfied
+feedback.redirect-startpage = Please return to start page
 
 ##### LEAVE FEEDBACK PAGE
 
