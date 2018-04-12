@@ -46,7 +46,7 @@ class ReliefsSummarySpec extends FeatureSpec with OneServerPerSuite with Mockito
       val document = Jsoup.parse(html.toString())
 
       Then("The text for disabling the submit button should be visible")
-      assert(document.getElementById("submit-disabled-text").text() contains "You can not submit returns until after the 1 April.")
+      assert(document.getElementById("submit-disabled-text").text() contains "You cannot submit returns until after the 1 April.")
     }
   }
 }
