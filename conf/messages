@@ -1330,6 +1330,7 @@ ated.delete-draft.error = delete draft return
 ated.confirm-past-return-question.title = Does this new return relate to one of your existing returns in the last chargeable period?
 ated.confirm-past-return-question.header = Does this new return relate to one of your existing returns in the last chargeable period?
 ated.confirm-past-return.error = existing return
+ated.confirm-past-return-question.error.general.yesNo = The existing return question must be answered
 
 ated.select-past-return.title = Select the previous return this new return relates to
 ated.select-past-return.header = Select the previous return this new return relates to
