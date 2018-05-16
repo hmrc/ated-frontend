@@ -59,7 +59,7 @@ class propertyDetailsTitleSpec extends FeatureSpec with OneServerPerSuite with M
       assert(document.getElementById("title-text").text() === "You can find the property’s title number on the title deeds for the property.")
       assert(document.getElementById("references.titleNumber").attr("value") === "")
       assert(document.getElementById("references.titleNumber_hint").text() === "For example, CS72532")
-      assert(document.getElementById("titleNumber-reveal").text() === "I don’t know my property’s title number")
+      assert(document.getElementById("titleNumber-reveal").text() === "I do not know my property’s title number")
 
 
       Then("The submit button should have the correct name")
@@ -90,7 +90,7 @@ class propertyDetailsTitleSpec extends FeatureSpec with OneServerPerSuite with M
       assert(document.getElementById("title-text").text() === "You can find the property’s title number on the title deeds for the property.")
       assert(document.getElementById("references.titleNumber").attr("value") === "")
       assert(document.getElementById("references.titleNumber_hint").text() === "For example, CS72532")
-      assert(document.getElementById("titleNumber-reveal").text() === "I don’t know my property’s title number")
+      assert(document.getElementById("titleNumber-reveal").text() === "I do not know my property’s title number")
 
 
       Then("The submit button should have the correct name")

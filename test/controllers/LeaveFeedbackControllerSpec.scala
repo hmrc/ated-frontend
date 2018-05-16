@@ -59,7 +59,7 @@ class LeaveFeedbackControllerSpec extends PlaySpec with MockitoSugar with OneSer
           val document = Jsoup.parse(contentAsString(result))
           document.title() must be(TitleBuilder.buildTitle("Leave Feedback"))
           document.getElementById("feedback-header").text() must be("Leave Feedback")
-          document.getElementById("feedback-txt").text() must be("You won’t get a reply to any feedback. If you want to raise a technical problem or get a response use the get help with this page link. Do not include any personal or financial information.")
+          document.getElementById("feedback-txt").text() must be("You will not get a reply to any feedback. If you want to raise a technical problem or get a response use the get help with this page link. Do not include any personal or financial information.")
           document.getElementById("summaryInfo_field").text() must be("What were you trying to do today?")
           document.getElementById("moreInfo_field").text() must be("What would you like to tell us?")
           document.getElementById("experienceLevel_legend").text() must be("Overall, how do you feel about your experience using the service today?")

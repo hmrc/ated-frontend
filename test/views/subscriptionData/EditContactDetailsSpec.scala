@@ -63,8 +63,8 @@ class EditContactDetailsSpec extends FeatureSpec with OneServerPerSuite with Moc
       And("The the field names are correct")
       assert(document.getElementById("phoneNumber_field").text() === "Telephone")
       assert(document.getElementById("phoneNumber").attr("type") === "number")
-      assert(document.getElementById("firstName_field").text() === "First Name")
-      assert(document.getElementById("lastName_field").text() === "Last Name")
+      assert(document.getElementById("firstName_field").text() === "First name")
+      assert(document.getElementById("lastName_field").text() === "Last name")
 
       And("The the field values are blank")
       assert(document.getElementById("phoneNumber").attr("value") === "0191")

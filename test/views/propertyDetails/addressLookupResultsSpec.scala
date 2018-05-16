@@ -66,7 +66,7 @@ class addressLookupResultsSpec extends FeatureSpec with OneServerPerSuite with M
       Then("The search criteria results header should be - Property address")
       assert(document.getElementById("search-results-header").text() === "Property address")
 
-      Then("The address link should be - I can't find my address in the list")
+      Then("The address link should be - I cannot find my address in the list")
       assert(document.getElementById("no-address-found").text() === "No addresses were found for this postcode")
 
       assert(document.getElementById("enter-address-link").text() === "Manually enter the address")
@@ -114,10 +114,10 @@ class addressLookupResultsSpec extends FeatureSpec with OneServerPerSuite with M
       assert(document.getElementById("selected-2_field").text() === "2, result street, UK")
       assert(document.getElementById("selected-3_field").text() === "3, result street, UK")
 
-      Then("The address link should be - I can't find my address in the list")
+      Then("The address link should be - I cannot find my address in the list")
       assert(document.getElementById("no-address-found") === null)
 
-      assert(document.getElementById("enter-address-link").text() === "I can’t find my address in the list")
+      assert(document.getElementById("enter-address-link").text() === "I cannot find my address in the list")
       assert(document.getElementById("enter-address-link").attr("href") === "/ated/liability/address-lookup/manual/2015?propertyKey=123456&mode=editSubmitted")
 
       Then("The submit button should be - Save and continue")
