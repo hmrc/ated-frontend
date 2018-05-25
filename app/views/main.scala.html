@@ -77,13 +77,6 @@
 
 @footerLinks = {}
 
-@betaBanner = {
-  @uiLayouts.betaBanner(
-    userLoggedIn = userLoggedIn,
-    betaFeedbackUrl = controllers.routes.LeaveFeedbackController.view(request.uri).url,
-    betaFeedbackUnauthenticatedUrl = applicationConfig.betaFeedbackUnauthenticatedUrl,
-    showFeedbackLinkInBetaBanner = true)
-}
 
 @btaLink = {
 <div class="bta-link">
@@ -97,7 +90,7 @@
 
 @serviceInfo = {
   @uiLayouts.serviceInfo(
-    betaBanner = betaBanner,
+    betaBanner = HtmlFormat.empty,
     includeGridWrapper = false,
     serviceInfoContent = Option(serviceInfoContent),
     includeHMRCBranding = false)
