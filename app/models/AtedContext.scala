@@ -19,6 +19,7 @@ package models
 import play.api.Logger
 import play.api.mvc.{AnyContent, Request}
 import uk.gov.hmrc.domain.{AgentBusinessUtr, AtedUtr}
+import uk.gov.hmrc.http.{InternalServerException, UnauthorizedException}
 import uk.gov.hmrc.play.frontend.auth.AuthContext
 import uk.gov.hmrc.play.frontend.auth.connectors.domain.AgentAdmin
 
@@ -36,7 +37,7 @@ case class AtedUser(authContext: AuthContext) {
   }
 
   def userLink: String = {
-    accounts.ated.map(_.link).getOrElse(throw new RuntimeException("User does not have the correct authorisation"))
+    accounts.ated.map(_.link).getOrElse(throw new UnauthorizedException("User does not have the correct authorisation"))
   }
 
   def agentLink: String = {
