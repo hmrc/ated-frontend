@@ -28,7 +28,7 @@ import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
 import play.api.libs.json.{JsValue, Json}
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.logging.SessionId
-import uk.gov.hmrc.http.{CoreDelete, _}
+import uk.gov.hmrc.http.{CoreDelete, UnauthorizedException, _}
 import utils.AtedConstants
 
 import scala.concurrent.Future
@@ -167,6 +167,19 @@ class AtedConnectorSpec extends PlaySpec with OneServerPerSuite with MockitoSuga
         val result = TestAtedConnector.retrieveSubscriptionData()
         await(result).json must be(successResponse)
       }
+
+      "throw 401 unauthorized in case bad retrieval of subscription data" in {
+        implicit val hc = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
+        implicit val user = createAtedContext(createUserAuthContext("User-Id", "name"))
+        val successResponse = Json.parse( """{}""")
+        when(mockWSHttp.GET[HttpResponse]
+          (Matchers.any())
+          (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.failed(new UnauthorizedException("User does not have the correct authorisation")))
+
+        val result = intercept[UnauthorizedException]{await(TestAtedConnector.retrieveSubscriptionData())}
+        result.message must be("User does not have the correct authorisation")
+      }
+
     }
 
     "Update subscription data" must {
