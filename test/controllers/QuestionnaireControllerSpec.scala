@@ -50,7 +50,7 @@ class QuestionnaireControllerSpec extends PlaySpec with OneServerPerSuite {
           val document = Jsoup.parse(contentAsString(result))
           document.title() must be(TitleBuilder.buildTitle("ATED feedback questionnaire")) //Questionnaire title
           document.getElementsByClass("heading-xlarge").text() must be("You are signed out")
-          document.getElementById("signed-out-text").text() must be("You are now signed out of your ATED account.")
+          document.getElementById("signed-out-text").text() must be("We use your feedback to make our services better.")
           document.getElementById("satisfaction-survey-heading").text() must be("Satisfaction survey")
           document.getElementById("dont-include-text").text() must be("Please do not include any personal or financial information, for example your National Insurance or credit card numbers.")
           document.getElementById("submit").text() must be("Send feedback")
