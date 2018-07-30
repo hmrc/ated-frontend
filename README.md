@@ -6,7 +6,7 @@ ated-frontend
 This service provides the frontend application for the Annual Tax on Enveloped Dwellings (ATED) service.
 
 Summary
------------
+-------
 
 This service is designed for users who have subscribed to ATED (clients and agents) to submit a return in the following scenarios:
 
