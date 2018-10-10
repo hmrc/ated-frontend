@@ -257,14 +257,14 @@ class SubscriptionDataAdapterSpec extends PlaySpec with OneServerPerSuite with M
     }
 
     "createEditEmailWithConsentRequest" must {
-      "return None, if no correspondence address is found" must {
+      "return None, if no correspondence address is found" in {
         val successResponse = SubscriptionData("", "", address = Nil, emailConsent = Some(true))
         val updatedDetails = EditContactDetailsEmail(emailAddress = "aa@mail.com", emailConsent = true)
         val response = TestSubscriptionDataService.createEditEmailWithConsentRequest(successResponse, updatedDetails)
         response.isDefined must be(false)
       }
 
-      "return Updated Indicators, if correspondence address is found" must {
+      "return Updated Indicators, if correspondence address is found" in {
         val successResponse = Json.parse(successJson1).as[SubscriptionData]
         val updatedDetails = EditContactDetailsEmail(emailAddress = "aa@mail.com", emailConsent = true)
         val response = TestSubscriptionDataService.createEditEmailWithConsentRequest(successResponse, updatedDetails)
@@ -277,14 +277,14 @@ class SubscriptionDataAdapterSpec extends PlaySpec with OneServerPerSuite with M
       }
     }
     "createEditContactDetailsRequest" must {
-      "return None, if no correspondence address is found" must {
+      "return None, if no correspondence address is found" in {
         val successResponse = SubscriptionData("", "", address = Nil, emailConsent = Some(true))
         val updatedDetails = EditContactDetails("name1", "name2", phoneNumber = "123456789")
         val response = TestSubscriptionDataService.createEditContactDetailsRequest(successResponse, updatedDetails)
         response.isDefined must be(false)
       }
 
-      "return Some, if correspondence address is found" must {
+      "return Some, if correspondence address is found" in {
         val successResponse = Json.parse(successJson1).as[SubscriptionData]
         val updatedDetails = EditContactDetails("name1", "name2", phoneNumber = "123456789")
         val response = TestSubscriptionDataService.createEditContactDetailsRequest(successResponse, updatedDetails)
@@ -294,7 +294,8 @@ class SubscriptionDataAdapterSpec extends PlaySpec with OneServerPerSuite with M
         response.get.changeIndicators.correspondenceChanged must be(false)
         response.get.changeIndicators.permanentPlaceOfBusinessChanged must be(false)
       }
-      "return Some, if correspondence address is found but BLANK postCode" must {
+
+      "return Some, if correspondence address is found but BLANK postCode" in {
         val successResponse = Json.parse(successJson2).as[SubscriptionData]
         val updatedDetails = EditContactDetails("name1", "name2", phoneNumber = "123456789")
         val response = TestSubscriptionDataService.createEditContactDetailsRequest(successResponse, updatedDetails)
@@ -304,7 +305,8 @@ class SubscriptionDataAdapterSpec extends PlaySpec with OneServerPerSuite with M
         response.get.changeIndicators.correspondenceChanged must be(false)
         response.get.changeIndicators.permanentPlaceOfBusinessChanged must be(false)
       }
-      "return Some, if correspondence address is found but no postCode" must {
+
+      "return Some, if correspondence address is found but no postCode" in {
         val successResponse = Json.parse(successJson3).as[SubscriptionData]
         val updatedDetails = EditContactDetails("name1", "name2", phoneNumber = "123456789")
         val response = TestSubscriptionDataService.createEditContactDetailsRequest(successResponse, updatedDetails)
@@ -317,14 +319,14 @@ class SubscriptionDataAdapterSpec extends PlaySpec with OneServerPerSuite with M
     }
 
     "createUpdateCorrespondenceAddressRequest" must {
-      "return None if no correspondence address is found" must {
+      "return None if no correspondence address is found" in {
         val successResponse = SubscriptionData("", "", address = Nil, emailConsent = Some(true))
         val updatedDetails = AddressDetails(addressType = "", addressLine1 = "", addressLine2 = "", countryCode = "GB")
         val response = TestSubscriptionDataService.createUpdateCorrespondenceAddressRequest(successResponse, updatedDetails)
         response.isDefined must be(false)
       }
 
-      "return Some if correspondence address is found" must {
+      "return Some if correspondence address is found" in {
         val successResponse = Json.parse(successJson).as[SubscriptionData]
         val updatedDetails = AddressDetails(addressType = "", addressLine1 = "", addressLine2 = "", countryCode = "GB")
         val response = TestSubscriptionDataService.createUpdateCorrespondenceAddressRequest(successResponse, updatedDetails)
