@@ -13,12 +13,12 @@ private object AppDependencies {
 
   private val playHealthVersion = "2.1.0"
 
-  private val frontendBootstrapVersion = "8.24.0"
+  private val frontendBootstrapVersion = "10.5.0"
   private val httpCachingClientVersion = "7.0.0"
   private val playPartialsVersion = "6.1.0"
-  private val domainVersion = "4.1.0"
-  private val hmrcTestVersion = "2.3.0"
-  private val scalaTestPlusVersion = "1.5.1"
+  private val domainVersion = "5.2.0"
+  private val hmrcTestVersion = "3.1.0"
+  private val scalaTestPlusVersion = "2.0.1"
   private val pegdownVersion = "1.6.0"
 
   val compile = Seq(

@@ -455,9 +455,9 @@ ated.property-details-value.propertyDetailsValue.partAcqDispDate.error.empty = Y
 ated.property-details-value.propertyDetailsValue.valuationDate.error.empty = You must enter a valuation date
 ated.property-details-value.propertyDetailsValue.valuationDate-hint = For example, {0}
 
-ated.property-details-value.isPropertyRevalued.title = Have you had the property revalued since you made the £40,000 or more change?
-ated.property-details-value.isPropertyRevalued.header = Have you had the property revalued since you made the £40,000 or more change?
-ated.property-details-value.isPropertyRevalued = Have you had the property revalued since you made the £40,000 or more change?
+ated.property-details-value.isPropertyRevalued.title = Has the property been revalued since the £40,000 or more change?
+ated.property-details-value.isPropertyRevalued.header = Has the property been revalued since the £40,000 or more change?
+ated.property-details-value.isPropertyRevalued = Has the property been revalued since the £40,000 or more change?
 ated.property-details-value.isPropertyRevalued.no-text = The property must be revalued before you can submit this chargeable return
 ated.property-details-value.isPropertyRevalued.error = The property must be revalued before you can submit this chargeable return
 ated.property-details-value.isPropertyRevalued.error.non-selected = You must answer this question

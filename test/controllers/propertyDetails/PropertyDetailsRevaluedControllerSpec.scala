@@ -101,7 +101,7 @@ class PropertyDetailsRevaluedControllerSpec extends PlaySpec with OneServerPerSu
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
-              document.getElementById("property-details-header").text() must be("Have you had the property revalued since you made the £40,000 or more change?")
+              document.getElementById("property-details-header").text() must be("Has the property been revalued since the £40,000 or more change?")
 
               document.getElementById("isPropertyRevalued").text() contains ("Yes No")
               document.getElementById("revaluedValue_field").text() must be("What is the new valuation of the property in GBP?")
