@@ -31,11 +31,13 @@
     @DateTimeFormat.forPattern("d MMMM yyyy").print(new LocalDate())
 }
 
+@serviceName = {@Messages("ated.welcome.related.link.first")}
+
 @printFriendly(Messages("ated.relief-sent.title")) {
 
 <script src='@controllers.routes.AssetsController.at("javascript/printFriendly.js")'></script>
 
-<h1 id="header">@Messages("ated.edit-liability.sent.header.dispose", today)
+<h1 id="header">@Messages("ated.edit-liability.sent.header.dispose", serviceName)
 </h1>
 
 <p id="view-message">@Messages("ated.edit-liabilty.sent.view-message")</p>
