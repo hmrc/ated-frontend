@@ -233,6 +233,23 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with OneServerPerSuit
               }
             }
 
+            "If entered, Address line must have valid special characters" in {
+              implicit val hc: HeaderCarrier = HeaderCarrier()
+              val inputJson = Json.parse( """{ "addressType": "", "addressLine1": "A&. ' / & DD *", "addressLine2": "A&. ' / & DD", "addressLine3": "A&. ' / & DD", "addressLine4": "A&. ' / & DD", "postalCode": "*****", "countryCode": ""}""")
+              val addressDetails: AddressDetails = inputJson.as[AddressDetails]
+              submitWithAuthorisedUserSuccess(Some(addressDetails))(FakeRequest().withJsonBody(inputJson)) {
+                result =>
+                  status(result) must be(BAD_REQUEST)
+
+                  val doc = Jsoup.parse(contentAsString(result))
+                  doc.getElementsMatchingOwnText("You must enter a valid address line 1").hasText mustBe true
+                  doc.getElementsMatchingOwnText("You must enter a valid address line 2").hasText mustBe true
+                  doc.getElementsMatchingOwnText("You must enter a valid address line 3").hasText mustBe true
+                  doc.getElementsMatchingOwnText("You must enter a valid address line 4").hasText mustBe true
+                  doc.getElementsMatchingOwnText("You must enter a valid postcode").hasText mustBe true
+              }
+            }
+
 
             "If entered, Address line 2 must be maximum of 35 characters" in {
               implicit val hc: HeaderCarrier = HeaderCarrier()
@@ -272,7 +289,7 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with OneServerPerSuit
                 submitWithAuthorisedUserSuccess(Some(addressDetails))(FakeRequest().withJsonBody(inputJson)) {
                   result =>
                     status(result) must be(BAD_REQUEST)
-                    contentAsString(result) must include("You must enter a valid postcode")
+                    contentAsString(result) must include("The postcode cannot be more than 10 characters")
                 }
               }
 

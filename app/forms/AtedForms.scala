@@ -30,6 +30,7 @@ import uk.gov.hmrc.play.mappers.StopOnFirstFail
 import uk.gov.hmrc.play.mappers.StopOnFirstFail.constraint
 import utils.AtedUtils
 import utils.PeriodUtils._
+import forms.FormHelper._
 
 import scala.annotation.tailrec
 
@@ -71,20 +72,20 @@ object AtedForms {
         "addressDetails" -> mapping(
         "addressLine1" -> text.verifying(
           validateFormAddressLine(Messages("ated.error.mandatory", Messages("ated.address.line-1")),
-            Messages("ated.error.address.line-1", Messages("ated.address.line-1")),
+            Messages("ated.error.address.line-1"),
             Messages("ated.error.address.line-1.format"))
         ),
         "addressLine2" -> text.verifying(
           validateFormAddressLine(Messages("ated.error.mandatory", Messages("ated.address.line-2")),
-            Messages("ated.error.address.line-2", Messages("ated.address.line-2"), addressLineLength),
+            Messages("ated.error.address.line-2"),
             Messages("ated.error.address.line-2.format"))
         ),
         "addressLine3" -> optional(text).verifying(
-          validateFormOptionalAddressLine(Messages("ated.error.address.line-3", Messages("ated.address.line-3"), addressLineLength),
+          validateFormOptionalAddressLine(Messages("ated.error.address.line-3"),
             Messages("ated.error.address.line-3.format"))
         ),
         "addressLine4" -> optional(text).verifying(
-          validateFormOptionalAddressLine(Messages("ated.error.address.line-4", Messages("ated.address.line-4"), addressLineLength),
+          validateFormOptionalAddressLine(Messages("ated.error.address.line-4"),
             Messages("ated.error.address.line-4.format"))
         ),
         "postalCode" -> optional(text).verifying(
@@ -102,52 +103,31 @@ object AtedForms {
     )(RegisteredDetails.apply)(RegisteredDetails.unapply)
   )
 
-  private def validateFormAddressLine(mandatoryMsg: String, lengthMsg: String, validMsg: String): Constraint[String] = {
-    StopOnFirstFail(
-      constraint[String](mandatoryMsg, x => checkBlankFieldLength(x)),
-      constraint[String](lengthMsg, x => x.isEmpty || (x.nonEmpty && x.length <= addressLineLength)),
-      constraint[String](validMsg, x => x.trim.matches(addressRegex)))
-  }
-
-  private def validateFormOptionalAddressLine(lengthMsg: String, validMsg: String): Constraint[Option[String]] = {
-    StopOnFirstFail(
-      constraint[Option[String]](lengthMsg, x => checkFieldLengthIfPopulated(x, addressLineLength)),
-      constraint[Option[String]](validMsg, x => x.isEmpty || x.fold(false)(_.trim.matches(addressRegex))))
-  }
-
-  private def validateBusinessname(mandatoryMsg: String, lengthMsg: String, validMsg: String): Constraint[String] = {
-    StopOnFirstFail(
-      constraint[String](mandatoryMsg, x => checkBlankFieldLength(x)),
-      constraint[String](lengthMsg, x => x.isEmpty || (x.nonEmpty && x.length <= businessNameLength)),
-      constraint[String](validMsg, x => x.trim.matches(businessNameRegex)))
-  }
-
-  private def validateFormPostCode(lengthMsg: String, validMsg: String): Constraint[Option[String]] = {
-    StopOnFirstFail(
-      constraint[Option[String]](lengthMsg, x => checkFieldLengthIfPopulated(x, postcodeLength)),
-      constraint[Option[String]](validMsg, x => validatePostCodeFormat(AtedUtils.formatPostCode(x))))
-  }
-
   val correspondenceAddressForm = Form(
     mapping(
       "addressType" -> text,
-      "addressLine1" -> text.
-        verifying(Messages("ated.error.mandatory", Messages("ated.address.line-1")), x => checkBlankFieldLength(x))
-        .verifying(Messages("ated.error.address.line-1", Messages("ated.address.line-1"), addressLineLength),
-          x => x.isEmpty || (x.nonEmpty && x.length <= addressLineLength)),
-      "addressLine2" -> text.
-        verifying(Messages("ated.error.mandatory", Messages("ated.address.line-2")), x => checkBlankFieldLength(x))
-        .verifying(Messages("ated.error.address.line-2", Messages("ated.address.line-2"), addressLineLength),
-          x => x.isEmpty || (x.nonEmpty && x.length <= addressLineLength)),
-      "addressLine3" -> optional(text)
-        .verifying(Messages("ated.error.address.line-3", Messages("ated.address.line-3"), addressLineLength),
-          x => checkFieldLengthIfPopulated(x, addressLineLength)),
-      "addressLine4" -> optional(text)
-        .verifying(Messages("ated.error.address.line-4", Messages("ated.address.line-4"), addressLineLength),
-          x => checkFieldLengthIfPopulated(x, addressLineLength)),
-      "postalCode" -> optional(text)
-        .verifying(Messages("ated.error.address.postalcode.format", Messages("ated.address.postcode.field"), postcodeLength),
-          x => checkFieldLengthIfPopulated(AtedUtils.formatPostCode(x), postcodeLength)),
+      "addressLine1" -> text.verifying(
+        validateFormAddressLine(Messages("ated.error.mandatory", Messages("ated.address.line-1")),
+          Messages("ated.error.address.line-1"),
+          Messages("ated.error.address.line-1.format"))
+      ),
+      "addressLine2" -> text.verifying(
+        validateFormAddressLine(Messages("ated.error.mandatory", Messages("ated.address.line-2")),
+          Messages("ated.error.address.line-2"),
+          Messages("ated.error.address.line-2.format"))
+      ),
+      "addressLine3" -> optional(text).verifying(
+        validateFormOptionalAddressLine(Messages("ated.error.address.line-3"),
+          Messages("ated.error.address.line-3.format"))
+      ),
+      "addressLine4" -> optional(text).verifying(
+        validateFormOptionalAddressLine(Messages("ated.error.address.line-4"),
+          Messages("ated.error.address.line-4.format"))
+      ),
+      "postalCode" -> optional(text).verifying(
+        validateFormPostCode(Messages("ated.error.address.postalcode"),
+          Messages("ated.error.address.postalcode.format", postcodeLength))
+      ),
       "countryCode" -> text.
         verifying(Messages("ated.error.mandatory", Messages("ated.address.country")), x => x.length > lengthZero)
         .verifying(Messages("ated.error.address.country", Messages("ated.address.country"), addressLineLength),
