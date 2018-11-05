@@ -16,6 +16,8 @@
 
 package forms
 
+import forms.AtedForms.postcodeLength
+import forms.FormHelper.{validateFormAddressLine, validateFormOptionalAddressLine, validateFormPostCode}
 import models._
 import org.joda.time.LocalDate
 import play.api.data.{Form, FormError, Mapping}
@@ -56,27 +58,28 @@ object PropertyDetailsForms {
 
   val propertyDetailsAddressForm = Form(
     mapping(
-      "line_1" -> text
-        .verifying(Messages("ated.error.mandatory", Messages("ated.address.line-1")), x => AtedForms.checkBlankFieldLength(x))
-        .verifying(Messages("ated.error.address.line-1", Messages("ated.address.line-1")),
-          x => x.isEmpty || (x.nonEmpty && x.length <= addressLineLength))
-        .verifying(Messages("ated.error.address.line-1.format", Messages("ated.address.line-1")), x => AtedForms.validateAddressLine(Some(x))),
-      "line_2" -> text
-        .verifying(Messages("ated.error.mandatory", Messages("ated.address.line-2")), x => AtedForms.checkBlankFieldLength(x))
-        .verifying(Messages("ated.error.address.line-2", Messages("ated.address.line-2")),
-          x => x.isEmpty || (x.nonEmpty && x.length <= addressLineLength))
-        .verifying(Messages("ated.error.address.line-2.format", Messages("ated.address.line-2")), x => AtedForms.validateAddressLine(Some(x))),
-      "line_3" -> optional(text)
-        .verifying(Messages("ated.error.address.line-3", Messages("ated.address.line-3")),
-          x => AtedForms.checkFieldLengthIfPopulated(x, addressLineLength))
-        .verifying(Messages("ated.error.address.line-3.format", Messages("ated.address.line-3")), x => AtedForms.validateAddressLine(x)),
-      "line_4" -> optional(text)
-        .verifying(Messages("ated.error.address.line-4", Messages("ated.address.line-4")),
-          x => AtedForms.checkFieldLengthIfPopulated(x, addressLineLength))
-        .verifying(Messages("ated.error.address.line-4.format", Messages("ated.address.line-4")), x => AtedForms.validateAddressLine(x)),
-      "postcode" -> optional(text)
-        .verifying(Messages("ated.error.address.postalcode.format", Messages("ated.address.postcode.field"), AtedForms.postcodeLength),
-          x => AtedForms.checkFieldLengthIfPopulated(AtedUtils.formatPostCode(x), AtedForms.postcodeLength))
+      "line_1" -> text.verifying(
+        validateFormAddressLine(Messages("ated.error.mandatory", Messages("ated.address.line-1")),
+          Messages("ated.error.address.line-1"),
+          Messages("ated.error.address.line-1.format"))
+      ),
+      "line_2" -> text.verifying(
+        validateFormAddressLine(Messages("ated.error.mandatory", Messages("ated.address.line-2")),
+          Messages("ated.error.address.line-2"),
+          Messages("ated.error.address.line-2.format"))
+      ),
+      "line_3" -> optional(text).verifying(
+        validateFormOptionalAddressLine(Messages("ated.error.address.line-3"),
+          Messages("ated.error.address.line-3.format"))
+      ),
+      "line_4" -> optional(text).verifying(
+        validateFormOptionalAddressLine(Messages("ated.error.address.line-4"),
+          Messages("ated.error.address.line-4.format"))
+      ),
+      "postcode" -> optional(text).verifying(
+        validateFormPostCode(Messages("ated.error.address.postalcode"),
+          Messages("ated.error.address.postalcode.format", postcodeLength))
+      )
     )(PropertyDetailsAddress.apply)(PropertyDetailsAddress.unapply)
   )
 
