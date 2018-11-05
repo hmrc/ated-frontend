@@ -57,7 +57,7 @@ ated.error.address.line-4.format =  You must enter a valid address line 4
 
 ated.error.titleNumber = Property title number cannot be more than 40 characters
 ated.error.titleNumber.invalid = You cannot enter special characters. For example £, or @.
-ated.error.address.postalcode = The postcode cannot be more than 9 characters
+ated.error.address.postalcode = The postcode cannot be more than 10 characters
 ated.error.address.postalcode.format = You must enter a valid postcode
 
 ated.error.address.country = You must enter a country

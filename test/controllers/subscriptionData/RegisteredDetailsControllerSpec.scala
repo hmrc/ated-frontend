@@ -217,7 +217,7 @@ class RegisteredDetailsControllerSpec extends PlaySpec with OneServerPerSuite wi
             }
           }
 
-          "Details enetered contains spaces" in {
+          "Details entered contains spaces" in {
             implicit val hc: HeaderCarrier = HeaderCarrier()
             val inputJson = Json.parse(
               """{ "isEditable": true,
@@ -241,8 +241,6 @@ class RegisteredDetailsControllerSpec extends PlaySpec with OneServerPerSuite wi
             }
           }
 
-
-
           "If entered, data must not be too long" in {
             implicit val hc: HeaderCarrier = HeaderCarrier()
             val inputJson = Json.parse(
@@ -264,9 +262,36 @@ class RegisteredDetailsControllerSpec extends PlaySpec with OneServerPerSuite wi
                 contentAsString(result) must include("Address line 2 cannot be more than 35 characters")
                 contentAsString(result) must include("Address line 3 cannot be more than 35 characters")
                 contentAsString(result) must include("Address line 4 cannot be more than 35 characters")
-                contentAsString(result) must include("You must enter a valid postcode")
+                contentAsString(result) must include("The postcode cannot be more than 10 characters")
                 contentAsString(result) must include("You must enter Country")
+            }
+          }
 
+          "If entered, data must be valid" in {
+            implicit val hc: HeaderCarrier = HeaderCarrier()
+            val inputJson = Json.parse(
+              """{ "isEditable": true,
+                |"name": "testName/^£9898989**",
+                |"addressDetails" : {
+                |"addressLine1": "AAAA***DDD",
+                |"addressLine2": "AAA**DDDDDD",
+                |"addressLine3": "AA**DDDDD",
+                |"addressLine4": "AAA***DDD",
+                |"postalCode": "123456780*",
+                |"countryCode": ""}}""".stripMargin)
+            val
+            registeredDetails: RegisteredDetails = inputJson.as[RegisteredDetails]
+            submitWithAuthorisedUserSuccess(Some(registeredDetails))(FakeRequest().withJsonBody(inputJson)) {
+              result =>
+                status(result) must be(BAD_REQUEST)
+                val doc = Jsoup.parse(contentAsString(result))
+                doc.getElementsMatchingOwnText("bc.business-registration-error.businessName.invalid").hasText must be(true)
+                doc.getElementsMatchingOwnText("You must enter a valid address line 1").hasText must be(true)
+                doc.getElementsMatchingOwnText("You must enter a valid address line 2").hasText must be(true)
+                doc.getElementsMatchingOwnText("You must enter a valid address line 3").hasText must be(true)
+                doc.getElementsMatchingOwnText("You must enter a valid address line 4").hasText must be(true)
+                doc.getElementsMatchingOwnText("You must enter a valid postcode").hasText must be(true)
+                doc.getElementsMatchingOwnText("You must enter Country").hasText must be(true)
             }
           }
         }
