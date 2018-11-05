@@ -90,8 +90,46 @@ class PropertyDetailsFormsSpec extends PlaySpec with OneServerPerSuite {
         }
       )
     }
+  }
 
+  "propertyDetailsTitleForm" must {
+    "pass through the validation when enetered valid data" in {
+      val validData = Map("titleNumber" -> "125341524")
+      PropertyDetailsForms.propertyDetailsTitleForm.bind(validData).fold(
+        formWithErrors => {
+          formWithErrors.errors.length must be(0)
+        },
+        success => {
+          success.titleNumber must be("125341524")
+        }
+      )
+    }
 
+     "throw error on entering input data which exceeds max length" in {
+       val validData = Map("titleNumber" -> "125341524"*10)
+       PropertyDetailsForms.propertyDetailsTitleForm.bind(validData).fold(
+         formWithErrors => {
+           formWithErrors.errors.head.message must be("Property title number cannot be more than 40 characters")
+           formWithErrors.errors.length must be(1)
+         },
+         success => {
+
+         }
+       )
+     }
+
+    "throw error on entering invalid input data" in {
+      val validData = Map("titleNumber" -> "125341524&£',.")
+      PropertyDetailsForms.propertyDetailsTitleForm.bind(validData).fold(
+        formWithErrors => {
+          formWithErrors.errors.head.message must be("You cannot enter special characters. For example £, or @.")
+          formWithErrors.errors.length must be(1)
+        },
+        success => {
+          success.titleNumber must be("125341524")
+        }
+      )
+    }
   }
 
 

@@ -16,7 +16,7 @@
 
 package forms
 
-import forms.AtedForms.postcodeLength
+import forms.AtedForms.{checkBlankFieldLength, nameRegex, postcodeLength}
 import forms.FormHelper.{validateFormAddressLine, validateFormOptionalAddressLine, validateFormPostCode}
 import models._
 import org.joda.time.LocalDate
@@ -25,9 +25,12 @@ import play.api.data.Forms._
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
+import play.api.data.validation.Constraint
 import utils.AtedUtils
 import utils.AtedUtils._
 import uk.gov.hmrc.play.mappers.DateTuple._
+import uk.gov.hmrc.play.mappers.StopOnFirstFail
+import uk.gov.hmrc.play.mappers.StopOnFirstFail.constraint
 
 import scala.annotation.tailrec
 import scala.util.Try
@@ -53,7 +56,7 @@ object PropertyDetailsForms {
     """^(?!\.)("([^"\r\\]|\\["\r\\])*"|([-a-zA-Z0-9!#$%&'*+/=?^_`{|}~]|(?<!\.)\.)*)
       |(?<!\.)@[a-zA-Z0-9][\w\.-]*[a-zA-Z0-9]\.[a-zA-Z][a-zA-Z\.]*[a-zA-Z]$""".r
   val supportingInfoRegex = """^[A-Za-z0-9\s\.\,\']*$"""
-  val titleRegex = """^[A-Za-z0-9\s\.\,\']*$"""
+  val titleRegex = "^[A-Za-z0-9 ,.&']{1,40}$"
   val supportingInfo = 200
 
   val propertyDetailsAddressForm = Form(
@@ -85,10 +88,13 @@ object PropertyDetailsForms {
 
   val propertyDetailsTitleForm = Form(
     mapping(
-      "titleNumber" -> text
-        .verifying(Messages("ated.error.titleNumber", Messages("ated.error.titleNumber"), titleNumberLength),
-          x => x.isEmpty || (x.nonEmpty && x.replaceAll(" ", "").length <= titleNumberLength) )
-        .verifying(Messages("ated.error.titleNumber.invalid", Messages("ated.error.titleNumber")), x => x matches titleRegex)
+      "titleNumber" -> text.verifying(
+        StopOnFirstFail(
+          constraint[String](Messages("ated.error.titleNumber", Messages("ated.error.titleNumber"), titleNumberLength), x =>  x.isEmpty
+            || (x.nonEmpty && x.replaceAll(" ", "").length <= titleNumberLength)),
+          constraint[String](Messages("ated.error.titleNumber.invalid", Messages("ated.error.titleNumber")), x => x.trim.matches(titleRegex))
+        )
+      )
     )(PropertyDetailsTitle.apply)(PropertyDetailsTitle.unapply)
   )
 
