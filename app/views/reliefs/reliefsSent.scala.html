@@ -24,11 +24,13 @@
 @import org.joda.time.format.DateTimeFormat
 @import org.joda.time.LocalDate
 
+@serviceName = {@Messages("ated.welcome.related.link.first")}
+
 @atedMain(title = Messages("ated.relief-sent.title"), attorney = atedContext.user.authContext.attorney) {
 
   <div id="banner" class="transaction-banner--complete">
     <h1 id="banner-text">
-        @Messages("ated.relief-sent.banner-text", DateTimeFormat.forPattern("d MMMM yyyy").print(new LocalDate()))
+        @Messages("ated.relief-sent.banner-text", serviceName)
         </h1>
   </div>
 

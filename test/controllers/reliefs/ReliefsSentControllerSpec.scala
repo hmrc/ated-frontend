@@ -102,7 +102,7 @@ class ReliefsSentControllerSpec extends PlaySpec with OneServerPerSuite with Moc
 
             val document = Jsoup.parse(contentAsString(result))
             document.title() must be (TitleBuilder.buildTitle("Your returns have been successfully submitted"))
-            document.getElementById("banner-text").text() must be(s"Your returns have been successfully submitted on $submittedDate")
+            document.getElementById("banner-text").text() must be(s"Your returns have been successfully submitted - Annual Tax on enveloped dwellings")
             document.getElementById("completed-returns").text() must be("You can view your completed returns, payment references and ways to pay in the ATED online service.")
             document.getElementById("email-confirmation").text() must be("You will not receive an email confirmation.")
             document.getElementById("receipt-message").text() must be("The ATED charge for these returns is £0")
@@ -117,7 +117,7 @@ class ReliefsSentControllerSpec extends PlaySpec with OneServerPerSuite with Moc
 
             val document = Jsoup.parse(contentAsString(result))
             document.title() must be("Your returns have been successfully submitted")
-            document.getElementById("header").text() must be(s"Your returns have been successfully submitted on $submittedDate")
+            document.getElementById("header").text() must be(s"Your returns have been successfully submitted - Annual Tax on enveloped dwellings")
             document.getElementById("completed-returns").text() must be("You can view your completed returns, payment references and ways to pay in the ATED online service.")
             document.getElementById("email-confirmation").text() must be("You will not receive an email confirmation.")
             document.getElementById("receipt-message").text() must be("The ATED charge for these returns is £0")

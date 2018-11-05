@@ -24,11 +24,13 @@
 @import org.joda.time.format.DateTimeFormat
 @import org.joda.time.LocalDate
 
+@serviceName = {@Messages("ated.welcome.related.link.first")}
+
 @printFriendly(Messages("ated.relief-sent.title")) {
 
     <script src='@controllers.routes.AssetsController.at("javascript/printFriendly.js")'></script>
 
-    <h1 id="header">@Messages("ated.relief-sent.header", DateTimeFormat.forPattern("d MMMM yyyy").print(new LocalDate()))
+    <h1 id="header">@Messages("ated.relief-sent.header", serviceName)
     </h1>
 
     <p id="completed-returns">@Messages("ated.reliefs-sent.completed-message")</p>
