@@ -77,10 +77,12 @@ object BicSwiftCode extends (String => BicSwiftCode){
   implicit val formats = Json.format[BicSwiftCode]
 
   def isValid(swiftCode: String): Boolean = {
+    val swiftCodeRegex = "^[A-Za-z0-9 \\-]{1,11}$"
+
     val stripped = swiftCode.replaceAll(" ", "")
     val SWIFT_CODE_LENGTH_1 = 8
     val SWIFT_CODE_LENGTH_2 = 11
-    stripped.length == SWIFT_CODE_LENGTH_1 || stripped.length == SWIFT_CODE_LENGTH_2
+    stripped.length == SWIFT_CODE_LENGTH_1 || stripped.length == SWIFT_CODE_LENGTH_2 || stripped.trim.matches(swiftCodeRegex)
   }
 }
 
@@ -91,10 +93,11 @@ object Iban extends (String => Iban){
   implicit val formats = Json.format[Iban]
 
   def isValid(iban: String): Boolean = {
+    val ibanRegex = "^[A-Za-z0-9 \\-]{1,34}$"
     val stripped = iban.replaceAll(" ", "")
     val MIN_IBAN_LENGTH = 1
     val MAX_IBAN_LENGTH = 34
-    stripped.length >= MIN_IBAN_LENGTH && stripped.length <= MAX_IBAN_LENGTH
+    stripped.length >= MIN_IBAN_LENGTH && stripped.length <= MAX_IBAN_LENGTH || stripped.trim.matches(ibanRegex)
   }
 }
 

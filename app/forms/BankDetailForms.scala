@@ -30,6 +30,7 @@ import scala.util.Try
 object BankDetailForms {
 
   val TWO = 2
+  val accountNameRegex = "^[a-zA-Z][a-zA-Z '.& \\/]{1,59}$"
 
   val sortCodeTuple: Mapping[Option[SortCode]] = sortCodeTupleOpt
 
@@ -97,11 +98,15 @@ object BankDetailForms {
       }
     }
 
+
+
     def validateAccountName: Seq[Option[FormError]] = {
       val accountName = bankDetails.data.get("accountName").map(_.trim)
       if (accountName.getOrElse("").length == 0) Seq(Some(FormError("accountName", Messages("ated.bank-details.error-key.accountName.empty"))))
-      else if (accountName.nonEmpty && accountName.getOrElse("").length > 60) {
+      else if (accountName.fold(false)(_.length > 60)) {
         Seq(Some(FormError("accountName", Messages("ated.bank-details.error-key.accountName.max-len"))))
+      }  else if (accountName.fold(false)(!_.trim.matches(accountNameRegex))) {
+        Seq(Some(FormError("accountName", Messages("ated.bank-details.error-key.accountName.invalid"))))
       }
       else Seq()
     }
@@ -127,8 +132,8 @@ object BankDetailForms {
       (sortCodeElement1, sortCodeElement2, sortCodeElement3) match {
         case (Some(a), Some(b), Some(c)) if a.length > 0 && b.length > 0 && c.length > 0 =>
           if (SortCodeFields.isValid(a) && SortCodeFields.isValid(b) & SortCodeFields.isValid(c)) Seq()
-          else Seq(Some(FormError("sortCode", "ated.bank-details.error-key.sortCode.invalid")))
-        case (_, _, _) => Seq(Some(FormError("sortCode", "ated.bank-details.error-key.sortCode.empty")))
+          else Seq(Some(FormError("sortCode", Messages("ated.bank-details.error-key.sortCode.invalid"))))
+        case (_, _, _) => Seq(Some(FormError("sortCode", Messages("ated.bank-details.error-key.sortCode.empty"))))
       }
     }
 
