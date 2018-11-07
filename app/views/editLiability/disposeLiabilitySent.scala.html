@@ -29,18 +29,12 @@
   ga('set', 'page', page);
 }
 
-@today = {
-  @DateTimeFormat.forPattern("d MMMM yyyy").print(new LocalDate())
-}
-
-@serviceName = {@Messages("ated.welcome.related.link.first")}
-
-@atedMain(title = Messages("ated.edit-liability.sent.header.dispose", serviceName),
+@atedMain(title = Messages("ated.edit-liability.sent.header.dispose"),
           attorney = atedContext.user.authContext.attorney,
           analyticsAdditionalJs = Some(analyticsJs)) {
 
   <div id="banner" class="transaction-banner--complete">
-    <h1 id="header">@Messages("ated.edit-liability.sent.header.dispose", serviceName)</h1>
+    <h1 id="header">@Messages("ated.edit-liability.sent.header.dispose")</h1>
   </div>
 
   <p id="view-message">@Messages("ated.edit-liabilty.sent.view-message")</p>

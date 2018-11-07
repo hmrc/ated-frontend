@@ -215,8 +215,8 @@ ated.avoidance-schemes.avoidance-scheme-promoter.text = {0} Promoter reference n
 ##### RELIEF SENT
 
 ated.relief-sent.title = Your returns have been successfully submitted
-ated.relief-sent.banner-text = Your returns have been successfully submitted - {0}
-ated.relief-sent.header = Your returns have been successfully submitted - {0}
+ated.relief-sent.banner-text = Your returns have been successfully submitted - Annual Tax on enveloped dwellings
+ated.relief-sent.header = Your returns have been successfully submitted - Annual Tax on enveloped dwellings
 ated.reliefs-sent.button = Finish and sign out
 ated.reliefs-sent.client-link = Your ATED online service
 ated.reliefs-sent.completed-message = You can view your completed returns, payment references and ways to pay in the ATED online service.
@@ -669,7 +669,7 @@ ated.chargeable-return-confirmation.reference.text = The reference to make this 
 ated.chargeable-return-late-payment.text = Late payment penalties can be issued when ATED is unpaid. Find out about <a href="https://www.gov.uk/guidance/pay-annual-tax-on-enveloped-dwellings" data-journey-click="ated-fronted:click:late-penalties-link">how to pay and payment deadlines</a>.
 ated.chargeable-return-late-payment-pf.text = Late payment penalties can be issued when ATED is unpaid. Find out about how to pay and payment deadlines at https://www.gov.uk/guidance/pay-annual-tax-on-enveloped-dwellings .
 
-ated.chargeable-return-confirmation.submitted.text = Your return has been successfully submitted on {0}
+ated.chargeable-return-confirmation.submitted.text = Your return has been successfully submitted - Annual Tax on enveloped dwellings
 ated.chargeable-return-confirmation.ated-charge = The ATED charge is {0}
 ated.chargeable-return-confirmation.payment-reference-number = Payment reference number {0}
 ated.chargeable-return-confirmation.not-receive-text = You can view your balance in your ATED online service. There can be a 24-hour delay before you see any updates.
@@ -1131,11 +1131,11 @@ ated.edit.liability.sent.amount-already-paid.title-further = Your previous ATED 
 ated.edit.liability.sent.amount-already-paid = If you have already paid you owe HMRC {0} for this further return
 ated.edit.liability.sent.amount-not-paid.title = If you have not paid your previous ATED liability
 ated.edit.liability.sent.amount-not-paid.title-further = If you have not already paid you owe HMRC {0} for this further return
-ated.edit-liability.sent.header.change = Your change in details has been successfully submitted - {0}
-ated.edit-liability.sent.header.further = Your further return has been successfully submitted - {0}
-ated.edit-liability.sent.header.dispose = Your amended return has been successfully submitted - {0}
+ated.edit-liability.sent.header.change = Your change in details has been successfully submitted - Annual Tax on enveloped dwellings
+ated.edit-liability.sent.header.further = Your further return has been successfully submitted - Annual Tax on enveloped dwellings
+ated.edit-liability.sent.header.dispose = Your amended return has been successfully submitted - Annual Tax on enveloped dwellings
 ated.edit-liability.sent.header.date = on the
-ated.edit-liability.sent.header.amend = Your amended return has been successfully submitted - {0}
+ated.edit-liability.sent.header.amend = Your amended return has been successfully submitted - Annual Tax on enveloped dwellings
 ated.edit.liability.sent.liable-for = If you have sold the property you may be liable for <a href="https://www.gov.uk/guidance/capital-gains-tax-on-high-value-residential-property" data-journey-click="ated-fronted:click:capatial-gains-link">ATED-related Capital Gains Tax</a>.
 ated.edit.liability.sent.liable-for-pf = If you have sold the property you may be liable for ATED-related Capital Gains Tax
 

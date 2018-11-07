@@ -30,8 +30,6 @@
   ga('set', 'page', page);
 }
 
-@serviceName = {@Messages("ated.welcome.related.link.first")}
-
 @returnHeaderMessage = @{
   returnType match {
     case "F" => "ated.edit-liability.sent.header.further"
@@ -40,16 +38,12 @@
   }
 }
 
-@today = {
-  @DateTimeFormat.forPattern("d MMMM yyyy").print(new LocalDate())
-}
-
-@atedMain(title = Messages(returnHeaderMessage, serviceName),
+@atedMain(title = Messages(returnHeaderMessage),
           attorney = atedContext.user.authContext.attorney,
           analyticsAdditionalJs = Some(analyticsJs)) {
 
   <div id="banner" class="transaction-banner--complete">
-      <h1 id="header">@Messages(returnHeaderMessage, serviceName)</h1>
+      <h1 id="header">@Messages(returnHeaderMessage)</h1>
   </div>
 
   <p id="view-message">@Messages("ated.edit-liabilty.sent.view-message")</p>
