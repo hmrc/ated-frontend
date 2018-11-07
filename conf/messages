@@ -729,7 +729,10 @@ ated.non-uk-reg.title = Edit your overseas company registration number
 ated.non-uk-reg.header = Edit your overseas company registration number
 ated.non-uk-reg.subheader = Manage your ATED service
 ated.non-uk-reg.businessUniqueId.length = The overseas company registration number cannot be more than {0} characters
+ated.non-uk-reg.businessUniqueId.invalid = The overseas company registration number must only include letters a to z, numbers 0 to 9, ampersands (&), apostrophes (‘) and hyphens (-)
 ated.non-uk-reg.issuingInstitution.length = The institution that issued the overseas company registration number cannot be more than {0} characters
+ated.non-uk-reg.issuingInstitution.invalid = Issuing institution must only include letters a to z, numbers 0 to 9, ampersands (&), apostrophes (‘), forward slashes (/) and hyphens (-)
+ated.non-uk-reg.countryCode.invalid = Enter a country outside of United Kingdom and Great Britain
 
 ##### CORRESPONDENCE ADDRESS
 
@@ -1165,6 +1168,7 @@ ated.bank-details.uk-bank-account.no-selected.important-text = If you require a 
 ated.bank-details.error-key.accountName = There is a problem with the account holder name
 ated.bank-details.error-key.accountName.empty = You must enter the name of the bank account holder
 ated.bank-details.error-key.accountName.max-len = The account holder name cannot be more than 60 characters
+ated.bank-details.error-key.accountName.invalid = The account holder name must only include letters a to z, ampersands (&), apostrophes (‘), forward slashes (/)  and full stops (.)
 ated.bank-details.error-key.accountNumber = There is a problem with the account number
 ated.bank-details.error-key.accountNumber.empty = You must enter an account number
 ated.bank-details.error-key.accountNumber.max-len = The account number cannot be more than 18 characters
@@ -1180,10 +1184,11 @@ ated.bank-details.error-key.hasBankDetails.empty = You must answer the bank deta
 ated.bank-details.error-key.iban = There is a problem with the IBAN
 ated.bank-details.error-key.iban.empty = You must enter the IBAN
 ated.bank-details.error-key.iban.max-len = The IBAN cannot be more than 34 characters
-ated.bank-details.error-key.iban.invalid = The IBAN cannot be more than 34 characters
+ated.bank-details.error-key.iban.invalid = The IBAN must only include letters a to z, numbers 0 to 9 and hyphens (-)
 ated.bank-details.error-key.bicSwiftCode = There is a problem with the SWIFT code
 ated.bank-details.error-key.bicSwiftCode.empty = You must enter the SWIFT code
-ated.bank-details.error-key.bicSwiftCode.invalid = The SWIFT code must be 8 or 11 characters
+ated.bank-details.error-key.bicSwiftCode.max-len = The SWIFT code must be 8 or 11 characters
+ated.bank-details.error-key.bicSwiftCode.invalid = The SWIFT code must only include letters a to z, numbers 0 to 9 and hyphens (-)
 
 ##### EDIT LIABILITY SUMMARY PAGE
 

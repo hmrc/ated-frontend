@@ -31,6 +31,8 @@ object BankDetailForms {
 
   val TWO = 2
   val accountNameRegex = "^[a-zA-Z][a-zA-Z '.& \\/]{1,59}$"
+  val swiftCodeRegex = "^[A-Za-z0-9 \\-]{1,11}$"
+  val ibanRegex = "^[A-Za-z0-9 \\-]{1,34}$"
 
   val sortCodeTuple: Mapping[Option[SortCode]] = sortCodeTupleOpt
 
@@ -98,8 +100,6 @@ object BankDetailForms {
       }
     }
 
-
-
     def validateAccountName: Seq[Option[FormError]] = {
       val accountName = bankDetails.data.get("accountName").map(_.trim)
       if (accountName.getOrElse("").length == 0) Seq(Some(FormError("accountName", Messages("ated.bank-details.error-key.accountName.empty"))))
@@ -140,15 +140,18 @@ object BankDetailForms {
     def validateIBAN: Seq[Option[FormError]] = {
       val iban = bankDetails.data.get("iban").map(_.trim).getOrElse("").replaceAll(" ", "")
       if (iban.length == 0) Seq(Some(FormError("iban", Messages("ated.bank-details.error-key.iban.empty"))))
-      else if (iban.length > 34) Seq(Some(FormError("iban", Messages("ated.bank-details.error-key.iban.max-len"))))
-      else if (!Iban.isValid(iban)) Seq(Some(FormError("iban", Messages("ated.bank-details.error-key.iban.invalid"))))
+      else if (!Iban.isValid(iban)) Seq(Some(FormError("iban", Messages("ated.bank-details.error-key.iban.max-len"))))
+      else if (!iban.trim.matches(ibanRegex)) Seq(Some(FormError("iban", Messages("ated.bank-details.error-key.iban.invalid"))))
       else Seq()
     }
 
     def validateBicSwiftCode: Seq[Option[FormError]] = {
       val bicSwiftCode = bankDetails.data.get("bicSwiftCode").map(_.trim).getOrElse("").replaceAll(" ", "")
       if (bicSwiftCode.length == 0) Seq(Some(FormError("bicSwiftCode", Messages("ated.bank-details.error-key.bicSwiftCode.empty"))))
-      else if (!BicSwiftCode.isValid(bicSwiftCode)) Seq(Some(FormError("bicSwiftCode", Messages("ated.bank-details.error-key.bicSwiftCode.invalid"))))
+      else if (!BicSwiftCode.isValid(bicSwiftCode)) Seq(Some(FormError("bicSwiftCode", Messages("ated.bank-details.error-key.bicSwiftCode.max-len"))))
+      else if (!bicSwiftCode.trim.matches(swiftCodeRegex)) {
+        Seq(Some(FormError("bicSwiftCode", Messages("ated.bank-details.error-key.bicSwiftCode.invalid"))))
+      }
       else Seq()
     }
 

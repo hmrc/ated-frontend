@@ -55,9 +55,9 @@ class OverseasCompanyRegistrationFormSpec extends PlaySpec with OneServerPerSuit
     "throw overseasCompanyRegistrationForm error on entering invalid input data" in {
       OverseasCompanyRegistrationForm.overseasCompanyRegistrationForm.bind(invalidCompanyFormData).fold(
         formWithErrors => {
-          formWithErrors.errors(0).message must be("ated.non-uk-reg.businessUniqueId.invalid")
-          formWithErrors.errors(1).message must be("ated.non-uk-reg.issuingInstitution.invalid")
-          formWithErrors.errors(2).message must be("ated.non-uk-reg.countryCode.invalid")
+          formWithErrors.errors(0).message must be("The overseas company registration number must only include letters a to z, numbers 0 to 9, ampersands (&), apostrophes (‘) and hyphens (-)")
+          formWithErrors.errors(1).message must be("Issuing institution must only include letters a to z, numbers 0 to 9, ampersands (&), apostrophes (‘), forward slashes (/) and hyphens (-)")
+          formWithErrors.errors(2).message must be("Enter a country outside of United Kingdom and Great Britain")
           formWithErrors.errors.length must be(3)
         },
         success => {
@@ -71,7 +71,7 @@ class OverseasCompanyRegistrationFormSpec extends PlaySpec with OneServerPerSuit
         formWithErrors => {
           formWithErrors.errors(0).message must be("The overseas company registration number cannot be more than 60 characters")
           formWithErrors.errors(1).message must be("The institution that issued the overseas company registration number cannot be more than 40 characters")
-          formWithErrors.errors(2).message must be("ated.non-uk-reg.countryCode.invalid")
+          formWithErrors.errors(2).message must be("Enter a country outside of United Kingdom and Great Britain")
           formWithErrors.errors.length must be(3)
         },
         success => {
@@ -79,10 +79,5 @@ class OverseasCompanyRegistrationFormSpec extends PlaySpec with OneServerPerSuit
         }
       )
     }
-
-
   }
-
-
-
 }

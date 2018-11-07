@@ -1,3 +1,19 @@
+/*
+ * Copyright 2018 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package forms
 
 import models.{BicSwiftCode, Iban, SortCode}
@@ -43,8 +59,8 @@ class BankDetailFormsSpec extends PlaySpec with OneServerPerSuite {
 
   val invalidNonUkData: Map[String, String] = Map("hasUKBankAccount" -> "false",
     "accountName" -> "Account Name***",
-    "bicSwiftCode" -> "123654789654***",
-    "iban" -> "GADGSDGADSGF***"
+    "bicSwiftCode" -> "12364***",
+    "iban" -> "%$***"
   )
 
   "bankDetailsForm" must {
@@ -111,8 +127,7 @@ class BankDetailFormsSpec extends PlaySpec with OneServerPerSuite {
       "supplied with invalid uk account form data" in {
         BankDetailForms.validateBankDetails(BankDetailForms.bankDetailsForm.bind(invalidUkData)).fold (
           formWithErrors => {
-            println(formWithErrors)
-            formWithErrors.errors.head.message must be("ated.bank-details.error-key.accountName.invalid")
+            formWithErrors.errors.head.message must be("The account holder name must only include letters a to z, ampersands (&), apostrophes (‘), forward slashes (/)  and full stops (.)")
             formWithErrors.errors(1).message must be("You must enter a valid account number")
             formWithErrors.errors(2).message must be("You must enter a valid sort code")
             formWithErrors.errors.length must be(3)
@@ -128,9 +143,9 @@ class BankDetailFormsSpec extends PlaySpec with OneServerPerSuite {
       "supplied with invalid non uk bank form data" in {
         BankDetailForms.validateBankDetails(BankDetailForms.bankDetailsForm.bind(invalidNonUkData)).fold (
           formWithErrors => {
-            formWithErrors.errors.head.message must be("ated.bank-details.error-key.accountName.invalid")
-            formWithErrors.errors(1).message must be("Need invalid Message")
-            formWithErrors.errors(2).message must be("Need invalid Message")
+            formWithErrors.errors.head.message must be("The account holder name must only include letters a to z, ampersands (&), apostrophes (‘), forward slashes (/)  and full stops (.)")
+            formWithErrors.errors(1).message must be("The IBAN must only include letters a to z, numbers 0 to 9 and hyphens (-)")
+            formWithErrors.errors(2).message must be("The SWIFT code must only include letters a to z, numbers 0 to 9 and hyphens (-)")
             formWithErrors.errors.length must be(3)
           },
           success => {
