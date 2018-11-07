@@ -214,9 +214,9 @@ ated.avoidance-schemes.avoidance-scheme-promoter.text = {0} Promoter reference n
 
 ##### RELIEF SENT
 
-ated.relief-sent.title = Your returns have been successfully submitted
-ated.relief-sent.banner-text = Your returns have been successfully submitted - Annual Tax on enveloped dwellings
-ated.relief-sent.header = Your returns have been successfully submitted - Annual Tax on enveloped dwellings
+ated.relief-sent.title = Your returns have been successfully submitted - Annual Tax on enveloped dwellings
+ated.relief-sent.banner-text = Your returns have been successfully submitted
+ated.relief-sent.header = Your returns have been successfully submitted
 ated.reliefs-sent.button = Finish and sign out
 ated.reliefs-sent.client-link = Your ATED online service
 ated.reliefs-sent.completed-message = You can view your completed returns, payment references and ways to pay in the ATED online service.
