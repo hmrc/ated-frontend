@@ -99,7 +99,7 @@ class ChargeableReturnConfirmationControllerSpec extends PlaySpec with OneServer
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
-              document.getElementById("banner").text() must include("Your return has been successfully submitted - Annual Tax on enveloped dwellings")
+              document.getElementById("banner").text() must include("Your return has been successfully submitted")
               document.getElementById("completed-message").text() must be("You can view your completed returns, payment references and ways to pay in the ATED online service.")
               document.getElementById("email-message").text() must include("You will not receive an email confirmation.")
               document.getElementById("receipt-message-title").text() must include("Charges for this return")
@@ -117,7 +117,7 @@ class ChargeableReturnConfirmationControllerSpec extends PlaySpec with OneServer
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
-              document.getElementById("header").text() must include("Your return has been successfully submitted - Annual Tax on enveloped dwellings")
+              document.getElementById("header").text() must include("Your return has been successfully submitted")
               document.getElementById("completed-message").text() must be("You can view your completed returns, payment references and ways to pay in the ATED online service.")
               document.getElementById("email-message").text() must include("You will not receive an email confirmation.")
               document.getElementById("receipt-message-title").text() must include("Charges for this return")

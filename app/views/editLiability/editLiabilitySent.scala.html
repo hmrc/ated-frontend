@@ -38,7 +38,14 @@
   }
 }
 
-@atedMain(title = Messages(returnHeaderMessage),
+@returnTitleMessage = @{
+    returnType match {
+        case "F" => "ated.edit-liability.sent.title.further"
+        case "A" => "ated.edit-liability.sent.title.amend"
+        case "C" => "ated.edit-liability.sent.title.change"
+    }
+}
+@atedMain(title = Messages(returnTitleMessage),
           attorney = atedContext.user.authContext.attorney,
           analyticsAdditionalJs = Some(analyticsJs)) {
 
