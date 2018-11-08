@@ -774,6 +774,7 @@ ated.registered-details.safeId = SafeId
 ated.registered-details.isEditable = Is editable
 ated.registered-address.error.general.name = There is a problem with business name
 ated.registered-details.businessName.length = Business name must not be more than 105 characters
+ated.registered-details.businessName.invalid = Business name must only include letters a to z, numbers 0 to 9, apostrophes (‘), forward slashes (/) and ampersands (&)
 ated.registered-address.error.general.addressDetails.addressLine1 = There is a problem with address line 1
 ated.registered-address.error.general.addressDetails.addressLine2 = There is a problem with address line 2
 ated.registered-address.error.general.addressDetails.addressLine3 = There is a problem with address line 3
@@ -807,7 +808,7 @@ ated.contact-details-phoneNumber.error = You must enter a telephone number
 ated.contact-details-emailAddress.error = You must enter an email address
 ated.contact-phoneNumber.length = Telephone number must not be more than 24 characters
 ated.contact-phoneNumber.invalidText =Telephone number is not valid
-ated.contact-email.length = Email address must not be more than 241 characters
+ated.contact-email.length = Email address must not be more than 132 characters
 ated.contact-email.error = Email address is not valid
 # this is error thrown for save failure
 ated.contact-details.error.general.addressType = Something has gone wrong, try again later.

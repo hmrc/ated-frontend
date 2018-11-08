@@ -135,15 +135,16 @@ class EditContactEmailControllerSpec extends PlaySpec with OneServerPerSuite wit
         "validate form" must {
 
 
-          "Email address must not be more than 241 characters if entered" in {
+          "Email address must not be more than 132 characters if entered" in {
             implicit val hc: HeaderCarrier = HeaderCarrier()
-            val emailTest = "a" * 240 + "@gmail.com"
+            val emailTest = "a" * 123 + "@gmail.com"
+
             val inputJson = Json.parse( s"""{"emailAddress": "$emailTest", "emailConsent": true }""")
 
             submitWithAuthorisedUserSuccess(None)(FakeRequest().withJsonBody(inputJson)) {
               result =>
                 status(result) must be(BAD_REQUEST)
-                contentAsString(result) must include("Email address must not be more than 241 characters")
+                contentAsString(result) must include("Email address must not be more than 132 characters")
             }
           }
 
