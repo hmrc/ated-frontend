@@ -42,7 +42,10 @@ trait EditLiabilitySentController extends AtedBaseController
           submitResponse.liabilityReturnResponse.find(_.oldFormBundleNumber == oldFormBundleNo) match {
             case Some(resp) =>
               val returnType = if (resp.amountDueOrRefund < BigDecimal(0)) "A" else if (resp.amountDueOrRefund > BigDecimal(0)) "F" else "C"
-              Ok(views.html.editLiability.editLiabilitySent(oldFormBundleNo, returnType, resp.paymentReference, resp.amountDueOrRefund, resp.liabilityAmount))
+              Ok(views.html.editLiability.editLiabilitySent(oldFormBundleNo, returnType, resp.paymentReference,
+                resp.amountDueOrRefund, resp.liabilityAmount,
+                createHeaderMessages(returnType,"ated.edit-liability.sent.title"),
+                createHeaderMessages(returnType,"ated.edit-liability.sent.header")))
             case None => Redirect(controllers.routes.AccountSummaryController.view())
           }
         case None =>
@@ -59,8 +62,15 @@ trait EditLiabilitySentController extends AtedBaseController
       } yield {
         val x = submittedResponse.get.liabilityReturnResponse.find(_.oldFormBundleNumber == oldFormBundleNo)
         val returnType = if (x.get.amountDueOrRefund < BigDecimal(0)) "A" else if (x.get.amountDueOrRefund > BigDecimal(0)) "F" else "C"
-        Ok(views.html.editLiability.editLiabilitySentPrintFriendly(submittedResponse, returnType, organisationName, x.get.paymentReference, x.get.amountDueOrRefund, x.get.liabilityAmount))
+        Ok(views.html.editLiability.editLiabilitySentPrintFriendly(submittedResponse, returnType, organisationName,
+          x.get.paymentReference, x.get.amountDueOrRefund, x.get.liabilityAmount))
       }
+  }
+
+  private def createHeaderMessages(returnType: String, prefix: String): String = returnType match {
+       case "F" => s"$prefix.further"
+       case "A" => s"$prefix.amend"
+       case "C" => s"$prefix.change"
   }
 
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  *@
 
-@(formBundleNum:String, returnType: String, paymentReference: Option[String], amountDueOrRefund: BigDecimal, liabilityAmount : BigDecimal)(implicit atedContext: AtedContext, messages: Messages)
+@(formBundleNum:String, returnType: String, paymentReference: Option[String], amountDueOrRefund: BigDecimal, liabilityAmount : BigDecimal, returnTitleMessage: String, returnHeaderMessage: String)(implicit atedContext: AtedContext, messages: Messages)
 @import models._
 @import uk.gov.hmrc.play.views.html._
 @import uk.gov.hmrc.play.views.html.helpers._
@@ -30,21 +30,6 @@
   ga('set', 'page', page);
 }
 
-@returnHeaderMessage = @{
-  returnType match {
-    case "F" => "ated.edit-liability.sent.header.further"
-    case "A" => "ated.edit-liability.sent.header.amend"
-    case "C" => "ated.edit-liability.sent.header.change"
-  }
-}
-
-@returnTitleMessage = @{
-    returnType match {
-        case "F" => "ated.edit-liability.sent.title.further"
-        case "A" => "ated.edit-liability.sent.title.amend"
-        case "C" => "ated.edit-liability.sent.title.change"
-    }
-}
 @atedMain(title = Messages(returnTitleMessage),
           attorney = atedContext.user.authContext.attorney,
           analyticsAdditionalJs = Some(analyticsJs)) {
