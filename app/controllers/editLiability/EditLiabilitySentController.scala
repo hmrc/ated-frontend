@@ -27,6 +27,7 @@ import utils.AtedConstants._
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
 import services.SubscriptionDataService
+import controllers.viewhelper.EditLiability._
 
 trait EditLiabilitySentController extends AtedBaseController
   with AtedFrontendAuthHelpers with DelegationAwareActions  with ClientHelper {
@@ -41,7 +42,7 @@ trait EditLiabilitySentController extends AtedBaseController
         case Some(submitResponse) =>
           submitResponse.liabilityReturnResponse.find(_.oldFormBundleNumber == oldFormBundleNo) match {
             case Some(resp) =>
-              val returnType = if (resp.amountDueOrRefund < BigDecimal(0)) "A" else if (resp.amountDueOrRefund > BigDecimal(0)) "F" else "C"
+              val returnType = returnTypeFromAmount(resp.amountDueOrRefund)
               Ok(views.html.editLiability.editLiabilitySent(oldFormBundleNo, returnType, resp.paymentReference,
                 resp.amountDueOrRefund, resp.liabilityAmount,
                 createHeaderMessages(returnType,"ated.edit-liability.sent.title"),
@@ -65,12 +66,6 @@ trait EditLiabilitySentController extends AtedBaseController
         Ok(views.html.editLiability.editLiabilitySentPrintFriendly(submittedResponse, returnType, organisationName,
           x.get.paymentReference, x.get.amountDueOrRefund, x.get.liabilityAmount))
       }
-  }
-
-  private def createHeaderMessages(returnType: String, prefix: String): String = returnType match {
-       case "F" => s"$prefix.further"
-       case "A" => s"$prefix.amend"
-       case "C" => s"$prefix.change"
   }
 
 }
