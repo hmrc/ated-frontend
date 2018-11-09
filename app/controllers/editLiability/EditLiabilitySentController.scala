@@ -62,7 +62,7 @@ trait EditLiabilitySentController extends AtedBaseController
         organisationName <- subscriptionDataService.getOrganisationName
       } yield {
         val x = submittedResponse.get.liabilityReturnResponse.find(_.oldFormBundleNumber == oldFormBundleNo)
-        val returnType = if (x.get.amountDueOrRefund < BigDecimal(0)) "A" else if (x.get.amountDueOrRefund > BigDecimal(0)) "F" else "C"
+        val returnType = returnTypeFromAmount(x.get.amountDueOrRefund)
         Ok(views.html.editLiability.editLiabilitySentPrintFriendly(submittedResponse, returnType, organisationName,
           x.get.paymentReference, x.get.amountDueOrRefund, x.get.liabilityAmount))
       }
