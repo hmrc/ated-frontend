@@ -52,7 +52,7 @@ object AtedForms {
   val faxLength = 24
   val businessNameLength = 105
   val businessNameRegex = "^[a-zA-Z0-9 '&\\\\/]{1,105}$"
-  val telephoneRegex = """^[A-Z0-9)\/(\-*#]+$""".r
+  val telephoneRegex = "^[A-Z0-9 )/(\\-*#]+$".r
   val emailRegex =
     """^(?!\.)("([^"\r\\]|\\["\r\\])*"|([-a-zA-Z0-9!#$%&'*+/=?^_`{|}~]|(?<!\.)\.)*)
       |(?<!\.)@[a-zA-Z0-9][\w\.-]*[a-zA-Z0-9]\.[a-zA-Z][a-zA-Z\.]*[a-zA-Z]$""".r
