@@ -91,8 +91,8 @@ class DisposeLiabilitySentControllerSpec extends PlaySpec with OneServerPerSuite
         result =>
           status(result) must be(OK)
           val document = Jsoup.parse(contentAsString(result))
-          document.title() must include(TitleBuilder.buildTitle(s"Your amended return has been successfully submitted on $date"))
-          document.getElementById("header").text() must be(s"Your amended return has been successfully submitted on $date")
+          document.title() must include(TitleBuilder.buildTitle(s"Your amended return has been successfully submitted - Annual Tax on enveloped dwellings"))
+          document.getElementById("header").text() must be(s"Your amended return has been successfully submitted")
           document.getElementById("view-message").text() must be("You can view your completed returns, overall balance, payment references and ways to pay in the ATED online service.")
           document.getElementById("email-message").text() must be("You will not receive an email confirmation.")
           document.getElementById("charges-heading").text() must be("Charges for this return")
@@ -164,7 +164,7 @@ class DisposeLiabilitySentControllerSpec extends PlaySpec with OneServerPerSuite
         result =>
           status(result) must be(OK)
           val document = Jsoup.parse(contentAsString(result))
-          document.title() must be(TitleBuilder.buildTitle(s"Your amended return has been successfully submitted on $date"))
+          document.title() must be(TitleBuilder.buildTitle(s"Your amended return has been successfully submitted - Annual Tax on enveloped dwellings"))
       }
     }
 
@@ -175,7 +175,7 @@ class DisposeLiabilitySentControllerSpec extends PlaySpec with OneServerPerSuite
         result =>
           status(result) must be(OK)
           val document = Jsoup.parse(contentAsString(result))
-          document.title() must be(TitleBuilder.buildTitle(s"Your amended return has been successfully submitted on $date"))
+          document.title() must be(TitleBuilder.buildTitle(s"Your amended return has been successfully submitted - Annual Tax on enveloped dwellings"))
       }
     }
 

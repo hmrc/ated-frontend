@@ -14,7 +14,7 @@
  * limitations under the License.
  *@
 
-@(formBundleNum:String, returnType: String, paymentReference: Option[String], amountDueOrRefund: BigDecimal, liabilityAmount : BigDecimal)(implicit atedContext: AtedContext, messages: Messages)
+@(formBundleNum:String, returnType: String, paymentReference: Option[String], amountDueOrRefund: BigDecimal, liabilityAmount : BigDecimal, returnTitleMessage: String, returnHeaderMessage: String)(implicit atedContext: AtedContext, messages: Messages)
 @import models._
 @import uk.gov.hmrc.play.views.html._
 @import uk.gov.hmrc.play.views.html.helpers._
@@ -30,24 +30,12 @@
   ga('set', 'page', page);
 }
 
-@returnHeaderMessage = @{
-  returnType match {
-    case "F" => "ated.edit-liability.sent.header.further"
-    case "A" => "ated.edit-liability.sent.header.amend"
-    case "C" => "ated.edit-liability.sent.header.change"
-  }
-}
-
-@today = {
-  @DateTimeFormat.forPattern("d MMMM yyyy").print(new LocalDate())
-}
-
-@atedMain(title = Messages(returnHeaderMessage, today),
+@atedMain(title = Messages(returnTitleMessage),
           attorney = atedContext.user.authContext.attorney,
           analyticsAdditionalJs = Some(analyticsJs)) {
 
   <div id="banner" class="transaction-banner--complete">
-      <h1 id="header">@Messages(returnHeaderMessage, today)</h1>
+      <h1 id="header">@Messages(returnHeaderMessage)</h1>
   </div>
 
   <p id="view-message">@Messages("ated.edit-liabilty.sent.view-message")</p>

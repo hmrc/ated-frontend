@@ -27,15 +27,12 @@
 @import views.html.helpers._
 @import views.html.helpers.error._
 
-@today = {
-    @DateTimeFormat.forPattern("d MMMM yyyy").print(new LocalDate())
-}
 
 @printFriendly(Messages("ated.relief-sent.title")) {
 
 <script src='@controllers.routes.AssetsController.at("javascript/printFriendly.js")'></script>
 
-<h1 id="header">@Messages("ated.edit-liability.sent.header.dispose", today)
+<h1 id="header">@Messages("ated.edit-liability.sent.header.dispose")
 </h1>
 
 <p id="view-message">@Messages("ated.edit-liabilty.sent.view-message")</p>

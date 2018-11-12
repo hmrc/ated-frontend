@@ -58,6 +58,10 @@ object AtedConstants {
   val TypeChangeLiabilityDraft = "Change_Liability"
   val TypeDisposeLiabilityDraft = "Dispose_Liability"
 
+  val Further = "F"
+  val Amend = "A"
+  val Change = "C"
+
   val SelectedPreviousReturn = "selected-previous-return"
 
 }
