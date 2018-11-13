@@ -56,10 +56,10 @@ object AtedForms {
   val emailRegex =
     """^(?!\.)("([^"\r\\]|\\["\r\\])*"|([-a-zA-Z0-9!#$%&'*+/=?^_`{|}~]|(?<!\.)\.)*)
       |(?<!\.)@[a-zA-Z0-9][\w\.-]*[a-zA-Z0-9]\.[a-zA-Z][a-zA-Z\.]*[a-zA-Z]$""".r
-  val postCodeRegex = "^[A-Z]{1,2}[0-9][0-9A-Z]?\\s?[0-9][A-Z]{2}|BFPO\\s?[0-9]{1,10}$".r
-  val addressLineRegex = "^[A-Za-z0-9 \\-,.&']{1,35}$".r
-  val addressRegex = "^[A-Za-z0-9 \\-,.&']{1,35}$"
-  val nameRegex = "^[a-zA-Z &`\\-\'^]{1,35}$"
+  val PostCodeRegex = "^[A-Z]{1,2}[0-9][0-9A-Z]?\\s?[0-9][A-Z]{2}|BFPO\\s?[0-9]{1,10}$".r
+  val AddressLineRegex = "^[A-Za-z0-9 \\-,.&']{1,35}$".r
+  val AddressRegex = "^[A-Za-z0-9 \\-,.&']{1,35}$"
+  val NameRegex = "^[a-zA-Z &`\\-\'^]{1,35}$"
 
   val registeredDetailsForm = Form(
     mapping(
@@ -143,14 +143,14 @@ object AtedForms {
         StopOnFirstFail(
           constraint[String](Messages("ated.contact-details-first-name.error"), x => checkBlankFieldLength(x)),
           constraint[String](Messages("ated.contact-details-first-name.length"), x => x.isEmpty || (x.nonEmpty && x.length <= nameLength)),
-          constraint[String](Messages("ated.contact-details-first-name.invalid"), x => x.trim.matches(nameRegex))
+          constraint[String](Messages("ated.contact-details-first-name.invalid"), x => x.trim.matches(NameRegex))
         )
       ),
       "lastName" -> text.verifying(
         StopOnFirstFail(
           constraint[String](Messages("ated.contact-details-last-name.error"), x => checkBlankFieldLength(x)),
           constraint[String](Messages("ated.contact-details-last-name.length"), x => x.isEmpty || (x.nonEmpty && x.length <= nameLength)),
-          constraint[String](Messages("ated.contact-details-first-name.invalid"), x => x.trim.matches(nameRegex))
+          constraint[String](Messages("ated.contact-details-first-name.invalid"), x => x.trim.matches(NameRegex))
         )
       ),
       "phoneNumber" -> text
@@ -178,7 +178,7 @@ object AtedForms {
       val emailConsent = f.data.get("emailConsent")
       val formErrors = emailConsent match {
         case Some("true") => {
-          val email = f.data.get("emailAddress").getOrElse("")
+          val email = f.data.getOrElse("emailAddress","")
           if (email.isEmpty || (email.nonEmpty && email.trim.length == lengthZero)) {
             Seq(FormError("emailAddress", Messages("ated.contact-details-emailAddress.error")))
           } else if (email.length > emailLength) {
@@ -221,7 +221,7 @@ object AtedForms {
   def validatePostCodeFormat(optionValue: Option[String]): Boolean = {
     optionValue match {
       case Some(value) =>
-        if (postCodeRegex.findFirstMatchIn(value).exists(_ => true)) true
+        if (PostCodeRegex.findFirstMatchIn(value).exists(_ => true)) true
         else false
       case None => true
     }
@@ -230,7 +230,7 @@ object AtedForms {
   def validateAddressLine(optionValue: Option[String]): Boolean = {
     optionValue match {
       case Some(value) =>
-        if (addressLineRegex.findFirstMatchIn(value).exists(_ => true)) true
+        if (AddressLineRegex.findFirstMatchIn(value).exists(_ => true)) true
         else false
       case None => true
     }

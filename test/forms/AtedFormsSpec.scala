@@ -71,6 +71,7 @@ class AtedFormsSpec extends PlaySpec with OneServerPerSuite {
            formWithErrors.errors.length must be(3)
          },
          success => {
+           fail("Form should give an error")
          }
        )
      }
@@ -84,6 +85,7 @@ class AtedFormsSpec extends PlaySpec with OneServerPerSuite {
             formWithErrors.errors.length must be(3)
           },
           success => {
+            fail("Form should give an error")
           }
         )
       }

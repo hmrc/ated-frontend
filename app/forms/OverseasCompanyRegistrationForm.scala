@@ -27,26 +27,26 @@ import uk.gov.hmrc.play.mappers.StopOnFirstFail.constraint
 
 object OverseasCompanyRegistrationForm {
 
-  private val length60 = 60
-  private val length40 = 40
-  private val idNumberRegex = "^[a-zA-Z0-9 '&\\-]{1,60}$"
-  private val issuingInstitutionRegex = "^[a-zA-Z0-9 '&\\-\\/]{1,40}$"
-  private val issuingCountryRegex = "(?!^GB$)^[A-Z]{2}$"
+  private val Length60 = 60
+  private val Length40 = 40
+  private val IdNumberRegex = "^[a-zA-Z0-9 '&\\-]{1,60}$"
+  private val IssuingInstitutionRegex = "^[a-zA-Z0-9 '&\\-\\/]{1,40}$"
+  private val IssuingCountryRegex = "(?!^GB$)^[A-Z]{2}$"
 
   val overseasCompanyRegistrationForm = Form(
     mapping(
       "businessUniqueId" ->  optional(text).verifying(StopOnFirstFail(
-        constraint[Option[String]](Messages("ated.non-uk-reg.businessUniqueId.length", length60), x => x.isEmpty || (x.nonEmpty && x.get.length <= length60)),
+        constraint[Option[String]](Messages("ated.non-uk-reg.businessUniqueId.length", Length60), x => x.isEmpty || (x.nonEmpty && x.get.length <= Length60)),
         constraint[Option[String]](Messages("ated.non-uk-reg.businessUniqueId.invalid"), x => x.isEmpty
-          || x.fold(false)(_.trim.matches(idNumberRegex))))
+          || x.fold(false)(_.trim.matches(IdNumberRegex))))
       ),
       "issuingInstitution" -> optional(text).verifying(StopOnFirstFail(
-        constraint[Option[String]](Messages("ated.non-uk-reg.issuingInstitution.length", length40), x => x.isEmpty || (x.nonEmpty && x.get.length <= length40)),
+        constraint[Option[String]](Messages("ated.non-uk-reg.issuingInstitution.length", Length40), x => x.isEmpty || (x.nonEmpty && x.get.length <= Length40)),
         constraint[Option[String]](Messages("ated.non-uk-reg.issuingInstitution.invalid"), x => x.isEmpty
-          || x.fold(false)(_.trim.matches(issuingInstitutionRegex))))
+          || x.fold(false)(_.trim.matches(IssuingInstitutionRegex))))
       ),
       "countryCode" -> optional(text).verifying(Messages("ated.non-uk-reg.countryCode.invalid"), x => x.isEmpty
-        || x.fold(false)(_.trim.matches(issuingCountryRegex)))
+        || x.fold(false)(_.trim.matches(IssuingCountryRegex)))
     )(OverseasCompanyRegistration.apply)(OverseasCompanyRegistration.unapply)
   )
 }

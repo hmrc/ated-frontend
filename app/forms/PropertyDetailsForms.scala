@@ -16,7 +16,7 @@
 
 package forms
 
-import forms.AtedForms.{checkBlankFieldLength, nameRegex, postcodeLength}
+import forms.AtedForms.{checkBlankFieldLength, NameRegex, postcodeLength}
 import forms.FormHelper.{validateFormAddressLine, validateFormOptionalAddressLine, validateFormPostCode}
 import models._
 import org.joda.time.LocalDate
