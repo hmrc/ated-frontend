@@ -41,19 +41,18 @@ object AtedForms {
   val countryUK = "GB"
   val ELEVEN = 11
   val SIXTY = 60
-  val numRegex = """[0-9]{8}"""
-  val addressLineLength = 35
+  val NumRegex = """[0-9]{8}"""
+  val AddressLineLength = 35
   val PostcodeLength = 10
-  val countryLength = 2
+  val CountryLength = 2
   val EmailLength = 132
-  val lengthZero = 0
-  val nameLength = 35
-  val phoneLength = 24
-  val faxLength = 24
-  val businessNameLength = 105
+  val LengthZero = 0
+  val NameLength = 35
+  val PhoneLength = 24
+  val BusinessNameLength = 105
   val BusinessNameRegex = "^[a-zA-Z0-9 '&\\\\/]{1,105}$"
   val TelephoneRegex = "^[A-Z0-9 )/(\\-*#]+$".r
-  val emailRegex =
+  val EmailRegex =
     """^(?!\.)("([^"\r\\]|\\["\r\\])*"|([-a-zA-Z0-9!#$%&'*+/=?^_`{|}~]|(?<!\.)\.)*)
       |(?<!\.)@[a-zA-Z0-9][\w\.-]*[a-zA-Z0-9]\.[a-zA-Z][a-zA-Z\.]*[a-zA-Z]$""".r
   val PostCodeRegex = "^[A-Z]{1,2}[0-9][0-9A-Z]?\\s?[0-9][A-Z]{2}|BFPO\\s?[0-9]{1,10}$".r
@@ -66,7 +65,7 @@ object AtedForms {
       "isEditable" -> boolean,
       "name" -> text.verifying(
         validateBusinessname(Messages("ated.error.mandatory", Messages("ated.registered-details.business-name")),
-          Messages("bc.business-registration-error.businessName.length", businessNameLength),
+          Messages("bc.business-registration-error.businessName.length", BusinessNameLength),
           Messages("bc.business-registration-error.businessName.invalid"))
         ),
         "addressDetails" -> mapping(
@@ -93,9 +92,9 @@ object AtedForms {
             Messages("ated.error.address.postalcode.format", PostcodeLength))
         ),
         "countryCode" -> text.
-          verifying(Messages("ated.error.mandatory", Messages("ated.address.country")), x => x.length > lengthZero).
-          verifying(Messages("ated.error.address.country", Messages("ated.address.country"), addressLineLength),
-            x => x.isEmpty || (x.nonEmpty && x.length <= addressLineLength)).
+          verifying(Messages("ated.error.mandatory", Messages("ated.address.country")), x => x.length > LengthZero).
+          verifying(Messages("ated.error.address.country", Messages("ated.address.country"), AddressLineLength),
+            x => x.isEmpty || (x.nonEmpty && x.length <= AddressLineLength)).
           verifying(Messages("ated.error.address.country.non-uk"), x => !x.matches(countryUK))
 
       )(RegisteredAddressDetails.apply)(RegisteredAddressDetails.unapply)
@@ -129,9 +128,9 @@ object AtedForms {
           Messages("ated.error.address.postalcode.format", PostcodeLength))
       ),
       "countryCode" -> text.
-        verifying(Messages("ated.error.mandatory", Messages("ated.address.country")), x => x.length > lengthZero)
-        .verifying(Messages("ated.error.address.country", Messages("ated.address.country"), addressLineLength),
-          x => x.isEmpty || (x.nonEmpty && x.length <= addressLineLength))
+        verifying(Messages("ated.error.mandatory", Messages("ated.address.country")), x => x.length > LengthZero)
+        .verifying(Messages("ated.error.address.country", Messages("ated.address.country"), AddressLineLength),
+          x => x.isEmpty || (x.nonEmpty && x.length <= AddressLineLength))
 
     )(AddressDetails.apply)(AddressDetails.unapply)
   )
@@ -142,24 +141,24 @@ object AtedForms {
       "firstName" -> text.verifying(
         StopOnFirstFail(
           constraint[String](Messages("ated.contact-details-first-name.error"), x => checkBlankFieldLength(x)),
-          constraint[String](Messages("ated.contact-details-first-name.length"), x => x.isEmpty || (x.nonEmpty && x.length <= nameLength)),
+          constraint[String](Messages("ated.contact-details-first-name.length"), x => x.isEmpty || (x.nonEmpty && x.length <= NameLength)),
           constraint[String](Messages("ated.contact-details-first-name.invalid"), x => x.trim.matches(NameRegex))
         )
       ),
       "lastName" -> text.verifying(
         StopOnFirstFail(
           constraint[String](Messages("ated.contact-details-last-name.error"), x => checkBlankFieldLength(x)),
-          constraint[String](Messages("ated.contact-details-last-name.length"), x => x.isEmpty || (x.nonEmpty && x.length <= nameLength)),
+          constraint[String](Messages("ated.contact-details-last-name.length"), x => x.isEmpty || (x.nonEmpty && x.length <= NameLength)),
           constraint[String](Messages("ated.contact-details-first-name.invalid"), x => x.trim.matches(NameRegex))
         )
       ),
       "phoneNumber" -> text
         .verifying(Messages("ated.contact-details-phoneNumber.error"), x => checkBlankFieldLength(x))
-        .verifying(Messages("ated.contact-phoneNumber.length", phoneLength), x => x.isEmpty || (x.nonEmpty && x.length <= phoneLength))
+        .verifying(Messages("ated.contact-phoneNumber.length", PhoneLength), x => x.isEmpty || (x.nonEmpty && x.length <= PhoneLength))
         .verifying(Messages("ated.contact-phoneNumber.invalidText"), x => {
           val p = TelephoneRegex.findFirstMatchIn(x.replaceAll(" ", "")).exists(_ => true)
-          val y = x.length == lengthZero
-          val z = x.length > phoneLength
+          val y = x.length == LengthZero
+          val z = x.length > PhoneLength
           p || z || y
         })
     )(EditContactDetails.apply)(EditContactDetails.unapply)
@@ -179,13 +178,13 @@ object AtedForms {
       val formErrors = emailConsent match {
         case Some("true") => {
           val email = f.data.getOrElse("emailAddress","")
-          if (email.isEmpty || (email.nonEmpty && email.trim.length == lengthZero)) {
+          if (email.isEmpty || (email.nonEmpty && email.trim.length == LengthZero)) {
             Seq(FormError("emailAddress", Messages("ated.contact-details-emailAddress.error")))
           } else if (email.length > EmailLength) {
             Seq(FormError("emailAddress", Messages("ated.contact-email.length")))
           } else {
-            val x = emailRegex.findFirstMatchIn(email).exists(_ => true)
-            val y = email.length == lengthZero
+            val x = EmailRegex.findFirstMatchIn(email).exists(_ => true)
+            val y = email.length == LengthZero
             if (x || y) {
               Nil
             } else {

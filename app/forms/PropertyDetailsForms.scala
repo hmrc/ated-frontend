@@ -40,19 +40,18 @@ object PropertyDetailsForms {
   val ZERO = 0
   val ELEVEN = 11
   val SIXTY = 60
-  val numRegex = """[0-9]{8}"""
-  val addressLineLength = 35
+  val NumRegex = """[0-9]{8}"""
+  val AddressLineLength = 35
   val EmailLength = 132
-  val lengthZero = 0
-  val nameLength = 35
-  val phoneLength = 30
-  val faxLength = 30
-  val businessNameLength = 105
+  val LengthZero = 0
+  val NameLength = 35
+  val PhoneLength = 30
+  val BusinessNameLength = 105
   val titleNumberLength = 40
   val lanLength = 4
   val minimumPropertyValue = 500001L
   val maximumPropertyValue = 9999999999999L
-  val emailRegex =
+  val EmailRegex =
     """^(?!\.)("([^"\r\\]|\\["\r\\])*"|([-a-zA-Z0-9!#$%&'*+/=?^_`{|}~]|(?<!\.)\.)*)
       |(?<!\.)@[a-zA-Z0-9][\w\.-]*[a-zA-Z0-9]\.[a-zA-Z][a-zA-Z\.]*[a-zA-Z]$""".r
   val supportingInfoRegex = """^[A-Za-z0-9\s\.\,\']*$"""

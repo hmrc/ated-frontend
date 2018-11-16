@@ -27,20 +27,20 @@ object FormHelper {
   def validateFormAddressLine(mandatoryMsg: String, lengthMsg: String, validMsg: String): Constraint[String] = {
     StopOnFirstFail(
       constraint[String](mandatoryMsg, x => checkBlankFieldLength(x)),
-      constraint[String](lengthMsg, x => x.isEmpty || (x.nonEmpty && x.length <= addressLineLength)),
+      constraint[String](lengthMsg, x => x.isEmpty || (x.nonEmpty && x.length <= AddressLineLength)),
       constraint[String](validMsg, x => x.trim.matches(AddressRegex)))
   }
 
   def validateFormOptionalAddressLine(lengthMsg: String, validMsg: String): Constraint[Option[String]] = {
     StopOnFirstFail(
-      constraint[Option[String]](lengthMsg, x => checkFieldLengthIfPopulated(x, addressLineLength)),
+      constraint[Option[String]](lengthMsg, x => checkFieldLengthIfPopulated(x, AddressLineLength)),
       constraint[Option[String]](validMsg, x => x.isEmpty || x.fold(false)(_.trim.matches(AddressRegex))))
   }
 
   def validateBusinessname(mandatoryMsg: String, lengthMsg: String, validMsg: String): Constraint[String] = {
     StopOnFirstFail(
       constraint[String](mandatoryMsg, x => checkBlankFieldLength(x)),
-      constraint[String](lengthMsg, x => x.isEmpty || (x.nonEmpty && x.length <= businessNameLength)),
+      constraint[String](lengthMsg, x => x.isEmpty || (x.nonEmpty && x.length <= BusinessNameLength)),
       constraint[String](validMsg, x => x.trim.matches(BusinessNameRegex)))
   }
 
