@@ -16,7 +16,7 @@
 
 package forms
 
-import forms.AtedForms.{checkBlankFieldLength, NameRegex, postcodeLength}
+import forms.AtedForms.{checkBlankFieldLength, NameRegex, PostcodeLength}
 import forms.FormHelper.{validateFormAddressLine, validateFormOptionalAddressLine, validateFormPostCode}
 import models._
 import org.joda.time.LocalDate
@@ -42,7 +42,7 @@ object PropertyDetailsForms {
   val SIXTY = 60
   val numRegex = """[0-9]{8}"""
   val addressLineLength = 35
-  val emailLength = 132
+  val EmailLength = 132
   val lengthZero = 0
   val nameLength = 35
   val phoneLength = 30
@@ -81,7 +81,7 @@ object PropertyDetailsForms {
       ),
       "postcode" -> optional(text).verifying(
         validateFormPostCode(Messages("ated.error.address.postalcode"),
-          Messages("ated.error.address.postalcode.format", postcodeLength))
+          Messages("ated.error.address.postalcode.format", PostcodeLength))
       )
     )(PropertyDetailsAddress.apply)(PropertyDetailsAddress.unapply)
   )

@@ -41,12 +41,12 @@ object FormHelper {
     StopOnFirstFail(
       constraint[String](mandatoryMsg, x => checkBlankFieldLength(x)),
       constraint[String](lengthMsg, x => x.isEmpty || (x.nonEmpty && x.length <= businessNameLength)),
-      constraint[String](validMsg, x => x.trim.matches(businessNameRegex)))
+      constraint[String](validMsg, x => x.trim.matches(BusinessNameRegex)))
   }
 
   def validateFormPostCode(lengthMsg: String, validMsg: String): Constraint[Option[String]] = {
     StopOnFirstFail(
-      constraint[Option[String]](lengthMsg, x => checkFieldLengthIfPopulated(x, postcodeLength)),
+      constraint[Option[String]](lengthMsg, x => checkFieldLengthIfPopulated(x, PostcodeLength)),
       constraint[Option[String]](validMsg, x => validatePostCodeFormat(AtedUtils.formatPostCode(x))))
   }
 

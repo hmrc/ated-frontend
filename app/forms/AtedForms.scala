@@ -43,16 +43,16 @@ object AtedForms {
   val SIXTY = 60
   val numRegex = """[0-9]{8}"""
   val addressLineLength = 35
-  val postcodeLength = 10
+  val PostcodeLength = 10
   val countryLength = 2
-  val emailLength = 132
+  val EmailLength = 132
   val lengthZero = 0
   val nameLength = 35
   val phoneLength = 24
   val faxLength = 24
   val businessNameLength = 105
-  val businessNameRegex = "^[a-zA-Z0-9 '&\\\\/]{1,105}$"
-  val telephoneRegex = "^[A-Z0-9 )/(\\-*#]+$".r
+  val BusinessNameRegex = "^[a-zA-Z0-9 '&\\\\/]{1,105}$"
+  val TelephoneRegex = "^[A-Z0-9 )/(\\-*#]+$".r
   val emailRegex =
     """^(?!\.)("([^"\r\\]|\\["\r\\])*"|([-a-zA-Z0-9!#$%&'*+/=?^_`{|}~]|(?<!\.)\.)*)
       |(?<!\.)@[a-zA-Z0-9][\w\.-]*[a-zA-Z0-9]\.[a-zA-Z][a-zA-Z\.]*[a-zA-Z]$""".r
@@ -90,7 +90,7 @@ object AtedForms {
         ),
         "postalCode" -> optional(text).verifying(
           validateFormPostCode(Messages("ated.error.address.postalcode"),
-            Messages("ated.error.address.postalcode.format", postcodeLength))
+            Messages("ated.error.address.postalcode.format", PostcodeLength))
         ),
         "countryCode" -> text.
           verifying(Messages("ated.error.mandatory", Messages("ated.address.country")), x => x.length > lengthZero).
@@ -126,7 +126,7 @@ object AtedForms {
       ),
       "postalCode" -> optional(text).verifying(
         validateFormPostCode(Messages("ated.error.address.postalcode"),
-          Messages("ated.error.address.postalcode.format", postcodeLength))
+          Messages("ated.error.address.postalcode.format", PostcodeLength))
       ),
       "countryCode" -> text.
         verifying(Messages("ated.error.mandatory", Messages("ated.address.country")), x => x.length > lengthZero)
@@ -157,7 +157,7 @@ object AtedForms {
         .verifying(Messages("ated.contact-details-phoneNumber.error"), x => checkBlankFieldLength(x))
         .verifying(Messages("ated.contact-phoneNumber.length", phoneLength), x => x.isEmpty || (x.nonEmpty && x.length <= phoneLength))
         .verifying(Messages("ated.contact-phoneNumber.invalidText"), x => {
-          val p = telephoneRegex.findFirstMatchIn(x.replaceAll(" ", "")).exists(_ => true)
+          val p = TelephoneRegex.findFirstMatchIn(x.replaceAll(" ", "")).exists(_ => true)
           val y = x.length == lengthZero
           val z = x.length > phoneLength
           p || z || y
@@ -181,7 +181,7 @@ object AtedForms {
           val email = f.data.getOrElse("emailAddress","")
           if (email.isEmpty || (email.nonEmpty && email.trim.length == lengthZero)) {
             Seq(FormError("emailAddress", Messages("ated.contact-details-emailAddress.error")))
-          } else if (email.length > emailLength) {
+          } else if (email.length > EmailLength) {
             Seq(FormError("emailAddress", Messages("ated.contact-email.length")))
           } else {
             val x = emailRegex.findFirstMatchIn(email).exists(_ => true)
