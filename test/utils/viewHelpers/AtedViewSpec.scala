@@ -23,6 +23,7 @@ import models.AtedContext
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
+import play.api.i18n.Messages
 import play.api.test.FakeRequest
 import play.twirl.api.Html
 
@@ -63,7 +64,19 @@ trait AtedViewSpec extends PlaySpec
       doc must haveBackLink
     }
   }
+  def pageWithYesNoRadioButton(
+                                idYes:String,
+                                idNo:String,
+                                yesLabelText: String = Messages("ated.label.yes"),
+                                noLabelText: String = Messages("ated.label.no")): Unit = {
+    "have a yes/no radio button" in {
+      doc must haveInputLabelWithText(idYes, yesLabelText)
+      doc must haveInputLabelWithText(idNo, noLabelText)
+      doc.getElementById(idYes) must not be null
+      doc.getElementById(idNo) must not be null
 
+    }
+  }
   def pageWithContinueButtonForm(submitUrl: String): Unit = {
     pageWithButtonForm(submitUrl, "Save and continue")
   }

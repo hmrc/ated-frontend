@@ -91,4 +91,6 @@ trait JsoupMatchers {
   def haveBackLink = new CssSelector("a[id=backLinkHref]")
   def haveSubmitButton(expectedText: String) = new CssSelectorWithTextMatcher(expectedText,"button[type=submit]")
   def haveFormWithSubmitUrl(url: String) = new CssSelectorWithAttributeValueMatcher("action", url, "form[method=POST]")
+  def haveInputLabelWithText (id:String, expectedText: String) = new CssSelectorWithTextMatcher(expectedText, s"label[for=$id]")
+
 }

@@ -32,6 +32,7 @@ class BankDetailsSpec extends AtedViewSpec {
     behave like pageWithPreHeading(messages("ated.property-details.pre-header-change"))
     behave like pageWithBackLink
     behave like pageWithContinueButtonForm("/ated/liability/oldFormBundleNo/change/bank-details")
+    behave like pageWithYesNoRadioButton("hasUKBankAccount-true", "hasUKBankAccount-false")
   }
 
 
