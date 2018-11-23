@@ -17,6 +17,7 @@
 package utils.viewHelpers
 
 import org.jsoup.nodes.Document
+import org.jsoup.select.Elements
 import org.scalatest.matchers.{MatchResult, Matcher}
 
 trait JsoupMatchers {
@@ -40,5 +41,19 @@ trait JsoupMatchers {
     }
   }
 
+  class CssSelector(selector: String) extends Matcher[Document] {
+    def apply(left: Document): MatchResult = {
+      val elements: Elements =
+        left.select(selector)
+
+      MatchResult(
+        elements.size >= 1,
+        s"No element found with '$selector' selector",
+        s"${elements.size} elements found with '$selector' selector"
+      )
+    }
+  }
+
   def haveHeadingWithText (expectedText: String) = new TagWithTextMatcher(expectedText, "h1")
+  def haveElementWithId(id: String) = new CssSelector(s"#${id}")
 }

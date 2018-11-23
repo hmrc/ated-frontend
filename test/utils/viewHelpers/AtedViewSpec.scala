@@ -33,9 +33,6 @@ trait AtedViewSpec extends PlaySpec
   implicit val messages : play.api.i18n.Messages = play.api.i18n.Messages.Implicits.applicationMessages
   val userId = s"user-${UUID.randomUUID}"
   implicit val user: AtedContext = createAtedContext(createUserAuthContext(userId, "name"))
-  //implicit val templateRenderer = MockTemplateRenderer
-  //implicit val partialRetriever = MockPartialRetriever
-  //implicit val user = UserBuilder()
 
   def view: Html
 
@@ -52,6 +49,12 @@ trait AtedViewSpec extends PlaySpec
   def pageWithHeader(headerText: String): Unit = {
     "have a static h1 header" in {
       doc must haveHeadingWithText(headerText)
+    }
+  }
+
+  def pageWithPreHeading(preHeadingText: String): Unit = {
+    "have a static element with id pre-heading" in {
+      doc must haveElementWithId("pre-heading")
     }
   }
 

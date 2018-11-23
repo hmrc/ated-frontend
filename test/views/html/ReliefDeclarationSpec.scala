@@ -26,6 +26,7 @@ class ReliefDeclarationSpec extends AtedViewSpec {
     behave like pageWithHeader(messages("ated.relief-summary.declaration.header"))
   }
 
-  override def view: Html = views.html.reliefs.reliefDeclaration(2017, None)
+  private val periodKey = 2017
+  override def view: Html = views.html.reliefs.reliefDeclaration(periodKey, None)
 
 }
