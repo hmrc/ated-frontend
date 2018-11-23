@@ -30,6 +30,8 @@ class BankDetailsSpec extends AtedViewSpec {
     behave like pageWithTitle(messages("ated.bank-details.title"))
     behave like pageWithHeader(messages("ated.bank-details.title"))
     behave like pageWithPreHeading(messages("ated.property-details.pre-header-change"))
+    behave like pageWithBackLink
+    behave like pageWithContinueButtonForm("/ated/liability/oldFormBundleNo/change/bank-details")
   }
 
 

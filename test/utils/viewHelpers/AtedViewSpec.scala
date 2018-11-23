@@ -58,7 +58,25 @@ trait AtedViewSpec extends PlaySpec
     }
   }
 
+  def pageWithBackLink: Unit = {
+    "have a back link" in {
+      doc must haveBackLink
+    }
+  }
+
+  def pageWithContinueButtonForm(submitUrl: String): Unit = {
+    pageWithButtonForm(submitUrl, "Save and continue")
+  }
 
   def nonBreakable(string: String): String = string.replace(" ", "\u00A0")
+
+  def pageWithButtonForm(submitUrl: String, buttonText: String): Unit = {
+    "have a form with a submit button or input labelled as buttonText" in {
+      doc must haveSubmitButton(buttonText)
+    }
+    "have a form with the correct submit url" in {
+      doc must haveFormWithSubmitUrl(submitUrl)
+    }
+  }
 }
 

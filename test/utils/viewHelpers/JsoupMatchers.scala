@@ -16,7 +16,7 @@
 
 package utils.viewHelpers
 
-import org.jsoup.nodes.Document
+import org.jsoup.nodes.{Attributes, Document}
 import org.jsoup.select.Elements
 import org.scalatest.matchers.{MatchResult, Matcher}
 
@@ -53,7 +53,42 @@ trait JsoupMatchers {
       )
     }
   }
+  class CssSelectorWithTextMatcher(expectedContent: String, selector: String) extends Matcher[Document] {
+    def apply(left: Document): MatchResult = {
+      val elements: List[String] =
+        left.select(selector)
+          .toList
+          .map(_.text)
+
+      lazy val elementContents = elements.mkString("\t", "\n\t", "")
+
+      MatchResult(
+        elements.contains(expectedContent),
+        s"[$expectedContent] not found in elements with '$selector' selector:[\n$elementContents]",
+        s"[$expectedContent] element found with '$selector' selector and text [$expectedContent]"
+      )
+    }
+  }
+  class CssSelectorWithAttributeValueMatcher(attributeName: String, attributeValue: String, selector: String) extends Matcher[Document] {
+    def apply(left: Document): MatchResult = {
+      val attributes: List[Attributes] =
+        left.select(selector)
+          .toList
+          .map(_.attributes())
+
+      lazy val attributeContents = attributes.mkString("\t", "\n\t", "")
+
+      MatchResult(
+        attributes.map(_.get(attributeName)).contains(attributeValue),
+        s"[$attributeName=$attributeValue] not found in elements with '$selector' selector:[\n$attributeContents]",
+        s"[$attributeName=$attributeValue] element found with '$selector' selector"
+      )
+    }
+  }
 
   def haveHeadingWithText (expectedText: String) = new TagWithTextMatcher(expectedText, "h1")
   def haveElementWithId(id: String) = new CssSelector(s"#${id}")
+  def haveBackLink = new CssSelector("a[id=backLinkHref]")
+  def haveSubmitButton(expectedText: String) = new CssSelectorWithTextMatcher(expectedText,"button[type=submit]")
+  def haveFormWithSubmitUrl(url: String) = new CssSelectorWithAttributeValueMatcher("action", url, "form[method=POST]")
 }
