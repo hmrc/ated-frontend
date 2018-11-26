@@ -18,7 +18,15 @@ package forms
 
 import forms.ReliefForms.taxAvoidanceForm
 import models._
+import org.joda.time.LocalDate
 import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
+import play.api.data.Form
+import play.api.data.FormError
+import play.api.data.validation.{Invalid, Valid, ValidationError, ValidationResult}
+import play.api.i18n.Messages
+import play.api.i18n.Messages.Implicits._
+import play.api.libs.json.Json
+import utils.PeriodUtils
 
 class ReliefFormsSpec extends PlaySpec with OneServerPerSuite {
 
@@ -217,5 +225,59 @@ class ReliefFormsSpec extends PlaySpec with OneServerPerSuite {
       result.error("openToPublicSchemePromoter").map(_.message) must be (Some("The promoter reference number can only contain numbers"))
     }
 
+  }
+
+  "avoidanceSchemeConstraint" must {
+    "throw validation" when {
+      "avoidance scheme is not available" in {
+        val form: Form[IsTaxAvoidance] = ReliefForms.isTaxAvoidanceForm.bind(Json.obj())
+        form.hasErrors mustBe true
+        form.errors must contain (FormError("", Seq(Messages("ated.claim-relief.avoidance-scheme.selected")),Seq("isAvoidanceScheme")))
+      }
+    }
+
+    "not throw validation" when {
+      "avoidance scheme is available" in {
+        val form: Form[IsTaxAvoidance] = ReliefForms.isTaxAvoidanceForm.bind(Json.obj("isAvoidanceScheme" -> false))
+        form.hasErrors mustBe false
+      }
+    }
+  }
+
+  "validatePeriodStartDate" must {
+    val periodKey = PeriodUtils.calculatePeriod()
+    val field = "rentalBusiness"
+
+    "throw validation error" when {
+      "reliefSelected is true and start date is empty" in {
+        val validationResult = ReliefForms.validatePeriodStartDate(periodKey, true, None, field, field)
+        val expectedError = Messages("ated.choose-reliefs.error.date.mandatory", Messages(s"ated.choose-reliefs.$field").toLowerCase)
+
+        validationResult mustBe Invalid(List(ValidationError(List(expectedError),field)))
+      }
+
+      "reliefSelected is true and period is too early" in {
+        val startDate = Some(new LocalDate().minusYears(1))
+        val validationResult = ReliefForms.validatePeriodStartDate(periodKey, true, startDate, field, field)
+        val expectedError = Messages("ated.choose-reliefs.error.date.tooEarly", Messages(s"ated.choose-reliefs.$field").toLowerCase)
+
+        validationResult mustBe Invalid(List(ValidationError(List(expectedError),field)))
+      }
+
+      "reliefSelected is true and period is too late" in {
+        val startDate = Some(new LocalDate().plusYears(1))
+        val validationResult = ReliefForms.validatePeriodStartDate(periodKey, true, startDate, field, field)
+        val expectedError = Messages("ated.choose-reliefs.error.date.tooLate", Messages(s"ated.choose-reliefs.$field").toLowerCase)
+
+        validationResult mustBe Invalid(List(ValidationError(List(expectedError),field)))
+      }
+    }
+
+    "not throw any validation error" when {
+      "reliefSelected is false" in {
+        val validationResult = ReliefForms.validatePeriodStartDate(periodKey, false, None, field, field)
+        validationResult mustBe Valid
+      }
+    }
   }
 }

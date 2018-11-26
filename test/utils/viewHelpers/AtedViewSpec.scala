@@ -31,7 +31,7 @@ trait AtedViewSpec extends PlaySpec
   with JsoupMatchers
   with OneServerPerSuite {
   implicit val request = FakeRequest()
-  implicit val messages : play.api.i18n.Messages = play.api.i18n.Messages.Implicits.applicationMessages
+  implicit val messages: play.api.i18n.Messages = play.api.i18n.Messages.Implicits.applicationMessages
   val userId = s"user-${UUID.randomUUID}"
   implicit val user: AtedContext = createAtedContext(createUserAuthContext(userId, "name"))
 
@@ -64,9 +64,10 @@ trait AtedViewSpec extends PlaySpec
       doc must haveBackLink
     }
   }
+
   def pageWithYesNoRadioButton(
-                                idYes:String,
-                                idNo:String,
+                                idYes: String,
+                                idNo: String,
                                 yesLabelText: String = Messages("ated.label.yes"),
                                 noLabelText: String = Messages("ated.label.no")): Unit = {
     "have a yes/no radio button" in {
@@ -77,6 +78,7 @@ trait AtedViewSpec extends PlaySpec
 
     }
   }
+
   def pageWithContinueButtonForm(submitUrl: String): Unit = {
     pageWithButtonForm(submitUrl, "Save and continue")
   }
