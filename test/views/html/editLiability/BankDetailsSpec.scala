@@ -17,12 +17,9 @@
 package views.html.editLiability
 
 import forms.BankDetailForms
-import models.{BicSwiftCode, Iban}
+import play.api.data.{Form, FormError}
 import play.twirl.api.Html
 import utils.viewHelpers.AtedViewSpec
-import play.api.data.Form
-import play.api.data.Forms._
-import play.api.i18n.Messages
 
 class BankDetailsSpec extends AtedViewSpec {
 
@@ -33,8 +30,29 @@ class BankDetailsSpec extends AtedViewSpec {
     behave like pageWithBackLink
     behave like pageWithContinueButtonForm("/ated/liability/oldFormBundleNo/change/bank-details")
     behave like pageWithYesNoRadioButton("hasUKBankAccount-true", "hasUKBankAccount-false")
+
+    "check contents" in {
+      doc.getElementsMatchingOwnText(messages("ated.bank-details.uk-bank-account.name.label")).hasText must be(true)
+      doc.getElementsMatchingOwnText(messages("ated.bank-details.uk-bank-account.number.label")).hasText must be(true)
+      doc.getElementsMatchingOwnText(messages("ated.bank-details.uk-bank-account.sort-code.label")).hasText must be(true)
+    }
+
+    "check page errors" in {
+      doc.getElementsMatchingOwnText(messages("ated.bank-details.error-key.accountName.empty")).hasText mustBe true
+      doc.getElementsMatchingOwnText(messages("ated.bank-details.error-key.accountName")).hasText mustBe true
+      doc.getElementsMatchingOwnText(messages("ated.bank-details.error-key.accountNumber.empty")).hasText mustBe true
+      doc.getElementsMatchingOwnText(messages("ated.bank-details.error-key.accountNumber")).hasText mustBe true
+      doc.getElementsMatchingOwnText(messages("ated.bank-details.error-key.sortCode.empty")).hasText mustBe true
+      doc.getElementsMatchingOwnText(messages("ated.bank-details.error-key.sortCode")).hasText mustBe true
+    }
   }
+
+
   private val form = BankDetailForms.bankDetailsForm
-  override def view: Html = views.html.editLiability.bankDetails(form, "oldFormBundleNo", Some("backLink"))
+  val eform = Form(form.mapping, form.data, Seq(FormError("accountName", messages("ated.bank-details.error-key.accountName.empty")),
+    FormError("accountNumber", messages("ated.bank-details.error-key.accountNumber.empty")),
+    FormError("sortCode", messages("ated.bank-details.error-key.sortCode.empty")))
+    , form.value)
+  override def view: Html = views.html.editLiability.bankDetails(eform, "oldFormBundleNo", Some("backLink"))
 
 }
