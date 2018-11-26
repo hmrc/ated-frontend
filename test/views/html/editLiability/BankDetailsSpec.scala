@@ -34,17 +34,6 @@ class BankDetailsSpec extends AtedViewSpec {
     behave like pageWithContinueButtonForm("/ated/liability/oldFormBundleNo/change/bank-details")
     behave like pageWithYesNoRadioButton("hasUKBankAccount-true", "hasUKBankAccount-false")
   }
-
-
-  /*Form(mapping(
-    "hasUKBankAccount" -> optional(boolean).verifying(Messages("ated.bank-details.error-key.hasUKBankAccount.empty"), a => a.isDefined),
-    "accountName" -> optional(text),
-    "accountNumber" -> optional(text),
-    "sortCode" -> sortCodeTuple,
-    "bicSwiftCode" -> optional(of[BicSwiftCode]),
-    "iban" -> optional(of[Iban])
-  )*/
-
   private val form = BankDetailForms.bankDetailsForm
   override def view: Html = views.html.editLiability.bankDetails(form, "oldFormBundleNo", Some("backLink"))
 
