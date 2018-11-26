@@ -28,7 +28,7 @@ import play.api.libs.json.Json
 import play.api.test.Helpers._
 
 import scala.concurrent.Future
-import uk.gov.hmrc.http.{ HeaderCarrier, HttpResponse, InternalServerException }
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, InternalServerException}
 
 class PropertyDetailsServiceSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
 
@@ -274,6 +274,7 @@ class PropertyDetailsServiceSpec extends PlaySpec with OneServerPerSuite with Mo
         val result = TestPropertyDetailsService.submitDraftPropertyDetails("1")
         val response = await(result)
         verify(mockDataCacheConnector, times(1)).clearCache()(Matchers.any())
+        verify(mockDataCacheConnector, times(1)).saveFormData(Matchers.any(),Matchers.any())(Matchers.any(),Matchers.any(),Matchers.any())
       }
 
     }

@@ -361,10 +361,9 @@ trait PropertyDetailsService {
                                 (implicit atedContext: AtedContext, headerCarrier: HeaderCarrier): Future[HttpResponse] = {
     for {
       httpResponse <- atedConnector.submitDraftPropertyDetails(id)
+      _ <- dataCacheConnector.clearCache()
+      _ <- dataCacheConnector.saveFormData[SubmitReturnsResponse](formId = SubmitReturnsResponseFormId, data = httpResponse.json.as[SubmitReturnsResponse])
     } yield {
-      dataCacheConnector.clearCache() flatMap { clearCacheResponse =>
-        dataCacheConnector.saveFormData[SubmitReturnsResponse](formId = SubmitReturnsResponseFormId,
-          data = httpResponse.json.as[SubmitReturnsResponse])}
       httpResponse
     }
   }
