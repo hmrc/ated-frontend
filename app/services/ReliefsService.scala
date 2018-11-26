@@ -97,13 +97,11 @@ trait ReliefsService {
   def submitDraftReliefs(atedRefNo: String, periodKey: Int)(implicit atedContext: AtedContext, hc: HeaderCarrier): Future[HttpResponse] = {
     for {
       httpResponse <- atedConnector.submitDraftReliefs(atedRefNo, periodKey)
+      _ <- dataCacheConnector.clearCache()
+      _ <-  dataCacheConnector.saveFormData[SubmitReturnsResponse](formId = SubmitReturnsResponseFormId, data = httpResponse.json.as[SubmitReturnsResponse])
     } yield {
-      dataCacheConnector.clearCache() flatMap { clearCacheResponse =>
-        dataCacheConnector.saveFormData[SubmitReturnsResponse](formId = SubmitReturnsResponseFormId,
-          data = httpResponse.json.as[SubmitReturnsResponse]) }
       httpResponse
     }
-
   }
 
   def clearDraftReliefs(implicit atedContext: AtedContext, hc: HeaderCarrier): Future[HttpResponse] = atedConnector.deleteDraftReliefs
