@@ -112,6 +112,7 @@ class BankDetailsControllerSpec extends PlaySpec with OneServerPerSuite with Moc
         saveWithAuthorisedUser(inputJson) {
           result =>
             status(result) must be(BAD_REQUEST)
+            contentAsString(result) must include("You must answer the UK bank account question")
             verify(mockChangeLiabilityReturnService, times(0)).cacheChangeLiabilityReturnBank(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())
         }
       }
