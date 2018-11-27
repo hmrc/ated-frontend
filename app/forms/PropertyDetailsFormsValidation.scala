@@ -35,16 +35,16 @@ object PropertyDetailsFormsValidation {
     def validateAvoidanceScheme(avoidanceSchemeNo: Option[String]): Seq[Option[FormError]] = {
       avoidanceSchemeNo.getOrElse("") match {
         case a if a.isEmpty => Seq(Some(FormError("taxAvoidanceScheme", Messages("ated.property-details-period.taxAvoidanceScheme.error.empty"))))
-        case a if a.length != 8 => Seq(Some(FormError("taxAvoidanceScheme", Messages("ated.property-details-period.taxAvoidanceScheme.error.wrong-length"))))
         case a if Try(a.toInt).isFailure => Seq(Some(FormError("taxAvoidanceScheme", Messages("ated.property-details-period.taxAvoidanceScheme.error.numbers"))))
+        case a if a.length != 8 => Seq(Some(FormError("taxAvoidanceScheme", Messages("ated.property-details-period.taxAvoidanceScheme.error.wrong-length"))))
         case _ => Seq(None)
       }
     }
     def validatePromoterReference(promoterReference: Option[String]): Seq[Option[FormError]] = {
       promoterReference.getOrElse("") match {
         case a if a.isEmpty => Seq(Some(FormError("taxAvoidancePromoterReference", Messages("ated.property-details-period.taxAvoidancePromoterReference.error.empty"))))
-        case a if a.length != 8 => Seq(Some(FormError("taxAvoidancePromoterReference", Messages("ated.property-details-period.taxAvoidancePromoterReference.error.wrong-length"))))
         case a if Try(a.toInt).isFailure => Seq(Some(FormError("taxAvoidancePromoterReference", Messages("ated.property-details-period.taxAvoidancePromoterReference.error.numbers"))))
+        case a if a.length != 8 => Seq(Some(FormError("taxAvoidancePromoterReference", Messages("ated.property-details-period.taxAvoidancePromoterReference.error.wrong-length"))))
         case _ => Seq(None)
       }
     }
