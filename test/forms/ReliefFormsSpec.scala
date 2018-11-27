@@ -25,7 +25,7 @@ import play.api.data.FormError
 import play.api.data.validation.{Invalid, Valid, ValidationError, ValidationResult}
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
-import play.api.libs.json.Json
+import play.api.libs.json.{JsValue, Json}
 import utils.PeriodUtils
 
 class ReliefFormsSpec extends PlaySpec with OneServerPerSuite {
@@ -251,7 +251,7 @@ class ReliefFormsSpec extends PlaySpec with OneServerPerSuite {
     "throw validation error" when {
       "reliefSelected is true and start date is empty" in {
         val validationResult = ReliefForms.validatePeriodStartDate(periodKey, true, None, field, field)
-        val expectedError = Messages("ated.choose-reliefs.error.date.mandatory", Messages(s"ated.choose-reliefs.$field").toLowerCase)
+        val expectedError = Messages("ated.choose-reliefs.error.date.mandatory", Messages(s"ated.choose-reliefs.rentalBusiness").toLowerCase)
 
         validationResult mustBe Invalid(List(ValidationError(List(expectedError),field)))
       }
@@ -259,7 +259,7 @@ class ReliefFormsSpec extends PlaySpec with OneServerPerSuite {
       "reliefSelected is true and period is too early" in {
         val startDate = Some(new LocalDate().minusYears(1))
         val validationResult = ReliefForms.validatePeriodStartDate(periodKey, true, startDate, field, field)
-        val expectedError = Messages("ated.choose-reliefs.error.date.tooEarly", Messages(s"ated.choose-reliefs.$field").toLowerCase)
+        val expectedError = Messages("ated.choose-reliefs.error.date.tooEarly", Messages(s"ated.choose-reliefs.rentalBusiness").toLowerCase)
 
         validationResult mustBe Invalid(List(ValidationError(List(expectedError),field)))
       }
@@ -267,7 +267,7 @@ class ReliefFormsSpec extends PlaySpec with OneServerPerSuite {
       "reliefSelected is true and period is too late" in {
         val startDate = Some(new LocalDate().plusYears(1))
         val validationResult = ReliefForms.validatePeriodStartDate(periodKey, true, startDate, field, field)
-        val expectedError = Messages("ated.choose-reliefs.error.date.tooLate", Messages(s"ated.choose-reliefs.$field").toLowerCase)
+        val expectedError = Messages("ated.choose-reliefs.error.date.tooLate", Messages(s"ated.choose-reliefs.rentalBusiness").toLowerCase)
 
         validationResult mustBe Invalid(List(ValidationError(List(expectedError),field)))
       }
@@ -277,6 +277,26 @@ class ReliefFormsSpec extends PlaySpec with OneServerPerSuite {
       "reliefSelected is false" in {
         val validationResult = ReliefForms.validatePeriodStartDate(periodKey, false, None, field, field)
         validationResult mustBe Valid
+      }
+    }
+  }
+
+  "reliefSelectedConstraint" must {
+    "throw validation error" when {
+      "there is no relief option selected" in {
+        val year = 2015
+        val form: Form[Reliefs] = ReliefForms.reliefsForm.bind(Json.obj("periodKey" -> year))
+        form.hasErrors mustBe true
+        form.errors must contain (FormError("", List(Messages("ated.choose-reliefs.error")),List("reliefs")))
+      }
+    }
+
+    "not throw validation error" when {
+      "there is a relief option selected" in {
+        val year = 2015
+        val form: Form[Reliefs] = ReliefForms.reliefsForm.bind(Json.obj("periodKey" -> year,
+          "rentalBusiness" -> true, "rentalBusinessDate" ->  Map("day" -> "1", "month" -> "7", "year" -> year.toString)))
+        form.hasErrors mustBe false
       }
     }
   }
