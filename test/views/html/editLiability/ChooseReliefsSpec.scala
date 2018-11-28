@@ -19,7 +19,9 @@ package views.html.editLiability
 import forms.ReliefForms
 import models.Reliefs
 import org.joda.time.LocalDate
+import org.jsoup.nodes.Document
 import play.api.data.Form
+import play.api.i18n.Messages
 import play.api.libs.json.Json
 import play.twirl.api.Html
 import utils.viewHelpers.AtedViewSpec
@@ -109,21 +111,44 @@ class ChooseReliefsSpec extends AtedViewSpec {
     "display equity release scheme start date" in {
       doc must haveElementWithId("equityReleaseDate")
     }
+    
 
     "display error" when {
-      "rental business is selected but not date is populated" in {
-        val formWithErrors: Form[Reliefs] = ReliefForms.reliefsForm.bind(Json.obj("periodKey" -> periodKey, "rentalBusiness" -> true))
-        def view: Html = views.html.reliefs.chooseReliefs(periodKey, formWithErrors, periodStartDate, Some("backLink"))
-        println("\n\n\n")
-        println(doc(view))
+      "rental business is selected but no date is populated" in {
+        haveChooseReleifFormError("rentalBusiness")
+      }
+
+      "rental business start date is invalid" in {
+        haveChooseReleifStartDateFormError("rentalBusiness")
       }
     }
   }
 
+  def haveChooseReleifFormError(field: String): Unit = {
+    val fieldStartDate = field + "Date"
+    val formWithErrors: Form[Reliefs] = ReliefForms.reliefsForm.bind(Json.obj("periodKey" -> periodKey, field -> true))
+    def view: Html = views.html.reliefs.chooseReliefs(periodKey, formWithErrors, periodStartDate, Some("backLink"))
+    val errorDoc = doc(view)
+    haveFormError(errorDoc, Messages(s"ated.choose-reliefs.error.general.$fieldStartDate"), "You must enter a rental businesses date")
+  }
 
+  def haveChooseReleifStartDateFormError(field: String): Unit = {
+    val fieldStartDate = field + "Date"
+    val formWithErrors: Form[Reliefs] = ReliefForms.reliefsForm.bind(Json.obj("periodKey" -> periodKey, field -> true,
+      fieldStartDate -> Map("day" -> "1")))
+    def view: Html = views.html.reliefs.chooseReliefs(periodKey, formWithErrors, periodStartDate, Some("backLink"))
+    val errorDoc = doc(view)
+    haveFormError(errorDoc, Messages(s"ated.choose-reliefs.error.general.$fieldStartDate"), "You must enter a valid date")
+  }
+
+  def haveFormError(errorDoc: Document, globalErrorMessage: String, expectedText: String) = {
+    errorDoc must haveElementAtPathWithText(".error-list", globalErrorMessage)
+    errorDoc must haveElementAtPathWithText(".error-notification", expectedText)
+  }
 
 
   val reliefsForm: Form[Reliefs] = ReliefForms.reliefsForm
+
   override def view: Html = views.html.reliefs.chooseReliefs(periodKey, reliefsForm, periodStartDate, Some("backLink"))
 
 }
