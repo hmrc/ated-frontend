@@ -218,6 +218,7 @@ object PropertyDetailsForms {
   }
 
 
+  //scalastyle:off cyclomatic.complexity
   def validatePropertyDetailsRevalued(periodKey: Int, f: Form[PropertyDetailsRevalued]): Form[PropertyDetailsRevalued] = {
     if (!f.hasErrors) {
       val formErrors = (PropertyDetailsFormsValidation.checkPartAcqDispDate(periodKey, f.get.isPropertyRevalued,  f.get.partAcqDispDate)
@@ -230,16 +231,16 @@ object PropertyDetailsForms {
 
   def validatePropertyDetailsTaxAvoidance(f: Form[PropertyDetailsTaxAvoidance]): Form[PropertyDetailsTaxAvoidance] = {
     if (!f.hasErrors) {
-      val formErrors = PropertyDetailsFormsValidation.validateAvoidanceSchemeRefNo(f.get.isTaxAvoidance,
+      val formErrors = (PropertyDetailsFormsValidation.validateAvoidanceSchemeRefNo(f.get.isTaxAvoidance,
         f.get.taxAvoidanceScheme,
-        f.get.taxAvoidancePromoterReference).flatten
+        f.get.taxAvoidancePromoterReference)).flatten
       addErrorsToForm(f, formErrors)
     } else f
   }
 
   def validatePropertyDetailsOwnedBefore(f: Form[PropertyDetailsOwnedBefore]): Form[PropertyDetailsOwnedBefore] = {
     if (!f.hasErrors) {
-      val formErrors = validateValue(f.get.isOwnedBefore2012 == Some(true), "ownedBefore2012Value", f.get.ownedBefore2012Value, f).flatten
+      val formErrors = (validateValue(f.get.isOwnedBefore2012 == Some(true), "ownedBefore2012Value", f.get.ownedBefore2012Value, f)).flatten
       addErrorsToForm(f, formErrors)
     } else f
   }
@@ -255,28 +256,26 @@ object PropertyDetailsForms {
     } else f
   }
 
-  def validatePropertyDetailsDatesLiable(periodKey: Int, f: Form[PropertyDetailsDatesLiable], periodsCheck: Boolean,
-                                         currentPeriods: List[LineItem] = Nil): Form[PropertyDetailsDatesLiable] = {
+  def validatePropertyDetailsDatesLiable(periodKey: Int, f: Form[PropertyDetailsDatesLiable], periodsCheck: Boolean, currentPeriods: List[LineItem] = Nil): Form[PropertyDetailsDatesLiable] = {
     val basicErrorForm = if (!f.hasErrors) {
-      val formErrors = PropertyDetailsFormsValidation.validateStartEndDates("ated.property-details-period.datesLiable", periodKey, f).flatten
+      val formErrors = (PropertyDetailsFormsValidation.validateStartEndDates("ated.property-details-period.datesLiable", periodKey, f)).flatten
       addErrorsToForm(f, formErrors)
     } else f
 
     if (!basicErrorForm.hasErrors && periodsCheck) {
-      val formErrors = PropertyDetailsFormsValidation.validateDatesInExistingPeriod("ated.property-details-period.datesLiable", currentPeriods, f).flatten
+      val formErrors = (PropertyDetailsFormsValidation.validateDatesInExistingPeriod("ated.property-details-period.datesLiable", currentPeriods, f)).flatten
       addErrorsToForm(basicErrorForm, formErrors)
     } else basicErrorForm
   }
 
-  def validatePropertyDetailsDatesInRelief(periodKey: Int, f: Form[PropertyDetailsDatesInRelief],
-                                           currentPeriods: List[LineItem]): Form[PropertyDetailsDatesInRelief] = {
+  def validatePropertyDetailsDatesInRelief(periodKey: Int, f: Form[PropertyDetailsDatesInRelief], currentPeriods: List[LineItem]): Form[PropertyDetailsDatesInRelief] = {
     val basicErrorForm = if (!f.hasErrors) {
-      val formErrors = PropertyDetailsFormsValidation.validateStartEndDates("ated.property-details-period.datesInRelief", periodKey, f).flatten
+      val formErrors = (PropertyDetailsFormsValidation.validateStartEndDates("ated.property-details-period.datesInRelief", periodKey, f)).flatten
       addErrorsToForm(f, formErrors)
     } else f
 
     if (!basicErrorForm.hasErrors) {
-      val formErrors = PropertyDetailsFormsValidation.validateDatesInExistingPeriod("ated.property-details-period.datesInRelief", currentPeriods, f).flatten
+      val formErrors = (PropertyDetailsFormsValidation.validateDatesInExistingPeriod("ated.property-details-period.datesInRelief", currentPeriods, f)).flatten
       addErrorsToForm(basicErrorForm, formErrors)
     } else basicErrorForm
   }

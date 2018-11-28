@@ -24,7 +24,7 @@ import utils.viewHelpers.AtedViewSpec
 
 class isFullTaxPeriodSpec extends AtedViewSpec {
 
-  "Property Details Acquisition view" must {
+  "isFullTaxPeriod view" must {
     behave like pageWithTitle(messages("ated.property-details-period.isFullPeriod.title"))
     behave like pageWithHeader(messages("ated.property-details-period.isFullPeriod.title"))
     behave like pageWithPreHeading(messages("ated.property-details-period.isFullPeriod.header"))
