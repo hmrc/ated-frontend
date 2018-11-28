@@ -111,32 +111,100 @@ class ChooseReliefsSpec extends AtedViewSpec {
     "display equity release scheme start date" in {
       doc must haveElementWithId("equityReleaseDate")
     }
-    
+
 
     "display error" when {
       "rental business is selected but no date is populated" in {
-        haveChooseReleifFormError("rentalBusiness")
+        haveChooseReliefFormError("rentalBusiness", "rental businesses")
       }
 
       "rental business start date is invalid" in {
-        haveChooseReleifStartDateFormError("rentalBusiness")
+        haveChooseReliefStartDateFormError("rentalBusiness")
+      }
+
+      "open to public is selected but no date is populated" in {
+        haveChooseReliefFormError("openToPublic", "open to the public")
+      }
+
+      "open to public start date is invalid" in {
+        haveChooseReliefStartDateFormError("openToPublic")
+      }
+
+      "property developer is selected but no date is populated" in {
+        haveChooseReliefFormError("propertyDeveloper", "property developers")
+      }
+
+      "property developer start date is invalid" in {
+        haveChooseReliefStartDateFormError("propertyDeveloper")
+      }
+
+      "property trading is selected but no date is populated" in {
+        haveChooseReliefFormError("propertyTrading", "property trading")
+      }
+
+      "property trading start date is invalid" in {
+        haveChooseReliefStartDateFormError("propertyTrading")
+      }
+
+      "lending is selected but no date is populated" in {
+        haveChooseReliefFormError("lending", "lending")
+      }
+
+      "lending start date is invalid" in {
+        haveChooseReliefStartDateFormError("lending")
+      }
+
+      "employee occupation is selected but no date is populated" in {
+        haveChooseReliefFormError("employeeOccupation", "employee occupation")
+      }
+
+      "employee occupation start date is invalid" in {
+        haveChooseReliefStartDateFormError("employeeOccupation")
+      }
+
+      "farm houses is selected but no date is populated" in {
+        haveChooseReliefFormError("farmHouses", "farmhouses")
+      }
+
+      "farm houses start date is invalid" in {
+        haveChooseReliefStartDateFormError("farmHouses")
+      }
+
+      "social housing is selected but no date is populated" in {
+        haveChooseReliefFormError("socialHousing", "social housing")
+      }
+
+      "social housing start date is invalid" in {
+        haveChooseReliefStartDateFormError("socialHousing")
+      }
+
+      "equity release is selected but no date is populated" in {
+        haveChooseReliefFormError("equityRelease", "equity release scheme")
+      }
+
+      "equity release start date is invalid" in {
+        haveChooseReliefStartDateFormError("equityRelease")
       }
     }
   }
 
-  def haveChooseReleifFormError(field: String): Unit = {
+  def haveChooseReliefFormError(field: String, partialFieldError: String): Unit = {
     val fieldStartDate = field + "Date"
     val formWithErrors: Form[Reliefs] = ReliefForms.reliefsForm.bind(Json.obj("periodKey" -> periodKey, field -> true))
+
     def view: Html = views.html.reliefs.chooseReliefs(periodKey, formWithErrors, periodStartDate, Some("backLink"))
+
     val errorDoc = doc(view)
-    haveFormError(errorDoc, Messages(s"ated.choose-reliefs.error.general.$fieldStartDate"), "You must enter a rental businesses date")
+    haveFormError(errorDoc, Messages(s"ated.choose-reliefs.error.general.$fieldStartDate"), s"You must enter a $partialFieldError date")
   }
 
-  def haveChooseReleifStartDateFormError(field: String): Unit = {
+  def haveChooseReliefStartDateFormError(field: String): Unit = {
     val fieldStartDate = field + "Date"
     val formWithErrors: Form[Reliefs] = ReliefForms.reliefsForm.bind(Json.obj("periodKey" -> periodKey, field -> true,
       fieldStartDate -> Map("day" -> "1")))
+
     def view: Html = views.html.reliefs.chooseReliefs(periodKey, formWithErrors, periodStartDate, Some("backLink"))
+
     val errorDoc = doc(view)
     haveFormError(errorDoc, Messages(s"ated.choose-reliefs.error.general.$fieldStartDate"), "You must enter a valid date")
   }
