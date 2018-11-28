@@ -17,13 +17,17 @@
 package views.html.editLiability
 
 import forms.ReliefForms
+import models.Reliefs
 import org.joda.time.LocalDate
+import play.api.data.Form
+import play.api.libs.json.Json
 import play.twirl.api.Html
 import utils.viewHelpers.AtedViewSpec
 
 class ChooseReliefsSpec extends AtedViewSpec {
 
   val periodKey = 2017
+  val periodStartDate = new LocalDate()
 
   "choose relief view" must {
     behave like pageWithTitle(messages("ated.choose-reliefs.title"))
@@ -33,9 +37,93 @@ class ChooseReliefsSpec extends AtedViewSpec {
     behave like pageWithContinueButtonForm(s"/ated/reliefs/$periodKey/send")
   }
 
+  "choose relief page" must {
+    "display rental business checkbox" in {
+      doc must haveElementWithId("rentalBusiness")
+    }
 
-  val reliefsForm = ReliefForms.reliefsForm
-  val periodStartDate = new LocalDate()
+    "display rental business start date" in {
+      doc must haveElementWithId("rentalBusinessDate")
+    }
+
+    "display open to the public" in {
+      doc must haveElementWithId("openToPublic")
+    }
+
+    "display open to the public start date" in {
+      doc must haveElementWithId("openToPublicDate")
+    }
+
+    "display property developers" in {
+      doc must haveElementWithId("propertyDeveloper")
+    }
+
+    "display property developer start date" in {
+      doc must haveElementWithId("propertyDeveloperDate")
+    }
+
+    "display property trading" in {
+      doc must haveElementWithId("propertyTrading")
+    }
+
+    "display property trading start date" in {
+      doc must haveElementWithId("propertyTradingDate")
+    }
+
+    "display Lending" in {
+      doc must haveElementWithId("lending")
+    }
+
+    "display Lending start date" in {
+      doc must haveElementWithId("lendingDate")
+    }
+
+    "display employee occupation" in {
+      doc must haveElementWithId("employeeOccupation")
+    }
+
+    "display employee occupation start date" in {
+      doc must haveElementWithId("employeeOccupationDate")
+    }
+
+    "display farm houses" in {
+      doc must haveElementWithId("farmHouses")
+    }
+
+    "display farm houses start date" in {
+      doc must haveElementWithId("farmHousesDate")
+    }
+
+    "display social housing" in {
+      doc must haveElementWithId("socialHousing")
+    }
+
+    "display social housing start date" in {
+      doc must haveElementWithId("socialHousingDate")
+    }
+
+    "display equity release scheme" in {
+      doc must haveElementWithId("equityRelease")
+    }
+
+    "display equity release scheme start date" in {
+      doc must haveElementWithId("equityReleaseDate")
+    }
+
+    "display error" when {
+      "rental business is selected but not date is populated" in {
+        val formWithErrors: Form[Reliefs] = ReliefForms.reliefsForm.bind(Json.obj("periodKey" -> periodKey, "rentalBusiness" -> true))
+        def view: Html = views.html.reliefs.chooseReliefs(periodKey, formWithErrors, periodStartDate, Some("backLink"))
+        println("\n\n\n")
+        println(doc(view))
+      }
+    }
+  }
+
+
+
+
+  val reliefsForm: Form[Reliefs] = ReliefForms.reliefsForm
   override def view: Html = views.html.reliefs.chooseReliefs(periodKey, reliefsForm, periodStartDate, Some("backLink"))
 
 }
