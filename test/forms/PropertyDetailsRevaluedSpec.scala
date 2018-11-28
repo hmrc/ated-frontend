@@ -1,6 +1,7 @@
 package forms
 
 import forms.PropertyDetailsForms.{propertyDetailsRevaluedForm, propertyDetailsTaxAvoidanceForm, validatePropertyDetailsTaxAvoidance}
+import org.joda.time.LocalDate
 import org.scalatest.Matchers
 import org.scalatestplus.play.OneAppPerSuite
 import play.api.i18n.{Messages, MessagesApi}
@@ -53,15 +54,18 @@ class PropertyDetailsRevaluedSpec extends UnitSpec with Matchers with OneAppPerS
 
       "Option 'yes' is selected and change date, revalued date have invalid data" in {
         val periodKey = 2018
+        val currentDate = new LocalDate()
+        val futureDate = currentDate.plusYears(5)
         val input: Map[String, String] =  Map("isPropertyRevalued" -> "true",
           "partAcqDispDate.day" -> "13",
           "partAcqDispDate.month" -> "10",
-          "partAcqDispDate.year" -> "2030",
+          "partAcqDispDate.year" -> s"${futureDate.getYear}",
           "revaluedValue" -> "150000000",
           "revaluedDate.day" -> "12",
           "revaluedDate.month" -> "10",
-          "revaluedDate.year" -> "2030"
+          "revaluedDate.year" -> s"${futureDate.getYear}"
         )
+
         PropertyDetailsForms.validatePropertyDetailsRevalued(periodKey,  propertyDetailsRevaluedForm.bind(input)).fold(
           hasErrors => {
             hasErrors.errors.length shouldBe  2
