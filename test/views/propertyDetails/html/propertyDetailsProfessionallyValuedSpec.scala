@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package views.propertyDetails
+package views.propertyDetails.html
 
 import forms.PropertyDetailsForms
 import play.api.data.{Form, FormError}
@@ -32,9 +32,7 @@ class propertyDetailsProfessionallyValuedSpec extends AtedViewSpec {
     behave like pageWithYesNoRadioButton("isValuedByAgent-true", "isValuedByAgent-false")
 
     "check page errors" in new AtedViewSpec {
-      val eform = Form(form.mapping, form.data,
-        Seq(FormError("isValuedByAgent", messages("ated.property-details-value.isValuedByAgent.error.non-selected")))
-        , form.value)
+      val eform = form.withError(FormError("isValuedByAgent", messages("ated.property-details-value.isValuedByAgent.error.non-selected")))
       override def view: Html = views.html.propertyDetails.propertyDetailsProfessionallyValued("",0,  eform, None, Some("backLink"))
 
       doc.getElementsMatchingOwnText(messages("ated.property-details-value.isValuedByAgent.error.non-selected")).hasText mustBe true

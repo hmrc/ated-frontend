@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package views.propertyDetails
+package views.propertyDetails.html
 
 import forms.PropertyDetailsForms
 import play.api.data.{Form, FormError}
@@ -40,9 +40,7 @@ class propertyDetailsAcquisitionSpec extends AtedViewSpec {
     }
 
     "check page errors" in new AtedViewSpec {
-      val eform = Form(form.mapping, form.data,
-        Seq(FormError("anAcquisition", messages("ated.property-details-value.anAcquisition.error-field-name")))
-        , form.value)
+      val eform = form.withError(FormError("anAcquisition", messages("ated.property-details-value.anAcquisition.error-field-name")))
       override def view: Html = views.html.propertyDetails.propertyDetailsAcquisition("",0,  eform, None, Some("backLink"))
 
       doc.getElementsMatchingOwnText(messages("ated.property-details-value.anAcquisition.error-field-name")).hasText mustBe true

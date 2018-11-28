@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package views.propertyDetails
+package views.propertyDetails.html
 
 import forms.PropertyDetailsForms
 import play.api.data.{Form, FormError}
