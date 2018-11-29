@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package views.html.editLiability
+package views.html.reliefs
 
 import forms.ReliefForms
 import models.Reliefs
