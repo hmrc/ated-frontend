@@ -107,7 +107,6 @@ class PropertyDetailsRevaluedSpec extends PlaySpec with MustMatchers with OneApp
         PropertyDetailsForms.validatePropertyDetailsRevalued(periodKey,  propertyDetailsRevaluedForm.bind(input)).fold(
           hasErrors => {
             hasErrors.errors.length mustBe  2
-            println(hasErrors.errors)
             Messages(hasErrors.errors.head.message) mustBe Messages("error.invalid.date.format")
             Messages(hasErrors.errors.last.message) mustBe Messages("error.invalid.date.format")
           },
