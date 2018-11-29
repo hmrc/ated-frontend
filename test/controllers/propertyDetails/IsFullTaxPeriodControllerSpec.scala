@@ -174,7 +174,6 @@ class IsFullTaxPeriodControllerSpec extends PlaySpec with OneServerPerSuite with
           submitWithAuthorisedUser(inputJson) {
             result =>
               status(result) must be(BAD_REQUEST)
-              contentAsString(result) must include("There is a problem with this question")
           }
         }
         "for valid data set to false forward to the In Relief Page" in {
