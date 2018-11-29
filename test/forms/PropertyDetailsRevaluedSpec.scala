@@ -18,13 +18,13 @@ package forms
 
 import forms.PropertyDetailsForms.{propertyDetailsRevaluedForm, propertyDetailsTaxAvoidanceForm, validatePropertyDetailsTaxAvoidance}
 import org.joda.time.LocalDate
-import org.scalatest.Matchers
-import org.scalatestplus.play.OneAppPerSuite
+import org.scalatest.{Matchers, MustMatchers}
+import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.test.FakeRequest
 import uk.gov.hmrc.play.test.UnitSpec
 
-class PropertyDetailsRevaluedSpec extends UnitSpec with Matchers with OneAppPerSuite {
+class PropertyDetailsRevaluedSpec extends PlaySpec with MustMatchers with OneAppPerSuite {
 
   implicit lazy val messagesApi = app.injector.instanceOf[MessagesApi]
   implicit lazy val messages = messagesApi.preferred(FakeRequest())
@@ -35,8 +35,8 @@ class PropertyDetailsRevaluedSpec extends UnitSpec with Matchers with OneAppPerS
         val form = propertyDetailsRevaluedForm.bind(Map.empty[String, String])
         form.fold(
           hasErrors => {
-            hasErrors.errors.length shouldBe 1
-            hasErrors.errors.head.message shouldBe Messages("ated.property-details-value.isPropertyRevalued.error.non-selected")
+            hasErrors.errors.length mustBe 1
+            hasErrors.errors.head.message mustBe Messages("ated.property-details-value.isPropertyRevalued.error.non-selected")
           },
           _ => {
             fail("There is a problem")
@@ -57,10 +57,10 @@ class PropertyDetailsRevaluedSpec extends UnitSpec with Matchers with OneAppPerS
         )
         PropertyDetailsForms.validatePropertyDetailsRevalued(periodKey,  propertyDetailsRevaluedForm.bind(input)).fold(
           hasErrors => {
-            hasErrors.errors.length shouldBe  3
-            hasErrors.errors.head.message shouldBe Messages("ated.property-details-value.partAcqDispDate.error.empty")
-            hasErrors.errors(1).message shouldBe Messages("q2ated.property-details-value.ownedBefore2012Value.error.empty")
-            hasErrors.errors.last.message shouldBe Messages("ated.property-details-value.revaluedDate.error.empty")
+            hasErrors.errors.length mustBe  3
+            hasErrors.errors.head.message mustBe Messages("ated.property-details-value.partAcqDispDate.error.empty")
+            hasErrors.errors(1).message mustBe Messages("q2ated.property-details-value.ownedBefore2012Value.error.empty")
+            hasErrors.errors.last.message mustBe Messages("ated.property-details-value.revaluedDate.error.empty")
           },
           _ => {
             fail("There is some problem")
@@ -82,9 +82,9 @@ class PropertyDetailsRevaluedSpec extends UnitSpec with Matchers with OneAppPerS
 
         PropertyDetailsForms.validatePropertyDetailsRevalued(periodKey,  propertyDetailsRevaluedForm.bind(input)).fold(
           hasErrors => {
-            hasErrors.errors.length shouldBe  2
-            hasErrors.errors.head.message shouldBe Messages("ated.property-details-value.partAcqDispDate.error.in-future")
-            hasErrors.errors.last.message shouldBe Messages("ated.property-details-value.revaluedDate.error.in-future")
+            hasErrors.errors.length mustBe  2
+            hasErrors.errors.head.message mustBe Messages("ated.property-details-value.partAcqDispDate.error.in-future")
+            hasErrors.errors.last.message mustBe Messages("ated.property-details-value.revaluedDate.error.in-future")
           },
           _ => {
             fail("There is some problem")
@@ -106,10 +106,10 @@ class PropertyDetailsRevaluedSpec extends UnitSpec with Matchers with OneAppPerS
 
         PropertyDetailsForms.validatePropertyDetailsRevalued(periodKey,  propertyDetailsRevaluedForm.bind(input)).fold(
           hasErrors => {
-            hasErrors.errors.length shouldBe  2
+            hasErrors.errors.length mustBe  2
             println(hasErrors.errors)
-            Messages(hasErrors.errors.head.message) shouldBe Messages("error.invalid.date.format")
-            Messages(hasErrors.errors.last.message) shouldBe Messages("error.invalid.date.format")
+            Messages(hasErrors.errors.head.message) mustBe Messages("error.invalid.date.format")
+            Messages(hasErrors.errors.last.message) mustBe Messages("error.invalid.date.format")
           },
           _ => {
             fail("There is some problem")
@@ -130,8 +130,8 @@ class PropertyDetailsRevaluedSpec extends UnitSpec with Matchers with OneAppPerS
         )
         PropertyDetailsForms.validatePropertyDetailsRevalued(periodKey,  propertyDetailsRevaluedForm.bind(input)).fold(
           hasErrors => {
-            hasErrors.errors.length shouldBe  1
-            hasErrors.errors.head.message shouldBe Messages("ated.property-details-value.incorrect-format")
+            hasErrors.errors.length mustBe  1
+            hasErrors.errors.head.message mustBe Messages("ated.property-details-value.incorrect-format")
           },
           _ => {
             fail("There is some problem")

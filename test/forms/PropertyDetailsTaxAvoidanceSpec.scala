@@ -17,13 +17,12 @@
 package forms
 
 import forms.PropertyDetailsForms.{propertyDetailsTaxAvoidanceForm, validatePropertyDetailsTaxAvoidance}
-import org.scalatest.Matchers
-import org.scalatestplus.play.OneAppPerSuite
+import org.scalatest.MustMatchers
+import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.test.FakeRequest
-import uk.gov.hmrc.play.test.UnitSpec
 
-class PropertyDetailsTaxAvoidanceSpec  extends UnitSpec with Matchers with OneAppPerSuite {
+class PropertyDetailsTaxAvoidanceSpec  extends PlaySpec with MustMatchers with OneAppPerSuite {
 
   implicit lazy val messagesApi = app.injector.instanceOf[MessagesApi]
   implicit lazy val messages = messagesApi.preferred(FakeRequest())
@@ -34,8 +33,8 @@ class PropertyDetailsTaxAvoidanceSpec  extends UnitSpec with Matchers with OneAp
         val form = propertyDetailsTaxAvoidanceForm.bind(Map.empty[String, String])
         form.fold(
           hasErrors => {
-            hasErrors.errors.length shouldBe 1
-            hasErrors.errors.head.message shouldBe Messages("ated.property-details-period.isTaxAvoidance.error-field-name")
+            hasErrors.errors.length mustBe 1
+            hasErrors.errors.head.message mustBe Messages("ated.property-details-period.isTaxAvoidance.error-field-name")
           },
           _ => {
             fail("There is a problem")
@@ -48,9 +47,9 @@ class PropertyDetailsTaxAvoidanceSpec  extends UnitSpec with Matchers with OneAp
         val form = propertyDetailsTaxAvoidanceForm.bind(input)
         validatePropertyDetailsTaxAvoidance(form).fold(
           hasErrors => {
-            hasErrors.errors.length shouldBe 2
-            hasErrors.errors.head.message shouldBe Messages("ated.property-details-period.taxAvoidanceScheme.error.empty")
-            hasErrors.errors(1).message shouldBe Messages("ated.property-details-period.taxAvoidancePromoterReference.error.empty")
+            hasErrors.errors.length mustBe 2
+            hasErrors.errors.head.message mustBe Messages("ated.property-details-period.taxAvoidanceScheme.error.empty")
+            hasErrors.errors(1).message mustBe Messages("ated.property-details-period.taxAvoidancePromoterReference.error.empty")
           },
           _ => {
             fail("There is a problem")
@@ -65,9 +64,9 @@ class PropertyDetailsTaxAvoidanceSpec  extends UnitSpec with Matchers with OneAp
         val form = propertyDetailsTaxAvoidanceForm.bind(input)
         validatePropertyDetailsTaxAvoidance(form).fold(
           hasErrors => {
-            hasErrors.errors.length shouldBe 2
-            hasErrors.errors.head.message shouldBe Messages("ated.property-details-period.taxAvoidanceScheme.error.wrong-length")
-            hasErrors.errors(1).message shouldBe Messages("ated.property-details-period.taxAvoidancePromoterReference.error.wrong-length")
+            hasErrors.errors.length mustBe 2
+            hasErrors.errors.head.message mustBe Messages("ated.property-details-period.taxAvoidanceScheme.error.wrong-length")
+            hasErrors.errors(1).message mustBe Messages("ated.property-details-period.taxAvoidancePromoterReference.error.wrong-length")
           },
           _ => {
             fail("There is a problem")
@@ -83,9 +82,9 @@ class PropertyDetailsTaxAvoidanceSpec  extends UnitSpec with Matchers with OneAp
         val form = propertyDetailsTaxAvoidanceForm.bind(input)
         validatePropertyDetailsTaxAvoidance(form).fold(
           hasErrors => {
-            hasErrors.errors.length shouldBe 2
-            hasErrors.errors.head.message shouldBe Messages("ated.property-details-period.taxAvoidanceScheme.error.numbers")
-            hasErrors.errors(1).message shouldBe Messages("ated.property-details-period.taxAvoidancePromoterReference.error.numbers")
+            hasErrors.errors.length mustBe 2
+            hasErrors.errors.head.message mustBe Messages("ated.property-details-period.taxAvoidanceScheme.error.numbers")
+            hasErrors.errors(1).message mustBe Messages("ated.property-details-period.taxAvoidancePromoterReference.error.numbers")
           },
           _ => {
             fail("There is a problem")

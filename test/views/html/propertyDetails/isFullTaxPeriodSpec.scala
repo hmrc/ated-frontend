@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package views.propertyDetails.html
+package views.html.propertyDetails
 
 import forms.PropertyDetailsForms
 import org.joda.time.LocalDate
