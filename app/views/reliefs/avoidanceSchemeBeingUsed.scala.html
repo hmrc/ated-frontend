@@ -32,7 +32,7 @@
 @implicitFormInstance = @{ Some(isTaxAvoidanceForm) }
 
 @atedMain(title = Messages("ated.choose-reliefs.avoidance-title"), attorney = atedContext.user.authContext.attorney, pageScripts = Some(pageScripts)) {
-@pageHeadersAndError(backLink, "pre-header", Messages("ated.choose-reliefs.subheader"), "choose-reliefs-header", Messages("ated.choose-reliefs.avoidance-title"),
+@pageHeadersAndError(backLink, "pre-heading", Messages("ated.choose-reliefs.subheader"), "choose-reliefs-header", Messages("ated.choose-reliefs.avoidance-title"),
     Some(atedErrorSummary(isTaxAvoidanceForm, "ated.choose-reliefs.error.general")))
 
 
