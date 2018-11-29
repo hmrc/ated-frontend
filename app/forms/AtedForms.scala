@@ -112,8 +112,10 @@ object AtedForms {
         .verifying(Messages("ated.error.address.line-4", Messages("ated.address.line-4"), addressLineLength),
           x => checkFieldLengthIfPopulated(x, addressLineLength)),
       "postalCode" -> optional(text)
+        .verifying(Messages("ated.error.address.postalcode", Messages("ated.address.postcode.field"), postcodeLength),
+          x => checkFieldLengthIfPopulated(AtedUtils.formatPostCode(x), postcodeLength))
         .verifying(Messages("ated.error.address.postalcode.format", Messages("ated.address.postcode.field"), postcodeLength),
-          x => checkFieldLengthIfPopulated(AtedUtils.formatPostCode(x), postcodeLength)),
+          x => validatePostCodeFormat(AtedUtils.formatPostCode(x))),
       "countryCode" -> text.
         verifying(Messages("ated.error.mandatory", Messages("ated.address.country")), x => x.length > lengthZero)
         .verifying(Messages("ated.error.address.country", Messages("ated.address.country"), addressLineLength),
