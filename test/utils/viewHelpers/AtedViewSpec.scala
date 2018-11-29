@@ -22,6 +22,7 @@ import builders.AuthBuilder.{createAtedContext, createUserAuthContext}
 import models.AtedContext
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
 import play.api.{Application, Mode}
 import play.api.i18n.Messages
@@ -31,7 +32,7 @@ import play.twirl.api.Html
 
 trait AtedViewSpec extends PlaySpec
   with JsoupMatchers
-  with OneAppPerSuite {
+  with GuiceOneAppPerSuite {
 
   protected val bindModules: Seq[GuiceableModule] = Seq()
 
