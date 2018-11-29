@@ -31,16 +31,14 @@ class propertyDetailsProfessionallyValuedSpec extends AtedViewSpec {
     behave like pageWithContinueButtonForm("/ated/liability/create/valued/save//period/0")
     behave like pageWithYesNoRadioButton("isValuedByAgent-true", "isValuedByAgent-false")
 
-    "check page errors" in new AtedViewSpec {
-      val eform = form.withError(FormError("isValuedByAgent", messages("ated.property-details-value.isValuedByAgent.error.non-selected")))
-      override def view: Html = views.html.propertyDetails.propertyDetailsProfessionallyValued("",0,  eform, None, Some("backLink"))
-
+    "check page errors" in {
       doc.getElementsMatchingOwnText(messages("ated.property-details-value.isValuedByAgent.error.non-selected")).hasText mustBe true
       doc.getElementsMatchingOwnText(messages("ated.property-details-value-error.general.isValuedByAgent")).hasText mustBe true
     }
   }
 
-  private val form = PropertyDetailsForms.propertyDetailsProfessionallyValuedForm
+  private val form = PropertyDetailsForms.propertyDetailsProfessionallyValuedForm.withError("isValuedByAgent",
+    messages("ated.property-details-value.isValuedByAgent.error.non-selected"))
   override def view: Html = views.html.propertyDetails.propertyDetailsProfessionallyValued("",0,  form, None, Some("backLink"))
 
 }

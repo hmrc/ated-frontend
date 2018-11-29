@@ -111,14 +111,6 @@ class IsFullTaxPeriodControllerSpec extends PlaySpec with OneServerPerSuite with
           getDataWithAuthorisedUser(propertyDetails) {
             result =>
               status(result) must be(OK)
-              val document = Jsoup.parse(contentAsString(result))
-              document.title() must be(TitleBuilder.buildTitle("Is the ATED charge for the full chargeable period?"))
-
-              document.getElementById("isFullPeriod").text() must be("Is the ATED charge for the full chargeable period? Yes No")
-              document.getElementById("isFullPeriod-true").attr("checked") must be("")
-              document.getElementById("isFullPeriod-false").attr("checked") must be("")
-
-              document.getElementById("submit").text() must be("Save and continue")
           }
         }
 
@@ -132,8 +124,6 @@ class IsFullTaxPeriodControllerSpec extends PlaySpec with OneServerPerSuite with
 
               document.getElementById("isFullPeriod-true").attr("checked") must be("")
               document.getElementById("isFullPeriod-false").attr("checked") must be("checked")
-
-              document.getElementById("submit").text() must be("Save and continue")
           }
         }
       }

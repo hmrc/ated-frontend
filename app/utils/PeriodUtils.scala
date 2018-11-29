@@ -47,10 +47,7 @@ object PeriodUtils {
   }
 
   def isPeriodTooLate(periodKey: Int, periodDate: Option[LocalDate]): Boolean = periodDate match {
-    case Some(x) => {
-      println("-----------------------"+x+"----"+PeriodUtils.periodEndDate(periodKey))
-      x.isAfter(PeriodUtils.periodEndDate(periodKey))
-    }
+    case Some(x) => x.isAfter(PeriodUtils.periodEndDate(periodKey))
     case _ => false
   }
 

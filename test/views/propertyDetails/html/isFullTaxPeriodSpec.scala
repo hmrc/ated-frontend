@@ -32,16 +32,14 @@ class isFullTaxPeriodSpec extends AtedViewSpec {
     behave like pageWithContinueButtonForm("/ated/liability/create/full-tax-period/save//period/0")
     behave like pageWithYesNoRadioButton("isFullPeriod-true", "isFullPeriod-false")
 
-    "check page errors" in new AtedViewSpec {
-      val eform = form.withError(FormError("isFullPeriod", messages("ated.property-details-period.isFullPeriod.error-field-name")))
-      override def view: Html = views.html.propertyDetails.isFullTaxPeriod("",0,  eform, new LocalDate, new LocalDate, Some("backLink"))
-
+    "check page errors" in {
       doc.getElementsMatchingOwnText(messages("ated.property-details-period.isFullPeriod.error-field-name")).hasText mustBe true
       doc.getElementsMatchingOwnText(messages("ated.property-details-period-error.general.isFullPeriod")).hasText mustBe true
     }
   }
 
-  private val form = PropertyDetailsForms.isFullTaxPeriodForm
+  private val form = PropertyDetailsForms.isFullTaxPeriodForm.withError("isFullPeriod",
+    messages("ated.property-details-period.isFullPeriod.error-field-name"))
   override def view: Html = views.html.propertyDetails.isFullTaxPeriod("",0,  form, new LocalDate, new LocalDate, Some("backLink"))
 
 }

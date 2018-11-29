@@ -68,18 +68,16 @@ class PropertyDetailsRevaluedSpec extends UnitSpec with Matchers with OneAppPerS
         )
       }
 
-      "Option 'yes' is selected and change date, revalued date have invalid data" in {
+      "Option 'yes' is selected and change date, revalued date are invalid" in {
         val periodKey = 2018
-        val currentDate = new LocalDate()
-        val futureDate = currentDate.plusYears(5)
-        val input: Map[String, String] =  Map("isPropertyRevalued" -> "true",
+          val input: Map[String, String] =  Map("isPropertyRevalued" -> "true",
           "partAcqDispDate.day" -> "13",
           "partAcqDispDate.month" -> "10",
-          "partAcqDispDate.year" -> s"${futureDate.getYear}",
+          "partAcqDispDate.year" -> "2030",
           "revaluedValue" -> "150000000",
           "revaluedDate.day" -> "12",
           "revaluedDate.month" -> "10",
-          "revaluedDate.year" -> s"${futureDate.getYear}"
+          "revaluedDate.year" -> "2030"
         )
 
         PropertyDetailsForms.validatePropertyDetailsRevalued(periodKey,  propertyDetailsRevaluedForm.bind(input)).fold(
@@ -87,6 +85,31 @@ class PropertyDetailsRevaluedSpec extends UnitSpec with Matchers with OneAppPerS
             hasErrors.errors.length shouldBe  2
             hasErrors.errors.head.message shouldBe Messages("ated.property-details-value.partAcqDispDate.error.in-future")
             hasErrors.errors.last.message shouldBe Messages("ated.property-details-value.revaluedDate.error.in-future")
+          },
+          _ => {
+            fail("There is some problem")
+          }
+        )
+      }
+
+      "Option 'yes' is selected and change date and revalued date are not filled correctly" in {
+        val periodKey = 2018
+         val input: Map[String, String] =  Map("isPropertyRevalued" -> "true",
+          "partAcqDispDate.day" -> "13",
+          "partAcqDispDate.month" -> "",
+          "partAcqDispDate.year" -> "",
+          "revaluedValue" -> "150000000",
+          "revaluedDate.day" -> "12",
+          "revaluedDate.month" -> "",
+          "revaluedDate.year" -> ""
+        )
+
+        PropertyDetailsForms.validatePropertyDetailsRevalued(periodKey,  propertyDetailsRevaluedForm.bind(input)).fold(
+          hasErrors => {
+            hasErrors.errors.length shouldBe  2
+            println(hasErrors.errors)
+            Messages(hasErrors.errors.head.message) shouldBe Messages("error.invalid.date.format")
+            Messages(hasErrors.errors.last.message) shouldBe Messages("error.invalid.date.format")
           },
           _ => {
             fail("There is some problem")

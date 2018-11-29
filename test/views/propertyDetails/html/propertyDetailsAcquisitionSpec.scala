@@ -39,16 +39,14 @@ class propertyDetailsAcquisitionSpec extends AtedViewSpec {
       doc.getElementById("anAcquisition-text-3").html mustBe messages("ated.property-details-value.anAcquisition.what.text3")
     }
 
-    "check page errors" in new AtedViewSpec {
-      val eform = form.withError(FormError("anAcquisition", messages("ated.property-details-value.anAcquisition.error-field-name")))
-      override def view: Html = views.html.propertyDetails.propertyDetailsAcquisition("",0,  eform, None, Some("backLink"))
-
+    "check page errors" in {
       doc.getElementsMatchingOwnText(messages("ated.property-details-value.anAcquisition.error-field-name")).hasText mustBe true
       doc.getElementsMatchingOwnText(messages("ated.property-details-value-error.general.anAcquisition")).hasText mustBe true
     }
   }
 
-  private val form = PropertyDetailsForms.propertyDetailsAcquisitionForm
+  private val form = PropertyDetailsForms.propertyDetailsAcquisitionForm.withError("anAcquisition",
+    messages("ated.property-details-value.anAcquisition.error-field-name"))
   override def view: Html = views.html.propertyDetails.propertyDetailsAcquisition("",0,  form, None, Some("backLink"))
 
 }

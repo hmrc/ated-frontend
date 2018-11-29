@@ -31,17 +31,15 @@ class propertyDetailsRevaluedSpec extends AtedViewSpec {
     behave like pageWithContinueButtonForm("/ated/liability/create/revalued/save//period/0")
     behave like pageWithYesNoRadioButton("isPropertyRevalued-true", "isPropertyRevalued-false")
 
-    "check page errors" in new AtedViewSpec {
-      val eform = form.withError(FormError("isPropertyRevalued", messages("ated.property-details-value.isPropertyRevalued.error.non-selected")))
-
-      override def view: Html = views.html.propertyDetails.propertyDetailsRevalued("",0,  eform, None, Some("backLink"))
-
+    "check page errors" in {
       doc.getElementsMatchingOwnText(messages("ated.property-details-value.isPropertyRevalued.error.non-selected")).hasText mustBe true
       doc.getElementsMatchingOwnText(messages("ated.property-details-value-error.general.isPropertyRevalued")).hasText mustBe true
     }
   }
 
-  private val form = PropertyDetailsForms.propertyDetailsRevaluedForm
+  private val form = PropertyDetailsForms.propertyDetailsRevaluedForm.withError("isPropertyRevalued",
+    messages("ated.property-details-value.isPropertyRevalued.error.non-selected"))
+
   override def view: Html = views.html.propertyDetails.propertyDetailsRevalued("",0,  form, None, Some("backLink"))
 
 }
