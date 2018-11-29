@@ -62,7 +62,6 @@ class propertyDetailsTaxAvoidanceSpec extends AtedViewSpec {
       doc.getElementsMatchingOwnText(messages("ated.property-details-period.taxAvoidancePromoterReference.error.empty")).hasText mustBe true
       doc.getElementsMatchingOwnText(messages("ated.property-details-period-error.general.taxAvoidancePromoterReference")).hasText mustBe true
     }
-
   }
 
   private val form = PropertyDetailsForms.propertyDetailsTaxAvoidanceForm
