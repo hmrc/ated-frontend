@@ -48,7 +48,7 @@ class propertyDetailsTaxAvoidanceSpec extends AtedViewSpec {
       def view: Html = views.html.propertyDetails.propertyDetailsTaxAvoidance("", 0, eform, None, Some("backLink"))
 
       val errorDoc = doc(view)
-      
+
       errorDoc.getElementsMatchingOwnText(messages("ated.property-details-period.isTaxAvoidance.error-field-name")).hasText mustBe true
       errorDoc.getElementsMatchingOwnText(messages("ated.property-details-period-error.general.isTaxAvoidance")).hasText mustBe true
     }
