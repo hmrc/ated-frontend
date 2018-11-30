@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package views.html
+package views.html.reliefs
 
 import play.twirl.api.Html
 import utils.viewHelpers.AtedViewSpec

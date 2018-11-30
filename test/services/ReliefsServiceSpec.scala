@@ -22,6 +22,7 @@ import builders.{AuthBuilder, ReliefBuilder}
 import connectors.{AtedConnector, DataCacheConnector}
 import models.{TaxAvoidance, _}
 import org.joda.time.{DateTime, LocalDate}
+import org.mockito.Matchers._
 import org.mockito.Mockito._
 import org.mockito.{ArgumentCaptor, Matchers}
 import org.scalatest.mock.MockitoSugar
@@ -32,7 +33,7 @@ import play.api.test.Helpers._
 import utils.AtedConstants._
 
 import scala.concurrent.Future
-import uk.gov.hmrc.http.{ HeaderCarrier, HttpResponse, InternalServerException }
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, InternalServerException}
 import uk.gov.hmrc.http.logging.SessionId
 
 class ReliefsServiceSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach with PrivateMethodTester {
@@ -81,10 +82,10 @@ class ReliefsServiceSpec extends PlaySpec with OneServerPerSuite with MockitoSug
 
         val respJson = Json.parse("""{"reason": "some reason"}""")
         val responseJson = Json.toJson(reliefsTaxAvoidance)
-        when(mockAtedConnector.retrievePeriodDraftReliefs(Matchers.eq("ATED-123"), Matchers.eq(periodKey))(Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(respJson))))
+        when(mockAtedConnector.retrievePeriodDraftReliefs(Matchers.eq("ATED-123"), Matchers.eq(periodKey))(any(), any())).thenReturn(Future.successful(HttpResponse(OK, Some(respJson))))
 
         val captor = ArgumentCaptor.forClass(classOf[ReliefsTaxAvoidance])
-        when(mockAtedConnector.saveDraftReliefs(Matchers.any(), captor.capture())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(responseJson))))
+        when(mockAtedConnector.saveDraftReliefs(any(), captor.capture())(any(), any())).thenReturn(Future.successful(HttpResponse(OK, Some(responseJson))))
 
         val result = TestReliefsService.saveDraftReliefs("ATED-123", periodKey, reliefs)
         val retrievedReliefs = await(result)
@@ -113,10 +114,10 @@ class ReliefsServiceSpec extends PlaySpec with OneServerPerSuite with MockitoSug
 
         val respJson = Json.parse("""{"reason": "some reason"}""")
         val responseJson = Json.toJson(reliefsTaxAvoidance)
-        when(mockAtedConnector.retrievePeriodDraftReliefs(Matchers.eq("ATED-123"), Matchers.eq(periodKey))(Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(respJson))))
+        when(mockAtedConnector.retrievePeriodDraftReliefs(Matchers.eq("ATED-123"), Matchers.eq(periodKey))(any(), any())).thenReturn(Future.successful(HttpResponse(OK, Some(respJson))))
 
         val captor = ArgumentCaptor.forClass(classOf[ReliefsTaxAvoidance])
-        when(mockAtedConnector.saveDraftReliefs(Matchers.any(), captor.capture())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(responseJson))))
+        when(mockAtedConnector.saveDraftReliefs(any(), captor.capture())(any(), any())).thenReturn(Future.successful(HttpResponse(OK, Some(responseJson))))
 
         val result = TestReliefsService.saveDraftReliefs("ATED-123", periodKey, reliefs)
         val retrievedReliefs = await(result)
@@ -145,11 +146,11 @@ class ReliefsServiceSpec extends PlaySpec with OneServerPerSuite with MockitoSug
         val reliefsTaxAvoidance = ReliefBuilder.reliefTaxAvoidance(periodKey, reliefs, taxAvoidance)
 
         val responseJson = Json.toJson(reliefsTaxAvoidance)
-        when(mockAtedConnector.retrievePeriodDraftReliefs(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(responseJson))))
+        when(mockAtedConnector.retrievePeriodDraftReliefs(any(), any())(any(), any())).thenReturn(Future.successful(HttpResponse(OK, Some(responseJson))))
 
         val captor = ArgumentCaptor.forClass(classOf[ReliefsTaxAvoidance])
-        when(mockAtedConnector.saveDraftReliefs(Matchers.any(), captor.capture())
-        (Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(responseJson))))
+        when(mockAtedConnector.saveDraftReliefs(any(), captor.capture())
+        (any(), any())).thenReturn(Future.successful(HttpResponse(OK, Some(responseJson))))
 
         val result = TestReliefsService.saveDraftReliefs("ATED-123", periodKey, reliefs)
         val retrievedReliefs = await(result)
@@ -178,11 +179,11 @@ class ReliefsServiceSpec extends PlaySpec with OneServerPerSuite with MockitoSug
 
         val respJson = Json.parse("""{"reason": "some reason"}""")
         val responseJson = Json.toJson(reliefsTaxAvoidance)
-        when(mockAtedConnector.retrievePeriodDraftReliefs(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(responseJson))))
+        when(mockAtedConnector.retrievePeriodDraftReliefs(any(), any())(any(), any())).thenReturn(Future.successful(HttpResponse(OK, Some(responseJson))))
 
         val captor = ArgumentCaptor.forClass(classOf[ReliefsTaxAvoidance])
-        when(mockAtedConnector.saveDraftReliefs(Matchers.any(), captor.capture())
-        (Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(BAD_GATEWAY, Some(respJson))))
+        when(mockAtedConnector.saveDraftReliefs(any(), captor.capture())
+        (any(), any())).thenReturn(Future.successful(HttpResponse(BAD_GATEWAY, Some(respJson))))
 
         val result = TestReliefsService.saveDraftReliefs("ATED-123", periodKey, reliefs)
         val thrown = the[InternalServerException] thrownBy await(result)
@@ -204,11 +205,11 @@ class ReliefsServiceSpec extends PlaySpec with OneServerPerSuite with MockitoSug
         val reliefsTaxAvoidance = ReliefBuilder.reliefTaxAvoidance(periodKey, reliefs, taxAvoidance)
 
         val responseJson = Json.toJson(reliefsTaxAvoidance)
-        when(mockAtedConnector.retrievePeriodDraftReliefs(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(responseJson))))
+        when(mockAtedConnector.retrievePeriodDraftReliefs(any(), any())(any(), any())).thenReturn(Future.successful(HttpResponse(OK, Some(responseJson))))
 
         val captor = ArgumentCaptor.forClass(classOf[ReliefsTaxAvoidance])
-        when(mockAtedConnector.saveDraftReliefs(Matchers.any(), captor.capture())
-        (Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(responseJson))))
+        when(mockAtedConnector.saveDraftReliefs(any(), captor.capture())
+        (any(), any())).thenReturn(Future.successful(HttpResponse(OK, Some(responseJson))))
 
         val result = TestReliefsService.saveDraftReliefs("ATED-123", periodKey, reliefs)
         val retrievedReliefs = await(result)
@@ -241,11 +242,11 @@ class ReliefsServiceSpec extends PlaySpec with OneServerPerSuite with MockitoSug
         val responseJson = Json.toJson(reliefsTaxAvoidance)
         val respJson = Json.parse("""{"reason": "some reason"}""")
 
-        when(mockAtedConnector.retrievePeriodDraftReliefs(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(respJson))))
+        when(mockAtedConnector.retrievePeriodDraftReliefs(any(), any())(any(), any())).thenReturn(Future.successful(HttpResponse(OK, Some(respJson))))
 
         val captor = ArgumentCaptor.forClass(classOf[ReliefsTaxAvoidance])
-        when(mockAtedConnector.saveDraftReliefs(Matchers.any(), captor.capture())
-        (Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(responseJson))))
+        when(mockAtedConnector.saveDraftReliefs(any(), captor.capture())
+        (any(), any())).thenReturn(Future.successful(HttpResponse(OK, Some(responseJson))))
 
         val result = TestReliefsService.saveDraftTaxAvoidance("ATED-123", periodKey, taxAvoidance)
         val retrievedReliefs = await(result)
@@ -273,11 +274,11 @@ class ReliefsServiceSpec extends PlaySpec with OneServerPerSuite with MockitoSug
         val reliefsTaxAvoidance = ReliefBuilder.reliefTaxAvoidance(periodKey, reliefs, taxAvoidance)
 
         val responseJson = Json.toJson(reliefsTaxAvoidance)
-        when(mockAtedConnector.retrievePeriodDraftReliefs(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(responseJson))))
+        when(mockAtedConnector.retrievePeriodDraftReliefs(any(), any())(any(), any())).thenReturn(Future.successful(HttpResponse(OK, Some(responseJson))))
 
         val captor = ArgumentCaptor.forClass(classOf[ReliefsTaxAvoidance])
-        when(mockAtedConnector.saveDraftReliefs(Matchers.any(), captor.capture())
-        (Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(responseJson))))
+        when(mockAtedConnector.saveDraftReliefs(any(), captor.capture())
+        (any(), any())).thenReturn(Future.successful(HttpResponse(OK, Some(responseJson))))
 
         val result = TestReliefsService.saveDraftTaxAvoidance("ATED-123", periodKey, taxAvoidance)
         val retrievedReliefs = await(result)
@@ -307,11 +308,11 @@ class ReliefsServiceSpec extends PlaySpec with OneServerPerSuite with MockitoSug
 
         val respJson = Json.parse("""{"reason": "some reason"}""")
         val responseJson = Json.toJson(reliefsTaxAvoidance)
-        when(mockAtedConnector.retrievePeriodDraftReliefs(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(responseJson))))
+        when(mockAtedConnector.retrievePeriodDraftReliefs(any(), any())(any(), any())).thenReturn(Future.successful(HttpResponse(OK, Some(responseJson))))
 
         val captor = ArgumentCaptor.forClass(classOf[ReliefsTaxAvoidance])
-        when(mockAtedConnector.saveDraftReliefs(Matchers.any(), captor.capture())
-        (Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(BAD_GATEWAY, Some(respJson))))
+        when(mockAtedConnector.saveDraftReliefs(any(), captor.capture())
+        (any(), any())).thenReturn(Future.successful(HttpResponse(BAD_GATEWAY, Some(respJson))))
 
         val result = TestReliefsService.saveDraftTaxAvoidance("ATED-123", periodKey, taxAvoidance)
         val thrown = the[InternalServerException] thrownBy await(result)
@@ -326,7 +327,7 @@ class ReliefsServiceSpec extends PlaySpec with OneServerPerSuite with MockitoSug
 
         val respJson = Json.parse("""{"reason": "some reason"}""")
 
-        when(mockAtedConnector.retrievePeriodDraftReliefs(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(respJson))))
+        when(mockAtedConnector.retrievePeriodDraftReliefs(any(), any())(any(), any())).thenReturn(Future.successful(HttpResponse(OK, Some(respJson))))
 
         val result = TestReliefsService.saveDraftIsTaxAvoidance("ATED-123", periodKey, true)
         val thrown = the[RuntimeException] thrownBy await(result)
@@ -349,11 +350,11 @@ class ReliefsServiceSpec extends PlaySpec with OneServerPerSuite with MockitoSug
         val reliefsTaxAvoidance = ReliefBuilder.reliefTaxAvoidance(periodKey, reliefs, TaxAvoidance())
         val responseJson = Json.toJson(reliefsTaxAvoidance)
 
-        when(mockAtedConnector.retrievePeriodDraftReliefs(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(responseJson))))
+        when(mockAtedConnector.retrievePeriodDraftReliefs(any(), any())(any(), any())).thenReturn(Future.successful(HttpResponse(OK, Some(responseJson))))
 
         val captor = ArgumentCaptor.forClass(classOf[ReliefsTaxAvoidance])
-        when(mockAtedConnector.saveDraftReliefs(Matchers.any(), captor.capture())
-        (Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(responseJson))))
+        when(mockAtedConnector.saveDraftReliefs(any(), captor.capture())
+        (any(), any())).thenReturn(Future.successful(HttpResponse(OK, Some(responseJson))))
 
 
         val result = TestReliefsService.saveDraftIsTaxAvoidance("ATED-123", periodKey, true)
@@ -382,11 +383,11 @@ class ReliefsServiceSpec extends PlaySpec with OneServerPerSuite with MockitoSug
 
         val respJson = Json.parse("""{"reason": "some reason"}""")
         val responseJson = Json.toJson(reliefsTaxAvoidance)
-        when(mockAtedConnector.retrievePeriodDraftReliefs(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(responseJson))))
+        when(mockAtedConnector.retrievePeriodDraftReliefs(any(), any())(any(), any())).thenReturn(Future.successful(HttpResponse(OK, Some(responseJson))))
 
         val captor = ArgumentCaptor.forClass(classOf[ReliefsTaxAvoidance])
-        when(mockAtedConnector.saveDraftReliefs(Matchers.any(), captor.capture())
-        (Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(BAD_GATEWAY, Some(respJson))))
+        when(mockAtedConnector.saveDraftReliefs(any(), captor.capture())
+        (any(), any())).thenReturn(Future.successful(HttpResponse(BAD_GATEWAY, Some(respJson))))
 
         val result = TestReliefsService.saveDraftIsTaxAvoidance("ATED-123", periodKey, true)
         val thrown = the[InternalServerException] thrownBy await(result)
@@ -408,8 +409,8 @@ class ReliefsServiceSpec extends PlaySpec with OneServerPerSuite with MockitoSug
           socialHousing = true))
 
         val responseJson = Json.toJson(reliefs)
-        when(mockAtedConnector.retrievePeriodDraftReliefs(Matchers.any(), Matchers.any())
-        (Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(responseJson))))
+        when(mockAtedConnector.retrievePeriodDraftReliefs(any(), any())
+        (any(), any())).thenReturn(Future.successful(HttpResponse(OK, Some(responseJson))))
         val result = TestReliefsService.retrieveDraftReliefs("ATED-123", periodKey)
         await(result) must be(Some(reliefs))
       }
@@ -427,15 +428,14 @@ class ReliefsServiceSpec extends PlaySpec with OneServerPerSuite with MockitoSug
           socialHousing = true))
 
         val responseJson = Json.toJson(reliefs)
-        when(mockAtedConnector.retrievePeriodDraftReliefs(Matchers.any(), Matchers.any())
-        (Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
+        when(mockAtedConnector.retrievePeriodDraftReliefs(any(), any())
+        (any(), any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
         val result = TestReliefsService.retrieveDraftReliefs("ATED-123", periodKey)
         val thrown = the[InternalServerException] thrownBy await(result)
         thrown.message must include("status : 400")
       }
 
     }
-
 
     "Submit the draft reliefs" must {
       "successfully submit reliefs to ETMP via DES" in {
@@ -454,22 +454,23 @@ class ReliefsServiceSpec extends PlaySpec with OneServerPerSuite with MockitoSug
         implicit val hc = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
         val successResponse = Json.parse(jsonEtmpResponse)
 
-        when(mockAtedConnector.submitDraftReliefs(Matchers.any(), Matchers.any())
-        (Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+        when(mockAtedConnector.submitDraftReliefs(any(), any())
+        (any(), any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
 
-        when(mockDataCacheConnector.clearCache()(Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, None)))
+        when(mockDataCacheConnector.clearCache()(any())).thenReturn(Future.successful(HttpResponse(OK, None)))
 
 
         val SubmitReturnsResponseFormId = "submit-returns-response-Id"
         when(mockDataCacheConnector.saveFormData[SubmitReturnsResponse](Matchers.eq(SubmitReturnsResponseFormId),
           Matchers.eq(successResponse.as[SubmitReturnsResponse]))
-          (Matchers.any(), Matchers.any(), Matchers.eq(SubmitReturnsResponse.formats)))
+          (any(), any(), Matchers.eq(SubmitReturnsResponse.formats)))
           .thenReturn(Future.successful(successResponse.as[SubmitReturnsResponse]))
 
         val result = TestReliefsService.submitDraftReliefs("ATED-123", periodKey)
         val response = await(result)
 
-        verify(mockDataCacheConnector, times(1)).clearCache()(Matchers.any())
+        verify(mockDataCacheConnector, times(1)).clearCache()(any())
+        verify(mockDataCacheConnector, times(1)).saveFormData(any(),any())(any(),any(),any())
       }
 
     }
@@ -483,7 +484,7 @@ class ReliefsServiceSpec extends PlaySpec with OneServerPerSuite with MockitoSug
         val periodSummaryReturns = PeriodSummaryReturns(periodKey, Seq(), Some(submittedReturns))
         val data = SummaryReturnsModel(Some(BigDecimal(999.99)), Seq(periodSummaryReturns))
         when(mockDataCacheConnector.fetchAndGetFormData[SummaryReturnsModel](Matchers.eq(RetrieveReturnsResponseId))
-          (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(data)))
+          (any(), any(), any())).thenReturn(Future.successful(Some(data)))
         val result = TestReliefsService.viewReliefReturn(periodKey, formBundleNo1)
         await(result) must be(Some(submittedReliefReturns1))
       }
@@ -495,7 +496,7 @@ class ReliefsServiceSpec extends PlaySpec with OneServerPerSuite with MockitoSug
         val periodSummaryReturns = PeriodSummaryReturns(periodKey, Seq(), Some(submittedReturns))
         val data = SummaryReturnsModel(Some(BigDecimal(999.99)), Seq(periodSummaryReturns))
         when(mockDataCacheConnector.fetchAndGetFormData[SummaryReturnsModel](Matchers.eq(RetrieveReturnsResponseId))
-          (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(data)))
+          (any(), any(), any())).thenReturn(Future.successful(Some(data)))
         val result = TestReliefsService.viewReliefReturn(periodKey, formBundleNo1)
         await(result) must be(None)
       }
@@ -504,7 +505,7 @@ class ReliefsServiceSpec extends PlaySpec with OneServerPerSuite with MockitoSug
         val formBundleNo = "form-123"
         val data = SummaryReturnsModel(None, Nil)
         when(mockDataCacheConnector.fetchAndGetFormData[SummaryReturnsModel](Matchers.eq(RetrieveReturnsResponseId))
-          (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(data)))
+          (any(), any(), any())).thenReturn(Future.successful(Some(data)))
         val result = TestReliefsService.viewReliefReturn(periodKey, formBundleNo)
         await(result) must be(None)
       }
@@ -512,7 +513,7 @@ class ReliefsServiceSpec extends PlaySpec with OneServerPerSuite with MockitoSug
         implicit val hc = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
         val formBundleNo = "form-123"
         when(mockDataCacheConnector.fetchAndGetFormData[SummaryReturnsModel](Matchers.eq(RetrieveReturnsResponseId))
-          (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
+          (any(), any(), any())).thenReturn(Future.successful(None))
         val result = TestReliefsService.viewReliefReturn(periodKey, formBundleNo)
         await(result) must be(None)
       }
@@ -524,7 +525,7 @@ class ReliefsServiceSpec extends PlaySpec with OneServerPerSuite with MockitoSug
 
         implicit val hc = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
 
-        when(mockAtedConnector.deleteDraftReliefs(Matchers.any(), Matchers.any())) thenReturn Future.successful(HttpResponse(200, None))
+        when(mockAtedConnector.deleteDraftReliefs(any(), any())) thenReturn Future.successful(HttpResponse(200, None))
 
         val result = TestReliefsService.clearDraftReliefs
         await(result).status must be(OK)
@@ -538,7 +539,7 @@ class ReliefsServiceSpec extends PlaySpec with OneServerPerSuite with MockitoSug
 
         implicit val hc = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
 
-        when(mockAtedConnector.deleteDraftReliefsByYear(Matchers.any())(Matchers.any(), Matchers.any())) thenReturn Future.successful(HttpResponse(200, None))
+        when(mockAtedConnector.deleteDraftReliefsByYear(any())(any(), any())) thenReturn Future.successful(HttpResponse(200, None))
 
         val result = TestReliefsService.deleteDraftReliefs(2017)
         await(result).status must be (OK)

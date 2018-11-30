@@ -53,6 +53,7 @@ trait JsoupMatchers {
       )
     }
   }
+
   class CssSelectorWithTextMatcher(expectedContent: String, selector: String) extends Matcher[Document] {
     def apply(left: Document): MatchResult = {
       val elements: List[String] =
@@ -69,6 +70,7 @@ trait JsoupMatchers {
       )
     }
   }
+
   class CssSelectorWithAttributeValueMatcher(attributeName: String, attributeValue: String, selector: String) extends Matcher[Document] {
     def apply(left: Document): MatchResult = {
       val attributes: List[Attributes] =
@@ -86,11 +88,37 @@ trait JsoupMatchers {
     }
   }
 
-  def haveHeadingWithText (expectedText: String) = new TagWithTextMatcher(expectedText, "h1")
+  class CssSelectorWithClassMatcher(className: String, selector: String) extends Matcher[Document] {
+    def apply(left: Document): MatchResult = {
+      val classes: List[String] =
+        left.select(selector)
+          .toList
+          .map(_.className())
+
+      lazy val classContents = classes.mkString("\t", "\n\t", "")
+
+      MatchResult(
+        classes.exists(_.contains(className)),
+        s"[class=$className] not found in elements with '$selector' selector:[\n$classContents]",
+        s"[class=$className] element found with '$selector' selector"
+      )
+    }
+  }
+
+  def haveHeadingWithText(expectedText: String) = new TagWithTextMatcher(expectedText, "h1")
+
   def haveElementWithId(id: String) = new CssSelector(s"#${id}")
+
   def haveBackLink = new CssSelector("a[id=backLinkHref]")
-  def haveSubmitButton(expectedText: String) = new CssSelectorWithTextMatcher(expectedText,"button[type=submit]")
+
+  def haveSubmitButton(expectedText: String) = new CssSelectorWithTextMatcher(expectedText, "button[type=submit]")
+
   def haveFormWithSubmitUrl(url: String) = new CssSelectorWithAttributeValueMatcher("action", url, "form[method=POST]")
-  def haveInputLabelWithText (id:String, expectedText: String) = new CssSelectorWithTextMatcher(expectedText, s"label[for=$id]")
+
+  def haveInputLabelWithText(id: String, expectedText: String) = new CssSelectorWithTextMatcher(expectedText, s"label[for=$id]")
+
+  def haveElementAtPathWithText(elementSelector: String, expectedText: String) = new CssSelectorWithTextMatcher(expectedText, elementSelector)
+
+  def haveElementAtPathWithClass(elementSelector: String, className: String) = new CssSelectorWithClassMatcher(className, elementSelector)
 
 }
