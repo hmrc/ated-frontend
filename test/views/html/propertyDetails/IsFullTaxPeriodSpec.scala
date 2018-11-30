@@ -22,7 +22,7 @@ import play.api.data.FormError
 import play.twirl.api.Html
 import utils.viewHelpers.AtedViewSpec
 
-class isFullTaxPeriodSpec extends AtedViewSpec {
+class IsFullTaxPeriodSpec extends AtedViewSpec {
 
   "isFullTaxPeriod view" must {
     behave like pageWithTitle(messages("ated.property-details-period.isFullPeriod.title"))

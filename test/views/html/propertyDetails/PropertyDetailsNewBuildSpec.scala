@@ -21,7 +21,7 @@ import play.api.data.{Form, FormError}
 import play.twirl.api.Html
 import utils.viewHelpers.AtedViewSpec
 
-class propertyDetailsNewBuildSpec extends AtedViewSpec {
+class PropertyDetailsNewBuildSpec extends AtedViewSpec {
 
   "Property details New Build view" must {
     behave like pageWithTitle(messages("ated.property-details-value.isNewBuild.title"))

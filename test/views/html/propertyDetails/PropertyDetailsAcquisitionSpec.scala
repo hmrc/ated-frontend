@@ -21,7 +21,7 @@ import play.api.data.{Form, FormError}
 import play.twirl.api.Html
 import utils.viewHelpers.AtedViewSpec
 
-class propertyDetailsAcquisitionSpec extends AtedViewSpec {
+class PropertyDetailsAcquisitionSpec extends AtedViewSpec {
 
   "Property Details Acquisition view" must {
     behave like pageWithTitle(messages("ated.property-details-value.anAcquisition.title"))

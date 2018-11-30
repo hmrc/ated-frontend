@@ -21,7 +21,7 @@ import play.api.data.{Form, FormError}
 import play.twirl.api.Html
 import utils.viewHelpers.AtedViewSpec
 
-class propertyDetailsProfessionallyValuedSpec extends AtedViewSpec {
+class PropertyDetailsProfessionallyValuedSpec extends AtedViewSpec {
 
   "Property Details Professionally Valued view" must {
     behave like pageWithTitle(messages("ated.property-details-value.isValuedByAgent.title"))

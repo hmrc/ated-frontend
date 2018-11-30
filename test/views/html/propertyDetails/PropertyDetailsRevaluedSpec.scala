@@ -21,7 +21,7 @@ import play.api.data.{Form, FormError}
 import play.twirl.api.Html
 import utils.viewHelpers.AtedViewSpec
 
-class propertyDetailsRevaluedSpec extends AtedViewSpec {
+class PropertyDetailsRevaluedSpec extends AtedViewSpec {
 
   "Property Details Revalued view" must {
     behave like pageWithTitle(messages("ated.property-details-value.isPropertyRevalued.title"))

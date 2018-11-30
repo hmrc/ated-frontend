@@ -21,7 +21,7 @@ import play.api.data.{Form, FormError}
 import play.twirl.api.Html
 import utils.viewHelpers.AtedViewSpec
 
-class propertyDetailsTaxAvoidanceSpec extends AtedViewSpec {
+class PropertyDetailsTaxAvoidanceSpec extends AtedViewSpec {
 
   "Property Details TaxAvoidance view" must {
     behave like pageWithTitle(messages("ated.property-details-period.isTaxAvoidance.title"))
