@@ -121,4 +121,8 @@ trait JsoupMatchers {
 
   def haveElementAtPathWithClass(elementSelector: String, className: String) = new CssSelectorWithClassMatcher(className, elementSelector)
 
+  def haveErrorSummary(expectedText: String) = new CssSelectorWithTextMatcher(expectedText, ".error-list")
+
+  def haveErrorNotification(expectedText: String) = new CssSelectorWithTextMatcher(expectedText, ".error-notification")
+
 }
