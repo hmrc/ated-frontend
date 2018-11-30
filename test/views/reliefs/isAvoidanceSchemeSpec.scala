@@ -53,7 +53,7 @@ class isAvoidanceSchemeSpec extends FeatureSpec with OneServerPerSuite with Mock
       assert(document.select("h1").text === "Is an avoidance scheme being used for any of these reliefs?")
 
       Then("The subheader should be - Create return")
-      assert(document.getElementById("pre-header").text() === "This section is: Create return")
+      assert(document.getElementById("pre-heading").text() === "This section is: Create return")
 
       Then("The the text on the screen should be correct")
       assert(document.getElementById("isAvoidanceScheme-true").attr("checked") === "")
@@ -79,7 +79,7 @@ class isAvoidanceSchemeSpec extends FeatureSpec with OneServerPerSuite with Mock
       assert(document.select("h1").text === "Is an avoidance scheme being used for any of these reliefs?")
 
       Then("The subheader should be - Create return")
-      assert(document.getElementById("pre-header").text() === "This section is: Create return")
+      assert(document.getElementById("pre-heading").text() === "This section is: Create return")
 
       Then("The the text on the screen should be correct")
       assert(document.getElementById("isAvoidanceScheme-true").attr("checked") === "checked")
