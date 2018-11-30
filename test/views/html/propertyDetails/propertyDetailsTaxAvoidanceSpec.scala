@@ -40,31 +40,38 @@ class propertyDetailsTaxAvoidanceSpec extends AtedViewSpec {
       doc.getElementById("moreINfoOnTaxAvoidance").html mustBe messages("ated.choose-reliefs.avoidance-more-info")
     }
 
-    "check page errors for tax avoidance" in new AtedViewSpec {
+    "check page errors for tax avoidance" in {
       val eform = Form(form.mapping, form.data,
         Seq(FormError("isTaxAvoidance", messages("ated.property-details-period.isTaxAvoidance.error-field-name")))
         , form.value)
-      override def view: Html = views.html.propertyDetails.propertyDetailsTaxAvoidance("",0,  eform, None, Some("backLink"))
 
-      doc.getElementsMatchingOwnText(messages("ated.property-details-period.isTaxAvoidance.error-field-name")).hasText mustBe true
-      doc.getElementsMatchingOwnText(messages("ated.property-details-period-error.general.isTaxAvoidance")).hasText mustBe true
+      def view: Html = views.html.propertyDetails.propertyDetailsTaxAvoidance("", 0, eform, None, Some("backLink"))
+
+      val errorDoc = doc(view)
+      
+      errorDoc.getElementsMatchingOwnText(messages("ated.property-details-period.isTaxAvoidance.error-field-name")).hasText mustBe true
+      errorDoc.getElementsMatchingOwnText(messages("ated.property-details-period-error.general.isTaxAvoidance")).hasText mustBe true
     }
 
-    "check page errors for tax avoidance yes" in new AtedViewSpec {
+    "check page errors for tax avoidance yes" in {
       val eform = Form(form.mapping, Map("isTaxAvoidance" -> "true"),
         Seq(FormError("taxAvoidanceScheme", messages("ated.property-details-period.taxAvoidanceScheme.error.empty")),
           FormError("taxAvoidancePromoterReference", messages("ated.property-details-period.taxAvoidancePromoterReference.error.empty")))
         , form.value)
-      override def view: Html = views.html.propertyDetails.propertyDetailsTaxAvoidance("",0,  eform, None, Some("backLink"))
 
-      doc.getElementsMatchingOwnText(messages("ated.property-details-period.taxAvoidanceScheme.error.empty")).hasText mustBe true
-      doc.getElementsMatchingOwnText(messages("ated.property-details-period-error.general.taxAvoidanceScheme")).hasText mustBe true
-      doc.getElementsMatchingOwnText(messages("ated.property-details-period.taxAvoidancePromoterReference.error.empty")).hasText mustBe true
-      doc.getElementsMatchingOwnText(messages("ated.property-details-period-error.general.taxAvoidancePromoterReference")).hasText mustBe true
+      def view: Html = views.html.propertyDetails.propertyDetailsTaxAvoidance("", 0, eform, None, Some("backLink"))
+
+      val errorDoc = doc(view)
+
+      errorDoc.getElementsMatchingOwnText(messages("ated.property-details-period.taxAvoidanceScheme.error.empty")).hasText mustBe true
+      errorDoc.getElementsMatchingOwnText(messages("ated.property-details-period-error.general.taxAvoidanceScheme")).hasText mustBe true
+      errorDoc.getElementsMatchingOwnText(messages("ated.property-details-period.taxAvoidancePromoterReference.error.empty")).hasText mustBe true
+      errorDoc.getElementsMatchingOwnText(messages("ated.property-details-period-error.general.taxAvoidancePromoterReference")).hasText mustBe true
     }
   }
 
   private val form = PropertyDetailsForms.propertyDetailsTaxAvoidanceForm
-  override def view: Html = views.html.propertyDetails.propertyDetailsTaxAvoidance("",0,  form, None, Some("backLink"))
+
+  override def view: Html = views.html.propertyDetails.propertyDetailsTaxAvoidance("", 0, form, None, Some("backLink"))
 
 }

@@ -77,8 +77,8 @@ class PropertyDetailsTaxAvoidanceSpec  extends PlaySpec with MustMatchers with G
 
       "taxAvoidance is selected as 'Yes' and fields have some random string as input" in {
         val input: Map[String, String] = Map("isTaxAvoidance" -> "true",
-          "taxAvoidanceScheme" -> "asdfght",
-          "taxAvoidancePromoterReference" -> "asdfght")
+          "taxAvoidanceScheme" -> "asdfghto",
+          "taxAvoidancePromoterReference" -> "asdfghtk")
 
         val form = propertyDetailsTaxAvoidanceForm.bind(input)
         validatePropertyDetailsTaxAvoidance(form).fold(

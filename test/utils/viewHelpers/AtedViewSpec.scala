@@ -34,13 +34,6 @@ trait AtedViewSpec extends PlaySpec
   with JsoupMatchers
   with GuiceOneServerPerSuite {
 
-  protected val bindModules: Seq[GuiceableModule] = Seq()
-
-  implicit override lazy val app: Application = new GuiceApplicationBuilder()
-    .disable[com.kenshoo.play.metrics.PlayModule]
-    .bindings(bindModules:_*).in(Mode.Test)
-    .build()
-
   implicit val request = FakeRequest()
   implicit val messages: play.api.i18n.Messages = play.api.i18n.Messages.Implicits.applicationMessages
   val userId = s"user-${UUID.randomUUID}"
