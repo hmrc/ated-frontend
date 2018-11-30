@@ -18,6 +18,7 @@ package views.html.reliefs
 
 import forms.ReliefForms
 import org.joda.time.LocalDate
+import play.api.libs.json.Json
 import play.twirl.api.Html
 import utils.viewHelpers.AtedViewSpec
 
@@ -31,7 +32,24 @@ class IsAvoidanceSchemeSpec extends AtedViewSpec {
     behave like pageWithHeader(messages("ated.choose-reliefs.avoidance-title"))
     behave like pageWithPreHeading(messages("ated.choose-reliefs.subheader"))
     behave like pageWithBackLink
+    behave like pageWithYesNoRadioButton(
+      "isAvoidanceScheme-true",
+      "isAvoidanceScheme-false",
+      messages("ated.claim-relief.avoidance-scheme.yes"),
+      messages("ated.claim-relief.avoidance-scheme.no"))
     behave like pageWithContinueButtonForm(s"/ated/reliefs/$periodKey/avoidance-schemes-used/send")
+  }
+
+  "display error" when {
+    "continuing without selecting an option" in {
+      val formWithErrors = ReliefForms.isTaxAvoidanceForm.bind(Json.obj("isAvoidanceScheme" -> ""))
+      def view: Html = views.html.reliefs.avoidanceSchemeBeingUsed(periodKey,formWithErrors,periodStartDate,Some("backlink"))
+
+      val errorDoc = doc(view)
+
+      errorDoc must haveElementAtPathWithText(".error-list", messages("ated.choose-reliefs.error.general.isAvoidanceScheme"))
+      errorDoc must haveElementAtPathWithText(".error-notification", messages("ated.claim-relief.avoidance-scheme.selected"))
+    }
   }
 
 
