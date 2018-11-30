@@ -16,15 +16,14 @@
 
 package forms
 
-import forms.PropertyDetailsForms.{propertyDetailsRevaluedForm, propertyDetailsTaxAvoidanceForm, validatePropertyDetailsTaxAvoidance}
-import org.joda.time.LocalDate
-import org.scalatest.{Matchers, MustMatchers}
-import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
+import forms.PropertyDetailsForms.propertyDetailsRevaluedForm
+import org.scalatest.MustMatchers
+import org.scalatestplus.play.PlaySpec
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.test.FakeRequest
-import uk.gov.hmrc.play.test.UnitSpec
 
-class PropertyDetailsRevaluedSpec extends PlaySpec with MustMatchers with OneAppPerSuite {
+class PropertyDetailsRevaluedSpec extends PlaySpec with MustMatchers with GuiceOneServerPerSuite {
 
   implicit lazy val messagesApi = app.injector.instanceOf[MessagesApi]
   implicit lazy val messages = messagesApi.preferred(FakeRequest())
