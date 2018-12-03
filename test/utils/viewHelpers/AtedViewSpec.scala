@@ -59,7 +59,8 @@ trait AtedViewSpec extends PlaySpec
 
   def pageWithPreHeading(preHeadingText: String): Unit = {
     "have a static element with id pre-heading" in {
-      doc must haveElementWithId("pre-heading")
+      val preheading = messages("ated.screen-reader.section") + " " + preHeadingText
+      doc must haveElementWithIdAndText(preheading, "pre-heading")
     }
   }
 
