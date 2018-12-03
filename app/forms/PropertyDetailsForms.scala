@@ -17,18 +17,17 @@
 package forms
 
 import models._
-import org.joda.time.LocalDate
 import play.api.data.{Form, FormError, Mapping}
 import play.api.data.Forms._
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
 import utils.AtedUtils
-import utils.AtedUtils._
 import uk.gov.hmrc.play.mappers.DateTuple._
 
 import scala.annotation.tailrec
 import scala.util.Try
+import forms.AtedForms.validatePostCodeFormat
 
 object PropertyDetailsForms {
 
@@ -53,6 +52,7 @@ object PropertyDetailsForms {
   val supportingInfoRegex = """^[A-Za-z0-9\s\.\,\']*$"""
   val titleRegex = """^[A-Za-z0-9\s\.\,\']*$"""
   val supportingInfo = 200
+  val PostcodeLength = 10
 
   val propertyDetailsAddressForm = Form(
     mapping(
@@ -75,8 +75,8 @@ object PropertyDetailsForms {
           x => AtedForms.checkFieldLengthIfPopulated(x, addressLineLength))
         .verifying(Messages("ated.error.address.line-4.format", Messages("ated.address.line-4")), x => AtedForms.validateAddressLine(x)),
       "postcode" -> optional(text)
-        .verifying(Messages("ated.error.address.postalcode.format", Messages("ated.address.postcode.field"), AtedForms.postcodeLength),
-          x => AtedForms.checkFieldLengthIfPopulated(AtedUtils.formatPostCode(x), AtedForms.postcodeLength))
+        .verifying(Messages("ated.error.address.postalcode.format", Messages("ated.address.postcode.field"), PostcodeLength),
+          x => validatePostCodeFormat(AtedUtils.formatPostCode(x)))
     )(PropertyDetailsAddress.apply)(PropertyDetailsAddress.unapply)
   )
 

@@ -41,7 +41,7 @@ object AtedForms {
   val SIXTY = 60
   val numRegex = """[0-9]{8}"""
   val addressLineLength = 35
-  val postcodeLength = 9
+  val PostcodeLength = 10
   val countryLength = 2
   val emailLength = 241
   val lengthZero = 0
@@ -53,7 +53,7 @@ object AtedForms {
   val emailRegex =
     """^(?!\.)("([^"\r\\]|\\["\r\\])*"|([-a-zA-Z0-9!#$%&'*+/=?^_`{|}~]|(?<!\.)\.)*)
       |(?<!\.)@[a-zA-Z0-9][\w\.-]*[a-zA-Z0-9]\.[a-zA-Z][a-zA-Z\.]*[a-zA-Z]$""".r
-  val postCodeRegex = """^[A-Z]{1,2}[0-9R][0-9A-Z]? [0-9][ABD-HJLNP-UW-Z]{2}$""".r
+  val PostCodeRegex = "^[A-Z]{1,2}[0-9][0-9A-Z]?\\s?[0-9][A-Z]{2}|BFPO\\s?[0-9]{1,10}".r
   val addressLineRegex = """^([A-Za-z0-9\s\&\-\,\@\#\.\'])*$""".r
 
   val registeredDetailsForm = Form(
@@ -79,9 +79,9 @@ object AtedForms {
           .verifying(Messages("ated.error.address.line-4", Messages("ated.address.line-4"), addressLineLength),
             x => checkFieldLengthIfPopulated(x, addressLineLength)),
         "postalCode" -> optional(text)
-          .verifying(Messages("ated.error.address.postalcode", Messages("ated.address.postcode.field"), postcodeLength),
-            x => checkFieldLengthIfPopulated(x, postcodeLength))
-          .verifying(Messages("ated.error.address.postalcode.format", Messages("ated.address.postcode.field"), postcodeLength),
+          .verifying(Messages("ated.error.address.postalcode", Messages("ated.address.postcode.field"), PostcodeLength),
+            x => checkFieldLengthIfPopulated(x, PostcodeLength))
+          .verifying(Messages("ated.error.address.postalcode.format", Messages("ated.address.postcode.field"), PostcodeLength),
             x => validatePostCodeFormat(AtedUtils.formatPostCode(x))),
         "countryCode" -> text.
           verifying(Messages("ated.error.mandatory", Messages("ated.address.country")), x => x.length > lengthZero).
@@ -112,8 +112,10 @@ object AtedForms {
         .verifying(Messages("ated.error.address.line-4", Messages("ated.address.line-4"), addressLineLength),
           x => checkFieldLengthIfPopulated(x, addressLineLength)),
       "postalCode" -> optional(text)
-        .verifying(Messages("ated.error.address.postalcode.format", Messages("ated.address.postcode.field"), postcodeLength),
-          x => checkFieldLengthIfPopulated(AtedUtils.formatPostCode(x), postcodeLength)),
+        .verifying(Messages("ated.error.address.postalcode", Messages("ated.address.postcode.field"), PostcodeLength),
+          x => checkFieldLengthIfPopulated(AtedUtils.formatPostCode(x), PostcodeLength))
+        .verifying(Messages("ated.error.address.postalcode.format", Messages("ated.address.postcode.field"), PostcodeLength),
+          x => validatePostCodeFormat(AtedUtils.formatPostCode(x))),
       "countryCode" -> text.
         verifying(Messages("ated.error.mandatory", Messages("ated.address.country")), x => x.length > lengthZero)
         .verifying(Messages("ated.error.address.country", Messages("ated.address.country"), addressLineLength),
@@ -199,7 +201,7 @@ object AtedForms {
   def validatePostCodeFormat(optionValue: Option[String]): Boolean = {
     optionValue match {
       case Some(value) =>
-        if (postCodeRegex.findFirstMatchIn(value).exists(_ => true)) true
+        if (PostCodeRegex.findFirstMatchIn(value).exists(_ => true)) true
         else false
       case None => true
     }
