@@ -17,12 +17,9 @@
 package views.html.editLiability
 
 import forms.BankDetailForms
-import models.{BicSwiftCode, Iban}
 import play.twirl.api.Html
 import utils.viewHelpers.AtedViewSpec
-import play.api.data.Form
-import play.api.data.Forms._
-import play.api.i18n.Messages
+
 
 class BankDetailsSpec extends AtedViewSpec {
 
@@ -34,7 +31,36 @@ class BankDetailsSpec extends AtedViewSpec {
     behave like pageWithContinueButtonForm("/ated/liability/oldFormBundleNo/change/bank-details")
     behave like pageWithYesNoRadioButton("hasUKBankAccount-true", "hasUKBankAccount-false")
   }
+
+  "Bank details" must {
+    "have account name " in {
+      doc must haveInputLabelWithText("accountName", messages("ated.bank-details.uk-bank-account.name.label"))
+    }
+
+    "have account number" in {
+      doc must haveInputLabelWithText("accountNumber", messages("ated.bank-details.uk-bank-account.number.label"))
+    }
+
+    "have sort code" in {
+      doc must haveInputLabelWithText("sortCode_firstElement", messages("First two numbers"))
+      doc must haveInputLabelWithText("sortCode_secondElement", messages("Second two numbers"))
+      doc must haveInputLabelWithText("sortCode_thirdElement", messages("Third two numbers"))
+    }
+
+    "have iban code" in {
+      doc must haveInputLabelWithText("iban", messages("ated.bank-details.non-uk-bank-account.iban.label"))
+    }
+
+    "have bic swift code" in {
+      doc must haveInputLabelWithText("bicSwiftCode", messages("ated.bank-details.non-uk-bank-account.bic-swift-code.label"))
+    }
+
+  }
+
+
   private val form = BankDetailForms.bankDetailsForm
+
   override def view: Html = views.html.editLiability.bankDetails(form, "oldFormBundleNo", Some("backLink"))
+
 
 }

@@ -125,4 +125,6 @@ trait JsoupMatchers {
 
   def haveErrorNotification(expectedText: String) = new CssSelectorWithTextMatcher(expectedText, ".error-notification")
 
+  def haveClassWithText(expectedText: String, className: String) = new CssSelectorWithTextMatcher(expectedText, s".$className")
+
 }
