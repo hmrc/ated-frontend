@@ -131,6 +131,20 @@ class PropertyFormValidationSpec extends PlaySpec with MustMatchers with GuiceOn
         )
       }
 
+      "periodsInAndOutReliefForm is empty" in {
+        val form = periodsInAndOutReliefForm.bind(Map.empty[String, String])
+        form.fold(
+          hasErrors => {
+            hasErrors.errors.length mustBe 1
+            hasErrors.errors.head.message mustBe Messages("ated.property-details-period.isInRelief.error-field-name")
+
+          },
+          _ => {
+            fail("There is a problem")
+          }
+        )
+      }
+
       "propertyDetailsProfessionallyValuedForm is empty" in {
         val form = propertyDetailsProfessionallyValuedForm.bind(Map.empty[String, String])
         form.fold(
