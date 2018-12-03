@@ -121,4 +121,6 @@ trait JsoupMatchers {
 
   def haveElementAtPathWithClass(elementSelector: String, className: String) = new CssSelectorWithClassMatcher(className, elementSelector)
 
+  def haveClassWithText(expectedText: String, className: String) = new CssSelectorWithTextMatcher(expectedText, s".$className")
+
 }
