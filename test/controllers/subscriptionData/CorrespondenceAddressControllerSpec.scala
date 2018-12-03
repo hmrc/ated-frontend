@@ -265,9 +265,21 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with OneServerPerSuit
                 }
               }
 
-                "Postcode must not be more than 10 characters" in {
+               "Postcode must not be more than 9 characters" in {
                 implicit val hc: HeaderCarrier = HeaderCarrier()
                 val inputJson = Json.parse( """{ "addressType": "", "addressLine1": "", "addressLine2": "", "addressLine3": "", "addressLine4": "", "postalCode": "asssaa34aaaaaa", "countryCode": ""}""")
+                val addressDetails: AddressDetails = inputJson.as[AddressDetails]
+                submitWithAuthorisedUserSuccess(Some(addressDetails))(FakeRequest().withJsonBody(inputJson)) {
+                  result =>
+                    status(result) must be(BAD_REQUEST)
+                    contentAsString(result) must include("The postcode cannot be more than 9 characters")
+                }
+              }
+
+
+              "Postcode must not contain special characters" in {
+                implicit val hc: HeaderCarrier = HeaderCarrier()
+                val inputJson = Json.parse( """{ "addressType": "", "addressLine1": "", "addressLine2": "", "addressLine3": "", "addressLine4": "", "postalCode": "aaa,uu", "countryCode": ""}""")
                 val addressDetails: AddressDetails = inputJson.as[AddressDetails]
                 submitWithAuthorisedUserSuccess(Some(addressDetails))(FakeRequest().withJsonBody(inputJson)) {
                   result =>
@@ -276,7 +288,8 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with OneServerPerSuit
                 }
               }
 
-               "Country Code must be selected" in {
+
+              "Country Code must be selected" in {
                 implicit val hc: HeaderCarrier = HeaderCarrier()
                 val inputJson = Json.parse(  """{ "addressType": "", "addressLine1": "", "addressLine2": "", "addressLine3": "", "addressLine4": "", "postalCode": "", "countryCode": ""}""")
                 val addressDetails: AddressDetails = inputJson.as[AddressDetails]

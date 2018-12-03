@@ -28,6 +28,10 @@ class AtedFormsSpec extends PlaySpec with OneServerPerSuite {
     "return false for an invalid postcode" in {
       AtedForms.validatePostCodeFormat(Some("ZZ1")) must be(false)
     }
+
+    "return false for an invalid postcode with ," in {
+      AtedForms.validatePostCodeFormat(Some("ZZ, 1AA")) must be(false)
+    }
   }
 
   "validateAddressLine" must {
