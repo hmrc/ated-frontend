@@ -195,7 +195,8 @@ class ChooseReliefsSpec extends AtedViewSpec {
     def view: Html = views.html.reliefs.chooseReliefs(periodKey, formWithErrors, periodStartDate, Some("backLink"))
 
     val errorDoc = doc(view)
-    haveFormError(errorDoc, Messages(s"ated.choose-reliefs.error.general.$fieldStartDate"), s"You must enter a $partialFieldError date")
+    errorDoc must haveErrorSummary(Messages(s"ated.choose-reliefs.error.general.$fieldStartDate"))
+    errorDoc must haveErrorNotification(s"You must enter a $partialFieldError date")
   }
 
   def haveChooseReliefStartDateFormError(field: String): Unit = {
@@ -206,14 +207,9 @@ class ChooseReliefsSpec extends AtedViewSpec {
     def view: Html = views.html.reliefs.chooseReliefs(periodKey, formWithErrors, periodStartDate, Some("backLink"))
 
     val errorDoc = doc(view)
-    haveFormError(errorDoc, Messages(s"ated.choose-reliefs.error.general.$fieldStartDate"), "You must enter a valid date")
+    errorDoc must haveErrorSummary(Messages(s"ated.choose-reliefs.error.general.$fieldStartDate"))
+    errorDoc must haveErrorNotification("You must enter a valid date")
   }
-
-  def haveFormError(errorDoc: Document, globalErrorMessage: String, expectedText: String) = {
-    errorDoc must haveElementAtPathWithText(".error-list", globalErrorMessage)
-    errorDoc must haveElementAtPathWithText(".error-notification", expectedText)
-  }
-
 
   val reliefsForm: Form[Reliefs] = ReliefForms.reliefsForm
 
