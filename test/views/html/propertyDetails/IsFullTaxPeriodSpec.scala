@@ -26,8 +26,8 @@ class IsFullTaxPeriodSpec extends AtedViewSpec {
 
   "isFullTaxPeriod view" must {
     behave like pageWithTitle(messages("ated.property-details-period.isFullPeriod.title"))
-    behave like pageWithHeader(messages("ated.property-details-period.isFullPeriod.title"))
-    behave like pageWithPreHeading(messages("ated.property-details-period.isFullPeriod.header"))
+    behave like pageWithHeader(messages("ated.property-details-period.isFullPeriod.header"))
+    behave like pageWithPreHeading(messages("ated.property-details.pre-header"))
     behave like pageWithBackLink
     behave like pageWithContinueButtonForm("/ated/liability/create/full-tax-period/save//period/0")
     behave like pageWithYesNoRadioButton("isFullPeriod-true", "isFullPeriod-false")

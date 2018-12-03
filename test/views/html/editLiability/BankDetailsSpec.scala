@@ -31,12 +31,6 @@ class BankDetailsSpec extends AtedViewSpec {
     behave like pageWithContinueButtonForm("/ated/liability/oldFormBundleNo/change/bank-details")
     behave like pageWithYesNoRadioButton("hasUKBankAccount-true", "hasUKBankAccount-false")
 
-    "check contents" in {
-      doc.getElementsMatchingOwnText(messages("ated.bank-details.uk-bank-account.name.label")).hasText must be(true)
-      doc.getElementsMatchingOwnText(messages("ated.bank-details.uk-bank-account.number.label")).hasText must be(true)
-      doc.getElementsMatchingOwnText(messages("ated.bank-details.uk-bank-account.sort-code.label")).hasText must be(true)
-    }
-
     "check page errors for uk account" in {
       val eform = Form(form.mapping, Map("hasUKBankAccount" -> "true"),
         Seq(FormError("accountName", messages("ated.bank-details.error-key.accountName.empty")),
@@ -71,6 +65,32 @@ class BankDetailsSpec extends AtedViewSpec {
       errorDoc.getElementsMatchingOwnText(messages("ated.bank-details.error-key.bicSwiftCode")).hasText mustBe true
     }
   }
+
+  "Bank details" must {
+    "have account name " in {
+      doc must haveInputLabelWithText("accountName", messages("ated.bank-details.uk-bank-account.name.label"))
+    }
+
+    "have account number" in {
+      doc must haveInputLabelWithText("accountNumber", messages("ated.bank-details.uk-bank-account.number.label"))
+    }
+
+    "have sort code" in {
+      doc must haveInputLabelWithText("sortCode_firstElement", messages("First two numbers"))
+      doc must haveInputLabelWithText("sortCode_secondElement", messages("Second two numbers"))
+      doc must haveInputLabelWithText("sortCode_thirdElement", messages("Third two numbers"))
+    }
+
+    "have iban code" in {
+      doc must haveInputLabelWithText("iban", messages("ated.bank-details.non-uk-bank-account.iban.label"))
+    }
+
+    "have bic swift code" in {
+      doc must haveInputLabelWithText("bicSwiftCode", messages("ated.bank-details.non-uk-bank-account.bic-swift-code.label"))
+    }
+
+  }
+
 
   private val form = BankDetailForms.bankDetailsForm
   override def view: Html = views.html.editLiability.bankDetails(form, "oldFormBundleNo", Some("backLink"))

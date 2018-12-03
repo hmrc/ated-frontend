@@ -25,8 +25,8 @@ class PropertyDetailsProfessionallyValuedSpec extends AtedViewSpec {
 
   "Property Details Professionally Valued view" must {
     behave like pageWithTitle(messages("ated.property-details-value.isValuedByAgent.title"))
-    behave like pageWithHeader(messages("ated.property-details-value.isValuedByAgent.title"))
-    behave like pageWithPreHeading(messages("ated.property-details-value.isValuedByAgent.header"))
+    behave like pageWithHeader(messages("ated.property-details-value.isValuedByAgent.header"))
+    behave like pageWithPreHeading(messages("ated.property-details.pre-header"))
     behave like pageWithBackLink
     behave like pageWithContinueButtonForm("/ated/liability/create/valued/save//period/0")
     behave like pageWithYesNoRadioButton("isValuedByAgent-true", "isValuedByAgent-false")

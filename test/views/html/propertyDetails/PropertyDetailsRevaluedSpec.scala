@@ -25,8 +25,8 @@ class PropertyDetailsRevaluedSpec extends AtedViewSpec {
 
   "Property Details Revalued view" must {
     behave like pageWithTitle(messages("ated.property-details-value.isPropertyRevalued.title"))
-    behave like pageWithHeader(messages("ated.property-details-value.isPropertyRevalued.title"))
-    behave like pageWithPreHeading(messages("ated.property-details-value.isPropertyRevalued.header"))
+    behave like pageWithHeader(messages("ated.property-details-value.isPropertyRevalued.header"))
+    behave like pageWithPreHeading(messages("ated.property-details.pre-header"))
     behave like pageWithBackLink
     behave like pageWithContinueButtonForm("/ated/liability/create/revalued/save//period/0")
     behave like pageWithYesNoRadioButton("isPropertyRevalued-true", "isPropertyRevalued-false")

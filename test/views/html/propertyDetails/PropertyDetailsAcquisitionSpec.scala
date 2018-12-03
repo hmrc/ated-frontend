@@ -24,8 +24,8 @@ class PropertyDetailsAcquisitionSpec extends AtedViewSpec {
 
   "Property Details Acquisition view" must {
     behave like pageWithTitle(messages("ated.property-details-value.anAcquisition.title"))
-    behave like pageWithHeader(messages("ated.property-details-value.anAcquisition.title"))
-    behave like pageWithPreHeading(messages("ated.property-details-value.anAcquisition.header"))
+    behave like pageWithHeader(messages("ated.property-details-value.anAcquisition.header"))
+    behave like pageWithPreHeading(messages("ated.property-details.pre-header"))
     behave like pageWithBackLink
     behave like pageWithContinueButtonForm("/ated/liability/create/acquisition/save//period/0")
     behave like pageWithYesNoRadioButton("anAcquisition-true", "anAcquisition-false")
