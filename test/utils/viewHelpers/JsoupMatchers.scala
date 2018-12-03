@@ -107,6 +107,8 @@ trait JsoupMatchers {
 
   def haveHeadingWithText(expectedText: String) = new TagWithTextMatcher(expectedText, "h1")
 
+  def haveElementWithIdAndText(expectedText: String, id: String) = new CssSelectorWithTextMatcher(expectedText, s"#${id}")
+
   def haveElementWithId(id: String) = new CssSelector(s"#${id}")
 
   def haveBackLink = new CssSelector("a[id=backLinkHref]")
