@@ -111,14 +111,6 @@ class PropertyDetailsInReliefControllerSpec extends PlaySpec with OneServerPerSu
           getDataWithAuthorisedUser(propertyDetails) {
             result =>
               status(result) must be(OK)
-              val document = Jsoup.parse(contentAsString(result))
-              document.title() must be(TitleBuilder.buildTitle("Was the property in relief for any part of the ATED chargeable period?"))
-
-              document.getElementById("isInRelief").text() must be(s"Was the property in relief for any part of the ATED chargeable period? Yes No")
-              document.getElementById("isInRelief-true").attr("checked") must be("")
-              document.getElementById("isInRelief-false").attr("checked") must be("")
-
-              document.getElementById("submit").text() must be("Save and continue")
           }
         }
 
@@ -132,8 +124,6 @@ class PropertyDetailsInReliefControllerSpec extends PlaySpec with OneServerPerSu
 
               document.getElementById("isInRelief-true").attr("checked") must be("")
               document.getElementById("isInRelief-false").attr("checked") must be("checked")
-
-              document.getElementById("submit").text() must be("Save and continue")
           }
         }
       }
