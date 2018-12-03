@@ -17,7 +17,6 @@
 package views.html.propertyDetails
 
 import forms.PropertyDetailsForms
-import play.api.data.{Form, FormError}
 import play.twirl.api.Html
 import utils.viewHelpers.AtedViewSpec
 
