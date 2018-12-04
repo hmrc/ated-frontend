@@ -131,7 +131,6 @@ class PropertyDetailsNewBuildFormSpec extends PlaySpec with MustMatchers with Gu
           hasErrors => {
             hasErrors.errors.length mustBe  2
             Messages(hasErrors.errors.head.message) mustBe Messages("error.invalid.date.format")
-            Messages(hasErrors.errors.last.message) mustBe Messages("error.invalid.date.format")
           },
           _ => {
             fail("There is some problem")
@@ -154,6 +153,52 @@ class PropertyDetailsNewBuildFormSpec extends PlaySpec with MustMatchers with Gu
           hasErrors => {
             hasErrors.errors.length mustBe  1
             hasErrors.errors.head.message mustBe Messages("ated.property-details-value.incorrect-format")
+          },
+          _ => {
+            fail("There is some problem")
+          }
+        )
+      }
+
+
+      "Option 'yes' is selected and newBuild value is too low" in {
+        val periodKey = 2018
+        val input: Map[String, String] =  Map("isNewBuild" -> "true",
+          "newBuildDate.day" -> "13",
+          "newBuildDate.month" -> "10",
+          "newBuildDate.year" -> "2018",
+          "newBuildValue" -> "500000",
+          "localAuthRegDate.day" -> "12",
+          "localAuthRegDate.month" -> "10",
+          "localAuthRegDate.year" -> "2018"
+        )
+        PropertyDetailsForms.validatePropertyDetailsNewBuild(periodKey,  propertyDetailsNewBuildForm.bind(input)).fold(
+          hasErrors => {
+            hasErrors.errors.length mustBe  1
+            hasErrors.errors.head.message mustBe Messages("ated.property-details-value.newBuildValue.error.too-low")
+          },
+          _ => {
+            fail("There is some problem")
+          }
+        )
+      }
+
+
+      "Option 'yes' is selected and newBuild value is too high" in {
+        val periodKey = 2018
+        val input: Map[String, String] =  Map("isNewBuild" -> "true",
+          "newBuildDate.day" -> "13",
+          "newBuildDate.month" -> "10",
+          "newBuildDate.year" -> "2018",
+          "newBuildValue" -> "10000000000000",
+          "localAuthRegDate.day" -> "12",
+          "localAuthRegDate.month" -> "10",
+          "localAuthRegDate.year" -> "2018"
+        )
+        PropertyDetailsForms.validatePropertyDetailsNewBuild(periodKey,  propertyDetailsNewBuildForm.bind(input)).fold(
+          hasErrors => {
+            hasErrors.errors.length mustBe  1
+            hasErrors.errors.head.message mustBe Messages("ated.property-details-value.newBuildValue.error.too-high")
           },
           _ => {
             fail("There is some problem")
@@ -221,7 +266,45 @@ class PropertyDetailsNewBuildFormSpec extends PlaySpec with MustMatchers with Gu
         )
       }
 
+      "Option 'no' is selected and value of the property is too low" in {
+        val periodKey = 2018
+        val input: Map[String, String] =  Map("isNewBuild" -> "false",
+          "notNewBuildDate.day" -> "13",
+          "notNewBuildDate.month" -> "10",
+          "notNewBuildDate.year" -> "2018",
+          "notNewBuildValue" -> "500000"
+        )
 
+        PropertyDetailsForms.validatePropertyDetailsNewBuild(periodKey,  propertyDetailsNewBuildForm.bind(input)).fold(
+          hasErrors => {
+            hasErrors.errors.length mustBe  1
+            hasErrors.errors.head.message mustBe Messages("ated.property-details-value.notNewBuildValue.error.too-low")
+          },
+          _ => {
+            fail("There is some problem")
+          }
+        )
+      }
+
+      "Option 'no' is selected and value of the property exceeds max length" in {
+        val periodKey = 2018
+        val input: Map[String, String] =  Map("isNewBuild" -> "false",
+          "notNewBuildDate.day" -> "13",
+          "notNewBuildDate.month" -> "10",
+          "notNewBuildDate.year" -> "2018",
+          "notNewBuildValue" -> "10000000000000"
+        )
+
+        PropertyDetailsForms.validatePropertyDetailsNewBuild(periodKey,  propertyDetailsNewBuildForm.bind(input)).fold(
+          hasErrors => {
+            hasErrors.errors.length mustBe  1
+            hasErrors.errors.head.message mustBe Messages("ated.property-details-value.notNewBuildValue.error.too-high")
+          },
+          _ => {
+            fail("There is some problem")
+          }
+        )
+      }
     }
   }
 }

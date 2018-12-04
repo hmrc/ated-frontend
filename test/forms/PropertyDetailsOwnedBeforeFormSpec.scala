@@ -59,6 +59,39 @@ class PropertyDetailsOwnedBeforeFormSpec extends PlaySpec with MustMatchers with
         )
       }
 
+      "Option 'yes' is selected and ownedBefore value is too high" in {
+        val input: Map[String, String] =  Map("isOwnedBefore2012" -> "true",
+          "ownedBefore2012Value" -> "10000000000000"
+        )
+
+        PropertyDetailsForms.validatePropertyDetailsOwnedBefore(propertyDetailsOwnedBeforeForm.bind(input)).fold(
+          hasErrors => {
+            hasErrors.errors.length mustBe  1
+            hasErrors.errors.last.message mustBe Messages("ated.property-details-value.ownedBefore2012Value.error.too-high")
+          },
+          _ => {
+            fail("There is some problem")
+          }
+        )
+      }
+
+
+      "Option 'yes' is selected and ownedBefore value is too low" in {
+        val input: Map[String, String] =  Map("isOwnedBefore2012" -> "true",
+          "ownedBefore2012Value" -> "500000"
+        )
+
+        PropertyDetailsForms.validatePropertyDetailsOwnedBefore(propertyDetailsOwnedBeforeForm.bind(input)).fold(
+          hasErrors => {
+            hasErrors.errors.length mustBe  1
+            hasErrors.errors.last.message mustBe Messages("ated.property-details-value.ownedBefore2012Value.error.too-low")
+          },
+          _ => {
+            fail("There is some problem")
+          }
+        )
+      }
+
       "Option 'yes' is selected and owned Before value is invalid" in {
         val input: Map[String, String] =  Map("isOwnedBefore2012" -> "true",
           "ownedBefore2012Value" -> "ahgfhagsfhafshg"

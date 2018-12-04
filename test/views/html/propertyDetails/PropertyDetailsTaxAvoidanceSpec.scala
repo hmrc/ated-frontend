@@ -68,9 +68,14 @@ class PropertyDetailsTaxAvoidanceSpec extends AtedViewSpec {
       errorDoc.getElementsMatchingOwnText(messages("ated.property-details-period.taxAvoidancePromoterReference.error.empty")).hasText mustBe true
       errorDoc.getElementsMatchingOwnText(messages("ated.property-details-period-error.general.taxAvoidancePromoterReference")).hasText mustBe true
     }
+
+    "check error message for empty form" in {
+      doc.getElementsContainingOwnText(messages("ated.property-details-period-error.general.isFullPeriod")).hasText mustBe true
+      doc.getElementsContainingOwnText(messages("ated.property-details-period.isTaxAvoidance.error-field-name")).hasText mustBe true
+    }
   }
 
-  private val form = PropertyDetailsForms.propertyDetailsTaxAvoidanceForm
+  private val form = PropertyDetailsForms.propertyDetailsTaxAvoidanceForm.withError("isTaxAvoidance", "ated.property-details-period.isTaxAvoidance.error-field-name")
 
   override def view: Html = views.html.propertyDetails.propertyDetailsTaxAvoidance("", 0, form, None, Some("backLink"))
 

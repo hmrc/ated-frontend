@@ -107,7 +107,6 @@ class PropertyDetailsRevaluedSpec extends PlaySpec with MustMatchers with GuiceO
           hasErrors => {
             hasErrors.errors.length mustBe  2
             Messages(hasErrors.errors.head.message) mustBe Messages("error.invalid.date.format")
-            Messages(hasErrors.errors.last.message) mustBe Messages("error.invalid.date.format")
           },
           _ => {
             fail("There is some problem")
@@ -130,6 +129,50 @@ class PropertyDetailsRevaluedSpec extends PlaySpec with MustMatchers with GuiceO
           hasErrors => {
             hasErrors.errors.length mustBe  1
             hasErrors.errors.head.message mustBe Messages("ated.property-details-value.incorrect-format")
+          },
+          _ => {
+            fail("There is some problem")
+          }
+        )
+      }
+
+      "Option 'yes' is selected and valuation value is too low" in {
+        val periodKey = 2018
+        val input: Map[String, String] =  Map("isPropertyRevalued" -> "true",
+          "partAcqDispDate.day" -> "13",
+          "partAcqDispDate.month" -> "10",
+          "partAcqDispDate.year" -> "2010",
+          "revaluedValue" -> "499999",
+          "revaluedDate.day" -> "12",
+          "revaluedDate.month" -> "10",
+          "revaluedDate.year" -> "2010"
+        )
+        PropertyDetailsForms.validatePropertyDetailsRevalued(periodKey,  propertyDetailsRevaluedForm.bind(input)).fold(
+          hasErrors => {
+            hasErrors.errors.length mustBe  1
+            hasErrors.errors.head.message mustBe Messages("ated.property-details-value.revaluedValue.error.too-low")
+          },
+          _ => {
+            fail("There is some problem")
+          }
+        )
+      }
+
+      "Option 'yes' is selected and valuation value is too high" in {
+        val periodKey = 2018
+        val input: Map[String, String] =  Map("isPropertyRevalued" -> "true",
+          "partAcqDispDate.day" -> "13",
+          "partAcqDispDate.month" -> "10",
+          "partAcqDispDate.year" -> "2010",
+          "revaluedValue" -> "10000000000000",
+          "revaluedDate.day" -> "12",
+          "revaluedDate.month" -> "10",
+          "revaluedDate.year" -> "2010"
+        )
+        PropertyDetailsForms.validatePropertyDetailsRevalued(periodKey,  propertyDetailsRevaluedForm.bind(input)).fold(
+          hasErrors => {
+            hasErrors.errors.length mustBe  1
+            hasErrors.errors.head.message mustBe Messages("ated.property-details-value.revaluedValue.error.too-high")
           },
           _ => {
             fail("There is some problem")

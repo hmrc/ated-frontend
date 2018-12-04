@@ -58,7 +58,24 @@ class PropertyDetailsTaxAvoidanceSpec  extends PlaySpec with MustMatchers with G
         )
       }
 
-      "taxAvoidance is selected as 'Yes' and fields have invalid data" in {
+      "taxAvoidance is selected as 'Yes' and fields have invalid data less then 8" in {
+        val input: Map[String, String] = Map("isTaxAvoidance" -> "true",
+          "taxAvoidanceScheme" -> "12345",
+          "taxAvoidancePromoterReference" -> "1239")
+        val form = propertyDetailsTaxAvoidanceForm.bind(input)
+        validatePropertyDetailsTaxAvoidance(form).fold(
+          hasErrors => {
+            hasErrors.errors.length mustBe 2
+            hasErrors.errors.head.message mustBe Messages("ated.property-details-period.taxAvoidanceScheme.error.wrong-length")
+            hasErrors.errors(1).message mustBe Messages("ated.property-details-period.taxAvoidancePromoterReference.error.wrong-length")
+          },
+          _ => {
+            fail("There is a problem")
+          }
+        )
+      }
+
+      "taxAvoidance is selected as 'Yes' and fields have invalid data greater then 8" in {
         val input: Map[String, String] = Map("isTaxAvoidance" -> "true",
           "taxAvoidanceScheme" -> "123456789",
           "taxAvoidancePromoterReference" -> "123456789")
@@ -74,6 +91,7 @@ class PropertyDetailsTaxAvoidanceSpec  extends PlaySpec with MustMatchers with G
           }
         )
       }
+
 
       "taxAvoidance is selected as 'Yes' and fields have some random string as input" in {
         val input: Map[String, String] = Map("isTaxAvoidance" -> "true",
