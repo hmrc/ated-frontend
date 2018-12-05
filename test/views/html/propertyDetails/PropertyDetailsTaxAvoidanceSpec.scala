@@ -70,8 +70,9 @@ class PropertyDetailsTaxAvoidanceSpec extends AtedViewSpec {
     }
 
     "check error message for empty form" in {
-      doc.getElementsContainingOwnText(messages("ated.property-details-period-error.general.isFullPeriod")).hasText mustBe true
-      doc.getElementsContainingOwnText(messages("ated.property-details-period.isTaxAvoidance.error-field-name")).hasText mustBe true
+
+      doc must haveErrorNotification(messages("ated.property-details-period.isTaxAvoidance.error-field-name"))
+      doc must haveErrorSummary(messages("ated.property-details-period-error.general.isFullPeriod"))
     }
   }
 
