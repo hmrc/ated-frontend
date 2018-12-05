@@ -49,8 +49,8 @@ class PropertyDetailsTaxAvoidanceSpec extends AtedViewSpec {
 
       val errorDoc = doc(view)
 
-      errorDoc.getElementsMatchingOwnText(messages("ated.property-details-period.isTaxAvoidance.error-field-name")).hasText mustBe true
-      errorDoc.getElementsMatchingOwnText(messages("ated.property-details-period-error.general.isTaxAvoidance")).hasText mustBe true
+      errorDoc must haveErrorNotification(messages("ated.property-details-period.isTaxAvoidance.error-field-name"))
+      errorDoc must haveErrorSummary(messages("ated.property-details-period-error.general.isTaxAvoidance"))
     }
 
     "check page errors for tax avoidance yes" in {
@@ -63,10 +63,10 @@ class PropertyDetailsTaxAvoidanceSpec extends AtedViewSpec {
 
       val errorDoc = doc(view)
 
-      errorDoc.getElementsMatchingOwnText(messages("ated.property-details-period.taxAvoidanceScheme.error.empty")).hasText mustBe true
-      errorDoc.getElementsMatchingOwnText(messages("ated.property-details-period-error.general.taxAvoidanceScheme")).hasText mustBe true
-      errorDoc.getElementsMatchingOwnText(messages("ated.property-details-period.taxAvoidancePromoterReference.error.empty")).hasText mustBe true
-      errorDoc.getElementsMatchingOwnText(messages("ated.property-details-period-error.general.taxAvoidancePromoterReference")).hasText mustBe true
+      errorDoc must haveErrorNotification(messages("ated.property-details-period.taxAvoidanceScheme.error.empty"))
+      errorDoc must haveErrorSummary(messages("ated.property-details-period-error.general.taxAvoidanceScheme"))
+      errorDoc must haveErrorNotification(messages("ated.property-details-period.taxAvoidancePromoterReference.error.empty"))
+      errorDoc must haveErrorSummary(messages("ated.property-details-period-error.general.taxAvoidancePromoterReference"))
     }
 
     "check error message for empty form" in {

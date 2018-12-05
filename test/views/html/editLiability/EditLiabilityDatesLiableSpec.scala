@@ -39,10 +39,10 @@ class EditLiabilityDatesLiableSpec extends AtedViewSpec {
        def view: Html = views.html.editLiability.editLiabilityDatesLiable("",0,  eform, Some("backLink"))
       val errorDoc = doc(view)
 
-      errorDoc.getElementsMatchingOwnText(messages("ated.property-details-value.startDate.error.empty")).hasText mustBe true
-      errorDoc.getElementsMatchingOwnText(messages("ated.property-details-period.datesLiable.general.error.startDate")).hasText mustBe true
-      errorDoc.getElementsMatchingOwnText(messages("ated.property-details-value.endDate.error.empty")).hasText mustBe true
-      errorDoc.getElementsMatchingOwnText(messages("ated.property-details-period.datesLiable.general.error.endDate")).hasText mustBe true
+      errorDoc must haveErrorNotification(messages("ated.property-details-value.startDate.error.empty"))
+      errorDoc must haveErrorSummary(messages("ated.property-details-period.datesLiable.general.error.startDate"))
+      errorDoc must haveErrorNotification(messages("ated.property-details-value.endDate.error.empty"))
+      errorDoc must haveErrorSummary(messages("ated.property-details-period.datesLiable.general.error.endDate"))
 
       errorDoc.getElementsMatchingOwnText(messages("ated.property-details-period.change-dates-liable.startDate")).hasText mustBe true
       errorDoc.getElementsMatchingOwnText(messages("ated.property-details-period.datesLiable.startDate.hint")).hasText mustBe true
