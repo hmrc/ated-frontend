@@ -127,8 +127,8 @@ object BankDetailForms {
       (sortCodeElement1, sortCodeElement2, sortCodeElement3) match {
         case (Some(a), Some(b), Some(c)) if a.length > 0 && b.length > 0 && c.length > 0 =>
           if (SortCodeFields.isValid(a) && SortCodeFields.isValid(b) & SortCodeFields.isValid(c)) Seq()
-          else Seq(Some(FormError("sortCode", "ated.bank-details.error-key.sortCode.invalid")))
-        case (_, _, _) => Seq(Some(FormError("sortCode", "ated.bank-details.error-key.sortCode.empty")))
+          else Seq(Some(FormError("sortCode", Messages("ated.bank-details.error-key.sortCode.invalid"))))
+        case (_, _, _) => Seq(Some(FormError("sortCode", Messages("ated.bank-details.error-key.sortCode.empty"))))
       }
     }
 

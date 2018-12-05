@@ -17,8 +17,13 @@
 package forms
 
 import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
+import play.api.i18n.{Messages, MessagesApi}
+import play.api.test.FakeRequest
 
 class AtedFormsSpec extends PlaySpec with OneServerPerSuite {
+
+  implicit lazy val messagesApi = app.injector.instanceOf[MessagesApi]
+  implicit lazy val messages = messagesApi.preferred(FakeRequest())
 
   "validatePostCodeFormat" must {
     "return true for a valid postcode" in {
@@ -50,5 +55,18 @@ class AtedFormsSpec extends PlaySpec with OneServerPerSuite {
     "return false for an invalid address line with special characters" in {
       AtedForms.validateAddressLine(Some("<select all addresses>")) must be(false)
     }
+  }
+
+  "returnTypeForm is empty" in {
+    val form = AtedForms.returnTypeForm.bind(Map.empty[String, String])
+    form.fold(
+      hasErrors => {
+        hasErrors.errors.length mustBe 1
+        hasErrors.errors.head.message mustBe Messages("ated.summary-return.return-type.error")
+      },
+      _ => {
+        fail("There is a problem")
+      }
+    )
   }
 }

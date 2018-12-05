@@ -22,14 +22,18 @@ import builders.AuthBuilder.{createAtedContext, createUserAuthContext}
 import models.AtedContext
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
-import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
+import org.scalatestplus.play.PlaySpec
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.i18n.Messages
+import play.api.inject.guice.{GuiceApplicationBuilder, GuiceableModule}
 import play.api.test.FakeRequest
+import play.api.{Application, Mode}
 import play.twirl.api.Html
 
 trait AtedViewSpec extends PlaySpec
   with JsoupMatchers
-  with OneServerPerSuite {
+  with GuiceOneServerPerSuite {
+
   implicit val request = FakeRequest()
   implicit val messages: play.api.i18n.Messages = play.api.i18n.Messages.Implicits.applicationMessages
   val userId = s"user-${UUID.randomUUID}"

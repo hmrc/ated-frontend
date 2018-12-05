@@ -17,9 +17,9 @@
 package views.html.editLiability
 
 import forms.BankDetailForms
+import play.api.data.{Form, FormError}
 import play.twirl.api.Html
 import utils.viewHelpers.AtedViewSpec
-
 
 class BankDetailsSpec extends AtedViewSpec {
 
@@ -30,6 +30,40 @@ class BankDetailsSpec extends AtedViewSpec {
     behave like pageWithBackLink
     behave like pageWithContinueButtonForm("/ated/liability/oldFormBundleNo/change/bank-details")
     behave like pageWithYesNoRadioButton("hasUKBankAccount-true", "hasUKBankAccount-false")
+
+    "check page errors for uk account" in {
+      val eform = Form(form.mapping, Map("hasUKBankAccount" -> "true"),
+        Seq(FormError("accountName", messages("ated.bank-details.error-key.accountName.empty")),
+        FormError("accountNumber", messages("ated.bank-details.error-key.accountNumber.empty")),
+        FormError("sortCode", messages("ated.bank-details.error-key.sortCode.empty")))
+        , form.value)
+       def view: Html = views.html.editLiability.bankDetails(eform, "oldFormBundleNo", Some("backLink"))
+      val errorDoc = doc(view)
+
+      errorDoc.getElementsMatchingOwnText(messages("ated.bank-details.error-key.accountName.empty")).hasText mustBe true
+      errorDoc.getElementsMatchingOwnText(messages("ated.bank-details.error-key.accountName")).hasText mustBe true
+      errorDoc.getElementsMatchingOwnText(messages("ated.bank-details.error-key.accountNumber.empty")).hasText mustBe true
+      errorDoc.getElementsMatchingOwnText(messages("ated.bank-details.error-key.accountNumber")).hasText mustBe true
+      errorDoc.getElementsMatchingOwnText(messages("ated.bank-details.error-key.sortCode.empty")).hasText mustBe true
+      errorDoc.getElementsMatchingOwnText(messages("ated.bank-details.error-key.sortCode")).hasText mustBe true
+    }
+
+    "check page errors for non uk account" in {
+      val eform = Form(form.mapping, Map("hasUKBankAccount" -> "false"),
+        Seq(FormError("accountName", messages("ated.bank-details.error-key.accountName.empty")),
+        FormError("bicSwiftCode", messages("ated.bank-details.error-key.iban.empty")),
+        FormError("iban", messages("ated.bank-details.error-key.bicSwiftCode.empty")))
+        , form.value)
+       def view: Html = views.html.editLiability.bankDetails(eform, "oldFormBundleNo", Some("backLink"))
+      val errorDoc = doc(view)
+
+      errorDoc.getElementsMatchingOwnText(messages("ated.bank-details.error-key.accountName.empty")).hasText mustBe true
+      errorDoc.getElementsMatchingOwnText(messages("ated.bank-details.error-key.accountName")).hasText mustBe true
+      errorDoc.getElementsMatchingOwnText(messages("ated.bank-details.error-key.iban.empty")).hasText mustBe true
+      errorDoc.getElementsMatchingOwnText(messages("ated.bank-details.error-key.iban")).hasText mustBe true
+      errorDoc.getElementsMatchingOwnText(messages("ated.bank-details.error-key.bicSwiftCode.empty")).hasText mustBe true
+      errorDoc.getElementsMatchingOwnText(messages("ated.bank-details.error-key.bicSwiftCode")).hasText mustBe true
+    }
   }
 
   "Bank details" must {
@@ -59,8 +93,6 @@ class BankDetailsSpec extends AtedViewSpec {
 
 
   private val form = BankDetailForms.bankDetailsForm
-
   override def view: Html = views.html.editLiability.bankDetails(form, "oldFormBundleNo", Some("backLink"))
-
 
 }

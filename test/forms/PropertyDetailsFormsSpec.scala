@@ -17,8 +17,14 @@
 package forms
 
 import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
+import play.api.i18n.{Messages, MessagesApi}
+import play.api.test.FakeRequest
 
 class PropertyDetailsFormsSpec extends PlaySpec with OneServerPerSuite {
+
+  implicit lazy val messagesApi = app.injector.instanceOf[MessagesApi]
+  implicit lazy val messages = messagesApi.preferred(FakeRequest())
+
   "propertyDetailsAddressForm" must {
 
     val propertyDetailsAddressFormData: Map[String, String] = Map(
@@ -52,11 +58,12 @@ class PropertyDetailsFormsSpec extends PlaySpec with OneServerPerSuite {
           formWithErrors.errors.head.message must be("You must enter a valid postcode")
           formWithErrors.errors.length must be(1)
         },
-        success => {
+        _ => {
           fail("Form should give an error")
         }
       )
     }
+
   }
 
 }

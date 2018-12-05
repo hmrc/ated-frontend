@@ -102,20 +102,6 @@ class PropertyDetailsNewBuildControllerSpec extends PlaySpec with OneServerPerSu
           getDataWithAuthorisedUser("1", propertyDetails) {
             result =>
               status(result) must be(OK)
-              val document = Jsoup.parse(contentAsString(result))
-              document.getElementById("property-details-header").text() must be("Was the property a new build, or a new dwelling produced from other dwellings, in this chargeable period?")
-
-              document.getElementById("isNewBuild").text() contains ("Yes No")
-              document.getElementById("notNewBuildDate").text() must be("What date was the property acquired? For example, 31 3 2013 Day Month Year")
-              document.getElementById("notNewBuildValue_field").text() must be("What was the value of the property on the date it was acquired, in GBP?")
-              document.getElementById("notNewBuildValue").attr("type") must be("text")
-              document.getElementById("newBuildDate").text() must be("What was the date the property was first occupied? Day Month Year")
-              document.getElementById("localAuthRegDate").text() must be("What was the date the local council registered the property for council tax? Day Month Year")
-              document.getElementById("newBuildValue_field").text() must be("What was the value of the property in GBP at this date?")
-              document.getElementById("newBuildValue").attr("type") must be("text")
-              document.getElementById("isNewBuild-true").attr("checked") must be("")
-              document.getElementById("isNewBuild-false").attr("checked") must be("")
-
           }
         }
       }
