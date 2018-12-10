@@ -114,7 +114,7 @@ class ApplicationControllerSpec extends PlaySpec with MockitoSugar with OneServe
 
         "be redirected to the logout page" in {
           val result = controllers.ApplicationController.logout().apply(FakeRequest())
-          redirectLocation(result).get must include("/ated/signed-out")
+          redirectLocation(result).get must include("/feedback/ATED")
         }
 
       }
