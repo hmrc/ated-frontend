@@ -46,11 +46,6 @@ POST           /reliefs/:periodKey/change-submit                           contr
 GET            /reliefs/:periodKey/sent-reliefs-print                      controllers.reliefs.ReliefsSentController.viewPrintFriendlyReliefSent(periodKey: Int)
 
 
-## Feedback and sign-out ##
-GET            /signed-out                                                  controllers.QuestionnaireController.showQuestionnaire
-POST           /signed-out                                                  controllers.QuestionnaireController.submitQuestionnaire
-GET            /feedbackThankYou                                            controllers.QuestionnaireController.feedbackThankYou
-
 ## Registration details ##
 GET            /company-details                                             controllers.subscriptionData.CompanyDetailsController.view
 GET            /back                                                        controllers.subscriptionData.CompanyDetailsController.back

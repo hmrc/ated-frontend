@@ -16,13 +16,13 @@
 
 package controllers
 
-import controllers.auth.{ExternalUrls, AtedSubscriptionNotNeededRegime, UnauthorisedRegime, AtedFrontendAuthHelpers}
+import config.ApplicationConfig
+import controllers.auth.{AtedFrontendAuthHelpers, AtedSubscriptionNotNeededRegime, UnauthorisedRegime}
 import play.api.Play
+import play.api.i18n.Messages.Implicits._
 import play.api.mvc.Action
 import uk.gov.hmrc.play.config.RunMode
 import uk.gov.hmrc.play.frontend.controller.UnauthorisedAction
-import play.api.i18n.Messages.Implicits._
-import play.api.Play.current
 
 import scala.concurrent.Future
 
@@ -40,7 +40,7 @@ trait ApplicationController extends AtedFrontendAuthHelpers with RunMode {
   }
 
   def logout = UnauthorisedAction { implicit request =>
-    Redirect(controllers.routes.QuestionnaireController.showQuestionnaire).withNewSession
+    Redirect(ApplicationConfig.serviceSignOut).withNewSession
   }
 
   def keepAlive = AuthAction(AtedSubscriptionNotNeededRegime) {
