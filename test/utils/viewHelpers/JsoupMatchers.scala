@@ -105,6 +105,22 @@ trait JsoupMatchers {
     }
   }
 
+  class IdSelectorWithUrlMatcher(expectedContent: String, selector: String) extends Matcher[Document] {
+    def apply(left: Document): MatchResult = {
+      val elements: String =
+        left.getElementById(selector).attr("href")
+
+      lazy val elementContents = elements.mkString("\t", "\n\t", "")
+
+      MatchResult(
+        elements.contains(expectedContent),
+        s"[$expectedContent] not found in elements with id '$selector':[\n$elementContents]",
+        s"[$expectedContent] element found with id '$selector' and url [$expectedContent]"
+      )
+    }
+  }
+
+
   def haveHeadingWithText(expectedText: String) = new TagWithTextMatcher(expectedText, "h1")
 
   def haveElementWithIdAndText(expectedText: String, id: String) = new CssSelectorWithTextMatcher(expectedText, s"#${id}")
@@ -129,4 +145,5 @@ trait JsoupMatchers {
 
   def haveClassWithText(expectedText: String, className: String) = new CssSelectorWithTextMatcher(expectedText, s".$className")
 
+  def haveLinkWithUrlWithID(id: String, expectedURL: String) = new IdSelectorWithUrlMatcher(expectedURL, id)
 }
