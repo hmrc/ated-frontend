@@ -25,7 +25,7 @@
 
 @atedMain(title = Messages("ated.contact-details.title"), attorney = atedContext.user.authContext.attorney) {
 
-  @pageHeadersAndError(backLink, "pre-header", Messages("ated.contact-details-edit.subheader"), "contact-details-header", Messages("ated.contact-details.header"),
+  @pageHeadersAndError(backLink, "pre-heading", Messages("ated.contact-details-edit.subheader"), "contact-details-header", Messages("ated.contact-details.header"),
       Some(atedErrorSummary(editContactDetailsForm, "ated.contact-details.error.general")))
 
   <div class="form-group">
