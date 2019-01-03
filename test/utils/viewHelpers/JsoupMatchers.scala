@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package utils.viewHelpers
 
-import org.jsoup.nodes.{Attributes, Document}
+import org.jsoup.nodes.{Attributes, Document, Element}
 import org.jsoup.select.Elements
 import org.scalatest.matchers.{MatchResult, Matcher}
 
@@ -105,6 +105,34 @@ trait JsoupMatchers {
     }
   }
 
+  class IdSelectorWithUrlMatcher(expectedContent: String, selector: String) extends Matcher[Document] {
+    def apply(left: Document): MatchResult = {
+      val elements: String =
+        left.getElementById(selector).attr("href")
+
+      lazy val elementContents = elements.mkString("\t", "\n\t", "")
+
+      MatchResult(
+        elements.contains(expectedContent),
+        s"[$expectedContent] not found in elements with id '$selector':[\n$elementContents]",
+        s"[$expectedContent] element found with id '$selector' and url [$expectedContent]"
+      )
+    }
+  }
+
+  class IdSelectorWithUrlAndTextMatcher(id: String, value: String) extends Matcher[Document] {
+    def apply(left: Document): MatchResult = {
+      val element = left.getElementById(id)
+      val valueFound: String = element.attr("value")
+
+      MatchResult(
+        valueFound.contains(value),
+        s"[url:$value] not found in element with id:'$id' \nInstead found:[url:$valueFound]",
+        s"Element found with id '$id' and url [$value]"
+      )
+    }
+  }
+
   def haveHeadingWithText(expectedText: String) = new TagWithTextMatcher(expectedText, "h1")
 
   def haveElementWithIdAndText(expectedText: String, id: String) = new CssSelectorWithTextMatcher(expectedText, s"#${id}")
@@ -129,4 +157,7 @@ trait JsoupMatchers {
 
   def haveClassWithText(expectedText: String, className: String) = new CssSelectorWithTextMatcher(expectedText, s".$className")
 
+  def haveLinkWithUrlWithID(id: String, expectedURL: String) = new IdSelectorWithUrlMatcher(expectedURL, id)
+
+  def haveValueElement(id:String, value: String) = new IdSelectorWithUrlAndTextMatcher(id, value)
 }

@@ -1,5 +1,5 @@
 @*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@
 }
 
 @atedMain(title = Messages("ated.contact-details-edit-email.header"), attorney = atedContext.user.authContext.attorney, pageScripts = Some(pageScripts)) {
-    @pageHeadersAndError(backLink, "pre-header", Messages("ated.contact-details-edit-email.subheader"), "contact-details-email-header", Messages("ated.contact-details-edit-email.header"))
+    @pageHeadersAndError(backLink, "pre-heading", Messages("ated.contact-details-edit-email.subheader"), "contact-details-email-header", Messages("ated.contact-details-edit-email.header"))
 
     <p id="lede">@Messages("ated.contact-details-email-lede")</p>
 
