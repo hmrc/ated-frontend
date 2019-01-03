@@ -34,7 +34,41 @@ class EditContactEmailSpec extends AtedViewSpec {
       behave like pageWithBackLink
     }
 
+  "Edit contact email page" must {
 
-  override def view: Html = views.html.subcriptionData.editContactEmail(editContactDetailsEmailForm, Some("http://backLink"))
+    "display info text correctly" in {
+      doc must haveElementWithIdAndText(messages("ated.contact-details-email-lede"), "lede")
+    }
+
+    "display email risk help text correctly" in {
+      doc must haveElementWithIdAndText(messages("ated.contact-details.email.risk.help.text"), "email-risk-question")
+    }
+
+    "display email consent Yes correctly" in {
+      doc must haveElementWithIdAndText(messages("Yes"), "emailConsent-true_field")
+    }
+
+    "display email consent No correctly" in {
+      doc must haveElementWithIdAndText(messages("No"), "emailConsent-false_field")
+    }
+
+    "display correct value in the email field" in {
+      doc must haveValueElement("emailAddress", "test@test.com")
+    }
+
+    "display submit button" in {
+      doc must haveSubmitButton(messages("ated.save-changes"))
+    }
+
+    "display correct submit form url" in {
+      doc must haveFormWithSubmitUrl("/ated/edit-contact-email")
+    }
+
+  }
+
+  val prePopulatedData = EditContactDetailsEmail(emailAddress = "test@test.com",
+    emailConsent = true
+  )
+  override def view: Html = views.html.subcriptionData.editContactEmail(editContactDetailsEmailForm.fill(prePopulatedData), Some("http://backLink"))
 
 }
