@@ -387,7 +387,7 @@ ated.property-details.title.header =  What is the property’s title number? (op
 ated.property-details.address = Address
 ated.property-details.references = You can find the property’s title number on the title deeds for the property.
 ated.property-details-titleNumber.reveal =  I do not know my property’s title number
-ated.property-details-titleNumber-reveal.text = This is a number issued by the Land Registry when land is first registered. If you do not have a copy of the title deeds for the property you can find it by doing a <a href="https://www.gov.uk/search-property-information-land-registry">Land Registry search</a>.
+ated.property-details-titleNumber-reveal.text = This is a number issued by the Land Registry when land is first registered. If you do not have a copy of the title deeds for the property you can find it by doing a <a href="https://www.gov.uk/search-property-information-land-registry" target="_blank" data-journey-click="external link-click:What is the property’s title number? (optional):Land Registry search">Land Registry search</a>.
 ated.property-details-localAuthorityNumber-reveal = I do not know my local authority number
 ated.property-details-localAuthorityNumber.text = <p>Enter the number of the local authority in the area where the lead property is situated. If a property falls between more than one local authority boundary enter the code for either, preferably the authority into whose area most of the property falls.</p><a href="https://www.gov.uk/hmrc-internal-manuals/stamp-duty-land-tax-manual/sdltm62320">Find your local authority number</a>
 ated.property-title.yes = Yes
@@ -650,7 +650,7 @@ ated.property-details-period-error.general.taxAvoidancePromoterReference = There
 ated.property-details-period.supportingInfo.title = Do you have any supporting information to add? (optional)
 ated.property-details-period.supportingInfo.header = Do you have any supporting information to add? (optional)
 ated.property-details-period.supportingInfo = Supporting information (optional)
-ated.property-details-period.supportingInfo.hint = See the <a href="https://www.gov.uk/government/publications/stld-annual-tax-on-enveloped-dwellings-ated/annual-tax-on-enveloped-dwellings-returns-guidance#sec5" data-journey-click="ated-fronted:click:returns-guidance-link">guidance for more information</a>.
+ated.property-details-period.supportingInfo.hint = See the <a href="https://www.gov.uk/government/publications/stld-annual-tax-on-enveloped-dwellings-ated/annual-tax-on-enveloped-dwellings-returns-guidance#sec5" target="_blank" data-journey-click="external link - click:Do you have any supporting information to add? (optional):guidance for more information">guidance for more information</a>.
 ated.property-details-period-error.supportingInfo = You cannot enter more than 200 characters in supporting information
 ated.property-details-period-error.supportingInfo.invalid = You cannot enter special characters. For example £, or @.
 ated.property-details-period-error.general.supportingInfo = There is a problem with your supporting information
@@ -716,6 +716,7 @@ ated.company-details.correspondence-address.edit = Edit
 ated.company-details.contact-preference.label = Email address
 ated.company-details.appointed_agent = Appointed agent
 ated.company-details.mandate_email = Email address
+ated.company-details.agent-email-address = Agent email address
 ated.company-details.overseas_reg_number = Overseas company registration number
 
 ##### OVERSEAS COMPANY REGISTRATION
