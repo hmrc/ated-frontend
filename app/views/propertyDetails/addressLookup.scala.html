@@ -70,7 +70,7 @@
              onkeyup='spaceBarHandler(event,"@controllers.propertyDetails.routes.AddressLookupController.manualAddressRedirect(id, periodKey, mode)")'>
             @Messages("ated.address-lookup.no-postcode-link.title")</a>
         </div>
-       <button class="button" id="submit" type="submit">@Messages("ated.address-lookup.find-button")</button>
+       <button class="button" id="submit" type="submit" data-journey-click="button - click:@Messages("ated.address-lookup.title"):@Messages("ated.address-lookup.find-button")">@Messages("ated.address-lookup.find-button")</button>
     </fieldset>
 
   }

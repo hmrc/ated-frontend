@@ -106,6 +106,6 @@
 
     <p id="view-balance">@Messages("ated.edit-liabilty.sent.view-balance")</p>
 
-    <a href="@controllers.routes.AccountSummaryController.view()" id="submit" class="button margin-top-default"> @Messages("ated.edit.liability.sent.button") </a>
+    <a href="@controllers.routes.AccountSummaryController.view()" id="submit" class="button margin-top-default" data-journey-click="button - click:@Messages(returnTitleMessage):@Messages("ated.edit.liability.sent.button")"> @Messages("ated.edit.liability.sent.button") </a>
 
 }

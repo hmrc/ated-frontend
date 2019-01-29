@@ -29,6 +29,6 @@
     @if(balance.getOrElse(BigDecimal(0)) > 0){<p>@Html(Messages("ated.summary-return.sidebar.pay.link")) </p>} @if(balance.getOrElse(BigDecimal(0)) < 0){<p class="font-xsmall">@Html(Messages("ated.summary-return.sidebar.owed.link"))</p>}
 
     @correspondence.map { _ =>
-    <p class="balance-display"><a href="@controllers.subscriptionData.routes.CompanyDetailsController.view" id="change-details-link">@Messages("ated.summary-return.company-details.link")</a></p>
+    <p class="balance-display"><a href="@controllers.subscriptionData.routes.CompanyDetailsController.view" id="change-details-link" data-journey-click="link - click:@Messages("ated.your-ated-online-service"):@Messages("ated.summary-return.company-details.link")">@Messages("ated.summary-return.company-details.link")</a></p>
     }
   </div>
