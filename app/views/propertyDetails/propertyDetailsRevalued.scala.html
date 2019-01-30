@@ -120,8 +120,8 @@
 
       </div>
 
-     <p id="back-to-ated"><a class="button " id="back-to-ated-link" href="@controllers.routes.AccountSummaryController.view()">@Messages("ated.company-details.back")</a></p>
-     <button class="button" id="submit" type="submit">@Messages("ated.save-and-continue")</button>
+     <p id="back-to-ated"><a class="button " id="back-to-ated-link" href="@controllers.routes.AccountSummaryController.view()" data-journey-click="button - click:@Messages("ated.property-details-value.isPropertyRevalued.title"):@Messages("ated.company-details.back")">@Messages("ated.company-details.back")</a></p>
+     <button class="button" id="submit" type="submit" data-journey-click="button - click:@Messages("ated.property-details-value.isPropertyRevalued.title"):@Messages("ated.save-and-continue")">@Messages("ated.save-and-continue")</button>
 
   }
 
