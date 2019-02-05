@@ -53,8 +53,8 @@ case class PropertyDetailsValue( anAcquisition: Option[Boolean] = None,
                                  revaluedValue: Option[BigDecimal] = None,
                                  revaluedDate: Option[LocalDate] = None,
                                  partAcqDispDate: Option[LocalDate] = None,
-                                 isOwnedBefore2012: Option[Boolean] = None,
-                                 ownedBefore2012Value: Option[BigDecimal] = None,
+                                 isOwnedBeforePolicyYear: Option[Boolean] = None,
+                                 ownedBeforePolicyYearValue: Option[BigDecimal] = None,
                                  isNewBuild: Option[Boolean] = None,
                                  newBuildValue: Option[BigDecimal] = None,
                                  newBuildDate: Option[LocalDate] = None,
@@ -91,8 +91,8 @@ object PropertyDetailsRevalued {
   implicit val formats = Json.format[PropertyDetailsRevalued]
 }
 
-case class PropertyDetailsOwnedBefore(isOwnedBefore2012: Option[Boolean] = None,
-                                      ownedBefore2012Value: Option[BigDecimal] = None)
+case class PropertyDetailsOwnedBefore(isOwnedBeforePolicyYear: Option[Boolean] = None,
+                                      ownedBeforePolicyYearValue: Option[BigDecimal] = None)
 
 object PropertyDetailsOwnedBefore {
   implicit val formats = Json.format[PropertyDetailsOwnedBefore]
