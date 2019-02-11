@@ -111,8 +111,8 @@ object PropertyDetailsForms {
 
   val propertyDetailsOwnedBeforeForm = Form(
     mapping(
-      "isOwnedBefore2012" -> optional(boolean).verifying(Messages("ated.property-details-value.isOwnedBeforeValuationYear.error.non-selected"), x => x.isDefined),
-      "ownedBefore2012Value" -> valueValidation
+      "isOwnedBeforePolicyYear" -> optional(boolean).verifying(Messages("ated.property-details-value.isOwnedBeforeValuationYear.error.non-selected"), x => x.isDefined),
+      "ownedBeforePolicyYearValue" -> valueValidation
     )(PropertyDetailsOwnedBefore.apply)(PropertyDetailsOwnedBefore.unapply))
 
   val propertyDetailsProfessionallyValuedForm = Form(
@@ -240,7 +240,7 @@ object PropertyDetailsForms {
 
   def validatePropertyDetailsOwnedBefore(f: Form[PropertyDetailsOwnedBefore]): Form[PropertyDetailsOwnedBefore] = {
     if (!f.hasErrors) {
-      val formErrors = (validateValue(f.get.isOwnedBefore2012 == Some(true), "ownedBefore2012Value", f.get.ownedBefore2012Value, f)).flatten
+      val formErrors = (validateValue(f.get.isOwnedBeforePolicyYear == Some(true), "ownedBeforePolicyYearValue", f.get.ownedBeforePolicyYearValue, f)).flatten
       addErrorsToForm(f, formErrors)
     } else f
   }

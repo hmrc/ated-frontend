@@ -39,7 +39,7 @@ trait PropertyDetailsOwnedBeforeController extends PropertyDetailsHelpers with C
           case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
             currentBackLink.flatMap { backLink =>
               dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
-                val displayData = PropertyDetailsOwnedBefore(propertyDetails.value.flatMap(_.isOwnedBefore2012), propertyDetails.value.flatMap(_.ownedBefore2012Value))
+                val displayData = PropertyDetailsOwnedBefore(propertyDetails.value.flatMap(_.isOwnedBeforePolicyYear), propertyDetails.value.flatMap(_.ownedBeforePolicyYearValue))
                 Future.successful(Ok(views.html.propertyDetails.propertyDetailsOwnedBefore(id,
                   propertyDetails.periodKey,
                   propertyDetailsOwnedBeforeForm.fill(displayData),
@@ -58,7 +58,7 @@ trait PropertyDetailsOwnedBeforeController extends PropertyDetailsHelpers with C
         propertyDetailsCacheResponse(id) {
           case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
             dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
-              val displayData = PropertyDetailsOwnedBefore(propertyDetails.value.flatMap(_.isOwnedBefore2012), propertyDetails.value.flatMap(_.ownedBefore2012Value))
+              val displayData = PropertyDetailsOwnedBefore(propertyDetails.value.flatMap(_.isOwnedBeforePolicyYear), propertyDetails.value.flatMap(_.ownedBeforePolicyYearValue))
               val mode = AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn)
               Future.successful(Ok(views.html.propertyDetails.propertyDetailsOwnedBefore(id,
                 propertyDetails.periodKey,
@@ -84,7 +84,7 @@ trait PropertyDetailsOwnedBeforeController extends PropertyDetailsHelpers with C
             for {
               savedData <- propertyDetailsService.saveDraftPropertyDetailsOwnedBefore(id, propertyDetails)
               result <-
-              if (propertyDetails.isOwnedBefore2012.getOrElse(false))
+              if (propertyDetails.isOwnedBeforePolicyYear.getOrElse(false))
                 RedirectWithBackLink(
                   PropertyDetailsProfessionallyValuedController.controllerId,
                   controllers.propertyDetails.routes.PropertyDetailsProfessionallyValuedController.view(id),
