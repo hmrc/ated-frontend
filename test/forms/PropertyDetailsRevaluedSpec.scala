@@ -58,7 +58,7 @@ class PropertyDetailsRevaluedSpec extends PlaySpec with MustMatchers with GuiceO
           hasErrors => {
             hasErrors.errors.length mustBe  3
             hasErrors.errors.head.message mustBe Messages("ated.property-details-value.partAcqDispDate.error.empty")
-            hasErrors.errors(1).message mustBe Messages("q2ated.property-details-value.ownedBefore2012Value.error.empty")
+            hasErrors.errors(1).message mustBe Messages("q2ated.property-details-value.ownedBeforePolicyYearValue.error.empty")
             hasErrors.errors.last.message mustBe Messages("ated.property-details-value.revaluedDate.error.empty")
           },
           _ => {
