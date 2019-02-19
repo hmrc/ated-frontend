@@ -21,8 +21,11 @@ import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
+import play.api.Mode.Mode
+import play.api.{Configuration, Play}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import uk.gov.hmrc.crypto.ApplicationCrypto
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.frontend.filters.SessionCookieCryptoFilter
 import uk.gov.hmrc.play.partials.HeaderCarrierForPartials
@@ -36,8 +39,12 @@ class AgentClientMandateFrontendConnectorSpec extends PlaySpec with OneServerPer
   val mockWSHttp: CoreGet = mock[MockedVerbs]
 
   object TestAgentClientMandateFrontendConnector extends AgentClientMandateFrontendConnector {
-    val crypto = SessionCookieCryptoFilter.encrypt _
+    val crypto = new SessionCookieCryptoFilter(new ApplicationCrypto(Play.current.configuration.underlying)).encrypt _
     override val http = mockWSHttp
+
+    override protected def mode: Mode = Play.current.mode
+
+    override protected def runModeConfiguration: Configuration = Play.current.configuration
   }
 
   override def beforeEach = {

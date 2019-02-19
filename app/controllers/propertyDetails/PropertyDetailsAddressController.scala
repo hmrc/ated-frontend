@@ -23,6 +23,7 @@ import controllers.auth.{AtedRegime, ClientHelper}
 import forms.PropertyDetailsForms
 import forms.PropertyDetailsForms._
 import models.{PropertyDetailsAddress, SelectPeriod}
+import play.api.Play
 import services._
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
@@ -179,12 +180,12 @@ trait PropertyDetailsAddressController extends PropertyDetailsHelpers with Clien
 }
 
 object PropertyDetailsAddressController extends PropertyDetailsAddressController {
+  val appName = AppName(Play.current.configuration).appName
   val delegationConnector = FrontendDelegationConnector
   val propertyDetailsService = PropertyDetailsService
   val dataCacheConnector = DataCacheConnector
   val changeLiabilityReturnService = ChangeLiabilityReturnService
   override val controllerId = "PropertyDetailsAddressController"
   override val backLinkCacheConnector = BackLinkCacheConnector
-  val audit: Audit = new Audit(s"ATED:${AppName.appName}-PropertyDetailsAddress", AtedFrontendAuditConnector)
-  val appName = AppName.appName
+  val audit: Audit = new Audit(s"ATED:${appName}-PropertyDetailsAddress", AtedFrontendAuditConnector)
 }

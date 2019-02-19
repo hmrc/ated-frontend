@@ -26,7 +26,7 @@ import uk.gov.hmrc.play.frontend.controller.UnauthorisedAction
 
 import scala.concurrent.Future
 
-trait ApplicationController extends AtedFrontendAuthHelpers with RunMode {
+trait ApplicationController extends AtedFrontendAuthHelpers {
 
   import play.api.Play.current
 

@@ -32,7 +32,7 @@ import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
 import uk.gov.hmrc.play.frontend.filters.{ FrontendAuditFilter, FrontendLoggingFilter, MicroserviceFilterSupport }
 
-object ApplicationGlobal extends DefaultFrontendGlobal with RunMode {
+object ApplicationGlobal extends DefaultFrontendGlobal {
 
   override val auditConnector = AtedFrontendAuditConnector
   override val loggingFilter = AtedFrontendLoggingFilter
@@ -40,7 +40,7 @@ object ApplicationGlobal extends DefaultFrontendGlobal with RunMode {
 
   override def onStart(app: Application) {
     super.onStart(app)
-    ApplicationCrypto.verifyConfiguration()
+    new ApplicationCrypto(app.configuration.underlying).verifyConfiguration()
   }
 
   override def standardErrorTemplate(pageTitle: String, heading: String, message: String)(implicit request: Request[_]): Html =
@@ -58,7 +58,7 @@ object AtedFrontendLoggingFilter extends FrontendLoggingFilter with Microservice
   override def controllerNeedsLogging(controllerName: String) = ControllerConfiguration.paramsForController(controllerName).needsLogging
 }
 
-object AtedFrontendAuditFilter extends FrontendAuditFilter with RunMode with AppName with MicroserviceFilterSupport {
+object AtedFrontendAuditFilter extends FrontendAuditFilter with AppName with MicroserviceFilterSupport {
 
   override lazy val maskedFormFields = Seq.empty[String]
 
@@ -67,4 +67,6 @@ object AtedFrontendAuditFilter extends FrontendAuditFilter with RunMode with App
   override lazy val auditConnector = AtedFrontendAuditConnector
 
   override def controllerNeedsAuditing(controllerName: String) = ControllerConfiguration.paramsForController(controllerName).needsAuditing
+
+  override protected def appNameConfiguration: Configuration = Play.current.configuration
 }

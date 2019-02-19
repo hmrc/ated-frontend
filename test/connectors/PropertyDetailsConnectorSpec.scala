@@ -27,6 +27,8 @@ import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
+import play.api.{Configuration, Play}
+import play.api.Mode.Mode
 import play.api.libs.json.{JsValue, Json}
 import play.api.test.Helpers._
 import uk.gov.hmrc.play.http._
@@ -44,6 +46,10 @@ class PropertyDetailsConnectorSpec extends PlaySpec with OneServerPerSuite with 
   object TestAtedConnector extends PropertyDetailsConnector {
     override val serviceURL = baseUrl("ated")
     override val http: CoreGet with CorePost with CoreDelete = mockWSHttp
+
+    override protected def mode: Mode = Play.current.mode
+
+    override protected def runModeConfiguration: Configuration = Play.current.configuration
   }
 
   override def beforeEach = {

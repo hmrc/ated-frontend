@@ -25,7 +25,7 @@ import utils.SessionUtils
 
 import scala.concurrent.Future
 
-trait HomeController extends AtedBaseController with AtedFrontendAuthHelpers with RunMode {
+trait HomeController extends AtedBaseController with AtedFrontendAuthHelpers {
 
   def home(callerId: Option[String] = None) = AuthAction(AtedSubscriptionNotNeededRegime) {
     implicit atedContext =>
