@@ -433,9 +433,9 @@ ated.change-relief-return.error.empty.general.changeRelief = There is a problem 
 ated.property-details-value-error.general.anAcquisition = There is a problem with this question
 ated.property-details-value.revaluedValue.error.too-high = The property value must be less than 14 characters
 ated.property-details-value.notNewBuildValue.error.too-high = The property value must be less than 14 characters
-ated.property-details-value.ownedBefore2012Value.error.empty = You must enter a valid property value
-ated.property-details-value.ownedBefore2012Value.error.too-high = The property value must be less than 14 characters.
-ated.property-details-value.ownedBefore2012Value.error.too-low = The property value cannot be below the lowest band
+ated.property-details-value.ownedBeforePolicyYearValue.error.empty = You must enter a valid property value
+ated.property-details-value.ownedBeforePolicyYearValue.error.too-high = The property value must be less than 14 characters.
+ated.property-details-value.ownedBeforePolicyYearValue.error.too-low = The property value cannot be below the lowest band
 ated.property-details-value.newBuildValue.error.too-high = The property value must be less than 14 characters.
 
 ated.property-details-value.anAcquisition.title = Since the date of acquisition, have you bought or sold land, or extended an existing lease on this property, for £40,000 or more?
@@ -527,8 +527,8 @@ ated.property-details-value.valuationDate.error.too-late = The valuation date ca
 ated.property-details-value-error.general.isPropertyRevalued = There is a problem with this question
 ated.property-details-value-error.general.revaluedValue = There is a problem with the property value
 ated.property-details-value-error.general.revaluedDate = There is a problem with the property revalued date
-ated.property-details-value-error.general.isOwnedBefore2012 = There is a problem with this question
-ated.property-details-value-error.general.ownedBefore2012Value = There is a problem with the property value
+ated.property-details-value-error.general.isOwnedBeforePolicyYear = There is a problem with this question
+ated.property-details-value-error.general.ownedBeforePolicyYearValue = There is a problem with the property value
 ated.property-details-value-error.general.newBuildDate = There is a problem with the property first occupied date
 ated.property-details-value-error.general.localAuthRegDate = There is a problem with the property local council registered date
 ated.property-details-value-error.general.newBuildValue = There is a problem with the property value
@@ -1233,20 +1233,20 @@ ated.change-property-value-error.general.propertyDetailsValue.isPropertyRevalued
 ated.change-property-value-error.general.propertyDetailsValue.revaluedValue = There is a problem with the property revalued value
 ated.change-property-value-error.general.propertyDetailsValue.revaluedDate = There is a problem with the property revalued date
 ated.change-property-value-error.general.propertyDetailsValue.partAcqDispDate = There is a problem with the property partial disposal or acquisition date
-ated.change-property-value-error.general.propertyDetailsValue.isOwnedBefore2012 = There is a problem with this question
+ated.change-property-value-error.general.propertyDetailsValue.isOwnedBeforePolicyYear = There is a problem with this question
 ated.change-property-value-error.general.propertyDetailsValue.isValuedByAgent = There is a problem with the professionally valued question
 ated.change-property-value-error.general.propertyDetailsValue.isNewBuild = There is a problem with the new build question
 ated.change-property-value-error.general.propertyDetailsValue.newBuildDate = There is a problem with the property build date
 ated.change-property-value-error.general.propertyDetailsValue.newBuildValue = There is a problem with the property value
 ated.change-property-value-error.general.propertyDetailsValue.notNewBuildDate =There is a problem with the property acquired date
 ated.change-property-value-error.general.propertyDetailsValue.notNewBuildValue = There is a problem with the property value
-ated.change-property-value-error.general.propertyDetailsValue.ownedBefore2012Value = There is a problem with the property value
+ated.change-property-value-error.general.propertyDetailsValue.ownedBeforePolicyYearValue = There is a problem with the property value
 ated.change-property-value-error.general.propertyDetailsValue.valuationDate = There is a problem with the date of valuation
 
 ated.change-property-value.hasValueChanged.error.non-selected = You must answer the property value question
 ated.change-property-value.anAcquisition.error.non-selected = You must answer the acquisition or partial disposal question
 ated.change-property-value.isPropertyRevalued.error.non-selected = You must answer the property revalued question
-ated.change-property-value.isOwnedBefore2012.error.non-selected = You must answer this question
+ated.change-property-value.isOwnedBeforePolicyYear.error.non-selected = You must answer this question
 
 ated.change-property-value.isNewBuild.error.non-selected = You must answer the question
 ated.change-property-value.isValuedByAgent.error.non-selected = You must answer the professionally valued question
@@ -1344,7 +1344,7 @@ ated.select-past-return.general.selected = There is a problem with the previous 
 urbanner.message.text = Help improve digital services by joining the HMRC user panel (opens in new window)
 urbanner.message.reject = No thanks
 
-ated.property-details-value.ownedBefore2012Value.error.non-selected = You must answer the property owned before 1 April {0} question.
+ated.property-details-value.ownedBeforePolicyYearValue.error.non-selected = You must answer the property owned before 1 April {0} question.
 ated.property-details-value.notNewBuildDate.error.too-early = The property acquired date cannot be before 1 April {0}
 ated.property-details-value.valuationDate.error.too-early = The property valuation date cannot be before 1 April {0}w
-q2ated.property-details-value.ownedBefore2012Value.error.empty = You must enter a valid property value
+q2ated.property-details-value.ownedBeforePolicyYearValue.error.empty = You must enter a valid property value

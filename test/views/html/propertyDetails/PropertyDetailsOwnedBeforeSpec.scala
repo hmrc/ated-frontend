@@ -30,17 +30,17 @@ class PropertyDetailsOwnedBeforeSpec extends AtedViewSpec {
     behave like pageWithPreHeading(messages("ated.property-details.pre-header"))
     behave like pageWithBackLink
     behave like pageWithContinueButtonForm("/ated/liability/create/owned-before/save//period/2014")
-    behave like pageWithYesNoRadioButton("isOwnedBefore2012-true", "isOwnedBefore2012-false")
+    behave like pageWithYesNoRadioButton("isOwnedBeforePolicyYear-true", "isOwnedBeforePolicyYear-false")
 
     "check page contents and errors" in {
-      val eform = Form(form.mapping, Map("isOwnedBefore2012" -> "true"),
-        Seq(FormError("ownedBefore2012Value", messages("ated.property-details-value.ownedBefore2012Value.error.empty")))
+      val eform = Form(form.mapping, Map("isOwnedBeforePolicyYear" -> "true"),
+        Seq(FormError("ownedBeforePolicyYearValue", messages("ated.property-details-value.ownedBeforePolicyYearValue.error.empty")))
         , form.value)
       def view: Html = views.html.propertyDetails.propertyDetailsOwnedBefore("",2014,  eform, None, Some("backLink"))
       val errorDoc = doc(view)
 
-      errorDoc.getElementsMatchingOwnText(messages("ated.property-details-value-error.general.ownedBefore2012Value")).hasText mustBe true
-      errorDoc.getElementsMatchingOwnText(messages("ated.property-details-value.ownedBefore2012Value.error.empty")).hasText mustBe true
+      errorDoc.getElementsMatchingOwnText(messages("ated.property-details-value-error.general.ownedBeforePolicyYearValue")).hasText mustBe true
+      errorDoc.getElementsMatchingOwnText(messages("ated.property-details-value.ownedBeforePolicyYearValue.error.empty")).hasText mustBe true
 
       errorDoc.getElementsMatchingOwnText(messages("ated.property-details-value.ownedBeforevaluationYear.Value")).hasText mustBe true
       errorDoc.getElementsMatchingOwnText(messages("ated.property-details-value.ownedBeforevaluationYear.hint")).hasText mustBe true
