@@ -262,9 +262,8 @@ class PeriodUtilsSpec extends PlaySpec with OneServerPerSuite with ReliefConstan
 
       PeriodUtils.getPeriods(startDate, endDate).reverse must be (List("2015" -> "2015 to 2016", "2016" -> "2016 to 2017", "2017" -> "2017 to 2018"))
     }
-
   }
-  
+
   "getOrderedReturnPeriodValues" must {
     val periodKey = 2015
     val dateOfValuation = new LocalDate(s"${periodKey}-4-1")
