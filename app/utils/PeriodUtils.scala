@@ -103,7 +103,7 @@ object PeriodUtils {
   // from 1st of march add the next period so they can start to submit draft periods
   def getPeriods(startDate: LocalDate, endDate: LocalDate): List[(String,String)] = {
     val startYear = if (startDate.getMonthOfYear >= 4) startDate.getYear else startDate.getYear-1
-    val endYear = if ((endDate.getMonthOfYear >= 3 && endDate.getDayOfMonth > 3) || endDate.getMonthOfYear > 3) endDate.getYear else endDate.getYear-1
+    val endYear = if ((endDate.getMonthOfYear >= 3 && endDate.getDayOfMonth > 4) || endDate.getMonthOfYear > 3) endDate.getYear else endDate.getYear-1
 
     (startYear to endYear toList).reverse.map(x => s"$x" -> s"$x to ${x + 1}")
   }
