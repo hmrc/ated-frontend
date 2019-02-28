@@ -227,12 +227,51 @@ class PeriodUtilsSpec extends PlaySpec with OneServerPerSuite with ReliefConstan
 
     "return correct list of periods for dates after april" in {
       val startDate = new LocalDate(2015, 4, 1)
+      val endDate = new LocalDate(2017, 3, 8)
+
+      PeriodUtils.getPeriods(startDate, endDate).reverse must be (List("2015" -> "2015 to 2016", "2016" -> "2016 to 2017", "2017" -> "2017 to 2018"))
+    }
+
+    "return correct list of periods for date 1 March (don't show period for next tax year)" in {
+      val startDate = new LocalDate(2015, 4, 1)
       val endDate = new LocalDate(2017, 3, 1)
+
+      PeriodUtils.getPeriods(startDate, endDate).reverse must be (List("2015" -> "2015 to 2016", "2016" -> "2016 to 2017"))
+    }
+
+    "return correct list of periods for date 2 March (don't show period for next tax year)" in {
+
+      val startDate = new LocalDate(2015, 4, 1)
+      val endDate = new LocalDate(2017, 3, 2)
+
+      PeriodUtils.getPeriods(startDate, endDate).reverse must be (List("2015" -> "2015 to 2016", "2016" -> "2016 to 2017"))
+    }
+
+    "return correct list of periods for date 3 March (don't show period for next tax year)" in {
+
+      val startDate = new LocalDate(2015, 4, 1)
+      val endDate = new LocalDate(2017, 3, 3)
+
+      PeriodUtils.getPeriods(startDate, endDate).reverse must be (List("2015" -> "2015 to 2016", "2016" -> "2016 to 2017"))
+    }
+
+    "return correct list of periods for date  4 March (don't show period for next tax year)" in {
+
+      val startDate = new LocalDate(2015, 4, 1)
+      val endDate = new LocalDate(2017, 3, 4)
+
+      PeriodUtils.getPeriods(startDate, endDate).reverse must be (List("2015" -> "2015 to 2016", "2016" -> "2016 to 2017"))
+    }
+
+    "return correct list of periods for date after 5 March (show period for next tax year)" in {
+
+      val startDate = new LocalDate(2015, 4, 1)
+      val endDate = new LocalDate(2017, 3, 5)
 
       PeriodUtils.getPeriods(startDate, endDate).reverse must be (List("2015" -> "2015 to 2016", "2016" -> "2016 to 2017", "2017" -> "2017 to 2018"))
     }
   }
-  
+
   "getOrderedReturnPeriodValues" must {
     val periodKey = 2015
     val dateOfValuation = new LocalDate(s"${periodKey}-4-1")
