@@ -68,6 +68,6 @@ trait LeaveFeedbackController extends AtedBaseController with AtedFrontendAuthHe
 }
 
 object LeaveFeedbackController extends LeaveFeedbackController {
-  val audit: Audit = new Audit(s"ATED:${AppName.appName}-Feedback", AtedFrontendAuditConnector)
-  val appName = AppName.appName
+  val appName = AppName(Play.current.configuration).appName
+  val audit: Audit = new Audit(s"ATED:${appName}-Feedback", AtedFrontendAuditConnector)
 }

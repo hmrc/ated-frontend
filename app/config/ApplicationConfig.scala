@@ -16,6 +16,8 @@
 
 package config
 
+import play.api.{Configuration, Play}
+import play.api.Mode.Mode
 import play.api.Play._
 import uk.gov.hmrc.play.config.ServicesConfig
 
@@ -57,4 +59,8 @@ object ApplicationConfig extends ApplicationConfig with ServicesConfig {
   override lazy val urBannerToggle:Boolean = loadConfig("urBanner.toggle").toBoolean
   override lazy val urBannerLink: String = loadConfig("urBanner.link")
   override lazy val serviceSignOut:String = loadConfig("service-signout.url")
+
+  override protected def mode: Mode = Play.current.mode
+
+  override protected def runModeConfiguration: Configuration = Play.current.configuration
 }

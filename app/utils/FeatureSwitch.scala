@@ -22,7 +22,7 @@ import uk.gov.hmrc.play.config.RunMode
 
 case class FeatureSwitch(name: String, enabled: Boolean)
 
-object FeatureSwitch extends RunMode {
+object FeatureSwitch {
   import play.api.Play.current
 
   def forName(name: String) = {

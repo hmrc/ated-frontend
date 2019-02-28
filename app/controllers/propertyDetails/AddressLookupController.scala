@@ -30,6 +30,7 @@ import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
 import utils.AtedUtils
 import audit.Auditable
+import play.api.Play
 import uk.gov.hmrc.play.audit.model.{Audit, EventTypes}
 import uk.gov.hmrc.play.config.AppName
 
@@ -147,12 +148,12 @@ trait AddressLookupController extends PropertyDetailsHelpers with ClientHelper w
 }
 
 object AddressLookupController extends AddressLookupController {
+  val appName = AppName(Play.current.configuration).appName
   val delegationConnector = FrontendDelegationConnector
   val propertyDetailsService = PropertyDetailsService
   val dataCacheConnector = DataCacheConnector
   val addressLookupService = AddressLookupService
   override val controllerId = "AddressLookupController"
   override val backLinkCacheConnector = BackLinkCacheConnector
-  val audit: Audit = new Audit(s"ATED:${AppName.appName}-AddressLookup", AtedFrontendAuditConnector)
-  val appName = AppName.appName
+  val audit: Audit = new Audit(s"ATED:${appName}-AddressLookup", AtedFrontendAuditConnector)
 }

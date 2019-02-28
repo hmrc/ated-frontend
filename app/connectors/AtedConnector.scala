@@ -18,6 +18,8 @@ package connectors
 
 import config.WSHttp
 import models._
+import play.api.{Configuration, Play}
+import play.api.Mode.Mode
 import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.config.ServicesConfig
@@ -28,6 +30,10 @@ import scala.concurrent.Future
 object AtedConnector extends AtedConnector {
   val serviceURL = baseUrl("ated")
   val http = WSHttp
+
+  override protected def mode: Mode = Play.current.mode
+
+  override protected def runModeConfiguration: Configuration = Play.current.configuration
 }
 
 trait AtedConnector extends ServicesConfig with RawResponseReads {

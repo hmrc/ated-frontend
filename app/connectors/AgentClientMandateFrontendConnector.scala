@@ -17,7 +17,10 @@
 package connectors
 
 import config.{ApplicationConfig, WSHttp}
+import play.api.Mode.Mode
+import play.api.{Configuration, Play}
 import play.api.mvc.Request
+import uk.gov.hmrc.crypto.ApplicationCrypto
 import uk.gov.hmrc.http.{CoreGet, HttpResponse}
 import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.frontend.filters.SessionCookieCryptoFilter
@@ -48,6 +51,8 @@ trait AgentClientMandateFrontendConnector extends ServicesConfig with RawRespons
 
 object AgentClientMandateFrontendConnector extends AgentClientMandateFrontendConnector{
   // $COVERAGE-OFF$Trivial and never going to be called by a test that uses it's own object implementation
-  override val crypto = SessionCookieCryptoFilter.encrypt _
+  override val crypto = new SessionCookieCryptoFilter(new ApplicationCrypto(Play.current.configuration.underlying)).encrypt _
   // $COVERAGE-ON$
+  override protected def mode: Mode = Play.current.mode
+  override protected def runModeConfiguration: Configuration = Play.current.configuration
 }
