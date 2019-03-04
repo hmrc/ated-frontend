@@ -51,7 +51,7 @@ class PropertyDetailsModelsSpec extends PlaySpec with OneServerPerSuite {
     "read the value from isOwnedBeforePolicyYear and ownedBefore2012Value for PropertyDetailsOwnedBeforeReads" in {
       val request =
         """{ "isOwnedBeforePolicyYear": true,
-          |  "ownedBefore2012Value": "1599999",
+          |  "ownedBefore2012Value": "1599999"
           |}""".stripMargin
       val exampleRequestJson = Json.parse(request)
       val propertyDetailsOwnedBefore = exampleRequestJson.as[PropertyDetailsOwnedBefore]
