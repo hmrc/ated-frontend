@@ -17,7 +17,8 @@
 package models
 
 import org.joda.time.LocalDate
-import play.api.libs.json.Json
+import play.api.libs.json.{JsPath, Json, OWrites, Reads}
+import play.api.libs.functional.syntax._
 
 
 sealed trait PeriodValidity
@@ -95,7 +96,13 @@ case class PropertyDetailsOwnedBefore(isOwnedBeforePolicyYear: Option[Boolean] =
                                       ownedBeforePolicyYearValue: Option[BigDecimal] = None)
 
 object PropertyDetailsOwnedBefore {
-  implicit val formats = Json.format[PropertyDetailsOwnedBefore]
+
+  implicit val propertyDetailsOwnedBeforeReads: Reads[PropertyDetailsOwnedBefore] = (
+    (JsPath \ "isOwnedBeforePolicyYear").read[Boolean].map(Option(_)).orElse((JsPath \ "isOwnedBefore2012").readNullable[Boolean]) and
+      (JsPath \ "ownedBeforePolicyYearValue").read[BigDecimal].map(Option(_)).orElse((JsPath \ "ownedBefore2012Value").readNullable[BigDecimal])
+    )(PropertyDetailsOwnedBefore.apply _)
+
+  implicit val propertyDetailsOwnedBeforeWrites: OWrites[PropertyDetailsOwnedBefore]=Json.writes[PropertyDetailsOwnedBefore]
 }
 
 case class PropertyDetailsProfessionallyValued(isValuedByAgent: Option[Boolean] = None)
