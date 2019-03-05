@@ -52,7 +52,7 @@ trait AgentClientMandateFrontendConnector extends ServicesConfig with RawRespons
 object AgentClientMandateFrontendConnector extends AgentClientMandateFrontendConnector{
   // $COVERAGE-OFF$Trivial and never going to be called by a test that uses it's own object implementation
   override val crypto = new SessionCookieCryptoFilter(new ApplicationCrypto(Play.current.configuration.underlying)).encrypt _
-  // $COVERAGE-ON$
   override protected def mode: Mode = Play.current.mode
   override protected def runModeConfiguration: Configuration = Play.current.configuration
+  // $COVERAGE-ON$
 }
