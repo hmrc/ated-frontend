@@ -102,7 +102,7 @@ class PropertyDetailsAcquisitionControllerSpec extends PlaySpec with OneServerPe
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
-              document.getElementById("property-details-header").text() must be("Since the date of acquisition, have you bought or sold land, or extended an existing lease on this property, for £40,000 or more?")
+              document.getElementById("property-details-header").text() must be("In this chargeable period, have you bought or sold land, or extended an existing lease on the property, for £40,000 or more?")
               document.getElementById("anAcquisition-reveal").text() must be("Why is the £40,000 level important?")
               document.getElementById("anAcquisition").text() contains ("Yes No")
               document.getElementById("anAcquisition-true").attr("checked") must be("")
@@ -123,7 +123,7 @@ class PropertyDetailsAcquisitionControllerSpec extends PlaySpec with OneServerPe
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
-              document.title() must be("Since the date of acquisition, have you bought or sold land, or extended an existing lease on this property, for £40,000 or more? - GOV.UK")
+              document.title() must be("In this chargeable period, have you bought or sold land, or extended an existing lease on the property, for £40,000 or more? - GOV.UK")
               document.getElementById("backLinkHref").text must be("Back")
               document.getElementById("backLinkHref").attr("href") must include("/ated/liability/create/summary")
 

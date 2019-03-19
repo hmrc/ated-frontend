@@ -430,7 +430,7 @@ ated.property-details-value.no = No
 ated.property-details-value.newBuildValue.error.too-low = The property value cannot be below the lowest band
 ated.property-details-value.notNewBuildValue.error.too-low = The property value cannot be below the lowest band
 ated.change-relief-return.error.empty.general.changeRelief = There is a problem with this page
-ated.property-details-value-error.general.anAcquisition = There is a problem with this question
+ated.property-details-value-error.general.anAcquisition = Select yes if you bought or sold land, or extended an existing lease on the property, for £40,000 or more In this chargeable period
 ated.property-details-value.revaluedValue.error.too-high = The property value must be less than 14 characters
 ated.property-details-value.notNewBuildValue.error.too-high = The property value must be less than 14 characters
 ated.property-details-value.ownedBeforePolicyYearValue.error.empty = You must enter a valid property value
@@ -438,10 +438,10 @@ ated.property-details-value.ownedBeforePolicyYearValue.error.too-high = The prop
 ated.property-details-value.ownedBeforePolicyYearValue.error.too-low = The property value cannot be below the lowest band
 ated.property-details-value.newBuildValue.error.too-high = The property value must be less than 14 characters.
 
-ated.property-details-value.anAcquisition.title = Since the date of acquisition, have you bought or sold land, or extended an existing lease on this property, for £40,000 or more?
-ated.property-details-value.anAcquisition.header = Since the date of acquisition, have you bought or sold land, or extended an existing lease on this property, for £40,000 or more?
+ated.property-details-value.anAcquisition.title = In this chargeable period, have you bought or sold land, or extended an existing lease on the property, for £40,000 or more?
+ated.property-details-value.anAcquisition.header = In this chargeable period, have you bought or sold land, or extended an existing lease on the property, for £40,000 or more?
 ated.property-details-value.anAcquisition.error-field-name = You must answer this question
-ated.property-details-value.anAcquisition.legend = Since the date of acquisition, have you bought or sold land, or extended an existing lease on this property, for £40,000 or more?
+ated.property-details-value.anAcquisition.legend = In this chargeable period, have you bought or sold land, or extended an existing lease on the property, for £40,000 or more?
 ated.property-details-value.anAcquisition.what = Why is the £40,000 level important?
 
 ated.property-details-value.anAcquisition.what.text1 = Buying land or extending an existing lease for £40,000 or more (acquistion) would trigger a revaluation. If the property moves into a higher property band this mean you have to pay more tax.
