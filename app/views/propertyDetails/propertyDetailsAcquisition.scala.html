@@ -43,7 +43,7 @@
       Some(atedErrorSummary(propertyDetailsForm, "ated.property-details-value-error.general")))
 
     <details>
-        <summary id="anAcquisition-reveal" class="summary">
+        <summary id="anAcquisition-reveal" class="summary" data-journey-click="@Messages("ated.property-details-value.anAcquisition.what"):click-accordion:@Messages("ated.property-details-value.anAcquisition.title")">
             @Messages("ated.property-details-value.anAcquisition.what")
         </summary>
         <div class="panel-indent">
@@ -71,7 +71,7 @@
       )
       </div>
 
-      <button class="button" id="submit" type="submit">@Messages("ated.save-and-continue")</button>
+      <button class="button" id="submit" type="submit" data-journey-click="@Messages("ated.continue"):click-button:@Messages("ated.property-details-value.anAcquisition.title")">@Messages("ated.save-and-continue")</button>
 
 
   }
