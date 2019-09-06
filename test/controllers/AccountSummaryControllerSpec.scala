@@ -18,8 +18,7 @@ package controllers
 
 import java.util.UUID
 
-import builders.{AuthBuilder, SessionBuilder, TitleBuilder}
-import config.FrontendDelegationConnector
+import builders.{SessionBuilder, TitleBuilder}
 import connectors.{AgentClientMandateFrontendConnector, DataCacheConnector}
 import models._
 import org.joda.time.LocalDate
@@ -27,54 +26,47 @@ import org.jsoup.Jsoup
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mock.MockitoSugar
-import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
+import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.play.PlaySpec
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.mvc.Result
-import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import play.twirl.api.Html
-import services.{DetailsService, SubscriptionDataService, SummaryReturnsService}
-import uk.gov.hmrc.play.frontend.auth.DummyDelegationData
-import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
+import services.{DelegationService, DetailsService, SubscriptionDataService, SummaryReturnsService}
+import uk.gov.hmrc.auth.core.{AffinityGroup, PlayAuthConnector}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, UserId}
 import uk.gov.hmrc.play.partials.HtmlPartial
 import utils.AtedConstants._
+import utils.MockAuthUtil
 
 import scala.concurrent.Future
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, UserId}
 
-class AccountSummaryControllerSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
+class AccountSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with MockAuthUtil {
 
-  import AuthBuilder._
-
-  val mockAuthConnector = mock[AuthConnector]
-  val mockReturnSummaryService = mock[SummaryReturnsService]
-  val mockSubscriptionDataService = mock[SubscriptionDataService]
-  val mockDelegationConnector = mock[DelegationConnector]
-  val mockDetailsService = mock[DetailsService]
-  val mockAgentClientMandateFrontendConnector = mock[AgentClientMandateFrontendConnector]
-  val mockDataCacheConnector = mock[DataCacheConnector]
-  val organisationName = "OrganisationName"
-  val formBundleNo1 = "123456789012"
-  val formBundleNo2 = "123456789013"
-
-  implicit def atedContext2AuthContext(implicit atedContext: AtedContext) = atedContext.user.authContext
-  implicit val hc: HeaderCarrier = HeaderCarrier()
+  val mockReturnSummaryService: SummaryReturnsService = mock[SummaryReturnsService]
+  val mockSubscriptionDataService: SubscriptionDataService = mock[SubscriptionDataService]
+  val mockDetailsService: DetailsService = mock[DetailsService]
+  val mockAgentClientMandateFrontendConnector: AgentClientMandateFrontendConnector = mock[AgentClientMandateFrontendConnector]
+  val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
+  val organisationName: String = "OrganisationName"
+  val formBundleNo1: String = "123456789012"
+  val formBundleNo2: String = "123456789013"
+  implicit lazy val hc: HeaderCarrier = HeaderCarrier()
 
   object TestAccountSummaryController extends AccountSummaryController {
-    override val authConnector = mockAuthConnector
-    override val summaryReturnsService = mockReturnSummaryService
-    override val subscriptionDataService = mockSubscriptionDataService
-    override val delegationConnector = mockDelegationConnector
-    override val mandateFrontendConnector = mockAgentClientMandateFrontendConnector
-    override val detailsService = mockDetailsService
-    override val dataCacheConnector = mockDataCacheConnector
+    override val authConnector: PlayAuthConnector = mockAuthConnector
+    override val summaryReturnsService: SummaryReturnsService = mockReturnSummaryService
+    override val subscriptionDataService: SubscriptionDataService = mockSubscriptionDataService
+    override val delegationService: DelegationService = mockDelegationService
+    override val mandateFrontendConnector: AgentClientMandateFrontendConnector = mockAgentClientMandateFrontendConnector
+    override val detailsService: DetailsService = mockDetailsService
+    override val dataCacheConnector: DataCacheConnector = mockDataCacheConnector
   }
 
   override def beforeEach(): Unit = {
     reset(mockAuthConnector)
     reset(mockReturnSummaryService)
     reset(mockSubscriptionDataService)
-    reset(mockDelegationConnector)
     reset(mockAgentClientMandateFrontendConnector)
     reset(mockDetailsService)
     reset(mockDataCacheConnector)
@@ -83,16 +75,10 @@ class AccountSummaryControllerSpec extends PlaySpec with OneServerPerSuite with 
   "AccountSummaryController" must {
 
     "use correct DelegationConnector" in {
-      AccountSummaryController.delegationConnector must be(FrontendDelegationConnector)
+      AccountSummaryController.delegationService must be(DelegationService)
     }
 
     "accountSummary" must {
-
-      "not respond with NOT_FOUND" in {
-        val result = route(FakeRequest(GET, "/ated/account-summary"))
-        result.isDefined must be(true)
-        status(result.get) must not be NOT_FOUND
-      }
 
       "unauthorised users" must {
         "respond with a redirect" in {
@@ -111,14 +97,25 @@ class AccountSummaryControllerSpec extends PlaySpec with OneServerPerSuite with 
       "Authorised users" must {
 
         "show the account summary view V_2_0 with balance (debit) if we have some Summary data" in {
-          val address = Address(name1 = Some("name1"), name2 = Some("name2"), contactDetails = Some(ContactDetails(phoneNumber = Some("03000123456789"), mobileNumber = Some("09876543211"), emailAddress = Some("aa@aa.com"), faxNumber = Some("0223344556677"))), addressDetails = AddressDetails(AddressTypeCorrespondence, "addrLine1", "addrLine2", None, None, None, "GB"))
+          val year = 2015
+          val address = {
+            Address(name1 = Some("name1"),
+              name2 = Some("name2"),
+              contactDetails = Some(ContactDetails(phoneNumber = Some("03000123456789"),
+                mobileNumber = Some("09876543211"),
+                emailAddress = Some("aa@aa.com"),
+                faxNumber = Some("0223344556677"))),
+              addressDetails = AddressDetails(AddressTypeCorrespondence, "addrLine1", "addrLine2", None, None, None, "GB"))}
 
-          val draftReturns1 = DraftReturns(2015, "1", "desc", Some(BigDecimal(100.00)), TypeChangeLiabilityDraft)
-          val draftReturns2 = DraftReturns(2015, "", "some relief", None, TypeReliefDraft)
-          val submittedReliefReturns1 = SubmittedReliefReturns(formBundleNo1, "some relief", new LocalDate("2015-05-05"), new LocalDate("2015-05-05"), new LocalDate("2015-05-05"))
-          val submittedLiabilityReturns1 = SubmittedLiabilityReturns(formBundleNo2, "addr1+2", BigDecimal(1234.00), new LocalDate("2015-05-05"), new LocalDate("2015-05-05"), new LocalDate("2015-05-05"), true, "payment-ref-01")
-          val submittedReturns = SubmittedReturns(2015, Seq(submittedReliefReturns1), Seq(submittedLiabilityReturns1))
-          val periodSummaryReturns = PeriodSummaryReturns(2015, Seq(draftReturns1, draftReturns2), Some(submittedReturns))
+          val draftReturns1 = DraftReturns(year, "1", "desc", Some(BigDecimal(100.00)), TypeChangeLiabilityDraft)
+          val draftReturns2 = DraftReturns(year, "", "some relief", None, TypeReliefDraft)
+          val submittedReliefReturns1 = SubmittedReliefReturns(
+            formBundleNo1, "some relief", new LocalDate("2015-05-05"), new LocalDate("2015-05-05"), new LocalDate("2015-05-05"))
+          val submittedLiabilityReturns1 = SubmittedLiabilityReturns(
+            formBundleNo2, "addr1+2", BigDecimal(1234.00), new LocalDate("2015-05-05"), new LocalDate("2015-05-05"),
+            new LocalDate("2015-05-05"), changeAllowed = true, "payment-ref-01")
+          val submittedReturns = SubmittedReturns(year, Seq(submittedReliefReturns1), Seq(submittedLiabilityReturns1))
+          val periodSummaryReturns = PeriodSummaryReturns(year, Seq(draftReturns1, draftReturns2), Some(submittedReturns))
           val data = SummaryReturnsModel(Some(BigDecimal(999.99)), Seq(periodSummaryReturns))
           getWithAuthorisedUser(data, Some(address)) {
             result =>
@@ -151,14 +148,17 @@ class AccountSummaryControllerSpec extends PlaySpec with OneServerPerSuite with 
         }
 
         "show the account summary view V_2_0 with balance (credit) if we have some Summary data" in {
+          val year = 2015
           val address = Address(addressDetails = AddressDetails(AddressTypeCorrespondence, "addrLine1", "addrLine2", None, None, None, "GB"))
-
-          val draftReturns1 = DraftReturns(2015, "1", "desc", Some(BigDecimal(100.00)), TypeChangeLiabilityDraft)
-          val draftReturns2 = DraftReturns(2015, "", "some relief", None, TypeReliefDraft)
-          val submittedReliefReturns1 = SubmittedReliefReturns(formBundleNo1, "some relief", new LocalDate("2015-05-05"), new LocalDate("2015-05-05"), new LocalDate("2015-05-05"))
-          val submittedLiabilityReturns1 = SubmittedLiabilityReturns(formBundleNo2, "addr1+2", BigDecimal(1234.00), new LocalDate("2015-05-05"), new LocalDate("2015-05-05"), new LocalDate("2015-05-05"), true, "payment-ref-01")
-          val submittedReturns = SubmittedReturns(2015, Seq(submittedReliefReturns1), Seq(submittedLiabilityReturns1))
-          val periodSummaryReturns = PeriodSummaryReturns(2015, Seq(draftReturns1, draftReturns2), Some(submittedReturns))
+          val draftReturns1 = DraftReturns(year, "1", "desc", Some(BigDecimal(100.00)), TypeChangeLiabilityDraft)
+          val draftReturns2 = DraftReturns(year, "", "some relief", None, TypeReliefDraft)
+          val submittedReliefReturns1 = SubmittedReliefReturns(
+            formBundleNo1, "some relief", new LocalDate("2015-05-05"), new LocalDate("2015-05-05"), new LocalDate("2015-05-05"))
+          val submittedLiabilityReturns1 = SubmittedLiabilityReturns(
+            formBundleNo2, "addr1+2", BigDecimal(1234.00), new LocalDate("2015-05-05"), new LocalDate("2015-05-05"),
+            new LocalDate("2015-05-05"), changeAllowed = true, "payment-ref-01")
+          val submittedReturns = SubmittedReturns(year, Seq(submittedReliefReturns1), Seq(submittedLiabilityReturns1))
+          val periodSummaryReturns = PeriodSummaryReturns(year, Seq(draftReturns1, draftReturns2), Some(submittedReturns))
           val data = SummaryReturnsModel(Some(BigDecimal(-999.99)), Seq(periodSummaryReturns))
           getWithAuthorisedUser(data, Some(address)) {
             result =>
@@ -182,14 +182,18 @@ class AccountSummaryControllerSpec extends PlaySpec with OneServerPerSuite with 
         }
 
         "show the account summary view V_2_0 with balance if we have some Summary data and balance is 0" in {
+          val year = 2015
           val address = Address(addressDetails = AddressDetails(AddressTypeCorrespondence, "addrLine1", "addrLine2", None, None, None, "GB"))
 
-          val draftReturns1 = DraftReturns(2015, "1", "desc", Some(BigDecimal(100.00)), TypeChangeLiabilityDraft)
-          val draftReturns2 = DraftReturns(2015, "", "some relief", None, TypeReliefDraft)
-          val submittedReliefReturns1 = SubmittedReliefReturns(formBundleNo1, "some relief", new LocalDate("2015-05-05"), new LocalDate("2015-05-05"), new LocalDate("2015-05-05"))
-          val submittedLiabilityReturns1 = SubmittedLiabilityReturns(formBundleNo2, "addr1+2", BigDecimal(1234.00), new LocalDate("2015-05-05"), new LocalDate("2015-05-05"), new LocalDate("2015-05-05"), true, "payment-ref-01")
-          val submittedReturns = SubmittedReturns(2015, Seq(submittedReliefReturns1), Seq(submittedLiabilityReturns1))
-          val periodSummaryReturns = PeriodSummaryReturns(2015, Seq(draftReturns1, draftReturns2), Some(submittedReturns))
+          val draftReturns1 = DraftReturns(year, "1", "desc", Some(BigDecimal(100.00)), TypeChangeLiabilityDraft)
+          val draftReturns2 = DraftReturns(year, "", "some relief", None, TypeReliefDraft)
+          val submittedReliefReturns1 = SubmittedReliefReturns(
+            formBundleNo1, "some relief", new LocalDate("2015-05-05"), new LocalDate("2015-05-05"), new LocalDate("2015-05-05"))
+          val submittedLiabilityReturns1 = SubmittedLiabilityReturns(
+            formBundleNo2, "addr1+2", BigDecimal(1234.00), new LocalDate("2015-05-05"), new LocalDate("2015-05-05"),
+            new LocalDate("2015-05-05"), changeAllowed = true, "payment-ref-01")
+          val submittedReturns = SubmittedReturns(year, Seq(submittedReliefReturns1), Seq(submittedLiabilityReturns1))
+          val periodSummaryReturns = PeriodSummaryReturns(year, Seq(draftReturns1, draftReturns2), Some(submittedReturns))
           val data = SummaryReturnsModel(Some(BigDecimal(0)), Seq(periodSummaryReturns))
           getWithAuthorisedUser(data, Some(address)) {
             result =>
@@ -213,26 +217,30 @@ class AccountSummaryControllerSpec extends PlaySpec with OneServerPerSuite with 
         }
 
         "show the account summary view with UR banner" in {
+          val year = 2015
           val address = Address(addressDetails = AddressDetails(AddressTypeCorrespondence, "addrLine1", "addrLine2", None, None, None, "GB"))
 
-          val draftReturns1 = DraftReturns(2015, "1", "desc", Some(BigDecimal(100.00)), TypeChangeLiabilityDraft)
-          val draftReturns2 = DraftReturns(2015, "", "some relief", None, TypeReliefDraft)
-          val submittedReliefReturns1 = SubmittedReliefReturns(formBundleNo1, "some relief", new LocalDate("2015-05-05"), new LocalDate("2015-05-05"), new LocalDate("2015-05-05"))
-          val submittedLiabilityReturns1 = SubmittedLiabilityReturns(formBundleNo2, "addr1+2", BigDecimal(1234.00), new LocalDate("2015-05-05"), new LocalDate("2015-05-05"), new LocalDate("2015-05-05"), true, "payment-ref-01")
-          val submittedReturns = SubmittedReturns(2015, Seq(submittedReliefReturns1), Seq(submittedLiabilityReturns1))
-          val periodSummaryReturns = PeriodSummaryReturns(2015, Seq(draftReturns1, draftReturns2), Some(submittedReturns))
+          val draftReturns1 = DraftReturns(year, "1", "desc", Some(BigDecimal(100.00)), TypeChangeLiabilityDraft)
+          val draftReturns2 = DraftReturns(year, "", "some relief", None, TypeReliefDraft)
+          val submittedReliefReturns1 = SubmittedReliefReturns(
+            formBundleNo1, "some relief", new LocalDate("2015-05-05"), new LocalDate("2015-05-05"), new LocalDate("2015-05-05"))
+          val submittedLiabilityReturns1 = SubmittedLiabilityReturns(
+            formBundleNo2, "addr1+2", BigDecimal(1234.00), new LocalDate("2015-05-05"), new LocalDate("2015-05-05"),
+            new LocalDate("2015-05-05"), changeAllowed = true, "payment-ref-01")
+          val submittedReturns = SubmittedReturns(year, Seq(submittedReliefReturns1), Seq(submittedLiabilityReturns1))
+          val periodSummaryReturns = PeriodSummaryReturns(year, Seq(draftReturns1, draftReturns2), Some(submittedReturns))
           val data = SummaryReturnsModel(Some(BigDecimal(0)), Seq(periodSummaryReturns))
           getWithAuthorisedUser(data, Some(address)) {
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
 
-              document.getElementById("ur-panel") must not be(null)
-              document.getElementById("ur-panel").text() must be ("Help improve digital services by joining the HMRC user panel (opens in new window) No thanks")
+              document.getElementById("ur-panel") must not be null
+              document.getElementById("ur-panel")
+                .text() must be ("Help improve digital services by joining the HMRC user panel (opens in new window) No thanks")
               document.getElementsByClass("banner-panel__close").text() must be("No thanks")
           }
         }
-        
 
         "show the create a return and appoint an agent link if there are no returns and no delegation" in {
           val data = SummaryReturnsModel(None, Seq())
@@ -261,18 +269,20 @@ class AccountSummaryControllerSpec extends PlaySpec with OneServerPerSuite with 
         }
 
         "throw exception for no safe id" in {
+          val httpValue = 200
           val data = SummaryReturnsModel(None, Seq())
           val userId = s"user-${UUID.randomUUID}"
-          implicit val user = createAtedContext(createUserAuthContext(userId, "name"))
-          AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-
-          when(mockDataCacheConnector.clearCache()(Matchers.any())).thenReturn(Future.successful(HttpResponse(200)))
+          val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+          setAuthMocks(authMock)
+          when(mockDataCacheConnector.clearCache()(Matchers.any())).thenReturn(Future.successful(HttpResponse(httpValue)))
           when(mockReturnSummaryService.getSummaryReturns(Matchers.any(), Matchers.any())).thenReturn(Future.successful(data))
           when(mockSubscriptionDataService.getCorrespondenceAddress(Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
-          when(mockDetailsService.cacheClientReference(Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful("XN1200000100001"))
+          when(mockDetailsService.cacheClientReference(Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+            .thenReturn(Future.successful("XN1200000100001"))
           when(mockSubscriptionDataService.getOrganisationName(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(organisationName)))
           when(mockSubscriptionDataService.getSafeId(Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
-          when(mockAgentClientMandateFrontendConnector.getClientBannerPartial(Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(HtmlPartial.Success(Some("thepartial"), Html(""))))
+          when(mockAgentClientMandateFrontendConnector.getClientBannerPartial(Matchers.any(), Matchers.any())(Matchers.any()))
+            .thenReturn(Future.successful(HtmlPartial.Success(Some("thepartial"), Html(""))))
 
           val result = TestAccountSummaryController.view().apply(SessionBuilder.buildRequestWithSession(userId))
           val thrown = the[RuntimeException] thrownBy await(result)
@@ -280,12 +290,16 @@ class AccountSummaryControllerSpec extends PlaySpec with OneServerPerSuite with 
         }
 
         "show the create a return button and no appoint an agent link if there are returns and delegation" in {
-          val draftReturns1 = DraftReturns(2015, "1", "desc", Some(BigDecimal(100.00)), TypeChangeLiabilityDraft)
-          val draftReturns2 = DraftReturns(2015, "", "some relief", None, TypeReliefDraft)
-          val submittedReliefReturns1 = SubmittedReliefReturns(formBundleNo1, "some relief", new LocalDate("2015-05-05"), new LocalDate("2015-05-05"), new LocalDate("2015-05-05"))
-          val submittedLiabilityReturns1 = SubmittedLiabilityReturns(formBundleNo2, "addr1+2", BigDecimal(1234.00), new LocalDate("2015-05-05"), new LocalDate("2015-05-05"), new LocalDate("2015-05-05"), true, "payment-ref-01")
-          val submittedReturns = SubmittedReturns(2015, Seq(submittedReliefReturns1), Seq(submittedLiabilityReturns1))
-          val periodSummaryReturns = PeriodSummaryReturns(2015, Seq(draftReturns1, draftReturns2), Some(submittedReturns))
+          val year = 2015
+          val draftReturns1 = DraftReturns(year, "1", "desc", Some(BigDecimal(100.00)), TypeChangeLiabilityDraft)
+          val draftReturns2 = DraftReturns(year, "", "some relief", None, TypeReliefDraft)
+          val submittedReliefReturns1 = SubmittedReliefReturns(
+            formBundleNo1, "some relief", new LocalDate("2015-05-05"), new LocalDate("2015-05-05"), new LocalDate("2015-05-05"))
+          val submittedLiabilityReturns1 = SubmittedLiabilityReturns(
+            formBundleNo2, "addr1+2", BigDecimal(1234.00), new LocalDate("2015-05-05"), new LocalDate("2015-05-05"),
+            new LocalDate("2015-05-05"), changeAllowed = true, "payment-ref-01")
+          val submittedReturns = SubmittedReturns(year, Seq(submittedReliefReturns1), Seq(submittedLiabilityReturns1))
+          val periodSummaryReturns = PeriodSummaryReturns(year, Seq(draftReturns1, draftReturns2), Some(submittedReturns))
           val data = SummaryReturnsModel(Some(BigDecimal(0)), Seq(periodSummaryReturns))
           getWithAuthorisedDelegatedUser(data, None) {
             result =>
@@ -301,20 +315,22 @@ class AccountSummaryControllerSpec extends PlaySpec with OneServerPerSuite with 
     }
   }
 
-
   def getWithAuthorisedUser(returnsSummaryWithDraft: SummaryReturnsModel,
                             correspondence: Option[Address] = None)(test: Future[Result] => Any) {
+    val httpValue = 200
     val userId = s"user-${UUID.randomUUID}"
-    implicit val user = createAtedContext(createUserAuthContext(userId, "name"))
-    AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
+    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+    setAuthMocks(authMock)
 
-    when(mockDataCacheConnector.clearCache()(Matchers.any())).thenReturn(Future.successful(HttpResponse(200)))
+    when(mockDataCacheConnector.clearCache()(Matchers.any())).thenReturn(Future.successful(HttpResponse(httpValue)))
     when(mockReturnSummaryService.getSummaryReturns(Matchers.any(), Matchers.any())).thenReturn(Future.successful(returnsSummaryWithDraft))
     when(mockSubscriptionDataService.getCorrespondenceAddress(Matchers.any(), Matchers.any())).thenReturn(Future.successful(correspondence))
     when(mockSubscriptionDataService.getOrganisationName(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(organisationName)))
     when(mockSubscriptionDataService.getSafeId(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("safeId")))
-    when(mockAgentClientMandateFrontendConnector.getClientBannerPartial(Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(HtmlPartial.Success(Some("thepartial"), Html(""))))
-    when(mockDetailsService.cacheClientReference(Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful("XN1200000100001"))
+    when(mockAgentClientMandateFrontendConnector.getClientBannerPartial(Matchers.any(), Matchers.any())(Matchers.any()))
+      .thenReturn(Future.successful(HtmlPartial.Success(Some("thepartial"), Html(""))))
+    when(mockDetailsService.cacheClientReference(Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful("XN1200000100001"))
 
     val result = TestAccountSummaryController.view().apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
@@ -322,32 +338,29 @@ class AccountSummaryControllerSpec extends PlaySpec with OneServerPerSuite with 
 
   def getWithAuthorisedDelegatedUser(returnsSummaryWithDraft: SummaryReturnsModel,
                                      correspondence: Option[Address] = None)(test: Future[Result] => Any) {
+    val httpValue = 200
     val userId = s"user-${UUID.randomUUID}"
-    implicit val user = createAtedContext(createDelegatedAuthContext(userId, "company name|display name"))
     implicit val hc: HeaderCarrier = HeaderCarrier(userId = Some(UserId(userId)))
-    AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-
-    when(mockDataCacheConnector.clearCache()(Matchers.any())).thenReturn(Future.successful(HttpResponse(200)))
+    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+    setAuthMocks(authMock)
+    when(mockDataCacheConnector.clearCache()(Matchers.any())).thenReturn(Future.successful(HttpResponse(httpValue)))
     when(mockReturnSummaryService.getSummaryReturns(Matchers.any(), Matchers.any())).thenReturn(Future.successful(returnsSummaryWithDraft))
     when(mockSubscriptionDataService.getCorrespondenceAddress(Matchers.any(), Matchers.any())).thenReturn(Future.successful(correspondence))
     when(mockSubscriptionDataService.getOrganisationName(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(organisationName)))
-    when(mockDelegationConnector.getDelegationData(Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(Some(DummyDelegationData.returnData)))
     when(mockSubscriptionDataService.getSafeId(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("safeId")))
-    when(mockAgentClientMandateFrontendConnector.getClientBannerPartial(Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(HtmlPartial.Success(Some("thepartial"), Html(""))))
-    when(mockDetailsService.cacheClientReference(Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful("XN1200000100001"))
+    when(mockAgentClientMandateFrontendConnector.getClientBannerPartial(Matchers.any(), Matchers.any())(Matchers.any()))
+      .thenReturn(Future.successful(HtmlPartial.Success(Some("thepartial"), Html(""))))
+    when(mockDetailsService.cacheClientReference(Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful("XN1200000100001"))
     val result = TestAccountSummaryController.view().apply(SessionBuilder.buildRequestWithSessionDelegation(userId))
     test(result)
   }
 
   def getWithUnAuthorisedUser(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
-    AuthBuilder.mockUnAuthorisedUser(userId, mockAuthConnector)
+    val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
+    setInvalidAuthMocks(authMock)
     val result = TestAccountSummaryController.view().apply(SessionBuilder.buildRequestWithSession(userId))
-    test(result)
-  }
-
-  def getWithUnAuthenticated(test: Future[Result] => Any) {
-    val result = TestAccountSummaryController.view().apply(SessionBuilder.buildRequestWithSessionNoUser)
     test(result)
   }
 

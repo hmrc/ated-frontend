@@ -19,9 +19,10 @@ package utils
 import builders.{ChangeLiabilityReturnBuilder, PropertyDetailsBuilder}
 import models._
 import org.joda.time.LocalDate
-import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
+import org.scalatestplus.play.PlaySpec
 
-class PeriodUtilsSpec extends PlaySpec with OneServerPerSuite with ReliefConstants {
+class PeriodUtilsSpec extends PlaySpec with GuiceOneServerPerSuite with ReliefConstants {
 
   "PeriodUtils" must {
 

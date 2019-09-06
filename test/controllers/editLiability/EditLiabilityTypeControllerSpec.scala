@@ -18,60 +18,53 @@ package controllers.editLiability
 
 import java.util.UUID
 
-import builders.{AuthBuilder, SessionBuilder}
-import config.FrontendDelegationConnector
+import builders.SessionBuilder
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import org.jsoup.Jsoup
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mock.MockitoSugar
-import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
+import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.play.PlaySpec
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.libs.json.Json
 import play.api.mvc.{AnyContentAsJson, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
-import utils.AtedConstants
+import services.DelegationService
+import uk.gov.hmrc.auth.core.{AffinityGroup, PlayAuthConnector}
+import utils.{AtedConstants, MockAuthUtil}
 
 import scala.concurrent.Future
 
-class EditLiabilityTypeControllerSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
+class EditLiabilityTypeControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with MockAuthUtil {
 
-  import AuthBuilder._
 
-  val mockAuthConnector = mock[AuthConnector]
-  val mockDelegationConnector = mock[DelegationConnector]
-  val mockBackLinkCache = mock[BackLinkCacheConnector]
-  val mockDataCacheConnector = mock[DataCacheConnector]
+  val mockBackLinkCache: BackLinkCacheConnector = mock[BackLinkCacheConnector]
+  val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
 
   object TestEditLiabilityTypeController extends EditLiabilityTypeController {
-    override val authConnector = mockAuthConnector
-    override val delegationConnector: DelegationConnector = mockDelegationConnector
-    override val controllerId = "controllerId"
-    override val backLinkCacheConnector = mockBackLinkCache
-    override val dataCacheConnector = mockDataCacheConnector
+    override val authConnector: PlayAuthConnector = mockAuthConnector
+    override val delegationService: DelegationService = mockDelegationService
+    override val controllerId: String = "controllerId"
+    override val backLinkCacheConnector: BackLinkCacheConnector = mockBackLinkCache
+    override val dataCacheConnector: DataCacheConnector = mockDataCacheConnector
 
   }
 
-  override def beforeEach = {
+  override def beforeEach: Unit = {
     reset(mockAuthConnector)
-    reset(mockDelegationConnector)
+    reset(mockDelegationService)
     reset(mockBackLinkCache)
   }
 
   "EditLiabilityTypeController" must {
 
-    "use correct DelegationConnector" in {
-      EditLiabilityTypeController.delegationConnector must be(FrontendDelegationConnector)
+    "use correct DelegationService" in {
+      EditLiabilityTypeController.delegationService must be(DelegationService)
     }
 
     "editLiability" must {
-      "not respond with NOT_FOUND" in {
-        val result = route(FakeRequest(GET, "/ated/liability/1234567890/change/address"))
-        result.isDefined must be(true)
-        status(result.get) must not be (NOT_FOUND)
-      }
 
       "take user to edit liability page" in {
         editLiabilityWithAuthorisedUser {
@@ -126,23 +119,26 @@ class EditLiabilityTypeControllerSpec extends PlaySpec with OneServerPerSuite wi
   }
 
   def editLiabilityWithAuthorisedUser(test: Future[Result] => Any) {
+    val periodKey: Int = 2015
     val userId = s"user-${UUID.randomUUID}"
-    implicit val user = createAtedContext(createUserAuthContext(userId, "name"))
-    AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
+    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+    setAuthMocks(authMock)
     when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
     when(mockBackLinkCache.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
-    val result = TestEditLiabilityTypeController.editLiability("12345678901", 2015, true).apply(SessionBuilder.buildRequestWithSession(userId))
+    val result = TestEditLiabilityTypeController.editLiability("12345678901", periodKey, editAllowed = true)
+      .apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
   def continueWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsJson])(test: Future[Result] => Any) {
+    val periodKey: Int = 2015
     val userId = s"user-${UUID.randomUUID}"
-    implicit val user = createAtedContext(createUserAuthContext(userId, "name"))
-    AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
+    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+    setAuthMocks(authMock)
     when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-    val result = TestEditLiabilityTypeController.continue("12345678901", 2015, true)
+    val result = TestEditLiabilityTypeController.continue("12345678901", periodKey, editAllowed = true)
       .apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
     test(result)
   }

@@ -18,9 +18,9 @@ package utils
 
 import models._
 import org.joda.time.LocalDate
-import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
 import play.api.i18n.Messages
+import play.api.i18n.Messages.Implicits._
 import utils.AtedConstants._
 
 
@@ -60,14 +60,14 @@ object PeriodUtils {
   lazy val liabilityReturnTypeDesc = Messages("ated.property-details-period.liability.return-type")
   lazy val disposeReturnTypeDesc = Messages("ated.property-details-period.dispose.return-type")
 
-  def getDisplayPeriods(propertyDetails: Option[PropertyDetailsPeriod]) = {
+  def getDisplayPeriods(propertyDetails: Option[PropertyDetailsPeriod]): Seq[LineItem] = {
 
     val liabilityPeriods = propertyDetails.map(_.liabilityPeriods).getOrElse(Nil)
     val reliefPeriods = propertyDetails.map(_.reliefPeriods).getOrElse(Nil)
     sortAndConvertLineItemsForDisplay(liabilityPeriods ++ reliefPeriods)
   }
 
-  def getDisplayFormBundleProperties(lineItems: Seq[FormBundleProperty]) = {
+  def getDisplayFormBundleProperties(lineItems: Seq[FormBundleProperty]): Seq[LineItem] = {
     def mergeValueChanges(lineItems: Seq[FormBundleProperty]) = {
       val startingVal = List[FormBundleProperty]()
       lineItems.foldLeft(startingVal){
@@ -108,7 +108,7 @@ object PeriodUtils {
     (startYear to endYear toList).reverse.map(x => s"$x" -> s"$x to ${x + 1}")
   }
 
-  def getCalculatedPeriodValues(calculated : Option[PropertyDetailsCalculated]) = {
+  def getCalculatedPeriodValues(calculated : Option[PropertyDetailsCalculated]): Seq[LineItemValue] = {
     def convert(items: Seq[CalculatedPeriod]) : Seq[FormBundleProperty]= {
       items.map(item => FormBundleProperty(item.value, item.startDate, item.endDate, item.lineItemType, item.description))
     }
@@ -118,7 +118,7 @@ object PeriodUtils {
     }
   }
 
-  def getOrderedReturnPeriodValues(lineItems: Seq[FormBundleProperty], dateOfAcquisition : Option[LocalDate] = None) = {
+  def getOrderedReturnPeriodValues(lineItems: Seq[FormBundleProperty], dateOfAcquisition : Option[LocalDate] = None): Seq[LineItemValue] = {
     implicit val lineItemOrdering: Ordering[FormBundleProperty] = Ordering.by(_.dateFrom)
 
     def filterReturnPeriodValues(lineItems: Seq[FormBundleProperty]) = {
@@ -156,7 +156,7 @@ object PeriodUtils {
     }
   }
 
-  def getPeriodValueMessage(index: Int, size: Int) = {
+  def getPeriodValueMessage(index: Int, size: Int): String = {
     (index, size) match {
       case (_, 1) => Messages("ated.form-bundle.view.return.value.only")
       case (0, _) => Messages("ated.form-bundle.view.return.value.initial")
@@ -164,7 +164,7 @@ object PeriodUtils {
     }
   }
 
-  def getPeriodValueDateMessage(index: Int, size: Int) = {
+  def getPeriodValueDateMessage(index: Int, size: Int): String = {
     (index, size) match {
       case (_, 1) => Messages("ated.form-bundle.view.return.date.valuation.only")
       case (0, _) => Messages("ated.form-bundle.view.return.date.valuation.initial")
@@ -177,7 +177,7 @@ object PeriodUtils {
   def isBlank(str: String): Boolean = str.isEmpty
 
 /* function needs to be updated after every five years according to busines logic*/
-  def getValuationYear(periodKey : Int) = {
+  def getValuationYear(periodKey : Int): String = {
     periodKey match {
       case p if periodKey >= 2018 && periodKey <= 2023 => "2017"
       case p if periodKey <= 2017 => "2012"

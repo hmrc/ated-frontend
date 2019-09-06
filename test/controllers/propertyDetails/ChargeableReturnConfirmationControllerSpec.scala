@@ -18,64 +18,57 @@ package controllers.propertyDetails
 
 import java.util.UUID
 
-import builders.{AuthBuilder, SessionBuilder}
-import config.FrontendDelegationConnector
+import builders.SessionBuilder
 import connectors.DataCacheConnector
-import models.{LiabilityReturnResponse, PropertyDetails, SubmitReturnsResponse}
+import models.{LiabilityReturnResponse, SubmitReturnsResponse}
 import org.joda.time.DateTime
 import org.jsoup.Jsoup
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mock.MockitoSugar
-import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
-import play.api.libs.json.Json
+import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
+import org.scalatestplus.play.PlaySpec
 import play.api.mvc.Result
-import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.SubscriptionDataService
-import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
-import utils.AtedConstants
+import services.{DelegationService, SubscriptionDataService}
+import uk.gov.hmrc.auth.core.{AffinityGroup, PlayAuthConnector}
+import uk.gov.hmrc.http.HeaderCarrier
 import utils.AtedConstants._
+import utils.MockAuthUtil
 
 import scala.concurrent.Future
 
-class ChargeableReturnConfirmationControllerSpec extends PlaySpec with OneServerPerSuite with BeforeAndAfterEach with MockitoSugar {
-  import AuthBuilder._
+class ChargeableReturnConfirmationControllerSpec extends PlaySpec with GuiceOneServerPerSuite with BeforeAndAfterEach with MockitoSugar with MockAuthUtil {
 
-  val mockAuthConnector = mock[AuthConnector]
-  val mockDataCacheConnector = mock[DataCacheConnector]
-  val mockDelegationConnector = mock[DelegationConnector]
-  val mockSubscriptionDataService = mock[SubscriptionDataService]
-  val organisationName = "ACME Limited"
+  implicit lazy val hc: HeaderCarrier = HeaderCarrier()
+
+  val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
+
+  val mockSubscriptionDataService: SubscriptionDataService = mock[SubscriptionDataService]
+  val organisationName: String = "ACME Limited"
 
   object TestChargeableReturnConfirmationController extends ChargeableReturnConfirmationController {
-    override val authConnector = mockAuthConnector
-    override val subscriptionDataService = mockSubscriptionDataService
+    override val authConnector: PlayAuthConnector = mockAuthConnector
+    override val subscriptionDataService: SubscriptionDataService = mockSubscriptionDataService
     override val dataCacheConnector: DataCacheConnector = mockDataCacheConnector
-    override val delegationConnector: DelegationConnector = mockDelegationConnector
+    override val delegationService: DelegationService = mockDelegationService
   }
 
 
-  override def beforeEach = {
+  override def beforeEach: Unit = {
     reset(mockAuthConnector)
     reset(mockDataCacheConnector)
-    reset(mockDelegationConnector)
+    reset(mockDelegationService)
   }
 
   "ChargeableReturnConfirmationController" must {
 
-    "use correct DelegationConnector" in {
-      ChargeableReturnConfirmationController.delegationConnector must be(FrontendDelegationConnector)
+    "use correct DelegationService" in {
+      ChargeableReturnConfirmationController.delegationService must be(DelegationService)
     }
 
     "confirmation" must {
-
-      "not respond with NOT_FOUND" in {
-        val result = route(FakeRequest(GET, "/ated/liability/create/confirmation"))
-        result.isDefined must be(true)
-        status(result.get) must not be(NOT_FOUND)
-      }
 
       "unauthorised users" must {
 
@@ -100,13 +93,16 @@ class ChargeableReturnConfirmationControllerSpec extends PlaySpec with OneServer
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
               document.getElementById("banner").text() must include("Your return has been successfully submitted")
-              document.getElementById("completed-message").text() must be("You can view your completed returns, payment references and ways to pay in the ATED online service.")
+              document.getElementById("completed-message")
+                .text() must be("You can view your completed returns, payment references and ways to pay in the ATED online service.")
               document.getElementById("email-message").text() must include("You will not receive an email confirmation.")
               document.getElementById("receipt-message-title").text() must include("Charges for this return")
-              document.getElementById("adjusted-amount").text() must include("This amount does not reflect any payments you have already made or penalties that have been issued.")
+              document.getElementById("adjusted-amount")
+                .text() must include("This amount does not reflect any payments you have already made or penalties that have been issued.")
               document.getElementById("owed-amount").text() must include("The charges for this return are")
               document.getElementById("reference-text").text() must include("The reference to make this payment is")
-              document.getElementById("not-receive-email").text() must be("You can view your balance in your ATED online service. There can be a 24-hour delay before you see any updates.")
+              document.getElementById("not-receive-email")
+                .text() must be("You can view your balance in your ATED online service. There can be a 24-hour delay before you see any updates.")
               document.getElementById("submit").text() must be("Your ATED online service")
               document.getElementById("submit").attr("href") must be("/ated/account-summary")
           }
@@ -118,13 +114,16 @@ class ChargeableReturnConfirmationControllerSpec extends PlaySpec with OneServer
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
               document.getElementById("header").text() must include("Your return has been successfully submitted")
-              document.getElementById("completed-message").text() must be("You can view your completed returns, payment references and ways to pay in the ATED online service.")
+              document.getElementById("completed-message")
+                .text() must be("You can view your completed returns, payment references and ways to pay in the ATED online service.")
               document.getElementById("email-message").text() must include("You will not receive an email confirmation.")
               document.getElementById("receipt-message-title").text() must include("Charges for this return")
-              document.getElementById("adjusted-amount").text() must include("This amount does not reflect any payments you have already made or penalties that have been issued.")
+              document.getElementById("adjusted-amount")
+                .text() must include("This amount does not reflect any payments you have already made or penalties that have been issued.")
               document.getElementById("owed-amount").text() must include("The charges for this return are")
               document.getElementById("reference-text").text() must include("The reference to make this payment is")
-              document.getElementById("not-receive-email").text() must be("You can view your balance in your ATED online service. There can be a 24-hour delay before you see any updates.")
+              document.getElementById("not-receive-email")
+                .text() must be("You can view your balance in your ATED online service. There can be a 24-hour delay before you see any updates.")
 
           }
         }
@@ -143,11 +142,12 @@ class ChargeableReturnConfirmationControllerSpec extends PlaySpec with OneServer
 
   def confirmationWithAuthorisedUser(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
-    implicit val user = createAtedContext(createUserAuthContext(userId, "name"))
-    AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
+    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+    setAuthMocks(authMock)
     val liabilityReturnResponse = LiabilityReturnResponse(mode = "Post", propertyKey = "1",
       liabilityAmount = BigDecimal("123"), paymentReference = Some("Payment-123"), formBundleNumber = "form-bundle-123")
-    val submitReturnsResponse = SubmitReturnsResponse(processingDate = DateTime.now().toString, None, liabilityReturnResponse = Some(Seq(liabilityReturnResponse)))
+    val submitReturnsResponse = SubmitReturnsResponse(processingDate = DateTime.now().toString, None, liabilityReturnResponse =
+      Some(Seq(liabilityReturnResponse)))
     when(mockDataCacheConnector.fetchAndGetFormData[SubmitReturnsResponse](Matchers.eq(SubmitReturnsResponseFormId))
       (Matchers.any(), Matchers.any(), Matchers.eq(SubmitReturnsResponse.formats))).thenReturn(Future.successful(Some(submitReturnsResponse)))
     val result = TestChargeableReturnConfirmationController.confirmation.apply(SessionBuilder.buildRequestWithSession(userId))
@@ -156,8 +156,8 @@ class ChargeableReturnConfirmationControllerSpec extends PlaySpec with OneServer
 
   def confirmationWithAuthorisedUserNotFound(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
-    implicit val user = createAtedContext(createUserAuthContext(userId, "name"))
-    AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
+    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+    setAuthMocks(authMock)
     when(mockDataCacheConnector.fetchAndGetFormData[SubmitReturnsResponse](Matchers.eq(SubmitReturnsResponseFormId))
       (Matchers.any(), Matchers.any(), Matchers.eq(SubmitReturnsResponse.formats))).thenReturn(Future.successful(None))
     val result = TestChargeableReturnConfirmationController.confirmation.apply(SessionBuilder.buildRequestWithSession(userId))
@@ -166,7 +166,8 @@ class ChargeableReturnConfirmationControllerSpec extends PlaySpec with OneServer
 
   def confirmationWithUnAuthorisedUser(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
-    AuthBuilder.mockUnAuthorisedUser(userId, mockAuthConnector)
+    val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
+    setInvalidAuthMocks(authMock)
     val result = TestChargeableReturnConfirmationController.confirmation.apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
@@ -178,11 +179,12 @@ class ChargeableReturnConfirmationControllerSpec extends PlaySpec with OneServer
 
   def getPrintFriendlyWithAuthorisedUser(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
-    implicit val user = createAtedContext(createUserAuthContext(userId, "name"))
-    AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
+    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+    setAuthMocks(authMock)
     val liabilityReturnResponse = LiabilityReturnResponse(mode = "Post", propertyKey = "1",
       liabilityAmount = BigDecimal("123"), paymentReference = Some("Payment-123"), formBundleNumber = "form-bundle-123")
-    val submitReturnsResponse = SubmitReturnsResponse(processingDate = DateTime.now().toString, None, liabilityReturnResponse = Some(Seq(liabilityReturnResponse)))
+    val submitReturnsResponse = SubmitReturnsResponse(processingDate = DateTime.now().toString, None, liabilityReturnResponse =
+      Some(Seq(liabilityReturnResponse)))
     when(mockDataCacheConnector.fetchAndGetFormData[SubmitReturnsResponse](Matchers.eq(SubmitReturnsResponseFormId))
       (Matchers.any(), Matchers.any(), Matchers.eq(SubmitReturnsResponse.formats))).thenReturn(Future.successful(Some(submitReturnsResponse)))
     when(mockSubscriptionDataService.getOrganisationName(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(organisationName)))

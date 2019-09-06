@@ -16,10 +16,11 @@
 
 package models
 
-import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
+import org.scalatestplus.play.PlaySpec
 import play.api.libs.json.Json
 
-class AddressLookupModelsSpec extends PlaySpec with OneServerPerSuite {
+class AddressLookupModelsSpec extends PlaySpec with GuiceOneServerPerSuite {
 
   "AddressLookup Response" should {
 

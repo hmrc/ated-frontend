@@ -16,39 +16,38 @@
 
 package services
 
-import builders.{AuthBuilder, PropertyDetailsBuilder}
+import builders.PropertyDetailsBuilder
 import connectors.{DataCacheConnector, PropertyDetailsConnector}
 import models._
 import org.joda.time.LocalDate
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mock.MockitoSugar
-import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
+import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.play.PlaySpec
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.libs.json.Json
 import play.api.test.Helpers._
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, InternalServerException}
 
 import scala.concurrent.Future
-import uk.gov.hmrc.http.{ HeaderCarrier, HttpResponse, InternalServerException }
 
-class PropertyDetailsServiceSpec_Periods extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
+class PropertyDetailsServiceSpec_Periods extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
 
-  import AuthBuilder._
-
-  val mockConnector = mock[PropertyDetailsConnector]
-  val mockDataCacheConnector = mock[DataCacheConnector]
+  val mockConnector: PropertyDetailsConnector = mock[PropertyDetailsConnector]
+  val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
 
   object TestPropertyDetailsService extends PropertyDetailsService {
-    override val atedConnector = mockConnector
-    override val dataCacheConnector = mockDataCacheConnector
+    override val atedConnector: PropertyDetailsConnector = mockConnector
+    override val dataCacheConnector: DataCacheConnector = mockDataCacheConnector
   }
 
-  override def beforeEach = {
+  override def beforeEach: Unit = {
     reset(mockConnector)
     reset(mockDataCacheConnector)
   }
 
-  implicit val user = createAtedContext(createUserAuthContext("User-Id", "name"))
+  implicit lazy val authContext: StandardAuthRetrievals = mock[StandardAuthRetrievals]
   implicit val hc: HeaderCarrier = HeaderCarrier()
 
   "PropertyDetailsService" must {
@@ -195,7 +194,7 @@ class PropertyDetailsServiceSpec_Periods extends PlaySpec with OneServerPerSuite
 
       }
     }
-    
+
     "store Chosen Relief" must {
       implicit val hc: HeaderCarrier = HeaderCarrier()
       val propValue = new PeriodChooseRelief("reliefDescription")

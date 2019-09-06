@@ -25,12 +25,9 @@
   editAllowed: Boolean,
   valuesToDisplay: Seq[LineItemValue],
   periodsToDisplay: Seq[LineItem],
-  backLink: Option[String])(implicit atedContext: AtedContext, messages: Messages)
-@import uk.gov.hmrc.play.views.html._
-@import uk.gov.hmrc.play.views.html.helpers._
-@import views.html.helpers._
-@import views.html.helpers.error._
+  backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent])
 @import utils._
+@import views.html.helpers._
 
 @pageScripts = {
 <script src='@controllers.routes.AssetsController.at("javascript/formBundleReturn.js")'></script>
@@ -43,7 +40,6 @@
 }
 
 @atedMain(title = Messages("ated.form-bundle.title"),
-          attorney = atedContext.user.authContext.attorney,
           pageScripts = Some(pageScripts),
           analyticsAdditionalJs = Some(analyticsJs)) {
 

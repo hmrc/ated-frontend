@@ -16,25 +16,21 @@
 
 package controllers.propertyDetails
 
-import config.FrontendDelegationConnector
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
-import controllers.auth.{AtedRegime, ClientHelper}
-import forms.PropertyDetailsForms
+import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms._
 import models.PropertyDetailsProfessionallyValued
-import services._
-import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
+import play.api.i18n.Messages.Implicits._
+import play.api.mvc.{Action, AnyContent}
+import services._
 import utils.AtedConstants.SelectedPreviousReturn
 import utils.AtedUtils
-import views.html.propertyDetails.propertyDetailsProfessionallyValued
 
-import scala.concurrent.Future
+trait PropertyDetailsProfessionallyValuedController extends PropertyDetailsHelpers with ClientHelper with AuthAction {
 
-trait PropertyDetailsProfessionallyValuedController extends PropertyDetailsHelpers with ClientHelper {
-
-  def view(id: String) = AuthAction(AtedRegime) {
-    implicit atedContext =>
+  def view(id: String) : Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       ensureClientContext {
         propertyDetailsCacheResponse(id) {
           case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
@@ -50,31 +46,31 @@ trait PropertyDetailsProfessionallyValuedController extends PropertyDetailsHelpe
             }
         }
       }
+    }
   }
 
-  def editFromSummary(id: String) = AuthAction(AtedRegime) {
-    implicit atedContext =>
+  def editFromSummary(id: String) : Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       ensureClientContext {
         propertyDetailsCacheResponse(id) {
           case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
-              dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).map { isPrevReturn =>
-                val displayData = PropertyDetailsProfessionallyValued(propertyDetails.value.flatMap(_.isValuedByAgent))
-                Ok(views.html.propertyDetails.propertyDetailsProfessionallyValued(id,
-                  propertyDetails.periodKey,
-                  propertyDetailsProfessionallyValuedForm.fill(displayData),
-                  AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn),
-                  AtedUtils.getSummaryBackLink(id, None)))
-              }
+            dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).map { isPrevReturn =>
+              val displayData = PropertyDetailsProfessionallyValued(propertyDetails.value.flatMap(_.isValuedByAgent))
+              Ok(views.html.propertyDetails.propertyDetailsProfessionallyValued(id,
+                propertyDetails.periodKey,
+                propertyDetailsProfessionallyValuedForm.fill(displayData),
+                AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn),
+                AtedUtils.getSummaryBackLink(id, None)))
+            }
         }
       }
+    }
   }
 
-
-
-
-  def save(id: String, periodKey: Int, mode: Option[String]) = AuthAction(AtedRegime) {
-    implicit atedContext =>
-      ensureClientContext { propertyDetailsProfessionallyValuedForm.bindFromRequest.fold(
+  def save(id: String, periodKey: Int, mode: Option[String]) : Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
+      ensureClientContext {
+        propertyDetailsProfessionallyValuedForm.bindFromRequest.fold(
           formWithError => {
             currentBackLink.map(backLink => BadRequest(views.html.propertyDetails.propertyDetailsProfessionallyValued(id, periodKey, formWithError, mode, backLink)))
           },
@@ -91,14 +87,14 @@ trait PropertyDetailsProfessionallyValuedController extends PropertyDetailsHelpe
           }
         )
       }
+    }
   }
-
 }
 
 object PropertyDetailsProfessionallyValuedController extends PropertyDetailsProfessionallyValuedController {
-  val delegationConnector = FrontendDelegationConnector
-  val propertyDetailsService = PropertyDetailsService
-  val dataCacheConnector = DataCacheConnector
-  override val controllerId = "PropertyDetailsProfessionallyValuedController"
-  override val backLinkCacheConnector = BackLinkCacheConnector
+  val delegationService: DelegationService = DelegationService
+  val propertyDetailsService: PropertyDetailsService = PropertyDetailsService
+  val dataCacheConnector: DataCacheConnector = DataCacheConnector
+  override val controllerId: String = "PropertyDetailsProfessionallyValuedController"
+  override val backLinkCacheConnector: BackLinkCacheConnector = BackLinkCacheConnector
 }

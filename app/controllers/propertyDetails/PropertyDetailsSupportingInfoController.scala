@@ -16,25 +16,25 @@
 
 package controllers.propertyDetails
 
-import config.FrontendDelegationConnector
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
-import controllers.auth.{AtedRegime, ClientHelper, ExternalUrls}
+import controllers.auth.{AuthAction, ClientHelper, ExternalUrls}
 import controllers.editLiability.EditLiabilitySummaryController
 import forms.PropertyDetailsForms._
 import models._
 import play.api.Play.current
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
-import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService}
-import utils.AtedUtils
+import play.api.mvc.{Action, AnyContent}
+import services.{DelegationService, PropertyDetailsCacheSuccessResponse, PropertyDetailsService}
 import utils.AtedConstants._
+import utils.AtedUtils
 
 import scala.concurrent.Future
 
-trait PropertyDetailsSupportingInfoController extends PropertyDetailsHelpers with ClientHelper {
+trait PropertyDetailsSupportingInfoController extends PropertyDetailsHelpers with ClientHelper with AuthAction {
 
-  def view(id: String) = AuthAction(AtedRegime) {
-    implicit atedContext =>
+  def view(id: String) : Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       ensureClientContext {
         propertyDetailsCacheResponse(id) {
           case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
@@ -50,10 +50,11 @@ trait PropertyDetailsSupportingInfoController extends PropertyDetailsHelpers wit
             )
         }
       }
+    }
   }
 
-  def editFromSummary(id: String) = AuthAction(AtedRegime) {
-    implicit atedContext =>
+  def editFromSummary(id: String) : Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       ensureClientContext {
         propertyDetailsCacheResponse(id) {
           case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
@@ -66,12 +67,13 @@ trait PropertyDetailsSupportingInfoController extends PropertyDetailsHelpers wit
               Future.successful(Ok(views.html.propertyDetails.propertyDetailsSupportingInfo(id, propertyDetails.periodKey, filledForm,
                 mode, AtedUtils.getSummaryBackLink(id, None))))
             }
+          }
         }
       }
   }
 
-  def save(id: String, periodKey: Int, mode: Option[String]) = AuthAction(AtedRegime) {
-    implicit atedContext =>
+  def save(id: String, periodKey: Int, mode: Option[String]): Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       ensureClientContext {
         propertyDetailsSupportingInfoForm.bindFromRequest.fold(
           formWithError => {
@@ -90,31 +92,31 @@ trait PropertyDetailsSupportingInfoController extends PropertyDetailsHelpers wit
                   controllers.editLiability.routes.EditLiabilitySummaryController.view(id),
                   backLink)
               } else {
-                  propertyDetailsService.calculateDraftPropertyDetails(id).flatMap { response =>
-                    response.status match {
-                      case OK =>
-                        RedirectWithBackLink(
-                          PropertyDetailsSummaryController.controllerId,
-                          controllers.propertyDetails.routes.PropertyDetailsSummaryController.view(id),
-                          backLink)
-                      case BAD_REQUEST if response.body.contains("Agent not Valid") =>
-                        Future.successful(BadRequest(views.html.global_error(Messages("ated.client-problem.title"),
-                          Messages("ated.client-problem.header"), Messages("ated.client-problem.body", ExternalUrls.agentRedirectedToMandate))))
-                    }
+                propertyDetailsService.calculateDraftPropertyDetails(id).flatMap { response =>
+                  response.status match {
+                    case OK =>
+                      RedirectWithBackLink(
+                        PropertyDetailsSummaryController.controllerId,
+                        controllers.propertyDetails.routes.PropertyDetailsSummaryController.view(id),
+                        backLink)
+                    case BAD_REQUEST if response.body.contains("Agent not Valid") =>
+                      Future.successful(BadRequest(views.html.global_error(Messages("ated.client-problem.title"),
+                        Messages("ated.client-problem.header"), Messages("ated.client-problem.body", ExternalUrls.agentRedirectedToMandate))))
                   }
                 }
+              }
             } yield result
           }
         )
       }
+    }
   }
-
 }
 
 object PropertyDetailsSupportingInfoController extends PropertyDetailsSupportingInfoController {
-  val delegationConnector = FrontendDelegationConnector
-  val propertyDetailsService = PropertyDetailsService
-  val dataCacheConnector = DataCacheConnector
-  override val controllerId = "PropertyDetailsSupportingInfoController"
-  override val backLinkCacheConnector = BackLinkCacheConnector
+  val delegationService: DelegationService = DelegationService
+  val propertyDetailsService: PropertyDetailsService = PropertyDetailsService
+  val dataCacheConnector: DataCacheConnector = DataCacheConnector
+  override val controllerId: String = "PropertyDetailsSupportingInfoController"
+  override val backLinkCacheConnector: BackLinkCacheConnector = BackLinkCacheConnector
 }

@@ -14,11 +14,21 @@
  * limitations under the License.
  */
 
+package views.html.subscriptionData
+
 import models._
+import org.scalatest.mockito.MockitoSugar
 import play.twirl.api.Html
+import uk.gov.hmrc.auth.core.AffinityGroup
+import utils.MockAuthUtil
 import utils.viewHelpers.AtedViewSpec
 
-class CompanyDetailsSpec extends AtedViewSpec {
+class CompanyDetailsSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil {
+
+  implicit val authContext = organisationStandardRetrievals
+  val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+  setAuthMocks(authMock)
+
   "Company Details view" must {
     behave like pageWithTitle(messages("ated.company-details.title"))
     behave like pageWithHeader(messages("ated.company-details.header"))

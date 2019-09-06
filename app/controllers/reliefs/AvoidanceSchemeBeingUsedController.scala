@@ -16,46 +16,47 @@
 
 package controllers.reliefs
 
-import config.FrontendDelegationConnector
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
-import controllers.{AtedBaseController, BackLinkController}
-import controllers.auth.{AtedFrontendAuthHelpers, AtedRegime, ClientHelper}
+import controllers.BackLinkController
+import controllers.auth.{AuthAction, ClientHelper}
 import forms.ReliefForms._
 import models.IsTaxAvoidance
-import services.ReliefsService
-import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
-import utils.{AtedUtils, PeriodUtils}
-import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
+import play.api.i18n.Messages.Implicits._
+import play.api.mvc.{Action, AnyContent}
+import services.{DelegationService, ReliefsService}
+import utils.{AtedUtils, PeriodUtils}
 
 import scala.collection.mutable.ArrayBuffer
 import scala.concurrent.Future
 
 trait AvoidanceSchemeBeingUsedController extends BackLinkController
-  with AtedFrontendAuthHelpers with ReliefHelpers with DelegationAwareActions with ClientHelper {
+   with ReliefHelpers with ClientHelper with AuthAction {
 
-  def view(periodKey: Int) = AuthAction(AtedRegime) {
-    implicit atedContext =>
+  def view(periodKey: Int): Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       ensureClientContext {
         validatePeriodKey(periodKey) {
           for {
             backLink <- currentBackLink
-            retrievedData <- reliefsService.retrieveDraftReliefs(atedContext.user.atedReferenceNumber, periodKey)
+            retrievedData <- reliefsService.retrieveDraftReliefs(authContext.atedReferenceNumber.get, periodKey)
           } yield {
             val isAvoidanceScheme = IsTaxAvoidance(retrievedData.flatMap(_.reliefs.isAvoidanceScheme))
-            Ok(views.html.reliefs.avoidanceSchemeBeingUsed(periodKey, isTaxAvoidanceForm.fill(isAvoidanceScheme), PeriodUtils.periodStartDate(periodKey), backLink))
+            Ok(views.html.reliefs.avoidanceSchemeBeingUsed(periodKey, isTaxAvoidanceForm.fill(isAvoidanceScheme),
+              PeriodUtils.periodStartDate(periodKey), backLink))
           }
         }
       }
+    }
   }
 
-  def editFromSummary(periodKey: Int) = AuthAction(AtedRegime) {
-    implicit atedContext =>
+  def editFromSummary(periodKey: Int): Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       ensureClientContext {
         validatePeriodKey(periodKey) {
           for {
-            retrievedData <- reliefsService.retrieveDraftReliefs(atedContext.user.atedReferenceNumber, periodKey)
-            result <-  retrievedData.flatMap(_.reliefs.isAvoidanceScheme) match {
+            retrievedData <- reliefsService.retrieveDraftReliefs(authContext.atedReferenceNumber.get, periodKey)
+            result <- retrievedData.flatMap(_.reliefs.isAvoidanceScheme) match {
               case Some(true) =>
                 RedirectWithBackLink(
                   AvoidanceSchemesController.controllerId,
@@ -68,20 +69,21 @@ trait AvoidanceSchemeBeingUsedController extends BackLinkController
           } yield result
         }
       }
+    }
   }
 
-  def send(periodKey: Int) = AuthAction(AtedRegime) {
-    implicit atedContext =>
+  def send(periodKey: Int): Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       ensureClientContext {
         validatePeriodKey(periodKey) {
-          val data = AtedUtils.addParamsToRequest(atedContext, Map("periodKey" -> ArrayBuffer(periodKey.toString)))
+          val data = AtedUtils.addParamsToRequest(Map("periodKey" -> ArrayBuffer(periodKey.toString)))
           isTaxAvoidanceForm.bindFromRequest(data.get).fold(
             formWithError =>
               currentBackLink.map(backLink =>
                 BadRequest(views.html.reliefs.avoidanceSchemeBeingUsed(periodKey, formWithError, PeriodUtils.periodStartDate(periodKey), backLink))
               ),
             isTaxAvoidance => {
-              reliefsService.saveDraftIsTaxAvoidance(atedContext.user.atedReferenceNumber, periodKey, isTaxAvoidance.isAvoidanceScheme.getOrElse(false)).
+              reliefsService.saveDraftIsTaxAvoidance(authContext.atedReferenceNumber.get, periodKey, isTaxAvoidance.isAvoidanceScheme.getOrElse(false)).
                 flatMap {
                   x =>
                     RedirectWithBackLink(
@@ -94,14 +96,15 @@ trait AvoidanceSchemeBeingUsedController extends BackLinkController
           )
         }
       }
+    }
   }
 
 }
 
 object AvoidanceSchemeBeingUsedController extends AvoidanceSchemeBeingUsedController {
-  val reliefsService = ReliefsService
-  val delegationConnector = FrontendDelegationConnector
-  val dataCacheConnector = DataCacheConnector
-  override val controllerId = "AvoidanceSchemeBeingUsedController"
-  override val backLinkCacheConnector = BackLinkCacheConnector
+  val delegationService: DelegationService = DelegationService
+  val reliefsService: ReliefsService = ReliefsService
+  val dataCacheConnector: DataCacheConnector = DataCacheConnector
+  override val controllerId: String = "AvoidanceSchemeBeingUsedController"
+  override val backLinkCacheConnector: BackLinkCacheConnector = BackLinkCacheConnector
 }

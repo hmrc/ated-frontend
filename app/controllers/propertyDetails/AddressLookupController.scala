@@ -16,42 +16,41 @@
 
 package controllers.propertyDetails
 
-import config.{AtedFrontendAuditConnector, FrontendDelegationConnector}
+import audit.Auditable
+import config.AtedFrontendAuditConnector
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
-import controllers.auth.{AtedRegime, ClientHelper}
+import controllers.auth.{AuthAction, ClientHelper}
 import forms.AddressLookupForms._
-import forms.PropertyDetailsForms
-import forms.PropertyDetailsForms._
-import models.{AddressLookup, AddressSearchResult, AddressSearchResults, PropertyDetailsAddress}
+import models.{AddressLookup, AddressSearchResults, PropertyDetailsAddress}
+import play.api.Play
+import play.api.Play.current
 import play.api.data.FormError
 import play.api.i18n.Messages
-import services._
 import play.api.i18n.Messages.Implicits._
-import play.api.Play.current
-import utils.AtedUtils
-import audit.Auditable
-import play.api.Play
-import uk.gov.hmrc.play.audit.model.{Audit, EventTypes}
-import uk.gov.hmrc.play.config.AppName
-
-import scala.concurrent.Future
+import play.api.mvc.{Action, AnyContent}
+import services._
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.audit.model.Audit
+import uk.gov.hmrc.play.config.AppName
+import utils.AtedUtils
+import scala.concurrent.Future
 
-trait AddressLookupController extends PropertyDetailsHelpers with ClientHelper with Auditable{
+trait AddressLookupController extends PropertyDetailsHelpers with ClientHelper with Auditable with AuthAction {
 
   val addressLookupService : AddressLookupService
 
-  def view(id: Option[String], periodKey: Int, mode: Option[String] = None) = AuthAction(AtedRegime) {
-    implicit atedContext =>
+  def view(id: Option[String], periodKey: Int, mode: Option[String] = None): Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       ensureClientContext {
         currentBackLink.map(backLink =>
           Ok(views.html.propertyDetails.addressLookup(id, periodKey, addressLookupForm, mode, backLink))
         )
       }
+    }
   }
 
-  def find(id: Option[String], periodKey: Int, mode: Option[String] = None) = AuthAction(AtedRegime) {
-    implicit atedContext =>
+  def find(id: Option[String], periodKey: Int, mode: Option[String] = None): Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       ensureClientContext {
         addressLookupForm.bindFromRequest.fold(
           formWithError => {
@@ -69,10 +68,11 @@ trait AddressLookupController extends PropertyDetailsHelpers with ClientHelper w
           }
         )
       }
+    }
   }
 
-  def manualAddressRedirect(id: Option[String], periodKey: Int, mode: Option[String]) = AuthAction(AtedRegime) {
-    implicit atedContext =>
+  def manualAddressRedirect(id: Option[String], periodKey: Int, mode: Option[String]): Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       ensureClientContext {
         val redirectUrl = id match {
           case Some(x) => controllers.propertyDetails.routes.PropertyDetailsAddressController.view(x)
@@ -84,11 +84,12 @@ trait AddressLookupController extends PropertyDetailsHelpers with ClientHelper w
           Some(controllers.propertyDetails.routes.AddressLookupController.view(id, periodKey, mode).url)
         )
       }
+    }
   }
 
 
-  def save(id: Option[String], periodKey: Int, mode: Option[String] = None) = AuthAction(AtedRegime) {
-    implicit atedContext =>
+  def save(id: Option[String], periodKey: Int, mode: Option[String] = None): Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       ensureClientContext {
         val backToViewLink = Some(routes.AddressLookupController.view(id, periodKey, mode).url)
         addressSelectedForm.bindFromRequest.fold(
@@ -134,6 +135,7 @@ trait AddressLookupController extends PropertyDetailsHelpers with ClientHelper w
           }
         )
       }
+    }
   }
 
   def auditInputAddress(address: PropertyDetailsAddress)(implicit hc: HeaderCarrier): Unit = {
@@ -148,12 +150,12 @@ trait AddressLookupController extends PropertyDetailsHelpers with ClientHelper w
 }
 
 object AddressLookupController extends AddressLookupController {
-  val appName = AppName(Play.current.configuration).appName
-  val delegationConnector = FrontendDelegationConnector
-  val propertyDetailsService = PropertyDetailsService
-  val dataCacheConnector = DataCacheConnector
-  val addressLookupService = AddressLookupService
+  val appName: String = AppName(Play.current.configuration).appName
+  val delegationService: DelegationService = DelegationService
+  val propertyDetailsService: PropertyDetailsService = PropertyDetailsService
+  val dataCacheConnector: DataCacheConnector = DataCacheConnector
+  val addressLookupService: AddressLookupService = AddressLookupService
   override val controllerId = "AddressLookupController"
-  override val backLinkCacheConnector = BackLinkCacheConnector
-  val audit: Audit = new Audit(s"ATED:${appName}-AddressLookup", AtedFrontendAuditConnector)
+  override val backLinkCacheConnector: BackLinkCacheConnector = BackLinkCacheConnector
+  val audit: Audit = new Audit(s"ATED:$appName-AddressLookup", AtedFrontendAuditConnector)
 }

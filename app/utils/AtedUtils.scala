@@ -18,12 +18,11 @@ package utils
 
 import models._
 import org.joda.time.LocalDate
-import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
 import play.api.i18n.Messages
+import play.api.i18n.Messages.Implicits._
+import play.api.mvc.{AnyContent, Request}
 import utils.AtedConstants._
-
-import scala.collection.mutable.ArrayBuffer
 
 
 object AtedUtils {
@@ -67,11 +66,11 @@ object AtedUtils {
     }
   }
 
-  def formatPostCode(postCode: Option[String]) = {
+  def formatPostCode(postCode: Option[String]): Option[String] = {
     postCode.map(formatMandatoryPostCode(_))
   }
 
-  def formatMandatoryPostCode(postCode: String) = {
+  def formatMandatoryPostCode(postCode: String): String = {
     val trimmedPostcode = postCode.replaceAll(" ", "").toUpperCase()
     val postCodeSplit = trimmedPostcode splitAt (trimmedPostcode.length - 3)
     postCodeSplit._1 + " " + postCodeSplit._2
@@ -81,7 +80,7 @@ object AtedUtils {
   val EDIT_SUBMITTED = "editSubmitted"
   val EDIT_PREV_RETURN = "editPrevReturn"
 
-  def getEditSubmittedMode(propertyDetails: PropertyDetails, isFromPrevReturn: Option[Boolean] = None) = {
+  def getEditSubmittedMode(propertyDetails: PropertyDetails, isFromPrevReturn: Option[Boolean] = None): Option[String] = {
     isFromPrevReturn match {
       case Some(true) => Some(EDIT_PREV_RETURN)
       case _ => propertyDetails.formBundleReturn.map(x => EDIT_SUBMITTED)
@@ -134,7 +133,7 @@ object AtedUtils {
 
   // $COVERAGE-ON$
 
-  def createLabel(str: String) = {
+  def createLabel(str: String): String = {
     str match {
       case "sortCode.firstElement" => "First two numbers"
       case "sortCode.secondElement" => "Second two numbers"
@@ -143,10 +142,10 @@ object AtedUtils {
     }
   }
 
-  def printNotProvidedIfEmpty(str: String) = if (str == "") Messages("ated.property-details-summary.field-blank") else str
+  def printNotProvidedIfEmpty(str: String): String = if (str == "") Messages("ated.property-details-summary.field-blank") else str
 
-  def addParamsToRequest(atedContext: AtedContext, params: Map[String, Seq[String]]): Option[Map[String, Seq[String]]] = {
-    atedContext.request.body.asFormUrlEncoded.map(c => c ++ params)
+  def addParamsToRequest(params: Map[String, Seq[String]])(implicit request: Request[AnyContent]): Option[Map[String, Seq[String]]] = {
+    request.body.asFormUrlEncoded.map(c => c ++ params)
   }
 
 }

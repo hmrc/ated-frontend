@@ -16,24 +16,23 @@
 
 package controllers.propertyDetails
 
-import config.FrontendDelegationConnector
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
-import controllers.auth.{AtedRegime, ClientHelper}
-import forms.PropertyDetailsForms
+import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms._
 import models.PropertyDetailsAcquisition
-import services._
-import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
+import play.api.i18n.Messages.Implicits._
+import play.api.mvc.{Action, AnyContent}
+import services._
 import utils.AtedConstants.SelectedPreviousReturn
 import utils.AtedUtils
 
 import scala.concurrent.Future
 
-trait PropertyDetailsAcquisitionController extends PropertyDetailsHelpers with ClientHelper {
+trait PropertyDetailsAcquisitionController extends PropertyDetailsHelpers with ClientHelper with AuthAction {
 
-  def view(id: String) = AuthAction(AtedRegime) {
-    implicit atedContext =>
+  def view(id: String): Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       ensureClientContext {
         propertyDetailsCacheResponse(id) {
           case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
@@ -50,10 +49,11 @@ trait PropertyDetailsAcquisitionController extends PropertyDetailsHelpers with C
             }
         }
       }
+    }
   }
 
-  def editFromSummary(id: String) = AuthAction(AtedRegime) {
-    implicit atedContext =>
+  def editFromSummary(id: String): Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       ensureClientContext {
         propertyDetailsCacheResponse(id) {
           case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
@@ -67,10 +67,11 @@ trait PropertyDetailsAcquisitionController extends PropertyDetailsHelpers with C
             ))
         }
       }
+    }
   }
 
-  def save(id: String, periodKey: Int, mode: Option[String]) = AuthAction(AtedRegime) {
-    implicit atedContext =>
+  def save(id: String, periodKey: Int, mode: Option[String]): Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       ensureClientContext {
         propertyDetailsAcquisitionForm.bindFromRequest.fold(
           formWithError => {
@@ -80,32 +81,34 @@ trait PropertyDetailsAcquisitionController extends PropertyDetailsHelpers with C
             val anAcquisition = propertyDetails.anAcquisition.getOrElse(false)
             val backLink = Some(controllers.propertyDetails.routes.PropertyDetailsAcquisitionController.view(id).url)
             for {
-              savedData <- propertyDetailsService.saveDraftPropertyDetailsAcquisition(id, anAcquisition)
+              _      <- propertyDetailsService.saveDraftPropertyDetailsAcquisition(id, anAcquisition)
               result <-
-              if (anAcquisition)
+              if (anAcquisition) {
                 RedirectWithBackLink(
                   PropertyDetailsRevaluedController.controllerId,
                   controllers.propertyDetails.routes.PropertyDetailsRevaluedController.view(id),
                   backLink
                 )
-              else
+              } else {
                 RedirectWithBackLink(
                   IsFullTaxPeriodController.controllerId,
                   controllers.propertyDetails.routes.IsFullTaxPeriodController.view(id),
                   backLink
                 )
+              }
             } yield result
           }
         )
       }
+    }
   }
 
 }
 
 object PropertyDetailsAcquisitionController extends PropertyDetailsAcquisitionController {
-  val delegationConnector = FrontendDelegationConnector
-  val propertyDetailsService = PropertyDetailsService
-  val dataCacheConnector = DataCacheConnector
+  val delegationService: DelegationService = DelegationService
+  val propertyDetailsService: PropertyDetailsService = PropertyDetailsService
+  val dataCacheConnector: DataCacheConnector = DataCacheConnector
   override val controllerId = "PropertyDetailsAcquisitionController"
-  override val backLinkCacheConnector = BackLinkCacheConnector
+  override val backLinkCacheConnector: BackLinkCacheConnector = BackLinkCacheConnector
 }

@@ -16,25 +16,22 @@
 
 package controllers.propertyDetails
 
-import config.FrontendDelegationConnector
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
-import controllers.auth.{AtedRegime, ClientHelper}
+import controllers.auth.{AuthAction, ClientHelper}
 import controllers.editLiability.EditLiabilityDatesLiableController
-import forms.PropertyDetailsForms
 import forms.PropertyDetailsForms._
 import models._
-import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService}
-import utils.AtedUtils
-import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
+import play.api.i18n.Messages.Implicits._
+import play.api.mvc.{Action, AnyContent}
+import services.{DelegationService, PropertyDetailsCacheSuccessResponse, PropertyDetailsService}
 import utils.AtedConstants.SelectedPreviousReturn
+import utils.AtedUtils
 
-import scala.concurrent.Future
+trait PropertyDetailsInReliefController extends PropertyDetailsHelpers with ClientHelper with AuthAction {
 
-trait PropertyDetailsInReliefController extends PropertyDetailsHelpers with ClientHelper {
-
-  def view(id: String) = AuthAction(AtedRegime) {
-    implicit atedContext =>
+  def view(id: String): Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       ensureClientContext {
         propertyDetailsCacheResponse(id) {
           case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
@@ -46,13 +43,13 @@ trait PropertyDetailsInReliefController extends PropertyDetailsHelpers with Clie
                 )
               }
             )
-
         }
       }
+    }
   }
 
-  def save(id: String, periodKey: Int, mode: Option[String]) = AuthAction(AtedRegime) {
-    implicit atedContext =>
+  def save(id: String, periodKey: Int, mode: Option[String]): Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       ensureClientContext {
         periodsInAndOutReliefForm.bindFromRequest.fold(
           formWithError => {
@@ -86,14 +83,14 @@ trait PropertyDetailsInReliefController extends PropertyDetailsHelpers with Clie
           }
         )
       }
+    }
   }
-
 }
 
 object PropertyDetailsInReliefController extends PropertyDetailsInReliefController {
-  val delegationConnector = FrontendDelegationConnector
-  val propertyDetailsService = PropertyDetailsService
-  val dataCacheConnector = DataCacheConnector
+  val delegationService: DelegationService = DelegationService
+  val propertyDetailsService: PropertyDetailsService = PropertyDetailsService
+  val dataCacheConnector: DataCacheConnector = DataCacheConnector
   override val controllerId = "PropertyDetailsInReliefController"
-  override val backLinkCacheConnector = BackLinkCacheConnector
+  override val backLinkCacheConnector: BackLinkCacheConnector = BackLinkCacheConnector
 }

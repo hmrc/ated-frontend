@@ -14,7 +14,7 @@
  * limitations under the License.
  *@
 
-@(field: Field,errors: Seq[FormError])(implicit messages: Messages)
+@(field: Field,errors: Seq[FormError])(implicit messages: Messages, request: Request[AnyContent])
 
 @errors.zipWithIndex.map { case (error, index) =>
 <span class="error-notification"

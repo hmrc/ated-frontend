@@ -16,22 +16,19 @@
 
 package views.editLiability
 
-import java.util.UUID
-
-import builders.AuthBuilder._
 import forms.BankDetailForms._
 import org.jsoup.Jsoup
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
 import org.scalatestplus.play.OneServerPerSuite
 import play.api.test.FakeRequest
+import utils.MockAuthUtil
 
-class bankDetailsSpec extends FeatureSpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach with GivenWhenThen{
+class bankDetailsSpec extends FeatureSpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
 
   implicit val request = FakeRequest()
   implicit val messages : play.api.i18n.Messages = play.api.i18n.Messages.Implicits.applicationMessages
-  val userId = s"user-${UUID.randomUUID}"
-  implicit val user = createAtedContext(createUserAuthContext(userId, "name"))
+  implicit lazy val authContext = organisationStandardRetrievals
 
   feature("The user can whether they have bank details") {
 

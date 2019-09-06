@@ -16,10 +16,13 @@
 
 package models
 
-import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
+import org.scalatestplus.play.PlaySpec
 import play.api.libs.json.Json
 
-class PropertyDetailsModelsSpec extends PlaySpec with OneServerPerSuite {
+class PropertyDetailsModelsSpec extends PlaySpec with GuiceOneServerPerSuite {
+
+  val ownedValue = 1599999
 
   "PropertyDetailsOwnedBefore Request" should {
     "read the value from isOwnedBeforePolicyYear for propertyDetailsOwnedBeforeReads" in {
@@ -30,7 +33,7 @@ class PropertyDetailsModelsSpec extends PlaySpec with OneServerPerSuite {
       val exampleRequestJson = Json.parse(request)
       val propertyDetailsOwnedBefore = exampleRequestJson.as[PropertyDetailsOwnedBefore]
       propertyDetailsOwnedBefore.isOwnedBeforePolicyYear must be (Some(true))
-      propertyDetailsOwnedBefore.ownedBeforePolicyYearValue must be (Some(1599999))
+      propertyDetailsOwnedBefore.ownedBeforePolicyYearValue must be (Some(ownedValue))
     }
   }
 
@@ -43,7 +46,7 @@ class PropertyDetailsModelsSpec extends PlaySpec with OneServerPerSuite {
       val exampleRequestJson = Json.parse(request)
       val propertyDetailsOwnedBefore = exampleRequestJson.as[PropertyDetailsOwnedBefore]
       propertyDetailsOwnedBefore.isOwnedBeforePolicyYear must be (Some(true))
-      propertyDetailsOwnedBefore.ownedBeforePolicyYearValue must be (Some(1599999))
+      propertyDetailsOwnedBefore.ownedBeforePolicyYearValue must be (Some(ownedValue))
     }
   }
 
@@ -56,7 +59,7 @@ class PropertyDetailsModelsSpec extends PlaySpec with OneServerPerSuite {
       val exampleRequestJson = Json.parse(request)
       val propertyDetailsOwnedBefore = exampleRequestJson.as[PropertyDetailsOwnedBefore]
       propertyDetailsOwnedBefore.isOwnedBeforePolicyYear must be (Some(true))
-      propertyDetailsOwnedBefore.ownedBeforePolicyYearValue must be (Some(1599999))
+      propertyDetailsOwnedBefore.ownedBeforePolicyYearValue must be (Some(ownedValue))
     }
   }
 

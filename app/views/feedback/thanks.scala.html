@@ -14,9 +14,9 @@
  * limitations under the License.
  *@
 
-@(returnUri: String)(implicit atedContext: AtedContext, messages: Messages)
+@(returnUri: String)(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent])
 
-@atedMain(title = Messages("ated.thanks.title"), attorney = atedContext.user.authContext.attorney) {
+@atedMain(title = Messages("ated.thanks.title")) {
 
   <h1 class="heading-xlarge" id="feedback-thanks-header">@Messages("ated.thanks.heading")</h1>
 

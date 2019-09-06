@@ -17,30 +17,30 @@
 package controllers.propertyDetails
 
 import audit.Auditable
-import config.{AtedFrontendAuditConnector, FrontendDelegationConnector}
+import config.AtedFrontendAuditConnector
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
-import controllers.auth.{AtedRegime, ClientHelper}
-import forms.PropertyDetailsForms
+import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms._
 import models.{PropertyDetailsAddress, SelectPeriod}
 import play.api.Play
-import services._
-import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
+import play.api.i18n.Messages.Implicits._
+import play.api.mvc.{Action, AnyContent}
+import services._
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.model.Audit
 import uk.gov.hmrc.play.config.AppName
-import utils.AtedUtils
 import utils.AtedConstants._
+import utils.AtedUtils
 
 import scala.concurrent.Future
-import uk.gov.hmrc.http.HeaderCarrier
 
-trait PropertyDetailsAddressController extends PropertyDetailsHelpers with ClientHelper with Auditable {
+trait PropertyDetailsAddressController extends PropertyDetailsHelpers with ClientHelper with Auditable with AuthAction {
 
   val changeLiabilityReturnService: ChangeLiabilityReturnService
 
-  def editSubmittedReturn(oldFormBundleNo: String) = AuthAction(AtedRegime) {
-    implicit atedContext =>
+  def editSubmittedReturn(oldFormBundleNo: String): Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       ensureClientContext {
         for {
           answer <- dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn)
@@ -60,10 +60,11 @@ trait PropertyDetailsAddressController extends PropertyDetailsHelpers with Clien
           }
         }
       }
+    }
   }
 
-  def createNewDraft(periodKey: Int) = AuthAction(AtedRegime) {
-    implicit atedContext =>
+  def createNewDraft(periodKey: Int) : Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       ensureClientContext {
         dataCacheConnector.saveFormData[Boolean](SelectedPreviousReturn, false).flatMap { saved =>
           currentBackLink.map(backLink =>
@@ -71,10 +72,11 @@ trait PropertyDetailsAddressController extends PropertyDetailsHelpers with Clien
           )
         }
       }
+    }
   }
 
-  def view(id: String) = AuthAction(AtedRegime) {
-    implicit atedContext =>
+  def view(id: String) : Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       ensureClientContext {
         propertyDetailsCacheResponse(id) {
           case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
@@ -88,10 +90,11 @@ trait PropertyDetailsAddressController extends PropertyDetailsHelpers with Clien
               )))
         }
       }
+    }
   }
 
-  def editFromSummary(id: String) = AuthAction(AtedRegime) {
-    implicit atedContext =>
+  def editFromSummary(id: String) : Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       ensureClientContext {
         propertyDetailsCacheResponse(id) {
           case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
@@ -103,12 +106,13 @@ trait PropertyDetailsAddressController extends PropertyDetailsHelpers with Clien
               mode,
               AtedUtils.getSummaryBackLink(id, None))
             ))
+          }
         }
       }
   }
 
-  def addressLookupRedirect(id: Option[String], periodKey: Int, mode: Option[String]) = AuthAction(AtedRegime) {
-    implicit atedContext =>
+  def addressLookupRedirect(id: Option[String], periodKey: Int, mode: Option[String]) : Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       ensureClientContext {
         val returnUrl = id match {
           case Some(x) => Some(controllers.propertyDetails.routes.PropertyDetailsAddressController.view(x).url)
@@ -120,10 +124,11 @@ trait PropertyDetailsAddressController extends PropertyDetailsHelpers with Clien
           returnUrl
         )
       }
+    }
   }
 
-  def save(id: Option[String], periodKey: Int, mode: Option[String]) = AuthAction(AtedRegime) {
-    implicit atedContext =>
+  def save(id: Option[String], periodKey: Int, mode: Option[String]): Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       ensureClientContext {
         propertyDetailsAddressForm.bindFromRequest.fold(
           formWithError => {
@@ -161,6 +166,7 @@ trait PropertyDetailsAddressController extends PropertyDetailsHelpers with Clien
           }
         )
       }
+    }
   }
 
   def auditInputAddress(address: PropertyDetailsAddress, addressEditMode: String)(implicit hc: HeaderCarrier): Unit = {
@@ -180,12 +186,12 @@ trait PropertyDetailsAddressController extends PropertyDetailsHelpers with Clien
 }
 
 object PropertyDetailsAddressController extends PropertyDetailsAddressController {
-  val appName = AppName(Play.current.configuration).appName
-  val delegationConnector = FrontendDelegationConnector
-  val propertyDetailsService = PropertyDetailsService
-  val dataCacheConnector = DataCacheConnector
-  val changeLiabilityReturnService = ChangeLiabilityReturnService
-  override val controllerId = "PropertyDetailsAddressController"
-  override val backLinkCacheConnector = BackLinkCacheConnector
+  val appName: String = AppName(Play.current.configuration).appName
+  val delegationService: DelegationService = DelegationService
+  val propertyDetailsService: PropertyDetailsService = PropertyDetailsService
+  val dataCacheConnector: DataCacheConnector.type = DataCacheConnector
+  val changeLiabilityReturnService: ChangeLiabilityReturnService = ChangeLiabilityReturnService
+  override val controllerId: String = "PropertyDetailsAddressController"
+  override val backLinkCacheConnector: BackLinkCacheConnector = BackLinkCacheConnector
   val audit: Audit = new Audit(s"ATED:${appName}-PropertyDetailsAddress", AtedFrontendAuditConnector)
 }

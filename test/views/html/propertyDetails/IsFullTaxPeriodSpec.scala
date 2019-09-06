@@ -17,12 +17,15 @@
 package views.html.propertyDetails
 
 import forms.PropertyDetailsForms
+import models.StandardAuthRetrievals
 import org.joda.time.LocalDate
-import play.api.data.FormError
+import org.scalatest.mockito.MockitoSugar
 import play.twirl.api.Html
+import utils.MockAuthUtil
 import utils.viewHelpers.AtedViewSpec
 
-class IsFullTaxPeriodSpec extends AtedViewSpec {
+class IsFullTaxPeriodSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil {
+  implicit lazy val authContext = organisationStandardRetrievals
 
   "isFullTaxPeriod view" must {
     behave like pageWithTitle(messages("ated.property-details-period.isFullPeriod.title"))

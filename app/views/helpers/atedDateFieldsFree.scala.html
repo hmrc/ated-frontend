@@ -14,7 +14,7 @@
  * limitations under the License.
  *@
 
-@(formItem:Form[_], fieldName: String, label: Html, isNested: Boolean, defaultDateOption: Option[org.joda.time.LocalDate], args: (Symbol,Any)*)(implicit messages: Messages, formInstance: Option[Form[_]] = None)
+@(formItem:Form[_], fieldName: String, label: Html, isNested: Boolean, defaultDateOption: Option[org.joda.time.LocalDate], args: (Symbol,Any)*)(implicit messages: Messages, formInstance: Option[Form[_]] = None, request: Request[AnyContent])
 @import uk.gov.hmrc.play.validators._
 @import play.api.i18n._
 @import uk.gov.hmrc.play.views.html._

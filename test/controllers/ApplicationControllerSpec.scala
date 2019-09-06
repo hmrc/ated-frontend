@@ -18,25 +18,31 @@ package controllers
 
 import java.util.UUID
 
-import builders.{AuthBuilder, SessionBuilder}
+import builders.SessionBuilder
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mock.MockitoSugar
-import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
+import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.play.PlaySpec
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.mvc.Result
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
+import services.DelegationService
+import uk.gov.hmrc.auth.core.{AffinityGroup, PlayAuthConnector}
+import uk.gov.hmrc.http.HeaderCarrier
+import utils.MockAuthUtil
 
 import scala.concurrent.Future
 
 
-class ApplicationControllerSpec extends PlaySpec with MockitoSugar with OneServerPerSuite with BeforeAndAfterEach {
+class ApplicationControllerSpec extends PlaySpec with MockitoSugar with GuiceOneServerPerSuite with BeforeAndAfterEach with MockAuthUtil {
 
-  val mockAuthConnector = mock[AuthConnector]
+implicit lazy val hc: HeaderCarrier = HeaderCarrier()
 
   object TestApplicationController extends ApplicationController {
-    override val authConnector = mockAuthConnector
+    override val authConnector: PlayAuthConnector = mockAuthConnector
+    override val delegationService: DelegationService = mockDelegationService
+
   }
 
   override def beforeEach(): Unit = {
@@ -76,20 +82,6 @@ class ApplicationControllerSpec extends PlaySpec with MockitoSugar with OneServe
           }
         }
       }
-
-      "For user who is not logged in" must {
-        "Respond with redirect to GGW sign in page" in {
-          val result = controllers.ApplicationController.unauthorised().apply(FakeRequest())
-          status(result) must be(SEE_OTHER)
-        }
-        "Redirect to GGW sign in page" in {
-          val result = controllers.ApplicationController.unauthorised().apply(FakeRequest())
-          redirectLocation(result).get must include("/gg/sign-in")
-        }
-
-
-      }
-
     }
 
     "Cancel" must {
@@ -116,10 +108,7 @@ class ApplicationControllerSpec extends PlaySpec with MockitoSugar with OneServe
           val result = controllers.ApplicationController.logout().apply(FakeRequest())
           redirectLocation(result).get must include("/feedback/ATED")
         }
-
       }
-
-
     }
 
     "Keep Alive" must {
@@ -135,21 +124,24 @@ class ApplicationControllerSpec extends PlaySpec with MockitoSugar with OneServe
 
   def getWithUnAuthorisedUser(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
-    AuthBuilder.mockUnAuthorisedUser(userId, mockAuthConnector)
-    val result = TestApplicationController.unauthorised().apply(SessionBuilder.buildRequestWithSession(userId))
+    val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
+    setAuthMocks(authMock)
+    val result = TestApplicationController.unauthorised(false).apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
   def getWithUnAuthorisedUserSa(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
-    AuthBuilder.mockUnAuthorisedUserWithSa(userId, mockAuthConnector)
-    val result = TestApplicationController.unauthorised().apply(SessionBuilder.buildRequestWithSession(userId))
+    val authMock = authResultDefault(AffinityGroup.Individual, saEnrolmentSet)
+    setAuthMocks(authMock)
+    val result = TestApplicationController.unauthorised(true).apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
   def keepAliveWithAuthorisedUser(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
-    AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
+    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+    setAuthMocks(authMock)
     val result = TestApplicationController.keepAlive().apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }

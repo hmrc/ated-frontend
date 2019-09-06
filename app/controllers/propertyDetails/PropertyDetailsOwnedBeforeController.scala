@@ -16,15 +16,15 @@
 
 package controllers.propertyDetails
 
-import config.FrontendDelegationConnector
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
-import controllers.auth.{AtedRegime, ClientHelper}
+import controllers.auth.ClientHelper
 import forms.PropertyDetailsForms
 import forms.PropertyDetailsForms._
 import models.PropertyDetailsOwnedBefore
-import services._
-import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
+import play.api.i18n.Messages.Implicits._
+import play.api.mvc.{Action, AnyContent}
+import services._
 import utils.AtedConstants.SelectedPreviousReturn
 import utils.AtedUtils
 
@@ -32,14 +32,15 @@ import scala.concurrent.Future
 
 trait PropertyDetailsOwnedBeforeController extends PropertyDetailsHelpers with ClientHelper {
 
-  def view(id: String) = AuthAction(AtedRegime) {
-    implicit atedContext =>
+  def view(id: String): Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       ensureClientContext {
         propertyDetailsCacheResponse(id) {
           case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
             currentBackLink.flatMap { backLink =>
               dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
-                val displayData = PropertyDetailsOwnedBefore(propertyDetails.value.flatMap(_.isOwnedBeforePolicyYear), propertyDetails.value.flatMap(_.ownedBeforePolicyYearValue))
+                val displayData = PropertyDetailsOwnedBefore(propertyDetails.value.flatMap(_.isOwnedBeforePolicyYear),
+                  propertyDetails.value.flatMap(_.ownedBeforePolicyYearValue))
                 Future.successful(Ok(views.html.propertyDetails.propertyDetailsOwnedBefore(id,
                   propertyDetails.periodKey,
                   propertyDetailsOwnedBeforeForm.fill(displayData),
@@ -48,17 +49,19 @@ trait PropertyDetailsOwnedBeforeController extends PropertyDetailsHelpers with C
                 ))
               }
             }
+          }
         }
       }
   }
 
-  def editFromSummary(id: String) = AuthAction(AtedRegime) {
-    implicit atedContext =>
+  def editFromSummary(id: String): Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       ensureClientContext {
         propertyDetailsCacheResponse(id) {
           case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
             dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
-              val displayData = PropertyDetailsOwnedBefore(propertyDetails.value.flatMap(_.isOwnedBeforePolicyYear), propertyDetails.value.flatMap(_.ownedBeforePolicyYearValue))
+              val displayData = PropertyDetailsOwnedBefore(propertyDetails.value.flatMap(_.isOwnedBeforePolicyYear),
+                propertyDetails.value.flatMap(_.ownedBeforePolicyYearValue))
               val mode = AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn)
               Future.successful(Ok(views.html.propertyDetails.propertyDetailsOwnedBefore(id,
                 propertyDetails.periodKey,
@@ -67,12 +70,13 @@ trait PropertyDetailsOwnedBeforeController extends PropertyDetailsHelpers with C
                 AtedUtils.getSummaryBackLink(id, None))
               ))
             }
+          }
         }
       }
   }
 
-  def save(id: String, periodKey: Int, mode: Option[String]) = AuthAction(AtedRegime) {
-    implicit atedContext =>
+  def save(id: String, periodKey: Int, mode: Option[String]): Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       ensureClientContext {
         PropertyDetailsForms.validatePropertyDetailsOwnedBefore(propertyDetailsOwnedBeforeForm.bindFromRequest).fold(
           formWithError => {
@@ -100,14 +104,15 @@ trait PropertyDetailsOwnedBeforeController extends PropertyDetailsHelpers with C
           }
         )
       }
+    }
   }
 
 }
 
 object PropertyDetailsOwnedBeforeController extends PropertyDetailsOwnedBeforeController {
-  val delegationConnector = FrontendDelegationConnector
-  val propertyDetailsService = PropertyDetailsService
-  val dataCacheConnector = DataCacheConnector
-  override val controllerId = "PropertyDetailsOwnedBeforeController"
-  override val backLinkCacheConnector = BackLinkCacheConnector
+  val delegationService: DelegationService = DelegationService
+  val propertyDetailsService: PropertyDetailsService = PropertyDetailsService
+  val dataCacheConnector: DataCacheConnector = DataCacheConnector
+  override val controllerId: String = "PropertyDetailsOwnedBeforeController"
+  override val backLinkCacheConnector: BackLinkCacheConnector = BackLinkCacheConnector
 }

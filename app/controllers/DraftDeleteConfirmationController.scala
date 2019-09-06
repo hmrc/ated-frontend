@@ -16,35 +16,34 @@
 
 package controllers
 
-import config.FrontendDelegationConnector
 import connectors.DataCacheConnector
-import controllers.AtedBaseController
-import controllers.auth.{AtedFrontendAuthHelpers, AtedRegime, ClientHelper}
+import controllers.auth.{AuthAction, ClientHelper}
 import forms.AtedForms.YesNoQuestionForm
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
-import services.{PropertyDetailsService, ReliefsService}
-import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
+import play.api.mvc.{Action, AnyContent}
+import services.{DelegationService, PropertyDetailsService, ReliefsService}
 
 import scala.concurrent.Future
 
-trait DraftDeleteConfirmationController extends AtedBaseController with AtedFrontendAuthHelpers with DelegationAwareActions with ClientHelper {
+trait DraftDeleteConfirmationController extends AtedBaseController with ClientHelper with AuthAction {
 
   val propertyDetailsService: PropertyDetailsService
   val reliefsService: ReliefsService
 
   def dataCacheConnector: DataCacheConnector
 
-  def view(id: Option[String], periodKey: Int, returnType: String) = AuthAction(AtedRegime) {
-    implicit atedContext =>
+  def view(id: Option[String], periodKey: Int, returnType: String): Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       ensureClientContext {
         Future.successful(Ok(views.html.confirmDeleteDraft(new YesNoQuestionForm("client.agent-change.error").yesNoQuestionForm, id, periodKey,
           returnType, getBackLink(id, periodKey, returnType))))
       }
+    }
   }
 
-  def submit(id: Option[String], periodKey: Int, returnType: String) = AuthAction(AtedRegime) {
-    implicit atedContext =>
+  def submit(id: Option[String], periodKey: Int, returnType: String) : Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       ensureClientContext {
         val form = new YesNoQuestionForm("ated.delete-draft.error")
         form.yesNoQuestionForm.bindFromRequest.fold(
@@ -61,25 +60,28 @@ trait DraftDeleteConfirmationController extends AtedBaseController with AtedFron
                 reliefsService.deleteDraftReliefs(periodKey)
                 Future.successful(Redirect(controllers.routes.PeriodSummaryController.view(periodKey)))
               case (false, "charge") =>
-                Future.successful(Redirect(controllers.propertyDetails.routes.PropertyDetailsSummaryController.view(id.getOrElse(throw new RuntimeException("No id found for draft return")))))
+                Future.successful(Redirect(controllers.propertyDetails.routes.PropertyDetailsSummaryController
+                  .view(id.getOrElse(throw new RuntimeException("No id found for draft return")))))
               case (false, "relief") => Future.successful(Redirect(controllers.reliefs.routes.ReliefsSummaryController.view(periodKey)))
             }
           }
         )
       }
+    }
   }
 
   private def getBackLink(id: Option[String], periodKey: Int, returnType: String) = {
     returnType match {
       case "relief" => Some(controllers.reliefs.routes.ReliefsSummaryController.view(periodKey).url)
-      case "charge" => Some(controllers.propertyDetails.routes.PropertyDetailsSummaryController.view(id.getOrElse(throw new RuntimeException("No id found for draft return"))).url)
+      case "charge" => Some(controllers.propertyDetails.routes.PropertyDetailsSummaryController
+        .view(id.getOrElse(throw new RuntimeException("No id found for draft return"))).url)
     }
   }
 }
 
 object DraftDeleteConfirmationController extends DraftDeleteConfirmationController {
-  override val dataCacheConnector = DataCacheConnector
-  override val propertyDetailsService = PropertyDetailsService
-  override val reliefsService = ReliefsService
-  val delegationConnector = FrontendDelegationConnector
+  val delegationService: DelegationService = DelegationService
+  override val dataCacheConnector: DataCacheConnector = DataCacheConnector
+  override val propertyDetailsService: PropertyDetailsService = PropertyDetailsService
+  override val reliefsService: ReliefsService = ReliefsService
 }

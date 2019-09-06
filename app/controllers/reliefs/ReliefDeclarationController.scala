@@ -16,55 +16,55 @@
 
 package controllers.reliefs
 
-import config.FrontendDelegationConnector
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.BackLinkController
-import controllers.auth.{AtedFrontendAuthHelpers, AtedRegime, ClientHelper, ExternalUrls}
-import play.api.Logger
+import controllers.auth.{AuthAction, ClientHelper, ExternalUrls}
 import play.api.Play.current
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
-import services.ReliefsService
-import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
+import play.api.mvc.{Action, AnyContent}
+import services.{DelegationService, ReliefsService}
 
 import scala.concurrent.Future
 
 
 trait ReliefDeclarationController extends BackLinkController
-  with AtedFrontendAuthHelpers with DelegationAwareActions with ClientHelper {
+   with ClientHelper with AuthAction {
 
   def reliefsService: ReliefsService
 
-  def view(periodKey: Int) = AuthAction(AtedRegime) {
-    implicit atedContext =>
+  def view(periodKey: Int): Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       ensureClientContext {
         currentBackLink.flatMap(
           backLink =>
             Future.successful(Ok(views.html.reliefs.reliefDeclaration(periodKey, backLink)))
         )
       }
+    }
   }
 
-  def submit(periodKey: Int) = AuthAction(AtedRegime) {
-    implicit atedContext =>
+  def submit(periodKey: Int): Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       ensureClientContext {
-        reliefsService.submitDraftReliefs(atedContext.user.atedReferenceNumber, periodKey) flatMap { response =>
+        reliefsService.submitDraftReliefs(authContext.atedReferenceNumber.get, periodKey) flatMap { response =>
           response.status match {
             case OK => Future.successful(Redirect(controllers.reliefs.routes.ReliefsSentController.view(periodKey)))
-            case BAD_REQUEST if(response.body.contains("Agent not Valid")) =>
+            case BAD_REQUEST if (response.body.contains("Agent not Valid")) =>
               Future.successful(BadRequest(views.html.global_error(Messages("ated.client-problem.title"),
                 Messages("ated.client-problem.header"), Messages("ated.client-problem.body", ExternalUrls.agentRedirectedToMandate))))
           }
         }
       }
+    }
   }
 
 }
 
 object ReliefDeclarationController extends ReliefDeclarationController {
-  val reliefsService = ReliefsService
-  val delegationConnector = FrontendDelegationConnector
-  val dataCacheConnector = DataCacheConnector
-  override val controllerId = "ReliefDeclarationController"
-  override val backLinkCacheConnector = BackLinkCacheConnector
+  val reliefsService: ReliefsService = ReliefsService
+  val delegationService: DelegationService = DelegationService
+  val dataCacheConnector: DataCacheConnector = DataCacheConnector
+  override val controllerId: String = "ReliefDeclarationController"
+  override val backLinkCacheConnector: BackLinkCacheConnector = BackLinkCacheConnector
 }

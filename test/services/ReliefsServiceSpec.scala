@@ -18,46 +18,45 @@ package services
 
 import java.util.UUID
 
-import builders.{AuthBuilder, ReliefBuilder}
+import builders.ReliefBuilder
 import connectors.{AtedConnector, DataCacheConnector}
 import models.{TaxAvoidance, _}
-import org.joda.time.{DateTime, LocalDate}
+import org.joda.time.LocalDate
 import org.mockito.Matchers._
 import org.mockito.Mockito._
 import org.mockito.{ArgumentCaptor, Matchers}
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfterEach, PrivateMethodTester}
-import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
+import org.scalatestplus.play.PlaySpec
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.libs.json.Json
 import play.api.test.Helpers._
+import uk.gov.hmrc.http.logging.SessionId
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, InternalServerException}
 import utils.AtedConstants._
 
 import scala.concurrent.Future
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, InternalServerException}
-import uk.gov.hmrc.http.logging.SessionId
 
-class ReliefsServiceSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach with PrivateMethodTester {
+class ReliefsServiceSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with PrivateMethodTester {
 
-  import AuthBuilder._
-
-  val mockAtedConnector = mock[AtedConnector]
-  val mockDataCacheConnector = mock[DataCacheConnector]
-  val formBundleNo1 = "123456789012"
-  val formBundleNo2 = "123456789013"
+  val mockAtedConnector: AtedConnector = mock[AtedConnector]
+  val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
+  val formBundleNo1: String = "123456789012"
+  val formBundleNo2: String = "123456789013"
 
   object TestReliefsService extends ReliefsService {
-    override val atedConnector = mockAtedConnector
-    override val dataCacheConnector = mockDataCacheConnector
-    val updateReliefsPrivate = PrivateMethod[Future[ReliefsTaxAvoidance]]('updateReliefs)
+    override val atedConnector: AtedConnector = mockAtedConnector
+    override val dataCacheConnector: DataCacheConnector = mockDataCacheConnector
+    val updateReliefsPrivate: PrivateMethod[Future[ReliefsTaxAvoidance]] = PrivateMethod[Future[ReliefsTaxAvoidance]]('updateReliefs)
   }
 
-  override def beforeEach = {
+  override def beforeEach: Unit = {
     reset(mockAtedConnector)
     reset(mockDataCacheConnector)
   }
 
-  val periodKey = 2015
-  implicit val user = createAtedContext(createAgentAuthContext("User-Id", "name", Some("JARN1234567")))
+  val periodKey: Int = 2015
+  implicit lazy val authContext: StandardAuthRetrievals = mock[StandardAuthRetrievals]
 
   "ReliefsService" must {
     "use the correct connector" in {

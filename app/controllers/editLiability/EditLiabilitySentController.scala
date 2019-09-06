@@ -16,62 +16,66 @@
 
 package controllers.editLiability
 
-import config.FrontendDelegationConnector
 import connectors.DataCacheConnector
 import controllers.AtedBaseController
-import controllers.auth.{AtedFrontendAuthHelpers, AtedRegime, ClientHelper}
-import models.{EditLiabilityReturnsResponseModel, SubmitReturnsResponse}
-import play.api.Logger
-import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
-import utils.AtedConstants._
-import play.api.i18n.Messages.Implicits._
-import play.api.Play.current
-import services.SubscriptionDataService
+import controllers.auth.{AuthAction, ClientHelper}
 import controllers.viewhelper.EditLiability._
+import models.EditLiabilityReturnsResponseModel
+import play.api.Logger
+import play.api.Play.current
+import play.api.i18n.Messages.Implicits._
+import play.api.mvc.{Action, AnyContent}
+import services.{DelegationService, SubscriptionDataService}
+import utils.AtedConstants._
 
 trait EditLiabilitySentController extends AtedBaseController
-  with AtedFrontendAuthHelpers with DelegationAwareActions  with ClientHelper {
+  with AuthAction with ClientHelper {
 
   def dataCacheConnector: DataCacheConnector
   def subscriptionDataService: SubscriptionDataService
 
+  def view(oldFormBundleNo: String)
+          : Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
 
-  def view(oldFormBundleNo: String) = AuthAction(AtedRegime) {
-    implicit atedContext =>
-      dataCacheConnector.fetchAndGetFormData[EditLiabilityReturnsResponseModel](SubmitEditedLiabilityReturnsResponseFormId) map {
-        case Some(submitResponse) =>
-          submitResponse.liabilityReturnResponse.find(_.oldFormBundleNumber == oldFormBundleNo) match {
-            case Some(resp) =>
-              val returnType = returnTypeFromAmount(resp.amountDueOrRefund)
-              Ok(views.html.editLiability.editLiabilitySent(oldFormBundleNo, returnType, resp.paymentReference,
-                resp.amountDueOrRefund, resp.liabilityAmount,
-                createHeaderMessages(returnType,"ated.edit-liability.sent.title"),
-                createHeaderMessages(returnType,"ated.edit-liability.sent.header")))
-            case None => Redirect(controllers.routes.AccountSummaryController.view())
-          }
-        case None =>
-          Logger.warn("[EditLiabilitySentController][view] - Return Response not found in cache")
-          throw new RuntimeException("Return Response not found in cache")
+        dataCacheConnector.fetchAndGetFormData[EditLiabilityReturnsResponseModel](SubmitEditedLiabilityReturnsResponseFormId) map {
+          case Some(submitResponse) =>
+            submitResponse.liabilityReturnResponse.find(_.oldFormBundleNumber == oldFormBundleNo) match {
+              case Some(resp) =>
+                val returnType = returnTypeFromAmount(resp.amountDueOrRefund)
+                Ok(views.html.editLiability.editLiabilitySent(oldFormBundleNo, returnType, resp.paymentReference,
+                  resp.amountDueOrRefund, resp.liabilityAmount,
+                  createHeaderMessages(returnType, "ated.edit-liability.sent.title"),
+                  createHeaderMessages(returnType, "ated.edit-liability.sent.header")))
+              case None => Redirect(controllers.routes.AccountSummaryController.view())
+            }
+          case None =>
+            Logger.warn("[EditLiabilitySentController][view] - Return Response not found in cache")
+            throw new RuntimeException("Return Response not found in cache")
       }
+    }
   }
 
-  def viewPrintFriendlyEditLilabilitySent(oldFormBundleNo: String) = AuthAction(AtedRegime) {
-    implicit atedContext =>
-      for {
-        submittedResponse <- dataCacheConnector.fetchAndGetFormData[EditLiabilityReturnsResponseModel](SubmitEditedLiabilityReturnsResponseFormId)
-        organisationName <- subscriptionDataService.getOrganisationName
-      } yield {
-        val x = submittedResponse.get.liabilityReturnResponse.find(_.oldFormBundleNumber == oldFormBundleNo)
-        val returnType = returnTypeFromAmount(x.get.amountDueOrRefund)
-        Ok(views.html.editLiability.editLiabilitySentPrintFriendly(submittedResponse, returnType, organisationName,
-          x.get.paymentReference, x.get.amountDueOrRefund, x.get.liabilityAmount))
-      }
+  def viewPrintFriendlyEditLilabilitySent(oldFormBundleNo: String)
+                                         : Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
+
+        for {
+          submittedResponse <- dataCacheConnector.fetchAndGetFormData[EditLiabilityReturnsResponseModel](SubmitEditedLiabilityReturnsResponseFormId)
+          organisationName <- subscriptionDataService.getOrganisationName
+        } yield {
+          val x = submittedResponse.get.liabilityReturnResponse.find(_.oldFormBundleNumber == oldFormBundleNo)
+          val returnType = returnTypeFromAmount(x.get.amountDueOrRefund)
+          Ok(views.html.editLiability.editLiabilitySentPrintFriendly(submittedResponse, returnType, organisationName,
+            x.get.paymentReference, x.get.amountDueOrRefund, x.get.liabilityAmount))
+        }
+    }
   }
 
 }
 
 object EditLiabilitySentController extends EditLiabilitySentController {
-  override val dataCacheConnector = DataCacheConnector
-  val delegationConnector = FrontendDelegationConnector
-  val subscriptionDataService = SubscriptionDataService
+  val delegationService: DelegationService = DelegationService
+  override val dataCacheConnector: DataCacheConnector = DataCacheConnector
+  val subscriptionDataService: SubscriptionDataService = SubscriptionDataService
 }

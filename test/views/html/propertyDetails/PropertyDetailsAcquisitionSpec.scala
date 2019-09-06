@@ -17,10 +17,17 @@
 package views.html.propertyDetails
 
 import forms.PropertyDetailsForms
+import org.scalatest.mockito.MockitoSugar
 import play.twirl.api.Html
+import uk.gov.hmrc.auth.core.AffinityGroup
+import utils.MockAuthUtil
 import utils.viewHelpers.AtedViewSpec
 
-class PropertyDetailsAcquisitionSpec extends AtedViewSpec {
+class PropertyDetailsAcquisitionSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil {
+
+  implicit val authContext = organisationStandardRetrievals
+  val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+  setAuthMocks(authMock)
 
   "Property Details Acquisition view" must {
     behave like pageWithTitle(messages("ated.property-details-value.anAcquisition.title"))

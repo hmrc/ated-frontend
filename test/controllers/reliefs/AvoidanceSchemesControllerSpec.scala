@@ -18,46 +18,46 @@ package controllers.reliefs
 
 import java.util.UUID
 
-import builders.{AuthBuilder, ReliefBuilder, SessionBuilder, TitleBuilder}
-import config.FrontendDelegationConnector
+import builders.{ReliefBuilder, SessionBuilder, TitleBuilder}
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import models.{Reliefs, ReliefsTaxAvoidance, TaxAvoidance}
 import org.jsoup.Jsoup
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mock.MockitoSugar
-import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
-import play.api.libs.json.Json
-import play.api.mvc.{AnyContentAsJson, Result}
+import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.play.PlaySpec
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
+import play.api.mvc.Result
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.ReliefsService
-import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
-import utils.{AtedConstants, AtedUtils, PeriodUtils}
+import services.{DelegationService, ReliefsService}
+import uk.gov.hmrc.auth.core.{AffinityGroup, PlayAuthConnector}
+import uk.gov.hmrc.http.HeaderCarrier
+import utils.{AtedConstants, MockAuthUtil, PeriodUtils}
 
 import scala.concurrent.Future
 
-class AvoidanceSchemesControllerSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
-  import AuthBuilder._
+class AvoidanceSchemesControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with MockAuthUtil {
 
-  val mockAuthConnector = mock[AuthConnector]
-  val mockReliefsService = mock[ReliefsService]
-  val mockBackLinkCache = mock[BackLinkCacheConnector]
-  val mockDataCacheConnector = mock[DataCacheConnector]
+  implicit lazy val hc: HeaderCarrier = HeaderCarrier()
+
   val periodKey = 2015
+  val mockReliefsService: ReliefsService = mock[ReliefsService]
+  val mockBackLinkCache: BackLinkCacheConnector = mock[BackLinkCacheConnector]
+  val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
 
-  val testAvoidanceScheme = ReliefBuilder.reliefTaxAvoidance(periodKey,
+  val testAvoidanceScheme: ReliefsTaxAvoidance = ReliefBuilder.reliefTaxAvoidance(periodKey,
     Reliefs(periodKey = periodKey, rentalBusiness = true),
     TaxAvoidance(rentalBusinessScheme = Some("text")))
 
   object TestTaxAvoidanceController extends AvoidanceSchemesController {
-    override val authConnector = mockAuthConnector
-    val reliefsService = mockReliefsService
-    override val delegationConnector: DelegationConnector = FrontendDelegationConnector
-    override val controllerId = "controllerId"
-    override val backLinkCacheConnector = mockBackLinkCache
-    override val dataCacheConnector = mockDataCacheConnector
+    override val authConnector: PlayAuthConnector = mockAuthConnector
+    val reliefsService: ReliefsService = mockReliefsService
+    override val delegationService: DelegationService = mockDelegationService
+    override val controllerId: String = "controllerId"
+    override val backLinkCacheConnector: BackLinkCacheConnector = mockBackLinkCache
+    override val dataCacheConnector: DataCacheConnector = mockDataCacheConnector
   }
 
   override def beforeEach(): Unit = {
@@ -68,17 +68,11 @@ class AvoidanceSchemesControllerSpec extends PlaySpec with OneServerPerSuite wit
 
   "TaxAvoidanceController" must {
 
-    "use correct DelegationConnector" in {
-      AvoidanceSchemesController.delegationConnector must be(FrontendDelegationConnector)
+    "use correct DelegationService" in {
+      AvoidanceSchemesController.delegationService must be(DelegationService)
     }
 
     "reliefSummary" must {
-
-      "not respond with NOT_FOUND" in {
-        val result = route(FakeRequest(GET, "/ated/reliefs/2015/avoidance-schemes"))
-        result.isDefined must be(true)
-        status(result.get) must not be(NOT_FOUND)
-      }
 
       "unauthorised users" must {
 
@@ -131,9 +125,6 @@ class AvoidanceSchemesControllerSpec extends PlaySpec with OneServerPerSuite wit
               document.getElementById("relief-summary-scheme-text").text() must be("Avoidance scheme reference number")
               document.getElementById("relief-summary-scheme-promoter-text").text() must be("Promoter reference number")
               document.getElementById("submit").text() must be("Continue")
-
-
-
           }
         }
 
@@ -144,7 +135,7 @@ class AvoidanceSchemesControllerSpec extends PlaySpec with OneServerPerSuite wit
         "not respond with NOT_FOUND" in {
           val result = route(FakeRequest(POST, "/ated/reliefs/2015/submit-avoidance-schemes"))
           result.isDefined must be(true)
-          status(result.get) must not be (NOT_FOUND)
+          status(result.get) must not be NOT_FOUND
         }
 
         "unauthorised users" must {
@@ -232,7 +223,8 @@ class AvoidanceSchemesControllerSpec extends PlaySpec with OneServerPerSuite wit
 
   def getWithAuthorisedUser(testReliefs: Option[ReliefsTaxAvoidance])(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
-    AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
+    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+    setAuthMocks(authMock)
     when(mockDataCacheConnector.fetchAndGetFormData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
     when(mockReliefsService.retrieveDraftReliefs(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(testReliefs))
@@ -244,20 +236,16 @@ class AvoidanceSchemesControllerSpec extends PlaySpec with OneServerPerSuite wit
 
   def getWithUnAuthorisedUser(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
-    AuthBuilder.mockUnAuthorisedUser(userId, mockAuthConnector)
+        val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
+    setInvalidAuthMocks(authMock)
     val result = TestTaxAvoidanceController.view(periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
-  def getWithUnAuthenticated(test: Future[Result] => Any) {
-    val result = TestTaxAvoidanceController.view(periodKey).apply(SessionBuilder.buildRequestWithSessionNoUser)
-    test(result)
-  }
-
-
   def submitWithUnAuthorisedUser(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
-    AuthBuilder.mockUnAuthorisedUser(userId, mockAuthConnector)
+        val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
+    setInvalidAuthMocks(authMock)
     when(mockBackLinkCache.saveBackLink(Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
     val result = TestTaxAvoidanceController.submit(periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
@@ -265,21 +253,19 @@ class AvoidanceSchemesControllerSpec extends PlaySpec with OneServerPerSuite wit
 
   def submitWithAuthorisedUser(formData: Seq[(String, String)], avoidanceSchemes: ReliefsTaxAvoidance = testAvoidanceScheme)(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
-    implicit val user = createAtedContext(createUserAuthContext(userId, "name"))
     when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-    when(mockReliefsService.retrieveDraftReliefs(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(avoidanceSchemes)))
-    when(mockReliefsService.saveDraftTaxAvoidance(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(avoidanceSchemes)))
+    when(mockReliefsService.retrieveDraftReliefs(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(Some(avoidanceSchemes)))
+    when(mockReliefsService.saveDraftTaxAvoidance(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(Some(avoidanceSchemes)))
     when(mockBackLinkCache.saveBackLink(Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
 
-    AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-    val result = TestTaxAvoidanceController.submit(periodKey).apply(SessionBuilder.updateRequestFormWithSession(FakeRequest().withFormUrlEncodedBody(formData: _*), userId))
+    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+    setAuthMocks(authMock)
+    val result = TestTaxAvoidanceController.submit(periodKey)
+      .apply(SessionBuilder.updateRequestFormWithSession(FakeRequest().withFormUrlEncodedBody(formData: _*), userId))
 
-    test(result)
-  }
-
-  def submitWithUnAuthenticated(test: Future[Result] => Any) {
-    val result = TestTaxAvoidanceController.submit(periodKey).apply(SessionBuilder.buildRequestWithSessionNoUser)
     test(result)
   }
 

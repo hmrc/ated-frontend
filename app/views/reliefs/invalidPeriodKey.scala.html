@@ -14,9 +14,9 @@
  * limitations under the License.
  *@
 
-@()(implicit atedContext: AtedContext, messages: Messages)
+@()(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent])
 
-@atedMain(title = Messages("ated.reliefs.error.title"), attorney = atedContext.user.authContext.attorney) {
+@atedMain(title = Messages("ated.reliefs.error.title")) {
 
   <h1 id="relief-error-title">@Messages("ated.reliefs.error.wrong-period")</h1>
 

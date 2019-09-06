@@ -18,15 +18,14 @@ package connectors
 
 import config.{ApplicationConfig, WSHttp}
 import play.api.Mode.Mode
-import play.api.{Configuration, Play}
 import play.api.mvc.Request
+import play.api.{Configuration, Play}
 import uk.gov.hmrc.crypto.ApplicationCrypto
 import uk.gov.hmrc.http.{CoreGet, HttpResponse}
 import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.frontend.filters.SessionCookieCryptoFilter
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 import uk.gov.hmrc.play.partials.{HeaderCarrierForPartialsConverter, HtmlPartial}
-
 import scala.concurrent.Future
 
 trait AgentClientMandateFrontendConnector extends ServicesConfig with RawResponseReads with HeaderCarrierForPartialsConverter {

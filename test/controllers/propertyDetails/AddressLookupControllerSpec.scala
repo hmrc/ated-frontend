@@ -19,45 +19,43 @@ package controllers.propertyDetails
 import java.util.UUID
 
 import builders._
-import config.FrontendDelegationConnector
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import models._
 import org.jsoup.Jsoup
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mock.MockitoSugar
-import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
+import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.play.PlaySpec
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.Result
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.{AddressLookupService, ChangeLiabilityReturnService, PropertyDetailsCacheSuccessResponse, PropertyDetailsService}
+import services.{AddressLookupService, DelegationService, PropertyDetailsService}
+import uk.gov.hmrc.auth.core.{AffinityGroup, PlayAuthConnector}
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.model.Audit
-import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
-import utils.AtedConstants
-import utils.AtedConstants.SubmitReturnsResponseFormId
+import utils.{AtedConstants, MockAuthUtil}
 
 import scala.concurrent.Future
 
-class AddressLookupControllerSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
-  import AuthBuilder._
+class AddressLookupControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with MockAuthUtil {
 
-  val mockAuthConnector = mock[AuthConnector]
-  val mockPropertyDetailsService = mock[PropertyDetailsService]
-  val mockAddressLookupService = mock[AddressLookupService]
-  val mockDelegationConnector = mock[DelegationConnector]
-  val mockBackLinkCache = mock[BackLinkCacheConnector]
-  val mockDataCacheConnector = mock[DataCacheConnector]
+  implicit lazy val hc: HeaderCarrier = HeaderCarrier()
+  val mockPropertyDetailsService: PropertyDetailsService = mock[PropertyDetailsService]
+  val mockAddressLookupService: AddressLookupService = mock[AddressLookupService]
+  val mockBackLinkCache: BackLinkCacheConnector = mock[BackLinkCacheConnector]
+  val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
 
   object TestAddressLookupController extends AddressLookupController {
-    override val authConnector = mockAuthConnector
-    override val delegationConnector: DelegationConnector = mockDelegationConnector
-    override val propertyDetailsService = mockPropertyDetailsService
-    override val addressLookupService = mockAddressLookupService
-    override val controllerId = "controllerId"
-    override val backLinkCacheConnector = mockBackLinkCache
-    override val dataCacheConnector = mockDataCacheConnector
+    override val authConnector: PlayAuthConnector = mockAuthConnector
+    override val delegationService: DelegationService = mockDelegationService
+    override val propertyDetailsService: PropertyDetailsService = mockPropertyDetailsService
+    override val addressLookupService: AddressLookupService = mockAddressLookupService
+    override val controllerId: String = "controllerId"
+    override val backLinkCacheConnector: BackLinkCacheConnector = mockBackLinkCache
+    override val dataCacheConnector: DataCacheConnector = mockDataCacheConnector
     override val audit: Audit = new TestAudit
     override val appName: String = "Test"
   }
@@ -65,29 +63,24 @@ class AddressLookupControllerSpec extends PlaySpec with OneServerPerSuite with M
   override def beforeEach(): Unit = {
     reset(mockAuthConnector)
     reset(mockPropertyDetailsService)
-    reset(mockDelegationConnector)
+    reset(mockDelegationService)
     reset(mockAddressLookupService)
     reset(mockBackLinkCache)
   }
 
-
   "AddressLookupController" must {
+
+    val periodKey: Int = 2015
 
     val address1 = AddressLookupRecord("1", AddressSearchResult(List("1", "result street"), None, None, "XX1 1XX", AddressLookupCountry("UK", "UK")))
     val address2 = AddressLookupRecord("2", AddressSearchResult(List("2", "result street"), None, None, "XX1 1XX", AddressLookupCountry("UK", "UK")))
     val address3 = AddressLookupRecord("3", AddressSearchResult(List("3", "result street"), None, None, "XX1 1XX", AddressLookupCountry("UK", "UK")))
 
     "use correct DelegationConnector" in {
-      AddressLookupController.delegationConnector must be(FrontendDelegationConnector)
+      AddressLookupController.delegationService must be(DelegationService)
     }
 
     "view" must {
-
-      "not respond with NOT_FOUND when we try to view an id" in {
-        val result = route(FakeRequest(GET, "/ated/liability/address-lookup/view/2015"))
-        result.isDefined must be(true)
-        status(result.get) must not be (NOT_FOUND)
-      }
 
       "unauthorised users" must {
 
@@ -116,7 +109,7 @@ class AddressLookupControllerSpec extends PlaySpec with OneServerPerSuite with M
       "not respond with NOT_FOUND when we try to view an id" in {
         val result = route(FakeRequest(POST, "/ated/liability/address-lookup/find/2015"))
         result.isDefined must be(true)
-        status(result.get) must not be (NOT_FOUND)
+        status(result.get) must not be NOT_FOUND
       }
 
       "unauthorised users" must {
@@ -140,7 +133,6 @@ class AddressLookupControllerSpec extends PlaySpec with OneServerPerSuite with M
 
         }
       }
-
 
       "submitting a valid request should that returns no search results should show this on the screen" in {
         val searchCriteria = AddressLookup("XX1 1XX", None)
@@ -194,7 +186,7 @@ class AddressLookupControllerSpec extends PlaySpec with OneServerPerSuite with M
       "not respond with NOT_FOUND when we try to view an id" in {
         val result = route(FakeRequest(POST, "/ated/liability/address-lookup/save/2015"))
         result.isDefined must be(true)
-        status(result.get) must not be (NOT_FOUND)
+        status(result.get) must not be NOT_FOUND
       }
 
       "unauthorised users" must {
@@ -207,11 +199,10 @@ class AddressLookupControllerSpec extends PlaySpec with OneServerPerSuite with M
         }
       }
 
-
       "submitting an invalid request should fail and return to the search results page" in {
         val searchCriteria = AddressLookup("XX1 1XX", None)
         val searchResults =  AddressSearchResults(searchCriteria, Nil)
-        saveWithAuthorisedUser(None, 2015, Json.toJson(AddressSelected(None)), Some(searchResults), None) {
+        saveWithAuthorisedUser(None, periodKey, Json.toJson(AddressSelected(None)), Some(searchResults), None) {
           result =>
             status(result) must be(BAD_REQUEST)
             val document = Jsoup.parse(contentAsString(result))
@@ -221,9 +212,7 @@ class AddressLookupControllerSpec extends PlaySpec with OneServerPerSuite with M
       }
 
       "submitting an invalid request should fail and return to the search results page even with no cached data" in {
-        val searchCriteria = AddressLookup("XX1 1XX", None)
-        val searchResults =  AddressSearchResults(searchCriteria, Nil)
-        saveWithAuthorisedUser(None, 2015, Json.toJson(AddressSelected(None)), None, None) {
+        saveWithAuthorisedUser(None, periodKey, Json.toJson(AddressSelected(None)), None, None) {
           result =>
             status(result) must be(BAD_REQUEST)
             val document = Jsoup.parse(contentAsString(result))
@@ -236,48 +225,43 @@ class AddressLookupControllerSpec extends PlaySpec with OneServerPerSuite with M
         val searchCriteria = AddressLookup("XX1 1XX", None)
         val results = AddressSearchResults(searchCriteria,List(address1, address2, address3))
 
-        saveWithAuthorisedUser(None, 2015, Json.toJson(AddressSelected(Some("1"))), Some(results), None) {
+        saveWithAuthorisedUser(None, periodKey, Json.toJson(AddressSelected(Some("1"))), Some(results), None) {
           result =>
             status(result) must be(BAD_REQUEST)
             val document = Jsoup.parse(contentAsString(result))
             document.title() must be(TitleBuilder.buildTitle("Select the address of the property"))
-
         }
       }
 
       "submitting a valid request should fail if we don't find the property and hae no cached data" in {
-        val searchCriteria = AddressLookup("XX1 1XX", None)
-        val results = AddressSearchResults(searchCriteria,List(address1, address2, address3))
 
-        saveWithAuthorisedUser(None, 2015, Json.toJson(AddressSelected(Some("1"))), None, None) {
+        saveWithAuthorisedUser(None, periodKey, Json.toJson(AddressSelected(Some("1"))), None, None) {
           result =>
             status(result) must be(BAD_REQUEST)
             val document = Jsoup.parse(contentAsString(result))
             document.title() must be(TitleBuilder.buildTitle("Select the address of the property"))
-
         }
       }
 
 
       "submitting a valid request should create a new return if we have no Id" in {
-        val searchCriteria = AddressLookup("XX1 1XX", None)
+        val value = 2015
         val foundProperty = PropertyDetailsAddress("", "", None, None, None)
-        when(mockPropertyDetailsService.createDraftPropertyDetailsAddress(Matchers.eq(2015), Matchers.eq(foundProperty))(Matchers.any(), Matchers.any())).thenReturn(Future.successful("newId"))
+        when(mockPropertyDetailsService.createDraftPropertyDetailsAddress
+        (Matchers.eq(value), Matchers.eq(foundProperty))(Matchers.any(), Matchers.any())).thenReturn(Future.successful("newId"))
         when(mockBackLinkCache.saveBackLink(Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
-
-        saveWithAuthorisedUser(None, 2015, Json.toJson(AddressSelected(Some("1"))), None, Some(foundProperty)) {
+        saveWithAuthorisedUser(None, periodKey, Json.toJson(AddressSelected(Some("1"))), None, Some(foundProperty)) {
           result =>
             status(result) must be(SEE_OTHER)
             redirectLocation(result).get must include("/ated/liability/create/title/view/newId")
         }
       }
       "submitting a valid request should update a return if we have an Id" in {
-        val searchCriteria = AddressLookup("XX1 1XX", None)
         val foundProperty = PropertyDetailsAddress("", "", None, None, None)
-        when(mockPropertyDetailsService.saveDraftPropertyDetailsAddress(Matchers.any(), Matchers.eq(foundProperty))(Matchers.any(), Matchers.any())).thenReturn(Future.successful("1"))
+        when(mockPropertyDetailsService.saveDraftPropertyDetailsAddress
+        (Matchers.any(), Matchers.eq(foundProperty))(Matchers.any(), Matchers.any())).thenReturn(Future.successful("1"))
         when(mockBackLinkCache.saveBackLink(Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
-
-        saveWithAuthorisedUser(Some("1"), 2015, Json.toJson(AddressSelected(Some("1"))), None, Some(foundProperty)) {
+        saveWithAuthorisedUser(Some("1"), periodKey, Json.toJson(AddressSelected(Some("1"))), None, Some(foundProperty)) {
           result =>
             status(result) must be(SEE_OTHER)
             redirectLocation(result).get must include("/ated/liability/create/title/view/1")
@@ -287,51 +271,58 @@ class AddressLookupControllerSpec extends PlaySpec with OneServerPerSuite with M
     }
   }
 
+  lazy val periodKey = 2015
+
   def viewWithUnAuthorisedUser(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
-    AuthBuilder.mockUnAuthorisedUser(userId, mockAuthConnector)
+        val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
+    setInvalidAuthMocks(authMock)
     when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
     when(mockBackLinkCache.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
-    val result = TestAddressLookupController.view(None, 2015).apply(SessionBuilder.buildRequestWithSession(userId))
+    val result = TestAddressLookupController.view(None, periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
   def viewWithAuthorisedUser(id: Option[String])(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
-    AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
+    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+    setAuthMocks(authMock)
     when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
     when(mockBackLinkCache.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
-    val result = TestAddressLookupController.view(id, 2015).apply(SessionBuilder.buildRequestWithSession(userId))
+    val result = TestAddressLookupController.view(id, periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
   def findWithUnAuthorisedUser(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
-    AuthBuilder.mockUnAuthorisedUser(userId, mockAuthConnector)
+        val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
+    setInvalidAuthMocks(authMock)
     when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-    val result = TestAddressLookupController.find(None, 2015).apply(SessionBuilder.buildRequestWithSession(userId))
+    val result = TestAddressLookupController.find(None, periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
   def findWithAuthorisedUser(id: Option[String], inputJson: JsValue, results: AddressSearchResults)(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
-    AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
+    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+    setAuthMocks(authMock)
     when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
     when(mockAddressLookupService.find(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(results))
-    val result = TestAddressLookupController.find(id, 2015).apply(SessionBuilder.updateRequestWithSession(FakeRequest().withJsonBody(inputJson), userId))
+    val result = TestAddressLookupController.find(id, periodKey).apply(SessionBuilder.updateRequestWithSession(FakeRequest().withJsonBody(inputJson), userId))
     test(result)
   }
 
   def saveWithUnAuthorisedUser(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
-    AuthBuilder.mockUnAuthorisedUser(userId, mockAuthConnector)
+        val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
+    setInvalidAuthMocks(authMock)
     when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-    val result = TestAddressLookupController.save(None, 2015).apply(SessionBuilder.buildRequestWithSession(userId))
+    val result = TestAddressLookupController.save(None, periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
@@ -341,7 +332,8 @@ class AddressLookupControllerSpec extends PlaySpec with OneServerPerSuite with M
                              results: Option[AddressSearchResults],
                              selected: Option[PropertyDetailsAddress])(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
-    AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
+    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+    setAuthMocks(authMock)
     when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
     when(mockAddressLookupService.retrieveCachedSearchResults()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(results))
@@ -353,12 +345,13 @@ class AddressLookupControllerSpec extends PlaySpec with OneServerPerSuite with M
 
   def manualAddressRedirect(id: Option[String])(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
-    AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
+    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+    setAuthMocks(authMock)
     when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
     when(mockBackLinkCache.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(Some("http://")))
     when(mockBackLinkCache.saveBackLink(Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
-    val result = TestAddressLookupController.manualAddressRedirect(id, 2015, None).apply(SessionBuilder.buildRequestWithSession(userId))
+    val result = TestAddressLookupController.manualAddressRedirect(id, periodKey, None).apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 }

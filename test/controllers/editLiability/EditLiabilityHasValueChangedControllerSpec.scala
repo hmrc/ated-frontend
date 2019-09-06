@@ -18,56 +18,53 @@ package controllers.editLiability
 
 import java.util.UUID
 
-import builders.{AuthBuilder, ChangeLiabilityReturnBuilder, PropertyDetailsBuilder, SessionBuilder}
-import config.FrontendDelegationConnector
+import builders.{PropertyDetailsBuilder, SessionBuilder}
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import models.{HasValueChanged, PropertyDetails}
 import org.jsoup.Jsoup
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mock.MockitoSugar
-import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
+import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.play.PlaySpec
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.Result
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.{ChangeLiabilityReturnService, PropertyDetailsCacheSuccessResponse, PropertyDetailsService}
-import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
-import utils.AtedConstants
+import services.{DelegationService, PropertyDetailsCacheSuccessResponse, PropertyDetailsService}
+import uk.gov.hmrc.auth.core.{AffinityGroup, PlayAuthConnector}
+import utils.{AtedConstants, MockAuthUtil}
 
 import scala.concurrent.Future
 
-class EditLiabilityHasValueChangedControllerSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
+class EditLiabilityHasValueChangedControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with MockAuthUtil {
 
-  import AuthBuilder._
 
-  val mockAuthConnector = mock[AuthConnector]
-  val mockDelegationConnector = mock[DelegationConnector]
-  val mockService = mock[PropertyDetailsService]
-  val mockBackLinkCache = mock[BackLinkCacheConnector]
-  val mockDataCacheConnector = mock[DataCacheConnector]
+  val mockService: PropertyDetailsService = mock[PropertyDetailsService]
+  val mockBackLinkCache: BackLinkCacheConnector = mock[BackLinkCacheConnector]
+  val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
 
   object TestChangeLiabilityValueController extends EditLiabilityHasValueChangedController {
-    override val authConnector = mockAuthConnector
-    override val delegationConnector: DelegationConnector = mockDelegationConnector
-    override val propertyDetailsService = mockService
-    override val controllerId = "controllerId"
-    override val backLinkCacheConnector = mockBackLinkCache
-    override val dataCacheConnector = mockDataCacheConnector
+    override val authConnector: PlayAuthConnector = mockAuthConnector
+    override val delegationService: DelegationService = mockDelegationService
+    override val propertyDetailsService: PropertyDetailsService = mockService
+    override val controllerId: String = "controllerId"
+    override val backLinkCacheConnector: BackLinkCacheConnector = mockBackLinkCache
+    override val dataCacheConnector: DataCacheConnector = mockDataCacheConnector
   }
 
-  override def beforeEach = {
+  override def beforeEach: Unit = {
     reset(mockAuthConnector)
-    reset(mockDelegationConnector)
+    reset(mockDelegationService)
     reset(mockService)
     reset(mockBackLinkCache)
   }
 
   "EditLiabilityHasValueChangedController" must {
 
-    "use correct DelegationConnector" in {
-      EditLiabilityHasValueChangedController.delegationConnector must be(FrontendDelegationConnector)
+    "use correct DelegationService" in {
+      EditLiabilityHasValueChangedController.delegationService must be(DelegationService)
     }
 
     "use correct Service" in {
@@ -77,7 +74,7 @@ class EditLiabilityHasValueChangedControllerSpec extends PlaySpec with OneServer
     "view - for authorised users" must {
 
       "return a status of OK, when that liability return is found in cache" in {
-        val changeLiabilityReturn = PropertyDetailsBuilder.getFullPropertyDetails("12345678901")
+        val changeLiabilityReturn = PropertyDetailsBuilder.getPropertyDetailsWithFormBundleReturn("12345678901")
         viewWithAuthorisedUser(changeLiabilityReturn) {
           result =>
             status(result) must be(OK)
@@ -90,7 +87,7 @@ class EditLiabilityHasValueChangedControllerSpec extends PlaySpec with OneServer
     "editFromSummary - for authorised users" must {
 
       "return a status of OK and set the back link to the summary page" in {
-        val changeLiabilityReturn = PropertyDetailsBuilder.getFullPropertyDetails("12345678901")
+        val changeLiabilityReturn = PropertyDetailsBuilder.getPropertyDetailsWithFormBundleReturn("12345678901")
         editFromSummary(changeLiabilityReturn) {
           result =>
             status(result) must be(OK)
@@ -107,7 +104,7 @@ class EditLiabilityHasValueChangedControllerSpec extends PlaySpec with OneServer
     "save - for authorised user" must {
 
       "for invalid data, return BAD_REQUEST" in {
-        val changeLiabilityReturn = PropertyDetailsBuilder.getFullPropertyDetails("12345678901")
+        val changeLiabilityReturn = PropertyDetailsBuilder.getPropertyDetailsWithFormBundleReturn("12345678901")
         val inputJson = Json.parse("""{"startDate.day": "31", "startDate.month": "6", "startDate.year": "2015", "periodKey": 2015}""")
         when(mockBackLinkCache.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
         saveWithAuthorisedUser(Some(changeLiabilityReturn), inputJson) {
@@ -116,7 +113,7 @@ class EditLiabilityHasValueChangedControllerSpec extends PlaySpec with OneServer
         }
       }
 
-      "for valid date when we have indicated that the value has changed, save and redirect to change in aquisition page" in {
+      "for valid date when we have indicated that the value has changed, save and redirect to change in acquisition page" in {
         val value1 = HasValueChanged(Some(true))
         val inputJson = Json.toJson(value1)
         when(mockBackLinkCache.saveBackLink(Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
@@ -143,13 +140,14 @@ class EditLiabilityHasValueChangedControllerSpec extends PlaySpec with OneServer
 
   def viewWithAuthorisedUser(propertyDetails: PropertyDetails)(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
-    implicit val user = createAtedContext(createUserAuthContext(userId, "name"))
-    AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
+    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+    setAuthMocks(authMock)
     when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
     when(mockDataCacheConnector.fetchAndGetFormData[Boolean](Matchers.any())
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
-    when(mockService.retrieveDraftPropertyDetails(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propertyDetails)))
+    when(mockService.retrieveDraftPropertyDetails(Matchers.any())(Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propertyDetails)))
     when(mockBackLinkCache.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
     val result = TestChangeLiabilityValueController.view("12345678901").apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
@@ -157,26 +155,28 @@ class EditLiabilityHasValueChangedControllerSpec extends PlaySpec with OneServer
 
   def editFromSummary(propertyDetails: PropertyDetails)(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
-    implicit val user = createAtedContext(createUserAuthContext(userId, "name"))
-    AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
+    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+    setAuthMocks(authMock)
     when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
     when(mockDataCacheConnector.fetchAndGetFormData[Boolean](Matchers.any())
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
-    when(mockService.retrieveDraftPropertyDetails(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propertyDetails)))
-    val result = TestChangeLiabilityValueController.editFromSummary("12345678901").apply(SessionBuilder.buildRequestWithSession(userId))
+    when(mockService.retrieveDraftPropertyDetails(Matchers.any())(Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propertyDetails)))
+    val result = TestChangeLiabilityValueController.editFromSummary("12345678901", Some(true)).apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
 
-  def saveWithAuthorisedUser(propertyDetails: Option[PropertyDetails], inputJson: JsValue)(test: Future[Result] => Any) = {
+  def saveWithAuthorisedUser(propertyDetails: Option[PropertyDetails], inputJson: JsValue)(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
-    implicit val user = createAtedContext(createUserAuthContext(userId, "name"))
-    AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
+    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+    setAuthMocks(authMock)
     when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
     propertyDetails.map(propVal =>
-      when(mockService.retrieveDraftPropertyDetails(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propVal)))
+      when(mockService.retrieveDraftPropertyDetails(Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propVal)))
     )
     when(mockDataCacheConnector.fetchAndGetFormData[Boolean](Matchers.any())
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))

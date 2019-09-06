@@ -18,41 +18,40 @@ package connectors
 
 import java.util.UUID
 
-import builders._
 import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
-import play.api.{Configuration, Play}
 import play.api.Mode.Mode
 import play.api.test.Helpers._
+import play.api.{Configuration, Play}
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.http.logging.SessionId
+import utils.MockAuthUtil
 
 import scala.concurrent.Future
 
-class AddressLookupConnectorSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
+class AddressLookupConnectorSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach with MockAuthUtil {
 
   trait MockedVerbs extends CoreGet with CorePost with CoreDelete
   val mockWSHttp: CoreGet with CorePost with CoreDelete = mock[MockedVerbs]
 
   object TestAtedConnector extends AddressLookupConnector {
     override val http: CoreGet with CorePost with CoreDelete = mockWSHttp
-    override val serviceURL = baseUrl("address-lookup")
+    override val serviceURL: String = baseUrl("address-lookup")
 
     override protected def mode: Mode = Play.current.mode
 
     override protected def runModeConfiguration: Configuration = Play.current.configuration
   }
 
-  override def beforeEach = {
+  override def beforeEach: Unit = {
     reset(mockWSHttp)
   }
 
   "AddressLookupConnector" must {
-    import AuthBuilder._
     val address =  AddressSearchResult(List("line1", "line2"), Some("town"), Some("country"), "postCode", AddressLookupCountry("",""))
     val addressLookupRecord = AddressLookupRecord("1", address)
 
@@ -61,8 +60,7 @@ class AddressLookupConnectorSpec extends PlaySpec with OneServerPerSuite with Mo
       "retrieve the Addresses Based on Post Code" in {
 
         val response = List(addressLookupRecord)
-        implicit val hc = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
-        implicit val user = createAtedContext(createUserAuthContext("User-Id", "name"))
+        implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
         when(mockWSHttp.GET[List[AddressLookupRecord]]
           (Matchers.any())
           (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(response))
@@ -74,8 +72,7 @@ class AddressLookupConnectorSpec extends PlaySpec with OneServerPerSuite with Mo
       "return nil if something goes wrong" in {
 
         val response = List(addressLookupRecord)
-        implicit val hc = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
-        implicit val user = createAtedContext(createUserAuthContext("User-Id", "name"))
+        implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
         when(mockWSHttp.GET[List[AddressLookupRecord]]
           (Matchers.any())
           (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.failed(new Exception("")))
@@ -90,8 +87,7 @@ class AddressLookupConnectorSpec extends PlaySpec with OneServerPerSuite with Mo
       "retrieve the from the id" in {
 
         val response = Some(addressLookupRecord)
-        implicit val hc = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
-        implicit val user = createAtedContext(createUserAuthContext("User-Id", "name"))
+        implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
         when(mockWSHttp.GET[Option[AddressLookupRecord]]
           (Matchers.any())
           (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(response))
@@ -103,8 +99,7 @@ class AddressLookupConnectorSpec extends PlaySpec with OneServerPerSuite with Mo
       "return None if something goes wrong" in {
 
         val response = List(AddressLookupRecord("1", address))
-        implicit val hc = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
-        implicit val user = createAtedContext(createUserAuthContext("User-Id", "name"))
+        implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
         when(mockWSHttp.GET[Option[AddressLookupRecord]]
           (Matchers.any())
           (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.failed(new NotFoundException("")))

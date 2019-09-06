@@ -19,16 +19,15 @@
   hasBanner: Boolean = false,
   showUrBanner:Option[Boolean] = Some(false),
   supportLinkEnabled: Boolean = true,
-  attorney: Option[uk.gov.hmrc.play.frontend.auth.Attorney] = None,
   banner: Html = HtmlFormat.empty,
   scriptElement: Option[Html] = None,
   pageScripts: Option[Html] = None,
   sidebarLinks: Option[Html] = None,
   sidebarClass: Option[String] = None,
-  analyticsAdditionalJs: Option[Html] = None)(mainContent: Html)(implicit atedContext: AtedContext, messages: Messages)
+  analyticsAdditionalJs: Option[Html] = None)(mainContent: Html)(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent])
 
-@import uk.gov.hmrc.play.views.html.{layouts => uiLayouts}
 @import uk.gov.hmrc.play.views.helpers.AttorneyRegime
+@import uk.gov.hmrc.play.views.html.{layouts => uiLayouts}
 
 @scriptElement = {
 <script src='@controllers.routes.AssetsController.at("jquery/jquery-ui.min.js")'></script>
@@ -53,8 +52,8 @@
 
 @mainBanner = {
 
-  @if(attorney.isDefined) {
-    @Some(uiLayouts.attorney_banner(name = Some(atedContext.user.name), returnLinkUrl = attorney.get.returnLink.url, regime = AttorneyRegime.pertax, customReturnLinkText = Some(attorney.get.returnLink.text), bannerContent = Some(Html(Messages("ated.agent.banner", atedContext.user.name)))))
+  @if(authContext.delegationModel.isDefined) {
+    @Some(uiLayouts.attorney_banner(name = Some(authContext.delegationModel.get.principalName), returnLinkUrl = authContext.delegationModel.get.link.url, regime = AttorneyRegime.pertax, customReturnLinkText = Some(authContext.delegationModel.get.link.url), bannerContent = Some(Html(Messages("ated.agent.banner", authContext.delegationModel.get.principalName)))))
   } else {
     @banner
   }

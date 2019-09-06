@@ -19,9 +19,9 @@ package connectors
 import config.WSHttp
 import models._
 import org.joda.time.LocalDate
-import play.api.{Configuration, Play}
 import play.api.Mode.Mode
 import play.api.libs.json.{JsValue, Json}
+import play.api.{Configuration, Play}
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
@@ -66,8 +66,8 @@ trait PropertyDetailsConnector extends ServicesConfig with RawResponseReads {
   def http: CoreGet with CorePost with CoreDelete
 
   def createDraftPropertyDetails(periodKey: Int, propertyDetails: PropertyDetailsAddress)
-                                        (implicit atedContext: AtedContext, headerCarrier: HeaderCarrier): Future[HttpResponse] = {
-    val authLink = atedContext.user.authLink
+                                        (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[HttpResponse] = {
+    val authLink = authContext.authLink
     val postUrl = s"""$serviceURL$authLink/$createDraftPropertyDetailsURI/$periodKey"""
     val jsonData = Json.toJson(propertyDetails)
     http.POST[JsValue, HttpResponse](postUrl, jsonData)
@@ -75,96 +75,96 @@ trait PropertyDetailsConnector extends ServicesConfig with RawResponseReads {
 
 
   def saveDraftPropertyDetailsAddressRef(id: String, propertyDetails: PropertyDetailsAddress)
-                                        (implicit atedContext: AtedContext, headerCarrier: HeaderCarrier): Future[HttpResponse] = {
-    val authLink = atedContext.user.authLink
+                                        (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[HttpResponse] = {
+    val authLink = authContext.authLink
     val postUrl = s"""$serviceURL$authLink/$saveDraftPropertyDetailsAddressRefURI/$id"""
     val jsonData = Json.toJson(propertyDetails)
     http.POST[JsValue, HttpResponse](postUrl, jsonData)
   }
 
   def saveDraftPropertyDetailsTitle(id: String, propertyDetails: PropertyDetailsTitle)
-                                        (implicit atedContext: AtedContext, headerCarrier: HeaderCarrier): Future[HttpResponse] = {
-    val authLink = atedContext.user.authLink
+                                        (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[HttpResponse] = {
+    val authLink = authContext.authLink
     val postUrl = s"""$serviceURL$authLink/$saveDraftPropertyDetailsTitleURI/$id"""
     val jsonData = Json.toJson(propertyDetails)
     http.POST[JsValue, HttpResponse](postUrl, jsonData)
   }
 
   def saveDraftHasValueChanged(id: String, propertyDetails: Boolean)
-                                   (implicit atedContext: AtedContext, headerCarrier: HeaderCarrier): Future[HttpResponse] = {
-    val authLink = atedContext.user.authLink
+                                   (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[HttpResponse] = {
+    val authLink = authContext.authLink
     val postUrl = s"""$serviceURL$authLink/$saveDraftPropertyHasValueChangedURI/$id"""
     val jsonData = Json.toJson(propertyDetails)
     http.POST[JsValue, HttpResponse](postUrl, jsonData)
   }
 
   def saveDraftPropertyDetailsAcquisition(id: String, overLimit: Boolean)
-                                   (implicit atedContext: AtedContext, headerCarrier: HeaderCarrier): Future[HttpResponse] = {
-    val authLink = atedContext.user.authLink
+                                   (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[HttpResponse] = {
+    val authLink = authContext.authLink
     val postUrl = s"""$serviceURL$authLink/$saveDraftPropertyDetailsAcquisitionURI/$id"""
     val jsonData = Json.toJson(overLimit)
     http.POST[JsValue, HttpResponse](postUrl, jsonData)
   }
 
   def saveDraftPropertyDetailsRevalued(id: String, propertyDetails: PropertyDetailsRevalued)
-                                         (implicit atedContext: AtedContext, headerCarrier: HeaderCarrier): Future[HttpResponse] = {
-    val authLink = atedContext.user.authLink
+                                         (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[HttpResponse] = {
+    val authLink = authContext.authLink
     val postUrl = s"""$serviceURL$authLink/$saveDraftPropertyDetailsRevaluedURI/$id"""
     val jsonData = Json.toJson(propertyDetails)
     http.POST[JsValue, HttpResponse](postUrl, jsonData)
   }
 
   def saveDraftPropertyDetailsOwnedBefore(id: String, propertyDetails: PropertyDetailsOwnedBefore)
-                                      (implicit atedContext: AtedContext, headerCarrier: HeaderCarrier): Future[HttpResponse] = {
-    val authLink = atedContext.user.authLink
+                                      (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[HttpResponse] = {
+    val authLink = authContext.authLink
     val postUrl = s"""$serviceURL$authLink/$saveDraftPropertyDetailsOwnedBeforeURI/$id"""
     val jsonData = Json.toJson(propertyDetails)
     http.POST[JsValue, HttpResponse](postUrl, jsonData)
   }
 
   def saveDraftPropertyDetailsProfessionallyValued(id: String, propertyDetails: PropertyDetailsProfessionallyValued)
-                                      (implicit atedContext: AtedContext, headerCarrier: HeaderCarrier): Future[HttpResponse] = {
-    val authLink = atedContext.user.authLink
+                                      (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[HttpResponse] = {
+    val authLink = authContext.authLink
     val postUrl = s"""$serviceURL$authLink/$saveDraftPropertyDetailsValuedURI/$id"""
     val jsonData = Json.toJson(propertyDetails)
     http.POST[JsValue, HttpResponse](postUrl, jsonData)
   }
 
   def saveDraftPropertyDetailsNewBuild(id: String, propertyDetails: PropertyDetailsNewBuild)
-                                                  (implicit atedContext: AtedContext, headerCarrier: HeaderCarrier): Future[HttpResponse] = {
-    val authLink = atedContext.user.authLink
+                                                  (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[HttpResponse] = {
+    val authLink = authContext.authLink
     val postUrl = s"""$serviceURL$authLink/$saveDraftPropertyDetailsNewBuildURI/$id"""
     val jsonData = Json.toJson(propertyDetails)
     http.POST[JsValue, HttpResponse](postUrl, jsonData)
   }
 
   def saveDraftIsFullTaxPeriod(id: String, isFullPeriod: IsFullTaxPeriod)
-                                      (implicit atedContext: AtedContext, headerCarrier: HeaderCarrier): Future[HttpResponse] = {
-    val authLink = atedContext.user.authLink
+                                      (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[HttpResponse] = {
+    val authLink = authContext.authLink
     val postUrl = s"""$serviceURL$authLink/$saveDraftPropertyDetailsFullTaxPeriodURI/$id"""
     val jsonData = Json.toJson(isFullPeriod)
     http.POST[JsValue, HttpResponse](postUrl, jsonData)
   }
 
   def saveDraftPropertyDetailsInRelief(id: String, propertyDetails: PropertyDetailsInRelief)
-                                      (implicit atedContext: AtedContext, headerCarrier: HeaderCarrier): Future[HttpResponse] = {
-    val authLink = atedContext.user.authLink
+                                      (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[HttpResponse] = {
+    val authLink = authContext.authLink
     val postUrl = s"""$serviceURL$authLink/$saveDraftPropertyDetailsInReliefURI/$id"""
     val jsonData = Json.toJson(propertyDetails)
     http.POST[JsValue, HttpResponse](postUrl, jsonData)
   }
 
   def saveDraftPropertyDetailsDatesLiable(id: String, propertyDetails: PropertyDetailsDatesLiable)
-                                      (implicit atedContext: AtedContext, headerCarrier: HeaderCarrier): Future[HttpResponse] = {
-    val authLink = atedContext.user.authLink
+                                      (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[HttpResponse] = {
+    val authLink = authContext.authLink
     val postUrl = s"""$serviceURL$authLink/$saveDraftPropertyDetailsDatesLiableURI/$id"""
     val jsonData = Json.toJson(propertyDetails)
     http.POST[JsValue, HttpResponse](postUrl, jsonData)
   }
 
   def addDraftPropertyDetailsDatesLiable(id: String, propertyDetails: PropertyDetailsDatesLiable)
-                                         (implicit atedContext: AtedContext, headerCarrier: HeaderCarrier): Future[HttpResponse] = {
-    val authLink = atedContext.user.authLink
+                                         (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[HttpResponse] = {
+    val authLink = authContext.authLink
     val postUrl = s"""$serviceURL$authLink/$addDraftPropertyDetailsDatesLiableURI/$id"""
     val jsonData = Json.toJson(propertyDetails)
     http.POST[JsValue, HttpResponse](postUrl, jsonData)
@@ -172,65 +172,65 @@ trait PropertyDetailsConnector extends ServicesConfig with RawResponseReads {
 
 
   def addDraftPropertyDetailsDatesInRelief(id: String, propertyDetails: PropertyDetailsDatesInRelief)
-                                        (implicit atedContext: AtedContext, headerCarrier: HeaderCarrier): Future[HttpResponse] = {
-    val authLink = atedContext.user.authLink
+                                        (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[HttpResponse] = {
+    val authLink = authContext.authLink
     val postUrl = s"""$serviceURL$authLink/$addDraftPropertyDetailsDatesInReliefURI/$id"""
     val jsonData = Json.toJson(propertyDetails)
     http.POST[JsValue, HttpResponse](postUrl, jsonData)
   }
 
   def deleteDraftPropertyDetailsPeriod(id: String, propertyDetails: LocalDate)
-                                           (implicit atedContext: AtedContext, headerCarrier: HeaderCarrier): Future[HttpResponse] = {
-    val authLink = atedContext.user.authLink
+                                           (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[HttpResponse] = {
+    val authLink = authContext.authLink
     val postUrl = s"""$serviceURL$authLink/$deleteDraftPropertyDetailsPeriodURI/$id"""
     val jsonData = Json.toJson(propertyDetails)
     http.POST[JsValue, HttpResponse](postUrl, jsonData)
   }
 
   def saveDraftPropertyDetailsTaxAvoidance(id: String, propertyDetails: PropertyDetailsTaxAvoidance)
-                                         (implicit atedContext: AtedContext, headerCarrier: HeaderCarrier): Future[HttpResponse] = {
-    val authLink = atedContext.user.authLink
+                                         (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[HttpResponse] = {
+    val authLink = authContext.authLink
     val postUrl = s"""$serviceURL$authLink/$saveDraftPropertyDetailsTaxAvoidanceURI/$id"""
     val jsonData = Json.toJson(propertyDetails)
     http.POST[JsValue, HttpResponse](postUrl, jsonData)
   }
 
   def saveDraftPropertyDetailsSupportingInfo(id: String, propertyDetails: PropertyDetailsSupportingInfo)
-                                          (implicit atedContext: AtedContext, headerCarrier: HeaderCarrier): Future[HttpResponse] = {
-    val authLink = atedContext.user.authLink
+                                          (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[HttpResponse] = {
+    val authLink = authContext.authLink
     val postUrl = s"""$serviceURL$authLink/$saveDraftPropertyDetailsSupportingInfoURI/$id"""
     val jsonData = Json.toJson(propertyDetails)
     http.POST[JsValue, HttpResponse](postUrl, jsonData)
   }
 
   def calculateDraftChangeLiability(id: String)
-                                   (implicit atedContext: AtedContext, headerCarrier: HeaderCarrier): Future[HttpResponse] = {
-    val authLink = atedContext.user.authLink
+                                   (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[HttpResponse] = {
+    val authLink = authContext.authLink
     val postUrl = s"""$serviceURL$authLink/$calculateDraftChangeLiabilityURI/$id"""
     http.GET[HttpResponse](postUrl)
   }
 
   def calculateDraftPropertyDetails(id: String)
-                                            (implicit atedContext: AtedContext, headerCarrier: HeaderCarrier): Future[HttpResponse] = {
-    val authLink = atedContext.user.authLink
+                                            (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[HttpResponse] = {
+    val authLink = authContext.authLink
     val postUrl = s"""$serviceURL$authLink/$calculateDraftPropertyDetailsURI/$id"""
     http.GET[HttpResponse](postUrl)
   }
 
-  def retrieveDraftPropertyDetails(id: String)(implicit atedContext: AtedContext, headerCarrier: HeaderCarrier): Future[HttpResponse] = {
-    val authLink = atedContext.user.authLink
+  def retrieveDraftPropertyDetails(id: String)(implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[HttpResponse] = {
+    val authLink = authContext.authLink
     val postUrl = s"""$serviceURL$authLink/$retrieveDraftPropertyDetailsURI/$id"""
     http.GET[HttpResponse](postUrl)
   }
 
-  def submitDraftPropertyDetails(id: String)(implicit atedContext: AtedContext, headerCarrier: HeaderCarrier): Future[HttpResponse] = {
-    val authLink = atedContext.user.authLink
+  def submitDraftPropertyDetails(id: String)(implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[HttpResponse] = {
+    val authLink = authContext.authLink
     val postUrl = s"""$serviceURL$authLink/$submitDraftPropertyDetailsURI/$id"""
     http.POST[JsValue, HttpResponse](postUrl, Json.parse("""{}"""))
   }
 
-  def deleteDraftChargeable(id: String)(implicit atedContext: AtedContext, hc: HeaderCarrier): Future[HttpResponse] = {
-    val userLink = atedContext.user.userLink
+  def deleteDraftChargeable(id: String)(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[HttpResponse] = {
+    val userLink = authContext.userLink
     val deleteUrl = s"""$serviceURL$userLink/$deletePropertyDetailsURI/drafts/$id"""
     http.DELETE[HttpResponse](deleteUrl)
   }

@@ -18,24 +18,23 @@ package views.propertyDetails
 
 import java.util.UUID
 
-import builders.AuthBuilder._
 import builders.PropertyDetailsBuilder
+import models.StandardAuthRetrievals
 import org.joda.time.format.DateTimeFormat
 import org.joda.time.{DateTimeZone, LocalDate}
 import org.jsoup.Jsoup
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
 import org.scalatestplus.play.OneServerPerSuite
 import play.api.test.FakeRequest
-import utils.{PeriodUtils, AtedUtils}
+import utils.{MockAuthUtil, PeriodUtils}
 import utils.PeriodUtils._
 
-class propertyDetailsSummarySpec extends FeatureSpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach with GivenWhenThen{
+class propertyDetailsSummarySpec extends FeatureSpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
 
   implicit val request = FakeRequest()
   implicit val messages : play.api.i18n.Messages = play.api.i18n.Messages.Implicits.applicationMessages
-  val userId = s"user-${UUID.randomUUID}"
-  implicit val user = createAtedContext(createUserAuthContext(userId, "name"))
+  implicit lazy val authContext = organisationStandardRetrievals
 
   val thisYear: Int = calculatePeriod()
   val nextYear = thisYear + 1
@@ -65,7 +64,7 @@ class propertyDetailsSummarySpec extends FeatureSpec with OneServerPerSuite with
 
       Then("The subheader should be - Create return")
       assert(document.getElementById("pre-heading").text() === "This section is: Create return")
-      
+
       assert(document.getElementById("details-text").text() === s"For the ATED period from ${formatDate(periodStartDate(calculatePeriod()))} to ${formatDate(periodEndDate(calculatePeriod()))}.")
       assert(document.getElementById("property-details-header").text() === "Property details")
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  *@
 
-@(formBundleNum:String, returnType: String, paymentReference: Option[String], amountDueOrRefund: BigDecimal, liabilityAmount : BigDecimal, returnTitleMessage: String, returnHeaderMessage: String)(implicit atedContext: AtedContext, messages: Messages)
+@(formBundleNum:String, returnType: String, paymentReference: Option[String], amountDueOrRefund: BigDecimal, liabilityAmount : BigDecimal, returnTitleMessage: String, returnHeaderMessage: String)(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent])
 @import models._
 @import uk.gov.hmrc.play.views.html._
 @import uk.gov.hmrc.play.views.html.helpers._
@@ -31,7 +31,6 @@
 }
 
 @atedMain(title = Messages(returnTitleMessage),
-          attorney = atedContext.user.authContext.attorney,
           analyticsAdditionalJs = Some(analyticsJs)) {
 
   <div id="banner" class="transaction-banner--complete">

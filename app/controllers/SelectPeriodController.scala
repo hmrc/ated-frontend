@@ -16,26 +16,24 @@
 
 package controllers
 
-import config.FrontendDelegationConnector
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
-import controllers.auth.{AtedFrontendAuthHelpers, AtedRegime, ClientHelper}
-import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
+import controllers.auth.{AuthAction, ClientHelper}
 import forms.AtedForms._
 import models.SelectPeriod
 import org.joda.time.LocalDate
+import play.api.Play.current
+import play.api.i18n.Messages.Implicits._
+import play.api.mvc.{Action, AnyContent}
+import services.DelegationService
+import utils.AtedConstants._
+import utils.PeriodUtils
 
 import scala.concurrent.Future
-import play.api.i18n.Messages.Implicits._
-import play.api.Play.current
-import utils.PeriodUtils
-import utils.AtedConstants._
-import views.html.selectPeriod
 
-trait SelectPeriodController extends BackLinkController
-  with AtedFrontendAuthHelpers with DelegationAwareActions with ClientHelper {
+trait SelectPeriodController extends BackLinkController with ClientHelper with AuthAction {
 
-  def view = AuthAction(AtedRegime) {
-    implicit atedContext =>
+  def view: Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       ensureClientContext {
         val periods = PeriodUtils.getPeriods(new LocalDate(2015, 4, 1), LocalDate.now())
         dataCacheConnector.fetchAndGetFormData[SelectPeriod](RetrieveSelectPeriodFormId) map {
@@ -43,10 +41,11 @@ trait SelectPeriodController extends BackLinkController
           case _ => Ok(views.html.selectPeriod(selectPeriodForm, periods, getBackLink))
         }
       }
+    }
   }
 
-  def submit = AuthAction(AtedRegime) {
-    implicit atedContext =>
+  def submit : Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       ensureClientContext {
         val periods = PeriodUtils.getPeriods(new LocalDate(2015, 4, 1), LocalDate.now())
         selectPeriodForm.bindFromRequest.fold(
@@ -61,16 +60,17 @@ trait SelectPeriodController extends BackLinkController
           }
         )
       }
+    }
   }
 
-  private def getBackLink() = {
+  private def getBackLink(): Option[String] = {
     Some(routes.AccountSummaryController.view().url)
   }
 }
 
 object SelectPeriodController extends SelectPeriodController {
-  val delegationConnector = FrontendDelegationConnector
+  val delegationService: DelegationService = DelegationService
   override val controllerId = "SelectPeriodController"
-  override val backLinkCacheConnector = BackLinkCacheConnector
-  val dataCacheConnector = DataCacheConnector
+  override val backLinkCacheConnector: BackLinkCacheConnector = BackLinkCacheConnector
+  val dataCacheConnector: DataCacheConnector = DataCacheConnector
 }

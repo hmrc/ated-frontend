@@ -14,7 +14,7 @@
  * limitations under the License.
  *@
 
-@(periodKey: Int, returnResponse: SubmitReturnsResponse)(implicit atedContext: AtedContext, messages: Messages)
+@(periodKey: Int, returnResponse: SubmitReturnsResponse)(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent])
 
 @import models._
 @import uk.gov.hmrc.play.views.html._
@@ -26,7 +26,7 @@
 
 @serviceName = {@Messages("ated.welcome.related.link.first")}
 
-@atedMain(title = Messages("ated.relief-sent.title"), attorney = atedContext.user.authContext.attorney) {
+@atedMain(title = Messages("ated.relief-sent.title")) {
 
   <div id="banner" class="transaction-banner--complete">
     <h1 id="banner-text">

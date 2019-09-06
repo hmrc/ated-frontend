@@ -20,11 +20,11 @@ import connectors.{AtedConnector, DataCacheConnector}
 import models._
 import play.api.Logger
 import play.api.http.Status._
+import uk.gov.hmrc.http.HeaderCarrier
 import utils.AtedConstants._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import uk.gov.hmrc.http.HeaderCarrier
 
 trait SummaryReturnsService {
 
@@ -32,7 +32,7 @@ trait SummaryReturnsService {
 
   def dataCacheConnector: DataCacheConnector
 
-  def getSummaryReturns(implicit atedContext: AtedContext, hc: HeaderCarrier): Future[SummaryReturnsModel] = {
+  def getSummaryReturns(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[SummaryReturnsModel] = {
     def convertSeqOfPeriodSummariesToObject(x: Seq[PeriodSummaryReturns]): PeriodSummaryReturns = {
       val allDrafts = x.flatMap(a => a.draftReturns)
       val allSubmitted = x.flatMap(a => a.submittedReturns)
@@ -85,7 +85,7 @@ trait SummaryReturnsService {
     } yield summaryReturns
   }
 
-  def getPeriodSummaryReturns(period: Int)(implicit atedContext: AtedContext, hc: HeaderCarrier): Future[Option[PeriodSummaryReturns]] = {
+  def getPeriodSummaryReturns(period: Int)(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[Option[PeriodSummaryReturns]] = {
     for {
       summaryReturnsModel <- getSummaryReturns
     } yield {
@@ -93,7 +93,7 @@ trait SummaryReturnsService {
     }
   }
 
-  def getPreviousSubmittedLiabilityDetails(selectedPeriodKey: Int)(implicit atedContext: AtedContext, hc: HeaderCarrier): Future[Seq[PreviousReturns]] =
+  def getPreviousSubmittedLiabilityDetails(selectedPeriodKey: Int)(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[Seq[PreviousReturns]] =
     getSummaryReturns.flatMap { returnSummary =>
     val periodSummaryReturns = returnSummary.allReturns
     val submittedReturns = periodSummaryReturns.flatMap(x => x.submittedReturns).filter(_.periodKey == selectedPeriodKey - 1)
@@ -103,17 +103,17 @@ trait SummaryReturnsService {
     savePastReturnDetails(pastReturnDetails)
   }
 
-  private def savePastReturnDetails(pastReturnDetails: Seq[PreviousReturns])(implicit atedContext: AtedContext, headerCarrier: HeaderCarrier): Future[Seq[PreviousReturns]] = {
+  private def savePastReturnDetails(pastReturnDetails: Seq[PreviousReturns])(implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[Seq[PreviousReturns]] = {
     dataCacheConnector.saveFormData[Seq[PreviousReturns]](PreviousReturnsDetailsList, pastReturnDetails)
   }
 
-  def retrieveCachedPreviousReturnAddressList(implicit atedContext: AtedContext, hc: HeaderCarrier): Future[Option[Seq[PreviousReturns]]] = {
+  def retrieveCachedPreviousReturnAddressList(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[Option[Seq[PreviousReturns]]] = {
     dataCacheConnector.fetchAndGetFormData[Seq[PreviousReturns]](PreviousReturnsDetailsList)
   }
 
 }
 
 object SummaryReturnsService extends SummaryReturnsService {
-  val atedConnector = AtedConnector
-  val dataCacheConnector = DataCacheConnector
+  val atedConnector: AtedConnector = AtedConnector
+  val dataCacheConnector: DataCacheConnector = DataCacheConnector
 }

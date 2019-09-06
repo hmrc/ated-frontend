@@ -14,7 +14,7 @@
  * limitations under the License.
  *@
 
-@(disposeLiability: models.DisposeLiabilityReturn, backLink: Option[String])(implicit atedContext: AtedContext, messages: Messages)
+@(disposeLiability: models.DisposeLiabilityReturn, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent])
 
 @import uk.gov.hmrc.play.views.html.helpers._
 @import utils.PeriodUtils._
@@ -114,7 +114,6 @@
 }
 
 @atedMain(title = Messages("ated.property-details-summary.title"),
-          attorney = atedContext.user.authContext.attorney,
           analyticsAdditionalJs = Some(analyticsJs)) {
 
   @pageHeadersAndError(backLink, "pre-heading", Messages("ated.property-details.pre-header-dispose"), "edit-liability-summary-header", Messages("ated.property-details-summary.header"))

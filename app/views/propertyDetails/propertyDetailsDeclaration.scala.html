@@ -15,7 +15,7 @@
  *@
 
 @import models._
-@(id: String, backLink: Option[String])(implicit atedContext: AtedContext, messages: Messages)
+@(id: String, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent])
 
 @import uk.gov.hmrc.play.views.helpers.MoneyPounds
 @import uk.gov.hmrc.play.views.formatting.Money._
@@ -32,18 +32,17 @@
 }
 
 @atedMain(title = Messages("ated.chargeable-return-declaration.title"),
-          attorney = atedContext.user.authContext.attorney,
           analyticsAdditionalJs = Some(analyticsJs)) {
 
   @pageHeadersAndError(backLink, "pre-heading", Messages("ated.property-details.pre-header"), "chargeable-return-confirmation-header", Messages("ated.chargeable-return-declaration.header"))
 
   <p id="chargeable-return-before-declaration-text">
-    @if(atedContext.user.authContext.attorney.isDefined) { @Messages("ated.chargeable-return-declaration.before-declaration.agent")} else { @Messages("ated.chargeable-return-declaration.before-declaration.client")}
+    @if(authContext.delegationModel.isDefined) { @Messages("ated.chargeable-return-declaration.before-declaration.agent")} else { @Messages("ated.chargeable-return-declaration.before-declaration.client")}
   </p>
 
   <p>
     <span class="text-bold"  id="declaration-confirmation-text">
-      @if(atedContext.user.authContext.attorney.isDefined) { @Messages("ated.chargeable-return-declaration.i-confirm-that.bullet-text.agent")} else { @Messages("ated.chargeable-return-declaration.i-declare-that.bullet-text.client")}
+      @if(authContext.delegationModel.isDefined) { @Messages("ated.chargeable-return-declaration.i-confirm-that.bullet-text.agent")} else { @Messages("ated.chargeable-return-declaration.i-declare-that.bullet-text.client")}
     </span>
     </p>
 

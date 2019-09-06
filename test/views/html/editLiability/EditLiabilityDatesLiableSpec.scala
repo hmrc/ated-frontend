@@ -17,11 +17,16 @@
 package views.html.editLiability
 
 import forms.PropertyDetailsForms
+import models.StandardAuthRetrievals
+import org.scalatest.mockito.MockitoSugar
 import play.api.data.{Form, FormError}
 import play.twirl.api.Html
+import utils.MockAuthUtil
 import utils.viewHelpers.AtedViewSpec
 
-class EditLiabilityDatesLiableSpec extends AtedViewSpec {
+class EditLiabilityDatesLiableSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil {
+  implicit lazy val authContext = organisationStandardRetrievals
+
 
   "Edit Liability Dates Liable view" must {
     behave like pageWithTitle(messages("ated.property-details-period.change-dates-liable.title"))

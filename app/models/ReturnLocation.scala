@@ -14,13 +14,28 @@
  * limitations under the License.
  */
 
-package controllers.auth
+package models
 
-import uk.gov.hmrc.play.frontend.auth.GovernmentGateway
 
-object AtedGovernmentGateway extends GovernmentGateway {
-  override def loginURL = ExternalUrls.loginURL
-  override def continueURL = ExternalUrls.continueURL
 
-  override val defaultTimeoutSeconds = 1800
+import config.ApplicationConfig
+import play.api.libs.json.{JsString, Writes}
+import play.api.mvc.Call
+
+case class ReturnLocation(url: String, absoluteUrl: String)
+
+object ReturnLocation {
+
+  def apply(url: String) =
+    new ReturnLocation(url, publicRedirectUrl(url))
+
+  def apply(call: Call) =
+    new ReturnLocation(call.url, publicRedirectUrl(call.url))
+
+  private def publicRedirectUrl(url: String) = s"${ApplicationConfig.baseUrl("ATED")}$url"
+
+  implicit val locationWrites = new Writes[ReturnLocation] {
+    override def writes(o: ReturnLocation) = JsString(o.absoluteUrl)
+  }
+
 }

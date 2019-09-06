@@ -18,41 +18,42 @@ package controllers
 
 import java.util.UUID
 
-import builders.{AuthBuilder, SessionBuilder}
-import config.FrontendDelegationConnector
+import builders.SessionBuilder
 import models._
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mock.MockitoSugar
-import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
-import play.api.mvc.{AnyContentAsJson, Result}
-import play.api.test.FakeRequest
+import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.play.PlaySpec
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
+import play.api.mvc.Result
 import play.api.test.Helpers._
-import services.{SubscriptionDataService, FormBundleReturnsService, SummaryReturnsService}
-import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
+import services.{DelegationService, FormBundleReturnsService, SubscriptionDataService, SummaryReturnsService}
+import uk.gov.hmrc.auth.core.{AffinityGroup, PlayAuthConnector}
+import uk.gov.hmrc.http.HeaderCarrier
+import utils.MockAuthUtil
 
 import scala.concurrent.Future
 
-class FormBundleReturnControllerSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
+class FormBundleReturnControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with MockAuthUtil {
 
-  import AuthBuilder._
+  val periodKey: Int = 2015
 
-  val mockAuthConnector = mock[AuthConnector]
-  val mockFormBundleReturnsService = mock[FormBundleReturnsService]
-  val mockSummaryReturnsService = mock[SummaryReturnsService]
-  val mockSubscriptionDataService = mock[SubscriptionDataService]
-  val formBundleNo1 = "123456789012"
-  val organisationName = "ACME Limited"
+  val mockFormBundleReturnsService: FormBundleReturnsService = mock[FormBundleReturnsService]
+  val mockSummaryReturnsService: SummaryReturnsService = mock[SummaryReturnsService]
+  val mockSubscriptionDataService: SubscriptionDataService = mock[SubscriptionDataService]
+  val formBundleNo1: String = "123456789012"
+  val organisationName: String = "ACME Limited"
+  implicit lazy val hc: HeaderCarrier = HeaderCarrier()
 
   object TestFormBundleReturnController extends FormBundleReturnController {
-    override val authConnector = mockAuthConnector
-    override val delegationConnector: DelegationConnector = FrontendDelegationConnector
-    override val formBundleReturnsService = mockFormBundleReturnsService
-    override val summaryReturnsService = mockSummaryReturnsService
-    override val subscriptionDataService = mockSubscriptionDataService
+    override val delegationService: DelegationService = mockDelegationService
+    override val formBundleReturnsService: FormBundleReturnsService = mockFormBundleReturnsService
+    override val summaryReturnsService: SummaryReturnsService = mockSummaryReturnsService
+    override val subscriptionDataService: SubscriptionDataService = mockSubscriptionDataService
+    override val authConnector: PlayAuthConnector = mockAuthConnector
   }
 
   override def beforeEach(): Unit = {
@@ -65,16 +66,10 @@ class FormBundleReturnControllerSpec extends PlaySpec with OneServerPerSuite wit
   "FormBundleReturnController" must {
 
     "use correct DelegationConnector" in {
-      FormBundleReturnController.delegationConnector must be(FrontendDelegationConnector)
+      FormBundleReturnController.delegationService must be(DelegationService)
     }
 
     "form bundle returnType" must {
-
-      "not respond with NOT_FOUND" in {
-        val result = route(FakeRequest(GET, "/ated/form-bundle/12345678901090/2014"))
-        result.isDefined must be(true)
-        status(result.get) must not be NOT_FOUND
-      }
 
       "unauthorised users" must {
         "respond with a redirect" in {
@@ -93,14 +88,21 @@ class FormBundleReturnControllerSpec extends PlaySpec with OneServerPerSuite wit
     }
 
     "Authorised users" must {
+      val bd1: Int = 100
+      val bd2: Int = 200
+      val bd3: Int = 9324
 
-      val formBundleProp = FormBundleProperty(BigDecimal(100), new LocalDate("2015-09-08"), new LocalDate("2015-10-12"), "Relief", Some("Property developers"))
-      val formBundleProp2 = FormBundleProperty(BigDecimal(200), new LocalDate("2015-10-12"), new LocalDate("2015-12-12"), "Relief", Some("Property developers"))
+      val formBundleProp = FormBundleProperty(BigDecimal(bd1), new LocalDate("2015-09-08"), new LocalDate("2015-10-12"), "Relief",Some("Property developers"))
+      val formBundleProp2 = FormBundleProperty(BigDecimal(bd2), new LocalDate("2015-10-12"), new LocalDate("2015-12-12"), "Relief", Some("Property developers"))
       val formBundleAddress = FormBundleAddress("1 addressLine1", "addressLine2", Some("addressLine3"), Some("AddressLine4"), Some("XX11XX"), "GB")
       val formBundlePropertyDetails = FormBundlePropertyDetails(Some("title here"), formBundleAddress, Some("additional details"))
-      val viewReturn = FormBundleReturn("2014", formBundlePropertyDetails, Some(new LocalDate("2013-10-10")), Some(BigDecimal(100)), Some("ABCdefgh"), Some("PromABCdefgh"), Some("1234"), true, true, new LocalDate("2015-05-10"), BigDecimal(9324), "1234567891", List(formBundleProp))
+      val viewReturn = FormBundleReturn("2014", formBundlePropertyDetails, Some(new LocalDate("2013-10-10")), Some(BigDecimal(bd1)),
+        Some("ABCdefgh"), Some("PromABCdefgh"), Some("1234"), professionalValuation = true, ninetyDayRuleApplies = true, new LocalDate("2015-05-10"),
+        BigDecimal(bd3), "1234567891", List(formBundleProp))
 
-      val viewReturnMultipleValues = FormBundleReturn("2014", formBundlePropertyDetails, Some(new LocalDate("2013-10-10")), Some(BigDecimal(100)), Some("ABCdefgh"), Some("PromABCdefgh"), Some("1234"), true, true, new LocalDate("2015-05-10"), BigDecimal(9324), "1234567891", List(formBundleProp, formBundleProp2))
+      val viewReturnMultipleValues = FormBundleReturn("2014", formBundlePropertyDetails, Some(new LocalDate("2013-10-10")), Some(BigDecimal(bd1)),
+        Some("ABCdefgh"), Some("PromABCdefgh"), Some("1234"), professionalValuation = true, ninetyDayRuleApplies = true, new LocalDate("2015-05-10"),
+        BigDecimal(bd3), "1234567891", List(formBundleProp, formBundleProp2))
 
       "show the return view with data when change is allowed" in {
 
@@ -113,10 +115,10 @@ class FormBundleReturnControllerSpec extends PlaySpec with OneServerPerSuite wit
           changeAllowed = true,
           paymentReference = "")
 
-        val chargeableSubmittedReturns = new SubmittedReturns(2015, Nil, List(changeablePeriod))
-        val periodSummaryChargeable = PeriodSummaryReturns(periodKey = 2015,
+//        val chargeableSubmittedReturns = new SubmittedReturns(periodKey, Nil, List(changeablePeriod))
+        val periodSummaryChargeable = PeriodSummaryReturns(periodKey = periodKey,
           draftReturns = Nil,
-          submittedReturns = Some(new SubmittedReturns(2015, Nil, List(changeablePeriod))))
+          submittedReturns = Some(new SubmittedReturns(periodKey, Nil, List(changeablePeriod))))
 
         getWithAuthorisedUser(Some(viewReturn), Some(periodSummaryChargeable)) {
           result =>
@@ -160,10 +162,10 @@ class FormBundleReturnControllerSpec extends PlaySpec with OneServerPerSuite wit
           changeAllowed = true,
           paymentReference = "")
 
-        val chargeableSubmittedReturns = new SubmittedReturns(2015, Nil, List(changeablePeriod))
-        val periodSummaryChargeable = PeriodSummaryReturns(periodKey = 2015,
+//        val chargeableSubmittedReturns = new SubmittedReturns(periodKey, Nil, List(changeablePeriod))
+        val periodSummaryChargeable = PeriodSummaryReturns(periodKey = periodKey,
           draftReturns = Nil,
-          submittedReturns = Some(new SubmittedReturns(2015, Nil, List(changeablePeriod))))
+          submittedReturns = Some(new SubmittedReturns(periodKey, Nil, List(changeablePeriod))))
 
         getWithAuthorisedUser(Some(viewReturnMultipleValues), Some(periodSummaryChargeable)) {
           result =>
@@ -176,42 +178,30 @@ class FormBundleReturnControllerSpec extends PlaySpec with OneServerPerSuite wit
         }
       }
     }
-
   }
-
 
   def getWithAuthorisedUser(formBundleReturn: Option[FormBundleReturn], periodSummaries: Option[PeriodSummaryReturns] = None)(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
-    implicit val user = createAtedContext(createUserAuthContext(userId, "name"))
-    AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
+    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+    setAuthMocks(authMock)
 
     when(mockFormBundleReturnsService.getFormBundleReturns(Matchers.eq(formBundleNo1))(Matchers.any(), Matchers.any()))
       .thenReturn(Future.successful(formBundleReturn))
 
-    when(mockSummaryReturnsService.getPeriodSummaryReturns(Matchers.eq(2015))(Matchers.any(), Matchers.any())).thenReturn(Future.successful(periodSummaries))
+    when(mockSummaryReturnsService.getPeriodSummaryReturns(Matchers.eq(periodKey))(Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(periodSummaries))
     when(mockSubscriptionDataService.getOrganisationName(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(organisationName)))
 
-    val result = TestFormBundleReturnController.view(formBundleNo1, 2015).apply(SessionBuilder.buildRequestWithSession(userId))
+    val result = TestFormBundleReturnController.view(formBundleNo1, periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
   def getWithUnAuthorisedUser(test: Future[Result] => Any) {
+    val periodKey: Int = 2014
     val userId = s"user-${UUID.randomUUID}"
-    AuthBuilder.mockUnAuthorisedUser(userId, mockAuthConnector)
-    val result = TestFormBundleReturnController.view("12345678901", 2014).apply(SessionBuilder.buildRequestWithSession(userId))
-    test(result)
-  }
-
-  def getWithUnAuthenticated(test: Future[Result] => Any) {
-    val result = TestFormBundleReturnController.view("12345678901", 2014).apply(SessionBuilder.buildRequestWithSessionNoUser)
-    test(result)
-  }
-
-  def submitWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsJson])(test: Future[Result] => Any): Unit = {
-    val userId = s"user-${UUID.randomUUID}"
-    implicit val user = createAtedContext(createUserAuthContext(userId, "name"))
-    AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-    val result = TestFormBundleReturnController.view("12345678901", 2014).apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
+        val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
+    setInvalidAuthMocks(authMock)
+    val result = TestFormBundleReturnController.view("12345678901", periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 }

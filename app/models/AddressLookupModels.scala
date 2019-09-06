@@ -16,29 +16,29 @@
 
 package models
 
-import play.api.libs.json.Json
+import play.api.libs.json.{Json, OFormat}
 
 case class PreviousReturns(address: String, formBundleNumber: String)
 
 object PreviousReturns {
-  implicit val formats = Json.format[PreviousReturns]
+  implicit val formats: OFormat[PreviousReturns] = Json.format[PreviousReturns]
 }
 
 case class AddressLookup(postcode: String, houseName: Option[String])
 
 object AddressLookup {
-  implicit val formats = Json.format[AddressLookup]
+  implicit val formats: OFormat[AddressLookup] = Json.format[AddressLookup]
 }
 
 case class AddressSelected(selected: Option[String])
 
 object AddressSelected {
-  implicit val formats = Json.format[AddressSelected]
+  implicit val formats: OFormat[AddressSelected] = Json.format[AddressSelected]
 }
 
 case class AddressLookupCountry(code: String, name: String)
 object AddressLookupCountry {
-  implicit val formats = Json.format[AddressLookupCountry]
+  implicit val formats: OFormat[AddressLookupCountry] = Json.format[AddressLookupCountry]
 }
 
 case class AddressSearchResult(lines: List[String],
@@ -54,19 +54,19 @@ case class AddressSearchResult(lines: List[String],
 }
 
 object AddressSearchResult {
-  implicit val formats = Json.format[AddressSearchResult]
+  implicit val formats: OFormat[AddressSearchResult] = Json.format[AddressSearchResult]
 }
 
 case class AddressLookupRecord(
                           id: String,
                           address: AddressSearchResult)
 object AddressLookupRecord {
-  implicit val formats = Json.format[AddressLookupRecord]
+  implicit val formats: OFormat[AddressLookupRecord] = Json.format[AddressLookupRecord]
 }
 
 
 case class AddressSearchResults(searchCriteria: AddressLookup, results: Seq[AddressLookupRecord])
 
 object AddressSearchResults {
-  implicit val formats = Json.format[AddressSearchResults]
+  implicit val formats: OFormat[AddressSearchResults] = Json.format[AddressSearchResults]
 }

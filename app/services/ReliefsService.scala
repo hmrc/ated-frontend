@@ -20,19 +20,19 @@ import connectors.{AtedConnector, DataCacheConnector}
 import models._
 import play.api.Logger
 import play.mvc.Http.Status._
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, InternalServerException}
 import utils.AtedConstants._
 import utils.ReliefsUtils
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import uk.gov.hmrc.http.{ HeaderCarrier, HttpResponse, InternalServerException }
 
 trait ReliefsService {
 
   val atedConnector: AtedConnector
   val dataCacheConnector: DataCacheConnector
 
-  def saveDraftReliefs(atedRefNo: String, periodKey: Int, reliefs: Reliefs)(implicit atedContext: AtedContext, hc: HeaderCarrier) = {
+  def saveDraftReliefs(atedRefNo: String, periodKey: Int, reliefs: Reliefs)(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier) = {
     for {
       newTaxAvoidanceReliefs <- updateReliefs(atedRefNo, periodKey, reliefs)
       response <- atedConnector.saveDraftReliefs(atedRefNo, newTaxAvoidanceReliefs)
@@ -47,7 +47,7 @@ trait ReliefsService {
     }
   }
 
-  def saveDraftIsTaxAvoidance(atedRefNo: String, periodKey: Int, isAvoidanceScheme: Boolean)(implicit atedContext: AtedContext, hc: HeaderCarrier) = {
+  def saveDraftIsTaxAvoidance(atedRefNo: String, periodKey: Int, isAvoidanceScheme: Boolean)(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier) = {
     for {
       newTaxAvoidanceReliefs <- updateIsTaxAvoidance(atedRefNo, periodKey, isAvoidanceScheme)
       response <- atedConnector.saveDraftReliefs(atedRefNo, newTaxAvoidanceReliefs)
@@ -62,7 +62,7 @@ trait ReliefsService {
     }
   }
 
-  def saveDraftTaxAvoidance(atedRefNo: String, periodKey: Int, taxAvoidance: TaxAvoidance)(implicit atedContext: AtedContext, hc: HeaderCarrier) = {
+  def saveDraftTaxAvoidance(atedRefNo: String, periodKey: Int, taxAvoidance: TaxAvoidance)(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier) = {
     for {
       newTaxAvoidanceReliefs <- updateTaxAvoidance(atedRefNo, periodKey, taxAvoidance)
       response <- atedConnector.saveDraftReliefs(atedRefNo, newTaxAvoidanceReliefs)
@@ -78,7 +78,7 @@ trait ReliefsService {
   }
 
   // FIXME: rename method to retrievePeriodDraftReliefs
-  def retrieveDraftReliefs(atedRefNo: String, periodKey: Int)(implicit atedContext: AtedContext, hc: HeaderCarrier):
+  def retrieveDraftReliefs(atedRefNo: String, periodKey: Int)(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier):
   Future[Option[ReliefsTaxAvoidance]] = {
     for {
       response <- atedConnector.retrievePeriodDraftReliefs(atedRefNo, periodKey)
@@ -94,7 +94,7 @@ trait ReliefsService {
       }
   }
 
-  def submitDraftReliefs(atedRefNo: String, periodKey: Int)(implicit atedContext: AtedContext, hc: HeaderCarrier): Future[HttpResponse] = {
+  def submitDraftReliefs(atedRefNo: String, periodKey: Int)(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[HttpResponse] = {
     for {
       httpResponse <- atedConnector.submitDraftReliefs(atedRefNo, periodKey)
       _ <- dataCacheConnector.clearCache()
@@ -104,9 +104,9 @@ trait ReliefsService {
     }
   }
 
-  def clearDraftReliefs(implicit atedContext: AtedContext, hc: HeaderCarrier): Future[HttpResponse] = atedConnector.deleteDraftReliefs
+  def clearDraftReliefs(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[HttpResponse] = atedConnector.deleteDraftReliefs
 
-  private def updateReliefs(atedRefNo: String, periodKey: Int, reliefs: Reliefs)(implicit atedContext: AtedContext, hc: HeaderCarrier) = {
+  private def updateReliefs(atedRefNo: String, periodKey: Int, reliefs: Reliefs)(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier) = {
     for {
       draftReliefs <- retrieveDraftReliefs(atedRefNo, periodKey)
     } yield {
@@ -116,7 +116,7 @@ trait ReliefsService {
   }
 
   private def updateIsTaxAvoidance(atedRefNo: String, periodKey: Int, isAvoidanceScheme: Boolean)
-                                  (implicit atedContext: AtedContext, hc: HeaderCarrier) = {
+                                  (implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier) = {
 
     for {
       draftReliefs <- retrieveDraftReliefs(atedRefNo, periodKey)
@@ -127,7 +127,7 @@ trait ReliefsService {
     }
   }
 
-  private def updateTaxAvoidance(atedRefNo: String, periodKey: Int, taxAvoidance: TaxAvoidance)(implicit atedContext: AtedContext, hc: HeaderCarrier) = {
+  private def updateTaxAvoidance(atedRefNo: String, periodKey: Int, taxAvoidance: TaxAvoidance)(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier) = {
     for {
       draftReliefs <- retrieveDraftReliefs(atedRefNo, periodKey)
     } yield {
@@ -138,7 +138,7 @@ trait ReliefsService {
   }
 
   def viewReliefReturn(periodKey: Int, formBundleNo: String)
-                      (implicit atedContext: AtedContext, hc: HeaderCarrier): Future[Option[SubmittedReliefReturns]] = {
+                      (implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[Option[SubmittedReliefReturns]] = {
     for {
       cachedReturns <- dataCacheConnector.fetchAndGetFormData[SummaryReturnsModel](RetrieveReturnsResponseId)
     } yield {
@@ -150,7 +150,7 @@ trait ReliefsService {
     }
   }
 
-  def deleteDraftReliefs(periodKey: Int)(implicit atedContext: AtedContext, hc: HeaderCarrier): Future[HttpResponse] = atedConnector.deleteDraftReliefsByYear(periodKey)
+  def deleteDraftReliefs(periodKey: Int)(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[HttpResponse] = atedConnector.deleteDraftReliefsByYear(periodKey)
 
 }
 

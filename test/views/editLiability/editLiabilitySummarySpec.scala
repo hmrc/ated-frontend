@@ -16,26 +16,23 @@
 
 package views.editLiability
 
-import java.util.UUID
-
-import builders.AuthBuilder._
 import builders.PropertyDetailsBuilder
 import org.joda.time.format.DateTimeFormat
 import org.joda.time.{DateTimeZone, LocalDate}
 import org.jsoup.Jsoup
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
-import org.scalatestplus.play.OneServerPerSuite
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.test.FakeRequest
-import utils.{PeriodUtils, AtedUtils}
 import utils.PeriodUtils._
+import utils.{MockAuthUtil, PeriodUtils}
 
-class editLiabilitySummarySpec extends FeatureSpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach with GivenWhenThen{
+class editLiabilitySummarySpec extends FeatureSpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil{
 
   implicit val request = FakeRequest()
   implicit val messages : play.api.i18n.Messages = play.api.i18n.Messages.Implicits.applicationMessages
-  val userId = s"user-${UUID.randomUUID}"
-  implicit val user = createAtedContext(createUserAuthContext(userId, "name"))
+  implicit lazy val authContext = organisationStandardRetrievals
+
 
   val thisYear: Int = calculatePeriod()
   val nextYear = thisYear + 1
@@ -64,7 +61,7 @@ class editLiabilitySummarySpec extends FeatureSpec with OneServerPerSuite with M
 
       Then("The subheader should be - Change return")
       assert(document.getElementById("pre-heading").text() === "This section is: Change return")
-      
+
       assert(document.getElementById("details-text").text() === s"For the ATED period from ${formatDate(periodStartDate(calculatePeriod()))} to ${formatDate(periodEndDate(calculatePeriod()))}.")
       assert(document.getElementById("edit-liability-header").text() === "Property details")
 

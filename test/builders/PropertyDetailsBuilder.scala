@@ -16,11 +16,20 @@
 
 package builders
 
+import builders.ChangeLiabilityReturnBuilder.generateFormBundlePropertyDetails
 import models._
 import org.joda.time.LocalDate
+import utils.AtedConstants
 import utils.PeriodUtils._
 
 object PropertyDetailsBuilder {
+
+  val formBundleProp = FormBundleProperty(BigDecimal(100), new LocalDate("2015-09-08"), new LocalDate("2015-10-12"), AtedConstants.LiabilityReturnType, None)
+
+  def generateFormBundleReturn: FormBundleReturn = {
+    FormBundleReturn("2015", generateFormBundlePropertyDetails, dateOfAcquisition = None, valueAtAcquisition = None, taxAvoidanceScheme = None, localAuthorityCode = None, professionalValuation = true, ninetyDayRuleApplies = false, dateOfSubmission = new LocalDate("2015-04-02"), liabilityAmount = BigDecimal(123.45), paymentReference = "payment-ref-123", lineItem = Seq(formBundleProp))
+  }
+
 
   def getPropertyDetailsValueRevalued(periodKey: Int): Option[PropertyDetailsValue] = {
     Some(PropertyDetailsValue(anAcquisition = Some(true),
@@ -125,7 +134,7 @@ object PropertyDetailsBuilder {
       getPropertyDetailsAddress(postCode),
       getPropertyDetailsTitle(),
       getPropertyDetailsValueRevalued(periodKey),
-      getPropertyDetailsPeriod,
+      getPropertyDetailsPeriodFull(periodKey),
       getPropertyDetailsCalculated(liabilityAmount))
   }
 
@@ -171,7 +180,25 @@ object PropertyDetailsBuilder {
       getPropertyDetailsTitle(),
       getPropertyDetailsValueFull(),
       getPropertyDetailsPeriodFull(periodKey),
-      getPropertyDetailsCalculated(liabilityAmount))
+      getPropertyDetailsCalculated(liabilityAmount)
+    )
+  }
+
+  def getPropertyDetailsWithFormBundleReturn(id: String,
+                             postCode: Option[String] = None,
+                             liabilityAmount: Option[BigDecimal] = None,
+                             periodKey: Int = calculatePeriod()
+                            ): PropertyDetails = {
+    PropertyDetails(
+      id,
+      periodKey,
+      getPropertyDetailsAddress(postCode),
+      getPropertyDetailsTitle(),
+      getPropertyDetailsValueFull(),
+      getPropertyDetailsPeriodFull(periodKey),
+      getPropertyDetailsCalculated(liabilityAmount),
+      Option(generateFormBundleReturn)
+    )
   }
 
 }

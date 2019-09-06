@@ -14,7 +14,7 @@
  * limitations under the License.
  *@
 
-@(form: Form[_], errorMessageFieldPrefix: String, formErrorMessage: Option[String] = None, maxErrorsToShow: Int = 999)(implicit messages: Messages)
+@(form: Form[_], errorMessageFieldPrefix: String, formErrorMessage: Option[String] = None, maxErrorsToShow: Int = 999)(implicit messages: Messages, request: Request[AnyContent])
 
 
 <script type="text/javascript" src='@controllers.routes.AssetsController.at("javascript/error-summary.js")'></script>

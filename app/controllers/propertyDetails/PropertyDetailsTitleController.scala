@@ -16,30 +16,29 @@
 
 package controllers.propertyDetails
 
-import config.FrontendDelegationConnector
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
-import controllers.auth.{AtedRegime, ClientHelper}
+import controllers.auth.{AuthAction, ClientHelper}
 import controllers.editLiability.EditLiabilityHasValueChangedController
-import forms.PropertyDetailsForms
 import forms.PropertyDetailsForms._
 import models.PropertyDetailsTitle
-import services._
-import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
+import play.api.i18n.Messages.Implicits._
+import play.api.mvc.{Action, AnyContent}
+import services._
 import utils.AtedConstants.SelectedPreviousReturn
 import utils.AtedUtils
 
 import scala.concurrent.Future
 
-trait PropertyDetailsTitleController extends PropertyDetailsHelpers with ClientHelper {
+trait PropertyDetailsTitleController extends PropertyDetailsHelpers with ClientHelper with AuthAction {
 
-  def view(id: String) = AuthAction(AtedRegime) {
-    implicit atedContext =>
+  def view(id: String): Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       ensureClientContext {
         propertyDetailsCacheResponse(id) {
           case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
             currentBackLink.flatMap { backLink =>
-              dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).map{ isPrevReturn =>
+              dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).map { isPrevReturn =>
                 val displayData = propertyDetails.title.getOrElse(new PropertyDetailsTitle(""))
                 Ok(views.html.propertyDetails.propertyDetailsTitle(id, propertyDetails.periodKey, propertyDetailsTitleForm.fill(displayData),
                   AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn),
@@ -48,15 +47,16 @@ trait PropertyDetailsTitleController extends PropertyDetailsHelpers with ClientH
             }
         }
       }
+    }
   }
 
 
-  def editFromSummary(id: String) = AuthAction(AtedRegime) {
-    implicit atedContext =>
+  def editFromSummary(id: String): Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       propertyDetailsCacheResponse(id) {
         case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
           dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
-          val mode = AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn)
+            val mode = AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn)
             Future.successful(
               Ok(views.html.propertyDetails.propertyDetailsTitle(
                 id,
@@ -68,10 +68,11 @@ trait PropertyDetailsTitleController extends PropertyDetailsHelpers with ClientH
             )
           }
       }
+    }
   }
 
-  def save(id: String, periodKey: Int, mode: Option[String] = None) = AuthAction(AtedRegime) {
-    implicit atedContext =>
+  def save(id: String, periodKey: Int, mode: Option[String] = None): Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       ensureClientContext {
         propertyDetailsTitleForm.bindFromRequest.fold(
           formWithError => {
@@ -82,28 +83,29 @@ trait PropertyDetailsTitleController extends PropertyDetailsHelpers with ClientH
             for {
               savedData <- propertyDetailsService.saveDraftPropertyDetailsTitle(id, propertyDetails)
               result <-
-              if (AtedUtils.isEditSubmittedMode(mode))
+              if (AtedUtils.isEditSubmittedMode(mode)) {
                 RedirectWithBackLink(
                   EditLiabilityHasValueChangedController.controllerId,
                   controllers.editLiability.routes.EditLiabilityHasValueChangedController.view(id),
                   backLink)
-              else
+            } else {
                 RedirectWithBackLink(
                   PropertyDetailsOwnedBeforeController.controllerId,
                   controllers.propertyDetails.routes.PropertyDetailsOwnedBeforeController.view(id),
                   backLink)
+              }
             } yield result
           }
         )
       }
+    }
   }
-
 }
 
 object PropertyDetailsTitleController extends PropertyDetailsTitleController {
-  val delegationConnector = FrontendDelegationConnector
-  val propertyDetailsService = PropertyDetailsService
-  val dataCacheConnector = DataCacheConnector
-  override val controllerId = "PropertyDetailsTitleController"
-  override val backLinkCacheConnector = BackLinkCacheConnector
+  val delegationService: DelegationService = DelegationService
+  val propertyDetailsService: PropertyDetailsService = PropertyDetailsService
+  val dataCacheConnector: DataCacheConnector = DataCacheConnector
+  override val controllerId: String = "PropertyDetailsTitleController"
+  override val backLinkCacheConnector: BackLinkCacheConnector = BackLinkCacheConnector
 }

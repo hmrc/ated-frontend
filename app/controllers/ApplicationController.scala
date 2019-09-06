@@ -17,36 +17,39 @@
 package controllers
 
 import config.ApplicationConfig
-import controllers.auth.{AtedFrontendAuthHelpers, AtedSubscriptionNotNeededRegime, UnauthorisedRegime}
+import controllers.auth.AuthAction
 import play.api.Play
 import play.api.i18n.Messages.Implicits._
-import play.api.mvc.Action
-import uk.gov.hmrc.play.config.RunMode
+import play.api.mvc.{Action, AnyContent}
+import services.DelegationService
 import uk.gov.hmrc.play.frontend.controller.UnauthorisedAction
 
 import scala.concurrent.Future
 
-trait ApplicationController extends AtedFrontendAuthHelpers {
+trait ApplicationController extends AuthAction {
 
   import play.api.Play.current
 
-  def unauthorised = AuthAction(UnauthorisedRegime) { implicit atedContext =>
-    Future.successful(Ok(views.html.unauthorised()))
+  def unauthorised(isSa: Boolean) : Action[AnyContent] = Action.async { implicit request =>
+      Future.successful(Ok(views.html.unauthorised()(isSa, implicitly, implicitly)))
   }
 
-  def cancel = Action { implicit request =>
-    val serviceRedirectUrl: Option[String] = Play.configuration.getString(s"cancelRedirectUrl")
-    Redirect(serviceRedirectUrl.getOrElse("https://www.gov.uk/"))
+    def cancel: Action[AnyContent] = Action { implicit request =>
+      val serviceRedirectUrl: Option[String] = Play.configuration.getString(s"cancelRedirectUrl")
+      Redirect(serviceRedirectUrl.getOrElse("https://www.gov.uk/"))
+    }
+
+    def logout = UnauthorisedAction { implicit request =>
+      Redirect(ApplicationConfig.serviceSignOut).withNewSession
+    }
+
+    def keepAlive: Action[AnyContent] = Action.async { implicit request =>
+      authorisedForNoEnrolments { implicit authContext =>
+        Future.successful(Ok("OK"))
+      }
+    }
   }
 
-  def logout = UnauthorisedAction { implicit request =>
-    Redirect(ApplicationConfig.serviceSignOut).withNewSession
-  }
-
-  def keepAlive = AuthAction(AtedSubscriptionNotNeededRegime) {
-    implicit atedContext =>
-      Future.successful(Ok("OK"))
-  }
+object ApplicationController extends ApplicationController {
+  val delegationService: DelegationService = DelegationService
 }
-
-object ApplicationController extends ApplicationController

@@ -18,7 +18,7 @@
 @(id: Option[String], periodKey: Int, propertyDetailsForm: Form[PropertyDetailsAddress],
   mode: Option[String] = None,
   backLink: Option[String],
-  oldFormBundleNo: Option[String] = None)(implicit atedContext: AtedContext, messages: Messages)
+  oldFormBundleNo: Option[String] = None)(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent])
 @import uk.gov.hmrc.play.views.html._
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
@@ -41,7 +41,6 @@ case _ => oldFormBundleNo.getOrElse("")
 }
 
 @atedMain(title = Messages("ated.property-details.title"),
-          attorney = atedContext.user.authContext.attorney,
           analyticsAdditionalJs = Some(analyticsJs)) {
 
   @pageHeadersAndError(backLink, "pre-heading", AtedUtils.getPropertyDetailsPreHeader(mode), "property-details-header", Messages("ated.property-details.header"),

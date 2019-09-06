@@ -14,7 +14,7 @@
  * limitations under the License.
  *@
 
-@(field: play.api.data.Field, checkboxText: String, args: (Symbol,Any)*)(implicit messages: Messages, formInstance: Option[Form[_]] = None)
+@(field: play.api.data.Field, checkboxText: String, args: (Symbol,Any)*)(implicit messages: Messages, formInstance: Option[Form[_]] = None, request: Request[AnyContent])
 
 @import views.html.helper._
 @import views.helpers._

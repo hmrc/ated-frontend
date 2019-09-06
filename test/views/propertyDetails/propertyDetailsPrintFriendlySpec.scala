@@ -16,27 +16,22 @@
 
 package views.propertyDetails
 
-import java.util.UUID
-
-import builders.AuthBuilder._
 import builders.PropertyDetailsBuilder
 import org.joda.time.format.DateTimeFormat
-import org.joda.time.DateTime
 import org.joda.time.{DateTimeZone, LocalDate}
 import org.jsoup.Jsoup
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
-import org.scalatestplus.play.OneServerPerSuite
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.test.FakeRequest
-import utils.{PeriodUtils, AtedUtils}
 import utils.PeriodUtils._
+import utils.{MockAuthUtil, PeriodUtils}
 
-class propertyDetailsPrintFriendlySpec extends FeatureSpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach with GivenWhenThen{
+class propertyDetailsPrintFriendlySpec extends FeatureSpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
 
   implicit val request = FakeRequest()
   implicit val messages : play.api.i18n.Messages = play.api.i18n.Messages.Implicits.applicationMessages
-  val userId = s"user-${UUID.randomUUID}"
-  implicit val user = createAtedContext(createUserAuthContext(userId, "name"))
+  implicit lazy val authContext = organisationStandardRetrievals
 
   val thisYear: Int = calculatePeriod()
   val nextYear = thisYear + 1
@@ -66,7 +61,7 @@ class propertyDetailsPrintFriendlySpec extends FeatureSpec with OneServerPerSuit
       Then("The header should match - Chargeable return for")
       assert(document.getElementById("property-details-summary-header").text.contains("Chargeable return for") === true)
 
-      
+
       assert(document.getElementById("details-text").text() === s"For the ATED period from ${formatDate(periodStartDate(calculatePeriod()))} to ${formatDate(periodEndDate(calculatePeriod()))}.")
       assert(document.getElementById("property-details-header").text() === "Property details")
 

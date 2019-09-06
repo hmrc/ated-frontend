@@ -18,23 +18,21 @@ package views.propertyDetails
 
 import java.util.UUID
 
-import builders.AuthBuilder._
 import forms.PropertyDetailsForms._
-import models.PeriodChooseRelief
+import models.{PeriodChooseRelief, StandardAuthRetrievals}
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
 import org.scalatestplus.play.OneServerPerSuite
 import play.api.test.FakeRequest
-import utils.ReliefConstants
+import utils.{MockAuthUtil, ReliefConstants}
 
-class periodChooseReliefSpec extends FeatureSpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach with GivenWhenThen with ReliefConstants{
+class periodChooseReliefSpec extends FeatureSpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach with GivenWhenThen with ReliefConstants with MockAuthUtil{
 
   implicit val request = FakeRequest()
   implicit val messages : play.api.i18n.Messages = play.api.i18n.Messages.Implicits.applicationMessages
-  val userId = s"user-${UUID.randomUUID}"
-  implicit val user = createAtedContext(createUserAuthContext(userId, "name"))
+  implicit lazy val authContext = organisationStandardRetrievals
 
   feature("The user can add a period that the property is in relief") {
 

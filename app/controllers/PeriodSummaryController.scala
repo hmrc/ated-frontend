@@ -16,82 +16,88 @@
 
 package controllers
 
-import config.FrontendDelegationConnector
 import connectors.BackLinkCacheConnector
-import controllers.auth.{AtedFrontendAuthHelpers, AtedRegime}
+import controllers.auth.AuthAction
 import controllers.editLiability.DisposePropertyController
-import controllers.propertyDetails.{AddressLookupController, PropertyDetailsAddressController, PropertyDetailsSummaryController}
-import controllers.reliefs.{ChooseReliefsController, ReliefsSummaryController}
-import services.{SubscriptionDataService, SummaryReturnsService}
-import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
-import play.api.i18n.Messages.Implicits._
+import controllers.propertyDetails.{AddressLookupController, PropertyDetailsSummaryController}
+import controllers.reliefs.ReliefsSummaryController
 import play.api.Play.current
+import play.api.i18n.Messages.Implicits._
+import play.api.mvc.{Action, AnyContent}
+import services.{DelegationService, SubscriptionDataService, SummaryReturnsService}
 
-trait PeriodSummaryController extends BackLinkController with AtedFrontendAuthHelpers with DelegationAwareActions {
+trait PeriodSummaryController extends BackLinkController with AuthAction {
 
   def summaryReturnsService: SummaryReturnsService
   def subscriptionDataService: SubscriptionDataService
 
-  def view(periodKey: Int) = AuthAction(AtedRegime) {
-    implicit atedContext =>
+  def view(periodKey: Int): Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       for {
         periodSummaries <- summaryReturnsService.getPeriodSummaryReturns(periodKey)
         organisationName <- subscriptionDataService.getOrganisationName
       } yield {
-        Ok(views.html.periodSummary(periodKey, periodSummaries,organisationName, getBackLink))
+        Ok(views.html.periodSummary(periodKey, periodSummaries, organisationName, getBackLink))
       }
+    }
   }
 
-  def viewPastReturns(periodKey: Int) = AuthAction(AtedRegime) {
-    implicit atedContext =>
+  def viewPastReturns(periodKey: Int) : Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       for {
         periodSummaries <- summaryReturnsService.getPeriodSummaryReturns(periodKey)
         organisationName <- subscriptionDataService.getOrganisationName
       } yield {
-        Ok(views.html.periodSummaryPastReturns(periodKey, periodSummaries,organisationName, getBackLink))
+        Ok(views.html.periodSummaryPastReturns(periodKey, periodSummaries, organisationName, getBackLink))
       }
+    }
   }
 
-  def createReturn(periodKey: Int) = AuthAction(AtedRegime) {
-    implicit atedContext =>
+  def createReturn(periodKey: Int) : Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       RedirectWithBackLink(ReturnTypeController.controllerId,
         routes.ReturnTypeController.view(periodKey),
         Some(routes.PeriodSummaryController.view(periodKey).url)
       )
+    }
   }
 
-  def viewReturn(periodKey: Int) = AuthAction(AtedRegime) {
-    implicit atedContext =>
+  def viewReturn(periodKey: Int) : Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       RedirectWithBackLink(ReliefsSummaryController.controllerId,
         controllers.reliefs.routes.ReliefsSummaryController.view(periodKey),
         Some(routes.PeriodSummaryController.view(periodKey).url)
       )
+    }
   }
 
-  def viewChargeable(periodKey: Int, propertyKey: String) = AuthAction(AtedRegime) {
-    implicit atedContext =>
+  def viewChargeable(periodKey: Int, propertyKey: String) : Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       RedirectWithBackLink(PropertyDetailsSummaryController.controllerId,
         controllers.propertyDetails.routes.PropertyDetailsSummaryController.view(propertyKey),
         Some(routes.PeriodSummaryController.view(periodKey).url),
         List(AddressLookupController.controllerId)
       )
+    }
   }
 
-  def viewChargeableEdit(periodKey: Int, propertyKey: String) = AuthAction(AtedRegime) {
-    implicit atedContext =>
+  def viewChargeableEdit(periodKey: Int, propertyKey: String) : Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       RedirectWithBackLink(PropertyDetailsSummaryController.controllerId,
         controllers.editLiability.routes.EditLiabilitySummaryController.view(propertyKey),
         Some(routes.PeriodSummaryController.view(periodKey).url),
         List(AddressLookupController.controllerId)
       )
+    }
   }
 
-  def viewDisposal(periodKey: Int, propertyKey: String) = AuthAction(AtedRegime) {
-    implicit atedContext =>
+  def viewDisposal(periodKey: Int, propertyKey: String) : Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       RedirectWithBackLink(DisposePropertyController.controllerId,
         controllers.editLiability.routes.DisposeLiabilitySummaryController.view(propertyKey),
         Some(routes.PeriodSummaryController.view(periodKey).url)
       )
+    }
   }
 
   private def getBackLink() = {
@@ -100,9 +106,9 @@ trait PeriodSummaryController extends BackLinkController with AtedFrontendAuthHe
 }
 
 object PeriodSummaryController extends PeriodSummaryController {
-  val delegationConnector = FrontendDelegationConnector
-  val summaryReturnsService = SummaryReturnsService
-  val subscriptionDataService = SubscriptionDataService
-  override val controllerId = "PeriodSummaryController"
-  override val backLinkCacheConnector = BackLinkCacheConnector
+  val delegationService: DelegationService = DelegationService
+  val summaryReturnsService: SummaryReturnsService = SummaryReturnsService
+  val subscriptionDataService: SubscriptionDataService = SubscriptionDataService
+  override val controllerId: String = "PeriodSummaryController"
+  override val backLinkCacheConnector: BackLinkCacheConnector = BackLinkCacheConnector
 }

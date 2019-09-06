@@ -16,29 +16,26 @@
 
 package controllers.propertyDetails
 
-import config.FrontendDelegationConnector
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
-import controllers.auth.{AtedRegime, ClientHelper}
-import forms.PropertyDetailsForms
+import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms._
-import org.joda.time.LocalDate
-import services.PropertyDetailsService
-import utils.AtedUtils
-import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
-
+import play.api.i18n.Messages.Implicits._
+import play.api.mvc.{Action, AnyContent}
+import services.{DelegationService, PropertyDetailsService}
 import scala.concurrent.Future
 
-trait PeriodChooseReliefController extends PropertyDetailsHelpers with ClientHelper {
+trait PeriodChooseReliefController extends PropertyDetailsHelpers with ClientHelper with AuthAction {
 
 
-  def add(id: String, periodKey: Int) = AuthAction(AtedRegime) {
-    implicit atedContext =>
-        ensureClientContext(Future.successful(Ok(views.html.propertyDetails.periodChooseRelief(id, periodKey, periodChooseReliefForm, getBackLink(id)))))
+  def add(id: String, periodKey: Int): Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
+      ensureClientContext(Future.successful(Ok(views.html.propertyDetails.periodChooseRelief(id, periodKey, periodChooseReliefForm, getBackLink(id)))))
+    }
   }
 
-  def save(id: String, periodKey: Int) = AuthAction(AtedRegime) {
-    implicit atedContext =>
+  def save(id: String, periodKey: Int): Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       ensureClientContext {
         periodChooseReliefForm.bindFromRequest.fold(
           formWithError =>
@@ -54,6 +51,7 @@ trait PeriodChooseReliefController extends PropertyDetailsHelpers with ClientHel
           }
         )
       }
+    }
   }
 
   private def getBackLink(id: String) = {
@@ -62,9 +60,9 @@ trait PeriodChooseReliefController extends PropertyDetailsHelpers with ClientHel
 }
 
 object PeriodChooseReliefController extends PeriodChooseReliefController {
-  val delegationConnector = FrontendDelegationConnector
-  val propertyDetailsService = PropertyDetailsService
-  val dataCacheConnector = DataCacheConnector
-  override val controllerId = "PeriodChooseReliefController"
-  override val backLinkCacheConnector = BackLinkCacheConnector
+  val delegationService: DelegationService = DelegationService
+  val propertyDetailsService: PropertyDetailsService.type = PropertyDetailsService
+  val dataCacheConnector: DataCacheConnector.type = DataCacheConnector
+  override val controllerId: String = "PeriodChooseReliefController"
+  override val backLinkCacheConnector: BackLinkCacheConnector.type = BackLinkCacheConnector
 }

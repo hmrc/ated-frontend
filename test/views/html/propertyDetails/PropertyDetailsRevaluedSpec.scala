@@ -17,11 +17,16 @@
 package views.html.propertyDetails
 
 import forms.PropertyDetailsForms
+import models.StandardAuthRetrievals
+import org.scalatest.mockito.MockitoSugar
 import play.api.data.{Form, FormError}
 import play.twirl.api.Html
+import utils.MockAuthUtil
 import utils.viewHelpers.AtedViewSpec
 
-class PropertyDetailsRevaluedSpec extends AtedViewSpec {
+class PropertyDetailsRevaluedSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil {
+
+  implicit lazy val authContext = organisationStandardRetrievals
 
   "Property Details Revalued view" must {
     behave like pageWithTitle(messages("ated.property-details-value.isPropertyRevalued.title"))

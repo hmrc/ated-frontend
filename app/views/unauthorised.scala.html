@@ -14,13 +14,13 @@
  * limitations under the License.
  *@
 
-@()(implicit atedContext: AtedContext, messages: Messages)
+@()(implicit isSa: Boolean, messages: Messages, request: Request[AnyContent])
 
-@import uk.gov.hmrc.play.views.html._
+
 
 @atedNoAuthMain(title = Messages("unauthorised.title"), supportLinkEnabled = false) {
 
-  @if(atedContext.user.authContext.principal.accounts.sa.isDefined) {
+  @if(isSa) {
     <h1>@Messages("unauthorised.sa.header")</h1>
   } else {
     <h1>@Messages("unauthorised.header")</h1>

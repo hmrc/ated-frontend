@@ -16,25 +16,23 @@
 
 package controllers.subscriptionData
 
-import config.FrontendDelegationConnector
 import connectors.DataCacheConnector
 import controllers.AtedBaseController
-import controllers.auth.{AtedFrontendAuthHelpers, AtedRegime}
-import play.api.Logger
-import services.{DetailsService, SubscriptionDataService}
-import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
-import play.api.i18n.Messages.Implicits._
+import controllers.auth.AuthAction
 import play.api.Play.current
+import play.api.i18n.Messages.Implicits._
+import play.api.mvc.{Action, AnyContent}
+import services.{DelegationService, DetailsService, SubscriptionDataService}
 
 import scala.concurrent.Future
 
-trait CompanyDetailsController extends AtedBaseController with AtedFrontendAuthHelpers with DelegationAwareActions {
+trait CompanyDetailsController extends AtedBaseController with AuthAction {
 
   def subscriptionDataService: SubscriptionDataService
   def detailsDataService: DetailsService
 
-  def view = AuthAction(AtedRegime) {
-    implicit atedContext =>
+  def view : Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       for {
         emailConsent <- subscriptionDataService.getEmailConsent
         correspondenceAddress <- subscriptionDataService.getCorrespondenceAddress
@@ -51,19 +49,20 @@ trait CompanyDetailsController extends AtedBaseController with AtedFrontendAuthH
           Some(controllers.routes.AccountSummaryController.view().url)
         ))
       }
+    }
   }
 
-  def back = AuthAction(AtedRegime) {
-    implicit atedContext =>
+  def back: Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       Future.successful(Redirect(controllers.routes.AccountSummaryController.view()))
+    }
   }
-
 }
 
 object CompanyDetailsController extends CompanyDetailsController {
-  val delegationConnector = FrontendDelegationConnector
-  val dataCacheConnector = DataCacheConnector
-  val subscriptionDataService = SubscriptionDataService
-  val detailsDataService = DetailsService
+  val delegationService: DelegationService = DelegationService
+  val dataCacheConnector: DataCacheConnector = DataCacheConnector
+  val subscriptionDataService: SubscriptionDataService = SubscriptionDataService
+  val detailsDataService: DetailsService = DetailsService
 
 }

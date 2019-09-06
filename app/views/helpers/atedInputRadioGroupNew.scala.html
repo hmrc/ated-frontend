@@ -14,7 +14,7 @@
  * limitations under the License.
  *@
 
-@(field: Field, radioOptions: Seq[(String, String)], args: (Symbol, Any)*)(implicit messages: Messages, formInstance: Option[Form[_]] = None)
+@(field: Field, radioOptions: Seq[(String, String)], args: (Symbol, Any)*)(implicit messages: Messages, formInstance: Option[Form[_]] = None, request: Request[AnyContent])
 
 @import play.api.i18n._
 @import views.html.helper._

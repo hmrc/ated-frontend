@@ -16,26 +16,27 @@
 
 package controllers.propertyDetails
 
-import config.FrontendDelegationConnector
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
-import controllers.auth.{AtedRegime, ClientHelper}
+import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms
 import forms.PropertyDetailsForms._
-import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService}
-import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
+import play.api.i18n.Messages.Implicits._
+import play.api.mvc.{Action, AnyContent}
+import services.{DelegationService, PropertyDetailsCacheSuccessResponse, PropertyDetailsService}
 
 import scala.concurrent.Future
 
-trait PeriodInReliefDatesController extends PropertyDetailsHelpers with ClientHelper {
+trait PeriodInReliefDatesController extends PropertyDetailsHelpers with ClientHelper with AuthAction {
 
-  def add(id: String, periodKey: Int) = AuthAction(AtedRegime) {
-    implicit atedContext =>
-        ensureClientContext(Future.successful(Ok(views.html.propertyDetails.periodInReliefDates(id, periodKey, periodInReliefDatesForm, getBackLink(id, periodKey)))))
+  def add(id: String, periodKey: Int) : Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
+      ensureClientContext(Future.successful(Ok(views.html.propertyDetails.periodInReliefDates(id,
+        periodKey, periodInReliefDatesForm, getBackLink(id, periodKey)))))
+    }
   }
-
-  def save(id: String, periodKey: Int) = AuthAction(AtedRegime) {
-    implicit atedContext =>
+  def save(id: String, periodKey: Int) : Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       ensureClientContext {
         propertyDetailsCacheResponse(id) {
           case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
@@ -50,21 +51,21 @@ trait PeriodInReliefDatesController extends PropertyDetailsHelpers with ClientHe
                 } yield {
                   Redirect(controllers.propertyDetails.routes.PeriodsInAndOutReliefController.view(id))
                 }
-
               }
             )
+          }
         }
       }
-  }
+    }
   private def getBackLink(id: String, periodKey: Int) = {
     Some(controllers.propertyDetails.routes.PeriodChooseReliefController.add(id, periodKey).url)
   }
 }
 
 object PeriodInReliefDatesController extends PeriodInReliefDatesController {
-  val delegationConnector = FrontendDelegationConnector
-  val dataCacheConnector = DataCacheConnector
-  val propertyDetailsService = PropertyDetailsService
-  override val controllerId = "PeriodInReliefDatesController"
-  override val backLinkCacheConnector = BackLinkCacheConnector
+  val delegationService: DelegationService = DelegationService
+  val dataCacheConnector: DataCacheConnector = DataCacheConnector
+  val propertyDetailsService:PropertyDetailsService = PropertyDetailsService
+  override val controllerId: String = "PeriodInReliefDatesController"
+  override val backLinkCacheConnector: BackLinkCacheConnector = BackLinkCacheConnector
 }

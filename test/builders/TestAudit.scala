@@ -25,11 +25,13 @@ import uk.gov.hmrc.http.HeaderCarrier
 
 class TestAudit extends Audit("test", AtedFrontendAuditConnector) {
 
+  implicit val hc: HeaderCarrier = HeaderCarrier()
+
   var capturedTxName: String = ""
   var capturedInputs: Map[String, String] = Map.empty
   private val dataEvents = new ConcurrentLinkedQueue[DataEvent]
 
-  override def as[A](auditMagnet: AuditAsMagnet[A])(body: Body[A])(implicit hc: HeaderCarrier): A = {
+  def as[A](auditMagnet: AuditAsMagnet[A])(body: Body[A]): A = {
     this.capturedTxName = auditMagnet.txName
     this.capturedInputs = auditMagnet.inputs
     super.as(auditMagnet)(body)

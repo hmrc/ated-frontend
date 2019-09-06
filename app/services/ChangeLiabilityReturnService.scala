@@ -21,11 +21,11 @@ import models._
 import org.joda.time.DateTime
 import play.api.Logger
 import play.api.http.Status._
+import uk.gov.hmrc.http.HeaderCarrier
 import utils.AtedConstants._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import uk.gov.hmrc.http.HeaderCarrier
 
 trait ChangeLiabilityReturnService {
 
@@ -34,7 +34,7 @@ trait ChangeLiabilityReturnService {
   def dataCacheConnector: DataCacheConnector
 
   def retrieveSubmittedLiabilityReturnAndCache(oldFormBundleNo: String, fromSelectedPastReturn: Option[Boolean] = None, periodKey: Option[SelectPeriod] = None)
-                             (implicit atedContext: AtedContext, hc: HeaderCarrier): Future[Option[PropertyDetails]] = {
+                             (implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[Option[PropertyDetails]] = {
     (fromSelectedPastReturn, periodKey) match {
       case (Some(true), Some(x)) =>
         atedConnector.retrieveAndCachePreviousLiabilityReturn(oldFormBundleNo, x.period.get.toInt) map {
@@ -58,36 +58,36 @@ trait ChangeLiabilityReturnService {
   }
 
   def cacheChangeLiabilityReturnHasBankDetails(oldFormBundleNo: String, updatedValue: Boolean)
-                                    (implicit atedContext: AtedContext, hc: HeaderCarrier) = {
+                                    (implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[Option[PropertyDetails]] = {
     atedConnector.cacheDraftChangeLiabilityReturnHasBank(oldFormBundleNo, updatedValue) map {
       response => response.status match {
         case OK => response.json.asOpt[PropertyDetails]
-        case status => None
+        case _  => None
       }
     }
   }
 
 
   def cacheChangeLiabilityReturnBank(oldFormBundleNo: String, updatedValue: BankDetails)
-                                    (implicit atedContext: AtedContext, hc: HeaderCarrier) = {
+                                    (implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[Option[PropertyDetails]]  = {
     atedConnector.cacheDraftChangeLiabilityReturnBank(oldFormBundleNo, updatedValue) map {
       response => response.status match {
         case OK => response.json.asOpt[PropertyDetails]
-        case status => None
+        case _  => None
       }
     }
   }
 
-  def submitDraftChangeLiability(oldFormBundleNo: String)(implicit atedContext: AtedContext, hc: HeaderCarrier): Future[EditLiabilityReturnsResponseModel] = {
-    atedConnector.submitDraftChangeLiabilityReturn(oldFormBundleNo) flatMap {
-      changeLiabilityResponse => changeLiabilityResponse.status match {
+  def submitDraftChangeLiability(oldFormBundleNo: String)
+                                (implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[EditLiabilityReturnsResponseModel] = {
+    atedConnector.submitDraftChangeLiabilityReturn(oldFormBundleNo) flatMap { changeLiabilityResponse =>
+      changeLiabilityResponse.status match {
         case OK =>
-          dataCacheConnector.clearCache() flatMap {
-            response =>
+          dataCacheConnector.clearCache() flatMap { _ =>
               dataCacheConnector.saveFormData[EditLiabilityReturnsResponseModel](formId = SubmitEditedLiabilityReturnsResponseFormId,
                 data = changeLiabilityResponse.json.as[EditLiabilityReturnsResponseModel])
           }
-        case status => Future.successful(EditLiabilityReturnsResponseModel(DateTime.now(), Nil, BigDecimal(0.00)))
+        case _ => Future.successful(EditLiabilityReturnsResponseModel(DateTime.now(), Nil, BigDecimal(0.00)))
       }
     }
   }
@@ -95,6 +95,6 @@ trait ChangeLiabilityReturnService {
 }
 
 object ChangeLiabilityReturnService extends ChangeLiabilityReturnService {
-  val atedConnector = AtedConnector
-  val dataCacheConnector = DataCacheConnector
+  val atedConnector: AtedConnector = AtedConnector
+  val dataCacheConnector: DataCacheConnector = DataCacheConnector
 }

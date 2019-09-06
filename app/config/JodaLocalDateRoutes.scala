@@ -18,7 +18,6 @@ package config
 
 import org.joda.time.LocalDate
 import org.joda.time.format.DateTimeFormat
-import java.net.URLEncoder
 import play.api.mvc._
 
 

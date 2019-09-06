@@ -17,9 +17,9 @@
 package utils
 
 import models._
+import play.api.Play.current
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
-import play.api.Play.current
 
 object ReliefsUtils extends ReliefConstants {
 

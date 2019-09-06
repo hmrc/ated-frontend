@@ -14,7 +14,7 @@
  * limitations under the License.
  *@
 
-@(field: play.api.data.Field, elementOptions: Seq[(String, String)], displayEmptyValue: Boolean, args: (Symbol,Any)*)(implicit messages: Messages)
+@(field: play.api.data.Field, elementOptions: Seq[(String, String)], displayEmptyValue: Boolean, args: (Symbol,Any)*)(implicit messages: Messages, request: Request[AnyContent])
 
 @import play.api.i18n._
 @import views.html.helper._

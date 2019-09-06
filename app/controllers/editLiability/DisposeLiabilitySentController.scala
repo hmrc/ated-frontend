@@ -16,26 +16,25 @@
 
 package controllers.editLiability
 
-import config.FrontendDelegationConnector
 import connectors.DataCacheConnector
 import controllers.AtedBaseController
-import controllers.auth.{AtedFrontendAuthHelpers, AtedRegime, ClientHelper}
+import controllers.auth.{AuthAction, ClientHelper}
 import models.EditLiabilityReturnsResponseModel
-import play.api.Logger
-import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
-import utils.AtedConstants._
-import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
-import services.SubscriptionDataService
+import play.api.i18n.Messages.Implicits._
+import play.api.mvc.{Action, AnyContent}
+import services.{DelegationService, SubscriptionDataService}
+import utils.AtedConstants._
+
 
 trait DisposeLiabilitySentController extends AtedBaseController
-  with AtedFrontendAuthHelpers with DelegationAwareActions with ClientHelper {
+  with AuthAction with ClientHelper {
 
   def dataCacheConnector: DataCacheConnector
   def subscriptionDataService: SubscriptionDataService
 
-  def view(oldFormBundleNo: String) = AuthAction(AtedRegime) {
-    implicit atedContext =>
+  def view(oldFormBundleNo: String): Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       dataCacheConnector.fetchAndGetFormData[EditLiabilityReturnsResponseModel](SubmitEditedLiabilityReturnsResponseFormId) map {
         case Some(submitResponse) =>
           submitResponse.liabilityReturnResponse.find(_.oldFormBundleNumber == oldFormBundleNo) match {
@@ -45,24 +44,27 @@ trait DisposeLiabilitySentController extends AtedBaseController
         case None =>
           throw new RuntimeException("Return Response not found in cache")
       }
+    }
   }
 
-  def viewPrintFriendlyDisposeliabilitySent(oldFormBundleNo: String) = AuthAction(AtedRegime) {
-    implicit atedContext =>
+  def viewPrintFriendlyDisposeliabilitySent(oldFormBundleNo: String): Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       for {
         submittedResponse <- dataCacheConnector.fetchAndGetFormData[EditLiabilityReturnsResponseModel](SubmitEditedLiabilityReturnsResponseFormId)
         organisationName <- subscriptionDataService.getOrganisationName
       } yield {
         val x = submittedResponse.get.liabilityReturnResponse.find(_.oldFormBundleNumber == oldFormBundleNo)
         val returnType = if (x.get.amountDueOrRefund < BigDecimal(0)) "A" else if (x.get.amountDueOrRefund > BigDecimal(0)) "F" else "C"
-        Ok(views.html.editLiability.disposeLiabilitySentPrintFriendly(submittedResponse, returnType, organisationName, x.get.paymentReference, x.get.amountDueOrRefund, x.get.liabilityAmount))
+        Ok(views.html.editLiability.disposeLiabilitySentPrintFriendly(submittedResponse, returnType,
+          organisationName, x.get.paymentReference, x.get.amountDueOrRefund, x.get.liabilityAmount))
       }
+    }
   }
 
 }
 
 object DisposeLiabilitySentController extends DisposeLiabilitySentController {
-  val delegationConnector = FrontendDelegationConnector
-  val subscriptionDataService = SubscriptionDataService
-  override val dataCacheConnector = DataCacheConnector
+  val delegationService: DelegationService = DelegationService
+  val subscriptionDataService: SubscriptionDataService = SubscriptionDataService
+  override val dataCacheConnector: DataCacheConnector = DataCacheConnector
 }

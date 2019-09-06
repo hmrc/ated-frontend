@@ -18,34 +18,35 @@ package controllers.subscriptionData
 
 import java.util.UUID
 
-import builders.{AuthBuilder, SessionBuilder, TitleBuilder}
-import config.FrontendDelegationConnector
+import builders.{SessionBuilder, TitleBuilder}
 import models.{Address, AddressDetails, ContactDetails, EditContactDetails}
 import org.jsoup.Jsoup
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mock.MockitoSugar
-import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
+import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.play.PlaySpec
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.libs.json.Json
 import play.api.mvc.{AnyContentAsJson, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.SubscriptionDataService
-import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
+import services.{DelegationService, SubscriptionDataService}
+import uk.gov.hmrc.auth.core.{AffinityGroup, PlayAuthConnector}
+import uk.gov.hmrc.http.HeaderCarrier
+import utils.MockAuthUtil
 
 import scala.concurrent.Future
-import uk.gov.hmrc.http.HeaderCarrier
 
-class EditContactDetailsControllerSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
+class EditContactDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with MockAuthUtil {
 
-  val mockAuthConnector = mock[AuthConnector]
-  val mockSubscriptionDataService = mock[SubscriptionDataService]
+  val mockSubscriptionDataService: SubscriptionDataService = mock[SubscriptionDataService]
+implicit lazy val hc: HeaderCarrier = HeaderCarrier()
 
   object TestEditAtedContactController extends EditContactDetailsController {
-    override val authConnector = mockAuthConnector
-    override val delegationConnector: DelegationConnector = FrontendDelegationConnector
-    override val subscriptionDataService = mockSubscriptionDataService
+    override val authConnector: PlayAuthConnector = mockAuthConnector
+    override val delegationService: DelegationService = mockDelegationService
+    override val subscriptionDataService: SubscriptionDataService = mockSubscriptionDataService
   }
 
   override def beforeEach(): Unit = {
@@ -56,13 +57,7 @@ class EditContactDetailsControllerSpec extends PlaySpec with OneServerPerSuite w
   "EditContactDetailsController " must {
 
     "use correct DelegationConnector ...." in {
-      EditContactDetailsController.delegationConnector must be(FrontendDelegationConnector)
-    }
-
-    "not respond with NOT_FOUND for the GET" in {
-      val result = route(FakeRequest(GET, "/ated/edit-contact"))
-      result.isDefined must be(true)
-      status(result.get) must not be (NOT_FOUND)
+      EditContactDetailsController.delegationService must be(DelegationService)
     }
 
     "unauthorised users" must {
@@ -144,7 +139,7 @@ class EditContactDetailsControllerSpec extends PlaySpec with OneServerPerSuite w
         "not respond with NOT_FOUND" in {
           val result = route(FakeRequest(POST, "/ated/contact-address"))
           result.isDefined must be(true)
-          status(result.get) must not be (NOT_FOUND)
+          status(result.get) must not be NOT_FOUND
         }
 
         "unauthorised users" must {
@@ -251,19 +246,16 @@ class EditContactDetailsControllerSpec extends PlaySpec with OneServerPerSuite w
 
   def getWithUnAuthorisedUser(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
-    AuthBuilder.mockUnAuthorisedUser(userId, mockAuthConnector)
+        val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
+    setInvalidAuthMocks(authMock)
     val result = TestEditAtedContactController.edit().apply(SessionBuilder.buildRequestWithSession(userId))
-    test(result)
-  }
-
-  def getWithUnAuthenticated(test: Future[Result] => Any) {
-    val result = TestEditAtedContactController.edit().apply(SessionBuilder.buildRequestWithSessionNoUser)
     test(result)
   }
 
   def getWithAuthorisedUser(companyDetails: Option[Address] = None)(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
-    AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
+    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+    setAuthMocks(authMock)
     implicit val hc: HeaderCarrier = HeaderCarrier()
     when(mockSubscriptionDataService.getCorrespondenceAddress(Matchers.any(), Matchers.any())).thenReturn(Future.successful(companyDetails))
     val result = TestEditAtedContactController.edit().apply(SessionBuilder.buildRequestWithSession(userId))
@@ -273,20 +265,17 @@ class EditContactDetailsControllerSpec extends PlaySpec with OneServerPerSuite w
 
   def submitWithUnAuthorisedUser(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
-    AuthBuilder.mockUnAuthorisedUser(userId, mockAuthConnector)
+        val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
+    setInvalidAuthMocks(authMock)
     val result = TestEditAtedContactController.submit().apply(SessionBuilder.buildRequestWithSession(userId))
-    test(result)
-  }
-
-  def submitWithUnAuthenticated(test: Future[Result] => Any) {
-    val result = TestEditAtedContactController.submit().apply(SessionBuilder.buildRequestWithSessionNoUser)
     test(result)
   }
 
   def submitWithAuthorisedUserSuccess(testAddress: Option[EditContactDetails] = None)
                                      (fakeRequest: FakeRequest[AnyContentAsJson])(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
-    AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
+    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+    setAuthMocks(authMock)
     when(mockSubscriptionDataService.editContactDetails(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(testAddress))
     val result = TestEditAtedContactController.submit().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
 

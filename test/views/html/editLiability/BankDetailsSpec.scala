@@ -17,11 +17,17 @@
 package views.html.editLiability
 
 import forms.BankDetailForms
+import models.StandardAuthRetrievals
+import org.scalatest.mockito.MockitoSugar
 import play.api.data.{Form, FormError}
 import play.twirl.api.Html
+import utils.MockAuthUtil
 import utils.viewHelpers.AtedViewSpec
 
-class BankDetailsSpec extends AtedViewSpec {
+class BankDetailsSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil {
+  implicit lazy val authContext = organisationStandardRetrievals
+
+
 
   "Bank Details view" must {
     behave like pageWithTitle(messages("ated.bank-details.title"))

@@ -16,32 +16,31 @@
 
 package controllers.reliefs
 
-import config.FrontendDelegationConnector
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.BackLinkController
-import controllers.auth.{AtedFrontendAuthHelpers, AtedRegime, ClientHelper}
+import controllers.auth.{AuthAction, ClientHelper}
 import models.ReliefsTaxAvoidance
 import org.joda.time.LocalDate
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
-import services.{ReliefsService, SubscriptionDataService}
-import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
+import play.api.mvc.{Action, AnyContent}
+import services.{DelegationService, ReliefsService, SubscriptionDataService}
 import utils.AtedUtils
 
 import scala.concurrent.Future
 
 trait ReliefsSummaryController extends BackLinkController
-  with AtedFrontendAuthHelpers with ReliefHelpers with DelegationAwareActions  with ClientHelper {
+   with ReliefHelpers with ClientHelper with AuthAction {
 
   def subscriptionDataService: SubscriptionDataService
 
-  def view(periodKey: Int) = AuthAction(AtedRegime) {
-    implicit atedContext =>
+  def view(periodKey: Int): Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       ensureClientContext {
         validatePeriodKey(periodKey) {
           for {
             backLink <- currentBackLink
-            retrievedData <- reliefsService.retrieveDraftReliefs(atedContext.user.atedReferenceNumber, periodKey)
+            retrievedData <- reliefsService.retrieveDraftReliefs(authContext.atedReferenceNumber.get, periodKey)
           } yield {
             val canSubmit = AtedUtils.canSubmit(periodKey, LocalDate.now)
             Ok(views.html.reliefs.reliefsSummary(retrievedData.map(_.periodKey).getOrElse(periodKey),
@@ -51,6 +50,7 @@ trait ReliefsSummaryController extends BackLinkController
           }
         }
       }
+    }
   }
 
   private def isComplete(data: Option[ReliefsTaxAvoidance]) = {
@@ -75,8 +75,8 @@ trait ReliefsSummaryController extends BackLinkController
     }
   }
 
-  def continue(periodKey: Int) = AuthAction(AtedRegime) {
-    implicit atedContext =>
+  def continue(periodKey: Int): Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       ensureClientContext {
         validatePeriodKey(periodKey) {
           RedirectWithBackLink(
@@ -86,38 +86,41 @@ trait ReliefsSummaryController extends BackLinkController
           )
         }
       }
+    }
   }
 
-  def viewPrintFriendlyReliefReturn(periodKey: Int) = AuthAction(AtedRegime) {
-    implicit atedContext =>
+  def viewPrintFriendlyReliefReturn(periodKey: Int): Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       ensureClientContext {
         validatePeriodKey(periodKey) {
           for {
-            retrievedData <- reliefsService.retrieveDraftReliefs(atedContext.user.atedReferenceNumber, periodKey)
+            retrievedData <- reliefsService.retrieveDraftReliefs(authContext.atedReferenceNumber.get, periodKey)
             organisationName <- subscriptionDataService.getOrganisationName
           } yield {
             Ok(views.html.reliefs.reliefsPrintFriendly(periodKey, retrievedData, organisationName))
           }
         }
       }
+    }
   }
 
-  def deleteDraft(periodKey: Int) = AuthAction(AtedRegime) {
-    implicit atedContext =>
+  def deleteDraft(periodKey: Int): Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       ensureClientContext {
         ensureClientContext {
           Future.successful(Redirect(controllers.routes.DraftDeleteConfirmationController.view(None, periodKey, "relief")))
         }
       }
+    }
   }
 
 }
 
 object ReliefsSummaryController extends ReliefsSummaryController {
-  val reliefsService = ReliefsService
-  val delegationConnector = FrontendDelegationConnector
-  val dataCacheConnector = DataCacheConnector
-  val subscriptionDataService = SubscriptionDataService
-  override val controllerId = "ReliefsSummaryController"
-  override val backLinkCacheConnector = BackLinkCacheConnector
+  val reliefsService: ReliefsService = ReliefsService
+  val delegationService: DelegationService = DelegationService
+  val dataCacheConnector: DataCacheConnector = DataCacheConnector
+  val subscriptionDataService: SubscriptionDataService = SubscriptionDataService
+  override val controllerId: String = "ReliefsSummaryController"
+  override val backLinkCacheConnector: BackLinkCacheConnector = BackLinkCacheConnector
 }

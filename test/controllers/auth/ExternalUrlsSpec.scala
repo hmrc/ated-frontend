@@ -16,9 +16,10 @@
 
 package controllers.auth
 
-import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
+import org.scalatestplus.play.PlaySpec
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 
-class ExternalUrlsSpec extends PlaySpec with OneServerPerSuite {
+class ExternalUrlsSpec extends PlaySpec with GuiceOneServerPerSuite {
 
   "ExternalUrls" must {
 
