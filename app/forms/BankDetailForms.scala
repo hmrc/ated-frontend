@@ -17,12 +17,12 @@
 package forms
 
 import models._
+import play.api.Play.current
 import play.api.data.Forms._
 import play.api.data.format.Formatter
-import play.api.data.{Mapping, Form, FormError}
+import play.api.data.{Form, FormError, Mapping}
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
-import play.api.Play.current
 
 import scala.annotation.tailrec
 import scala.util.Try
@@ -34,7 +34,7 @@ object BankDetailForms {
   val sortCodeTuple: Mapping[Option[SortCode]] = sortCodeTupleOpt
 
   //scalastyle:off cyclomatic.complexity
-  def sortCodeTupleOpt = {
+  def sortCodeTupleOpt: Mapping[Option[SortCode]] = {
     import SortCodeFields._
 
     tuple("firstElement" -> optional(text), "secondElement" -> optional(text), "thirdElement" -> optional(text))
@@ -53,22 +53,22 @@ object BankDetailForms {
     def isValid(value: String): Boolean = value.length == TWO && Try(value.toInt).isSuccess
   }
 
-  implicit val bicSwiftFormat = new Formatter[BicSwiftCode] {
+  implicit val bicSwiftFormat: Formatter[BicSwiftCode] = new Formatter[BicSwiftCode] {
     def bind(key: String, data: Map[String, String]):Either[Seq[FormError], BicSwiftCode] = {
       val bicSwiftValue = data.get(key).getOrElse("")
       Right(BicSwiftCode(bicSwiftValue))
     }
 
-    def unbind(key: String, value: BicSwiftCode) = Map(key -> value.toString)
+    def unbind(key: String, value: BicSwiftCode): Map[String, String] = Map(key -> value.toString)
   }
 
-  implicit val ibanFormat = new Formatter[Iban] {
+  implicit val ibanFormat: Formatter[Iban] = new Formatter[Iban] {
     def bind(key: String, data: Map[String, String]):Either[Seq[FormError], Iban] = {
       val ibanValue = data.get(key).getOrElse("")
       Right(Iban(ibanValue))
     }
 
-    def unbind(key: String, value: Iban) = Map(key -> value.toString)
+    def unbind(key: String, value: Iban): Map[String, String] = Map(key -> value.toString)
   }
 
 

@@ -25,8 +25,8 @@ import play.api.test.FakeRequest
 
 class PropertyDetailsOwnedBeforeFormSpec extends PlaySpec with MustMatchers with GuiceOneServerPerSuite {
 
-  implicit lazy val messagesApi = app.injector.instanceOf[MessagesApi]
-  implicit lazy val messages = messagesApi.preferred(FakeRequest())
+  implicit lazy val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  implicit lazy val messages: Messages = messagesApi.preferred(FakeRequest())
 
   "PropertyDetailsOwnedBeforeForm" must {
     "throw error" when {

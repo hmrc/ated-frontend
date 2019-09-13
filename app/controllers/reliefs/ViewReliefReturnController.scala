@@ -16,25 +16,22 @@
 
 package controllers.reliefs
 
-import config.FrontendDelegationConnector
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
+import controllers.auth.{AuthAction, ClientHelper}
 import controllers.{AtedBaseController, BackLinkController}
-import controllers.auth.{AtedFrontendAuthHelpers, AtedRegime, ClientHelper}
-import services.{ReliefsService, SubscriptionDataService}
-import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
-import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
+import play.api.i18n.Messages.Implicits._
+import play.api.mvc.{Action, AnyContent}
+import services.{DelegationService, ReliefsService, SubscriptionDataService}
 
-import scala.concurrent.Future
-
-trait ViewReliefReturnController extends BackLinkController with AtedBaseController with AtedFrontendAuthHelpers with DelegationAwareActions
-  with ClientHelper {
+trait ViewReliefReturnController extends BackLinkController with AtedBaseController
+  with ClientHelper with AuthAction {
 
   def reliefsService: ReliefsService
   def subscriptionDataService: SubscriptionDataService
 
-  def viewReliefReturn(periodKey: Int, formBundleNo: String) = AuthAction(AtedRegime) {
-    implicit atedContext =>
+  def viewReliefReturn(periodKey: Int, formBundleNo: String): Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       ensureClientContext {
         val formBundleReturnFuture = reliefsService.viewReliefReturn(periodKey, formBundleNo)
         val organisationNameFuture = subscriptionDataService.getOrganisationName
@@ -49,30 +46,29 @@ trait ViewReliefReturnController extends BackLinkController with AtedBaseControl
           }
         }
       }
-  }
-
-
-  def submit(periodKey: Int, formBundleNumber: String) = AuthAction(AtedRegime) { implicit atedContext =>
-    val returnUrl = Some(routes.ViewReliefReturnController.viewReliefReturn(periodKey, formBundleNumber).url)
-    ensureClientContext {
-      RedirectWithBackLink(
-        ChangeReliefReturnController.controllerId,
-        controllers.reliefs.routes.ChangeReliefReturnController.viewChangeReliefReturn(periodKey, formBundleNumber),
-        returnUrl
-      )
     }
   }
 
 
-
-
+  def submit(periodKey: Int, formBundleNumber: String) : Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
+      val returnUrl = Some(routes.ViewReliefReturnController.viewReliefReturn(periodKey, formBundleNumber).url)
+      ensureClientContext {
+        RedirectWithBackLink(
+          ChangeReliefReturnController.controllerId,
+          controllers.reliefs.routes.ChangeReliefReturnController.viewChangeReliefReturn(periodKey, formBundleNumber),
+          returnUrl
+        )
+      }
+    }
+  }
 }
 
 object ViewReliefReturnController extends ViewReliefReturnController {
-  val delegationConnector = FrontendDelegationConnector
-  val reliefsService = ReliefsService
-  val dataCacheConnector = DataCacheConnector
-  def subscriptionDataService = SubscriptionDataService
+  val delegationService: DelegationService = DelegationService
+  val reliefsService: ReliefsService = ReliefsService
+  val dataCacheConnector: DataCacheConnector = DataCacheConnector
+  def subscriptionDataService: SubscriptionDataService = SubscriptionDataService
   override val controllerId = "ChangeReliefReturnController"
-  override val backLinkCacheConnector = BackLinkCacheConnector
+  override val backLinkCacheConnector: BackLinkCacheConnector = BackLinkCacheConnector
 }

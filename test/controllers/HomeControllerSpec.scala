@@ -18,39 +18,43 @@ package controllers
 
 import java.util.UUID
 
-import builders.{AuthBuilder, SessionBuilder}
-import org.jsoup.Jsoup
+import builders.SessionBuilder
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mock.MockitoSugar
-import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
+import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.play.PlaySpec
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.mvc.Result
-import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
+import services.DelegationService
+import uk.gov.hmrc.auth.core.{AffinityGroup, PlayAuthConnector}
+import uk.gov.hmrc.http.HeaderCarrier
+import utils.MockAuthUtil
 
 import scala.concurrent.Future
 
-class HomeControllerSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
+class HomeControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with MockAuthUtil {
 
-  val mockAuthConnector = mock[AuthConnector]
+  implicit lazy val hc: HeaderCarrier = HeaderCarrier()
 
-  object TestHomeController extends HomeController {
-    override val authConnector = mockAuthConnector
+object TestHomeController extends HomeController {
+    override val authConnector: PlayAuthConnector = mockAuthConnector
+    override val delegationService: DelegationService = mockDelegationService
   }
 
   override def beforeEach(): Unit = {
     reset(mockAuthConnector)
+    reset(mockDelegationService)
+  }
+
+  "HomeController" should {
+    "use correct delegationService" in {
+      HomeController.delegationService mustBe DelegationService
+    }
   }
 
   "HomeController" must {
     "Home" must {
-
-      "not respond with NOT_FOUND" in {
-        val result = route(FakeRequest(GET, "/ated/home"))
-        result.isDefined must be(true)
-        status(result.get) must not be NOT_FOUND
-      }
 
       "unauthorised users" must {
         "be redirected to the unauthorised page" in {
@@ -111,48 +115,49 @@ class HomeControllerSpec extends PlaySpec with OneServerPerSuite with MockitoSug
 
   def homeWithAuthorisedAgent(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
-    AuthBuilder.mockAuthorisedAgent(userId, mockAuthConnector)
+    val authMock = authResultDefault(AffinityGroup.Agent, agentEnrolmentSet)
+    setAuthMocks(authMock)
     val result = TestHomeController.home().apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
   def homeWithUnsubscribedUser(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
-    AuthBuilder.mockUnsubscribedUser(userId, mockAuthConnector)
+    val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
+    setAuthMocks(authMock)
     val result = TestHomeController.home().apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
   def homeWithUnsubscribedAgent(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
-    AuthBuilder.mockUnsubscribedAgent(userId, mockAuthConnector)
+    val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
+    setAuthMocks(authMock)
     val result = TestHomeController.home().apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
   def homeWithAuthorisedUser(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
-    AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
+    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+    setAuthMocks(authMock)
     val result = TestHomeController.home().apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
   def homeWithAuthorisedUserFromBTA(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
-    AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
+    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+    setAuthMocks(authMock)
     val result = TestHomeController.home(Some("bta")).apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
   def homeWithUnAuthorisedUser(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
-    AuthBuilder.mockUnAuthorisedUser(userId, mockAuthConnector)
+    val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
+    setInvalidAuthMocks(authMock)
     val result = TestHomeController.home().apply(SessionBuilder.buildRequestWithSession(userId))
-    test(result)
-  }
-
-  def homeWithUnAuthenticated(test: Future[Result] => Any) {
-    val result = TestHomeController.home().apply(SessionBuilder.buildRequestWithSessionNoUser)
     test(result)
   }
 

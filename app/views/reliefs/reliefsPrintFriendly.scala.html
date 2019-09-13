@@ -14,7 +14,7 @@
  * limitations under the License.
  *@
 
-@(periodKey: Int, reliefsTaxAvoidance : Option[ReliefsTaxAvoidance], organisationName: Option[String])(implicit atedContext: AtedContext, messages: Messages)
+@(periodKey: Int, reliefsTaxAvoidance : Option[ReliefsTaxAvoidance], organisationName: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent])
 
 @import utils.PeriodUtils._
 @import services.SubscriptionDataService._
@@ -23,7 +23,7 @@
 
 <script src='@controllers.routes.AssetsController.at("javascript/printFriendly.js")'></script>
 
-  <p id="reliefs-print-ated-ref" class="font-xsmall">@Messages("ated.refNo", atedContext.user.atedReferenceNumber)</p>
+  <p id="reliefs-print-ated-ref" class="font-xsmall">@Messages("ated.refNo", authContext.atedReferenceNumber)</p>
 
   <h1 class="heading-xlarge" id="property-details-summary-header">@Messages("ated.relief-summary.print.header", organisationName.getOrElse(""))</h1>
 

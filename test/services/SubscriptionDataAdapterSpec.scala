@@ -18,37 +18,34 @@ package services
 
 import java.util.UUID
 
-import builders.AuthBuilder
 import connectors.AtedConnector
 import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mock.MockitoSugar
-import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
+import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.play.PlaySpec
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.libs.json.Json
 import play.api.test.Helpers._
-import uk.gov.hmrc.play.http._
+import uk.gov.hmrc.http.logging.SessionId
+import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, HttpResponse, InternalServerException}
 
 import scala.concurrent.Future
-import uk.gov.hmrc.http.{ BadRequestException, HeaderCarrier, HttpResponse, InternalServerException }
-import uk.gov.hmrc.http.logging.SessionId
 
-class SubscriptionDataAdapterSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
+class SubscriptionDataAdapterSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
 
-  import AuthBuilder._
+  val mockConnector: AtedConnector = mock[AtedConnector]
 
-  val mockConnector = mock[AtedConnector]
-
-  override def beforeEach = {
+  override def beforeEach: Unit = {
     reset(mockConnector)
   }
 
   object TestSubscriptionDataService extends SubscriptionDataAdapterService {
-    override val atedConnector = mockConnector
+    override val atedConnector: AtedConnector = mockConnector
   }
 
-  val successJson =
+  val successJson: String =
     """
       |{
       |  "safeId": "XA0001234567899",
@@ -178,7 +175,7 @@ class SubscriptionDataAdapterSpec extends PlaySpec with OneServerPerSuite with M
       |}
     """.stripMargin
 
-  implicit val user = createAtedContext(createAgentAuthContext("User-Id", "name", Some("JARN1234567")))
+  implicit lazy val authContext = mock[StandardAuthRetrievals]
 
   "SubscriptionDataAdapterService" must {
     val emptySubscriptionData = SubscriptionData("", "", address = Nil, emailConsent = Some(true))

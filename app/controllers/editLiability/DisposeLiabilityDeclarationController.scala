@@ -16,33 +16,31 @@
 
 package controllers.editLiability
 
-import config.FrontendDelegationConnector
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.BackLinkController
-import controllers.auth.{AtedFrontendAuthHelpers, AtedRegime, ClientHelper}
-import services.DisposeLiabilityReturnService
-import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
-import play.api.i18n.Messages.Implicits._
+import controllers.auth.{AuthAction, ClientHelper}
 import play.api.Play.current
-
-import scala.concurrent.Future
+import play.api.i18n.Messages.Implicits._
+import play.api.mvc.{Action, AnyContent}
+import services.{DelegationService, DisposeLiabilityReturnService}
 
 trait DisposeLiabilityDeclarationController extends BackLinkController
-  with AtedFrontendAuthHelpers with DelegationAwareActions with ClientHelper {
+  with AuthAction with ClientHelper {
 
   def disposeLiabilityReturnService: DisposeLiabilityReturnService
 
-  def view(oldFormBundleNo: String) = AuthAction(AtedRegime) {
-    implicit atedContext =>
+  def view(oldFormBundleNo: String): Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       ensureClientContext {
         currentBackLink.map(backLink =>
           Ok(views.html.editLiability.disposeLiabilityDeclaration(oldFormBundleNo, backLink))
         )
       }
+    }
   }
 
-  def submit(oldFormBundleNo: String) = AuthAction(AtedRegime) {
-    implicit atedContext =>
+  def submit(oldFormBundleNo: String): Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       ensureClientContext {
         disposeLiabilityReturnService.submitDraftDisposeLiability(oldFormBundleNo) map {
           response =>
@@ -52,14 +50,15 @@ trait DisposeLiabilityDeclarationController extends BackLinkController
             }
         }
       }
+    }
   }
 
 }
 
 object DisposeLiabilityDeclarationController extends DisposeLiabilityDeclarationController {
-  val delegationConnector = FrontendDelegationConnector
-  val dataCacheConnector = DataCacheConnector
-  val disposeLiabilityReturnService = DisposeLiabilityReturnService
-  override val controllerId = "DisposeLiabilityDeclarationController"
-  override val backLinkCacheConnector = BackLinkCacheConnector
+  val delegationService : DelegationService = DelegationService
+  val dataCacheConnector: DataCacheConnector = DataCacheConnector
+  val disposeLiabilityReturnService: DisposeLiabilityReturnService = DisposeLiabilityReturnService
+  override val controllerId: String = "DisposeLiabilityDeclarationController"
+  override val backLinkCacheConnector: BackLinkCacheConnector = BackLinkCacheConnector
 }

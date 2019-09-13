@@ -24,7 +24,7 @@
 @import views.html.helpers._
 @import views.html.helpers.error._
 
-@(periodKey: Int, returnType: String, addressResultsForm: Form[AddressSelected], prevReturns: Seq[PreviousReturns], backLink: Option[String])(implicit atedContext: AtedContext, messages: Messages)
+@(periodKey: Int, returnType: String, addressResultsForm: Form[AddressSelected], prevReturns: Seq[PreviousReturns], backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent])
 
 @analyticsJs = {
   ga('set', 'page', document.location.pathname);
@@ -32,7 +32,6 @@
 }
 
 @atedMain(title = Messages("ated.select-past-return.title"),
-          attorney = atedContext.user.authContext.attorney,
           analyticsAdditionalJs = Some(analyticsJs)) {
 
 @pageHeadersAndError(backLink, "pre-header", Messages("ated.return-type.pre-header"), "header", Messages("ated.select-past-return.header"),

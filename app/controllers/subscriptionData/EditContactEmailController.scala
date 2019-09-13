@@ -16,25 +16,22 @@
 
 package controllers.subscriptionData
 
-import config.FrontendDelegationConnector
 import connectors.DataCacheConnector
 import controllers.AtedBaseController
-import controllers.auth.{AtedFrontendAuthHelpers, AtedRegime}
+import controllers.auth.AuthAction
 import forms.AtedForms._
-import models.{AtedContext, EditContactDetails, EditContactDetailsEmail}
-import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
-import services.SubscriptionDataService
-import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
+import play.api.i18n.Messages.Implicits._
+import play.api.mvc.{Action, AnyContent}
+import services.{DelegationService, SubscriptionDataService}
 
 import scala.concurrent.Future
 
-trait EditContactEmailController extends AtedBaseController with AtedFrontendAuthHelpers with DelegationAwareActions {
+trait EditContactEmailController extends AtedBaseController with AuthAction {
   val subscriptionDataService: SubscriptionDataService
 
-  def edit = AuthAction(AtedRegime) {
-    implicit atedContext =>
+  def edit : Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       for {
         emailWithConsent <- subscriptionDataService.getEmailWithConsent
       } yield {
@@ -44,11 +41,12 @@ trait EditContactEmailController extends AtedBaseController with AtedFrontendAut
         }
         Ok(views.html.subcriptionData.editContactEmail(populatedForm, getBackLink))
       }
+    }
   }
 
 
-  def submit = AuthAction(AtedRegime) {
-    implicit atedContext =>
+  def submit : Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
 
       validateEmail(editContactDetailsEmailForm.bindFromRequest).fold(
         formWithErrors => Future.successful(BadRequest(views.html.subcriptionData.editContactEmail(formWithErrors, getBackLink))),
@@ -60,15 +58,16 @@ trait EditContactEmailController extends AtedBaseController with AtedFrontendAut
           }
         }
       )
+    }
   }
 
   private def getBackLink = {
-    Some(controllers.subscriptionData.routes.CompanyDetailsController.view.url)
+    Some(controllers.subscriptionData.routes.CompanyDetailsController.view().url)
   }
 }
 
 object EditContactEmailController extends EditContactEmailController {
-  val delegationConnector = FrontendDelegationConnector
-  val dataCacheConnector = DataCacheConnector
-  override val subscriptionDataService = SubscriptionDataService
+  val delegationService: DelegationService = DelegationService
+  val dataCacheConnector: DataCacheConnector = DataCacheConnector
+  override val subscriptionDataService: SubscriptionDataService = SubscriptionDataService
 }

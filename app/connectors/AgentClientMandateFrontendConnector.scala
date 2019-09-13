@@ -18,8 +18,8 @@ package connectors
 
 import config.{ApplicationConfig, WSHttp}
 import play.api.Mode.Mode
-import play.api.{Configuration, Play}
 import play.api.mvc.Request
+import play.api.{Configuration, Play}
 import uk.gov.hmrc.crypto.ApplicationCrypto
 import uk.gov.hmrc.http.{CoreGet, HttpResponse}
 import uk.gov.hmrc.play.config.ServicesConfig

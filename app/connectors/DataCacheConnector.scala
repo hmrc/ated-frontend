@@ -17,30 +17,27 @@
 package connectors
 
 import config.AtedSessionCache
-import models.AtedContext
+import models.StandardAuthRetrievals
 import play.api.libs.json.Format
 import uk.gov.hmrc.http.cache.client.SessionCache
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import uk.gov.hmrc.http.{ HeaderCarrier, HttpResponse }
 
 trait DataCacheConnector {
 
   def sessionCache: SessionCache
 
-  def saveFormData[T](formId: String, data: T)(implicit atedContext: AtedContext, hc: HeaderCarrier, formats: Format[T]): Future[T] = {
-    sessionCache.cache[T](formId, data) map {
-      cacheMap =>
-        data
-    }
+  def saveFormData[T](formId: String, data: T)(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier, formats: Format[T]): Future[T] = {
+    sessionCache.cache[T](formId, data) map { _ => data }
   }
 
-  def fetchAndGetFormData[T](formId: String)(implicit atedContext: AtedContext, hc: HeaderCarrier, formats: Format[T]): Future[Option[T]] = {
+  def fetchAndGetFormData[T](formId: String)(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier, formats: Format[T]): Future[Option[T]] = {
     sessionCache.fetchAndGetEntry[T](key = formId)
   }
 
-  def fetchAtedRefData[T](formId: String)(implicit atedContext: AtedContext, hc: HeaderCarrier, formats: Format[T]): Future[Option[T]] = {
+  def fetchAtedRefData[T](formId: String)(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier, formats: Format[T]): Future[Option[T]] = {
     sessionCache.fetchAndGetEntry[T](key = formId)
   }
 
@@ -51,5 +48,5 @@ trait DataCacheConnector {
 }
 
 object DataCacheConnector extends DataCacheConnector {
-  val sessionCache = AtedSessionCache
+  val sessionCache: SessionCache = AtedSessionCache
 }

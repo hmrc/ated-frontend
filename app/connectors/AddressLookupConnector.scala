@@ -19,17 +19,17 @@ package connectors
 import java.net.URLEncoder
 
 import config.WSHttp
-import models.{AddressLookup, AddressLookupRecord, AtedContext}
-import play.api.{Configuration, Play}
+import models.{AddressLookup, AddressLookupRecord}
 import play.api.Mode.Mode
+import play.api.{Configuration, Play}
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.config.ServicesConfig
-import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 object AddressLookupConnector extends AddressLookupConnector {
-  val serviceURL = baseUrl("address-lookup")
+  val serviceURL: String = baseUrl("address-lookup")
 
   override protected def mode: Mode = Play.current.mode
 
@@ -45,16 +45,16 @@ trait AddressLookupConnector extends ServicesConfig with RawResponseReads {
 
   val http: CoreGet with CorePost with CoreDelete = WSHttp
 
-  def findByPostcode(addressLookup: AddressLookup)
-                    (implicit atedContext: AtedContext, hc: HeaderCarrier):Future[List[AddressLookupRecord]] = {
+  def findByPostcode(addressLookup: AddressLookup)(implicit hc: HeaderCarrier)
+                    :Future[List[AddressLookupRecord]] = {
     val filter = addressLookup.houseName.map(fi => "&filter=" + enc(fi)).getOrElse("")
     http.GET[List[AddressLookupRecord]](serviceURL + POSTCODE_LOOKUP + addressLookup.postcode + filter).recover {
       case e => Nil
     }
   }
 
-  def findById(id: String)
-                    (implicit atedContext: AtedContext, hc: HeaderCarrier):Future[Option[AddressLookupRecord]] = {
+  def findById(id: String)(implicit hc: HeaderCarrier)
+                    :Future[Option[AddressLookupRecord]] = {
     http.GET[Option[AddressLookupRecord]](serviceURL + ID_LOOKUP + enc(id)).recover {
       case e: NotFoundException => None
     }

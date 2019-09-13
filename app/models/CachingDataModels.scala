@@ -16,10 +16,10 @@
 
 package models
 
-import play.api.libs.json.Json
+import play.api.libs.json.{Json, OFormat}
 
 case class CachedData(subscriptionData: SubscriptionData, registrationDetails: Option[EtmpRegistrationDetails] = None)
 
 object CachedData {
-  implicit val formats = Json.format[CachedData]
+  implicit val formats: OFormat[CachedData] = Json.format[CachedData]
 }

@@ -16,52 +16,52 @@
 
 package utils
 
+import play.api.Play.current
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
-import play.api.Play.current
 
 object AtedConstants {
 
-  val IdentifierArn = "arn"
-  val IdentifierUtr = "utr"
-  val IdentifierSafeId = "safeid"
-  val LoggedInUser = "loggedInUser"
-  val SubmitReturnsResponseFormId = "submit-returns-response-Id"
-  val SubmitEditedLiabilityReturnsResponseFormId = "submit-edited-liability-returns-response-Id"
-  val RetrieveReturnsResponseId = "get-returns-response-Id"
-  val PreviousReturnsDetailsList = "previous-return-details-list"
-  val RetrieveSubscriptionDataId = "get-subscription-data-response-Id"
-  val RetrieveSelectPeriodFormId = "get-selected-period-Id"
-  val RetrieveReturnTypeFormId = "get-selected-return-type-Id"
-  val DelegatedClientAtedRefNumber = "delegatedClientAtedRefNumber"
+  val IdentifierArn: String = "arn"
+  val IdentifierUtr: String = "utr"
+  val IdentifierSafeId: String = "safeid"
+  val LoggedInUser: String = "loggedInUser"
+  val SubmitReturnsResponseFormId: String = "submit-returns-response-Id"
+  val SubmitEditedLiabilityReturnsResponseFormId: String = "submit-edited-liability-returns-response-Id"
+  val RetrieveReturnsResponseId: String = "get-returns-response-Id"
+  val PreviousReturnsDetailsList: String = "previous-return-details-list"
+  val RetrieveSubscriptionDataId: String = "get-subscription-data-response-Id"
+  val RetrieveSelectPeriodFormId: String = "get-selected-period-Id"
+  val RetrieveReturnTypeFormId: String = "get-selected-return-type-Id"
+  val DelegatedClientAtedRefNumber: String = "delegatedClientAtedRefNumber"
 
-  val AddressTypeCorrespondence = "Correspondence"
+  val AddressTypeCorrespondence: String = "Correspondence"
 
-  val PeriodKey = "2015"
-  val PeriodStartMonth = "4"
-  val PeriodStartDay = "1"
+  val PeriodKey: String = "2015"
+  val PeriodStartMonth: String = "4"
+  val PeriodStartDay: String = "1"
 
-  val ReliefReturnType = "relief"
-  val LiabilityReturnType = "liability"
-  val DisposeReturnType = "de-enveloped"
+  val ReliefReturnType: String = "relief"
+  val LiabilityReturnType: String = "liability"
+  val DisposeReturnType: String = "de-enveloped"
 
-  lazy val FurtherReturnDec =  Messages("ated.edit-liability.declaration.header.further")
-  lazy val AmendedReturnDec =  Messages("ated.edit-liability.declaration.header.amend")
-  lazy val ChangeDetailsDec =  Messages("ated.edit-liability.declaration.header.change")
+  lazy val FurtherReturnDec: String =  Messages("ated.edit-liability.declaration.header.further")
+  lazy val AmendedReturnDec: String =  Messages("ated.edit-liability.declaration.header.amend")
+  lazy val ChangeDetailsDec: String =  Messages("ated.edit-liability.declaration.header.change")
 
-  lazy val FurtherReturnSub =  Messages("ated.edit-liability.declaration.submit.further")
-  lazy val AmendedReturnSub =  Messages("ated.edit-liability.declaration.submit.amend")
-  lazy val ChangedReturnSub =  Messages("ated.edit-liability.declaration.submit.change")
+  lazy val FurtherReturnSub: String =  Messages("ated.edit-liability.declaration.submit.further")
+  lazy val AmendedReturnSub: String =  Messages("ated.edit-liability.declaration.submit.amend")
+  lazy val ChangedReturnSub: String =  Messages("ated.edit-liability.declaration.submit.change")
 
-  val TypeReliefDraft = "Relief"
-  val TypeLiabilityDraft = "Liability"
-  val TypeChangeLiabilityDraft = "Change_Liability"
-  val TypeDisposeLiabilityDraft = "Dispose_Liability"
+  val TypeReliefDraft: String = "Relief"
+  val TypeLiabilityDraft: String = "Liability"
+  val TypeChangeLiabilityDraft: String = "Change_Liability"
+  val TypeDisposeLiabilityDraft: String = "Dispose_Liability"
 
-  val Further = "F"
-  val Amend = "A"
-  val Change = "C"
+  val Further: String = "F"
+  val Amend: String = "A"
+  val Change: String = "C"
 
-  val SelectedPreviousReturn = "selected-previous-return"
+  val SelectedPreviousReturn: String = "selected-previous-return"
 
 }

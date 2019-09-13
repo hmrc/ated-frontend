@@ -20,17 +20,17 @@ import connectors.AtedConnector
 import models._
 import play.api.Logger
 import play.api.http.Status._
+import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, InternalServerException}
 import utils.AtedConstants
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import uk.gov.hmrc.http.{ BadRequestException, HeaderCarrier, InternalServerException }
 
 trait SubscriptionDataAdapterService {
 
   def atedConnector: AtedConnector
 
-  def retrieveSubscriptionData(implicit atedContext: AtedContext, hc: HeaderCarrier): Future[Option[SubscriptionData]] = {
+  def retrieveSubscriptionData(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[Option[SubscriptionData]] = {
     atedConnector.retrieveSubscriptionData() map { response =>
       response.status match {
         case OK => Some(response.json.as[SubscriptionData])
@@ -48,7 +48,7 @@ trait SubscriptionDataAdapterService {
   }
 
   def updateSubscriptionData(request: UpdateSubscriptionDataRequest)
-                            (implicit atedContext: AtedContext, hc: HeaderCarrier): Future[Option[UpdateSubscriptionDataRequest]] = {
+                            (implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[Option[UpdateSubscriptionDataRequest]] = {
     atedConnector.updateSubscriptionData(request).map { response =>
       response.status match {
         case OK => Some(request)

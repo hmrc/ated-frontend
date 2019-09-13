@@ -14,7 +14,7 @@
  * limitations under the License.
  *@
 
-@(returnResponse: SubmitReturnsResponse)(implicit atedContext: AtedContext, messages: Messages)
+@(returnResponse: SubmitReturnsResponse)(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent])
 
 @import models._
 @import uk.gov.hmrc.play.views.html._
@@ -33,7 +33,6 @@
 }
 
 @atedMain(title = Messages("ated.chargeable-return-confirmation.title"),
-          attorney = atedContext.user.authContext.attorney,
           analyticsAdditionalJs = Some(analyticsJs)) {
 
   <div id="banner" class="transaction-banner--complete form-group">

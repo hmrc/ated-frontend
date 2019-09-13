@@ -16,27 +16,26 @@
 
 package controllers.propertyDetails
 
-import config.FrontendDelegationConnector
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
-import controllers.auth.{AtedRegime, ClientHelper}
+import controllers.auth.{AuthAction, ClientHelper}
 import forms.AddressLookupForms.addressSelectedForm
 import play.api.Logger
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
-import services.{FormBundleReturnsService, PropertyDetailsService, SummaryReturnsService}
+import play.api.mvc.{Action, AnyContent}
+import services.{DelegationService, FormBundleReturnsService, PropertyDetailsService, SummaryReturnsService}
 import utils.AtedConstants._
-import utils.AtedUtils
 
 import scala.concurrent.Future
 
-trait SelectExistingReturnAddressController extends PropertyDetailsHelpers with ClientHelper {
+trait SelectExistingReturnAddressController extends PropertyDetailsHelpers with ClientHelper with AuthAction{
 
   def summaryReturnService: SummaryReturnsService
 
   def formBundleReturnService: FormBundleReturnsService
 
-  def view(periodKey: Int, returnType: String) = AuthAction(AtedRegime) {
-    implicit atedContext =>
+  def view(periodKey: Int, returnType: String): Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       ensureClientContext {
         for {
           previousReturns <- summaryReturnService.retrieveCachedPreviousReturnAddressList
@@ -45,13 +44,13 @@ trait SelectExistingReturnAddressController extends PropertyDetailsHelpers with 
             case Some(pr) => Ok(views.html.propertyDetails.selectPreviousReturn(periodKey, returnType, addressSelectedForm, pr, getBackLink(periodKey, returnType)))
             case None => Ok(views.html.propertyDetails.selectPreviousReturn(periodKey, returnType, addressSelectedForm, Nil, getBackLink(periodKey, returnType)))
           }
-
         }
       }
+    }
   }
 
-  def continue(periodKey: Int, returnType: String) = AuthAction(AtedRegime) {
-    implicit atedContext =>
+  def continue(periodKey: Int, returnType: String): Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       ensureClientContext {
         addressSelectedForm.bindFromRequest.fold(
           formWithError => {
@@ -80,6 +79,7 @@ trait SelectExistingReturnAddressController extends PropertyDetailsHelpers with 
           }
         )
       }
+    }
   }
 
   private def getBackLink(periodKey: Int, returnType: String) = {
@@ -89,11 +89,11 @@ trait SelectExistingReturnAddressController extends PropertyDetailsHelpers with 
 
 
 object SelectExistingReturnAddressController extends SelectExistingReturnAddressController {
-  val delegationConnector = FrontendDelegationConnector
-  val formBundleReturnService = FormBundleReturnsService
-  val propertyDetailsService = PropertyDetailsService
-  val dataCacheConnector = DataCacheConnector
+  val delegationService: DelegationService = DelegationService
+  val formBundleReturnService: FormBundleReturnsService = FormBundleReturnsService
+  val propertyDetailsService: PropertyDetailsService = PropertyDetailsService
+  val dataCacheConnector: DataCacheConnector = DataCacheConnector
   val summaryReturnService: SummaryReturnsService = SummaryReturnsService
   override val controllerId = "SelectExistingReturnAddressController"
-  override val backLinkCacheConnector = BackLinkCacheConnector
+  override val backLinkCacheConnector: BackLinkCacheConnector = BackLinkCacheConnector
 }

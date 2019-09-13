@@ -17,19 +17,18 @@
 package utils
 
 import play.api.Play
-import play.api.libs.json.Json
-import uk.gov.hmrc.play.config.RunMode
+import play.api.libs.json.{Json, OFormat}
 
 case class FeatureSwitch(name: String, enabled: Boolean)
 
 object FeatureSwitch {
   import play.api.Play.current
 
-  def forName(name: String) = {
+  def forName(name: String): FeatureSwitch = {
     FeatureSwitch(name, isEnabled(name))
   }
 
-  def isEnabled(name: String) = {
+  def isEnabled(name: String): Boolean = {
     val sysPropValue = sys.props.get(systemPropertyName(name))
     sysPropValue match {
       case Some(x) => x.toBoolean
@@ -38,10 +37,10 @@ object FeatureSwitch {
   }
 
   def enable(switch: FeatureSwitch): FeatureSwitch = {
-    setProp(switch.name, true)
+    setProp(switch.name, value = true)
   }
 
-  def disable(switch: FeatureSwitch): FeatureSwitch = setProp(switch.name, false)
+  def disable(switch: FeatureSwitch): FeatureSwitch = setProp(switch.name, value = false)
 
   def setProp(name: String, value: Boolean): FeatureSwitch = {
     val systemProps = sys.props.+= ((systemPropertyName(name), value.toString))
@@ -51,5 +50,5 @@ object FeatureSwitch {
   def confPropertyName(name: String) = s"features.$name"
   def systemPropertyName(name: String) = s"features.$name"
 
-  implicit val format = Json.format[FeatureSwitch]
+  implicit val format: OFormat[FeatureSwitch] = Json.format[FeatureSwitch]
 }

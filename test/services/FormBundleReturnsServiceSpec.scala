@@ -18,35 +18,33 @@ package services
 
 import java.util.UUID
 
-import builders.AuthBuilder
 import connectors.AtedConnector
+import models.StandardAuthRetrievals
 import org.joda.time.LocalDate
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mock.MockitoSugar
-import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
+import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.play.PlaySpec
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.libs.json.Json
 import play.api.test.Helpers._
-import uk.gov.hmrc.play.http._
+import uk.gov.hmrc.http.logging.SessionId
+import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, HttpResponse, InternalServerException}
 
 import scala.concurrent.Future
-import uk.gov.hmrc.http.{ BadRequestException, HeaderCarrier, HttpResponse, InternalServerException }
-import uk.gov.hmrc.http.logging.SessionId
 
 
-class FormBundleReturnsServiceSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
+class FormBundleReturnsServiceSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
 
-  import AuthBuilder._
-
-  val mockConnector = mock[AtedConnector]
+  val mockConnector: AtedConnector = mock[AtedConnector]
 
   object TestFormBundleReturnsService extends FormBundleReturnsService {
-    override val atedConnector = mockConnector
+    override val atedConnector: AtedConnector = mockConnector
 
   }
 
-  val successJson =
+  val successJson: String =
     """
       |{
       |  "periodKey": "2014",
@@ -83,11 +81,11 @@ class FormBundleReturnsServiceSpec extends PlaySpec with OneServerPerSuite with 
     """.stripMargin
 
 
-  override def beforeEach = {
+  override def beforeEach: Unit = {
     reset(mockConnector)
   }
 
-  implicit val user = createAtedContext(createAgentAuthContext("User-Id", "name", Some("JARN1234567")))
+  implicit lazy val authContext: StandardAuthRetrievals = mock[StandardAuthRetrievals]
 
   "FormBundleReturnsService" must {
     "use the correct connectors" in {
@@ -95,11 +93,12 @@ class FormBundleReturnsServiceSpec extends PlaySpec with OneServerPerSuite with 
     }
 
     "return data if we have some" in {
-      implicit val hc = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
+      implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
 
       val successResponse = Json.parse(successJson)
 
-      when(mockConnector.retrieveFormBundleReturns(Matchers.eq("12345678901090"))(Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+      when(mockConnector.retrieveFormBundleReturns(Matchers.eq("12345678901090"))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
       val result = TestFormBundleReturnsService.getFormBundleReturns("12345678901090")
       val bundleReturn = await(result)
       bundleReturn.isDefined must be(true)
@@ -116,18 +115,20 @@ class FormBundleReturnsServiceSpec extends PlaySpec with OneServerPerSuite with 
 
 
     "return no data if we have none" in {
-      implicit val hc = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
+      implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
 
       val notFoundResponse = Json.parse( """{}""")
 
-      when(mockConnector.retrieveFormBundleReturns(Matchers.eq("12345678901090"))(Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(NOT_FOUND, Some(notFoundResponse))))
+      when(mockConnector.retrieveFormBundleReturns(Matchers.eq("12345678901090"))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(HttpResponse(NOT_FOUND, Some(notFoundResponse))))
       val result = TestFormBundleReturnsService.getFormBundleReturns("12345678901090")
       await(result).isDefined must be(false)
     }
 
     "throws an exception for a bad request" in {
-      implicit val hc = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID()}")))
-      when(mockConnector.retrieveFormBundleReturns(Matchers.eq("12345678901090"))(Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
+      implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID()}")))
+      when(mockConnector.retrieveFormBundleReturns(Matchers.eq("12345678901090"))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
 
       val result = TestFormBundleReturnsService.getFormBundleReturns("12345678901090")
       val thrown = the[BadRequestException] thrownBy await(result)
@@ -135,8 +136,9 @@ class FormBundleReturnsServiceSpec extends PlaySpec with OneServerPerSuite with 
     }
 
     "throws an exception for a unknown exception" in {
-      implicit val hc = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID()}")))
-      when(mockConnector.retrieveFormBundleReturns(Matchers.eq("12345678901090"))(Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(UNAUTHORIZED, None)))
+      implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID()}")))
+      when(mockConnector.retrieveFormBundleReturns(Matchers.eq("12345678901090"))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(HttpResponse(UNAUTHORIZED, None)))
 
       val result = TestFormBundleReturnsService.getFormBundleReturns("12345678901090")
       val thrown = the[InternalServerException] thrownBy await(result)

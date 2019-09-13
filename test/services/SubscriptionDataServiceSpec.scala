@@ -18,46 +18,45 @@ package services
 
 import java.util.UUID
 
-import builders.{AuthBuilder, RegistrationBuilder}
+import builders.RegistrationBuilder
 import connectors.DataCacheConnector
 import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mock.MockitoSugar
-import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
+import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.play.PlaySpec
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.test.Helpers._
+import uk.gov.hmrc.http.logging.SessionId
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import utils.AtedConstants._
 
 import scala.concurrent.Future
-import uk.gov.hmrc.http.{ HeaderCarrier, HttpResponse }
-import uk.gov.hmrc.http.logging.SessionId
 
-class SubscriptionDataServiceSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
+class SubscriptionDataServiceSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
 
-  import AuthBuilder._
-
-  val mockSubscriptionDataAdapterService = mock[SubscriptionDataAdapterService]
-  val mockDataCacheConnector = mock[DataCacheConnector]
-  val mockDetailsService = mock[DetailsService]
+  val mockSubscriptionDataAdapterService: SubscriptionDataAdapterService = mock[SubscriptionDataAdapterService]
+  val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
+  val mockDetailsService: DetailsService = mock[DetailsService]
 
   object TestSubscriptionDataService extends SubscriptionDataService {
-    override val dataCacheConnector = mockDataCacheConnector
-    override val subscriptionDataAdapterService = mockSubscriptionDataAdapterService
-    override val detailsDataService = mockDetailsService
+    override val dataCacheConnector: DataCacheConnector = mockDataCacheConnector
+    override val subscriptionDataAdapterService: SubscriptionDataAdapterService = mockSubscriptionDataAdapterService
+    override val detailsDataService: DetailsService = mockDetailsService
   }
 
 
-  override def beforeEach = {
+  override def beforeEach: Unit = {
     reset(mockDataCacheConnector)
     reset(mockSubscriptionDataAdapterService)
     reset(mockDetailsService)
   }
 
-  implicit val user = createAtedContext(createAgentAuthContext("User-Id", "name", Some("JARN1234567")))
+  implicit lazy val authContext: StandardAuthRetrievals = mock[StandardAuthRetrievals]
 
-  val addressDetails = AddressDetails(addressType = "", addressLine1 = "", addressLine2 = "", countryCode = "GB")
-  val registrationDetails = RegistrationBuilder.getEtmpRegistrationForOrganisation("testName")
+  val addressDetails: AddressDetails = AddressDetails(addressType = "", addressLine1 = "", addressLine2 = "", countryCode = "GB")
+  val registrationDetails: EtmpRegistrationDetails = RegistrationBuilder.getEtmpRegistrationForOrganisation("testName")
 
   "Caching Data Service" must {
     "use the correct connectors" in {

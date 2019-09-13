@@ -17,20 +17,20 @@
 package controllers.propertyDetails
 
 import controllers.BackLinkController
-import controllers.auth.AtedFrontendAuthHelpers
-import models.AtedContext
+import controllers.auth.AuthAction
+import models.StandardAuthRetrievals
 import play.api.mvc.Result
 import services._
-import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
+import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.Future
 
-trait PropertyDetailsHelpers extends BackLinkController with AtedFrontendAuthHelpers with DelegationAwareActions {
+trait PropertyDetailsHelpers extends BackLinkController with AuthAction {
 
   def propertyDetailsService: PropertyDetailsService
 
   def propertyDetailsCacheResponse(id: String)(f: PartialFunction[PropertyDetailsCacheResponse, Future[Result]])
-                                   (implicit atedContext: AtedContext): Future[Result] = {
+                                   (implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[Result] = {
 
     val handleError: PartialFunction[PropertyDetailsCacheResponse, Future[Result]] = {
       case PropertyDetailsCacheNotFoundResponse | PropertyDetailsCacheErrorResponse =>

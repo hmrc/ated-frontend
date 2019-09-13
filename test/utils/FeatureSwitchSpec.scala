@@ -17,11 +17,12 @@
 package utils
 
 import org.scalatest.BeforeAndAfterEach
-import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
+import org.scalatestplus.play.PlaySpec
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 
-class FeatureSwitchSpec extends PlaySpec with OneServerPerSuite with BeforeAndAfterEach {
+class FeatureSwitchSpec extends PlaySpec with GuiceOneServerPerSuite with BeforeAndAfterEach {
 
-  override def beforeEach = {
+  override def beforeEach: Unit = {
     System.clearProperty("feature.test")
   }
 

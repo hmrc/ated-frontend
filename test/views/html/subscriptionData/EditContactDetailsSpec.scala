@@ -18,12 +18,15 @@ package views.html.subscriptionData
 
 import forms.AtedForms.editContactDetailsForm
 import models._
+import org.scalatest.mockito.MockitoSugar
 import play.twirl.api.Html
+import utils.MockAuthUtil
 import utils.viewHelpers.AtedViewSpec
 
-class EditContactDetailsSpec extends AtedViewSpec {
+class EditContactDetailsSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil {
+  implicit lazy val authContext = organisationStandardRetrievals
 
-    "Edit contact details view" must {
+  "Edit contact details view" must {
       behave like pageWithTitle(messages("ated.contact-details.title"))
       behave like pageWithHeader(messages("ated.contact-details.header"))
       behave like pageWithPreHeading(messages("ated.contact-details-edit.subheader"))

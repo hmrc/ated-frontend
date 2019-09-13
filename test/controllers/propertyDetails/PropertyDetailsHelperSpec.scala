@@ -16,36 +16,38 @@
 
 package controllers.propertyDetails
 
-import java.util.UUID
-
-import builders.{PropertyDetailsBuilder, SessionBuilder, AuthBuilder}
-import builders.AuthBuilder._
+import builders.PropertyDetailsBuilder
 import connectors.BackLinkCacheConnector
-import play.api.mvc.Result
-import play.api.test.Helpers._
+import models.StandardAuthRetrievals
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.PartialFunctionValues
-import org.scalatest.mock.MockitoSugar
-import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
+import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.play.PlaySpec
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
+import play.api.mvc.Result
 import play.api.mvc.Results._
+import play.api.test.Helpers._
 import services._
-import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
+import uk.gov.hmrc.http.HeaderCarrier
+import utils.MockAuthUtil
 
 import scala.concurrent.Future
 
-class PropertyDetailsHelperSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with PartialFunctionValues {
+class PropertyDetailsHelperSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with PartialFunctionValues with MockAuthUtil {
 
-  val mockAuthConnector = mock[AuthConnector]
-  val mockPropertyDetailsService = mock[PropertyDetailsService]
-  val mockDelegationConnector = mock[DelegationConnector]
-  val mockBackLinkCache = mock[BackLinkCacheConnector]
+  implicit lazy val hc: HeaderCarrier = HeaderCarrier()
+
+  val mockPropertyDetailsService: PropertyDetailsService = mock[PropertyDetailsService]
+  val mockBackLinkCache: BackLinkCacheConnector = mock[BackLinkCacheConnector]
+
+  implicit val authContext: StandardAuthRetrievals = organisationStandardRetrievals
 
   object TestPropertyDetailsHelpers extends PropertyDetailsHelpers {
-    val delegationConnector = mockDelegationConnector
-    val propertyDetailsService = mockPropertyDetailsService
-    override val controllerId = "controllerId"
-    override val backLinkCacheConnector = mockBackLinkCache
+    val delegationService: DelegationService = mockDelegationService
+    val propertyDetailsService: PropertyDetailsService = mockPropertyDetailsService
+    override val controllerId: String = "controllerId"
+    override val backLinkCacheConnector: BackLinkCacheConnector = mockBackLinkCache
   }
 
   "PropertyDetailsHelpers" must {
@@ -73,12 +75,9 @@ class PropertyDetailsHelperSpec extends PlaySpec with OneServerPerSuite with Moc
     }
   }
 
-  def getDataWithAuthorisedUser(cacheSuccessResponse: PropertyDetailsCacheResponse)(test: Future[Result] => Any) = {
-    val userId = s"user-${UUID.randomUUID}"
-    implicit val user = createAtedContext(createUserAuthContext(userId, "name"))
-    AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-    val propertyDetails = PropertyDetailsBuilder.getPropertyDetails("1")
-    when(mockPropertyDetailsService.retrieveDraftPropertyDetails(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(cacheSuccessResponse))
+  def getDataWithAuthorisedUser(cacheSuccessResponse: PropertyDetailsCacheResponse)(test: Future[Result] => Any) {
+    when(mockPropertyDetailsService.retrieveDraftPropertyDetails
+    (Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(cacheSuccessResponse))
     val result = TestPropertyDetailsHelpers.propertyDetailsCacheResponse("1") {
       case PropertyDetailsCacheSuccessResponse(_) => Future.successful(Ok)
     }

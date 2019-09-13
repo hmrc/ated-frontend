@@ -26,12 +26,11 @@
   linkElement : Option[Html] = None,
   analyticsJs: Option[Html] = None,
   isUserResearchBannerVisible:Boolean = false
-  )(mainContent: Html = HtmlFormat.empty)(implicit request : Request[_], messages: Messages)
+  )(mainContent: Html = HtmlFormat.empty)(implicit messages: Messages, request: Request[AnyContent])
 
-@import layouts.{govuk_template => hmrcGovUkTemplate}
-@import uk.gov.hmrc.play.views.html.{layouts => uiLayouts}
-@import uk.gov.hmrc.play.views.html.{helpers => uiHelpers}
 @import controllers.auth.ExternalUrls
+@import layouts.{govuk_template => hmrcGovUkTemplate}
+@import uk.gov.hmrc.play.views.html.{helpers => uiHelpers, layouts => uiLayouts}
 @import utils.SessionUtils
 
 @head = {

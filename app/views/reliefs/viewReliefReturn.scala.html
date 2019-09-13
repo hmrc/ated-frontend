@@ -15,7 +15,7 @@
  *@
 
 @import models._
-@(submittedReliefReturn: SubmittedReliefReturns, periodKey: Int, formBundleNumber: String, organisationName: Option[String], backLink: Option[String])(implicit atedContext: AtedContext, messages: Messages)
+@(submittedReliefReturn: SubmittedReliefReturns, periodKey: Int, formBundleNumber: String, organisationName: Option[String], backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent])
 @import uk.gov.hmrc.play.views.html._
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
@@ -29,7 +29,6 @@
 }
 
 @atedMain(title = Messages("ated.view-relief-return.title"),
-          attorney = atedContext.user.authContext.attorney,
           analyticsAdditionalJs = Some(analyticsJs)) {
 
   @pageHeadersAndError(backLink, "relief-return-subheader", organisationName.getOrElse(""), "relief-return-header", Messages("ated.view-relief-return.header"))
@@ -64,7 +63,7 @@
     </div>
 
     <div class="grid grid-1-4 cya-answer" id="td-view-relief-from-date">
-      <span id="td-view-relief-date-to"> <span class="visuallyhidden">@Messages("ated.view-relief-return.date.to")</span> @submittedReliefReturn.dateTo.toString(Messages("ated.date-format"))
+        <span id="td-view-relief-date-to"> <span class="visuallyhidden">@Messages("ated.view-relief-return.date.to")</span> @submittedReliefReturn.dateTo.toString(Messages("ated.date-format"))</span>
     </div>
   </div>
 

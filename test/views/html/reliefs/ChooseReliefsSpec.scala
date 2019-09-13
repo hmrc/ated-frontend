@@ -19,14 +19,16 @@ package views.html.reliefs
 import forms.ReliefForms
 import models.Reliefs
 import org.joda.time.LocalDate
-import org.jsoup.nodes.Document
+import org.scalatest.mockito.MockitoSugar
 import play.api.data.Form
 import play.api.i18n.Messages
 import play.api.libs.json.Json
 import play.twirl.api.Html
+import utils.MockAuthUtil
 import utils.viewHelpers.AtedViewSpec
 
-class ChooseReliefsSpec extends AtedViewSpec {
+class ChooseReliefsSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil {
+  implicit lazy val authContext = organisationStandardRetrievals
 
   val periodKey = 2017
   val periodStartDate = new LocalDate()

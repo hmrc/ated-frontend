@@ -19,44 +19,43 @@ package controllers.reliefs
 import java.util.UUID
 
 import builders._
-import config.FrontendDelegationConnector
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
-import models.{Reliefs, ReliefsTaxAvoidance, TaxAvoidance}
+import models.{Reliefs, ReliefsTaxAvoidance, SummaryReturnsModel, TaxAvoidance}
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mock.MockitoSugar
-import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
+import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.play.PlaySpec
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.mvc.Result
-import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.{ReliefsService, SubscriptionDataService}
-import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
-import utils.{AtedConstants, AtedUtils, PeriodUtils}
+import services.{DelegationService, ReliefsService, SubscriptionDataService}
+import uk.gov.hmrc.auth.core.{AffinityGroup, PlayAuthConnector}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
+import utils.{AtedConstants, MockAuthUtil, PeriodUtils}
 
 import scala.concurrent.Future
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 
-class ReliefsSummaryControllerSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
-  import AuthBuilder._
+class ReliefsSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with MockAuthUtil {
 
-  val mockAuthConnector = mock[AuthConnector]
-  val mockReliefsService = mock[ReliefsService]
-  val mockBackLinkCache = mock[BackLinkCacheConnector]
-  val mockDataCacheConnector = mock[DataCacheConnector]
-  val mockSubscriptionDataService = mock[SubscriptionDataService]
-  val organisationName = "ACME Limited"
+  implicit lazy val hc: HeaderCarrier = HeaderCarrier()
+
+  val mockReliefsService: ReliefsService = mock[ReliefsService]
+  val mockBackLinkCache: BackLinkCacheConnector = mock[BackLinkCacheConnector]
+  val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
+  val mockSubscriptionDataService: SubscriptionDataService = mock[SubscriptionDataService]
+val organisationName = "ACME Limited"
 
   object TestReliefsSummaryController extends ReliefsSummaryController {
-    override val authConnector = mockAuthConnector
-    val reliefsService = mockReliefsService
-    override val delegationConnector: DelegationConnector = FrontendDelegationConnector
+    override val authConnector: PlayAuthConnector = mockAuthConnector
+    val reliefsService: ReliefsService = mockReliefsService
+    override val delegationService: DelegationService = mockDelegationService
     override val controllerId = "controllerId"
-    override val backLinkCacheConnector = mockBackLinkCache
-    override val dataCacheConnector = mockDataCacheConnector
-    override val subscriptionDataService = mockSubscriptionDataService
+    override val backLinkCacheConnector: BackLinkCacheConnector = mockBackLinkCache
+    override val dataCacheConnector: DataCacheConnector = mockDataCacheConnector
+    override val subscriptionDataService: SubscriptionDataService = mockSubscriptionDataService
   }
 
   override def beforeEach(): Unit = {
@@ -66,22 +65,15 @@ class ReliefsSummaryControllerSpec extends PlaySpec with OneServerPerSuite with 
     reset(mockSubscriptionDataService)
   }
 
-
   val periodKey = 2015
 
   "ReliefsSummaryController" must {
 
-    "use correct DelegationConnector" in {
-      ReliefsSummaryController.delegationConnector must be(FrontendDelegationConnector)
+    "use correct DelegationService" in {
+      ReliefsSummaryController.delegationService must be(DelegationService)
     }
 
     "view" must {
-
-      "not respond with NOT_FOUND" in {
-        val result = route(FakeRequest(GET, s"/ated/reliefs/${periodKey}/relief-summary"))
-        result.isDefined must be(true)
-        status(result.get) must not be(NOT_FOUND)
-      }
 
       "unauthorised users" must {
         "respond with a redirect" in {
@@ -186,7 +178,8 @@ class ReliefsSummaryControllerSpec extends PlaySpec with OneServerPerSuite with 
               status(result) must be(BAD_REQUEST)
               val document = Jsoup.parse(contentAsString(result))
               document.title() must be(TitleBuilder.buildTitle("There is a problem with your ATED return"))
-              document.getElementById("relief-error-title").text() must be("There is a problem with your ATED return. No details have been saved so you must return to your account summary and start again.")
+              document.getElementById("relief-error-title")
+                .text() must be("There is a problem with your ATED return. No details have been saved so you must return to your account summary and start again.")
               document.getElementById("relief-error-ated-home-link").text() must be("ATED Account Summary")
           }
         }
@@ -229,6 +222,16 @@ class ReliefsSummaryControllerSpec extends PlaySpec with OneServerPerSuite with 
           }
         }
 
+        "respond with a redirect to unauthorised URL" in {
+          getWithForbiddenUser(Some(
+            ReliefBuilder.reliefTaxAvoidance(periodKey,
+              Reliefs(periodKey = periodKey, isAvoidanceScheme = Some(true), openToPublic = true),
+              taxAvoidance = TaxAvoidance(openToPublicScheme = Some("12345678"))
+            ))){ result =>
+            redirectLocation(result).get must include("/ated/unauthorised")
+          }
+        }
+
       }
 
     }
@@ -241,23 +244,21 @@ class ReliefsSummaryControllerSpec extends PlaySpec with OneServerPerSuite with 
 
     def getWithUnAuthorisedUser(test: Future[Result] => Any) {
       val userId = s"user-${UUID.randomUUID}"
-      AuthBuilder.mockUnAuthorisedUser(userId, mockAuthConnector)
+      val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
+      setInvalidAuthMocks(authMock)
       val result = TestReliefsSummaryController.view(periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
 
-    def getWithUnAuthenticated(test: Future[Result] => Any) {
-      val result = TestReliefsSummaryController.view(periodKey).apply(SessionBuilder.buildRequestWithSessionNoUser)
-      test(result)
-    }
-
     def getWithAuthorisedUser(testReliefs: Option[ReliefsTaxAvoidance], periodKeyLocal: Int = periodKey)(test: Future[Result] => Any) {
+      val httpValue = 200
       val userId = s"user-${UUID.randomUUID}"
-      AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
+      val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+    setAuthMocks(authMock)
       when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
         (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
       when(mockReliefsService.retrieveDraftReliefs(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(testReliefs))
-      when(mockReliefsService.clearDraftReliefs(Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(200, None)))
+      when(mockReliefsService.clearDraftReliefs(Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(httpValue, None)))
       when(mockBackLinkCache.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
       val result = TestReliefsSummaryController.view(periodKeyLocal).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
@@ -265,8 +266,8 @@ class ReliefsSummaryControllerSpec extends PlaySpec with OneServerPerSuite with 
 
     def submitWithAuthorisedUser(test: Future[Result] => Any) {
       val userId = s"user-${UUID.randomUUID}"
-      implicit val user = createAtedContext(createUserAuthContext(userId, "name"))
-      AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
+      val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+    setAuthMocks(authMock)
       when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
         (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
       val result = TestReliefsSummaryController.continue(periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
@@ -276,7 +277,20 @@ class ReliefsSummaryControllerSpec extends PlaySpec with OneServerPerSuite with 
 
     def getPrintFriendlyWithAuthorisedUser(testReliefs: Option[ReliefsTaxAvoidance])(test: Future[Result] => Any) {
       val userId = s"user-${UUID.randomUUID}"
-      AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
+      val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+    setAuthMocks(authMock)
+      when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
+      when(mockReliefsService.retrieveDraftReliefs(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(testReliefs))
+      when(mockSubscriptionDataService.getOrganisationName(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(organisationName)))
+      val result = TestReliefsSummaryController.viewPrintFriendlyReliefReturn(periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
+      test(result)
+    }
+
+    def getWithForbiddenUser(testReliefs: Option[ReliefsTaxAvoidance])(test: Future[Result] => Any) {
+      val userId = s"user-${UUID.randomUUID}"
+      val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
+    setForbiddenAuthMocks(authMock)
       when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
         (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
       when(mockReliefsService.retrieveDraftReliefs(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(testReliefs))
@@ -287,12 +301,13 @@ class ReliefsSummaryControllerSpec extends PlaySpec with OneServerPerSuite with 
 
 
     def getWithDeleteDraftLink(test: Future[Result] => Any) {
+      val periodKey: Int = 2017
       val userId = s"user-${UUID.randomUUID}"
-      AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
+      val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+    setAuthMocks(authMock)
       implicit val hc: HeaderCarrier = HeaderCarrier()
 
-      val result = TestReliefsSummaryController.deleteDraft(2017).apply(SessionBuilder.buildRequestWithSession(userId))
-
+      val result = TestReliefsSummaryController.deleteDraft(periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
 

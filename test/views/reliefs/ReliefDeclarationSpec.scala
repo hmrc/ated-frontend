@@ -16,35 +16,35 @@
 
 package views.reliefs
 
-import java.util.UUID
-
-import builders.AuthBuilder._
+import models.StandardAuthRetrievals
 import org.jsoup.Jsoup
+import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
-import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.OneServerPerSuite
 import play.api.test.FakeRequest
+import utils.MockAuthUtil
 
+class ReliefDeclarationSpec extends FeatureSpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
 
-class ReliefDeclarationSpec extends FeatureSpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach with GivenWhenThen{
-
-  val userId = s"user-${UUID.randomUUID}"
-
+  implicit val request = FakeRequest()
   implicit val messages : play.api.i18n.Messages = play.api.i18n.Messages.Implicits.applicationMessages
 
+
   feature("The user can view the relief declaration page") {
+
+    implicit val authContext: StandardAuthRetrievals = organisationStandardRetrievals.copy(delegationModel = None)
 
     info("as a user I want to view the correct page content")
 
     scenario("user has created a relief return") {
       Given("A user visits the page")
       When("The user views the page")
-      implicit val request = FakeRequest()
 
-      implicit val user = createAtedContext(createUserAuthContext(userId, "name"))
+
       val html = views.html.reliefs.reliefDeclaration(2015, None)
 
       val document = Jsoup.parse(html.toString())
+
       Then("Returns declaration")
       assert(document.title() === "Returns declaration - GOV.UK")
 
@@ -63,14 +63,14 @@ class ReliefDeclarationSpec extends FeatureSpec with OneServerPerSuite with Mock
 
   feature("The agent can view the relief declaration page as a client") {
 
+    implicit lazy val authContext: StandardAuthRetrievals = agentStandardRetrievals
+
     info("as an agent I want to view the correct page content")
 
     scenario("agent has created a relief return") {
       Given("An agent visits the page")
       When("The agent views the page")
-      implicit val request = FakeRequest()
 
-      implicit val user = createAtedContext(createDelegatedAuthContext(userId, "company name|display name"))
       val html = views.html.reliefs.reliefDeclaration(2015, Some("http://backLink"))
 
       val document = Jsoup.parse(html.toString())

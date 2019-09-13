@@ -16,28 +16,27 @@
 
 package controllers.editLiability
 
-import config.FrontendDelegationConnector
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.BackLinkController
-import controllers.auth.{AtedFrontendAuthHelpers, AtedRegime, ClientHelper}
-import models.{AtedContext, PropertyDetails}
+import controllers.auth.{AuthAction, ClientHelper}
+import models.{PropertyDetails, StandardAuthRetrievals}
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
-import services.{PropertyDetailsService, SubscriptionDataService}
-import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
+import play.api.mvc.{Action, AnyContent, Request}
+import services.{DelegationService, PropertyDetailsService, SubscriptionDataService}
+import uk.gov.hmrc.http.HeaderCarrier
 import utils.PeriodUtils
 
 import scala.concurrent.Future
-import uk.gov.hmrc.http.HeaderCarrier
 
 trait EditLiabilitySummaryController extends BackLinkController
-  with AtedFrontendAuthHelpers with DelegationAwareActions with ClientHelper {
+  with AuthAction with ClientHelper {
 
   def propertyDetailsService: PropertyDetailsService
   def subscriptionDataService: SubscriptionDataService
 
-  def view(oldFormBundleNo: String) = AuthAction(AtedRegime) {
-    implicit atedContext =>
+  def view(oldFormBundleNo: String): Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       ensureClientContext {
         propertyDetailsService.calculateDraftChangeLiability(oldFormBundleNo).flatMap { x =>
           x.calculated.flatMap(_.amountDueOrRefund) match {
@@ -48,16 +47,19 @@ trait EditLiabilitySummaryController extends BackLinkController
           }
         }
       }
+    }
   }
 
-  def viewSummary(oldFormBundleNo: String) = AuthAction(AtedRegime) {
-    implicit atedContext =>
+  def viewSummary(oldFormBundleNo: String): Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       ensureClientContext {
         propertyDetailsService.calculateDraftChangeLiability(oldFormBundleNo).flatMap(viewSummaryDetails(_))
       }
+    }
   }
 
-  private def viewSummaryDetails(propertyDetails: PropertyDetails) (implicit atedContext: AtedContext, hc: HeaderCarrier) = {
+  private def viewSummaryDetails(propertyDetails: PropertyDetails)
+                                (implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier, request: Request[AnyContent]) = {
     currentBackLink.map(
       backLink =>
         Ok(views.html.editLiability.editLiabilitySummary(propertyDetails,
@@ -72,8 +74,8 @@ trait EditLiabilitySummaryController extends BackLinkController
     propertyDetails.calculated.flatMap(_.amountDueOrRefund).fold("C")(a => if (a > 0) "F" else if (a < 0) "A" else "C")
   }
 
-  def submit(oldFormBundleNo: String) = AuthAction(AtedRegime) {
-    implicit atedContext =>
+  def submit(oldFormBundleNo: String): Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       ensureClientContext {
         RedirectWithBackLink(
           EditLiabilityDeclarationController.controllerId,
@@ -81,15 +83,16 @@ trait EditLiabilitySummaryController extends BackLinkController
           Some(controllers.editLiability.routes.EditLiabilitySummaryController.viewSummary(oldFormBundleNo).url)
         )
       }
+    }
   }
 
-  def viewPrintFriendlyEditLiabilityReturn(oldFormBundleNo: String) = AuthAction(AtedRegime) {
-    implicit atedContext =>
+  def viewPrintFriendlyEditLiabilityReturn(oldFormBundleNo: String): Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       ensureClientContext {
-        for{
-          calculateDraftLiability<- propertyDetailsService.calculateDraftChangeLiability(oldFormBundleNo)
+        for {
+          calculateDraftLiability <- propertyDetailsService.calculateDraftChangeLiability(oldFormBundleNo)
           organisationName <- subscriptionDataService.getOrganisationName
-        }yield {
+        } yield {
           Ok(views.html.editLiability.editLiabilityPrintFriendly(calculateDraftLiability, getReturnType(calculateDraftLiability),
             PeriodUtils.getDisplayPeriods(calculateDraftLiability.period),
             PeriodUtils.getCalculatedPeriodValues(calculateDraftLiability.calculated),
@@ -97,15 +100,16 @@ trait EditLiabilitySummaryController extends BackLinkController
           ))
         }
       }
+    }
   }
 
 }
 
 object EditLiabilitySummaryController extends EditLiabilitySummaryController {
-  val delegationConnector = FrontendDelegationConnector
-  val propertyDetailsService = PropertyDetailsService
-  val dataCacheConnector = DataCacheConnector
-  val subscriptionDataService = SubscriptionDataService
+  val delegationService: DelegationService = DelegationService
+  val propertyDetailsService: PropertyDetailsService = PropertyDetailsService
+  val dataCacheConnector: DataCacheConnector = DataCacheConnector
+  val subscriptionDataService: SubscriptionDataService = SubscriptionDataService
   override val controllerId = "EditLiabilitySummaryController"
-  override val backLinkCacheConnector = BackLinkCacheConnector
+  override val backLinkCacheConnector: BackLinkCacheConnector = BackLinkCacheConnector
 }

@@ -16,28 +16,24 @@
 
 package controllers.editLiability
 
-import config.FrontendDelegationConnector
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
-import controllers.{AtedBaseController, BackLinkController}
-import controllers.auth.{AtedFrontendAuthHelpers, AtedRegime, ClientHelper}
-import forms.AtedForms
+import controllers.BackLinkController
+import controllers.auth.{AuthAction, ClientHelper}
 import forms.AtedForms.disposeLiabilityForm
 import models.DisposeLiability
-import play.api.Logger
-import services.DisposeLiabilityReturnService
-import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
-import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
+import play.api.i18n.Messages.Implicits._
+import play.api.mvc.{Action, AnyContent}
+import services.{DelegationService, DisposeLiabilityReturnService}
 
 import scala.concurrent.Future
 
-trait DisposePropertyController extends BackLinkController
-  with AtedFrontendAuthHelpers with DelegationAwareActions with ClientHelper {
+trait DisposePropertyController extends BackLinkController with ClientHelper with AuthAction {
 
   def disposeLiabilityReturnService: DisposeLiabilityReturnService
 
-  def view(oldFormBundleNo: String) = AuthAction(AtedRegime) {
-    implicit atedContext =>
+  def view(oldFormBundleNo: String) : Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       ensureClientContext {
         for {
           disposeLiabilityOpt <- disposeLiabilityReturnService.retrieveLiabilityReturn(oldFormBundleNo)
@@ -52,10 +48,11 @@ trait DisposePropertyController extends BackLinkController
           }
         } yield result
       }
+    }
   }
 
-  def editFromSummary(oldFormBundleNo: String) = AuthAction(AtedRegime) {
-    implicit atedContext =>
+  def editFromSummary(oldFormBundleNo: String): Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       ensureClientContext {
         for {
           disposeLiabilityOpt <- disposeLiabilityReturnService.retrieveLiabilityReturn(oldFormBundleNo)
@@ -70,10 +67,11 @@ trait DisposePropertyController extends BackLinkController
           }
         } yield result
       }
+    }
   }
 
-  def save(oldFormBundleNo: String) = AuthAction(AtedRegime) {
-    implicit atedContext =>
+  def save(oldFormBundleNo: String): Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       ensureClientContext {
         disposeLiabilityForm.bindFromRequest.fold(
           formWithErrors => {
@@ -89,14 +87,14 @@ trait DisposePropertyController extends BackLinkController
           }
         )
       }
+    }
   }
-
 }
 
 object DisposePropertyController extends DisposePropertyController {
-  val delegationConnector = FrontendDelegationConnector
-  val disposeLiabilityReturnService = DisposeLiabilityReturnService
-  val dataCacheConnector = DataCacheConnector
-  override val controllerId = "DisposePropertyController"
-  override val backLinkCacheConnector = BackLinkCacheConnector
+  val delegationService: DelegationService = DelegationService
+  val disposeLiabilityReturnService : DisposeLiabilityReturnService = DisposeLiabilityReturnService
+  val dataCacheConnector: DataCacheConnector = DataCacheConnector
+  override val controllerId: String = "DisposePropertyController"
+  override val backLinkCacheConnector: BackLinkCacheConnector = BackLinkCacheConnector
 }

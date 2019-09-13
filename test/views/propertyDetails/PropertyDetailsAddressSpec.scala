@@ -16,22 +16,18 @@
 
 package views.propertyDetails
 
-import java.util.UUID
-
-import builders.AuthBuilder._
 import builders.{PropertyDetailsBuilder, TitleBuilder}
 import forms.PropertyDetailsForms._
 import org.jsoup.Jsoup
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
-import org.scalatestplus.play.OneServerPerSuite
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.test.FakeRequest
-import utils.AtedUtils
+import utils.{AtedUtils, MockAuthUtil}
 
-class PropertyDetailsAddressSpec extends FeatureSpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach with GivenWhenThen{
+class PropertyDetailsAddressSpec extends FeatureSpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
 
-  val userId = s"user-${UUID.randomUUID}"
-  implicit val user = createAtedContext(createUserAuthContext(userId, "name"))
+  implicit lazy val authContext = organisationStandardRetrievals
   implicit val messages : play.api.i18n.Messages = play.api.i18n.Messages.Implicits.applicationMessages
 
   feature("The user can view an empty property details page") {
@@ -106,7 +102,5 @@ class PropertyDetailsAddressSpec extends FeatureSpec with OneServerPerSuite with
       assert(document.getElementById("backLinkHref").attr("href") === "http://backLink")
 
     }
-
-
   }
 }

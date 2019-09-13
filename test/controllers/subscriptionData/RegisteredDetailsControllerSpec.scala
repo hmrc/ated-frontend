@@ -18,35 +18,37 @@ package controllers.subscriptionData
 
 import java.util.UUID
 
-import builders.{AuthBuilder, SessionBuilder, TitleBuilder}
-import config.FrontendDelegationConnector
+import builders.{SessionBuilder, TitleBuilder}
+import connectors.DataCacheConnector
 import models._
 import org.jsoup.Jsoup
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mock.MockitoSugar
-import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
+import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.play.PlaySpec
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.libs.json.Json
 import play.api.mvc.{AnyContentAsJson, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.SubscriptionDataService
-import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
+import services.{DelegationService, SubscriptionDataService}
+import uk.gov.hmrc.auth.core.{AffinityGroup, PlayAuthConnector}
+import uk.gov.hmrc.http.HeaderCarrier
+import utils.MockAuthUtil
 
 import scala.concurrent.Future
-import uk.gov.hmrc.http.HeaderCarrier
 
-class RegisteredDetailsControllerSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
-  import AuthBuilder._
+class RegisteredDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with MockAuthUtil {
 
-  val mockAuthConnector = mock[AuthConnector]
-  val mockSubscriptionDataService = mock[SubscriptionDataService]
+  val mockSubscriptionDataService: SubscriptionDataService = mock[SubscriptionDataService]
+  implicit lazy val hc: HeaderCarrier = HeaderCarrier()
+
 
   object TestRegisteredDetailsController extends RegisteredDetailsController {
-    override val authConnector = mockAuthConnector
-    override val delegationConnector: DelegationConnector = FrontendDelegationConnector
-    override val subscriptionDataService = mockSubscriptionDataService
+    override val authConnector: PlayAuthConnector = mockAuthConnector
+    override val delegationService: DelegationService = mockDelegationService
+    override val subscriptionDataService: SubscriptionDataService = mockSubscriptionDataService
   }
 
   override def beforeEach(): Unit = {
@@ -54,27 +56,31 @@ class RegisteredDetailsControllerSpec extends PlaySpec with OneServerPerSuite wi
     reset(mockSubscriptionDataService)
   }
 
+  "RegisteredDetailsController" should {
+    "use correct delegationService" in {
+      RegisteredDetailsController.delegationService mustBe DelegationService
+    }
+    "use correct controllerId" in {
+      RegisteredDetailsController.subscriptionDataService mustBe SubscriptionDataService
+    }
+    "use correct dataCacheConnector" in {
+      RegisteredDetailsController.dataCacheConnector mustBe DataCacheConnector
+    }
+
+  }
+
   "RegisteredDetailsController" must {
 
     "editAddress" must {
 
-      "not respond with NOT_FOUND" in {
-        val result = route(FakeRequest(GET, "/ated/registered-details"))
-        result.isDefined must be(true)
-        status(result.get) must not be(NOT_FOUND)
-      }
-
       "unauthorised users" must {
         "respond with a redirect" in {
-          getWithUnAuthorisedUser { result =>
-            status(result) must be(SEE_OTHER)
-          }
+            status(getWithUnAuthorisedUser) must be(SEE_OTHER)
         }
 
         "be redirected to the login page" in {
-          getWithUnAuthorisedUser { result =>
-            redirectLocation(result).get must include("/ated/unauthorised")
-          }
+            redirectLocation(getWithUnAuthorisedUser).get must include("/ated/unauthorised")
+
         }
       }
 
@@ -105,7 +111,7 @@ class RegisteredDetailsControllerSpec extends PlaySpec with OneServerPerSuite wi
         }
 
         "show the Registered details view with populated data" in {
-          val businessPartnerDetails = RegisteredDetails(false, "testName",
+          val businessPartnerDetails = RegisteredDetails(isEditable = false, "testName",
             RegisteredAddressDetails(addressLine1 = "bpline1",
               addressLine2 = "bpline2",
               addressLine3 = Some("bpline3"),
@@ -131,12 +137,6 @@ class RegisteredDetailsControllerSpec extends PlaySpec with OneServerPerSuite wi
       }
     }
     "submit" must {
-      "not respond with NOT_FOUND" in {
-        val result = route(FakeRequest(POST, "/ated/registered-details/testName"))
-        result.isDefined must be(true)
-        status(result.get) must not be (NOT_FOUND)
-      }
-
       "unauthorised users" must {
         "respond with a redirect" in {
           submitWithUnAuthorisedUser { result =>
@@ -144,10 +144,8 @@ class RegisteredDetailsControllerSpec extends PlaySpec with OneServerPerSuite wi
           }
         }
 
-        "be redirected to the login page" in {
-          getWithUnAuthorisedUser { result =>
-            redirectLocation(result).get must include("/ated/unauthorised")
-          }
+        "be redirected to the unauthorised page" in {
+            redirectLocation(getWithUnAuthorisedUser).get must include("/ated/unauthorised")
         }
       }
 
@@ -206,7 +204,7 @@ class RegisteredDetailsControllerSpec extends PlaySpec with OneServerPerSuite wi
                 |"postalCode": "",
                 |"countryCode": ""}}""".stripMargin)
             val registeredDetails: RegisteredDetails = inputJson.as[RegisteredDetails]
-            submitWithAuthorisedUserSuccess(None)(FakeRequest().withJsonBody(inputJson)) {
+            submitWithAuthorisedUserSuccess(Some(registeredDetails))(FakeRequest().withJsonBody(inputJson)) {
               result =>
                 status(
                   result) must be(BAD_REQUEST)
@@ -217,7 +215,7 @@ class RegisteredDetailsControllerSpec extends PlaySpec with OneServerPerSuite wi
             }
           }
 
-          "Details enetered contains spaces" in {
+          "Details entered contains spaces" in {
             implicit val hc: HeaderCarrier = HeaderCarrier()
             val inputJson = Json.parse(
               """{ "isEditable": true,
@@ -230,7 +228,7 @@ class RegisteredDetailsControllerSpec extends PlaySpec with OneServerPerSuite wi
                 |"postalCode": "",
                 |"countryCode": ""}}""".stripMargin)
             val registeredDetails: RegisteredDetails = inputJson.as[RegisteredDetails]
-            submitWithAuthorisedUserSuccess(None)(FakeRequest().withJsonBody(inputJson)) {
+            submitWithAuthorisedUserSuccess(Some(registeredDetails))(FakeRequest().withJsonBody(inputJson)) {
               result =>
                 status(
                   result) must be(BAD_REQUEST)
@@ -240,8 +238,6 @@ class RegisteredDetailsControllerSpec extends PlaySpec with OneServerPerSuite wi
                 contentAsString(result) must include("You must enter Country")
             }
           }
-
-
 
           "If entered, data must not be too long" in {
             implicit val hc: HeaderCarrier = HeaderCarrier()
@@ -276,7 +272,8 @@ class RegisteredDetailsControllerSpec extends PlaySpec with OneServerPerSuite wi
 
   def getWithAuthorisedUser(registeredDetails: Option[RegisteredDetails]=None)(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
-    AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
+    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+    setAuthMocks(authMock)
     when(mockSubscriptionDataService.getRegisteredDetails(Matchers.any(), Matchers.any())).thenReturn(Future.successful(registeredDetails))
 
     val result = TestRegisteredDetailsController.edit().apply(SessionBuilder.buildRequestWithSession(userId))
@@ -284,22 +281,18 @@ class RegisteredDetailsControllerSpec extends PlaySpec with OneServerPerSuite wi
     test(result)
   }
 
-  def getWithUnAuthorisedUser(test: Future[Result] => Any) {
+  def getWithUnAuthorisedUser: Future[Result] =  {
     val userId = s"user-${UUID.randomUUID}"
-    AuthBuilder.mockUnAuthorisedUser(userId, mockAuthConnector)
-    val result = TestRegisteredDetailsController.edit().apply(SessionBuilder.buildRequestWithSession(userId))
-    test(result)
-  }
-
-  def getWithUnAuthenticated(test: Future[Result] => Any) {
-    val result = TestRegisteredDetailsController.edit().apply(SessionBuilder.buildRequestWithSessionNoUser)
-    test(result)
+        val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
+    setInvalidAuthMocks(authMock)
+    TestRegisteredDetailsController.edit()(SessionBuilder.buildRequestWithSession(userId))
   }
 
   def submitWithAuthorisedUserSuccess(updatedDetails: Option[RegisteredDetails]=None)
                                      (fakeRequest: FakeRequest[AnyContentAsJson])(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
-    AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
+    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+    setAuthMocks(authMock)
     when(mockSubscriptionDataService.updateRegisteredDetails(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(updatedDetails))
     val result = TestRegisteredDetailsController.submit().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
 
@@ -308,13 +301,9 @@ class RegisteredDetailsControllerSpec extends PlaySpec with OneServerPerSuite wi
 
   def submitWithUnAuthorisedUser(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
-    AuthBuilder.mockUnAuthorisedUser(userId, mockAuthConnector)
+        val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
+    setInvalidAuthMocks(authMock)
     val result = TestRegisteredDetailsController.submit().apply(SessionBuilder.buildRequestWithSession(userId))
-    test(result)
-  }
-
-  def submitWithUnAuthenticated(test: Future[Result] => Any) {
-    val result = TestRegisteredDetailsController.submit().apply(SessionBuilder.buildRequestWithSessionNoUser)
     test(result)
   }
 }

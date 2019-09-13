@@ -16,23 +16,21 @@
 
 package controllers.editLiability
 
-import config.FrontendDelegationConnector
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
-import controllers.auth.{AtedRegime, ClientHelper}
+import controllers.auth.{AuthAction, ClientHelper}
 import controllers.propertyDetails.{PropertyDetailsHelpers, PropertyDetailsTaxAvoidanceController}
 import forms.PropertyDetailsForms
 import forms.PropertyDetailsForms._
 import models._
-import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService}
-import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
+import play.api.i18n.Messages.Implicits._
+import play.api.mvc.{Action, AnyContent}
+import services.{DelegationService, PropertyDetailsCacheSuccessResponse, PropertyDetailsService}
 
-import scala.concurrent.Future
+trait EditLiabilityDatesLiableController extends PropertyDetailsHelpers with ClientHelper with AuthAction {
 
-trait EditLiabilityDatesLiableController extends PropertyDetailsHelpers with ClientHelper {
-
-  def view(formBundleNo: String) = AuthAction(AtedRegime) {
-    implicit atedContext =>
+  def view(formBundleNo: String) : Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       ensureClientContext {
         propertyDetailsCacheResponse(formBundleNo) {
           case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
@@ -47,13 +45,14 @@ trait EditLiabilityDatesLiableController extends PropertyDetailsHelpers with Cli
             )
         }
       }
+    }
   }
 
 
-  def save(formBundleNo: String, periodKey: Int) = AuthAction(AtedRegime) {
-    implicit atedContext =>
+  def save(formBundleNo: String, periodKey: Int) : Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       ensureClientContext {
-        PropertyDetailsForms.validatePropertyDetailsDatesLiable(periodKey, periodDatesLiableForm.bindFromRequest, false).fold(
+        PropertyDetailsForms.validatePropertyDetailsDatesLiable(periodKey, periodDatesLiableForm.bindFromRequest, periodsCheck = false).fold(
           formWithError => {
             currentBackLink.map(backLink =>
               BadRequest(views.html.editLiability.editLiabilityDatesLiable(formBundleNo, periodKey, formWithError, backLink))
@@ -72,14 +71,15 @@ trait EditLiabilityDatesLiableController extends PropertyDetailsHelpers with Cli
           }
         )
       }
+    }
   }
 
 }
 
 object EditLiabilityDatesLiableController extends EditLiabilityDatesLiableController {
-  val delegationConnector = FrontendDelegationConnector
-  val propertyDetailsService = PropertyDetailsService
-  val dataCacheConnector = DataCacheConnector
+  val delegationService: DelegationService = DelegationService
+  val propertyDetailsService: PropertyDetailsService = PropertyDetailsService
+  val dataCacheConnector: DataCacheConnector = DataCacheConnector
   override val controllerId = "EditLiabilityDatesLiableController"
-  override val backLinkCacheConnector = BackLinkCacheConnector
+  override val backLinkCacheConnector: BackLinkCacheConnector = BackLinkCacheConnector
 }

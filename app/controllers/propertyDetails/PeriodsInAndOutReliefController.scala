@@ -16,41 +16,42 @@
 
 package controllers.propertyDetails
 
-import config.FrontendDelegationConnector
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
-import controllers.auth.{AtedRegime, ClientHelper}
+import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms._
 import org.joda.time.LocalDate
-import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService}
-import utils.{AtedUtils, PeriodUtils}
-import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
+import play.api.i18n.Messages.Implicits._
+import play.api.mvc.{Action, AnyContent}
+import services.{DelegationService, PropertyDetailsCacheSuccessResponse, PropertyDetailsService}
 import utils.AtedConstants.SelectedPreviousReturn
+import utils.{AtedUtils, PeriodUtils}
 
 import scala.concurrent.Future
 
-trait PeriodsInAndOutReliefController extends PropertyDetailsHelpers with ClientHelper {
+trait PeriodsInAndOutReliefController extends PropertyDetailsHelpers with ClientHelper with AuthAction {
 
-  def view(id: String) = AuthAction(AtedRegime) {
-    implicit atedContext =>
+  def view(id: String) : Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       ensureClientContext {
         propertyDetailsCacheResponse(id) {
           case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
             currentBackLink.flatMap { backLink =>
               dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
-                  Future.successful(Ok(views.html.propertyDetails.periodsInAndOutRelief(id, propertyDetails.periodKey,
-                    periodsInAndOutReliefForm,
-                    PeriodUtils.getDisplayPeriods(propertyDetails.period),
-                    AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn),
-                    backLink)))
+                Future.successful(Ok(views.html.propertyDetails.periodsInAndOutRelief(id, propertyDetails.periodKey,
+                  periodsInAndOutReliefForm,
+                  PeriodUtils.getDisplayPeriods(propertyDetails.period),
+                  AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn),
+                  backLink)))
               }
             }
         }
       }
+    }
   }
 
-  def deletePeriod(id: String, startDate: LocalDate) = AuthAction(AtedRegime) {
-    implicit atedContext =>
+  def deletePeriod(id: String, startDate: LocalDate) : Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       ensureClientContext {
         for {
           propertyDetails <- propertyDetailsService.deleteDraftPropertyDetailsPeriod(id, startDate)
@@ -66,24 +67,24 @@ trait PeriodsInAndOutReliefController extends PropertyDetailsHelpers with Client
           result
         }
       }
+    }
   }
 
-  def continue(id: String, periodKey: Int) = AuthAction(AtedRegime) {
-    implicit atedContext =>
+  def continue(id: String, periodKey: Int) : Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       ensureClientContext(RedirectWithBackLink(
         PropertyDetailsTaxAvoidanceController.controllerId,
         controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceController.view(id),
         Some(controllers.propertyDetails.routes.PeriodsInAndOutReliefController.view(id).url)
       ))
+    }
   }
-
-
 }
 
 object PeriodsInAndOutReliefController extends PeriodsInAndOutReliefController {
-  val delegationConnector = FrontendDelegationConnector
-  val propertyDetailsService = PropertyDetailsService
-  val dataCacheConnector = DataCacheConnector
-  override val controllerId = "PeriodsInAndOutReliefController"
-  override val backLinkCacheConnector = BackLinkCacheConnector
+  val delegationService: DelegationService = DelegationService
+  val propertyDetailsService: PropertyDetailsService = PropertyDetailsService
+  val dataCacheConnector: DataCacheConnector = DataCacheConnector
+  override val controllerId: String = "PeriodsInAndOutReliefController"
+  override val backLinkCacheConnector: BackLinkCacheConnector = BackLinkCacheConnector
 }

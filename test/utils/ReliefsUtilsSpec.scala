@@ -16,9 +16,10 @@
 
 package utils
 
-import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
+import org.scalatestplus.play.PlaySpec
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 
-class ReliefsUtilsSpec extends PlaySpec with OneServerPerSuite with ReliefConstants {
+class ReliefsUtilsSpec extends PlaySpec with GuiceOneServerPerSuite with ReliefConstants {
 
   "ReliefsUtils" must {
 

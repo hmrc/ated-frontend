@@ -19,56 +19,53 @@ package controllers.editLiability
 import java.util.UUID
 
 import builders._
-import config.FrontendDelegationConnector
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import models.{BankDetails, BankDetailsModel, PropertyDetails, SortCode}
 import org.jsoup.Jsoup
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mock.MockitoSugar
-import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
+import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.play.PlaySpec
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.Result
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.ChangeLiabilityReturnService
-import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
-import utils.AtedConstants
+import services.{ChangeLiabilityReturnService, DelegationService}
+import uk.gov.hmrc.auth.core.{AffinityGroup, PlayAuthConnector}
+import utils.{AtedConstants, MockAuthUtil}
 
 import scala.concurrent.Future
 
-class BankDetailsControllerSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
+class BankDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with MockAuthUtil {
 
-  import AuthBuilder._
 
-  val mockAuthConnector = mock[AuthConnector]
-  val mockDelegationConnector = mock[DelegationConnector]
-  val mockChangeLiabilityReturnService = mock[ChangeLiabilityReturnService]
-  val mockBackLinkCache = mock[BackLinkCacheConnector]
-  val mockDataCacheConnector = mock[DataCacheConnector]
+  val mockChangeLiabilityReturnService: ChangeLiabilityReturnService = mock[ChangeLiabilityReturnService]
+  val mockBackLinkCache: BackLinkCacheConnector = mock[BackLinkCacheConnector]
+  val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
 
   object TestBankDetailsController extends BankDetailsController {
 
-    override val authConnector: AuthConnector = mockAuthConnector
-    override val delegationConnector: DelegationConnector = mockDelegationConnector
-    override val changeLiabilityReturnService = mockChangeLiabilityReturnService
-    override val controllerId = "controllerId"
-    override val backLinkCacheConnector = mockBackLinkCache
-    override val dataCacheConnector = mockDataCacheConnector
+    override val authConnector: PlayAuthConnector = mockAuthConnector
+    override val delegationService: DelegationService = mockDelegationService
+    override val changeLiabilityReturnService: ChangeLiabilityReturnService = mockChangeLiabilityReturnService
+    override val controllerId: String = "controllerId"
+    override val backLinkCacheConnector: BackLinkCacheConnector = mockBackLinkCache
+    override val dataCacheConnector: DataCacheConnector = mockDataCacheConnector
   }
 
-  override def beforeEach = {
+  override def beforeEach: Unit = {
     reset(mockAuthConnector)
-    reset(mockDelegationConnector)
+    reset(mockDelegationService)
     reset(mockChangeLiabilityReturnService)
     reset(mockBackLinkCache)
   }
 
   "BankController" must {
 
-    "use correct DelegationConnector" in {
-      BankDetailsController.delegationConnector must be(FrontendDelegationConnector)
+    "use correct DelegationService" in {
+      BankDetailsController.delegationService must be(DelegationService)
     }
 
     "use correct Service" in {
@@ -76,12 +73,6 @@ class BankDetailsControllerSpec extends PlaySpec with OneServerPerSuite with Moc
     }
 
     "view - for authorised users" must {
-      "not respond with Not_Found" in {
-        val result = route(FakeRequest(GET, "/ated/liability/1234567890/change/bank-details"))
-        result.isDefined must be(true)
-        status(result.get) must not be NOT_FOUND
-      }
-
 
       "navigate to bank details page, if liablity is retrieved" in {
         val bankDetails = BankDetailsModel()
@@ -131,27 +122,28 @@ class BankDetailsControllerSpec extends PlaySpec with OneServerPerSuite with Moc
 
   }
 
-
   def viewWithAuthorisedUser(changeLiabilityReturnOpt: Option[PropertyDetails])(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
-    implicit val user = createAtedContext(createUserAuthContext(userId, "name"))
-    AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
+    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+    setAuthMocks(authMock)
     when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-    when(mockChangeLiabilityReturnService.retrieveSubmittedLiabilityReturnAndCache(Matchers.eq("12345678901"), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(changeLiabilityReturnOpt))
+    when(mockChangeLiabilityReturnService.retrieveSubmittedLiabilityReturnAndCache
+    (Matchers.eq("12345678901"), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(changeLiabilityReturnOpt))
     when(mockBackLinkCache.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
     val result = TestBankDetailsController.view("12345678901").apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
-  def saveWithAuthorisedUser(inputJson: JsValue)(test: Future[Result] => Any) = {
+  def saveWithAuthorisedUser(inputJson: JsValue)(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
-    implicit val user = createAtedContext(createUserAuthContext(userId, "name"))
-    AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
+    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+    setAuthMocks(authMock)
     when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
     val changeLiabilityReturn = ChangeLiabilityReturnBuilder.generateChangeLiabilityReturn("123456789012")
-    when(mockChangeLiabilityReturnService.cacheChangeLiabilityReturnBank(Matchers.eq("12345678901"), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(changeLiabilityReturn)))
+    when(mockChangeLiabilityReturnService.cacheChangeLiabilityReturnBank
+    (Matchers.eq("12345678901"), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(changeLiabilityReturn)))
     val result = TestBankDetailsController.save("12345678901").apply(SessionBuilder.updateRequestWithSession(FakeRequest().withJsonBody(inputJson), userId))
     test(result)
   }

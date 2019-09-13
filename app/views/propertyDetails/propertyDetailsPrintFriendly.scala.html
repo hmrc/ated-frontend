@@ -14,7 +14,7 @@
  * limitations under the License.
  *@
 
-@(propertyDetails : PropertyDetails, periods : Seq[models.LineItem], valuesToDisplay: Seq[models.LineItemValue], organisationName: Option[String])(implicit atedContext: AtedContext, messages: Messages)
+@(propertyDetails : PropertyDetails, periods : Seq[models.LineItem], valuesToDisplay: Seq[models.LineItemValue], organisationName: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent])
 
 @import views.html.helpers._
 @import utils.PeriodUtils
@@ -27,7 +27,7 @@
 
 <script src='@controllers.routes.AssetsController.at("javascript/printFriendly.js")'></script>
 
-  <p id="liability-print-ated-ref" class="font-xsmall">@Messages("ated.refNo", atedContext.user.atedReferenceNumber)</p>
+  <p id="liability-print-ated-ref" class="font-xsmall">@Messages("ated.refNo", authContext.atedReferenceNumber)</p>
 
   <h1 class="heading-xlarge" id="property-details-summary-header">
     @Messages("ated.property-details-summary.print.header", organisationName.getOrElse(""))

@@ -16,27 +16,26 @@
 
 package controllers.subscriptionData
 
-import config.FrontendDelegationConnector
 import connectors.DataCacheConnector
 import controllers.AtedBaseController
-import controllers.auth.{AtedFrontendAuthHelpers, AtedRegime}
+import controllers.auth.AuthAction
 import forms.AtedForms
 import forms.AtedForms._
+import play.api.Play.current
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
-import play.api.Play.current
-import services.SubscriptionDataService
-import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
+import play.api.mvc.{Action, AnyContent}
+import services.{DelegationService, SubscriptionDataService}
 import utils.{AtedUtils, CountryCodeUtils}
 
 import scala.concurrent.Future
 
-trait CorrespondenceAddressController extends AtedBaseController with AtedFrontendAuthHelpers with DelegationAwareActions {
+trait CorrespondenceAddressController extends AtedBaseController with AuthAction {
 
   def subscriptionDataService: SubscriptionDataService
 
-  def editAddress = AuthAction(AtedRegime) {
-    implicit atedContext =>
+  def editAddress: Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       val correspondenceAddressResponse = subscriptionDataService.getCorrespondenceAddress
       for {
         correspondenceAddress <- correspondenceAddressResponse
@@ -47,10 +46,11 @@ trait CorrespondenceAddressController extends AtedBaseController with AtedFronte
         }
         Ok(views.html.subcriptionData.correspondenceAddress(populatedForm, CountryCodeUtils.getIsoCodeTupleList, getBackLink))
       }
+    }
   }
 
-  def submit = AuthAction(AtedRegime) {
-    implicit atedContext =>
+  def submit: Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       AtedForms.verifyUKPostCode(correspondenceAddressForm.bindFromRequest).fold(
         formWithErrors => Future.successful(BadRequest(views.html.subcriptionData.correspondenceAddress(formWithErrors,
           CountryCodeUtils.getIsoCodeTupleList, getBackLink))),
@@ -61,16 +61,17 @@ trait CorrespondenceAddressController extends AtedBaseController with AtedFronte
             correspondenceAddress <- subscriptionDataService.updateCorrespondenceAddressDetails(trimmedAddress)
           }
             yield {
-            correspondenceAddress match {
-              case Some(x) => Redirect(controllers.subscriptionData.routes.CompanyDetailsController.view())
-              case None =>
-                val errorMsg = Messages("ated.correspondence-address.save.error")
-                val errorForm = correspondenceAddressForm.withError(key = "addressType", message = errorMsg).fill(addressData)
-                BadRequest(views.html.subcriptionData.correspondenceAddress(errorForm, CountryCodeUtils.getIsoCodeTupleList, getBackLink))
+              correspondenceAddress match {
+                case Some(x) => Redirect(controllers.subscriptionData.routes.CompanyDetailsController.view())
+                case None =>
+                  val errorMsg = Messages("ated.correspondence-address.save.error")
+                  val errorForm = correspondenceAddressForm.withError(key = "addressType", message = errorMsg).fill(addressData)
+                  BadRequest(views.html.subcriptionData.correspondenceAddress(errorForm, CountryCodeUtils.getIsoCodeTupleList, getBackLink))
+              }
             }
-          }
         }
       )
+    }
   }
 
   private def getBackLink = {
@@ -79,7 +80,7 @@ trait CorrespondenceAddressController extends AtedBaseController with AtedFronte
 }
 
 object CorrespondenceAddressController extends CorrespondenceAddressController {
-  val delegationConnector = FrontendDelegationConnector
-  val dataCacheConnector = DataCacheConnector
-  val subscriptionDataService = SubscriptionDataService
+  val delegationService: DelegationService = DelegationService
+  val dataCacheConnector: DataCacheConnector = DataCacheConnector
+  val subscriptionDataService: SubscriptionDataService = SubscriptionDataService
 }

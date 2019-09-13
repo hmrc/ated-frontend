@@ -14,7 +14,7 @@
  * limitations under the License.
  *@
 
-@(changeLiability: models.PropertyDetails, returnType: String, periods : Seq[models.LineItem], valuesToDisplay: Seq[models.LineItemValue], backLink: Option[String])(implicit atedContext: AtedContext, messages: Messages)
+@(changeLiability: models.PropertyDetails, returnType: String, periods : Seq[models.LineItem], valuesToDisplay: Seq[models.LineItemValue], backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent])
 
 @import uk.gov.hmrc.play.views.html.helpers._
 @import utils.PeriodUtils
@@ -28,7 +28,6 @@
 }
 
 @atedMain(title = Messages("ated.property-details-summary.title"),
-          attorney = atedContext.user.authContext.attorney,
           analyticsAdditionalJs = Some(analyticsJs)) {
 
   @pageHeadersAndError(backLink, "pre-heading", Messages("ated.property-details.pre-header-change"), "edit-liability-summary-header", Messages("ated.property-details-summary.header"))
@@ -124,7 +123,7 @@
   </div>
     }
 </div>
-  
+
   <div class="form-group">
 
 @if(changeLiability.bankDetails.map(_.hasBankDetails) == Some(true)){

@@ -16,24 +16,20 @@
 
 package views
 
-import java.util.UUID
-
-import builders.AuthBuilder._
 import forms.AtedForms.selectPeriodForm
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
-import org.scalatestplus.play.OneServerPerSuite
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.test.FakeRequest
-import utils.{PeriodUtils, AtedUtils}
+import utils.{MockAuthUtil, PeriodUtils}
 
-class selectPeriodSpec extends FeatureSpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach with GivenWhenThen{
+class selectPeriodSpec extends FeatureSpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
 
   implicit val request = FakeRequest()
   implicit val messages : play.api.i18n.Messages = play.api.i18n.Messages.Implicits.applicationMessages
-  val userId = s"user-${UUID.randomUUID}"
-  implicit val user = createAtedContext(createUserAuthContext(userId, "name"))
+  implicit lazy val authContext = organisationStandardRetrievals
   val periodKey = 2015
 
   feature("The user can view the select period page") {

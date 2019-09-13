@@ -16,60 +16,54 @@
 
 package connectors
 
-import builders.AuthBuilder
-import models.ReturnType
+import models.{ReturnType, StandardAuthRetrievals}
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
 import play.api.libs.json.Json
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.cache.client.{CacheMap, SessionCache}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 
 import scala.concurrent.Future
-import uk.gov.hmrc.http.{ HeaderCarrier, HttpResponse }
 
 class DataCacheConnectorSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
 
-  val mockSessionCache = mock[SessionCache]
+  val mockSessionCache: SessionCache = mock[SessionCache]
+  implicit val authContext: StandardAuthRetrievals = mock[StandardAuthRetrievals]
 
   object TestDataCacheConnector extends DataCacheConnector {
     override val sessionCache: SessionCache = mockSessionCache
   }
 
-  override def beforeEach = {
+  override def beforeEach: Unit = {
     reset()
   }
 
   val returnType = ReturnType(Some("CR"))
 
   "DataCacheConnector" must {
-    import AuthBuilder._
 
-    implicit val user = createAtedContext(createUserAuthContext("User-Id", "name"))
 
     "saveFormData" must {
       "save form data in keystore" in {
         implicit val hc: HeaderCarrier = HeaderCarrier()
         val returnedCacheMap = CacheMap("form-id", Map("data" -> Json.toJson(returnType)))
-        when(mockSessionCache.cache[ReturnType](Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(returnedCacheMap))
+        when(mockSessionCache.cache[ReturnType]
+          (Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(returnedCacheMap))
         await(TestDataCacheConnector.saveFormData[ReturnType]("form-id", returnType)) must be(returnType)
         val result = TestDataCacheConnector.saveFormData[ReturnType]("form-id", returnType)
         await(result) must be(returnType)
       }
     }
-//    "fetchClientData" must {
-//      "fetch client data from Keystore" in {
-//        implicit val hc: HeaderCarrier = HeaderCarrier()
-//        when(mockSessionCache.fetchAndGetEntry[ReturnType](Matchers.contains("form-id"))(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(returnType)))
-//        await(TestDataCacheConnector.fetchAndGetFormData[ReturnType]("form-id")) must be(Some(returnType))
-//      }
-//    }
+
     "fetchAndGetFormData" must {
       "fetch data from Keystore" in {
         implicit val hc: HeaderCarrier = HeaderCarrier()
-        when(mockSessionCache.fetchAndGetEntry[ReturnType](Matchers.contains("form-id"))(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(returnType)))
+        when(mockSessionCache.fetchAndGetEntry[ReturnType]
+          (Matchers.contains("form-id"))(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(returnType)))
         await(TestDataCacheConnector.fetchAndGetFormData[ReturnType]("form-id")) must be(Some(returnType))
       }
     }
@@ -88,7 +82,8 @@ class DataCacheConnectorSpec extends PlaySpec with OneServerPerSuite with Mockit
     "fetchAtedRefData" must {
       "fetch data from Keystore" in {
         implicit val hc: HeaderCarrier = HeaderCarrier()
-        when(mockSessionCache.fetchAndGetEntry[String](Matchers.contains("XN1200000100001"))(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
+        when(mockSessionCache.fetchAndGetEntry[String]
+          (Matchers.contains("XN1200000100001"))(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
         val result = TestDataCacheConnector.fetchAtedRefData[String]("XN1200000100001")
         await(result) must be(Some("XN1200000100001"))
       }

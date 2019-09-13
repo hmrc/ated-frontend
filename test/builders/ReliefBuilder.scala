@@ -17,7 +17,7 @@
 package builders
 
 import models.{Reliefs, ReliefsTaxAvoidance, TaxAvoidance}
-import utils.{PeriodUtils, AtedUtils}
+import utils.PeriodUtils
 
 
 object ReliefBuilder {

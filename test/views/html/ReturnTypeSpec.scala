@@ -17,10 +17,13 @@
 package views.html
 
 import forms.AtedForms
+import org.scalatest.mockito.MockitoSugar
 import play.twirl.api.Html
+import utils.MockAuthUtil
 import utils.viewHelpers.AtedViewSpec
 
-class ReturnTypeSpec extends AtedViewSpec {
+class ReturnTypeSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil {
+  implicit lazy val authContext = organisationStandardRetrievals
 
   "Return Type view" must {
     behave like pageWithTitle(messages("ated.return-type.title"))

@@ -14,11 +14,11 @@
  * limitations under the License.
  *@
 
-@(leaveFeedbackForm: Form[models.LeaveFeedback], returnUri: String)(implicit atedContext: AtedContext, messages: Messages)
+@(leaveFeedbackForm: Form[models.LeaveFeedback], returnUri: String)(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent])
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
 
-@atedMain(title = Messages("ated.leave-feedback.heading"), attorney = atedContext.user.authContext.attorney) {
+@atedMain(title = Messages("ated.leave-feedback.heading")) {
 
   <div class="form-group">
       <h1 class="heading-xlarge" id="feedback-header">@Messages("ated.leave-feedback.heading")</h1>

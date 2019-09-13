@@ -18,42 +18,43 @@ package controllers
 
 import java.util.UUID
 
-import builders.{AuthBuilder, SessionBuilder, TitleBuilder}
-import config.FrontendDelegationConnector
+import builders.{SessionBuilder, TitleBuilder}
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import models.{PreviousReturns, ReturnType}
 import org.jsoup.Jsoup
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mock.MockitoSugar
-import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
+import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.play.PlaySpec
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.libs.json.Json
 import play.api.mvc.{AnyContentAsJson, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.SummaryReturnsService
-import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
-import utils.AtedConstants
+import services.{DelegationService, SummaryReturnsService}
+import uk.gov.hmrc.auth.core.{AffinityGroup, PlayAuthConnector}
+import uk.gov.hmrc.http.HeaderCarrier
+import utils.{AtedConstants, MockAuthUtil}
 
 import scala.concurrent.Future
 
-class ReturnTypeControllerSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
+class ReturnTypeControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with MockAuthUtil {
 
-  import AuthBuilder._
+  val periodKey: Int = 2015
+  val mockBackLinkCache: BackLinkCacheConnector = mock[BackLinkCacheConnector]
+  val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
+  val mockSummaryReturnsService: SummaryReturnsService = mock[SummaryReturnsService]
 
-  val mockAuthConnector = mock[AuthConnector]
-  val mockBackLinkCache = mock[BackLinkCacheConnector]
-  val mockDataCacheConnector = mock[DataCacheConnector]
-  val mockSummaryReturnsService = mock[SummaryReturnsService]
+  implicit lazy val hc: HeaderCarrier = HeaderCarrier()
 
   object TestReturnTypeController extends ReturnTypeController {
     override val summaryReturnService: SummaryReturnsService = mockSummaryReturnsService
-    override val authConnector = mockAuthConnector
-    override val delegationConnector: DelegationConnector = FrontendDelegationConnector
-    override val controllerId = "controllerId"
-    override val backLinkCacheConnector = mockBackLinkCache
-    override val dataCacheConnector = mockDataCacheConnector
+    override val authConnector: PlayAuthConnector = mockAuthConnector
+    override val delegationService: DelegationService = DelegationService
+    override val controllerId: String = "controllerId"
+    override val backLinkCacheConnector: BackLinkCacheConnector = mockBackLinkCache
+    override val dataCacheConnector: DataCacheConnector = mockDataCacheConnector
   }
 
   override def beforeEach(): Unit = {
@@ -63,17 +64,11 @@ class ReturnTypeControllerSpec extends PlaySpec with OneServerPerSuite with Mock
 
   "ReturnTypeController" must {
 
-    "use correct DelegationConnector" in {
-      ReturnTypeController.delegationConnector must be(FrontendDelegationConnector)
+    "use correct DelegationService" in {
+      ReturnTypeController.delegationService must be(DelegationService)
     }
 
     "returnType" must {
-
-      "not respond with NOT_FOUND" in {
-        val result = route(FakeRequest(GET, "/ated/return-type/2015"))
-        result.isDefined must be(true)
-        status(result.get) must not be NOT_FOUND
-      }
 
       "unauthorised users" must {
         "respond with a redirect" in {
@@ -171,52 +166,49 @@ class ReturnTypeControllerSpec extends PlaySpec with OneServerPerSuite with Mock
 
   def getWithAuthorisedUser(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
-    implicit val user = createAtedContext(createUserAuthContext(userId, "name"))
-    AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
+    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+    setAuthMocks(authMock)
     when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
     when(mockDataCacheConnector.fetchAndGetFormData[String](Matchers.any())
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
     when(mockBackLinkCache.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
-    val result = TestReturnTypeController.view(2015).apply(SessionBuilder.buildRequestWithSession(userId))
+    val result = TestReturnTypeController.view(periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
   def getWithAuthorisedUserWithSomeData(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
-    implicit val user = createAtedContext(createUserAuthContext(userId, "name"))
-    AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
+    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+    setAuthMocks(authMock)
     when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
     when(mockDataCacheConnector.fetchAndGetFormData[ReturnType](Matchers.any())
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(ReturnType(Some("RR")))))
     when(mockBackLinkCache.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
-    val result = TestReturnTypeController.view(2015).apply(SessionBuilder.buildRequestWithSession(userId))
+    val result = TestReturnTypeController.view(periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
   def getWithUnAuthorisedUser(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
-    AuthBuilder.mockUnAuthorisedUser(userId, mockAuthConnector)
-    val result = TestReturnTypeController.view(2015).apply(SessionBuilder.buildRequestWithSession(userId))
-    test(result)
-  }
-
-  def getWithUnAuthenticated(test: Future[Result] => Any) {
-    val result = TestReturnTypeController.view(2015).apply(SessionBuilder.buildRequestWithSessionNoUser)
+        val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
+    setInvalidAuthMocks(authMock)
+    val result = TestReturnTypeController.view(periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
   def submitWithAuthorisedUser(prevReturns: Seq[PreviousReturns], fakeRequest: FakeRequest[AnyContentAsJson])(test: Future[Result] => Any): Unit = {
     val userId = s"user-${UUID.randomUUID}"
-    implicit val user = createAtedContext(createUserAuthContext(userId, "name"))
-    AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
+    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+    setAuthMocks(authMock)
     when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-    when(mockSummaryReturnsService.getPreviousSubmittedLiabilityDetails(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(prevReturns))
+    when(mockSummaryReturnsService.getPreviousSubmittedLiabilityDetails(Matchers.any())(Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(prevReturns))
     when(mockBackLinkCache.clearBackLinks(Matchers.any())(Matchers.any())).thenReturn(Future.successful(Nil))
     when(mockBackLinkCache.saveBackLink(Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
-    val result = TestReturnTypeController.submit(2015).apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
+    val result = TestReturnTypeController.submit(periodKey).apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
     test(result)
   }
 }

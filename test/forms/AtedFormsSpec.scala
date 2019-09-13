@@ -16,14 +16,15 @@
 
 package forms
 
-import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
+import org.scalatestplus.play.PlaySpec
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.test.FakeRequest
 
-class AtedFormsSpec extends PlaySpec with OneServerPerSuite {
+class AtedFormsSpec extends PlaySpec with GuiceOneServerPerSuite {
 
-  implicit lazy val messagesApi = app.injector.instanceOf[MessagesApi]
-  implicit lazy val messages = messagesApi.preferred(FakeRequest())
+  implicit lazy val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  implicit lazy val messages: Messages = messagesApi.preferred(FakeRequest())
 
   "validatePostCodeFormat" must {
     "return true for a valid postcode" in {

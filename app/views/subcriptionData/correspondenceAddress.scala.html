@@ -14,7 +14,7 @@
  * limitations under the License.
  *@
 
-@(correspondenceAddressForm: Form[models.AddressDetails], listOfIsoCode: List[(String, String)], backLink: Option[String])(implicit atedContext: AtedContext, messages: Messages)
+@(correspondenceAddressForm: Form[models.AddressDetails], listOfIsoCode: List[(String, String)], backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent])
 @import uk.gov.hmrc.play.views.html._
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
@@ -35,7 +35,7 @@
 
 @implicitFormInstance = @{ Some(correspondenceAddressForm) }
 
-@atedMain(title = Messages("ated.correspondence-address.title"), attorney = atedContext.user.authContext.attorney, pageScripts = Some(pageScripts)) {
+@atedMain(title = Messages("ated.correspondence-address.title"), pageScripts = Some(pageScripts)) {
   @pageHeadersAndError(backLink, "pre-heading", Messages("ated.correspondence-address.subheader"), "correspondence-address-header", Messages("ated.correspondence-address.header"),
       Some(atedErrorSummary(correspondenceAddressForm, "ated.correspondence-address.error.general")))
 

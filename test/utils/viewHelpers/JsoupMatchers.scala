@@ -16,7 +16,7 @@
 
 package utils.viewHelpers
 
-import org.jsoup.nodes.{Attributes, Document, Element}
+import org.jsoup.nodes.{Attributes, Document}
 import org.jsoup.select.Elements
 import org.scalatest.matchers.{MatchResult, Matcher}
 

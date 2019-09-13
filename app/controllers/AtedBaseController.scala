@@ -17,19 +17,12 @@
 package controllers
 
 import config.FrontendAuthConnector
-import models.AtedContext
-import play.api.mvc.{Request, AnyContent}
-import uk.gov.hmrc.play.frontend.auth.{AuthContext, Actions}
-import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
+import uk.gov.hmrc.auth.core.PlayAuthConnector
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 
-trait AtedBaseController extends FrontendController with Actions {
+trait AtedBaseController extends FrontendController {
 
-  val authConnector: AuthConnector = FrontendAuthConnector
+  val authConnector: PlayAuthConnector = FrontendAuthConnector
 
-  implicit def atedContext2Request(implicit atedContext: AtedContext): Request[AnyContent] = atedContext.request
-  // $COVERAGE-OFF$
-  implicit def atedContext2AuthContext(implicit atedContext: AtedContext): AuthContext = atedContext.user.authContext
-  // $COVERAGE-ON$
 
 }

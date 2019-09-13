@@ -16,24 +16,22 @@
 
 package controllers.editLiability
 
-import config.FrontendDelegationConnector
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.BackLinkController
-import controllers.auth.{AtedFrontendAuthHelpers, AtedRegime, ClientHelper}
-import services.ChangeLiabilityReturnService
-import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
-import play.api.i18n.Messages.Implicits._
+import controllers.auth.{AuthAction, ClientHelper}
 import play.api.Play.current
+import play.api.i18n.Messages.Implicits._
+import play.api.mvc.{Action, AnyContent}
+import services.{ChangeLiabilityReturnService, DelegationService}
 
 import scala.concurrent.Future
 
-trait EditLiabilityDeclarationController extends BackLinkController
-  with AtedFrontendAuthHelpers with DelegationAwareActions with ClientHelper {
+trait EditLiabilityDeclarationController extends BackLinkController with ClientHelper with AuthAction {
 
   def changeLiabilityReturnService: ChangeLiabilityReturnService
 
-  def view(oldFormBundleNo: String) = AuthAction(AtedRegime) {
-    implicit atedContext =>
+  def view(oldFormBundleNo: String): Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       ensureClientContext {
         changeLiabilityReturnService.retrieveSubmittedLiabilityReturnAndCache(oldFormBundleNo) flatMap {
           case Some(x) =>
@@ -44,10 +42,11 @@ trait EditLiabilityDeclarationController extends BackLinkController
           case None => Future.successful(Redirect(controllers.routes.AccountSummaryController.view()))
         }
       }
+    }
   }
 
-  def submit(oldFormBundleNo: String) = AuthAction(AtedRegime) {
-    implicit atedContext =>
+  def submit(oldFormBundleNo: String) : Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       ensureClientContext {
         changeLiabilityReturnService.submitDraftChangeLiability(oldFormBundleNo) map {
           response =>
@@ -59,6 +58,7 @@ trait EditLiabilityDeclarationController extends BackLinkController
             }
         }
       }
+    }
   }
 
   private def getReturnType(amountDueOrRefund: Option[BigDecimal]) = {
@@ -67,9 +67,9 @@ trait EditLiabilityDeclarationController extends BackLinkController
 }
 
 object EditLiabilityDeclarationController extends EditLiabilityDeclarationController {
-  val delegationConnector = FrontendDelegationConnector
-  val changeLiabilityReturnService = ChangeLiabilityReturnService
-  val dataCacheConnector = DataCacheConnector
+  val delegationService: DelegationService = DelegationService
+  val changeLiabilityReturnService: ChangeLiabilityReturnService = ChangeLiabilityReturnService
+  val dataCacheConnector: DataCacheConnector = DataCacheConnector
   override val controllerId = "EditLiabilityDeclarationController"
-  override val backLinkCacheConnector = BackLinkCacheConnector
+  override val backLinkCacheConnector: BackLinkCacheConnector = BackLinkCacheConnector
 }

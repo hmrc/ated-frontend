@@ -16,32 +16,32 @@
 
 package controllers.editLiability
 
-import config.FrontendDelegationConnector
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
+import controllers.BackLinkController
+import controllers.auth.{AuthAction, ClientHelper}
 import controllers.propertyDetails.{AddressLookupController, PropertyDetailsAddressController}
-import controllers.{AtedBaseController, BackLinkController}
-import controllers.auth.{AtedFrontendAuthHelpers, AtedRegime, ClientHelper}
 import forms.AtedForms._
-import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
-import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
+import play.api.i18n.Messages.Implicits._
+import play.api.mvc.{Action, AnyContent}
+import services.DelegationService
 
 import scala.concurrent.Future
 
-trait EditLiabilityTypeController extends BackLinkController
-  with AtedFrontendAuthHelpers with DelegationAwareActions with ClientHelper {
+trait EditLiabilityTypeController extends BackLinkController with ClientHelper with AuthAction {
 
-  def editLiability(oldFormBundleNo: String, periodKey: Int, editAllowed: Boolean) = AuthAction(AtedRegime) {
-    implicit atedContext =>
+  def editLiability(oldFormBundleNo: String, periodKey: Int, editAllowed: Boolean) : Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       ensureClientContext {
         Future.successful(
           Ok(views.html.editLiability.editLiability(editLiabilityReturnTypeForm, oldFormBundleNo, periodKey, editAllowed, returnToFormBundle(oldFormBundleNo, periodKey)))
         )
       }
+    }
   }
 
-  def continue(oldFormBundleNo: String, periodKey: Int, editAllowed: Boolean) = AuthAction(AtedRegime) {
-    implicit atedContext =>
+  def continue(oldFormBundleNo: String, periodKey: Int, editAllowed: Boolean) : Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       ensureClientContext {
         editLiabilityReturnTypeForm.bindFromRequest.fold(
           formWithErrors =>
@@ -68,6 +68,7 @@ trait EditLiabilityTypeController extends BackLinkController
           }
         )
       }
+    }
   }
 
   private def returnToFormBundle(oldFormBundleNo: String, periodKey: Int) = {
@@ -76,8 +77,8 @@ trait EditLiabilityTypeController extends BackLinkController
 }
 
 object EditLiabilityTypeController extends EditLiabilityTypeController {
-  val delegationConnector = FrontendDelegationConnector
+  val delegationService: DelegationService = DelegationService
   override val controllerId = "EditLiabilityTypeController"
-  val dataCacheConnector = DataCacheConnector
-  override val backLinkCacheConnector = BackLinkCacheConnector
+  val dataCacheConnector: DataCacheConnector = DataCacheConnector
+  override val backLinkCacheConnector: BackLinkCacheConnector = BackLinkCacheConnector
 }

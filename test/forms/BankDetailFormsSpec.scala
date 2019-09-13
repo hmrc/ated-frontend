@@ -25,8 +25,8 @@ import play.api.test.FakeRequest
 
 class BankDetailFormsSpec extends PlaySpec with MustMatchers with GuiceOneServerPerSuite {
 
-  implicit lazy val messagesApi = app.injector.instanceOf[MessagesApi]
-  implicit lazy val messages = messagesApi.preferred(FakeRequest())
+  implicit lazy val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  implicit lazy val messages: Messages = messagesApi.preferred(FakeRequest())
 
   val validUkData: Map[String, String] = Map("hasUKBankAccount" -> "true",
       "accountName" -> "Account Name",
@@ -56,7 +56,7 @@ class BankDetailFormsSpec extends PlaySpec with MustMatchers with GuiceOneServer
     "iban" -> "GADGSDGADSGF"*10
   )
 
-  val emptyUkData = Map("hasUKBankAccount" -> "true",
+  val emptyUkData: Map[String, String] = Map("hasUKBankAccount" -> "true",
     "accountName" -> "",
     "accountNumber" -> "",
     "sortCode.firstElement" -> "",
@@ -64,7 +64,7 @@ class BankDetailFormsSpec extends PlaySpec with MustMatchers with GuiceOneServer
     "sortCode.thirdElement" -> ""
   )
 
-  val emptyNonUkData = Map("hasUKBankAccount" -> "false",
+  val emptyNonUkData: Map[String, String] = Map("hasUKBankAccount" -> "false",
     "accountName" -> "",
     "bicSwiftCode" -> "",
     "iban" -> ""
@@ -75,7 +75,7 @@ class BankDetailFormsSpec extends PlaySpec with MustMatchers with GuiceOneServer
       "supplied with valid data for uk accounts" in {
         BankDetailForms.bankDetailsForm.bind(validUkData).fold(
           formWithErrors => {
-            formWithErrors.errors.isEmpty mustBe(true)
+            formWithErrors.errors.isEmpty mustBe true
 
           },
           success => {
@@ -89,7 +89,7 @@ class BankDetailFormsSpec extends PlaySpec with MustMatchers with GuiceOneServer
       "supplied with valid data for non uk accounts" in {
         BankDetailForms.bankDetailsForm.bind(validNonUkData).fold(
           formWithErrors => {
-            formWithErrors.errors.isEmpty mustBe(true)
+            formWithErrors.errors.isEmpty mustBe true
 
           },
           success => {

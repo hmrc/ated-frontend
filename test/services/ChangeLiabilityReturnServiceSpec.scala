@@ -16,50 +16,50 @@
 
 package services
 
-import builders.{AuthBuilder, ChangeLiabilityReturnBuilder, PropertyDetailsBuilder}
+import builders.{ChangeLiabilityReturnBuilder, PropertyDetailsBuilder}
 import connectors.{AtedConnector, DataCacheConnector}
-import models.{BankDetails, EditLiabilityReturnsResponseModel, PropertyDetailsTitle, SelectPeriod}
+import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mock.MockitoSugar
-import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
+import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.play.PlaySpec
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.libs.json.{JsValue, Json}
 import play.api.test.Helpers._
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import utils.AtedConstants._
 
 import scala.concurrent.Future
-import uk.gov.hmrc.http.{ HeaderCarrier, HttpResponse }
 
-class ChangeLiabilityReturnServiceSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
+class ChangeLiabilityReturnServiceSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
 
-  import AuthBuilder._
-
-  val mockAtedConnector = mock[AtedConnector]
-  val mockDataCacheConnector = mock[DataCacheConnector]
+  val mockAtedConnector: AtedConnector = mock[AtedConnector]
+  val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
 
   object TestChangeLiabilityReturnService extends ChangeLiabilityReturnService {
-    override val atedConnector = mockAtedConnector
-    override val dataCacheConnector = mockDataCacheConnector
+    override val atedConnector: AtedConnector = mockAtedConnector
+    override val dataCacheConnector: DataCacheConnector = mockDataCacheConnector
   }
 
   val formBundleNo1 = "123456789012"
   val formBundleNo2 = "123456789000"
   implicit val hc: HeaderCarrier = HeaderCarrier()
-  implicit val user = createAtedContext(createUserAuthContext("user-id", "user-name"))
+  implicit lazy val authContext: StandardAuthRetrievals = mock[StandardAuthRetrievals]
+
   val periodKey = 2015
 
-  override def beforeEach = {
+  override def beforeEach: Unit = {
     reset(mockAtedConnector)
     reset(mockDataCacheConnector)
   }
 
-  val changeLiabilityReturn = PropertyDetailsBuilder.getFullPropertyDetails("123456789012")
-  val changeLiabilityReturnJson = Json.toJson(changeLiabilityReturn)
+  val changeLiabilityReturn: PropertyDetails = PropertyDetailsBuilder.getFullPropertyDetails("123456789012")
+  val changeLiabilityReturnJson: JsValue = Json.toJson(changeLiabilityReturn)
 
-  val address = ChangeLiabilityReturnBuilder.generatePropertyDetailsAddress
+  val address: PropertyDetailsAddress = ChangeLiabilityReturnBuilder.generatePropertyDetailsAddress
   val title1 = PropertyDetailsTitle("updatedTitle")
-  val period1 =  PropertyDetailsBuilder.getPropertyDetailsPeriodFull(periodKey).get
+  val period1: PropertyDetailsPeriod =  PropertyDetailsBuilder.getPropertyDetailsPeriodFull(periodKey).get
   val bankDetails1 = BankDetails()
 
   "ChangeLiabilityReturnService" must {
@@ -88,14 +88,16 @@ class ChangeLiabilityReturnServiceSpec extends PlaySpec with OneServerPerSuite w
         "return Some(ChangeLiabilityReturn), if data is found in cache/ETMP, i.e. for status-code OK" in {
           when(mockAtedConnector.retrieveAndCachePreviousLiabilityReturn(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
             .thenReturn(Future.successful(HttpResponse(OK, responseJson = Some(changeLiabilityReturnJson))))
-          val result = await(TestChangeLiabilityReturnService.retrieveSubmittedLiabilityReturnAndCache(formBundleNo1, Some(true), Some(SelectPeriod(Some("2015")))))
+          val result = await(TestChangeLiabilityReturnService.retrieveSubmittedLiabilityReturnAndCache(
+            formBundleNo1, Some(true), Some(SelectPeriod(Some("2015")))))
           result must be(Some(changeLiabilityReturn))
         }
 
         "return None, if data is not-found in cache/ETMP, i.e. for any other status-code" in {
           when(mockAtedConnector.retrieveAndCachePreviousLiabilityReturn(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
             .thenReturn(Future.successful(HttpResponse(NOT_FOUND, responseJson = None)))
-          val result = await(TestChangeLiabilityReturnService.retrieveSubmittedLiabilityReturnAndCache(formBundleNo2, Some(true), Some(SelectPeriod(Some("2015")))))
+          val result = await(TestChangeLiabilityReturnService.retrieveSubmittedLiabilityReturnAndCache(
+            formBundleNo2, Some(true), Some(SelectPeriod(Some("2015")))))
           result must be(None)
         }
       }
@@ -107,14 +109,14 @@ class ChangeLiabilityReturnServiceSpec extends PlaySpec with OneServerPerSuite w
         "return Some(ChangeLiabilityReturn), if data is saved in cache, i.e. for status-code OK" in {
           when(mockAtedConnector.cacheDraftChangeLiabilityReturnHasBank(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
             .thenReturn(Future.successful(HttpResponse(OK, responseJson = Some(changeLiabilityReturnJson))))
-          val result = await(TestChangeLiabilityReturnService.cacheChangeLiabilityReturnHasBankDetails(formBundleNo1, true))
+          val result = await(TestChangeLiabilityReturnService.cacheChangeLiabilityReturnHasBankDetails(formBundleNo1, updatedValue = true))
           result must be(Some(changeLiabilityReturn))
         }
 
         "return None, if data is not saved in cache, i.e. for any other status-code" in {
           when(mockAtedConnector.cacheDraftChangeLiabilityReturnHasBank(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
             .thenReturn(Future.successful(HttpResponse(NOT_FOUND, responseJson = None)))
-          val result = await(TestChangeLiabilityReturnService.cacheChangeLiabilityReturnHasBankDetails(formBundleNo2, false))
+          val result = await(TestChangeLiabilityReturnService.cacheChangeLiabilityReturnHasBankDetails(formBundleNo2, updatedValue = false))
           result must be(None)
         }
       }
@@ -165,14 +167,18 @@ class ChangeLiabilityReturnServiceSpec extends PlaySpec with OneServerPerSuite w
           val response: JsValue = Json.parse(jsonEtmpResponse)
 
           when(mockDataCacheConnector.clearCache()(Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, None)))
-          when(mockDataCacheConnector.saveFormData[EditLiabilityReturnsResponseModel](Matchers.eq(SubmitEditedLiabilityReturnsResponseFormId), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(response.as[EditLiabilityReturnsResponseModel]))
-          when(mockAtedConnector.submitDraftChangeLiabilityReturn(Matchers.eq(formBundleNo1))(Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, responseJson = Some(response))))
+          when(mockDataCacheConnector.saveFormData[EditLiabilityReturnsResponseModel]
+            (Matchers.eq(SubmitEditedLiabilityReturnsResponseFormId), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+            .thenReturn(Future.successful(response.as[EditLiabilityReturnsResponseModel]))
+          when(mockAtedConnector.submitDraftChangeLiabilityReturn(Matchers.eq(formBundleNo1))(Matchers.any(), Matchers.any()))
+            .thenReturn(Future.successful(HttpResponse(OK, responseJson = Some(response))))
           val result = await(TestChangeLiabilityReturnService.submitDraftChangeLiability(formBundleNo1))
           result.liabilityReturnResponse.length must be(1)
         }
 
         "return empty EditLiabilityReturnsResponseModel, if submit status is not OK" in {
-          when(mockAtedConnector.submitDraftChangeLiabilityReturn(Matchers.eq(formBundleNo1))(Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST)))
+          when(mockAtedConnector.submitDraftChangeLiabilityReturn(Matchers.eq(formBundleNo1))(Matchers.any(), Matchers.any()))
+            .thenReturn(Future.successful(HttpResponse(BAD_REQUEST)))
           val result = await(TestChangeLiabilityReturnService.submitDraftChangeLiability(formBundleNo1))
           result.liabilityReturnResponse.length must be(0)
           result.liabilityReturnResponse must be(Nil)
