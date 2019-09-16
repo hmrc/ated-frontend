@@ -14,7 +14,7 @@
  * limitations under the License.
  *@
 
-@(periodKey: Int, submittedReturnResponse: Option[SubmitReturnsResponse], organisationName: Option[String])(implicit atedContext: AtedContext, messages: Messages)
+@(periodKey: Int, submittedReturnResponse: Option[SubmitReturnsResponse], organisationName: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent])
 
 @import models._
 @import uk.gov.hmrc.play.views.html._

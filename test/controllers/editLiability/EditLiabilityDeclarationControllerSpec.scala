@@ -19,7 +19,6 @@ package controllers.editLiability
 import java.util.UUID
 
 import builders._
-import config.FrontendDelegationConnector
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import models._
 import org.joda.time.DateTime
@@ -27,63 +26,53 @@ import org.jsoup.Jsoup
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mock.MockitoSugar
-import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
-import play.api.libs.json.Json
+import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.play.PlaySpec
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.mvc.Result
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.ChangeLiabilityReturnService
-import uk.gov.hmrc.play.frontend.auth.DummyDelegationData
-import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
-import utils.AtedConstants
+import services.{ChangeLiabilityReturnService, DelegationService}
+import uk.gov.hmrc.auth.core.{AffinityGroup, PlayAuthConnector}
+import uk.gov.hmrc.http.{HeaderCarrier, UserId}
+import utils.{AtedConstants, MockAuthUtil}
 
 import scala.concurrent.Future
-import uk.gov.hmrc.http.{HeaderCarrier, UserId}
 
-class EditLiabilityDeclarationControllerSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
+class EditLiabilityDeclarationControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with MockAuthUtil {
+  implicit lazy val hc: HeaderCarrier = HeaderCarrier()
 
-  import AuthBuilder._
 
-  val mockAuthConnector = mock[AuthConnector]
-  val mockDelegationConnector = mock[DelegationConnector]
-  val mockChangeLiabilityReturnService = mock[ChangeLiabilityReturnService]
-  val mockBackLinkCache = mock[BackLinkCacheConnector]
-  val mockDataCacheConnector = mock[DataCacheConnector]
+  val mockChangeLiabilityReturnService: ChangeLiabilityReturnService = mock[ChangeLiabilityReturnService]
+  val mockBackLinkCache: BackLinkCacheConnector = mock[BackLinkCacheConnector]
+  val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
 
   object TestEditLiabilityDeclarationController extends EditLiabilityDeclarationController {
-    override val authConnector = mockAuthConnector
-    override val delegationConnector: DelegationConnector = mockDelegationConnector
+    override val authConnector: PlayAuthConnector = mockAuthConnector
+    override val delegationService: DelegationService = mockDelegationService
     override val changeLiabilityReturnService: ChangeLiabilityReturnService = mockChangeLiabilityReturnService
-    override val controllerId = "controllerId"
-    override val backLinkCacheConnector = mockBackLinkCache
-    override val dataCacheConnector = mockDataCacheConnector
+    override val controllerId: String = "controllerId"
+    override val backLinkCacheConnector: BackLinkCacheConnector = mockBackLinkCache
+    override val dataCacheConnector: DataCacheConnector = mockDataCacheConnector
   }
 
-  override def beforeEach = {
+  override def beforeEach: Unit = {
     reset(mockAuthConnector)
-    reset(mockDelegationConnector)
+    reset(mockDelegationService)
     reset(mockChangeLiabilityReturnService)
     reset(mockBackLinkCache)
   }
 
-  val formBundleNo1 = "123456789012"
-  val formBundleNo2 = "123456789011"
+  val formBundleNo1: String = "123456789012"
+  val formBundleNo2: String = "123456789011"
 
   "EditLiabilityDeclarationController" must {
 
-    "use correct DelegationConnector" in {
-      EditLiabilityTypeController.delegationConnector must be(FrontendDelegationConnector)
+    "use correct DelegationService" in {
+      EditLiabilityTypeController.delegationService must be(DelegationService)
     }
 
     "view" must {
-
-      "not respond with NOT_FOUND" in {
-        val result = route(FakeRequest(GET, s"/ated/liability/$formBundleNo1/change/declaration"))
-        result.isDefined must be(true)
-        status(result.get) must not be NOT_FOUND
-      }
-
       "unauthorised users" must {
 
         "respond with a redirect" in {
@@ -109,8 +98,10 @@ class EditLiabilityDeclarationControllerSpec extends PlaySpec with OneServerPerS
             val document = Jsoup.parse(contentAsString(result))
             document.title() must be(TitleBuilder.buildTitle("Amended return declaration"))
             document.getElementById("relief-declaration-confirmation-header").text() must be("Amended return declaration")
-            document.getElementById("relief-declaration-before-declaration-text").text() must be("Before you can submit your return to HMRC you must read and agree to the following statement. If you give false information you may have to pay financial penalties and face prosecution.")
-            document.getElementById("declaration-confirmation-text").text() must be("I declare that the information I have given on this return is correct and complete.")
+            document.getElementById("relief-declaration-before-declaration-text")
+              .text() must be("Before you can submit your return to HMRC you must read and agree to the following statement. If you give false information you may have to pay financial penalties and face prosecution.")
+            document.getElementById("declaration-confirmation-text")
+              .text() must be("I declare that the information I have given on this return is correct and complete.")
             document.getElementById("submit").text() must be("Agree and submit amended return")
           }
         }
@@ -124,8 +115,10 @@ class EditLiabilityDeclarationControllerSpec extends PlaySpec with OneServerPerS
             val document = Jsoup.parse(contentAsString(result))
             document.title() must be(TitleBuilder.buildTitle("Further return declaration"))
             document.getElementById("relief-declaration-confirmation-header").text() must be("Further return declaration")
-            document.getElementById("relief-declaration-before-declaration-text").text() must be("Before you can submit your return to HMRC you must read and agree to the following statement. If you give false information you may have to pay financial penalties and face prosecution.")
-            document.getElementById("declaration-confirmation-text").text() must be("I declare that the information I have given on this return is correct and complete.")
+            document.getElementById("relief-declaration-before-declaration-text")
+              .text() must be("Before you can submit your return to HMRC you must read and agree to the following statement. If you give false information you may have to pay financial penalties and face prosecution.")
+            document.getElementById("declaration-confirmation-text")
+              .text() must be("I declare that the information I have given on this return is correct and complete.")
             document.getElementById("submit").text() must be("Agree and submit further return")
           }
         }
@@ -139,8 +132,10 @@ class EditLiabilityDeclarationControllerSpec extends PlaySpec with OneServerPerS
             val document = Jsoup.parse(contentAsString(result))
             document.title() must be(TitleBuilder.buildTitle("Change in details declaration"))
             document.getElementById("relief-declaration-confirmation-header").text() must be("Change in details declaration")
-            document.getElementById("relief-declaration-before-declaration-text").text() must be("Before you can submit your return to HMRC you must read and agree to the following statement. If you give false information you may have to pay financial penalties and face prosecution.")
-            document.getElementById("declaration-confirmation-text").text() must be("I declare that the information I have given on this return is correct and complete.")
+            document.getElementById("relief-declaration-before-declaration-text")
+              .text() must be("Before you can submit your return to HMRC you must read and agree to the following statement. If you give false information you may have to pay financial penalties and face prosecution.")
+            document.getElementById("declaration-confirmation-text")
+              .text() must be("I declare that the information I have given on this return is correct and complete.")
             document.getElementById("submit").text() must be("Agree and submit")
           }
         }
@@ -156,15 +151,17 @@ class EditLiabilityDeclarationControllerSpec extends PlaySpec with OneServerPerS
           }
         }
 
-        "view return declaration, if AGENT is acting on behalf of client" in {
+        "view return declaration, with delegated user providing a delegation model" in {
           val cL1 = PropertyDetailsBuilder.getFullPropertyDetails(formBundleNo1)
           val calc1 = ChangeLiabilityReturnBuilder.generateCalculated.copy(amountDueOrRefund = Some(BigDecimal(0.00)))
           val cL2 = cL1.copy(calculated = Some(calc1))
           viewWithAuthorisedDelegatedUser(Some(cL2)) { result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
-            document.getElementById("relief-declaration-before-declaration-text").text() must be("Before your client’s return can be submitted to HMRC, you must read and agree to the following statement. Your client’s approval may be in electronic or non-electronic form. If your client gives false information, they may have to pay financial penalties and face prosecution.")
-            document.getElementById("declaration-confirmation-text").text() must be("I confirm that my client has approved the information contained in this return as being correct and complete to the best of their knowledge and belief.")
+            document.getElementById("relief-declaration-before-declaration-text")
+              .text() must be("Before your client’s return can be submitted to HMRC, you must read and agree to the following statement. Your client’s approval may be in electronic or non-electronic form. If your client gives false information, they may have to pay financial penalties and face prosecution.")
+            document.getElementById("declaration-confirmation-text")
+              .text() must be("I confirm that my client has approved the information contained in this return as being correct and complete to the best of their knowledge and belief.")
             document.getElementById("submit").text() must be("Agree and submit")
           }
         }
@@ -224,69 +221,63 @@ class EditLiabilityDeclarationControllerSpec extends PlaySpec with OneServerPerS
 
   def viewWithUnAuthorisedUser(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
-    AuthBuilder.mockUnAuthorisedUser(userId, mockAuthConnector)
+        val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
+    setInvalidAuthMocks(authMock)
     val result = TestEditLiabilityDeclarationController.view(formBundleNo1).apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
   def viewWithAuthorisedUser(x: Option[PropertyDetails] = None)(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
-    AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-    implicit val user = createAtedContext(createUserAuthContext(userId, "name"))
+    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+    noDelegationModelAuthMocks(authMock)
     implicit val hc: HeaderCarrier = HeaderCarrier()
     when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-    when(mockChangeLiabilityReturnService.retrieveSubmittedLiabilityReturnAndCache(Matchers.eq(formBundleNo1), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(x))
+    when(mockChangeLiabilityReturnService.retrieveSubmittedLiabilityReturnAndCache
+    (Matchers.eq(formBundleNo1), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(x))
     when(mockBackLinkCache.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
     val result = TestEditLiabilityDeclarationController.view(formBundleNo1).apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
-  implicit def atedContext2AuthContext(implicit atedContext: AtedContext) = atedContext.user.authContext
-
   def viewWithAuthorisedDelegatedUser(x: Option[PropertyDetails] = None)(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
-    implicit val user = createAtedContext(createDelegatedAuthContext(userId, "company name|display name"))
     implicit val hc: HeaderCarrier = HeaderCarrier(userId = Some(UserId(userId)))
-    AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
+    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+    setAuthMocks(authMock)
     when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-    when(mockDelegationConnector.getDelegationData(Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(Some(DummyDelegationData.returnData)))
-    when(mockChangeLiabilityReturnService.retrieveSubmittedLiabilityReturnAndCache(Matchers.eq(formBundleNo1), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(x))
+    when(mockChangeLiabilityReturnService.retrieveSubmittedLiabilityReturnAndCache
+    (Matchers.eq(formBundleNo1), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(x))
     when(mockBackLinkCache.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
     val result = TestEditLiabilityDeclarationController.view(formBundleNo1).apply(SessionBuilder.buildRequestWithSessionDelegation(userId))
     test(result)
   }
 
-  def viewWithUnAuthenticated(test: Future[Result] => Any) {
-    val result = TestEditLiabilityDeclarationController.view(formBundleNo1).apply(SessionBuilder.buildRequestWithSessionNoUser)
-    test(result)
-  }
-
-
   def submitWithAuthorisedUser(a: Option[PropertyDetails], oldForBundle: String = formBundleNo1)(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
-    implicit val user = createAtedContext(createUserAuthContext(userId, "name"))
-    AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
+    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+    setAuthMocks(authMock)
     when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-    when(mockChangeLiabilityReturnService.retrieveSubmittedLiabilityReturnAndCache(Matchers.eq(formBundleNo1), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(a))
-    val r1 = EditLiabilityReturnsResponse(mode = "Post", oldFormBundleNumber = oldForBundle, formBundleNumber = Some(formBundleNo2), liabilityAmount = BigDecimal(3500.00), amountDueOrRefund = BigDecimal(0.00), paymentReference = Some("payment-ref-1"))
+    when(mockChangeLiabilityReturnService.retrieveSubmittedLiabilityReturnAndCache
+    (Matchers.eq(formBundleNo1), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(a))
+    val r1 = EditLiabilityReturnsResponse(mode = "Post", oldFormBundleNumber = oldForBundle, formBundleNumber =
+      Some(formBundleNo2), liabilityAmount = BigDecimal(3500.00), amountDueOrRefund = BigDecimal(0.00), paymentReference = Some("payment-ref-1"))
     val response = EditLiabilityReturnsResponseModel(processingDate = DateTime.now(), liabilityReturnResponse = Seq(r1), BigDecimal(0.00))
-    when(mockChangeLiabilityReturnService.submitDraftChangeLiability(Matchers.eq(formBundleNo1))(Matchers.any(), Matchers.any())).thenReturn(Future.successful(response))
-    val result = TestEditLiabilityDeclarationController.submit(formBundleNo1).apply(SessionBuilder.updateRequestFormWithSession(FakeRequest().withFormUrlEncodedBody(), userId))
+    when(mockChangeLiabilityReturnService.submitDraftChangeLiability
+    (Matchers.eq(formBundleNo1))(Matchers.any(), Matchers.any())).thenReturn(Future.successful(response))
+    val result = TestEditLiabilityDeclarationController.submit(formBundleNo1)
+      .apply(SessionBuilder.updateRequestFormWithSession(FakeRequest().withFormUrlEncodedBody(), userId))
     test(result)
   }
 
   def submitWithUnAuthorisedUser(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
-    AuthBuilder.mockUnAuthorisedUser(userId, mockAuthConnector)
+    val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
+    setInvalidAuthMocks(authMock)
     val result = TestEditLiabilityDeclarationController.submit(formBundleNo1).apply(SessionBuilder.buildRequestWithSession(userId))
-    test(result)
-  }
-
-  def submitWithUnAuthenticated(test: Future[Result] => Any) {
-    val result = TestEditLiabilityDeclarationController.submit(formBundleNo1).apply(SessionBuilder.buildRequestWithSessionNoUser)
     test(result)
   }
 }

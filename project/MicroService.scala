@@ -1,10 +1,7 @@
 import play.routes.compiler.StaticRoutesGenerator
 import play.sbt.routes.RoutesKeys._
-import play.twirl.sbt.Import.TwirlKeys
 import sbt.Keys._
-import sbt.Tests.{Group, SubProcess}
 import sbt._
-import uk.gov.hmrc.SbtArtifactory
 import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin._
 import uk.gov.hmrc.versioning.SbtGitVersioning.autoImport.majorVersion
 
@@ -68,6 +65,5 @@ trait MicroService {
       resolvers += Resolver.bintrayRepo("hmrc", "releases"),
       resolvers += Resolver.jcenterRepo
     )
-    .settings(TwirlKeys.templateImports += "views.helpers.Conversions._")
 }
 

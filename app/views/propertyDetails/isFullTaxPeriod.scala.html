@@ -19,7 +19,7 @@
   propertyDetailsForm: Form[PropertyDetailsFullTaxPeriod],
   periodStartDate: org.joda.time.LocalDate,
   periodEndDate: org.joda.time.LocalDate,
-  backLink: Option[String])(implicit atedContext: AtedContext, messages: Messages)
+  backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent])
 @import uk.gov.hmrc.play.views.html._
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
@@ -35,7 +35,6 @@
 }
 
 @atedMain(title = Messages("ated.property-details-period.isFullPeriod.title"),
-          attorney = atedContext.user.authContext.attorney,
           analyticsAdditionalJs = Some(analyticsJs)) {
   @pageHeadersAndError(backLink, "pre-heading", Messages("ated.property-details.pre-header"), "property-details-header", Messages("ated.property-details-period.isFullPeriod.header"),
     Some(atedErrorSummary(propertyDetailsForm, "ated.property-details-period-error.general")))

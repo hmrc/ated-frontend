@@ -18,14 +18,13 @@ package forms
 
 import models._
 import org.joda.time.LocalDate
-import play.api.Logger
 import play.api.Play.current
 import play.api.data.Forms._
 import play.api.data.validation.{Constraint, Invalid, Valid, ValidationResult}
 import play.api.data.{Form, FormError}
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
-import play.api.libs.json.Json
+import play.api.libs.json.{Json, OFormat}
 import uk.gov.hmrc.play.mappers.DateTuple._
 import utils.AtedUtils
 import utils.PeriodUtils._
@@ -157,8 +156,8 @@ object AtedForms {
     if (!f.hasErrors) {
       val emailConsent = f.data.get("emailConsent")
       val formErrors = emailConsent match {
-        case Some("true") => {
-          val email = f.data.get("emailAddress").getOrElse("")
+        case Some("true") =>
+          val email = {f.data.get("emailAddress").getOrElse("")}
           if (email.isEmpty || (email.nonEmpty && email.trim.length == lengthZero)) {
             Seq(FormError("emailAddress", Messages("ated.contact-details-emailAddress.error")))
           } else if (email.length > emailLength) {
@@ -172,7 +171,6 @@ object AtedForms {
               Seq(FormError("emailAddress", Messages("ated.contact-email.error")))
             }
           }
-        }
         case _ => Nil
       }
       addErrorsToForm(f, formErrors)
@@ -262,7 +260,7 @@ object AtedForms {
     model => validateDisposedProperty(model.periodKey, model.dateOfDisposal)
   }
 
-  val disposeLiabilityForm = {
+  val disposeLiabilityForm: Form[DisposeLiability] = {
     Form(
       mapping(
         "dateOfDisposal" -> dateTuple,
@@ -302,7 +300,7 @@ object AtedForms {
   case class YesNoQuestion(yesNo: Option[Boolean] = None)
 
   object YesNoQuestion {
-    implicit val formats = Json.format[YesNoQuestion]
+    implicit val formats: OFormat[YesNoQuestion] = Json.format[YesNoQuestion]
   }
 
   class YesNoQuestionForm(_param: String) {

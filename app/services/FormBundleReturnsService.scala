@@ -20,15 +20,15 @@ import connectors.AtedConnector
 import models._
 import play.api.Logger
 import play.api.http.Status._
+import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, InternalServerException}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import uk.gov.hmrc.http.{ BadRequestException, HeaderCarrier, InternalServerException }
 
 trait FormBundleReturnsService {
   val atedConnector: AtedConnector
 
-  def getFormBundleReturns(formBundleNumber: String)(implicit atedContext: AtedContext, headerCarrier: HeaderCarrier): Future[Option[FormBundleReturn]] = {
+  def getFormBundleReturns(formBundleNumber: String)(implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[Option[FormBundleReturn]] = {
     atedConnector.retrieveFormBundleReturns(formBundleNumber).map {
       response =>
         response.status match {

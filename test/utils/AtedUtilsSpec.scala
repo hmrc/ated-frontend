@@ -16,18 +16,15 @@
 
 package utils
 
-import builders.AuthBuilder.createUserAuthContext
-import builders.{AuthBuilder, ChangeLiabilityReturnBuilder, PropertyDetailsBuilder}
-import controllers.auth.AtedAgentRegime.isAuthorised
-import models._
+import builders.{ChangeLiabilityReturnBuilder, PropertyDetailsBuilder}
 import org.joda.time.LocalDate
-import org.mockito.Mockito.when
-import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
-import play.twirl.api.Html
+import org.scalatestplus.play.PlaySpec
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
+import play.api.test.FakeRequest
 
 import scala.collection.mutable.ArrayBuffer
 
-class AtedUtilsSpec extends PlaySpec with OneServerPerSuite {
+class AtedUtilsSpec extends PlaySpec with GuiceOneServerPerSuite {
 
   "AtedUtils" must {
     "patternCheckARN should validate input ARN" in {
@@ -190,8 +187,8 @@ class AtedUtilsSpec extends PlaySpec with OneServerPerSuite {
   }
 
   "adds the new parameter in the request data" in {
-    val testAtedContextWithNoBody = AuthBuilder.createAtedContext(createUserAuthContext("User-Id", "name"))
-    AtedUtils.addParamsToRequest(testAtedContextWithNoBody, Map("periodKey" -> ArrayBuffer("2017"))) must be(None)
+    implicit val request = FakeRequest()
+    AtedUtils.addParamsToRequest(Map("periodKey" -> ArrayBuffer("2017"))) must be(None)
   }
 
   "print Not Provided" when {

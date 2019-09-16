@@ -19,17 +19,19 @@ package builders
 import java.util.concurrent.ConcurrentLinkedQueue
 
 import config.AtedFrontendAuditConnector
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.model.Audit._
 import uk.gov.hmrc.play.audit.model.{Audit, AuditAsMagnet, DataEvent}
-import uk.gov.hmrc.http.HeaderCarrier
 
 class TestAudit extends Audit("test", AtedFrontendAuditConnector) {
+
+  implicit val hc: HeaderCarrier = HeaderCarrier()
 
   var capturedTxName: String = ""
   var capturedInputs: Map[String, String] = Map.empty
   private val dataEvents = new ConcurrentLinkedQueue[DataEvent]
 
-  override def as[A](auditMagnet: AuditAsMagnet[A])(body: Body[A])(implicit hc: HeaderCarrier): A = {
+  def as[A](auditMagnet: AuditAsMagnet[A])(body: Body[A]): A = {
     this.capturedTxName = auditMagnet.txName
     this.capturedInputs = auditMagnet.inputs
     super.as(auditMagnet)(body)

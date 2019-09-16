@@ -18,33 +18,34 @@ package connectors
 
 import java.util.UUID
 
-import builders.AuthBuilder._
 import builders.PropertyDetailsBuilder
 import models._
 import org.joda.time.LocalDate
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
-import play.api.{Configuration, Play}
 import play.api.Mode.Mode
 import play.api.libs.json.{JsValue, Json}
 import play.api.test.Helpers._
-import uk.gov.hmrc.play.http._
-import uk.gov.hmrc.play.http.ws.{WSDelete, WSGet, WSPost}
-
-import scala.concurrent.Future
+import play.api.{Configuration, Play}
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.http.logging.SessionId
 
+import scala.concurrent.Future
+
 class PropertyDetailsConnectorSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
+
+  implicit val authContext: StandardAuthRetrievals = mock[StandardAuthRetrievals]
 
   trait MockedVerbs extends CoreGet with CorePost with CoreDelete
   val mockWSHttp: CoreGet with CorePost with CoreDelete = mock[MockedVerbs]
 
+  lazy val periodKey = 2015
+
   object TestAtedConnector extends PropertyDetailsConnector {
-    override val serviceURL = baseUrl("ated")
+    override val serviceURL: String = baseUrl("ated")
     override val http: CoreGet with CorePost with CoreDelete = mockWSHttp
 
     override protected def mode: Mode = Play.current.mode
@@ -52,7 +53,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with OneServerPerSuite with 
     override protected def runModeConfiguration: Configuration = Play.current.configuration
   }
 
-  override def beforeEach = {
+  override def beforeEach: Unit = {
     reset(mockWSHttp)
   }
 
@@ -64,14 +65,13 @@ class PropertyDetailsConnectorSpec extends PlaySpec with OneServerPerSuite with 
 
         val successResponse = Json.toJson(propertyDetails)
 
-        implicit val hc = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
-        implicit val user = createAtedContext(createUserAuthContext("User-Id", "name"))
+        implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
         when(mockWSHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
           (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
 
 
-        val result = TestAtedConnector.createDraftPropertyDetails(2015, propertyDetails)
+        val result = TestAtedConnector.createDraftPropertyDetails(periodKey, propertyDetails)
         val response = await(result)
         response.status must be(OK)
       }
@@ -79,8 +79,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with OneServerPerSuite with 
       "for an unsuccessful save, return an empty object" in {
         val propertyDetails = PropertyDetailsBuilder.getPropertyDetailsAddress(Some("testPostCode"))
 
-        implicit val hc = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
-        implicit val user = createAtedContext(createUserAuthContext("User-Id", "name"))
+        implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
         when(mockWSHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
           (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
@@ -96,8 +95,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with OneServerPerSuite with 
 
         val successResponse = Json.toJson(propertyDetails)
 
-        implicit val hc = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
-        implicit val user = createAtedContext(createUserAuthContext("User-Id", "name"))
+        implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
         when(mockWSHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
           (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
@@ -111,8 +109,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with OneServerPerSuite with 
       "for an unsuccessful save, return an empty object" in {
         val propertyDetails = PropertyDetailsBuilder.getPropertyDetailsAddress(Some("testPostCode"))
 
-        implicit val hc = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
-        implicit val user = createAtedContext(createUserAuthContext("User-Id", "name"))
+        implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
         when(mockWSHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
           (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
@@ -128,27 +125,23 @@ class PropertyDetailsConnectorSpec extends PlaySpec with OneServerPerSuite with 
 
         val successResponse = Json.toJson(propertyDetails)
 
-        implicit val hc = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
-        implicit val user = createAtedContext(createUserAuthContext("User-Id", "name"))
+        implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
         when(mockWSHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
           (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
 
-        val result = TestAtedConnector.saveDraftHasValueChanged("1", true)
+        val result = TestAtedConnector.saveDraftHasValueChanged("1", propertyDetails = true)
         val response = await(result)
         response.status must be(OK)
       }
 
       "for an unsuccessful save, return an empty object" in {
-        val propertyDetails = PropertyDetailsTitle("")
-
-        implicit val hc = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
-        implicit val user = createAtedContext(createUserAuthContext("User-Id", "name"))
+        implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
         when(mockWSHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
           (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
 
-        val result = TestAtedConnector.saveDraftHasValueChanged("1", true)
+        val result = TestAtedConnector.saveDraftHasValueChanged("1", propertyDetails = true)
         val response = await(result)
         response.status must be(BAD_REQUEST)
       }
@@ -160,8 +153,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with OneServerPerSuite with 
 
         val successResponse = Json.toJson(propertyDetails)
 
-        implicit val hc = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
-        implicit val user = createAtedContext(createUserAuthContext("User-Id", "name"))
+        implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
         when(mockWSHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
           (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
@@ -174,8 +166,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with OneServerPerSuite with 
       "for an unsuccessful save, return an empty object" in {
         val propertyDetails = PropertyDetailsTitle("")
 
-        implicit val hc = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
-        implicit val user = createAtedContext(createUserAuthContext("User-Id", "name"))
+        implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
         when(mockWSHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
           (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
@@ -188,35 +179,32 @@ class PropertyDetailsConnectorSpec extends PlaySpec with OneServerPerSuite with 
 
     "save property details Acquisition" must {
       "for successful save, return PropertyDetails Acquisition for a user" in {
-        implicit val hc = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
-        implicit val user = createAtedContext(createUserAuthContext("User-Id", "name"))
+        implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
         val successResponse = Json.toJson(true)
 
         when(mockWSHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
           (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
 
-        val result = TestAtedConnector.saveDraftPropertyDetailsAcquisition("1", true)
+        val result = TestAtedConnector.saveDraftPropertyDetailsAcquisition("1", overLimit = true)
         val response = await(result)
         response.status must be(OK)
       }
 
       "for an unsuccessful save, return an empty object" in {
-        implicit val hc = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
-        implicit val user = createAtedContext(createUserAuthContext("User-Id", "name"))
+        implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
         when(mockWSHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
           (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
 
-        val result = TestAtedConnector.saveDraftPropertyDetailsAcquisition("1", true)
+        val result = TestAtedConnector.saveDraftPropertyDetailsAcquisition("1", overLimit = true)
         val response = await(result)
         response.status must be(BAD_REQUEST)
       }
     }
 
     "save property details Revalued" must {
-      implicit val hc = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
-      implicit val user = createAtedContext(createUserAuthContext("User-Id", "name"))
+      implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
       val propertyDetails = new PropertyDetailsRevalued()
 
       "for successful save, return PropertyDetails Revalued for a user" in {
@@ -248,8 +236,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with OneServerPerSuite with 
 
         val successResponse = Json.toJson(propertyDetails)
 
-        implicit val hc = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
-        implicit val user = createAtedContext(createUserAuthContext("User-Id", "name"))
+        implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
         when(mockWSHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
           (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
@@ -262,8 +249,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with OneServerPerSuite with 
       "for an unsuccessful save, return an empty object" in {
         val propertyDetails = new PropertyDetailsOwnedBefore()
 
-        implicit val hc = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
-        implicit val user = createAtedContext(createUserAuthContext("User-Id", "name"))
+        implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
         when(mockWSHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
           (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
@@ -275,8 +261,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with OneServerPerSuite with 
     }
 
     "save property details ProfessionallyValued" must {
-      implicit val hc = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
-      implicit val user = createAtedContext(createUserAuthContext("User-Id", "name"))
+      implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
       val propertyDetails = new PropertyDetailsProfessionallyValued()
 
       "for successful save, return PropertyDetails title for a user" in {
@@ -302,8 +287,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with OneServerPerSuite with 
     }
 
     "save property details NewBuild" must {
-      implicit val hc = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
-      implicit val user = createAtedContext(createUserAuthContext("User-Id", "name"))
+      implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
       val propertyDetails = new PropertyDetailsNewBuild()
 
       "for successful save, return PropertyDetails title for a user" in {
@@ -329,8 +313,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with OneServerPerSuite with 
     }
 
     "save property details IsFullTaxPeriod" must {
-      implicit val hc = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
-      implicit val user = createAtedContext(createUserAuthContext("User-Id", "name"))
+      implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
       val propertyDetails = new IsFullTaxPeriod(false, None)
 
       "for successful save, return PropertyDetails title for a user" in {
@@ -356,8 +339,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with OneServerPerSuite with 
     }
 
     "save property details IsInRelief" must {
-      implicit val hc = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
-      implicit val user = createAtedContext(createUserAuthContext("User-Id", "name"))
+      implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
       val propertyDetails = new PropertyDetailsInRelief()
 
       "for successful save, return PropertyDetails title for a user" in {
@@ -383,8 +365,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with OneServerPerSuite with 
     }
 
     "save property details TaxAvoidance" must {
-      implicit val hc = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
-      implicit val user = createAtedContext(createUserAuthContext("User-Id", "name"))
+      implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
       val propertyDetails = new PropertyDetailsTaxAvoidance()
 
       "for successful save, return PropertyDetails title for a user" in {
@@ -410,8 +391,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with OneServerPerSuite with 
     }
 
     "save property details DatesLiable" must {
-      implicit val hc = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
-      implicit val user = createAtedContext(createUserAuthContext("User-Id", "name"))
+      implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
       val propertyDetails = new PropertyDetailsDatesLiable(new LocalDate("1970-01-01"), new LocalDate("1970-01-01"))
 
       "for successful save, return PropertyDetails title for a user" in {
@@ -437,8 +417,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with OneServerPerSuite with 
     }
 
     "add DatesLiable" must {
-      implicit val hc = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
-      implicit val user = createAtedContext(createUserAuthContext("User-Id", "name"))
+      implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
       val propertyDetails = PropertyDetailsDatesLiable(
         new LocalDate("2999-02-03"),new LocalDate("2999-03-04")
       )
@@ -466,8 +445,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with OneServerPerSuite with 
     }
 
     "delete Period" must {
-      implicit val hc = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
-      implicit val user = createAtedContext(createUserAuthContext("User-Id", "name"))
+      implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
       val propertyDetails = PropertyDetailsDatesLiable(
         new LocalDate("2999-02-03"),new LocalDate("2999-03-04")
       )
@@ -495,8 +473,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with OneServerPerSuite with 
     }
 
     "add DatesInRelief" must {
-      implicit val hc = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
-      implicit val user = createAtedContext(createUserAuthContext("User-Id", "name"))
+      implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
       val propertyDetails = PropertyDetailsDatesInRelief(
         new LocalDate("2999-02-03"),new LocalDate("2999-03-04")
       )
@@ -525,8 +502,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with OneServerPerSuite with 
 
 
     "save property details SupportingInfo" must {
-      implicit val hc = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
-      implicit val user = createAtedContext(createUserAuthContext("User-Id", "name"))
+      implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
       val propertyDetails = new PropertyDetailsSupportingInfo("")
 
       "for successful save, return PropertyDetails title for a user" in {
@@ -555,8 +531,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with OneServerPerSuite with 
       "return PropertyDetails for a user when we have some" in {
         val propertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("testPostCode"))
         val successResponse = Json.toJson(propertyDetails)
-        implicit val hc = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
-        implicit val user = createAtedContext(createUserAuthContext("User-Id", "name"))
+        implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
         when(mockWSHttp.GET[HttpResponse]
           (Matchers.any())
           (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
@@ -572,8 +547,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with OneServerPerSuite with 
       "return PropertyDetails for a user when we have some" in {
         val propertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("testPostCode"))
         val successResponse = Json.toJson(propertyDetails)
-        implicit val hc = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
-        implicit val user = createAtedContext(createUserAuthContext("User-Id", "name"))
+        implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
         when(mockWSHttp.GET[HttpResponse]
           (Matchers.any())
           (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
@@ -589,8 +563,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with OneServerPerSuite with 
       "return PropertyDetails for a user when we have some" in {
         val propertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("testPostCode"))
         val successResponse = Json.toJson(propertyDetails)
-        implicit val hc = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
-        implicit val user = createAtedContext(createUserAuthContext("User-Id", "name"))
+        implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
         when(mockWSHttp.GET[HttpResponse]
           (Matchers.any())
           (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
@@ -605,8 +578,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with OneServerPerSuite with 
     "submit property details" must {
       "for successful submit, return submit response" in {
         val successResponse = Json.toJson(PropertyDetailsBuilder.getPropertyDetails("1", Some("testPostCode")))
-        implicit val hc = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
-        implicit val user = createAtedContext(createUserAuthContext("User-Id", "name"))
+        implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
         when(mockWSHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
           (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
@@ -618,9 +590,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with OneServerPerSuite with 
       }
 
       "for an unsuccessful submit, return an empty object" in {
-        val propertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("testPostCode"))
-        implicit val hc = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
-        implicit val user = createAtedContext(createUserAuthContext("User-Id", "name"))
+        implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
         when(mockWSHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
           (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
@@ -635,8 +605,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with OneServerPerSuite with 
     "delete draft chargeable return" must {
       "for successful submit, return submit response" in {
         val successResponse = Json.toJson(Seq(PropertyDetailsBuilder.getPropertyDetails("1", Some("testPostCode"))))
-        implicit val hc = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
-        implicit val user = createAtedContext(createUserAuthContext("User-Id", "name"))
+        implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
         when(mockWSHttp.DELETE[HttpResponse]
           (Matchers.any())
           (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
@@ -646,8 +615,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with OneServerPerSuite with 
       }
 
       "for an inavlid id, return an empty object" in {
-        implicit val hc = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
-        implicit val user = createAtedContext(createUserAuthContext("User-Id", "name"))
+        implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
         when(mockWSHttp.DELETE[HttpResponse]
           (Matchers.any())
           (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))

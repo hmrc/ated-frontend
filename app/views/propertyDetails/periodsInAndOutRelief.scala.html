@@ -19,7 +19,7 @@
  propertyDetailsForm: Form[PropertyDetailsInRelief],
  periods : Seq[models.LineItem],
  mode: Option[String],
- backLink: Option[String])(implicit atedContext: AtedContext, messages: Messages)
+ backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent])
 
 @import uk.gov.hmrc.play.views.html._
 @import uk.gov.hmrc.play.views.html.helpers._
@@ -36,7 +36,6 @@
 }
 
 @atedMain(title = Messages("ated.property-details-period.peroidsInRelief.title"),
-          attorney = atedContext.user.authContext.attorney,
           analyticsAdditionalJs = Some(analyticsJs)) {
           @pageHeadersAndError(backLink,
             "pre-heading",

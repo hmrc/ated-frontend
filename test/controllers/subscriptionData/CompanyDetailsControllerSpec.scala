@@ -18,36 +18,34 @@ package controllers.subscriptionData
 
 import java.util.UUID
 
-import builders.{AuthBuilder, SessionBuilder, TitleBuilder}
-import config.FrontendDelegationConnector
+import builders.{SessionBuilder, TitleBuilder}
 import models._
 import org.jsoup.Jsoup
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mock.MockitoSugar
-import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
+import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.play.PlaySpec
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.mvc.Result
-import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.{DetailsService, SubscriptionDataService}
-import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
+import services.{DelegationService, DetailsService, SubscriptionDataService}
+import uk.gov.hmrc.auth.core.{AffinityGroup, PlayAuthConnector}
+import uk.gov.hmrc.http.HeaderCarrier
+import utils.MockAuthUtil
 
 import scala.concurrent.Future
-import uk.gov.hmrc.http.HeaderCarrier
 
-class CompanyDetailsControllerSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
-  import AuthBuilder._
+class CompanyDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with MockAuthUtil {
 
-  val mockAuthConnector = mock[AuthConnector]
-  val mockSubscriptionDataService = mock[SubscriptionDataService]
-  val mockDetailsService = mock[DetailsService]
-
+val mockSubscriptionDataService: SubscriptionDataService = mock[SubscriptionDataService]
+  val mockDetailsService: DetailsService = mock[DetailsService]
+  implicit lazy val hc: HeaderCarrier = HeaderCarrier()
 
   object TestCompanyDetailsController extends CompanyDetailsController {
-    override val authConnector = mockAuthConnector
-    override val delegationConnector: DelegationConnector = FrontendDelegationConnector
-    override val subscriptionDataService = mockSubscriptionDataService
+    override val authConnector: PlayAuthConnector = mockAuthConnector
+    override val delegationService: DelegationService = mockDelegationService
+    override val subscriptionDataService: SubscriptionDataService = mockSubscriptionDataService
     override val detailsDataService: DetailsService = mockDetailsService
   }
 
@@ -62,13 +60,7 @@ class CompanyDetailsControllerSpec extends PlaySpec with OneServerPerSuite with 
   "CompanyDetailsController" must {
 
     "use correct DelegationConnector" in {
-      CompanyDetailsController.delegationConnector must be(FrontendDelegationConnector)
-    }
-
-    "not respond with NOT_FOUND for the GET" in {
-      val result = route(FakeRequest(GET, "/ated/company-details"))
-      result.isDefined must be(true)
-      status(result.get) must not be(NOT_FOUND)
+      CompanyDetailsController.delegationService must be(DelegationService)
     }
 
     "unauthorised users" must {
@@ -91,7 +83,7 @@ class CompanyDetailsControllerSpec extends PlaySpec with OneServerPerSuite with 
       "return contact details view with editable address" in {
         val addressDetails = AddressDetails(addressType = "", addressLine1 = "", addressLine2 = "", countryCode = "GB")
         val correspondence = Address(Some("name1"), Some("name2"), addressDetails = addressDetails)
-        val businessPartnerDetails = RegisteredDetails(true, "testName",
+        val businessPartnerDetails = RegisteredDetails(isEditable = true, "testName",
           RegisteredAddressDetails(addressLine1 = "bpline1",
             addressLine2 = "bpline2",
             addressLine3 = Some("bpline3"),
@@ -115,7 +107,7 @@ class CompanyDetailsControllerSpec extends PlaySpec with OneServerPerSuite with 
       "return contact details view with UR banner" in {
         val addressDetails = AddressDetails(addressType = "", addressLine1 = "", addressLine2 = "", countryCode = "GB")
         val correspondence = Address(Some("name1"), Some("name2"), addressDetails = addressDetails)
-        val businessPartnerDetails = RegisteredDetails(true, "testName",
+        val businessPartnerDetails = RegisteredDetails(isEditable = true, "testName",
           RegisteredAddressDetails(addressLine1 = "bpline1",
             addressLine2 = "bpline2",
             addressLine3 = Some("bpline3"),
@@ -129,7 +121,7 @@ class CompanyDetailsControllerSpec extends PlaySpec with OneServerPerSuite with 
             val document = Jsoup.parse(contentAsString(result))
 
             document.title() must be(TitleBuilder.buildTitle("Your ATED details"))
-            document.getElementById("ur-panel") must not be (null)
+            document.getElementById("ur-panel") must not be null
             document.getElementById("ur-panel").text() must be("Help improve digital services by joining the HMRC user panel (opens in new window) No thanks")
             document.getElementsByClass("banner-panel__close").text() must be("No thanks")
         }
@@ -139,7 +131,7 @@ class CompanyDetailsControllerSpec extends PlaySpec with OneServerPerSuite with 
         val addressDetails = AddressDetails(addressType = "", addressLine1 = "", addressLine2 = "", countryCode = "GB")
         val contactDetails = ContactDetails(emailAddress = Some("a@b.c"))
         val correspondence = Address(Some("name1"), Some("name2"), addressDetails = addressDetails, contactDetails = Some(contactDetails))
-        val businessPartnerDetails = RegisteredDetails(false, "testName",
+        val businessPartnerDetails = RegisteredDetails(isEditable = false, "testName",
           RegisteredAddressDetails(addressLine1 = "bpline1",
             addressLine2 = "bpline2",
             addressLine3 = Some("bpline3"),
@@ -168,7 +160,8 @@ class CompanyDetailsControllerSpec extends PlaySpec with OneServerPerSuite with 
 
       "throw exception when missing safeId" in {
         val userId = s"user-${UUID.randomUUID}"
-        AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
+        val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+        setAuthMocks(authMock)
         implicit val hc: HeaderCarrier = HeaderCarrier()
         when(mockSubscriptionDataService.getEmailConsent(Matchers.any(), Matchers.any())).thenReturn(Future.successful(true))
         when(mockSubscriptionDataService.getCorrespondenceAddress(Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
@@ -185,26 +178,24 @@ class CompanyDetailsControllerSpec extends PlaySpec with OneServerPerSuite with 
 
   def getWithUnAuthorisedUser(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
-    AuthBuilder.mockUnAuthorisedUser(userId, mockAuthConnector)
+        val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
+    setInvalidAuthMocks(authMock)
     val result = TestCompanyDetailsController.view().apply(SessionBuilder.buildRequestWithSession(userId))
-    test(result)
-  }
-
-  def getWithUnAuthenticated(test: Future[Result] => Any) {
-    val result = TestCompanyDetailsController.view().apply(SessionBuilder.buildRequestWithSessionNoUser)
     test(result)
   }
 
   def getWithAuthorisedUser(correspondence: Option[Address] = None,
                             registeredDetails: Option[RegisteredDetails] = None)(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
-    AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
+    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+    setAuthMocks(authMock)
     implicit val hc: HeaderCarrier = HeaderCarrier()
     when(mockSubscriptionDataService.getEmailConsent(Matchers.any(), Matchers.any())).thenReturn(Future.successful(true))
     when(mockSubscriptionDataService.getCorrespondenceAddress(Matchers.any(), Matchers.any())).thenReturn(Future.successful(correspondence))
     when(mockSubscriptionDataService.getRegisteredDetails(Matchers.any(), Matchers.any())).thenReturn(Future.successful(registeredDetails))
     when(mockSubscriptionDataService.getSafeId(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("safeId")))
-    when(mockDetailsService.getClientMandateDetails(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())) thenReturn Future.successful(None)
+    when(mockDetailsService.getClientMandateDetails(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(None))
     when(mockSubscriptionDataService.getOverseasCompanyRegistration(Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
 
     val result = TestCompanyDetailsController.view().apply(SessionBuilder.buildRequestWithSession(userId))
@@ -214,13 +205,12 @@ class CompanyDetailsControllerSpec extends PlaySpec with OneServerPerSuite with 
 
   def getWithAuthorisedUserBack(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
-    AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
+    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+    setAuthMocks(authMock)
     implicit val hc: HeaderCarrier = HeaderCarrier()
 
     val result = TestCompanyDetailsController.back().apply(SessionBuilder.buildRequestWithSession(userId))
 
     test(result)
   }
-
-
 }

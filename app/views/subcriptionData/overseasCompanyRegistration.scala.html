@@ -14,7 +14,7 @@
  * limitations under the License.
  *@
 
-@(overseasCompanyRegistrationForm: Form[models.OverseasCompanyRegistration], listOfIsoCode: List[(String, String)], backLink: Option[String])(implicit atedContext: AtedContext, messages: Messages)
+@(overseasCompanyRegistrationForm: Form[models.OverseasCompanyRegistration], listOfIsoCode: List[(String, String)], backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent])
 @import uk.gov.hmrc.play.views.html._
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
@@ -35,7 +35,7 @@
 
 @implicitFormInstance = @{ Some(overseasCompanyRegistrationForm) }
 
-@atedMain(title = Messages("ated.non-uk-reg.title"), attorney = atedContext.user.authContext.attorney, pageScripts = Some(pageScripts)) {
+@atedMain(title = Messages("ated.non-uk-reg.title"), pageScripts = Some(pageScripts)) {
     @pageHeadersAndError(backLink, "pre-heading", Messages("ated.non-uk-reg.subheader"), "overseas-company-registration-header", Messages("ated.non-uk-reg.header"),
     Some(atedErrorSummary(overseasCompanyRegistrationForm, "ated.correspondence-address.error.general")))
 

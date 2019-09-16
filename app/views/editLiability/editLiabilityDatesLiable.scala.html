@@ -16,7 +16,7 @@
 
 @import models._
 @import org.joda.time.LocalDate
-@(formBundleNo: String, periodKey: Int, propertyDetailsForm: Form[PropertyDetailsDatesLiable], backLink: Option[String])(implicit atedContext: AtedContext, messages: Messages)
+@(formBundleNo: String, periodKey: Int, propertyDetailsForm: Form[PropertyDetailsDatesLiable], backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent])
 @import uk.gov.hmrc.play.views.html._
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
@@ -32,7 +32,6 @@
 }
 
 @atedMain(title = Messages("ated.property-details-period.change-dates-liable.title"),
-          attorney = atedContext.user.authContext.attorney,
           analyticsAdditionalJs = Some(analyticsJs)) {
 
   @pageHeadersAndError(backLink, "pre-heading", Messages("ated.property-details.pre-header-change"), "property-details-header", Messages("ated.property-details-period.change-dates-liable.header"),

@@ -15,9 +15,7 @@
  *@
 
 @import models._
-@(summaryReturnsWithDrafts: SummaryReturnsModel, correspondence: Option[Address], organisationName: Option[String], clientBanner: Html)(implicit atedContext: AtedContext, messages: Messages)
-@import utils._
-@import utils.AtedUtils._
+@(summaryReturnsWithDrafts: SummaryReturnsModel, correspondence: Option[Address], organisationName: Option[String], clientBanner: Html)(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent])
 @import controllers.auth.ExternalUrls
 @import views.html.helpers._
 
@@ -32,7 +30,6 @@
 
 @atedMain(
     title = Messages("ated.summary-return.title"),
-    attorney = atedContext.user.authContext.attorney,
     pageScripts = Some(pageScripts),
     sidebarLinks = Some(_accountSummary_sideBar(summaryReturnsWithDrafts.atedBalance, correspondence, organisationName)),
     sidebarClass = Some("related"),
@@ -112,7 +109,7 @@
             </a>
         </p>
     } else {
-        @if(atedContext.user.authContext.attorney.isDefined) {
+        @if(authContext.delegationModel.isDefined) {
             <p>
                 <a id="create-return"
                     onkeyup='spaceBarHandler(event,"@controllers.routes.SelectPeriodController.view")'
@@ -132,7 +129,7 @@
         }
     }
 
-    @if(atedContext.user.authContext.attorney.isEmpty && clientBanner == HtmlFormat.empty) {
+    @if(authContext.delegationModel.isEmpty && clientBanner == HtmlFormat.empty) {
         <p>
             <a id="appoint-agent" href="@ExternalUrls.clientApproveAgentMandate" data-journey-click="link - click:@Messages("ated.your-ated-online-service"):@Messages("ated.account-summary.appoint-agent.text")">
                 @Messages("ated.account-summary.appoint-agent.text")

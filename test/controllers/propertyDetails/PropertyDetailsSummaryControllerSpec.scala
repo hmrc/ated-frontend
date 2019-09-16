@@ -18,55 +18,50 @@ package controllers.propertyDetails
 
 import java.util.UUID
 
-import builders._
-import builders.{AuthBuilder, DisposeLiabilityReturnBuilder, PropertyDetailsBuilder, SessionBuilder}
+import builders.{PropertyDetailsBuilder, SessionBuilder, _}
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import models.PropertyDetails
-import org.joda.time.{DateTimeZone, LocalDate}
-import org.joda.time.format.DateTimeFormat
 import org.jsoup.Jsoup
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mock.MockitoSugar
-import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
+import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.play.PlaySpec
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.libs.json.Json
 import play.api.mvc.Result
-import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService, SubscriptionDataService}
-import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
-import utils.AtedConstants
+import services.{DelegationService, PropertyDetailsCacheSuccessResponse, PropertyDetailsService, SubscriptionDataService}
+import uk.gov.hmrc.auth.core.{AffinityGroup, PlayAuthConnector}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
+import utils.{AtedConstants, MockAuthUtil}
 
 import scala.concurrent.Future
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 
-class PropertyDetailsSummaryControllerSpec extends PlaySpec with OneServerPerSuite with BeforeAndAfterEach with MockitoSugar {
+class PropertyDetailsSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite with BeforeAndAfterEach with MockitoSugar with MockAuthUtil {
+  implicit lazy val hc: HeaderCarrier = HeaderCarrier()
 
-  import AuthBuilder._
+  val mockPropertyDetailsService: PropertyDetailsService = mock[PropertyDetailsService]
 
-  val mockAuthConnector = mock[AuthConnector]
-  val mockPropertyDetailsService = mock[PropertyDetailsService]
-  val mockDelegationConnector = mock[DelegationConnector]
-  val mockBackLinkCache = mock[BackLinkCacheConnector]
-  val mockDataCacheConnector = mock[DataCacheConnector]
-  val mockSubscriptionDataService = mock[SubscriptionDataService]
+  val mockBackLinkCache: BackLinkCacheConnector = mock[BackLinkCacheConnector]
+  val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
+  val mockSubscriptionDataService: SubscriptionDataService = mock[SubscriptionDataService]
   val organisationName = "ACME Limited"
 
   object TestPropertyDetailsSummaryController extends PropertyDetailsSummaryController {
-    override val authConnector = mockAuthConnector
-    override val delegationConnector = mockDelegationConnector
-    override val propertyDetailsService = mockPropertyDetailsService
-    override val controllerId = "controllerId"
-    override val backLinkCacheConnector = mockBackLinkCache
-    override val dataCacheConnector = mockDataCacheConnector
-    override val subscriptionDataService = mockSubscriptionDataService
+    override val authConnector: PlayAuthConnector = mockAuthConnector
+    override val delegationService: DelegationService = mockDelegationService
+    override val propertyDetailsService: PropertyDetailsService = mockPropertyDetailsService
+    override val controllerId: String = "controllerId"
+    override val backLinkCacheConnector: BackLinkCacheConnector = mockBackLinkCache
+    override val dataCacheConnector: DataCacheConnector = mockDataCacheConnector
+    override val subscriptionDataService: SubscriptionDataService = mockSubscriptionDataService
   }
 
-  override def beforeEach = {
+  override def beforeEach: Unit = {
     reset(mockAuthConnector)
     reset(mockPropertyDetailsService)
-    reset(mockDelegationConnector)
+    reset(mockDelegationService)
     reset(mockBackLinkCache)
     reset(mockSubscriptionDataService)
   }
@@ -78,12 +73,6 @@ class PropertyDetailsSummaryControllerSpec extends PlaySpec with OneServerPerSui
     }
 
     "view" must {
-
-      "not respond with NOT_FOUND when we dont pass an id" in {
-        val result = route(FakeRequest(GET, "/ated/liability/create/summary/1"))
-        result.isDefined must be(true)
-        status(result.get) must not be (NOT_FOUND)
-      }
 
       "unauthorised users" must {
 
@@ -98,9 +87,7 @@ class PropertyDetailsSummaryControllerSpec extends PlaySpec with OneServerPerSui
       "for authorised user" must {
 
         "status should be OK when we have a valid property details" in {
-          import utils.AtedUtils._
 
-          def formatDate(date: LocalDate): String = DateTimeFormat.forPattern("d MMMM yyyy").withZone(DateTimeZone.forID("Europe/London")).print(date)
           val propertyDetails = PropertyDetailsBuilder.getFullPropertyDetails(id = "1", postCode = Some("123456"), liabilityAmount = Some(BigDecimal(1000.20)))
           getWithAuthorisedUser(propertyDetails) {
             result =>
@@ -111,9 +98,9 @@ class PropertyDetailsSummaryControllerSpec extends PlaySpec with OneServerPerSui
         }
 
         "no periods should be displayed if we have none" in {
-          import utils.AtedUtils._
 
-          val propertyDetails = PropertyDetailsBuilder.getPropertyDetails(id = "1", postCode = Some("123456"), liabilityAmount = Some(BigDecimal(1000.20))).copy(period = None)
+          val propertyDetails = PropertyDetailsBuilder.getPropertyDetails(id = "1", postCode = Some("123456"), liabilityAmount =
+            Some(BigDecimal(1000.20))).copy(period = None)
           getWithAuthorisedUser (propertyDetails){
             result =>
               status(result) must be(OK)
@@ -168,58 +155,43 @@ class PropertyDetailsSummaryControllerSpec extends PlaySpec with OneServerPerSui
 
   def getWithUnAuthorisedUser(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
-    AuthBuilder.mockUnAuthorisedUser(userId, mockAuthConnector)
+        val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
+    setInvalidAuthMocks(authMock)
     val result = TestPropertyDetailsSummaryController.view("1").apply(SessionBuilder.buildRequestWithSession(userId))
-    test(result)
-  }
-
-
-  def getWithUnAuthenticated(test: Future[Result] => Any) {
-    val result = TestPropertyDetailsSummaryController.view("1").apply(SessionBuilder.buildRequestWithSessionNoUser)
     test(result)
   }
 
   def getWithAuthorisedUser(propertyDetails: PropertyDetails)(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
-    implicit val user = createAtedContext(createUserAuthContext(userId, "name"))
-    AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
+    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+    setAuthMocks(authMock)
     when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
     when(mockPropertyDetailsService.calculateDraftPropertyDetails(Matchers.eq("1"))(Matchers.any(), Matchers.any())).
       thenReturn(Future.successful(HttpResponse(OK, Some(Json.toJson(propertyDetails)))))
     when(mockBackLinkCache.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
-    when(mockPropertyDetailsService.retrieveDraftPropertyDetails(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propertyDetails)))
+    when(mockPropertyDetailsService.retrieveDraftPropertyDetails(Matchers.any())(Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propertyDetails)))
     val result = TestPropertyDetailsSummaryController.view("1").apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
-
 
   def getWithDeleteDraftLink(test: Future[Result] => Any) {
+    val periodKey: Int = 2017
     val userId = s"user-${UUID.randomUUID}"
-    AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
+    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+    setAuthMocks(authMock)
     implicit val hc: HeaderCarrier = HeaderCarrier()
 
-    val result = TestPropertyDetailsSummaryController.deleteDraft("123456", 2017).apply(SessionBuilder.buildRequestWithSession(userId))
+    val result = TestPropertyDetailsSummaryController.deleteDraft("123456", periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
 
     test(result)
   }
-
-  def getWithAuthorisedOtherUsers(propertyDetails: PropertyDetails)(test: Future[Result] => Any) {
-    val userId = s"user-${UUID.randomUUID}"
-    implicit val user = createAtedContext(createUserAuthContext(userId, "name"))
-    AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-    when(mockPropertyDetailsService.calculateDraftPropertyDetails(Matchers.eq("1"))(Matchers.any(), Matchers.any())).
-      thenReturn(Future.successful(HttpResponse(INTERNAL_SERVER_ERROR, None)))
-    when(mockPropertyDetailsService.retrieveDraftPropertyDetails(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propertyDetails)))
-    val result = TestPropertyDetailsSummaryController.view("1").apply(SessionBuilder.buildRequestWithSession(userId))
-    test(result)
-  }
-
 
   def submitWithAuthorisedUser(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
-    implicit val user = createAtedContext(createUserAuthContext(userId, "name"))
-    AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
+    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+    setAuthMocks(authMock)
     when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
     val result = TestPropertyDetailsSummaryController.submit("1").apply(SessionBuilder.buildRequestWithSession(userId))
@@ -228,15 +200,15 @@ class PropertyDetailsSummaryControllerSpec extends PlaySpec with OneServerPerSui
 
   def getPrintFriendlyWithAuthorisedUser(propertyDetails: PropertyDetails)(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
-
-    implicit val user = createAtedContext(createUserAuthContext(userId, "name"))
-    AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
+    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+    setAuthMocks(authMock)
     when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
     when(mockPropertyDetailsService.calculateDraftPropertyDetails(Matchers.eq("1"))(Matchers.any(), Matchers.any())).
       thenReturn(Future.successful(HttpResponse(OK, Some(Json.toJson(propertyDetails)))))
     when(mockSubscriptionDataService.getOrganisationName(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(organisationName)))
-    when(mockPropertyDetailsService.retrieveDraftPropertyDetails(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propertyDetails)))
+    when(mockPropertyDetailsService.retrieveDraftPropertyDetails(Matchers.any())(Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propertyDetails)))
     val result = TestPropertyDetailsSummaryController.viewPrintFriendlyLiabilityReturn("1").apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }

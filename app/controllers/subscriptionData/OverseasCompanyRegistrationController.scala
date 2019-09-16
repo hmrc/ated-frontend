@@ -16,54 +16,55 @@
 
 package controllers.subscriptionData
 
-import config.FrontendDelegationConnector
-import controllers.{AtedBaseController, routes}
-import controllers.auth.{AtedFrontendAuthHelpers, AtedRegime}
-import services.SubscriptionDataService
-import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
-import utils.CountryCodeUtils
+import controllers.AtedBaseController
+import controllers.auth.AuthAction
 import forms.OverseasCompanyRegistrationForm._
 import models.{Identification, OverseasCompanyRegistration}
-import play.api.Logger
-import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
+import play.api.i18n.Messages.Implicits._
+import play.api.mvc.{Action, AnyContent}
+import services.{DelegationService, SubscriptionDataService}
+import utils.CountryCodeUtils
 
 import scala.concurrent.Future
 
 object OverseasCompanyRegistrationController extends OverseasCompanyRegistrationController {
-  val subscriptionDataService = SubscriptionDataService
-  val delegationConnector = FrontendDelegationConnector
+  val subscriptionDataService: SubscriptionDataService = SubscriptionDataService
+  val delegationService: DelegationService = DelegationService
 }
 
 
-trait OverseasCompanyRegistrationController extends AtedBaseController with AtedFrontendAuthHelpers with DelegationAwareActions {
+trait OverseasCompanyRegistrationController extends AtedBaseController with AuthAction {
 
   def subscriptionDataService: SubscriptionDataService
 
-  def edit = AuthAction(AtedRegime) {
-    implicit atedContext =>
+  def edit: Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       for {
         overseasCompanyRegistration <- subscriptionDataService.getOverseasCompanyRegistration
       } yield {
         val result = OverseasCompanyRegistration(overseasCompanyRegistration.map(_.idNumber), overseasCompanyRegistration.map(_.issuingInstitution), overseasCompanyRegistration.map(_.issuingCountryCode))
-        Ok(views.html.subcriptionData.overseasCompanyRegistration(overseasCompanyRegistrationForm.fill(result), CountryCodeUtils.getIsoCodeTupleList, getBackLink))
+        Ok(views.html.subcriptionData.overseasCompanyRegistration
+        (overseasCompanyRegistrationForm.fill(result), CountryCodeUtils.getIsoCodeTupleList, getBackLink()))
       }
+    }
   }
 
-  def submit = AuthAction(AtedRegime) {
-    implicit atedContext =>
+  def submit: Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       overseasCompanyRegistrationForm.bindFromRequest().fold(
         formWithErrors =>
-          Future.successful(BadRequest(views.html.subcriptionData.overseasCompanyRegistration(formWithErrors, CountryCodeUtils.getIsoCodeTupleList, getBackLink))),
+          Future.successful(BadRequest(views.html.subcriptionData.overseasCompanyRegistration
+          (formWithErrors, CountryCodeUtils.getIsoCodeTupleList, getBackLink()))),
         data => {
           for {
-            _ <- subscriptionDataService.updateOverseasCompanyRegistration(Identification(data.businessUniqueId.getOrElse(""), data.issuingInstitution.getOrElse(""), data.countryCode.getOrElse("")))
+            _ <- subscriptionDataService.updateOverseasCompanyRegistration(Identification(data.businessUniqueId.getOrElse(""),data.issuingInstitution.getOrElse(""), data.countryCode.getOrElse("")))
           } yield {
             Redirect(controllers.subscriptionData.routes.CompanyDetailsController.view())
           }
         }
       )
+    }
   }
 
   private def getBackLink() = {

@@ -16,7 +16,7 @@
 
 package models
 
-import play.api.libs.json.Json
+import play.api.libs.json.{Json, OFormat}
 
 case class SortCode(firstElement: String, secondElement: String, thirdElement: String) {
   override def toString: String = s"$firstElement - $secondElement - $thirdElement"
@@ -25,7 +25,7 @@ case class SortCode(firstElement: String, secondElement: String, thirdElement: S
 
 object SortCode {
 
-  implicit val formats = Json.format[SortCode]
+  implicit val formats: OFormat[SortCode] = Json.format[SortCode]
   val FIRST_ELEMENT_START = 0
   val SECOND_ELEMENT_START = 2
   val THIRD_ELEMENT_START = 4
@@ -40,26 +40,26 @@ object SortCode {
 }
 
 case class BicSwiftCode(swiftCode: String) {
-  val strippedSwiftCode = swiftCode.replaceAll(" ", "")
+  val strippedSwiftCode: String = swiftCode.replaceAll(" ", "")
 
-  def bankCode = {
+  def bankCode: String = {
     val BANK_CODE_START = 0
     val BANK_CODE_END = 4
     strippedSwiftCode.substring(BANK_CODE_START, BANK_CODE_END)
   }
 
-  def countryCode = {
+  def countryCode: String = {
     val COUNTRY_CODE_START = 4
     val COUNTRY_CODE_END = 6
     strippedSwiftCode.substring(COUNTRY_CODE_START, COUNTRY_CODE_END)
   }
 
-  def locationCode = {
+  def locationCode: String = {
     val LOCATION_CODE_START = 6
     val LOCATION_CODE_END = 8
     strippedSwiftCode.substring(LOCATION_CODE_START, LOCATION_CODE_END)
   }
-  def branchCode = {
+  def branchCode: String = {
     val BRANCH_CODE_START = 8
     val BRANCH_CODE_END = 11
     if (strippedSwiftCode.length >= BRANCH_CODE_END)
@@ -68,13 +68,13 @@ case class BicSwiftCode(swiftCode: String) {
       ""
   }
 
-  override def toString = {
+  override def toString: String = {
     s"$bankCode $countryCode $locationCode $branchCode".trim
   }
 }
 
 object BicSwiftCode extends (String => BicSwiftCode){
-  implicit val formats = Json.format[BicSwiftCode]
+  implicit val formats: OFormat[BicSwiftCode] = Json.format[BicSwiftCode]
 
   def isValid(swiftCode: String): Boolean = {
     val stripped = swiftCode.replaceAll(" ", "")
@@ -85,10 +85,10 @@ object BicSwiftCode extends (String => BicSwiftCode){
 }
 
 case class Iban(iban: String) {
-  override def toString = iban
+  override def toString: String = iban
 }
 object Iban extends (String => Iban){
-  implicit val formats = Json.format[Iban]
+  implicit val formats: OFormat[Iban] = Json.format[Iban]
 
   def isValid(iban: String): Boolean = {
     val stripped = iban.replaceAll(" ", "")
@@ -101,7 +101,7 @@ object Iban extends (String => Iban){
 case class HasBankDetails(hasBankDetails: Option[Boolean] = None)
 
 object HasBankDetails {
-  implicit val format = Json.format[HasBankDetails]
+  implicit val format: OFormat[HasBankDetails] = Json.format[HasBankDetails]
 }
 
 
@@ -113,7 +113,7 @@ case class BankDetails(hasUKBankAccount: Option[Boolean] = None,
                        iban: Option[Iban] = None)
 
 object BankDetails {
-  implicit val format = Json.format[BankDetails]
+  implicit val format: OFormat[BankDetails] = Json.format[BankDetails]
 }
 
 
@@ -121,5 +121,5 @@ case class BankDetailsModel(hasBankDetails: Boolean = false,
                             bankDetails: Option[BankDetails] = None)
 
 object BankDetailsModel {
-  implicit val format = Json.format[BankDetailsModel]
+  implicit val format: OFormat[BankDetailsModel] = Json.format[BankDetailsModel]
 }

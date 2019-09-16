@@ -16,22 +16,24 @@
 
 package controllers.reliefs
 
-import models.AtedContext
-import play.api.mvc.Result
-import play.api.mvc.Results._
-import services.ReliefsService
-import utils.{PeriodUtils, AtedUtils}
-import play.api.i18n.Messages.Implicits._
+import models.StandardAuthRetrievals
 import play.api.Play.current
-import scala.concurrent.Future
-import scala.concurrent.ExecutionContext.Implicits.global
+import play.api.i18n.Messages.Implicits._
+import play.api.mvc.Results._
+import play.api.mvc.{AnyContent, Request, Result}
+import services.ReliefsService
 import uk.gov.hmrc.http.HeaderCarrier
+import utils.PeriodUtils
+
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 trait ReliefHelpers {
 
   def reliefsService: ReliefsService
 
-  def validatePeriodKey(periodKey: Int)(block: Future[Result])(implicit atedContext: AtedContext, hc: HeaderCarrier): Future[Result] = {
+  def validatePeriodKey(periodKey: Int)(block: Future[Result])
+                       (implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier, request: Request[AnyContent]): Future[Result] = {
     if (PeriodUtils.calculatePeriod(month = 3) >= periodKey) {
       block
     } else {

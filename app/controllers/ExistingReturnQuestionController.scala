@@ -16,37 +16,36 @@
 
 package controllers
 
-import config.FrontendDelegationConnector
 import connectors.DataCacheConnector
-import controllers.AtedBaseController
-import controllers.auth.{AtedFrontendAuthHelpers, AtedRegime, ClientHelper}
+import controllers.auth.{AuthAction, ClientHelper}
 import forms.AtedForms.YesNoQuestionForm
 import models.SelectPeriod
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
-import services.{PropertyDetailsService, ReliefsService}
-import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
+import play.api.mvc.{Action, AnyContent}
+import services.{DelegationService, PropertyDetailsService, ReliefsService}
 import utils.AtedConstants.RetrieveSelectPeriodFormId
 
 import scala.concurrent.Future
 
-trait ExistingReturnQuestionController extends AtedBaseController with AtedFrontendAuthHelpers with DelegationAwareActions with ClientHelper {
+trait ExistingReturnQuestionController extends AtedBaseController with AuthAction with ClientHelper {
 
   def propertyDetailsService: PropertyDetailsService
   def reliefsService: ReliefsService
 
   def dataCacheConnector: DataCacheConnector
 
-  def view(periodKey: Int, returnType: String) = AuthAction(AtedRegime) {
-    implicit atedContext =>
+  def view(periodKey: Int, returnType: String): Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       ensureClientContext {
         Future.successful(Ok(views.html.confirmPastReturn(new YesNoQuestionForm("client.agent-change.error").yesNoQuestionForm, periodKey,
           returnType, getBackLink(periodKey, returnType))))
       }
+    }
   }
 
-  def submit(periodKey: Int, returnType: String) = AuthAction(AtedRegime) {
-    implicit atedContext =>
+  def submit(periodKey: Int, returnType: String): Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       ensureClientContext {
         dataCacheConnector.saveFormData[SelectPeriod](RetrieveSelectPeriodFormId, SelectPeriod(Some(periodKey.toString)))
         val form = new YesNoQuestionForm("ated.confirm-past-return.error")
@@ -64,6 +63,7 @@ trait ExistingReturnQuestionController extends AtedBaseController with AtedFront
           }
         )
       }
+    }
   }
 
   private def getBackLink(periodKey: Int, returnType: String) = Some(controllers.routes.ReturnTypeController.view(periodKey).url)
@@ -71,9 +71,9 @@ trait ExistingReturnQuestionController extends AtedBaseController with AtedFront
 
 object ExistingReturnQuestionController extends ExistingReturnQuestionController {
   // $COVERAGE-OFF$
-  override val dataCacheConnector = DataCacheConnector
-  val propertyDetailsService = PropertyDetailsService
-  val reliefsService = ReliefsService
-  val delegationConnector = FrontendDelegationConnector
+  override val dataCacheConnector: DataCacheConnector = DataCacheConnector
+  val propertyDetailsService: PropertyDetailsService = PropertyDetailsService
+  val reliefsService: ReliefsService = ReliefsService
+  val delegationService: DelegationService = DelegationService
   // $COVERAGE-ON$
 }

@@ -16,48 +16,49 @@
 
 package controllers.propertyDetails
 
-import config.FrontendDelegationConnector
 import connectors.DataCacheConnector
 import controllers.AtedBaseController
-import controllers.auth.{AtedFrontendAuthHelpers, AtedRegime}
+import controllers.auth.AuthAction
 import models.SubmitReturnsResponse
 import play.api.Logger
-import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
-import utils.AtedConstants._
-import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
-import services.SubscriptionDataService
+import play.api.i18n.Messages.Implicits._
+import play.api.mvc.{Action, AnyContent}
+import services.{DelegationService, SubscriptionDataService}
+import utils.AtedConstants._
 
-trait ChargeableReturnConfirmationController extends AtedBaseController with AtedFrontendAuthHelpers with DelegationAwareActions {
+trait ChargeableReturnConfirmationController extends AtedBaseController with AuthAction {
 
   def subscriptionDataService: SubscriptionDataService
   def dataCacheConnector: DataCacheConnector
 
-  def confirmation = AuthAction(AtedRegime) {
-    implicit atedContext =>
-        dataCacheConnector.fetchAndGetFormData[SubmitReturnsResponse](SubmitReturnsResponseFormId) map {
-          case Some(submitResponse) =>
-            Ok(views.html.propertyDetails.chargeableReturnsConfirmation(submitResponse))
-          case None =>
-            Logger.warn("[ChargeableReturnConfirmationController][confirmation] - Return Response not found in cache")
-            Redirect(controllers.routes.AccountSummaryController.view())
-        }
+  def confirmation : Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
+      dataCacheConnector.fetchAndGetFormData[SubmitReturnsResponse](SubmitReturnsResponseFormId) map {
+        case Some(submitResponse) =>
+          Ok(views.html.propertyDetails.chargeableReturnsConfirmation(submitResponse))
+        case None =>
+          Logger.warn("[ChargeableReturnConfirmationController][confirmation] - Return Response not found in cache")
+          Redirect(controllers.routes.AccountSummaryController.view())
+      }
+    }
   }
 
-  def viewPrintFriendlyChargeableConfirmation = AuthAction(AtedRegime) {
-    implicit atedContext =>
+  def viewPrintFriendlyChargeableConfirmation : Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       for {
         submitedResponse <- dataCacheConnector.fetchAndGetFormData[SubmitReturnsResponse](SubmitReturnsResponseFormId)
         organisationName <- subscriptionDataService.getOrganisationName
       } yield {
         Ok(views.html.propertyDetails.chargeableConfirmationPrintFriendly(submitedResponse, organisationName))
       }
+    }
   }
 
 }
 
 object ChargeableReturnConfirmationController extends ChargeableReturnConfirmationController {
-  override val dataCacheConnector = DataCacheConnector
-  val delegationConnector = FrontendDelegationConnector
-  val subscriptionDataService = SubscriptionDataService
+  override val dataCacheConnector: DataCacheConnector = DataCacheConnector
+  val delegationService: DelegationService = DelegationService
+  val subscriptionDataService: SubscriptionDataService = SubscriptionDataService
 }

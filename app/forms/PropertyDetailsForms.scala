@@ -16,18 +16,18 @@
 
 package forms
 
+import forms.AtedForms.validatePostCodeFormat
 import models._
-import play.api.data.{Form, FormError, Mapping}
+import play.api.Play.current
 import play.api.data.Forms._
+import play.api.data.{Form, FormError, Mapping}
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
-import play.api.Play.current
-import utils.AtedUtils
 import uk.gov.hmrc.play.mappers.DateTuple._
+import utils.AtedUtils
 
 import scala.annotation.tailrec
 import scala.util.Try
-import forms.AtedForms.validatePostCodeFormat
 
 object PropertyDetailsForms {
 

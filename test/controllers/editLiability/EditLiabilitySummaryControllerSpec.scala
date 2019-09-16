@@ -18,50 +18,47 @@ package controllers.editLiability
 
 import java.util.UUID
 
-import builders.{AuthBuilder, PropertyDetailsBuilder, SessionBuilder, TitleBuilder}
-import config.FrontendDelegationConnector
+import builders.{PropertyDetailsBuilder, SessionBuilder, TitleBuilder}
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import models.{PropertyDetails, PropertyDetailsCalculated}
 import org.jsoup.Jsoup
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mock.MockitoSugar
-import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
+import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.play.PlaySpec
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.mvc.Result
 import play.api.test.Helpers._
-import services.{ChangeLiabilityReturnService, PropertyDetailsService, SubscriptionDataService}
-import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
-import utils.AtedConstants
+import services.{DelegationService, PropertyDetailsService, SubscriptionDataService}
+import uk.gov.hmrc.auth.core.{AffinityGroup, PlayAuthConnector}
+import utils.{AtedConstants, MockAuthUtil}
 
 import scala.concurrent.Future
 
-class EditLiabilitySummaryControllerSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
+class EditLiabilitySummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with MockAuthUtil{
 
-  import AuthBuilder._
 
-  val mockAuthConnector = mock[AuthConnector]
-  val mockDelegationConnector = mock[DelegationConnector]
-  val mockPropertyDetailsService = mock[PropertyDetailsService]
-  val mockBackLinkCache = mock[BackLinkCacheConnector]
-  val mockDataCacheConnector = mock[DataCacheConnector]
-  val mockSubscriptionDataService = mock[SubscriptionDataService]
-  val organisationName = "ACME Limited"
+  val mockPropertyDetailsService: PropertyDetailsService = mock[PropertyDetailsService]
+  val mockBackLinkCache: BackLinkCacheConnector = mock[BackLinkCacheConnector]
+  val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
+  val mockSubscriptionDataService: SubscriptionDataService = mock[SubscriptionDataService]
+  val organisationName: String = "ACME Limited"
 
 
   object TestChangeLiabilitySummaryController extends EditLiabilitySummaryController {
-    override val authConnector = mockAuthConnector
-    override val delegationConnector: DelegationConnector = mockDelegationConnector
-    override val propertyDetailsService = mockPropertyDetailsService
-    override val controllerId = "controllerId"
-    override val backLinkCacheConnector = mockBackLinkCache
-    override val dataCacheConnector = mockDataCacheConnector
-    override val subscriptionDataService = mockSubscriptionDataService
+    override val authConnector: PlayAuthConnector = mockAuthConnector
+    override val delegationService: DelegationService = mockDelegationService
+    override val propertyDetailsService: PropertyDetailsService = mockPropertyDetailsService
+    override val controllerId: String = "controllerId"
+    override val backLinkCacheConnector: BackLinkCacheConnector = mockBackLinkCache
+    override val dataCacheConnector: DataCacheConnector = mockDataCacheConnector
+    override val subscriptionDataService: SubscriptionDataService = mockSubscriptionDataService
   }
 
-  override def beforeEach = {
+  override def beforeEach: Unit = {
     reset(mockAuthConnector)
-    reset(mockDelegationConnector)
+    reset(mockDelegationService)
     reset(mockPropertyDetailsService)
     reset(mockBackLinkCache)
     reset(mockSubscriptionDataService)
@@ -69,8 +66,8 @@ class EditLiabilitySummaryControllerSpec extends PlaySpec with OneServerPerSuite
 
   "EditLiabilitySummaryController" must {
 
-    "use correct DelegationConnector" in {
-      EditLiabilitySummaryController.delegationConnector must be(FrontendDelegationConnector)
+    "use correct DelegationService" in {
+      EditLiabilitySummaryController.delegationService must be(DelegationService)
     }
 
     "use correct Service" in {
@@ -181,11 +178,12 @@ class EditLiabilitySummaryControllerSpec extends PlaySpec with OneServerPerSuite
 
   def viewWithAuthorisedUser(propertyDetails: PropertyDetails)(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
-    implicit val user = createAtedContext(createUserAuthContext(userId, "name"))
-    AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
+    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+    setAuthMocks(authMock)
     when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-    when(mockPropertyDetailsService.calculateDraftChangeLiability(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(propertyDetails))
+    when(mockPropertyDetailsService.calculateDraftChangeLiability(Matchers.any())(Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(propertyDetails))
     when(mockBackLinkCache.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
     val result = TestChangeLiabilitySummaryController.view("12345678901").apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
@@ -194,20 +192,21 @@ class EditLiabilitySummaryControllerSpec extends PlaySpec with OneServerPerSuite
 
   def viewSummaryWithAuthorisedUser(propertyDetails: PropertyDetails)(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
-    implicit val user = createAtedContext(createUserAuthContext(userId, "name"))
-    AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
+    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+    setAuthMocks(authMock)
     when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-    when(mockPropertyDetailsService.calculateDraftChangeLiability(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(propertyDetails))
+    when(mockPropertyDetailsService.calculateDraftChangeLiability(Matchers.any())(Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(propertyDetails))
     when(mockBackLinkCache.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
     val result = TestChangeLiabilitySummaryController.viewSummary("12345678901").apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
-  def submitWithAuthorisedUser(test: Future[Result] => Any) = {
+  def submitWithAuthorisedUser(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
-    implicit val user = createAtedContext(createUserAuthContext(userId, "name"))
-    AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
+    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+    setAuthMocks(authMock)
     when(mockDataCacheConnector.fetchAndGetFormData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
     val result = TestChangeLiabilitySummaryController.submit("12345678901").apply(SessionBuilder.buildRequestWithSession(userId))
@@ -216,10 +215,12 @@ class EditLiabilitySummaryControllerSpec extends PlaySpec with OneServerPerSuite
 
   def getPrintFriendlyWithAuthorisedUser(propertyDetails: PropertyDetails)(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
-    AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
+    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+    setAuthMocks(authMock)
     when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-    when(mockPropertyDetailsService.calculateDraftChangeLiability(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(propertyDetails))
+    when(mockPropertyDetailsService.calculateDraftChangeLiability(Matchers.any())(Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(propertyDetails))
     when(mockSubscriptionDataService.getOrganisationName(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(organisationName)))
     val result = TestChangeLiabilitySummaryController.viewPrintFriendlyEditLiabilityReturn("12345678901").apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)

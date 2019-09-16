@@ -18,34 +18,35 @@ package controllers.subscriptionData
 
 import java.util.UUID
 
-import builders.{AuthBuilder, SessionBuilder, TitleBuilder}
-import config.FrontendDelegationConnector
-import models.{EditContactDetailsEmail, Identification}
+import builders.{SessionBuilder, TitleBuilder}
+import models.Identification
 import org.jsoup.Jsoup
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mock.MockitoSugar
-import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
+import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.play.PlaySpec
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.libs.json.Json
 import play.api.mvc.{AnyContentAsJson, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.SubscriptionDataService
-import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
+import services.{DelegationService, SubscriptionDataService}
+import uk.gov.hmrc.auth.core.{AffinityGroup, PlayAuthConnector}
+import uk.gov.hmrc.http.HeaderCarrier
+import utils.MockAuthUtil
 
 import scala.concurrent.Future
-import uk.gov.hmrc.http.HeaderCarrier
 
-class OverseasCompanyRegistrationControllerSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
+class OverseasCompanyRegistrationControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with MockAuthUtil {
 
-  val mockAuthConnector = mock[AuthConnector]
-  val mockSubscriptionDataService = mock[SubscriptionDataService]
+  val mockSubscriptionDataService: SubscriptionDataService = mock[SubscriptionDataService]
+implicit lazy val hc: HeaderCarrier = HeaderCarrier()
 
   object TestOverseasCompanyRegistrationController extends OverseasCompanyRegistrationController {
-    override val authConnector = mockAuthConnector
-    override val delegationConnector: DelegationConnector = FrontendDelegationConnector
-    override val subscriptionDataService = mockSubscriptionDataService
+    override val authConnector: PlayAuthConnector = mockAuthConnector
+    override val delegationService: DelegationService = mockDelegationService
+    override val subscriptionDataService: SubscriptionDataService = mockSubscriptionDataService
   }
 
   override def beforeEach(): Unit = {
@@ -56,14 +57,7 @@ class OverseasCompanyRegistrationControllerSpec extends PlaySpec with OneServerP
   "OverseasCompanyRegistrationController " must {
 
     "use correct DelegationConnector ...." in {
-      OverseasCompanyRegistrationController.delegationConnector must be(FrontendDelegationConnector)
-    }
-
-    "not respond with NOT_FOUND for the GET" in {
-      val result = route(FakeRequest(GET, "/ated/overseas-company"))
-
-      result.isDefined must be(true)
-      status(result.get) must not be (NOT_FOUND)
+      OverseasCompanyRegistrationController.delegationService must be(DelegationService)
     }
 
     "unauthorised users" must {
@@ -101,12 +95,6 @@ class OverseasCompanyRegistrationControllerSpec extends PlaySpec with OneServerP
     }
 
     "submit" must {
-
-      "not respond with NOT_FOUND" in {
-        val result = route(FakeRequest(POST, "/ated/overseas-company"))
-        result.isDefined must be(true)
-        status(result.get) must not be (NOT_FOUND)
-      }
 
       "unauthorised users" must {
 
@@ -159,14 +147,16 @@ class OverseasCompanyRegistrationControllerSpec extends PlaySpec with OneServerP
 
     def getWithUnAuthorisedUser(test: Future[Result] => Any) {
       val userId = s"user-${UUID.randomUUID}"
-      AuthBuilder.mockUnAuthorisedUser(userId, mockAuthConnector)
+      val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
+      setInvalidAuthMocks(authMock)
       val result = TestOverseasCompanyRegistrationController.edit().apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
 
     def getWithAuthorisedUser(overseasInfo: Option[Identification] = None)(test: Future[Result] => Any) {
       val userId = s"user-${UUID.randomUUID}"
-      AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
+      val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+      setAuthMocks(authMock)
       implicit val hc: HeaderCarrier = HeaderCarrier()
       when(mockSubscriptionDataService.getOverseasCompanyRegistration(Matchers.any(), Matchers.any())).thenReturn(Future.successful(overseasInfo))
       val result = TestOverseasCompanyRegistrationController.edit().apply(SessionBuilder.buildRequestWithSession(userId))
@@ -176,20 +166,17 @@ class OverseasCompanyRegistrationControllerSpec extends PlaySpec with OneServerP
 
     def submitWithUnAuthorisedUser(test: Future[Result] => Any) {
       val userId = s"user-${UUID.randomUUID}"
-      AuthBuilder.mockUnAuthorisedUser(userId, mockAuthConnector)
+      val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
+      setInvalidAuthMocks(authMock)
       val result = TestOverseasCompanyRegistrationController.submit().apply(SessionBuilder.buildRequestWithSession(userId))
-      test(result)
-    }
-
-    def submitWithUnAuthenticated(test: Future[Result] => Any) {
-      val result = TestOverseasCompanyRegistrationController.submit().apply(SessionBuilder.buildRequestWithSessionNoUser)
       test(result)
     }
 
     def submitWithAuthorisedUserSuccess(input: Option[Identification] = None)
                                        (fakeRequest: FakeRequest[AnyContentAsJson])(test: Future[Result] => Any) {
       val userId = s"user-${UUID.randomUUID}"
-      AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
+      val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+      setAuthMocks(authMock)
       when(mockSubscriptionDataService.updateOverseasCompanyRegistration(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(input))
       val result = TestOverseasCompanyRegistrationController.submit().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
 

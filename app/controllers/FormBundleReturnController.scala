@@ -16,46 +16,46 @@
 
 package controllers
 
-import config.FrontendDelegationConnector
-import controllers.auth.{AtedFrontendAuthHelpers, AtedRegime}
-import services.{SubscriptionDataService, FormBundleReturnsService, SummaryReturnsService}
-import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
-import play.api.i18n.Messages.Implicits._
+import controllers.auth.AuthAction
 import play.api.Play.current
+import play.api.i18n.Messages.Implicits._
+import play.api.mvc.{Action, AnyContent}
+import services.{DelegationService, FormBundleReturnsService, SubscriptionDataService, SummaryReturnsService}
 import utils.PeriodUtils
 
-trait FormBundleReturnController extends AtedBaseController with AtedFrontendAuthHelpers with DelegationAwareActions {
+trait FormBundleReturnController extends AtedBaseController with AuthAction {
 
   def formBundleReturnsService: FormBundleReturnsService
 
   def summaryReturnsService: SummaryReturnsService
   def subscriptionDataService: SubscriptionDataService
 
-  def view(formBundleNumber: String, periodKey: Int) = AuthAction(AtedRegime) {
-      implicit atedContext =>
-        for {
-          formBundleReturn <- formBundleReturnsService.getFormBundleReturns(formBundleNumber)
-          periodSummaries <- summaryReturnsService.getPeriodSummaryReturns(periodKey)
-          organisationName <- subscriptionDataService.getOrganisationName
-        } yield {
-          val valuesToDisplay = formBundleReturn.map(x => PeriodUtils.getOrderedReturnPeriodValues(x.lineItem, x.dateOfAcquisition)).getOrElse(Nil)
-          val periodsToDisplay = formBundleReturn.map(x => PeriodUtils.getDisplayFormBundleProperties(x.lineItem)).getOrElse(Nil)
+  def view(formBundleNumber: String, periodKey: Int): Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
+      for {
+        formBundleReturn <- formBundleReturnsService.getFormBundleReturns(formBundleNumber)
+        periodSummaries <- summaryReturnsService.getPeriodSummaryReturns(periodKey)
+        organisationName <- subscriptionDataService.getOrganisationName
+      } yield {
+        val valuesToDisplay = formBundleReturn.map(x => PeriodUtils.getOrderedReturnPeriodValues(x.lineItem, x.dateOfAcquisition)).getOrElse(Nil)
+        val periodsToDisplay = formBundleReturn.map(x => PeriodUtils.getDisplayFormBundleProperties(x.lineItem)).getOrElse(Nil)
 
-          val formBundlePeriodReturn = periodSummaries.flatMap{
-            period =>
-              val returns = List(period.submittedReturns.map(_.currentLiabilityReturns), period.submittedReturns.map(_.oldLiabilityReturns))
-              val mergedReturns = returns.flatten.flatten
-              mergedReturns.find(_.formBundleNo == formBundleNumber)
-          }
-
-          val changeAllowed = formBundlePeriodReturn.map(_.changeAllowed).getOrElse(false)
-          val editAllowed =  valuesToDisplay.size <= 1
-
-          Ok(views.html.formBundleReturn(periodKey, formBundleReturn, formBundleNumber, organisationName, changeAllowed, editAllowed,
-            valuesToDisplay,
-            periodsToDisplay,
-            getBackLink(periodKey)))
+        val formBundlePeriodReturn = periodSummaries.flatMap {
+          period =>
+            val returns = List(period.submittedReturns.map(_.currentLiabilityReturns), period.submittedReturns.map(_.oldLiabilityReturns))
+            val mergedReturns = returns.flatten.flatten
+            mergedReturns.find(_.formBundleNo == formBundleNumber)
         }
+
+        val changeAllowed = formBundlePeriodReturn.exists(_.changeAllowed)
+        val editAllowed = valuesToDisplay.size <= 1
+
+        Ok(views.html.formBundleReturn(periodKey, formBundleReturn, formBundleNumber, organisationName, changeAllowed, editAllowed,
+          valuesToDisplay,
+          periodsToDisplay,
+          getBackLink(periodKey)))
+        }
+      }
     }
 
   private def getBackLink(periodKey: Int) = {
@@ -64,8 +64,8 @@ trait FormBundleReturnController extends AtedBaseController with AtedFrontendAut
 }
 
 object FormBundleReturnController extends FormBundleReturnController {
-  val delegationConnector = FrontendDelegationConnector
-  val formBundleReturnsService = FormBundleReturnsService
-  val summaryReturnsService = SummaryReturnsService
-  val subscriptionDataService = SubscriptionDataService
+  val delegationService: DelegationService = DelegationService
+  val formBundleReturnsService: FormBundleReturnsService = FormBundleReturnsService
+  val summaryReturnsService: SummaryReturnsService = SummaryReturnsService
+  val subscriptionDataService: SubscriptionDataService = SubscriptionDataService
 }

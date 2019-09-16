@@ -21,11 +21,11 @@ import models._
 import org.joda.time.DateTime
 import play.api.Logger
 import play.api.http.Status._
+import uk.gov.hmrc.http.HeaderCarrier
 import utils.AtedConstants._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import uk.gov.hmrc.http.HeaderCarrier
 
 trait DisposeLiabilityReturnService {
 
@@ -34,7 +34,7 @@ trait DisposeLiabilityReturnService {
   def dataCacheConnector: DataCacheConnector
 
   def retrieveLiabilityReturn(oldFormBundleNo: String)
-                             (implicit atedContext: AtedContext, hc: HeaderCarrier): Future[Option[DisposeLiabilityReturn]] = {
+                             (implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[Option[DisposeLiabilityReturn]] = {
     atedConnector.retrieveAndCacheDisposeLiability(oldFormBundleNo) map {
       response => response.status match {
         case OK => response.json.asOpt[DisposeLiabilityReturn]
@@ -46,7 +46,7 @@ trait DisposeLiabilityReturnService {
   }
 
   def cacheDisposeLiabilityReturnDate(oldFormBundleNo: String, updatedDate: DisposeLiability)
-                                     (implicit atedContext: AtedContext, hc: HeaderCarrier): Future[Option[DisposeLiabilityReturn]] = {
+                                     (implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[Option[DisposeLiabilityReturn]] = {
     atedConnector.cacheDraftDisposeLiabilityReturnDate(oldFormBundleNo, updatedDate) map {
       response => response.status match {
         case OK => response.json.asOpt[DisposeLiabilityReturn]
@@ -56,7 +56,7 @@ trait DisposeLiabilityReturnService {
   }
 
   def cacheDisposeLiabilityReturnHasBankDetails(oldFormBundleNo: String, hasBankDetails: Boolean)
-                                     (implicit atedContext: AtedContext, hc: HeaderCarrier): Future[Option[DisposeLiabilityReturn]] = {
+                                     (implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[Option[DisposeLiabilityReturn]] = {
     atedConnector.cacheDraftDisposeLiabilityReturnHasBank(oldFormBundleNo, hasBankDetails) map {
       response => response.status match {
         case OK => response.json.asOpt[DisposeLiabilityReturn]
@@ -66,7 +66,7 @@ trait DisposeLiabilityReturnService {
   }
 
   def cacheDisposeLiabilityReturnBank(oldFormBundleNo: String, updatedValue: BankDetails)
-                                     (implicit atedContext: AtedContext, hc: HeaderCarrier): Future[Option[DisposeLiabilityReturn]] = {
+                                     (implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[Option[DisposeLiabilityReturn]] = {
     atedConnector.cacheDraftDisposeLiabilityReturnBank(oldFormBundleNo, updatedValue) map {
       response => response.status match {
         case OK => response.json.asOpt[DisposeLiabilityReturn]
@@ -76,7 +76,7 @@ trait DisposeLiabilityReturnService {
   }
 
   def calculateDraftDisposal(oldFormBundleNo: String)
-                                     (implicit atedContext: AtedContext, hc: HeaderCarrier): Future[Option[DisposeLiabilityReturn]] = {
+                                     (implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[Option[DisposeLiabilityReturn]] = {
     atedConnector.calculateDraftDisposal(oldFormBundleNo) map {
       response => response.status match {
         case OK => response.json.asOpt[DisposeLiabilityReturn]
@@ -85,7 +85,7 @@ trait DisposeLiabilityReturnService {
     }
   }
 
-  def submitDraftDisposeLiability(oldFormBundleNo: String)(implicit atedContext: AtedContext, hc: HeaderCarrier): Future[EditLiabilityReturnsResponseModel] = {
+  def submitDraftDisposeLiability(oldFormBundleNo: String)(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[EditLiabilityReturnsResponseModel] = {
     atedConnector.submitDraftDisposeLiabilityReturn(oldFormBundleNo) flatMap {
       disposeLiabilityResponse => disposeLiabilityResponse.status match {
         case OK =>

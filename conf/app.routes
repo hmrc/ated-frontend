@@ -4,7 +4,7 @@ GET            /assets/*file                                                cont
 
 GET            /home                                                        controllers.HomeController.home(callerId: Option[String] ?=None)
 
-GET            /unauthorised                                                controllers.ApplicationController.unauthorised
+GET            /unauthorised                                                controllers.ApplicationController.unauthorised(isSa: Boolean ?= false)
 GET            /cancel                                                      controllers.ApplicationController.cancel
 GET            /keep-alive                                                  controllers.ApplicationController.keepAlive
 GET            /logout                                                      controllers.ApplicationController.logout

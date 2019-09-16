@@ -14,7 +14,7 @@
  * limitations under the License.
  *@
 
-@(formBundleNum:String, amountDueOrRefund: BigDecimal, liabilityAmount: BigDecimal, paymentReference: Option[String])(implicit atedContext: AtedContext, messages: Messages)
+@(formBundleNum:String, amountDueOrRefund: BigDecimal, liabilityAmount: BigDecimal, paymentReference: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent])
 @import models._
 @import uk.gov.hmrc.play.views.html._
 @import uk.gov.hmrc.play.views.html.helpers._
@@ -30,7 +30,6 @@
 }
 
 @atedMain(title = Messages("ated.edit-liability.sent.title.dispose"),
-          attorney = atedContext.user.authContext.attorney,
           analyticsAdditionalJs = Some(analyticsJs)) {
 
   <div id="banner" class="transaction-banner--complete">

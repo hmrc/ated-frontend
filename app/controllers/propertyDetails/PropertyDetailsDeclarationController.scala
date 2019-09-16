@@ -16,34 +16,33 @@
 
 package controllers.propertyDetails
 
-import config.FrontendDelegationConnector
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
-import controllers.auth.{AtedRegime, ClientHelper, ExternalUrls}
-import forms.AtedForms._
-import play.api.Logger
-import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService}
-import play.api.i18n.Messages.Implicits._
+import controllers.auth.{AuthAction, ClientHelper, ExternalUrls}
 import play.api.Play.current
 import play.api.i18n.Messages
+import play.api.i18n.Messages.Implicits._
+import play.api.mvc.{Action, AnyContent}
+import services.{DelegationService, PropertyDetailsCacheSuccessResponse, PropertyDetailsService}
 
 import scala.concurrent.Future
 
-trait PropertyDetailsDeclarationController extends PropertyDetailsHelpers with ClientHelper {
+trait PropertyDetailsDeclarationController extends PropertyDetailsHelpers with ClientHelper with AuthAction {
 
-  def view(id: String) = AuthAction(AtedRegime) {
-    implicit atedContext =>
+  def view(id: String): Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       ensureClientContext {
         propertyDetailsCacheResponse(id) {
-          case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
+          case PropertyDetailsCacheSuccessResponse(_) =>
             currentBackLink.map(backLink =>
               Ok(views.html.propertyDetails.propertyDetailsDeclaration(id, backLink))
             )
         }
       }
+    }
   }
 
-  def submit(id: String) = AuthAction(AtedRegime) {
-    implicit atedContext =>
+  def submit(id: String): Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       ensureClientContext {
         propertyDetailsService.submitDraftPropertyDetails(id) flatMap { response =>
           response.status match {
@@ -54,13 +53,14 @@ trait PropertyDetailsDeclarationController extends PropertyDetailsHelpers with C
           }
         }
       }
+    }
   }
 }
 
 object PropertyDetailsDeclarationController extends PropertyDetailsDeclarationController {
-  val delegationConnector = FrontendDelegationConnector
-  val propertyDetailsService = PropertyDetailsService
-  val dataCacheConnector = DataCacheConnector
+  val delegationService: DelegationService = DelegationService
+  val propertyDetailsService: PropertyDetailsService = PropertyDetailsService
+  val dataCacheConnector: DataCacheConnector = DataCacheConnector
   override val controllerId = "PropertyDetailsDeclarationController"
-  override val backLinkCacheConnector = BackLinkCacheConnector
+  override val backLinkCacheConnector: BackLinkCacheConnector = BackLinkCacheConnector
 }

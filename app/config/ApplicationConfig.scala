@@ -16,9 +16,9 @@
 
 package config
 
-import play.api.{Configuration, Play}
 import play.api.Mode.Mode
 import play.api.Play._
+import play.api.{Configuration, Play}
 import uk.gov.hmrc.play.config.ServicesConfig
 
 trait ApplicationConfig {

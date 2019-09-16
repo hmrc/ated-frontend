@@ -19,16 +19,16 @@ package forms
 import forms.ReliefForms.taxAvoidanceForm
 import models._
 import org.joda.time.LocalDate
-import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
-import play.api.data.Form
-import play.api.data.FormError
-import play.api.data.validation.{Invalid, Valid, ValidationError, ValidationResult}
+import org.scalatestplus.play.PlaySpec
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
+import play.api.data.validation.{Invalid, Valid, ValidationError}
+import play.api.data.{Form, FormError}
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
-import play.api.libs.json.{JsValue, Json}
+import play.api.libs.json.Json
 import utils.PeriodUtils
 
-class ReliefFormsSpec extends PlaySpec with OneServerPerSuite {
+class ReliefFormsSpec extends PlaySpec with GuiceOneServerPerSuite {
 
   val noPromoterErrorMessage = "You must enter a reference number"
   val noSchemeErrorMessage = "You must enter a reference number"
@@ -196,6 +196,7 @@ class ReliefFormsSpec extends PlaySpec with OneServerPerSuite {
     }
 
     "fail if the avoidance scheme is not 8 digits" in {
+      val errSize: Int = 4
       val taxAvoidance = TaxAvoidance(rentalBusinessScheme = Some("123"),
         rentalBusinessSchemePromoter = Some("123"),
         openToPublicScheme = Some("123"),
@@ -203,7 +204,7 @@ class ReliefFormsSpec extends PlaySpec with OneServerPerSuite {
       )
       val result = ReliefForms.validateTaxAvoidance(taxAvoidanceForm.fill(taxAvoidance))
       result.hasErrors must be(true)
-      result.errors.size must be (4)
+      result.errors.size must be (errSize)
       result.error("rentalBusinessScheme").map(_.message) must be (Some("The avoidance scheme number must be 8 digits."))
       result.error("openToPublicScheme").map(_.message) must be (Some("The avoidance scheme number must be 8 digits."))
       result.error("rentalBusinessSchemePromoter").map(_.message) must be (Some("The promoter reference number must be 8 digits."))
@@ -211,6 +212,7 @@ class ReliefFormsSpec extends PlaySpec with OneServerPerSuite {
     }
 
     "fail if the avoidance scheme is 8 characters" in {
+      val errSize: Int = 4
       val taxAvoidance = TaxAvoidance(rentalBusinessScheme = Some("1234567a"),
         rentalBusinessSchemePromoter = Some("1234567a"),
         openToPublicScheme = Some("1234567a"),
@@ -218,7 +220,7 @@ class ReliefFormsSpec extends PlaySpec with OneServerPerSuite {
       )
       val result = ReliefForms.validateTaxAvoidance(taxAvoidanceForm.fill(taxAvoidance))
       result.hasErrors must be(true)
-      result.errors.size must be (4)
+      result.errors.size must be (errSize)
       result.error("rentalBusinessScheme").map(_.message) must be (Some("The avoidance scheme number can only contain numbers"))
       result.error("openToPublicScheme").map(_.message) must be (Some("The avoidance scheme number can only contain numbers"))
       result.error("rentalBusinessSchemePromoter").map(_.message) must be (Some("The promoter reference number can only contain numbers"))
@@ -250,7 +252,7 @@ class ReliefFormsSpec extends PlaySpec with OneServerPerSuite {
 
     "throw validation error" when {
       "reliefSelected is true and start date is empty" in {
-        val validationResult = ReliefForms.validatePeriodStartDate(periodKey, true, None, field, field)
+        val validationResult = ReliefForms.validatePeriodStartDate(periodKey, reliefSelected = true, None, field, field)
         val expectedError = Messages("ated.choose-reliefs.error.date.mandatory", Messages(s"ated.choose-reliefs.rentalBusiness").toLowerCase)
 
         validationResult mustBe Invalid(List(ValidationError(List(expectedError),field)))
@@ -258,7 +260,7 @@ class ReliefFormsSpec extends PlaySpec with OneServerPerSuite {
 
       "reliefSelected is true and period is too early" in {
         val startDate = Some(new LocalDate().minusYears(1))
-        val validationResult = ReliefForms.validatePeriodStartDate(periodKey, true, startDate, field, field)
+        val validationResult = ReliefForms.validatePeriodStartDate(periodKey, reliefSelected = true, startDate, field, field)
         val expectedError = Messages("ated.choose-reliefs.error.date.tooEarly", Messages(s"ated.choose-reliefs.rentalBusiness").toLowerCase)
 
         validationResult mustBe Invalid(List(ValidationError(List(expectedError),field)))
@@ -266,7 +268,7 @@ class ReliefFormsSpec extends PlaySpec with OneServerPerSuite {
 
       "reliefSelected is true and period is too late" in {
         val startDate = Some(new LocalDate().plusYears(1))
-        val validationResult = ReliefForms.validatePeriodStartDate(periodKey, true, startDate, field, field)
+        val validationResult = ReliefForms.validatePeriodStartDate(periodKey, reliefSelected = true, startDate, field, field)
         val expectedError = Messages("ated.choose-reliefs.error.date.tooLate", Messages(s"ated.choose-reliefs.rentalBusiness").toLowerCase)
 
         validationResult mustBe Invalid(List(ValidationError(List(expectedError),field)))
@@ -275,7 +277,7 @@ class ReliefFormsSpec extends PlaySpec with OneServerPerSuite {
 
     "not throw any validation error" when {
       "reliefSelected is false" in {
-        val validationResult = ReliefForms.validatePeriodStartDate(periodKey, false, None, field, field)
+        val validationResult = ReliefForms.validatePeriodStartDate(periodKey, reliefSelected = false, None, field, field)
         validationResult mustBe Valid
       }
     }

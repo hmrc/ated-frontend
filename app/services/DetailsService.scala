@@ -21,11 +21,11 @@ import models._
 import play.api.Logger
 import play.api.mvc.Request
 import play.mvc.Http.Status._
+import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, InternalServerException}
 import utils.AtedConstants
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import uk.gov.hmrc.http.{ BadRequestException, HeaderCarrier, InternalServerException }
 
 trait DetailsService {
 
@@ -36,7 +36,7 @@ trait DetailsService {
   val delegatedClientAtedRefNumber = "delegatedClientAtedRefNumber"
 
 
-  def getDetails(identifier: String, identifierType: String)(implicit atedContext: AtedContext, hc: HeaderCarrier): Future[Option[EtmpRegistrationDetails]] = {
+  def getDetails(identifier: String, identifierType: String)(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[Option[EtmpRegistrationDetails]] = {
     atedConnector.getDetails(identifier = identifier, identifierType = identifierType) map {
       response =>
         response.status match {
@@ -55,7 +55,7 @@ trait DetailsService {
   }
 
   def updateOrganisationRegisteredDetails(oldDetails: EtmpRegistrationDetails, updatedData: RegisteredDetails)
-                                         (implicit atedContext: AtedContext, hc: HeaderCarrier): Future[Option[UpdateRegistrationDetailsRequest]] = {
+                                         (implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[Option[UpdateRegistrationDetailsRequest]] = {
 
     if (oldDetails.isAnIndividual) {
       Logger.warn(s"[DetailsService] [updateRegisteredDetails] tried to update an individual")
@@ -86,7 +86,7 @@ trait DetailsService {
   }
 
   def updateOverseasCompanyRegistration(oldDetails: EtmpRegistrationDetails, updatedData: Option[Identification])
-                                         (implicit atedContext: AtedContext, hc: HeaderCarrier): Future[Option[UpdateRegistrationDetailsRequest]] = {
+                                         (implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[Option[UpdateRegistrationDetailsRequest]] = {
 
     if (oldDetails.isAnIndividual) {
       Logger.warn(s"[DetailsService] [updateRegisteredDetails] tried to update an individual")
@@ -116,7 +116,7 @@ trait DetailsService {
     }
   }
 
-  def getRegisteredDetailsFromSafeId(safeId: String)(implicit atedContext: AtedContext, hc: HeaderCarrier): Future[Option[EtmpRegistrationDetails]] = {
+  def getRegisteredDetailsFromSafeId(safeId: String)(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[Option[EtmpRegistrationDetails]] = {
     for {
       returnedJsValue <- getDetails(safeId, AtedConstants.IdentifierSafeId)
     } yield {
@@ -124,8 +124,8 @@ trait DetailsService {
     }
   }
 
-  def getClientMandateDetails(clientId: String, service: String)(implicit atedContext: AtedContext, request: Request[_], hc: HeaderCarrier): Future[Option[ClientMandateDetails]] = {
-    if (atedContext.user.authContext.attorney.isDefined) {
+  def getClientMandateDetails(clientId: String, service: String)(implicit authContext: StandardAuthRetrievals, request: Request[_], hc: HeaderCarrier): Future[Option[ClientMandateDetails]] = {
+    if (authContext.isAgent) {
       Future.successful(None)
     } else {
       mandateFrontendConnector.getClientDetails(clientId, service).map { response =>
@@ -137,7 +137,7 @@ trait DetailsService {
     }
   }
 
-  def cacheClientReference(atedRef: String)(implicit atedContext: AtedContext, request: Request[_], hc: HeaderCarrier): Future[String] = {
+  def cacheClientReference(atedRef: String)(implicit authContext: StandardAuthRetrievals, request: Request[_], hc: HeaderCarrier): Future[String] = {
       dataCacheConnector.saveFormData[String](delegatedClientAtedRefNumber, atedRef)
   }
 

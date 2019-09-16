@@ -17,11 +17,14 @@
 package views.html.propertyDetails
 
 import forms.PropertyDetailsForms
-import play.api.data.{Form, FormError}
+import org.scalatest.mockito.MockitoSugar
 import play.twirl.api.Html
+import utils.MockAuthUtil
 import utils.viewHelpers.AtedViewSpec
 
-class PropertyDetailsProfessionallyValuedSpec extends AtedViewSpec {
+class PropertyDetailsProfessionallyValuedSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil {
+
+  implicit lazy val authContext = organisationStandardRetrievals
 
   "Property Details Professionally Valued view" must {
     behave like pageWithTitle(messages("ated.property-details-value.isValuedByAgent.title"))

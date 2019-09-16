@@ -18,9 +18,9 @@ package connectors
 
 import config.WSHttp
 import models._
-import play.api.{Configuration, Play}
 import play.api.Mode.Mode
 import play.api.libs.json.{JsValue, Json}
+import play.api.{Configuration, Play}
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
@@ -28,8 +28,8 @@ import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 import scala.concurrent.Future
 
 object AtedConnector extends AtedConnector {
-  val serviceURL = baseUrl("ated")
-  val http = WSHttp
+  val serviceURL: String = baseUrl("ated")
+  val http: WSHttp.type = WSHttp
 
   override protected def mode: Mode = Play.current.mode
 
@@ -70,154 +70,155 @@ trait AtedConnector extends ServicesConfig with RawResponseReads {
   def http: CoreGet with CorePost with CoreDelete
 
   def saveDraftReliefs(accountRef: String, reliefs: ReliefsTaxAvoidance)
-                      (implicit atedContext: AtedContext, hc: HeaderCarrier): Future[HttpResponse] = {
+                      (implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[HttpResponse] = {
     val baseURI = "ated"
-    val authLink = atedContext.user.authLink
+    val authLink = authContext.authLink
     val postUrl = s"""$serviceURL$authLink/$baseURI/$saveDraftReliefURI"""
     val jsonData = Json.toJson(reliefs)
     http.POST[JsValue, HttpResponse](postUrl, jsonData)
   }
 
   def retrievePeriodDraftReliefs(accountRef: String, periodKey: Int)
-                                (implicit atedContext: AtedContext, hc: HeaderCarrier): Future[HttpResponse] = {
+                                (implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[HttpResponse] = {
     val baseURI = "ated"
-    val authLink = atedContext.user.authLink
+    val authLink = authContext.authLink
     val getUrl = s"""$serviceURL$authLink/$baseURI/$retrieveDraftReliefURI/$periodKey"""
     http.GET[HttpResponse](getUrl)
   }
 
-  def submitDraftReliefs(accountRef: String, periodKey: Int)(implicit atedContext: AtedContext, hc: HeaderCarrier): Future[HttpResponse] = {
+  def submitDraftReliefs(accountRef: String, periodKey: Int)(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[HttpResponse] = {
     val baseURI = "ated"
-    val authLink = atedContext.user.authLink
+    val authLink = authContext.authLink
     http.GET[HttpResponse]( s"""$serviceURL$authLink/$baseURI/$submitDraftReliefURI/$periodKey""")
   }
 
-  def getDetails(identifier: String, identifierType: String)(implicit atedContext: AtedContext, hc: HeaderCarrier): Future[HttpResponse] = {
+  def getDetails(identifier: String, identifierType: String)(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[HttpResponse] = {
     val baseURI = "ated"
-    val authLink = atedContext.user.authLink
+    val authLink = authContext.authLink
     http.GET[HttpResponse](s"$serviceURL$authLink/$baseURI/$getDetailsURI/$identifier/$identifierType")
   }
 
-  def retrieveSubscriptionData()(implicit atedContext: AtedContext, hc: HeaderCarrier): Future[HttpResponse] = {
-    val userLink = atedContext.user.userLink
+  def retrieveSubscriptionData()(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[HttpResponse] = {
+    val userLink = authContext.userLink
     val getUrl = s"""$serviceURL$userLink/$retrieveSubscriptionData"""
     http.GET[HttpResponse](getUrl)
   }
 
   def updateSubscriptionData(updatedSubscriptionData: UpdateSubscriptionDataRequest)
-                            (implicit atedContext: AtedContext, hc: HeaderCarrier): Future[HttpResponse] = {
-    val userLink = atedContext.user.userLink
+                            (implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[HttpResponse] = {
+    val userLink = authContext.userLink
     val postUrl = s"""$serviceURL$userLink/$updateSubscriptionData"""
     http.POST[JsValue, HttpResponse](postUrl, Json.toJson(updatedSubscriptionData))
   }
 
   def updateRegistrationDetails(safeId: String, updateRegistrationDetails: UpdateRegistrationDetailsRequest)
-                               (implicit atedContext: AtedContext, hc: HeaderCarrier): Future[HttpResponse] = {
-    val userLink = atedContext.user.userLink
+                               (implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[HttpResponse] = {
+    val userLink = authContext.userLink
     val postUrl = s"""$serviceURL$userLink/$updateRegistrationDetailsURI/$safeId"""
     http.POST[JsValue, HttpResponse](postUrl, Json.toJson(updateRegistrationDetails))
   }
 
-  def retrieveFormBundleReturns(formBundleNumber: String)(implicit atedContext: AtedContext, hc: HeaderCarrier): Future[HttpResponse] = {
-    val userLink = atedContext.user.userLink
+  def retrieveFormBundleReturns(formBundleNumber: String)(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[HttpResponse] = {
+    val userLink = authContext.userLink
     val getUrl = s"""$serviceURL$userLink/$retrieveFormBundleReturns/$formBundleNumber"""
     http.GET[HttpResponse](getUrl)
   }
 
-  def retrieveAndCacheLiabilityReturn(oldFormBundleNo: String)(implicit atedContext: AtedContext, hc: HeaderCarrier): Future[HttpResponse] = {
-    val userLink = atedContext.user.userLink
+  def retrieveAndCacheLiabilityReturn(oldFormBundleNo: String)(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[HttpResponse] = {
+    val userLink = authContext.userLink
     val getUrl = s"""$serviceURL$userLink/$retrieveLiabilityReturn/$oldFormBundleNo"""
     http.GET[HttpResponse](getUrl)
   }
 
-  def retrieveAndCachePreviousLiabilityReturn(oldFormBundleNo: String, periodKey: Int)(implicit atedContext: AtedContext, hc: HeaderCarrier): Future[HttpResponse] = {
-    val userLink = atedContext.user.userLink
+  def retrieveAndCachePreviousLiabilityReturn(oldFormBundleNo: String, periodKey: Int)
+                                             (implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[HttpResponse] = {
+    val userLink = authContext.userLink
     val getUrl = s"""$serviceURL$userLink/$retrievePreviousLiabilityReturn/$oldFormBundleNo/$periodKey"""
     http.GET[HttpResponse](getUrl)
   }
 
   def cacheDraftChangeLiabilityReturnHasBank(oldFormBundleNo: String, hasBankDetails: Boolean)
-                                         (implicit atedContext: AtedContext, hc: HeaderCarrier): Future[HttpResponse] = {
-    val userLink = atedContext.user.userLink
+                                         (implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[HttpResponse] = {
+    val userLink = authContext.userLink
     val postUrl = s"""$serviceURL$userLink/$retrieveLiabilityReturn/$oldFormBundleNo/$cacheDraftHasBank"""
     http.POST[JsValue, HttpResponse](postUrl, Json.toJson(hasBankDetails))
   }
 
 
   def cacheDraftChangeLiabilityReturnBank(oldFormBundleNo: String, updatedValue: BankDetails)
-                                         (implicit atedContext: AtedContext, hc: HeaderCarrier): Future[HttpResponse] = {
-    val userLink = atedContext.user.userLink
+                                         (implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[HttpResponse] = {
+    val userLink = authContext.userLink
     val postUrl = s"""$serviceURL$userLink/$retrieveLiabilityReturn/$oldFormBundleNo/$cacheDraftBank"""
     http.POST[JsValue, HttpResponse](postUrl, Json.toJson(updatedValue))
   }
 
   def submitDraftChangeLiabilityReturn(oldFormBundleNo: String)
-                                      (implicit atedContext: AtedContext, hc: HeaderCarrier): Future[HttpResponse] = {
-    val userLink = atedContext.user.userLink
+                                      (implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[HttpResponse] = {
+    val userLink = authContext.userLink
     val postUrl = s"""$serviceURL$userLink/$retrieveLiabilityReturn/$oldFormBundleNo/$submit"""
     http.POST[JsValue, HttpResponse](postUrl, Json.parse("""{}"""))
   }
 
-  def retrieveAndCacheDisposeLiability(oldFormBundleNo: String)(implicit atedContext: AtedContext, hc: HeaderCarrier): Future[HttpResponse] = {
-    val userLink = atedContext.user.userLink
+  def retrieveAndCacheDisposeLiability(oldFormBundleNo: String)(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[HttpResponse] = {
+    val userLink = authContext.userLink
     val getUrl = s"""$serviceURL$userLink/$retrieveDisposeLiability/$oldFormBundleNo"""
     http.GET[HttpResponse](getUrl)
   }
 
   def cacheDraftDisposeLiabilityReturnDate(oldFormBundleNo: String, updatedDate: DisposeLiability)
-                                          (implicit atedContext: AtedContext, hc: HeaderCarrier): Future[HttpResponse] = {
-    val userLink = atedContext.user.userLink
+                                          (implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[HttpResponse] = {
+    val userLink = authContext.userLink
     val postUrl = s"""$serviceURL$userLink/$retrieveDisposeLiability/$oldFormBundleNo/$cacheDraftDate"""
     http.POST[JsValue, HttpResponse](postUrl, Json.toJson(updatedDate))
   }
 
   def cacheDraftDisposeLiabilityReturnHasBank(oldFormBundleNo: String, hasBankDetails: Boolean)
-                                            (implicit atedContext: AtedContext, hc: HeaderCarrier): Future[HttpResponse] = {
-    val userLink = atedContext.user.userLink
+                                            (implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[HttpResponse] = {
+    val userLink = authContext.userLink
     val postUrl = s"""$serviceURL$userLink/$retrieveDisposeLiability/$oldFormBundleNo/$cacheDraftHasBank"""
     http.POST[JsValue, HttpResponse](postUrl, Json.toJson(hasBankDetails))
   }
 
 
   def cacheDraftDisposeLiabilityReturnBank(oldFormBundleNo: String, updatedValue: BankDetails)
-                                          (implicit atedContext: AtedContext, hc: HeaderCarrier): Future[HttpResponse] = {
-    val userLink = atedContext.user.userLink
+                                          (implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[HttpResponse] = {
+    val userLink = authContext.userLink
     val postUrl = s"""$serviceURL$userLink/$retrieveDisposeLiability/$oldFormBundleNo/$cacheDraftBank"""
     http.POST[JsValue, HttpResponse](postUrl, Json.toJson(updatedValue))
   }
 
-  def calculateDraftDisposal(oldFormBundleNo: String)(implicit atedContext: AtedContext, hc: HeaderCarrier): Future[HttpResponse] = {
-    val userLink = atedContext.user.userLink
+  def calculateDraftDisposal(oldFormBundleNo: String)(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[HttpResponse] = {
+    val userLink = authContext.userLink
     val getUrl = s"""$serviceURL$userLink/$retrieveDisposeLiability/$oldFormBundleNo/$calculateDraftDisposal"""
     http.GET[HttpResponse](getUrl)
   }
 
-  def submitDraftDisposeLiabilityReturn(oldFormBundleNo: String)(implicit atedContext: AtedContext, hc: HeaderCarrier): Future[HttpResponse] = {
-    val userLink = atedContext.user.userLink
+  def submitDraftDisposeLiabilityReturn(oldFormBundleNo: String)(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[HttpResponse] = {
+    val userLink = authContext.userLink
     val postUrl = s"""$serviceURL$userLink/$retrieveDisposeLiability/$oldFormBundleNo/$submit"""
     http.POST[JsValue, HttpResponse](postUrl, Json.parse("""{}"""))
   }
 
-  def getFullSummaryReturns(implicit atedContext: AtedContext, hc: HeaderCarrier): Future[HttpResponse] = {
-    val userLink = atedContext.user.userLink
+  def getFullSummaryReturns(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[HttpResponse] = {
+    val userLink = authContext.userLink
     val getUrl = s"""$serviceURL$userLink/$retrieveFullSummaryReturns"""
     http.GET[HttpResponse](getUrl)
   }
 
-  def getPartialSummaryReturns(implicit atedContext: AtedContext, hc: HeaderCarrier): Future[HttpResponse] = {
-    val userLink = atedContext.user.userLink
+  def getPartialSummaryReturns(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[HttpResponse] = {
+    val userLink = authContext.userLink
     val getUrl = s"""$serviceURL$userLink/$retrievePartialSummaryReturns"""
     http.GET[HttpResponse](getUrl)
   }
 
-  def deleteDraftReliefs(implicit atedContext: AtedContext, hc: HeaderCarrier): Future[HttpResponse] = {
-    val userLink = atedContext.user.userLink
+  def deleteDraftReliefs(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[HttpResponse] = {
+    val userLink = authContext.userLink
     val deleteUrl = s"""$serviceURL$userLink/ated/$retrieveDraftReliefURI/drafts"""
     http.DELETE[HttpResponse](deleteUrl)
   }
 
-  def deleteDraftReliefsByYear(periodKey: Int)(implicit atedContext: AtedContext, hc: HeaderCarrier): Future[HttpResponse] = {
-    val userLink = atedContext.user.userLink
+  def deleteDraftReliefsByYear(periodKey: Int)(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[HttpResponse] = {
+    val userLink = authContext.userLink
     val deleteUrl = s"""$serviceURL$userLink/ated/$retrieveDraftReliefURI/drafts/$periodKey"""
     http.DELETE[HttpResponse](deleteUrl)
   }

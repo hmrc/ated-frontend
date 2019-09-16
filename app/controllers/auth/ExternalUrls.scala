@@ -18,21 +18,22 @@ package controllers.auth
 
 import play.api.Play
 import play.api.Play.current
-import uk.gov.hmrc.play.config.RunMode
 
 object ExternalUrls {
 
-  val companyAuthHost = s"${Play.configuration.getString("microservice.services.auth.company-auth.host").getOrElse("")}"
-  val loginCallback = Play.configuration.getString("microservice.services.auth.login-callback.url").getOrElse("/ated/home")
-  val loginPath = s"${Play.configuration.getString("microservice.services.auth.login-path").getOrElse("sign-in")}"
-  val loginURL = s"$companyAuthHost/gg/$loginPath"
-  val continueURL = s"$loginCallback"
-  val signIn = s"$companyAuthHost/gg/$loginPath?continue=$loginCallback"
-  val signOut = s"$companyAuthHost/gg/sign-out"
-  val subscriptionStartPage = Play.configuration.getString("microservice.services.ated-subscription.serviceRedirectUrl")
+  val companyAuthHost: String = s"${Play.configuration.getString("microservice.services.auth.company-auth.host").getOrElse("")}"
+  val loginCallback: String = Play.configuration.getString("microservice.services.auth.login-callback.url").getOrElse("/ated/home")
+  val loginPath: String = s"${Play.configuration.getString("microservice.services.auth.login-path").getOrElse("sign-in")}"
+  val loginURL: String = s"$companyAuthHost/gg/$loginPath"
+  val continueURL: String = s"$loginCallback"
+  val signIn: String = s"$companyAuthHost/gg/$loginPath?continue=$loginCallback"
+  val signOut: String = s"$companyAuthHost/gg/sign-out"
+  val subscriptionStartPage: String = Play.configuration.getString("microservice.services.ated-subscription.serviceRedirectUrl")
     .getOrElse("/ated-subscription/start")
-  val clientApproveAgentMandate = Play.configuration.getString("microservice.services.agent-client-mandate-frontend.atedClientApproveAgentUri").getOrElse("/mandate/client/email")
-  val agentRedirectedToMandate = Play.configuration.getString("microservice.services.agent-client-mandate-frontend.atedAgentJourneyStartUri").getOrElse("/mandate/agent/service")
-  val businessTaxAccountPage = s"${Play.configuration.getString("microservice.services.auth.business-tax-account.serviceRedirectUrl").getOrElse("")}"
+  val clientApproveAgentMandate: String = Play.configuration
+    .getString("microservice.services.agent-client-mandate-frontend.atedClientApproveAgentUri").getOrElse("/mandate/client/email")
+  val agentRedirectedToMandate: String = Play.configuration
+    .getString("microservice.services.agent-client-mandate-frontend.atedAgentJourneyStartUri").getOrElse("/mandate/agent/service")
+  val businessTaxAccountPage: String = s"${Play.configuration.getString("microservice.services.auth.business-tax-account.serviceRedirectUrl").getOrElse("")}"
   
 }

@@ -17,10 +17,14 @@
 package views.html.propertyDetails
 
 import forms.PropertyDetailsForms
+import org.scalatest.mockito.MockitoSugar
 import play.twirl.api.Html
+import utils.MockAuthUtil
 import utils.viewHelpers.AtedViewSpec
 
-class PropertyDetailsInReliefSpec extends AtedViewSpec {
+class PropertyDetailsInReliefSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil {
+  implicit lazy val authContext = organisationStandardRetrievals
+
 
   "Property Details in-relief view" must {
     behave like pageWithTitle(messages("ated.property-details-period.isInRelief.title"))

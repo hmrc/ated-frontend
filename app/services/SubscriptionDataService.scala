@@ -18,11 +18,11 @@ package services
 
 import connectors.DataCacheConnector
 import models._
+import uk.gov.hmrc.http.HeaderCarrier
 import utils.AtedConstants._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import uk.gov.hmrc.http.HeaderCarrier
 
 trait SubscriptionDataService {
 
@@ -32,11 +32,11 @@ trait SubscriptionDataService {
 
   def detailsDataService: DetailsService
 
-  private def retrieveCachedData(implicit atedContext: AtedContext, hc: HeaderCarrier): Future[Option[CachedData]] = {
+  private def retrieveCachedData(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[Option[CachedData]] = {
     dataCacheConnector.fetchAndGetFormData[CachedData](RetrieveSubscriptionDataId)
   }
 
-  private def retrieveAndCacheData(implicit atedContext: AtedContext, hc: HeaderCarrier): Future[Option[CachedData]] = {
+  private def retrieveAndCacheData(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[Option[CachedData]] = {
     for {
       cachedReturns <- retrieveCachedData
       etmpOrCachedData <- cachedReturns match {
@@ -48,7 +48,7 @@ trait SubscriptionDataService {
     }
   }
 
-  private def retrieveDataToCache(implicit atedContext: AtedContext, hc: HeaderCarrier): Future[Option[CachedData]] = {
+  private def retrieveDataToCache(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[Option[CachedData]] = {
     for {
       subscriptionData <- subscriptionDataAdapterService.retrieveSubscriptionData
       registrationDetails <- subscriptionData match {
@@ -64,26 +64,26 @@ trait SubscriptionDataService {
     }
   }
 
-  def getCorrespondenceAddress(implicit atedContext: AtedContext, hc: HeaderCarrier): Future[Option[Address]] = {
+  def getCorrespondenceAddress(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[Option[Address]] = {
     retrieveAndCacheData.map { cachedData =>
       subscriptionDataAdapterService.getCorrespondenceAddress(cachedData.map(_.subscriptionData))
     }
   }
 
-  def getOrganisationName(implicit atedContext: AtedContext, hc: HeaderCarrier): Future[Option[String]] = {
+  def getOrganisationName(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[Option[String]] = {
     retrieveAndCacheData.map { cachedData =>
       subscriptionDataAdapterService.getOrganisationName(cachedData.flatMap(_.registrationDetails))
     }
   }
 
-  def getSafeId(implicit atedContext: AtedContext, hc: HeaderCarrier): Future[Option[String]] = {
+  def getSafeId(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[Option[String]] = {
     retrieveAndCacheData.map { cachedData =>
       subscriptionDataAdapterService.getSafeId(cachedData.map(_.subscriptionData))
     }
   }
 
   def updateCorrespondenceAddressDetails(updatedAddressDetails: AddressDetails)
-                                        (implicit atedContext: AtedContext, hc: HeaderCarrier): Future[Option[AddressDetails]] = {
+                                        (implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[Option[AddressDetails]] = {
     def performCorrespondenceAddressUpdate(cachedData: CachedData, updatedData: AddressDetails): Future[Option[Any]] = {
       subscriptionDataAdapterService.createUpdateCorrespondenceAddressRequest(cachedData.subscriptionData, updatedData) match {
         case Some(x) => subscriptionDataAdapterService.updateSubscriptionData(x)
@@ -94,16 +94,16 @@ trait SubscriptionDataService {
     updateDetails[AddressDetails](performCorrespondenceAddressUpdate)(updatedAddressDetails)
   }
 
-  def getRegisteredDetails(implicit atedContext: AtedContext, hc: HeaderCarrier): Future[Option[RegisteredDetails]] = {
+  def getRegisteredDetails(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[Option[RegisteredDetails]] = {
     retrieveAndCacheData.map(_.flatMap(_.registrationDetails.map(_.registeredDetails)))
   }
 
-  def getOverseasCompanyRegistration(implicit atedContext: AtedContext, hc: HeaderCarrier): Future[Option[Identification]] = {
+  def getOverseasCompanyRegistration(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[Option[Identification]] = {
     retrieveAndCacheData.map(_.flatMap(_.registrationDetails.flatMap(_.nonUKIdentification)))
   }
 
   def updateRegisteredDetails(updatedRegisteredDetails: RegisteredDetails)
-                             (implicit atedContext: AtedContext, hc: HeaderCarrier): Future[Option[RegisteredDetails]] = {
+                             (implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[Option[RegisteredDetails]] = {
     def performRegisteredDetailsUpdate(cachedData: CachedData, updatedData: RegisteredDetails): Future[Option[Any]] = {
       cachedData.registrationDetails match {
         case Some(x) => detailsDataService.updateOrganisationRegisteredDetails(x, updatedData)
@@ -114,7 +114,7 @@ trait SubscriptionDataService {
     updateDetails[RegisteredDetails](performRegisteredDetailsUpdate)(updatedRegisteredDetails)
   }
 
-  def updateOverseasCompanyRegistration(updatedDetails: Identification)(implicit atedContext: AtedContext, hc: HeaderCarrier): Future[Option[Identification]] = {
+  def updateOverseasCompanyRegistration(updatedDetails: Identification)(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[Option[Identification]] = {
     def performUpdate(cachedData: CachedData, updatedDetails: Identification): Future[Option[Any]] = {
       cachedData.registrationDetails match {
         case Some(x) => detailsDataService.updateOverseasCompanyRegistration(x, Some(updatedDetails))
@@ -126,7 +126,7 @@ trait SubscriptionDataService {
   }
 
   private def updateDetails[T](performUpdate: (CachedData, T) => Future[Option[Any]])(updatedData: T)
-                              (implicit atedContext: AtedContext, hc: HeaderCarrier): Future[Option[T]] = {
+                              (implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[Option[T]] = {
     for {
       cachedData <- retrieveCachedData
       updatedDataResponse <- {
@@ -144,13 +144,13 @@ trait SubscriptionDataService {
     }
   }
 
-  def getEmailConsent(implicit atedContext: AtedContext, hc: HeaderCarrier): Future[Boolean] = {
+  def getEmailConsent(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[Boolean] = {
     retrieveAndCacheData.map { cachedData =>
       cachedData.fold(false)(a => a.subscriptionData.emailConsent.getOrElse(false))
     }
   }
 
-  def getEmailWithConsent(implicit atedContext: AtedContext, hc: HeaderCarrier): Future[Option[EditContactDetailsEmail]] = {
+  def getEmailWithConsent(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[Option[EditContactDetailsEmail]] = {
     for {
       address <- getCorrespondenceAddress
       emailConsent <- getEmailConsent
@@ -164,7 +164,7 @@ trait SubscriptionDataService {
   }
 
   def editEmailWithConsent(editEmailWithConsent: EditContactDetailsEmail)
-                          (implicit atedContext: AtedContext, hc: HeaderCarrier): Future[Option[EditContactDetailsEmail]] = {
+                          (implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[Option[EditContactDetailsEmail]] = {
     def performEmailWithConsentUpdate(cachedData: CachedData, editedData: EditContactDetailsEmail): Future[Option[Any]] = {
       subscriptionDataAdapterService.createEditEmailWithConsentRequest(cachedData.subscriptionData, editedData) match {
         case Some(x) => subscriptionDataAdapterService.updateSubscriptionData(x)
@@ -176,7 +176,7 @@ trait SubscriptionDataService {
   }
 
   def editContactDetails(editContactDetails: EditContactDetails)
-                        (implicit atedContext: AtedContext, hc: HeaderCarrier): Future[Option[EditContactDetails]] = {
+                        (implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[Option[EditContactDetails]] = {
     def performContactDetailsUpdate(cachedData: CachedData, editedData: EditContactDetails): Future[Option[Any]] = {
       subscriptionDataAdapterService.createEditContactDetailsRequest(cachedData.subscriptionData, editedData) match {
         case Some(x) => subscriptionDataAdapterService.updateSubscriptionData(x)

@@ -15,9 +15,8 @@
  *@
 
 @import models._
-@(balance: Option[BigDecimal], correspondence: Option[Address], organisationName: Option[String])(implicit atedContext: AtedContext, messages: Messages)
+@(balance: Option[BigDecimal], correspondence: Option[Address], organisationName: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent])
 @import views.html.helpers._
-@import utils._
 
   <div class="service-info">
     <h2 class="balance-display heading-medium" id="sidebar.balance-header">@Messages("ated.summary-return.sidebar.balance")</h2>

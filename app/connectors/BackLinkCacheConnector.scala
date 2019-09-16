@@ -18,11 +18,11 @@ package connectors
 
 import config.AtedSessionCache
 import models.BackLinkModel
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.cache.client.SessionCache
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import uk.gov.hmrc.http.HeaderCarrier
 
 object BackLinkCacheConnector extends BackLinkCacheConnector {
   val sessionCache: SessionCache = AtedSessionCache

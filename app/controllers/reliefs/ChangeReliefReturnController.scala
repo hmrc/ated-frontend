@@ -16,35 +16,35 @@
 
 package controllers.reliefs
 
-import config.FrontendDelegationConnector
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
-import controllers.auth.{AtedFrontendAuthHelpers, AtedRegime, ClientHelper}
+import controllers.auth.{AuthAction, ClientHelper}
 import controllers.propertyDetails.AddressLookupController
 import controllers.{AtedBaseController, BackLinkController}
 import forms.AtedForms.editReliefForm
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
-import services.ReliefsService
-import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
+import play.api.mvc.{Action, AnyContent}
+import services.{DelegationService, ReliefsService}
 
 import scala.concurrent.Future
 
-trait ChangeReliefReturnController extends BackLinkController with AtedBaseController with AtedFrontendAuthHelpers with DelegationAwareActions
-with ClientHelper{
+trait ChangeReliefReturnController extends BackLinkController with AtedBaseController with AuthAction
+with ClientHelper {
 
   def reliefsService: ReliefsService
 
-  def viewChangeReliefReturn(periodKey: Int, formBundleNumber: String) = AuthAction(AtedRegime) {
-    implicit atedContext =>
+  def viewChangeReliefReturn(periodKey: Int, formBundleNumber: String): Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       ensureClientContext {
         currentBackLink.flatMap(backLink =>
           Future.successful(Ok(views.html.reliefs.changeReliefReturn(periodKey, formBundleNumber, editReliefForm, backLink)))
         )
       }
+    }
   }
 
-  def submit(periodKey: Int, formBundleNumber: String) = AuthAction(AtedRegime) {
-    implicit atedContext =>
+  def submit(periodKey: Int, formBundleNumber: String): Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       ensureClientContext {
         editReliefForm.bindFromRequest.fold(
           formWithError =>
@@ -71,22 +71,15 @@ with ClientHelper{
         )
 
       }
+    }
   }
 
-
-
-
-  }
-
-
-
-
-
+}
 
 object ChangeReliefReturnController extends ChangeReliefReturnController {
-  val delegationConnector = FrontendDelegationConnector
-  val reliefsService = ReliefsService
-  val dataCacheConnector = DataCacheConnector
+  val delegationService: DelegationService = DelegationService
+  val reliefsService: ReliefsService = ReliefsService
+  val dataCacheConnector: DataCacheConnector = DataCacheConnector
   override val controllerId = "ChangeReliefReturnController"
-  override val backLinkCacheConnector = BackLinkCacheConnector
+  override val backLinkCacheConnector: BackLinkCacheConnector = BackLinkCacheConnector
 }

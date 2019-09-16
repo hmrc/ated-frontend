@@ -19,7 +19,6 @@ package controllers.editLiability
 import java.util.UUID
 
 import builders._
-import config.FrontendDelegationConnector
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import models._
 import org.joda.time.LocalDate
@@ -27,65 +26,56 @@ import org.jsoup.Jsoup
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mock.MockitoSugar
-import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
+import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.play.PlaySpec
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.Result
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.DisposeLiabilityReturnService
-import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
-import utils.AtedConstants
+import services.{DelegationService, DisposeLiabilityReturnService}
+import uk.gov.hmrc.auth.core.{AffinityGroup, PlayAuthConnector}
+import uk.gov.hmrc.http.HeaderCarrier
+import utils.{AtedConstants, MockAuthUtil}
 
 import scala.concurrent.Future
-import uk.gov.hmrc.http.HeaderCarrier
 
-class DisposePropertyControllerSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
+class DisposePropertyControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with MockAuthUtil {
 
-  import AuthBuilder._
-
-  val mockAuthConnector = mock[AuthConnector]
-  val mockDelegationConnector = mock[DelegationConnector]
-  val mockDisposeLiabilityReturnService = mock[DisposeLiabilityReturnService]
-  val mockBackLinkCache = mock[BackLinkCacheConnector]
-  val mockDataCacheConnector = mock[DataCacheConnector]
+  val mockDisposeLiabilityReturnService: DisposeLiabilityReturnService = mock[DisposeLiabilityReturnService]
+  val mockBackLinkCache: BackLinkCacheConnector = mock[BackLinkCacheConnector]
+  val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
 
   object TestDisposePropertyController extends DisposePropertyController {
-    override val authConnector = mockAuthConnector
-    override val delegationConnector: DelegationConnector = mockDelegationConnector
+    override val authConnector: PlayAuthConnector = mockAuthConnector
+    override val delegationService: DelegationService = mockDelegationService
     override val disposeLiabilityReturnService: DisposeLiabilityReturnService = mockDisposeLiabilityReturnService
-    override val controllerId = "controllerId"
-    override val backLinkCacheConnector = mockBackLinkCache
-    override val dataCacheConnector = mockDataCacheConnector
+    override val controllerId: String = "controllerId"
+    override val backLinkCacheConnector: BackLinkCacheConnector = mockBackLinkCache
+    override val dataCacheConnector: DataCacheConnector = mockDataCacheConnector
   }
 
-  override def beforeEach = {
+  override def beforeEach: Unit = {
     reset(mockAuthConnector)
-    reset(mockDelegationConnector)
+    reset(mockDelegationService)
     reset(mockDisposeLiabilityReturnService)
     reset(mockBackLinkCache)
   }
 
-  val oldFormBundleNum = "123456789012"
+  lazy val oldFormBundleNum: String = "123456789012"
+  lazy val periodKey: Int = 2015
 
   "DisposePropertyController" must {
 
-    "use correct DelegationConnector" in {
-      DisposePropertyController.delegationConnector must be(FrontendDelegationConnector)
+    "use correct DelegationService" in {
+      DisposePropertyController.delegationService must be(DelegationService)
     }
 
     "use correct Service" in {
       DisposePropertyController.disposeLiabilityReturnService must be(DisposeLiabilityReturnService)
     }
 
-
     "view" must {
-
-      "not respond with Not_Found" in {
-        val result = route(FakeRequest(GET, "/ated/liability/1234567890/dispose"))
-        result.isDefined must be(true)
-        status(result.get) must not be (NOT_FOUND)
-      }
 
       "return a status of OK, when date of disposal is some(date)" in {
         val disposeLiabilityReturn = DisposeLiabilityReturnBuilder.generateDisposeLiabilityReturn("12345678901")
@@ -107,7 +97,7 @@ class DisposePropertyControllerSpec extends PlaySpec with OneServerPerSuite with
           taxAvoidanceScheme = None, localAuthorityCode = None, professionalValuation = true, ninetyDayRuleApplies = false,
           dateOfSubmission = new LocalDate("2015-04-02"), liabilityAmount = BigDecimal(123.45), paymentReference = "payment-ref-123", lineItem = Seq())
 
-        val disposeLiabilityReturn = DisposeLiabilityReturn(id = "12345678901", fReturn, disposeLiability = Some(DisposeLiability(None, 2015)))
+        val disposeLiabilityReturn = DisposeLiabilityReturn(id = "12345678901", fReturn, disposeLiability = Some(DisposeLiability(None, periodKey)))
         viewWithAuthorisedUser(Some(disposeLiabilityReturn)) {
           result =>
             status(result) must be(OK)
@@ -193,12 +183,13 @@ class DisposePropertyControllerSpec extends PlaySpec with OneServerPerSuite with
 
   def viewWithAuthorisedUser(disposeLiabilityReturn: Option[DisposeLiabilityReturn] = None)(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
-    AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-    implicit val user = createAtedContext(createUserAuthContext(userId, "name"))
+    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+    setAuthMocks(authMock)
     implicit val hc: HeaderCarrier = HeaderCarrier()
     when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-    when(mockDisposeLiabilityReturnService.retrieveLiabilityReturn(Matchers.eq(oldFormBundleNum))(Matchers.any(), Matchers.any())).thenReturn(Future.successful(disposeLiabilityReturn))
+    when(mockDisposeLiabilityReturnService.retrieveLiabilityReturn(Matchers.eq(oldFormBundleNum))
+    (Matchers.any(), Matchers.any())).thenReturn(Future.successful(disposeLiabilityReturn))
     when(mockBackLinkCache.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
     val result = TestDisposePropertyController.view(oldFormBundleNum).apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
@@ -206,27 +197,28 @@ class DisposePropertyControllerSpec extends PlaySpec with OneServerPerSuite with
 
   def editFromSummary(disposeLiabilityReturn: Option[DisposeLiabilityReturn] = None)(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
-    AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-    implicit val user = createAtedContext(createUserAuthContext(userId, "name"))
+    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+    setAuthMocks(authMock)
     implicit val hc: HeaderCarrier = HeaderCarrier()
     when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-    when(mockDisposeLiabilityReturnService.retrieveLiabilityReturn(Matchers.eq(oldFormBundleNum))(Matchers.any(), Matchers.any())).thenReturn(Future.successful(disposeLiabilityReturn))
+    when(mockDisposeLiabilityReturnService.retrieveLiabilityReturn(Matchers.eq(oldFormBundleNum))
+    (Matchers.any(), Matchers.any())).thenReturn(Future.successful(disposeLiabilityReturn))
     val result = TestDisposePropertyController.editFromSummary(oldFormBundleNum).apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
-
-  def saveWithAuthorisedUser(oldFormBundleNum: String, inputJson: JsValue)(test: Future[Result] => Any) = {
+  def saveWithAuthorisedUser(oldFormBundleNum: String, inputJson: JsValue)(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
-    implicit val user = createAtedContext(createUserAuthContext(userId, "name"))
-    AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
+    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+    setAuthMocks(authMock)
     when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
     val disposeLiabilityReturn = DisposeLiabilityReturnBuilder.generateDisposeLiabilityReturn("123456789012")
-    when(mockDisposeLiabilityReturnService.cacheDisposeLiabilityReturnDate(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(disposeLiabilityReturn)))
-    val result = TestDisposePropertyController.save(oldFormBundleNum).apply(SessionBuilder.updateRequestWithSession(FakeRequest().withJsonBody(inputJson), userId))
+    when(mockDisposeLiabilityReturnService.cacheDisposeLiabilityReturnDate(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(Some(disposeLiabilityReturn)))
+    val result = TestDisposePropertyController.save(oldFormBundleNum)
+      .apply(SessionBuilder.updateRequestWithSession(FakeRequest().withJsonBody(inputJson), userId))
     test(result)
   }
-
 }

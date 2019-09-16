@@ -16,37 +16,40 @@
 
 package controllers
 
-import controllers.auth.{AtedFrontendAuthHelpers, AtedSubscriptionNotNeededRegime, ExternalUrls}
-import models.AtedContext
+import controllers.auth.{AuthAction, ExternalUrls}
+import models.StandardAuthRetrievals
 import play.api.Logger
-import play.api.mvc.Result
-import uk.gov.hmrc.play.config.RunMode
+import play.api.Play.current
+import play.api.i18n.Messages.Implicits._
+import play.api.mvc.{Action, AnyContent, Request, Result}
+import services.DelegationService
 import utils.SessionUtils
 
 import scala.concurrent.Future
+import scala.util.Try
 
-trait HomeController extends AtedBaseController with AtedFrontendAuthHelpers {
+trait HomeController extends AtedBaseController with AuthAction {
 
-  def home(callerId: Option[String] = None) = AuthAction(AtedSubscriptionNotNeededRegime) {
-    implicit atedContext =>
+  def home(callerId: Option[String] = None): Action[AnyContent] = Action.async { implicit request =>
+    authorisedForNoEnrolments { implicit authContext =>
       Future.successful {
         if (isSubscribedUser) redirectSubscribedUser(callerId)
         else Redirect(ExternalUrls.subscriptionStartPage)
       }
+    }
   }
 
-  private def isSubscribedUser(implicit atedContext: AtedContext): Boolean = {
-    val user = atedContext.user.authContext
-    user.principal.accounts.agent.flatMap(_.agentBusinessUtr).isDefined || user.principal.accounts.ated.isDefined
+  private def isSubscribedUser(implicit authContext: StandardAuthRetrievals): Boolean = {
+    authContext.agentRefNo.isDefined || Try{authContext.atedReferenceNumber}.isSuccess
   }
 
-  private def redirectSubscribedUser(callerId: Option[String])(implicit atedContext: AtedContext): Result = {
-    if (atedContext.user.isAgent) {
-      Logger.debug("agent redirected to mandate:" + atedContext)
+  private def redirectSubscribedUser(callerId: Option[String])(implicit authContext: StandardAuthRetrievals, request: Request[AnyContent]): Result = {
+    if (authContext.isAgent) {
+      Logger.debug("[redirectSubscribedUser] agent redirected to mandate:" + authContext)
       Redirect(ExternalUrls.agentRedirectedToMandate)
     }
     else {
-      Logger.debug("user redirected to account summary:" + atedContext)
+      Logger.debug("[redirectSubscribedUser] user redirected to account summary:" + authContext)
       callerId match {
         case Some(x) => Redirect(controllers.routes.AccountSummaryController.view()).addingToSession(SessionUtils.sessionCallerId -> x)
         case None => Redirect(controllers.routes.AccountSummaryController.view())
@@ -56,5 +59,6 @@ trait HomeController extends AtedBaseController with AtedFrontendAuthHelpers {
 
 }
 
-
-object HomeController extends HomeController
+object HomeController extends HomeController {
+  val delegationService: DelegationService = DelegationService
+}

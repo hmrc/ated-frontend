@@ -17,12 +17,14 @@
 package views.html.propertyDetails
 
 import forms.PropertyDetailsForms
+import org.scalatest.mockito.MockitoSugar
 import play.api.data.{Form, FormError}
 import play.twirl.api.Html
-import utils.PeriodUtils
 import utils.viewHelpers.AtedViewSpec
+import utils.{MockAuthUtil, PeriodUtils}
 
-class PropertyDetailsOwnedBeforeSpec extends AtedViewSpec {
+class PropertyDetailsOwnedBeforeSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil {
+  implicit lazy val authContext = organisationStandardRetrievals
 
   "Property Details Owned Before view" must {
     behave like pageWithTitle(messages("ated.property-details-value.isOwnedBeforeValuationYear.title", PeriodUtils.getValuationYear(2014)))

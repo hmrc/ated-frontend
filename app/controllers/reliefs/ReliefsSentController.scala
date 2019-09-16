@@ -16,50 +16,49 @@
 
 package controllers.reliefs
 
-import config.FrontendDelegationConnector
 import connectors.DataCacheConnector
 import controllers.AtedBaseController
-import controllers.auth.{AtedFrontendAuthHelpers, AtedRegime}
+import controllers.auth.AuthAction
 import models.SubmitReturnsResponse
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
-import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
+import play.api.mvc.{Action, AnyContent}
+import services.{DelegationService, ReliefsService, SubscriptionDataService}
 import utils.AtedConstants._
-import services.{ReliefsService, SubscriptionDataService}
 
-trait ReliefsSentController extends AtedBaseController with AtedFrontendAuthHelpers with DelegationAwareActions {
+trait ReliefsSentController extends AtedBaseController with AuthAction {
 
   def subscriptionDataService: SubscriptionDataService
   def dataCacheConnector: DataCacheConnector
   def reliefsService: ReliefsService
 
-  def view(periodKey: Int) = AuthAction(AtedRegime) {
-    implicit atedContext =>
+  def view(periodKey: Int): Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       dataCacheConnector.fetchAndGetFormData[SubmitReturnsResponse](SubmitReturnsResponseFormId) map {
         case Some(submitResponse) =>
           Ok(views.html.reliefs.reliefsSent(periodKey, submitResponse))
         case None =>
           Redirect(controllers.reliefs.routes.ReliefDeclarationController.view(periodKey))
       }
-
+    }
   }
 
-  def viewPrintFriendlyReliefSent(periodKey: Int) = AuthAction(AtedRegime) {
-    implicit atedContext =>
+  def viewPrintFriendlyReliefSent(periodKey: Int): Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       for {
         submitedResponse <- dataCacheConnector.fetchAndGetFormData[SubmitReturnsResponse](SubmitReturnsResponseFormId)
         organisationName <- subscriptionDataService.getOrganisationName
       } yield {
         Ok(views.html.reliefs.reliefsSentPrintFriendly(periodKey, submitedResponse, organisationName))
       }
-
+    }
   }
 
 }
 
 object ReliefsSentController extends ReliefsSentController {
-  val dataCacheConnector = DataCacheConnector
-  val reliefsService = ReliefsService
-  val delegationConnector = FrontendDelegationConnector
-  val subscriptionDataService = SubscriptionDataService
+  val dataCacheConnector: DataCacheConnector = DataCacheConnector
+  val reliefsService: ReliefsService = ReliefsService
+  val delegationService: DelegationService = DelegationService
+  val subscriptionDataService: SubscriptionDataService = SubscriptionDataService
 }

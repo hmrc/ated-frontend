@@ -16,24 +16,24 @@
 
 package controllers.propertyDetails
 
-import config.FrontendDelegationConnector
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
-import controllers.auth.{AtedRegime, ClientHelper}
+import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms
 import forms.PropertyDetailsForms._
 import models._
-import play.api.i18n.Messages
-import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService}
-import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
-
-import scala.concurrent.Future
+import play.api.i18n.Messages
+import play.api.i18n.Messages.Implicits._
+import play.api.mvc.{Action, AnyContent}
+import services.{DelegationService, PropertyDetailsCacheSuccessResponse, PropertyDetailsService}
 import uk.gov.hmrc.http.HeaderCarrier
 
-trait PeriodDatesLiableController extends PropertyDetailsHelpers with ClientHelper {
+import scala.concurrent.Future
 
-  def view(id: String) = AuthAction(AtedRegime) {
-    implicit atedContext =>
+trait PeriodDatesLiableController extends PropertyDetailsHelpers with ClientHelper with AuthAction {
+
+  def view(id: String): Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       ensureClientContext {
         propertyDetailsCacheResponse(id) {
           case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
@@ -45,15 +45,16 @@ trait PeriodDatesLiableController extends PropertyDetailsHelpers with ClientHelp
             }
             val mode = None
             getBackLink(id, mode).map { backLink =>
-             Ok(views.html.propertyDetails.periodDatesLiable(id, propertyDetails.periodKey, filledForm,
+              Ok(views.html.propertyDetails.periodDatesLiable(id, propertyDetails.periodKey, filledForm,
                 getTitle(mode), mode, backLink))
             }
         }
       }
+    }
   }
 
-  def add(id: String, periodKey: Int) = AuthAction(AtedRegime) {
-    implicit atedContext =>
+  def add(id: String, periodKey: Int): Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       ensureClientContext {
         val mode = Some("add")
         getBackLink(id, mode).map { backLink =>
@@ -61,17 +62,18 @@ trait PeriodDatesLiableController extends PropertyDetailsHelpers with ClientHelp
             getTitle(mode), mode, backLink))
         }
       }
+    }
   }
 
-  def save(id: String, periodKey: Int, mode: Option[String] = None) = AuthAction(AtedRegime) {
-    implicit atedContext =>
+  def save(id: String, periodKey: Int, mode: Option[String] = None): Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       propertyDetailsCacheResponse(id) {
         case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
           val lineItems = propertyDetails.period.map(_.liabilityPeriods).getOrElse(Nil) ++ propertyDetails.period.map(_.reliefPeriods).getOrElse(Nil)
           PropertyDetailsForms.validatePropertyDetailsDatesLiable(periodKey, periodDatesLiableForm.bindFromRequest, mode == Some("add"), lineItems).fold(
             formWithError => {
               getBackLink(id, mode).map { backLink =>
-              BadRequest(views.html.propertyDetails.periodDatesLiable(id, periodKey, formWithError,
+                BadRequest(views.html.propertyDetails.periodDatesLiable(id, periodKey, formWithError,
                   getTitle(mode), mode, backLink))
               }
             },
@@ -98,9 +100,10 @@ trait PeriodDatesLiableController extends PropertyDetailsHelpers with ClientHelp
             }
           )
       }
+    }
   }
 
-  private def getBackLink(id: String, mode: Option[String] = None)(implicit atedContext: AtedContext, hc: HeaderCarrier) = {
+  private def getBackLink(id: String, mode: Option[String] = None)(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier) = {
     mode match {
       case Some("add") => Future.successful(Some(controllers.propertyDetails.routes.PeriodsInAndOutReliefController.view(id).url))
       case _ => currentBackLink
@@ -117,9 +120,9 @@ trait PeriodDatesLiableController extends PropertyDetailsHelpers with ClientHelp
 }
 
 object PeriodDatesLiableController extends PeriodDatesLiableController {
-  val delegationConnector = FrontendDelegationConnector
-  val propertyDetailsService = PropertyDetailsService
-  val dataCacheConnector = DataCacheConnector
+  val delegationService: DelegationService = DelegationService
+  val propertyDetailsService: PropertyDetailsService = PropertyDetailsService
+  val dataCacheConnector: DataCacheConnector = DataCacheConnector
   override val controllerId = "PeriodDatesLiableController"
-  override val backLinkCacheConnector = BackLinkCacheConnector
+  override val backLinkCacheConnector: BackLinkCacheConnector = BackLinkCacheConnector
 }

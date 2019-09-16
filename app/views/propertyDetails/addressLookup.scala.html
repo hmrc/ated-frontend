@@ -15,7 +15,7 @@
  *@
 
 @import models._
-@(id: Option[String], periodKey: Int, searchForm: Form[AddressLookup], mode: Option[String] = None, backLink: Option[String])(implicit atedContext: AtedContext, messages: Messages)
+@(id: Option[String], periodKey: Int, searchForm: Form[AddressLookup], mode: Option[String] = None, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent])
 @import uk.gov.hmrc.play.views.html._
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
@@ -34,7 +34,6 @@
 }
 
 @atedMain(title = Messages("ated.address-lookup.title"),
-          attorney = atedContext.user.authContext.attorney,
           pageScripts=Some(pageScripts),
           analyticsAdditionalJs = Some(analyticsJs)) {
 

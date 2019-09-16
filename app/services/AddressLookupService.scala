@@ -18,10 +18,10 @@ package services
 
 import connectors.{AddressLookupConnector, DataCacheConnector}
 import models._
+import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import uk.gov.hmrc.http.HeaderCarrier
 
 trait AddressLookupService {
 
@@ -29,13 +29,13 @@ trait AddressLookupService {
   val dataCacheConnector: DataCacheConnector
   val ADDRESS_LOOKUP_SEARCH_RESULTS = "ADDRESS-LOOKUP-SEARCH-RESULTS"
 
-  def find(searchCriteria: AddressLookup)(implicit atedContext: AtedContext, hc: HeaderCarrier): Future[AddressSearchResults] = {
+  def find(searchCriteria: AddressLookup)(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[AddressSearchResults] = {
     addressLookupConnector.findByPostcode(searchCriteria).flatMap{
       foundData => storeSearchResults(AddressSearchResults(searchCriteria, foundData))
     }
   }
 
-  def findById(id: String)(implicit atedContext: AtedContext, hc: HeaderCarrier): Future[Option[PropertyDetailsAddress]] = {
+  def findById(id: String)(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[Option[PropertyDetailsAddress]] = {
     def convertLookupAddressToPropertyDetailsAddress(addressResult: Option[AddressLookupRecord]): Option[PropertyDetailsAddress] = {
       addressResult.flatMap(found =>
         found.address.lines match {
@@ -66,12 +66,12 @@ trait AddressLookupService {
     addressLookupConnector.findById(id).map(res => convertLookupAddressToPropertyDetailsAddress(res))
   }
 
-  def retrieveCachedSearchResults()(implicit atedContext: AtedContext, hc: HeaderCarrier): Future[Option[AddressSearchResults]] = {
+  def retrieveCachedSearchResults()(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[Option[AddressSearchResults]] = {
     dataCacheConnector.fetchAndGetFormData[AddressSearchResults](ADDRESS_LOOKUP_SEARCH_RESULTS)
   }
 
 
-  private def storeSearchResults(searchResults: AddressSearchResults)(implicit atedContext: AtedContext, headerCarrier: HeaderCarrier): Future[AddressSearchResults] = {
+  private def storeSearchResults(searchResults: AddressSearchResults)(implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[AddressSearchResults] = {
     dataCacheConnector.saveFormData[AddressSearchResults](ADDRESS_LOOKUP_SEARCH_RESULTS, searchResults)
   }
 }

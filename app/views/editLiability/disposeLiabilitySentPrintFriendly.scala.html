@@ -14,7 +14,7 @@
  * limitations under the License.
  *@
 
-@(submittedReturnResponse: Option[EditLiabilityReturnsResponseModel], returnType: String, organisationName: Option[String], paymentReference: Option[String], amountDueOrRefund: BigDecimal, liabilityAmount : BigDecimal)(implicit atedContext: AtedContext, messages: Messages)
+@(submittedReturnResponse: Option[EditLiabilityReturnsResponseModel], returnType: String, organisationName: Option[String], paymentReference: Option[String], amountDueOrRefund: BigDecimal, liabilityAmount : BigDecimal)(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent])
 
 @import utils.AtedUtils._
 @import org.joda.time.format.DateTimeFormat

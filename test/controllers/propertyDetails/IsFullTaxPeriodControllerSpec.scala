@@ -18,68 +18,59 @@ package controllers.propertyDetails
 
 import java.util.UUID
 
-import builders.{AuthBuilder, PropertyDetailsBuilder, SessionBuilder, TitleBuilder}
-import config.FrontendDelegationConnector
+import builders.{PropertyDetailsBuilder, SessionBuilder, TitleBuilder}
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import models._
-import org.joda.time.format.DateTimeFormat
-import org.joda.time.{DateTimeZone, LocalDate}
+import org.joda.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mock.MockitoSugar
-import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
+import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.play.PlaySpec
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.Result
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService}
-import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
-import utils.{AtedConstants, PeriodUtils}
+import services.{DelegationService, PropertyDetailsCacheSuccessResponse, PropertyDetailsService}
+import uk.gov.hmrc.auth.core.{AffinityGroup, PlayAuthConnector}
+import uk.gov.hmrc.http.HeaderCarrier
+import utils.{AtedConstants, MockAuthUtil}
 
 import scala.concurrent.Future
 
-class IsFullTaxPeriodControllerSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
+class IsFullTaxPeriodControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with MockAuthUtil {
 
-  import AuthBuilder._
+  implicit lazy val hc: HeaderCarrier = HeaderCarrier()
 
-  val mockAuthConnector = mock[AuthConnector]
-  val mockService = mock[PropertyDetailsService]
-  val mockDelegationConnector = mock[DelegationConnector]
-  val periodKey = PeriodUtils.calculatePeriod()
-  val mockBackLinkCache = mock[BackLinkCacheConnector]
-  val mockDataCacheConnector = mock[DataCacheConnector]
+  val periodKey: Int = 2015
+  val mockService: PropertyDetailsService = mock[PropertyDetailsService]
+  val mockBackLinkCache: BackLinkCacheConnector = mock[BackLinkCacheConnector]
+  val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
 
   object TestPropertyDetailsPeriodController extends IsFullTaxPeriodController {
-    override val authConnector = mockAuthConnector
-    override val delegationConnector: DelegationConnector = mockDelegationConnector
-    override val propertyDetailsService = mockService
-    override val controllerId = "controllerId"
-    override val backLinkCacheConnector = mockBackLinkCache
-    override val dataCacheConnector = mockDataCacheConnector
+    override val authConnector: PlayAuthConnector = mockAuthConnector
+    override val delegationService: DelegationService = mockDelegationService
+    override val propertyDetailsService: PropertyDetailsService = mockService
+    override val controllerId: String = "controllerId"
+    override val backLinkCacheConnector: BackLinkCacheConnector = mockBackLinkCache
+    override val dataCacheConnector: DataCacheConnector = mockDataCacheConnector
   }
 
   override def beforeEach(): Unit = {
     reset(mockAuthConnector)
     reset(mockService)
-    reset(mockDelegationConnector)
+    reset(mockDelegationService)
     reset(mockBackLinkCache)
   }
 
 
   "IsFullTaxPeriodController" must {
 
-    "use correct DelegationConnector" in {
-      IsFullTaxPeriodController.delegationConnector must be(FrontendDelegationConnector)
+    "use correct DelegationService" in {
+      IsFullTaxPeriodController.delegationService must be(DelegationService)
     }
-
-    "propertyDetails" must {
-
-      "not respond with NOT_FOUND when we dont pass an id" in {
-        val result = route(FakeRequest(GET, "/ated/liability/create/full-tax-period/view/1"))
-        status(result.get) must not be (NOT_FOUND)
-      }
 
       "unauthorised users" must {
 
@@ -99,14 +90,7 @@ class IsFullTaxPeriodControllerSpec extends PlaySpec with OneServerPerSuite with
       "Authorised users" must {
 
         "show the chargeable property details value view with no data" in {
-          import utils.PeriodUtils._
-
           val propertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode")).copy(period = None)
-
-          def formatDate(date: LocalDate): String = DateTimeFormat.forPattern("d MMMM yyyy").withZone(DateTimeZone.forID("Europe/London")).print(date)
-
-          val startDate = periodStartDate(periodKey)
-          val endDate = periodEndDate(periodKey)
 
           getDataWithAuthorisedUser(propertyDetails) {
             result =>
@@ -114,8 +98,27 @@ class IsFullTaxPeriodControllerSpec extends PlaySpec with OneServerPerSuite with
           }
         }
 
+        "show the chargeable property details value view with data when propertyDetails has a formBundleReturn" in {
+          val propertyDetails = PropertyDetailsBuilder.getPropertyDetailsWithFormBundleReturn("1", Some("postCode"))
+
+          getDataWithAuthorisedUser(propertyDetails) {
+            result =>
+              status(result) must be(SEE_OTHER)
+          }
+        }
+
+        "show the chargeable property details value view with data" in {
+          val propertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode")).copy(period = None)
+
+          getFormBundleDatWithAuthorisedUser(propertyDetails) {
+            result =>
+              status(result) must be(OK)
+          }
+        }
+
         "show the chargeable property details value view with existing data" in {
-          val propertyDetailsPeriod = PropertyDetailsBuilder.getPropertyDetailsPeriodDatesLiable(new LocalDate("970-12-01"), new LocalDate("1999-03-02")).map(_.copy(isFullPeriod = Some(false)))
+          val propertyDetailsPeriod = PropertyDetailsBuilder.getPropertyDetailsPeriodDatesLiable(new LocalDate("970-12-01"), new LocalDate("1999-03-02"))
+            .map(_.copy(isFullPeriod = Some(false)))
           val propertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode")).copy(period = propertyDetailsPeriod)
           getDataWithAuthorisedUser(propertyDetails) {
             result =>
@@ -134,14 +137,7 @@ class IsFullTaxPeriodControllerSpec extends PlaySpec with OneServerPerSuite with
       "Authorised users" must {
 
         "show the chargeable property details value view with no data and set the back link to the summary page" in {
-          import utils.PeriodUtils._
-
-          val propertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode")).copy(period = None)
-
-          def formatDate(date: LocalDate): String = DateTimeFormat.forPattern("d MMMM yyyy").withZone(DateTimeZone.forID("Europe/London")).print(date)
-
-          val startDate = periodStartDate(periodKey)
-          val endDate = periodEndDate(periodKey)
+          val propertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
 
           editFromSummary(propertyDetails) {
             result =>
@@ -187,7 +183,6 @@ class IsFullTaxPeriodControllerSpec extends PlaySpec with OneServerPerSuite with
           }
         }
         "for valid data set to true forward to the TaxAvoidance Page" in {
-          val propertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
           val inputJson = Json.toJson(PropertyDetailsFullTaxPeriod(Some(true)))
           when(mockBackLinkCache.saveBackLink(Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
           submitWithAuthorisedUser(inputJson) {
@@ -199,26 +194,11 @@ class IsFullTaxPeriodControllerSpec extends PlaySpec with OneServerPerSuite with
       }
 
     }
-  }
 
   def getWithUnAuthorisedUser(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
-    AuthBuilder.mockUnAuthorisedUser(userId, mockAuthConnector)
-    when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
-      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-    val result = TestPropertyDetailsPeriodController.view("1").apply(SessionBuilder.buildRequestWithSession(userId))
-    test(result)
-  }
-
-  def getWithUnAuthenticated(test: Future[Result] => Any) {
-    val result = TestPropertyDetailsPeriodController.view("1").apply(SessionBuilder.buildRequestWithSessionNoUser)
-    test(result)
-  }
-
-  def getWithAuthorisedUser(test: Future[Result] => Any) {
-    val userId = s"user-${UUID.randomUUID}"
-    implicit val user = createAtedContext(createUserAuthContext(userId, "name"))
-    AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
+        val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
+    setInvalidAuthMocks(authMock)
     when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
     val result = TestPropertyDetailsPeriodController.view("1").apply(SessionBuilder.buildRequestWithSession(userId))
@@ -227,32 +207,41 @@ class IsFullTaxPeriodControllerSpec extends PlaySpec with OneServerPerSuite with
 
   def getDataWithAuthorisedUser(propertyDetails: PropertyDetails)(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
-    implicit val user = createAtedContext(createUserAuthContext(userId, "name"))
-    AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
+    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+    setAuthMocks(authMock)
     when(mockBackLinkCache.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
+    when(mockBackLinkCache.saveBackLink(Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
+
+
     when(mockDataCacheConnector.fetchAndGetFormData[Boolean](Matchers.any())
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
-    when(mockService.retrieveDraftPropertyDetails(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propertyDetails)))
+    when(mockService.retrieveDraftPropertyDetails(Matchers.any())(Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propertyDetails)))
     val result = TestPropertyDetailsPeriodController.view(propertyDetails.id).apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
-  def getAuthorisedUserNone(test: Future[Result] => Any) {
+  def getFormBundleDatWithAuthorisedUser(propertyDetails: PropertyDetails)(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
-    AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-
-    val result = TestPropertyDetailsPeriodController.view("1").apply(SessionBuilder.buildRequestWithSession(userId))
-
+    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+    setAuthMocks(authMock)
+    when(mockBackLinkCache.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
+    when(mockDataCacheConnector.fetchAndGetFormData[Boolean](Matchers.any())
+        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(true)))
+    when(mockService.retrieveDraftPropertyDetails(Matchers.any())(Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propertyDetails)))
+    val result = TestPropertyDetailsPeriodController.view(propertyDetails.id).apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
   def editFromSummary(propertyDetails: PropertyDetails)(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
-    implicit val user = createAtedContext(createUserAuthContext(userId, "name"))
-    AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
+    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+    setAuthMocks(authMock)
     when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-    when(mockService.retrieveDraftPropertyDetails(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propertyDetails)))
+    when(mockService.retrieveDraftPropertyDetails(Matchers.any())(Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propertyDetails)))
     val result = TestPropertyDetailsPeriodController.editFromSummary(propertyDetails.id).apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
@@ -260,26 +249,23 @@ class IsFullTaxPeriodControllerSpec extends PlaySpec with OneServerPerSuite with
 
   def saveWithUnAuthorisedUser(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
-    AuthBuilder.mockUnAuthorisedUser(userId, mockAuthConnector)
-    val result = TestPropertyDetailsPeriodController.save("1", 2015).apply(SessionBuilder.buildRequestWithSession(userId))
-    test(result)
-  }
-
-  def saveWithUnAuthenticated(test: Future[Result] => Any) {
-    val result = TestPropertyDetailsPeriodController.save("1", 2015).apply(SessionBuilder.buildRequestWithSessionNoUser)
+    val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
+    setInvalidAuthMocks(authMock)
+    val result = TestPropertyDetailsPeriodController.save("1", periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
   def submitWithAuthorisedUser(inputJson: JsValue)(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
-    implicit val user = createAtedContext(createUserAuthContext(userId, "name"))
     when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
     when(mockService.saveDraftIsFullTaxPeriod(Matchers.eq("1"), Matchers.any())(Matchers.any(), Matchers.any())).
       thenReturn(Future.successful(OK))
 
-    AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-    val result = TestPropertyDetailsPeriodController.save("1", 2015).apply(SessionBuilder.updateRequestWithSession(FakeRequest().withJsonBody(inputJson), userId))
+    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+    setAuthMocks(authMock)
+    val result = TestPropertyDetailsPeriodController.save("1", periodKey)
+      .apply(SessionBuilder.updateRequestWithSession(FakeRequest().withJsonBody(inputJson), userId))
 
     test(result)
   }

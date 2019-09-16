@@ -16,43 +16,41 @@
 
 package services
 
-import builders.AuthBuilder
 import connectors.{AtedConnector, DataCacheConnector}
 import models.{PeriodSummaryReturns, _}
 import org.joda.time.LocalDate
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mock.MockitoSugar
-import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
+import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.play.PlaySpec
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.libs.json.Json
 import play.api.test.Helpers._
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import utils.AtedConstants._
 
 import scala.concurrent.Future
-import uk.gov.hmrc.http.{ HeaderCarrier, HttpResponse }
 
-class SummaryReturnsServiceSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
+class SummaryReturnsServiceSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
 
-  import AuthBuilder._
-
-  val mockAtedConnector = mock[AtedConnector]
-  val mockDataCacheConnector = mock[DataCacheConnector]
-  val periodKey = 2015
-  val formBundleNo1 = "123456789012"
-  val formBundleNo2 = "123456789013"
+  val mockAtedConnector: AtedConnector = mock[AtedConnector]
+  val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
+  val periodKey: Int = 2015
+  val formBundleNo1: String = "123456789012"
+  val formBundleNo2: String = "123456789013"
 
   object TestSummaryReturnsService extends SummaryReturnsService {
-    override val atedConnector = mockAtedConnector
-    override val dataCacheConnector = mockDataCacheConnector
+    override val atedConnector: AtedConnector = mockAtedConnector
+    override val dataCacheConnector: DataCacheConnector = mockDataCacheConnector
   }
 
-  override def beforeEach = {
+  override def beforeEach: Unit = {
     reset(mockAtedConnector)
     reset(mockDataCacheConnector)
   }
 
-  implicit val user = createAtedContext(createUserAuthContext("User-Id", "name"))
+  implicit lazy val authContext: StandardAuthRetrievals = mock[StandardAuthRetrievals]
   implicit val hc: HeaderCarrier = HeaderCarrier()
 
   "SummmaryReturnsService" must {

@@ -15,7 +15,7 @@
  *@
 
 @import models._
-@(periodKey: Int, taxAvoidanceForm: Form[TaxAvoidance], backLink: Option[String])(reliefsTaxAvoidance : Option[ReliefsTaxAvoidance])(implicit atedContext: AtedContext, messages: Messages)
+@(periodKey: Int, taxAvoidanceForm: Form[TaxAvoidance], backLink: Option[String])(reliefsTaxAvoidance : Option[ReliefsTaxAvoidance])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent])
 @import uk.gov.hmrc.play.views.html._
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
@@ -50,7 +50,7 @@
     }
 }
 
-@atedMain(title = Messages("ated.avoidance-schemes.title"), attorney = atedContext.user.authContext.attorney) {
+@atedMain(title = Messages("ated.avoidance-schemes.title")) {
     @pageHeadersAndError(
         backLink,
         "pre-header",

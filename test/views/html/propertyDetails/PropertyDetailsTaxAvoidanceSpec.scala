@@ -17,11 +17,15 @@
 package views.html.propertyDetails
 
 import forms.PropertyDetailsForms
+import org.scalatest.mockito.MockitoSugar
 import play.api.data.{Form, FormError}
 import play.twirl.api.Html
+import utils.MockAuthUtil
 import utils.viewHelpers.AtedViewSpec
 
-class PropertyDetailsTaxAvoidanceSpec extends AtedViewSpec {
+class PropertyDetailsTaxAvoidanceSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil{
+
+  implicit lazy val authContext = organisationStandardRetrievals
 
   "Property Details TaxAvoidance view" must {
     behave like pageWithTitle(messages("ated.property-details-period.isTaxAvoidance.title"))

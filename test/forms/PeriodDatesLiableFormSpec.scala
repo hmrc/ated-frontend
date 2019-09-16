@@ -24,8 +24,9 @@ import play.api.test.FakeRequest
 
 class PeriodDatesLiableFormSpec extends PlaySpec with MustMatchers with GuiceOneServerPerSuite {
 
-  implicit lazy val messagesApi = app.injector.instanceOf[MessagesApi]
-  implicit lazy val messages = messagesApi.preferred(FakeRequest())
+  val periodKey: Int = 2016
+  implicit lazy val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  implicit lazy val messages: Messages = messagesApi.preferred(FakeRequest())
 
   "periodDatesLiableForm" must {
     "fail validation" when {
@@ -60,7 +61,8 @@ class PeriodDatesLiableFormSpec extends PlaySpec with MustMatchers with GuiceOne
           "endDate.month" -> "8",
           "endDate.year" -> "2014")
 
-        PropertyDetailsForms.validatePropertyDetailsDatesLiable(2016, PropertyDetailsForms.periodDatesLiableForm.bind(inputDate), false).fold(
+        PropertyDetailsForms.validatePropertyDetailsDatesLiable(periodKey, PropertyDetailsForms.periodDatesLiableForm.bind(inputDate), periodsCheck = false)
+          .fold(
           hasErrors => {
             hasErrors.errors.length mustBe 2
             hasErrors.errors.head.message mustBe Messages("ated.property-details-period.datesLiable.startDate.error.too-early")
@@ -83,7 +85,8 @@ class PeriodDatesLiableFormSpec extends PlaySpec with MustMatchers with GuiceOne
           "endDate.month" -> "9",
           "endDate.year" -> "2018")
 
-        PropertyDetailsForms.validatePropertyDetailsDatesLiable(2016, PropertyDetailsForms.periodDatesLiableForm.bind(inputDate), false).fold(
+        PropertyDetailsForms.validatePropertyDetailsDatesLiable(periodKey, PropertyDetailsForms.periodDatesLiableForm.bind(inputDate), periodsCheck = false)
+          .fold(
           hasErrors => {
             hasErrors.errors.length mustBe 2
             hasErrors.errors.head.message mustBe Messages("ated.property-details-period.datesLiable.startDate.error.too-late")
@@ -105,7 +108,8 @@ class PeriodDatesLiableFormSpec extends PlaySpec with MustMatchers with GuiceOne
           "endDate.month" -> "4",
           "endDate.year" -> "2016")
 
-        PropertyDetailsForms.validatePropertyDetailsDatesLiable(2016, PropertyDetailsForms.periodDatesLiableForm.bind(inputDate), false).fold(
+        PropertyDetailsForms.validatePropertyDetailsDatesLiable(periodKey, PropertyDetailsForms.periodDatesLiableForm.bind(inputDate), periodsCheck = false)
+          .fold(
           hasErrors => {
             hasErrors.errors.length mustBe 1
             hasErrors.errors.head.message mustBe Messages("ated.property-details-period.datesLiable.endDate.error.before-start-date")

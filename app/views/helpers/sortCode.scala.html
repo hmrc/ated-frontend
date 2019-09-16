@@ -15,7 +15,7 @@
  *@
 
 @import models._
-@(formObject: play.api.data.Form[BankDetails], fieldName: String, legend: String, args: (Symbol,Any)*)(implicit messages: Messages)
+@(formObject: play.api.data.Form[BankDetails], fieldName: String, legend: String, args: (Symbol,Any)*)(implicit messages: Messages, request: Request[AnyContent])
 
 @import play.api.i18n._
 @import views.html.helper._

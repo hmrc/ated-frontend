@@ -14,17 +14,12 @@
  * limitations under the License.
  *@
 
-@import models._
 @import forms.AtedForms._
-@import uk.gov.hmrc.play.views.html._
+@import models._
 @import uk.gov.hmrc.play.views.html.helpers._
-@import org.joda.time.format.DateTimeFormat
-@import org.joda.time.LocalDate
-@import utils._
 @import views.html.helpers._
-@import views.html.helpers.error._
 
-@(deleteDraftForm: Form[YesNoQuestion], id: Option[String], periodKey: Int, returnType: String, backLink: Option[String])(implicit atedContext: AtedContext, messages: Messages)
+@(deleteDraftForm: Form[YesNoQuestion], id: Option[String], periodKey: Int, returnType: String, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent])
 
 @analyticsJs = {
   ga('set', 'page', document.location.pathname);
@@ -32,7 +27,6 @@
 }
 
 @atedMain(title = Messages("ated.delete-draft.title"),
-          attorney = atedContext.user.authContext.attorney,
           analyticsAdditionalJs = Some(analyticsJs)) {
 
 @pageHeadersAndError(backLink, "pre-header", Messages("ated.return-type.pre-header"), "header", Messages("ated.delete-draft.header"),

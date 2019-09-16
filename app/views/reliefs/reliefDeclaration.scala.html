@@ -15,7 +15,7 @@
  *@
 
 @import models._
-@(periodKey: Int, backLink: Option[String])(implicit atedContext: AtedContext, messages: Messages)
+@(periodKey: Int, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent])
 @import uk.gov.hmrc.play.views.helpers.MoneyPounds
 @import uk.gov.hmrc.play.views.formatting.Money._
 @import uk.gov.hmrc.play.views.html._
@@ -24,13 +24,13 @@
 @import org.joda.time.format.DateTimeFormat
 @import org.joda.time.LocalDate
 
-@atedMain(title = Messages("ated.relief-summary.declaration.title"), attorney = atedContext.user.authContext.attorney) {
+@atedMain(title = Messages("ated.relief-summary.declaration.title")) {
 
   @pageHeadersAndError(backLink, "pre-header", Messages("ated.choose-reliefs.subheader"), "relief-declaration-confirmation-header", Messages("ated.relief-summary.declaration.header"))
 
 
     <p id="relief-declaration-before-declaration-text">
-      @if(atedContext.user.authContext.attorney.isDefined) { @Messages("ated.relief-summary.before-declaration.agent")} else { @Messages("ated.relief-summary.before-declaration.client")}
+      @if(authContext.delegationModel.isDefined) { @Messages("ated.relief-summary.before-declaration.agent")} else { @Messages("ated.relief-summary.before-declaration.client")}
     </p>
 
     <p id="relief-declaration-mid-declaration-text">@Messages("ated.relief-summary.mid-declaration.agent")</p>
@@ -38,9 +38,9 @@
 
 
      <p id="declare-or-confirm">
-      @if(atedContext.user.authContext.attorney.isDefined) { @Messages("ated.relief-summary.i-confirm-that.agent")} else { @Messages("ated.relief-summary.i-declare-that.client")}
+      @if(authContext.delegationModel.isDefined) { @Messages("ated.relief-summary.i-confirm-that.agent")} else { @Messages("ated.relief-summary.i-declare-that.client")}
     </p>
-    @if(atedContext.user.authContext.attorney.isDefined) {
+    @if(authContext.delegationModel.isDefined) {
     <ul class="list-bullet">
       <li id="declaration-confirmation-text">
         @Messages("ated.relief-summary.i-confirm-that.bullet-text.agent")

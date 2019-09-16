@@ -18,11 +18,14 @@ package views.html.reliefs
 
 import forms.ReliefForms
 import org.joda.time.LocalDate
+import org.scalatest.mockito.MockitoSugar
 import play.api.libs.json.Json
 import play.twirl.api.Html
+import utils.MockAuthUtil
 import utils.viewHelpers.AtedViewSpec
 
-class IsAvoidanceSchemeSpec extends AtedViewSpec {
+class IsAvoidanceSchemeSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil {
+  implicit lazy val authContext = organisationStandardRetrievals
 
   val periodKey = 2017
   val periodStartDate = new LocalDate()

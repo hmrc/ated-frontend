@@ -16,26 +16,25 @@
 
 package controllers.subscriptionData
 
-import config.FrontendDelegationConnector
 import connectors.DataCacheConnector
 import controllers.AtedBaseController
-import controllers.auth.{AtedFrontendAuthHelpers, AtedRegime}
+import controllers.auth.AuthAction
 import forms.AtedForms._
+import play.api.Play.current
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
-import play.api.Play.current
-import services.SubscriptionDataService
-import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
+import play.api.mvc.{Action, AnyContent}
+import services.{DelegationService, SubscriptionDataService}
 import utils.CountryCodeUtils
 
 import scala.concurrent.Future
 
-trait RegisteredDetailsController extends AtedBaseController with AtedFrontendAuthHelpers with DelegationAwareActions {
+trait RegisteredDetailsController extends AtedBaseController with AuthAction {
 
   def subscriptionDataService: SubscriptionDataService
 
-  def edit = AuthAction(AtedRegime) {
-    implicit atedContext =>
+  def edit(): Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       for {
         registeredDetails <- subscriptionDataService.getRegisteredDetails
       } yield {
@@ -45,10 +44,11 @@ trait RegisteredDetailsController extends AtedBaseController with AtedFrontendAu
         }
         Ok(views.html.subcriptionData.registeredDetails(populatedForm, CountryCodeUtils.getIsoCodeTupleList, getBackLink))
       }
+    }
   }
 
-  def submit() = AuthAction(AtedRegime) {
-    implicit atedContext =>
+  def submit(): Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       registeredDetailsForm.bindFromRequest.fold(
         formWithErrors => Future.successful(BadRequest(views.html.subcriptionData.registeredDetails(formWithErrors, CountryCodeUtils.getIsoCodeTupleList, getBackLink))),
         updateDetails => {
@@ -65,15 +65,16 @@ trait RegisteredDetailsController extends AtedBaseController with AtedFrontendAu
           }
         }
       )
+    }
   }
 
   private def getBackLink = {
-    Some(controllers.subscriptionData.routes.CompanyDetailsController.view.url)
+    Some(controllers.subscriptionData.routes.CompanyDetailsController.view().url)
   }
 }
 
 object RegisteredDetailsController extends RegisteredDetailsController {
-  val delegationConnector = FrontendDelegationConnector
-  val dataCacheConnector = DataCacheConnector
-  val subscriptionDataService = SubscriptionDataService
+  val delegationService: DelegationService = DelegationService
+  val dataCacheConnector: DataCacheConnector = DataCacheConnector
+  val subscriptionDataService: SubscriptionDataService = SubscriptionDataService
 }

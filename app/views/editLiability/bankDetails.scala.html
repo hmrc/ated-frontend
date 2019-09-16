@@ -15,7 +15,7 @@
  *@
 
 @import models._
-@(bankDetailsForm: Form[BankDetails], oldFormBundleNo: String, backLink: Option[String])(implicit atedContext: AtedContext, messages: Messages)
+@(bankDetailsForm: Form[BankDetails], oldFormBundleNo: String, backLink: Option[String])(implicit authorisedRequest: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent])
 @import uk.gov.hmrc.play.views.html._
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
@@ -43,7 +43,6 @@
 }
 
 @atedMain(title = Messages("ated.bank-details.title"),
-          attorney = atedContext.user.authContext.attorney,
           pageScripts = Some(pageScripts),
           analyticsAdditionalJs = Some(analyticsJs)) {
 

@@ -16,28 +16,27 @@
 
 package controllers
 
-import config.FrontendDelegationConnector
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
-import controllers.auth.{AtedFrontendAuthHelpers, AtedRegime, ClientHelper}
+import controllers.auth.{AuthAction, ClientHelper}
 import controllers.propertyDetails.{AddressLookupController, PropertyDetailsAddressController}
 import controllers.reliefs.ChooseReliefsController
-import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
 import forms.AtedForms.returnTypeForm
 import models.ReturnType
-import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
-import services.SummaryReturnsService
+import play.api.i18n.Messages.Implicits._
+import play.api.mvc.{Action, AnyContent}
+import services.{DelegationService, SummaryReturnsService}
 import utils.AtedConstants._
 
 import scala.concurrent.Future
 
 trait ReturnTypeController extends BackLinkController
-  with AtedFrontendAuthHelpers with DelegationAwareActions with ClientHelper {
+  with AuthAction with ClientHelper {
 
   def summaryReturnService: SummaryReturnsService
 
-  def view(periodKey: Int) = AuthAction(AtedRegime) {
-    implicit user =>
+  def view(periodKey: Int): Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       ensureClientContext {
         currentBackLink.flatMap(backLink =>
           dataCacheConnector.fetchAndGetFormData[ReturnType](RetrieveReturnTypeFormId) map {
@@ -46,12 +45,11 @@ trait ReturnTypeController extends BackLinkController
           }
         )
       }
+    }
   }
 
-
-
-  def submit(periodKey: Int) = AuthAction(AtedRegime) {
-    implicit atedContext =>
+  def submit(periodKey: Int): Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { implicit authContext =>
       ensureClientContext {
         returnTypeForm.bindFromRequest.fold(
           formWithError =>
@@ -89,13 +87,14 @@ trait ReturnTypeController extends BackLinkController
           }
         )
       }
+    }
   }
 }
 
 object ReturnTypeController extends ReturnTypeController {
-  val delegationConnector = FrontendDelegationConnector
-  val dataCacheConnector = DataCacheConnector
-  val summaryReturnService = SummaryReturnsService
-  override val controllerId = "ReturnTypeController"
-  override val backLinkCacheConnector = BackLinkCacheConnector
+  val delegationService: DelegationService = DelegationService
+  val dataCacheConnector: DataCacheConnector = DataCacheConnector
+  val summaryReturnService: SummaryReturnsService = SummaryReturnsService
+  override val controllerId: String = "ReturnTypeController"
+  override val backLinkCacheConnector: BackLinkCacheConnector = BackLinkCacheConnector
 }

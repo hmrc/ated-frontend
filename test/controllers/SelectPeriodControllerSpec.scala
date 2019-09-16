@@ -18,48 +18,58 @@ package controllers
 
 import java.util.UUID
 
-import builders.{AuthBuilder, SessionBuilder, TitleBuilder}
-import config.FrontendDelegationConnector
+import builders.{SessionBuilder, TitleBuilder}
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import models.SelectPeriod
 import org.jsoup.Jsoup
 import org.mockito.Matchers
 import org.mockito.Mockito._
-import org.scalatest.mock.MockitoSugar
-import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
+import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.play.PlaySpec
+import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.libs.json.Json
 import play.api.mvc.{AnyContentAsJson, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
-import utils.AtedConstants
-import utils.AtedConstants.RetrieveSelectPeriodFormId
+import services.DelegationService
+import uk.gov.hmrc.auth.core.{AffinityGroup, PlayAuthConnector}
+import uk.gov.hmrc.http.HeaderCarrier
+import utils.{AtedConstants, MockAuthUtil}
 
 import scala.concurrent.Future
 
-class SelectPeriodControllerSpec extends PlaySpec with OneServerPerSuite with MockitoSugar {
-  import AuthBuilder._
+class SelectPeriodControllerSpec extends PlaySpec with GuiceOneAppPerSuite with MockitoSugar with MockAuthUtil {
 
-  val mockAuthConnector = mock[AuthConnector]
-  val mockBackLinkCache = mock[BackLinkCacheConnector]
-  val mockDataCacheConnector = mock[DataCacheConnector]
+  implicit lazy val hc: HeaderCarrier = HeaderCarrier()
 
+  val mockBackLinkCache: BackLinkCacheConnector = mock[BackLinkCacheConnector]
+  val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
 
   object TestSelectPeriodController extends SelectPeriodController {
-    override val authConnector = mockAuthConnector
-    override val delegationConnector: DelegationConnector = FrontendDelegationConnector
-    override val controllerId = "controllerId"
-    override val backLinkCacheConnector = mockBackLinkCache
-    override val dataCacheConnector = mockDataCacheConnector
+    override val authConnector: PlayAuthConnector = mockAuthConnector
+    override val delegationService: DelegationService = mockDelegationService
+    override val controllerId: String = "controllerId"
+    override val backLinkCacheConnector: BackLinkCacheConnector = mockBackLinkCache
+    override val dataCacheConnector: DataCacheConnector = mockDataCacheConnector
+  }
+
+  "SelectPeriodController" should {
+    "use correct delegationService" in {
+        SelectPeriodController.delegationService mustBe DelegationService
+    }
+    "use correct controllerId" in {
+      SelectPeriodController.controllerId mustBe "SelectPeriodController"
+    }
+    "use correct backLinkCacheConnector" in {
+      SelectPeriodController.backLinkCacheConnector mustBe BackLinkCacheConnector
+    }
+    "use correct dataCacheConnector" in {
+      SelectPeriodController.dataCacheConnector mustBe DataCacheConnector
+    }
+
   }
 
   "selectPeriod" must {
-
-    "not respond with NOT_FOUND" in {
-      val result = route(FakeRequest(GET, "/ated/period/select"))
-      result.isDefined must be(true)
-      status(result.get) must not be NOT_FOUND
-    }
 
     "unauthorised users" must {
 
@@ -158,7 +168,8 @@ class SelectPeriodControllerSpec extends PlaySpec with OneServerPerSuite with Mo
             result =>
               val document = Jsoup.parse(contentAsString(result))
               status(result) must be(OK)
-              document.getElementById("content").text() must include("There are one or more people from your organisation signed in with the same Government Gateway details")
+              document.getElementById("content").text() must include
+              "There are one or more people from your organisation signed in with the same Government Gateway details"
           }
         }
       }
@@ -168,8 +179,8 @@ class SelectPeriodControllerSpec extends PlaySpec with OneServerPerSuite with Mo
 
   def getWithAuthorisedUser(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
-    implicit val user = createAtedContext(createUserAuthContext(userId, "name"))
-    AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
+    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+    setAuthMocks(authMock)
     when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
 
@@ -181,8 +192,8 @@ class SelectPeriodControllerSpec extends PlaySpec with OneServerPerSuite with Mo
   }
   def getWithAuthorisedUserWithSavedData(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
-    implicit val user = createAtedContext(createUserAuthContext(userId, "name"))
-    AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
+    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+    setAuthMocks(authMock)
     when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
 
@@ -196,7 +207,8 @@ class SelectPeriodControllerSpec extends PlaySpec with OneServerPerSuite with Mo
 
   def getWithUnAuthorisedUser(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
-    AuthBuilder.mockUnAuthorisedUser(userId, mockAuthConnector)
+        val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
+    setInvalidAuthMocks(authMock)
     when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
     val result = TestSelectPeriodController.view.apply(SessionBuilder.buildRequestWithSession(userId))
@@ -205,8 +217,8 @@ class SelectPeriodControllerSpec extends PlaySpec with OneServerPerSuite with Mo
 
   def submitWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsJson], atedRef: Option[String] = None)(test: Future[Result] => Any): Unit = {
     val userId = s"user-${UUID.randomUUID}"
-    implicit val user = createAtedContext(createUserAuthContext(userId, "name"))
-    AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
+    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+    setAuthMocks(authMock)
     when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(atedRef))
     when(mockBackLinkCache.saveBackLink(Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))

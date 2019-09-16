@@ -16,27 +16,21 @@
 
 package views
 
-import java.util.UUID
-
-import builders.AuthBuilder._
 import builders.PropertyDetailsBuilder
-import models.{FormBundleReturn, FormBundlePropertyDetails, FormBundleAddress, FormBundleProperty}
-import org.joda.time.format.DateTimeFormat
-import org.joda.time.{DateTimeZone, LocalDate}
+import models._
+import org.joda.time.LocalDate
 import org.jsoup.Jsoup
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
-import org.scalatestplus.play.OneServerPerSuite
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.test.FakeRequest
-import utils.{PeriodUtils, AtedConstants, AtedUtils}
-import utils.AtedUtils._
+import utils.{AtedConstants, MockAuthUtil, PeriodUtils}
 
-class formBundleReturnSpec extends FeatureSpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach with GivenWhenThen{
+class formBundleReturnSpec extends FeatureSpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
 
   implicit val request = FakeRequest()
   implicit val messages : play.api.i18n.Messages = play.api.i18n.Messages.Implicits.applicationMessages
-  val userId = s"user-${UUID.randomUUID}"
-  implicit val user = createAtedContext(createUserAuthContext(userId, "name"))
+  implicit lazy val authContext = organisationStandardRetrievals
 
   val formBundleProp = FormBundleProperty(BigDecimal(100), new LocalDate("2015-09-08"), new LocalDate("2015-10-12"), AtedConstants.LiabilityReturnType, None)
   val formBundleAddress = FormBundleAddress("100 addressLine1", "addressLine2", Some("addressLine3"), Some("AddressLine4"), Some("XX11XX"), "GB")
