@@ -180,7 +180,7 @@ class PeriodSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite w
 
   def getWithUnAuthorisedUser(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
-        val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
+    val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
     setInvalidAuthMocks(authMock)
     val result = TestPeriodSummaryController.view(periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)

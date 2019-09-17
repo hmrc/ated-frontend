@@ -77,7 +77,7 @@ trait MockAuthUtil extends MockitoSugar with TestUtil {
     when(mockDelegationService.delegationCall(Matchers.any())(Matchers.any())).thenReturn(Future.successful(Some(delegationModel)))
     when(mockAuthConnector.authorise[Enrolments ~ Some[AffinityGroup] ~ Some[String]]
       (Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
-      .thenReturn(Future.failed(MissingBearerToken("Auth Error")))
+      .thenReturn(Future.failed(InsufficientEnrolments("Auth Error")))
   }
 
   def setForbiddenAuthMocks(

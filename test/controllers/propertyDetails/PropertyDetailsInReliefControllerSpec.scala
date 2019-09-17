@@ -172,7 +172,7 @@ class PropertyDetailsInReliefControllerSpec extends PlaySpec with GuiceOneServer
 
   def getWithUnAuthorisedUser(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
-        val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
+    val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
     setInvalidAuthMocks(authMock)
     val result = TestPropertyDetailsPeriodController.view("1").apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
@@ -204,7 +204,7 @@ class PropertyDetailsInReliefControllerSpec extends PlaySpec with GuiceOneServer
 
   def saveWithUnAuthorisedUser(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
-        val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
+    val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
     setInvalidAuthMocks(authMock)
     val result = TestPropertyDetailsPeriodController.save("1", periodKey, None).apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)

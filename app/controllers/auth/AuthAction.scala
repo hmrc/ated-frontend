@@ -28,9 +28,17 @@ import uk.gov.hmrc.auth.core.retrieve.~
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.{ExecutionContext, Future, Promise}
+import scala.concurrent.{ExecutionContext, Future}
 
 trait AuthAction extends AtedBaseController with AuthorisedFunctions {
+
+  val origin: String = "ated-frontend"
+
+  def loginParams(implicit request: Request[AnyContent]): Map[String, Seq[String]] = Map(
+    "continue" -> Seq(ExternalUrls.loginURL),
+    "origin" -> Seq(origin)
+  )
+
 
   def unauthorisedUrl(isSa: Boolean = false): Result = Redirect(controllers.routes.ApplicationController.unauthorised(isSa).url)
 
@@ -88,14 +96,18 @@ trait AuthAction extends AtedBaseController with AuthorisedFunctions {
     }
   }
 
-  def handleException(ae: AuthorisationException): Result  = ae match {
-    case nas: NoActiveSession =>
-      Logger.info("[AuthAction][handleException] DefaultAuthAction:Refine - NoActiveSession:" + nas)
+
+  def handleException(ae: AuthorisationException)(implicit request: Request[AnyContent]): Result  = ae match {
+    case usa: UnsupportedAffinityGroup =>
+      Logger.info("[AuthAction][handleException] DefaultAuthAction:Refine - Unsupported Affinity Group" + usa)
       unauthorisedUrl()
+    case nas: NoActiveSession =>
+      Logger.info("[AuthAction][handleException] DefaultAuthAction:Refine - NoActiveSession" + nas)
+      Redirect(ExternalUrls.loginURL, loginParams)
     case e: AuthorisationException =>
       Logger.info("[AuthAction][handleException] DefaultAuthAction:Refine - AuthorisationException:" + e)
       unauthorisedUrl()
-  }
+}
 
 }
 
