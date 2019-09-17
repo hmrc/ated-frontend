@@ -35,7 +35,7 @@ trait AuthAction extends AtedBaseController with AuthorisedFunctions {
   val origin: String = "ated-frontend"
 
   def loginParams(implicit request: Request[AnyContent]): Map[String, Seq[String]] = Map(
-    "continue" -> Seq(ExternalUrls.loginURL),
+    "continue" -> Seq(ExternalUrls.continueURL),
     "origin" -> Seq(origin)
   )
 
