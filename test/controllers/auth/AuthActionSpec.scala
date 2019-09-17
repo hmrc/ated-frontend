@@ -24,7 +24,8 @@ import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.Messages
 import play.api.mvc.{AnyContentAsEmpty, Result, Results}
-import play.api.test.FakeRequest
+import play.api.test.{DefaultAwaitTimeout, FakeRequest}
+import play.api.test.Helpers.redirectLocation
 import services.DelegationService
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.retrieve.~
@@ -35,7 +36,7 @@ import utils.TestUtil
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class AuthActionSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with GuiceOneAppPerSuite with TestUtil {
+class AuthActionSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with GuiceOneAppPerSuite with TestUtil with DefaultAwaitTimeout {
   val mockAuthConnector: PlayAuthConnector = mock[PlayAuthConnector]
   val mockDelegationService: DelegationService = mock[DelegationService]
 
@@ -99,12 +100,12 @@ class AuthActionSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach 
     }
 
     "return 303 redirect response" when {
-      "affinity group fails authorisation for reason InsufficientEnrolments (AuthorisationException)" in {
+      "affinity group fails authorisation for reason UnsupportedAffinityGroup (AuthorisationException)" in {
 
         when(mockDelegationService.delegationCall(Matchers.any())(Matchers.any())).thenReturn(Future.successful(Some(delegationModel)))
 
         when(mockAuthConnector.authorise[RetrievalType](Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.failed(InsufficientEnrolments("error")))
+          .thenReturn(Future.failed(UnsupportedAffinityGroup("error")))
 
         val myFuture: Future[Result] = Future.successful(Results.Ok("test"))
         val func: StandardAuthRetrievals => Future[Result] = (_: StandardAuthRetrievals) => myFuture
@@ -112,6 +113,7 @@ class AuthActionSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach 
         val res: Future[Result] = TestAuthAction.authorisedForNoEnrolments(func)
 
         status(res) shouldBe 303
+        redirectLocation(res) shouldBe Some("/ated/unauthorised")
       }
 
       "affinity group fails authorisation for reason InvalidBearerToken (NoActiveSession)" in {
@@ -127,6 +129,23 @@ class AuthActionSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach 
         val res: Future[Result] = TestAuthAction.authorisedForNoEnrolments(func)
 
         status(res) shouldBe 303
+        redirectLocation(res) shouldBe Some("http://localhost:9025/gg/sign-in?continue=http%3A%2F%2Flocalhost%3A9025%2Fgg%2Fsign-in&origin=ated-frontend")
+      }
+
+      "affinity group fails authorisation for reason InsufficientConfidenceLevel (AuthorisationException)" in {
+
+        when(mockDelegationService.delegationCall(Matchers.any())(Matchers.any())).thenReturn(Future.successful(Some(delegationModel)))
+
+        when(mockAuthConnector.authorise[RetrievalType](Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.failed(InsufficientConfidenceLevel("error")))
+
+        val myFuture: Future[Result] = Future.successful(Results.Ok("test"))
+        val func: StandardAuthRetrievals => Future[Result] = (_: StandardAuthRetrievals) => myFuture
+
+        val res: Future[Result] = TestAuthAction.authorisedForNoEnrolments(func)
+
+        status(res) shouldBe 303
+        redirectLocation(res) shouldBe Some("/ated/unauthorised")
       }
     }
   }

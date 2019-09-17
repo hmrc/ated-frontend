@@ -275,7 +275,7 @@ class AddressLookupControllerSpec extends PlaySpec with GuiceOneServerPerSuite w
 
   def viewWithUnAuthorisedUser(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
-        val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
+    val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
     setInvalidAuthMocks(authMock)
     when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
@@ -297,7 +297,7 @@ class AddressLookupControllerSpec extends PlaySpec with GuiceOneServerPerSuite w
 
   def findWithUnAuthorisedUser(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
-        val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
+    val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
     setInvalidAuthMocks(authMock)
     when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
@@ -318,7 +318,7 @@ class AddressLookupControllerSpec extends PlaySpec with GuiceOneServerPerSuite w
 
   def saveWithUnAuthorisedUser(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
-        val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
+    val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
     setInvalidAuthMocks(authMock)
     when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
