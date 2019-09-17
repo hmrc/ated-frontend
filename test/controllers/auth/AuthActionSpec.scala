@@ -129,7 +129,7 @@ class AuthActionSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach 
         val res: Future[Result] = TestAuthAction.authorisedForNoEnrolments(func)
 
         status(res) shouldBe 303
-        redirectLocation(res) shouldBe Some("http://localhost:9025/gg/sign-in?continue=http%3A%2F%2Flocalhost%3A9025%2Fgg%2Fsign-in&origin=ated-frontend")
+        redirectLocation(res) shouldBe Some("http://localhost:9025/gg/sign-in?continue=http%3A%2F%2Flocalhost%3A9916%2Fated%2Fhome&origin=ated-frontend")
       }
 
       "affinity group fails authorisation for reason InsufficientConfidenceLevel (AuthorisationException)" in {
