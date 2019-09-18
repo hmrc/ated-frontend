@@ -35,7 +35,7 @@ trait DelegationService {
       }
     }.recover {
       case e =>
-        Logger.warn("[DelegationService][delegationCall] no Delegation Returned")
+        Logger.info("[DelegationService][delegationCall] no Delegation Returned")
         None
     }
   }
