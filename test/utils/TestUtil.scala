@@ -18,6 +18,7 @@ package utils
 
 import models.{DelegationModel, Link, PrincipalTaxIdentifiers}
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolment, EnrolmentIdentifier}
+import uk.gov.hmrc.domain.AtedUtr
 
 trait TestUtil {
 
@@ -59,7 +60,7 @@ trait TestUtil {
 
 
   val link: Link = Link("url", "text")
-  val principalTaxIdentifiers: PrincipalTaxIdentifiers = PrincipalTaxIdentifiers(None, None, None, None, None, None, None)
+  val principalTaxIdentifiers: PrincipalTaxIdentifiers = PrincipalTaxIdentifiers(None, None, None, None, None, None, Some(AtedUtr("XN1200000100001")))
   val delegationModel: DelegationModel = DelegationModel("attorney", "principalName", link, accounts = principalTaxIdentifiers, None, Some("Id"))
 
 }

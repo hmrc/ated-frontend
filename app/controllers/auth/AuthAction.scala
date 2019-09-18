@@ -87,7 +87,11 @@ trait AuthAction extends AtedBaseController with AuthorisedFunctions {
         if (validateAgainstSaEnrolment(enrolments)) {
           Future.successful(unauthorisedUrl(true))
         } else {
-          delegationService.delegationCall(internalId) flatMap { delegationModel =>
+          (if (affinityGroup contains AffinityGroup.Agent) {
+            delegationService.delegationCall(internalId)
+          } else {
+            Future.successful(None)
+          }) flatMap { delegationModel =>
             body(StandardAuthRetrievals(enrolments.enrolments, affinityGroup, delegationModel))
           }
         }
