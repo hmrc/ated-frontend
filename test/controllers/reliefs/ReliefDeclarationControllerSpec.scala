@@ -248,7 +248,7 @@ class ReliefDeclarationControllerSpec extends PlaySpec with GuiceOneServerPerSui
 
   def getWithAuthorisedDelegatedUser(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
-    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+    val authMock = authResultDefault(AffinityGroup.Agent, defaultEnrolmentSet)
     setAuthMocks(authMock)
     implicit val hc: HeaderCarrier = HeaderCarrier(userId = Some(UserId(userId)))
     when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))

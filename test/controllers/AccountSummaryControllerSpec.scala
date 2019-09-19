@@ -266,6 +266,7 @@ class AccountSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
           val data = SummaryReturnsModel(None, Seq())
           getWithAuthorisedDelegatedUser(data, None) {
             result =>
+              println(result)
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
               document.title() must be(TitleBuilder.buildTitle("Your ATED online service"))
@@ -369,7 +370,7 @@ class AccountSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
     val httpValue = 200
     val userId = s"user-${UUID.randomUUID}"
     implicit val hc: HeaderCarrier = HeaderCarrier(userId = Some(UserId(userId)))
-    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+    val authMock = authResultDefault(AffinityGroup.Agent, agentEnrolmentSet)
     setAuthMocks(authMock)
     when(mockDataCacheConnector.clearCache()(Matchers.any())).thenReturn(Future.successful(HttpResponse(httpValue)))
     when(mockReturnSummaryService.getSummaryReturns(Matchers.any(), Matchers.any())).thenReturn(Future.successful(returnsSummaryWithDraft))

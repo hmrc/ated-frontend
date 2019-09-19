@@ -182,7 +182,7 @@ class PropertyDetailsDeclarationControllerSpec extends PlaySpec with GuiceOneSer
   def getWithAuthorisedDelegatedUser(test: Future[Result] => Any): Unit = {
     val userId = s"user-${UUID.randomUUID}"
     implicit val hc: HeaderCarrier = HeaderCarrier(userId = Some(UserId(userId)))
-    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+    val authMock = authResultDefault(AffinityGroup.Agent, defaultEnrolmentSet)
     setAuthMocks(authMock)
     when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
