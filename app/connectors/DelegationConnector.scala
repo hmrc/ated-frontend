@@ -26,13 +26,13 @@ import scala.concurrent.Future
 
 trait DelegationConnector {
 
-  def http: CoreGet with CorePost with CoreDelete
+  val serviceURL = baseUrl("delegation")
+  val http: CoreGet with CorePost with CoreDelete
 
   def delegationDataCall(id: String)(implicit hc: HeaderCarrier): Future[HttpResponse] = {
-    val serviceURL = baseUrl("delegation")
     val jsonData = Json.parse(s"""{"internalId" : "$id"}""".stripMargin)
-
     val postUrl = s"""$serviceURL/oid"""
+
     http.POST[JsValue, HttpResponse](postUrl, jsonData)
   }
 }
