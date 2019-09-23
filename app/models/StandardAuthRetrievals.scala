@@ -63,7 +63,10 @@ case class StandardAuthRetrievals(enrolments: Set[Enrolment],
     val atedRefNumber = getEnrolment(atedKey)
 
     atedRefNumber.flatMap {
-      case Enrolment(_, ids, _, _) => ids.collectFirst { case EnrolmentIdentifier(k, v) if k.equals(atedNumberKey) => v }
+      case Enrolment(_, ids, _, _) =>
+        val numberOfAtedRefs = ids.count{case EnrolmentIdentifier(k, _) => k.equals(atedNumberKey)}
+        Logger.info(s"[StandardAuthRetrievals][clientAtedRefNo] Number of ATED Reference numbers: $numberOfAtedRefs")
+        ids.collectFirst { case EnrolmentIdentifier(k, v) if k.equals(atedNumberKey) => v }
     }
   }
 
