@@ -70,12 +70,11 @@ case class StandardAuthRetrievals(enrolments: Set[Enrolment],
   def clientAtedRefNo: Option[String] = {
     val atedRefNumber = getEnrolment(atedKey)
 
-    atedRefNumber.flatMap {
-      case Enrolment(_, ids, _, _) =>
-        val numberOfAtedRefs = ids.count{case EnrolmentIdentifier(k, _) => k.equals(atedNumberKey)}
-        Logger.info(s"[StandardAuthRetrievals][clientAtedRefNo] Number of ATED Reference numbers: $numberOfAtedRefs")
-        ids.collectFirst { case EnrolmentIdentifier(k, v) if k.equals(atedNumberKey) => v }
+    val optionRef = atedRefNumber.flatMap {
+      case Enrolment(_, ids, _, _) => ids.collectFirst { case EnrolmentIdentifier(k, v) if k.equals(atedNumberKey) => v }
     }
+    Logger.info(s"[StandardAuthRetrievals][clientAtedRefNo] Client ref was: $optionRef")
+    optionRef
   }
 
   def atedReferenceNumber: String = {
