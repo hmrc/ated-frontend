@@ -31,7 +31,9 @@ case class StandardAuthRetrievals(enrolments: Set[Enrolment],
   private val agentNumberKey = "AgentRefNumber"
   private val atedNumberKey = "ATEDRefNumber"
 
-  private def getEnrolment(key: String): Option[Enrolment] = enrolments.find(_.key.equalsIgnoreCase(key))
+  private def getEnrolment(key: String): Option[Enrolment] = {
+    enrolments.find(_.key.equalsIgnoreCase(key))
+  }
 
   def authLink: String = if (isAgent) agentLink else userLink
 
@@ -48,11 +50,17 @@ case class StandardAuthRetrievals(enrolments: Set[Enrolment],
 
   def agentRefNo: Option[String] = {
     val agentRefNumber = getEnrolment(agentKey)
-    if (isAgent) {
+    val optionRef = if (isAgent) {
       agentRefNumber.flatMap {
-        case Enrolment(_, ids, _, _) => ids.collectFirst { case EnrolmentIdentifier(k, v) if k.equals(agentNumberKey) => v }
+        case Enrolment(_, ids, _, _) =>
+          val numberOfAgentRefs = ids.count{case EnrolmentIdentifier(k, _) => k.equals(agentNumberKey)}
+          Logger.info(s"[StandardAuthRetrievals][agentRefNo] Number of Agent Reference numbers: $numberOfAgentRefs")
+
+          ids.collectFirst { case EnrolmentIdentifier(k, v) if k.equals(agentNumberKey) => v }
       }
     } else None
+    Logger.info(s"[StandardAuthRetrievals][agentRefNo] Agent ref was: $optionRef")
+    optionRef
   }
 
   def isAgent: Boolean = affinityGroup contains Agent
@@ -74,10 +82,16 @@ case class StandardAuthRetrievals(enrolments: Set[Enrolment],
     delegationModel match {
       case Some(delModel) =>
         (isAgent, delModel) match {
-          case (true, DelegationModel(_, _, _, taxIdentifiers, _, _)) => taxIdentifiers.ated.map(_.value)
-          case _ => clientAtedRefNo
+          case (true, DelegationModel(_, _, _, taxIdentifiers, _, _)) =>
+            Logger.info(s"[StandardAuthRetrievals][atedReferenceNumber] Agent with Delegation model ${taxIdentifiers}")
+            taxIdentifiers.ated.map(_.value)
+          case _ =>
+            Logger.info(s"[StandardAuthRetrievals][atedReferenceNumber] client with ated ref first case ${clientAtedRefNo}")
+            clientAtedRefNo
         }
-      case _ => clientAtedRefNo
+      case _ =>
+        Logger.info(s"[StandardAuthRetrievals][atedReferenceNumber] client with ated ref second case ${clientAtedRefNo}")
+        clientAtedRefNo
     }
   }.getOrElse {
     Logger.warn(s"[StandardAuthRetrieval][atedReferenceNumber] Exception - User forbidden exception")
