@@ -85,11 +85,11 @@ trait ReliefsService {
     }
       yield {
         response.status match {
-          case OK | NOT_FOUND => response.json.asOpt[ReliefsTaxAvoidance]
+          case OK  => response.json.asOpt[ReliefsTaxAvoidance]
           case status =>
-            Logger.warn(s"[ReliefsService][retrieveDraftReliefs] - Invalid status returned when retrieving all drafts - " +
+            Logger.info(s"[ReliefsService][retrieveDraftReliefs] - Invalid status returned when retrieving all drafts - " +
               s"status = $status, body = ${response.body}")
-            throw new InternalServerException(s"[ReliefsService][retrieveDraftReliefs] - status : $status")
+            None
         }
       }
   }
