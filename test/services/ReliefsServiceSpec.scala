@@ -414,26 +414,15 @@ class ReliefsServiceSpec extends PlaySpec with GuiceOneServerPerSuite with Mocki
         await(result) must be(Some(reliefs))
       }
 
-      "throw internal server exception, for any other exceptions..." in {
+      "take no action, for any Not Found exception" in {
         implicit val hc = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
 
-        val reliefs = ReliefBuilder.reliefTaxAvoidance(periodKey, Reliefs(periodKey = periodKey, rentalBusiness = true,
-          openToPublic = true,
-          propertyDeveloper = true,
-          propertyTrading = true,
-          lending = true,
-          employeeOccupation = true,
-          farmHouses = true,
-          socialHousing = true))
-
-        val responseJson = Json.toJson(reliefs)
         when(mockAtedConnector.retrievePeriodDraftReliefs(any(), any())
-        (any(), any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
-        val result = TestReliefsService.retrieveDraftReliefs("ATED-123", periodKey)
-        val thrown = the[InternalServerException] thrownBy await(result)
-        thrown.message must include("status : 400")
-      }
+        (any(), any())).thenReturn(Future.successful(HttpResponse(NOT_FOUND, None)))
 
+        val result = TestReliefsService.retrieveDraftReliefs("ATED-123", periodKey)
+        await(result) must be (None)
+      }
     }
 
     "Submit the draft reliefs" must {
