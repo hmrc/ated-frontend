@@ -42,7 +42,7 @@ case class StandardAuthRetrievals(enrolments: Set[Enrolment],
   }
 
   def agentLink: String = {
-    "/agent/" + agentRefNo.getOrElse {
+    "/ated/" + agentRefNo.getOrElse {
       Logger.warn(s"[AtedContext][agentLink] Exception - Agent does not have the correct authorisation")
       throw new RuntimeException("Agent does not have the correct authorisation")
     }
