@@ -150,7 +150,9 @@ trait ReliefsService {
     }
   }
 
-  def deleteDraftReliefs(periodKey: Int)(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[HttpResponse] = atedConnector.deleteDraftReliefsByYear(periodKey)
+  def deleteDraftReliefs(periodKey: Int)(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[HttpResponse] = {
+    atedConnector.deleteDraftReliefsByYear(periodKey)
+  }
 
 }
 
