@@ -67,7 +67,7 @@ trait PropertyDetailsConnector extends ServicesConfig with RawResponseReads {
 
   def createDraftPropertyDetails(periodKey: Int, propertyDetails: PropertyDetailsAddress)
                                         (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[HttpResponse] = {
-    val authLink = authContext.authLink
+    val authLink = authContext.atedReferenceNumber
     val postUrl = s"""$serviceURL$authLink/$createDraftPropertyDetailsURI/$periodKey"""
     val jsonData = Json.toJson(propertyDetails)
     http.POST[JsValue, HttpResponse](postUrl, jsonData)
@@ -76,7 +76,7 @@ trait PropertyDetailsConnector extends ServicesConfig with RawResponseReads {
 
   def saveDraftPropertyDetailsAddressRef(id: String, propertyDetails: PropertyDetailsAddress)
                                         (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[HttpResponse] = {
-    val authLink = authContext.authLink
+    val authLink = authContext.atedReferenceNumber
     val postUrl = s"""$serviceURL$authLink/$saveDraftPropertyDetailsAddressRefURI/$id"""
     val jsonData = Json.toJson(propertyDetails)
     http.POST[JsValue, HttpResponse](postUrl, jsonData)
@@ -84,7 +84,7 @@ trait PropertyDetailsConnector extends ServicesConfig with RawResponseReads {
 
   def saveDraftPropertyDetailsTitle(id: String, propertyDetails: PropertyDetailsTitle)
                                         (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[HttpResponse] = {
-    val authLink = authContext.authLink
+    val authLink = authContext.atedReferenceNumber
     val postUrl = s"""$serviceURL$authLink/$saveDraftPropertyDetailsTitleURI/$id"""
     val jsonData = Json.toJson(propertyDetails)
     http.POST[JsValue, HttpResponse](postUrl, jsonData)
@@ -92,7 +92,7 @@ trait PropertyDetailsConnector extends ServicesConfig with RawResponseReads {
 
   def saveDraftHasValueChanged(id: String, propertyDetails: Boolean)
                                    (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[HttpResponse] = {
-    val authLink = authContext.authLink
+    val authLink = authContext.atedReferenceNumber
     val postUrl = s"""$serviceURL$authLink/$saveDraftPropertyHasValueChangedURI/$id"""
     val jsonData = Json.toJson(propertyDetails)
     http.POST[JsValue, HttpResponse](postUrl, jsonData)
@@ -100,7 +100,7 @@ trait PropertyDetailsConnector extends ServicesConfig with RawResponseReads {
 
   def saveDraftPropertyDetailsAcquisition(id: String, overLimit: Boolean)
                                    (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[HttpResponse] = {
-    val authLink = authContext.authLink
+    val authLink = authContext.atedReferenceNumber
     val postUrl = s"""$serviceURL$authLink/$saveDraftPropertyDetailsAcquisitionURI/$id"""
     val jsonData = Json.toJson(overLimit)
     http.POST[JsValue, HttpResponse](postUrl, jsonData)
@@ -108,7 +108,7 @@ trait PropertyDetailsConnector extends ServicesConfig with RawResponseReads {
 
   def saveDraftPropertyDetailsRevalued(id: String, propertyDetails: PropertyDetailsRevalued)
                                          (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[HttpResponse] = {
-    val authLink = authContext.authLink
+    val authLink = authContext.atedReferenceNumber
     val postUrl = s"""$serviceURL$authLink/$saveDraftPropertyDetailsRevaluedURI/$id"""
     val jsonData = Json.toJson(propertyDetails)
     http.POST[JsValue, HttpResponse](postUrl, jsonData)
@@ -116,7 +116,7 @@ trait PropertyDetailsConnector extends ServicesConfig with RawResponseReads {
 
   def saveDraftPropertyDetailsOwnedBefore(id: String, propertyDetails: PropertyDetailsOwnedBefore)
                                       (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[HttpResponse] = {
-    val authLink = authContext.authLink
+    val authLink = authContext.atedReferenceNumber
     val postUrl = s"""$serviceURL$authLink/$saveDraftPropertyDetailsOwnedBeforeURI/$id"""
     val jsonData = Json.toJson(propertyDetails)
     http.POST[JsValue, HttpResponse](postUrl, jsonData)
@@ -124,7 +124,7 @@ trait PropertyDetailsConnector extends ServicesConfig with RawResponseReads {
 
   def saveDraftPropertyDetailsProfessionallyValued(id: String, propertyDetails: PropertyDetailsProfessionallyValued)
                                       (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[HttpResponse] = {
-    val authLink = authContext.authLink
+    val authLink = authContext.atedReferenceNumber
     val postUrl = s"""$serviceURL$authLink/$saveDraftPropertyDetailsValuedURI/$id"""
     val jsonData = Json.toJson(propertyDetails)
     http.POST[JsValue, HttpResponse](postUrl, jsonData)
@@ -132,7 +132,7 @@ trait PropertyDetailsConnector extends ServicesConfig with RawResponseReads {
 
   def saveDraftPropertyDetailsNewBuild(id: String, propertyDetails: PropertyDetailsNewBuild)
                                                   (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[HttpResponse] = {
-    val authLink = authContext.authLink
+    val authLink = authContext.atedReferenceNumber
     val postUrl = s"""$serviceURL$authLink/$saveDraftPropertyDetailsNewBuildURI/$id"""
     val jsonData = Json.toJson(propertyDetails)
     http.POST[JsValue, HttpResponse](postUrl, jsonData)
@@ -140,7 +140,7 @@ trait PropertyDetailsConnector extends ServicesConfig with RawResponseReads {
 
   def saveDraftIsFullTaxPeriod(id: String, isFullPeriod: IsFullTaxPeriod)
                                       (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[HttpResponse] = {
-    val authLink = authContext.authLink
+    val authLink = authContext.atedReferenceNumber
     val postUrl = s"""$serviceURL$authLink/$saveDraftPropertyDetailsFullTaxPeriodURI/$id"""
     val jsonData = Json.toJson(isFullPeriod)
     http.POST[JsValue, HttpResponse](postUrl, jsonData)
@@ -148,7 +148,7 @@ trait PropertyDetailsConnector extends ServicesConfig with RawResponseReads {
 
   def saveDraftPropertyDetailsInRelief(id: String, propertyDetails: PropertyDetailsInRelief)
                                       (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[HttpResponse] = {
-    val authLink = authContext.authLink
+    val authLink = authContext.atedReferenceNumber
     val postUrl = s"""$serviceURL$authLink/$saveDraftPropertyDetailsInReliefURI/$id"""
     val jsonData = Json.toJson(propertyDetails)
     http.POST[JsValue, HttpResponse](postUrl, jsonData)
@@ -156,7 +156,7 @@ trait PropertyDetailsConnector extends ServicesConfig with RawResponseReads {
 
   def saveDraftPropertyDetailsDatesLiable(id: String, propertyDetails: PropertyDetailsDatesLiable)
                                       (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[HttpResponse] = {
-    val authLink = authContext.authLink
+    val authLink = authContext.atedReferenceNumber
     val postUrl = s"""$serviceURL$authLink/$saveDraftPropertyDetailsDatesLiableURI/$id"""
     val jsonData = Json.toJson(propertyDetails)
     http.POST[JsValue, HttpResponse](postUrl, jsonData)
@@ -164,7 +164,7 @@ trait PropertyDetailsConnector extends ServicesConfig with RawResponseReads {
 
   def addDraftPropertyDetailsDatesLiable(id: String, propertyDetails: PropertyDetailsDatesLiable)
                                          (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[HttpResponse] = {
-    val authLink = authContext.authLink
+    val authLink = authContext.atedReferenceNumber
     val postUrl = s"""$serviceURL$authLink/$addDraftPropertyDetailsDatesLiableURI/$id"""
     val jsonData = Json.toJson(propertyDetails)
     http.POST[JsValue, HttpResponse](postUrl, jsonData)
@@ -173,7 +173,7 @@ trait PropertyDetailsConnector extends ServicesConfig with RawResponseReads {
 
   def addDraftPropertyDetailsDatesInRelief(id: String, propertyDetails: PropertyDetailsDatesInRelief)
                                         (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[HttpResponse] = {
-    val authLink = authContext.authLink
+    val authLink = authContext.atedReferenceNumber
     val postUrl = s"""$serviceURL$authLink/$addDraftPropertyDetailsDatesInReliefURI/$id"""
     val jsonData = Json.toJson(propertyDetails)
     http.POST[JsValue, HttpResponse](postUrl, jsonData)
@@ -181,7 +181,7 @@ trait PropertyDetailsConnector extends ServicesConfig with RawResponseReads {
 
   def deleteDraftPropertyDetailsPeriod(id: String, propertyDetails: LocalDate)
                                            (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[HttpResponse] = {
-    val authLink = authContext.authLink
+    val authLink = authContext.atedReferenceNumber
     val postUrl = s"""$serviceURL$authLink/$deleteDraftPropertyDetailsPeriodURI/$id"""
     val jsonData = Json.toJson(propertyDetails)
     http.POST[JsValue, HttpResponse](postUrl, jsonData)
@@ -189,7 +189,7 @@ trait PropertyDetailsConnector extends ServicesConfig with RawResponseReads {
 
   def saveDraftPropertyDetailsTaxAvoidance(id: String, propertyDetails: PropertyDetailsTaxAvoidance)
                                          (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[HttpResponse] = {
-    val authLink = authContext.authLink
+    val authLink = authContext.atedReferenceNumber
     val postUrl = s"""$serviceURL$authLink/$saveDraftPropertyDetailsTaxAvoidanceURI/$id"""
     val jsonData = Json.toJson(propertyDetails)
     http.POST[JsValue, HttpResponse](postUrl, jsonData)
@@ -197,7 +197,7 @@ trait PropertyDetailsConnector extends ServicesConfig with RawResponseReads {
 
   def saveDraftPropertyDetailsSupportingInfo(id: String, propertyDetails: PropertyDetailsSupportingInfo)
                                           (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[HttpResponse] = {
-    val authLink = authContext.authLink
+    val authLink = authContext.atedReferenceNumber
     val postUrl = s"""$serviceURL$authLink/$saveDraftPropertyDetailsSupportingInfoURI/$id"""
     val jsonData = Json.toJson(propertyDetails)
     http.POST[JsValue, HttpResponse](postUrl, jsonData)
@@ -205,32 +205,32 @@ trait PropertyDetailsConnector extends ServicesConfig with RawResponseReads {
 
   def calculateDraftChangeLiability(id: String)
                                    (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[HttpResponse] = {
-    val authLink = authContext.authLink
+    val authLink = authContext.atedReferenceNumber
     val postUrl = s"""$serviceURL$authLink/$calculateDraftChangeLiabilityURI/$id"""
     http.GET[HttpResponse](postUrl)
   }
 
   def calculateDraftPropertyDetails(id: String)
                                             (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[HttpResponse] = {
-    val authLink = authContext.authLink
+    val authLink = authContext.atedReferenceNumber
     val postUrl = s"""$serviceURL$authLink/$calculateDraftPropertyDetailsURI/$id"""
     http.GET[HttpResponse](postUrl)
   }
 
   def retrieveDraftPropertyDetails(id: String)(implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[HttpResponse] = {
-    val authLink = authContext.authLink
+    val authLink = authContext.atedReferenceNumber
     val postUrl = s"""$serviceURL$authLink/$retrieveDraftPropertyDetailsURI/$id"""
     http.GET[HttpResponse](postUrl)
   }
 
   def submitDraftPropertyDetails(id: String)(implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[HttpResponse] = {
-    val authLink = authContext.authLink
+    val authLink = authContext.atedReferenceNumber
     val postUrl = s"""$serviceURL$authLink/$submitDraftPropertyDetailsURI/$id"""
     http.POST[JsValue, HttpResponse](postUrl, Json.parse("""{}"""))
   }
 
   def deleteDraftChargeable(id: String)(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[HttpResponse] = {
-    val userLink = authContext.userLink
+    val userLink = authContext.atedReferenceNumber
     val deleteUrl = s"""$serviceURL$userLink/$deletePropertyDetailsURI/drafts/$id"""
     http.DELETE[HttpResponse](deleteUrl)
   }
@@ -238,7 +238,7 @@ trait PropertyDetailsConnector extends ServicesConfig with RawResponseReads {
 }
 
 object PropertyDetailsConnector extends PropertyDetailsConnector {
-  val serviceURL = baseUrl("ated")
+  val serviceURL = baseUrl("ated") + "/ated/"
   val http = WSHttp
 
   override protected def mode: Mode = Play.current.mode

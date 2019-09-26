@@ -230,7 +230,7 @@ trait PropertyDetailsService {
 
   def calculateDraftPropertyDetails(id: String)(implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[HttpResponse] = {
     validateCalculateDraftPropertyDetails(id).flatMap {
-      case true => atedConnector.calculateDraftPropertyDetails(id )
+      case true => atedConnector.calculateDraftPropertyDetails(id)
       case false => Future.successful(HttpResponse(OK, None))
     }
 
