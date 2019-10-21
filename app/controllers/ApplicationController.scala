@@ -20,10 +20,10 @@ import config.ApplicationConfig
 import controllers.auth.AuthAction
 import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.DelegationService
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.Try
 
 class ApplicationController @Inject()(mcc: MessagesControllerComponents,
                                       authAction: AuthAction)
@@ -37,7 +37,7 @@ class ApplicationController @Inject()(mcc: MessagesControllerComponents,
   }
 
   def cancel: Action[AnyContent] = Action { implicit request =>
-      val serviceRedirectUrl: String = appConfig.conf.getConfString(s"cancelRedirectUrl", "https://www.gov.uk/")
+      val serviceRedirectUrl: String = Try{appConfig.conf.getString("cancelRedirectUrl")}.getOrElse("https://www.gov.uk/")
       Redirect(serviceRedirectUrl)
     }
 

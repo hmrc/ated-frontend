@@ -20,6 +20,8 @@ import config.ApplicationConfig
 import javax.inject.Inject
 import play.api.libs.json.{Json, OFormat}
 
+import scala.util.Try
+
 case class FeatureSwitch(name: String, enabled: Boolean)
 
 class FeatureSwitchImpl @Inject()(appConfig: ApplicationConfig) {
@@ -32,7 +34,7 @@ class FeatureSwitchImpl @Inject()(appConfig: ApplicationConfig) {
     val sysPropValue = sys.props.get(systemPropertyName(name))
     sysPropValue match {
       case Some(x) => x.toBoolean
-      case None => appConfig.conf.getConfBool(confPropertyName(name), false)
+      case None => Try{appConfig.conf.getBoolean(confPropertyName(name))}.getOrElse(false)
     }
   }
 
