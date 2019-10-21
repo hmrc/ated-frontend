@@ -16,43 +16,48 @@
 
 package controllers.auth
 
+import config.ApplicationConfig
+import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 
-class ExternalUrlsSpec extends PlaySpec with GuiceOneServerPerSuite {
+class ExternalUrlsSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar {
+
+  val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
+
 
   "ExternalUrls" must {
 
     "have companyAuthHost " in {
-      ExternalUrls.companyAuthHost must be("http://localhost:9025")
+      mockAppConfig.companyAuthHost must be("http://localhost:9025")
     }
 
     "have loginCallback " in {
-      ExternalUrls.loginCallback must be("http://localhost:9916/ated/home")
+      mockAppConfig.loginCallback must be("http://localhost:9916/ated/home")
     }
 
     "have loginPath " in {
-      ExternalUrls.loginPath must be("sign-in")
+      mockAppConfig.loginPath must be("sign-in")
     }
 
     "have loginURL " in {
-      ExternalUrls.loginURL must be("http://localhost:9025/gg/sign-in")
+      mockAppConfig.loginURL must be("http://localhost:9025/gg/sign-in")
     }
 
     "have continueURL " in {
-      ExternalUrls.continueURL must be("http://localhost:9916/ated/home")
+      mockAppConfig.continueURL must be("http://localhost:9916/ated/home")
     }
 
     "have signIn " in {
-      ExternalUrls.signIn must be( "http://localhost:9025/gg/sign-in?continue=http://localhost:9916/ated/home")
+      mockAppConfig.signIn must be( "http://localhost:9025/gg/sign-in?continue=http://localhost:9916/ated/home")
     }
 
     "have signOut " in {
-      ExternalUrls.signOut must be("http://localhost:9025/gg/sign-out")
+      mockAppConfig.signOut must be("http://localhost:9025/gg/sign-out")
     }
 
     "have subscription redirect " in {
-      ExternalUrls.subscriptionStartPage must be("http://localhost:9933/ated-subscription/start-subscription")
+      mockAppConfig.subscriptionStartPage must be("http://localhost:9933/ated-subscription/start-subscription")
     }
   }
 

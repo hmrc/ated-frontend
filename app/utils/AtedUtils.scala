@@ -102,8 +102,8 @@ object AtedUtils {
 
   def getPropertyDetailsPreHeader(mode: Option[String] = None): String = {
     mode match {
-      case Some(EDIT_SUBMITTED) => Messages("ated.property-details.pre-header-change")
-      case _ => Messages("ated.property-details.pre-header")
+      case Some(EDIT_SUBMITTED) => "ated.property-details.pre-header-change"
+      case _ => "ated.property-details.pre-header"
     }
   }
 
@@ -142,7 +142,7 @@ object AtedUtils {
     }
   }
 
-  def printNotProvidedIfEmpty(str: String): String = if (str == "") Messages("ated.property-details-summary.field-blank") else str
+  def printNotProvidedIfEmpty(str: String): String = if (str == "") "ated.property-details-summary.field-blank" else str
 
   def addParamsToRequest(params: Map[String, Seq[String]])(implicit request: Request[AnyContent]): Option[Map[String, Seq[String]]] = {
     request.body.asFormUrlEncoded.map(c => c ++ params)

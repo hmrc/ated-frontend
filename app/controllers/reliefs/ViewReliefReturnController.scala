@@ -16,22 +16,33 @@
 
 package controllers.reliefs
 
+import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
+import controllers.BackLinkController
 import controllers.auth.{AuthAction, ClientHelper}
-import controllers.{AtedBaseController, BackLinkController}
-import play.api.Play.current
-import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, AnyContent}
+import javax.inject.Inject
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{DelegationService, ReliefsService, SubscriptionDataService}
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
-trait ViewReliefReturnController extends BackLinkController with AtedBaseController
-  with ClientHelper with AuthAction {
+import scala.concurrent.ExecutionContext
 
-  def reliefsService: ReliefsService
-  def subscriptionDataService: SubscriptionDataService
+class ViewReliefReturnController @Inject()(mcc: MessagesControllerComponents,
+                                           authAction: AuthAction,
+                                           subscriptionDataService: SubscriptionDataService,
+                                           changeReliefReturnController: ChangeReliefReturnController,
+                                           val reliefsService: ReliefsService,
+                                           val dataCacheConnector: DataCacheConnector,
+                                           val backLinkCacheConnector: BackLinkCacheConnector)
+                                          (implicit val appConfig: ApplicationConfig)
+
+  extends FrontendController(mcc) with BackLinkController with ClientHelper {
+
+  implicit val ec: ExecutionContext = mcc.executionContext
+  val controllerId = "ChangeReliefReturnController"
 
   def viewReliefReturn(periodKey: Int, formBundleNo: String): Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         val formBundleReturnFuture = reliefsService.viewReliefReturn(periodKey, formBundleNo)
         val organisationNameFuture = subscriptionDataService.getOrganisationName
@@ -51,24 +62,15 @@ trait ViewReliefReturnController extends BackLinkController with AtedBaseControl
 
 
   def submit(periodKey: Int, formBundleNumber: String) : Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       val returnUrl = Some(routes.ViewReliefReturnController.viewReliefReturn(periodKey, formBundleNumber).url)
       ensureClientContext {
-        RedirectWithBackLink(
-          ChangeReliefReturnController.controllerId,
+        redirectWithBackLink(
+          changeReliefReturnController.controllerId,
           controllers.reliefs.routes.ChangeReliefReturnController.viewChangeReliefReturn(periodKey, formBundleNumber),
           returnUrl
         )
       }
     }
   }
-}
-
-object ViewReliefReturnController extends ViewReliefReturnController {
-  val delegationService: DelegationService = DelegationService
-  val reliefsService: ReliefsService = ReliefsService
-  val dataCacheConnector: DataCacheConnector = DataCacheConnector
-  def subscriptionDataService: SubscriptionDataService = SubscriptionDataService
-  override val controllerId = "ChangeReliefReturnController"
-  override val backLinkCacheConnector: BackLinkCacheConnector = BackLinkCacheConnector
 }

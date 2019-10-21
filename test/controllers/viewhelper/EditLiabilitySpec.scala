@@ -21,11 +21,9 @@ import org.scalatestplus.play.PlaySpec
 import utils.AtedConstants
 
 class EditLiabilitySpec extends PlaySpec {
-
   val headerPrefix = "Foo"
 
   "createHeaderMessages function" must {
-
     "return header for further view" in {
 
       EditLiability.createHeaderMessages(AtedConstants.Further, headerPrefix) mustBe "Foo.further"

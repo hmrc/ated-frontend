@@ -14,10 +14,11 @@
  * limitations under the License.
  *@
 
-@(field: play.api.data.Field, args: (Symbol,Any)*)(implicit messages: Messages)
+@(field: play.api.data.Field, periodKey: Int, args: (Symbol,Any)*)(implicit messages: Messages)
 
 @import play.api.i18n._
 @import views.html.helper._
+@import _root_.utils.PeriodUtils._
 
 @elements = @{FieldElements(field.id, field, Html(""), args.toMap, messages)}
 @parentField = @{args.toMap.get('parentField).asInstanceOf[Option[Field]]}
@@ -36,10 +37,10 @@
     @if(elements.args.contains('_labelDataAttributes)){@elements.args.get('_labelDataAttributes)}
   >
 
-    @elements.errors.map { error => <span class="error-notification">@Messages(error)</span>}
+    @elements.errors.map { error => <span class="error-notification">@Messages(error, calculateLowerTaxYearBoundary(periodKey).getYear.toString)</span>}
 
     @if(parentElements.isDefined) {
-      @parentElements.get.errors.map { error => <span class="error-notification">@Messages(error)</span>}
+      @parentElements.get.errors.map { error => <span class="error-notification">@Messages(error, calculateLowerTaxYearBoundary(periodKey).getYear.toString)</span>}
     }
 
     @if(labelHighlight){<strong>}

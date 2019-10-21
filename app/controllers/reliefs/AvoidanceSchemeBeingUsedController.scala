@@ -16,27 +16,37 @@
 
 package controllers.reliefs
 
+import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.BackLinkController
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.ReliefForms._
+import javax.inject.Inject
 import models.IsTaxAvoidance
 import play.api.Logger
-import play.api.Play.current
-import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{DelegationService, ReliefsService}
 import uk.gov.hmrc.http.ForbiddenException
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.{AtedUtils, PeriodUtils}
-
 import scala.collection.mutable.ArrayBuffer
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-trait AvoidanceSchemeBeingUsedController extends BackLinkController
-   with ReliefHelpers with ClientHelper with AuthAction {
+class AvoidanceSchemeBeingUsedController @Inject()(mcc: MessagesControllerComponents,
+                                                   authAction: AuthAction,
+                                                   avoidanceSchemesController: AvoidanceSchemesController,
+                                                   val reliefsService: ReliefsService,
+                                                   val dataCacheConnector: DataCacheConnector,
+                                                   val backLinkCacheConnector: BackLinkCacheConnector)
+                                                  (implicit val appConfig: ApplicationConfig)
+  extends FrontendController(mcc) with BackLinkController with ReliefHelpers with ClientHelper {
+
+  implicit val ec: ExecutionContext = mcc.executionContext
+  val controllerId: String = "AvoidanceSchemeBeingUsedController"
+
 
   def view(periodKey: Int): Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         validatePeriodKey(periodKey) {
           val atedRefNum = authContext.atedReferenceNumber
@@ -51,22 +61,22 @@ trait AvoidanceSchemeBeingUsedController extends BackLinkController
         }
       }
     } recover {
-      case fe: ForbiddenException     =>
+      case _: ForbiddenException     =>
         Logger.warn("[AvoidanceSchemeBeingUsedController][view] Forbidden exception")
-        unauthorisedUrl()
+        authAction.unauthorisedUrl()
     }
   }
 
   def editFromSummary(periodKey: Int): Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         validatePeriodKey(periodKey) {
           for {
             retrievedData <- reliefsService.retrieveDraftReliefs(authContext.atedReferenceNumber, periodKey)
             result <- retrievedData.flatMap(_.reliefs.isAvoidanceScheme) match {
               case Some(true) =>
-                RedirectWithBackLink(
-                  AvoidanceSchemesController.controllerId,
+                redirectWithBackLink(
+                  avoidanceSchemesController.controllerId,
                   controllers.reliefs.routes.AvoidanceSchemesController.view(periodKey),
                   Some(routes.ReliefsSummaryController.view(periodKey).url)
                 )
@@ -77,14 +87,14 @@ trait AvoidanceSchemeBeingUsedController extends BackLinkController
         }
       }
     } recover {
-      case fe: ForbiddenException     =>
+      case _: ForbiddenException     =>
         Logger.warn("[AvoidanceSchemeBeingUsedController][editFromSummary] Forbidden exception")
-        unauthorisedUrl()
+        authAction.unauthorisedUrl()
     }
   }
 
   def send(periodKey: Int): Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         validatePeriodKey(periodKey) {
           val data = AtedUtils.addParamsToRequest(Map("periodKey" -> ArrayBuffer(periodKey.toString)))
@@ -96,9 +106,9 @@ trait AvoidanceSchemeBeingUsedController extends BackLinkController
             isTaxAvoidance => {
               reliefsService.saveDraftIsTaxAvoidance(authContext.atedReferenceNumber, periodKey, isTaxAvoidance.isAvoidanceScheme.getOrElse(false)).
                 flatMap {
-                  x =>
-                    RedirectWithBackLink(
-                      AvoidanceSchemesController.controllerId,
+                  _ =>
+                    redirectWithBackLink(
+                      avoidanceSchemesController.controllerId,
                       controllers.reliefs.routes.AvoidanceSchemesController.view(periodKey),
                       Some(routes.AvoidanceSchemeBeingUsedController.view(periodKey).url)
                     )
@@ -108,18 +118,12 @@ trait AvoidanceSchemeBeingUsedController extends BackLinkController
         }
       }
     } recover {
-      case fe: ForbiddenException     =>
+      case _: ForbiddenException     =>
         Logger.warn("[AvoidanceSchemeBeingUsedController][send] Forbidden exception")
-        unauthorisedUrl()
+        authAction.unauthorisedUrl()
     }
   }
 
 }
 
-object AvoidanceSchemeBeingUsedController extends AvoidanceSchemeBeingUsedController {
-  val delegationService: DelegationService = DelegationService
-  val reliefsService: ReliefsService = ReliefsService
-  val dataCacheConnector: DataCacheConnector = DataCacheConnector
-  override val controllerId: String = "AvoidanceSchemeBeingUsedController"
-  override val backLinkCacheConnector: BackLinkCacheConnector = BackLinkCacheConnector
-}
+

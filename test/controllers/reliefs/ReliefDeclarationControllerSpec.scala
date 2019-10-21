@@ -19,8 +19,9 @@ package controllers.reliefs
 import java.util.UUID
 
 import builders.{SessionBuilder, TitleBuilder}
+import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
-import models.StandardAuthRetrievals
+import controllers.auth.AuthAction
 import org.jsoup.Jsoup
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -29,59 +30,144 @@ import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.libs.json.Json
-import play.api.mvc.Result
+import play.api.mvc.{MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{contentAsString, _}
-import services.{DelegationService, ReliefsService}
-import uk.gov.hmrc.auth.core.{AffinityGroup, PlayAuthConnector}
-import uk.gov.hmrc.http.{ForbiddenException, HeaderCarrier, HttpResponse, UserId}
+import services.ReliefsService
+import uk.gov.hmrc.auth.core.AffinityGroup
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, UserId}
 import utils.{AtedConstants, MockAuthUtil}
 
 import scala.concurrent.Future
 
 class ReliefDeclarationControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with MockAuthUtil {
+
+  implicit val mockAppConfig: ApplicationConfig = mock[ApplicationConfig]
   implicit lazy val hc: HeaderCarrier = HeaderCarrier()
 
+  val mockMcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
   val mockReliefsService: ReliefsService = mock[ReliefsService]
-  val mockBackLinkCache: BackLinkCacheConnector = mock[BackLinkCacheConnector]
   val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
-  val mockStandardAuthRetrievals: StandardAuthRetrievals = mock[StandardAuthRetrievals]
-
-  object TestReliefDeclarationController extends ReliefDeclarationController {
-    override val authConnector: PlayAuthConnector = mockAuthConnector
-    val reliefsService: ReliefsService = mockReliefsService
-    override val delegationService: DelegationService = mockDelegationService
-    override val controllerId: String = "controllerId"
-    override val backLinkCacheConnector: BackLinkCacheConnector = mockBackLinkCache
-    override val dataCacheConnector: DataCacheConnector = mockDataCacheConnector
-  }
-
-  override def beforeEach(): Unit = {
-    reset(mockAuthConnector)
-    reset(mockReliefsService)
-    reset(mockDelegationService)
-    reset(mockBackLinkCache)
-  }
+  val mockBackLinkCacheConnector: BackLinkCacheConnector = mock[BackLinkCacheConnector]
 
   val periodKey = 2015
 
-  "ReliefDeclarationController" must {
+  class Setup {
 
-    "use correct DelegationService" in {
-      ReliefDeclarationController.delegationService must be(DelegationService)
+    val mockAuthAction: AuthAction = new AuthAction(
+      mockAppConfig,
+      mockDelegationService,
+      mockAuthConnector
+    )
+
+    val testReliefDeclarationController: ReliefDeclarationController = new ReliefDeclarationController (
+      mockMcc,
+      mockAuthAction,
+      mockReliefsService,
+      mockDelegationService,
+      mockDataCacheConnector,
+      mockBackLinkCacheConnector
+    )
+
+    def getWithAuthorisedUser(test: Future[Result] => Any) {
+      val userId = s"user-${UUID.randomUUID}"
+      val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+      noDelegationModelAuthMocks(authMock)
+      when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
+      when(mockBackLinkCacheConnector.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
+      val result = testReliefDeclarationController.view(periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
+
+      test(result)
     }
+
+    def getWithUnAuthorisedUser(test: Future[Result] => Any) {
+      val userId = s"user-${UUID.randomUUID}"
+      val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+      setInvalidAuthMocks(authMock)
+      val result = testReliefDeclarationController.view(periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
+      test(result)
+    }
+
+    def submitWithAuthorisedUser(test: Future[Result] => Any) {
+      val userId = s"user-${UUID.randomUUID}"
+      val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+      setAuthMocks(authMock)
+      when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
+      when(mockBackLinkCacheConnector.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
+      when(mockReliefsService.submitDraftReliefs(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(HttpResponse(OK, Some(Json.toJson(userId)))))
+
+      val result = testReliefDeclarationController.submit(periodKey)
+        .apply(SessionBuilder.updateRequestFormWithSession(FakeRequest().withFormUrlEncodedBody(), userId))
+      test(result)
+    }
+    def submitWithAuthorisedUserInvalidAgent(test: Future[Result] => Any) {
+      val userId = s"user-${UUID.randomUUID}"
+      val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+      setAuthMocks(authMock)
+      when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
+      when(mockBackLinkCacheConnector.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
+      when(mockReliefsService.submitDraftReliefs(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(HttpResponse(BAD_REQUEST, Some(Json.parse("""{"Reason":"Agent not Valid"}""")))))
+
+      val result = testReliefDeclarationController.submit(periodKey)
+        .apply(SessionBuilder.updateRequestFormWithSession(FakeRequest().withFormUrlEncodedBody(), userId))
+      test(result)
+    }
+
+    def submitWithUnAuthorisedUser(test: Future[Result] => Any) {
+      val userId = s"user-${UUID.randomUUID}"
+      val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+      setInvalidAuthMocks(authMock)
+      val result = testReliefDeclarationController.submit(periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
+      test(result)
+    }
+
+    def submitWithForbiddenUser(test: Future[Result] => Any): Unit = {
+      val userId = s"user-${UUID.randomUUID}"
+      val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
+      setForbiddenAuthMocks(authMock)
+      val result = testReliefDeclarationController.submit(periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
+      test(result)
+    }
+
+    def getWithAuthorisedDelegatedUser(test: Future[Result] => Any) {
+      val userId = s"user-${UUID.randomUUID}"
+      val authMock = authResultDefault(AffinityGroup.Agent, defaultEnrolmentSet)
+      setAuthMocks(authMock)
+      implicit val hc: HeaderCarrier = HeaderCarrier(userId = Some(UserId(userId)))
+      when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
+      when(mockBackLinkCacheConnector.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
+      val result = testReliefDeclarationController.view(periodKey).apply(SessionBuilder.buildRequestWithSessionDelegation(userId))
+      test(result)
+    }
+  }
+
+  override def beforeEach(): Unit = {
+
+reset(mockReliefsService)
+    reset(mockDelegationService)
+    reset(mockDataCacheConnector)
+    reset(mockBackLinkCacheConnector)
+  }
+
+  "ReliefDeclarationController" must {
 
     "view" must {
 
       "unauthorised users" must {
 
-        "respond with a redirect" in {
+        "respond with a redirect" in new Setup {
           getWithUnAuthorisedUser { result =>
             status(result) must be(SEE_OTHER)
           }
         }
 
-        "be redirected to the login page" in {
+        "be redirected to the login page" in new Setup {
           getWithUnAuthorisedUser { result =>
             redirectLocation(result).get must include("/ated/unauthorised")
           }
@@ -90,14 +176,15 @@ class ReliefDeclarationControllerSpec extends PlaySpec with GuiceOneServerPerSui
 
       "Authorised Users" must {
 
-        "have a status of ok, for clients" in {
+        "have a status of ok, for clients" in new Setup {
           getWithAuthorisedUser{
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
               document.title() must be(TitleBuilder.buildTitle("Returns declaration"))
               document.getElementById("relief-declaration-before-declaration-text")
-                .text() must be("Before you can submit your return to HMRC you must read and agree to the following statement. If you give false information you may have to pay financial penalties and face prosecution.")
+                .text() must be(
+                "Before you can submit your return to HMRC you must read and agree to the following statement. If you give false information you may have to pay financial penalties and face prosecution.")
               document.getElementById("relief-declaration-mid-declaration-text").text() must be("Each type of relief claimed is an individual ATED return.")
               document.getElementById("declare-or-confirm").text() must be("I declare that:")
               document.getElementById("declaration-confirmation-text")
@@ -106,7 +193,7 @@ class ReliefDeclarationControllerSpec extends PlaySpec with GuiceOneServerPerSui
           }
         }
 
-        "have a status of ok, for agents" in {
+        "have a status of ok, for agents" in new Setup {
           getWithAuthorisedDelegatedUser {
             result =>
               status(result) must be(OK)
@@ -122,7 +209,7 @@ class ReliefDeclarationControllerSpec extends PlaySpec with GuiceOneServerPerSui
           }
         }
 
-        "contain a Confirm button" in {
+        "contain a Confirm button" in new Setup {
           getWithAuthorisedUser {
             result =>
               val document = Jsoup.parse(contentAsString(result))
@@ -136,21 +223,21 @@ class ReliefDeclarationControllerSpec extends PlaySpec with GuiceOneServerPerSui
 
       "unauthorised users" must {
 
-        "respond with a redirect" in {
+        "respond with a redirect" in new Setup {
           submitWithUnAuthorisedUser { result =>
             status(result) must be(SEE_OTHER)
           }
         }
 
         "Forbidden users" must {
-          "respond with a redirect to unauthorised URL" in {
+          "respond with a redirect to unauthorised URL" in new Setup {
             submitWithForbiddenUser { result =>
               redirectLocation(result).get must include("/ated/unauthorised")
             }
           }
         }
 
-        "be redirected to the login page" in {
+        "be redirected to the login page" in new Setup {
           submitWithUnAuthorisedUser { result =>
             redirectLocation(result).get must include("/ated/unauthorised")
           }
@@ -159,103 +246,23 @@ class ReliefDeclarationControllerSpec extends PlaySpec with GuiceOneServerPerSui
 
       "Authorised users" must {
 
-        "for valid data, redirect to sent relief page" in {
+        "for valid data, redirect to sent relief page" in new Setup {
           submitWithAuthorisedUser {
             result =>
               status(result) must be(SEE_OTHER)
-              redirectLocation(result).get must include(s"/ated/reliefs/${periodKey}/sent-reliefs")
+              redirectLocation(result).get must include(s"/ated/reliefs/$periodKey/sent-reliefs")
           }
         }
 
-        "for invalid data, return BAD_REQUEST" in {
-          submitWithAuthorisedUserInvlidAgent {
+        "for invalid data, return BAD_REQUEST" in new Setup {
+          submitWithAuthorisedUserInvalidAgent {
             result =>
               status(result) must be(BAD_REQUEST)
               val document = Jsoup.parse(contentAsString(result))
-              document.title() must be("There was a problem when you set up this client")
+              document.body().getElementById("header").text() must include("There was a problem when you set up this client")
           }
-
         }
       }
     }
   }
-
-  def getWithAuthorisedUser(test: Future[Result] => Any) {
-    val userId = s"user-${UUID.randomUUID}"
-    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
-    noDelegationModelAuthMocks(authMock)
-    when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
-      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-    when(mockBackLinkCache.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
-    val result = TestReliefDeclarationController.view(periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
-
-    test(result)
-  }
-
-
-  def getWithUnAuthorisedUser(test: Future[Result] => Any) {
-    val userId = s"user-${UUID.randomUUID}"
-    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
-    setInvalidAuthMocks(authMock)
-    val result = TestReliefDeclarationController.view(periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
-    test(result)
-  }
-
-  def submitWithAuthorisedUser(test: Future[Result] => Any) {
-    val userId = s"user-${UUID.randomUUID}"
-    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
-    setAuthMocks(authMock)
-    when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
-      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-    when(mockBackLinkCache.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
-    when(mockReliefsService.submitDraftReliefs(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
-      .thenReturn(Future.successful(HttpResponse(OK, Some(Json.toJson(userId)))))
-
-    val result = TestReliefDeclarationController.submit(periodKey)
-      .apply(SessionBuilder.updateRequestFormWithSession(FakeRequest().withFormUrlEncodedBody(), userId))
-    test(result)
-  }
-  def submitWithAuthorisedUserInvlidAgent(test: Future[Result] => Any) {
-    val userId = s"user-${UUID.randomUUID}"
-    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
-    setAuthMocks(authMock)
-    when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
-      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-    when(mockBackLinkCache.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
-    when(mockReliefsService.submitDraftReliefs(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
-      .thenReturn(Future.successful(HttpResponse(BAD_REQUEST, Some(Json.parse("""{"Reason":"Agent not Valid"}""")))))
-
-    val result = TestReliefDeclarationController.submit(periodKey)
-      .apply(SessionBuilder.updateRequestFormWithSession(FakeRequest().withFormUrlEncodedBody(), userId))
-    test(result)
-  }
-
-  def submitWithUnAuthorisedUser(test: Future[Result] => Any) {
-    val userId = s"user-${UUID.randomUUID}"
-    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
-    setInvalidAuthMocks(authMock)
-    val result = TestReliefDeclarationController.submit(periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
-    test(result)
-  }
-
-  def submitWithForbiddenUser(test: Future[Result] => Any): Unit = {
-    val userId = s"user-${UUID.randomUUID}"
-    val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
-    setForbiddenAuthMocks(authMock)
-    val result = TestReliefDeclarationController.submit(periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
-    test(result)
-  }
-
-  def getWithAuthorisedDelegatedUser(test: Future[Result] => Any) {
-    val userId = s"user-${UUID.randomUUID}"
-    val authMock = authResultDefault(AffinityGroup.Agent, defaultEnrolmentSet)
-    setAuthMocks(authMock)
-    implicit val hc: HeaderCarrier = HeaderCarrier(userId = Some(UserId(userId)))
-    when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
-      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-    when(mockBackLinkCache.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
-    val result = TestReliefDeclarationController.view(periodKey).apply(SessionBuilder.buildRequestWithSessionDelegation(userId))
-    test(result)
-  }
-
 }

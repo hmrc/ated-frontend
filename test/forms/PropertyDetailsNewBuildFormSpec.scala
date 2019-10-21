@@ -20,13 +20,8 @@ import forms.PropertyDetailsForms.propertyDetailsNewBuildForm
 import org.scalatest.MustMatchers
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
-import play.api.i18n.{Messages, MessagesApi}
-import play.api.test.FakeRequest
 
 class PropertyDetailsNewBuildFormSpec extends PlaySpec with MustMatchers with GuiceOneServerPerSuite {
-
-  implicit lazy val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-  implicit lazy val messages: Messages = messagesApi.preferred(FakeRequest())
 
   "propertyDetailsNewBuildForm" must {
     "throw error" when {
@@ -35,7 +30,7 @@ class PropertyDetailsNewBuildFormSpec extends PlaySpec with MustMatchers with Gu
         form.fold(
           hasErrors => {
             hasErrors.errors.length mustBe 1
-            hasErrors.errors.head.message mustBe Messages("ated.property-details-value.isNewBuild.error.non-selected")
+            hasErrors.errors.head.message mustBe "ated.property-details-value.isNewBuild.error.non-selected"
           },
           _ => {
             fail("There is a problem")
@@ -57,9 +52,9 @@ class PropertyDetailsNewBuildFormSpec extends PlaySpec with MustMatchers with Gu
         PropertyDetailsForms.validatePropertyDetailsNewBuild(periodKey,  propertyDetailsNewBuildForm.bind(input)).fold(
           hasErrors => {
             hasErrors.errors.length mustBe  3
-            hasErrors.errors.head.message mustBe Messages("ated.property-details-value.newBuildDate.error.empty")
-            hasErrors.errors(1).message mustBe Messages("ated.property-details-value.localAuthRegDate.error.empty")
-            hasErrors.errors.last.message mustBe Messages("ated.property-details-value.newBuildValue.error.empty")
+            hasErrors.errors.head.message mustBe "ated.property-details-value.newBuildDate.error.empty"
+            hasErrors.errors(1).message mustBe "ated.property-details-value.localAuthRegDate.error.empty"
+            hasErrors.errors.last.message mustBe "ated.property-details-value.newBuildValue.error.empty"
           },
           _ => {
             fail("There is some problem")
@@ -82,8 +77,8 @@ class PropertyDetailsNewBuildFormSpec extends PlaySpec with MustMatchers with Gu
         PropertyDetailsForms.validatePropertyDetailsNewBuild(periodKey,  propertyDetailsNewBuildForm.bind(input)).fold(
           hasErrors => {
             hasErrors.errors.length mustBe  2
-            hasErrors.errors.head.message mustBe Messages("ated.property-details-value.newBuildDate.error.too-late")
-            hasErrors.errors.last.message mustBe Messages("ated.property-details-value.localAuthRegDate.error.too-late")
+            hasErrors.errors.head.message mustBe "ated.property-details-value.newBuildDate.error.too-late"
+            hasErrors.errors.last.message mustBe "ated.property-details-value.localAuthRegDate.error.too-late"
           },
           _ => {
             fail("There is some problem")
@@ -106,8 +101,8 @@ class PropertyDetailsNewBuildFormSpec extends PlaySpec with MustMatchers with Gu
         PropertyDetailsForms.validatePropertyDetailsNewBuild(periodKey,  propertyDetailsNewBuildForm.bind(input)).fold(
           hasErrors => {
             hasErrors.errors.length mustBe  2
-            hasErrors.errors.head.message mustBe Messages("ated.property-details-value.newBuildDate.error.too-early")
-            hasErrors.errors.last.message mustBe Messages("ated.property-details-value.localAuthRegDate.error.too-early")
+            hasErrors.errors.head.message mustBe "ated.property-details-value.newBuildDate.error.too-early"
+            hasErrors.errors.last.message mustBe "ated.property-details-value.localAuthRegDate.error.too-early"
           },
           _ => {
             fail("There is some problem")
@@ -130,7 +125,7 @@ class PropertyDetailsNewBuildFormSpec extends PlaySpec with MustMatchers with Gu
         PropertyDetailsForms.validatePropertyDetailsNewBuild(periodKey,  propertyDetailsNewBuildForm.bind(input)).fold(
           hasErrors => {
             hasErrors.errors.length mustBe  2
-            Messages(hasErrors.errors.head.message) mustBe Messages("error.invalid.date.format")
+            hasErrors.errors.head.message mustBe "error.invalid.date.format"
           },
           _ => {
             fail("There is some problem")
@@ -152,7 +147,7 @@ class PropertyDetailsNewBuildFormSpec extends PlaySpec with MustMatchers with Gu
         PropertyDetailsForms.validatePropertyDetailsNewBuild(periodKey,  propertyDetailsNewBuildForm.bind(input)).fold(
           hasErrors => {
             hasErrors.errors.length mustBe  1
-            hasErrors.errors.head.message mustBe Messages("ated.property-details-value.incorrect-format")
+            hasErrors.errors.head.message mustBe "ated.property-details-value.incorrect-format"
           },
           _ => {
             fail("There is some problem")
@@ -175,7 +170,7 @@ class PropertyDetailsNewBuildFormSpec extends PlaySpec with MustMatchers with Gu
         PropertyDetailsForms.validatePropertyDetailsNewBuild(periodKey,  propertyDetailsNewBuildForm.bind(input)).fold(
           hasErrors => {
             hasErrors.errors.length mustBe  1
-            hasErrors.errors.head.message mustBe Messages("ated.property-details-value.newBuildValue.error.too-low")
+            hasErrors.errors.head.message mustBe "ated.property-details-value.newBuildValue.error.too-low"
           },
           _ => {
             fail("There is some problem")
@@ -198,7 +193,7 @@ class PropertyDetailsNewBuildFormSpec extends PlaySpec with MustMatchers with Gu
         PropertyDetailsForms.validatePropertyDetailsNewBuild(periodKey,  propertyDetailsNewBuildForm.bind(input)).fold(
           hasErrors => {
             hasErrors.errors.length mustBe  1
-            hasErrors.errors.head.message mustBe Messages("ated.property-details-value.newBuildValue.error.too-high")
+            hasErrors.errors.head.message mustBe "ated.property-details-value.newBuildValue.error.too-high"
           },
           _ => {
             fail("There is some problem")
@@ -217,8 +212,8 @@ class PropertyDetailsNewBuildFormSpec extends PlaySpec with MustMatchers with Gu
         PropertyDetailsForms.validatePropertyDetailsNewBuild(periodKey,  propertyDetailsNewBuildForm.bind(input)).fold(
           hasErrors => {
             hasErrors.errors.length mustBe  2
-            hasErrors.errors.head.message mustBe Messages("ated.property-details-value.notNewBuildDate.error.empty")
-            hasErrors.errors.last.message mustBe Messages("ated.property-details-value.notNewBuildValue.error.empty")
+            hasErrors.errors.head.message mustBe "ated.property-details-value.notNewBuildDate.error.empty"
+            hasErrors.errors.last.message mustBe "ated.property-details-value.notNewBuildValue.error.empty"
           },
           _ => {
             fail("There is some problem")
@@ -238,7 +233,7 @@ class PropertyDetailsNewBuildFormSpec extends PlaySpec with MustMatchers with Gu
         PropertyDetailsForms.validatePropertyDetailsNewBuild(periodKey,  propertyDetailsNewBuildForm.bind(input)).fold(
           hasErrors => {
             hasErrors.errors.length mustBe  1
-            hasErrors.errors.head.message mustBe Messages("ated.property-details-value.notNewBuildDate.error.too-late")
+            hasErrors.errors.head.message mustBe "ated.property-details-value.notNewBuildDate.error.too-late"
           },
           _ => {
             fail("There is some problem")
@@ -258,7 +253,7 @@ class PropertyDetailsNewBuildFormSpec extends PlaySpec with MustMatchers with Gu
         PropertyDetailsForms.validatePropertyDetailsNewBuild(periodKey,  propertyDetailsNewBuildForm.bind(input)).fold(
           hasErrors => {
             hasErrors.errors.length mustBe  1
-            hasErrors.errors.head.message mustBe Messages("ated.property-details-value.incorrect-format")
+            hasErrors.errors.head.message mustBe "ated.property-details-value.incorrect-format"
           },
           _ => {
             fail("There is some problem")
@@ -278,7 +273,7 @@ class PropertyDetailsNewBuildFormSpec extends PlaySpec with MustMatchers with Gu
         PropertyDetailsForms.validatePropertyDetailsNewBuild(periodKey,  propertyDetailsNewBuildForm.bind(input)).fold(
           hasErrors => {
             hasErrors.errors.length mustBe  1
-            hasErrors.errors.head.message mustBe Messages("ated.property-details-value.notNewBuildValue.error.too-low")
+            hasErrors.errors.head.message mustBe "ated.property-details-value.notNewBuildValue.error.too-low"
           },
           _ => {
             fail("There is some problem")
@@ -298,7 +293,7 @@ class PropertyDetailsNewBuildFormSpec extends PlaySpec with MustMatchers with Gu
         PropertyDetailsForms.validatePropertyDetailsNewBuild(periodKey,  propertyDetailsNewBuildForm.bind(input)).fold(
           hasErrors => {
             hasErrors.errors.length mustBe  1
-            hasErrors.errors.head.message mustBe Messages("ated.property-details-value.notNewBuildValue.error.too-high")
+            hasErrors.errors.head.message mustBe "ated.property-details-value.notNewBuildValue.error.too-high"
           },
           _ => {
             fail("There is some problem")

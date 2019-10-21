@@ -16,24 +16,31 @@
 
 package controllers.propertyDetails
 
+import config.ApplicationConfig
 import connectors.DataCacheConnector
-import controllers.AtedBaseController
 import controllers.auth.AuthAction
+import javax.inject.Inject
 import models.SubmitReturnsResponse
 import play.api.Logger
-import play.api.Play.current
-import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{DelegationService, SubscriptionDataService}
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.AtedConstants._
 
-trait ChargeableReturnConfirmationController extends AtedBaseController with AuthAction {
+import scala.concurrent.ExecutionContext
 
-  def subscriptionDataService: SubscriptionDataService
-  def dataCacheConnector: DataCacheConnector
+class ChargeableReturnConfirmationController @Inject()(mcc: MessagesControllerComponents,
+                                                       subscriptionDataService: SubscriptionDataService,
+                                                       authAction: AuthAction,
+                                                       val dataCacheConnector: DataCacheConnector)
+                                                      (implicit val appConfig: ApplicationConfig)
+
+  extends FrontendController(mcc) {
+
+  implicit val ec: ExecutionContext = mcc.executionContext
 
   def confirmation : Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       dataCacheConnector.fetchAndGetFormData[SubmitReturnsResponse](SubmitReturnsResponseFormId) map {
         case Some(submitResponse) =>
           Ok(views.html.propertyDetails.chargeableReturnsConfirmation(submitResponse))
@@ -45,7 +52,7 @@ trait ChargeableReturnConfirmationController extends AtedBaseController with Aut
   }
 
   def viewPrintFriendlyChargeableConfirmation : Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       for {
         submitedResponse <- dataCacheConnector.fetchAndGetFormData[SubmitReturnsResponse](SubmitReturnsResponseFormId)
         organisationName <- subscriptionDataService.getOrganisationName
@@ -57,8 +64,4 @@ trait ChargeableReturnConfirmationController extends AtedBaseController with Aut
 
 }
 
-object ChargeableReturnConfirmationController extends ChargeableReturnConfirmationController {
-  override val dataCacheConnector: DataCacheConnector = DataCacheConnector
-  val delegationService: DelegationService = DelegationService
-  val subscriptionDataService: SubscriptionDataService = SubscriptionDataService
-}
+

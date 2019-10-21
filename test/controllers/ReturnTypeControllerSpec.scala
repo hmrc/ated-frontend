@@ -19,7 +19,11 @@ package controllers
 import java.util.UUID
 
 import builders.{SessionBuilder, TitleBuilder}
+import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
+import controllers.auth.AuthAction
+import controllers.propertyDetails.{AddressLookupController, PropertyDetailsAddressController}
+import controllers.reliefs.ChooseReliefsController
 import models.{PreviousReturns, ReturnType}
 import org.jsoup.Jsoup
 import org.mockito.Matchers
@@ -28,11 +32,11 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
-import play.api.libs.json.Json
-import play.api.mvc.{AnyContentAsJson, Result}
+import play.api.libs.json.{JsValue, Json}
+import play.api.mvc.{AnyContentAsJson, MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.{DelegationService, SummaryReturnsService}
+import services.{DelegationService, FormBundleReturnsService, SubscriptionDataService, SummaryReturnsService}
 import uk.gov.hmrc.auth.core.{AffinityGroup, PlayAuthConnector}
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.{AtedConstants, MockAuthUtil}
@@ -41,43 +45,101 @@ import scala.concurrent.Future
 
 class ReturnTypeControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with MockAuthUtil {
 
-  val periodKey: Int = 2015
-  val mockBackLinkCache: BackLinkCacheConnector = mock[BackLinkCacheConnector]
+  implicit lazy val hc: HeaderCarrier = HeaderCarrier()
+  implicit val mockAppConfig: ApplicationConfig = mock[ApplicationConfig]
+
+  val mockMcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
+  val mockBackLinkCacheConnector: BackLinkCacheConnector = mock[BackLinkCacheConnector]
   val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
   val mockSummaryReturnsService: SummaryReturnsService = mock[SummaryReturnsService]
+  val mockAddressLookupController: AddressLookupController = mock[AddressLookupController]
+  val mockPropertyDetailsAddressController: PropertyDetailsAddressController = mock[PropertyDetailsAddressController]
+  val mockChooseReliefsController: ChooseReliefsController = mock[ChooseReliefsController]
 
-  implicit lazy val hc: HeaderCarrier = HeaderCarrier()
+  val periodKey: Int = 2015
 
-  object TestReturnTypeController extends ReturnTypeController {
-    override val summaryReturnService: SummaryReturnsService = mockSummaryReturnsService
-    override val authConnector: PlayAuthConnector = mockAuthConnector
-    override val delegationService: DelegationService = DelegationService
-    override val controllerId: String = "controllerId"
-    override val backLinkCacheConnector: BackLinkCacheConnector = mockBackLinkCache
-    override val dataCacheConnector: DataCacheConnector = mockDataCacheConnector
+  class Setup {
+
+    val mockAuthAction: AuthAction = new AuthAction(
+      mockAppConfig,
+      mockDelegationService,
+      mockAuthConnector
+    )
+
+    val testReturnTypeController: ReturnTypeController = new ReturnTypeController(
+      mockMcc,
+      mockAuthAction,
+      mockSummaryReturnsService,
+      mockAddressLookupController,
+      mockPropertyDetailsAddressController,
+      mockChooseReliefsController,
+      mockDataCacheConnector,
+      mockBackLinkCacheConnector
+    )
+
+    def getWithAuthorisedUser(test: Future[Result] => Any) {
+      val userId = s"user-${UUID.randomUUID}"
+      val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+      setAuthMocks(authMock)
+      when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
+      when(mockDataCacheConnector.fetchAndGetFormData[String](Matchers.any())
+        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
+      when(mockBackLinkCacheConnector.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
+      val result = testReturnTypeController.view(periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
+      test(result)
+    }
+
+    def getWithAuthorisedUserWithSomeData(test: Future[Result] => Any) {
+      val userId = s"user-${UUID.randomUUID}"
+      val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+      setAuthMocks(authMock)
+      when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
+      when(mockDataCacheConnector.fetchAndGetFormData[ReturnType](Matchers.any())
+        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(ReturnType(Some("RR")))))
+      when(mockBackLinkCacheConnector.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
+      val result = testReturnTypeController.view(periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
+      test(result)
+    }
+
+    def getWithUnAuthorisedUser(test: Future[Result] => Any) {
+      val userId = s"user-${UUID.randomUUID}"
+      val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
+      setInvalidAuthMocks(authMock)
+      val result = testReturnTypeController.view(periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
+      test(result)
+    }
+
+    def submitWithAuthorisedUser(prevReturns: Seq[PreviousReturns], fakeRequest: FakeRequest[AnyContentAsJson])(test: Future[Result] => Any): Unit = {
+      val userId = s"user-${UUID.randomUUID}"
+      val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+      setAuthMocks(authMock)
+      when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
+      when(mockSummaryReturnsService.getPreviousSubmittedLiabilityDetails(Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(prevReturns))
+      when(mockBackLinkCacheConnector.clearBackLinks(Matchers.any())(Matchers.any())).thenReturn(Future.successful(Nil))
+      when(mockBackLinkCacheConnector.saveBackLink(Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
+      val result = testReturnTypeController.submit(periodKey).apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
+      test(result)
+    }
   }
 
   override def beforeEach(): Unit = {
-    reset(mockAuthConnector)
-    reset(mockBackLinkCache)
   }
 
   "ReturnTypeController" must {
-
-    "use correct DelegationService" in {
-      ReturnTypeController.delegationService must be(DelegationService)
-    }
-
     "returnType" must {
 
       "unauthorised users" must {
-        "respond with a redirect" in {
+        "respond with a redirect" in new Setup {
           getWithUnAuthorisedUser { result =>
             status(result) must be(SEE_OTHER)
           }
         }
 
-        "be redirected to the unauthorised page" in {
+        "be redirected to the unauthorised page" in new Setup {
           getWithUnAuthorisedUser { result =>
             redirectLocation(result).get must include("/ated/unauthorised")
           }
@@ -86,7 +148,7 @@ class ReturnTypeControllerSpec extends PlaySpec with GuiceOneServerPerSuite with
       }
 
       "Authorised users" must {
-        "show the return type view in version 2" in {
+        "show the return type view in version 2" in new Setup {
           getWithAuthorisedUser { result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
@@ -95,7 +157,7 @@ class ReturnTypeControllerSpec extends PlaySpec with GuiceOneServerPerSuite with
             document.getElementById("returnType-rr_field").text() must be("For a property or properties in relief where no ATED charge is due")
           }
         }
-        "show the return type view with saved data" in {
+        "show the return type view with saved data" in new Setup {
           getWithAuthorisedUserWithSomeData { result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
@@ -113,9 +175,9 @@ class ReturnTypeControllerSpec extends PlaySpec with GuiceOneServerPerSuite with
       "for authorised user" must {
         val prevReturns = Seq(PreviousReturns("1, addressLine1", "12345678"))
         "with valid form data" must {
-          "with invalid form, return BadRequest" in {
-            val inputJson = Json.parse( """{"returnType": ""}""")
-            when(mockBackLinkCache.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
+          "with invalid form, return BadRequest" in new Setup {
+            val inputJson: JsValue = Json.parse( """{"returnType": ""}""")
+            when(mockBackLinkCacheConnector.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
             submitWithAuthorisedUser(prevReturns, FakeRequest().withJsonBody(inputJson)) {
               result =>
                 status(result) must be(BAD_REQUEST)
@@ -124,16 +186,16 @@ class ReturnTypeControllerSpec extends PlaySpec with GuiceOneServerPerSuite with
                 contentAsString(result) must include("Select an option for type of return")
             }
           }
-          "with returnType=RR - relief return Redirect to choose relief page" in {
-            val inputJson = Json.parse( """{"returnType": "RR"}""")
+          "with returnType=RR - relief return Redirect to choose relief page" in new Setup {
+            val inputJson: JsValue = Json.parse( """{"returnType": "RR"}""")
             submitWithAuthorisedUser(prevReturns, FakeRequest().withJsonBody(inputJson)) {
               result =>
                 status(result) must be(SEE_OTHER)
                 redirectLocation(result).get must be("/ated/reliefs/2015/choose")
             }
           }
-          "with returnType=CR - chargeable return, status is OK" in {
-            val inputJson = Json.parse( """{"returnType": "CR"}""")
+          "with returnType=CR - chargeable return, status is OK" in new Setup {
+            val inputJson: JsValue = Json.parse( """{"returnType": "CR"}""")
             submitWithAuthorisedUser(prevReturns, FakeRequest().withJsonBody(inputJson)) {
               result =>
                 status(result) must be(SEE_OTHER)
@@ -141,8 +203,8 @@ class ReturnTypeControllerSpec extends PlaySpec with GuiceOneServerPerSuite with
             }
           }
 
-          "with returnType=CR - chargeable return and previous submitted details found from ETMP, status is OK" in {
-            val inputJson = Json.parse( """{"returnType": "CR"}""")
+          "with returnType=CR - chargeable return and previous submitted details found from ETMP, status is OK" in new Setup {
+            val inputJson: JsValue = Json.parse( """{"returnType": "CR"}""")
             submitWithAuthorisedUser(Nil, FakeRequest().withJsonBody(inputJson)) {
               result =>
                 status(result) must be(SEE_OTHER)
@@ -150,8 +212,8 @@ class ReturnTypeControllerSpec extends PlaySpec with GuiceOneServerPerSuite with
             }
           }
         }
-        "with returnType=anything else, status is Redirect" in {
-          val inputJson = Json.parse( """{"returnType": "INVALID"}""")
+        "with returnType=anything else, status is Redirect" in new Setup {
+          val inputJson: JsValue = Json.parse( """{"returnType": "INVALID"}""")
           submitWithAuthorisedUser(prevReturns, FakeRequest().withJsonBody(inputJson)) {
             result =>
               status(result) must be(SEE_OTHER)
@@ -160,55 +222,5 @@ class ReturnTypeControllerSpec extends PlaySpec with GuiceOneServerPerSuite with
         }
       }
     }
-
-
-  }
-
-  def getWithAuthorisedUser(test: Future[Result] => Any) {
-    val userId = s"user-${UUID.randomUUID}"
-    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
-    setAuthMocks(authMock)
-    when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
-      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-    when(mockDataCacheConnector.fetchAndGetFormData[String](Matchers.any())
-      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
-    when(mockBackLinkCache.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
-    val result = TestReturnTypeController.view(periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
-    test(result)
-  }
-
-  def getWithAuthorisedUserWithSomeData(test: Future[Result] => Any) {
-    val userId = s"user-${UUID.randomUUID}"
-    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
-    setAuthMocks(authMock)
-    when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
-      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-    when(mockDataCacheConnector.fetchAndGetFormData[ReturnType](Matchers.any())
-      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(ReturnType(Some("RR")))))
-    when(mockBackLinkCache.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
-    val result = TestReturnTypeController.view(periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
-    test(result)
-  }
-
-  def getWithUnAuthorisedUser(test: Future[Result] => Any) {
-    val userId = s"user-${UUID.randomUUID}"
-        val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
-    setInvalidAuthMocks(authMock)
-    val result = TestReturnTypeController.view(periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
-    test(result)
-  }
-
-  def submitWithAuthorisedUser(prevReturns: Seq[PreviousReturns], fakeRequest: FakeRequest[AnyContentAsJson])(test: Future[Result] => Any): Unit = {
-    val userId = s"user-${UUID.randomUUID}"
-    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
-    setAuthMocks(authMock)
-    when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
-      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-    when(mockSummaryReturnsService.getPreviousSubmittedLiabilityDetails(Matchers.any())(Matchers.any(), Matchers.any()))
-      .thenReturn(Future.successful(prevReturns))
-    when(mockBackLinkCache.clearBackLinks(Matchers.any())(Matchers.any())).thenReturn(Future.successful(Nil))
-    when(mockBackLinkCache.saveBackLink(Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
-    val result = TestReturnTypeController.submit(periodKey).apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
-    test(result)
   }
 }

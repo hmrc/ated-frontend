@@ -26,7 +26,7 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
-import play.api.libs.json.Json
+import play.api.libs.json.{JsValue, Json}
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, InternalServerException}
 
@@ -34,176 +34,166 @@ import scala.concurrent.Future
 
 class PropertyDetailsServiceSpec_Periods extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
 
-  val mockConnector: PropertyDetailsConnector = mock[PropertyDetailsConnector]
-  val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
-
-  object TestPropertyDetailsService extends PropertyDetailsService {
-    override val atedConnector: PropertyDetailsConnector = mockConnector
-    override val dataCacheConnector: DataCacheConnector = mockDataCacheConnector
-  }
-
-  override def beforeEach: Unit = {
-    reset(mockConnector)
-    reset(mockDataCacheConnector)
-  }
-
   implicit lazy val authContext: StandardAuthRetrievals = mock[StandardAuthRetrievals]
   implicit val hc: HeaderCarrier = HeaderCarrier()
 
-  "PropertyDetailsService" must {
-    "use the correct connector" in {
-      PropertyDetailsService.atedConnector must be(PropertyDetailsConnector)
-    }
+  val mockPropertyDetailsConnector: PropertyDetailsConnector = mock[PropertyDetailsConnector]
+  val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
 
+ class Setup {
+   val testPropertyDetailsService: PropertyDetailsService = new PropertyDetailsService(
+     mockPropertyDetailsConnector,
+     mockDataCacheConnector
+   )
+ }
+
+  override def beforeEach: Unit = {
+  }
+
+  "PropertyDetailsService" must {
     "Save property Details IsFullTaxPeriod" must {
-      implicit val hc: HeaderCarrier = HeaderCarrier()
       val propertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
       val propValue = new IsFullTaxPeriod(false, None)
 
 
-      "save the value and return the response from the connector" in {
-        val successResponse = Json.toJson(propertyDetails)
-        when(mockConnector.saveDraftIsFullTaxPeriod(Matchers.eq("1"), Matchers.any())
+      "save the value and return the response from the connector" in new Setup {
+        val successResponse: JsValue = Json.toJson(propertyDetails)
+        when(mockPropertyDetailsConnector.saveDraftIsFullTaxPeriod(Matchers.eq("1"), Matchers.any())
           (Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
 
-        val result = TestPropertyDetailsService.saveDraftIsFullTaxPeriod("1", propValue)
+        val result: Future[Int] = testPropertyDetailsService.saveDraftIsFullTaxPeriod("1", propValue)
         await(result) must be(OK)
 
       }
 
-      "save and throw an Exception if it fails" in {
-        val successResponse = Json.toJson(propValue)
-        when(mockConnector.saveDraftIsFullTaxPeriod(Matchers.eq("1"), Matchers.any())
+      "save and throw an Exception if it fails" in new Setup {
+        val successResponse: JsValue = Json.toJson(propValue)
+        when(mockPropertyDetailsConnector.saveDraftIsFullTaxPeriod(Matchers.eq("1"), Matchers.any())
           (Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, Some(successResponse))))
 
-        val result = TestPropertyDetailsService.saveDraftIsFullTaxPeriod("1", propValue)
-        val thrown = the[InternalServerException] thrownBy await(result)
+        val result: Future[Int] = testPropertyDetailsService.saveDraftIsFullTaxPeriod("1", propValue)
+        val thrown: InternalServerException = the[InternalServerException] thrownBy await(result)
         thrown.getMessage must be(s"[PropertyDetailsService][saveDraftIsFullTaxPeriod] Invalid status when saving Property Details :$BAD_REQUEST")
 
       }
     }
 
     "Save property Details IsInRelief" must {
-      implicit val hc: HeaderCarrier = HeaderCarrier()
       val propertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
       val propValue = new PropertyDetailsInRelief()
 
 
-      "save the value and return the response from the connector" in {
-        val successResponse = Json.toJson(propertyDetails)
-        when(mockConnector.saveDraftPropertyDetailsInRelief(Matchers.eq("1"), Matchers.any())
+      "save the value and return the response from the connector" in new Setup {
+        val successResponse: JsValue = Json.toJson(propertyDetails)
+        when(mockPropertyDetailsConnector.saveDraftPropertyDetailsInRelief(Matchers.eq("1"), Matchers.any())
         (Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
 
-        val result = TestPropertyDetailsService.saveDraftPropertyDetailsInRelief("1", propValue)
+        val result: Future[Int] = testPropertyDetailsService.saveDraftPropertyDetailsInRelief("1", propValue)
         await(result) must be(OK)
 
       }
 
-      "save and throw an Exception if it fails" in {
-        val successResponse = Json.toJson(propValue)
-        when(mockConnector.saveDraftPropertyDetailsInRelief(Matchers.eq("1"), Matchers.any())
+      "save and throw an Exception if it fails" in new Setup {
+        val successResponse: JsValue = Json.toJson(propValue)
+        when(mockPropertyDetailsConnector.saveDraftPropertyDetailsInRelief(Matchers.eq("1"), Matchers.any())
         (Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, Some(successResponse))))
 
-        val result = TestPropertyDetailsService.saveDraftPropertyDetailsInRelief("1", propValue)
-        val thrown = the[InternalServerException] thrownBy await(result)
+        val result: Future[Int] = testPropertyDetailsService.saveDraftPropertyDetailsInRelief("1", propValue)
+        val thrown: InternalServerException = the[InternalServerException] thrownBy await(result)
         thrown.getMessage must be(s"[PropertyDetailsService][saveDraftPropertyDetailsInRelief] Invalid status when saving Property Details :$BAD_REQUEST")
 
       }
     }
 
     "Save property Details TaxAvoidance" must {
-      implicit val hc: HeaderCarrier = HeaderCarrier()
       val propertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
       val propValue = new PropertyDetailsTaxAvoidance()
 
 
-      "save the value and return the response from the connector" in {
-        val successResponse = Json.toJson(propertyDetails)
-        when(mockConnector.saveDraftPropertyDetailsTaxAvoidance(Matchers.eq("1"), Matchers.any())
+      "save the value and return the response from the connector" in new Setup {
+        val successResponse: JsValue = Json.toJson(propertyDetails)
+        when(mockPropertyDetailsConnector.saveDraftPropertyDetailsTaxAvoidance(Matchers.eq("1"), Matchers.any())
         (Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
 
-        val result = TestPropertyDetailsService.saveDraftPropertyDetailsTaxAvoidance("1", propValue)
+        val result: Future[Int] = testPropertyDetailsService.saveDraftPropertyDetailsTaxAvoidance("1", propValue)
         await(result) must be(OK)
 
       }
 
-      "save and throw an Exception if it fails" in {
-        val successResponse = Json.toJson(propValue)
-        when(mockConnector.saveDraftPropertyDetailsTaxAvoidance(Matchers.eq("1"), Matchers.any())
+      "save and throw an Exception if it fails" in new Setup {
+        val successResponse: JsValue = Json.toJson(propValue)
+        when(mockPropertyDetailsConnector.saveDraftPropertyDetailsTaxAvoidance(Matchers.eq("1"), Matchers.any())
         (Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, Some(successResponse))))
 
-        val result = TestPropertyDetailsService.saveDraftPropertyDetailsTaxAvoidance("1", propValue)
-        val thrown = the[InternalServerException] thrownBy await(result)
+        val result: Future[Int] = testPropertyDetailsService.saveDraftPropertyDetailsTaxAvoidance("1", propValue)
+        val thrown: InternalServerException = the[InternalServerException] thrownBy await(result)
         thrown.getMessage must be(s"[PropertyDetailsService][saveDraftPropertyDetailsTaxAvoidance] Invalid status when saving Property Details :$BAD_REQUEST")
 
       }
     }
 
     "Save property Details DatesLiable" must {
-      implicit val hc: HeaderCarrier = HeaderCarrier()
       val propertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
       val propValue = new PropertyDetailsDatesLiable(new LocalDate("1970-01-01"), new LocalDate("1970-01-01"))
 
 
-      "save the value and return the response from the connector" in {
-        val successResponse = Json.toJson(propertyDetails)
-        when(mockConnector.saveDraftPropertyDetailsDatesLiable(Matchers.eq("1"), Matchers.any())
+      "save the value and return the response from the connector" in new Setup {
+        val successResponse: JsValue = Json.toJson(propertyDetails)
+        when(mockPropertyDetailsConnector.saveDraftPropertyDetailsDatesLiable(Matchers.eq("1"), Matchers.any())
         (Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
 
-        val result = TestPropertyDetailsService.saveDraftPropertyDetailsDatesLiable("1", propValue)
+        val result: Future[Int] = testPropertyDetailsService.saveDraftPropertyDetailsDatesLiable("1", propValue)
         await(result) must be(OK)
 
       }
 
-      "save and throw an Exception if it fails" in {
-        val successResponse = Json.toJson(propValue)
-        when(mockConnector.saveDraftPropertyDetailsDatesLiable(Matchers.eq("1"), Matchers.any())
+      "save and throw an Exception if it fails" in new Setup {
+        val successResponse: JsValue = Json.toJson(propValue)
+        when(mockPropertyDetailsConnector.saveDraftPropertyDetailsDatesLiable(Matchers.eq("1"), Matchers.any())
         (Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, Some(successResponse))))
 
-        val result = TestPropertyDetailsService.saveDraftPropertyDetailsDatesLiable("1", propValue)
-        val thrown = the[InternalServerException] thrownBy await(result)
+        val result: Future[Int] = testPropertyDetailsService.saveDraftPropertyDetailsDatesLiable("1", propValue)
+        val thrown: InternalServerException = the[InternalServerException] thrownBy await(result)
         thrown.getMessage must be(s"[PropertyDetailsService][saveDraftPropertyDetailsDatesLiable] Invalid status when saving Property Details :$BAD_REQUEST")
 
       }
     }
 
     "add DatesLiable" must {
-      implicit val hc: HeaderCarrier = HeaderCarrier()
       val propertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
       val propValue = new PropertyDetailsDatesLiable(new LocalDate("1970-01-01"), new LocalDate("1970-01-01"))
 
 
-      "add the value and return the response from the connector" in {
-        val successResponse = Json.toJson(propertyDetails)
-        when(mockConnector.addDraftPropertyDetailsDatesLiable(Matchers.eq("1"), Matchers.any())
+      "add the value and return the response from the connector" in new Setup {
+        val successResponse: JsValue = Json.toJson(propertyDetails)
+        when(mockPropertyDetailsConnector.addDraftPropertyDetailsDatesLiable(Matchers.eq("1"), Matchers.any())
         (Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
 
-        val result = TestPropertyDetailsService.addDraftPropertyDetailsDatesLiable("1", propValue)
+        val result: Future[Int] = testPropertyDetailsService.addDraftPropertyDetailsDatesLiable("1", propValue)
         await(result) must be(OK)
 
       }
 
-      "add and throw an Exception if it fails" in {
-        val successResponse = Json.toJson(propValue)
-        when(mockConnector.addDraftPropertyDetailsDatesLiable(Matchers.eq("1"), Matchers.any())
+      "add and throw an Exception if it fails" in new Setup {
+        val successResponse: JsValue = Json.toJson(propValue)
+        when(mockPropertyDetailsConnector.addDraftPropertyDetailsDatesLiable(Matchers.eq("1"), Matchers.any())
         (Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, Some(successResponse))))
 
-        val result = TestPropertyDetailsService.addDraftPropertyDetailsDatesLiable("1", propValue)
-        val thrown = the[InternalServerException] thrownBy await(result)
+        val result: Future[Int] = testPropertyDetailsService.addDraftPropertyDetailsDatesLiable("1", propValue)
+        val thrown: InternalServerException = the[InternalServerException] thrownBy await(result)
         thrown.getMessage must be(s"[PropertyDetailsService][addDraftPropertyDetailsDatesLiable] Invalid status when saving Property Details :$BAD_REQUEST")
 
       }
     }
 
     "store Chosen Relief" must {
-      implicit val hc: HeaderCarrier = HeaderCarrier()
       val propValue = new PeriodChooseRelief("reliefDescription")
 
-      "add the chosen relief to the data cache" in {
+      "add the chosen relief to the data cache" in new Setup {
         when(mockDataCacheConnector.saveFormData(Matchers.any(), Matchers.eq(propValue))
         (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(propValue))
 
-        val result = TestPropertyDetailsService.storeChosenRelief(propValue)
+        val result: Future[PeriodChooseRelief] = testPropertyDetailsService.storeChosenRelief(propValue)
         await(result) must be(propValue)
 
       }
@@ -212,93 +202,88 @@ class PropertyDetailsServiceSpec_Periods extends PlaySpec with GuiceOneServerPer
 
 
     "add DatesInRelief" must {
-      implicit val hc: HeaderCarrier = HeaderCarrier()
       val propertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
       val propValue = new PropertyDetailsDatesInRelief(new LocalDate("1970-01-01"), new LocalDate("1970-01-01"))
 
 
-      "add the value and return the response from the connector" in {
-        val successResponse = Json.toJson(propertyDetails)
+      "add the value and return the response from the connector" in new Setup {
+        val successResponse: JsValue = Json.toJson(propertyDetails)
         when(mockDataCacheConnector.fetchAndGetFormData[PeriodChooseRelief](Matchers.any())
           (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(PeriodChooseRelief("reliefDescription"))))
-        when(mockConnector.addDraftPropertyDetailsDatesInRelief(Matchers.eq("1"), Matchers.any())
+        when(mockPropertyDetailsConnector.addDraftPropertyDetailsDatesInRelief(Matchers.eq("1"), Matchers.any())
           (Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
 
-        val result = TestPropertyDetailsService.addDraftPropertyDetailsDatesInRelief("1", propValue)
+        val result: Future[Int] = testPropertyDetailsService.addDraftPropertyDetailsDatesInRelief("1", propValue)
         await(result) must be(OK)
 
       }
 
-      "add and throw an Exception if it fails" in {
-        val successResponse = Json.toJson(propValue)
+      "add and throw an Exception if it fails" in new Setup {
+        val successResponse: JsValue = Json.toJson(propValue)
         when(mockDataCacheConnector.fetchAndGetFormData[PeriodChooseRelief](Matchers.any())
           (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(PeriodChooseRelief("reliefDescription"))))
-        when(mockConnector.addDraftPropertyDetailsDatesInRelief(Matchers.eq("1"), Matchers.any())
+        when(mockPropertyDetailsConnector.addDraftPropertyDetailsDatesInRelief(Matchers.eq("1"), Matchers.any())
           (Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, Some(successResponse))))
 
-        val result = TestPropertyDetailsService.addDraftPropertyDetailsDatesInRelief("1", propValue)
-        val thrown = the[InternalServerException] thrownBy await(result)
+        val result: Future[Int] = testPropertyDetailsService.addDraftPropertyDetailsDatesInRelief("1", propValue)
+        val thrown: InternalServerException = the[InternalServerException] thrownBy await(result)
         thrown.getMessage must be(s"[PropertyDetailsService][addDraftPropertyDetailsDatesInRelief] Invalid status when saving Property Details :$BAD_REQUEST")
 
       }
     }
 
     "delete period" must {
-      implicit val hc: HeaderCarrier = HeaderCarrier()
       val propertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
       val propValue = new PropertyDetailsDatesInRelief(new LocalDate("1970-01-01"), new LocalDate("1970-01-01"))
 
 
-      "delete the value and return the response from the connector" in {
-        val successResponse = Json.toJson(propertyDetails)
-        when(mockConnector.deleteDraftPropertyDetailsPeriod(Matchers.eq("1"), Matchers.any())
+      "delete the value and return the response from the connector" in new Setup {
+        val successResponse: JsValue = Json.toJson(propertyDetails)
+        when(mockPropertyDetailsConnector.deleteDraftPropertyDetailsPeriod(Matchers.eq("1"), Matchers.any())
         (Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
 
-        val result = TestPropertyDetailsService.deleteDraftPropertyDetailsPeriod("1", propValue.startDate)
+        val result: Future[PropertyDetails] = testPropertyDetailsService.deleteDraftPropertyDetailsPeriod("1", propValue.startDate)
         await(result) must be(propertyDetails)
 
       }
 
-      "delete and throw an Exception if it fails" in {
-        val successResponse = Json.toJson(propValue)
-        when(mockConnector.deleteDraftPropertyDetailsPeriod(Matchers.eq("1"), Matchers.any())
+      "delete and throw an Exception if it fails" in new Setup {
+        val successResponse: JsValue = Json.toJson(propValue)
+        when(mockPropertyDetailsConnector.deleteDraftPropertyDetailsPeriod(Matchers.eq("1"), Matchers.any())
         (Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, Some(successResponse))))
 
-        val result = TestPropertyDetailsService.deleteDraftPropertyDetailsPeriod("1", propValue.startDate)
-        val thrown = the[InternalServerException] thrownBy await(result)
+        val result: Future[PropertyDetails] = testPropertyDetailsService.deleteDraftPropertyDetailsPeriod("1", propValue.startDate)
+        val thrown: InternalServerException = the[InternalServerException] thrownBy await(result)
         thrown.getMessage must be(s"[PropertyDetailsService][deleteDraftPropertyDetailsPeriod] Invalid status when saving Property Details :$BAD_REQUEST")
 
       }
     }
 
     "Save property Details SupportingInfo" must {
-      implicit val hc: HeaderCarrier = HeaderCarrier()
       val propertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
       val propValue = new PropertyDetailsSupportingInfo("")
 
 
-      "save the value and return the response from the connector" in {
-        val successResponse = Json.toJson(propertyDetails)
-        when(mockConnector.saveDraftPropertyDetailsSupportingInfo(Matchers.eq("1"), Matchers.any())
+      "save the value and return the response from the connector" in new Setup {
+        val successResponse: JsValue = Json.toJson(propertyDetails)
+        when(mockPropertyDetailsConnector.saveDraftPropertyDetailsSupportingInfo(Matchers.eq("1"), Matchers.any())
         (Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
 
-        val result = TestPropertyDetailsService.saveDraftPropertyDetailsSupportingInfo("1", propValue)
+        val result: Future[Int] = testPropertyDetailsService.saveDraftPropertyDetailsSupportingInfo("1", propValue)
         await(result) must be(OK)
 
       }
 
-      "save and throw an Exception if it fails" in {
-        val successResponse = Json.toJson(propValue)
-        when(mockConnector.saveDraftPropertyDetailsSupportingInfo(Matchers.eq("1"), Matchers.any())
+      "save and throw an Exception if it fails" in new Setup {
+        val successResponse: JsValue = Json.toJson(propValue)
+        when(mockPropertyDetailsConnector.saveDraftPropertyDetailsSupportingInfo(Matchers.eq("1"), Matchers.any())
         (Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, Some(successResponse))))
 
-        val result = TestPropertyDetailsService.saveDraftPropertyDetailsSupportingInfo("1", propValue)
-        val thrown = the[InternalServerException] thrownBy await(result)
+        val result: Future[Int] = testPropertyDetailsService.saveDraftPropertyDetailsSupportingInfo("1", propValue)
+        val thrown: InternalServerException = the[InternalServerException] thrownBy await(result)
         thrown.getMessage must be(s"[PropertyDetailsService][saveDraftPropertyDetailsSupportingInfo] Invalid status when saving Property Details :$BAD_REQUEST")
 
       }
     }
-
   }
-
 }

@@ -16,9 +16,9 @@
 
 package controllers.reliefs
 
+import config.ApplicationConfig
 import models.StandardAuthRetrievals
-import play.api.Play.current
-import play.api.i18n.Messages.Implicits._
+import play.api.i18n.Messages
 import play.api.mvc.Results._
 import play.api.mvc.{AnyContent, Request, Result}
 import services.ReliefsService
@@ -33,7 +33,7 @@ trait ReliefHelpers {
   def reliefsService: ReliefsService
 
   def validatePeriodKey(periodKey: Int)(block: Future[Result])
-                       (implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier, request: Request[AnyContent]): Future[Result] = {
+                       (implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier, request: Request[AnyContent], messages: Messages, appConfig: ApplicationConfig): Future[Result] = {
     if (PeriodUtils.calculatePeriod(month = 3) >= periodKey) {
       block
     } else {

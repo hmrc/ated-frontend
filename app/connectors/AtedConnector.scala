@@ -16,29 +16,21 @@
 
 package connectors
 
-import config.WSHttp
+import config.ApplicationConfig
+import javax.inject.Inject
 import models._
-import play.api.Mode.Mode
 import play.api.libs.json.{JsValue, Json}
-import play.api.{Configuration, Play}
 import uk.gov.hmrc.http._
-import uk.gov.hmrc.play.config.ServicesConfig
-import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
+import uk.gov.hmrc.play.bootstrap.http.{DefaultHttpClient, HttpClient}
 
 import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 
-object AtedConnector extends AtedConnector {
-  val serviceURL: String = baseUrl("ated") + "/ated/"
-  val http: WSHttp.type = WSHttp
+class AtedConnector @Inject()(appConfig: ApplicationConfig,
+                              httpClient: DefaultHttpClient) extends RawResponseReads {
 
-  override protected def mode: Mode = Play.current.mode
-
-  override protected def runModeConfiguration: Configuration = Play.current.configuration
-}
-
-trait AtedConnector extends ServicesConfig with RawResponseReads {
-
-  def serviceURL: String
+  val serviceURL: String = appConfig.conf.baseUrl("ated") + "/ated/"
+  val http: HttpClient = httpClient
 
   val saveDraftReliefURI = "reliefs/save"
   val retrieveDraftReliefURI = "reliefs"
@@ -66,8 +58,6 @@ trait AtedConnector extends ServicesConfig with RawResponseReads {
   val cacheDraftDate = "update-date"
   val cacheDraftSelectRelief = "update-relief"
   val submit = "submit"
-
-  def http: CoreGet with CorePost with CoreDelete
 
   def saveDraftReliefs(accountRef: String, reliefs: ReliefsTaxAvoidance)
                       (implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[HttpResponse] = {

@@ -16,51 +16,52 @@
 
 package config
 
-import play.api.Mode.Mode
-import play.api.Play._
-import play.api.{Configuration, Play}
-import uk.gov.hmrc.play.config.ServicesConfig
+import javax.inject.Inject
+import play.api.Environment
+import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
+import utils.CountryCodeUtils
 
-trait ApplicationConfig {
+import scala.util.Try
 
-  val assetsPrefix: String
-  val betaFeedbackUrl: String
-  val betaFeedbackUnauthenticatedUrl: String
-  val analyticsToken: Option[String]
-  val analyticsHost: String
-  val reportAProblemPartialUrl: String
-  val reportAProblemNonJSUrl: String
-  val atedFrontendHost: String
-  val defaultTimeoutSeconds: Int
-  val timeoutCountdown: Int
-  val urBannerToggle:Boolean
-  val urBannerLink: String
-  val serviceSignOut:String
-}
+class ApplicationConfig @Inject()(val conf: ServicesConfig,
+                                  val environment: Environment) extends CountryCodeUtils {
 
-object ApplicationConfig extends ApplicationConfig with ServicesConfig {
+  private def loadConfig(key: String) = conf.getString(key)
 
-  private def loadConfig(key: String) = configuration.getString(key).getOrElse(throw new Exception(s"Missing key: $key"))
-
-  private val contactHost = configuration.getString(s"contact-frontend.host").getOrElse("")
+  private val contactHost = conf.getString("contact-frontend.host")
 
   val contactFormServiceIdentifier = "ATED"
 
-  override lazy val assetsPrefix: String = loadConfig(s"assets.url") + loadConfig(s"assets.version")
-  override lazy val betaFeedbackUrl = s"$contactHost/contact/beta-feedback"
-  override lazy val betaFeedbackUnauthenticatedUrl = s"$contactHost/contact/beta-feedback-unauthenticated"
-  override lazy val analyticsToken: Option[String] = configuration.getString(s"google-analytics.token")
-  override lazy val analyticsHost: String = configuration.getString(s"google-analytics.host").getOrElse("auto")
-  override lazy val reportAProblemPartialUrl = s"$contactHost/contact/problem_reports_ajax?service=$contactFormServiceIdentifier"
-  override lazy val reportAProblemNonJSUrl = s"$contactHost/contact/problem_reports_nonjs?service=$contactFormServiceIdentifier"
-  override lazy val atedFrontendHost = configuration.getString(s"microservice.services.ated-frontend.host").getOrElse("")
-  override lazy val defaultTimeoutSeconds: Int = loadConfig("defaultTimeoutSeconds").toInt
-  override lazy val timeoutCountdown: Int = loadConfig("timeoutCountdown").toInt
-  override lazy val urBannerToggle:Boolean = loadConfig("urBanner.toggle").toBoolean
-  override lazy val urBannerLink: String = loadConfig("urBanner.link")
-  override lazy val serviceSignOut:String = loadConfig("service-signout.url")
+  lazy val assetsPrefix: String = loadConfig("assets.url") + loadConfig("assets.version")
+  lazy val betaFeedbackUrl = s"$contactHost/contact/beta-feedback"
+  lazy val betaFeedbackUnauthenticatedUrl = s"$contactHost/contact/beta-feedback-unauthenticated"
+  lazy val analyticsToken: Option[String] = Try{conf.getString("google-analytics.token")}.toOption
+  lazy val analyticsHost: String = conf.getString("google-analytics.host")
+  lazy val reportAProblemPartialUrl = s"$contactHost/contact/problem_reports_ajax?service=$contactFormServiceIdentifier"
+  lazy val reportAProblemNonJSUrl = s"$contactHost/contact/problem_reports_nonjs?service=$contactFormServiceIdentifier"
+  lazy val atedFrontendHost: String = conf.getString("microservice.services.ated-frontend.host")
+  lazy val defaultTimeoutSeconds: Int = loadConfig("defaultTimeoutSeconds").toInt
+  lazy val timeoutCountdown: Int = loadConfig("timeoutCountdown").toInt
+  lazy val urBannerToggle:Boolean = loadConfig("urBanner.toggle").toBoolean
+  lazy val urBannerLink: String = loadConfig("urBanner.link")
+  lazy val serviceSignOut:String = loadConfig("service-signout.url")
 
-  override protected def mode: Mode = Play.current.mode
+  lazy val baseUri: String = conf.baseUrl("cachable.session-cache")
+  lazy val defaultSource: String = "ated-frontend"
+  lazy val domain: String = conf.getConfString(
+    "cachable.session-cache.domain", throw new Exception(s"Could not find config 'cachable.session-cache.domain'")
+  )
 
-  override protected def runModeConfiguration: Configuration = Play.current.configuration
+  val companyAuthHost: String = s"${conf.getString("microservice.services.auth.company-auth.host")}"
+  val loginCallback: String = conf.getString("microservice.services.auth.login-callback.url")
+  val loginPath: String = s"${conf.getString("microservice.services.auth.login-path")}"
+  val loginURL: String = s"$companyAuthHost/gg/$loginPath"
+  val continueURL: String = s"$loginCallback"
+  val signIn: String = s"$companyAuthHost/gg/$loginPath?continue=$loginCallback"
+  val signOut: String = s"$companyAuthHost/gg/sign-out"
+  val subscriptionStartPage: String = conf.getString("microservice.services.ated-subscription.serviceRedirectUrl")
+  val clientApproveAgentMandate: String = conf.getString("microservice.services.agent-client-mandate-frontend.atedClientApproveAgentUri")
+  val agentRedirectedToMandate: String = conf.getString("microservice.services.agent-client-mandate-frontend.atedAgentJourneyStartUri")
+  val businessTaxAccountPage: String = s"${conf.getString("microservice.services.auth.business-tax-account.serviceRedirectUrl")}"
+
 }

@@ -19,7 +19,9 @@ package controllers.propertyDetails
 import java.util.UUID
 
 import builders.SessionBuilder
+import config.ApplicationConfig
 import connectors.DataCacheConnector
+import controllers.auth.AuthAction
 import models.{LiabilityReturnResponse, SubmitReturnsResponse}
 import org.joda.time.DateTime
 import org.jsoup.Jsoup
@@ -29,10 +31,10 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
-import play.api.mvc.Result
+import play.api.mvc.{MessagesControllerComponents, Result}
 import play.api.test.Helpers._
-import services.{DelegationService, SubscriptionDataService}
-import uk.gov.hmrc.auth.core.{AffinityGroup, PlayAuthConnector}
+import services.SubscriptionDataService
+import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.AtedConstants._
 import utils.MockAuthUtil
@@ -41,44 +43,105 @@ import scala.concurrent.Future
 
 class ChargeableReturnConfirmationControllerSpec extends PlaySpec with GuiceOneServerPerSuite with BeforeAndAfterEach with MockitoSugar with MockAuthUtil {
 
+  implicit val mockAppConfig: ApplicationConfig = mock[ApplicationConfig]
   implicit lazy val hc: HeaderCarrier = HeaderCarrier()
 
-  val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
-
+  val mockMcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
   val mockSubscriptionDataService: SubscriptionDataService = mock[SubscriptionDataService]
+  val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
   val organisationName: String = "ACME Limited"
 
-  object TestChargeableReturnConfirmationController extends ChargeableReturnConfirmationController {
-    override val authConnector: PlayAuthConnector = mockAuthConnector
-    override val subscriptionDataService: SubscriptionDataService = mockSubscriptionDataService
-    override val dataCacheConnector: DataCacheConnector = mockDataCacheConnector
-    override val delegationService: DelegationService = mockDelegationService
+class Setup {
+
+  val mockAuthAction: AuthAction = new AuthAction(
+    mockAppConfig,
+    mockDelegationService,
+    mockAuthConnector
+  )
+
+  val testChargeableReturnConfirmationController: ChargeableReturnConfirmationController = new ChargeableReturnConfirmationController (
+    mockMcc,
+    mockSubscriptionDataService,
+    mockAuthAction,
+    mockDataCacheConnector
+  )
+
+  def confirmationWithAuthorisedUser(test: Future[Result] => Any) {
+    val userId = s"user-${UUID.randomUUID}"
+    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+    setAuthMocks(authMock)
+    val liabilityReturnResponse = LiabilityReturnResponse(mode = "Post", propertyKey = "1",
+      liabilityAmount = BigDecimal("123"), paymentReference = Some("Payment-123"), formBundleNumber = "form-bundle-123")
+    val submitReturnsResponse = SubmitReturnsResponse(processingDate = DateTime.now().toString, None, liabilityReturnResponse =
+      Some(Seq(liabilityReturnResponse)))
+    when(mockDataCacheConnector.fetchAndGetFormData[SubmitReturnsResponse](Matchers.eq(SubmitReturnsResponseFormId))
+      (Matchers.any(), Matchers.any(), Matchers.eq(SubmitReturnsResponse.formats))).thenReturn(Future.successful(Some(submitReturnsResponse)))
+
+    val result = testChargeableReturnConfirmationController.confirmation.apply(SessionBuilder.buildRequestWithSession(userId))
+    test(result)
   }
 
+  def confirmationWithAuthorisedUserNotFound(test: Future[Result] => Any) {
+    val userId = s"user-${UUID.randomUUID}"
+    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+    setAuthMocks(authMock)
+    when(mockDataCacheConnector.fetchAndGetFormData[SubmitReturnsResponse](Matchers.eq(SubmitReturnsResponseFormId))
+      (Matchers.any(), Matchers.any(), Matchers.eq(SubmitReturnsResponse.formats))).thenReturn(Future.successful(None))
+
+    val result = testChargeableReturnConfirmationController.confirmation.apply(SessionBuilder.buildRequestWithSession(userId))
+    test(result)
+  }
+
+  def confirmationWithUnAuthorisedUser(test: Future[Result] => Any) {
+    val userId = s"user-${UUID.randomUUID}"
+    val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
+    setInvalidAuthMocks(authMock)
+    val result = testChargeableReturnConfirmationController.confirmation.apply(SessionBuilder.buildRequestWithSession(userId))
+    test(result)
+  }
+
+  def confirmationWithUnAuthenticated(test: Future[Result] => Any) {
+    val result = testChargeableReturnConfirmationController.confirmation.apply(SessionBuilder.buildRequestWithSessionNoUser)
+    test(result)
+  }
+
+  def getPrintFriendlyWithAuthorisedUser(test: Future[Result] => Any) {
+    val userId = s"user-${UUID.randomUUID}"
+    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+    setAuthMocks(authMock)
+    val liabilityReturnResponse = LiabilityReturnResponse(mode = "Post", propertyKey = "1",
+      liabilityAmount = BigDecimal("123"), paymentReference = Some("Payment-123"), formBundleNumber = "form-bundle-123")
+    val submitReturnsResponse = SubmitReturnsResponse(processingDate = DateTime.now().toString, None, liabilityReturnResponse =
+      Some(Seq(liabilityReturnResponse)))
+    when(mockDataCacheConnector.fetchAndGetFormData[SubmitReturnsResponse](Matchers.eq(SubmitReturnsResponseFormId))
+      (Matchers.any(), Matchers.any(), Matchers.eq(SubmitReturnsResponse.formats))).thenReturn(Future.successful(Some(submitReturnsResponse)))
+    when(mockSubscriptionDataService.getOrganisationName(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(organisationName)))
+
+    val result = testChargeableReturnConfirmationController.viewPrintFriendlyChargeableConfirmation.apply(SessionBuilder.buildRequestWithSession(userId))
+    test(result)
+  }
+}
 
   override def beforeEach: Unit = {
-    reset(mockAuthConnector)
+
+    reset(mockSubscriptionDataService)
+reset(mockDelegationService)
     reset(mockDataCacheConnector)
-    reset(mockDelegationService)
   }
 
   "ChargeableReturnConfirmationController" must {
-
-    "use correct DelegationService" in {
-      ChargeableReturnConfirmationController.delegationService must be(DelegationService)
-    }
 
     "confirmation" must {
 
       "unauthorised users" must {
 
-        "respond with a redirect" in {
+        "respond with a redirect" in new Setup {
           confirmationWithUnAuthorisedUser { result =>
             status(result) must be(SEE_OTHER)
           }
         }
 
-        "be redirected to the unauthorised page" in {
+        "be redirected to the unauthorised page" in new Setup {
           confirmationWithUnAuthorisedUser { result =>
             redirectLocation(result).get must include("/ated/unauthorised")
           }
@@ -87,7 +150,7 @@ class ChargeableReturnConfirmationControllerSpec extends PlaySpec with GuiceOneS
 
       "Authorised users" must {
 
-        "take user to Chargeable return confirmation page" in {
+        "take user to Chargeable return confirmation page" in new Setup {
           confirmationWithAuthorisedUser {
             result =>
               status(result) must be(OK)
@@ -108,7 +171,7 @@ class ChargeableReturnConfirmationControllerSpec extends PlaySpec with GuiceOneS
           }
         }
 
-        "take user to print friendly Chargeable return confirmation" in {
+        "take user to print friendly Chargeable return confirmation" in new Setup {
           getPrintFriendlyWithAuthorisedUser {
             result =>
               status(result) must be(OK)
@@ -128,7 +191,7 @@ class ChargeableReturnConfirmationControllerSpec extends PlaySpec with GuiceOneS
           }
         }
 
-        "redirect to account summary, if return response not found in cache" in {
+        "redirect to account summary, if return response not found in cache" in new Setup {
           confirmationWithAuthorisedUserNotFound {
             result =>
               status(result) must be(SEE_OTHER)
@@ -139,59 +202,4 @@ class ChargeableReturnConfirmationControllerSpec extends PlaySpec with GuiceOneS
       }
     }
   }
-
-  def confirmationWithAuthorisedUser(test: Future[Result] => Any) {
-    val userId = s"user-${UUID.randomUUID}"
-    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
-    setAuthMocks(authMock)
-    val liabilityReturnResponse = LiabilityReturnResponse(mode = "Post", propertyKey = "1",
-      liabilityAmount = BigDecimal("123"), paymentReference = Some("Payment-123"), formBundleNumber = "form-bundle-123")
-    val submitReturnsResponse = SubmitReturnsResponse(processingDate = DateTime.now().toString, None, liabilityReturnResponse =
-      Some(Seq(liabilityReturnResponse)))
-    when(mockDataCacheConnector.fetchAndGetFormData[SubmitReturnsResponse](Matchers.eq(SubmitReturnsResponseFormId))
-      (Matchers.any(), Matchers.any(), Matchers.eq(SubmitReturnsResponse.formats))).thenReturn(Future.successful(Some(submitReturnsResponse)))
-    val result = TestChargeableReturnConfirmationController.confirmation.apply(SessionBuilder.buildRequestWithSession(userId))
-    test(result)
-  }
-
-  def confirmationWithAuthorisedUserNotFound(test: Future[Result] => Any) {
-    val userId = s"user-${UUID.randomUUID}"
-    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
-    setAuthMocks(authMock)
-    when(mockDataCacheConnector.fetchAndGetFormData[SubmitReturnsResponse](Matchers.eq(SubmitReturnsResponseFormId))
-      (Matchers.any(), Matchers.any(), Matchers.eq(SubmitReturnsResponse.formats))).thenReturn(Future.successful(None))
-    val result = TestChargeableReturnConfirmationController.confirmation.apply(SessionBuilder.buildRequestWithSession(userId))
-    test(result)
-  }
-
-  def confirmationWithUnAuthorisedUser(test: Future[Result] => Any) {
-    val userId = s"user-${UUID.randomUUID}"
-    val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
-    setInvalidAuthMocks(authMock)
-    val result = TestChargeableReturnConfirmationController.confirmation.apply(SessionBuilder.buildRequestWithSession(userId))
-    test(result)
-  }
-
-  def confirmationWithUnAuthenticated(test: Future[Result] => Any) {
-    val result = TestChargeableReturnConfirmationController.confirmation.apply(SessionBuilder.buildRequestWithSessionNoUser)
-    test(result)
-  }
-
-  def getPrintFriendlyWithAuthorisedUser(test: Future[Result] => Any) {
-    val userId = s"user-${UUID.randomUUID}"
-    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
-    setAuthMocks(authMock)
-    val liabilityReturnResponse = LiabilityReturnResponse(mode = "Post", propertyKey = "1",
-      liabilityAmount = BigDecimal("123"), paymentReference = Some("Payment-123"), formBundleNumber = "form-bundle-123")
-    val submitReturnsResponse = SubmitReturnsResponse(processingDate = DateTime.now().toString, None, liabilityReturnResponse =
-      Some(Seq(liabilityReturnResponse)))
-    when(mockDataCacheConnector.fetchAndGetFormData[SubmitReturnsResponse](Matchers.eq(SubmitReturnsResponseFormId))
-      (Matchers.any(), Matchers.any(), Matchers.eq(SubmitReturnsResponse.formats))).thenReturn(Future.successful(Some(submitReturnsResponse)))
-    when(mockSubscriptionDataService.getOrganisationName(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(organisationName)))
-
-    val result = TestChargeableReturnConfirmationController.viewPrintFriendlyChargeableConfirmation.apply(SessionBuilder.buildRequestWithSession(userId))
-    test(result)
-  }
-
-
 }

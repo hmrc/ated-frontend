@@ -19,6 +19,9 @@ package controllers.subscriptionData
 import java.util.UUID
 
 import builders.{SessionBuilder, TitleBuilder}
+import config.ApplicationConfig
+import connectors.DataCacheConnector
+import controllers.auth.AuthAction
 import models._
 import org.jsoup.Jsoup
 import org.mockito.Matchers
@@ -27,12 +30,12 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
-import play.api.libs.json.Json
-import play.api.mvc.{AnyContentAsJson, Result}
+import play.api.libs.json.{JsValue, Json}
+import play.api.mvc.{AnyContentAsJson, MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{contentAsString, _}
-import services.{DelegationService, SubscriptionDataService}
-import uk.gov.hmrc.auth.core.{AffinityGroup, PlayAuthConnector}
+import services.SubscriptionDataService
+import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.{MockAuthUtil, TestUtil}
 
@@ -41,30 +44,76 @@ import scala.concurrent.Future
 class EditContactEmailControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach
   with MockAuthUtil with TestUtil {
 
-  val mockSubscriptionDataService: SubscriptionDataService = mock[SubscriptionDataService]
   implicit lazy val hc: HeaderCarrier = HeaderCarrier()
+  implicit val mockAppConfig: ApplicationConfig = mock[ApplicationConfig]
 
-  object TestEditContactEmailController extends EditContactEmailController {
-    override val authConnector: PlayAuthConnector = mockAuthConnector
-    override val delegationService: DelegationService = DelegationService
-    override val subscriptionDataService: SubscriptionDataService = mockSubscriptionDataService
+  val mockMcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
+  val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
+  val mockSubscriptionDataService: SubscriptionDataService = mock[SubscriptionDataService]
+
+  class Setup {
+
+    val mockAuthAction: AuthAction = new AuthAction(
+      mockAppConfig,
+      mockDelegationService,
+      mockAuthConnector
+    )
+
+    val testEditContactEmailController: EditContactEmailController = new EditContactEmailController(
+      mockMcc,
+      mockAuthAction,
+      mockSubscriptionDataService
+    )
+
+    def getWithUnAuthorisedUser(test: Future[Result] => Any) {
+      val userId = s"user-${UUID.randomUUID}"
+      val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
+      setInvalidAuthMocks(authMock)
+      val result = testEditContactEmailController.edit().apply(SessionBuilder.buildRequestWithSession(userId))
+      test(result)
+    }
+
+    def getWithAuthorisedUser(contactDetailsEmail: Option[EditContactDetailsEmail] = None, emailConsent: Boolean)(test: Future[Result] => Any) {
+      val userId = s"user-${UUID.randomUUID}"
+      val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+      setAuthMocks(authMock)
+      implicit val hc: HeaderCarrier = HeaderCarrier()
+      when(mockSubscriptionDataService.getEmailWithConsent(Matchers.any(), Matchers.any())).thenReturn(Future.successful(contactDetailsEmail))
+      val result = testEditContactEmailController.edit().apply(SessionBuilder.buildRequestWithSession(userId))
+
+      test(result)
+    }
+
+    def submitWithUnAuthorisedUser(test: Future[Result] => Any) {
+      val userId = s"user-${UUID.randomUUID}"
+      val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
+      setInvalidAuthMocks(authMock)
+
+      val result = testEditContactEmailController.submit().apply(SessionBuilder.buildRequestWithSession(userId))
+      test(result)
+    }
+
+    def submitWithAuthorisedUserSuccess(testAddress: Option[EditContactDetailsEmail] = None)
+                                       (fakeRequest: FakeRequest[AnyContentAsJson])(test: Future[Result] => Any) {
+      val userId = s"user-${UUID.randomUUID}"
+      val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+      setAuthMocks(authMock)
+      when(mockSubscriptionDataService.editEmailWithConsent(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(testAddress))
+      val result = testEditContactEmailController.submit().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
+
+      test(result)
+
+    }
   }
 
 
   override def beforeEach(): Unit = {
-    reset(mockAuthConnector)
-    reset(mockSubscriptionDataService)
   }
 
   "EditContactEmailController " must {
-
-    "use correct DelegationConnector ...." in {
-      EditContactEmailController.delegationService must be(DelegationService)
-    }
-
     "unauthorised users" must {
 
-      "respond with a redirect" in {
+      "respond with a redirect" in new Setup {
         getWithUnAuthorisedUser { result =>
           status(result) must be(SEE_OTHER)
           redirectLocation(result).get must include("/ated/unauthorised")
@@ -72,7 +121,7 @@ class EditContactEmailControllerSpec extends PlaySpec with GuiceOneServerPerSuit
       }
     }
     "edit" must {
-      "return show the correct page if a client and we have empty data" in {
+      "return show the correct page if a client and we have empty data" in new Setup {
         getWithAuthorisedUser(None, emailConsent = true) {
           result =>
             status(result) must be(OK)
@@ -84,7 +133,7 @@ class EditContactEmailControllerSpec extends PlaySpec with GuiceOneServerPerSuit
         }
       }
 
-      "show email consent and address with populated data" in {
+      "show email consent and address with populated data" in new Setup {
 
         val testContactEmail = EditContactDetailsEmail(emailConsent = true, emailAddress = "hrmc@hmrc.com")
 
@@ -96,20 +145,18 @@ class EditContactEmailControllerSpec extends PlaySpec with GuiceOneServerPerSuit
             document.getElementById("emailConsent-false").attr("checked") must be("")
         }
       }
-
-
     }
 
     "submit" must {
       "unauthorised users" must {
 
-        "respond with a redirect" in {
+        "respond with a redirect" in new Setup {
           submitWithUnAuthorisedUser { result =>
             status(result) must be(SEE_OTHER)
           }
         }
 
-        "be redirected to the login page" in {
+        "be redirected to the login page" in new Setup {
           submitWithUnAuthorisedUser { result =>
             redirectLocation(result).get must include("/ated/unauthorised")
           }
@@ -117,14 +164,11 @@ class EditContactEmailControllerSpec extends PlaySpec with GuiceOneServerPerSuit
       }
 
       "Authorised users" must {
-
         "validate form" must {
 
-
-          "Email address must not be more than 241 characters if entered" in {
-            implicit val hc: HeaderCarrier = HeaderCarrier()
-            val emailTest = "a" * 240 + "@gmail.com"
-            val inputJson = Json.parse( s"""{"emailAddress": "$emailTest", "emailConsent": true }""")
+          "Email address must not be more than 241 characters if entered" in new Setup {
+            val emailTest: String = "a" * 240 + "@gmail.com"
+            val inputJson: JsValue = Json.parse( s"""{"emailAddress": "$emailTest", "emailConsent": true }""")
 
             submitWithAuthorisedUserSuccess(None)(FakeRequest().withJsonBody(inputJson)) {
               result =>
@@ -133,10 +177,8 @@ class EditContactEmailControllerSpec extends PlaySpec with GuiceOneServerPerSuit
             }
           }
 
-          "Email address must be a valid email address format" in {
-
-            implicit val hc: HeaderCarrier = HeaderCarrier()
-            val inputJson = Json.parse( s"""{ "emailAddress": "abcdef@com", "emailConsent": true }""")
+          "Email address must be a valid email address format" in new Setup {
+            val inputJson: JsValue = Json.parse( s"""{ "emailAddress": "abcdef@com", "emailConsent": true }""")
 
             submitWithAuthorisedUserSuccess(None)(FakeRequest().withJsonBody(inputJson)) {
               result =>
@@ -146,10 +188,8 @@ class EditContactEmailControllerSpec extends PlaySpec with GuiceOneServerPerSuit
 
           }
 
-          "If edited contact address is valid, submit must redirect" in {
-
-            implicit val hc: HeaderCarrier = HeaderCarrier()
-            val inputJson = Json.parse( s"""{ "emailAddress": "aa@mail.com", "emailConsent": true }""")
+          "If edited contact address is valid, submit must redirect" in new Setup {
+            val inputJson: JsValue = Json.parse( s"""{ "emailAddress": "aa@mail.com", "emailConsent": true }""")
             val contactAddress: EditContactDetailsEmail = inputJson.as[EditContactDetailsEmail]
 
             submitWithAuthorisedUserSuccess(Some(contactAddress))(FakeRequest().withJsonBody(inputJson)) {
@@ -161,46 +201,5 @@ class EditContactEmailControllerSpec extends PlaySpec with GuiceOneServerPerSuit
         }
       }
     }
-  }
-
-
-  def getWithUnAuthorisedUser(test: Future[Result] => Any) {
-    val userId = s"user-${UUID.randomUUID}"
-        val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
-    setInvalidAuthMocks(authMock)
-    val result = TestEditContactEmailController.edit().apply(SessionBuilder.buildRequestWithSession(userId))
-    test(result)
-  }
-
-  def getWithAuthorisedUser(contactDetailsEmail: Option[EditContactDetailsEmail] = None, emailConsent: Boolean)(test: Future[Result] => Any) {
-    val userId = s"user-${UUID.randomUUID}"
-    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
-    setAuthMocks(authMock)
-    implicit val hc: HeaderCarrier = HeaderCarrier()
-    when(mockSubscriptionDataService.getEmailWithConsent(Matchers.any(), Matchers.any())).thenReturn(Future.successful(contactDetailsEmail))
-    val result = TestEditContactEmailController.edit().apply(SessionBuilder.buildRequestWithSession(userId))
-
-    test(result)
-  }
-
-  def submitWithUnAuthorisedUser(test: Future[Result] => Any) {
-    val userId = s"user-${UUID.randomUUID}"
-        val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
-    setInvalidAuthMocks(authMock)
-
-    val result = TestEditContactEmailController.submit().apply(SessionBuilder.buildRequestWithSession(userId))
-    test(result)
-  }
-
-  def submitWithAuthorisedUserSuccess(testAddress: Option[EditContactDetailsEmail] = None)
-                                     (fakeRequest: FakeRequest[AnyContentAsJson])(test: Future[Result] => Any) {
-    val userId = s"user-${UUID.randomUUID}"
-    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
-    setAuthMocks(authMock)
-    when(mockSubscriptionDataService.editEmailWithConsent(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(testAddress))
-    val result = TestEditContactEmailController.submit().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
-
-    test(result)
-
   }
 }

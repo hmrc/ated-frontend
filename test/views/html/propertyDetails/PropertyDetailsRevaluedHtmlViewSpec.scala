@@ -16,15 +16,20 @@
 
 package views.html.propertyDetails
 
+import config.ApplicationConfig
 import forms.PropertyDetailsForms
+import models.StandardAuthRetrievals
 import org.scalatest.mockito.MockitoSugar
+import play.api.i18n.Messages
 import play.twirl.api.Html
 import utils.MockAuthUtil
 import utils.viewHelpers.AtedViewSpec
 
-class PropertyDetailsRevaluedSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil {
+class PropertyDetailsRevaluedHtmlViewSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil {
 
-  implicit lazy val authContext = organisationStandardRetrievals
+  implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
+
+  implicit val appConfig: ApplicationConfig = mock[ApplicationConfig]
 
   "Property Details Revalued view" must {
     behave like pageWithTitle(messages("ated.property-details-value.isPropertyRevalued.title"))
@@ -32,7 +37,9 @@ class PropertyDetailsRevaluedSpec extends AtedViewSpec with MockitoSugar with Mo
     behave like pageWithPreHeading(messages("ated.property-details.pre-header"))
     behave like pageWithBackLink
     behave like pageWithContinueButtonForm("/ated/liability/create/revalued/save//period/0")
-    behave like pageWithYesNoRadioButton("isPropertyRevalued-true", "isPropertyRevalued-false")
+    behave like pageWithYesNoRadioButton("isPropertyRevalued-true", "isPropertyRevalued-false",
+    messages("ated.property-details-value.yes"),
+    messages("ated.property-details-value.no"))
 
     "check page errors" in {
       doc.getElementsMatchingOwnText(messages("ated.property-details-value.isPropertyRevalued.error.non-selected")).hasText mustBe true

@@ -45,13 +45,13 @@ object AtedConstants {
   val LiabilityReturnType: String = "liability"
   val DisposeReturnType: String = "de-enveloped"
 
-  lazy val FurtherReturnDec: String =  Messages("ated.edit-liability.declaration.header.further")
-  lazy val AmendedReturnDec: String =  Messages("ated.edit-liability.declaration.header.amend")
-  lazy val ChangeDetailsDec: String =  Messages("ated.edit-liability.declaration.header.change")
+  lazy val FurtherReturnDec: String =  "ated.edit-liability.declaration.header.further"
+  lazy val AmendedReturnDec: String =  "ated.edit-liability.declaration.header.amend"
+  lazy val ChangeDetailsDec: String =  "ated.edit-liability.declaration.header.change"
 
-  lazy val FurtherReturnSub: String =  Messages("ated.edit-liability.declaration.submit.further")
-  lazy val AmendedReturnSub: String =  Messages("ated.edit-liability.declaration.submit.amend")
-  lazy val ChangedReturnSub: String =  Messages("ated.edit-liability.declaration.submit.change")
+  lazy val FurtherReturnSub: String =  "ated.edit-liability.declaration.submit.further"
+  lazy val AmendedReturnSub: String =  "ated.edit-liability.declaration.submit.amend"
+  lazy val ChangedReturnSub: String =  "ated.edit-liability.declaration.submit.change"
 
   val TypeReliefDraft: String = "Relief"
   val TypeLiabilityDraft: String = "Liability"

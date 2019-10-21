@@ -14,7 +14,9 @@
  * limitations under the License.
  *@
 
-@(applicationConfig: config.ApplicationConfig = config.ApplicationConfig,
+@import play.twirl.api.HtmlFormat
+@import config.ApplicationConfig
+@(appConfig: ApplicationConfig,
   supportLinkEnabled: Boolean = false,
   title: String,
   banner: Option[Html] = Some(HtmlFormat.empty),
@@ -28,10 +30,9 @@
   isUserResearchBannerVisible:Boolean = false
   )(mainContent: Html = HtmlFormat.empty)(implicit messages: Messages, request: Request[AnyContent])
 
-@import controllers.auth.ExternalUrls
 @import layouts.{govuk_template => hmrcGovUkTemplate}
 @import uk.gov.hmrc.play.views.html.{helpers => uiHelpers, layouts => uiLayouts}
-@import utils.SessionUtils
+@import _root_.utils.SessionUtils
 
 @head = {
   @uiLayouts.head(
@@ -64,11 +65,11 @@
 }
 
 @afterHeader = @{
-  if(isUserResearchBannerVisible && applicationConfig.urBannerToggle) {
+  if(isUserResearchBannerVisible && appConfig.urBannerToggle) {
       helpers.fullWidthBanner(
       Some(helpers.fullWidthBannerContentUr(
         messages("urbanner.message.text"),
-        applicationConfig.urBannerLink,
+        appConfig.urBannerLink,
         externalLinkWarning = None
       ))
     )
@@ -78,8 +79,8 @@
 
 @bodyEnd = {
   @uiLayouts.footer(
-    analyticsToken = applicationConfig.analyticsToken,
-    analyticsHost = applicationConfig.analyticsHost,
+    analyticsToken = appConfig.analyticsToken,
+    analyticsHost = appConfig.analyticsHost,
     ssoUrl = None,
     scriptElem = scriptElement,
     gaCalls = None,
@@ -93,7 +94,7 @@
 
 @btaLink = {
 <div class="bta-link">
-    <a id="btaNavHref" href=@ExternalUrls.businessTaxAccountPage>@Messages("ated.generic.bta_link")</a>
+    <a id="btaNavHref" href=@appConfig.businessTaxAccountPage>@Messages("ated.generic.bta_link")</a>
 </div>
 }
 
@@ -111,7 +112,7 @@
 
 @getHelpForm = {
   @if(supportLinkEnabled) {
-    @{uiHelpers.reportAProblemLink(config.ApplicationConfig.reportAProblemPartialUrl, config.ApplicationConfig.reportAProblemNonJSUrl)}
+    @{uiHelpers.reportAProblemLink(appConfig.reportAProblemPartialUrl, appConfig.reportAProblemNonJSUrl)}
   }
 }
 

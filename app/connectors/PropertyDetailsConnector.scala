@@ -16,22 +16,21 @@
 
 package connectors
 
-import config.WSHttp
+import config.ApplicationConfig
+import javax.inject.Inject
 import models._
 import org.joda.time.LocalDate
-import play.api.Mode.Mode
+import play.api.libs.json.JodaWrites._
 import play.api.libs.json.{JsValue, Json}
-import play.api.{Configuration, Play}
 import uk.gov.hmrc.http._
-import uk.gov.hmrc.play.config.ServicesConfig
-import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
-
+import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-trait PropertyDetailsConnector extends ServicesConfig with RawResponseReads {
+class PropertyDetailsConnector @Inject()(appConfig: ApplicationConfig,
+                                         http: DefaultHttpClient) extends RawResponseReads {
 
-  def serviceURL: String
-
+  val serviceURL: String = appConfig.conf.baseUrl("ated") + "/ated/"
   val baseURI = "ated"
   val retrieveDraftPropertyDetailsURI = "property-details/retrieve"
   val calculateDraftPropertyDetailsURI = "property-details/calculate"
@@ -61,9 +60,6 @@ trait PropertyDetailsConnector extends ServicesConfig with RawResponseReads {
   val saveDraftPropertyDetailsTaxAvoidanceURI = "property-details/tax-avoidance"
   val saveDraftPropertyDetailsSupportingInfoURI = "property-details/supporting-info"
   val saveDraftPropertyDetailsValuedURI = "property-details/valued"
-
-
-  def http: CoreGet with CorePost with CoreDelete
 
   def createDraftPropertyDetails(periodKey: Int, propertyDetails: PropertyDetailsAddress)
                                         (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[HttpResponse] = {
@@ -234,14 +230,4 @@ trait PropertyDetailsConnector extends ServicesConfig with RawResponseReads {
     val deleteUrl = s"""$serviceURL$userLink/$deletePropertyDetailsURI/drafts/$id"""
     http.DELETE[HttpResponse](deleteUrl)
   }
-
-}
-
-object PropertyDetailsConnector extends PropertyDetailsConnector {
-  val serviceURL = baseUrl("ated") + "/ated/"
-  val http = WSHttp
-
-  override protected def mode: Mode = Play.current.mode
-
-  override protected def runModeConfiguration: Configuration = Play.current.configuration
 }

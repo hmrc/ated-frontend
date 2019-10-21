@@ -14,7 +14,8 @@
  * limitations under the License.
  *@
 
-@()(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent])
+@import config.ApplicationConfig
+@()(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
 @atedMain(title = Messages("ated.reliefs.error.title")) {
 

@@ -19,7 +19,10 @@ package controllers.reliefs
 import java.util.UUID
 
 import builders.SessionBuilder
+import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
+import controllers.auth.AuthAction
+import controllers.propertyDetails.AddressLookupController
 import org.jsoup.Jsoup
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -27,56 +30,99 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
-import play.api.libs.json.Json
-import play.api.mvc.{AnyContentAsJson, Result}
+import play.api.libs.json.{JsValue, Json}
+import play.api.mvc.{AnyContentAsJson, MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.{DelegationService, ReliefsService}
-import uk.gov.hmrc.auth.core.{AffinityGroup, PlayAuthConnector}
+import services.ReliefsService
+import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.{AtedConstants, MockAuthUtil}
 
 import scala.concurrent.Future
 
 class ChangeReliefReturnControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with MockAuthUtil {
+  implicit val mockAppConfig: ApplicationConfig = mock[ApplicationConfig]
   implicit lazy val hc: HeaderCarrier = HeaderCarrier()
+
+  val mockMcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
+  val mockChooseReliefsController: ChooseReliefsController = mock[ChooseReliefsController]
+  val mockReliefsService: ReliefsService = mock[ReliefsService]
+  val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
+  val mockBackLinkCacheConnector: BackLinkCacheConnector = mock[BackLinkCacheConnector]
+  val mockAddressLookupController: AddressLookupController = mock[AddressLookupController]
 
   val periodKey: Int = 2015
 
-  val mockBackLinkCache: BackLinkCacheConnector = mock[BackLinkCacheConnector]
-  val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
-  val mockReliefsService: ReliefsService = mock[ReliefsService]
+class Setup {
 
-  object TestChangeReliefReturnController extends ChangeReliefReturnController {
-    override val authConnector: PlayAuthConnector = mockAuthConnector
-    override val delegationService: DelegationService = mockDelegationService
-    override val controllerId: String = "controllerId"
-    override val backLinkCacheConnector: BackLinkCacheConnector = mockBackLinkCache
-    override val reliefsService: ReliefsService = mockReliefsService
-    val dataCacheConnector: DataCacheConnector = mockDataCacheConnector
+  val mockAuthAction: AuthAction = new AuthAction(
+    mockAppConfig,
+    mockDelegationService,
+    mockAuthConnector
+  )
+
+  val testChangeReliefReturnController: ChangeReliefReturnController = new ChangeReliefReturnController(
+    mockMcc,
+    mockChooseReliefsController,
+    mockAuthAction,
+    mockAddressLookupController,
+    mockReliefsService,
+    mockDataCacheConnector,
+    mockBackLinkCacheConnector
+  )
+
+
+  def getWithAuthorisedUser(test: Future[Result] => Any) {
+    val userId = s"user-${UUID.randomUUID}"
+    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+    setAuthMocks(authMock)
+    when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
+    when(mockBackLinkCacheConnector.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
+    val result = testChangeReliefReturnController.viewChangeReliefReturn(periodKey, formBundleNumber = "")
+      .apply(SessionBuilder.buildRequestWithSession(userId))
+    test(result)
   }
 
+  def getWithUnAuthorisedUser(test: Future[Result] => Any) {
+    val userId = s"user-${UUID.randomUUID}"
+    val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
+    setInvalidAuthMocks(authMock)
+    val result = testChangeReliefReturnController.viewChangeReliefReturn(periodKey, formBundleNumber = "")
+      .apply(SessionBuilder.buildRequestWithSession(userId))
+    test(result)
+  }
+
+  def submitWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsJson])(test: Future[Result] => Any): Unit = {
+    val userId = s"user-${UUID.randomUUID}"
+    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+    setAuthMocks(authMock)
+    when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
+    when(mockBackLinkCacheConnector.clearBackLinks(Matchers.any())(Matchers.any())).thenReturn(Future.successful(Nil))
+    when(mockBackLinkCacheConnector.saveBackLink(Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
+    val result = testChangeReliefReturnController.submit(periodKey, formBundleNumber = "")
+      .apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
+    test(result)
+  }
+}
+
+
   override def beforeEach(): Unit = {
-    reset(mockAuthConnector)
-    reset(mockBackLinkCache)
   }
 
   "ReturnTypeController" must {
-
-    "use correct DelegationConnector" in {
-      ChangeReliefReturnController.delegationService must be(DelegationService)
-    }
-
     "returnType" must {
 
       "unauthorised users" must {
-        "respond with a redirect" in {
+        "respond with a redirect" in new Setup {
           getWithUnAuthorisedUser { result =>
             status(result) must be(SEE_OTHER)
           }
         }
 
-        "be redirected to the unauthorised page" in {
+        "be redirected to the unauthorised page" in new Setup {
           getWithUnAuthorisedUser { result =>
             redirectLocation(result).get must include("/ated/unauthorised")
           }
@@ -85,7 +131,7 @@ class ChangeReliefReturnControllerSpec extends PlaySpec with GuiceOneServerPerSu
       }
 
       "Authorised users" must {
-        "show the change return options" in {
+        "show the change return options" in new Setup {
           getWithAuthorisedUser { result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
@@ -99,9 +145,9 @@ class ChangeReliefReturnControllerSpec extends PlaySpec with GuiceOneServerPerSu
     "submit" must {
       "for authorised user" must {
         "with valid form data" must {
-          "with invalid form, return BadRequest" in {
-            val inputJson = Json.parse( """{"changeRelief": ""}""")
-            when(mockBackLinkCache.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
+          "with invalid form, return BadRequest" in new Setup {
+            val inputJson: JsValue = Json.parse( """{"changeRelief": ""}""")
+            when(mockBackLinkCacheConnector.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
             submitWithAuthorisedUser(FakeRequest().withJsonBody(inputJson)) {
               result =>
                 status(result) must be(BAD_REQUEST)
@@ -110,16 +156,16 @@ class ChangeReliefReturnControllerSpec extends PlaySpec with GuiceOneServerPerSu
                 contentAsString(result) must include("You must select an option")
             }
           }
-          "with changeDetails selected - Redirect to choose relief page" in {
-            val inputJson = Json.parse( """{"changeRelief": "changeDetails"}""")
+          "with changeDetails selected - Redirect to choose relief page" in new Setup {
+            val inputJson: JsValue = Json.parse( """{"changeRelief": "changeDetails"}""")
             submitWithAuthorisedUser(FakeRequest().withJsonBody(inputJson)) {
               result =>
                 status(result) must be(SEE_OTHER)
                 redirectLocation(result).get must be("/ated/reliefs/2015/choose")
             }
           }
-          "with createChargeable selected - redirect to address lookup" in {
-            val inputJson = Json.parse( """{"changeRelief": "createChargeable"}""")
+          "with createChargeable selected - redirect to address lookup" in new Setup {
+            val inputJson: JsValue = Json.parse( """{"changeRelief": "createChargeable"}""")
             submitWithAuthorisedUser(FakeRequest().withJsonBody(inputJson)) {
               result =>
                 status(result) must be(SEE_OTHER)
@@ -129,39 +175,5 @@ class ChangeReliefReturnControllerSpec extends PlaySpec with GuiceOneServerPerSu
         }
       }
     }
-  }
-
-  def getWithAuthorisedUser(test: Future[Result] => Any) {
-    val userId = s"user-${UUID.randomUUID}"
-    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
-    setAuthMocks(authMock)
-    when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
-      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-    when(mockBackLinkCache.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
-    val result = TestChangeReliefReturnController.viewChangeReliefReturn(periodKey, formBundleNumber = "")
-      .apply(SessionBuilder.buildRequestWithSession(userId))
-    test(result)
-  }
-
-  def getWithUnAuthorisedUser(test: Future[Result] => Any) {
-    val userId = s"user-${UUID.randomUUID}"
-        val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
-    setInvalidAuthMocks(authMock)
-    val result = TestChangeReliefReturnController.viewChangeReliefReturn(periodKey, formBundleNumber = "")
-      .apply(SessionBuilder.buildRequestWithSession(userId))
-    test(result)
-  }
-
-  def submitWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsJson])(test: Future[Result] => Any): Unit = {
-    val userId = s"user-${UUID.randomUUID}"
-    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
-    setAuthMocks(authMock)
-    when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
-      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-    when(mockBackLinkCache.clearBackLinks(Matchers.any())(Matchers.any())).thenReturn(Future.successful(Nil))
-    when(mockBackLinkCache.saveBackLink(Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
-    val result = TestChangeReliefReturnController.submit(periodKey, formBundleNumber = "")
-      .apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
-    test(result)
   }
 }

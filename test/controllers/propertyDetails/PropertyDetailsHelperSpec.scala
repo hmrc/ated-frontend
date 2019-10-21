@@ -25,26 +25,27 @@ import org.scalatest.PartialFunctionValues
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
-import play.api.mvc.Result
+import play.api.mvc.{MessagesControllerComponents, Result}
 import play.api.mvc.Results._
 import play.api.test.Helpers._
 import services._
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.MockAuthUtil
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class PropertyDetailsHelperSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with PartialFunctionValues with MockAuthUtil {
 
+  implicit val authContext: StandardAuthRetrievals = organisationStandardRetrievals
   implicit lazy val hc: HeaderCarrier = HeaderCarrier()
 
   val mockPropertyDetailsService: PropertyDetailsService = mock[PropertyDetailsService]
   val mockBackLinkCache: BackLinkCacheConnector = mock[BackLinkCacheConnector]
-
-  implicit val authContext: StandardAuthRetrievals = organisationStandardRetrievals
+  val mockMcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
 
   object TestPropertyDetailsHelpers extends PropertyDetailsHelpers {
-    val delegationService: DelegationService = mockDelegationService
+    implicit val ec: ExecutionContext = mockMcc.executionContext
+   val delegationService: DelegationService = mockDelegationService
     val propertyDetailsService: PropertyDetailsService = mockPropertyDetailsService
     override val controllerId: String = "controllerId"
     override val backLinkCacheConnector: BackLinkCacheConnector = mockBackLinkCache
@@ -78,6 +79,7 @@ class PropertyDetailsHelperSpec extends PlaySpec with GuiceOneServerPerSuite wit
   def getDataWithAuthorisedUser(cacheSuccessResponse: PropertyDetailsCacheResponse)(test: Future[Result] => Any) {
     when(mockPropertyDetailsService.retrieveDraftPropertyDetails
     (Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(cacheSuccessResponse))
+
     val result = TestPropertyDetailsHelpers.propertyDetailsCacheResponse("1") {
       case PropertyDetailsCacheSuccessResponse(_) => Future.successful(Ok)
     }

@@ -19,6 +19,9 @@ package controllers
 import java.util.UUID
 
 import builders.SessionBuilder
+import config.ApplicationConfig
+import connectors.DataCacheConnector
+import controllers.auth.AuthAction
 import models._
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
@@ -28,10 +31,10 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
-import play.api.mvc.Result
+import play.api.mvc.{MessagesControllerComponents, Result}
 import play.api.test.Helpers._
-import services.{DelegationService, FormBundleReturnsService, SubscriptionDataService, SummaryReturnsService}
-import uk.gov.hmrc.auth.core.{AffinityGroup, PlayAuthConnector}
+import services.{FormBundleReturnsService, SubscriptionDataService, SummaryReturnsService}
+import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.MockAuthUtil
 
@@ -39,52 +42,80 @@ import scala.concurrent.Future
 
 class FormBundleReturnControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with MockAuthUtil {
 
-  val periodKey: Int = 2015
+  implicit lazy val hc: HeaderCarrier = HeaderCarrier()
+  implicit val mockAppConfig: ApplicationConfig = mock[ApplicationConfig]
 
+  val mockMcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
+  val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
   val mockFormBundleReturnsService: FormBundleReturnsService = mock[FormBundleReturnsService]
   val mockSummaryReturnsService: SummaryReturnsService = mock[SummaryReturnsService]
   val mockSubscriptionDataService: SubscriptionDataService = mock[SubscriptionDataService]
+
+  val periodKey: Int = 2015
   val formBundleNo1: String = "123456789012"
   val organisationName: String = "ACME Limited"
-  implicit lazy val hc: HeaderCarrier = HeaderCarrier()
 
-  object TestFormBundleReturnController extends FormBundleReturnController {
-    override val delegationService: DelegationService = mockDelegationService
-    override val formBundleReturnsService: FormBundleReturnsService = mockFormBundleReturnsService
-    override val summaryReturnsService: SummaryReturnsService = mockSummaryReturnsService
-    override val subscriptionDataService: SubscriptionDataService = mockSubscriptionDataService
-    override val authConnector: PlayAuthConnector = mockAuthConnector
+  class Setup {
+
+    val mockAuthAction: AuthAction = new AuthAction(
+      mockAppConfig,
+      mockDelegationService,
+      mockAuthConnector
+    )
+
+    val testFormBundleReturnController: FormBundleReturnController = new FormBundleReturnController (
+      mockMcc,
+      mockAuthAction,
+      mockFormBundleReturnsService,
+      mockSummaryReturnsService,
+      mockSubscriptionDataService
+    )
+
+    def getWithAuthorisedUser(formBundleReturn: Option[FormBundleReturn], periodSummaries: Option[PeriodSummaryReturns] = None)(test: Future[Result] => Any) {
+      val userId = s"user-${UUID.randomUUID}"
+      val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+      setAuthMocks(authMock)
+
+      when(mockFormBundleReturnsService.getFormBundleReturns(Matchers.eq(formBundleNo1))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(formBundleReturn))
+
+      when(mockSummaryReturnsService.getPeriodSummaryReturns(Matchers.eq(periodKey))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(periodSummaries))
+      when(mockSubscriptionDataService.getOrganisationName(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(organisationName)))
+
+      val result = testFormBundleReturnController.view(formBundleNo1, periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
+      test(result)
+    }
+
+    def getWithUnAuthorisedUser(test: Future[Result] => Any) {
+      val periodKey: Int = 2014
+      val userId = s"user-${UUID.randomUUID}"
+      val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
+      setInvalidAuthMocks(authMock)
+      val result = testFormBundleReturnController.view("12345678901", periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
+      test(result)
+    }
   }
 
   override def beforeEach(): Unit = {
-    reset(mockAuthConnector)
-    reset(mockFormBundleReturnsService)
-    reset(mockSummaryReturnsService)
-    reset(mockSubscriptionDataService)
   }
 
   "FormBundleReturnController" must {
-
-    "use correct DelegationConnector" in {
-      FormBundleReturnController.delegationService must be(DelegationService)
-    }
-
     "form bundle returnType" must {
-
       "unauthorised users" must {
-        "respond with a redirect" in {
+
+        "respond with a redirect" in new Setup {
           getWithUnAuthorisedUser { result =>
             status(result) must be(SEE_OTHER)
           }
         }
 
-        "be redirected to the unauthorised page" in {
+        "be redirected to the unauthorised page" in new Setup {
           getWithUnAuthorisedUser { result =>
             redirectLocation(result).get must include("/ated/unauthorised")
           }
         }
       }
-
     }
 
     "Authorised users" must {
@@ -104,7 +135,7 @@ class FormBundleReturnControllerSpec extends PlaySpec with GuiceOneServerPerSuit
         Some("ABCdefgh"), Some("PromABCdefgh"), Some("1234"), professionalValuation = true, ninetyDayRuleApplies = true, new LocalDate("2015-05-10"),
         BigDecimal(bd3), "1234567891", List(formBundleProp, formBundleProp2))
 
-      "show the return view with data when change is allowed" in {
+      "show the return view with data when change is allowed" in new Setup {
 
         val changeablePeriod = SubmittedLiabilityReturns(formBundleNo = formBundleNo1,
           description = "",
@@ -115,7 +146,6 @@ class FormBundleReturnControllerSpec extends PlaySpec with GuiceOneServerPerSuit
           changeAllowed = true,
           paymentReference = "")
 
-//        val chargeableSubmittedReturns = new SubmittedReturns(periodKey, Nil, List(changeablePeriod))
         val periodSummaryChargeable = PeriodSummaryReturns(periodKey = periodKey,
           draftReturns = Nil,
           submittedReturns = Some(new SubmittedReturns(periodKey, Nil, List(changeablePeriod))))
@@ -129,7 +159,7 @@ class FormBundleReturnControllerSpec extends PlaySpec with GuiceOneServerPerSuit
 
         }
       }
-      "try to show the return view even when we have no data" in {
+      "try to show the return view even when we have no data" in new Setup {
 
         getWithAuthorisedUser(None, None) {
           result =>
@@ -139,7 +169,7 @@ class FormBundleReturnControllerSpec extends PlaySpec with GuiceOneServerPerSuit
         }
       }
 
-      "show the return view with data when change is not allowed" in {
+      "show the return view with data when change is not allowed" in new Setup {
 
         getWithAuthorisedUser(Some(viewReturn), None) {
           result =>
@@ -148,11 +178,10 @@ class FormBundleReturnControllerSpec extends PlaySpec with GuiceOneServerPerSuit
             document.title() must include("View return")
 
             assert(document.getElementById("submit") === null)
-
         }
       }
 
-      "show a return with multiple values" in {
+      "show a return with multiple values" in new Setup {
         val changeablePeriod = SubmittedLiabilityReturns(formBundleNo = formBundleNo1,
           description = "",
           liabilityAmount = BigDecimal(432.12),
@@ -162,7 +191,6 @@ class FormBundleReturnControllerSpec extends PlaySpec with GuiceOneServerPerSuit
           changeAllowed = true,
           paymentReference = "")
 
-//        val chargeableSubmittedReturns = new SubmittedReturns(periodKey, Nil, List(changeablePeriod))
         val periodSummaryChargeable = PeriodSummaryReturns(periodKey = periodKey,
           draftReturns = Nil,
           submittedReturns = Some(new SubmittedReturns(periodKey, Nil, List(changeablePeriod))))
@@ -178,30 +206,5 @@ class FormBundleReturnControllerSpec extends PlaySpec with GuiceOneServerPerSuit
         }
       }
     }
-  }
-
-  def getWithAuthorisedUser(formBundleReturn: Option[FormBundleReturn], periodSummaries: Option[PeriodSummaryReturns] = None)(test: Future[Result] => Any) {
-    val userId = s"user-${UUID.randomUUID}"
-    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
-    setAuthMocks(authMock)
-
-    when(mockFormBundleReturnsService.getFormBundleReturns(Matchers.eq(formBundleNo1))(Matchers.any(), Matchers.any()))
-      .thenReturn(Future.successful(formBundleReturn))
-
-    when(mockSummaryReturnsService.getPeriodSummaryReturns(Matchers.eq(periodKey))(Matchers.any(), Matchers.any()))
-      .thenReturn(Future.successful(periodSummaries))
-    when(mockSubscriptionDataService.getOrganisationName(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(organisationName)))
-
-    val result = TestFormBundleReturnController.view(formBundleNo1, periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
-    test(result)
-  }
-
-  def getWithUnAuthorisedUser(test: Future[Result] => Any) {
-    val periodKey: Int = 2014
-    val userId = s"user-${UUID.randomUUID}"
-        val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
-    setInvalidAuthMocks(authMock)
-    val result = TestFormBundleReturnController.view("12345678901", periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
-    test(result)
   }
 }

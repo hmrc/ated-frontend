@@ -17,6 +17,7 @@
 package services
 
 import connectors.AtedConnector
+import javax.inject.Inject
 import models._
 import play.api.Logger
 import play.api.http.Status._
@@ -26,9 +27,8 @@ import utils.AtedConstants
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-trait SubscriptionDataAdapterService {
+class SubscriptionDataAdapterService @Inject()(atedConnector: AtedConnector) {
 
-  def atedConnector: AtedConnector
 
   def retrieveSubscriptionData(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[Option[SubscriptionData]] = {
     atedConnector.retrieveSubscriptionData() map { response =>
@@ -108,8 +108,4 @@ trait SubscriptionDataAdapterService {
 
   def getSafeId(subscriptionData: Option[SubscriptionData]): Option[String] =  subscriptionData.map(_.safeId)
 
-}
-
-object SubscriptionDataAdapterService extends SubscriptionDataAdapterService {
-  val atedConnector = AtedConnector
 }

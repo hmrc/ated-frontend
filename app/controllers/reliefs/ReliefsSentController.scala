@@ -16,24 +16,31 @@
 
 package controllers.reliefs
 
+import config.ApplicationConfig
 import connectors.DataCacheConnector
-import controllers.AtedBaseController
 import controllers.auth.AuthAction
+import javax.inject.Inject
 import models.SubmitReturnsResponse
-import play.api.Play.current
-import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{DelegationService, ReliefsService, SubscriptionDataService}
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.AtedConstants._
 
-trait ReliefsSentController extends AtedBaseController with AuthAction {
+import scala.concurrent.ExecutionContext
 
-  def subscriptionDataService: SubscriptionDataService
-  def dataCacheConnector: DataCacheConnector
-  def reliefsService: ReliefsService
+class ReliefsSentController @Inject()(mcc : MessagesControllerComponents,
+                                      authAction: AuthAction,
+                                      subscriptionDataService: SubscriptionDataService,
+                                      val dataCacheConnector: DataCacheConnector,
+                                      val reliefsService: ReliefsService)
+                                     (implicit val appConfig: ApplicationConfig)
+
+  extends FrontendController(mcc) {
+
+  implicit val ec: ExecutionContext = mcc.executionContext
 
   def view(periodKey: Int): Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       dataCacheConnector.fetchAndGetFormData[SubmitReturnsResponse](SubmitReturnsResponseFormId) map {
         case Some(submitResponse) =>
           Ok(views.html.reliefs.reliefsSent(periodKey, submitResponse))
@@ -44,7 +51,7 @@ trait ReliefsSentController extends AtedBaseController with AuthAction {
   }
 
   def viewPrintFriendlyReliefSent(periodKey: Int): Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       for {
         submitedResponse <- dataCacheConnector.fetchAndGetFormData[SubmitReturnsResponse](SubmitReturnsResponseFormId)
         organisationName <- subscriptionDataService.getOrganisationName
@@ -53,12 +60,4 @@ trait ReliefsSentController extends AtedBaseController with AuthAction {
       }
     }
   }
-
-}
-
-object ReliefsSentController extends ReliefsSentController {
-  val dataCacheConnector: DataCacheConnector = DataCacheConnector
-  val reliefsService: ReliefsService = ReliefsService
-  val delegationService: DelegationService = DelegationService
-  val subscriptionDataService: SubscriptionDataService = SubscriptionDataService
 }

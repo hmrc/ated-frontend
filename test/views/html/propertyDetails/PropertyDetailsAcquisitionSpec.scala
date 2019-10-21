@@ -16,17 +16,24 @@
 
 package views.html.propertyDetails
 
+import config.ApplicationConfig
 import forms.PropertyDetailsForms
+import models.StandardAuthRetrievals
 import org.scalatest.mockito.MockitoSugar
+import play.api.i18n.Messages
 import play.twirl.api.Html
-import uk.gov.hmrc.auth.core.AffinityGroup
+import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
+import uk.gov.hmrc.auth.core.retrieve.~
 import utils.MockAuthUtil
 import utils.viewHelpers.AtedViewSpec
 
 class PropertyDetailsAcquisitionSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil {
 
-  implicit val authContext = organisationStandardRetrievals
-  val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+  implicit val authContext: StandardAuthRetrievals = organisationStandardRetrievals
+
+  implicit val appConfig: ApplicationConfig = mock[ApplicationConfig]
+
+  val authMock: Enrolments ~ Some[AffinityGroup] ~ Some[String] = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
   setAuthMocks(authMock)
 
   "Property Details Acquisition view" must {
@@ -35,7 +42,9 @@ class PropertyDetailsAcquisitionSpec extends AtedViewSpec with MockitoSugar with
     behave like pageWithPreHeading(messages("ated.property-details.pre-header"))
     behave like pageWithBackLink
     behave like pageWithContinueButtonForm("/ated/liability/create/acquisition/save//period/0")
-    behave like pageWithYesNoRadioButton("anAcquisition-true", "anAcquisition-false")
+    behave like pageWithYesNoRadioButton("anAcquisition-true", "anAcquisition-false",
+      messages("ated.property-details-value.yes"),
+      messages("ated.property-details-value.no"))
 
     "check contents" in {
       doc.getElementsContainingOwnText(messages("ated.property-details-value.anAcquisition.what")).hasText must be(true)

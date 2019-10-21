@@ -19,6 +19,8 @@ package controllers.subscriptionData
 import java.util.UUID
 
 import builders.{SessionBuilder, TitleBuilder}
+import config.ApplicationConfig
+import controllers.auth.AuthAction
 import models.Identification
 import org.jsoup.Jsoup
 import org.mockito.Matchers
@@ -27,12 +29,13 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
-import play.api.libs.json.Json
-import play.api.mvc.{AnyContentAsJson, Result}
+import play.api.Environment
+import play.api.libs.json.{JsValue, Json}
+import play.api.mvc.{AnyContentAsJson, MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.{DelegationService, SubscriptionDataService}
-import uk.gov.hmrc.auth.core.{AffinityGroup, PlayAuthConnector}
+import services.SubscriptionDataService
+import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.MockAuthUtil
 
@@ -40,29 +43,71 @@ import scala.concurrent.Future
 
 class OverseasCompanyRegistrationControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with MockAuthUtil {
 
+  implicit lazy val hc: HeaderCarrier = HeaderCarrier()
+  implicit val mockAppConfig: ApplicationConfig = mock[ApplicationConfig]
+
+  val mockMcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
+  val mockEnvironment: Environment = app.injector.instanceOf[Environment]
   val mockSubscriptionDataService: SubscriptionDataService = mock[SubscriptionDataService]
-implicit lazy val hc: HeaderCarrier = HeaderCarrier()
 
-  object TestOverseasCompanyRegistrationController extends OverseasCompanyRegistrationController {
-    override val authConnector: PlayAuthConnector = mockAuthConnector
-    override val delegationService: DelegationService = mockDelegationService
-    override val subscriptionDataService: SubscriptionDataService = mockSubscriptionDataService
-  }
+  class Setup {
 
-  override def beforeEach(): Unit = {
-    reset(mockAuthConnector)
-    reset(mockSubscriptionDataService)
+    val mockAuthAction: AuthAction = new AuthAction(
+      mockAppConfig,
+      mockDelegationService,
+      mockAuthConnector
+    )
+
+    val testOverseasCompanyRegistrationController: OverseasCompanyRegistrationController = new OverseasCompanyRegistrationController (
+      mockMcc,
+      mockAuthAction,
+      mockSubscriptionDataService,
+      mockEnvironment
+    )
+
+    def getWithUnAuthorisedUser(test: Future[Result] => Any) {
+      val userId = s"user-${UUID.randomUUID}"
+      val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
+      setInvalidAuthMocks(authMock)
+      val result = testOverseasCompanyRegistrationController.edit().apply(SessionBuilder.buildRequestWithSession(userId))
+      test(result)
+    }
+
+    def getWithAuthorisedUser(overseasInfo: Option[Identification] = None)(test: Future[Result] => Any) {
+      val userId = s"user-${UUID.randomUUID}"
+      val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+      setAuthMocks(authMock)
+      when(mockSubscriptionDataService.getOverseasCompanyRegistration(Matchers.any(), Matchers.any())).thenReturn(Future.successful(overseasInfo))
+      val result = testOverseasCompanyRegistrationController.edit().apply(SessionBuilder.buildRequestWithSession(userId))
+
+      test(result)
+    }
+
+    def submitWithUnAuthorisedUser(test: Future[Result] => Any) {
+      val userId = s"user-${UUID.randomUUID}"
+      val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
+      setInvalidAuthMocks(authMock)
+      val result = testOverseasCompanyRegistrationController.submit().apply(SessionBuilder.buildRequestWithSession(userId))
+      test(result)
+    }
+
+    def submitWithAuthorisedUserSuccess(input: Option[Identification] = None)
+                                       (fakeRequest: FakeRequest[AnyContentAsJson])(test: Future[Result] => Any) {
+      val userId = s"user-${UUID.randomUUID}"
+      val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+      setAuthMocks(authMock)
+      when(mockSubscriptionDataService.updateOverseasCompanyRegistration(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(input))
+      val result = testOverseasCompanyRegistrationController.submit().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
+
+      test(result)
+
+    }
   }
 
   "OverseasCompanyRegistrationController " must {
-
-    "use correct DelegationConnector ...." in {
-      OverseasCompanyRegistrationController.delegationService must be(DelegationService)
-    }
-
     "unauthorised users" must {
 
-      "respond with a redirect" in {
+      "respond with a redirect" in new Setup {
         getWithUnAuthorisedUser { result =>
           status(result) must be(SEE_OTHER)
           redirectLocation(result).get must include("/ated/unauthorised")
@@ -70,7 +115,7 @@ implicit lazy val hc: HeaderCarrier = HeaderCarrier()
       }
     }
     "edit" must {
-      "show page with empty data" in {
+      "show page with empty data" in new Setup {
         getWithAuthorisedUser(None) {
           result =>
             status(result) must be(OK)
@@ -81,8 +126,7 @@ implicit lazy val hc: HeaderCarrier = HeaderCarrier()
         }
       }
 
-      "show page with populated data" in {
-
+      "show page with populated data" in new Setup {
         val testIdentification = Identification("AAAAAAAAA", "Some Place", "FR")
 
         getWithAuthorisedUser(Some(testIdentification)) {
@@ -95,16 +139,15 @@ implicit lazy val hc: HeaderCarrier = HeaderCarrier()
     }
 
     "submit" must {
-
       "unauthorised users" must {
 
-        "respond with a redirect" in {
+        "respond with a redirect" in new Setup {
           submitWithUnAuthorisedUser { result =>
             status(result) must be(SEE_OTHER)
           }
         }
 
-        "be redirected to the login page" in {
+        "be redirected to the login page" in new Setup {
           submitWithUnAuthorisedUser { result =>
             redirectLocation(result).get must include("/ated/unauthorised")
           }
@@ -112,15 +155,13 @@ implicit lazy val hc: HeaderCarrier = HeaderCarrier()
       }
 
       "Authorised users" must {
-
         "validate form" must {
 
-
-          "overseas company registration number must not be more than 60 chars and issuing institution must not be more than 40 chars" in {
+          "overseas company registration number must not be more than 60 chars and issuing institution must not be more than 40 chars" in new Setup {
             implicit val hc: HeaderCarrier = HeaderCarrier()
-            val regNumber = "a" * 61
-            val issuingInst = "a" * 41
-            val inputJson = Json.parse( s"""{"businessUniqueId": "$regNumber", "issuingInstitution": "$issuingInst", "countryCode": "FR" }""")
+            val regNumber: String = "a" * 61
+            val issuingInst: String = "a" * 41
+            val inputJson: JsValue = Json.parse( s"""{"businessUniqueId": "$regNumber", "issuingInstitution": "$issuingInst", "countryCode": "FR" }""")
 
             submitWithAuthorisedUserSuccess()(FakeRequest().withJsonBody(inputJson)) {
               result =>
@@ -130,10 +171,10 @@ implicit lazy val hc: HeaderCarrier = HeaderCarrier()
             }
           }
 
-          "If input is valid, submit must redirect" in {
+          "If input is valid, submit must redirect" in new Setup {
 
             implicit val hc: HeaderCarrier = HeaderCarrier()
-            val inputJson = Json.parse( s"""{"businessUniqueId": "AAAAAAAA", "issuingInstitution": "Some Place", "countryCode": "FR" }""")
+            val inputJson: JsValue = Json.parse( s"""{"businessUniqueId": "AAAAAAAA", "issuingInstitution": "Some Place", "countryCode": "FR" }""")
 
             submitWithAuthorisedUserSuccess()(FakeRequest().withJsonBody(inputJson)) {
               result =>
@@ -143,45 +184,6 @@ implicit lazy val hc: HeaderCarrier = HeaderCarrier()
           }
         }
       }
-    }
-
-    def getWithUnAuthorisedUser(test: Future[Result] => Any) {
-      val userId = s"user-${UUID.randomUUID}"
-      val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
-      setInvalidAuthMocks(authMock)
-      val result = TestOverseasCompanyRegistrationController.edit().apply(SessionBuilder.buildRequestWithSession(userId))
-      test(result)
-    }
-
-    def getWithAuthorisedUser(overseasInfo: Option[Identification] = None)(test: Future[Result] => Any) {
-      val userId = s"user-${UUID.randomUUID}"
-      val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
-      setAuthMocks(authMock)
-      implicit val hc: HeaderCarrier = HeaderCarrier()
-      when(mockSubscriptionDataService.getOverseasCompanyRegistration(Matchers.any(), Matchers.any())).thenReturn(Future.successful(overseasInfo))
-      val result = TestOverseasCompanyRegistrationController.edit().apply(SessionBuilder.buildRequestWithSession(userId))
-
-      test(result)
-    }
-
-    def submitWithUnAuthorisedUser(test: Future[Result] => Any) {
-      val userId = s"user-${UUID.randomUUID}"
-      val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
-      setInvalidAuthMocks(authMock)
-      val result = TestOverseasCompanyRegistrationController.submit().apply(SessionBuilder.buildRequestWithSession(userId))
-      test(result)
-    }
-
-    def submitWithAuthorisedUserSuccess(input: Option[Identification] = None)
-                                       (fakeRequest: FakeRequest[AnyContentAsJson])(test: Future[Result] => Any) {
-      val userId = s"user-${UUID.randomUUID}"
-      val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
-      setAuthMocks(authMock)
-      when(mockSubscriptionDataService.updateOverseasCompanyRegistration(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(input))
-      val result = TestOverseasCompanyRegistrationController.submit().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
-
-      test(result)
-
     }
   }
 }

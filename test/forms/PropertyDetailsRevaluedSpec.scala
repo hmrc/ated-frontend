@@ -35,7 +35,7 @@ class PropertyDetailsRevaluedSpec extends PlaySpec with MustMatchers with GuiceO
         form.fold(
           hasErrors => {
             hasErrors.errors.length mustBe 1
-            hasErrors.errors.head.message mustBe Messages("ated.property-details-value.isPropertyRevalued.error.non-selected")
+            hasErrors.errors.head.message mustBe "ated.property-details-value.isPropertyRevalued.error.non-selected"
           },
           _ => {
             fail("There is a problem")
@@ -57,9 +57,9 @@ class PropertyDetailsRevaluedSpec extends PlaySpec with MustMatchers with GuiceO
         PropertyDetailsForms.validatePropertyDetailsRevalued(periodKey,  propertyDetailsRevaluedForm.bind(input)).fold(
           hasErrors => {
             hasErrors.errors.length mustBe  3
-            hasErrors.errors.head.message mustBe Messages("ated.property-details-value.partAcqDispDate.error.empty")
-            hasErrors.errors(1).message mustBe Messages("q2ated.property-details-value.ownedBeforePolicyYearValue.error.empty")
-            hasErrors.errors.last.message mustBe Messages("ated.property-details-value.revaluedDate.error.empty")
+            hasErrors.errors.head.message mustBe "ated.property-details-value.partAcqDispDate.error.empty"
+            hasErrors.errors(1).message mustBe "ated.property-details-value.revaluedValue.error.empty"
+            hasErrors.errors.last.message mustBe "ated.property-details-value.revaluedDate.error.empty"
           },
           _ => {
             fail("There is some problem")
@@ -82,8 +82,8 @@ class PropertyDetailsRevaluedSpec extends PlaySpec with MustMatchers with GuiceO
         PropertyDetailsForms.validatePropertyDetailsRevalued(periodKey,  propertyDetailsRevaluedForm.bind(input)).fold(
           hasErrors => {
             hasErrors.errors.length mustBe  2
-            hasErrors.errors.head.message mustBe Messages("ated.property-details-value.partAcqDispDate.error.in-future")
-            hasErrors.errors.last.message mustBe Messages("ated.property-details-value.revaluedDate.error.in-future")
+            hasErrors.errors.head.message mustBe "ated.property-details-value.partAcqDispDate.error.in-future"
+            hasErrors.errors.last.message mustBe "ated.property-details-value.revaluedDate.error.in-future"
           },
           _ => {
             fail("There is some problem")
@@ -106,7 +106,7 @@ class PropertyDetailsRevaluedSpec extends PlaySpec with MustMatchers with GuiceO
         PropertyDetailsForms.validatePropertyDetailsRevalued(periodKey,  propertyDetailsRevaluedForm.bind(input)).fold(
           hasErrors => {
             hasErrors.errors.length mustBe  2
-            Messages(hasErrors.errors.head.message) mustBe Messages("error.invalid.date.format")
+            hasErrors.errors.head.message mustBe "error.invalid.date.format"
           },
           _ => {
             fail("There is some problem")
@@ -128,7 +128,7 @@ class PropertyDetailsRevaluedSpec extends PlaySpec with MustMatchers with GuiceO
         PropertyDetailsForms.validatePropertyDetailsRevalued(periodKey,  propertyDetailsRevaluedForm.bind(input)).fold(
           hasErrors => {
             hasErrors.errors.length mustBe  1
-            hasErrors.errors.head.message mustBe Messages("ated.property-details-value.incorrect-format")
+            hasErrors.errors.head.message mustBe "ated.property-details-value.incorrect-format"
           },
           _ => {
             fail("There is some problem")
@@ -150,7 +150,7 @@ class PropertyDetailsRevaluedSpec extends PlaySpec with MustMatchers with GuiceO
         PropertyDetailsForms.validatePropertyDetailsRevalued(periodKey,  propertyDetailsRevaluedForm.bind(input)).fold(
           hasErrors => {
             hasErrors.errors.length mustBe  1
-            hasErrors.errors.head.message mustBe Messages("ated.property-details-value.revaluedValue.error.too-low")
+            hasErrors.errors.head.message mustBe "ated.property-details-value.revaluedValue.error.too-low"
           },
           _ => {
             fail("There is some problem")
@@ -172,7 +172,7 @@ class PropertyDetailsRevaluedSpec extends PlaySpec with MustMatchers with GuiceO
         PropertyDetailsForms.validatePropertyDetailsRevalued(periodKey,  propertyDetailsRevaluedForm.bind(input)).fold(
           hasErrors => {
             hasErrors.errors.length mustBe  1
-            hasErrors.errors.head.message mustBe Messages("ated.property-details-value.revaluedValue.error.too-high")
+            hasErrors.errors.head.message mustBe "ated.property-details-value.revaluedValue.error.too-high"
           },
           _ => {
             fail("There is some problem")

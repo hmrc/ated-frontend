@@ -31,9 +31,9 @@ object OverseasCompanyRegistrationForm {
   val overseasCompanyRegistrationForm = Form(
     mapping(
       "businessUniqueId" -> optional(text)
-        .verifying(Messages("ated.non-uk-reg.businessUniqueId.length", length60), x => x.isEmpty || (x.nonEmpty && x.get.length <= length60)),
+        .verifying("ated.non-uk-reg.businessUniqueId.length", x => x.isEmpty || (x.nonEmpty && x.get.length <= length60)),
       "issuingInstitution" -> optional(text)
-        .verifying(Messages("ated.non-uk-reg.issuingInstitution.length", length40), x => x.isEmpty || (x.nonEmpty && x.get.length <= length40)),
+        .verifying("ated.non-uk-reg.issuingInstitution.length", x => x.isEmpty || (x.nonEmpty && x.get.length <= length40)),
       "countryCode" -> optional(text)
     )(OverseasCompanyRegistration.apply)(OverseasCompanyRegistration.unapply)
   )

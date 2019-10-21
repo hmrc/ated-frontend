@@ -16,8 +16,9 @@
 
 package views.html.reliefs
 
+import config.ApplicationConfig
 import forms.ReliefForms
-import models.Reliefs
+import models.{Reliefs, StandardAuthRetrievals}
 import org.joda.time.LocalDate
 import org.scalatest.mockito.MockitoSugar
 import play.api.data.Form
@@ -28,7 +29,9 @@ import utils.MockAuthUtil
 import utils.viewHelpers.AtedViewSpec
 
 class ChooseReliefsSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil {
-  implicit lazy val authContext = organisationStandardRetrievals
+  implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
+
+  implicit val appConfig: ApplicationConfig = mock[ApplicationConfig]
 
   val periodKey = 2017
   val periodStartDate = new LocalDate()
@@ -117,7 +120,7 @@ class ChooseReliefsSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil
 
     "display error" when {
       "rental business is selected but no date is populated" in {
-        haveChooseReliefFormError("rentalBusiness", "rental businesses")
+        haveChooseReliefFormError("rentalBusiness", "rental business")
       }
 
       "rental business start date is invalid" in {
@@ -198,7 +201,7 @@ class ChooseReliefsSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil
 
     val errorDoc = doc(view)
     errorDoc must haveErrorSummary(Messages(s"ated.choose-reliefs.error.general.$fieldStartDate"))
-    errorDoc must haveErrorNotification(s"You must enter a $partialFieldError date")
+    errorDoc must haveErrorNotification("You must enter a valid date")
   }
 
   def haveChooseReliefStartDateFormError(field: String): Unit = {

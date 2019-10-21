@@ -14,20 +14,21 @@
  * limitations under the License.
  *@
 
+@import config.ApplicationConfig
 @(title: String,
     userLoggedIn: Boolean = true,
     supportLinkEnabled: Boolean = true,
     sidebarLinks: Option[Html] = None,
-    sidebarClass: Option[String] = None)(mainContent: Html)(implicit request: Request[AnyContent], messages: Messages)
+    sidebarClass: Option[String] = None)(mainContent: Html)(implicit request: Request[AnyContent], messages: Messages, appConfig: ApplicationConfig)
 
 
 
 @linkElement = {
-<link rel="stylesheet" href='@controllers.routes.AssetsController.at("stylesheets/main.css")'/>
+<link rel="stylesheet" href='@controllers.routes.Assets.versioned("stylesheets/main.css")'/>
 }
 
 @main(
-    applicationConfig = config.ApplicationConfig,
+    appConfig = appConfig,
     supportLinkEnabled = supportLinkEnabled,
     title = title,
     sidebarLinks = sidebarLinks,

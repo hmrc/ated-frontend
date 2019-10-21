@@ -34,9 +34,10 @@ class DelegationServiceSpec extends UnitSpec with MockitoSugar with BeforeAndAft
   val mockDelegationConnector: DelegationConnector = mock[DelegationConnector]
   implicit val hc: HeaderCarrier = HeaderCarrier()
 
-  object TestDelegationService extends DelegationService {
-
-    override val delegationConnector: DelegationConnector = mockDelegationConnector
+  class Setup {
+    val testDelegationService: DelegationService = new DelegationService(
+      mockDelegationConnector
+    )
   }
 
   override def beforeEach: Unit = {
@@ -45,7 +46,7 @@ class DelegationServiceSpec extends UnitSpec with MockitoSugar with BeforeAndAft
 
   "delegationCall" should {
     "return a delegation model" when {
-      "http response is returned" in {
+      "http response is returned" in new Setup {
 
         val returnJson = Json.parse(
           """{
@@ -74,16 +75,16 @@ class DelegationServiceSpec extends UnitSpec with MockitoSugar with BeforeAndAft
           internalId = Some("test")
         )
         when(mockDelegationConnector.delegationDataCall(Matchers.any())(Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(returnJson))))
-        val result = TestDelegationService.delegationCall("String")
+        val result: Future[Option[DelegationModel]] = testDelegationService.delegationCall("String")
         await(result) shouldBe Some(expectedModel)
       }
     }
 
     "not return a delegation model" when {
-      "no http response is returned" in {
+      "no http response is returned" in new Setup {
 
         when(mockDelegationConnector.delegationDataCall(Matchers.any())(Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, None)))
-        val result = TestDelegationService.delegationCall("String")
+        val result: Future[Option[DelegationModel]] = testDelegationService.delegationCall("String")
         await(result) shouldBe None
       }
     }

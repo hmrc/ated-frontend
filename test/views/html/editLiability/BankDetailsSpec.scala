@@ -16,7 +16,9 @@
 
 package views.html.editLiability
 
+import config.ApplicationConfig
 import forms.BankDetailForms
+import models.StandardAuthRetrievals
 import org.scalatest.mockito.MockitoSugar
 import play.api.data.{Form, FormError}
 import play.twirl.api.Html
@@ -24,9 +26,9 @@ import utils.MockAuthUtil
 import utils.viewHelpers.AtedViewSpec
 
 class BankDetailsSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil {
-  implicit lazy val authContext = organisationStandardRetrievals
 
-
+  implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
+  implicit val appConfig: ApplicationConfig = mock[ApplicationConfig]
 
   "Bank Details view" must {
     behave like pageWithTitle(messages("ated.bank-details.title"))
@@ -34,7 +36,9 @@ class BankDetailsSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil {
     behave like pageWithPreHeading(messages("ated.property-details.pre-header-change"))
     behave like pageWithBackLink
     behave like pageWithContinueButtonForm("/ated/liability/oldFormBundleNo/change/bank-details")
-    behave like pageWithYesNoRadioButton("hasUKBankAccount-true", "hasUKBankAccount-false")
+    behave like pageWithYesNoRadioButton("hasUKBankAccount-true", "hasUKBankAccount-false",
+      messages("ated.label.yes"),
+      messages("ated.label.no"))
 
     "check page errors for uk account" in {
       val eform = Form(form.mapping, Map("hasUKBankAccount" -> "true"),

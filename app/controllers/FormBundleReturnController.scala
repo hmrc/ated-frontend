@@ -16,22 +16,29 @@
 
 package controllers
 
+import config.ApplicationConfig
 import controllers.auth.AuthAction
-import play.api.Play.current
-import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, AnyContent}
+import javax.inject.Inject
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{DelegationService, FormBundleReturnsService, SubscriptionDataService, SummaryReturnsService}
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.PeriodUtils
 
-trait FormBundleReturnController extends AtedBaseController with AuthAction {
+import scala.concurrent.ExecutionContext
 
-  def formBundleReturnsService: FormBundleReturnsService
+class FormBundleReturnController @Inject()(mcc: MessagesControllerComponents,
+                                           authAction: AuthAction,
+                                           formBundleReturnsService: FormBundleReturnsService,
+                                           summaryReturnsService: SummaryReturnsService,
+                                           subscriptionDataService: SubscriptionDataService)
+                                          (implicit val appConfig: ApplicationConfig)
 
-  def summaryReturnsService: SummaryReturnsService
-  def subscriptionDataService: SubscriptionDataService
+  extends FrontendController(mcc) {
+
+  implicit val ec : ExecutionContext = mcc.executionContext
 
   def view(formBundleNumber: String, periodKey: Int): Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       for {
         formBundleReturn <- formBundleReturnsService.getFormBundleReturns(formBundleNumber)
         periodSummaries <- summaryReturnsService.getPeriodSummaryReturns(periodKey)
@@ -61,11 +68,4 @@ trait FormBundleReturnController extends AtedBaseController with AuthAction {
   private def getBackLink(periodKey: Int) = {
     Some(routes.PeriodSummaryController.view(periodKey).url)
   }
-}
-
-object FormBundleReturnController extends FormBundleReturnController {
-  val delegationService: DelegationService = DelegationService
-  val formBundleReturnsService: FormBundleReturnsService = FormBundleReturnsService
-  val summaryReturnsService: SummaryReturnsService = SummaryReturnsService
-  val subscriptionDataService: SubscriptionDataService = SubscriptionDataService
 }

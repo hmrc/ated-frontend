@@ -16,30 +16,32 @@
 
 package utils
 
+import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
+import play.api.Environment
 
-class CountryCodeUtilsSpec extends PlaySpec with GuiceOneServerPerSuite {
+class CountryCodeUtilsSpec extends PlaySpec with GuiceOneServerPerSuite with CountryCodeUtils with MockitoSugar {
+  override val environment: Environment = app.injector.instanceOf[Environment]
 
   "CountryCodeUtils" must {
 
     "getSelectedCountry" must {
       "bring the correct country from the file" in {
-        CountryCodeUtils.getSelectedCountry("GB") must be("United Kingdom")
-        CountryCodeUtils.getSelectedCountry("US") must be("USA")
-        CountryCodeUtils.getSelectedCountry("VG") must be("British Virgin Islands")
-        CountryCodeUtils.getSelectedCountry("UG") must be("Uganda")
-        CountryCodeUtils.getSelectedCountry("zz") must be("zz")
+        getSelectedCountry("GB") must be("United Kingdom")
+        getSelectedCountry("US") must be("USA")
+        getSelectedCountry("VG") must be("British Virgin Islands")
+        getSelectedCountry("UG") must be("Uganda")
+        getSelectedCountry("zz") must be("zz")
       }
     }
 
     "getIsoCodeMap" must {
       "return map of country iso-code to country name" in {
-        CountryCodeUtils.getIsoCodeTupleList must contain(("US", "USA :United States of America"))
-        CountryCodeUtils.getIsoCodeTupleList must contain(("GB", "United Kingdom :UK, GB, Great Britain"))
-        CountryCodeUtils.getIsoCodeTupleList must contain(("UG", "Uganda"))
+        getIsoCodeTupleList must contain(("US", "USA :United States of America"))
+        getIsoCodeTupleList must contain(("GB", "United Kingdom :UK, GB, Great Britain"))
+        getIsoCodeTupleList must contain(("UG", "Uganda"))
       }
     }
   }
-
 }

@@ -16,11 +16,20 @@
 
 package utils
 
+import config.ApplicationConfig
 import org.scalatest.BeforeAndAfterEach
+import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 
-class FeatureSwitchSpec extends PlaySpec with GuiceOneServerPerSuite with BeforeAndAfterEach {
+class FeatureSwitchSpec extends PlaySpec with GuiceOneServerPerSuite with BeforeAndAfterEach with MockitoSugar {
+
+  val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
+  class Setup {
+    val testFeatureSwitchImpl: FeatureSwitchImpl = new FeatureSwitchImpl(
+      mockAppConfig
+    )
+  }
 
   override def beforeEach: Unit = {
     System.clearProperty("feature.test")
@@ -28,37 +37,36 @@ class FeatureSwitchSpec extends PlaySpec with GuiceOneServerPerSuite with Before
 
   "FeatureSwitch" should {
 
-    "generate correct system property name for the feature" in {
-      FeatureSwitch.systemPropertyName("test") must be("features.test")
+    "generate correct system property name for the feature" in new Setup {
+      testFeatureSwitchImpl.systemPropertyName("test") must be("features.test")
     }
 
-    "be ENABLED if the system property is defined as 'true'" in {
+    "be ENABLED if the system property is defined as 'true'" in new Setup {
       System.setProperty("features.test", "true")
 
-      FeatureSwitch.forName("test").enabled must be(true)
+      testFeatureSwitchImpl.forName("test").enabled must be(true)
     }
 
-    "be DISABLED if the system property is defined as 'false'" in {
+    "be DISABLED if the system property is defined as 'false'" in new Setup {
       System.setProperty("features.test", "false")
 
-      FeatureSwitch.forName("test").enabled must be(false)
+      testFeatureSwitchImpl.forName("test").enabled must be(false)
     }
 
-    "be DISABLED if the system property is undefined" in {
+    "be DISABLED if the system property is undefined" in new Setup {
       System.clearProperty("features.test")
 
-      FeatureSwitch.forName("test").enabled must be(false)
+      testFeatureSwitchImpl.forName("test").enabled must be(false)
     }
 
-    "support dynamic toggling" in {
+    "support dynamic toggling" in new Setup {
       System.setProperty("features.test", "false")
       val testFeatureSwitch = FeatureSwitch("test", enabled = true)
-      FeatureSwitch.enable(testFeatureSwitch)
-      FeatureSwitch.forName("test").enabled must be(true)
+      testFeatureSwitchImpl.enable(testFeatureSwitch)
+      testFeatureSwitchImpl.forName("test").enabled must be(true)
 
-      FeatureSwitch.disable(testFeatureSwitch)
-      FeatureSwitch.forName("test").enabled must be(false)
+      testFeatureSwitchImpl.disable(testFeatureSwitch)
+      testFeatureSwitchImpl.forName("test").enabled must be(false)
     }
   }
-
 }

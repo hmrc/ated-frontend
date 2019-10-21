@@ -14,7 +14,8 @@
  * limitations under the License.
  *@
 
-@(periodKey: Int, returnResponse: SubmitReturnsResponse)(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent])
+@import config.ApplicationConfig
+@(periodKey: Int, returnResponse: SubmitReturnsResponse)(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
 @import models._
 @import uk.gov.hmrc.play.views.html._

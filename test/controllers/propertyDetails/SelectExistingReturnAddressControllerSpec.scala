@@ -19,7 +19,9 @@ package controllers.propertyDetails
 import java.util.UUID
 
 import builders.{SessionBuilder, TitleBuilder}
+import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
+import controllers.auth.AuthAction
 import models._
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
@@ -30,11 +32,11 @@ import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.libs.json.{JsValue, Json}
-import play.api.mvc.Result
+import play.api.mvc.{MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services._
-import uk.gov.hmrc.auth.core.{AffinityGroup, PlayAuthConnector}
+import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.{AtedConstants, MockAuthUtil}
 
@@ -42,51 +44,111 @@ import scala.concurrent.Future
 
 class SelectExistingReturnAddressControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with MockAuthUtil {
 
+  implicit val mockAppConfig: ApplicationConfig = mock[ApplicationConfig]
   implicit lazy val hc: HeaderCarrier = HeaderCarrier()
 
-  val mockPropertyDetailsService: PropertyDetailsService = mock[PropertyDetailsService]
-  val mockAddressLookupService: AddressLookupService = mock[AddressLookupService]
-
-  val mockBackLinkCache: BackLinkCacheConnector = mock[BackLinkCacheConnector]
-  val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
-  val mockFormBundleReturnsService: FormBundleReturnsService = mock[FormBundleReturnsService]
+  val mockMcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
   val mockSummaryReturnsService: SummaryReturnsService = mock[SummaryReturnsService]
+  val mockPropertyDetailsAddressController: PropertyDetailsAddressController = mock[PropertyDetailsAddressController]
+  val mockFormBundleReturnsService: FormBundleReturnsService = mock[FormBundleReturnsService]
+  val mockPropertyDetailsService: PropertyDetailsService = mock[PropertyDetailsService]
+  val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
+  val mockBackLinkCacheConnector: BackLinkCacheConnector = mock[BackLinkCacheConnector]
+
   val returnTypeCharge: String = "CR"
   val returnTypeRelief: String = "RR"
 
-  object TestSelectExistingReturnAddressController extends SelectExistingReturnAddressController {
-    override val authConnector: PlayAuthConnector = mockAuthConnector
-    override val delegationService: DelegationService = mockDelegationService
-    override val propertyDetailsService: PropertyDetailsService = mockPropertyDetailsService
-    override val controllerId: String = "controllerId"
-    override val backLinkCacheConnector: BackLinkCacheConnector = mockBackLinkCache
-    override val dataCacheConnector: DataCacheConnector = mockDataCacheConnector
-    override val formBundleReturnService: FormBundleReturnsService = mockFormBundleReturnsService
-    override val summaryReturnService: SummaryReturnsService = mockSummaryReturnsService
+  class Setup {
+
+    val mockAuthAction: AuthAction = new AuthAction(
+      mockAppConfig,
+      mockDelegationService,
+      mockAuthConnector
+    )
+
+    val testSelectExistingReturnAddressController: SelectExistingReturnAddressController = new SelectExistingReturnAddressController(
+      mockMcc,
+      mockAuthAction,
+      mockSummaryReturnsService,
+      mockPropertyDetailsAddressController,
+      mockFormBundleReturnsService,
+      mockPropertyDetailsService,
+      mockDataCacheConnector,
+      mockBackLinkCacheConnector
+    )
+
+    def viewWithUnAuthorisedUser(test: Future[Result] => Any) {
+      val periodKey: Int = 2015
+      val userId = s"user-${UUID.randomUUID}"
+      val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
+      setInvalidAuthMocks(authMock)
+      val prevReturns = Seq(PreviousReturns("1, addressLine1", "12345678"))
+      when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
+      when(mockSummaryReturnsService.getPreviousSubmittedLiabilityDetails
+      (Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(prevReturns))
+      when(mockBackLinkCacheConnector.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
+      val result = testSelectExistingReturnAddressController.view(periodKey, returnTypeCharge).apply(SessionBuilder.buildRequestWithSession(userId))
+      test(result)
+    }
+
+    def viewWithAuthorisedUser(prevReturns: Option[Seq[PreviousReturns]])(test: Future[Result] => Any) {
+      val periodKey: Int = 2015
+      val userId = s"user-${UUID.randomUUID}"
+      val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+      setAuthMocks(authMock)
+      when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
+      when(mockSummaryReturnsService.retrieveCachedPreviousReturnAddressList(Matchers.any(), Matchers.any())).thenReturn(Future.successful(prevReturns))
+      when(mockBackLinkCacheConnector.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
+      val result = testSelectExistingReturnAddressController.view(periodKey, returnTypeCharge).apply(SessionBuilder.buildRequestWithSession(userId))
+      test(result)
+    }
+
+    def saveWithUnAuthorisedUser(test: Future[Result] => Any) {
+      val periodKey: Int = 2015
+      val userId = s"user-${UUID.randomUUID}"
+      val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
+      setInvalidAuthMocks(authMock)
+      val prevReturns = Some(Seq(PreviousReturns("1, addressLine1", "12345678")))
+      when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
+      when(mockSummaryReturnsService.retrieveCachedPreviousReturnAddressList(Matchers.any(), Matchers.any())).thenReturn(Future.successful(prevReturns))
+      val result = testSelectExistingReturnAddressController.continue(periodKey, returnTypeCharge).apply(SessionBuilder.buildRequestWithSession(userId))
+      test(result)
+    }
+
+    def saveWithAuthorisedUser(formBundleReturn: Option[FormBundleReturn],
+                               prevReturns: Option[Seq[PreviousReturns]],
+                               inputJson: JsValue)(test: Future[Result] => Any) {
+      val periodKey: Int = 2014
+      val userId = s"user-${UUID.randomUUID}"
+      val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+      setAuthMocks(authMock)
+
+      when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
+      when(mockSummaryReturnsService.retrieveCachedPreviousReturnAddressList(Matchers.any(), Matchers.any())).thenReturn(Future.successful(prevReturns))
+      when(mockFormBundleReturnsService.getFormBundleReturns
+      (Matchers.eq("12345678"))(Matchers.any(), Matchers.any())).thenReturn(Future.successful(formBundleReturn))
+      when(mockDataCacheConnector.saveFormData[Boolean]
+        (Matchers.eq(AtedConstants.SelectedPreviousReturn), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(true))
+      when(mockBackLinkCacheConnector.saveBackLink(Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
+      val result = testSelectExistingReturnAddressController.continue(periodKey, returnTypeCharge)
+        .apply(SessionBuilder.updateRequestWithSession(FakeRequest().withJsonBody(inputJson), userId))
+      test(result)
+    }
   }
 
   override def beforeEach(): Unit = {
-    reset(mockAuthConnector)
-    reset(mockPropertyDetailsService)
-    reset(mockDelegationService)
-    reset(mockAddressLookupService)
-    reset(mockBackLinkCache)
   }
 
-
   "SelectExistingReturnAddressController" must {
-
     val prevReturns = Some(Seq(PreviousReturns("1, addressLine1", "12345678")))
-
-    "use correct DelegationService" in {
-      SelectExistingReturnAddressController.delegationService must be(DelegationService)
-    }
-
     "view" must {
-
       "unauthorised users" must {
 
-        "respond with a redirect" in {
+        "respond with a redirect" in new Setup {
           viewWithUnAuthorisedUser { result =>
             status(result) must be(SEE_OTHER)
             redirectLocation(result).get must include("/ated/unauthorised")
@@ -96,8 +158,8 @@ class SelectExistingReturnAddressControllerSpec extends PlaySpec with GuiceOneSe
 
       "Authorised users" must {
 
-        "show the address details view if address list is retrieved from cache" in {
-          val prevReturns = Seq(PreviousReturns("1, addressLine1", "12345678"))
+        "show the address details view if address list is retrieved from cache" in new Setup {
+          val prevReturns: Seq[PreviousReturns] = Seq(PreviousReturns("1, addressLine1", "12345678"))
           viewWithAuthorisedUser(Some(prevReturns)) {
             result =>
               status(result) must be(OK)
@@ -106,7 +168,7 @@ class SelectExistingReturnAddressControllerSpec extends PlaySpec with GuiceOneSe
           }
         }
 
-        "show the address details view with no addresses if address list is not retrieved from cache" in {
+        "show the address details view with no addresses if address list is not retrieved from cache" in new Setup {
           viewWithAuthorisedUser(None) {
             result =>
               status(result) must be(OK)
@@ -119,16 +181,9 @@ class SelectExistingReturnAddressControllerSpec extends PlaySpec with GuiceOneSe
     }
 
     "save" must {
-
-      "not respond with NOT_FOUND when we try to view an id" in {
-        val result = route(FakeRequest(POST, "/ated/liability/address-lookup/save/2015"))
-        result.isDefined must be(true)
-        status(result.get) must not be NOT_FOUND
-      }
-
       "unauthorised users" must {
 
-        "respond with a redirect" in {
+        "respond with a redirect" in new Setup {
           saveWithUnAuthorisedUser { result =>
             status(result) must be(SEE_OTHER)
             redirectLocation(result).get must include("/ated/unauthorised")
@@ -137,7 +192,7 @@ class SelectExistingReturnAddressControllerSpec extends PlaySpec with GuiceOneSe
       }
 
 
-      "submitting an invalid request should fail and return to the search results page" in {
+      "submitting an invalid request should fail and return to the search results page" in new Setup {
         saveWithAuthorisedUser(None, prevReturns, Json.toJson(AddressSelected(None))) {
           result =>
             status(result) must be(BAD_REQUEST)
@@ -146,7 +201,7 @@ class SelectExistingReturnAddressControllerSpec extends PlaySpec with GuiceOneSe
         }
       }
 
-      "submitting an invalid request should fail and return to the search results page even with cached data" in {
+      "submitting an invalid request should fail and return to the search results page even with cached data" in new Setup {
         saveWithAuthorisedUser(None, prevReturns, Json.toJson(AddressSelected(None))) {
           result =>
             status(result) must be(BAD_REQUEST)
@@ -156,7 +211,7 @@ class SelectExistingReturnAddressControllerSpec extends PlaySpec with GuiceOneSe
         }
       }
 
-      "submitting an invalid request should fail and return to the search results page even with no cached data" in {
+      "submitting an invalid request should fail and return to the search results page even with no cached data" in new Setup {
         saveWithAuthorisedUser(None, None, Json.toJson(AddressSelected(None))) {
           result =>
             status(result) must be(BAD_REQUEST)
@@ -166,7 +221,7 @@ class SelectExistingReturnAddressControllerSpec extends PlaySpec with GuiceOneSe
         }
       }
 
-      "submitting an valid request should get the form bundle return and save in keystore" in {
+      "submitting an valid request should get the form bundle return and save in keystore" in new Setup {
         val formBundleProp = FormBundleProperty(BigDecimal(100), new LocalDate("2015-09-08"),
           new LocalDate("2015-10-12"), "Relief", Some("Property developers"))
         val formBundleProp2 = FormBundleProperty(BigDecimal(200), new LocalDate("2015-10-12"),
@@ -186,74 +241,12 @@ class SelectExistingReturnAddressControllerSpec extends PlaySpec with GuiceOneSe
         }
       }
 
-      "submitting an invalid form bundle number request should redirect to Account Summary Page" in {
+      "submitting an invalid form bundle number request should redirect to Account Summary Page" in new Setup {
         saveWithAuthorisedUser(formBundleReturn = None, prevReturns, Json.toJson(AddressSelected(Some("12345678")))) {
           result =>
             status(result) must be(SEE_OTHER)
         }
       }
     }
-  }
-
-  def viewWithUnAuthorisedUser(test: Future[Result] => Any) {
-    val periodKey: Int = 2015
-    val userId = s"user-${UUID.randomUUID}"
-    val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
-    setInvalidAuthMocks(authMock)
-    val prevReturns = Seq(PreviousReturns("1, addressLine1", "12345678"))
-    when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
-      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-    when(mockSummaryReturnsService.getPreviousSubmittedLiabilityDetails
-    (Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(prevReturns))
-    when(mockBackLinkCache.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
-    val result = TestSelectExistingReturnAddressController.view(periodKey, returnTypeCharge).apply(SessionBuilder.buildRequestWithSession(userId))
-    test(result)
-  }
-
-  def viewWithAuthorisedUser(prevReturns: Option[Seq[PreviousReturns]])(test: Future[Result] => Any) {
-    val periodKey: Int = 2015
-    val userId = s"user-${UUID.randomUUID}"
-    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
-    setAuthMocks(authMock)
-    when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
-      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-    when(mockSummaryReturnsService.retrieveCachedPreviousReturnAddressList(Matchers.any(), Matchers.any())).thenReturn(Future.successful(prevReturns))
-    when(mockBackLinkCache.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
-    val result = TestSelectExistingReturnAddressController.view(periodKey, returnTypeCharge).apply(SessionBuilder.buildRequestWithSession(userId))
-    test(result)
-  }
-
-  def saveWithUnAuthorisedUser(test: Future[Result] => Any) {
-    val periodKey: Int = 2015
-    val userId = s"user-${UUID.randomUUID}"
-    val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
-    setInvalidAuthMocks(authMock)
-    val prevReturns = Some(Seq(PreviousReturns("1, addressLine1", "12345678")))
-    when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
-      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-    when(mockSummaryReturnsService.retrieveCachedPreviousReturnAddressList(Matchers.any(), Matchers.any())).thenReturn(Future.successful(prevReturns))
-    val result = TestSelectExistingReturnAddressController.continue(periodKey, returnTypeCharge).apply(SessionBuilder.buildRequestWithSession(userId))
-    test(result)
-  }
-
-  def saveWithAuthorisedUser(formBundleReturn: Option[FormBundleReturn],
-                             prevReturns: Option[Seq[PreviousReturns]],
-                             inputJson: JsValue)(test: Future[Result] => Any) {
-    val periodKey: Int = 2014
-    val userId = s"user-${UUID.randomUUID}"
-    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
-    setAuthMocks(authMock)
-
-    when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
-      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-    when(mockSummaryReturnsService.retrieveCachedPreviousReturnAddressList(Matchers.any(), Matchers.any())).thenReturn(Future.successful(prevReturns))
-    when(mockFormBundleReturnsService.getFormBundleReturns
-    (Matchers.eq("12345678"))(Matchers.any(), Matchers.any())).thenReturn(Future.successful(formBundleReturn))
-    when(mockDataCacheConnector.saveFormData[Boolean]
-      (Matchers.eq(AtedConstants.SelectedPreviousReturn), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(true))
-    when(mockBackLinkCache.saveBackLink(Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
-    val result = TestSelectExistingReturnAddressController.continue(periodKey, returnTypeCharge)
-      .apply(SessionBuilder.updateRequestWithSession(FakeRequest().withJsonBody(inputJson), userId))
-    test(result)
   }
  }

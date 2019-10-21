@@ -16,24 +16,37 @@
 
 package controllers.propertyDetails
 
+import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms
 import forms.PropertyDetailsForms._
+import javax.inject.Inject
 import models.PropertyDetailsNewBuild
-import play.api.Play.current
-import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services._
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.AtedConstants.SelectedPreviousReturn
 import utils.AtedUtils
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-trait PropertyDetailsNewBuildController extends PropertyDetailsHelpers with ClientHelper with AuthAction {
+
+class PropertyDetailsNewBuildController @Inject()(mcc : MessagesControllerComponents,
+                                                  authAction: AuthAction,
+                                                  propertyDetailsProfessionallyValuedController: PropertyDetailsProfessionallyValuedController,
+                                                  val propertyDetailsService: PropertyDetailsService,
+                                                  val dataCacheConnector: DataCacheConnector,
+                                                  val backLinkCacheConnector: BackLinkCacheConnector)
+                                                 (implicit val appConfig: ApplicationConfig)
+
+  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper {
+
+  implicit val ec: ExecutionContext = mcc.executionContext
+  val controllerId: String = "PropertyDetailsNewBuildController"
 
   def view(id: String): Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         propertyDetailsCacheResponse(id) {
           case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
@@ -60,7 +73,7 @@ trait PropertyDetailsNewBuildController extends PropertyDetailsHelpers with Clie
   }
 
   def save(id: String, periodKey: Int, mode: Option[String]): Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         PropertyDetailsForms.validatePropertyDetailsNewBuild(periodKey, propertyDetailsNewBuildForm.bindFromRequest).fold(
           formWithError => {
@@ -70,10 +83,10 @@ trait PropertyDetailsNewBuildController extends PropertyDetailsHelpers with Clie
           },
           propertyDetails => {
             for {
-              savedData <- propertyDetailsService.saveDraftPropertyDetailsNewBuild(id, propertyDetails)
+              _ <- propertyDetailsService.saveDraftPropertyDetailsNewBuild(id, propertyDetails)
               result <-
-              RedirectWithBackLink(
-                PropertyDetailsProfessionallyValuedController.controllerId,
+              redirectWithBackLink(
+                propertyDetailsProfessionallyValuedController.controllerId,
                 controllers.propertyDetails.routes.PropertyDetailsProfessionallyValuedController.view(id),
                 Some(controllers.propertyDetails.routes.PropertyDetailsNewBuildController.view(id).url)
               )
@@ -85,10 +98,3 @@ trait PropertyDetailsNewBuildController extends PropertyDetailsHelpers with Clie
   }
 }
 
-object PropertyDetailsNewBuildController extends PropertyDetailsNewBuildController {
-  val delegationService: DelegationService = DelegationService
-  val propertyDetailsService: PropertyDetailsService = PropertyDetailsService
-  val dataCacheConnector: DataCacheConnector = DataCacheConnector
-  override val controllerId: String = "PropertyDetailsNewBuildController"
-  override val backLinkCacheConnector: BackLinkCacheConnector = BackLinkCacheConnector
-}

@@ -15,7 +15,8 @@
  *@
 
 @import models._
-@(bankDetailsForm: Form[HasBankDetails], oldFormBundleNo: String, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent])
+@import config.ApplicationConfig
+@(bankDetailsForm: Form[HasBankDetails], oldFormBundleNo: String, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 @import uk.gov.hmrc.play.views.html._
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
@@ -24,7 +25,7 @@
 @implicitFormInstance = @{ Some(bankDetailsForm) }
 
 @pageScripts = {
-  <script src='@controllers.routes.AssetsController.at("javascript/bankDetails.js")'></script>
+  <script src='@controllers.routes.Assets.versioned("javascript/bankDetails.js")'></script>
 }
 
 @analyticsJs = {
@@ -37,7 +38,7 @@
           pageScripts = Some(pageScripts),
           analyticsAdditionalJs = Some(analyticsJs)) {
 
-  @pageHeadersAndError(backLink, "pre-heading", Messages("ated.property-details.pre-header-dispose"), "bank-details-header", Messages("ated.bank-details.has-bank-details.header"),
+  @pageHeadersAndError(backLink, "pre-heading", messages("ated.property-details.pre-header-dispose"), "bank-details-header", messages("ated.bank-details.has-bank-details.header"),
       Some(atedErrorSummary(bankDetailsForm, "ated.bank-details.error-key")))
 
 
@@ -59,7 +60,7 @@
       )
     </div>
 
-    <button class="button" id="submit" type="submit">@Messages("ated.save-and-continue")</button>
+    <button class="button" id="submit" type="submit">@messages("ated.save-and-continue")</button>
   }
 
 }

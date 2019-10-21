@@ -14,100 +14,98 @@
  * limitations under the License.
  *@
 
-@(propertyDetails : PropertyDetails, periods : Seq[models.LineItem], valuesToDisplay: Seq[models.LineItemValue], organisationName: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent])
+@import config.ApplicationConfig
+@(propertyDetails : PropertyDetails, periods : Seq[models.LineItem], valuesToDisplay: Seq[models.LineItemValue], organisationName: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
 @import views.html.helpers._
-@import utils.PeriodUtils
-@import utils.PeriodUtils._
-@import services.SubscriptionDataService._
+@import _root_.utils.PeriodUtils
+@import _root_.utils.PeriodUtils._
 
+@printFriendly(messages("ated.property-details-summary.title")) {
 
+<script src='@controllers.routes.Assets.versioned("javascript/printFriendly.js")'></script>
 
-@printFriendly(Messages("ated.property-details-summary.title")) {
-
-<script src='@controllers.routes.AssetsController.at("javascript/printFriendly.js")'></script>
-
-  <p id="liability-print-ated-ref" class="font-xsmall">@Messages("ated.refNo", authContext.atedReferenceNumber)</p>
+  <p id="liability-print-ated-ref" class="font-xsmall">@messages("ated.refNo", authContext.atedReferenceNumber)</p>
 
   <h1 class="heading-xlarge" id="property-details-summary-header">
-    @Messages("ated.property-details-summary.print.header", organisationName.getOrElse(""))
+    @messages("ated.property-details-summary.print.header", organisationName.getOrElse(""))
   </h1>
 
-  <p class="paragraph" id="details-text">@Messages("ated.property-details-summary.details-text", PeriodUtils.periodStartDate(propertyDetails.periodKey).toString(Messages("ated.date-format")), PeriodUtils.periodEndDate(propertyDetails.periodKey).toString(Messages("ated.date-format")))</p>
+  <p class="paragraph" id="details-text">@messages("ated.property-details-summary.details-text", PeriodUtils.periodStartDate(propertyDetails.periodKey).toString(messages("ated.date-format")), PeriodUtils.periodEndDate(propertyDetails.periodKey).toString(messages("ated.date-format")))</p>
 
   <table id="property-summary" class="ated-table-wrap">
     <tr>
-      <td class="heading-medium ated-table-padding-top" id="property-details-header">@Messages("ated.property-details-summary.table.property-details.header")</td>
+      <td class="heading-medium ated-table-padding-top" id="property-details-header">@messages("ated.property-details-summary.table.property-details.header")</td>
       <td></td>
     </tr>
     <tr>
-      <td class="heading-small" id="property-address-label">@Messages("ated.property-details-summary.table.property-details.address.label")</td>
+      <td class="heading-small" id="property-address-label">@messages("ated.property-details-summary.table.property-details.address.label")</td>
       <td id="property-address-value"><span id="address-line-1">@propertyDetails.addressProperty.line_1</span>,<br/><span id="address-line-2">@propertyDetails.addressProperty.line_2</span> <br/>@if(propertyDetails.addressProperty.postcode.isDefined){,<span id="address-postcode">@propertyDetails.addressProperty.postcode</span>}</td>
     </tr>
     <tr>
-      <td class="heading-small" id="property-title-number-label">@Messages("ated.property-details-summary.table.property-details.title-number.label")</td>
-      <td id="property-title-number">@propertyDetails.title.map(_.titleNumber).getOrElse("")</td>
+      <td class="heading-small" id="property-title-number-label">@messages("ated.property-details-summary.table.property-details.title-number.label")</td>
+      <td id="property-title-number">@messages(propertyDetails.title.map(_.titleNumber).getOrElse(""))</td>
     </tr>
     <tr>
-      <td class="heading-medium ated-table-padding-top" id="property-value-header">@Messages("ated.property-details-summary.table.property-value.header")</td>
+      <td class="heading-medium ated-table-padding-top" id="property-value-header">@messages("ated.property-details-summary.table.property-value.header")</td>
       <td></td>
     </tr>
     @for((valueObj, index) <- valuesToDisplay.zipWithIndex) {
     <tr>
-      <td class="heading-small" id="property-value-label-@index">@PeriodUtils.getPeriodValueMessage(index, valuesToDisplay.size)</td>
+      <td class="heading-small" id="property-value-label-@index">@messages(PeriodUtils.getPeriodValueMessage(index, valuesToDisplay.size))</td>
       <td id="property-value-value-@index">@formattedPounds(valueObj.propertyValue)</td>
     </tr>
     }
     <tr>
-      <td class="heading-medium ated-table-padding-top" id="dates-of-liability-header">@Messages("ated.property-details-summary.table.dates-of-liability.header")</td>
+      <td class="heading-medium ated-table-padding-top" id="dates-of-liability-header">@messages("ated.property-details-summary.table.dates-of-liability.header")</td>
       <td></td>
     </tr>
     @for((period, index) <- periods.zipWithIndex) {
     <tr>
-      <td class="heading-small" id="return-type-@index">@period.description</td>
-      <td id="period-@index">@Messages("ated.property-details-summary.table.period.text", period.startDate.toString(Messages("ated.date-format")), period.endDate.toString(Messages("ated.date-format")))</td>
+      <td class="heading-small" id="return-type-@index">@messages((period.description).getOrElse(""))</td>
+      <td id="period-@index">@messages("ated.property-details-summary.table.period.text", period.startDate.toString(messages("ated.date-format")), period.endDate.toString(messages("ated.date-format")))</td>
     </tr>
     }
     <tr>
-      <td class="heading-medium ated-table-padding-top" id="supporting-info-header">@Messages("ated.property-details-summary.table.supporting-info.header")</td>
+      <td class="heading-medium ated-table-padding-top" id="supporting-info-header">@messages("ated.property-details-summary.table.supporting-info.header")</td>
       <td></td>
     </tr>
     <tr>
-      <td class="heading-small" id="additional-information-label">@Messages("ated.property-details-summary.table.property-ated-details.additional-information.label")</td>
+      <td class="heading-small" id="additional-information-label">@messages("ated.property-details-summary.table.property-ated-details.additional-information.label")</td>
       <td id="additional-information-value">@propertyDetails.period.map(v => v.supportingInfo.fold("")(x=>x))</td>
     </tr>
     <tr>
-      <td class="heading-medium ated-table-padding-top" id="avoidance-scheme-header">@Messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.header")</td>
+      <td class="heading-medium ated-table-padding-top" id="avoidance-scheme-header">@messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.header")</td>
       <td></td>
     </tr>
     <tr>
-      <td class="heading-small" id="avoidance-scheme-label">@Messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.label")</td>
+      <td class="heading-small" id="avoidance-scheme-label">@messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.label")</td>
       <td id="avoidance-scheme-value">@propertyDetails.period.map(v => v.taxAvoidanceScheme.fold("")(x=>x))</td>
     </tr>
     <tr>
-      <td class="heading-small"id="promoter-reference-label" class="td-top">@Messages("ated.property-details-summary.table.property-ated-details.promoter-reference.label")</td>
+      <td class="heading-small"id="promoter-reference-label" class="td-top">@messages("ated.property-details-summary.table.property-ated-details.promoter-reference.label")</td>
       <td id="promoter-reference-value" class="td-top">@propertyDetails.period.map(v => v.taxAvoidancePromoterReference.fold("")(x=>x))</td>
     </tr>
     <tr>
-      <td class="heading-medium ated-table-padding-top" id="return-status-header">@Messages("ated.property-details-summary.table.property-ated-details.return-status.header")</td>
+      <td class="heading-medium ated-table-padding-top" id="return-status-header">@messages("ated.property-details-summary.table.property-ated-details.return-status.header")</td>
       <td></td>
     </tr>
     <tr>
-      <td class="heading-small" id="return-status-label">@Messages("ated.property-details-summary.table.property-ated-details.return-status.label")</td>
-      <td id="return-status-value">@Messages("ated.property-details-summary.status.text")</td>
+      <td class="heading-small" id="return-status-label">@messages("ated.property-details-summary.table.property-ated-details.return-status.label")</td>
+      <td id="return-status-value">@messages("ated.property-details-summary.status.text")</td>
     </tr>
   </table>
 
   <p id="ated-charge-text">
-    @Messages("ated.property-details-summary.table.ated-charge.text")
+    @messages("ated.property-details-summary.table.ated-charge.text")
   </p>
   <p id="ated-charge-value" class="heading-xlarge">
     @propertyDetails.calculated.flatMap(x=>x.liabilityAmount.map(y=>formattedPounds(y)))
   </p>
 
-  <div class="sign-labels">@Messages("ated.sign.here")</div>
-  <div class="sign-labels">@Messages("ated.print.name")</div>
-  <div class="sign-labels">@Messages("ated.date")</div>
+  <div class="sign-labels">@messages("ated.sign.here")</div>
+  <div class="sign-labels">@messages("ated.print.name")</div>
+  <div class="sign-labels">@messages("ated.date")</div>
 
   <div class="form-group">
     <div class="sign-box"></div>

@@ -14,6 +14,8 @@
  * limitations under the License.
  *@
 
+@import play.twirl.api.HtmlFormat
+@import config.ApplicationConfig
 @(title: String,
   userLoggedIn: Boolean = true,
   hasBanner: Boolean = false,
@@ -24,43 +26,45 @@
   pageScripts: Option[Html] = None,
   sidebarLinks: Option[Html] = None,
   sidebarClass: Option[String] = None,
-  analyticsAdditionalJs: Option[Html] = None)(mainContent: Html)(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent])
+  analyticsAdditionalJs: Option[Html] = None)(mainContent: Html)(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
-@import uk.gov.hmrc.play.views.helpers.AttorneyRegime
+    @import uk.gov.hmrc.play.views.helpers.AttorneyRegime
 @import uk.gov.hmrc.play.views.html.{layouts => uiLayouts}
 
 @scriptElement = {
-<script src='@controllers.routes.AssetsController.at("jquery/jquery-ui.min.js")'></script>
-  <script src='@controllers.routes.AssetsController.at("jquery/jquery-ui-1.12.1.min.js")'></script>
-  <script src='@controllers.routes.AssetsController.at("javascript/timeout-dialog.js")'></script>
-  <script src='@controllers.routes.AssetsController.at("javascript/urBanner.js")'></script>
-  @pageScripts
-  <script>
-    @if(userLoggedIn) {
-        $.timeoutDialog({timeout: @config.ApplicationConfig.defaultTimeoutSeconds, countdown: @config.ApplicationConfig.timeoutCountdown, keep_alive_url: '@controllers.routes.ApplicationController.keepAlive', logout_url: '@controllers.routes.ApplicationController.logout', logout_redirect_url: '@controllers.routes.ApplicationController.logout', restart_on_yes: true, background_no_scroll: true});
+    <script src='@controllers.routes.Assets.versioned("jquery/jquery-ui.min.js")'></script>
+    <script src='@controllers.routes.Assets.versioned("jquery/jquery-ui-1.12.1.min.js")'></script>
+    <script src='@controllers.routes.Assets.versioned("javascript/timeout-dialog.js")'></script>
+    <script src='@controllers.routes.Assets.versioned("javascript/urBanner.js")'></script>
+@pageScripts
+}
+    <script>
+        @if(userLoggedIn) {
+        $.timeoutDialog({timeout: @appConfig.defaultTimeoutSeconds, countdown: @appConfig.timeoutCountdown, keep_alive_url: '@controllers.routes.ApplicationController.keepAlive', logout_url: '@controllers.routes.ApplicationController.logout', logout_redirect_url: '@controllers.routes.ApplicationController.logout', restart_on_yes: true, background_no_scroll: true});
         var dialogOpen;
     }
-  </script>
-}
+    </script>
 
 @linkElement = {
-  <link rel="stylesheet" href='@controllers.routes.AssetsController.at("stylesheets/main.css")'/>
-  <link rel="stylesheet" href='@controllers.routes.AssetsController.at("stylesheets/urBanner.css")'/>
-  <link rel="stylesheet" href='@controllers.routes.AssetsController.at("jquery/jquery-ui.min.css")'/>
-  <link rel="stylesheet" href='@controllers.routes.AssetsController.at("jquery/jquery-ui.structure.min.css")'/>
+    <link rel="stylesheet" href='@controllers.routes.Assets.versioned("stylesheets/main.css")'/>
+    <link rel="stylesheet" href='@controllers.routes.Assets.versioned("stylesheets/urBanner.css")'/>
+    <link rel="stylesheet" href='@controllers.routes.Assets.versioned("jquery/jquery-ui.min.css")'/>
+    <link rel="stylesheet" href='@controllers.routes.Assets.versioned("jquery/jquery-ui.structure.min.css")'/>
 }
 
-@mainBanner = {
+    @mainBanner = {
 
-  @if(authContext.delegationModel.isDefined) {
-    @Some(uiLayouts.attorney_banner(name = Some(authContext.delegationModel.get.principalName), returnLinkUrl = authContext.delegationModel.get.link.url, regime = AttorneyRegime.pertax, customReturnLinkText = Some(authContext.delegationModel.get.link.text), bannerContent = Some(Html(Messages("ated.agent.banner", authContext.delegationModel.get.principalName)))))
-  } else {
-    @banner
+    @if(authContext.delegationModel.isDefined) {
+        @Some(uiLayouts.attorney_banner(name = Some(authContext.delegationModel.get.principalName), returnLinkUrl = authContext.delegationModel.get.link.url, regime = AttorneyRegime.pertax, customReturnLinkText = Some(authContext.delegationModel.get.link.text), bannerContent = Some(Html(Messages("ated.agent.banner", authContext.delegationModel.get.principalName)))))
+    } else {
+        @banner
   }
 }
 
+
+
 @main(
-  applicationConfig = config.ApplicationConfig,
+  appConfig = appConfig,
   supportLinkEnabled = supportLinkEnabled,
   title = title,
   sidebarLinks = sidebarLinks,

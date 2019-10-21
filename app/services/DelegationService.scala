@@ -17,6 +17,7 @@
 package services
 
 import connectors.DelegationConnector
+import javax.inject.Inject
 import models.DelegationModel
 import play.api.Logger
 import uk.gov.hmrc.http.HeaderCarrier
@@ -24,9 +25,8 @@ import uk.gov.hmrc.http.HeaderCarrier
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-trait DelegationService {
+class DelegationService @Inject()(delegationConnector: DelegationConnector) {
 
-  val delegationConnector: DelegationConnector
 
   def delegationCall(id: String)(implicit hc: HeaderCarrier): Future[Option[DelegationModel]] = {
     delegationConnector.delegationDataCall(id).map { response =>
@@ -39,8 +39,4 @@ trait DelegationService {
         None
     }
   }
-}
-
-object DelegationService extends DelegationService {
-  val delegationConnector: DelegationConnector = DelegationConnector
 }

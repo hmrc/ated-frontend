@@ -23,15 +23,18 @@ import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.data.validation.{Invalid, Valid, ValidationError}
 import play.api.data.{Form, FormError}
-import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
+import play.api.i18n.{Messages, MessagesApi}
 import play.api.libs.json.Json
+import play.api.test.FakeRequest
 import utils.PeriodUtils
 
 class ReliefFormsSpec extends PlaySpec with GuiceOneServerPerSuite {
 
-  val noPromoterErrorMessage = "You must enter a reference number"
-  val noSchemeErrorMessage = "You must enter a reference number"
+  implicit lazy val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  implicit lazy val messages: Messages = messagesApi.preferred(FakeRequest())
+
+  val noPromoterErrorMessage = "ated.avoidance-schemes.promoter.empty"
+  val noSchemeErrorMessage = "ated.avoidance-schemes.scheme.empty"
   "validateTaxAvoidance" must {
     "fail if we have no data" in {
 
@@ -205,10 +208,10 @@ class ReliefFormsSpec extends PlaySpec with GuiceOneServerPerSuite {
       val result = ReliefForms.validateTaxAvoidance(taxAvoidanceForm.fill(taxAvoidance))
       result.hasErrors must be(true)
       result.errors.size must be (errSize)
-      result.error("rentalBusinessScheme").map(_.message) must be (Some("The avoidance scheme number must be 8 digits."))
-      result.error("openToPublicScheme").map(_.message) must be (Some("The avoidance scheme number must be 8 digits."))
-      result.error("rentalBusinessSchemePromoter").map(_.message) must be (Some("The promoter reference number must be 8 digits."))
-      result.error("openToPublicSchemePromoter").map(_.message) must be (Some("The promoter reference number must be 8 digits."))
+      result.error("rentalBusinessScheme").map(_.message) must be (Some("ated.avoidance-schemes.scheme.wrong-length"))
+      result.error("openToPublicScheme").map(_.message) must be (Some("ated.avoidance-schemes.scheme.wrong-length"))
+      result.error("rentalBusinessSchemePromoter").map(_.message) must be (Some("ated.avoidance-schemes.promoter.wrong-length"))
+      result.error("openToPublicSchemePromoter").map(_.message) must be (Some("ated.avoidance-schemes.promoter.wrong-length"))
     }
 
     "fail if the avoidance scheme is 8 characters" in {
@@ -221,12 +224,11 @@ class ReliefFormsSpec extends PlaySpec with GuiceOneServerPerSuite {
       val result = ReliefForms.validateTaxAvoidance(taxAvoidanceForm.fill(taxAvoidance))
       result.hasErrors must be(true)
       result.errors.size must be (errSize)
-      result.error("rentalBusinessScheme").map(_.message) must be (Some("The avoidance scheme number can only contain numbers"))
-      result.error("openToPublicScheme").map(_.message) must be (Some("The avoidance scheme number can only contain numbers"))
-      result.error("rentalBusinessSchemePromoter").map(_.message) must be (Some("The promoter reference number can only contain numbers"))
-      result.error("openToPublicSchemePromoter").map(_.message) must be (Some("The promoter reference number can only contain numbers"))
+      result.error("rentalBusinessScheme").map(_.message) must be (Some("ated.avoidance-schemes.scheme.numeric-error"))
+      result.error("openToPublicScheme").map(_.message) must be (Some("ated.avoidance-schemes.scheme.numeric-error"))
+      result.error("rentalBusinessSchemePromoter").map(_.message) must be (Some("ated.avoidance-schemes.promoter.numeric-error"))
+      result.error("openToPublicSchemePromoter").map(_.message) must be (Some("ated.avoidance-schemes.promoter.numeric-error"))
     }
-
   }
 
   "avoidanceSchemeConstraint" must {
@@ -234,7 +236,7 @@ class ReliefFormsSpec extends PlaySpec with GuiceOneServerPerSuite {
       "avoidance scheme is not available" in {
         val form: Form[IsTaxAvoidance] = ReliefForms.isTaxAvoidanceForm.bind(Json.obj())
         form.hasErrors mustBe true
-        form.errors must contain (FormError("", Seq(Messages("ated.claim-relief.avoidance-scheme.selected")),Seq("isAvoidanceScheme")))
+        form.errors must contain (FormError("", Seq("ated.claim-relief.avoidance-scheme.selected"),Seq("isAvoidanceScheme")))
       }
     }
 
@@ -253,7 +255,7 @@ class ReliefFormsSpec extends PlaySpec with GuiceOneServerPerSuite {
     "throw validation error" when {
       "reliefSelected is true and start date is empty" in {
         val validationResult = ReliefForms.validatePeriodStartDate(periodKey, reliefSelected = true, None, field, field)
-        val expectedError = Messages("ated.choose-reliefs.error.date.mandatory", Messages(s"ated.choose-reliefs.rentalBusiness").toLowerCase)
+        val expectedError = "ated.choose-reliefs.error.date.mandatory"
 
         validationResult mustBe Invalid(List(ValidationError(List(expectedError),field)))
       }
@@ -261,7 +263,7 @@ class ReliefFormsSpec extends PlaySpec with GuiceOneServerPerSuite {
       "reliefSelected is true and period is too early" in {
         val startDate = Some(new LocalDate().minusYears(1))
         val validationResult = ReliefForms.validatePeriodStartDate(periodKey, reliefSelected = true, startDate, field, field)
-        val expectedError = Messages("ated.choose-reliefs.error.date.tooEarly", Messages(s"ated.choose-reliefs.rentalBusiness").toLowerCase)
+        val expectedError = "ated.choose-reliefs.error.date.chargePeriod"
 
         validationResult mustBe Invalid(List(ValidationError(List(expectedError),field)))
       }
@@ -269,7 +271,7 @@ class ReliefFormsSpec extends PlaySpec with GuiceOneServerPerSuite {
       "reliefSelected is true and period is too late" in {
         val startDate = Some(new LocalDate().plusYears(1))
         val validationResult = ReliefForms.validatePeriodStartDate(periodKey, reliefSelected = true, startDate, field, field)
-        val expectedError = Messages("ated.choose-reliefs.error.date.tooLate", Messages(s"ated.choose-reliefs.rentalBusiness").toLowerCase)
+        val expectedError = "ated.choose-reliefs.error.date.chargePeriod"
 
         validationResult mustBe Invalid(List(ValidationError(List(expectedError),field)))
       }
@@ -289,7 +291,7 @@ class ReliefFormsSpec extends PlaySpec with GuiceOneServerPerSuite {
         val year = 2015
         val form: Form[Reliefs] = ReliefForms.reliefsForm.bind(Json.obj("periodKey" -> year))
         form.hasErrors mustBe true
-        form.errors must contain (FormError("", List(Messages("ated.choose-reliefs.error")),List("reliefs")))
+        form.errors must contain (FormError("", List("ated.choose-reliefs.error"),List("reliefs")))
       }
     }
 

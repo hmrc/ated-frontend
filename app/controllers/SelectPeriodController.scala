@@ -16,44 +16,58 @@
 
 package controllers
 
+import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.AtedForms._
+import javax.inject.Inject
 import models.SelectPeriod
 import org.joda.time.LocalDate
-import play.api.Play.current
-import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.DelegationService
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.AtedConstants._
 import utils.PeriodUtils
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-trait SelectPeriodController extends BackLinkController with ClientHelper with AuthAction {
+class SelectPeriodController @Inject()(mcc: MessagesControllerComponents,
+                                       authAction: AuthAction,
+                                       returnTypeController: ReturnTypeController,
+                                       val backLinkCacheConnector: BackLinkCacheConnector,
+                                       val dataCacheConnector: DataCacheConnector)
+                                      (implicit val appConfig: ApplicationConfig)
+
+  extends FrontendController(mcc) with BackLinkController with ClientHelper {
+
+  implicit val ec : ExecutionContext = mcc.executionContext
+  val controllerId = "SelectPeriodController"
+  val year: Int = 2015
+  val month: Int = 4
+  val day: Int = 1
 
   def view: Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
-        val periods = PeriodUtils.getPeriods(new LocalDate(2015, 4, 1), LocalDate.now())
+        val periods = PeriodUtils.getPeriods(new LocalDate(year, month, day), LocalDate.now())
         dataCacheConnector.fetchAndGetFormData[SelectPeriod](RetrieveSelectPeriodFormId) map {
-          case Some(data) => Ok(views.html.selectPeriod(selectPeriodForm.fill(data), periods, getBackLink))
-          case _ => Ok(views.html.selectPeriod(selectPeriodForm, periods, getBackLink))
+          case Some(data) => Ok(views.html.selectPeriod(selectPeriodForm.fill(data), periods, getBackLink()))
+          case _ => Ok(views.html.selectPeriod(selectPeriodForm, periods, getBackLink()))
         }
       }
     }
   }
 
   def submit : Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
-        val periods = PeriodUtils.getPeriods(new LocalDate(2015, 4, 1), LocalDate.now())
+        val periods = PeriodUtils.getPeriods(new LocalDate(year, month, day), LocalDate.now())
         selectPeriodForm.bindFromRequest.fold(
-          formWithError => Future.successful(BadRequest(views.html.selectPeriod(formWithError, periods, getBackLink))),
+          formWithError => Future.successful(BadRequest(views.html.selectPeriod(formWithError, periods, getBackLink()))),
           periodData => {
             dataCacheConnector.saveFormData[SelectPeriod](RetrieveSelectPeriodFormId, periodData)
-            RedirectWithBackLink(
-              ReturnTypeController.controllerId,
+            redirectWithBackLink(
+              returnTypeController.controllerId,
               controllers.routes.ReturnTypeController.view(periodData.period.get.toInt),
               Some(routes.SelectPeriodController.view().url)
             )
@@ -66,11 +80,4 @@ trait SelectPeriodController extends BackLinkController with ClientHelper with A
   private def getBackLink(): Option[String] = {
     Some(routes.AccountSummaryController.view().url)
   }
-}
-
-object SelectPeriodController extends SelectPeriodController {
-  val delegationService: DelegationService = DelegationService
-  override val controllerId = "SelectPeriodController"
-  override val backLinkCacheConnector: BackLinkCacheConnector = BackLinkCacheConnector
-  val dataCacheConnector: DataCacheConnector = DataCacheConnector
 }

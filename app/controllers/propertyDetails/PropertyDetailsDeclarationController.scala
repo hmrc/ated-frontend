@@ -16,20 +16,31 @@
 
 package controllers.propertyDetails
 
+import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
-import controllers.auth.{AuthAction, ClientHelper, ExternalUrls}
-import play.api.Play.current
+import controllers.auth.{AuthAction, ClientHelper}
+import javax.inject.Inject
 import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{DelegationService, PropertyDetailsCacheSuccessResponse, PropertyDetailsService}
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-trait PropertyDetailsDeclarationController extends PropertyDetailsHelpers with ClientHelper with AuthAction {
+class PropertyDetailsDeclarationController @Inject()(mcc: MessagesControllerComponents,
+                                                     authAction: AuthAction,
+                                                     val propertyDetailsService: PropertyDetailsService,
+                                                     val dataCacheConnector: DataCacheConnector,
+                                                     val backLinkCacheConnector: BackLinkCacheConnector)
+                                                    (implicit val appConfig: ApplicationConfig)
+
+  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper {
+
+  implicit val ec: ExecutionContext = mcc.executionContext
+  val controllerId = "PropertyDetailsDeclarationController"
 
   def view(id: String): Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         propertyDetailsCacheResponse(id) {
           case PropertyDetailsCacheSuccessResponse(_) =>
@@ -42,25 +53,17 @@ trait PropertyDetailsDeclarationController extends PropertyDetailsHelpers with C
   }
 
   def submit(id: String): Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         propertyDetailsService.submitDraftPropertyDetails(id) flatMap { response =>
           response.status match {
             case OK => Future.successful(Redirect(controllers.propertyDetails.routes.ChargeableReturnConfirmationController.confirmation()))
             case BAD_REQUEST if response.body.contains("Agent not Valid") =>
-              Future.successful(BadRequest(views.html.global_error(Messages("ated.client-problem.title"),
-                Messages("ated.client-problem.header"), Messages("ated.client-problem.body", ExternalUrls.agentRedirectedToMandate))))
+              Future.successful(BadRequest(views.html.global_error("ated.client-problem.title",
+                "ated.client-problem.header", "ated.client-problem.message", Some(appConfig.agentRedirectedToMandate), None, None, appConfig)))
           }
         }
       }
     }
   }
-}
-
-object PropertyDetailsDeclarationController extends PropertyDetailsDeclarationController {
-  val delegationService: DelegationService = DelegationService
-  val propertyDetailsService: PropertyDetailsService = PropertyDetailsService
-  val dataCacheConnector: DataCacheConnector = DataCacheConnector
-  override val controllerId = "PropertyDetailsDeclarationController"
-  override val backLinkCacheConnector: BackLinkCacheConnector = BackLinkCacheConnector
 }

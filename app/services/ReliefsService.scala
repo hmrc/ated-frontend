@@ -17,6 +17,7 @@
 package services
 
 import connectors.{AtedConnector, DataCacheConnector}
+import javax.inject.Inject
 import models._
 import play.api.Logger
 import play.mvc.Http.Status._
@@ -27,10 +28,8 @@ import utils.ReliefsUtils
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-trait ReliefsService {
-
-  val atedConnector: AtedConnector
-  val dataCacheConnector: DataCacheConnector
+class ReliefsService @Inject()(atedConnector: AtedConnector,
+                               dataCacheConnector: DataCacheConnector) {
 
   def saveDraftReliefs(atedRefNo: String, periodKey: Int, reliefs: Reliefs)(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier) = {
     for {
@@ -153,10 +152,4 @@ trait ReliefsService {
   def deleteDraftReliefs(periodKey: Int)(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[HttpResponse] = {
     atedConnector.deleteDraftReliefsByYear(periodKey)
   }
-
-}
-
-object ReliefsService extends ReliefsService {
-  val atedConnector = AtedConnector
-  val dataCacheConnector = DataCacheConnector
 }

@@ -16,13 +16,13 @@
 
 package utils
 
-import play.api.Play
+import config.ApplicationConfig
+import javax.inject.Inject
 import play.api.libs.json.{Json, OFormat}
 
 case class FeatureSwitch(name: String, enabled: Boolean)
 
-object FeatureSwitch {
-  import play.api.Play.current
+class FeatureSwitchImpl @Inject()(appConfig: ApplicationConfig) {
 
   def forName(name: String): FeatureSwitch = {
     FeatureSwitch(name, isEnabled(name))
@@ -32,7 +32,7 @@ object FeatureSwitch {
     val sysPropValue = sys.props.get(systemPropertyName(name))
     sysPropValue match {
       case Some(x) => x.toBoolean
-      case None => Play.configuration.getBoolean(confPropertyName(name)).getOrElse(false)
+      case None => appConfig.conf.getConfBool(confPropertyName(name), false)
     }
   }
 

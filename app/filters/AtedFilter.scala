@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package controllers
+package filters
 
-import play.api.http.{HttpErrorHandler, LazyHttpErrorHandler}
+import javax.inject.Inject
+import play.api.http.DefaultHttpFilters
+import uk.gov.hmrc.play.bootstrap.filters.{AuditFilter, FrontendFilters}
 
-class AssetsController(errorHandler: HttpErrorHandler) extends AssetsBuilder(errorHandler)
-
-object AssetsController extends AssetsController(LazyHttpErrorHandler)
+class AtedFilter @Inject()(defaultFilters: FrontendFilters, auditFilter: AuditFilter)
+extends DefaultHttpFilters(defaultFilters.filters :+ auditFilter: _*)

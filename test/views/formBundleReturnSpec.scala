@@ -17,46 +17,54 @@
 package views
 
 import builders.PropertyDetailsBuilder
+import config.ApplicationConfig
 import models._
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
 import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
+import play.api.i18n.{Messages, MessagesApi}
 import play.api.test.FakeRequest
 import utils.{AtedConstants, MockAuthUtil, PeriodUtils}
 
-class formBundleReturnSpec extends FeatureSpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
+class formBundleReturnSpec extends FeatureSpec with GuiceOneServerPerSuite with MockitoSugar
+  with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
 
   implicit val request = FakeRequest()
-  implicit val messages : play.api.i18n.Messages = play.api.i18n.Messages.Implicits.applicationMessages
-  implicit lazy val authContext = organisationStandardRetrievals
+  implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
+  implicit val appConfig: ApplicationConfig = mock[ApplicationConfig]
+  implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
 
-  val formBundleProp = FormBundleProperty(BigDecimal(100), new LocalDate("2015-09-08"), new LocalDate("2015-10-12"), AtedConstants.LiabilityReturnType, None)
+  val formBundleProp = FormBundleProperty(BigDecimal(100), new LocalDate("2015-09-08"),
+    new LocalDate("2015-10-12"), AtedConstants.LiabilityReturnType, None)
   val formBundleAddress = FormBundleAddress("100 addressLine1", "addressLine2", Some("addressLine3"), Some("AddressLine4"), Some("XX11XX"), "GB")
   val formBundlePropertyDetails = FormBundlePropertyDetails(Some("title here"), formBundleAddress, Some("additional details"))
   val viewReturnWithSinglePeriod =
     FormBundleReturn("2014",
-    formBundlePropertyDetails, Some(new LocalDate("2013-10-10")), Some(BigDecimal(100)), Some("ABCdefgh"), Some("12345678"), Some("1234"), true, true,
+    formBundlePropertyDetails, Some(new LocalDate("2013-10-10")), Some(BigDecimal(100)), Some("ABCdefgh"), Some("12345678"), Some("1234"), professionalValuation = true, ninetyDayRuleApplies = true,
       new LocalDate("2015-05-10"), BigDecimal(9324), "1234567891",
       List(formBundleProp))
 
   val viewReturnWithMultiPeriod =
     FormBundleReturn("2014",
-      formBundlePropertyDetails, Some(new LocalDate("2013-10-10")), Some(BigDecimal(100)), Some("ABCdefgh"), Some("12345678"), Some("1234"), true, true,
+      formBundlePropertyDetails, Some(new LocalDate("2013-10-10")), Some(BigDecimal(100)), Some("ABCdefgh"), Some("12345678"), Some("1234"), professionalValuation = true, ninetyDayRuleApplies = true,
       new LocalDate("2015-05-10"), BigDecimal(9324), "1234567891",
       List(
-        FormBundleProperty(BigDecimal(100), new LocalDate("2015-04-01"), new LocalDate("2015-10-31"), AtedConstants.LiabilityReturnType, None ),
-        FormBundleProperty(BigDecimal(200), new LocalDate("2015-11-01"), new LocalDate("2016-03-31"), AtedConstants.ReliefReturnType, Some("Property rental businesses"))
+        FormBundleProperty(BigDecimal(100), new LocalDate("2015-04-01"),
+          new LocalDate("2015-10-31"), AtedConstants.LiabilityReturnType, None ),
+        FormBundleProperty(BigDecimal(200), new LocalDate("2015-11-01"),
+          new LocalDate("2016-03-31"), AtedConstants.ReliefReturnType, Some("Property rental businesses"))
       )
     )
 
   val viewWithDisposePeriod =
     FormBundleReturn("2014",
-      formBundlePropertyDetails, Some(new LocalDate("2013-10-10")), Some(BigDecimal(100)), Some("ABCdefgh"), Some("12345678"), Some("1234"), true, true,
+      formBundlePropertyDetails, Some(new LocalDate("2013-10-10")), Some(BigDecimal(100)), Some("ABCdefgh"), Some("12345678"), Some("1234"), professionalValuation = true, ninetyDayRuleApplies = true,
       new LocalDate("2015-05-10"), BigDecimal(9324), "1234567891",
       List(
-        FormBundleProperty(BigDecimal(100), new LocalDate("2015-04-01"), new LocalDate("2015-10-31"), AtedConstants.LiabilityReturnType, None ),
+        FormBundleProperty(BigDecimal(100), new LocalDate("2015-04-01"),
+          new LocalDate("2015-10-31"), AtedConstants.LiabilityReturnType, None ),
         FormBundleProperty(BigDecimal(100), new LocalDate("2015-11-01"), new LocalDate("2016-03-31"), AtedConstants.DisposeReturnType, None)
       )
     )
@@ -75,7 +83,7 @@ class formBundleReturnSpec extends FeatureSpec with GuiceOneServerPerSuite with 
       Then("The config should have - 2 periods")
       val displayPeriods = PeriodUtils.getDisplayPeriods(propertyDetails.period)
       assert(displayPeriods.size === 2)
-      val html = views.html.formBundleReturn(2015, None, "formBundleNo", Some("ACME Ltd"), false, false, Nil, Nil, None)
+      val html = views.html.formBundleReturn(2015, None, "formBundleNo", Some("ACME Ltd"), changeAllowed = false, editAllowed = false, Nil, Nil, None)
 
       val document = Jsoup.parse(html.toString())
 
@@ -104,7 +112,7 @@ class formBundleReturnSpec extends FeatureSpec with GuiceOneServerPerSuite with 
       assert(displayPeriods.size === 2)
       val valuesToDisplay = PeriodUtils.getOrderedReturnPeriodValues(viewReturnWithSinglePeriod.lineItem, viewReturnWithSinglePeriod.dateOfAcquisition)
       val periodsToDisplay = PeriodUtils.getDisplayFormBundleProperties(viewReturnWithSinglePeriod.lineItem)
-      val html = views.html.formBundleReturn(2015, Some(viewReturnWithSinglePeriod), "formBundleNo", None, false, false, valuesToDisplay, periodsToDisplay, Some("http://backLink"))
+      val html = views.html.formBundleReturn(2015, Some(viewReturnWithSinglePeriod), "formBundleNo", None, changeAllowed = false, editAllowed =  false, valuesToDisplay, periodsToDisplay, Some("http://backLink"))
 
       val document = Jsoup.parse(html.toString())
 
@@ -175,7 +183,7 @@ class formBundleReturnSpec extends FeatureSpec with GuiceOneServerPerSuite with 
       assert(displayPeriods.size === 2)
       val valuesToDisplay = PeriodUtils.getOrderedReturnPeriodValues(viewReturnWithSinglePeriod.lineItem, viewReturnWithSinglePeriod.dateOfAcquisition)
       val periodsToDisplay = PeriodUtils.getDisplayFormBundleProperties(viewReturnWithSinglePeriod.lineItem)
-      val html = views.html.formBundleReturn(2015, Some(viewReturnWithSinglePeriod), "formBundleNo", Some("ACME Ltd"), true, true, valuesToDisplay, periodsToDisplay, None)
+      val html = views.html.formBundleReturn(2015, Some(viewReturnWithSinglePeriod), "formBundleNo", Some("ACME Ltd"), changeAllowed = true, editAllowed = true, valuesToDisplay, periodsToDisplay, None)
 
       val document = Jsoup.parse(html.toString())
 
@@ -243,7 +251,7 @@ class formBundleReturnSpec extends FeatureSpec with GuiceOneServerPerSuite with 
       assert(displayPeriods.size === 2)
       val valuesToDisplay = PeriodUtils.getOrderedReturnPeriodValues(viewReturnWithMultiPeriod.lineItem, viewReturnWithMultiPeriod.dateOfAcquisition)
       val periodsToDisplay = PeriodUtils.getDisplayFormBundleProperties(viewReturnWithMultiPeriod.lineItem)
-      val html = views.html.formBundleReturn(2015, Some(viewReturnWithMultiPeriod), "formBundleNo", Some("ACME Ltd"), true, true, valuesToDisplay, periodsToDisplay, None)
+      val html = views.html.formBundleReturn(2015, Some(viewReturnWithMultiPeriod), "formBundleNo", Some("ACME Ltd"), changeAllowed = true, editAllowed = true, valuesToDisplay, periodsToDisplay, None)
 
       val document = Jsoup.parse(html.toString())
 
@@ -318,7 +326,7 @@ class formBundleReturnSpec extends FeatureSpec with GuiceOneServerPerSuite with 
       assert(displayPeriods.size === 2)
       val valuesToDisplay = PeriodUtils.getOrderedReturnPeriodValues(viewWithDisposePeriod.lineItem, viewReturnWithMultiPeriod.dateOfAcquisition)
       val periodsToDisplay = PeriodUtils.getDisplayFormBundleProperties(viewWithDisposePeriod.lineItem)
-      val html = views.html.formBundleReturn(2015, Some(viewWithDisposePeriod), "formBundleNo", Some("ACME Ltd"), false, false, valuesToDisplay, periodsToDisplay, None)
+      val html = views.html.formBundleReturn(2015, Some(viewWithDisposePeriod), "formBundleNo", Some("ACME Ltd"), changeAllowed = false, editAllowed = false, valuesToDisplay, periodsToDisplay, None)
 
       val document = Jsoup.parse(html.toString())
 

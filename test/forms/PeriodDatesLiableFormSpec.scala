@@ -65,8 +65,8 @@ class PeriodDatesLiableFormSpec extends PlaySpec with MustMatchers with GuiceOne
           .fold(
           hasErrors => {
             hasErrors.errors.length mustBe 2
-            hasErrors.errors.head.message mustBe Messages("ated.property-details-period.datesLiable.startDate.error.too-early")
-            hasErrors.errors.last.message mustBe Messages("ated.property-details-period.datesLiable.endDate.error.too-early")
+            hasErrors.errors.head.message mustBe "ated.property-details-period.datesLiable.startDate.error.too-early"
+            hasErrors.errors.last.message mustBe "ated.property-details-period.datesLiable.endDate.error.too-early"
 
           },
           _ => {
@@ -89,8 +89,8 @@ class PeriodDatesLiableFormSpec extends PlaySpec with MustMatchers with GuiceOne
           .fold(
           hasErrors => {
             hasErrors.errors.length mustBe 2
-            hasErrors.errors.head.message mustBe Messages("ated.property-details-period.datesLiable.startDate.error.too-late")
-            hasErrors.errors.last.message mustBe Messages("ated.property-details-period.datesLiable.endDate.error.too-late")
+            hasErrors.errors.head.message mustBe "ated.property-details-period.datesLiable.startDate.error.too-late"
+            hasErrors.errors.last.message mustBe "ated.property-details-period.datesLiable.endDate.error.too-late"
 
           },
           _ => {
@@ -112,7 +112,7 @@ class PeriodDatesLiableFormSpec extends PlaySpec with MustMatchers with GuiceOne
           .fold(
           hasErrors => {
             hasErrors.errors.length mustBe 1
-            hasErrors.errors.head.message mustBe Messages("ated.property-details-period.datesLiable.endDate.error.before-start-date")
+            hasErrors.errors.head.message mustBe "ated.property-details-period.datesLiable.endDate.error.before-start-date"
 
           },
           _ => {

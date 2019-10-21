@@ -17,6 +17,7 @@
 package services
 
 import connectors.AtedConnector
+import javax.inject.Inject
 import models._
 import play.api.Logger
 import play.api.http.Status._
@@ -25,8 +26,7 @@ import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, InternalServerExcep
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-trait FormBundleReturnsService {
-  val atedConnector: AtedConnector
+class FormBundleReturnsService @Inject()(atedConnector: AtedConnector) {
 
   def getFormBundleReturns(formBundleNumber: String)(implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[Option[FormBundleReturn]] = {
     atedConnector.retrieveFormBundleReturns(formBundleNumber).map {
@@ -46,9 +46,4 @@ trait FormBundleReturnsService {
         }
     }
   }
-
-}
-
-object FormBundleReturnsService extends FormBundleReturnsService {
-  val atedConnector = AtedConnector
 }

@@ -17,6 +17,7 @@
 package services
 
 import connectors.{AgentClientMandateFrontendConnector, AtedConnector, DataCacheConnector}
+import javax.inject.Inject
 import models._
 import play.api.Logger
 import play.api.mvc.Request
@@ -27,11 +28,10 @@ import utils.AtedConstants
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-trait DetailsService {
+class DetailsService @Inject()(atedConnector: AtedConnector,
+                               mandateFrontendConnector: AgentClientMandateFrontendConnector,
+                               dataCacheConnector: DataCacheConnector) {
 
-  def atedConnector: AtedConnector
-  def mandateFrontendConnector: AgentClientMandateFrontendConnector
-  def dataCacheConnector: DataCacheConnector
 
   val delegatedClientAtedRefNumber = "delegatedClientAtedRefNumber"
 
@@ -140,12 +140,4 @@ trait DetailsService {
   def cacheClientReference(atedRef: String)(implicit authContext: StandardAuthRetrievals, request: Request[_], hc: HeaderCarrier): Future[String] = {
       dataCacheConnector.saveFormData[String](delegatedClientAtedRefNumber, atedRef)
   }
-
-
-}
-
-object DetailsService extends DetailsService {
-  val atedConnector = AtedConnector
-  val mandateFrontendConnector = AgentClientMandateFrontendConnector
-  val dataCacheConnector= DataCacheConnector
 }

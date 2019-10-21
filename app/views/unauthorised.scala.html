@@ -14,7 +14,8 @@
  * limitations under the License.
  *@
 
-@()(implicit isSa: Boolean, messages: Messages, request: Request[AnyContent])
+@import config.ApplicationConfig
+@()(implicit isSa: Boolean, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
 
 

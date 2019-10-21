@@ -35,7 +35,7 @@ class PropertyDetailsTaxAvoidanceSpec  extends PlaySpec with MustMatchers with G
         form.fold(
           hasErrors => {
             hasErrors.errors.length mustBe 1
-            hasErrors.errors.head.message mustBe Messages("ated.property-details-period.isTaxAvoidance.error-field-name")
+            hasErrors.errors.head.message mustBe "ated.property-details-period.isTaxAvoidance.error-field-name"
           },
           _ => {
             fail("There is a problem")
@@ -49,8 +49,8 @@ class PropertyDetailsTaxAvoidanceSpec  extends PlaySpec with MustMatchers with G
         validatePropertyDetailsTaxAvoidance(form).fold(
           hasErrors => {
             hasErrors.errors.length mustBe 2
-            hasErrors.errors.head.message mustBe Messages("ated.property-details-period.taxAvoidanceScheme.error.empty")
-            hasErrors.errors(1).message mustBe Messages("ated.property-details-period.taxAvoidancePromoterReference.error.empty")
+            hasErrors.errors.head.message mustBe "ated.property-details-period.taxAvoidanceScheme.error.empty"
+            hasErrors.errors(1).message mustBe "ated.property-details-period.taxAvoidancePromoterReference.error.empty"
           },
           _ => {
             fail("There is a problem")
@@ -66,8 +66,8 @@ class PropertyDetailsTaxAvoidanceSpec  extends PlaySpec with MustMatchers with G
         validatePropertyDetailsTaxAvoidance(form).fold(
           hasErrors => {
             hasErrors.errors.length mustBe 2
-            hasErrors.errors.head.message mustBe Messages("ated.property-details-period.taxAvoidanceScheme.error.wrong-length")
-            hasErrors.errors(1).message mustBe Messages("ated.property-details-period.taxAvoidancePromoterReference.error.wrong-length")
+            hasErrors.errors.head.message mustBe "ated.property-details-period.taxAvoidanceScheme.error.wrong-length"
+            hasErrors.errors(1).message mustBe "ated.property-details-period.taxAvoidancePromoterReference.error.wrong-length"
           },
           _ => {
             fail("There is a problem")
@@ -83,8 +83,8 @@ class PropertyDetailsTaxAvoidanceSpec  extends PlaySpec with MustMatchers with G
         validatePropertyDetailsTaxAvoidance(form).fold(
           hasErrors => {
             hasErrors.errors.length mustBe 2
-            hasErrors.errors.head.message mustBe Messages("ated.property-details-period.taxAvoidanceScheme.error.wrong-length")
-            hasErrors.errors(1).message mustBe Messages("ated.property-details-period.taxAvoidancePromoterReference.error.wrong-length")
+            hasErrors.errors.head.message mustBe "ated.property-details-period.taxAvoidanceScheme.error.wrong-length"
+            hasErrors.errors(1).message mustBe "ated.property-details-period.taxAvoidancePromoterReference.error.wrong-length"
           },
           _ => {
             fail("There is a problem")
@@ -102,8 +102,8 @@ class PropertyDetailsTaxAvoidanceSpec  extends PlaySpec with MustMatchers with G
         validatePropertyDetailsTaxAvoidance(form).fold(
           hasErrors => {
             hasErrors.errors.length mustBe 2
-            hasErrors.errors.head.message mustBe Messages("ated.property-details-period.taxAvoidanceScheme.error.numbers")
-            hasErrors.errors(1).message mustBe Messages("ated.property-details-period.taxAvoidancePromoterReference.error.numbers")
+            hasErrors.errors.head.message mustBe "ated.property-details-period.taxAvoidanceScheme.error.numbers"
+            hasErrors.errors(1).message mustBe "ated.property-details-period.taxAvoidancePromoterReference.error.numbers"
           },
           _ => {
             fail("There is a problem")

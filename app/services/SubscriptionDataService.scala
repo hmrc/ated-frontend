@@ -17,6 +17,7 @@
 package services
 
 import connectors.DataCacheConnector
+import javax.inject.Inject
 import models._
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.AtedConstants._
@@ -24,13 +25,9 @@ import utils.AtedConstants._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-trait SubscriptionDataService {
-
-  def dataCacheConnector: DataCacheConnector
-
-  def subscriptionDataAdapterService: SubscriptionDataAdapterService
-
-  def detailsDataService: DetailsService
+class SubscriptionDataService @Inject()(dataCacheConnector: DataCacheConnector,
+                                        subscriptionDataAdapterService: SubscriptionDataAdapterService,
+                                        detailsService: DetailsService) {
 
   private def retrieveCachedData(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[Option[CachedData]] = {
     dataCacheConnector.fetchAndGetFormData[CachedData](RetrieveSubscriptionDataId)
@@ -52,7 +49,7 @@ trait SubscriptionDataService {
     for {
       subscriptionData <- subscriptionDataAdapterService.retrieveSubscriptionData
       registrationDetails <- subscriptionData match {
-        case Some(x) => detailsDataService.getRegisteredDetailsFromSafeId(x.safeId)
+        case Some(x) => detailsService.getRegisteredDetailsFromSafeId(x.safeId)
         case _ => Future.successful(None)
       }
     } yield {
@@ -106,7 +103,7 @@ trait SubscriptionDataService {
                              (implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[Option[RegisteredDetails]] = {
     def performRegisteredDetailsUpdate(cachedData: CachedData, updatedData: RegisteredDetails): Future[Option[Any]] = {
       cachedData.registrationDetails match {
-        case Some(x) => detailsDataService.updateOrganisationRegisteredDetails(x, updatedData)
+        case Some(x) => detailsService.updateOrganisationRegisteredDetails(x, updatedData)
         case None => Future.successful(None)
       }
     }
@@ -117,7 +114,7 @@ trait SubscriptionDataService {
   def updateOverseasCompanyRegistration(updatedDetails: Identification)(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[Option[Identification]] = {
     def performUpdate(cachedData: CachedData, updatedDetails: Identification): Future[Option[Any]] = {
       cachedData.registrationDetails match {
-        case Some(x) => detailsDataService.updateOverseasCompanyRegistration(x, Some(updatedDetails))
+        case Some(x) => detailsService.updateOverseasCompanyRegistration(x, Some(updatedDetails))
         case None => Future.successful(None)
       }
     }
@@ -186,11 +183,4 @@ trait SubscriptionDataService {
 
     updateDetails[EditContactDetails](performContactDetailsUpdate)(editContactDetails)
   }
-
-}
-
-object SubscriptionDataService extends SubscriptionDataService {
-  val dataCacheConnector = DataCacheConnector
-  val subscriptionDataAdapterService = SubscriptionDataAdapterService
-  val detailsDataService = DetailsService
 }

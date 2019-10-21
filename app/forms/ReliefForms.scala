@@ -40,7 +40,7 @@ object ReliefForms {
       if (model.isAvoidanceScheme.isDefined ) {
         Valid
       } else {
-        Invalid(Messages("ated.claim-relief.avoidance-scheme.selected"), "isAvoidanceScheme")
+        Invalid("ated.claim-relief.avoidance-scheme.selected", "isAvoidanceScheme")
       }
   })
 
@@ -51,15 +51,15 @@ object ReliefForms {
         || model.farmHouses || model.socialHousing || model.equityRelease) {
         Valid
       } else {
-        Invalid(Messages("ated.choose-reliefs.error"), "reliefs")
+        Invalid("ated.choose-reliefs.error", "reliefs")
       }
   })
 
   val rentalBusinessDateConstraint: Constraint[Reliefs] = Constraint("rentalBusinessDate")({
-    model => validatePeriodStartDate(model.periodKey, model.rentalBusiness, model.rentalBusinessDate, "rentalBusiness", "rentalBusinessDate")
+    model => validatePeriodStartDate(model.periodKey, model.rentalBusiness, model.rentalBusinessDate, "rental Business", "rentalBusinessDate")
   })
   val employeeOccupationDateConstraint: Constraint[Reliefs] = Constraint("employeeOccupationDate")({
-    model => validatePeriodStartDate(model.periodKey, model.employeeOccupation, model.employeeOccupationDate, "employeeOccupation", "employeeOccupationDate")
+    model => validatePeriodStartDate(model.periodKey, model.employeeOccupation, model.employeeOccupationDate, "employee Occupation", "employeeOccupationDate")
   })
   val farmHousesDateConstraint: Constraint[Reliefs] = Constraint("farmHousesDate")({
     model => validatePeriodStartDate(model.periodKey, model.farmHouses, model.farmHousesDate, "farmHouses", "farmHousesDate")
@@ -68,20 +68,21 @@ object ReliefForms {
     model => validatePeriodStartDate(model.periodKey, model.lending, model.lendingDate, "lending", "lendingDate")
   })
   val openToPublicDateConstraint: Constraint[Reliefs] = Constraint("openToPublicDate")({
-    model => validatePeriodStartDate(model.periodKey, model.openToPublic, model.openToPublicDate, "openToPublic", "openToPublicDate")
+    model => validatePeriodStartDate(model.periodKey, model.openToPublic, model.openToPublicDate, "open To the Public", "openToPublicDate")
   })
   val propertyDeveloperDateConstraint: Constraint[Reliefs] = Constraint("propertyDeveloperDate")({
-    model => validatePeriodStartDate(model.periodKey, model.propertyDeveloper, model.propertyDeveloperDate, "propertyDeveloper", "propertyDeveloperDate")
+    model => validatePeriodStartDate(model.periodKey, model.propertyDeveloper, model.propertyDeveloperDate, "property Developers", "propertyDeveloperDate")
   })
   val propertyTradingDateConstraint: Constraint[Reliefs] = Constraint("propertyTradingDate")({
-    model => validatePeriodStartDate(model.periodKey, model.propertyTrading, model.propertyTradingDate, "propertyTrading", "propertyTradingDate")
+    model => validatePeriodStartDate(model.periodKey, model.propertyTrading, model.propertyTradingDate, "property Trading", "propertyTradingDate")
   })
   val socialHousingDateConstraint: Constraint[Reliefs] = Constraint("socialHousingDate")({
-    model => validatePeriodStartDate(model.periodKey, model.socialHousing, model.socialHousingDate, "socialHousing", "socialHousingDate")
+    model => validatePeriodStartDate(model.periodKey, model.socialHousing, model.socialHousingDate, "social Housing", "socialHousingDate")
   })
   val equityReleaseConstraint: Constraint[Reliefs] = Constraint("equityReleaseDate")({
-    model => validatePeriodStartDate(model.periodKey, model.equityRelease, model.equityReleaseDate, "equityRelease", "equityReleaseDate")
+    model => validatePeriodStartDate(model.periodKey, model.equityRelease, model.equityReleaseDate, "equity Release scheme", "equityReleaseDate")
   })
+
   def validatePeriodStartDate(periodKey: Int,
                               reliefSelected: Boolean,
                               startDate: Option[LocalDate],
@@ -91,16 +92,16 @@ object ReliefForms {
 
     reliefSelected match {
       case true if startDate.isEmpty => {
-        Invalid(Messages("ated.choose-reliefs.error.date.mandatory",
-          Messages(s"ated.choose-reliefs.$reliefSelectedFieldName").toLowerCase), dateFieldName)
+        Invalid("ated.choose-reliefs.error.date.mandatory",
+          s"${dateFieldName}")
       }
       case true if isPeriodTooEarly(periodKey, startDate) => {
-        Invalid(Messages("ated.choose-reliefs.error.date.tooEarly",
-          Messages(s"ated.choose-reliefs.$reliefSelectedFieldName").toLowerCase), dateFieldName)
+        Invalid("ated.choose-reliefs.error.date.chargePeriod",
+          s"${dateFieldName}")
       }
       case true if isPeriodTooLate(periodKey, startDate) => {
-        Invalid(Messages("ated.choose-reliefs.error.date.tooLate",
-          Messages(s"ated.choose-reliefs.$reliefSelectedFieldName").toLowerCase), dateFieldName)
+        Invalid("ated.choose-reliefs.error.date.chargePeriod",
+          s"${dateFieldName}")
       }
       case _ => Valid
     }
@@ -181,18 +182,18 @@ object ReliefForms {
     def validateAvoidanceScheme(avoidanceFieldName: String): Seq[Option[FormError]] = {
       val avoidanceSchemeNo = f.data.get(avoidanceFieldName)
       avoidanceSchemeNo.getOrElse("") match {
-        case a if a.isEmpty => Seq(Some(FormError(avoidanceFieldName, Messages("ated.avoidance-schemes.scheme.empty"))))
-        case a if a.length != 8 => Seq(Some(FormError(avoidanceFieldName, Messages("ated.avoidance-schemes.scheme.wrong-length"))))
-        case a if Try(a.toInt).isFailure => Seq(Some(FormError(avoidanceFieldName, Messages("ated.avoidance-schemes.scheme.numeric-error"))))
+        case a if a.isEmpty => Seq(Some(FormError(avoidanceFieldName, "ated.avoidance-schemes.scheme.empty")))
+        case a if a.length != 8 => Seq(Some(FormError(avoidanceFieldName, "ated.avoidance-schemes.scheme.wrong-length")))
+        case a if Try(a.toInt).isFailure => Seq(Some(FormError(avoidanceFieldName, "ated.avoidance-schemes.scheme.numeric-error")))
         case _ => Seq(None)
       }
     }
     def validatePromoterReference(promoterFieldName: String): Seq[Option[FormError]] = {
       val promoterReference = f.data.get(promoterFieldName)
       promoterReference.getOrElse("") match {
-        case a if a.isEmpty => Seq(Some(FormError(promoterFieldName, Messages("ated.avoidance-schemes.promoter.empty"))))
-        case a if a.length != 8 => Seq(Some(FormError(promoterFieldName, Messages("ated.avoidance-schemes.promoter.wrong-length"))))
-        case a if Try(a.toInt).isFailure => Seq(Some(FormError(promoterFieldName, Messages("ated.avoidance-schemes.promoter.numeric-error"))))
+        case a if a.isEmpty => Seq(Some(FormError(promoterFieldName, "ated.avoidance-schemes.promoter.empty")))
+        case a if a.length != 8 => Seq(Some(FormError(promoterFieldName, "ated.avoidance-schemes.promoter.wrong-length")))
+        case a if Try(a.toInt).isFailure => Seq(Some(FormError(promoterFieldName, "ated.avoidance-schemes.promoter.numeric-error")))
         case _ => Seq(None)
       }
     }

@@ -56,7 +56,7 @@ class PropertyDetailsFormsSpec extends PlaySpec with GuiceOneServerPerSuite {
     "throw error on entering invalid input data" in {
       PropertyDetailsForms.propertyDetailsAddressForm.bind(invalidPropertyDetailsAddressFormData).fold(
         formWithErrors => {
-          formWithErrors.errors.head.message must be("You must enter a valid postcode")
+          formWithErrors.errors.head.message must be("ated.error.address.postalcode.format")
           formWithErrors.errors.length must be(1)
         },
         _ => {

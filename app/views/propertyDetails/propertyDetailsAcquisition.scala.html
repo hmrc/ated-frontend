@@ -15,14 +15,15 @@
  *@
 
 @import models._
+@import config.ApplicationConfig
 @(id: String, periodKey: Int, propertyDetailsForm: Form[PropertyDetailsAcquisition],
   mode: Option[String],
-  backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent])
+  backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 @import uk.gov.hmrc.play.views.html._
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
 @import views.html.helpers.error._
-@import utils._
+@import _root_.utils._
 
 @implicitFormInstance = @{
   Some(propertyDetailsForm)
@@ -35,20 +36,20 @@
   ga('set', 'location', document.URL.split("?")[0]);
 }
 
-@atedMain(title = Messages("ated.property-details-value.anAcquisition.title"),
+@atedMain(title = messages("ated.property-details-value.anAcquisition.title"),
           analyticsAdditionalJs = Some(analyticsJs)) {
 
-  @pageHeadersAndError(backLink, "pre-heading", AtedUtils.getPropertyDetailsPreHeader(mode), "property-details-header", Messages("ated.property-details-value.anAcquisition.header"),
-      Some(atedErrorSummary(propertyDetailsForm, "ated.property-details-value-error.general")))
+  @pageHeadersAndError(backLink, messages("pre-heading"), messages(AtedUtils.getPropertyDetailsPreHeader(mode)), messages("property-details-header"), messages("ated.property-details-value.anAcquisition.header"),
+      Some(atedErrorSummary(propertyDetailsForm, messages("ated.property-details-value-error.general"))))
 
     <details>
-        <summary id="anAcquisition-reveal" class="summary" data-journey-click="@Messages("ated.property-details-value.anAcquisition.what"):click-accordion:@Messages("ated.property-details-value.anAcquisition.title")">
-            @Messages("ated.property-details-value.anAcquisition.what")
+        <summary id="anAcquisition-reveal" class="summary" data-journey-click="@messages("ated.property-details-value.anAcquisition.what"):click-accordion:@messages("ated.property-details-value.anAcquisition.title")">
+            @messages("ated.property-details-value.anAcquisition.what")
         </summary>
         <div class="panel-indent">
-            <p id="anAcquisition-text-1">@Messages("ated.property-details-value.anAcquisition.what.text1")</p>
-            <p id="anAcquisition-text-2">@Messages("ated.property-details-value.anAcquisition.what.text2")</p>
-            <p id="anAcquisition-text-3">@Html(Messages("ated.property-details-value.anAcquisition.what.text3"))</p>
+            <p id="anAcquisition-text-1">@messages("ated.property-details-value.anAcquisition.what.text1")</p>
+            <p id="anAcquisition-text-2">@messages("ated.property-details-value.anAcquisition.what.text2")</p>
+            <p id="anAcquisition-text-3">@Html(messages("ated.property-details-value.anAcquisition.what.text3"))</p>
         </div>
     </details>
 
@@ -58,10 +59,10 @@
       <div class="form-group" id="anAcquisition">
       @atedInputRadioGroupNew(
         propertyDetailsForm("anAcquisition"),
-        Seq("true" -> Messages("ated.property-details-value.yes"),
-          "false" -> Messages("ated.property-details-value.no")),
+        Seq("true" -> messages("ated.property-details-value.yes"),
+          "false" -> messages("ated.property-details-value.no")),
         '_fieldsetAttributesHelpQuestion -> "anAcquisition-help-question",
-        '_legend -> Messages("ated.property-details-value.anAcquisition.header"),
+        '_legend -> messages("ated.property-details-value.anAcquisition.header"),
           '_legendClass -> "visuallyhidden",
         '_groupClass -> "inline",
         '_labelClass -> "block-label",
@@ -70,7 +71,7 @@
       )
       </div>
 
-      <button class="button" id="submit" type="submit" data-journey-click="@Messages("ated.continue"):click-button:@Messages("ated.property-details-value.anAcquisition.title")">@Messages("ated.save-and-continue")</button>
+      <button class="button" id="submit" type="submit" data-journey-click="@messages("ated.continue"):click-button:@messages("ated.property-details-value.anAcquisition.title")">@messages("ated.save-and-continue")</button>
 
 
   }

@@ -33,30 +33,30 @@ object ReliefsUtils extends ReliefConstants {
 
   def convertETMPReliefNameForMultipleReliefs(etmpReliefName: String): String = {
     val reliefsDescription = Map(
-      RentalBusinessDesc -> Messages("ated.choose-reliefs.rentalBusiness"),
-      OpenToPublicDesc -> Messages("ated.choose-reliefs.openToPublic"),
-      PropDevDesc -> Messages("ated.choose-reliefs.propertyDeveloper"),
-      PropTradingDesc -> Messages("ated.choose-reliefs.propertyTrading"),
-      LendingDesc -> Messages("ated.choose-reliefs.lending"),
-      EmpOccDesc -> Messages("ated.choose-reliefs.employeeOccupation"),
-      FarmHouseDesc -> Messages("ated.choose-reliefs.farmHouses"),
-      SocialHouseDesc -> Messages("ated.choose-reliefs.socialHousing"),
-      EquityReleaseDesc -> Messages("ated.choose-reliefs.equityRelease")
+      RentalBusinessDesc -> "ated.choose-reliefs.rentalBusiness",
+      OpenToPublicDesc -> "ated.choose-reliefs.openToPublic",
+      PropDevDesc -> "ated.choose-reliefs.propertyDeveloper",
+      PropTradingDesc -> "ated.choose-reliefs.propertyTrading",
+      LendingDesc -> "ated.choose-reliefs.lending",
+      EmpOccDesc -> "ated.choose-reliefs.employeeOccupation",
+      FarmHouseDesc -> "ated.choose-reliefs.farmHouses",
+      SocialHouseDesc -> "ated.choose-reliefs.socialHousing",
+      EquityReleaseDesc -> "ated.choose-reliefs.equityRelease"
     )
     reliefsDescription.getOrElse(etmpReliefName, etmpReliefName)
   }
 
   def convertETMPReliefNameForSingleRelief(etmpReliefName: String): String = {
     val reliefsDescription = Map(
-      RentalBusinessDesc -> Messages("ated.choose-single-relief.rentalBusiness"),
-      OpenToPublicDesc -> Messages("ated.choose-single-relief.openToPublic"),
-      PropDevDesc -> Messages("ated.choose-single-relief.propertyDeveloper"),
-      PropTradingDesc -> Messages("ated.choose-single-relief.propertyTrading"),
-      LendingDesc -> Messages("ated.choose-single-relief.lending"),
-      EmpOccDesc -> Messages("ated.choose-single-relief.employeeOccupation"),
-      FarmHouseDesc -> Messages("ated.choose-single-relief.farmHouses"),
-      SocialHouseDesc -> Messages("ated.choose-single-relief.socialHousing"),
-      EquityReleaseDesc -> Messages("ated.choose-reliefs.equityRelease")
+      RentalBusinessDesc -> "ated.choose-single-relief.rentalBusiness",
+      OpenToPublicDesc -> "ated.choose-single-relief.openToPublic",
+      PropDevDesc -> "ated.choose-single-relief.propertyDeveloper",
+      PropTradingDesc -> "ated.choose-single-relief.propertyTrading",
+      LendingDesc -> "ated.choose-single-relief.lending",
+      EmpOccDesc -> "ated.choose-single-relief.employeeOccupation",
+      FarmHouseDesc -> "ated.choose-single-relief.farmHouses",
+      SocialHouseDesc -> "ated.choose-single-relief.socialHousing",
+      EquityReleaseDesc -> "ated.choose-reliefs.equityRelease"
     )
     reliefsDescription.getOrElse(etmpReliefName, etmpReliefName)
   }

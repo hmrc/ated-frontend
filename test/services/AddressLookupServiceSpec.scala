@@ -32,30 +32,27 @@ import scala.concurrent.Future
 
 class AddressLookupServiceSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with MockAuthUtil {
 
+  implicit val hc: HeaderCarrier = HeaderCarrier()
+  implicit lazy val authContext: StandardAuthRetrievals = mock[StandardAuthRetrievals]
 
   val mockAddressLookupConnector: AddressLookupConnector = mock[AddressLookupConnector]
   val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
 
-  object TestAddressLookupService extends AddressLookupService {
-    override val addressLookupConnector: AddressLookupConnector = mockAddressLookupConnector
-    override val dataCacheConnector: DataCacheConnector = mockDataCacheConnector
+  class Setup {
+    val testAddressLookupService: AddressLookupService = new AddressLookupService(
+    mockAddressLookupConnector,
+    mockDataCacheConnector
+    )
   }
 
   override def beforeEach: Unit = {
-    reset(mockAddressLookupConnector)
-    reset(mockDataCacheConnector)
   }
-
-
-  implicit val hc: HeaderCarrier = HeaderCarrier()
-  implicit lazy val authContext: StandardAuthRetrievals = mock[StandardAuthRetrievals]
-
 
   "find" must {
     val address =  AddressSearchResult(List("line1", "line2"), Some("town"), Some("country"), "postCode", AddressLookupCountry("",""))
     val addressLookupRecord = AddressLookupRecord("1", address)
 
-    "return a list of Address and cache them if we have any" in {
+    "return a list of Address and cache them if we have any" in new Setup {
       val addressLookup = AddressLookup("testPostCode", None)
       val results = List(addressLookupRecord)
       val addressSearchResults = AddressSearchResults(addressLookup, results)
@@ -65,22 +62,20 @@ class AddressLookupServiceSpec extends PlaySpec with GuiceOneServerPerSuite with
       when(mockDataCacheConnector.saveFormData(Matchers.any(), Matchers.eq(addressSearchResults))
         (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(addressSearchResults))
 
-      val result = await(TestAddressLookupService.find(addressLookup))
+      val result: AddressSearchResults = await(testAddressLookupService.find(addressLookup))
 
       result.searchCriteria must be (addressLookup)
       result.results must be (List(addressLookupRecord))
     }
-
   }
 
-
   "findById" must {
-    "return the address from the list if we have 2 lines in it" in {
+    "return the address from the list if we have 2 lines in it" in new Setup {
       val addressLookupRecord =  AddressLookupRecord("1", AddressSearchResult(List("line1", "line2"), Some("town"), Some("county"), "postCode",
         AddressLookupCountry("","")))
 
       when(mockAddressLookupConnector.findById(Matchers.eq(addressLookupRecord.id))(Matchers.any())).thenReturn(Future.successful(Some(addressLookupRecord)))
-      val result = await(TestAddressLookupService.findById(addressLookupRecord.id))
+      val result: Option[PropertyDetailsAddress] = await(testAddressLookupService.findById(addressLookupRecord.id))
       result.isDefined must be (true)
       result.get.line_1 must be ("line1")
       result.get.line_2 must be ("line2")
@@ -89,15 +84,13 @@ class AddressLookupServiceSpec extends PlaySpec with GuiceOneServerPerSuite with
       result.get.postcode must be (Some("postCode"))
     }
 
-    "return the address from the list if we have 4 lines and a town and county" in {
+    "return the address from the list if we have 4 lines and a town and county" in new Setup {
       val addressLookupRecord =  AddressLookupRecord("1", AddressSearchResult(List("line1", "line2", "line3", "line4"), Some("town"), Some("county"),
         "postCode", AddressLookupCountry("","")))
 
       when(mockAddressLookupConnector.findById(Matchers.eq(addressLookupRecord.id))(Matchers.any())).thenReturn(Future.successful(Some(addressLookupRecord)))
 
-
-      val result = await(TestAddressLookupService.findById(addressLookupRecord.id))
-
+      val result: Option[PropertyDetailsAddress] = await(testAddressLookupService.findById(addressLookupRecord.id))
 
       result.isDefined must be (true)
       result.get.line_1 must be ("line1")
@@ -107,12 +100,12 @@ class AddressLookupServiceSpec extends PlaySpec with GuiceOneServerPerSuite with
       result.get.postcode must be (Some("postCode"))
     }
 
-    "return the address from the list if we have 4 lines and no town or county" in {
+    "return the address from the list if we have 4 lines and no town or county" in new Setup {
       val addressLookupRecord =  AddressLookupRecord("1", AddressSearchResult(List("line1", "line2", "line3", "line4"), None, None, "postCode",
         AddressLookupCountry("","")))
 
       when(mockAddressLookupConnector.findById(Matchers.eq(addressLookupRecord.id))(Matchers.any())).thenReturn(Future.successful(Some(addressLookupRecord)))
-      val result = await(TestAddressLookupService.findById(addressLookupRecord.id))
+      val result: Option[PropertyDetailsAddress] = await(testAddressLookupService.findById(addressLookupRecord.id))
       result.isDefined must be (true)
       result.get.line_1 must be ("line1")
       result.get.line_2 must be ("line2")
@@ -122,12 +115,12 @@ class AddressLookupServiceSpec extends PlaySpec with GuiceOneServerPerSuite with
     }
 
 
-    "return the address from the list if we have 3 lines in it and a county" in {
+    "return the address from the list if we have 3 lines in it and a county" in new Setup {
       val addressLookupRecord =  AddressLookupRecord("1", AddressSearchResult(List("line1", "line2", "line3"), None, Some("county"), "postCode",
         AddressLookupCountry("","")))
 
       when(mockAddressLookupConnector.findById(Matchers.eq(addressLookupRecord.id))(Matchers.any())).thenReturn(Future.successful(Some(addressLookupRecord)))
-      val result = await(TestAddressLookupService.findById(addressLookupRecord.id))
+      val result: Option[PropertyDetailsAddress] = await(testAddressLookupService.findById(addressLookupRecord.id))
 
       result.isDefined must be (true)
       result.get.line_1 must be ("line1")
@@ -137,12 +130,12 @@ class AddressLookupServiceSpec extends PlaySpec with GuiceOneServerPerSuite with
       result.get.postcode must be (Some("postCode"))
     }
 
-    "return the address from the list if we have 3 lines in it and a town" in {
+    "return the address from the list if we have 3 lines in it and a town" in new Setup {
       val addressLookupRecord =  AddressLookupRecord("1", AddressSearchResult(List("line1", "line2", "line3"), Some("town"), None, "postCode",
         AddressLookupCountry("","")))
 
       when(mockAddressLookupConnector.findById(Matchers.eq(addressLookupRecord.id))(Matchers.any())).thenReturn(Future.successful(Some(addressLookupRecord)))
-      val result = await(TestAddressLookupService.findById(addressLookupRecord.id))
+      val result: Option[PropertyDetailsAddress] = await(testAddressLookupService.findById(addressLookupRecord.id))
 
       result.isDefined must be (true)
       result.get.line_1 must be ("line1")
@@ -152,12 +145,12 @@ class AddressLookupServiceSpec extends PlaySpec with GuiceOneServerPerSuite with
       result.get.postcode must be (Some("postCode"))
     }
 
-    "return the address from the list if we have 3 lines and no town or county" in {
+    "return the address from the list if we have 3 lines and no town or county" in new Setup {
       val addressLookupRecord =  AddressLookupRecord("1", AddressSearchResult(List("line1", "line2", "line3"), None, None, "postCode",
         AddressLookupCountry("","")))
 
       when(mockAddressLookupConnector.findById(Matchers.eq(addressLookupRecord.id))(Matchers.any())).thenReturn(Future.successful(Some(addressLookupRecord)))
-      val result = await(TestAddressLookupService.findById(addressLookupRecord.id))
+      val result: Option[PropertyDetailsAddress] = await(testAddressLookupService.findById(addressLookupRecord.id))
 
       result.isDefined must be (true)
       result.get.line_1 must be ("line1")
@@ -167,12 +160,12 @@ class AddressLookupServiceSpec extends PlaySpec with GuiceOneServerPerSuite with
       result.get.postcode must be (Some("postCode"))
     }
 
-    "return the address from the list if we have 2 lines and a town" in {
+    "return the address from the list if we have 2 lines and a town" in new Setup {
       val addressLookupRecord =  AddressLookupRecord("1", AddressSearchResult(List("line1", "line2"), Some("town"), None, "postCode",
         AddressLookupCountry("","")))
 
       when(mockAddressLookupConnector.findById(Matchers.eq(addressLookupRecord.id))(Matchers.any())).thenReturn(Future.successful(Some(addressLookupRecord)))
-      val result = await(TestAddressLookupService.findById(addressLookupRecord.id))
+      val result: Option[PropertyDetailsAddress] = await(testAddressLookupService.findById(addressLookupRecord.id))
 
       result.isDefined must be (true)
       result.get.line_1 must be ("line1")
@@ -182,12 +175,12 @@ class AddressLookupServiceSpec extends PlaySpec with GuiceOneServerPerSuite with
       result.get.postcode must be (Some("postCode"))
     }
 
-    "return the address from the list if we have 2 lines and a county" in {
+    "return the address from the list if we have 2 lines and a county" in new Setup {
       val addressLookupRecord =  AddressLookupRecord("1",AddressSearchResult(List("line1", "line2"), None, Some("county"), "postCode",
         AddressLookupCountry("","")))
 
       when(mockAddressLookupConnector.findById(Matchers.eq(addressLookupRecord.id))(Matchers.any())).thenReturn(Future.successful(Some(addressLookupRecord)))
-      val result = await(TestAddressLookupService.findById(addressLookupRecord.id))
+      val result: Option[PropertyDetailsAddress] = await(testAddressLookupService.findById(addressLookupRecord.id))
 
       result.isDefined must be (true)
       result.get.line_1 must be ("line1")
@@ -197,11 +190,11 @@ class AddressLookupServiceSpec extends PlaySpec with GuiceOneServerPerSuite with
       result.get.postcode must be (Some("postCode"))
     }
 
-    "return the address from the list if we have 1 lines and a county" in {
+    "return the address from the list if we have 1 lines and a county" in new Setup {
       val addressLookupRecord =  AddressLookupRecord("1", AddressSearchResult(List("line1"), None, Some("county"), "postCode", AddressLookupCountry("","")))
 
       when(mockAddressLookupConnector.findById(Matchers.eq(addressLookupRecord.id))(Matchers.any())).thenReturn(Future.successful(Some(addressLookupRecord)))
-      val result = await(TestAddressLookupService.findById(addressLookupRecord.id))
+      val result: Option[PropertyDetailsAddress] = await(testAddressLookupService.findById(addressLookupRecord.id))
 
       result.isDefined must be (true)
       result.get.line_1 must be ("line1")
@@ -211,11 +204,11 @@ class AddressLookupServiceSpec extends PlaySpec with GuiceOneServerPerSuite with
       result.get.postcode must be (Some("postCode"))
     }
 
-    "return the address from the list if we have 1 lines in it and a town" in {
+    "return the address from the list if we have 1 lines in it and a town" in new Setup {
       val addressLookupRecord =  AddressLookupRecord("1", AddressSearchResult(List("line1"), Some("town"), None, "postCode", AddressLookupCountry("","")))
 
       when(mockAddressLookupConnector.findById(Matchers.eq(addressLookupRecord.id))(Matchers.any())).thenReturn(Future.successful(Some(addressLookupRecord)))
-      val result = await(TestAddressLookupService.findById(addressLookupRecord.id))
+      val result: Option[PropertyDetailsAddress] = await(testAddressLookupService.findById(addressLookupRecord.id))
 
       result.isDefined must be (true)
       result.get.line_1 must be ("line1")
@@ -225,21 +218,21 @@ class AddressLookupServiceSpec extends PlaySpec with GuiceOneServerPerSuite with
       result.get.postcode must be (Some("postCode"))
     }
 
-    "return None if we have no line2, town or county" in {
+    "return None if we have no line2, town or county" in new Setup {
       val address =  AddressSearchResult(List("line1"), None, None, "postCode", AddressLookupCountry("",""))
       val addressLookupRecord = AddressLookupRecord("1", address)
       val response = Some(addressLookupRecord)
 
       when(mockAddressLookupConnector.findById(Matchers.eq(addressLookupRecord.id))(Matchers.any())).thenReturn(Future.successful(response))
 
-      val result = await(TestAddressLookupService.findById(addressLookupRecord.id))
+      val result: Option[PropertyDetailsAddress] = await(testAddressLookupService.findById(addressLookupRecord.id))
 
       result.isDefined must be (false)
     }
   }
 
   "retrieveCachedSearchResults" must {
-    "return the cached data" in {
+    "return the cached data" in new Setup {
       val address =  AddressSearchResult(List("line1", "line2"), Some("town"), Some("county"), "postCode", AddressLookupCountry("",""))
       val addressLookupRecord = AddressLookupRecord("1", address)
 
@@ -249,7 +242,7 @@ class AddressLookupServiceSpec extends PlaySpec with GuiceOneServerPerSuite with
       when(mockDataCacheConnector.fetchAndGetFormData[AddressSearchResults](Matchers.any())
         (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(addressSearchResults)))
 
-      val result = await(TestAddressLookupService.retrieveCachedSearchResults())
+      val result: Option[AddressSearchResults] = await(testAddressLookupService.retrieveCachedSearchResults())
 
       result.isDefined must be (true)
       result.get.searchCriteria must be (addressLookup)

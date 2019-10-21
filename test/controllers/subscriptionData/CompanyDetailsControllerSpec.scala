@@ -19,6 +19,9 @@ package controllers.subscriptionData
 import java.util.UUID
 
 import builders.{SessionBuilder, TitleBuilder}
+import config.ApplicationConfig
+import connectors.DataCacheConnector
+import controllers.auth.AuthAction
 import models._
 import org.jsoup.Jsoup
 import org.mockito.Matchers
@@ -27,10 +30,11 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
-import play.api.mvc.Result
+import play.api.mvc.{MessagesControllerComponents, Result}
 import play.api.test.Helpers._
-import services.{DelegationService, DetailsService, SubscriptionDataService}
-import uk.gov.hmrc.auth.core.{AffinityGroup, PlayAuthConnector}
+import services.{DetailsService, SubscriptionDataService}
+import uk.gov.hmrc.auth.core.retrieve.~
+import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.MockAuthUtil
 
@@ -38,40 +42,83 @@ import scala.concurrent.Future
 
 class CompanyDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with MockAuthUtil {
 
-val mockSubscriptionDataService: SubscriptionDataService = mock[SubscriptionDataService]
-  val mockDetailsService: DetailsService = mock[DetailsService]
   implicit lazy val hc: HeaderCarrier = HeaderCarrier()
+  implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
 
-  object TestCompanyDetailsController extends CompanyDetailsController {
-    override val authConnector: PlayAuthConnector = mockAuthConnector
-    override val delegationService: DelegationService = mockDelegationService
-    override val subscriptionDataService: SubscriptionDataService = mockSubscriptionDataService
-    override val detailsDataService: DetailsService = mockDetailsService
+  val mockMcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
+  val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
+  val mockSubscriptionDataService: SubscriptionDataService = mock[SubscriptionDataService]
+  val mockDetailsService: DetailsService = mock[DetailsService]
+
+class Setup {
+
+  val mockAuthAction: AuthAction = new AuthAction(
+    mockAppConfig,
+    mockDelegationService,
+    mockAuthConnector
+  )
+
+  val testCompanyDetailsController: CompanyDetailsController = new CompanyDetailsController(
+      mockMcc,
+      mockAuthAction,
+      mockSubscriptionDataService,
+      mockDetailsService
+  )
+
+  def getWithUnAuthorisedUser(test: Future[Result] => Any) {
+    val userId = s"user-${UUID.randomUUID}"
+    val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
+    setInvalidAuthMocks(authMock)
+    val result = testCompanyDetailsController.view().apply(SessionBuilder.buildRequestWithSession(userId))
+    test(result)
   }
 
+  def getWithAuthorisedUser(correspondence: Option[Address] = None,
+                            registeredDetails: Option[RegisteredDetails] = None)(test: Future[Result] => Any) {
+    val userId = s"user-${UUID.randomUUID}"
+    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+    setAuthMocks(authMock)
+    implicit val hc: HeaderCarrier = HeaderCarrier()
+    when(mockSubscriptionDataService.getEmailConsent(Matchers.any(), Matchers.any())).thenReturn(Future.successful(true))
+    when(mockSubscriptionDataService.getCorrespondenceAddress(Matchers.any(), Matchers.any())).thenReturn(Future.successful(correspondence))
+    when(mockSubscriptionDataService.getRegisteredDetails(Matchers.any(), Matchers.any())).thenReturn(Future.successful(registeredDetails))
+    when(mockSubscriptionDataService.getSafeId(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("safeId")))
+    when(mockDetailsService.getClientMandateDetails(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(None))
+    when(mockSubscriptionDataService.getOverseasCompanyRegistration(Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
+
+    val result = testCompanyDetailsController.view().apply(SessionBuilder.buildRequestWithSession(userId))
+
+    test(result)
+  }
+
+  def getWithAuthorisedUserBack(test: Future[Result] => Any) {
+    val userId = s"user-${UUID.randomUUID}"
+    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+    setAuthMocks(authMock)
+    implicit val hc: HeaderCarrier = HeaderCarrier()
+
+    val result = testCompanyDetailsController.back().apply(SessionBuilder.buildRequestWithSession(userId))
+
+    test(result)
+  }
+}
+
   override def beforeEach(): Unit = {
-    reset(mockAuthConnector)
-    reset(mockSubscriptionDataService)
-    reset(mockDetailsService)
   }
 
   val clientMandateDetails = ClientMandateDetails("agentName", "changeLink", "email", "changeEmailLink")
 
   "CompanyDetailsController" must {
-
-    "use correct DelegationConnector" in {
-      CompanyDetailsController.delegationService must be(DelegationService)
-    }
-
     "unauthorised users" must {
 
-      "respond with a redirect" in {
+      "respond with a redirect" in new Setup {
         getWithUnAuthorisedUser { result =>
           status(result) must be(SEE_OTHER)
         }
       }
 
-      "be redirected to the unauthorised page" in {
+      "be redirected to the unauthorised page" in new Setup {
         getWithUnAuthorisedUser { result =>
           redirectLocation(result).get must include("/ated/unauthorised")
         }
@@ -80,7 +127,7 @@ val mockSubscriptionDataService: SubscriptionDataService = mock[SubscriptionData
 
     "Authorised Users" must {
 
-      "return contact details view with editable address" in {
+      "return contact details view with editable address" in new Setup {
         val addressDetails = AddressDetails(addressType = "", addressLine1 = "", addressLine2 = "", countryCode = "GB")
         val correspondence = Address(Some("name1"), Some("name2"), addressDetails = addressDetails)
         val businessPartnerDetails = RegisteredDetails(isEditable = true, "testName",
@@ -104,7 +151,7 @@ val mockSubscriptionDataService: SubscriptionDataService = mock[SubscriptionData
         }
       }
 
-      "return contact details view with UR banner" in {
+      "return contact details view with UR banner" in new Setup {
         val addressDetails = AddressDetails(addressType = "", addressLine1 = "", addressLine2 = "", countryCode = "GB")
         val correspondence = Address(Some("name1"), Some("name2"), addressDetails = addressDetails)
         val businessPartnerDetails = RegisteredDetails(isEditable = true, "testName",
@@ -127,7 +174,7 @@ val mockSubscriptionDataService: SubscriptionDataService = mock[SubscriptionData
         }
       }
 
-      "return contact details view with NO editable address" in {
+      "return contact details view with NO editable address" in new Setup {
         val addressDetails = AddressDetails(addressType = "", addressLine1 = "", addressLine2 = "", countryCode = "GB")
         val contactDetails = ContactDetails(emailAddress = Some("a@b.c"))
         val correspondence = Address(Some("name1"), Some("name2"), addressDetails = addressDetails, contactDetails = Some(contactDetails))
@@ -152,15 +199,15 @@ val mockSubscriptionDataService: SubscriptionDataService = mock[SubscriptionData
         }
       }
 
-      "Back link redirect to account summary" in {
+      "Back link redirect to account summary" in new Setup {
         getWithAuthorisedUserBack { result =>
           status(result) must be(SEE_OTHER)
         }
       }
 
-      "throw exception when missing safeId" in {
+      "throw exception when missing safeId" in new Setup {
         val userId = s"user-${UUID.randomUUID}"
-        val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+        val authMock: Enrolments ~ Some[AffinityGroup] ~ Some[String] = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
         setAuthMocks(authMock)
         implicit val hc: HeaderCarrier = HeaderCarrier()
         when(mockSubscriptionDataService.getEmailConsent(Matchers.any(), Matchers.any())).thenReturn(Future.successful(true))
@@ -169,48 +216,10 @@ val mockSubscriptionDataService: SubscriptionDataService = mock[SubscriptionData
         when(mockSubscriptionDataService.getSafeId(Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
         when(mockSubscriptionDataService.getOverseasCompanyRegistration(Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
 
-        val result = TestCompanyDetailsController.view().apply(SessionBuilder.buildRequestWithSession(userId))
-        val thrown = the[RuntimeException] thrownBy await(result)
+        val result: Future[Result] = testCompanyDetailsController.view().apply(SessionBuilder.buildRequestWithSession(userId))
+        val thrown: RuntimeException = the[RuntimeException] thrownBy await(result)
         thrown.getMessage must be("Could not get safeId")
       }
     }
-  }
-
-  def getWithUnAuthorisedUser(test: Future[Result] => Any) {
-    val userId = s"user-${UUID.randomUUID}"
-        val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
-    setInvalidAuthMocks(authMock)
-    val result = TestCompanyDetailsController.view().apply(SessionBuilder.buildRequestWithSession(userId))
-    test(result)
-  }
-
-  def getWithAuthorisedUser(correspondence: Option[Address] = None,
-                            registeredDetails: Option[RegisteredDetails] = None)(test: Future[Result] => Any) {
-    val userId = s"user-${UUID.randomUUID}"
-    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
-    setAuthMocks(authMock)
-    implicit val hc: HeaderCarrier = HeaderCarrier()
-    when(mockSubscriptionDataService.getEmailConsent(Matchers.any(), Matchers.any())).thenReturn(Future.successful(true))
-    when(mockSubscriptionDataService.getCorrespondenceAddress(Matchers.any(), Matchers.any())).thenReturn(Future.successful(correspondence))
-    when(mockSubscriptionDataService.getRegisteredDetails(Matchers.any(), Matchers.any())).thenReturn(Future.successful(registeredDetails))
-    when(mockSubscriptionDataService.getSafeId(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("safeId")))
-    when(mockDetailsService.getClientMandateDetails(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
-      .thenReturn(Future.successful(None))
-    when(mockSubscriptionDataService.getOverseasCompanyRegistration(Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
-
-    val result = TestCompanyDetailsController.view().apply(SessionBuilder.buildRequestWithSession(userId))
-
-    test(result)
-  }
-
-  def getWithAuthorisedUserBack(test: Future[Result] => Any) {
-    val userId = s"user-${UUID.randomUUID}"
-    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
-    setAuthMocks(authMock)
-    implicit val hc: HeaderCarrier = HeaderCarrier()
-
-    val result = TestCompanyDetailsController.back().apply(SessionBuilder.buildRequestWithSession(userId))
-
-    test(result)
   }
 }

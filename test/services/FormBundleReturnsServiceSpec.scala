@@ -19,7 +19,7 @@ package services
 import java.util.UUID
 
 import connectors.AtedConnector
-import models.StandardAuthRetrievals
+import models.{FormBundleReturn, StandardAuthRetrievals}
 import org.joda.time.LocalDate
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -27,7 +27,7 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
-import play.api.libs.json.Json
+import play.api.libs.json.{JsValue, Json}
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.logging.SessionId
 import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, HttpResponse, InternalServerException}
@@ -39,9 +39,10 @@ class FormBundleReturnsServiceSpec extends PlaySpec with GuiceOneServerPerSuite 
 
   val mockConnector: AtedConnector = mock[AtedConnector]
 
-  object TestFormBundleReturnsService extends FormBundleReturnsService {
-    override val atedConnector: AtedConnector = mockConnector
-
+  class Setup {
+    val testFormBundleReturnsService: FormBundleReturnsService = new FormBundleReturnsService(
+      mockConnector
+    )
   }
 
   val successJson: String =
@@ -88,19 +89,15 @@ class FormBundleReturnsServiceSpec extends PlaySpec with GuiceOneServerPerSuite 
   implicit lazy val authContext: StandardAuthRetrievals = mock[StandardAuthRetrievals]
 
   "FormBundleReturnsService" must {
-    "use the correct connectors" in {
-      FormBundleReturnsService.atedConnector must be(AtedConnector)
-    }
-
-    "return data if we have some" in {
+    "return data if we have some" in new Setup {
       implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
 
-      val successResponse = Json.parse(successJson)
+      val successResponse: JsValue = Json.parse(successJson)
 
       when(mockConnector.retrieveFormBundleReturns(Matchers.eq("12345678901090"))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
-      val result = TestFormBundleReturnsService.getFormBundleReturns("12345678901090")
-      val bundleReturn = await(result)
+      val result: Future[Option[FormBundleReturn]] = testFormBundleReturnsService.getFormBundleReturns("12345678901090")
+      val bundleReturn: Option[FormBundleReturn] = await(result)
       bundleReturn.isDefined must be(true)
 
       bundleReturn.get.periodKey must be("2014")
@@ -110,38 +107,36 @@ class FormBundleReturnsServiceSpec extends PlaySpec with GuiceOneServerPerSuite 
       bundleReturn.get.ninetyDayRuleApplies must be(true)
 
       bundleReturn.get.lineItem.size must be(1)
-
     }
 
-
-    "return no data if we have none" in {
+    "return no data if we have none" in new Setup {
       implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
 
-      val notFoundResponse = Json.parse( """{}""")
+      val notFoundResponse: JsValue = Json.parse( """{}""")
 
       when(mockConnector.retrieveFormBundleReturns(Matchers.eq("12345678901090"))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(HttpResponse(NOT_FOUND, Some(notFoundResponse))))
-      val result = TestFormBundleReturnsService.getFormBundleReturns("12345678901090")
+      val result: Future[Option[FormBundleReturn]] = testFormBundleReturnsService.getFormBundleReturns("12345678901090")
       await(result).isDefined must be(false)
     }
 
-    "throws an exception for a bad request" in {
+    "throws an exception for a bad request" in new Setup {
       implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID()}")))
       when(mockConnector.retrieveFormBundleReturns(Matchers.eq("12345678901090"))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
 
-      val result = TestFormBundleReturnsService.getFormBundleReturns("12345678901090")
-      val thrown = the[BadRequestException] thrownBy await(result)
+      val result: Future[Option[FormBundleReturn]] = testFormBundleReturnsService.getFormBundleReturns("12345678901090")
+      val thrown: BadRequestException = the[BadRequestException] thrownBy await(result)
       thrown.getMessage must include("Failed to retrieve form bundle return")
     }
 
-    "throws an exception for a unknown exception" in {
+    "throws an exception for a unknown exception" in new Setup {
       implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID()}")))
       when(mockConnector.retrieveFormBundleReturns(Matchers.eq("12345678901090"))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(HttpResponse(UNAUTHORIZED, None)))
 
-      val result = TestFormBundleReturnsService.getFormBundleReturns("12345678901090")
-      val thrown = the[InternalServerException] thrownBy await(result)
+      val result: Future[Option[FormBundleReturn]] = testFormBundleReturnsService.getFormBundleReturns("12345678901090")
+      val thrown: InternalServerException = the[InternalServerException] thrownBy await(result)
       thrown.getMessage must include("Failed to retrieve form bundle return")
     }
 

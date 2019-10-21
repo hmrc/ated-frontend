@@ -16,28 +16,35 @@
 
 package controllers.reliefs
 
+import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.BackLinkController
-import controllers.auth.{AuthAction, ClientHelper, ExternalUrls}
+import controllers.auth.{AuthAction, ClientHelper}
+import javax.inject.Inject
 import play.api.Logger
-import play.api.Play.current
 import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{DelegationService, ReliefsService}
-import uk.gov.hmrc.auth.core.AuthorisationException
 import uk.gov.hmrc.http.ForbiddenException
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import scala.concurrent.{ExecutionContext, Future}
 
-import scala.concurrent.Future
 
+class ReliefDeclarationController @Inject()(mcc: MessagesControllerComponents,
+                                            authAction: AuthAction,
+                                            val reliefsService: ReliefsService,
+                                            val delegationService: DelegationService,
+                                            val dataCacheConnector: DataCacheConnector,
+                                            val backLinkCacheConnector: BackLinkCacheConnector)
+                                           (implicit val appConfig: ApplicationConfig)
 
-trait ReliefDeclarationController extends BackLinkController
-   with ClientHelper with AuthAction {
+  extends FrontendController(mcc) with BackLinkController with ClientHelper {
 
-  def reliefsService: ReliefsService
+  implicit val ec: ExecutionContext = mcc.executionContext
+  val controllerId: String = "ReliefDeclarationController"
 
   def view(periodKey: Int): Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         currentBackLink.flatMap(
           backLink =>
@@ -48,30 +55,22 @@ trait ReliefDeclarationController extends BackLinkController
   }
 
   def submit(periodKey: Int): Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         reliefsService.submitDraftReliefs(authContext.atedReferenceNumber, periodKey) flatMap { response =>
           response.status match {
             case OK => Future.successful(Redirect(controllers.reliefs.routes.ReliefsSentController.view(periodKey)))
             case BAD_REQUEST if response.body.contains("Agent not Valid") =>
-              Future.successful(BadRequest(views.html.global_error(Messages("ated.client-problem.title"),
-                Messages("ated.client-problem.header"), Messages("ated.client-problem.body", ExternalUrls.agentRedirectedToMandate))))
+              Future.successful(BadRequest(views.html.global_error("ated.client-problem.title",
+                "ated.client-problem.header", "ated.client-problem.message",
+                Some(appConfig.agentRedirectedToMandate), Some("ated.client-problem.HrefMessage"), None, appConfig)))
           }
         }
       }
     } recover {
-      case fe: ForbiddenException     =>
+      case _: ForbiddenException     =>
         Logger.warn("[ReliefDeclarationController][submit] Forbidden exception")
-        unauthorisedUrl()
+        authAction.unauthorisedUrl()
     }
   }
-
-}
-
-object ReliefDeclarationController extends ReliefDeclarationController {
-  val reliefsService: ReliefsService = ReliefsService
-  val delegationService: DelegationService = DelegationService
-  val dataCacheConnector: DataCacheConnector = DataCacheConnector
-  override val controllerId: String = "ReliefDeclarationController"
-  override val backLinkCacheConnector: BackLinkCacheConnector = BackLinkCacheConnector
 }

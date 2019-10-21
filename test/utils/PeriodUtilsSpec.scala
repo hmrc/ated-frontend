@@ -109,11 +109,14 @@ class PeriodUtilsSpec extends PlaySpec with GuiceOneServerPerSuite with ReliefCo
       PeriodUtils.getDisplayPeriods(None).isEmpty must be(true)
     }
 
-    "return an orderd list if we have periods" in {
+    "return an ordered list if we have periods" in {
       val periodKey = 2015
-      val liabilityPeriod1 = LineItem(AtedConstants.LiabilityReturnType,new LocalDate(s"$periodKey-4-1"), new LocalDate(s"$periodKey-8-31"))
-      val liabilityPeriod2 = LineItem(AtedConstants.LiabilityReturnType,new LocalDate(s"${periodKey+1}-2-1"), new LocalDate(s"${periodKey+1}-3-31"))
-      val reliefPeriod1 = LineItem(AtedConstants.ReliefReturnType,new LocalDate(s"$periodKey-9-1"), new LocalDate(s"${periodKey+1}-1-31"), Some("Property rental businesses"))
+      val liabilityPeriod1 = LineItem(AtedConstants.LiabilityReturnType,new LocalDate(s"$periodKey-4-1"),
+        new LocalDate(s"$periodKey-8-31"))
+      val liabilityPeriod2 = LineItem(AtedConstants.LiabilityReturnType,new LocalDate(s"${periodKey + 1}-2-1"),
+        new LocalDate(s"${periodKey + 1}-3-31"))
+      val reliefPeriod1 = LineItem(AtedConstants.ReliefReturnType,new LocalDate(s"$periodKey-9-1"),
+        new LocalDate(s"${periodKey + 1}-1-31"), Some("Property rental businesses"))
       val liabilityPeriods = List(liabilityPeriod2, liabilityPeriod1)
       val reliefPeriods = List(reliefPeriod1)
 
@@ -127,10 +130,9 @@ class PeriodUtilsSpec extends PlaySpec with GuiceOneServerPerSuite with ReliefCo
         isInRelief =  Some(true)
       ))
       val lineItems = PeriodUtils.getDisplayPeriods(propertyDetailsPeriods)
-
-      val expected = List(liabilityPeriod1.copy(description = Some("Liable for charge")),
-        reliefPeriod1.copy(description = Some("Rental business")),
-        liabilityPeriod2.copy(description = Some("Liable for charge"))
+      val expected = List(liabilityPeriod1.copy(description = Some("ated.property-details-period.liability.return-type")),
+        reliefPeriod1.copy(description = Some("ated.choose-single-relief.rentalBusiness")),
+        liabilityPeriod2.copy(description = Some("ated.property-details-period.liability.return-type"))
       )
 
       lineItems.isEmpty must be(false)
@@ -145,21 +147,24 @@ class PeriodUtilsSpec extends PlaySpec with GuiceOneServerPerSuite with ReliefCo
 
     "return an ordered list of line items wherever the value or type has changed : Each item has changed and we have disposed of the property" in {
       val periodKey = 2015
-      val liabilityPeriod1 = FormBundleProperty(BigDecimal(123.45), new LocalDate(s"$periodKey-4-1"), new LocalDate(s"$periodKey-8-31"),  AtedConstants.LiabilityReturnType, None)
-      val liabilityPeriod2 = FormBundleProperty(BigDecimal(123.45), new LocalDate(s"${periodKey+1}-2-1"), new LocalDate(s"${periodKey+1}-3-01"), AtedConstants.LiabilityReturnType, None)
-      val reliefPeriod1 = FormBundleProperty(BigDecimal(123.45), new LocalDate(s"$periodKey-9-1"), new LocalDate(s"${periodKey+1}-1-31"), AtedConstants.ReliefReturnType, Some("Property rental businesses"))
-      val disposePeriod = FormBundleProperty(BigDecimal(123.45), new LocalDate(s"${periodKey+1}-3-02"), new LocalDate(s"${periodKey+1}-3-31"), AtedConstants.DisposeReturnType, None)
+      val liabilityPeriod1 = FormBundleProperty(BigDecimal(123.45), new LocalDate(s"$periodKey-4-1"),
+        new LocalDate(s"$periodKey-8-31"),  AtedConstants.LiabilityReturnType, None)
+      val liabilityPeriod2 = FormBundleProperty(BigDecimal(123.45), new LocalDate(s"${periodKey+1}-2-1"),
+        new LocalDate(s"${periodKey + 1}-3-01"), AtedConstants.LiabilityReturnType, None)
+      val reliefPeriod1 = FormBundleProperty(BigDecimal(123.45), new LocalDate(s"$periodKey-9-1"),
+        new LocalDate(s"${periodKey + 1}-1-31"), AtedConstants.ReliefReturnType, Some("Property rental businesses"))
+      val disposePeriod = FormBundleProperty(BigDecimal(123.45), new LocalDate(s"${periodKey+1}-3-02"),
+        new LocalDate(s"${periodKey + 1}-3-31"), AtedConstants.DisposeReturnType, None)
 
       val liabilityPeriods = List(liabilityPeriod2, liabilityPeriod1, disposePeriod)
       val reliefPeriods = List(reliefPeriod1)
-
       val lineItems = PeriodUtils.getDisplayFormBundleProperties(liabilityPeriods ++ reliefPeriods)
 
       val expected = List(
-        LineItem(liabilityPeriod1.`type`, liabilityPeriod1.dateFrom, liabilityPeriod1.dateTo, Some("Liable for charge")),
-        LineItem(reliefPeriod1.`type`, reliefPeriod1.dateFrom, reliefPeriod1.dateTo, Some("Rental business")),
-        LineItem(liabilityPeriod2.`type`, liabilityPeriod2.dateFrom, liabilityPeriod2.dateTo, Some("Liable for charge")),
-        LineItem(disposePeriod.`type`, disposePeriod.dateFrom, disposePeriod.dateTo, Some("Disposed of property"))
+        LineItem(liabilityPeriod1.`type`, liabilityPeriod1.dateFrom, liabilityPeriod1.dateTo, Some("ated.property-details-period.liability.return-type")),
+        LineItem(reliefPeriod1.`type`, reliefPeriod1.dateFrom, reliefPeriod1.dateTo, Some("ated.choose-single-relief.rentalBusiness")),
+        LineItem(liabilityPeriod2.`type`, liabilityPeriod2.dateFrom, liabilityPeriod2.dateTo, Some("ated.property-details-period.liability.return-type")),
+        LineItem(disposePeriod.`type`, disposePeriod.dateFrom, disposePeriod.dateTo, Some("ated.property-details-period.dispose.return-type"))
       )
       lineItems.isEmpty must be(false)
       lineItems must be (expected)
@@ -167,15 +172,13 @@ class PeriodUtilsSpec extends PlaySpec with GuiceOneServerPerSuite with ReliefCo
 
     "return an ordered list of line items wherever the value or type has changed : Merge two periods where value has changed and we have " in {
       val periodKey = 2015
-      val liabilityPeriod1a = FormBundleProperty(BigDecimal(123.45), new LocalDate(s"$periodKey-4-1"), new LocalDate(s"$periodKey-6-30"),  AtedConstants.LiabilityReturnType, None)
-      val liabilityPeriod1b = FormBundleProperty(BigDecimal(999.45), new LocalDate(s"$periodKey-7-1"), new LocalDate(s"$periodKey-8-31"),  AtedConstants.LiabilityReturnType, None)
-
+      val liabilityPeriod1a = FormBundleProperty(BigDecimal(123.45), new LocalDate(s"$periodKey-4-1"),
+        new LocalDate(s"$periodKey-6-30"),  AtedConstants.LiabilityReturnType, None)
+      val liabilityPeriod1b = FormBundleProperty(BigDecimal(999.45), new LocalDate(s"$periodKey-7-1"),
+        new LocalDate(s"$periodKey-8-31"),  AtedConstants.LiabilityReturnType, None)
       val liabilityPeriods = List(liabilityPeriod1a, liabilityPeriod1b)
-
       val lineItems = PeriodUtils.getDisplayFormBundleProperties(liabilityPeriods)
-
-      val mergedLiability =  LineItem(liabilityPeriod1a.`type`, liabilityPeriod1a.dateFrom, liabilityPeriod1b.dateTo, Some("Liable for charge"))
-
+      val mergedLiability =  LineItem(liabilityPeriod1a.`type`, liabilityPeriod1a.dateFrom, liabilityPeriod1b.dateTo, Some("ated.property-details-period.liability.return-type"))
       val expected = List(
         mergedLiability
       )
@@ -186,15 +189,21 @@ class PeriodUtilsSpec extends PlaySpec with GuiceOneServerPerSuite with ReliefCo
 
     "return an ordered list of line items wherever the value or type has changed : Merge multiple periods where value has changed" in {
       val periodKey = 2015
-      val liabilityPeriod1a = FormBundleProperty(BigDecimal(123.45), new LocalDate(s"$periodKey-4-1"), new LocalDate(s"$periodKey-6-30"),  AtedConstants.LiabilityReturnType, None)
-      val liabilityPeriod1b = FormBundleProperty(BigDecimal(999.45), new LocalDate(s"$periodKey-7-1"), new LocalDate(s"$periodKey-8-31"),  AtedConstants.LiabilityReturnType, None)
+      val liabilityPeriod1a = FormBundleProperty(BigDecimal(123.45), new LocalDate(s"$periodKey-4-1"),
+        new LocalDate(s"$periodKey-6-30"),  AtedConstants.LiabilityReturnType, None)
+      val liabilityPeriod1b = FormBundleProperty(BigDecimal(999.45), new LocalDate(s"$periodKey-7-1"),
+        new LocalDate(s"$periodKey-8-31"),  AtedConstants.LiabilityReturnType, None)
 
-      val reliefPeriod1a = FormBundleProperty(BigDecimal(999.45), new LocalDate(s"$periodKey-9-1"), new LocalDate(s"${periodKey}-10-31"), AtedConstants.ReliefReturnType, Some(RentalBusinessDesc))
-      val reliefPeriod1b = FormBundleProperty(BigDecimal(10009.45), new LocalDate(s"$periodKey-10-1"), new LocalDate(s"${periodKey+1}-12-31"), AtedConstants.ReliefReturnType, Some(RentalBusinessDesc))
+      val reliefPeriod1a = FormBundleProperty(BigDecimal(999.45), new LocalDate(s"$periodKey-9-1"),
+        new LocalDate(s"$periodKey-10-31"), AtedConstants.ReliefReturnType, Some(RentalBusinessDesc))
+      val reliefPeriod1b = FormBundleProperty(BigDecimal(10009.45), new LocalDate(s"$periodKey-10-1"),
+        new LocalDate(s"${periodKey + 1}-12-31"), AtedConstants.ReliefReturnType, Some(RentalBusinessDesc))
 
-      val reliefPeriod2 = FormBundleProperty(BigDecimal(10009.45), new LocalDate(s"$periodKey-12-1"), new LocalDate(s"${periodKey+1}-1-31"), AtedConstants.ReliefReturnType, Some(OpenToPublicDesc))
+      val reliefPeriod2 = FormBundleProperty(BigDecimal(10009.45), new LocalDate(s"$periodKey-12-1"),
+        new LocalDate(s"${periodKey + 1}-1-31"), AtedConstants.ReliefReturnType, Some(OpenToPublicDesc))
 
-      val liabilityPeriod2 = FormBundleProperty(BigDecimal(10009.45), new LocalDate(s"${periodKey+1}-2-1"), new LocalDate(s"${periodKey+1}-3-31"), AtedConstants.LiabilityReturnType, None)
+      val liabilityPeriod2 = FormBundleProperty(BigDecimal(10009.45), new LocalDate(s"${periodKey + 1}-2-1"),
+        new LocalDate(s"${periodKey + 1}-3-31"), AtedConstants.LiabilityReturnType, None)
 
 
       val liabilityPeriods = List(liabilityPeriod2, liabilityPeriod1a, liabilityPeriod1b)
@@ -202,13 +211,13 @@ class PeriodUtilsSpec extends PlaySpec with GuiceOneServerPerSuite with ReliefCo
 
       val lineItems = PeriodUtils.getDisplayFormBundleProperties(liabilityPeriods ++ reliefPeriods)
 
-      val mergedLiability =  LineItem(liabilityPeriod1a.`type`, liabilityPeriod1a.dateFrom, liabilityPeriod1b.dateTo, Some("Liable for charge"))
-      val mergedRelief =  LineItem(reliefPeriod1a.`type`, reliefPeriod1a.dateFrom, reliefPeriod1b.dateTo, Some("Rental business"))
+      val mergedLiability =  LineItem(liabilityPeriod1a.`type`, liabilityPeriod1a.dateFrom, liabilityPeriod1b.dateTo, Some("ated.property-details-period.liability.return-type"))
+      val mergedRelief =  LineItem(reliefPeriod1a.`type`, reliefPeriod1a.dateFrom, reliefPeriod1b.dateTo, Some("ated.choose-single-relief.rentalBusiness"))
       val expected = List(
         mergedLiability,
         mergedRelief,
-        LineItem(reliefPeriod2.`type`, reliefPeriod2.dateFrom, reliefPeriod2.dateTo, Some("Open to the public")),
-        LineItem(liabilityPeriod2.`type`, liabilityPeriod2.dateFrom, liabilityPeriod2.dateTo, Some("Liable for charge"))
+        LineItem(reliefPeriod2.`type`, reliefPeriod2.dateFrom, reliefPeriod2.dateTo, Some("ated.choose-single-relief.openToPublic")),
+        LineItem(liabilityPeriod2.`type`, liabilityPeriod2.dateFrom, liabilityPeriod2.dateTo, Some("ated.property-details-period.liability.return-type"))
       )
 
       lineItems.isEmpty must be(false)
@@ -284,7 +293,8 @@ class PeriodUtilsSpec extends PlaySpec with GuiceOneServerPerSuite with ReliefCo
 
     "return the single value and date when we have one line item" in {
 
-      val liabilityPeriod1 = FormBundleProperty(BigDecimal(123.45), new LocalDate(s"$periodKey-4-1"), new LocalDate(s"$periodKey-8-31"),  AtedConstants.LiabilityReturnType, None)
+      val liabilityPeriod1 = FormBundleProperty(BigDecimal(123.45), new LocalDate(s"$periodKey-4-1"),
+        new LocalDate(s"$periodKey-8-31"),  AtedConstants.LiabilityReturnType, None)
 
       val expected = List( LineItemValue(liabilityPeriod1.propertyValue, dateOfValuation))
 
@@ -294,8 +304,9 @@ class PeriodUtilsSpec extends PlaySpec with GuiceOneServerPerSuite with ReliefCo
     }
 
     "return the single value and date when we have one line item with the date being the latest date before the first period" in {
-      val liabilityPeriod1 = FormBundleProperty(BigDecimal(123.45), new LocalDate(s"$periodKey-4-1"), new LocalDate(s"$periodKey-8-31"),  AtedConstants.LiabilityReturnType, None)
-      val valuationDate = new LocalDate(s"${periodKey}-4-1")
+      val liabilityPeriod1 = FormBundleProperty(BigDecimal(123.45),
+        new LocalDate(s"$periodKey-4-1"), new LocalDate(s"$periodKey-8-31"),  AtedConstants.LiabilityReturnType, None)
+      val valuationDate = new LocalDate(s"$periodKey-4-1")
 
       val expected = List( LineItemValue(liabilityPeriod1.propertyValue, valuationDate))
 
@@ -305,9 +316,12 @@ class PeriodUtilsSpec extends PlaySpec with GuiceOneServerPerSuite with ReliefCo
     }
 
     "return ordered value and dates when we have more than one line item each with a different value" in {
-      val liabilityPeriod1 = FormBundleProperty(BigDecimal(123.45), new LocalDate(s"$periodKey-4-1"), new LocalDate(s"$periodKey-8-31"),  AtedConstants.LiabilityReturnType, None)
-      val liabilityPeriod2 = FormBundleProperty(BigDecimal(456.45), new LocalDate(s"${periodKey+1}-2-1"), new LocalDate(s"${periodKey+1}-3-31"), AtedConstants.LiabilityReturnType, None)
-      val reliefPeriod1 = FormBundleProperty(BigDecimal(789.45), new LocalDate(s"$periodKey-9-1"), new LocalDate(s"${periodKey+1}-1-31"), AtedConstants.ReliefReturnType, Some("Property rental businesses"))
+      val liabilityPeriod1 = FormBundleProperty(BigDecimal(123.45), new LocalDate(s"$periodKey-4-1"),
+        new LocalDate(s"$periodKey-8-31"),  AtedConstants.LiabilityReturnType, None)
+      val liabilityPeriod2 = FormBundleProperty(BigDecimal(456.45), new LocalDate(s"${periodKey + 1}-2-1"),
+        new LocalDate(s"${periodKey+1}-3-31"), AtedConstants.LiabilityReturnType, None)
+      val reliefPeriod1 = FormBundleProperty(BigDecimal(789.45), new LocalDate(s"$periodKey-9-1"),
+        new LocalDate(s"${periodKey + 1}-1-31"), AtedConstants.ReliefReturnType, Some("Property rental businesses"))
       val liabilityPeriods = List(liabilityPeriod2, liabilityPeriod1)
       val reliefPeriods = List(reliefPeriod1)
 
@@ -321,9 +335,12 @@ class PeriodUtilsSpec extends PlaySpec with GuiceOneServerPerSuite with ReliefCo
     }
 
     "only return the first date and value if all values match" in {
-      val liabilityPeriod1 = FormBundleProperty(BigDecimal(123.45), new LocalDate(s"$periodKey-4-1"), new LocalDate(s"$periodKey-8-31"),  AtedConstants.LiabilityReturnType, None)
-      val liabilityPeriod2 = FormBundleProperty(BigDecimal(123.45), new LocalDate(s"${periodKey+1}-2-1"), new LocalDate(s"${periodKey+1}-3-31"), AtedConstants.LiabilityReturnType, None)
-      val reliefPeriod1 = FormBundleProperty(BigDecimal(123.45), new LocalDate(s"$periodKey-9-1"), new LocalDate(s"${periodKey+1}-1-31"), AtedConstants.ReliefReturnType, Some("Property rental businesses"))
+      val liabilityPeriod1 = FormBundleProperty(BigDecimal(123.45), new LocalDate(s"$periodKey-4-1"),
+        new LocalDate(s"$periodKey-8-31"),  AtedConstants.LiabilityReturnType, None)
+      val liabilityPeriod2 = FormBundleProperty(BigDecimal(123.45), new LocalDate(s"${periodKey + 1}-2-1"),
+        new LocalDate(s"${periodKey + 1}-3-31"), AtedConstants.LiabilityReturnType, None)
+      val reliefPeriod1 = FormBundleProperty(BigDecimal(123.45), new LocalDate(s"$periodKey-9-1"),
+        new LocalDate(s"${periodKey + 1}-1-31"), AtedConstants.ReliefReturnType, Some("Property rental businesses"))
       val liabilityPeriods = List(liabilityPeriod2, liabilityPeriod1)
       val reliefPeriods = List(reliefPeriod1)
 
@@ -336,9 +353,12 @@ class PeriodUtilsSpec extends PlaySpec with GuiceOneServerPerSuite with ReliefCo
 
 
     "return two values if the value changed mid year, with the date being the date of the change" in {
-      val liabilityPeriod1 = FormBundleProperty(BigDecimal(123.45), new LocalDate(s"$periodKey-4-1"), new LocalDate(s"$periodKey-8-31"),  AtedConstants.LiabilityReturnType, None)
-      val liabilityPeriod2 = FormBundleProperty(BigDecimal(999.45), new LocalDate(s"${periodKey+1}-2-1"), new LocalDate(s"${periodKey+1}-3-31"), AtedConstants.LiabilityReturnType, None)
-      val reliefPeriod1 = FormBundleProperty(BigDecimal(999.45), new LocalDate(s"$periodKey-9-1"), new LocalDate(s"${periodKey+1}-1-31"), AtedConstants.ReliefReturnType, Some("Property rental businesses"))
+      val liabilityPeriod1 = FormBundleProperty(BigDecimal(123.45), new LocalDate(s"$periodKey-4-1"),
+        new LocalDate(s"$periodKey-8-31"),  AtedConstants.LiabilityReturnType, None)
+      val liabilityPeriod2 = FormBundleProperty(BigDecimal(999.45), new LocalDate(s"${periodKey + 1}-2-1"),
+        new LocalDate(s"${periodKey + 1}-3-31"), AtedConstants.LiabilityReturnType, None)
+      val reliefPeriod1 = FormBundleProperty(BigDecimal(999.45), new LocalDate(s"$periodKey-9-1"),
+        new LocalDate(s"${periodKey + 1}-1-31"), AtedConstants.ReliefReturnType, Some("Property rental businesses"))
       val liabilityPeriods = List(liabilityPeriod2, liabilityPeriod1)
       val reliefPeriods = List(reliefPeriod1)
 
@@ -353,9 +373,12 @@ class PeriodUtilsSpec extends PlaySpec with GuiceOneServerPerSuite with ReliefCo
     }
 
     "return three values if the value changed mid year, then changed back" in {
-      val liabilityPeriod1 = FormBundleProperty(BigDecimal(123.45), new LocalDate(s"$periodKey-4-1"), new LocalDate(s"$periodKey-8-31"),  AtedConstants.LiabilityReturnType, None)
-      val liabilityPeriod2 = FormBundleProperty(BigDecimal(123.45), new LocalDate(s"${periodKey+1}-2-1"), new LocalDate(s"${periodKey+1}-3-31"), AtedConstants.LiabilityReturnType, None)
-      val reliefPeriod1 = FormBundleProperty(BigDecimal(999.45), new LocalDate(s"$periodKey-9-1"), new LocalDate(s"${periodKey+1}-1-31"), AtedConstants.ReliefReturnType, Some("Property rental businesses"))
+      val liabilityPeriod1 = FormBundleProperty(BigDecimal(123.45), new LocalDate(s"$periodKey-4-1"),
+        new LocalDate(s"$periodKey-8-31"),  AtedConstants.LiabilityReturnType, None)
+      val liabilityPeriod2 = FormBundleProperty(BigDecimal(123.45), new LocalDate(s"${periodKey + 1}-2-1"),
+        new LocalDate(s"${periodKey + 1}-3-31"), AtedConstants.LiabilityReturnType, None)
+      val reliefPeriod1 = FormBundleProperty(BigDecimal(999.45), new LocalDate(s"$periodKey-9-1"),
+        new LocalDate(s"${periodKey + 1}-1-31"), AtedConstants.ReliefReturnType, Some("Property rental businesses"))
       val liabilityPeriods = List(liabilityPeriod2, liabilityPeriod1)
       val reliefPeriods = List(reliefPeriod1)
 
@@ -372,25 +395,25 @@ class PeriodUtilsSpec extends PlaySpec with GuiceOneServerPerSuite with ReliefCo
 
   "getPeriodValueMessage" must {
     "correct when we only have one value" in {
-      PeriodUtils.getPeriodValueMessage(0, 1) must be ("Value for the purposes of ATED")
+      PeriodUtils.getPeriodValueMessage(0, 1) must be ("ated.form-bundle.view.return.value.only")
     }
     "correct when we have the first of multiple values" in {
-      PeriodUtils.getPeriodValueMessage(0, 3) must be ("Initial value for the purposes of ATED")
+      PeriodUtils.getPeriodValueMessage(0, 3) must be ("ated.form-bundle.view.return.value.initial")
     }
     "correct when we have another of multiple values" in {
-      PeriodUtils.getPeriodValueMessage(1, 3) must be ("New value")
+      PeriodUtils.getPeriodValueMessage(1, 3) must be ("ated.form-bundle.view.return.value.changed")
     }
   }
 
   "getPeriodValueDateMessage" must {
     "correct when we only have one value" in {
-      PeriodUtils.getPeriodValueDateMessage(0, 1) must be ("Date of valuation")
+      PeriodUtils.getPeriodValueDateMessage(0, 1) must be ("ated.form-bundle.view.return.date.valuation.only")
     }
     "correct when we have the first of multiple values" in {
-      PeriodUtils.getPeriodValueDateMessage(0, 3) must be ("Date")
+      PeriodUtils.getPeriodValueDateMessage(0, 3) must be ("ated.form-bundle.view.return.date.valuation.initial")
     }
     "correct when we have another of multiple values" in {
-      PeriodUtils.getPeriodValueDateMessage(1, 3) must be ("Date")
+      PeriodUtils.getPeriodValueDateMessage(1, 3) must be ("ated.form-bundle.view.return.date.valuation.changed")
     }
   }
 
@@ -413,17 +436,12 @@ class PeriodUtilsSpec extends PlaySpec with GuiceOneServerPerSuite with ReliefCo
     }
   }
 
-  "getValuationYear" must {
+  "calculateLowerTaxYearBoundary" must {
     "return 2017, if periodKey is greater than or equal to 2018 or lesser than or equal 2023" in {
-      PeriodUtils.getValuationYear(2018) must be ("2017")
+      PeriodUtils.calculateLowerTaxYearBoundary(2018).getYear.toString() must be ("2017")
     }
     "return 2012, if periodKey is lesser than 2017" in {
-      PeriodUtils.getValuationYear(2015) must be ("2012")
-    }
-    "throw an exception, if period is incorrect" in {
-      val thrown = the[RuntimeException] thrownBy PeriodUtils.getValuationYear(2070)
-      thrown.getMessage must be("[PeriodUtils][getValuationYear] - Incorrect period")
+      PeriodUtils.calculateLowerTaxYearBoundary(2015).getYear.toString() must be ("2012")
     }
   }
-
 }

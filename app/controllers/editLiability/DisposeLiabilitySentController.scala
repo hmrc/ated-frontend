@@ -16,25 +16,30 @@
 
 package controllers.editLiability
 
+import config.ApplicationConfig
 import connectors.DataCacheConnector
-import controllers.AtedBaseController
 import controllers.auth.{AuthAction, ClientHelper}
+import javax.inject.Inject
 import models.EditLiabilityReturnsResponseModel
-import play.api.Play.current
-import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{DelegationService, SubscriptionDataService}
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.AtedConstants._
 
+import scala.concurrent.ExecutionContext
 
-trait DisposeLiabilitySentController extends AtedBaseController
-  with AuthAction with ClientHelper {
 
-  def dataCacheConnector: DataCacheConnector
-  def subscriptionDataService: SubscriptionDataService
+class DisposeLiabilitySentController @Inject()(mcc: MessagesControllerComponents,
+                                               subscriptionDataService: SubscriptionDataService,
+                                               authAction: AuthAction,
+                                               val dataCacheConnector: DataCacheConnector)
+                                              (implicit val appConfig: ApplicationConfig)
+  extends FrontendController(mcc) with ClientHelper {
+
+  implicit val ec: ExecutionContext = mcc.executionContext
 
   def view(oldFormBundleNo: String): Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       dataCacheConnector.fetchAndGetFormData[EditLiabilityReturnsResponseModel](SubmitEditedLiabilityReturnsResponseFormId) map {
         case Some(submitResponse) =>
           submitResponse.liabilityReturnResponse.find(_.oldFormBundleNumber == oldFormBundleNo) match {
@@ -47,8 +52,8 @@ trait DisposeLiabilitySentController extends AtedBaseController
     }
   }
 
-  def viewPrintFriendlyDisposeliabilitySent(oldFormBundleNo: String): Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+  def viewPrintFriendlyDisposeLiabilitySent(oldFormBundleNo: String): Action[AnyContent] = Action.async { implicit request =>
+    authAction.authorisedAction { implicit authContext =>
       for {
         submittedResponse <- dataCacheConnector.fetchAndGetFormData[EditLiabilityReturnsResponseModel](SubmitEditedLiabilityReturnsResponseFormId)
         organisationName <- subscriptionDataService.getOrganisationName
@@ -60,11 +65,4 @@ trait DisposeLiabilitySentController extends AtedBaseController
       }
     }
   }
-
-}
-
-object DisposeLiabilitySentController extends DisposeLiabilitySentController {
-  val delegationService: DelegationService = DelegationService
-  val subscriptionDataService: SubscriptionDataService = SubscriptionDataService
-  override val dataCacheConnector: DataCacheConnector = DataCacheConnector
 }

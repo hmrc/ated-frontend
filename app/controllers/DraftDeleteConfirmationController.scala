@@ -16,36 +16,41 @@
 
 package controllers
 
+import config.ApplicationConfig
 import connectors.DataCacheConnector
 import controllers.auth.{AuthAction, ClientHelper}
-import forms.AtedForms.YesNoQuestionForm
-import play.api.Play.current
-import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, AnyContent}
-import services.{DelegationService, PropertyDetailsService, ReliefsService}
+import forms.AtedForms.YesNoQuestionDraftDeleteForm
+import javax.inject.Inject
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import services.{PropertyDetailsService, ReliefsService}
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-trait DraftDeleteConfirmationController extends AtedBaseController with ClientHelper with AuthAction {
+class DraftDeleteConfirmationController @Inject()(mcc: MessagesControllerComponents,
+                                                  authAction: AuthAction,
+                                                  propertyDetailsService: PropertyDetailsService,
+                                                  reliefsService: ReliefsService,
+                                                  val dataCacheConnector: DataCacheConnector)
+                                                 (implicit val appConfig: ApplicationConfig)
 
-  val propertyDetailsService: PropertyDetailsService
-  val reliefsService: ReliefsService
+  extends FrontendController(mcc) with ClientHelper {
 
-  def dataCacheConnector: DataCacheConnector
+  implicit val ec: ExecutionContext = mcc.executionContext
 
   def view(id: Option[String], periodKey: Int, returnType: String): Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
-        Future.successful(Ok(views.html.confirmDeleteDraft(new YesNoQuestionForm("client.agent-change.error").yesNoQuestionForm, id, periodKey,
+        Future.successful(Ok(views.html.confirmDeleteDraft(new YesNoQuestionDraftDeleteForm().yesNoQuestionForm, id, periodKey,
           returnType, getBackLink(id, periodKey, returnType))))
       }
     }
   }
 
   def submit(id: Option[String], periodKey: Int, returnType: String) : Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
-        val form = new YesNoQuestionForm("ated.delete-draft.error")
+        val form = new YesNoQuestionDraftDeleteForm()
         form.yesNoQuestionForm.bindFromRequest.fold(
           formWithError =>
             Future.successful(BadRequest(views.html.confirmDeleteDraft(formWithError, id, periodKey, returnType, getBackLink(id, periodKey, returnType)))
@@ -77,11 +82,4 @@ trait DraftDeleteConfirmationController extends AtedBaseController with ClientHe
         .view(id.getOrElse(throw new RuntimeException("No id found for draft return"))).url)
     }
   }
-}
-
-object DraftDeleteConfirmationController extends DraftDeleteConfirmationController {
-  val delegationService: DelegationService = DelegationService
-  override val dataCacheConnector: DataCacheConnector = DataCacheConnector
-  override val propertyDetailsService: PropertyDetailsService = PropertyDetailsService
-  override val reliefsService: ReliefsService = ReliefsService
 }

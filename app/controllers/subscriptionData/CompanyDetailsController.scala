@@ -16,23 +16,28 @@
 
 package controllers.subscriptionData
 
+import config.ApplicationConfig
 import connectors.DataCacheConnector
-import controllers.AtedBaseController
 import controllers.auth.AuthAction
-import play.api.Play.current
-import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, AnyContent}
+import javax.inject.Inject
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{DelegationService, DetailsService, SubscriptionDataService}
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-trait CompanyDetailsController extends AtedBaseController with AuthAction {
+class CompanyDetailsController @Inject()(mcc: MessagesControllerComponents,
+                                         authAction: AuthAction,
+                                         subscriptionDataService: SubscriptionDataService,
+                                         detailsDataService: DetailsService)
+                                        (implicit val appConfig: ApplicationConfig)
 
-  def subscriptionDataService: SubscriptionDataService
-  def detailsDataService: DetailsService
+  extends FrontendController(mcc) {
+
+  implicit val ec: ExecutionContext = mcc.executionContext
 
   def view : Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       for {
         emailConsent <- subscriptionDataService.getEmailConsent
         correspondenceAddress <- subscriptionDataService.getCorrespondenceAddress
@@ -53,16 +58,8 @@ trait CompanyDetailsController extends AtedBaseController with AuthAction {
   }
 
   def back: Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       Future.successful(Redirect(controllers.routes.AccountSummaryController.view()))
     }
   }
-}
-
-object CompanyDetailsController extends CompanyDetailsController {
-  val delegationService: DelegationService = DelegationService
-  val dataCacheConnector: DataCacheConnector = DataCacheConnector
-  val subscriptionDataService: SubscriptionDataService = SubscriptionDataService
-  val detailsDataService: DetailsService = DetailsService
-
 }

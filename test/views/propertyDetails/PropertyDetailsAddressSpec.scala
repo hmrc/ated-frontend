@@ -17,18 +17,24 @@
 package views.propertyDetails
 
 import builders.{PropertyDetailsBuilder, TitleBuilder}
+import config.ApplicationConfig
 import forms.PropertyDetailsForms._
+import models.StandardAuthRetrievals
 import org.jsoup.Jsoup
 import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
+import play.api.i18n.{Messages, MessagesApi}
 import play.api.test.FakeRequest
 import utils.{AtedUtils, MockAuthUtil}
 
-class PropertyDetailsAddressSpec extends FeatureSpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
+class PropertyDetailsAddressSpec extends FeatureSpec with GuiceOneServerPerSuite with MockitoSugar
+  with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
 
-  implicit lazy val authContext = organisationStandardRetrievals
-  implicit val messages : play.api.i18n.Messages = play.api.i18n.Messages.Implicits.applicationMessages
+  implicit val request = FakeRequest()
+  implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
+  implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
+  implicit val appConfig: ApplicationConfig = mock[ApplicationConfig]
 
   feature("The user can view an empty property details page") {
 
@@ -77,7 +83,8 @@ class PropertyDetailsAddressSpec extends FeatureSpec with GuiceOneServerPerSuite
       implicit val request = FakeRequest()
 
       val propertyDetails = PropertyDetailsBuilder.getPropertyDetailsAddress(Some("postCode"))
-      val html = views.html.propertyDetails.propertyDetailsAddress(Some("1"), 2015, propertyDetailsAddressForm.fill(propertyDetails), Some(AtedUtils.EDIT_SUBMITTED), Some("http://backLink"))
+      val html = views.html.propertyDetails.propertyDetailsAddress(Some("1"), 2015,
+        propertyDetailsAddressForm.fill(propertyDetails), Some(AtedUtils.EDIT_SUBMITTED), Some("http://backLink"))
 
       val document = Jsoup.parse(html.toString())
       Then("Enter your property details")

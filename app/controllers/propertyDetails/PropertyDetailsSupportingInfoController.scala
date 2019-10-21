@@ -16,25 +16,39 @@
 
 package controllers.propertyDetails
 
+import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
-import controllers.auth.{AuthAction, ClientHelper, ExternalUrls}
+import controllers.auth.{AuthAction, ClientHelper}
 import controllers.editLiability.EditLiabilitySummaryController
 import forms.PropertyDetailsForms._
+import javax.inject.Inject
 import models._
-import play.api.Play.current
 import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{DelegationService, PropertyDetailsCacheSuccessResponse, PropertyDetailsService}
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.AtedConstants._
 import utils.AtedUtils
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-trait PropertyDetailsSupportingInfoController extends PropertyDetailsHelpers with ClientHelper with AuthAction {
+class PropertyDetailsSupportingInfoController @Inject()(mcc: MessagesControllerComponents,
+                                                        authAction: AuthAction,
+                                                        editLiabilitySummaryController: EditLiabilitySummaryController,
+                                                        propertyDetailsSummaryController: PropertyDetailsSummaryController,
+                                                        val propertyDetailsService: PropertyDetailsService,
+                                                        val dataCacheConnector: DataCacheConnector,
+                                                        val backLinkCacheConnector: BackLinkCacheConnector)
+                                                       (implicit val appConfig: ApplicationConfig)
+
+  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper {
+
+  implicit val ec: ExecutionContext = mcc.executionContext
+  val controllerId: String = "PropertyDetailsSupportingInfoController"
+
 
   def view(id: String) : Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         propertyDetailsCacheResponse(id) {
           case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
@@ -54,7 +68,7 @@ trait PropertyDetailsSupportingInfoController extends PropertyDetailsHelpers wit
   }
 
   def editFromSummary(id: String) : Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         propertyDetailsCacheResponse(id) {
           case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
@@ -73,7 +87,7 @@ trait PropertyDetailsSupportingInfoController extends PropertyDetailsHelpers wit
   }
 
   def save(id: String, periodKey: Int, mode: Option[String]): Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         propertyDetailsSupportingInfoForm.bindFromRequest.fold(
           formWithError => {
@@ -82,26 +96,26 @@ trait PropertyDetailsSupportingInfoController extends PropertyDetailsHelpers wit
           propertyDetails => {
             val backLink = Some(controllers.propertyDetails.routes.PropertyDetailsSupportingInfoController.view(id).url)
             for {
-              isRequestValid <- propertyDetailsService.validateCalculateDraftPropertyDetails(id)
+              _ <- propertyDetailsService.validateCalculateDraftPropertyDetails(id)
               cachedData <- dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn)
               _ <- propertyDetailsService.saveDraftPropertyDetailsSupportingInfo(id, propertyDetails)
               result <-
               if (AtedUtils.isEditSubmittedMode(mode) && cachedData.isEmpty) {
-                RedirectWithBackLink(
-                  EditLiabilitySummaryController.controllerId,
+                redirectWithBackLink(
+                  editLiabilitySummaryController.controllerId,
                   controllers.editLiability.routes.EditLiabilitySummaryController.view(id),
                   backLink)
               } else {
                 propertyDetailsService.calculateDraftPropertyDetails(id).flatMap { response =>
                   response.status match {
                     case OK =>
-                      RedirectWithBackLink(
-                        PropertyDetailsSummaryController.controllerId,
+                      redirectWithBackLink(
+                        propertyDetailsSummaryController.controllerId,
                         controllers.propertyDetails.routes.PropertyDetailsSummaryController.view(id),
                         backLink)
                     case BAD_REQUEST if response.body.contains("Agent not Valid") =>
-                      Future.successful(BadRequest(views.html.global_error(Messages("ated.client-problem.title"),
-                        Messages("ated.client-problem.header"), Messages("ated.client-problem.body", ExternalUrls.agentRedirectedToMandate))))
+                      Future.successful(BadRequest(views.html.global_error("ated.client-problem.title",
+                        "ated.client-problem.header", "ated.client-problem.message", Some(appConfig.agentRedirectedToMandate), None, None, appConfig)))
                   }
                 }
               }
@@ -111,12 +125,4 @@ trait PropertyDetailsSupportingInfoController extends PropertyDetailsHelpers wit
       }
     }
   }
-}
-
-object PropertyDetailsSupportingInfoController extends PropertyDetailsSupportingInfoController {
-  val delegationService: DelegationService = DelegationService
-  val propertyDetailsService: PropertyDetailsService = PropertyDetailsService
-  val dataCacheConnector: DataCacheConnector = DataCacheConnector
-  override val controllerId: String = "PropertyDetailsSupportingInfoController"
-  override val backLinkCacheConnector: BackLinkCacheConnector = BackLinkCacheConnector
 }

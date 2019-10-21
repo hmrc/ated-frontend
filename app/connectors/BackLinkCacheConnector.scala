@@ -16,44 +16,43 @@
 
 package connectors
 
-import config.AtedSessionCache
+import config.ApplicationConfig
+import javax.inject.Inject
 import models.BackLinkModel
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.cache.client.SessionCache
+import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-object BackLinkCacheConnector extends BackLinkCacheConnector {
-  val sessionCache: SessionCache = AtedSessionCache
+class BackLinkCacheConnector @Inject()(val http: DefaultHttpClient,
+                                       appConfig: ApplicationConfig) extends SessionCache {
+
+  val baseUri: String = appConfig.baseUri
+  val defaultSource: String = appConfig.defaultSource
+  val domain: String = appConfig.domain
+
   val sourceId: String = "ATED_Back_Link"
-}
-
-trait BackLinkCacheConnector {
-
-  def sessionCache: SessionCache
-
-  def sourceId: String
 
   private def getKey(pageId: String) = {
     s"$sourceId:$pageId"
   }
   def fetchAndGetBackLink(pageId: String)(implicit hc: HeaderCarrier): Future[Option[String]] = {
-    sessionCache.fetchAndGetEntry[BackLinkModel](getKey(pageId)).map(_.flatMap(_.backLink))
+    fetchAndGetEntry[BackLinkModel](getKey(pageId)).map(_.flatMap(_.backLink))
   }
 
   def saveBackLink(pageId: String, returnUrl: Option[String])(implicit hc: HeaderCarrier): Future[Option[String]] = {
-    sessionCache.cache[BackLinkModel](getKey(pageId), BackLinkModel(returnUrl)).map(cacheMap => returnUrl)
+    cache[BackLinkModel](getKey(pageId), BackLinkModel(returnUrl)).map(_ => returnUrl)
   }
 
   def clearBackLinks(pageIds: List[String] = Nil)(implicit hc: HeaderCarrier): Future[List[Option[String]]] = {
-    if (!pageIds.isEmpty){
-      Future.sequence(pageIds.map{ pageId =>
+    if (pageIds.nonEmpty) {
+      Future.sequence(pageIds.map { pageId =>
         saveBackLink(pageId, None)
       })
-    }
-    else
+    } else {
       Future.successful(Nil)
+    }
   }
-
 }

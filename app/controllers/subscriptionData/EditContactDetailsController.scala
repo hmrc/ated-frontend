@@ -16,25 +16,30 @@
 
 package controllers.subscriptionData
 
+import config.ApplicationConfig
 import connectors.DataCacheConnector
-import controllers.AtedBaseController
 import controllers.auth.AuthAction
 import forms.AtedForms._
+import javax.inject.Inject
 import models.EditContactDetails
-import play.api.Play.current
 import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{DelegationService, SubscriptionDataService}
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-trait EditContactDetailsController extends AtedBaseController with AuthAction {
+class EditContactDetailsController @Inject()(mcc: MessagesControllerComponents,
+                                             authAction: AuthAction,
+                                             subscriptionDataService: SubscriptionDataService)
+                                            (implicit val appConfig: ApplicationConfig)
 
-  def subscriptionDataService: SubscriptionDataService
+  extends FrontendController(mcc) {
+
+implicit val ec: ExecutionContext = mcc.executionContext
 
   def edit: Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       for {
         contactAddress <- subscriptionDataService.getCorrespondenceAddress
       } yield {
@@ -50,7 +55,7 @@ trait EditContactDetailsController extends AtedBaseController with AuthAction {
   }
 
   def submit: Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       editContactDetailsForm.bindFromRequest.fold(
         formWithErrors => Future.successful(BadRequest(views.html.subcriptionData.editContactDetails(formWithErrors, getBackLink))),
         editedClientData => {
@@ -58,7 +63,7 @@ trait EditContactDetailsController extends AtedBaseController with AuthAction {
             editedContact <- subscriptionDataService.editContactDetails(editedClientData)
           } yield {
             editedContact match {
-              case Some(x) => Redirect(controllers.subscriptionData.routes.CompanyDetailsController.view())
+              case Some(_) => Redirect(controllers.subscriptionData.routes.CompanyDetailsController.view())
               case None =>
                 val errorMsg = Messages("ated.contact-details.error.general.addressType")
                 val errorForm = editContactDetailsForm.withError(key = "addressType", message = errorMsg).fill(editedClientData)
@@ -73,10 +78,4 @@ trait EditContactDetailsController extends AtedBaseController with AuthAction {
   private def getBackLink = {
     Some(controllers.subscriptionData.routes.CompanyDetailsController.view().url)
   }
-}
-
-object EditContactDetailsController extends EditContactDetailsController {
-  val delegationService: DelegationService = DelegationService
-  val dataCacheConnector: DataCacheConnector = DataCacheConnector
-  val subscriptionDataService: SubscriptionDataService = SubscriptionDataService
 }

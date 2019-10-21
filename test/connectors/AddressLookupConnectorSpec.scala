@@ -18,37 +18,35 @@ package connectors
 
 import java.util.UUID
 
+import config.ApplicationConfig
 import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
-import play.api.Mode.Mode
+import org.scalatestplus.play.PlaySpec
+import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.test.Helpers._
-import play.api.{Configuration, Play}
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.http.logging.SessionId
+import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 import utils.MockAuthUtil
 
 import scala.concurrent.Future
 
-class AddressLookupConnectorSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach with MockAuthUtil {
+class AddressLookupConnectorSpec extends PlaySpec with GuiceOneAppPerSuite with MockitoSugar with BeforeAndAfterEach with MockAuthUtil {
 
-  trait MockedVerbs extends CoreGet with CorePost with CoreDelete
-  val mockWSHttp: CoreGet with CorePost with CoreDelete = mock[MockedVerbs]
+  val mockHttp: DefaultHttpClient = mock[DefaultHttpClient]
+  val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
 
-  object TestAtedConnector extends AddressLookupConnector {
-    override val http: CoreGet with CorePost with CoreDelete = mockWSHttp
-    override val serviceURL: String = baseUrl("address-lookup")
-
-    override protected def mode: Mode = Play.current.mode
-
-    override protected def runModeConfiguration: Configuration = Play.current.configuration
+  class Setup {
+    val testAddressLookupConnector = new AddressLookupConnector(
+      mockAppConfig,
+      mockHttp
+    )
   }
-
   override def beforeEach: Unit = {
-    reset(mockWSHttp)
+    reset(mockHttp)
   }
 
   "AddressLookupConnector" must {
@@ -57,54 +55,54 @@ class AddressLookupConnectorSpec extends PlaySpec with OneServerPerSuite with Mo
 
     "post code lookup" must {
 
-      "retrieve the Addresses Based on Post Code" in {
+      "retrieve the Addresses Based on Post Code" in new Setup {
 
         val response = List(addressLookupRecord)
         implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
-        when(mockWSHttp.GET[List[AddressLookupRecord]]
+        when(mockHttp.GET[List[AddressLookupRecord]]
           (Matchers.any())
           (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(response))
 
-        val result = TestAtedConnector.findByPostcode(AddressLookup("postCode", None))
+        val result: Future[List[AddressLookupRecord]] = testAddressLookupConnector.findByPostcode(AddressLookup("postCode", None))
         await(result).headOption must be(Some(addressLookupRecord))
       }
 
-      "return nil if something goes wrong" in {
+      "return nil if something goes wrong" in new Setup {
 
         val response = List(addressLookupRecord)
         implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
-        when(mockWSHttp.GET[List[AddressLookupRecord]]
+        when(mockHttp.GET[List[AddressLookupRecord]]
           (Matchers.any())
           (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.failed(new Exception("")))
 
-        val result = TestAtedConnector.findByPostcode(AddressLookup("postCode", Some("houseName")))
+        val result: Future[List[AddressLookupRecord]] = testAddressLookupConnector.findByPostcode(AddressLookup("postCode", Some("houseName")))
         await(result).isEmpty must be(true)
       }
     }
 
     "id lookup" must {
 
-      "retrieve the from the id" in {
+      "retrieve the from the id" in new Setup {
 
         val response = Some(addressLookupRecord)
         implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
-        when(mockWSHttp.GET[Option[AddressLookupRecord]]
+        when(mockHttp.GET[Option[AddressLookupRecord]]
           (Matchers.any())
           (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(response))
 
-        val result = TestAtedConnector.findById("1")
+        val result: Future[Option[AddressLookupRecord]] = testAddressLookupConnector.findById("1")
         await(result) must be(Some(addressLookupRecord))
       }
 
-      "return None if something goes wrong" in {
+      "return None if something goes wrong" in new Setup {
 
         val response = List(AddressLookupRecord("1", address))
         implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
-        when(mockWSHttp.GET[Option[AddressLookupRecord]]
+        when(mockHttp.GET[Option[AddressLookupRecord]]
           (Matchers.any())
           (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.failed(new NotFoundException("")))
 
-        val result = TestAtedConnector.findById("1")
+        val result: Future[Option[AddressLookupRecord]] = testAddressLookupConnector.findById("1")
         await(result).isDefined must be(false)
       }
     }

@@ -18,38 +18,36 @@ package controllers
 
 import config.ApplicationConfig
 import controllers.auth.AuthAction
-import play.api.Play
-import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, AnyContent}
+import javax.inject.Inject
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.DelegationService
-import uk.gov.hmrc.play.frontend.controller.UnauthorisedAction
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-trait ApplicationController extends AuthAction {
+class ApplicationController @Inject()(mcc: MessagesControllerComponents,
+                                      authAction: AuthAction)
+                                     (implicit val appConfig: ApplicationConfig)
+  extends FrontendController(mcc) {
 
-  import play.api.Play.current
+  implicit val ec: ExecutionContext = mcc.executionContext
 
-  def unauthorised(isSa: Boolean) : Action[AnyContent] = Action.async { implicit request =>
-      Future.successful(Ok(views.html.unauthorised()(isSa, implicitly, implicitly)))
+  def unauthorised(isSa: Boolean): Action[AnyContent] = Action.async { implicit request =>
+    Future.successful(Ok(views.html.unauthorised()(isSa, implicitly, implicitly, implicitly)))
   }
 
-    def cancel: Action[AnyContent] = Action { implicit request =>
-      val serviceRedirectUrl: Option[String] = Play.configuration.getString(s"cancelRedirectUrl")
-      Redirect(serviceRedirectUrl.getOrElse("https://www.gov.uk/"))
+  def cancel: Action[AnyContent] = Action { implicit request =>
+      val serviceRedirectUrl: String = appConfig.conf.getConfString(s"cancelRedirectUrl", "https://www.gov.uk/")
+      Redirect(serviceRedirectUrl)
     }
 
-    def logout = UnauthorisedAction { implicit request =>
-      Redirect(ApplicationConfig.serviceSignOut).withNewSession
+    def logout: Action[AnyContent] = Action { implicit request =>
+      Redirect(appConfig.serviceSignOut).withNewSession
     }
 
     def keepAlive: Action[AnyContent] = Action.async { implicit request =>
-      authorisedForNoEnrolments { implicit authContext =>
+      authAction.authorisedForNoEnrolments { implicit authContext =>
         Future.successful(Ok("OK"))
       }
     }
   }
-
-object ApplicationController extends ApplicationController {
-  val delegationService: DelegationService = DelegationService
-}

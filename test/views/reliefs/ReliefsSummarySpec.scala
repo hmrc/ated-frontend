@@ -16,17 +16,21 @@
 
 package views.reliefs
 
+import config.ApplicationConfig
 import org.jsoup.Jsoup
 import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
-import org.scalatestplus.play.OneServerPerSuite
+import org.scalatestplus.play.guice.GuiceOneAppPerSuite
+import play.api.i18n.{Messages, MessagesApi}
 import play.api.test.FakeRequest
 import utils.MockAuthUtil
 
-class ReliefsSummarySpec extends FeatureSpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
+class ReliefsSummarySpec extends FeatureSpec with GuiceOneAppPerSuite with MockitoSugar with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
 
   implicit val request = FakeRequest()
-  implicit val messages : play.api.i18n.Messages = play.api.i18n.Messages.Implicits.applicationMessages
+  implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
+
+  implicit val appConfig: ApplicationConfig = mock[ApplicationConfig]
   implicit lazy val authContext = organisationStandardRetrievals
 
   feature("The user can view the relief summary page") {

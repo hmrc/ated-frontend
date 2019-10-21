@@ -16,27 +16,36 @@
 
 package controllers.propertyDetails
 
+import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.BackLinkController
 import controllers.auth.{AuthAction, ClientHelper}
+import javax.inject.Inject
 import models.PropertyDetails
 import org.joda.time.LocalDate
-import play.api.Play.current
-import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{DelegationService, PropertyDetailsCacheSuccessResponse, PropertyDetailsService, SubscriptionDataService}
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.{AtedUtils, PeriodUtils}
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-trait PropertyDetailsSummaryController extends BackLinkController with PropertyDetailsHelpers with ClientHelper with AuthAction {
+class PropertyDetailsSummaryController @Inject()(mcc: MessagesControllerComponents,
+                                                 authAction: AuthAction,
+                                                 subscriptionDataService: SubscriptionDataService,
+                                                 propertyDetailsDeclarationController: PropertyDetailsDeclarationController,
+                                                 val propertyDetailsService: PropertyDetailsService,
+                                                 val dataCacheConnector: DataCacheConnector,
+                                                 val backLinkCacheConnector: BackLinkCacheConnector)
+                                                (implicit val appConfig: ApplicationConfig)
 
-  val propertyDetailsService: PropertyDetailsService
+  extends FrontendController(mcc) with BackLinkController with PropertyDetailsHelpers with ClientHelper {
 
-  def subscriptionDataService: SubscriptionDataService
+  implicit val ec: ExecutionContext = mcc.executionContext
+  override val controllerId = "PropertyDetailsSummaryController"
 
   def view(propertyKey: String): Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         propertyDetailsCacheResponse(propertyKey) {
           case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
@@ -53,9 +62,9 @@ trait PropertyDetailsSummaryController extends BackLinkController with PropertyD
   }
 
   def submit(propertyKey: String): Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
-      ensureClientContext(RedirectWithBackLink(
-        PropertyDetailsDeclarationController.controllerId,
+    authAction.authorisedAction { implicit authContext =>
+      ensureClientContext(redirectWithBackLink(
+        propertyDetailsDeclarationController.controllerId,
         controllers.propertyDetails.routes.PropertyDetailsDeclarationController.view(propertyKey),
         Some(controllers.propertyDetails.routes.PropertyDetailsSummaryController.view(propertyKey).url)
       ))
@@ -64,7 +73,7 @@ trait PropertyDetailsSummaryController extends BackLinkController with PropertyD
 
 
   def viewPrintFriendlyLiabilityReturn(propertyKey: String): Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         for {
           calculateDraft <- propertyDetailsService.calculateDraftPropertyDetails(propertyKey)
@@ -84,19 +93,10 @@ trait PropertyDetailsSummaryController extends BackLinkController with PropertyD
 
 
   def deleteDraft(propertyKey: String, periodKey: Int): Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         Future.successful(Redirect(controllers.routes.DraftDeleteConfirmationController.view(Some(propertyKey), periodKey, "charge")))
       }
     }
   }
-}
-
-object PropertyDetailsSummaryController extends PropertyDetailsSummaryController {
-  override val propertyDetailsService: PropertyDetailsService = PropertyDetailsService
-  val delegationService: DelegationService = DelegationService
-  val subscriptionDataService: SubscriptionDataService = SubscriptionDataService
-  val dataCacheConnector: DataCacheConnector = DataCacheConnector
-  override val controllerId = "PropertyDetailsSummaryController"
-  override val backLinkCacheConnector: BackLinkCacheConnector = BackLinkCacheConnector
 }

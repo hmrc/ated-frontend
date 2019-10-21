@@ -35,7 +35,7 @@ class PropertyDetailsOwnedBeforeFormSpec extends PlaySpec with MustMatchers with
         form.fold(
           hasErrors => {
             hasErrors.errors.length mustBe 1
-            hasErrors.errors.head.message mustBe Messages("ated.property-details-value.isOwnedBeforeValuationYear.error.non-selected")
+            hasErrors.errors.head.message mustBe "ated.property-details-value.isOwnedBeforeValuationYear.error.non-selected"
           },
           _ => {
             fail("There is a problem")
@@ -51,7 +51,7 @@ class PropertyDetailsOwnedBeforeFormSpec extends PlaySpec with MustMatchers with
         PropertyDetailsForms.validatePropertyDetailsOwnedBefore(propertyDetailsOwnedBeforeForm.bind(input)).fold(
           hasErrors => {
             hasErrors.errors.length mustBe  1
-            hasErrors.errors.last.message mustBe Messages("ated.property-details-value.ownedBeforePolicyYearValue.error.empty")
+            hasErrors.errors.last.message mustBe "ated.property-details-value.ownedBeforePolicyYearValue.error.empty"
           },
           _ => {
             fail("There is some problem")
@@ -67,7 +67,7 @@ class PropertyDetailsOwnedBeforeFormSpec extends PlaySpec with MustMatchers with
         PropertyDetailsForms.validatePropertyDetailsOwnedBefore(propertyDetailsOwnedBeforeForm.bind(input)).fold(
           hasErrors => {
             hasErrors.errors.length mustBe  1
-            hasErrors.errors.last.message mustBe Messages("ated.property-details-value.ownedBeforePolicyYearValue.error.too-high")
+            hasErrors.errors.last.message mustBe "ated.property-details-value.ownedBeforePolicyYearValue.error.too-high"
           },
           _ => {
             fail("There is some problem")
@@ -80,11 +80,10 @@ class PropertyDetailsOwnedBeforeFormSpec extends PlaySpec with MustMatchers with
         val input: Map[String, String] =  Map("isOwnedBeforePolicyYear" -> "true",
           "ownedBeforePolicyYearValue" -> "500000"
         )
-
         PropertyDetailsForms.validatePropertyDetailsOwnedBefore(propertyDetailsOwnedBeforeForm.bind(input)).fold(
           hasErrors => {
             hasErrors.errors.length mustBe  1
-            hasErrors.errors.last.message mustBe Messages("ated.property-details-value.ownedBeforePolicyYearValue.error.too-low")
+            hasErrors.errors.last.message mustBe "ated.property-details-value.ownedBeforePolicyYearValue.error.too-low"
           },
           _ => {
             fail("There is some problem")
@@ -99,7 +98,7 @@ class PropertyDetailsOwnedBeforeFormSpec extends PlaySpec with MustMatchers with
         propertyDetailsOwnedBeforeForm.bind(input).fold(
           hasErrors => {
             hasErrors.errors.length mustBe  1
-            hasErrors.errors.head.message mustBe Messages("ated.property-details-value.incorrect-format")
+            hasErrors.errors.head.message mustBe "ated.property-details-value.incorrect-format"
           },
           _ => {
             fail("There is some problem")

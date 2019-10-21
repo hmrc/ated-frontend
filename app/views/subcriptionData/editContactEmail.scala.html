@@ -14,7 +14,8 @@
  * limitations under the License.
  *@
 
-@(editContactDetailsEmailForm: Form[models.EditContactDetailsEmail], backLink:Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent])
+@import config.ApplicationConfig
+@(editContactDetailsEmailForm: Form[models.EditContactDetailsEmail], backLink:Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 @import uk.gov.hmrc.play.views.html._
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
@@ -25,7 +26,7 @@
 @implicitFormInstance = @{ Some(editContactDetailsEmailForm) }
 
 @pageScripts = {
-<script src='@controllers.routes.AssetsController.at("javascript/edit-contact-email.js")'></script>
+<script src='@controllers.routes.Assets.versioned("javascript/edit-contact-email.js")'></script>
 }
 
 @atedMain(title = Messages("ated.contact-details-edit-email.header"), pageScripts = Some(pageScripts)) {

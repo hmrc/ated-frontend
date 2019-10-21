@@ -16,13 +16,18 @@
 
 package views.html.reliefs
 
+import config.ApplicationConfig
+import models.StandardAuthRetrievals
 import org.scalatest.mockito.MockitoSugar
+import play.api.i18n.Messages
 import play.twirl.api.Html
 import utils.MockAuthUtil
 import utils.viewHelpers.AtedViewSpec
 
 class ReliefDeclarationSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil {
-  implicit lazy val authContext = organisationStandardRetrievals
+  implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
+
+  implicit val appConfig: ApplicationConfig = mock[ApplicationConfig]
 
   "Relief Declaration" must {
     behave like pageWithTitle(messages("ated.relief-summary.declaration.title"))

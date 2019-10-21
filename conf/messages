@@ -175,9 +175,8 @@ ated.choose-reliefs.error.general.employeeOccupationDate = There is a problem wi
 ated.choose-reliefs.error.general.farmHousesDate = There is a problem with the farmhouses start date
 ated.choose-reliefs.error.general.socialHousingDate = There is a problem with the social housing start date
 ated.choose-reliefs.error.general.equityReleaseDate = There is a problem with the equity release start date
-ated.choose-reliefs.error.date.mandatory = You must enter a {0} date
-ated.choose-reliefs.error.date.tooEarly = The {0} date must be in this chargeable period
-ated.choose-reliefs.error.date.tooLate = The {0} date must be in this chargeable period
+ated.choose-reliefs.error.date.mandatory = You must enter a valid date
+ated.choose-reliefs.error.date.chargePeriod = The date must be in this chargeable period
 
 ated.reliefs.error.title = There is a problem with your ATED return
 ated.reliefs.error.wrong-period = There is a problem with your ATED return. No details have been saved so you must return to your account summary and start again.
@@ -574,7 +573,6 @@ ated.property-details-period.datesLiable.startDate.error.too-late = The liabilit
 ated.property-details-period.datesLiable.startDate.invalid.error = The liability start date must not be between an already added period
 ated.property-details-period.datesLiable.endDate.invalid.error = The liability end date must not be between an already added period
 ated.property-details-period.datesLiable.overlap.error = No periods of charge or relief can overlap
-ated.property-details-period.datesInRelief.overlap.error = No periods of charge or relief can overlap
 
 ated.property-details-period.datesLiable.endDate = What was the end date in this chargeable period when the property stopped being liable for a charge?
 ated.property-details-period.datesLiable.endDate.hint = For example, {0}
@@ -729,8 +727,8 @@ ated.non-uk-reg.country.select = please select one country
 ated.non-uk-reg.title = Edit your overseas company registration number
 ated.non-uk-reg.header = Edit your overseas company registration number
 ated.non-uk-reg.subheader = Manage your ATED service
-ated.non-uk-reg.businessUniqueId.length = The overseas company registration number cannot be more than {0} characters
-ated.non-uk-reg.issuingInstitution.length = The institution that issued the overseas company registration number cannot be more than {0} characters
+ated.non-uk-reg.businessUniqueId.length = The overseas company registration number cannot be more than 60 characters
+ated.non-uk-reg.issuingInstitution.length = The institution that issued the overseas company registration number cannot be more than 40 characters
 
 ##### CORRESPONDENCE ADDRESS
 
@@ -739,8 +737,8 @@ ated.correspondence-address.subheader = Manage your ATED service
 ated.correspondence-address.header = Edit your correspondence address
 ated.correspondence-address.address-type = Address type
 ated.address.address = Address
-ated.address.line-1 = Address line 1
-ated.address.line-2 = Address line 2
+ated.address.line-1 = You must enter Address line 1
+ated.address.line-2 = You must enter Address line 2
 ated.address.line-3 = Address line 3
 ated.address.line-4 = Address line 4
 ated.address.postcode = Postcode (optional)
@@ -748,7 +746,7 @@ ated.address.postcode.field = Postcode
 
 #ated.address.country = ISO country code
 
-ated.address.country = Country
+ated.address.country = You must enter Country
 ated.address.country.select = Select one country
 ated.address.country.instruction = The ISO country code is internationally recognised and identifies a specific country. For example, United States = ‘US’ and Germany = ‘DE’
 ated.correspondence-address.save = Save
@@ -765,7 +763,7 @@ ated.correspondence-address.error.uk.postalCode = You must enter a UK postcode i
 
 ated.registered-details.title = Edit business name and address
 ated.registered-details.header = Edit business name and address
-ated.registered-details.business-name = Business name
+ated.registered-details.business-name = You must enter Business name
 ated.registered-details.save = Save
 ated.registered-details.postcode = Postcode
 ated.registered-details.safeId = SafeId
@@ -1099,6 +1097,7 @@ ated.change-liability.period.endDate.empty-error = You must enter a liability en
 ated.edit-liability-details-period-error.general.taxAvoidanceScheme = There is a problem with the avoidance scheme reference number
 ated.edit-liability-details-period-error.general.taxAvoidancePromoterReference = There is a problem with the promoter reference number
 ated.edit-liability-details-period-error.general.isTaxAvoidance = There is a problem with the avoidance scheme question
+ated.edit-liability.error.general.editLiabilityType = There is a problem with the type of return
 
 ##### EDIT LIABILITY DECLARATION PAGE
 
@@ -1242,6 +1241,7 @@ ated.change-property-value-error.general.propertyDetailsValue.notNewBuildDate =T
 ated.change-property-value-error.general.propertyDetailsValue.notNewBuildValue = There is a problem with the property value
 ated.change-property-value-error.general.propertyDetailsValue.ownedBeforePolicyYearValue = There is a problem with the property value
 ated.change-property-value-error.general.propertyDetailsValue.valuationDate = There is a problem with the date of valuation
+ated.change-property-value-error.general.hasValueChanged = Select if the value of your property has changed or not
 
 ated.change-property-value.hasValueChanged.error.non-selected = You must answer the property value question
 ated.change-property-value.anAcquisition.error.non-selected = You must answer the acquisition or partial disposal question
@@ -1272,7 +1272,7 @@ ated.change-liability.period.propertyDetailsValue.notNewBuildDate.after-today = 
 ated.change-liability.period.propertyDetailsValue.revaluedDate.after-today = The revaluation date cannot be in the future.
 ated.change-liability.period.propertyDetailsValue.partAcqDispDate.after-today = The property partial disposal or acquisition date cannot be in the future.
 
-##### DISPOSE PROPERTY 
+##### DISPOSE PROPERTY
 
 ated.dispose-property.error.general.dateOfDisposal = There is a problem with date of disposal
 ated.dispose-property.dateOfDisposal.error.empty =  You must enter date of disposal
@@ -1284,7 +1284,7 @@ ated.dispose-property.period.dateOfDisposal.date-after-today = The property disp
 
 ated.client-banner.agent.pending = You have requested <span class="heading-small">{0}</span> to act as your agent
 
-##### AGENT BANNER 
+##### AGENT BANNER
 
 ated.agent.banner = You are viewing the returns of <strong>{0}</strong>
 
@@ -1313,11 +1313,16 @@ ated.change-agent-confirmation.what-next.info-2 = you can appoint another agent 
 
 ated.selected-client-error.wrong.client.header = There is a problem with your sign in details
 ated.selected-client-error.wrong.client.title = There is a problem with your sign in details
-ated.selected-client-error.wrong.client.message = There are one or more people from your organisation signed in with the same Government Gateway details. You should <a href="https://myaccount.gateway.gov.uk/Pages/Credentials/View.aspx" target="_blank">set up Administrators and Assistants</a> rather than sharing credentials.
+ated.selected-client-error.wrong.client.message = There are one or more people from your organisation signed in with the same Government Gateway details. You should
+ated.selected-client-error.wrong.client.HrefLink = https://myaccount.gateway.gov.uk/Pages/Credentials/View.aspx
+ated.selected-client-error.wrong.client.HrefMessage = set up Administrators and Assistants
+ated.selected-client-error.wrong.client.PostHrefMessage = rather than sharing credentials.
+
 
 ated.client-problem.title = There was a problem when you set up this client
 ated.client-problem.header = There was a problem when you set up this client
-ated.client-problem.body = <p>You need to remove the client using ''edit'' and use ''add a new client'' to add the client again.</p> <p> <a href="{0}" >View all my clients</a> </p>
+ated.client-problem.message = You need to remove the client using ''edit'' and use ''add a new client'' to add the client again.
+ated.client-problem.HrefMessage = View all my clients
 
 ated.property-details-calculate.error.other = Error while calculating draft property details amount
 ated.submit-draft-reliefs.error.other = Error while submitting draft reliefs
@@ -1327,8 +1332,12 @@ ated.submit-draft-chargeable.error.other = Error while submitting draft chargeab
 
 ated.delete-draft.header = Are you sure you want to delete this draft return?
 ated.delete-draft.title = Are you sure you want to delete this draft return?
-yes-no.error.mandatory = The {0} question must be answered
 ated.delete-draft.error = delete draft return
+ated.delete-drafts.error.general.yesNo = Select if you want to delete this draft or not
+yes-no.error.mandatory.delete.draft = You must answer this question
+yes-no.error.mandatory.existing.returns = The existing return question must be answered
+yes-no.error.mandatory.draft.delete = The existing return question must be answered
+
 
 ##### SELECT PAST RETURNS
 
@@ -1346,5 +1355,6 @@ urbanner.message.reject = No thanks
 
 ated.property-details-value.ownedBeforePolicyYearValue.error.non-selected = You must answer the property owned before 1 April {0} question.
 ated.property-details-value.notNewBuildDate.error.too-early = The property acquired date cannot be before 1 April {0}
-ated.property-details-value.valuationDate.error.too-early = The property valuation date cannot be before 1 April {0}w
-q2ated.property-details-value.ownedBeforePolicyYearValue.error.empty = You must enter a valid property value
+ated.property-details-value.valuationDate.error.too-early = The property valuation date cannot be before 1 April {0}
+
+

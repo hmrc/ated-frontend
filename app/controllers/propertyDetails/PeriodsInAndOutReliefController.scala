@@ -16,23 +16,35 @@
 
 package controllers.propertyDetails
 
+import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms._
+import javax.inject.Inject
 import org.joda.time.LocalDate
-import play.api.Play.current
-import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{DelegationService, PropertyDetailsCacheSuccessResponse, PropertyDetailsService}
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.AtedConstants.SelectedPreviousReturn
 import utils.{AtedUtils, PeriodUtils}
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-trait PeriodsInAndOutReliefController extends PropertyDetailsHelpers with ClientHelper with AuthAction {
+class PeriodsInAndOutReliefController @Inject()(mcc: MessagesControllerComponents,
+                                                authAction: AuthAction,
+                                                propertyDetailsTaxAvoidanceController: PropertyDetailsTaxAvoidanceController,
+                                                val propertyDetailsService: PropertyDetailsService,
+                                                val dataCacheConnector: DataCacheConnector,
+                                                val backLinkCacheConnector: BackLinkCacheConnector)
+                                               (implicit val appConfig: ApplicationConfig)
+
+  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper {
+
+  implicit val ec: ExecutionContext = mcc.executionContext
+  val controllerId: String = "PeriodsInAndOutReliefController"
 
   def view(id: String) : Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         propertyDetailsCacheResponse(id) {
           case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
@@ -51,7 +63,7 @@ trait PeriodsInAndOutReliefController extends PropertyDetailsHelpers with Client
   }
 
   def deletePeriod(id: String, startDate: LocalDate) : Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         for {
           propertyDetails <- propertyDetailsService.deleteDraftPropertyDetailsPeriod(id, startDate)
@@ -71,9 +83,9 @@ trait PeriodsInAndOutReliefController extends PropertyDetailsHelpers with Client
   }
 
   def continue(id: String, periodKey: Int) : Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
-      ensureClientContext(RedirectWithBackLink(
-        PropertyDetailsTaxAvoidanceController.controllerId,
+    authAction.authorisedAction { implicit authContext =>
+      ensureClientContext(redirectWithBackLink(
+        propertyDetailsTaxAvoidanceController.controllerId,
         controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceController.view(id),
         Some(controllers.propertyDetails.routes.PeriodsInAndOutReliefController.view(id).url)
       ))
@@ -81,10 +93,4 @@ trait PeriodsInAndOutReliefController extends PropertyDetailsHelpers with Client
   }
 }
 
-object PeriodsInAndOutReliefController extends PeriodsInAndOutReliefController {
-  val delegationService: DelegationService = DelegationService
-  val propertyDetailsService: PropertyDetailsService = PropertyDetailsService
-  val dataCacheConnector: DataCacheConnector = DataCacheConnector
-  override val controllerId: String = "PeriodsInAndOutReliefController"
-  override val backLinkCacheConnector: BackLinkCacheConnector = BackLinkCacheConnector
-}
+

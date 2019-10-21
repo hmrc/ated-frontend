@@ -19,89 +19,120 @@ package controllers.propertyDetails
 import java.util.UUID
 
 import builders.{PropertyDetailsBuilder, SessionBuilder, TitleBuilder}
+import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
+import controllers.auth.AuthAction
 import models._
 import org.jsoup.Jsoup
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
-import play.api.mvc.Result
+import org.scalatestplus.play.PlaySpec
+import org.scalatestplus.play.guice.GuiceOneAppPerSuite
+import play.api.mvc.{MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.{DelegationService, PropertyDetailsCacheSuccessResponse, PropertyDetailsService}
-import uk.gov.hmrc.auth.core.{AffinityGroup, PlayAuthConnector}
+import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService}
+import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.{AtedConstants, MockAuthUtil, PeriodUtils}
 
 import scala.concurrent.Future
 
-class PeriodInReliefDatesControllerSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach with MockAuthUtil {
+class PeriodInReliefDatesControllerSpec extends PlaySpec with GuiceOneAppPerSuite with MockitoSugar with BeforeAndAfterEach with MockAuthUtil {
 
+  implicit val mockAppConfig: ApplicationConfig = mock[ApplicationConfig]
   implicit lazy val hc: HeaderCarrier = HeaderCarrier()
 
-  val mockService: PropertyDetailsService = mock[PropertyDetailsService]
+  val mockMcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
+  val mockPropertyDetailsService: PropertyDetailsService = mock[PropertyDetailsService]
+  val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
+  val mockBackLinkCacheConnector: BackLinkCacheConnector = mock[BackLinkCacheConnector]
 
   val periodKey: Int = PeriodUtils.calculatePeriod()
-  val mockBackLinkCache: BackLinkCacheConnector = mock[BackLinkCacheConnector]
-  val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
 
+  class Setup {
 
-  object TestPropertyDetailsPeriodController extends PeriodInReliefDatesController {
-    override val authConnector: PlayAuthConnector = mockAuthConnector
-    override val delegationService: DelegationService = mockDelegationService
-    override val propertyDetailsService: PropertyDetailsService = mockService
-    override val controllerId: String = "controllerId"
-    override val backLinkCacheConnector: BackLinkCacheConnector = mockBackLinkCache
-    override val dataCacheConnector: DataCacheConnector = mockDataCacheConnector
+    val mockAuthAction: AuthAction = new AuthAction(
+      mockAppConfig,
+      mockDelegationService,
+      mockAuthConnector
+    )
+
+    val testPeriodInReliefDatesController: PeriodInReliefDatesController = new PeriodInReliefDatesController(
+      mockMcc,
+      mockAuthAction,
+      mockDataCacheConnector,
+      mockPropertyDetailsService,
+      mockBackLinkCacheConnector
+    )
+
+    def getWithUnAuthorisedUser(test: Future[Result] => Any) {
+      val periodKey: Int = 2016
+      val userId = s"user-${UUID.randomUUID}"
+      val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
+      setInvalidAuthMocks(authMock)
+      val result = testPeriodInReliefDatesController.add("1", periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
+      test(result)
+    }
+
+    def addDataWithAuthorisedUser(propertyDetails: PropertyDetails)(test: Future[Result] => Any) {
+      val periodKey: Int = 2016
+      val userId = s"user-${UUID.randomUUID}"
+      val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+      setAuthMocks(authMock)
+      when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
+      val result = testPeriodInReliefDatesController.add(propertyDetails.id, periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
+      test(result)
+    }
+
+    def saveWithUnAuthorisedUser(test: Future[Result] => Any) {
+      val periodKey: Int = 2016
+      val userId = s"user-${UUID.randomUUID}"
+      val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
+      setInvalidAuthMocks(authMock)
+      val result = testPeriodInReliefDatesController.save("1", periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
+      test(result)
+    }
+
+    def submitWithAuthorisedUser(formBody: List[(String, String)], propertyDetails: PropertyDetails)(test: Future[Result] => Any) {
+      val periodKey: Int = 2015
+      val userId = s"user-${UUID.randomUUID}"
+      when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
+      when(mockPropertyDetailsService.retrieveDraftPropertyDetails(Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propertyDetails)))
+      when(mockPropertyDetailsService.addDraftPropertyDetailsDatesInRelief(Matchers.eq("1"), Matchers.any())(Matchers.any(), Matchers.any())).
+        thenReturn(Future.successful(OK))
+      val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+      setAuthMocks(authMock)
+      val result = testPeriodInReliefDatesController.save("1", periodKey)
+        .apply(SessionBuilder.updateRequestFormWithSession(FakeRequest().withFormUrlEncodedBody(formBody: _*), userId))
+      test(result)
+    }
   }
 
   override def beforeEach(): Unit = {
-    reset(mockAuthConnector)
-    reset(mockService)
-    reset(mockDelegationService)
-    reset(mockBackLinkCache)
-  }
 
-
-  "PeriodInReliefDatesController" should {
-
-    "use correct delegationService" in {
-      PeriodInReliefDatesController.delegationService mustBe DelegationService
-    }
-    "use correct propertyDetailsService" in {
-      PeriodInReliefDatesController.propertyDetailsService mustBe PropertyDetailsService
-    }
-    "use correct backLinkCacheConnector" in {
-      PeriodInReliefDatesController.backLinkCacheConnector mustBe BackLinkCacheConnector
-    }
-    "use correct dataCacheConnector" in {
-      PeriodInReliefDatesController.dataCacheConnector mustBe DataCacheConnector
-    }
-    "use correct controllerId" in {
-      PeriodInReliefDatesController.controllerId mustBe "PeriodInReliefDatesController"
-    }
-
+reset(mockDelegationService)
+    reset(mockDataCacheConnector)
+    reset(mockPropertyDetailsService)
+    reset(mockBackLinkCacheConnector)
   }
 
   "PeriodInReliefDatesController" must {
-
-    "use correct DelegationService" in {
-      PeriodChooseReliefController.delegationService must be(DelegationService)
-    }
-
     "add" must {
-
       "unauthorised users" must {
 
-        "respond with a redirect" in {
+        "respond with a redirect" in new Setup {
           getWithUnAuthorisedUser { result =>
             status(result) must be(SEE_OTHER)
           }
         }
 
-        "be redirected to the unauthorised page" in {
+        "be redirected to the unauthorised page" in new Setup {
           getWithUnAuthorisedUser { result =>
             redirectLocation(result).get must include("/ated/unauthorised")
           }
@@ -110,8 +141,8 @@ class PeriodInReliefDatesControllerSpec extends PlaySpec with OneServerPerSuite 
 
       "Authorised users" must {
 
-        "show the date selection for the choose reliefs" in {
-          val propertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode")).copy(period = None)
+        "show the date selection for the choose reliefs" in new Setup {
+          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode")).copy(period = None)
 
           addDataWithAuthorisedUser(propertyDetails) {
             result =>
@@ -126,7 +157,7 @@ class PeriodInReliefDatesControllerSpec extends PlaySpec with OneServerPerSuite 
     "save" must {
       "unauthorised users" must {
 
-        "be redirected to the login page" in {
+        "be redirected to the login page" in new Setup {
           saveWithUnAuthorisedUser { result =>
             status(result) must be(SEE_OTHER)
             redirectLocation(result).get must include("/ated/unauthorised")
@@ -135,16 +166,16 @@ class PeriodInReliefDatesControllerSpec extends PlaySpec with OneServerPerSuite 
       }
 
       "Authorised users" must {
-        "for invalid data, return BAD_REQUEST" in {
-          val propertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+        "for invalid data, return BAD_REQUEST" in new Setup {
+          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
           submitWithAuthorisedUser(Nil, propertyDetails) {
             result =>
               status(result) must be(BAD_REQUEST)
           }
         }
 
-        "for valid data when adding a period return to the Periods Summary Page" in {
-          val propertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode")).copy(period = None)
+        "for valid data when adding a period return to the Periods Summary Page" in new Setup {
+          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode")).copy(period = None)
           val formBody = List(
             ("startDate.day", "1"),
             ("startDate.month", "6"),
@@ -159,53 +190,6 @@ class PeriodInReliefDatesControllerSpec extends PlaySpec with OneServerPerSuite 
           }
         }
       }
-
     }
   }
-
-  def getWithUnAuthorisedUser(test: Future[Result] => Any) {
-    val periodKey: Int = 2016
-    val userId = s"user-${UUID.randomUUID}"
-    val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
-    setInvalidAuthMocks(authMock)
-    val result = TestPropertyDetailsPeriodController.add("1", periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
-    test(result)
-  }
-
-  def addDataWithAuthorisedUser(propertyDetails: PropertyDetails)(test: Future[Result] => Any) {
-    val periodKey: Int = 2016
-    val userId = s"user-${UUID.randomUUID}"
-    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
-    setAuthMocks(authMock)
-    when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
-      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-    val result = TestPropertyDetailsPeriodController.add(propertyDetails.id, periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
-    test(result)
-  }
-
-  def saveWithUnAuthorisedUser(test: Future[Result] => Any) {
-    val periodKey: Int = 2016
-    val userId = s"user-${UUID.randomUUID}"
-    val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
-    setInvalidAuthMocks(authMock)
-    val result = TestPropertyDetailsPeriodController.save("1", periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
-    test(result)
-  }
-
-  def submitWithAuthorisedUser(formBody: List[(String, String)], propertyDetails: PropertyDetails)(test: Future[Result] => Any) {
-    val periodKey: Int = 2015
-    val userId = s"user-${UUID.randomUUID}"
-    when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
-      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-    when(mockService.retrieveDraftPropertyDetails(Matchers.any())(Matchers.any(), Matchers.any()))
-      .thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propertyDetails)))
-    when(mockService.addDraftPropertyDetailsDatesInRelief(Matchers.eq("1"), Matchers.any())(Matchers.any(), Matchers.any())).
-      thenReturn(Future.successful(OK))
-    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
-    setAuthMocks(authMock)
-    val result = TestPropertyDetailsPeriodController.save("1", periodKey)
-      .apply(SessionBuilder.updateRequestFormWithSession(FakeRequest().withFormUrlEncodedBody(formBody: _*), userId))
-    test(result)
-  }
-
 }

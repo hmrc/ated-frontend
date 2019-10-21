@@ -18,18 +18,17 @@ package utils.viewHelpers
 
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
-import play.api.i18n.Messages
+import play.api.i18n.{Messages, MessagesApi}
 import play.api.test.FakeRequest
 import play.twirl.api.Html
 
-trait AtedViewSpec extends PlaySpec
-  with JsoupMatchers
-  with GuiceOneServerPerSuite {
+trait AtedViewSpec extends PlaySpec with JsoupMatchers with GuiceOneServerPerSuite with MockitoSugar {
 
   implicit val request = FakeRequest()
-  implicit val messages: play.api.i18n.Messages = play.api.i18n.Messages.Implicits.applicationMessages
+  implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
 
   def view: Html
 
@@ -65,8 +64,8 @@ trait AtedViewSpec extends PlaySpec
   def pageWithYesNoRadioButton(
                                 idYes: String,
                                 idNo: String,
-                                yesLabelText: String = Messages("ated.label.yes"),
-                                noLabelText: String = Messages("ated.label.no")): Unit = {
+                                yesLabelText: String = "ated.label.yes",
+                                noLabelText: String = "ated.label.no"): Unit = {
     "have a yes/no radio button" in {
       doc must haveInputLabelWithText(idYes, yesLabelText)
       doc must haveInputLabelWithText(idNo, noLabelText)

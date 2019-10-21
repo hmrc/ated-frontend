@@ -16,16 +16,23 @@
 
 package views.html.reliefs
 
+import config.ApplicationConfig
 import forms.ReliefForms
+import models.{IsTaxAvoidance, StandardAuthRetrievals}
 import org.joda.time.LocalDate
 import org.scalatest.mockito.MockitoSugar
+import play.api.data.Form
+import play.api.i18n.Messages
 import play.api.libs.json.Json
 import play.twirl.api.Html
 import utils.MockAuthUtil
 import utils.viewHelpers.AtedViewSpec
 
 class IsAvoidanceSchemeSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil {
-  implicit lazy val authContext = organisationStandardRetrievals
+
+  implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
+
+  implicit val appConfig: ApplicationConfig = mock[ApplicationConfig]
 
   val periodKey = 2017
   val periodStartDate = new LocalDate()
@@ -56,7 +63,7 @@ class IsAvoidanceSchemeSpec extends AtedViewSpec with MockitoSugar with MockAuth
   }
 
 
-  val isTaxAvoidanceForm = ReliefForms.isTaxAvoidanceForm
+  val isTaxAvoidanceForm: Form[IsTaxAvoidance] = ReliefForms.isTaxAvoidanceForm
 
   override def view: Html = views.html.reliefs.avoidanceSchemeBeingUsed(periodKey, isTaxAvoidanceForm, periodStartDate, Some("backLink"))
 }

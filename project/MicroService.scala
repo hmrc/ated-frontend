@@ -1,7 +1,6 @@
-import play.routes.compiler.StaticRoutesGenerator
 import play.sbt.routes.RoutesKeys._
 import sbt.Keys._
-import sbt._
+import sbt.{Def, _}
 import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin._
 import uk.gov.hmrc.versioning.SbtGitVersioning.autoImport.majorVersion
 
@@ -35,10 +34,11 @@ trait MicroService {
     }
   }
 
-  lazy val scoverageSettings = {
+  lazy val scoverageSettings: Seq[Def.Setting[_ >: Boolean with Double with String]] = {
     import scoverage.ScoverageKeys
     Seq(
-      ScoverageKeys.coverageExcludedPackages := "<empty>;Reverse.*;views.html.*;app.Routes.*;prod.*;uk.gov.hmrc.*;testOnlyDoNotUseInAppConf.*;forms.*;config.*;models.*;views.*",
+      ScoverageKeys.coverageExcludedPackages :=
+        "<empty>;Reverse.*;views.html.*;app.Routes.*;prod.*;uk.gov.hmrc.*;testOnlyDoNotUseInAppConf.*;forms.*;config.*;models.*;views.*",
       ScoverageKeys.coverageMinimum := 100,
       ScoverageKeys.coverageFailOnMinimum := true,
       ScoverageKeys.coverageHighlighting := true
@@ -56,9 +56,9 @@ trait MicroService {
     .settings(
       scalaVersion := "2.11.11",
       libraryDependencies ++= appDependencies,
+      routesGenerator := InjectedRoutesGenerator,
       retrieveManaged := true,
       evictionWarningOptions in update := EvictionWarningOptions.default.withWarnScalaVersionEviction(false),
-      routesGenerator := StaticRoutesGenerator,
       routesImport += "config.JodaLocalDateRoutes._"
     )
     .settings(

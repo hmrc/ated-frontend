@@ -16,46 +16,61 @@
 
 package controllers
 
+import config.ApplicationConfig
 import connectors.BackLinkCacheConnector
 import controllers.auth.AuthAction
 import controllers.editLiability.DisposePropertyController
 import controllers.propertyDetails.{AddressLookupController, PropertyDetailsSummaryController}
 import controllers.reliefs.ReliefsSummaryController
-import play.api.Play.current
-import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, AnyContent}
+import javax.inject.Inject
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{DelegationService, SubscriptionDataService, SummaryReturnsService}
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
-trait PeriodSummaryController extends BackLinkController with AuthAction {
+import scala.concurrent.ExecutionContext
 
-  def summaryReturnsService: SummaryReturnsService
-  def subscriptionDataService: SubscriptionDataService
+class PeriodSummaryController @Inject()(mcc: MessagesControllerComponents,
+                                        authAction: AuthAction,
+                                        summaryReturnsService: SummaryReturnsService,
+                                        subscriptionDataService: SubscriptionDataService,
+                                        returnTypeController: ReturnTypeController,
+                                        reliefsSummaryController: ReliefsSummaryController,
+                                        propertyDetailsSummaryController: PropertyDetailsSummaryController,
+                                        addressLookupController: AddressLookupController,
+                                        disposePropertyController: DisposePropertyController,
+                                        val backLinkCacheConnector: BackLinkCacheConnector)
+                                       (implicit val appConfig: ApplicationConfig)
+
+  extends FrontendController(mcc) with BackLinkController {
+
+  implicit val ec: ExecutionContext = mcc.executionContext
+  val controllerId: String = "PeriodSummaryController"
 
   def view(periodKey: Int): Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       for {
         periodSummaries <- summaryReturnsService.getPeriodSummaryReturns(periodKey)
         organisationName <- subscriptionDataService.getOrganisationName
       } yield {
-        Ok(views.html.periodSummary(periodKey, periodSummaries, organisationName, getBackLink))
+        Ok(views.html.periodSummary(periodKey, periodSummaries, organisationName, getBackLink()))
       }
     }
   }
 
   def viewPastReturns(periodKey: Int) : Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       for {
         periodSummaries <- summaryReturnsService.getPeriodSummaryReturns(periodKey)
         organisationName <- subscriptionDataService.getOrganisationName
       } yield {
-        Ok(views.html.periodSummaryPastReturns(periodKey, periodSummaries, organisationName, getBackLink))
+        Ok(views.html.periodSummaryPastReturns(periodKey, periodSummaries, organisationName, getBackLink()))
       }
     }
   }
 
   def createReturn(periodKey: Int) : Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
-      RedirectWithBackLink(ReturnTypeController.controllerId,
+    authAction.authorisedAction { implicit authContext =>
+      redirectWithBackLink(returnTypeController.controllerId,
         routes.ReturnTypeController.view(periodKey),
         Some(routes.PeriodSummaryController.view(periodKey).url)
       )
@@ -63,8 +78,8 @@ trait PeriodSummaryController extends BackLinkController with AuthAction {
   }
 
   def viewReturn(periodKey: Int) : Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
-      RedirectWithBackLink(ReliefsSummaryController.controllerId,
+    authAction.authorisedAction { implicit authContext =>
+      redirectWithBackLink(reliefsSummaryController.controllerId,
         controllers.reliefs.routes.ReliefsSummaryController.view(periodKey),
         Some(routes.PeriodSummaryController.view(periodKey).url)
       )
@@ -72,43 +87,35 @@ trait PeriodSummaryController extends BackLinkController with AuthAction {
   }
 
   def viewChargeable(periodKey: Int, propertyKey: String) : Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
-      RedirectWithBackLink(PropertyDetailsSummaryController.controllerId,
+    authAction.authorisedAction { implicit authContext =>
+      redirectWithBackLink(propertyDetailsSummaryController.controllerId,
         controllers.propertyDetails.routes.PropertyDetailsSummaryController.view(propertyKey),
         Some(routes.PeriodSummaryController.view(periodKey).url),
-        List(AddressLookupController.controllerId)
+        List(addressLookupController.controllerId)
       )
     }
   }
 
   def viewChargeableEdit(periodKey: Int, propertyKey: String) : Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
-      RedirectWithBackLink(PropertyDetailsSummaryController.controllerId,
+    authAction.authorisedAction { implicit authContext =>
+      redirectWithBackLink(propertyDetailsSummaryController.controllerId,
         controllers.editLiability.routes.EditLiabilitySummaryController.view(propertyKey),
         Some(routes.PeriodSummaryController.view(periodKey).url),
-        List(AddressLookupController.controllerId)
+        List(addressLookupController.controllerId)
       )
     }
   }
 
   def viewDisposal(periodKey: Int, propertyKey: String) : Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
-      RedirectWithBackLink(DisposePropertyController.controllerId,
+    authAction.authorisedAction { implicit authContext =>
+      redirectWithBackLink(disposePropertyController.controllerId,
         controllers.editLiability.routes.DisposeLiabilitySummaryController.view(propertyKey),
         Some(routes.PeriodSummaryController.view(periodKey).url)
       )
     }
   }
 
-  private def getBackLink() = {
+  private def getBackLink(): Some[String] = {
     Some(routes.AccountSummaryController.view().url)
   }
-}
-
-object PeriodSummaryController extends PeriodSummaryController {
-  val delegationService: DelegationService = DelegationService
-  val summaryReturnsService: SummaryReturnsService = SummaryReturnsService
-  val subscriptionDataService: SubscriptionDataService = SubscriptionDataService
-  override val controllerId: String = "PeriodSummaryController"
-  override val backLinkCacheConnector: BackLinkCacheConnector = BackLinkCacheConnector
 }

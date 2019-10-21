@@ -16,34 +16,36 @@
 
 package connectors
 
+import config.ApplicationConfig
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
 import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
+import org.scalatestplus.play.PlaySpec
+import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.libs.json.JsValue
 import play.api.test.Helpers._
 import uk.gov.hmrc.http._
+import uk.gov.hmrc.http.cache.client.SessionCache
+import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 
 import scala.concurrent.Future
 
-class DelegationConnectorSpec extends PlaySpec with OneServerPerSuite with MockitoSugar {
+class DelegationConnectorSpec extends PlaySpec with GuiceOneAppPerSuite with MockitoSugar {
   implicit val hc: HeaderCarrier = HeaderCarrier()
+  val mockSessionCache: SessionCache = mock[SessionCache]
+  val mockHttp: DefaultHttpClient = mock[DefaultHttpClient]
+  val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
 
-  trait MockedVerbs extends CoreGet with CorePost with CoreDelete
-  val mockWSHttp: CoreGet with CorePost with CoreDelete = mock[MockedVerbs]
-
-  object TestDelegationConnector extends DelegationConnector {
-    override val serviceURL: String = "delegationURl"
-    val http: CoreGet with CorePost with CoreDelete = mockWSHttp
+  class Setup {
+    val testDelegationConnector : DelegationConnector = new DelegationConnector(mockHttp, mockAppConfig)
   }
 
-
   "DelegationDataCall" should {
-    "POST with the correct information" in {
-      when(mockWSHttp.POST[JsValue, HttpResponse](any(), any(), any())(any(), any(), any(), any()))
+    "POST with the correct information" in new Setup {
+      when(mockHttp.POST[JsValue, HttpResponse](any(), any(), any())(any(), any(), any(), any()))
         .thenReturn(Future.successful(HttpResponse(OK)))
 
-      val testCall: Future[HttpResponse] = TestDelegationConnector.delegationDataCall("testID")
+      val testCall: Future[HttpResponse] = testDelegationConnector.delegationDataCall("testID")
       await(testCall).status mustBe OK
     }
   }

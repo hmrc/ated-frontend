@@ -17,21 +17,22 @@
 package services
 
 import connectors.{AtedConnector, DataCacheConnector}
+import javax.inject.Inject
 import models._
 import org.joda.time.DateTime
 import play.api.Logger
-import play.api.http.Status._
+import play.api.mvc.MessagesControllerComponents
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.AtedConstants._
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-trait ChangeLiabilityReturnService {
+class ChangeLiabilityReturnService @Inject()(mcc: MessagesControllerComponents,
+                                             atedConnector: AtedConnector,
+                                             dataCacheConnector: DataCacheConnector) extends FrontendController(mcc) {
+  implicit val ec: ExecutionContext = mcc.executionContext
 
-  def atedConnector: AtedConnector
-
-  def dataCacheConnector: DataCacheConnector
 
   def retrieveSubmittedLiabilityReturnAndCache(oldFormBundleNo: String, fromSelectedPastReturn: Option[Boolean] = None, periodKey: Option[SelectPeriod] = None)
                              (implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[Option[PropertyDetails]] = {
@@ -92,9 +93,4 @@ trait ChangeLiabilityReturnService {
     }
   }
 
-}
-
-object ChangeLiabilityReturnService extends ChangeLiabilityReturnService {
-  val atedConnector: AtedConnector = AtedConnector
-  val dataCacheConnector: DataCacheConnector = DataCacheConnector
 }

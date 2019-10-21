@@ -15,7 +15,8 @@
  *@
 
 @import models._
-@(periodKey: Int, isTaxAvoidanceForm: Form[IsTaxAvoidance], periodStartDate: org.joda.time.LocalDate, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent])
+@import config.ApplicationConfig
+@(periodKey: Int, isTaxAvoidanceForm: Form[IsTaxAvoidance], periodStartDate: org.joda.time.LocalDate, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
 @import uk.gov.hmrc.play.views.html._
 @import uk.gov.hmrc.play.views.html.helpers._
@@ -26,7 +27,7 @@
 @formattedPeriodStartDate = @{periodStartDate.toString(Messages("ated.date-format.numeric"))}
 
 @pageScripts = {
-<script src='@controllers.routes.AssetsController.at("javascript/chooseReliefs.js")'></script>
+<script src='@controllers.routes.Assets.versioned("javascript/chooseReliefs.js")'></script>
 }
 
 @implicitFormInstance = @{ Some(isTaxAvoidanceForm) }

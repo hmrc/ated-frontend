@@ -16,21 +16,36 @@
 
 package controllers.propertyDetails
 
+import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms._
+import javax.inject.Inject
 import models.PropertyDetailsProfessionallyValued
-import play.api.Play.current
-import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services._
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.AtedConstants.SelectedPreviousReturn
 import utils.AtedUtils
 
-trait PropertyDetailsProfessionallyValuedController extends PropertyDetailsHelpers with ClientHelper with AuthAction {
+import scala.concurrent.ExecutionContext
+
+class PropertyDetailsProfessionallyValuedController @Inject()(mcc: MessagesControllerComponents,
+                                                              authAction: AuthAction,
+                                                              propertyDetailsAcquisitionController: PropertyDetailsAcquisitionController,
+                                                              val propertyDetailsService: PropertyDetailsService,
+                                                              val dataCacheConnector: DataCacheConnector,
+                                                              val backLinkCacheConnector: BackLinkCacheConnector)
+                                                             (implicit val appConfig: ApplicationConfig)
+
+  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper {
+
+  implicit val ec: ExecutionContext = mcc.executionContext
+  val controllerId: String = "PropertyDetailsProfessionallyValuedController"
+
 
   def view(id: String) : Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         propertyDetailsCacheResponse(id) {
           case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
@@ -50,7 +65,7 @@ trait PropertyDetailsProfessionallyValuedController extends PropertyDetailsHelpe
   }
 
   def editFromSummary(id: String) : Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         propertyDetailsCacheResponse(id) {
           case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
@@ -68,18 +83,19 @@ trait PropertyDetailsProfessionallyValuedController extends PropertyDetailsHelpe
   }
 
   def save(id: String, periodKey: Int, mode: Option[String]) : Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         propertyDetailsProfessionallyValuedForm.bindFromRequest.fold(
           formWithError => {
-            currentBackLink.map(backLink => BadRequest(views.html.propertyDetails.propertyDetailsProfessionallyValued(id, periodKey, formWithError, mode, backLink)))
+            currentBackLink
+              .map(backLink => BadRequest(views.html.propertyDetails.propertyDetailsProfessionallyValued(id, periodKey, formWithError, mode, backLink)))
           },
           propertyDetails => {
             for {
-              savedData <- propertyDetailsService.saveDraftPropertyDetailsProfessionallyValued(id, propertyDetails)
+              _ <- propertyDetailsService.saveDraftPropertyDetailsProfessionallyValued(id, propertyDetails)
               result <-
-              RedirectWithBackLink(
-                PropertyDetailsAcquisitionController.controllerId,
+              redirectWithBackLink(
+                propertyDetailsAcquisitionController.controllerId,
                 controllers.propertyDetails.routes.PropertyDetailsAcquisitionController.view(id),
                 Some(controllers.propertyDetails.routes.PropertyDetailsProfessionallyValuedController.view(id).url)
               )
@@ -89,12 +105,4 @@ trait PropertyDetailsProfessionallyValuedController extends PropertyDetailsHelpe
       }
     }
   }
-}
-
-object PropertyDetailsProfessionallyValuedController extends PropertyDetailsProfessionallyValuedController {
-  val delegationService: DelegationService = DelegationService
-  val propertyDetailsService: PropertyDetailsService = PropertyDetailsService
-  val dataCacheConnector: DataCacheConnector = DataCacheConnector
-  override val controllerId: String = "PropertyDetailsProfessionallyValuedController"
-  override val backLinkCacheConnector: BackLinkCacheConnector = BackLinkCacheConnector
 }

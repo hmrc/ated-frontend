@@ -16,12 +16,15 @@
 
 @import models._
 @import org.joda.time.LocalDate
-@(formBundleNo: String, periodKey: Int, propertyDetailsForm: Form[PropertyDetailsDatesLiable], backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent])
+@import config.ApplicationConfig
+@(formBundleNo: String, periodKey: Int, propertyDetailsForm: Form[PropertyDetailsDatesLiable], backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 @import uk.gov.hmrc.play.views.html._
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
 @import views.html.helpers.error._
 @import utils._
+@import _root_.utils.PeriodUtils._
+
 
 @implicitFormInstance = @{ Some(propertyDetailsForm) }
 
@@ -31,7 +34,7 @@
   ga('set', 'page', page);
 }
 
-@atedMain(title = Messages("ated.property-details-period.change-dates-liable.title"),
+@atedMain(title = messages("ated.property-details-period.change-dates-liable.title"),
           analyticsAdditionalJs = Some(analyticsJs)) {
 
   @pageHeadersAndError(backLink, "pre-heading", Messages("ated.property-details.pre-header-change"), "property-details-header", Messages("ated.property-details-period.change-dates-liable.header"),
@@ -46,7 +49,8 @@
         label = Html(Messages("ated.property-details-period.change-dates-liable.startDate")),
         isNested = false,
         defaultDateOption = None,
-        '_hintText -> Messages("ated.property-details-period.datesLiable.startDate.hint", PeriodUtils.periodStartDate(periodKey).toString(Messages("ated.date-format.numeric"))),
+        periodKey,
+        '_hintText -> Messages("ated.property-details-period.datesLiable.startDate.hint", periodStartDate(periodKey).toString(Messages("ated.date-format.numeric"))),
         '_groupClass -> "form-group date-of-birth",
         '_idName -> "startDate"
       )
@@ -56,8 +60,9 @@
         fieldName = "endDate",
         label = Html(Messages("ated.property-details-period.change-dates-liable.endDate")),
         isNested = false,
-        defaultDateOption = Some(PeriodUtils.periodEndDate(periodKey)),
-        '_hintText -> Messages("ated.property-details-period.datesLiable.endDate.hint", PeriodUtils.periodEndDate(periodKey).toString(Messages("ated.date-format.numeric"))),
+        defaultDateOption = Some(periodEndDate(periodKey)),
+        periodKey,
+        '_hintText -> Messages("ated.property-details-period.datesLiable.endDate.hint", periodEndDate(periodKey).toString(Messages("ated.date-format.numeric"))),
         '_groupClass -> "form-group date-of-birth",
         '_idName -> "endDate"
       )

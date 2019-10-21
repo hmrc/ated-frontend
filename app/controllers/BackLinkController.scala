@@ -20,11 +20,12 @@ import connectors.BackLinkCacheConnector
 import models.StandardAuthRetrievals
 import play.api.mvc.{Call, Result}
 import uk.gov.hmrc.http.HeaderCarrier
+import scala.concurrent.{ExecutionContext, Future}
+import play.api.mvc.Results.Redirect
 
-import scala.concurrent.Future
+trait BackLinkController {
 
-trait BackLinkController extends AtedBaseController {
-
+  implicit val ec: ExecutionContext
   val controllerId: String
   val backLinkCacheConnector: BackLinkCacheConnector
 
@@ -47,33 +48,32 @@ trait BackLinkController extends AtedBaseController {
     }
   }
 
-  def ForwardBackLinkToNextPage(nextPageId: String, redirectCall: Call)
+  def forwardBackLinkToNextPage(nextPageId: String, redirectCall: Call)
                                (implicit authorisedRequest: StandardAuthRetrievals, hc: HeaderCarrier): Future[Result] = {
     for {
       currentBackLink <- currentBackLink
-      cache <- setBackLink(nextPageId, currentBackLink)
+      _ <- setBackLink(nextPageId, currentBackLink)
     } yield{
       Redirect(redirectCall)
     }
   }
 
-
-  def RedirectWithBackLink(nextPageId: String, redirectCall: Call, backCall: Option[String], pageIds: List[String]=Nil)
+  def redirectWithBackLink(nextPageId: String, redirectCall: Call, backCall: Option[String], pageIds: List[String]=Nil)
                           (implicit authorisedRequest: StandardAuthRetrievals, hc: HeaderCarrier): Future[Result] = {
     for {
-      cache <- setBackLink(nextPageId, backCall)
-      clearedLinks <- clearBackLinks(pageIds)
+      _ <- setBackLink(nextPageId, backCall)
+      _ <- clearBackLinks(pageIds)
     } yield{
       Redirect(redirectCall)
     }
   }
 
-  def RedirectWithBackLinkDontOverwriteOldLink(nextPageId: String, redirectCall: Call, backCall: Option[String])
+  def redirectWithBackLinkDontOverwriteOldLink(nextPageId: String, redirectCall: Call, backCall: Option[String])
                                               (implicit authorisedRequest: StandardAuthRetrievals, hc: HeaderCarrier): Future[Result] = {
     for {
       oldBackLink <- getBackLink(nextPageId)
-      cache <- oldBackLink match {
-          case Some(x) => Future.successful(oldBackLink)
+      _ <- oldBackLink match {
+          case Some(_) => Future.successful(oldBackLink)
           case None => setBackLink(nextPageId, backCall)
         }
     } yield{

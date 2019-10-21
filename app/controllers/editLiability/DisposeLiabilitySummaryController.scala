@@ -16,24 +16,33 @@
 
 package controllers.editLiability
 
+import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.BackLinkController
 import controllers.auth.{AuthAction, ClientHelper}
-import play.api.Play.current
-import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, AnyContent}
+import javax.inject.Inject
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{DelegationService, DisposeLiabilityReturnService, SubscriptionDataService}
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-trait DisposeLiabilitySummaryController extends BackLinkController with AuthAction with ClientHelper {
+class DisposeLiabilitySummaryController @Inject()(mcc: MessagesControllerComponents,
+                                                  disposeLiabilityReturnService: DisposeLiabilityReturnService,
+                                                  subscriptionDataService: SubscriptionDataService,
+                                                  authAction: AuthAction,
+                                                  disposeLiabilityDeclarationController: DisposeLiabilityDeclarationController,
+                                                  val dataCacheConnector: DataCacheConnector,
+                                                  val backLinkCacheConnector: BackLinkCacheConnector)
+                                                 (implicit val appConfig: ApplicationConfig)
+  extends FrontendController(mcc) with BackLinkController with ClientHelper {
 
-  def disposeLiabilityReturnService: DisposeLiabilityReturnService
+  implicit val ec: ExecutionContext = mcc.executionContext
 
-  def subscriptionDataService: SubscriptionDataService
+  val controllerId: String = "DisposeLiabilitySummaryController"
 
   def view(oldFormBundleNo: String): Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         disposeLiabilityReturnService.retrieveLiabilityReturn(oldFormBundleNo) flatMap {
           case Some(x) =>
@@ -47,10 +56,10 @@ trait DisposeLiabilitySummaryController extends BackLinkController with AuthActi
   }
 
   def submit(oldFormBundleNo: String): Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
-        RedirectWithBackLink(
-          DisposeLiabilityDeclarationController.controllerId,
+        redirectWithBackLink(
+          disposeLiabilityDeclarationController.controllerId,
           controllers.editLiability.routes.DisposeLiabilityDeclarationController.view(oldFormBundleNo),
           Some(controllers.editLiability.routes.DisposeLiabilitySummaryController.view(oldFormBundleNo).url)
         )
@@ -59,7 +68,7 @@ trait DisposeLiabilitySummaryController extends BackLinkController with AuthActi
   }
 
   def viewPrintFriendlyDisposeLiabilityReturn(oldFormBundleNo: String): Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         for {
           retrieveLiabilityReturn <- disposeLiabilityReturnService.retrieveLiabilityReturn(oldFormBundleNo)
@@ -75,13 +84,4 @@ trait DisposeLiabilitySummaryController extends BackLinkController with AuthActi
     }
   }
 
-}
-
-object DisposeLiabilitySummaryController extends DisposeLiabilitySummaryController {
-  val delegationService: DelegationService = DelegationService
-  val disposeLiabilityReturnService: DisposeLiabilityReturnService = DisposeLiabilityReturnService
-  val dataCacheConnector: DataCacheConnector = DataCacheConnector
-  val subscriptionDataService: SubscriptionDataService = SubscriptionDataService
-  override val controllerId: String = "DisposeLiabilitySummaryController"
-  override val backLinkCacheConnector: BackLinkCacheConnector = BackLinkCacheConnector
 }
