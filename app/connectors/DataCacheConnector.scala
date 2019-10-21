@@ -16,37 +16,38 @@
 
 package connectors
 
-import config.AtedSessionCache
+import config.ApplicationConfig
+import javax.inject.Inject
 import models.StandardAuthRetrievals
 import play.api.libs.json.Format
 import uk.gov.hmrc.http.cache.client.SessionCache
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
+import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-trait DataCacheConnector {
+class DataCacheConnector @Inject()(val http: DefaultHttpClient,
+                                   appConfig: ApplicationConfig) extends SessionCache {
 
-  def sessionCache: SessionCache
+  val baseUri: String = appConfig.baseUri
+  val defaultSource: String = appConfig.defaultSource
+  val domain: String = appConfig.domain
 
   def saveFormData[T](formId: String, data: T)(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier, formats: Format[T]): Future[T] = {
-    sessionCache.cache[T](formId, data) map { _ => data }
+    cache[T](formId, data) map { _ => data }
   }
 
   def fetchAndGetFormData[T](formId: String)(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier, formats: Format[T]): Future[Option[T]] = {
-    sessionCache.fetchAndGetEntry[T](key = formId)
+    fetchAndGetEntry[T](key = formId)
   }
 
   def fetchAtedRefData[T](formId: String)(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier, formats: Format[T]): Future[Option[T]] = {
-    sessionCache.fetchAndGetEntry[T](key = formId)
+    fetchAndGetEntry[T](key = formId)
   }
 
   def clearCache()(implicit hc: HeaderCarrier): Future[HttpResponse] = {
-    sessionCache.remove()
+    remove()
   }
 
-}
-
-object DataCacheConnector extends DataCacheConnector {
-  val sessionCache: SessionCache = AtedSessionCache
 }

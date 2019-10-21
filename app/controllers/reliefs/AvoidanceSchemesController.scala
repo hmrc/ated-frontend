@@ -16,23 +16,36 @@
 
 package controllers.reliefs
 
+import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.BackLinkController
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.ReliefForms._
+import javax.inject.Inject
 import models.TaxAvoidance
 import play.api.Logger
-import play.api.Play.current
-import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{DelegationService, ReliefsService}
 import uk.gov.hmrc.http.ForbiddenException
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
-trait AvoidanceSchemesController extends BackLinkController
-  with AuthAction with ReliefHelpers with ClientHelper {
+import scala.concurrent.ExecutionContext
+
+class AvoidanceSchemesController @Inject()(mcc: MessagesControllerComponents,
+                                           reliefsSummaryController: ReliefsSummaryController,
+                                           authAction: AuthAction,
+                                           val reliefsService: ReliefsService,
+                                           val dataCacheConnector: DataCacheConnector,
+                                           val backLinkCacheConnector: BackLinkCacheConnector)
+                                          (implicit val appConfig: ApplicationConfig)
+
+  extends FrontendController(mcc) with BackLinkController with ReliefHelpers with ClientHelper {
+
+  implicit val ec: ExecutionContext = mcc.executionContext
+  val controllerId: String = "AvoidanceSchemesController"
 
   def view(periodKey: Int): Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       validatePeriodKey(periodKey) {
         reliefsService.retrieveDraftReliefs(authContext.atedReferenceNumber, periodKey).flatMap {
           case Some(x) if x.reliefs.isAvoidanceScheme.contains(true) =>
@@ -41,21 +54,21 @@ trait AvoidanceSchemesController extends BackLinkController
             )
           case _ =>
             reliefsService.saveDraftTaxAvoidance(authContext.atedReferenceNumber, periodKey, TaxAvoidance())
-            ForwardBackLinkToNextPage(
-              ReliefsSummaryController.controllerId,
+            forwardBackLinkToNextPage(
+              reliefsSummaryController.controllerId,
               controllers.reliefs.routes.ReliefsSummaryController.view(periodKey)
             )
         }
       }
     } recover {
-      case fe: ForbiddenException     =>
+      case _: ForbiddenException     =>
         Logger.warn("[AvoidanceSchemesController][view] Forbidden exception")
-        unauthorisedUrl()
+        authAction.unauthorisedUrl()
     }
   }
 
   def submit(periodKey: Int): Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         validatePeriodKey(periodKey) {
           validateTaxAvoidance(taxAvoidanceForm.bindFromRequest).fold(
@@ -71,8 +84,8 @@ trait AvoidanceSchemesController extends BackLinkController
               for {
                 _ <- reliefsService.saveDraftTaxAvoidance(authContext.atedReferenceNumber, periodKey, taxAvoidance)
                 result <-
-                RedirectWithBackLink(
-                  ReliefsSummaryController.controllerId,
+                redirectWithBackLink(
+                  reliefsSummaryController.controllerId,
                   controllers.reliefs.routes.ReliefsSummaryController.view(periodKey),
                   Some(routes.AvoidanceSchemesController.view(periodKey).url)
                 )
@@ -84,17 +97,9 @@ trait AvoidanceSchemesController extends BackLinkController
         }
       }
     } recover {
-      case fe: ForbiddenException     =>
+      case _: ForbiddenException     =>
         Logger.warn("[AvoidanceSchemesController][submit] Forbidden exception")
-        unauthorisedUrl()
+        authAction.unauthorisedUrl()
     }
   }
-}
-
-object AvoidanceSchemesController extends AvoidanceSchemesController {
-  val reliefsService: ReliefsService = ReliefsService
-  val dataCacheConnector: DataCacheConnector = DataCacheConnector
-  val delegationService: DelegationService = DelegationService
-  override val controllerId: String = "AvoidanceSchemesController"
-  override val backLinkCacheConnector: BackLinkCacheConnector = BackLinkCacheConnector
 }

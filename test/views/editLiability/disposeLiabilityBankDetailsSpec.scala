@@ -16,23 +16,29 @@
 
 package views.editLiability
 
+import config.ApplicationConfig
 import forms.BankDetailForms._
+import models.StandardAuthRetrievals
 import org.jsoup.Jsoup
 import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
-import org.scalatestplus.play.OneServerPerSuite
+import org.scalatestplus.play.guice.GuiceOneAppPerSuite
+import play.api.i18n.{Messages, MessagesApi}
 import play.api.test.FakeRequest
-import uk.gov.hmrc.auth.core.AffinityGroup
+import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
+import uk.gov.hmrc.auth.core.retrieve.~
 import utils.MockAuthUtil
 
-class disposeLiabilityBankDetailsSpec extends FeatureSpec with OneServerPerSuite with MockitoSugar
+class disposeLiabilityBankDetailsSpec extends FeatureSpec with GuiceOneAppPerSuite with MockitoSugar
   with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
 
   implicit val request = FakeRequest()
-  implicit val messages : play.api.i18n.Messages = play.api.i18n.Messages.Implicits.applicationMessages
-  val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+  implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
+  implicit val appConfig: ApplicationConfig = mock[ApplicationConfig]
+  implicit val authContext: StandardAuthRetrievals = organisationStandardRetrievals
+
+  val authMock: Enrolments ~ Some[AffinityGroup] ~ Some[String] = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
   setAuthMocks(authMock)
-  implicit val authContext = organisationStandardRetrievals
 
     feature("The user can whether they have bank details") {
 

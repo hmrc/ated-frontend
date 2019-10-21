@@ -17,25 +17,29 @@
 package views.propertyDetails
 
 import builders.PropertyDetailsBuilder
+import config.ApplicationConfig
+import models.StandardAuthRetrievals
 import org.joda.time.format.DateTimeFormat
 import org.joda.time.{DateTimeZone, LocalDate}
 import org.jsoup.Jsoup
 import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
+import play.api.i18n.{Messages, MessagesApi}
 import play.api.test.FakeRequest
 import utils.PeriodUtils._
 import utils.{MockAuthUtil, PeriodUtils}
 
-class propertyDetailsPrintFriendlySpec extends FeatureSpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
+class propertyDetailsPrintFriendlySpec extends FeatureSpec with GuiceOneServerPerSuite with MockitoSugar
+  with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
 
   implicit val request = FakeRequest()
-  implicit val messages : play.api.i18n.Messages = play.api.i18n.Messages.Implicits.applicationMessages
-  implicit lazy val authContext = organisationStandardRetrievals
+  implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
+  implicit val appConfig: ApplicationConfig = mock[ApplicationConfig]
+  implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
 
   val thisYear: Int = calculatePeriod()
   val nextYear = thisYear + 1
-
 
   def formatDate(date: LocalDate): String = DateTimeFormat.forPattern("d MMMM yyyy").withZone(DateTimeZone.forID("Europe/London")).print(date)
   feature("The user can view their property details summary before they submit it") {
@@ -54,7 +58,8 @@ class propertyDetailsPrintFriendlySpec extends FeatureSpec with GuiceOneServerPe
       val displayPeriods = PeriodUtils.getDisplayPeriods(propertyDetails.period)
       assert(displayPeriods.size === 2)
 
-      val html = views.html.propertyDetails.propertyDetailsPrintFriendly(propertyDetails, displayPeriods, PeriodUtils.getCalculatedPeriodValues(propertyDetails.calculated), Some("ACME Ltd"))
+      val html = views.html.propertyDetails.propertyDetailsPrintFriendly(propertyDetails,
+        displayPeriods, PeriodUtils.getCalculatedPeriodValues(propertyDetails.calculated), Some("ACME Ltd"))
 
       val document = Jsoup.parse(html.toString())
 
@@ -62,7 +67,8 @@ class propertyDetailsPrintFriendlySpec extends FeatureSpec with GuiceOneServerPe
       assert(document.getElementById("property-details-summary-header").text.contains("Chargeable return for") === true)
 
 
-      assert(document.getElementById("details-text").text() === s"For the ATED period from ${formatDate(periodStartDate(calculatePeriod()))} to ${formatDate(periodEndDate(calculatePeriod()))}.")
+      assert(document.getElementById("details-text").text() === s"For the ATED period from" +
+        s" ${formatDate(periodStartDate(calculatePeriod()))} to ${formatDate(periodEndDate(calculatePeriod()))}.")
       assert(document.getElementById("property-details-header").text() === "Property details")
 
       assert(document.getElementById("property-address-label").text() === "Address")
@@ -93,7 +99,8 @@ class propertyDetailsPrintFriendlySpec extends FeatureSpec with GuiceOneServerPe
 
       val propertyDetails = PropertyDetailsBuilder.getFullPropertyDetails(id = "1", postCode = Some("123456"), liabilityAmount = Some(BigDecimal(1000.20)))
 
-      val html = views.html.propertyDetails.propertyDetailsPrintFriendly(propertyDetails, Nil, PeriodUtils.getCalculatedPeriodValues(propertyDetails.calculated), Some("ACME Ltd"))
+      val html = views.html.propertyDetails.propertyDetailsPrintFriendly(propertyDetails,
+        Nil, PeriodUtils.getCalculatedPeriodValues(propertyDetails.calculated), Some("ACME Ltd"))
 
       val document = Jsoup.parse(html.toString())
 
@@ -101,7 +108,8 @@ class propertyDetailsPrintFriendlySpec extends FeatureSpec with GuiceOneServerPe
       assert(document.getElementById("property-details-summary-header").text.contains("Chargeable return for") === true)
 
 
-      assert(document.getElementById("details-text").text() === s"For the ATED period from ${formatDate(periodStartDate(calculatePeriod()))} to ${formatDate(periodEndDate(calculatePeriod()))}.")
+      assert(document.getElementById("details-text").text() === s"For the ATED period from " +
+        s"${formatDate(periodStartDate(calculatePeriod()))} to ${formatDate(periodEndDate(calculatePeriod()))}.")
       assert(document.getElementById("property-details-header").text() === "Property details")
 
       assert(document.getElementById("property-address-label").text() === "Address")

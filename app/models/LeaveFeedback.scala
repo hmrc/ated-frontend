@@ -32,11 +32,11 @@ object LeaveFeedback {
 
   val form = Form(mapping(
     "summaryInfo" -> text
-      .verifying(Messages("ated.leave-feedback.error.mandatory"), x => x.length > lengthZero),
+      .verifying("ated.leave-feedback.error.mandatory", x => x.length > lengthZero),
     "moreInfo" -> text
-      .verifying(Messages("ated.leave-feedback.error.mandatory"), x => x.length > lengthZero),
+      .verifying("ated.leave-feedback.error.mandatory", x => x.length > lengthZero),
     "experienceLevel" -> optional(number(0, maxOptionSize))
-      .verifying(Messages("ated.leave-feedback.experience-error"), x => x.isDefined)
+      .verifying("ated.leave-feedback.experience-error", x => x.isDefined)
   )(LeaveFeedback.apply)(LeaveFeedback.unapply))
 
 }

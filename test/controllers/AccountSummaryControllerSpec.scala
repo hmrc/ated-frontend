@@ -19,7 +19,9 @@ package controllers
 import java.util.UUID
 
 import builders.{SessionBuilder, TitleBuilder}
+import config.ApplicationConfig
 import connectors.{AgentClientMandateFrontendConnector, DataCacheConnector}
+import controllers.auth.AuthAction
 import models._
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
@@ -29,11 +31,12 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
-import play.api.mvc.Result
+import play.api.mvc.{MessagesControllerComponents, Result}
 import play.api.test.Helpers._
 import play.twirl.api.Html
-import services.{DelegationService, DetailsService, SubscriptionDataService, SummaryReturnsService}
-import uk.gov.hmrc.auth.core.{AffinityGroup, PlayAuthConnector}
+import services.{DetailsService, SubscriptionDataService, SummaryReturnsService}
+import uk.gov.hmrc.auth.core.retrieve.~
+import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, UserId}
 import uk.gov.hmrc.play.partials.HtmlPartial
 import utils.AtedConstants._
@@ -43,57 +46,126 @@ import scala.concurrent.Future
 
 class AccountSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with MockAuthUtil {
 
-  val mockReturnSummaryService: SummaryReturnsService = mock[SummaryReturnsService]
-  val mockSubscriptionDataService: SubscriptionDataService = mock[SubscriptionDataService]
-  val mockDetailsService: DetailsService = mock[DetailsService]
-  val mockAgentClientMandateFrontendConnector: AgentClientMandateFrontendConnector = mock[AgentClientMandateFrontendConnector]
+  implicit lazy val hc: HeaderCarrier = HeaderCarrier()
+  implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
+
+  val mockMcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
   val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
+  val mockSummaryReturnsService: SummaryReturnsService = mock[SummaryReturnsService]
+  val mockSubscriptionDataService: SubscriptionDataService = mock[SubscriptionDataService]
+  val mockMandateFrontendConnector: AgentClientMandateFrontendConnector = mock[AgentClientMandateFrontendConnector]
+  val mockDetailsService: DetailsService = mock[DetailsService]
+
   val organisationName: String = "OrganisationName"
   val formBundleNo1: String = "123456789012"
   val formBundleNo2: String = "123456789013"
-  implicit lazy val hc: HeaderCarrier = HeaderCarrier()
 
-  object TestAccountSummaryController extends AccountSummaryController {
-    override val authConnector: PlayAuthConnector = mockAuthConnector
-    override val summaryReturnsService: SummaryReturnsService = mockReturnSummaryService
-    override val subscriptionDataService: SubscriptionDataService = mockSubscriptionDataService
-    override val delegationService: DelegationService = mockDelegationService
-    override val mandateFrontendConnector: AgentClientMandateFrontendConnector = mockAgentClientMandateFrontendConnector
-    override val detailsService: DetailsService = mockDetailsService
-    override val dataCacheConnector: DataCacheConnector = mockDataCacheConnector
-  }
+  class Setup {
 
-  override def beforeEach(): Unit = {
-    reset(mockAuthConnector)
-    reset(mockReturnSummaryService)
-    reset(mockSubscriptionDataService)
-    reset(mockAgentClientMandateFrontendConnector)
-    reset(mockDetailsService)
-    reset(mockDataCacheConnector)
+    val mockAuthAction: AuthAction = new AuthAction(
+      mockAppConfig,
+      mockDelegationService,
+      mockAuthConnector
+    )
+
+    val testAccountSummaryController: AccountSummaryController = new AccountSummaryController(
+      mockMcc,
+      mockAuthAction,
+      mockSummaryReturnsService,
+      mockSubscriptionDataService,
+      mockMandateFrontendConnector,
+      mockDetailsService,
+      mockDataCacheConnector
+    )
+
+    def getWithAuthorisedUser(returnsSummaryWithDraft: SummaryReturnsModel,
+                              correspondence: Option[Address] = None)(test: Future[Result] => Any) {
+      val httpValue = 200
+      val userId = s"user-${UUID.randomUUID}"
+      val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+      setAuthMocks(authMock)
+
+      when(mockDataCacheConnector.clearCache()(Matchers.any())).thenReturn(Future.successful(HttpResponse(httpValue)))
+      when(mockSummaryReturnsService.getSummaryReturns(Matchers.any(), Matchers.any())).thenReturn(Future.successful(returnsSummaryWithDraft))
+      when(mockSubscriptionDataService.getCorrespondenceAddress(Matchers.any(), Matchers.any())).thenReturn(Future.successful(correspondence))
+      when(mockSubscriptionDataService.getOrganisationName(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(organisationName)))
+      when(mockSubscriptionDataService.getSafeId(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("safeId")))
+      when(mockMandateFrontendConnector.getClientBannerPartial(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(HtmlPartial.Success(Some("thepartial"), Html(""))))
+      when(mockDetailsService.cacheClientReference(Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful("XN1200000100001"))
+
+      val result = testAccountSummaryController.view().apply(SessionBuilder.buildRequestWithSession(userId))
+      test(result)
+    }
+
+    def getWithForbiddenUser(returnsSummaryWithDraft: SummaryReturnsModel,
+                             correspondence: Option[Address] = None)(test: Future[Result] => Any) {
+      val httpValue = 200
+      val userId = s"user-${UUID.randomUUID}"
+      val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
+      setForbiddenAuthMocks(authMock)
+
+      when(mockDataCacheConnector.clearCache()(Matchers.any())).thenReturn(Future.successful(HttpResponse(httpValue)))
+      when(mockSummaryReturnsService.getSummaryReturns(Matchers.any(), Matchers.any())).thenReturn(Future.successful(returnsSummaryWithDraft))
+      when(mockSubscriptionDataService.getCorrespondenceAddress(Matchers.any(), Matchers.any())).thenReturn(Future.successful(correspondence))
+      when(mockSubscriptionDataService.getOrganisationName(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(organisationName)))
+      when(mockSubscriptionDataService.getSafeId(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("safeId")))
+      when(mockMandateFrontendConnector.getClientBannerPartial(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(HtmlPartial.Success(Some("thepartial"), Html(""))))
+      when(mockDetailsService.cacheClientReference(Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful("XN1200000100001"))
+
+      val result = testAccountSummaryController.view().apply(SessionBuilder.buildRequestWithSession(userId))
+      test(result)
+    }
+
+    def getWithAuthorisedDelegatedUser(returnsSummaryWithDraft: SummaryReturnsModel,
+                                       correspondence: Option[Address] = None)(test: Future[Result] => Any) {
+      val httpValue = 200
+      val userId = s"user-${UUID.randomUUID}"
+      implicit val hc: HeaderCarrier = HeaderCarrier(userId = Some(UserId(userId)))
+      val authMock = authResultDefault(AffinityGroup.Agent, agentEnrolmentSet)
+      setAuthMocks(authMock)
+      when(mockDataCacheConnector.clearCache()(Matchers.any())).thenReturn(Future.successful(HttpResponse(httpValue)))
+      when(mockSummaryReturnsService.getSummaryReturns(Matchers.any(), Matchers.any())).thenReturn(Future.successful(returnsSummaryWithDraft))
+      when(mockSubscriptionDataService.getCorrespondenceAddress(Matchers.any(), Matchers.any())).thenReturn(Future.successful(correspondence))
+      when(mockSubscriptionDataService.getOrganisationName(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(organisationName)))
+      when(mockSubscriptionDataService.getSafeId(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("safeId")))
+      when(mockMandateFrontendConnector.getClientBannerPartial(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(HtmlPartial.Success(Some("thepartial"), Html(""))))
+      when(mockDetailsService.cacheClientReference(Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful("XN1200000100001"))
+      val result = testAccountSummaryController.view().apply(SessionBuilder.buildRequestWithSessionDelegation(userId))
+      test(result)
+    }
+
+    def getWithUnAuthorisedUser(test: Future[Result] => Any) {
+      val userId = s"user-${UUID.randomUUID}"
+      val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
+      setInvalidAuthMocks(authMock)
+      val result = testAccountSummaryController.view().apply(SessionBuilder.buildRequestWithSession(userId))
+      test(result)
+    }
   }
 
   "AccountSummaryController" must {
-
-    "use correct DelegationConnector" in {
-      AccountSummaryController.delegationService must be(DelegationService)
-    }
-
     "accountSummary" must {
 
       "unauthorised users" must {
-        "respond with a redirect" in {
+        "respond with a redirect" in new Setup {
           getWithUnAuthorisedUser { result =>
             status(result) must be(SEE_OTHER)
           }
         }
 
-        "be redirected to the unauthorised page" in {
+        "be redirected to the unauthorised page" in new Setup {
           getWithUnAuthorisedUser { result =>
             redirectLocation(result).get must include("/ated/unauthorised")
           }
         }
 
-        "respond with a redirect to unauthorised URL" in {
+        "respond with a redirect to unauthorised URL" in new Setup {
           val data = SummaryReturnsModel(None, Seq())
           getWithForbiddenUser(data, None) { result =>
             redirectLocation(result).get must include("/ated/unauthorised")
@@ -103,9 +175,9 @@ class AccountSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
 
       "Authorised users" must {
 
-        "show the account summary view V_2_0 with balance (debit) if we have some Summary data" in {
+        "show the account summary view V_2_0 with balance (debit) if we have some Summary data" in new Setup {
           val year = 2015
-          val address = {
+          val address: Address = {
             Address(name1 = Some("name1"),
               name2 = Some("name2"),
               contactDetails = Some(ContactDetails(phoneNumber = Some("03000123456789"),
@@ -154,7 +226,7 @@ class AccountSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
           }
         }
 
-        "show the account summary view V_2_0 with balance (credit) if we have some Summary data" in {
+        "show the account summary view V_2_0 with balance (credit) if we have some Summary data" in new Setup {
           val year = 2015
           val address = Address(addressDetails = AddressDetails(AddressTypeCorrespondence, "addrLine1", "addrLine2", None, None, None, "GB"))
           val draftReturns1 = DraftReturns(year, "1", "desc", Some(BigDecimal(100.00)), TypeChangeLiabilityDraft)
@@ -188,7 +260,7 @@ class AccountSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
           }
         }
 
-        "show the account summary view V_2_0 with balance if we have some Summary data and balance is 0" in {
+        "show the account summary view V_2_0 with balance if we have some Summary data and balance is 0" in new Setup {
           val year = 2015
           val address = Address(addressDetails = AddressDetails(AddressTypeCorrespondence, "addrLine1", "addrLine2", None, None, None, "GB"))
 
@@ -223,7 +295,7 @@ class AccountSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
           }
         }
 
-        "show the account summary view with UR banner" in {
+        "show the account summary view with UR banner" in new Setup {
           val year = 2015
           val address = Address(addressDetails = AddressDetails(AddressTypeCorrespondence, "addrLine1", "addrLine2", None, None, None, "GB"))
 
@@ -249,7 +321,7 @@ class AccountSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
           }
         }
 
-        "show the create a return and appoint an agent link if there are no returns and no delegation" in {
+        "show the create a return and appoint an agent link if there are no returns and no delegation" in new Setup {
           val data = SummaryReturnsModel(None, Seq())
           getWithAuthorisedUser(data, None) {
             result =>
@@ -262,11 +334,10 @@ class AccountSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
           }
         }
 
-        "show the create a return button and no appoint an agent link if there are no returns and there is delegation" in {
+        "show the create a return button and no appoint an agent link if there are no returns and there is delegation" in new Setup {
           val data = SummaryReturnsModel(None, Seq())
           getWithAuthorisedDelegatedUser(data, None) {
             result =>
-              println(result)
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
               document.title() must be(TitleBuilder.buildTitle("Your ATED online service"))
@@ -276,28 +347,28 @@ class AccountSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
           }
         }
 
-        "throw exception for no safe id" in {
+        "throw exception for no safe id" in new Setup {
           val httpValue = 200
           val data = SummaryReturnsModel(None, Seq())
           val userId = s"user-${UUID.randomUUID}"
-          val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+          val authMock: Enrolments ~ Some[AffinityGroup] ~ Some[String] = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
           setAuthMocks(authMock)
           when(mockDataCacheConnector.clearCache()(Matchers.any())).thenReturn(Future.successful(HttpResponse(httpValue)))
-          when(mockReturnSummaryService.getSummaryReturns(Matchers.any(), Matchers.any())).thenReturn(Future.successful(data))
+          when(mockSummaryReturnsService.getSummaryReturns(Matchers.any(), Matchers.any())).thenReturn(Future.successful(data))
           when(mockSubscriptionDataService.getCorrespondenceAddress(Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
           when(mockDetailsService.cacheClientReference(Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
             .thenReturn(Future.successful("XN1200000100001"))
           when(mockSubscriptionDataService.getOrganisationName(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(organisationName)))
           when(mockSubscriptionDataService.getSafeId(Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
-          when(mockAgentClientMandateFrontendConnector.getClientBannerPartial(Matchers.any(), Matchers.any())(Matchers.any()))
+          when(mockMandateFrontendConnector.getClientBannerPartial(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
             .thenReturn(Future.successful(HtmlPartial.Success(Some("thepartial"), Html(""))))
 
-          val result = TestAccountSummaryController.view().apply(SessionBuilder.buildRequestWithSession(userId))
-          val thrown = the[RuntimeException] thrownBy await(result)
+          val result: Future[Result] = testAccountSummaryController.view().apply(SessionBuilder.buildRequestWithSession(userId))
+          val thrown: RuntimeException = the[RuntimeException] thrownBy await(result)
           thrown.getMessage must be("Could not get safeId")
         }
 
-        "show the create a return button and no appoint an agent link if there are returns and delegation" in {
+        "show the create a return button and no appoint an agent link if there are returns and delegation" in new Setup {
           val year = 2015
           val draftReturns1 = DraftReturns(year, "1", "desc", Some(BigDecimal(100.00)), TypeChangeLiabilityDraft)
           val draftReturns2 = DraftReturns(year, "", "some relief", None, TypeReliefDraft)
@@ -322,75 +393,4 @@ class AccountSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
       }
     }
   }
-
-  def getWithAuthorisedUser(returnsSummaryWithDraft: SummaryReturnsModel,
-                            correspondence: Option[Address] = None)(test: Future[Result] => Any) {
-    val httpValue = 200
-    val userId = s"user-${UUID.randomUUID}"
-    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
-    setAuthMocks(authMock)
-
-    when(mockDataCacheConnector.clearCache()(Matchers.any())).thenReturn(Future.successful(HttpResponse(httpValue)))
-    when(mockReturnSummaryService.getSummaryReturns(Matchers.any(), Matchers.any())).thenReturn(Future.successful(returnsSummaryWithDraft))
-    when(mockSubscriptionDataService.getCorrespondenceAddress(Matchers.any(), Matchers.any())).thenReturn(Future.successful(correspondence))
-    when(mockSubscriptionDataService.getOrganisationName(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(organisationName)))
-    when(mockSubscriptionDataService.getSafeId(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("safeId")))
-    when(mockAgentClientMandateFrontendConnector.getClientBannerPartial(Matchers.any(), Matchers.any())(Matchers.any()))
-      .thenReturn(Future.successful(HtmlPartial.Success(Some("thepartial"), Html(""))))
-    when(mockDetailsService.cacheClientReference(Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
-      .thenReturn(Future.successful("XN1200000100001"))
-
-    val result = TestAccountSummaryController.view().apply(SessionBuilder.buildRequestWithSession(userId))
-    test(result)
-  }
-
-  def getWithForbiddenUser(returnsSummaryWithDraft: SummaryReturnsModel,
-                            correspondence: Option[Address] = None)(test: Future[Result] => Any) {
-    val httpValue = 200
-    val userId = s"user-${UUID.randomUUID}"
-    val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
-    setForbiddenAuthMocks(authMock)
-
-    when(mockDataCacheConnector.clearCache()(Matchers.any())).thenReturn(Future.successful(HttpResponse(httpValue)))
-    when(mockReturnSummaryService.getSummaryReturns(Matchers.any(), Matchers.any())).thenReturn(Future.successful(returnsSummaryWithDraft))
-    when(mockSubscriptionDataService.getCorrespondenceAddress(Matchers.any(), Matchers.any())).thenReturn(Future.successful(correspondence))
-    when(mockSubscriptionDataService.getOrganisationName(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(organisationName)))
-    when(mockSubscriptionDataService.getSafeId(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("safeId")))
-    when(mockAgentClientMandateFrontendConnector.getClientBannerPartial(Matchers.any(), Matchers.any())(Matchers.any()))
-      .thenReturn(Future.successful(HtmlPartial.Success(Some("thepartial"), Html(""))))
-    when(mockDetailsService.cacheClientReference(Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
-      .thenReturn(Future.successful("XN1200000100001"))
-
-    val result = TestAccountSummaryController.view().apply(SessionBuilder.buildRequestWithSession(userId))
-    test(result)
-  }
-
-  def getWithAuthorisedDelegatedUser(returnsSummaryWithDraft: SummaryReturnsModel,
-                                     correspondence: Option[Address] = None)(test: Future[Result] => Any) {
-    val httpValue = 200
-    val userId = s"user-${UUID.randomUUID}"
-    implicit val hc: HeaderCarrier = HeaderCarrier(userId = Some(UserId(userId)))
-    val authMock = authResultDefault(AffinityGroup.Agent, agentEnrolmentSet)
-    setAuthMocks(authMock)
-    when(mockDataCacheConnector.clearCache()(Matchers.any())).thenReturn(Future.successful(HttpResponse(httpValue)))
-    when(mockReturnSummaryService.getSummaryReturns(Matchers.any(), Matchers.any())).thenReturn(Future.successful(returnsSummaryWithDraft))
-    when(mockSubscriptionDataService.getCorrespondenceAddress(Matchers.any(), Matchers.any())).thenReturn(Future.successful(correspondence))
-    when(mockSubscriptionDataService.getOrganisationName(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(organisationName)))
-    when(mockSubscriptionDataService.getSafeId(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("safeId")))
-    when(mockAgentClientMandateFrontendConnector.getClientBannerPartial(Matchers.any(), Matchers.any())(Matchers.any()))
-      .thenReturn(Future.successful(HtmlPartial.Success(Some("thepartial"), Html(""))))
-    when(mockDetailsService.cacheClientReference(Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
-      .thenReturn(Future.successful("XN1200000100001"))
-    val result = TestAccountSummaryController.view().apply(SessionBuilder.buildRequestWithSessionDelegation(userId))
-    test(result)
-  }
-
-  def getWithUnAuthorisedUser(test: Future[Result] => Any) {
-    val userId = s"user-${UUID.randomUUID}"
-    val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
-    setInvalidAuthMocks(authMock)
-    val result = TestAccountSummaryController.view().apply(SessionBuilder.buildRequestWithSession(userId))
-    test(result)
-  }
-
 }

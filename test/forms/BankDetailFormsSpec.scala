@@ -106,7 +106,7 @@ class BankDetailFormsSpec extends PlaySpec with MustMatchers with GuiceOneServer
         BankDetailForms.bankDetailsForm.bind(Map.empty[String, String]).fold (
           formWithErrors => {
             formWithErrors.errors.length mustBe 1
-            formWithErrors.errors.head.message mustBe Messages("ated.bank-details.error-key.hasUKBankAccount.empty")
+            formWithErrors.errors.head.message mustBe "ated.bank-details.error-key.hasUKBankAccount.empty"
           },
           _ => {
             fail("Form should give an error")
@@ -118,9 +118,9 @@ class BankDetailFormsSpec extends PlaySpec with MustMatchers with GuiceOneServer
         BankDetailForms.validateBankDetails(BankDetailForms.bankDetailsForm.bind(emptyUkData)).fold (
           formWithErrors => {
             formWithErrors.errors.length mustBe 3
-            formWithErrors.errors.head.message mustBe Messages("ated.bank-details.error-key.accountName.empty")
-            formWithErrors.errors(1).message mustBe Messages("ated.bank-details.error-key.accountNumber.empty")
-            formWithErrors.errors.last.message mustBe Messages("ated.bank-details.error-key.sortCode.empty")
+            formWithErrors.errors.head.message mustBe "ated.bank-details.error-key.accountName.empty"
+            formWithErrors.errors(1).message mustBe "ated.bank-details.error-key.accountNumber.empty"
+            formWithErrors.errors.last.message mustBe "ated.bank-details.error-key.sortCode.empty"
           },
           _ => {
             fail("Form should give an error")
@@ -132,9 +132,9 @@ class BankDetailFormsSpec extends PlaySpec with MustMatchers with GuiceOneServer
         BankDetailForms.validateBankDetails(BankDetailForms.bankDetailsForm.bind(emptyNonUkData)).fold (
           formWithErrors => {
             formWithErrors.errors.length mustBe 3
-            formWithErrors.errors.head.message mustBe Messages("ated.bank-details.error-key.accountName.empty")
-            formWithErrors.errors(1).message mustBe Messages("ated.bank-details.error-key.iban.empty")
-            formWithErrors.errors.last.message mustBe Messages("ated.bank-details.error-key.bicSwiftCode.empty")
+            formWithErrors.errors.head.message mustBe "ated.bank-details.error-key.accountName.empty"
+            formWithErrors.errors(1).message mustBe "ated.bank-details.error-key.iban.empty"
+            formWithErrors.errors.last.message mustBe "ated.bank-details.error-key.bicSwiftCode.empty"
 
           },
           _ => {
@@ -147,9 +147,9 @@ class BankDetailFormsSpec extends PlaySpec with MustMatchers with GuiceOneServer
         BankDetailForms.validateBankDetails(BankDetailForms.bankDetailsForm.bind(maxLengthUkData)).fold (
           formWithErrors => {
             formWithErrors.errors.length mustBe 3
-            formWithErrors.errors.head.message mustBe Messages("ated.bank-details.error-key.accountName.max-len")
-            formWithErrors.errors(1).message mustBe Messages("ated.bank-details.error-key.accountNumber.max-len")
-            formWithErrors.errors.last.message mustBe Messages("ated.bank-details.error-key.sortCode.invalid")
+            formWithErrors.errors.head.message mustBe "ated.bank-details.error-key.accountName.max-len"
+            formWithErrors.errors(1).message mustBe "ated.bank-details.error-key.accountNumber.max-len"
+            formWithErrors.errors.last.message mustBe "ated.bank-details.error-key.sortCode.invalid"
           },
           _ => {
             fail("Form should give an error")
@@ -161,9 +161,9 @@ class BankDetailFormsSpec extends PlaySpec with MustMatchers with GuiceOneServer
         BankDetailForms.validateBankDetails(BankDetailForms.bankDetailsForm.bind(maxLengthNonUkData)).fold (
           formWithErrors => {
             formWithErrors.errors.length mustBe 3
-            formWithErrors.errors.head.message mustBe Messages("ated.bank-details.error-key.accountName.max-len")
-            formWithErrors.errors(1).message mustBe Messages("ated.bank-details.error-key.iban.max-len")
-            formWithErrors.errors.last.message mustBe Messages("ated.bank-details.error-key.bicSwiftCode.invalid")
+            formWithErrors.errors.head.message mustBe "ated.bank-details.error-key.accountName.max-len"
+            formWithErrors.errors(1).message mustBe "ated.bank-details.error-key.iban.max-len"
+            formWithErrors.errors.last.message mustBe "ated.bank-details.error-key.bicSwiftCode.invalid"
 
           },
           _ => {

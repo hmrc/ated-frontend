@@ -16,20 +16,26 @@
 
 package views
 
+import config.ApplicationConfig
 import forms.AtedForms.selectPeriodForm
+import models.StandardAuthRetrievals
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
 import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
+import play.api.i18n.{Messages, MessagesApi}
 import play.api.test.FakeRequest
 import utils.{MockAuthUtil, PeriodUtils}
 
-class selectPeriodSpec extends FeatureSpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
+class selectPeriodSpec extends FeatureSpec with GuiceOneServerPerSuite with MockitoSugar
+  with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
 
   implicit val request = FakeRequest()
-  implicit val messages : play.api.i18n.Messages = play.api.i18n.Messages.Implicits.applicationMessages
-  implicit lazy val authContext = organisationStandardRetrievals
+  implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
+  implicit val appConfig: ApplicationConfig = mock[ApplicationConfig]
+  implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
+
   val periodKey = 2015
 
   feature("The user can view the select period page") {
@@ -41,7 +47,8 @@ class selectPeriodSpec extends FeatureSpec with GuiceOneServerPerSuite with Mock
       Given("The client is creating a new return and wants to tell us the year it is for")
       When("The user views the page")
 
-      val periods = PeriodUtils.getPeriods(new LocalDate(2015,4,1), new LocalDate(2016,4,1))
+      val periods = PeriodUtils.getPeriods(new LocalDate(2015,4,1),
+        new LocalDate(2016,4,1))
       val html = views.html.selectPeriod(selectPeriodForm, periods, Some("http://backLink"))
 
       val document = Jsoup.parse(html.toString())

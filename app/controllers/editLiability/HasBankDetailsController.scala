@@ -16,26 +16,35 @@
 
 package controllers.editLiability
 
+import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
-import controllers.BackLinkController
+import controllers.{BackLinkController, ControllerIds}
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.BankDetailForms.hasBankDetailsForm
+import javax.inject.Inject
 import models.HasBankDetails
-import play.api.Play.current
-import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, AnyContent}
-import services.{ChangeLiabilityReturnService, DelegationService}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import services.ChangeLiabilityReturnService
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.AtedUtils
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-trait HasBankDetailsController extends BackLinkController
-  with AuthAction with ClientHelper {
+class HasBankDetailsController @Inject()(mcc: MessagesControllerComponents,
+                                         changeLiabilityReturnService: ChangeLiabilityReturnService,
+                                         authAction: AuthAction,
+                                         bankDetailsController: BankDetailsController,
+                                         val dataCacheConnector: DataCacheConnector,
+                                         val backLinkCacheConnector: BackLinkCacheConnector)
+                                        (implicit val appConfig: ApplicationConfig)
+  extends FrontendController(mcc) with BackLinkController with ClientHelper with ControllerIds {
 
-  def changeLiabilityReturnService: ChangeLiabilityReturnService
+  implicit val ec: ExecutionContext = mcc.executionContext
+
+  val controllerId: String = hasBankDetailsId
 
   def view(oldFormBundleNo: String): Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         changeLiabilityReturnService.retrieveSubmittedLiabilityReturnAndCache(oldFormBundleNo) flatMap {
           case Some(x) =>
@@ -50,7 +59,7 @@ trait HasBankDetailsController extends BackLinkController
   }
 
   def editFromSummary(oldFormBundleNo: String): Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         changeLiabilityReturnService.retrieveSubmittedLiabilityReturnAndCache(oldFormBundleNo) flatMap {
           case Some(x) =>
@@ -67,7 +76,7 @@ trait HasBankDetailsController extends BackLinkController
   }
 
   def save(oldFormBundleNo: String): Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         hasBankDetailsForm.bindFromRequest.fold(
           formWithErrors => currentBackLink.map(backLink => BadRequest(views.html.editLiability.hasBankDetails(formWithErrors, oldFormBundleNo, backLink))),
@@ -76,14 +85,14 @@ trait HasBankDetailsController extends BackLinkController
             val backLink = Some(controllers.editLiability.routes.HasBankDetailsController.view(oldFormBundleNo).url)
             changeLiabilityReturnService.cacheChangeLiabilityReturnHasBankDetails(oldFormBundleNo, hasBankDetails) flatMap { _ =>
               if (hasBankDetails) {
-                RedirectWithBackLink(
-                  BankDetailsController.controllerId,
+                redirectWithBackLink(
+                  bankDetailsController.controllerId,
                   controllers.editLiability.routes.BankDetailsController.view(oldFormBundleNo),
                   backLink
                 )
               } else {
-                RedirectWithBackLink(
-                  EditLiabilitySummaryController.controllerId,
+                redirectWithBackLink(
+                  editLiabilitySummaryId,
                   controllers.editLiability.routes.EditLiabilitySummaryController.viewSummary(oldFormBundleNo),
                   backLink
                 )
@@ -95,12 +104,4 @@ trait HasBankDetailsController extends BackLinkController
     }
   }
 
-}
-
-object HasBankDetailsController extends HasBankDetailsController {
-  val delegationService: DelegationService = DelegationService
-  val changeLiabilityReturnService: ChangeLiabilityReturnService = ChangeLiabilityReturnService
-  val dataCacheConnector: DataCacheConnector = DataCacheConnector
-  override val controllerId = "HasBankDetailsController"
-  override val backLinkCacheConnector: BackLinkCacheConnector = BackLinkCacheConnector
 }

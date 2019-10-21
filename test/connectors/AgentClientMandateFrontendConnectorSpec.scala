@@ -16,59 +16,58 @@
 
 package connectors
 
+import config.ApplicationConfig
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
-import play.api.Mode.Mode
+import org.scalatestplus.play.PlaySpec
+import org.scalatestplus.play.guice.GuiceOneAppPerSuite
+import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import play.api.{Configuration, Play}
-import uk.gov.hmrc.crypto.ApplicationCrypto
 import uk.gov.hmrc.http._
-import uk.gov.hmrc.play.frontend.filters.SessionCookieCryptoFilter
+import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 import uk.gov.hmrc.play.partials.HeaderCarrierForPartials
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class AgentClientMandateFrontendConnectorSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
+class AgentClientMandateFrontendConnectorSpec extends PlaySpec with GuiceOneAppPerSuite with MockitoSugar with BeforeAndAfterEach {
 
-  trait MockedVerbs extends CoreGet
-  val mockWSHttp: CoreGet = mock[MockedVerbs]
+  val mockHttp: DefaultHttpClient = mock[DefaultHttpClient]
+  val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
 
-  object TestAgentClientMandateFrontendConnector extends AgentClientMandateFrontendConnector {
-    val crypto: String => String = new SessionCookieCryptoFilter(new ApplicationCrypto(Play.current.configuration.underlying)).encrypt _
-    override val http: CoreGet = mockWSHttp
-    override protected def mode: Mode = Play.current.mode
-    override protected def runModeConfiguration: Configuration = Play.current.configuration
+  class Setup {
+    val testAgentClientMandateFrontendConnector: AgentClientMandateFrontendConnector = new AgentClientMandateFrontendConnector (
+      mockAppConfig, mockHttp
+    )
   }
 
   override def beforeEach: Unit = {
-    reset(mockWSHttp)
+    reset(mockHttp)
   }
 
   "AgentClientMandateFrontendConnector" must {
-    "return the partial successfully" in {
-      implicit val request = FakeRequest()
+    "return the partial successfully" in new Setup {
+      implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
       implicit val hc: HeaderCarrier = HeaderCarrier()
       implicit val hcwc: HeaderCarrierForPartials = HeaderCarrierForPartials(hc,"")
       val html = "<h1>helloworld</h1>"
-      when(mockWSHttp.GET[HttpResponse]
-        (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(200, responseString = Some(html))))
-      TestAgentClientMandateFrontendConnector.getClientBannerPartial("clientId", "ated").map {
+      when(mockHttp.GET[HttpResponse]
+        (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, responseString = Some(html))))
+      testAgentClientMandateFrontendConnector.getClientBannerPartial("clientId", "ated").map {
         response => response.successfulContentOrEmpty must equal(html)
       }
     }
 
-    "return the client mandate details succcessfully" in {
-      implicit val request = FakeRequest()
+    "return the client mandate details succcessfully" in new Setup {
+      implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
       implicit val hc: HeaderCarrier = HeaderCarrier()
       implicit val hcwc: HeaderCarrierForPartials = HeaderCarrierForPartials(hc,"")
-      when(mockWSHttp.GET[HttpResponse]
-        (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(200, responseString = Some(""))))
-      val result = TestAgentClientMandateFrontendConnector.getClientDetails("clientId", "ated")
+      when(mockHttp.GET[HttpResponse]
+        (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, responseString = Some(""))))
+      val result: Future[HttpResponse] = testAgentClientMandateFrontendConnector.getClientDetails("clientId", "ated")
       await(result).status must be(OK)
     }
   }

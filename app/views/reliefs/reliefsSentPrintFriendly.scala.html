@@ -14,7 +14,8 @@
  * limitations under the License.
  *@
 
-@(periodKey: Int, submittedReturnResponse: Option[SubmitReturnsResponse], organisationName: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent])
+@import config.ApplicationConfig
+@(periodKey: Int, submittedReturnResponse: Option[SubmitReturnsResponse], organisationName: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
 @import models._
 @import uk.gov.hmrc.play.views.html._
@@ -28,7 +29,7 @@
 
 @printFriendly(Messages("ated.relief-sent.title")) {
 
-    <script src='@controllers.routes.AssetsController.at("javascript/printFriendly.js")'></script>
+    <script src='@controllers.routes.Assets.versioned("javascript/printFriendly.js")'></script>
 
     <h1 id="header">@Messages("ated.relief-sent.header")
     </h1>

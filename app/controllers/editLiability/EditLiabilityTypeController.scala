@@ -16,49 +16,65 @@
 
 package controllers.editLiability
 
+import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.BackLinkController
 import controllers.auth.{AuthAction, ClientHelper}
 import controllers.propertyDetails.{AddressLookupController, PropertyDetailsAddressController}
 import forms.AtedForms._
-import play.api.Play.current
-import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, AnyContent}
+import javax.inject.Inject
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.DelegationService
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-trait EditLiabilityTypeController extends BackLinkController with ClientHelper with AuthAction {
+class EditLiabilityTypeController @Inject()(mcc: MessagesControllerComponents,
+                                            propertyDetailsAddressController: PropertyDetailsAddressController,
+                                            addressLookupController: AddressLookupController,
+                                            authAction: AuthAction,
+                                            disposePropertyController: DisposePropertyController,
+                                            val dataCacheConnector: DataCacheConnector,
+                                            val backLinkCacheConnector: BackLinkCacheConnector)
+                                           (implicit val appConfig: ApplicationConfig)
+
+  extends FrontendController(mcc) with BackLinkController with ClientHelper {
+
+  implicit val ec: ExecutionContext = mcc.executionContext
+
+  val controllerId: String = "EditLiabilityTypeController"
 
   def editLiability(oldFormBundleNo: String, periodKey: Int, editAllowed: Boolean) : Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         Future.successful(
-          Ok(views.html.editLiability.editLiability(editLiabilityReturnTypeForm, oldFormBundleNo, periodKey, editAllowed, returnToFormBundle(oldFormBundleNo, periodKey)))
+          Ok(views.html.editLiability
+            .editLiability(editLiabilityReturnTypeForm, oldFormBundleNo, periodKey, editAllowed, returnToFormBundle(oldFormBundleNo, periodKey)))
         )
       }
     }
   }
 
   def continue(oldFormBundleNo: String, periodKey: Int, editAllowed: Boolean) : Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         editLiabilityReturnTypeForm.bindFromRequest.fold(
           formWithErrors =>
-            Future.successful(BadRequest(views.html.editLiability.editLiability(formWithErrors, oldFormBundleNo, periodKey, editAllowed, returnToFormBundle(oldFormBundleNo, periodKey)))),
+            Future.successful(BadRequest(
+              views.html.editLiability.editLiability(formWithErrors, oldFormBundleNo, periodKey, editAllowed, returnToFormBundle(oldFormBundleNo, periodKey)))),
           data => {
             val backLink = Some(controllers.editLiability.routes.EditLiabilityTypeController.editLiability(oldFormBundleNo, periodKey, editAllowed).url)
             data.editLiabilityType match {
               case Some("CR") =>
-                RedirectWithBackLink(
-                  PropertyDetailsAddressController.controllerId,
+                redirectWithBackLink(
+                  propertyDetailsAddressController.controllerId,
                   controllers.propertyDetails.routes.PropertyDetailsAddressController.editSubmittedReturn(oldFormBundleNo),
                   backLink,
-                  List(AddressLookupController.controllerId)
+                  List(addressLookupController.controllerId)
                 )
               case Some("DP") =>
-                RedirectWithBackLink(
-                  DisposePropertyController.controllerId,
+                redirectWithBackLink(
+                  disposePropertyController.controllerId,
                   controllers.editLiability.routes.DisposePropertyController.view(oldFormBundleNo),
                   backLink
                 )
@@ -74,11 +90,4 @@ trait EditLiabilityTypeController extends BackLinkController with ClientHelper w
   private def returnToFormBundle(oldFormBundleNo: String, periodKey: Int) = {
     Some(controllers.routes.FormBundleReturnController.view(oldFormBundleNo, periodKey).url)
   }
-}
-
-object EditLiabilityTypeController extends EditLiabilityTypeController {
-  val delegationService: DelegationService = DelegationService
-  override val controllerId = "EditLiabilityTypeController"
-  val dataCacheConnector: DataCacheConnector = DataCacheConnector
-  override val backLinkCacheConnector: BackLinkCacheConnector = BackLinkCacheConnector
 }

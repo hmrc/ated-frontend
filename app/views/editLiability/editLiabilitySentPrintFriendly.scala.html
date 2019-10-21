@@ -14,9 +14,9 @@
  * limitations under the License.
  *@
 
-@(submittedReturnResponse: Option[EditLiabilityReturnsResponseModel], returnType: String, organisationName: Option[String], paymentReference: Option[String], amountDueOrRefund: BigDecimal, liabilityAmount : BigDecimal)(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent])
+@import config.ApplicationConfig
+@(submittedReturnResponse: Option[EditLiabilityReturnsResponseModel], returnType: String, organisationName: Option[String], paymentReference: Option[String], amountDueOrRefund: BigDecimal, liabilityAmount : BigDecimal)(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
-@import utils.AtedUtils._
 @import org.joda.time.format.DateTimeFormat
 @import org.joda.time.LocalDate
 @import utils._
@@ -35,74 +35,74 @@
     }
 }
 
-@printFriendly(Messages("ated.relief-sent.title")) {
+@printFriendly(messages("ated.relief-sent.title")) {
 
-<script src='@controllers.routes.AssetsController.at("javascript/printFriendly.js")'></script>
+<script src='@controllers.routes.Assets.versioned("javascript/printFriendly.js")'></script>
 
-    <h1 id="header">@Messages(returnHeaderMessage)</h1>
+    <h1 id="header">@messages(returnHeaderMessage)</h1>
 
-    <p id="view-message">@Messages("ated.edit-liabilty.sent.view-message")</p>
-    <p id="email-message">@Messages("ated.edit-liabilty.sent.receipt-message")</p>
+    <p id="view-message">@messages("ated.edit-liabilty.sent.view-message")</p>
+    <p id="email-message">@messages("ated.edit-liabilty.sent.receipt-message")</p>
 
     <hr>
 
-    <h2 id="charges-heading">@Messages("ated.edit-liabilty.sent.charges-heading")</h2>
+    <h2 id="charges-heading">@messages("ated.edit-liabilty.sent.charges-heading")</h2>
 
-    <p id="new-amount">@Messages("ated.edit-liabilty.sent.new-amount")</p>
+    <p id="new-amount">@messages("ated.edit-liabilty.sent.new-amount")</p>
 
 
         @if(returnType == "F"){
 
-        <h3 id="already-paid-title">@Messages("ated.edit.liability.sent.amount-already-paid.title")</h3>
+        <h3 id="already-paid-title">@messages("ated.edit.liability.sent.amount-already-paid.title")</h3>
 
         <ul class="list-bullet">
-            <li id="already-paid-text">@Html(Messages("ated.edit.liability.sent.amount-already-paid", formattedPounds(amountDueOrRefund)))</li>
+            <li id="already-paid-text">@Html(messages("ated.edit.liability.sent.amount-already-paid", formattedPounds(amountDueOrRefund)))</li>
         </ul>
 
-        <h3 id="not-paid-title">@Messages("ated.edit.liability.sent.amount-not-paid.title")</h3>
+        <h3 id="not-paid-title">@messages("ated.edit.liability.sent.amount-not-paid.title")</h3>
 
         <ul class="list-bullet">
-            <li id="not-paid-text">@Html(Messages("ated.edit.liability.sent.amount-already-paid", formattedPounds(liabilityAmount)))</li>
+            <li id="not-paid-text">@Html(messages("ated.edit.liability.sent.amount-already-paid", formattedPounds(liabilityAmount)))</li>
         </ul>
 
-        <p id="payment-reference">@Html(Messages("ated.edit-liabilty.sent.payment-reference", paymentReference.getOrElse("")))</p>
-        <p id="late-payment">@Html(Messages("ated.edit-liabilty.sent.late-payment-pf"))</p>
+        <p id="payment-reference">@Html(messages("ated.edit-liabilty.sent.payment-reference", paymentReference.getOrElse("")))</p>
+        <p id="late-payment">@Html(messages("ated.edit-liabilty.sent.late-payment-pf"))</p>
 
         }
 
         @if(returnType == "A"){
 
-        <h3 id="already-paid-title">@Messages("ated.edit.liability.sent.amount-already-paid.title")</h3>
+        <h3 id="already-paid-title">@messages("ated.edit.liability.sent.amount-already-paid.title")</h3>
 
         <ul class="list-bullet">
-            <li id="owe-you">@Html(Messages("ated.edit.liability.sent.owe-you", formattedPounds(amountDueOrRefund.abs)))</li>
-            <li id="repayments">@Messages("ated.edit.liability.sent.repayments")</li>
+            <li id="owe-you">@Html(messages("ated.edit.liability.sent.owe-you", formattedPounds(amountDueOrRefund.abs)))</li>
+            <li id="repayments">@messages("ated.edit.liability.sent.repayments")</li>
         </ul>
 
-        <h3 id="not-paid-title">@Messages("ated.edit.liability.sent.amount-not-paid.title")</h3>
+        <h3 id="not-paid-title">@messages("ated.edit.liability.sent.amount-not-paid.title")</h3>
 
         <ul class="list-bullet">
-            <li id="you-owe">@Html(Messages("ated.edit.liability.sent.you-owe", formattedPounds(liabilityAmount)))</li>
-            <li id="payment-reference">@Html(Messages("ated.edit-liabilty.sent.payment-reference", paymentReference.getOrElse("")))</li>
-            <li id="late-payment">@Html(Messages("ated.edit-liabilty.sent.late-payment-pf"))</li>
+            <li id="you-owe">@Html(messages("ated.edit.liability.sent.you-owe", formattedPounds(liabilityAmount)))</li>
+            <li id="payment-reference">@Html(messages("ated.edit-liabilty.sent.payment-reference", paymentReference.getOrElse("")))</li>
+            <li id="late-payment">@Html(messages("ated.edit-liabilty.sent.late-payment-pf"))</li>
         </ul>
 
         }
 
         @if(returnType == "C"){
 
-        <h3 id="already-paid-title">@Messages("ated.edit.liability.sent.amount-already-paid.title")</h3>
+        <h3 id="already-paid-title">@messages("ated.edit.liability.sent.amount-already-paid.title")</h3>
 
         <ul class="list-bullet">
-            <li id="owe-you">@Html(Messages("ated.edit.liability.sent.you-owe-change-in-details",formattedPounds(amountDueOrRefund.abs)))</li>
+            <li id="owe-you">@Html(messages("ated.edit.liability.sent.you-owe-change-in-details",formattedPounds(amountDueOrRefund.abs)))</li>
         </ul>
 
-        <h3 id="not-paid-title">@Messages("ated.edit.liability.sent.amount-not-paid.title")</h3>
+        <h3 id="not-paid-title">@messages("ated.edit.liability.sent.amount-not-paid.title")</h3>
 
         <ul class="list-bullet">
-            <li id="you-owe">@Html(Messages("ated.edit.liability.sent.you-owe-change-in-details", formattedPounds(liabilityAmount)))</li>
-            <li id="payment-reference">@Html(Messages("ated.edit-liabilty.sent.payment-reference", paymentReference.getOrElse("")))</li>
-            <li id="late-payment">@Html(Messages("ated.edit-liabilty.sent.late-payment-pf"))</li>
+            <li id="you-owe">@Html(messages("ated.edit.liability.sent.you-owe-change-in-details", formattedPounds(liabilityAmount)))</li>
+            <li id="payment-reference">@Html(messages("ated.edit-liabilty.sent.payment-reference", paymentReference.getOrElse("")))</li>
+            <li id="late-payment">@Html(messages("ated.edit-liabilty.sent.late-payment-pf"))</li>
         </ul>
 
         }

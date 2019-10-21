@@ -16,27 +16,38 @@
 
 package controllers.propertyDetails
 
+import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms._
-import play.api.Play.current
-import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, AnyContent}
+import javax.inject.Inject
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{DelegationService, PropertyDetailsService}
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-trait PeriodChooseReliefController extends PropertyDetailsHelpers with ClientHelper with AuthAction {
+class PeriodChooseReliefController @Inject()(mcc: MessagesControllerComponents,
+                                             authAction: AuthAction,
+                                             val propertyDetailsService: PropertyDetailsService,
+                                             val dataCacheConnector: DataCacheConnector,
+                                             val backLinkCacheConnector: BackLinkCacheConnector)
+                                            (implicit val appConfig: ApplicationConfig)
 
+  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper {
+
+  implicit val ec: ExecutionContext = mcc.executionContext
+
+  val controllerId: String = "PeriodChooseReliefController"
 
   def add(id: String, periodKey: Int): Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       ensureClientContext(Future.successful(Ok(views.html.propertyDetails.periodChooseRelief(id, periodKey, periodChooseReliefForm, getBackLink(id)))))
     }
   }
 
   def save(id: String, periodKey: Int): Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         periodChooseReliefForm.bindFromRequest.fold(
           formWithError =>
@@ -58,12 +69,4 @@ trait PeriodChooseReliefController extends PropertyDetailsHelpers with ClientHel
   private def getBackLink(id: String) = {
     Some(controllers.propertyDetails.routes.PeriodsInAndOutReliefController.view(id).url)
   }
-}
-
-object PeriodChooseReliefController extends PeriodChooseReliefController {
-  val delegationService: DelegationService = DelegationService
-  val propertyDetailsService: PropertyDetailsService.type = PropertyDetailsService
-  val dataCacheConnector: DataCacheConnector.type = DataCacheConnector
-  override val controllerId: String = "PeriodChooseReliefController"
-  override val backLinkCacheConnector: BackLinkCacheConnector.type = BackLinkCacheConnector
 }

@@ -17,6 +17,7 @@
 package services
 
 import connectors.{DataCacheConnector, PropertyDetailsConnector}
+import javax.inject.Inject
 import models._
 import org.joda.time.LocalDate
 import play.api.Logger
@@ -36,16 +37,14 @@ case object PropertyDetailsCacheNotFoundResponse extends PropertyDetailsCacheRes
 
 case object PropertyDetailsCacheErrorResponse extends PropertyDetailsCacheResponse
 
-trait PropertyDetailsService {
+class PropertyDetailsService @Inject()(propertyDetailsConnector: PropertyDetailsConnector,
+                                       dataCacheConnector: DataCacheConnector) {
 
-  def atedConnector: PropertyDetailsConnector
-
-  def dataCacheConnector: DataCacheConnector
 
   def createDraftPropertyDetailsAddress(periodKey: Int, propertyDetailsAddress: PropertyDetailsAddress)
                                        (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[String] = {
     for {
-      propertyDetailsResponse <- atedConnector.createDraftPropertyDetails(periodKey, propertyDetailsAddress)
+      propertyDetailsResponse <- propertyDetailsConnector.createDraftPropertyDetails(periodKey, propertyDetailsAddress)
     } yield {
       propertyDetailsResponse.status match {
         case OK => propertyDetailsResponse.json.as[PropertyDetails].id
@@ -61,7 +60,7 @@ trait PropertyDetailsService {
   def saveDraftPropertyDetailsAddress(id: String, propertyDetailsAddress: PropertyDetailsAddress)
                                      (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[String] = {
     for {
-      propertyDetailsResponse <- atedConnector.saveDraftPropertyDetailsAddressRef(id, propertyDetailsAddress)
+      propertyDetailsResponse <- propertyDetailsConnector.saveDraftPropertyDetailsAddressRef(id, propertyDetailsAddress)
     } yield {
       propertyDetailsResponse.status match {
         case OK => id
@@ -78,7 +77,7 @@ trait PropertyDetailsService {
                                         (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[Int] = {
     val trimmedPropertyDetails = propertyDetails.copy(titleNumber = propertyDetails.titleNumber.replaceAll(" ", ""))
     for {
-      propertyDetailsResponse <- atedConnector.saveDraftPropertyDetailsTitle(id, trimmedPropertyDetails)
+      propertyDetailsResponse <- propertyDetailsConnector.saveDraftPropertyDetailsTitle(id, trimmedPropertyDetails)
     } yield {
       propertyDetailsResponse.status match {
         case OK => OK
@@ -94,7 +93,7 @@ trait PropertyDetailsService {
   def saveDraftHasValueChanged(id: String, hasValueChanged: Boolean)
                               (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[Int] = {
     for {
-      propertyDetailsResponse <- atedConnector.saveDraftHasValueChanged(id, hasValueChanged)
+      propertyDetailsResponse <- propertyDetailsConnector.saveDraftHasValueChanged(id, hasValueChanged)
     } yield {
       propertyDetailsResponse.status match {
         case OK => OK
@@ -109,7 +108,7 @@ trait PropertyDetailsService {
   def saveDraftPropertyDetailsAcquisition(id: String, overLimit: Boolean)
                                          (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[Int] = {
     for {
-      propertyDetailsResponse <- atedConnector.saveDraftPropertyDetailsAcquisition(id, overLimit)
+      propertyDetailsResponse <- propertyDetailsConnector.saveDraftPropertyDetailsAcquisition(id, overLimit)
     } yield {
       propertyDetailsResponse.status match {
         case OK => OK
@@ -125,7 +124,7 @@ trait PropertyDetailsService {
   def saveDraftPropertyDetailsOwnedBefore(id: String, updated: PropertyDetailsOwnedBefore)
                                          (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[Int] = {
     for {
-      propertyDetailsResponse <- atedConnector.saveDraftPropertyDetailsOwnedBefore(id, updated)
+      propertyDetailsResponse <- propertyDetailsConnector.saveDraftPropertyDetailsOwnedBefore(id, updated)
     } yield {
       propertyDetailsResponse.status match {
         case OK => OK
@@ -141,7 +140,7 @@ trait PropertyDetailsService {
   def saveDraftPropertyDetailsRevalued(id: String, revalued: PropertyDetailsRevalued)
                                       (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[Int] = {
     for {
-      propertyDetailsResponse <- atedConnector.saveDraftPropertyDetailsRevalued(id, revalued)
+      propertyDetailsResponse <- propertyDetailsConnector.saveDraftPropertyDetailsRevalued(id, revalued)
     } yield {
       propertyDetailsResponse.status match {
         case OK => OK
@@ -157,7 +156,7 @@ trait PropertyDetailsService {
   def saveDraftPropertyDetailsProfessionallyValued(id: String, updated: PropertyDetailsProfessionallyValued)
                                                   (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[Int] = {
     for {
-      propertyDetailsResponse <- atedConnector.saveDraftPropertyDetailsProfessionallyValued(id, updated)
+      propertyDetailsResponse <- propertyDetailsConnector.saveDraftPropertyDetailsProfessionallyValued(id, updated)
     } yield {
       propertyDetailsResponse.status match {
         case OK => OK
@@ -173,7 +172,7 @@ trait PropertyDetailsService {
   def saveDraftPropertyDetailsNewBuild(id: String, updated: PropertyDetailsNewBuild)
                                                   (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[Int] = {
     for {
-      propertyDetailsResponse <- atedConnector.saveDraftPropertyDetailsNewBuild(id, updated)
+      propertyDetailsResponse <- propertyDetailsConnector.saveDraftPropertyDetailsNewBuild(id, updated)
     } yield {
       propertyDetailsResponse.status match {
         case OK => OK
@@ -189,7 +188,7 @@ trait PropertyDetailsService {
   def saveDraftIsFullTaxPeriod(id: String, isFullPeriod: IsFullTaxPeriod)
                                (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[Int] = {
     for {
-      propertyDetailsResponse <- atedConnector.saveDraftIsFullTaxPeriod(id, isFullPeriod)
+      propertyDetailsResponse <- propertyDetailsConnector.saveDraftIsFullTaxPeriod(id, isFullPeriod)
     } yield {
       propertyDetailsResponse.status match {
         case OK => OK
@@ -204,7 +203,7 @@ trait PropertyDetailsService {
   def saveDraftPropertyDetailsSupportingInfo(id: String, propertyDetails: PropertyDetailsSupportingInfo)
                                            (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[Int] = {
     for {
-      propertyDetailsResponse <- atedConnector.saveDraftPropertyDetailsSupportingInfo(id, propertyDetails)
+      propertyDetailsResponse <- propertyDetailsConnector.saveDraftPropertyDetailsSupportingInfo(id, propertyDetails)
     } yield {
       propertyDetailsResponse.status match {
         case OK => OK
@@ -217,7 +216,7 @@ trait PropertyDetailsService {
   }
 
   def calculateDraftChangeLiability(id: String)(implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[PropertyDetails] = {
-        atedConnector.calculateDraftChangeLiability(id) map { propertyDetailsResponse =>
+        propertyDetailsConnector.calculateDraftChangeLiability(id) map { propertyDetailsResponse =>
           propertyDetailsResponse.status match {
             case OK => propertyDetailsResponse.json.as[PropertyDetails]
             case status =>
@@ -230,7 +229,7 @@ trait PropertyDetailsService {
 
   def calculateDraftPropertyDetails(id: String)(implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[HttpResponse] = {
     validateCalculateDraftPropertyDetails(id).flatMap {
-      case true => atedConnector.calculateDraftPropertyDetails(id)
+      case true => propertyDetailsConnector.calculateDraftPropertyDetails(id)
       case false => Future.successful(HttpResponse(OK, None))
     }
 
@@ -239,7 +238,7 @@ trait PropertyDetailsService {
   def saveDraftPropertyDetailsInRelief(id: String, propertyDetails: PropertyDetailsInRelief)
                                       (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[Int] = {
     for {
-      propertyDetailsResponse <- atedConnector.saveDraftPropertyDetailsInRelief(id, propertyDetails)
+      propertyDetailsResponse <- propertyDetailsConnector.saveDraftPropertyDetailsInRelief(id, propertyDetails)
     } yield {
       propertyDetailsResponse.status match {
         case OK => OK
@@ -254,7 +253,7 @@ trait PropertyDetailsService {
   def saveDraftPropertyDetailsTaxAvoidance(id: String, propertyDetails: PropertyDetailsTaxAvoidance)
                                          (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[Int] = {
     for {
-      propertyDetailsResponse <- atedConnector.saveDraftPropertyDetailsTaxAvoidance(id, propertyDetails)
+      propertyDetailsResponse <- propertyDetailsConnector.saveDraftPropertyDetailsTaxAvoidance(id, propertyDetails)
     } yield {
       propertyDetailsResponse.status match {
         case OK => OK
@@ -269,7 +268,7 @@ trait PropertyDetailsService {
   def saveDraftPropertyDetailsDatesLiable(id: String, propertyDetails: PropertyDetailsDatesLiable)
                                            (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[Int] = {
     for {
-      propertyDetailsResponse <- atedConnector.saveDraftPropertyDetailsDatesLiable(id, propertyDetails)
+      propertyDetailsResponse <- propertyDetailsConnector.saveDraftPropertyDetailsDatesLiable(id, propertyDetails)
     } yield {
       propertyDetailsResponse.status match {
         case OK => OK
@@ -284,7 +283,7 @@ trait PropertyDetailsService {
   def addDraftPropertyDetailsDatesLiable(id: String, propertyDetails: PropertyDetailsDatesLiable)
                                         (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[Int] = {
     for {
-      propertyDetailsResponse <- atedConnector.addDraftPropertyDetailsDatesLiable(id, propertyDetails)
+      propertyDetailsResponse <- propertyDetailsConnector.addDraftPropertyDetailsDatesLiable(id, propertyDetails)
     } yield {
       propertyDetailsResponse.status match {
         case OK => OK
@@ -310,7 +309,7 @@ trait PropertyDetailsService {
                                         (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[Int] = {
     for {
       chosenRelief <- dataCacheConnector.fetchAndGetFormData[PeriodChooseRelief](CHOSEN_RELIEF_ID)
-      propertyDetailsResponse <- atedConnector.addDraftPropertyDetailsDatesInRelief(id, propertyDetails.copy(description = chosenRelief.map(_.reliefDescription)))
+      propertyDetailsResponse <- propertyDetailsConnector.addDraftPropertyDetailsDatesInRelief(id, propertyDetails.copy(description = chosenRelief.map(_.reliefDescription)))
     } yield {
       propertyDetailsResponse.status match {
         case OK => OK
@@ -325,7 +324,7 @@ trait PropertyDetailsService {
   def deleteDraftPropertyDetailsPeriod(id: String, propertyDetails: LocalDate)
                                            (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[PropertyDetails] = {
     for {
-      propertyDetailsResponse <- atedConnector.deleteDraftPropertyDetailsPeriod(id, propertyDetails)
+      propertyDetailsResponse <- propertyDetailsConnector.deleteDraftPropertyDetailsPeriod(id, propertyDetails)
     } yield {
       propertyDetailsResponse.status match {
         case OK => propertyDetailsResponse.json.as[PropertyDetails]
@@ -340,7 +339,7 @@ trait PropertyDetailsService {
   def retrieveDraftPropertyDetails(id: String)
                                   (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[PropertyDetailsCacheResponse] = {
     for {
-      propertyDetailsResponse <- atedConnector.retrieveDraftPropertyDetails(id)
+      propertyDetailsResponse <- propertyDetailsConnector.retrieveDraftPropertyDetails(id)
     } yield {
       propertyDetailsResponse.status match {
         case OK =>
@@ -360,7 +359,7 @@ trait PropertyDetailsService {
   def submitDraftPropertyDetails(id: String)
                                 (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[HttpResponse] = {
     for {
-      httpResponse <- atedConnector.submitDraftPropertyDetails(id)
+      httpResponse <- propertyDetailsConnector.submitDraftPropertyDetails(id)
       _ <- dataCacheConnector.clearCache()
       _ <- dataCacheConnector.saveFormData[SubmitReturnsResponse](formId = SubmitReturnsResponseFormId, data = httpResponse.json.as[SubmitReturnsResponse])
     } yield {
@@ -368,7 +367,7 @@ trait PropertyDetailsService {
     }
   }
 
-  def clearDraftReliefs(id: String)(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[HttpResponse] = atedConnector.deleteDraftChargeable(id)
+  def clearDraftReliefs(id: String)(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[HttpResponse] = propertyDetailsConnector.deleteDraftChargeable(id)
 
   def validateCalculateDraftPropertyDetails(id : String)(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[Boolean] = {
     retrieveDraftPropertyDetails(id).map {
@@ -379,9 +378,4 @@ trait PropertyDetailsService {
         }
     }
   }
-}
-
-object PropertyDetailsService extends PropertyDetailsService {
-  val atedConnector = PropertyDetailsConnector
-  val dataCacheConnector = DataCacheConnector
 }

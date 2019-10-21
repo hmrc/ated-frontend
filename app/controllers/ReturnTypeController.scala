@@ -16,27 +16,39 @@
 
 package controllers
 
+import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.{AuthAction, ClientHelper}
 import controllers.propertyDetails.{AddressLookupController, PropertyDetailsAddressController}
 import controllers.reliefs.ChooseReliefsController
 import forms.AtedForms.returnTypeForm
+import javax.inject.Inject
 import models.ReturnType
-import play.api.Play.current
-import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{DelegationService, SummaryReturnsService}
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.AtedConstants._
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-trait ReturnTypeController extends BackLinkController
-  with AuthAction with ClientHelper {
+class ReturnTypeController @Inject()(mcc: MessagesControllerComponents,
+                                     authAction: AuthAction,
+                                     summaryReturnService: SummaryReturnsService,
+                                     addressLookupController: AddressLookupController,
+                                     propertyDetailsAddressController: PropertyDetailsAddressController,
+                                     chooseReliefsController: ChooseReliefsController,
+                                     val dataCacheConnector: DataCacheConnector,
+                                     val backLinkCacheConnector: BackLinkCacheConnector)
+                                    (implicit val appConfig: ApplicationConfig)
 
-  def summaryReturnService: SummaryReturnsService
+
+  extends FrontendController(mcc) with BackLinkController with ClientHelper {
+
+  val controllerId: String = "ReturnTypeController"
+  implicit val ec : ExecutionContext = mcc.executionContext
 
   def view(periodKey: Int): Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         currentBackLink.flatMap(backLink =>
           dataCacheConnector.fetchAndGetFormData[ReturnType](RetrieveReturnTypeFormId) map {
@@ -49,7 +61,7 @@ trait ReturnTypeController extends BackLinkController
   }
 
   def submit(periodKey: Int): Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         returnTypeForm.bindFromRequest.fold(
           formWithError =>
@@ -62,22 +74,22 @@ trait ReturnTypeController extends BackLinkController
             summaryReturnService.getPreviousSubmittedLiabilityDetails(periodKey).flatMap { pastReturns =>
               (returnTypeData.returnType, pastReturns) match {
                 case (Some("CR"), Nil) =>
-                  RedirectWithBackLink(
-                    AddressLookupController.controllerId,
+                  redirectWithBackLink(
+                    addressLookupController.controllerId,
                     controllers.propertyDetails.routes.AddressLookupController.view(None, periodKey),
                     returnUrl,
-                    List(PropertyDetailsAddressController.controllerId)
+                    List(propertyDetailsAddressController.controllerId)
                   )
                 case (Some("CR"), _) =>
-                  RedirectWithBackLink(
-                    AddressLookupController.controllerId,
+                  redirectWithBackLink(
+                    addressLookupController.controllerId,
                     controllers.routes.ExistingReturnQuestionController.view(periodKey, returnType = "charge"),
                     returnUrl,
-                    List(PropertyDetailsAddressController.controllerId)
+                    List(propertyDetailsAddressController.controllerId)
                   )
                 case (Some("RR"), _) =>
-                  RedirectWithBackLink(
-                    ChooseReliefsController.controllerId,
+                  redirectWithBackLink(
+                    chooseReliefsController.controllerId,
                     controllers.reliefs.routes.ChooseReliefsController.view(periodKey),
                     returnUrl
                   )
@@ -89,12 +101,4 @@ trait ReturnTypeController extends BackLinkController
       }
     }
   }
-}
-
-object ReturnTypeController extends ReturnTypeController {
-  val delegationService: DelegationService = DelegationService
-  val dataCacheConnector: DataCacheConnector = DataCacheConnector
-  val summaryReturnService: SummaryReturnsService = SummaryReturnsService
-  override val controllerId: String = "ReturnTypeController"
-  override val backLinkCacheConnector: BackLinkCacheConnector = BackLinkCacheConnector
 }

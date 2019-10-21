@@ -16,33 +16,30 @@
 
 package controllers
 
+import config.ApplicationConfig
 import connectors.{AgentClientMandateFrontendConnector, DataCacheConnector}
 import controllers.auth.AuthAction
+import javax.inject.Inject
 import play.api.Logger
-import play.api.Play.current
-import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, AnyContent}
-import services.{DelegationService, DetailsService, SubscriptionDataService, SummaryReturnsService}
-import uk.gov.hmrc.auth.core.AuthorisationException
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import services.{DetailsService, SubscriptionDataService, SummaryReturnsService}
 import uk.gov.hmrc.http.ForbiddenException
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-trait AccountSummaryController extends AtedBaseController with AuthAction {
-
-  def summaryReturnsService: SummaryReturnsService
-
-  def subscriptionDataService: SubscriptionDataService
-
-  def mandateFrontendConnector: AgentClientMandateFrontendConnector
-
-  def detailsService: DetailsService
-
-  def dataCacheConnector: DataCacheConnector
-
+class AccountSummaryController @Inject()(mcc: MessagesControllerComponents,
+                                         authAction: AuthAction,
+                                         summaryReturnsService: SummaryReturnsService,
+                                         subscriptionDataService: SubscriptionDataService,
+                                         mandateFrontendConnector: AgentClientMandateFrontendConnector,
+                                         detailsService: DetailsService,
+                                         dataCacheConnector: DataCacheConnector)
+                                        (implicit val appConfig: ApplicationConfig)
+  extends FrontendController(mcc) {
 
   def view(): Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       for {
         _ <- dataCacheConnector.clearCache()
         allReturns <- summaryReturnsService.getSummaryReturns
@@ -55,19 +52,9 @@ trait AccountSummaryController extends AtedBaseController with AuthAction {
         Ok(views.html.accountSummary(allReturns, correspondenceAddress, organisationName, clientBannerPartial.successfulContentOrEmpty))
       }
     } recover {
-      case fe: ForbiddenException     =>
+      case _: ForbiddenException     =>
         Logger.warn("[AccountSummaryController][view] Forbidden exception")
-        unauthorisedUrl()
+        authAction.unauthorisedUrl()
     }
   }
-
-}
-
-object AccountSummaryController extends AccountSummaryController {
-  val delegationService: DelegationService = DelegationService
-  val summaryReturnsService: SummaryReturnsService = SummaryReturnsService
-  val subscriptionDataService: SubscriptionDataService = SubscriptionDataService
-  val mandateFrontendConnector: AgentClientMandateFrontendConnector = AgentClientMandateFrontendConnector
-  val detailsService: DetailsService = DetailsService
-  val dataCacheConnector: DataCacheConnector = DataCacheConnector
 }

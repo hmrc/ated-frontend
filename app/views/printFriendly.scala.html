@@ -15,16 +15,16 @@
  *@
 
 @import config.ApplicationConfig
-@(title: String)(content: Html)(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent])
+@(title: String)(content: Html)(implicit authContext: StandardAuthRetrievals, appConfig: ApplicationConfig, messages: Messages, request: Request[AnyContent])
 
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
     <title>@title</title>
-    <link href="@{s"${ApplicationConfig.assetsPrefix}/stylesheets/application.min.css"}" rel="stylesheet"  type="text/css">
-    <link href="@controllers.routes.AssetsController.at("stylesheets/main.css")" rel="stylesheet"  type="text/css">
-    <link href="@controllers.routes.AssetsController.at("stylesheets/print-friendly.css")" rel="stylesheet"  type="text/css">
+    <link href="@{s"${appConfig.assetsPrefix}/stylesheets/application.min.css"}" rel="stylesheet"  type="text/css">
+    <link href="@controllers.routes.Assets.versioned("stylesheets/main.css")" rel="stylesheet"  type="text/css">
+    <link href="@controllers.routes.Assets.versioned("stylesheets/print-friendly.css")" rel="stylesheet"  type="text/css">
     <link rel="shortcut icon" href="@controllers.template.routes.Template.at("images/favicon.ico")" type="image/x-icon" />
     <link href="@controllers.template.routes.Template.at("stylesheets/fonts.css")" media="all" rel="stylesheet" type="text/css" />
   </head>

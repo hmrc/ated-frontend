@@ -17,16 +17,16 @@
 package services
 
 import connectors.{AddressLookupConnector, DataCacheConnector}
+import javax.inject.Inject
 import models._
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-trait AddressLookupService {
+class AddressLookupService @Inject()(addressLookupConnector: AddressLookupConnector,
+                                     dataCacheConnector: DataCacheConnector) {
 
-  val addressLookupConnector: AddressLookupConnector
-  val dataCacheConnector: DataCacheConnector
   val ADDRESS_LOOKUP_SEARCH_RESULTS = "ADDRESS-LOOKUP-SEARCH-RESULTS"
 
   def find(searchCriteria: AddressLookup)(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[AddressSearchResults] = {
@@ -74,8 +74,4 @@ trait AddressLookupService {
   private def storeSearchResults(searchResults: AddressSearchResults)(implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[AddressSearchResults] = {
     dataCacheConnector.saveFormData[AddressSearchResults](ADDRESS_LOOKUP_SEARCH_RESULTS, searchResults)
   }
-}
-object AddressLookupService extends AddressLookupService {
-  override val addressLookupConnector = AddressLookupConnector
-  override val dataCacheConnector = DataCacheConnector
 }

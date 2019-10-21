@@ -16,17 +16,20 @@
 
 package views.html.subscriptionData
 
+import config.ApplicationConfig
 import models._
 import org.scalatest.mockito.MockitoSugar
 import play.twirl.api.Html
-import uk.gov.hmrc.auth.core.AffinityGroup
+import uk.gov.hmrc.auth.core.retrieve.~
+import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
 import utils.MockAuthUtil
 import utils.viewHelpers.AtedViewSpec
 
 class CompanyDetailsSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil {
 
-  implicit val authContext = organisationStandardRetrievals
-  val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+  implicit val authContext: StandardAuthRetrievals = organisationStandardRetrievals
+  implicit val appConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
+  val authMock: Enrolments ~ Some[AffinityGroup] ~ Some[String] = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
   setAuthMocks(authMock)
 
   "Company Details view" must {
@@ -36,13 +39,8 @@ class CompanyDetailsSpec extends AtedViewSpec with MockitoSugar with MockAuthUti
     behave like pageWithBackLink
   }
 
-
   "Company Details page" must {
-
-
     "display company details of the user" when {
-      "user visits the page with email set as preference and an editable address"
-
       "display name label correctly" in {
         doc must haveElementWithIdAndText(messages("ated.company-details.name"), "company-name-header")
       }
@@ -124,7 +122,7 @@ class CompanyDetailsSpec extends AtedViewSpec with MockitoSugar with MockAuthUti
   val addressDetails = AddressDetails(addressType = "", addressLine1 = "some street", addressLine2 = "some area", addressLine3 = Some("some county"), postalCode = Some("ne981zz"), countryCode = "GB")
   val contactDetails = ContactDetails(emailAddress = Some("a@b.c"))
   val correspondence = Address(Some("name1"), Some("name2"), addressDetails = addressDetails, contactDetails = Some(contactDetails))
-  val businessPartnerDetails = RegisteredDetails(false, "testName",
+  val businessPartnerDetails = RegisteredDetails(isEditable = false, "testName",
     RegisteredAddressDetails(addressLine1 = "bpline1",
       addressLine2 = "bpline2",
       addressLine3 = Some("bpline3"),
@@ -132,7 +130,7 @@ class CompanyDetailsSpec extends AtedViewSpec with MockitoSugar with MockAuthUti
       postalCode = Some("postCode"),
       countryCode = "GB"))
 
-  val businessPartnerDetailsEditable = RegisteredDetails(true, "testName",
+  val businessPartnerDetailsEditable = RegisteredDetails(isEditable = true, "testName",
     RegisteredAddressDetails(addressLine1 = "bpline1",
       addressLine2 = "bpline2",
       addressLine3 = Some("bpline3"),
@@ -142,5 +140,6 @@ class CompanyDetailsSpec extends AtedViewSpec with MockitoSugar with MockAuthUti
 
 
 
-  override def view: Html = views.html.subcriptionData.companyDetails(Some(correspondence), Some(businessPartnerDetails), true, None, None, Some("http://backLink"))
+  override def view: Html = views.html.subcriptionData.companyDetails(Some(correspondence),
+    Some(businessPartnerDetails), emailConsent = true, None, None, Some("http://backLink"))
 }

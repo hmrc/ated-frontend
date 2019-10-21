@@ -16,27 +16,38 @@
 
 package controllers.propertyDetails
 
+import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms
 import forms.PropertyDetailsForms._
-import play.api.Play.current
-import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, AnyContent}
+import javax.inject.Inject
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{DelegationService, PropertyDetailsCacheSuccessResponse, PropertyDetailsService}
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-trait PeriodInReliefDatesController extends PropertyDetailsHelpers with ClientHelper with AuthAction {
+class PeriodInReliefDatesController @Inject()(mcc: MessagesControllerComponents,
+                                              authAction: AuthAction,
+                                              val dataCacheConnector: DataCacheConnector,
+                                              val propertyDetailsService: PropertyDetailsService,
+                                              val backLinkCacheConnector: BackLinkCacheConnector)
+                                             (implicit val appConfig: ApplicationConfig)
+
+  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper {
+
+  implicit val ec: ExecutionContext = mcc.executionContext
+  val controllerId: String = "PeriodInReliefDatesController"
 
   def add(id: String, periodKey: Int) : Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       ensureClientContext(Future.successful(Ok(views.html.propertyDetails.periodInReliefDates(id,
         periodKey, periodInReliefDatesForm, getBackLink(id, periodKey)))))
     }
   }
   def save(id: String, periodKey: Int) : Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         propertyDetailsCacheResponse(id) {
           case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
@@ -62,10 +73,4 @@ trait PeriodInReliefDatesController extends PropertyDetailsHelpers with ClientHe
   }
 }
 
-object PeriodInReliefDatesController extends PeriodInReliefDatesController {
-  val delegationService: DelegationService = DelegationService
-  val dataCacheConnector: DataCacheConnector = DataCacheConnector
-  val propertyDetailsService:PropertyDetailsService = PropertyDetailsService
-  override val controllerId: String = "PeriodInReliefDatesController"
-  override val backLinkCacheConnector: BackLinkCacheConnector = BackLinkCacheConnector
-}
+

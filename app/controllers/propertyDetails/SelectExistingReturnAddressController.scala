@@ -16,33 +16,45 @@
 
 package controllers.propertyDetails
 
+import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.AddressLookupForms.addressSelectedForm
+import javax.inject.Inject
 import play.api.Logger
-import play.api.Play.current
-import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{DelegationService, FormBundleReturnsService, PropertyDetailsService, SummaryReturnsService}
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.AtedConstants._
+import scala.concurrent.{ExecutionContext, Future}
 
-import scala.concurrent.Future
+class SelectExistingReturnAddressController @Inject()(mcc: MessagesControllerComponents,
+                                                      authAction: AuthAction,
+                                                      summaryReturnService: SummaryReturnsService,
+                                                      propertyDetailsAddressController: PropertyDetailsAddressController,
+                                                      formBundleReturnService: FormBundleReturnsService,
+                                                      val propertyDetailsService: PropertyDetailsService,
+                                                      val dataCacheConnector: DataCacheConnector,
+                                                      val backLinkCacheConnector: BackLinkCacheConnector)
+                                                     (implicit val appConfig: ApplicationConfig)
 
-trait SelectExistingReturnAddressController extends PropertyDetailsHelpers with ClientHelper with AuthAction{
+  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper {
 
-  def summaryReturnService: SummaryReturnsService
+  implicit val ec: ExecutionContext = mcc.executionContext
+  val controllerId = "SelectExistingReturnAddressController"
 
-  def formBundleReturnService: FormBundleReturnsService
 
   def view(periodKey: Int, returnType: String): Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         for {
           previousReturns <- summaryReturnService.retrieveCachedPreviousReturnAddressList
         } yield {
           previousReturns match {
-            case Some(pr) => Ok(views.html.propertyDetails.selectPreviousReturn(periodKey, returnType, addressSelectedForm, pr, getBackLink(periodKey, returnType)))
-            case None => Ok(views.html.propertyDetails.selectPreviousReturn(periodKey, returnType, addressSelectedForm, Nil, getBackLink(periodKey, returnType)))
+            case Some(pr) => Ok(views.html.propertyDetails.selectPreviousReturn
+            (periodKey, returnType, addressSelectedForm, pr, getBackLink(periodKey, returnType)))
+            case None => Ok(views.html.propertyDetails.selectPreviousReturn
+            (periodKey, returnType, addressSelectedForm, Nil, getBackLink(periodKey, returnType)))
           }
         }
       }
@@ -50,7 +62,7 @@ trait SelectExistingReturnAddressController extends PropertyDetailsHelpers with 
   }
 
   def continue(periodKey: Int, returnType: String): Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         addressSelectedForm.bindFromRequest.fold(
           formWithError => {
@@ -64,10 +76,10 @@ trait SelectExistingReturnAddressController extends PropertyDetailsHelpers with 
             for {
               formBundleReturnOpt <- formBundleReturnService.getFormBundleReturns(formBundleNum)
               result <- formBundleReturnOpt match {
-                case Some(formBundleReturn) =>
-                  dataCacheConnector.saveFormData[Boolean](SelectedPreviousReturn, true).flatMap { saved =>
-                    RedirectWithBackLink(
-                      PropertyDetailsAddressController.controllerId,
+                case Some(_) =>
+                  dataCacheConnector.saveFormData[Boolean](SelectedPreviousReturn, true).flatMap { _ =>
+                    redirectWithBackLink(
+                      propertyDetailsAddressController.controllerId,
                       controllers.propertyDetails.routes.PropertyDetailsAddressController.editSubmittedReturn(formBundleNum),
                       getBackLink(periodKey, returnType))
                   }
@@ -85,15 +97,4 @@ trait SelectExistingReturnAddressController extends PropertyDetailsHelpers with 
   private def getBackLink(periodKey: Int, returnType: String) = {
     Some(controllers.routes.ExistingReturnQuestionController.view(periodKey = periodKey, returnType = returnType).url)
   }
-}
-
-
-object SelectExistingReturnAddressController extends SelectExistingReturnAddressController {
-  val delegationService: DelegationService = DelegationService
-  val formBundleReturnService: FormBundleReturnsService = FormBundleReturnsService
-  val propertyDetailsService: PropertyDetailsService = PropertyDetailsService
-  val dataCacheConnector: DataCacheConnector = DataCacheConnector
-  val summaryReturnService: SummaryReturnsService = SummaryReturnsService
-  override val controllerId = "SelectExistingReturnAddressController"
-  override val backLinkCacheConnector: BackLinkCacheConnector = BackLinkCacheConnector
 }

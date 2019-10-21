@@ -27,6 +27,8 @@ import utils.AtedConstants._
 object PeriodUtils {
   implicit val localDateOrdering: Ordering[LocalDate] = Ordering.by(_.toDate.getTime)
 
+  val lowestBound = 2012
+
   def calculatePeriod(date: LocalDate = new LocalDate(), month:Int = 4): Int = {
     if (date.getMonthOfYear < month) date.minusYears(1).getYear
     else date.getYear
@@ -57,8 +59,8 @@ object PeriodUtils {
   }
 
 
-  lazy val liabilityReturnTypeDesc = Messages("ated.property-details-period.liability.return-type")
-  lazy val disposeReturnTypeDesc = Messages("ated.property-details-period.dispose.return-type")
+  lazy val liabilityReturnTypeDesc = "ated.property-details-period.liability.return-type"
+  lazy val disposeReturnTypeDesc = "ated.property-details-period.dispose.return-type"
 
   def getDisplayPeriods(propertyDetails: Option[PropertyDetailsPeriod]): Seq[LineItem] = {
 
@@ -158,17 +160,17 @@ object PeriodUtils {
 
   def getPeriodValueMessage(index: Int, size: Int): String = {
     (index, size) match {
-      case (_, 1) => Messages("ated.form-bundle.view.return.value.only")
-      case (0, _) => Messages("ated.form-bundle.view.return.value.initial")
-      case _ =>  Messages("ated.form-bundle.view.return.value.changed")
+      case (_, 1) => "ated.form-bundle.view.return.value.only"
+      case (0, _) => "ated.form-bundle.view.return.value.initial"
+      case _ =>  "ated.form-bundle.view.return.value.changed"
     }
   }
 
   def getPeriodValueDateMessage(index: Int, size: Int): String = {
     (index, size) match {
-      case (_, 1) => Messages("ated.form-bundle.view.return.date.valuation.only")
-      case (0, _) => Messages("ated.form-bundle.view.return.date.valuation.initial")
-      case _ =>  Messages("ated.form-bundle.view.return.date.valuation.changed")
+      case (_, 1) => "ated.form-bundle.view.return.date.valuation.only"
+      case (0, _) => "ated.form-bundle.view.return.date.valuation.initial"
+      case _ =>  "ated.form-bundle.view.return.date.valuation.changed"
     }
   }
 
@@ -176,12 +178,10 @@ object PeriodUtils {
 
   def isBlank(str: String): Boolean = str.isEmpty
 
-/* function needs to be updated after every five years according to busines logic*/
-  def getValuationYear(periodKey : Int): String = {
-    periodKey match {
-      case p if periodKey >= 2018 && periodKey <= 2023 => "2017"
-      case p if periodKey <= 2017 => "2012"
-      case _ => throw new RuntimeException("[PeriodUtils][getValuationYear] - Incorrect period")
+  def calculateLowerTaxYearBoundary(periodKey: Int): LocalDate = {
+    val year = if (periodKey <= lowestBound) lowestBound else {
+      lowestBound + (5 * ((periodKey - lowestBound - 1) / 5).floor.toInt)
     }
+    LocalDate.parse(s"$year-4-1")
   }
 }

@@ -16,21 +16,25 @@
 
 package views.propertyDetails
 
+import config.ApplicationConfig
 import forms.PropertyDetailsForms._
-import models.PeriodChooseRelief
+import models.{PeriodChooseRelief, StandardAuthRetrievals}
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
 import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
-import org.scalatestplus.play.OneServerPerSuite
+import org.scalatestplus.play.guice.GuiceOneAppPerSuite
+import play.api.i18n.{Messages, MessagesApi}
 import play.api.test.FakeRequest
 import utils.{MockAuthUtil, ReliefConstants}
 
-class periodChooseReliefSpec extends FeatureSpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach with GivenWhenThen with ReliefConstants with MockAuthUtil{
+class periodChooseReliefSpec extends FeatureSpec with GuiceOneAppPerSuite with MockitoSugar
+  with BeforeAndAfterEach with GivenWhenThen with ReliefConstants with MockAuthUtil {
 
   implicit val request = FakeRequest()
-  implicit val messages : play.api.i18n.Messages = play.api.i18n.Messages.Implicits.applicationMessages
-  implicit lazy val authContext = organisationStandardRetrievals
+  implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
+  implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
+  implicit val appConfig: ApplicationConfig = mock[ApplicationConfig]
 
   feature("The user can add a period that the property is in relief") {
 
@@ -86,7 +90,8 @@ class periodChooseReliefSpec extends FeatureSpec with OneServerPerSuite with Moc
 
       val periodStartDate = new LocalDate("2015-01-01")
       val periodEndDate = new LocalDate("2016-02-02")
-      val html = views.html.propertyDetails.periodChooseRelief("1", 2015, periodChooseReliefForm.fill(PeriodChooseRelief(RentalBusinessDesc)), Some("http://backLink"))
+      val html = views.html.propertyDetails.periodChooseRelief("1",
+        2015, periodChooseReliefForm.fill(PeriodChooseRelief(RentalBusinessDesc)), Some("http://backLink"))
 
       val document = Jsoup.parse(html.toString())
 

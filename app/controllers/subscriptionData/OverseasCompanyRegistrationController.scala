@@ -16,49 +16,52 @@
 
 package controllers.subscriptionData
 
-import controllers.AtedBaseController
+import config.ApplicationConfig
 import controllers.auth.AuthAction
 import forms.OverseasCompanyRegistrationForm._
+import javax.inject.Inject
 import models.{Identification, OverseasCompanyRegistration}
-import play.api.Play.current
-import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, AnyContent}
+import play.api.Environment
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{DelegationService, SubscriptionDataService}
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.CountryCodeUtils
 
-import scala.concurrent.Future
-
-object OverseasCompanyRegistrationController extends OverseasCompanyRegistrationController {
-  val subscriptionDataService: SubscriptionDataService = SubscriptionDataService
-  val delegationService: DelegationService = DelegationService
-}
+import scala.concurrent.{ExecutionContext, Future}
 
 
-trait OverseasCompanyRegistrationController extends AtedBaseController with AuthAction {
+class OverseasCompanyRegistrationController @Inject()(mcc: MessagesControllerComponents,
+                                                      authAction: AuthAction,
+                                                      subscriptionDataService: SubscriptionDataService,
+                                                      val environment: Environment)
+                                                     (implicit val appConfig: ApplicationConfig)
+  extends FrontendController(mcc) with CountryCodeUtils {
 
-  def subscriptionDataService: SubscriptionDataService
+  implicit val ec : ExecutionContext = mcc.executionContext
 
   def edit: Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       for {
         overseasCompanyRegistration <- subscriptionDataService.getOverseasCompanyRegistration
       } yield {
-        val result = OverseasCompanyRegistration(overseasCompanyRegistration.map(_.idNumber), overseasCompanyRegistration.map(_.issuingInstitution), overseasCompanyRegistration.map(_.issuingCountryCode))
+        val result = OverseasCompanyRegistration(overseasCompanyRegistration
+          .map(_.idNumber), overseasCompanyRegistration.map(_.issuingInstitution), overseasCompanyRegistration.map(_.issuingCountryCode))
         Ok(views.html.subcriptionData.overseasCompanyRegistration
-        (overseasCompanyRegistrationForm.fill(result), CountryCodeUtils.getIsoCodeTupleList, getBackLink()))
+        (overseasCompanyRegistrationForm.fill(result), getIsoCodeTupleList, getBackLink()))
       }
     }
   }
 
   def submit: Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       overseasCompanyRegistrationForm.bindFromRequest().fold(
         formWithErrors =>
           Future.successful(BadRequest(views.html.subcriptionData.overseasCompanyRegistration
-          (formWithErrors, CountryCodeUtils.getIsoCodeTupleList, getBackLink()))),
+          (formWithErrors, getIsoCodeTupleList, getBackLink()))),
         data => {
           for {
-            _ <- subscriptionDataService.updateOverseasCompanyRegistration(Identification(data.businessUniqueId.getOrElse(""),data.issuingInstitution.getOrElse(""), data.countryCode.getOrElse("")))
+            _ <- subscriptionDataService.updateOverseasCompanyRegistration(Identification(data.businessUniqueId
+              .getOrElse(""),data.issuingInstitution.getOrElse(""), data.countryCode.getOrElse("")))
           } yield {
             Redirect(controllers.subscriptionData.routes.CompanyDetailsController.view())
           }
@@ -67,7 +70,7 @@ trait OverseasCompanyRegistrationController extends AtedBaseController with Auth
     }
   }
 
-  private def getBackLink() = {
+  private def getBackLink(): Some[String] = {
     Some(routes.CompanyDetailsController.view().url)
   }
 }

@@ -19,7 +19,10 @@ package controllers.editLiability
 import java.util.UUID
 
 import builders.SessionBuilder
+import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
+import controllers.auth.AuthAction
+import controllers.propertyDetails.{AddressLookupController, PropertyDetailsAddressController}
 import org.jsoup.Jsoup
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -28,45 +31,85 @@ import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.libs.json.Json
-import play.api.mvc.{AnyContentAsJson, Result}
+import play.api.mvc.{AnyContentAsJson, MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.DelegationService
-import uk.gov.hmrc.auth.core.{AffinityGroup, PlayAuthConnector}
+import uk.gov.hmrc.auth.core.AffinityGroup
+import uk.gov.hmrc.http.HeaderCarrier
 import utils.{AtedConstants, MockAuthUtil}
 
 import scala.concurrent.Future
 
 class EditLiabilityTypeControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with MockAuthUtil {
 
+  implicit val mockAppConfig: ApplicationConfig = mock[ApplicationConfig]
+  implicit lazy val hc: HeaderCarrier = HeaderCarrier()
 
-  val mockBackLinkCache: BackLinkCacheConnector = mock[BackLinkCacheConnector]
+  val mockMcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
+  val mockPropertyDetailsAddressController: PropertyDetailsAddressController = mock[PropertyDetailsAddressController]
+  val mockAddressLookupController: AddressLookupController = mock[AddressLookupController]
   val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
+  val mockBackLinkCacheConnector: BackLinkCacheConnector = mock[BackLinkCacheConnector]
+  val mockDisposePropertyController: DisposePropertyController = mock[DisposePropertyController]
 
-  object TestEditLiabilityTypeController extends EditLiabilityTypeController {
-    override val authConnector: PlayAuthConnector = mockAuthConnector
-    override val delegationService: DelegationService = mockDelegationService
-    override val controllerId: String = "controllerId"
-    override val backLinkCacheConnector: BackLinkCacheConnector = mockBackLinkCache
-    override val dataCacheConnector: DataCacheConnector = mockDataCacheConnector
+class Setup {
 
-  }
+  val mockAuthAction: AuthAction = new AuthAction(
+    mockAppConfig,
+    mockDelegationService,
+    mockAuthConnector
+  )
+
+  val testEditLiabilityTypeController:EditLiabilityTypeController = new EditLiabilityTypeController (
+    mockMcc,
+    mockPropertyDetailsAddressController,
+    mockAddressLookupController,
+    mockAuthAction,
+    mockDisposePropertyController,
+    mockDataCacheConnector,
+    mockBackLinkCacheConnector
+  )
+
+    def editLiabilityWithAuthorisedUser(test: Future[Result] => Any) {
+      val periodKey: Int = 2015
+      val userId = s"user-${UUID.randomUUID}"
+      val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+      setAuthMocks(authMock)
+      when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
+      when(mockBackLinkCacheConnector.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
+      val result = testEditLiabilityTypeController.editLiability("12345678901", periodKey, editAllowed = true)
+        .apply(SessionBuilder.buildRequestWithSession(userId))
+      test(result)
+    }
+
+    def continueWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsJson])(test: Future[Result] => Any) {
+      val periodKey: Int = 2015
+      val userId = s"user-${UUID.randomUUID}"
+      val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+      setAuthMocks(authMock)
+      when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
+      val result = testEditLiabilityTypeController.continue("12345678901", periodKey, editAllowed = true)
+        .apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
+      test(result)
+    }
+}
 
   override def beforeEach: Unit = {
-    reset(mockAuthConnector)
-    reset(mockDelegationService)
-    reset(mockBackLinkCache)
+
+    reset(mockPropertyDetailsAddressController)
+    reset(mockAddressLookupController)
+reset(mockDelegationService)
+    reset(mockDataCacheConnector)
+    reset(mockBackLinkCacheConnector)
+    reset(mockDisposePropertyController)
   }
 
   "EditLiabilityTypeController" must {
-
-    "use correct DelegationService" in {
-      EditLiabilityTypeController.delegationService must be(DelegationService)
-    }
-
     "editLiability" must {
 
-      "take user to edit liability page" in {
+      "take user to edit liability page" in new Setup {
         editLiabilityWithAuthorisedUser {
           result =>
             status(result) must be(OK)
@@ -79,36 +122,36 @@ class EditLiabilityTypeControllerSpec extends PlaySpec with GuiceOneServerPerSui
 
     "continue" must {
 
-      "if user doesn't select any radio button, show form error with bad_request" in {
-        val fakeRequest = FakeRequest().withJsonBody(Json.parse("""{"editLiabilityType": ""}"""))
-        when(mockBackLinkCache.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
+      "if user doesn't select any radio button, show form error with bad_request" in new Setup {
+        val fakeRequest: FakeRequest[AnyContentAsJson] = FakeRequest().withJsonBody(Json.parse("""{"editLiabilityType": ""}"""))
+        when(mockBackLinkCacheConnector.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
         continueWithAuthorisedUser(fakeRequest) {
           result =>
             status(result) must be(BAD_REQUEST)
         }
       }
-      "if user select 'change return' any radio button, redirect to edit return page" in {
-        val fakeRequest = FakeRequest().withJsonBody(Json.parse("""{"editLiabilityType":"CR"}"""))
-        when(mockBackLinkCache.saveBackLink(Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
-        when(mockBackLinkCache.clearBackLinks(Matchers.any())(Matchers.any())).thenReturn(Future.successful(Nil))
+      "if user select 'change return' any radio button, redirect to edit return page" in new Setup {
+        val fakeRequest: FakeRequest[AnyContentAsJson] = FakeRequest().withJsonBody(Json.parse("""{"editLiabilityType":"CR"}"""))
+        when(mockBackLinkCacheConnector.saveBackLink(Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
+        when(mockBackLinkCacheConnector.clearBackLinks(Matchers.any())(Matchers.any())).thenReturn(Future.successful(Nil))
         continueWithAuthorisedUser(fakeRequest) {
           result =>
             status(result) must be(SEE_OTHER)
             redirectLocation(result) must be(Some("/ated/liability/12345678901/change/address"))
         }
       }
-      "if user select 'dispose property' any radio button, redirect to dispose property page" in {
-        val fakeRequest = FakeRequest().withJsonBody(Json.parse("""{"editLiabilityType":"DP"}"""))
-        when(mockBackLinkCache.saveBackLink(Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
+      "if user select 'dispose property' any radio button, redirect to dispose property page" in new Setup {
+        val fakeRequest: FakeRequest[AnyContentAsJson] = FakeRequest().withJsonBody(Json.parse("""{"editLiabilityType":"DP"}"""))
+        when(mockBackLinkCacheConnector.saveBackLink(Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
         continueWithAuthorisedUser(fakeRequest) {
           result =>
             status(result) must be(SEE_OTHER)
             redirectLocation(result) must be(Some("/ated/liability/12345678901/dispose"))
         }
       }
-      "for anything else, redirect to edit liability page" in {
-        val fakeRequest = FakeRequest().withJsonBody(Json.parse("""{"editLiabilityType":"X"}"""))
-        when(mockBackLinkCache.saveBackLink(Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
+      "for anything else, redirect to edit liability page" in new Setup {
+        val fakeRequest: FakeRequest[AnyContentAsJson] = FakeRequest().withJsonBody(Json.parse("""{"editLiabilityType":"X"}"""))
+        when(mockBackLinkCacheConnector.saveBackLink(Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
         continueWithAuthorisedUser(fakeRequest) {
           result =>
             status(result) must be(SEE_OTHER)
@@ -117,30 +160,4 @@ class EditLiabilityTypeControllerSpec extends PlaySpec with GuiceOneServerPerSui
       }
     }
   }
-
-  def editLiabilityWithAuthorisedUser(test: Future[Result] => Any) {
-    val periodKey: Int = 2015
-    val userId = s"user-${UUID.randomUUID}"
-    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
-    setAuthMocks(authMock)
-    when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
-      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-    when(mockBackLinkCache.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
-    val result = TestEditLiabilityTypeController.editLiability("12345678901", periodKey, editAllowed = true)
-      .apply(SessionBuilder.buildRequestWithSession(userId))
-    test(result)
-  }
-
-  def continueWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsJson])(test: Future[Result] => Any) {
-    val periodKey: Int = 2015
-    val userId = s"user-${UUID.randomUUID}"
-    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
-    setAuthMocks(authMock)
-    when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
-      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-    val result = TestEditLiabilityTypeController.continue("12345678901", periodKey, editAllowed = true)
-      .apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
-    test(result)
-  }
-
 }

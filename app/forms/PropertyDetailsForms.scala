@@ -18,16 +18,16 @@ package forms
 
 import forms.AtedForms.validatePostCodeFormat
 import models._
-import play.api.Play.current
 import play.api.data.Forms._
+import play.api.data.validation.Constraint
 import play.api.data.{Form, FormError, Mapping}
-import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
 import uk.gov.hmrc.play.mappers.DateTuple._
 import utils.AtedUtils
+import uk.gov.hmrc.play.mappers.StopOnFirstFail
 
 import scala.annotation.tailrec
 import scala.util.Try
+import scala.util.matching.Regex
 
 object PropertyDetailsForms {
 
@@ -46,7 +46,7 @@ object PropertyDetailsForms {
   val lanLength = 4
   val minimumPropertyValue = 500001L
   val maximumPropertyValue = 9999999999999L
-  val emailRegex =
+  val emailRegex: Regex =
     """^(?!\.)("([^"\r\\]|\\["\r\\])*"|([-a-zA-Z0-9!#$%&'*+/=?^_`{|}~]|(?<!\.)\.)*)
       |(?<!\.)@[a-zA-Z0-9][\w\.-]*[a-zA-Z0-9]\.[a-zA-Z][a-zA-Z\.]*[a-zA-Z]$""".r
   val supportingInfoRegex = """^[A-Za-z0-9\s\.\,\']*$"""
@@ -57,53 +57,50 @@ object PropertyDetailsForms {
   val propertyDetailsAddressForm = Form(
     mapping(
       "line_1" -> text
-        .verifying(Messages("ated.error.mandatory", Messages("ated.address.line-1")), x => AtedForms.checkBlankFieldLength(x))
-        .verifying(Messages("ated.error.address.line-1", Messages("ated.address.line-1")),
-          x => x.isEmpty || (x.nonEmpty && x.length <= addressLineLength))
-        .verifying(Messages("ated.error.address.line-1.format", Messages("ated.address.line-1")), x => AtedForms.validateAddressLine(Some(x))),
+        .verifying("ated.address.line-1", x => AtedForms.checkBlankFieldLength(x))
+        .verifying("ated.error.address.line-1", x => x.isEmpty || (x.nonEmpty && x.length <= addressLineLength))
+        .verifying("ated.error.address.line-1.format", x => AtedForms.validateAddressLine(Some(x))),
       "line_2" -> text
-        .verifying(Messages("ated.error.mandatory", Messages("ated.address.line-2")), x => AtedForms.checkBlankFieldLength(x))
-        .verifying(Messages("ated.error.address.line-2", Messages("ated.address.line-2")),
-          x => x.isEmpty || (x.nonEmpty && x.length <= addressLineLength))
-        .verifying(Messages("ated.error.address.line-2.format", Messages("ated.address.line-2")), x => AtedForms.validateAddressLine(Some(x))),
+        .verifying("ated.address.line-2", x => AtedForms.checkBlankFieldLength(x))
+        .verifying("ated.error.address.line-2", x => x.isEmpty || (x.nonEmpty && x.length <= addressLineLength))
+        .verifying("ated.error.address.line-2.format", x => AtedForms.validateAddressLine(Some(x))),
       "line_3" -> optional(text)
-        .verifying(Messages("ated.error.address.line-3", Messages("ated.address.line-3")),
-          x => AtedForms.checkFieldLengthIfPopulated(x, addressLineLength))
-        .verifying(Messages("ated.error.address.line-3.format", Messages("ated.address.line-3")), x => AtedForms.validateAddressLine(x)),
-      "line_4" -> optional(text)
-        .verifying(Messages("ated.error.address.line-4", Messages("ated.address.line-4")),
-          x => AtedForms.checkFieldLengthIfPopulated(x, addressLineLength))
-        .verifying(Messages("ated.error.address.line-4.format", Messages("ated.address.line-4")), x => AtedForms.validateAddressLine(x)),
+        .verifying("ated.address.line-3", x => AtedForms.checkBlankFieldLength(x.toString))
+        .verifying("ated.error.address.line-3", x => AtedForms.checkFieldLengthIfPopulated(x, addressLineLength))
+        .verifying("ated.error.address.line-3.format", x => AtedForms.validateAddressLine(x)),
+    "line_4" -> optional(text)
+      .verifying("ated.address.line-4", x => AtedForms.checkBlankFieldLength(x.toString))
+      .verifying("ated.error.address.line-4", x => AtedForms.checkFieldLengthIfPopulated(x, addressLineLength))
+        .verifying("ated.error.address.line-4.format", x => AtedForms.validateAddressLine(x)),
       "postcode" -> optional(text)
-        .verifying(Messages("ated.error.address.postalcode.format", Messages("ated.address.postcode.field"), PostcodeLength),
-          x => validatePostCodeFormat(AtedUtils.formatPostCode(x)))
+        .verifying("ated.error.address.postalcode.format", x => validatePostCodeFormat(AtedUtils.formatPostCode(x)))
     )(PropertyDetailsAddress.apply)(PropertyDetailsAddress.unapply)
   )
 
   val propertyDetailsTitleForm = Form(
     mapping(
       "titleNumber" -> text
-        .verifying(Messages("ated.error.titleNumber", Messages("ated.error.titleNumber"), titleNumberLength),
-          x => x.isEmpty || (x.nonEmpty && x.replaceAll(" ", "").length <= titleNumberLength) )
-        .verifying(Messages("ated.error.titleNumber.invalid", Messages("ated.error.titleNumber")), x => x matches titleRegex)
+        .verifying("ated.error.titleNumber",
+          x => x.isEmpty || (x.nonEmpty && x.replaceAll(" ", "").length <= titleNumberLength))
+        .verifying("ated.error.titleNumber.invalid", x => x matches titleRegex)
     )(PropertyDetailsTitle.apply)(PropertyDetailsTitle.unapply)
   )
 
   val hasValueChangedForm = Form(
     mapping(
-      "hasValueChanged" -> optional(boolean).verifying(Messages("ated.change-property-value.hasValueChanged.error.non-selected"), a => a.isDefined)
+      "hasValueChanged" -> optional(boolean).verifying("ated.change-property-value.hasValueChanged.error.non-selected", a => a.isDefined)
     )(HasValueChanged.apply)(HasValueChanged.unapply)
   )
 
   val valueValidation: Mapping[Option[BigDecimal]] = propertyDetailsValueValidation
 
   val propertyDetailsAcquisitionForm = Form(
-    mapping("anAcquisition" -> optional(boolean).verifying(Messages("ated.property-details-value.anAcquisition.error-field-name"), x => x.isDefined)
+    mapping("anAcquisition" -> optional(boolean).verifying("ated.property-details-value.anAcquisition.error-field-name", x => x.isDefined)
     )(PropertyDetailsAcquisition.apply)(PropertyDetailsAcquisition.unapply))
 
   val propertyDetailsRevaluedForm = Form(
     mapping(
-      "isPropertyRevalued" -> optional(boolean).verifying(Messages("ated.property-details-value.isPropertyRevalued.error.non-selected"), x => x.isDefined),
+      "isPropertyRevalued" -> optional(boolean).verifying("ated.property-details-value.isPropertyRevalued.error.non-selected", x => x.isDefined),
       "revaluedValue" -> valueValidation,
       "revaluedDate" -> dateTuple,
       "partAcqDispDate" -> dateTuple
@@ -111,18 +108,18 @@ object PropertyDetailsForms {
 
   val propertyDetailsOwnedBeforeForm = Form(
     mapping(
-      "isOwnedBeforePolicyYear" -> optional(boolean).verifying(Messages("ated.property-details-value.isOwnedBeforeValuationYear.error.non-selected"), x => x.isDefined),
+      "isOwnedBeforePolicyYear" -> optional(boolean).verifying("ated.property-details-value.isOwnedBeforeValuationYear.error.non-selected", x => x.isDefined),
       "ownedBeforePolicyYearValue" -> valueValidation
     )(PropertyDetailsOwnedBefore.apply)(PropertyDetailsOwnedBefore.unapply))
 
   val propertyDetailsProfessionallyValuedForm = Form(
     mapping(
-      "isValuedByAgent" -> optional(boolean).verifying(Messages("ated.property-details-value.isValuedByAgent.error.non-selected"), x => x.isDefined)
+      "isValuedByAgent" -> optional(boolean).verifying("ated.property-details-value.isValuedByAgent.error.non-selected", x => x.isDefined)
     )(PropertyDetailsProfessionallyValued.apply)(PropertyDetailsProfessionallyValued.unapply))
 
   val propertyDetailsNewBuildForm = Form(
     mapping(
-      "isNewBuild" -> optional(boolean).verifying(Messages("ated.property-details-value.isNewBuild.error.non-selected"), x => x.isDefined),
+      "isNewBuild" -> optional(boolean).verifying("ated.property-details-value.isNewBuild.error.non-selected", x => x.isDefined),
       "newBuildValue" -> valueValidation,
       "newBuildDate" -> dateTuple,
       "localAuthRegDate" -> dateTuple,
@@ -133,16 +130,16 @@ object PropertyDetailsForms {
 
   val isFullTaxPeriodForm = Form(
     mapping(
-      "isFullPeriod" -> optional(boolean).verifying(Messages("ated.property-details-period.isFullPeriod.error-field-name"), x => x.isDefined)
+      "isFullPeriod" -> optional(boolean).verifying("ated.property-details-period.isFullPeriod.error-field-name", x => x.isDefined)
     )(PropertyDetailsFullTaxPeriod.apply)(PropertyDetailsFullTaxPeriod.unapply)
   )
 
   val periodsInAndOutReliefForm = Form(
     mapping(
-      "isInRelief" -> optional(boolean).verifying(Messages("ated.property-details-period.isInRelief.error-field-name"), x => x.isDefined)
+      "isInRelief" -> optional(boolean).verifying("ated.property-details-period.isInRelief.error-field-name", x => x.isDefined)
     )(PropertyDetailsInRelief.apply)(PropertyDetailsInRelief.unapply)
   )
-  val periodDatesLiableForm = Form(
+  val periodDatesLiableForm: Form[PropertyDetailsDatesLiable] = Form(
     mapping(
       "startDate" -> mandatoryDateTuple("ated.property-details-period.datesLiable.startDate.error.empty"),
       "endDate" -> mandatoryDateTuple("ated.property-details-period.datesLiable.endDate.error.empty")
@@ -150,7 +147,7 @@ object PropertyDetailsForms {
   )
 
 
-  lazy val mandatoryRadio = optional(text)
+  lazy val mandatoryRadio: Mapping[String] = optional(text)
     .verifying("ated.property-details-period.chooseRelief.error.non-selected", _.isDefined)
     .transform({ s: Option[String] => s.getOrElse("") }, { v: String => Some(v) })
 
@@ -170,7 +167,7 @@ object PropertyDetailsForms {
 
   val propertyDetailsTaxAvoidanceForm = Form(
     mapping(
-      "isTaxAvoidance" -> optional(boolean).verifying(Messages("ated.property-details-period.isTaxAvoidance.error-field-name"), x => x.isDefined),
+      "isTaxAvoidance" -> optional(boolean).verifying("ated.property-details-period.isTaxAvoidance.error-field-name", x => x.isDefined),
       "taxAvoidanceScheme" -> optional(text),
       "taxAvoidancePromoterReference" -> optional(text)
     )(PropertyDetailsTaxAvoidance.apply)(PropertyDetailsTaxAvoidance.unapply)
@@ -179,16 +176,17 @@ object PropertyDetailsForms {
   val propertyDetailsSupportingInfoForm = Form(
     mapping(
       "supportingInfo" -> text
-        .verifying(Messages("ated.property-details-period-error.supportingInfo", Messages("ated.property-details-period.supportingInfo"), supportingInfo), x => x.isEmpty || (x.nonEmpty && x.length <= supportingInfo))
-        .verifying(Messages("ated.property-details-period-error.supportingInfo.invalid", Messages("ated.property-details-period.supportingInfo")), x => x matches supportingInfoRegex)
+        .verifying("ated.property-details-period-error.supportingInfo", x => x.isEmpty || (x.nonEmpty && x.length <= supportingInfo))
+        .verifying("ated.property-details-period-error.supportingInfo.invalid", x => x matches supportingInfoRegex)
+
     )(PropertyDetailsSupportingInfo.apply)(PropertyDetailsSupportingInfo.unapply)
   )
 
-  def propertyDetailsValueValidation = {
+  def propertyDetailsValueValidation: Mapping[Option[BigDecimal]] = {
     import PropertyValueField._
 
     optional(text)
-      .verifying(Messages("ated.property-details-value.incorrect-format"), propertyValue => {
+      .verifying("ated.property-details-value.incorrect-format", propertyValue => {
         propertyValue match {
           case Some(x) =>
             val noDecimals = x.split("\\.").head
@@ -231,9 +229,9 @@ object PropertyDetailsForms {
 
   def validatePropertyDetailsTaxAvoidance(f: Form[PropertyDetailsTaxAvoidance]): Form[PropertyDetailsTaxAvoidance] = {
     if (!f.hasErrors) {
-      val formErrors = (PropertyDetailsFormsValidation.validateAvoidanceSchemeRefNo(f.get.isTaxAvoidance,
+      val formErrors = PropertyDetailsFormsValidation.validateAvoidanceSchemeRefNo(f.get.isTaxAvoidance,
         f.get.taxAvoidanceScheme,
-        f.get.taxAvoidancePromoterReference)).flatten
+        f.get.taxAvoidancePromoterReference).flatten
       addErrorsToForm(f, formErrors)
     } else f
   }
@@ -284,11 +282,11 @@ object PropertyDetailsForms {
     if (requiresValidation) {
       if (f.data.get(fieldName).isDefined && !f.data.get(fieldName).contains("")) {
         if (fieldValue.exists(a => a.toDouble >= maximumPropertyValue)) {
-          Seq(Some(FormError(fieldName, Messages(s"ated.property-details-value.$fieldName.error.too-high"))))
+          Seq(Some(FormError(fieldName, s"ated.property-details-value.$fieldName.error.too-high")))
         } else if (fieldValue.exists(a => a.toDouble < minimumPropertyValue)) {
-          Seq(Some(FormError(fieldName, Messages(s"ated.property-details-value.$fieldName.error.too-low"))))
+          Seq(Some(FormError(fieldName, s"ated.property-details-value.$fieldName.error.too-low")))
         } else Seq(None)
-      } else Seq(Some(FormError(fieldName, Messages(s"ated.property-details-value.$fieldName.error.empty"))))
+      } else Seq(Some(FormError(fieldName, s"ated.property-details-value.$fieldName.error.empty")))
     } else Seq(None)
   }
 

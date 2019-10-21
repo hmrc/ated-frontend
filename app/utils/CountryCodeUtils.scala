@@ -16,21 +16,32 @@
 
 package utils
 
-import java.util.Properties
+import java.util.PropertyResourceBundle
+import play.api.Environment
+import scala.collection.JavaConversions._
+import scala.util.{Success, Try}
 
-import play.api.Play
+trait CountryCodeUtils {
 
-import scala.collection.JavaConverters
-import scala.io.Source
+  val environment: Environment
 
-object CountryCodeUtils {
+  // $COVERAGE-OFF$
+  lazy val resourceStream: PropertyResourceBundle =
+    (environment.resourceAsStream("country-code.properties") flatMap { stream =>
+      val optBundle: Option[PropertyResourceBundle] = Try(new PropertyResourceBundle(stream)) match {
+        case Success(bundle) => Some(bundle)
+        case _               => None
+      }
+      stream.close()
+      optBundle
+    }).getOrElse(throw new RuntimeException("[CountryCodeUtils] Could not retrieve property bundle"))
 
-  lazy val p = new Properties
-  p.load(Source.fromInputStream(Play.classloader(Play.current).getResourceAsStream("country-code.properties"), "UTF-8").bufferedReader())
+  // $COVERAGE-ON$
 
   def getIsoCodeTupleList: List[(String, String)] = {
-    JavaConverters.propertiesAsScalaMapConverter(p).asScala.toList.sortBy(_._2)
+    resourceStream.getKeys.toList.map(key => (key, resourceStream.getString(key))).sortBy{case (_,v) => v}
   }
+
 
   def getSelectedCountry(isoCode: String): String = {
     def trimCountry(selectedCountry: String) = {
@@ -43,7 +54,7 @@ object CountryCodeUtils {
     }
 
     def getCountry(isoCode: String): Option[String] = {
-      val country = Option(p.getProperty(isoCode.toUpperCase))
+      val country = getIsoCodeTupleList.toMap.get(isoCode.toUpperCase)
       country.map{ selectedCountry =>
         trimCountry(selectedCountry)
       }

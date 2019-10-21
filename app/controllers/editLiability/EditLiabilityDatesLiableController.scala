@@ -16,21 +16,36 @@
 
 package controllers.editLiability
 
+import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.{AuthAction, ClientHelper}
 import controllers.propertyDetails.{PropertyDetailsHelpers, PropertyDetailsTaxAvoidanceController}
 import forms.PropertyDetailsForms
 import forms.PropertyDetailsForms._
+import javax.inject.Inject
 import models._
-import play.api.Play.current
-import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{DelegationService, PropertyDetailsCacheSuccessResponse, PropertyDetailsService}
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
-trait EditLiabilityDatesLiableController extends PropertyDetailsHelpers with ClientHelper with AuthAction {
+import scala.concurrent.ExecutionContext
+
+class EditLiabilityDatesLiableController @Inject()(mcc: MessagesControllerComponents,
+                                                   authAction: AuthAction,
+                                                   propertyDetailsTaxAvoidanceController: PropertyDetailsTaxAvoidanceController,
+                                                   val propertyDetailsService: PropertyDetailsService,
+                                                   val dataCacheConnector: DataCacheConnector,
+                                                   val backLinkCacheConnector: BackLinkCacheConnector)
+                                                  (implicit val appConfig: ApplicationConfig)
+
+  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper {
+
+  implicit val ec: ExecutionContext = mcc.executionContext
+
+  val controllerId = "EditLiabilityDatesLiableController"
 
   def view(formBundleNo: String) : Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         propertyDetailsCacheResponse(formBundleNo) {
           case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
@@ -48,9 +63,8 @@ trait EditLiabilityDatesLiableController extends PropertyDetailsHelpers with Cli
     }
   }
 
-
   def save(formBundleNo: String, periodKey: Int) : Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         PropertyDetailsForms.validatePropertyDetailsDatesLiable(periodKey, periodDatesLiableForm.bindFromRequest, periodsCheck = false).fold(
           formWithError => {
@@ -62,8 +76,8 @@ trait EditLiabilityDatesLiableController extends PropertyDetailsHelpers with Cli
             for {
               _ <- propertyDetailsService.saveDraftPropertyDetailsDatesLiable(formBundleNo, propertyDetails)
               result <-
-              RedirectWithBackLink(
-                PropertyDetailsTaxAvoidanceController.controllerId,
+              redirectWithBackLink(
+                propertyDetailsTaxAvoidanceController.controllerId,
                 controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceController.view(formBundleNo),
                 Some(controllers.editLiability.routes.EditLiabilityDatesLiableController.view(formBundleNo).url)
               )
@@ -74,12 +88,4 @@ trait EditLiabilityDatesLiableController extends PropertyDetailsHelpers with Cli
     }
   }
 
-}
-
-object EditLiabilityDatesLiableController extends EditLiabilityDatesLiableController {
-  val delegationService: DelegationService = DelegationService
-  val propertyDetailsService: PropertyDetailsService = PropertyDetailsService
-  val dataCacheConnector: DataCacheConnector = DataCacheConnector
-  override val controllerId = "EditLiabilityDatesLiableController"
-  override val backLinkCacheConnector: BackLinkCacheConnector = BackLinkCacheConnector
 }

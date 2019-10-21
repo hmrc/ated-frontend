@@ -16,25 +16,37 @@
 
 package controllers.editLiability
 
+import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.BackLinkController
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.BankDetailForms.hasBankDetailsForm
+import javax.inject.Inject
 import models.HasBankDetails
-import play.api.Play.current
-import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{DelegationService, DisposeLiabilityReturnService}
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-trait DisposeLiabilityHasBankDetailsController extends BackLinkController
-  with AuthAction with ClientHelper {
 
-  def disposeLiabilityReturnService: DisposeLiabilityReturnService
+class DisposeLiabilityHasBankDetailsController @Inject()(mcc: MessagesControllerComponents,
+                                                         disposeLiabilityReturnService: DisposeLiabilityReturnService,
+                                                         authAction: AuthAction,
+                                                         disposeLiabilityBankDetailsController: DisposeLiabilityBankDetailsController,
+                                                         disposeLiabilitySummaryController: DisposeLiabilitySummaryController,
+                                                         val dataCacheConnector: DataCacheConnector,
+                                                         val backLinkCacheConnector: BackLinkCacheConnector)
+                                                        (implicit val appConfig: ApplicationConfig)
+
+  extends FrontendController(mcc) with BackLinkController with ClientHelper {
+
+  implicit val ec: ExecutionContext = mcc.executionContext
+
+  val controllerId: String = "DisposeLiabilityDeclarationController"
 
   def view(oldFormBundleNo: String): Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         disposeLiabilityReturnService.retrieveLiabilityReturn(oldFormBundleNo) flatMap {
           case Some(x) =>
@@ -49,7 +61,7 @@ trait DisposeLiabilityHasBankDetailsController extends BackLinkController
   }
 
   def editFromSummary(oldFormBundleNo: String): Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         disposeLiabilityReturnService.retrieveLiabilityReturn(oldFormBundleNo) flatMap {
           case Some(x) =>
@@ -65,7 +77,7 @@ trait DisposeLiabilityHasBankDetailsController extends BackLinkController
   }
 
   def save(oldFormBundleNo: String): Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         hasBankDetailsForm.bindFromRequest.fold(
           formWithErrors =>
@@ -78,17 +90,17 @@ trait DisposeLiabilityHasBankDetailsController extends BackLinkController
             disposeLiabilityReturnService.cacheDisposeLiabilityReturnHasBankDetails(oldFormBundleNo, hasBankDetails) flatMap { _ =>
               if (hasBankDetails) {
                 disposeLiabilityReturnService.calculateDraftDisposal(oldFormBundleNo) flatMap {
-                  case Some(x) =>
-                    RedirectWithBackLink(
-                      DisposeLiabilityBankDetailsController.controllerId,
+                  case Some(_) =>
+                    redirectWithBackLink(
+                      disposeLiabilityBankDetailsController.controllerId,
                       controllers.editLiability.routes.DisposeLiabilityBankDetailsController.view(oldFormBundleNo),
                       backLink
                     )
                   case None => Future.successful(Redirect(controllers.routes.AccountSummaryController.view()))
                 }
               } else {
-                RedirectWithBackLink(
-                  DisposeLiabilitySummaryController.controllerId,
+                redirectWithBackLink(
+                  disposeLiabilitySummaryController.controllerId,
                   controllers.editLiability.routes.DisposeLiabilitySummaryController.view(oldFormBundleNo),
                   backLink
                 )
@@ -99,13 +111,6 @@ trait DisposeLiabilityHasBankDetailsController extends BackLinkController
       }
     }
   }
-
 }
 
-object DisposeLiabilityHasBankDetailsController extends DisposeLiabilityHasBankDetailsController {
-  val delegationService: DelegationService = DelegationService
-  val disposeLiabilityReturnService: DisposeLiabilityReturnService = DisposeLiabilityReturnService
-  val dataCacheConnector: DataCacheConnector = DataCacheConnector
-  override val controllerId = "DisposeLiabilityDeclarationController"
-  override val backLinkCacheConnector: BackLinkCacheConnector = BackLinkCacheConnector
-}
+

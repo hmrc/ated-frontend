@@ -16,25 +16,31 @@
 
 package controllers
 
-import controllers.auth.{AuthAction, ExternalUrls}
+import config.ApplicationConfig
+import controllers.auth.AuthAction
+import javax.inject.Inject
 import models.StandardAuthRetrievals
 import play.api.Logger
-import play.api.Play.current
-import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, AnyContent, Request, Result}
+import play.api.mvc._
 import services.DelegationService
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.SessionUtils
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Try
 
-trait HomeController extends AtedBaseController with AuthAction {
+class HomeController @Inject()(mcc: MessagesControllerComponents,
+                               authAction: AuthAction,
+                               applicationConfig: ApplicationConfig)
+  extends FrontendController(mcc) {
+
+  implicit val ec : ExecutionContext = mcc.executionContext
 
   def home(callerId: Option[String] = None): Action[AnyContent] = Action.async { implicit request =>
-    authorisedForNoEnrolments { implicit authContext =>
+    authAction.authorisedForNoEnrolments { implicit authContext =>
       Future.successful {
         if (isSubscribedUser) redirectSubscribedUser(callerId)
-        else Redirect(ExternalUrls.subscriptionStartPage)
+        else Redirect(applicationConfig.subscriptionStartPage)
       }
     }
   }
@@ -46,7 +52,7 @@ trait HomeController extends AtedBaseController with AuthAction {
   private def redirectSubscribedUser(callerId: Option[String])(implicit authContext: StandardAuthRetrievals, request: Request[AnyContent]): Result = {
     if (authContext.isAgent) {
       Logger.debug("[redirectSubscribedUser] agent redirected to mandate:" + authContext)
-      Redirect(ExternalUrls.agentRedirectedToMandate)
+      Redirect(applicationConfig.agentRedirectedToMandate)
     }
     else {
       Logger.debug("[redirectSubscribedUser] user redirected to account summary:" + authContext)
@@ -57,8 +63,4 @@ trait HomeController extends AtedBaseController with AuthAction {
     }
   }
 
-}
-
-object HomeController extends HomeController {
-  val delegationService: DelegationService = DelegationService
 }

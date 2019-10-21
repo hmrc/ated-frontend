@@ -194,7 +194,7 @@ class AtedUtilsSpec extends PlaySpec with GuiceOneServerPerSuite {
   "print Not Provided" when {
 
     "string is blank/empty" in {
-      AtedUtils.printNotProvidedIfEmpty("") must be("Not provided")
+      AtedUtils.printNotProvidedIfEmpty("") must be("ated.property-details-summary.field-blank")
     }
   }
 

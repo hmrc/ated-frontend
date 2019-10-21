@@ -18,12 +18,13 @@ package builders
 
 import java.util.concurrent.ConcurrentLinkedQueue
 
-import config.AtedFrontendAuditConnector
+import javax.inject.Inject
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.audit.model.Audit._
 import uk.gov.hmrc.play.audit.model.{Audit, AuditAsMagnet, DataEvent}
 
-class TestAudit extends Audit("test", AtedFrontendAuditConnector) {
+class TestAudit @Inject()(auditConnector: AuditConnector) extends Audit("test", auditConnector) {
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
 

@@ -19,6 +19,9 @@ package controllers.subscriptionData
 import java.util.UUID
 
 import builders.{SessionBuilder, TitleBuilder}
+import config.ApplicationConfig
+import connectors.DataCacheConnector
+import controllers.auth.AuthAction
 import models._
 import org.jsoup.Jsoup
 import org.mockito.Matchers
@@ -27,48 +30,97 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
-import play.api.libs.json.Json
-import play.api.mvc.{AnyContentAsJson, Result}
+import play.api.Environment
+import play.api.libs.json.{JsValue, Json}
+import play.api.mvc.{AnyContentAsJson, MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.{DelegationService, SubscriptionDataService}
-import uk.gov.hmrc.auth.core.{AffinityGroup, PlayAuthConnector}
+import services.{DetailsService, SubscriptionDataService}
+import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.frontend.auth.connectors.DelegationConnector
 import utils.MockAuthUtil
 
 import scala.concurrent.Future
 
 class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with MockAuthUtil {
 
-  val mockSubscriptionDataService: SubscriptionDataService = mock[SubscriptionDataService]
-  val mockDelegationConnector: DelegationConnector = mock[DelegationConnector]
   implicit lazy val hc: HeaderCarrier = HeaderCarrier()
+  implicit val mockAppConfig: ApplicationConfig = mock[ApplicationConfig]
 
-  object TestCorrespondenceAddressController extends CorrespondenceAddressController {
-    override val authConnector: PlayAuthConnector = mockAuthConnector
-    override val delegationService: DelegationService = mockDelegationService
-    override val subscriptionDataService: SubscriptionDataService = mockSubscriptionDataService
+  val mockMcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
+  val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
+  val mockSubscriptionDataService: SubscriptionDataService = mock[SubscriptionDataService]
+  val mockDetailsService: DetailsService = mock[DetailsService]
+  val mockEnvironment: Environment = app.injector.instanceOf[Environment]
+
+  class Setup {
+
+    val mockAuthAction: AuthAction = new AuthAction(
+      mockAppConfig,
+      mockDelegationService,
+      mockAuthConnector
+    )
+
+    val testCorrespondenceAddressController: CorrespondenceAddressController = new CorrespondenceAddressController(
+      mockMcc,
+      mockAuthAction,
+      mockSubscriptionDataService,
+      mockEnvironment
+    )
+
+    def getWithAuthorisedUser(companyDetails: Option[Address]=None)(test: Future[Result] => Any) {
+      val userId = s"user-${UUID.randomUUID}"
+      val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+      setAuthMocks(authMock)
+      when(mockSubscriptionDataService.getCorrespondenceAddress(Matchers.any(), Matchers.any())).thenReturn(Future.successful(companyDetails))
+      val result = testCorrespondenceAddressController.editAddress().apply(SessionBuilder.buildRequestWithSession(userId))
+      test(result)
+    }
+
+    def getWithUnAuthorisedUser(test: Future[Result] => Any) {
+      val userId = s"user-${UUID.randomUUID}"
+      val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
+      setInvalidAuthMocks(authMock)
+      val result = testCorrespondenceAddressController.editAddress().apply(SessionBuilder.buildRequestWithSession(userId))
+      test(result)
+    }
+
+    def submitWithAuthorisedUserSuccess(testAddress: Option[AddressDetails] = None)
+                                       (fakeRequest: FakeRequest[AnyContentAsJson])(test: Future[Result] => Any) {
+      val userId = s"user-${UUID.randomUUID}"
+      val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+      setAuthMocks(authMock)
+      when(mockSubscriptionDataService.updateCorrespondenceAddressDetails(Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(testAddress))
+      val result = testCorrespondenceAddressController.submit().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
+
+      test(result)
+    }
+
+    def submitWithUnAuthorisedUser(test: Future[Result] => Any) {
+      val userId = s"user-${UUID.randomUUID}"
+      val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
+      setInvalidAuthMocks(authMock)
+      val result = testCorrespondenceAddressController.submit().apply(SessionBuilder.buildRequestWithSession(userId))
+      test(result)
+    }
   }
-
   override def beforeEach(): Unit = {
     reset(mockAuthConnector)
     reset(mockSubscriptionDataService)
   }
 
   "CorrespondenceAddressController" must {
-
     "editAddress" must {
-
       "unauthorised users" must {
 
-        "respond with a redirect" in {
+        "respond with a redirect" in new Setup {
           getWithUnAuthorisedUser { result =>
             status(result) must be(SEE_OTHER)
           }
         }
 
-        "be redirected to the login page" in {
+        "be redirected to the login page" in new Setup {
           getWithUnAuthorisedUser { result =>
             redirectLocation(result).get must include("/ated/unauthorised")
           }
@@ -77,14 +129,14 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
 
       "Authorised users" must {
 
-        "respond with OK" in {
+        "respond with OK" in new Setup {
           getWithAuthorisedUser() {
             result =>
               status(result) must be(OK)
           }
         }
 
-        "show the correspondence address view with empty data" in {
+        "show the correspondence address view with empty data" in new Setup {
           getWithAuthorisedUser(None) {
             result =>
               val document = Jsoup.parse(contentAsString(result))
@@ -103,7 +155,7 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
         }
 
 
-        "show the correspondence address view with populated space in data" in {
+        "show the correspondence address view with populated space in data" in new Setup {
           val testAddressDetails = AddressDetails("Correspondence", "  ", "  ", Some("line_3"), Some("line_4"), Some("postCode"), "GB")
           val testAddress = Address(Some("name1"), Some("name2"), addressDetails = testAddressDetails, contactDetails = None)
 
@@ -124,7 +176,7 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
           }
         }
 
-        "show the correspondence address view with populated data" in {
+        "show the correspondence address view with populated data" in new Setup {
           val testAddressDetails = AddressDetails("Correspondence", "line_1", "line_2", Some("line_3"), Some("line_4"), Some("postCode"), "GB")
           val testAddress = Address(Some("name1"), Some("name2"), addressDetails = testAddressDetails, contactDetails = None)
 
@@ -147,21 +199,15 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
 
         "submit" must {
 
-          "not respond with NOT_FOUND" in {
-            val result = route(FakeRequest(POST, "/ated/correspondence-address"))
-            result.isDefined must be(true)
-            status(result.get) must not be NOT_FOUND
-          }
-
           "unauthorised users" must {
 
-            "respond with a redirect" in {
+            "respond with a redirect" in new Setup {
               submitWithUnAuthorisedUser { result =>
                 status(result) must be(SEE_OTHER)
               }
             }
 
-            "be redirected to the login page" in {
+            "be redirected to the login page" in new Setup {
               getWithUnAuthorisedUser { result =>
                 redirectLocation(result).get must include("/ated/unauthorised")
               }
@@ -169,12 +215,9 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
           }
 
           "Authorised users" must {
-
             "validate form" must {
-
-              "If registration details entered are valid, save and continue button must redirect to contact details page if the save worked" in {
-                implicit val hc: HeaderCarrier = HeaderCarrier()
-                val inputJson = Json.parse(
+              "If registration details entered are valid, save and continue button must redirect to contact details page if the save worked" in new Setup {
+                val inputJson: JsValue = Json.parse(
                   """{
                     |"addressType": "sadsdf",
                     |"addressLine1": "sdfsdf",
@@ -191,9 +234,8 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
                 }
               }
 
-              "If registration details entered are valid but the save fails, throw a validation error" in {
-                implicit val hc: HeaderCarrier = HeaderCarrier()
-                val inputJson = Json.parse(
+              "If registration details entered are valid but the save fails, throw a validation error" in new Setup {
+                val inputJson: JsValue = Json.parse(
                   """{
                     |"addressType": "sadsdf",
                     |"addressLine1": "sdfsdf",
@@ -210,9 +252,8 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
               }
 
 
-              "If address line 1 in correspondence details entered is with spaces  but the save fails, throw a validation error" in {
-                implicit val hc: HeaderCarrier = HeaderCarrier()
-                val inputJson = Json.parse(
+              "If address line 1 in correspondence details entered is with spaces  but the save fails, throw a validation error" in new Setup {
+                val inputJson: JsValue = Json.parse(
                   """{
                     |"addressType": "sadsdf",
                     |"addressLine1": " ",
@@ -228,9 +269,8 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
                 }
               }
 
-              "not be empty" in {
-                implicit val hc: HeaderCarrier = HeaderCarrier()
-                val inputJson = Json.parse(
+              "not be empty" in new Setup {
+                val inputJson: JsValue = Json.parse(
                   """{
                     |"addressType": "",
                     |"addressLine1": "",
@@ -249,9 +289,8 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
                 }
               }
 
-            "If entered, Address line 1 must be maximum of 35 characters" in {
-              implicit val hc: HeaderCarrier = HeaderCarrier()
-              val inputJson = Json.parse(
+            "If entered, Address line 1 must be maximum of 35 characters" in new Setup {
+              val inputJson: JsValue = Json.parse(
                 """{
                   |"addressType": "",
                   |"addressLine1": "AAAAAAAAAABBBBBBBBBBCCCCCCCCCCDDDDDD",
@@ -269,9 +308,8 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
             }
 
 
-            "If entered, Address line 2 must be maximum of 35 characters" in {
-              implicit val hc: HeaderCarrier = HeaderCarrier()
-              val inputJson = Json.parse(
+            "If entered, Address line 2 must be maximum of 35 characters" in new Setup {
+              val inputJson: JsValue = Json.parse(
                 """{
                   |"addressType": "",
                   |"addressLine1": "",
@@ -287,9 +325,8 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
                   contentAsString(result) must include("Address line 2 cannot be more than 35 characters")
               }
             }
-              "If entered, Address line 3 must be maximum of 35 characters" in {
-                implicit val hc: HeaderCarrier = HeaderCarrier()
-                val inputJson = Json.parse(
+              "If entered, Address line 3 must be maximum of 35 characters" in new Setup {
+                val inputJson: JsValue = Json.parse(
                   """{
                     |"addressType": "",
                     |"addressLine1": "",
@@ -305,9 +342,8 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
                     contentAsString(result) must include("Address line 3 cannot be more than 35 characters")
                 }
               }
-              "If entered, Address line 4 must be maximum of 35 characters" in {
-                implicit val hc: HeaderCarrier = HeaderCarrier()
-                val inputJson = Json.parse(
+              "If entered, Address line 4 must be maximum of 35 characters" in new Setup {
+                val inputJson: JsValue = Json.parse(
                   """{
                     |"addressType": "",
                     |"addressLine1": "",
@@ -324,9 +360,8 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
                 }
               }
 
-               "Postcode must not be more than 9 characters" in {
-                implicit val hc: HeaderCarrier = HeaderCarrier()
-                val inputJson = Json.parse(
+               "Postcode must not be more than 9 characters" in new Setup {
+                val inputJson: JsValue = Json.parse(
                   """{
                     |"addressType": "",
                     |"addressLine1": "",
@@ -344,9 +379,8 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
               }
 
 
-              "Postcode must not contain special characters" in {
-                implicit val hc: HeaderCarrier = HeaderCarrier()
-                val inputJson = Json.parse(
+              "Postcode must not contain special characters" in new Setup {
+                val inputJson: JsValue = Json.parse(
                   """{
                     |"addressType": "",
                     |"addressLine1": "",
@@ -364,9 +398,8 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
               }
 
 
-              "Country Code must be selected" in {
-                implicit val hc: HeaderCarrier = HeaderCarrier()
-                val inputJson = Json.parse(
+              "Country Code must be selected" in new Setup {
+                val inputJson: JsValue = Json.parse(
                   """{
                     |"addressType": "",
                     |"addressLine1": "",
@@ -382,9 +415,8 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
                   contentAsString(result) must include("You must enter Country")
                 }
                }
-              "throw a validation error, if save fails" in {
-                implicit val hc: HeaderCarrier = HeaderCarrier()
-                val inputJson = Json.parse(
+              "throw a validation error, if save fails" in new Setup {
+                val inputJson: JsValue = Json.parse(
                   """{
                     |"addressType": "Correspondence",
                     |"addressLine1": "sdfsdf",
@@ -393,7 +425,6 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
                     |"addressLine4": "asd",
                     |"postalCode": "XX1 1XX",
                     |"countryCode": "GB"}""".stripMargin)
-//                val addressDetails: AddressDetails = inputJson.as[AddressDetails]
                 submitWithAuthorisedUserSuccess(None)(FakeRequest().withJsonBody(inputJson)) {
                   result =>
                     status(result) must be(BAD_REQUEST)
@@ -406,41 +437,4 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
       }
      }
     }
-
-  def getWithAuthorisedUser(companyDetails: Option[Address]=None)(test: Future[Result] => Any) {
-    val userId = s"user-${UUID.randomUUID}"
-    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
-    setAuthMocks(authMock)
-    when(mockSubscriptionDataService.getCorrespondenceAddress(Matchers.any(), Matchers.any())).thenReturn(Future.successful(companyDetails))
-    val result = TestCorrespondenceAddressController.editAddress().apply(SessionBuilder.buildRequestWithSession(userId))
-    test(result)
-  }
-
-  def getWithUnAuthorisedUser(test: Future[Result] => Any) {
-    val userId = s"user-${UUID.randomUUID}"
-        val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
-    setInvalidAuthMocks(authMock)
-    val result = TestCorrespondenceAddressController.editAddress().apply(SessionBuilder.buildRequestWithSession(userId))
-    test(result)
-  }
-
-  def submitWithAuthorisedUserSuccess(testAddress: Option[AddressDetails] = None)
-                                     (fakeRequest: FakeRequest[AnyContentAsJson])(test: Future[Result] => Any) {
-    val userId = s"user-${UUID.randomUUID}"
-    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
-    setAuthMocks(authMock)
-    when(mockSubscriptionDataService.updateCorrespondenceAddressDetails(Matchers.any())(Matchers.any(), Matchers.any()))
-      .thenReturn(Future.successful(testAddress))
-    val result = TestCorrespondenceAddressController.submit().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
-
-    test(result)
-  }
-
-  def submitWithUnAuthorisedUser(test: Future[Result] => Any) {
-    val userId = s"user-${UUID.randomUUID}"
-        val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
-    setInvalidAuthMocks(authMock)
-    val result = TestCorrespondenceAddressController.submit().apply(SessionBuilder.buildRequestWithSession(userId))
-    test(result)
-  }
 }

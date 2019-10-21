@@ -16,28 +16,39 @@
 
 package controllers.reliefs
 
+import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.BackLinkController
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.ReliefForms._
+import javax.inject.Inject
 import models.Reliefs
 import play.api.Logger
-import play.api.Play.current
-import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{DelegationService, ReliefsService}
-import uk.gov.hmrc.auth.core.AuthorisationException
 import uk.gov.hmrc.http.ForbiddenException
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.AtedUtils._
 import utils.PeriodUtils
 
 import scala.collection.mutable.ArrayBuffer
+import scala.concurrent.ExecutionContext
 
-trait ChooseReliefsController extends BackLinkController
-    with ReliefHelpers with ClientHelper with AuthAction {
+class ChooseReliefsController @Inject()(mcc: MessagesControllerComponents,
+                                        authAction: AuthAction,
+                                        avoidanceSchemeBeingUsedController: AvoidanceSchemeBeingUsedController,
+                                        val reliefsService: ReliefsService,
+                                        val dataCacheConnector: DataCacheConnector,
+                                        val backLinkCacheConnector: BackLinkCacheConnector)
+                                       (implicit val appConfig: ApplicationConfig)
+
+  extends FrontendController(mcc) with BackLinkController with ReliefHelpers with ClientHelper {
+
+  implicit val ec: ExecutionContext = mcc.executionContext
+  override val controllerId: String = "ChooseReliefsController"
 
   def view(periodKey: Int): Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         validatePeriodKey(periodKey) {
           for {
@@ -56,7 +67,7 @@ trait ChooseReliefsController extends BackLinkController
   }
 
     def editFromSummary(periodKey: Int): Action[AnyContent] = Action.async { implicit request =>
-      authorisedAction { implicit authContext =>
+      authAction.authorisedAction { implicit authContext =>
         ensureClientContext {
           validatePeriodKey(periodKey) {
             for {
@@ -66,20 +77,21 @@ trait ChooseReliefsController extends BackLinkController
               retrievedData match {
                 case Some(reliefs) =>
                   Ok(views.html.reliefs.chooseReliefs(reliefs.periodKey, reliefsForm.fill(reliefs.reliefs), PeriodUtils.periodStartDate(periodKey), backLink))
-                case _ => Ok(views.html.reliefs.chooseReliefs(periodKey, reliefsForm.fill(Reliefs(periodKey)), PeriodUtils.periodStartDate(periodKey), backLink))
+                case _ => Ok(views.html.reliefs
+                  .chooseReliefs(periodKey, reliefsForm.fill(Reliefs(periodKey)), PeriodUtils.periodStartDate(periodKey), backLink))
               }
             }
           }
         }
       } recover {
-        case fe: ForbiddenException     =>
+        case _: ForbiddenException     =>
           Logger.warn("[ChooseReliefsController][editFromSummary] Forbidden exception")
-          unauthorisedUrl()
+          authAction.unauthorisedUrl()
       }
     }
 
     def send(periodKey: Int): Action[AnyContent] = Action.async { implicit request =>
-      authorisedAction { implicit authContext =>
+      authAction.authorisedAction { implicit authContext =>
         ensureClientContext {
           validatePeriodKey(periodKey) {
             val data = addParamsToRequest(Map("periodKey" -> ArrayBuffer(periodKey.toString)))
@@ -90,9 +102,9 @@ trait ChooseReliefsController extends BackLinkController
                 },
               reliefs => {
                 for {
-                  savedData <- reliefsService.saveDraftReliefs(authContext.atedReferenceNumber, periodKey, reliefs)
+                  _ <- reliefsService.saveDraftReliefs(authContext.atedReferenceNumber, periodKey, reliefs)
                   result <-
-                  RedirectWithBackLink(AvoidanceSchemeBeingUsedController.controllerId,
+                  redirectWithBackLink(avoidanceSchemeBeingUsedController.controllerId,
                     controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.view(periodKey),
                     Some(routes.ChooseReliefsController.view(periodKey).url))
                 } yield {
@@ -103,17 +115,9 @@ trait ChooseReliefsController extends BackLinkController
           }
         }
       } recover {
-        case fe: ForbiddenException     =>
+        case _: ForbiddenException     =>
           Logger.warn("[ChooseReliefsController][send] Forbidden exception")
-          unauthorisedUrl()
+          authAction.unauthorisedUrl()
       }
     }
   }
-
-object ChooseReliefsController extends ChooseReliefsController {
-  val reliefsService: ReliefsService = ReliefsService
-  val delegationService: DelegationService = DelegationService
-  val dataCacheConnector: DataCacheConnector = DataCacheConnector
-  override val controllerId: String = "ChooseReliefsController"
-  override val backLinkCacheConnector: BackLinkCacheConnector = BackLinkCacheConnector
-}

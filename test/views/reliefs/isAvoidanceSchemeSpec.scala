@@ -16,22 +16,26 @@
 
 package views.reliefs
 
+import config.ApplicationConfig
 import forms.ReliefForms._
-import models.IsTaxAvoidance
+import models.{IsTaxAvoidance, StandardAuthRetrievals}
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
 import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
-import org.scalatestplus.play.OneServerPerSuite
+import org.scalatestplus.play.guice.GuiceOneAppPerSuite
+import play.api.i18n.{Messages, MessagesApi}
 import play.api.test.FakeRequest
 import utils.MockAuthUtil
 
-class isAvoidanceSchemeSpec extends FeatureSpec with OneServerPerSuite
+class isAvoidanceSchemeSpec extends FeatureSpec with GuiceOneAppPerSuite
   with MockitoSugar with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
 
   implicit val request = FakeRequest()
-  implicit val messages : play.api.i18n.Messages = play.api.i18n.Messages.Implicits.applicationMessages
-  implicit lazy val authContext = organisationStandardRetrievals
+  implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
+
+  implicit val appConfig: ApplicationConfig = mock[ApplicationConfig]
+  implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
   val periodKey = 2015
 
   feature("The user can view the is avoidance scheme page") {
@@ -69,7 +73,8 @@ class isAvoidanceSchemeSpec extends FeatureSpec with OneServerPerSuite
       When("The user views the page")
 
       val isTaxAvoidance = IsTaxAvoidance(isAvoidanceScheme = Some(true))
-      val html = views.html.reliefs.avoidanceSchemeBeingUsed(periodKey, isTaxAvoidanceForm.fill(isTaxAvoidance), new LocalDate("2015-04-01"), Some("http://backLink"))
+      val html = views.html.reliefs.avoidanceSchemeBeingUsed(periodKey, isTaxAvoidanceForm.fill(isTaxAvoidance),
+        new LocalDate("2015-04-01"), Some("http://backLink"))
 
       val document = Jsoup.parse(html.toString())
 

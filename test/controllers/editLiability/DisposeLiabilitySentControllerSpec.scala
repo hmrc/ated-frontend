@@ -19,21 +19,23 @@ package controllers.editLiability
 import java.util.UUID
 
 import builders._
+import config.ApplicationConfig
 import connectors.DataCacheConnector
+import controllers.auth.AuthAction
 import models.{EditLiabilityReturnsResponse, EditLiabilityReturnsResponseModel}
 import org.joda.time.format.DateTimeFormat
 import org.joda.time.{DateTime, LocalDate}
 import org.jsoup.Jsoup
 import org.mockito.Matchers
-import org.mockito.Mockito._
+import org.mockito.Mockito.{reset, _}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
-import play.api.mvc.Result
+import play.api.mvc.{MessagesControllerComponents, Result}
 import play.api.test.Helpers._
-import services.{DelegationService, SubscriptionDataService}
-import uk.gov.hmrc.auth.core.{AffinityGroup, PlayAuthConnector}
+import services.{DisposeLiabilityReturnService, SubscriptionDataService}
+import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.AtedConstants._
 import utils.MockAuthUtil
@@ -42,9 +44,13 @@ import scala.concurrent.Future
 
 class DisposeLiabilitySentControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with MockAuthUtil {
 
+  implicit val mockAppConfig: ApplicationConfig = mock[ApplicationConfig]
+  implicit lazy val hc: HeaderCarrier = HeaderCarrier()
 
-  val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
+  val mockMcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
   val mockSubscriptionDataService: SubscriptionDataService = mock[SubscriptionDataService]
+  val mockDisposeLiabilityReturnService: DisposeLiabilityReturnService = mock[DisposeLiabilityReturnService]
+  val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
 
   val formBundleNo1: String = "123456789012"
   val formBundleNo2: String = "123456789011"
@@ -52,36 +58,54 @@ class DisposeLiabilitySentControllerSpec extends PlaySpec with GuiceOneServerPer
 
   val date: String = DateTimeFormat.forPattern("d MMMM yyyy").print(new LocalDate())
 
+  class Setup {
 
-  object TestDisposeLiabilitySentController extends DisposeLiabilitySentController {
-    override val authConnector: PlayAuthConnector = mockAuthConnector
-    override val subscriptionDataService: SubscriptionDataService = mockSubscriptionDataService
-    override val delegationService: DelegationService = mockDelegationService
-    override val dataCacheConnector: DataCacheConnector = mockDataCacheConnector
+    val mockAuthAction: AuthAction = new AuthAction(
+      mockAppConfig,
+      mockDelegationService,
+      mockAuthConnector
+    )
+
+    val testDisposeLiabilitySentController: DisposeLiabilitySentController = new DisposeLiabilitySentController(
+      mockMcc,
+      mockSubscriptionDataService,
+      mockAuthAction,
+      mockDataCacheConnector
+    )
+
+     def viewWithAuthorisedUser(x: Option[EditLiabilityReturnsResponseModel] = None)(test: Future[Result] => Any): Any = {
+       val userId = s"user-${UUID.randomUUID}"
+      val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+      setAuthMocks(authMock)
+      when(mockDataCacheConnector.fetchAndGetFormData[EditLiabilityReturnsResponseModel]
+        (Matchers.eq(SubmitEditedLiabilityReturnsResponseFormId))(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(x))
+      val result = testDisposeLiabilitySentController.view(formBundleNo1).apply(SessionBuilder.buildRequestWithSession(userId))
+      test(result)
+    }
+
+     def getPrintFriendlyWithAuthorisedUser(x: Option[EditLiabilityReturnsResponseModel] = None)(test: Future[Result] => Any): Any = {
+       val userId = s"user-${UUID.randomUUID}"
+      val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+      setAuthMocks(authMock)
+      when(mockDataCacheConnector.fetchAndGetFormData[EditLiabilityReturnsResponseModel]
+        (Matchers.eq(SubmitEditedLiabilityReturnsResponseFormId))(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(x))
+      when(mockSubscriptionDataService.getOrganisationName(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(organisationName)))
+      val result = testDisposeLiabilitySentController.viewPrintFriendlyDisposeLiabilitySent(formBundleNo1).apply(SessionBuilder.buildRequestWithSession(userId))
+      test(result)
+    }
   }
 
   override def beforeEach: Unit = {
-    reset(mockAuthConnector)
-    reset(mockDelegationService)
+
+    reset(mockSubscriptionDataService)
+reset(mockDelegationService)
     reset(mockDataCacheConnector)
   }
 
   val oldFormBundleNum = "123456789012"
 
-  "DisposeLiabilitySentController" should {
-
-    "use correct DelegationConnector" in {
-      DisposeLiabilitySentController.delegationService must be(DelegationService)
-    }
-
-    "use correct data cache connector" in {
-      DisposeLiabilitySentController.dataCacheConnector must be(DataCacheConnector)
-    }
-
-  }
-
   "DisposeLiabilitySentController.view" should {
-    "return amended return sent page, if response found in cache and amountDueOrRefund is Negative" in {
+    "return amended return sent page, if response found in cache and amountDueOrRefund is Negative" in new Setup {
 
       val r1 = EditLiabilityReturnsResponse(mode = "Post", oldFormBundleNumber = formBundleNo1, formBundleNumber =
         Some(formBundleNo2), liabilityAmount = BigDecimal(1234.56), amountDueOrRefund = BigDecimal(-500.00), paymentReference = Some("payment-ref-01"))
@@ -118,7 +142,7 @@ class DisposeLiabilitySentControllerSpec extends PlaySpec with GuiceOneServerPer
       }
     }
 
-    "take user to print friendly dispose liability confirmation" in {
+    "take user to print friendly dispose liability confirmation" in new Setup {
       val r1 = EditLiabilityReturnsResponse(mode = "Post", oldFormBundleNumber = formBundleNo1, formBundleNumber =
         Some(formBundleNo2), liabilityAmount = BigDecimal(1234.56), amountDueOrRefund = BigDecimal(-500.00), paymentReference = Some("payment-ref-01"))
       val resp = EditLiabilityReturnsResponseModel(DateTime.now(), liabilityReturnResponse = Seq(r1), BigDecimal(0.00))
@@ -148,7 +172,7 @@ class DisposeLiabilitySentControllerSpec extends PlaySpec with GuiceOneServerPer
       }
     }
 
-    "take user to print friendly dispose liability confirmation bigger than zero" in {
+    "take user to print friendly dispose liability confirmation bigger than zero" in new Setup {
       val r1 = EditLiabilityReturnsResponse(mode = "Post", oldFormBundleNumber = formBundleNo1, formBundleNumber =
         Some(formBundleNo2), liabilityAmount = BigDecimal(1234.56), amountDueOrRefund = BigDecimal(500.00), paymentReference = Some("payment-ref-01"))
       val resp = EditLiabilityReturnsResponseModel(DateTime.now(), liabilityReturnResponse = Seq(r1), BigDecimal(0.00))
@@ -159,7 +183,7 @@ class DisposeLiabilitySentControllerSpec extends PlaySpec with GuiceOneServerPer
           document.getElementById("header").text() must include("Your amended return has been successfully submitted")
       }
     }
-    "take user to print friendly dispose liability confirmation exactly zero" in {
+    "take user to print friendly dispose liability confirmation exactly zero" in new Setup {
       val r1 = EditLiabilityReturnsResponse(mode = "Post", oldFormBundleNumber = formBundleNo1, formBundleNumber =
         Some(formBundleNo2), liabilityAmount = BigDecimal(1234.56), amountDueOrRefund = BigDecimal(0.00), paymentReference = Some("payment-ref-01"))
       val resp = EditLiabilityReturnsResponseModel(DateTime.now(), liabilityReturnResponse = Seq(r1), BigDecimal(0.00))
@@ -171,7 +195,7 @@ class DisposeLiabilitySentControllerSpec extends PlaySpec with GuiceOneServerPer
       }
     }
 
-    "return further return sent page, if response found in cache and amountDueOrRefund is Negative" in {
+    "return further return sent page, if response found in cache and amountDueOrRefund is Negative" in new Setup {
       val r1 = EditLiabilityReturnsResponse(mode = "Post", oldFormBundleNumber = formBundleNo1, formBundleNumber =
         Some(formBundleNo2), liabilityAmount = BigDecimal(1234.56), amountDueOrRefund = BigDecimal(500.00), paymentReference = Some("payment-ref-01"))
       val resp = EditLiabilityReturnsResponseModel(DateTime.now(), liabilityReturnResponse = Seq(r1), BigDecimal(0.00))
@@ -183,7 +207,7 @@ class DisposeLiabilitySentControllerSpec extends PlaySpec with GuiceOneServerPer
       }
     }
 
-    "return edit details return sent page, if response found in cache and amountDueOrRefund is Negative" in {
+    "return edit details return sent page, if response found in cache and amountDueOrRefund is Negative" in new Setup {
       val r1 = EditLiabilityReturnsResponse(mode = "Post", oldFormBundleNumber = formBundleNo1, formBundleNumber =
         Some(formBundleNo2), liabilityAmount = BigDecimal(1234.56), amountDueOrRefund = BigDecimal(0.0), paymentReference = Some("payment-ref-01"))
       val resp = EditLiabilityReturnsResponseModel(DateTime.now(), liabilityReturnResponse = Seq(r1), BigDecimal(0.00))
@@ -195,7 +219,7 @@ class DisposeLiabilitySentControllerSpec extends PlaySpec with GuiceOneServerPer
       }
     }
 
-    "redirect to account summary, if response found in cache but formbundle doesn't match" in {
+    "redirect to account summary, if response found in cache but formbundle doesn't match" in new Setup {
       val r1 = EditLiabilityReturnsResponse(mode = "Post", oldFormBundleNumber = formBundleNo2, formBundleNumber =
         Some(formBundleNo2), liabilityAmount = BigDecimal(1234.56), amountDueOrRefund = BigDecimal(0.0), paymentReference = Some("payment-ref-01"))
       val resp = EditLiabilityReturnsResponseModel(DateTime.now(), liabilityReturnResponse = Seq(r1), BigDecimal(0.00))
@@ -206,36 +230,12 @@ class DisposeLiabilitySentControllerSpec extends PlaySpec with GuiceOneServerPer
       }
     }
 
-    "throw exception, if response not-found in cache" in {
+    "throw exception, if response not-found in cache" in new Setup {
       viewWithAuthorisedUser() {
         result =>
           val thrown = the[RuntimeException] thrownBy await(result)
           thrown.getMessage must include("Return Response not found in cache")
       }
     }
-  }
-
-  private def viewWithAuthorisedUser(x: Option[EditLiabilityReturnsResponseModel] = None)(test: Future[Result] => Any) {
-    val userId = s"user-${UUID.randomUUID}"
-    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
-    setAuthMocks(authMock)
-    implicit val hc: HeaderCarrier = HeaderCarrier()
-    when(mockDataCacheConnector.fetchAndGetFormData[EditLiabilityReturnsResponseModel]
-      (Matchers.eq(SubmitEditedLiabilityReturnsResponseFormId))(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(x))
-    val result = TestDisposeLiabilitySentController.view(formBundleNo1).apply(SessionBuilder.buildRequestWithSession(userId))
-    test(result)
-  }
-
-  private def getPrintFriendlyWithAuthorisedUser(x: Option[EditLiabilityReturnsResponseModel] = None)(test: Future[Result] => Any) {
-    val userId = s"user-${UUID.randomUUID}"
-    implicit val hc: HeaderCarrier = HeaderCarrier()
-    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
-    setAuthMocks(authMock)
-    when(mockDataCacheConnector.fetchAndGetFormData[EditLiabilityReturnsResponseModel]
-      (Matchers.eq(SubmitEditedLiabilityReturnsResponseFormId))(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(x))
-    when(mockSubscriptionDataService.getOrganisationName(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(organisationName)))
-
-    val result = TestDisposeLiabilitySentController.viewPrintFriendlyDisposeliabilitySent(formBundleNo1).apply(SessionBuilder.buildRequestWithSession(userId))
-    test(result)
   }
 }

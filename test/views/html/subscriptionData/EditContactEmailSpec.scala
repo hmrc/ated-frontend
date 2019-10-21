@@ -16,15 +16,19 @@
 
 package views.html.subscriptionData
 
+import config.ApplicationConfig
 import forms.AtedForms.editContactDetailsEmailForm
 import models._
 import org.scalatest.mockito.MockitoSugar
+import play.api.i18n.Messages
 import play.twirl.api.Html
 import utils.MockAuthUtil
 import utils.viewHelpers.AtedViewSpec
 
 class EditContactEmailSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil {
-  implicit lazy val authContext = organisationStandardRetrievals
+  implicit lazy val authContxt: StandardAuthRetrievals = organisationStandardRetrievals
+
+  implicit val appConfig: ApplicationConfig = mock[ApplicationConfig]
 
 
   "Edit contact email view" must {

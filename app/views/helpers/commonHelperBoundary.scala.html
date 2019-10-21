@@ -1,4 +1,4 @@
-/*
+@*
  * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,18 +12,16 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */
+ *@
 
-package uk.gov.hmrc.play.frontend.auth
+@(field: Field, errors: Seq[FormError], periodKey: Int)(implicit messages: Messages, request: Request[AnyContent])
+@import _root_.utils.PeriodUtils._
 
-// this object is created to call the mocked method of getDelegationData from mocked connector
-object DummyDelegationData {
-
-  def returnData(implicit authContext: AuthContext) = DelegationData(
-    principalName = authContext.principal.name.getOrElse(""),
-    attorneyName = authContext.attorney.get.name,
-    accounts = authContext.principal.accounts,
-    link = authContext.attorney.get.returnLink
-  )
-
+@errors.zipWithIndex.map { case (error, index) =>
+<span class="error-notification"
+role="tooltip"
+data-journey="search-page:error:@field.name"
+id="@(field.name)-error-@index">
+@Messages(error.message, calculateLowerTaxYearBoundary(periodKey).getYear.toString)
+</span>
 }

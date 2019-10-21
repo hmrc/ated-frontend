@@ -17,25 +17,21 @@
 package forms
 
 import models._
-import play.api.Play.current
 import play.api.data.Form
 import play.api.data.Forms._
-import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
 
 object AddressLookupForms {
 
   val addressLookupForm = Form(
     mapping(
       "postcode" -> text
-        .verifying(Messages("ated.error.address.postalcode.format", Messages("ated.address.postcode.field")),
-          x => AtedForms.validatePostCodeFormat(Some(x.toUpperCase))),
+        .verifying("ated.error.address.postalcode.format",  x => AtedForms.validatePostCodeFormat(Some(x.toUpperCase))),
       "houseName" -> optional(text)
     )(AddressLookup.apply)(AddressLookup.unapply)
   )
 
   val addressSelectedForm = Form(mapping(
-      "selected" -> optional(text).verifying(Messages("ated.address-lookup.error.non-selected.field"), _.isDefined)
+      "selected" -> optional(text).verifying("ated.address-lookup.error.non-selected.field", _.isDefined)
     )(AddressSelected.apply)(AddressSelected.unapply))
 
 }

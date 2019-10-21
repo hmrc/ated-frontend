@@ -15,7 +15,8 @@
  *@
 
 @import models._
-@(bankDetailsForm: Form[BankDetails], oldFormBundleNo: String, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent])
+@import config.ApplicationConfig
+@(bankDetailsForm: Form[BankDetails], oldFormBundleNo: String, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 @import uk.gov.hmrc.play.views.html._
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
@@ -24,8 +25,8 @@
 @implicitFormInstance = @{ Some(bankDetailsForm) }
 
 @pageScripts = {
-  <script src='@controllers.routes.AssetsController.at("javascript/bankDetails.js")'></script>
-  <script src='@controllers.routes.AssetsController.at("javascript/show-hide-content.js")'></script>
+  <script src='@controllers.routes.Assets.versioned("javascript/bankDetails.js")'></script>
+  <script src='@controllers.routes.Assets.versioned("javascript/show-hide-content.js")'></script>
   <script>
     $(document).ready(function() {
      // Where .multiple-choice uses the data-target attribute
@@ -42,11 +43,11 @@
   ga('set', 'page', page);
 }
 
-@atedMain(title = Messages("ated.bank-details.title"),
+@atedMain(title = messages("ated.bank-details.title"),
           pageScripts = Some(pageScripts),
           analyticsAdditionalJs = Some(analyticsJs)) {
 
-  @pageHeadersAndError(backLink, "pre-heading", Messages("ated.property-details.pre-header-dispose"), "bank-details-header", Messages("ated.bank-details.header"),
+  @pageHeadersAndError(backLink, "pre-heading", messages("ated.property-details.pre-header-dispose"), "bank-details-header", messages("ated.bank-details.header"),
       Some(atedErrorSummary(bankDetailsForm, "ated.bank-details.error-key")))
 
   @form(action=controllers.editLiability.routes.DisposeLiabilityBankDetailsController.save(oldFormBundleNo)) {
@@ -54,10 +55,10 @@
       @atedInputRadioGroupReveal(
         bankDetailsForm("hasUKBankAccount"),
         Seq(
-        "true" -> (Messages("ated.label.yes"), Some("hidden-bank-details")),
-        "false" -> (Messages("ated.label.no"), Some("hidden-bank-details"))
+        "true" -> (messages("ated.label.yes"), Some("hidden-bank-details")),
+        "false" -> (messages("ated.label.no"), Some("hidden-bank-details"))
         ),
-        '_legend -> Messages("ated.bank-details.header"),
+        '_legend -> messages("ated.bank-details.header"),
         '_legendClass -> "visuallyhidden",
         '_labelClass -> "block-label",
         '_groupClass -> "inline",
@@ -67,10 +68,10 @@
 
     <div id="hidden-bank-details" class="panel-indent form-control-indent js-hidden">
       <fieldset>
-        <legend class="visuallyhidden">@Messages("ated.bank-details.legend")</legend>
+        <legend class="visuallyhidden">@messages("ated.bank-details.legend")</legend>
         <div id="name-of-person" class="form-field">
           @atedInputNew(bankDetailsForm("accountName"),
-          '_label -> Messages("ated.bank-details.uk-bank-account.name.label"),
+          '_label -> messages("ated.bank-details.uk-bank-account.name.label"),
           '_id -> "accountName",
           '_showConstraints -> false)
         </div>
@@ -78,7 +79,7 @@
         <div id="hidden-bank-details-uk">
           <div id="account-number" class="form-field">
             @atedInputNew(bankDetailsForm("accountNumber"),
-            '_label -> Messages("ated.bank-details.uk-bank-account.number.label"),
+            '_label -> messages("ated.bank-details.uk-bank-account.number.label"),
             '_id -> "accountNumber",
             '_showConstraints -> false,
             '_type -> "number")
@@ -87,8 +88,8 @@
             @sortCode(
               bankDetailsForm,
               "sortCode",
-              Messages("ated.bank-details.uk-bank-account.sort-code.label"),
-              '_label -> Messages("ated.bank-details.uk-bank-account.number.label")
+              messages("ated.bank-details.uk-bank-account.sort-code.label"),
+              '_label -> messages("ated.bank-details.uk-bank-account.number.label")
             )
           </div>
         </div>
@@ -96,14 +97,14 @@
         <div id="hidden-bank-details-non-uk">
           <div id="iban-code" class="form-field">
             @atedInputNew(bankDetailsForm("iban"),
-            '_label -> Messages("ated.bank-details.non-uk-bank-account.iban.label"),
+            '_label -> messages("ated.bank-details.non-uk-bank-account.iban.label"),
             '_id -> "iban",
             '_showConstraints -> false)
           </div>
 
           <div id="bic-swift-code">
             @atedInputNew(bankDetailsForm("bicSwiftCode"),
-            '_label -> Messages("ated.bank-details.non-uk-bank-account.bic-swift-code.label"),
+            '_label -> messages("ated.bank-details.non-uk-bank-account.bic-swift-code.label"),
             '_id -> "bicSwiftCode",
             '_showConstraints -> false)
           </div>
@@ -113,7 +114,7 @@
     </div>
 
 
-    <button class="button margin-top-default" id="submit" type="submit">@Messages("ated.save-and-continue")</button>
+    <button class="button margin-top-default" id="submit" type="submit">@messages("ated.save-and-continue")</button>
 
   }
 

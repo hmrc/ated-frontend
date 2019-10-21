@@ -16,27 +16,34 @@
 
 package controllers.editLiability
 
+import config.ApplicationConfig
 import connectors.DataCacheConnector
-import controllers.AtedBaseController
 import controllers.auth.{AuthAction, ClientHelper}
 import controllers.viewhelper.EditLiability._
+import javax.inject.Inject
 import models.EditLiabilityReturnsResponseModel
 import play.api.Logger
-import play.api.Play.current
-import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{DelegationService, SubscriptionDataService}
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.AtedConstants._
 
-trait EditLiabilitySentController extends AtedBaseController
-  with AuthAction with ClientHelper {
+import scala.concurrent.ExecutionContext
 
-  def dataCacheConnector: DataCacheConnector
-  def subscriptionDataService: SubscriptionDataService
+class EditLiabilitySentController @Inject()(mcc: MessagesControllerComponents,
+                                            subscriptionDataService: SubscriptionDataService,
+                                            authAction: AuthAction,
+                                            val delegationService: DelegationService,
+                                            val dataCacheConnector: DataCacheConnector)
+                                           (implicit val appConfig: ApplicationConfig)
+
+  extends FrontendController(mcc) with ClientHelper {
+
+  implicit val ec: ExecutionContext = mcc.executionContext
 
   def view(oldFormBundleNo: String)
           : Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
 
         dataCacheConnector.fetchAndGetFormData[EditLiabilityReturnsResponseModel](SubmitEditedLiabilityReturnsResponseFormId) map {
           case Some(submitResponse) =>
@@ -56,9 +63,9 @@ trait EditLiabilitySentController extends AtedBaseController
     }
   }
 
-  def viewPrintFriendlyEditLilabilitySent(oldFormBundleNo: String)
+  def viewPrintFriendlyEditLiabilitySent(oldFormBundleNo: String)
                                          : Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
 
         for {
           submittedResponse <- dataCacheConnector.fetchAndGetFormData[EditLiabilityReturnsResponseModel](SubmitEditedLiabilityReturnsResponseFormId)
@@ -74,8 +81,3 @@ trait EditLiabilitySentController extends AtedBaseController
 
 }
 
-object EditLiabilitySentController extends EditLiabilitySentController {
-  val delegationService: DelegationService = DelegationService
-  override val dataCacheConnector: DataCacheConnector = DataCacheConnector
-  val subscriptionDataService: SubscriptionDataService = SubscriptionDataService
-}

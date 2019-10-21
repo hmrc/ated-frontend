@@ -15,7 +15,8 @@
  *@
 
 @import models._
-@(disposeLiabilityForm: Form[DisposeLiability], oldFormBundleNo: String, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent])
+@import config.ApplicationConfig
+@(disposeLiabilityForm: Form[DisposeLiability], oldFormBundleNo: String, backLink: Option[String], periodKey: Int)(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 @import uk.gov.hmrc.play.views.html._
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
@@ -32,7 +33,7 @@
 @atedMain(title = Messages("ated.dispose-property.disposal-date.title"),
           analyticsAdditionalJs = Some(analyticsJs)) {
 
-  @pageHeadersAndError(backLink, "pre-heading", Messages("ated.property-details.pre-header-dispose"), "dispose-property-header", Messages("ated.dispose-property.disposal-date.header"),
+  @pageHeadersAndError(backLink, "pre-heading", messages("ated.property-details.pre-header-dispose"), "dispose-property-header", messages("ated.dispose-property.disposal-date.header"),
       Some(atedErrorSummary(disposeLiabilityForm, "ated.dispose-property.error.general")))
 
   @form(action=controllers.editLiability.routes.DisposePropertyController.save(oldFormBundleNo)) {
@@ -41,10 +42,11 @@
       @atedDateFieldsFree(
         formItem = disposeLiabilityForm,
         fieldName = "dateOfDisposal",
-        label = Html(Messages("ated.dispose-property.disposal-date.header")),
+        label = Html(messages("ated.dispose-property.disposal-date.header")),
         isNested = false,
         defaultDateOption = None,
-        '_hintText -> Messages("ated.date.hint"),
+        periodKey,
+          '_hintText -> messages("ated.date.hint"),
         '_groupClass -> "date-of-birth",
         '_idName -> "dateOfDisposal",
         '_legendClass -> "visuallyhidden"
@@ -53,7 +55,7 @@
     </div>
 
     <div class="form-group">
-      <button class="button" id="submit" type="submit">@Messages("ated.save-and-continue")</button>
+      <button class="button" id="submit" type="submit">@messages("ated.save-and-continue")</button>
 
       <input type="hidden" class="form-control" name="periodKey" id="id" value=@disposeLiabilityForm("periodKey").value>
     </div>

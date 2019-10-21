@@ -16,29 +16,37 @@
 
 package controllers.reliefs
 
+import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.BackLinkController
 import controllers.auth.{AuthAction, ClientHelper}
+import javax.inject.Inject
 import models.ReliefsTaxAvoidance
 import org.joda.time.LocalDate
 import play.api.Logger
-import play.api.Play.current
-import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{DelegationService, ReliefsService, SubscriptionDataService}
-import uk.gov.hmrc.auth.core.AuthorisationException
 import uk.gov.hmrc.http.ForbiddenException
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.AtedUtils
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-trait ReliefsSummaryController extends BackLinkController
-   with ReliefHelpers with ClientHelper with AuthAction {
+class ReliefsSummaryController @Inject()(mcc: MessagesControllerComponents,
+                                         authAction: AuthAction,
+                                         reliefDeclarationController: ReliefDeclarationController,
+                                         subscriptionDataService: SubscriptionDataService,
+                                         val reliefsService: ReliefsService,
+                                         val dataCacheConnector: DataCacheConnector,
+                                         val backLinkCacheConnector: BackLinkCacheConnector)
+                                        (implicit val appConfig: ApplicationConfig)
+  extends FrontendController(mcc) with BackLinkController with ReliefHelpers with ClientHelper {
 
-  def subscriptionDataService: SubscriptionDataService
+  implicit val ec: ExecutionContext = mcc.executionContext
+  override val controllerId: String = "ReliefsSummaryController"
 
   def view(periodKey: Int): Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         validatePeriodKey(periodKey) {
           for {
@@ -79,11 +87,11 @@ trait ReliefsSummaryController extends BackLinkController
   }
 
   def continue(periodKey: Int): Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         validatePeriodKey(periodKey) {
-          RedirectWithBackLink(
-            ReliefDeclarationController.controllerId,
+          redirectWithBackLink(
+            reliefDeclarationController.controllerId,
             controllers.reliefs.routes.ReliefDeclarationController.view(periodKey),
             Some(routes.ReliefsSummaryController.view(periodKey).url)
           )
@@ -93,7 +101,7 @@ trait ReliefsSummaryController extends BackLinkController
   }
 
   def viewPrintFriendlyReliefReturn(periodKey: Int): Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         validatePeriodKey(periodKey) {
           for {
@@ -105,14 +113,14 @@ trait ReliefsSummaryController extends BackLinkController
         }
       }
     } recover {
-      case fe: ForbiddenException     =>
+      case _: ForbiddenException     =>
         Logger.warn("[ReliefsSummaryController][viewPrintFriendlyReliefReturn] Forbidden exception")
-        unauthorisedUrl()
+        authAction.unauthorisedUrl()
     }
   }
 
   def deleteDraft(periodKey: Int): Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         ensureClientContext {
           Future.successful(Redirect(controllers.routes.DraftDeleteConfirmationController.view(None, periodKey, "relief")))
@@ -121,13 +129,4 @@ trait ReliefsSummaryController extends BackLinkController
     }
   }
 
-}
-
-object ReliefsSummaryController extends ReliefsSummaryController {
-  val reliefsService: ReliefsService = ReliefsService
-  val delegationService: DelegationService = DelegationService
-  val dataCacheConnector: DataCacheConnector = DataCacheConnector
-  val subscriptionDataService: SubscriptionDataService = SubscriptionDataService
-  override val controllerId: String = "ReliefsSummaryController"
-  override val backLinkCacheConnector: BackLinkCacheConnector = BackLinkCacheConnector
 }

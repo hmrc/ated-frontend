@@ -16,22 +16,28 @@
 
 package controllers.subscriptionData
 
+import config.ApplicationConfig
 import connectors.DataCacheConnector
-import controllers.AtedBaseController
 import controllers.auth.AuthAction
 import forms.AtedForms._
-import play.api.Play.current
-import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, AnyContent}
+import javax.inject.Inject
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{DelegationService, SubscriptionDataService}
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-trait EditContactEmailController extends AtedBaseController with AuthAction {
-  val subscriptionDataService: SubscriptionDataService
+class EditContactEmailController @Inject()(mcc: MessagesControllerComponents,
+                                           authAction: AuthAction,
+                                           subscriptionDataService: SubscriptionDataService)
+                                          (implicit val appConfig: ApplicationConfig)
+
+  extends FrontendController(mcc) {
+
+  implicit val ec: ExecutionContext = mcc.executionContext
 
   def edit : Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       for {
         emailWithConsent <- subscriptionDataService.getEmailWithConsent
       } yield {
@@ -46,13 +52,13 @@ trait EditContactEmailController extends AtedBaseController with AuthAction {
 
 
   def submit : Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
 
       validateEmail(editContactDetailsEmailForm.bindFromRequest).fold(
         formWithErrors => Future.successful(BadRequest(views.html.subcriptionData.editContactEmail(formWithErrors, getBackLink))),
         editedClientData => {
           for {
-            editedContact <- subscriptionDataService.editEmailWithConsent(editedClientData)
+            _ <- subscriptionDataService.editEmailWithConsent(editedClientData)
           } yield {
             Redirect(controllers.subscriptionData.routes.CompanyDetailsController.view())
           }
@@ -64,10 +70,4 @@ trait EditContactEmailController extends AtedBaseController with AuthAction {
   private def getBackLink = {
     Some(controllers.subscriptionData.routes.CompanyDetailsController.view().url)
   }
-}
-
-object EditContactEmailController extends EditContactEmailController {
-  val delegationService: DelegationService = DelegationService
-  val dataCacheConnector: DataCacheConnector = DataCacheConnector
-  override val subscriptionDataService: SubscriptionDataService = SubscriptionDataService
 }

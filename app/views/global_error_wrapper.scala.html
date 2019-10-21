@@ -14,6 +14,8 @@
  * limitations under the License.
  *@
 
+@import play.twirl.api.HtmlFormat
+
 @(appConfig: config.ApplicationConfig,
 title: String,
 mainClass: Option[String] = None,
@@ -31,7 +33,7 @@ delegatedService: Option[String] = None)(implicit messages: Messages, request: R
 @import uk.gov.hmrc.play.views.html.{helpers => uiHelpers, layouts => uiLayouts}
 
 @linkElement = {
-<link rel="stylesheet" href='@controllers.routes.AssetsController.at("stylesheets/main.css")'/>
+<link rel="stylesheet" href='@controllers.routes.Assets.versioned("stylesheets/main.css")'/>
 }
 
 @head = {
@@ -47,8 +49,8 @@ headScripts = None)
 
 
 @scriptElement = {
-<script type="text/javascript" src='@controllers.routes.AssetsController.at("jquery/jquery-ui-1.12.1.min.js")'></script>
-<script type="text/javascript" src='@controllers.routes.AssetsController.at("javascript/timeout-dialog.js")'></script>
+<script type="text/javascript" src='@controllers.routes.Assets.versioned("jquery/jquery-ui-1.12.1.min.js")'></script>
+<script type="text/javascript" src='@controllers.routes.Assets.versioned("javascript/timeout-dialog.js")'></script>
 <script type="text/javascript" charset="utf-8">
   @if(userLoggedIn) {
      $.timeoutDialog({timeout: @appConfig.defaultTimeoutSeconds, countdown: @appConfig.timeoutCountdown, keep_alive_url: '/ated/keep-alive', logout_url: '@routes.ApplicationController.logout', logout_redirect_url: '@routes.ApplicationController.logout', restart_on_yes: true, background_no_scroll: true});

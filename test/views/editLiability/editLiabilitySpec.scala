@@ -16,18 +16,22 @@
 
 package views.editLiability
 
+import config.ApplicationConfig
 import forms.AtedForms._
+import models.StandardAuthRetrievals
 import org.jsoup.Jsoup
 import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
+import play.api.i18n.{Messages, MessagesApi}
 import play.api.test.FakeRequest
 import utils.MockAuthUtil
 
 class editLiabilitySpec extends FeatureSpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
-
-  implicit lazy val authContext = organisationStandardRetrievals
-  implicit val messages : play.api.i18n.Messages = play.api.i18n.Messages.Implicits.applicationMessages
+  implicit val request = FakeRequest()
+  implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
+  implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
+  implicit val appConfig: ApplicationConfig = mock[ApplicationConfig]
 
   feature("The user can view an edit liability type page") {
 
@@ -39,7 +43,7 @@ class editLiabilitySpec extends FeatureSpec with GuiceOneServerPerSuite with Moc
       When("The user views the page and clicks yes")
 
       implicit val request = FakeRequest()
-      val html = views.html.editLiability.editLiability(editLiabilityReturnTypeForm, "formBundleNo", 2015, true, None)
+      val html = views.html.editLiability.editLiability(editLiabilityReturnTypeForm, "formBundleNo", 2015, editAllowed = true, None)
 
       val document = Jsoup.parse(html.toString())
       Then("the page title : How do you want to change your ATED return?")
@@ -72,7 +76,7 @@ class editLiabilitySpec extends FeatureSpec with GuiceOneServerPerSuite with Moc
 
       implicit val request = FakeRequest()
 
-      val html = views.html.editLiability.editLiability(editLiabilityReturnTypeForm, "formBundleNo", 2015, false, Some("http://backLink"))
+      val html = views.html.editLiability.editLiability(editLiabilityReturnTypeForm, "formBundleNo", 2015, editAllowed = false, Some("http://backLink"))
 
       val document = Jsoup.parse(html.toString())
       Then("the page title : How do you want to change your ATED return?")
@@ -80,7 +84,8 @@ class editLiabilitySpec extends FeatureSpec with GuiceOneServerPerSuite with Moc
 
       assert(document.getElementById("pre-heading").text() === "This section is: Change return")
 
-      assert(document.getElementById("editliability-text").text() === "Your original return is too complex to edit online. To make any changes contact Customer Support.")
+      assert(document.getElementById("editliability-text")
+        .text() === "Your original return is too complex to edit online. To make any changes contact Customer Support.")
 
       assert(document.getElementById("editLiabilityType_legend").text() === "How do you want to change your ATED return?")
       assert(document.getElementById("editLiabilityType-cr") === null)

@@ -19,7 +19,9 @@ package controllers.propertyDetails
 import java.util.UUID
 
 import builders.{PropertyDetailsBuilder, SessionBuilder}
+import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
+import controllers.auth.AuthAction
 import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -27,11 +29,11 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
-import play.api.mvc.Result
+import play.api.mvc.{MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.{DelegationService, PropertyDetailsCacheSuccessResponse, PropertyDetailsService}
-import uk.gov.hmrc.auth.core.{AffinityGroup, PlayAuthConnector}
+import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService}
+import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.{AtedConstants, MockAuthUtil}
 
@@ -39,113 +41,39 @@ import scala.concurrent.Future
 
 class PropertyDetailsNewBuildControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with MockAuthUtil{
 
+  implicit val mockAppConfig: ApplicationConfig = mock[ApplicationConfig]
   implicit lazy val hc: HeaderCarrier = HeaderCarrier()
 
-  val periodKey: Int = 2016
-  val mockService: PropertyDetailsService = mock[PropertyDetailsService]
-  val mockBackLinkCache: BackLinkCacheConnector = mock[BackLinkCacheConnector]
+  val mockMcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
+  val mockPropertyDetailsService: PropertyDetailsService = mock[PropertyDetailsService]
   val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
+  val mockBackLinkCacheConnector: BackLinkCacheConnector = mock[BackLinkCacheConnector]
+  val mockPropertyDetailsProfessionallyValuedController: PropertyDetailsProfessionallyValuedController = mock[PropertyDetailsProfessionallyValuedController]
 
-  object TestPropertyDetailsController extends PropertyDetailsNewBuildController {
-    override val authConnector: PlayAuthConnector = mockAuthConnector
-    override val delegationService: DelegationService = mockDelegationService
-    override val propertyDetailsService: PropertyDetailsService = mockService
-    override val controllerId: String = "controllerId"
-    override val backLinkCacheConnector: BackLinkCacheConnector = mockBackLinkCache
-    override val dataCacheConnector: DataCacheConnector = mockDataCacheConnector
+  val periodKey: Int = 2016
 
-  }
+class Setup {
 
-  override def beforeEach(): Unit = {
-    reset(mockAuthConnector)
-    reset(mockService)
-    reset(mockDelegationService)
-    reset(mockBackLinkCache)
-  }
+  val mockAuthAction: AuthAction = new AuthAction(
+    mockAppConfig,
+    mockDelegationService,
+    mockAuthConnector
+  )
 
-  "PropertyDetailsNewBuildController" must {
-
-    "use correct DelegationService" in {
-      PropertyDetailsAcquisitionController.delegationService must be(DelegationService)
-    }
-
-    "propertyDetails" must {
-
-      "unauthorised users" must {
-
-        "respond with a redirect" in {
-          getWithUnAuthorisedUser { result =>
-            status(result) must be(SEE_OTHER)
-          }
-        }
-
-        "be redirected to the unauthorised page" in {
-          getWithUnAuthorisedUser { result =>
-            redirectLocation(result).get must include("/ated/unauthorised")
-          }
-        }
-      }
-
-      "Authorised users" must {
-
-        "show the chargeable property details view if we id and data" in {
-          val propertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
-          getDataWithAuthorisedUser("1", propertyDetails) {
-            result =>
-              status(result) must be(OK)
-          }
-        }
-      }
-    }
-
-    "save" must {
-      "unauthorised users" must {
-
-        "be redirected to the login page" in {
-          saveWithUnAuthorisedUser { result =>
-            status(result) must be(SEE_OTHER)
-            redirectLocation(result).get must include("/ated/unauthorised")
-          }
-        }
-      }
-
-      "Authorised users" must {
-
-        "for invalid data, return BAD_REQUEST" in {
-          val formBody = List(
-            ("isNewBuild", "false"))
-          when(mockBackLinkCache.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
-          submitWithAuthorisedUser(formBody) {
-            result =>
-              status(result) must be(BAD_REQUEST)
-          }
-        }
-
-        "When the data is valid forward to the Professionally Valued Page" in {
-          val formBody = List(
-            ("isNewBuild", "false"),
-            ("notNewBuildDate.day", "1"),
-            ("notNewBuildDate.month", "4"),
-            ("notNewBuildDate.year", "2016"),
-            ("notNewBuildValue", "1500000")
-          )
-          when(mockBackLinkCache.saveBackLink(Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
-          submitWithAuthorisedUser(formBody) {
-            result =>
-              status(result) must be(SEE_OTHER)
-              redirectLocation(result).get must include("/liability/create/valued/view")
-          }
-        }
-      }
-
-    }
-  }
+  val testPropertyDetailsNewBuildController: PropertyDetailsNewBuildController = new PropertyDetailsNewBuildController(
+    mockMcc,
+    mockAuthAction,
+    mockPropertyDetailsProfessionallyValuedController,
+    mockPropertyDetailsService,
+    mockDataCacheConnector,
+    mockBackLinkCacheConnector
+  )
 
   def getWithUnAuthorisedUser(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
     val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
     setInvalidAuthMocks(authMock)
-    val result = TestPropertyDetailsController.view("1").apply(SessionBuilder.buildRequestWithSession(userId))
+    val result = testPropertyDetailsNewBuildController.view("1").apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
@@ -157,10 +85,10 @@ class PropertyDetailsNewBuildControllerSpec extends PlaySpec with GuiceOneServer
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
     when(mockDataCacheConnector.fetchAndGetFormData[Boolean](Matchers.any())
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
-    when(mockBackLinkCache.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
-    when(mockService.retrieveDraftPropertyDetails(Matchers.any())(Matchers.any(), Matchers.any()))
+    when(mockBackLinkCacheConnector.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
+    when(mockPropertyDetailsService.retrieveDraftPropertyDetails(Matchers.any())(Matchers.any(), Matchers.any()))
       .thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propertyDetails)))
-    val result = TestPropertyDetailsController.view(id).apply(SessionBuilder.buildRequestWithSession(userId))
+    val result = testPropertyDetailsNewBuildController.view(id).apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
@@ -169,7 +97,7 @@ class PropertyDetailsNewBuildControllerSpec extends PlaySpec with GuiceOneServer
     val userId = s"user-${UUID.randomUUID}"
     val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
     setInvalidAuthMocks(authMock)
-    val result = TestPropertyDetailsController.save("1", periodKey, None)
+    val result = testPropertyDetailsNewBuildController.save("1", periodKey, None)
       .apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
@@ -178,13 +106,90 @@ class PropertyDetailsNewBuildControllerSpec extends PlaySpec with GuiceOneServer
     val userId = s"user-${UUID.randomUUID}"
     when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-    when(mockService.saveDraftPropertyDetailsNewBuild(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).
+    when(mockPropertyDetailsService.saveDraftPropertyDetailsNewBuild(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).
       thenReturn(Future.successful(OK))
     val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
     setAuthMocks(authMock)
-    val result = TestPropertyDetailsController.save("1", periodKey, None)
+    val result = testPropertyDetailsNewBuildController.save("1", periodKey, None)
       .apply(SessionBuilder.updateRequestFormWithSession(FakeRequest().withFormUrlEncodedBody(formBody: _*), userId))
 
     test(result)
+  }
+}
+
+
+  override def beforeEach(): Unit = {
+  }
+
+  "PropertyDetailsNewBuildController" must {
+    "propertyDetails" must {
+
+      "unauthorised users" must {
+
+        "respond with a redirect" in new Setup {
+          getWithUnAuthorisedUser { result =>
+            status(result) must be(SEE_OTHER)
+          }
+        }
+
+        "be redirected to the unauthorised page" in new Setup {
+          getWithUnAuthorisedUser { result =>
+            redirectLocation(result).get must include("/ated/unauthorised")
+          }
+        }
+      }
+
+      "Authorised users" must {
+
+        "show the chargeable property details view if we id and data" in new Setup {
+          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+          getDataWithAuthorisedUser("1", propertyDetails) {
+            result =>
+              status(result) must be(OK)
+          }
+        }
+      }
+    }
+
+    "save" must {
+      "unauthorised users" must {
+
+        "be redirected to the login page" in new Setup {
+          saveWithUnAuthorisedUser { result =>
+            status(result) must be(SEE_OTHER)
+            redirectLocation(result).get must include("/ated/unauthorised")
+          }
+        }
+      }
+
+      "Authorised users" must {
+
+        "for invalid data, return BAD_REQUEST" in new Setup {
+          val formBody = List(
+            ("isNewBuild", "false"))
+          when(mockBackLinkCacheConnector.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
+          submitWithAuthorisedUser(formBody) {
+            result =>
+              status(result) must be(BAD_REQUEST)
+          }
+        }
+
+        "When the data is valid forward to the Professionally Valued Page" in new Setup {
+          val formBody = List(
+            ("isNewBuild", "false"),
+            ("notNewBuildDate.day", "1"),
+            ("notNewBuildDate.month", "4"),
+            ("notNewBuildDate.year", "2016"),
+            ("notNewBuildValue", "1500000")
+          )
+          when(mockBackLinkCacheConnector.saveBackLink(Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
+          submitWithAuthorisedUser(formBody) {
+            result =>
+              status(result) must be(SEE_OTHER)
+              redirectLocation(result).get must include("/liability/create/valued/view")
+          }
+        }
+      }
+    }
   }
 }

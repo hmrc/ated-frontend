@@ -16,18 +16,22 @@
 
 package views.propertyDetails
 
+import config.ApplicationConfig
 import forms.PropertyDetailsForms._
 import org.jsoup.Jsoup
 import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
-import org.scalatestplus.play.OneServerPerSuite
+import org.scalatestplus.play.guice.GuiceOneAppPerSuite
+import play.api.i18n.{Messages, MessagesApi}
 import play.api.test.FakeRequest
 import utils.{AtedUtils, MockAuthUtil}
 
-class propertyDetailsTitleSpec extends FeatureSpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
+class propertyDetailsTitleSpec extends FeatureSpec with GuiceOneAppPerSuite with MockitoSugar
+  with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
 
   implicit val request = FakeRequest()
-  implicit val messages : play.api.i18n.Messages = play.api.i18n.Messages.Implicits.applicationMessages
+  implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
+  implicit val appConfig: ApplicationConfig = mock[ApplicationConfig]
   implicit lazy val authContext = organisationStandardRetrievals
 
   feature("The user can adit the title") {
@@ -71,7 +75,8 @@ class propertyDetailsTitleSpec extends FeatureSpec with OneServerPerSuite with M
       Given("the client is adding a dates liable")
       When("The user views the page")
 
-      val html = views.html.propertyDetails.propertyDetailsTitle("1", 2015, propertyDetailsTitleForm, Some(AtedUtils.EDIT_SUBMITTED), Some("http://backLink"))
+      val html = views.html.propertyDetails.propertyDetailsTitle("1", 2015,
+        propertyDetailsTitleForm, Some(AtedUtils.EDIT_SUBMITTED), Some("http://backLink"))
 
       val document = Jsoup.parse(html.toString())
 

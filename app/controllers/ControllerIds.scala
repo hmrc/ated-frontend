@@ -16,13 +16,12 @@
 
 package controllers
 
-import config.FrontendAuthConnector
-import uk.gov.hmrc.auth.core.PlayAuthConnector
-import uk.gov.hmrc.play.frontend.controller.FrontendController
-
-trait AtedBaseController extends FrontendController {
-
-  val authConnector: PlayAuthConnector = FrontendAuthConnector
-
-
+trait ControllerIds {
+  val editLiabilitySummaryId: String = "EditLiabilitySummaryController"
+  val hasBankDetailsId: String = "HasBankDetailsController"
+  val editLiabilityDeclarationId: String = "EditLiabilityDeclarationController"
+  val propertyDetailsAddressId: String = "PropertyDetailsAddressController"
+  val propertyDetailsTitleId: String = "PropertyDetailsTitleController"
+  val addressLookupId: String = "AddressLookupController"
+  val bankDetailsController: String = "BankDetailsController"
 }

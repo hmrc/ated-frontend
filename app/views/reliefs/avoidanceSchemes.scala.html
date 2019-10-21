@@ -15,7 +15,8 @@
  *@
 
 @import models._
-@(periodKey: Int, taxAvoidanceForm: Form[TaxAvoidance], backLink: Option[String])(reliefsTaxAvoidance : Option[ReliefsTaxAvoidance])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent])
+@import config.ApplicationConfig
+@(periodKey: Int, taxAvoidanceForm: Form[TaxAvoidance], backLink: Option[String])(reliefsTaxAvoidance : Option[ReliefsTaxAvoidance])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 @import uk.gov.hmrc.play.views.html._
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._

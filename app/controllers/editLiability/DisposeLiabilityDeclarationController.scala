@@ -16,21 +16,31 @@
 
 package controllers.editLiability
 
+import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.BackLinkController
 import controllers.auth.{AuthAction, ClientHelper}
-import play.api.Play.current
-import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, AnyContent}
+import javax.inject.Inject
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{DelegationService, DisposeLiabilityReturnService}
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
-trait DisposeLiabilityDeclarationController extends BackLinkController
-  with AuthAction with ClientHelper {
+import scala.concurrent.ExecutionContext
 
-  def disposeLiabilityReturnService: DisposeLiabilityReturnService
+class DisposeLiabilityDeclarationController @Inject()(mcc: MessagesControllerComponents,
+                                                      disposeLiabilityReturnService: DisposeLiabilityReturnService,
+                                                      authAction: AuthAction,
+                                                      val dataCacheConnector: DataCacheConnector,
+                                                      val backLinkCacheConnector: BackLinkCacheConnector)
+                                                      (implicit val appConfig: ApplicationConfig)
+  extends FrontendController(mcc) with BackLinkController with ClientHelper {
+
+  implicit val ec: ExecutionContext = mcc.executionContext
+
+  val controllerId: String = "DisposeLiabilityDeclarationController"
 
   def view(oldFormBundleNo: String): Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         currentBackLink.map(backLink =>
           Ok(views.html.editLiability.disposeLiabilityDeclaration(oldFormBundleNo, backLink))
@@ -40,25 +50,16 @@ trait DisposeLiabilityDeclarationController extends BackLinkController
   }
 
   def submit(oldFormBundleNo: String): Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         disposeLiabilityReturnService.submitDraftDisposeLiability(oldFormBundleNo) map {
           response =>
             response.liabilityReturnResponse.find(_.oldFormBundleNumber == oldFormBundleNo) match {
-              case Some(resp) => Redirect(controllers.editLiability.routes.DisposeLiabilitySentController.view(oldFormBundleNo))
+              case Some(_) => Redirect(controllers.editLiability.routes.DisposeLiabilitySentController.view(oldFormBundleNo))
               case None => Redirect(controllers.routes.AccountSummaryController.view())
             }
         }
       }
     }
   }
-
-}
-
-object DisposeLiabilityDeclarationController extends DisposeLiabilityDeclarationController {
-  val delegationService : DelegationService = DelegationService
-  val dataCacheConnector: DataCacheConnector = DataCacheConnector
-  val disposeLiabilityReturnService: DisposeLiabilityReturnService = DisposeLiabilityReturnService
-  override val controllerId: String = "DisposeLiabilityDeclarationController"
-  override val backLinkCacheConnector: BackLinkCacheConnector = BackLinkCacheConnector
 }

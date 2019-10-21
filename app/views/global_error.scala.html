@@ -14,14 +14,27 @@
  * limitations under the License.
  *@
 
-@(pageTitle: String, heading: String, message: String, applicationConfig: config.ApplicationConfig = config.ApplicationConfig)(implicit request: Request[_], messages: Messages)
+@import config.ApplicationConfig
+@(pageTitle: String,
+  heading: String,
+  message: String,
+  href: Option[String],
+  hrefMessage: Option[String],
+  postHrefMessage: Option[String],
+  appConfig: ApplicationConfig)(implicit request: Request[_], messages: Messages)
+
+@hrefLink = @{href.getOrElse("")}
+@hrefMessages = @{hrefMessage.getOrElse("")}
+@postHref = @{postHrefMessage.getOrElse("")}
+ @test = @{Messages(heading)}
+
 
 @contentHeader = {
-<h1 class="column-two-thirds">@heading</h1>
+<h1 id="header" class="column-two-thirds">@messages(heading)</h1>
 }
 
 @mainContent = {
-<p class="column-two-thirds">@Html(message)</p>
+ <p class="column-two-thirds">@messages(message)<a href=@messages(hrefLink) target="_blank">@messages(hrefMessages)</a>@messages(postHref)</p>
 }
 
-@global_error_wrapper(appConfig = config.ApplicationConfig, title = pageTitle, contentHeader = Some(contentHeader), mainContent = mainContent)
+@global_error_wrapper(appConfig = appConfig, title = pageTitle, contentHeader = Some(contentHeader), mainContent = mainContent)

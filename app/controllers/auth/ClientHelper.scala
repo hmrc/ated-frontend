@@ -16,31 +16,41 @@
 
 package controllers.auth
 
+import config.ApplicationConfig
 import connectors.DataCacheConnector
-import controllers.AtedBaseController
 import models.StandardAuthRetrievals
 import play.api.Logger
-import play.api.Play.current
 import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
+import play.api.mvc.Results._
 import play.api.mvc.{AnyContent, Request, Result}
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.AtedConstants._
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-trait ClientHelper extends AtedBaseController{
+trait ClientHelper {
 
-  def dataCacheConnector: DataCacheConnector
+  val dataCacheConnector: DataCacheConnector
+  val appConfig: ApplicationConfig
 
   def ensureClientContext(result: Future[Result])
-                         (implicit authorisedRequest: StandardAuthRetrievals, req: Request[AnyContent], hc: HeaderCarrier): Future[Result] = {
+                         (implicit authorisedRequest: StandardAuthRetrievals,
+                          req: Request[AnyContent],
+                          hc: HeaderCarrier,
+                          messages: Messages): Future[Result] = {
     dataCacheConnector.fetchAtedRefData[String](DelegatedClientAtedRefNumber) flatMap {
       case refNo @ Some(_) if refNo.get == authorisedRequest.atedReferenceNumber => result
       case _ => Logger.warn(s"[ClientHelper][compareClient] - Client different from context")
-        Future.successful(Ok(views.html.global_error(Messages("ated.selected-client-error.wrong.client.header"),
-          Messages("ated.selected-client-error.wrong.client.title"),
-          Messages("ated.selected-client-error.wrong.client.message"))))
+        Future.successful(Ok(views.html.global_error(
+          "ated.selected-client-error.wrong.client.header",
+          "ated.selected-client-error.wrong.client.title",
+          "ated.selected-client-error.wrong.client.message",
+          Some("ated.selected-client-error.wrong.client.HrefLink"),
+          Some("ated.selected-client-error.wrong.client.HrefMessage"),
+          Some("ated.selected-client-error.wrong.client.PostHrefMessage"),
+          appConfig
+        )))
     }
   }
 

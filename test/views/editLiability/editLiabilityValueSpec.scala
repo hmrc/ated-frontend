@@ -16,19 +16,24 @@
 
 package views.editLiability
 
+import config.ApplicationConfig
 import forms.PropertyDetailsForms._
 import models.{HasValueChanged, StandardAuthRetrievals}
 import org.jsoup.Jsoup
 import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
+import play.api.i18n.{Messages, MessagesApi}
 import play.api.test.FakeRequest
 import utils.MockAuthUtil
 
-class editLiabilityValueSpec extends FeatureSpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil{
+class editLiabilityValueSpec extends FeatureSpec with GuiceOneServerPerSuite with MockitoSugar
+  with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
 
+  implicit val request = FakeRequest()
+  implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
-  implicit val messages : play.api.i18n.Messages = play.api.i18n.Messages.Implicits.applicationMessages
+  implicit val appConfig: ApplicationConfig = mock[ApplicationConfig]
 
   feature("The user can view an edit liability value page") {
     info("as a user I want to view the correct page content")
@@ -48,7 +53,8 @@ class editLiabilityValueSpec extends FeatureSpec with GuiceOneServerPerSuite wit
 
       assert(document.getElementById("pre-heading").text() === "This section is: Create return")
 
-      assert(document.getElementById("value-text").text() === "Based on the information you have previously given us the value of your property for the purposes of ATED is £123")
+      assert(document.getElementById("value-text")
+        .text() === "Based on the information you have previously given us the value of your property for the purposes of ATED is £123")
 
       And("No data is populated")
       assert(document.getElementById("hasValueChanged").text() === "Has the value of your property changed for the purposes of ATED? Yes No")
@@ -76,7 +82,8 @@ class editLiabilityValueSpec extends FeatureSpec with GuiceOneServerPerSuite wit
 
       implicit val request = FakeRequest()
 
-      val html = views.html.editLiability.editLiabilityHasValueChanged(Some(BigDecimal(45678.12)), "1", hasValueChangedForm.fill(HasValueChanged(Some(true))), None, Some("http://backLink"))
+      val html = views.html.editLiability.editLiabilityHasValueChanged(Some(BigDecimal(45678.12)), "1",
+        hasValueChangedForm.fill(HasValueChanged(Some(true))), None, Some("http://backLink"))
 
       val document = Jsoup.parse(html.toString())
       Then("the page title : Has the value of your property changed for the purposes of ATED?")
@@ -84,7 +91,8 @@ class editLiabilityValueSpec extends FeatureSpec with GuiceOneServerPerSuite wit
 
       assert(document.getElementById("pre-heading").text() === "This section is: Create return")
 
-      assert(document.getElementById("value-text").text() === "Based on the information you have previously given us the value of your property for the purposes of ATED is £45,678")
+      assert(document.getElementById("value-text")
+        .text() === "Based on the information you have previously given us the value of your property for the purposes of ATED is £45,678")
 
       And("The data is populated for a property value set to true")
       assert(document.getElementById("hasValueChanged").text() === "Has the value of your property changed for the purposes of ATED? Yes No")

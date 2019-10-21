@@ -14,13 +14,14 @@
  * limitations under the License.
  *@
 
-@(disposeLiability: models.DisposeLiabilityReturn, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent])
+@import config.ApplicationConfig
+@(disposeLiability: models.DisposeLiabilityReturn, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
 @import uk.gov.hmrc.play.views.html.helpers._
-@import utils.PeriodUtils._
+@import _root_.utils.PeriodUtils._
 @import views.html.helpers._
 
-@incomplete = {@Messages("ated.label.incomplete")}
+@incomplete = {@messages("ated.label.incomplete")}
 
 @analyticsJs = {
   ga('set', 'page', document.location.pathname.replace(/[0-9]/g ,'').replace(/\/\//g, '/'));
@@ -28,32 +29,32 @@
 }
 
 @propertyDetailsAddress = {
-  <span id="address-line-1">@Messages(disposeLiability.formBundleReturn.propertyDetails.address.addressLine1)</span><br>
-  <span id="address-line-2">@Messages(disposeLiability.formBundleReturn.propertyDetails.address.addressLine2)</span><br>
+  <span id="address-line-1">@messages(disposeLiability.formBundleReturn.propertyDetails.address.addressLine1)</span><br>
+  <span id="address-line-2">@messages(disposeLiability.formBundleReturn.propertyDetails.address.addressLine2)</span><br>
   @if(disposeLiability.formBundleReturn.propertyDetails.address.postalCode.isDefined){
     <span id="address-postcode">@disposeLiability.formBundleReturn.propertyDetails.address.postalCode</span>
   }
 }
 
 @disposeLiabilityDate = {
-  @disposeLiability.disposeLiability.flatMap(x => x.dateOfDisposal.map(y => y.toString(Messages("ated.date-format"))))
+  @disposeLiability.disposeLiability.flatMap(x => x.dateOfDisposal.map(y => y.toString(messages("ated.date-format"))))
 }
 
 @disposeLiabilityDateEdit = {
   <a href="@controllers.editLiability.routes.DisposePropertyController.editFromSummary(disposeLiability.id.toString)"   id="edit-property-disposal-date" data-journey-click="ated-frontend:click:edit-property-disposal-date">
-    @Messages("ated.edit") <span class="visuallyhidden">@Messages("ated.dispose-property.summary.disposal-date-label")</span>
+    @messages("ated.edit") <span class="visuallyhidden">@messages("ated.dispose-property.summary.disposal-date-label")</span>
   </a>
 }
 
 @bankDetailsTypeOfAccountNONEEdit = {
 <a href="@controllers.editLiability.routes.DisposePropertyController.editFromSummary(disposeLiability.id.toString)" id="edit-bank-details-type" data-journey-click="ated-frontend:click:edit-bank-details">
-  @Messages("ated.edit") <span class="visuallyhidden">@Messages("ated.edit-liability.summary.bank-details.type-of-account")</span>
+  @messages("ated.edit") <span class="visuallyhidden">@messages("ated.edit-liability.summary.bank-details.type-of-account")</span>
 </a>
 }
 
 @bankDetailsTypeOfAccountEdit = {
-<a href="@controllers.editLiability.routes.DisposeLiabilityBankDetailsController.editFromSummary(disposeLiability.id.toString)" id="edit-bank-details-type" data-journey-click="ated-frontend:click:edit-bank-details"> @Messages("ated.edit")
-  <span class="visuallyhidden">@Messages("ated.edit-liability.summary.bank-details.type-of-account")</span>
+<a href="@controllers.editLiability.routes.DisposeLiabilityBankDetailsController.editFromSummary(disposeLiability.id.toString)" id="edit-bank-details-type" data-journey-click="ated-frontend:click:edit-bank-details"> @messages("ated.edit")
+  <span class="visuallyhidden">@messages("ated.edit-liability.summary.bank-details.type-of-account")</span>
 </a>
 }
 
@@ -62,8 +63,8 @@
 }
 
 @bankDetailsAccountNameEdit = {
-<a href="@controllers.editLiability.routes.DisposeLiabilityBankDetailsController.editFromSummary(disposeLiability.id.toString)" id="edit-bank-details-account-name" data-journey-click="ated-frontend:click:edit-bank-details"> @Messages("ated.edit")
-  <span class="visuallyhidden">@Messages("ated.edit-liability.summary.bank-details.account-holder-name")</span>
+<a href="@controllers.editLiability.routes.DisposeLiabilityBankDetailsController.editFromSummary(disposeLiability.id.toString)" id="edit-bank-details-account-name" data-journey-click="ated-frontend:click:edit-bank-details"> @messages("ated.edit")
+  <span class="visuallyhidden">@messages("ated.edit-liability.summary.bank-details.account-holder-name")</span>
 </a>
 }
 
@@ -72,8 +73,8 @@
 }
 
 @bankDetailsAccountNumberEdit = {
-<a href="@controllers.editLiability.routes.DisposeLiabilityBankDetailsController.editFromSummary(disposeLiability.id.toString)" id="edit-bank-details-account" data-journey-click="ated-frontend:click:edit-bank-details"> @Messages("ated.edit")
-  <span class="visuallyhidden">@Messages("ated.edit-liability.summary.bank-details.account-number")</span>
+<a href="@controllers.editLiability.routes.DisposeLiabilityBankDetailsController.editFromSummary(disposeLiability.id.toString)" id="edit-bank-details-account" data-journey-click="ated-frontend:click:edit-bank-details"> @messages("ated.edit")
+  <span class="visuallyhidden">@messages("ated.edit-liability.summary.bank-details.account-number")</span>
 </a>
 }
 
@@ -82,8 +83,8 @@
 }
 
 @bankDetailsAccountSortCodeEdit = {
-<a href="@controllers.editLiability.routes.DisposeLiabilityBankDetailsController.editFromSummary(disposeLiability.id.toString)" id="edit-bank-details-sortcode" data-journey-click="ated-frontend:click:edit-bank-details"> @Messages("ated.edit")
-    <span class="visuallyhidden">@Messages("ated.edit-liability.summary.bank-details.sort-code")</span>
+<a href="@controllers.editLiability.routes.DisposeLiabilityBankDetailsController.editFromSummary(disposeLiability.id.toString)" id="edit-bank-details-sortcode" data-journey-click="ated-frontend:click:edit-bank-details"> @messages("ated.edit")
+    <span class="visuallyhidden">@messages("ated.edit-liability.summary.bank-details.sort-code")</span>
 </a>
 }
 
@@ -92,8 +93,8 @@
 }
 
 @bankDetailsAccountNumberIBANEdit = {
-<a href="@controllers.editLiability.routes.DisposeLiabilityBankDetailsController.editFromSummary(disposeLiability.id.toString)" id="edit-bank-details-iban" data-journey-click="ated-frontend:click:edit-bank-details"> @Messages("ated.edit")
-  <span class="visuallyhidden">@Messages("ated.edit-liability.summary.bank-details.iban")</span>
+<a href="@controllers.editLiability.routes.DisposeLiabilityBankDetailsController.editFromSummary(disposeLiability.id.toString)" id="edit-bank-details-iban" data-journey-click="ated-frontend:click:edit-bank-details"> @messages("ated.edit")
+  <span class="visuallyhidden">@messages("ated.edit-liability.summary.bank-details.iban")</span>
 </a>
 }
 
@@ -102,26 +103,26 @@
 }
 
 @bankDetailsAccountSwiftCodeEdit = {
-<a href="@controllers.editLiability.routes.DisposeLiabilityBankDetailsController.editFromSummary(disposeLiability.id.toString)" id="edit-bank-details-swift-code" data-journey-click="ated-frontend:click:edit-bank-details"> @Messages("ated.edit")
-  <span class="visuallyhidden">@Messages("ated.edit-liability.summary.bank-details.bic-swift-code")</span>
+<a href="@controllers.editLiability.routes.DisposeLiabilityBankDetailsController.editFromSummary(disposeLiability.id.toString)" id="edit-bank-details-swift-code" data-journey-click="ated-frontend:click:edit-bank-details"> @messages("ated.edit")
+  <span class="visuallyhidden">@messages("ated.edit-liability.summary.bank-details.bic-swift-code")</span>
 </a>
 }
 
 @bankDetailsIncompleteEdit = {
-<a href="@controllers.editLiability.routes.DisposeLiabilityHasBankDetailsController.editFromSummary(disposeLiability.id.toString)" id="edit-bank-name-details" data-journey-click="ated-frontend:click:edit-bank-details"> @Messages("ated.edit")
-  <span class="visuallyhidden">@Messages("ated.edit-liability.summary.bank-details.supply-bank-details")</span>
+<a href="@controllers.editLiability.routes.DisposeLiabilityHasBankDetailsController.editFromSummary(disposeLiability.id.toString)" id="edit-bank-name-details" data-journey-click="ated-frontend:click:edit-bank-details"> @messages("ated.edit")
+  <span class="visuallyhidden">@messages("ated.edit-liability.summary.bank-details.supply-bank-details")</span>
 </a>
 }
 
-@atedMain(title = Messages("ated.property-details-summary.title"),
+@atedMain(title = messages("ated.property-details-summary.title"),
           analyticsAdditionalJs = Some(analyticsJs)) {
 
-  @pageHeadersAndError(backLink, "pre-heading", Messages("ated.property-details.pre-header-dispose"), "edit-liability-summary-header", Messages("ated.property-details-summary.header"))
+  @pageHeadersAndError(backLink, "pre-heading", messages("ated.property-details.pre-header-dispose"), "edit-liability-summary-header", messages("ated.property-details-summary.header"))
 
-  <p id="details-text">@Messages("ated.property-details-summary.details-text", periodStartDate(disposeLiability.formBundleReturn.periodKey.toInt).toString(Messages("ated.date-format")), periodEndDate(disposeLiability.formBundleReturn.periodKey.toInt).toString(Messages("ated.date-format")))</p>
+  <p id="details-text">@messages("ated.property-details-summary.details-text", periodStartDate(disposeLiability.formBundleReturn.periodKey.toInt).toString(messages("ated.date-format")), periodEndDate(disposeLiability.formBundleReturn.periodKey.toInt).toString(messages("ated.date-format")))</p>
 
   <section class="cya-wrapper" id="cya-property-details">
-    <h2 id="cya-property-details-header" class="heading-medium">@Messages("ated.property-details-summary.table.property-details.header")</h2>
+    <h2 id="cya-property-details-header" class="heading-medium">@messages("ated.property-details-summary.table.property-details.header")</h2>
     @cyaRows(
       Seq(
         CyaRow(
@@ -147,7 +148,7 @@
   @if(disposeLiability.bankDetails.map(_.hasBankDetails) == Some(true)){
 
     <div class="grid-wrapper">
-      <h2 class="heading-medium" id="bank-details-header">@Messages("ated.edit-liability.summary.bank-details.header")</h2>
+      <h2 class="heading-medium" id="bank-details-header">@messages("ated.edit-liability.summary.bank-details.header")</h2>
     </div>
 
     @if(!disposeLiability.bankDetails.flatMap(_.bankDetails).isDefined) {
@@ -157,7 +158,7 @@
           CyaRow(
             cyaQuestion = "ated.edit-liability.summary.bank-details.type-of-account",
             cyaQuestionId = "type-of-account-label",
-            cyaAnswer = Html(Messages("ated.label.incomplete")),
+            cyaAnswer = Html(messages("ated.label.incomplete")),
             cyaAnswerId = "type-of-account-value",
             cyaChange = Some(bankDetailsTypeOfAccountEdit)
           )
@@ -173,7 +174,7 @@
             CyaRow(
               cyaQuestion = "ated.edit-liability.summary.bank-details.type-of-account",
               cyaQuestionId = "type-of-account-label",
-              cyaAnswer = Html(Messages("ated.label-bank-account-type.uk")),
+              cyaAnswer = Html(messages("ated.label-bank-account-type.uk")),
               cyaAnswerId = "type-of-account-value",
               cyaChange = Some(bankDetailsTypeOfAccountEdit)
             ),
@@ -208,7 +209,7 @@
               CyaRow(
                 cyaQuestion = "ated.edit-liability.summary.bank-details.type-of-account",
                 cyaQuestionId = "type-of-account-label",
-                cyaAnswer = Html(Messages("ated.label-bank-account-type.overseas")),
+                cyaAnswer = Html(messages("ated.label-bank-account-type.overseas")),
                 cyaAnswerId = "type-of-account-label-value",
                 cyaChange = Some(bankDetailsTypeOfAccountEdit)
               ),
@@ -248,7 +249,7 @@
           CyaRow(
             cyaQuestion = "ated.edit-liability.summary.bank-details.supply-bank-details",
             cyaQuestionId = "supply-bank-label",
-            cyaAnswer = Html(Messages("ated.label.incomplete")),
+            cyaAnswer = Html(messages("ated.label.incomplete")),
             cyaAnswerId = "supply-bank-value",
             cyaChange = Some(bankDetailsIncompleteEdit)
           )
@@ -260,13 +261,13 @@
   </section>
 
   <section class="cya-wrapper" id="cya-return-status">
-    <h2 id="return-status-header" class="heading-medium">@Messages("ated.property-details-summary.table.property-ated-details.return-status.header")</h2>
+    <h2 id="return-status-header" class="heading-medium">@messages("ated.property-details-summary.table.property-ated-details.return-status.header")</h2>
     @cyaRows(
       Seq(
         CyaRow(
           cyaQuestion = "ated.edit-liability.summary.bank-details.return-status.label",
           cyaQuestionId = "return-status-label",
-          cyaAnswer = Html(Messages("ated.property-details-summary.status.text")),
+          cyaAnswer = Html(messages("ated.property-details-summary.status.text")),
           cyaAnswerId = "return-status-value",
           cyaChange = None
         )
@@ -276,7 +277,7 @@
 
   <div class="margin-bottom-default">
     <p id="ated-charge-text">
-      @Messages("ated.property-details-summary.table.ated-charge.text")
+      @messages("ated.property-details-summary.table.ated-charge.text")
       <span class="heading-xlarge" id="ated-charge-value">
         @disposeLiability.calculated.map(x => formattedPounds(x.liabilityAmount))
       </span>
@@ -284,21 +285,21 @@
   </div>
 
   <div class="margin-bottom-default">
-    <span class="panel-indent">@Messages("ated.property-details-summary.saved-draft.text")</span>
+    <span class="panel-indent">@messages("ated.property-details-summary.saved-draft.text")</span>
   </div>
 
   <p class="margin-bottom-default">
     <a href="@controllers.editLiability.routes.DisposeLiabilitySummaryController.viewPrintFriendlyDisposeLiabilityReturn(disposeLiability.id.toString)" id="print-friendly-edit-liability-link" target="_blank">
-      @Messages("ated.dispose-property.summary.print.view")
+      @messages("ated.dispose-property.summary.print.view")
     </a>
   </p>
 
   <p class="margin-bottom-default">
-    <a href="@controllers.routes.AccountSummaryController.view()" id="saved-returns-link">@Messages("ated.dispose-property.summary.save-as-draft-link")</a>
+    <a href="@controllers.routes.AccountSummaryController.view()" id="saved-returns-link">@messages("ated.dispose-property.summary.save-as-draft-link")</a>
   </p>
 
   @form(action=controllers.editLiability.routes.DisposeLiabilitySummaryController.submit(disposeLiability.id.toString)) {
-    <button class="button" id="submit" type="submit">@Messages("ated.confirm-and-continue")</button>
+    <button class="button" id="submit" type="submit">@messages("ated.confirm-and-continue")</button>
   }
 
 }

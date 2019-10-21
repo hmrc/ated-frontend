@@ -19,7 +19,9 @@ package controllers.editLiability
 import java.util.UUID
 
 import builders._
+import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
+import controllers.auth.AuthAction
 import models.{BankDetailsModel, HasBankDetails, PropertyDetails}
 import org.jsoup.Jsoup
 import org.mockito.Matchers
@@ -29,140 +31,43 @@ import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.libs.json.{JsValue, Json}
-import play.api.mvc.Result
+import play.api.mvc.{MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.{ChangeLiabilityReturnService, DelegationService}
-import uk.gov.hmrc.auth.core.{AffinityGroup, PlayAuthConnector}
+import services.ChangeLiabilityReturnService
+import uk.gov.hmrc.auth.core.AffinityGroup
+import uk.gov.hmrc.http.HeaderCarrier
 import utils.{AtedConstants, MockAuthUtil}
 
 import scala.concurrent.Future
 
 class HasBankDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with MockAuthUtil {
 
+  implicit val mockAppConfig: ApplicationConfig = mock[ApplicationConfig]
+  implicit lazy val hc: HeaderCarrier = HeaderCarrier()
 
+  val mockMcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
   val mockChangeLiabilityReturnService: ChangeLiabilityReturnService = mock[ChangeLiabilityReturnService]
-  val mockBackLinkCache: BackLinkCacheConnector = mock[BackLinkCacheConnector]
   val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
+  val mockBackLinkCacheConnector: BackLinkCacheConnector = mock[BackLinkCacheConnector]
+  val mockBankDetailsController: BankDetailsController = mock[BankDetailsController]
 
-  object TestBankDetailsController extends HasBankDetailsController {
+class Setup {
 
-    override val authConnector: PlayAuthConnector = mockAuthConnector
-    override val delegationService: DelegationService = mockDelegationService
-    override val changeLiabilityReturnService: ChangeLiabilityReturnService = mockChangeLiabilityReturnService
-    override val controllerId: String = "controllerId"
-    override val backLinkCacheConnector: BackLinkCacheConnector = mockBackLinkCache
-    override val dataCacheConnector: DataCacheConnector = mockDataCacheConnector
+  val mockAuthAction: AuthAction = new AuthAction(
+    mockAppConfig,
+    mockDelegationService,
+    mockAuthConnector
+  )
 
-  }
-
-  override def beforeEach: Unit = {
-    reset(mockAuthConnector)
-    reset(mockDelegationService)
-    reset(mockChangeLiabilityReturnService)
-    reset(mockBackLinkCache)
-  }
-
-  "HasBankDetailsController" must {
-
-    "use correct DelegationService" in {
-      HasBankDetailsController.delegationService must be(DelegationService)
-    }
-
-    "use correct Service" in {
-      HasBankDetailsController.changeLiabilityReturnService must be(ChangeLiabilityReturnService)
-    }
-
-    "view - for authorised users" must {
-
-      "navigate to bank details page, if liablity is retrieved" in {
-        val bankDetails = BankDetailsModel()
-        val changeLiabilityReturn = ChangeLiabilityReturnBuilder.generateChangeLiabilityReturn("12345678901").copy(bankDetails = Some(bankDetails))
-        viewWithAuthorisedUser(Some(changeLiabilityReturn)) {
-          result =>
-            status(result) must be(OK)
-            val document = Jsoup.parse(contentAsString(result))
-            document.title() must be("Do you have a bank account where we could pay a refund? - GOV.UK")
-            document.getElementById("pre-heading").text() must be("This section is: Change return")
-
-        }
-      }
-
-      "redirect to account summary page, when that liability return is not-found in cache or ETMP" in {
-        when(mockBackLinkCache.saveBackLink(Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
-        viewWithAuthorisedUser(None) {
-          result =>
-            status(result) must be(SEE_OTHER)
-            redirectLocation(result) must be(Some("/ated/account-summary"))
-        }
-      }
-    }
-
-    "editFromSummary - for authorised users" must {
-
-      "navigate to bank details page, if liablity is retrieved, show the summary back link" in {
-        val bankDetails = BankDetailsModel()
-        val changeLiabilityReturn = ChangeLiabilityReturnBuilder.generateChangeLiabilityReturn("12345678901").copy(bankDetails = Some(bankDetails))
-        editFromSummary(Some(changeLiabilityReturn)) {
-          result =>
-            status(result) must be(OK)
-            val document = Jsoup.parse(contentAsString(result))
-            document.title() must be("Do you have a bank account where we could pay a refund? - GOV.UK")
-
-            document.getElementById("backLinkHref").text must be("Back")
-            document.getElementById("backLinkHref").attr("href") must include("/ated/liability/12345678901/change/summary")
-        }
-      }
-
-      "redirect to account summary page, when that liability return is not-found in cache or ETMP" in {
-        when(mockBackLinkCache.saveBackLink(Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
-        editFromSummary(None) {
-          result =>
-            status(result) must be(SEE_OTHER)
-            redirectLocation(result) must be(Some("/ated/account-summary"))
-        }
-      }
-    }
-
-    "save - for authorised user" must {
-      "for invalid data, return BAD_REQUEST" in {
-        val inputJson = Json.parse( """{"hasBankDetails": "2"}""")
-        when(mockBackLinkCache.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
-        saveWithAuthorisedUser(inputJson) {
-          result =>
-             status(result) must be(BAD_REQUEST)
-            verify(mockChangeLiabilityReturnService, times(0))
-              .cacheChangeLiabilityReturnHasBankDetails(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())
-        }
-      }
-
-      "for valid, redirect to change in value page" in {
-        val inputJson = Json.toJson(HasBankDetails(Some(true)))
-        when(mockBackLinkCache.saveBackLink(Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
-        saveWithAuthorisedUser(inputJson) {
-          result =>
-            status(result) must be(SEE_OTHER)
-            redirectLocation(result) must be(Some("/ated/liability/12345678901/change/bank-details"))
-            verify(mockChangeLiabilityReturnService, times(1))
-              .cacheChangeLiabilityReturnHasBankDetails(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())
-        }
-      }
-
-      "for valid, redirect to change in value page if we have no bank details" in {
-        val inputJson = Json.toJson(HasBankDetails(Some(false)))
-        when(mockBackLinkCache.saveBackLink(Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
-        saveWithAuthorisedUser(inputJson) {
-          result =>
-            status(result) must be(SEE_OTHER)
-            redirectLocation(result) must be(Some("/ated/liability/12345678901/change/view-summary"))
-            verify(mockChangeLiabilityReturnService, times(1))
-              .cacheChangeLiabilityReturnHasBankDetails(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())
-        }
-      }
-    }
-
-  }
-
+  val testHasBankDetailsController: HasBankDetailsController = new HasBankDetailsController (
+    mockMcc,
+    mockChangeLiabilityReturnService,
+    mockAuthAction,
+    mockBankDetailsController,
+    mockDataCacheConnector,
+    mockBackLinkCacheConnector
+  )
 
   def viewWithAuthorisedUser(changeLiabilityReturnOpt: Option[PropertyDetails])(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
@@ -172,8 +77,8 @@ class HasBankDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
     when(mockChangeLiabilityReturnService.retrieveSubmittedLiabilityReturnAndCache
     (Matchers.eq("12345678901"), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(changeLiabilityReturnOpt))
-    when(mockBackLinkCache.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
-    val result = TestBankDetailsController.view("12345678901").apply(SessionBuilder.buildRequestWithSession(userId))
+    when(mockBackLinkCacheConnector.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
+    val result = testHasBankDetailsController.view("12345678901").apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
@@ -185,8 +90,8 @@ class HasBankDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
     when(mockChangeLiabilityReturnService.retrieveSubmittedLiabilityReturnAndCache
     (Matchers.eq("12345678901"), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(changeLiabilityReturnOpt))
-    when(mockBackLinkCache.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
-    val result = TestBankDetailsController.editFromSummary("12345678901").apply(SessionBuilder.buildRequestWithSession(userId))
+    when(mockBackLinkCacheConnector.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
+    val result = testHasBankDetailsController.editFromSummary("12345678901").apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
@@ -199,8 +104,104 @@ class HasBankDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
     val changeLiabilityReturn = ChangeLiabilityReturnBuilder.generateChangeLiabilityReturn("123456789012")
     when(mockChangeLiabilityReturnService.cacheChangeLiabilityReturnHasBankDetails
     (Matchers.eq("12345678901"), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(changeLiabilityReturn)))
-    val result = TestBankDetailsController.save("12345678901").apply(SessionBuilder.updateRequestWithSession(FakeRequest().withJsonBody(inputJson), userId))
+    val result = testHasBankDetailsController.save("12345678901").apply(SessionBuilder.updateRequestWithSession(FakeRequest().withJsonBody(inputJson), userId))
     test(result)
   }
+}
 
+  override def beforeEach: Unit = {
+    reset(mockChangeLiabilityReturnService)
+  }
+
+  "HasBankDetailsController" must {
+    "view - for authorised users" must {
+
+      "navigate to bank details page, if liability is retrieved" in new Setup {
+        val bankDetails = BankDetailsModel()
+        val changeLiabilityReturn: PropertyDetails = ChangeLiabilityReturnBuilder
+          .generateChangeLiabilityReturn("12345678901").copy(bankDetails = Some(bankDetails))
+        viewWithAuthorisedUser(Some(changeLiabilityReturn)) {
+          result =>
+            status(result) must be(OK)
+            val document = Jsoup.parse(contentAsString(result))
+            document.title() must be("Do you have a bank account where we could pay a refund? - GOV.UK")
+            document.getElementById("pre-heading").text() must be("This section is: Change return")
+
+        }
+      }
+
+      "redirect to account summary page, when that liability return is not-found in cache or ETMP" in new Setup {
+        when(mockBackLinkCacheConnector.saveBackLink(Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
+        viewWithAuthorisedUser(None) {
+          result =>
+            status(result) must be(SEE_OTHER)
+            redirectLocation(result) must be(Some("/ated/account-summary"))
+        }
+      }
+    }
+
+    "editFromSummary - for authorised users" must {
+
+      "navigate to bank details page, if liability is retrieved, show the summary back link" in new Setup {
+        val bankDetails = BankDetailsModel()
+        val changeLiabilityReturn: PropertyDetails = ChangeLiabilityReturnBuilder
+          .generateChangeLiabilityReturn("12345678901").copy(bankDetails = Some(bankDetails))
+        editFromSummary(Some(changeLiabilityReturn)) {
+          result =>
+            status(result) must be(OK)
+            val document = Jsoup.parse(contentAsString(result))
+            document.title() must be("Do you have a bank account where we could pay a refund? - GOV.UK")
+
+            document.getElementById("backLinkHref").text must be("Back")
+            document.getElementById("backLinkHref").attr("href") must include("/ated/liability/12345678901/change/summary")
+        }
+      }
+
+      "redirect to account summary page, when that liability return is not-found in cache or ETMP" in new Setup {
+        when(mockBackLinkCacheConnector.saveBackLink(Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
+        editFromSummary(None) {
+          result =>
+            status(result) must be(SEE_OTHER)
+            redirectLocation(result) must be(Some("/ated/account-summary"))
+        }
+      }
+    }
+
+    "save - for authorised user" must {
+      "for invalid data, return BAD_REQUEST" in new Setup {
+        val inputJson: JsValue = Json.parse( """{"hasBankDetails": "2"}""")
+        when(mockBackLinkCacheConnector.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
+        saveWithAuthorisedUser(inputJson) {
+          result =>
+             status(result) must be(BAD_REQUEST)
+            verify(mockChangeLiabilityReturnService, times(0))
+              .cacheChangeLiabilityReturnHasBankDetails(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())
+        }
+      }
+
+      "for valid, redirect to change in value page" in new Setup {
+        val inputJson: JsValue = Json.toJson(HasBankDetails(Some(true)))
+        when(mockBackLinkCacheConnector.saveBackLink(Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
+        saveWithAuthorisedUser(inputJson) {
+          result =>
+            status(result) must be(SEE_OTHER)
+            redirectLocation(result) must be(Some("/ated/liability/12345678901/change/bank-details"))
+            verify(mockChangeLiabilityReturnService, times(1))
+              .cacheChangeLiabilityReturnHasBankDetails(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())
+        }
+      }
+
+      "for valid, redirect to change in value page if we have no bank details" in new Setup {
+        val inputJson: JsValue = Json.toJson(HasBankDetails(Some(false)))
+        when(mockBackLinkCacheConnector.saveBackLink(Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
+        saveWithAuthorisedUser(inputJson) {
+          result =>
+            status(result) must be(SEE_OTHER)
+            redirectLocation(result) must be(Some("/ated/liability/12345678901/change/view-summary"))
+            verify(mockChangeLiabilityReturnService, times(1))
+              .cacheChangeLiabilityReturnHasBankDetails(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())
+        }
+      }
+    }
+  }
 }

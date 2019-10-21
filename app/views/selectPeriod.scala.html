@@ -14,7 +14,8 @@
  * limitations under the License.
  *@
 
-@(selectPeriodForm: Form[SelectPeriod], periods: List[(String, String)], backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent])
+@import config.ApplicationConfig
+@(selectPeriodForm: Form[SelectPeriod], periods: List[(String, String)], backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._

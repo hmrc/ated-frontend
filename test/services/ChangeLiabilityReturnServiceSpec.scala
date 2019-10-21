@@ -26,6 +26,7 @@ import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.libs.json.{JsValue, Json}
+import play.api.mvc.MessagesControllerComponents
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import utils.AtedConstants._
@@ -34,25 +35,12 @@ import scala.concurrent.Future
 
 class ChangeLiabilityReturnServiceSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
 
-  val mockAtedConnector: AtedConnector = mock[AtedConnector]
-  val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
-
-  object TestChangeLiabilityReturnService extends ChangeLiabilityReturnService {
-    override val atedConnector: AtedConnector = mockAtedConnector
-    override val dataCacheConnector: DataCacheConnector = mockDataCacheConnector
-  }
-
-  val formBundleNo1 = "123456789012"
-  val formBundleNo2 = "123456789000"
   implicit val hc: HeaderCarrier = HeaderCarrier()
   implicit lazy val authContext: StandardAuthRetrievals = mock[StandardAuthRetrievals]
 
-  val periodKey = 2015
-
-  override def beforeEach: Unit = {
-    reset(mockAtedConnector)
-    reset(mockDataCacheConnector)
-  }
+  val mockMcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
+  val mockAtedConnector: AtedConnector = mock[AtedConnector]
+  val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
 
   val changeLiabilityReturn: PropertyDetails = PropertyDetailsBuilder.getFullPropertyDetails("123456789012")
   val changeLiabilityReturnJson: JsValue = Json.toJson(changeLiabilityReturn)
@@ -62,41 +50,54 @@ class ChangeLiabilityReturnServiceSpec extends PlaySpec with GuiceOneServerPerSu
   val period1: PropertyDetailsPeriod =  PropertyDetailsBuilder.getPropertyDetailsPeriodFull(periodKey).get
   val bankDetails1 = BankDetails()
 
-  "ChangeLiabilityReturnService" must {
-    "use correct connector" in {
-      ChangeLiabilityReturnService.atedConnector must be(AtedConnector)
-    }
+  val formBundleNo1 = "123456789012"
+  val formBundleNo2 = "123456789000"
 
+  val periodKey = 2015
+
+  class Setup {
+    val testChangeLiabilityReturnService: ChangeLiabilityReturnService = new ChangeLiabilityReturnService (
+    mockMcc,
+    mockAtedConnector,
+    mockDataCacheConnector
+    )
+  }
+
+  override def beforeEach: Unit = {
+  }
+
+  "ChangeLiabilityReturnService" must {
     "retrieveLiabilityReturn" must {
       "for valid form-bundle-number" must {
-        "return Some(ChangeLiabilityReturn), if data is found in cache/ETMP, i.e. for status-code OK" in {
+
+        "return Some(ChangeLiabilityReturn), if data is found in cache/ETMP, i.e. for status-code OK" in new Setup {
           when(mockAtedConnector.retrieveAndCacheLiabilityReturn(Matchers.any())(Matchers.any(), Matchers.any()))
             .thenReturn(Future.successful(HttpResponse(OK, responseJson = Some(changeLiabilityReturnJson))))
-          val result = await(TestChangeLiabilityReturnService.retrieveSubmittedLiabilityReturnAndCache(formBundleNo1))
+          val result: Option[PropertyDetails] = await(testChangeLiabilityReturnService.retrieveSubmittedLiabilityReturnAndCache(formBundleNo1))
           result must be(Some(changeLiabilityReturn))
         }
 
-        "return None, if data is not-found in cache/ETMP, i.e. for any other status-code" in {
+        "return None, if data is not-found in cache/ETMP, i.e. for any other status-code" in new Setup {
           when(mockAtedConnector.retrieveAndCacheLiabilityReturn(Matchers.any())(Matchers.any(), Matchers.any()))
             .thenReturn(Future.successful(HttpResponse(NOT_FOUND, responseJson = None)))
-          val result = await(TestChangeLiabilityReturnService.retrieveSubmittedLiabilityReturnAndCache(formBundleNo2))
+          val result: Option[PropertyDetails] = await(testChangeLiabilityReturnService.retrieveSubmittedLiabilityReturnAndCache(formBundleNo2))
           result must be(None)
         }
       }
 
       "for valid form-bundle-number and previous return is selected" must {
-        "return Some(ChangeLiabilityReturn), if data is found in cache/ETMP, i.e. for status-code OK" in {
+        "return Some(ChangeLiabilityReturn), if data is found in cache/ETMP, i.e. for status-code OK" in new Setup {
           when(mockAtedConnector.retrieveAndCachePreviousLiabilityReturn(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
             .thenReturn(Future.successful(HttpResponse(OK, responseJson = Some(changeLiabilityReturnJson))))
-          val result = await(TestChangeLiabilityReturnService.retrieveSubmittedLiabilityReturnAndCache(
+          val result: Option[PropertyDetails] = await(testChangeLiabilityReturnService.retrieveSubmittedLiabilityReturnAndCache(
             formBundleNo1, Some(true), Some(SelectPeriod(Some("2015")))))
           result must be(Some(changeLiabilityReturn))
         }
 
-        "return None, if data is not-found in cache/ETMP, i.e. for any other status-code" in {
+        "return None, if data is not-found in cache/ETMP, i.e. for any other status-code" in new Setup {
           when(mockAtedConnector.retrieveAndCachePreviousLiabilityReturn(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
             .thenReturn(Future.successful(HttpResponse(NOT_FOUND, responseJson = None)))
-          val result = await(TestChangeLiabilityReturnService.retrieveSubmittedLiabilityReturnAndCache(
+          val result: Option[PropertyDetails] = await(testChangeLiabilityReturnService.retrieveSubmittedLiabilityReturnAndCache(
             formBundleNo2, Some(true), Some(SelectPeriod(Some("2015")))))
           result must be(None)
         }
@@ -106,17 +107,17 @@ class ChangeLiabilityReturnServiceSpec extends PlaySpec with GuiceOneServerPerSu
 
     "cacheChangeLiabilityReturnHasBankDetails" must {
       "for valid form-bundle-number" must {
-        "return Some(ChangeLiabilityReturn), if data is saved in cache, i.e. for status-code OK" in {
+        "return Some(ChangeLiabilityReturn), if data is saved in cache, i.e. for status-code OK" in new Setup {
           when(mockAtedConnector.cacheDraftChangeLiabilityReturnHasBank(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
             .thenReturn(Future.successful(HttpResponse(OK, responseJson = Some(changeLiabilityReturnJson))))
-          val result = await(TestChangeLiabilityReturnService.cacheChangeLiabilityReturnHasBankDetails(formBundleNo1, updatedValue = true))
+          val result: Option[PropertyDetails] = await(testChangeLiabilityReturnService.cacheChangeLiabilityReturnHasBankDetails(formBundleNo1, updatedValue = true))
           result must be(Some(changeLiabilityReturn))
         }
 
-        "return None, if data is not saved in cache, i.e. for any other status-code" in {
+        "return None, if data is not saved in cache, i.e. for any other status-code" in new Setup {
           when(mockAtedConnector.cacheDraftChangeLiabilityReturnHasBank(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
             .thenReturn(Future.successful(HttpResponse(NOT_FOUND, responseJson = None)))
-          val result = await(TestChangeLiabilityReturnService.cacheChangeLiabilityReturnHasBankDetails(formBundleNo2, updatedValue = false))
+          val result: Option[PropertyDetails] = await(testChangeLiabilityReturnService.cacheChangeLiabilityReturnHasBankDetails(formBundleNo2, updatedValue = false))
           result must be(None)
         }
       }
@@ -125,17 +126,17 @@ class ChangeLiabilityReturnServiceSpec extends PlaySpec with GuiceOneServerPerSu
 
     "cacheChangeLiabilityReturnBank" must {
       "for valid form-bundle-number" must {
-        "return Some(ChangeLiabilityReturn), if data is saved in cache, i.e. for status-code OK" in {
+        "return Some(ChangeLiabilityReturn), if data is saved in cache, i.e. for status-code OK" in new Setup {
           when(mockAtedConnector.cacheDraftChangeLiabilityReturnBank(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
             .thenReturn(Future.successful(HttpResponse(OK, responseJson = Some(changeLiabilityReturnJson))))
-          val result = await(TestChangeLiabilityReturnService.cacheChangeLiabilityReturnBank(formBundleNo1, bankDetails1))
+          val result: Option[PropertyDetails] = await(testChangeLiabilityReturnService.cacheChangeLiabilityReturnBank(formBundleNo1, bankDetails1))
           result must be(Some(changeLiabilityReturn))
         }
 
-        "return None, if data is not saved in cache, i.e. for any other status-code" in {
+        "return None, if data is not saved in cache, i.e. for any other status-code" in new Setup {
           when(mockAtedConnector.cacheDraftChangeLiabilityReturnBank(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
             .thenReturn(Future.successful(HttpResponse(NOT_FOUND, responseJson = None)))
-          val result = await(TestChangeLiabilityReturnService.cacheChangeLiabilityReturnBank(formBundleNo2, bankDetails1))
+          val result: Option[PropertyDetails] = await(testChangeLiabilityReturnService.cacheChangeLiabilityReturnBank(formBundleNo2, bankDetails1))
           result must be(None)
         }
       }
@@ -144,8 +145,8 @@ class ChangeLiabilityReturnServiceSpec extends PlaySpec with GuiceOneServerPerSu
 
     "submitDraftChangeLiability" must {
       "for valid form-bundle-number" must {
-        "return EditLiabilityReturnsResponseModel, if submit status is OK" in {
-          val jsonEtmpResponse =
+        "return EditLiabilityReturnsResponseModel, if submit status is OK" in new Setup {
+          val jsonEtmpResponse: String =
             s"""
                |{
                |  "processingDate": "2001-12-17T09:30:47Z",
@@ -172,14 +173,14 @@ class ChangeLiabilityReturnServiceSpec extends PlaySpec with GuiceOneServerPerSu
             .thenReturn(Future.successful(response.as[EditLiabilityReturnsResponseModel]))
           when(mockAtedConnector.submitDraftChangeLiabilityReturn(Matchers.eq(formBundleNo1))(Matchers.any(), Matchers.any()))
             .thenReturn(Future.successful(HttpResponse(OK, responseJson = Some(response))))
-          val result = await(TestChangeLiabilityReturnService.submitDraftChangeLiability(formBundleNo1))
+          val result: EditLiabilityReturnsResponseModel = await(testChangeLiabilityReturnService.submitDraftChangeLiability(formBundleNo1))
           result.liabilityReturnResponse.length must be(1)
         }
 
-        "return empty EditLiabilityReturnsResponseModel, if submit status is not OK" in {
+        "return empty EditLiabilityReturnsResponseModel, if submit status is not OK" in new Setup {
           when(mockAtedConnector.submitDraftChangeLiabilityReturn(Matchers.eq(formBundleNo1))(Matchers.any(), Matchers.any()))
             .thenReturn(Future.successful(HttpResponse(BAD_REQUEST)))
-          val result = await(TestChangeLiabilityReturnService.submitDraftChangeLiability(formBundleNo1))
+          val result: EditLiabilityReturnsResponseModel = await(testChangeLiabilityReturnService.submitDraftChangeLiability(formBundleNo1))
           result.liabilityReturnResponse.length must be(0)
           result.liabilityReturnResponse must be(Nil)
         }

@@ -18,42 +18,79 @@ package controllers
 
 import java.util.UUID
 
-import builders.{SessionBuilder, TestAudit, TitleBuilder}
+import builders.{SessionBuilder, TitleBuilder}
+import config.ApplicationConfig
+import connectors.DataCacheConnector
+import controllers.auth.AuthAction
 import org.jsoup.Jsoup
-import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
-import play.api.mvc.Result
+import play.api.mvc.{MessagesControllerComponents, Result}
 import play.api.test.Helpers._
-import services.DelegationService
-import uk.gov.hmrc.auth.core.{AffinityGroup, PlayAuthConnector}
-import uk.gov.hmrc.play.audit.model.Audit
+import uk.gov.hmrc.auth.core.AffinityGroup
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.bootstrap.audit.DefaultAuditConnector
 import utils.MockAuthUtil
 
 import scala.concurrent.Future
 
 class LeaveFeedbackControllerSpec extends PlaySpec with MockitoSugar with GuiceOneServerPerSuite with BeforeAndAfterEach with MockAuthUtil {
 
-override def beforeEach(): Unit = {
-    reset(mockAuthConnector)
+  implicit lazy val hc: HeaderCarrier = HeaderCarrier()
+  implicit val mockAppConfig: ApplicationConfig = mock[ApplicationConfig]
+
+  val mockMcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
+  val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
+  val mockAuditConnector: DefaultAuditConnector = mock[DefaultAuditConnector]
+
+
+  class Setup {
+
+    val mockAuthAction: AuthAction = new AuthAction(
+      mockAppConfig,
+      mockDelegationService,
+      mockAuthConnector
+    )
+
+    val testLeaveFeedbackController: LeaveFeedbackController = new LeaveFeedbackController (
+      mockMcc,
+      mockAuthAction,
+      mockAuditConnector
+    )
+
+    def getWithAuthorisedUser(test: Future[Result] => Any) {
+      val userId = s"user-${UUID.randomUUID}"
+      val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+      setAuthMocks(authMock)
+      val result = testLeaveFeedbackController.view("/ated/home").apply(SessionBuilder.buildRequestWithSession(userId))
+      test(result)
+    }
+
+    def submit(inputData: Seq[(String, String)])(test: Future[Result] => Any): Unit = {
+      val userId = s"user-${UUID.randomUUID}"
+      val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+      setAuthMocks(authMock)
+      val result = testLeaveFeedbackController.submitFeedback("/ated/home")
+        .apply(SessionBuilder.buildRequestWithSession(userId).withFormUrlEncodedBody(inputData: _*))
+      test(result)
+    }
+
+    def thanks(test: Future[Result] => Any): Unit = {
+      val userId = s"user-${UUID.randomUUID}"
+      val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+      setAuthMocks(authMock)
+      val result = testLeaveFeedbackController.thanks("/ated/home").apply(SessionBuilder.buildRequestWithSession(userId))
+      test(result)
+    }
   }
 
-  object TestLeaveFeedbackController extends LeaveFeedbackController {
-    override val delegationService: DelegationService = mockDelegationService
-    override val authConnector: PlayAuthConnector = mockAuthConnector
-    override val audit: Audit = new TestAudit
-    override val appName: String = "Test"
+  override def beforeEach(): Unit = {
   }
 
   "LeaveFeedbackController" must {
-
-    "have the correct audit connector" in {
-      LeaveFeedbackController.audit must be(LeaveFeedbackController.audit)
-    }
-
-    "show the feedback view" in {
+    "show the feedback view" in new Setup {
       getWithAuthorisedUser {
         result =>
           status(result) must be(OK)
@@ -70,8 +107,8 @@ override def beforeEach(): Unit = {
       }
     }
 
-    "show the correct errors if nothing has been entered on the form" in {
-      val inputData = Seq(("summaryInfo", ""), ("moreInfo", ""))
+    "show the correct errors if nothing has been entered on the form" in new Setup {
+      val inputData: Seq[(String, String)] = Seq(("summaryInfo", ""), ("moreInfo", ""))
       submit(inputData) {
         result =>
           status(result) must be(BAD_REQUEST)
@@ -87,8 +124,8 @@ override def beforeEach(): Unit = {
       }
     }
 
-    "redirect to the Thank You page if the data has been entered into the form correctly" in {
-      val inputData = Seq(("summaryInfo", "This is my summary info"), ("moreInfo", "This is more info"), ("experienceLevel", "2"))
+    "redirect to the Thank You page if the data has been entered into the form correctly" in new Setup {
+      val inputData: Seq[(String, String)] = Seq(("summaryInfo", "This is my summary info"), ("moreInfo", "This is more info"), ("experienceLevel", "2"))
       submit(inputData) {
         result =>
           status(result) must be(SEE_OTHER)
@@ -96,7 +133,7 @@ override def beforeEach(): Unit = {
       }
     }
 
-    "display the Thank You page" in {
+    "display the Thank You page" in new Setup {
       thanks {
         result =>
           status(result) must be(OK)
@@ -105,32 +142,5 @@ override def beforeEach(): Unit = {
           document.getElementById("feedback-thanks-header").text() must be("Thank you")
       }
     }
-
   }
-
-  def getWithAuthorisedUser(test: Future[Result] => Any) {
-    val userId = s"user-${UUID.randomUUID}"
-    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
-    setAuthMocks(authMock)
-    val result = TestLeaveFeedbackController.view("/ated/home").apply(SessionBuilder.buildRequestWithSession(userId))
-    test(result)
-  }
-
-  def submit(inputData: Seq[(String, String)])(test: Future[Result] => Any): Unit = {
-    val userId = s"user-${UUID.randomUUID}"
-    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
-    setAuthMocks(authMock)
-    val result = TestLeaveFeedbackController.submitFeedback("/ated/home")
-      .apply(SessionBuilder.buildRequestWithSession(userId).withFormUrlEncodedBody(inputData: _*))
-    test(result)
-  }
-
-  def thanks(test: Future[Result] => Any): Unit = {
-    val userId = s"user-${UUID.randomUUID}"
-    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
-    setAuthMocks(authMock)
-    val result = TestLeaveFeedbackController.thanks("/ated/home").apply(SessionBuilder.buildRequestWithSession(userId))
-    test(result)
-  }
-
 }

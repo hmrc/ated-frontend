@@ -16,24 +16,37 @@
 
 package controllers.editLiability
 
+import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.{AuthAction, ClientHelper}
 import controllers.propertyDetails._
 import forms.PropertyDetailsForms.hasValueChangedForm
+import javax.inject.Inject
 import models.HasValueChanged
-import play.api.Play.current
-import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{DelegationService, PropertyDetailsCacheSuccessResponse, PropertyDetailsService}
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.AtedConstants.SelectedPreviousReturn
 import utils.AtedUtils
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-trait EditLiabilityHasValueChangedController extends PropertyDetailsHelpers with ClientHelper with AuthAction {
+class EditLiabilityHasValueChangedController @Inject()(mcc: MessagesControllerComponents,
+                                                       propertyDetailsOwnedBeforeController: PropertyDetailsOwnedBeforeController,
+                                                       isFullTaxPeriodController: IsFullTaxPeriodController,
+                                                       authAction: AuthAction,
+                                                       val propertyDetailsService: PropertyDetailsService,
+                                                       val dataCacheConnector: DataCacheConnector,
+                                                       val backLinkCacheConnector: BackLinkCacheConnector)
+                                                      (implicit val appConfig: ApplicationConfig)
+  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper {
+
+  implicit val ec: ExecutionContext = mcc.executionContext
+
+  val controllerId: String = "EditLiabilityHasValueChangedController"
 
   def view(oldFormBundleNo: String): Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         propertyDetailsCacheResponse(oldFormBundleNo) {
           case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
@@ -51,7 +64,7 @@ trait EditLiabilityHasValueChangedController extends PropertyDetailsHelpers with
   }
 
   def editFromSummary(oldFormBundleNo: String, isPrevReturn: Option[Boolean] = None): Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         propertyDetailsCacheResponse(oldFormBundleNo) {
           case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
@@ -68,7 +81,7 @@ trait EditLiabilityHasValueChangedController extends PropertyDetailsHelpers with
   }
 
   def save(oldFormBundleNo: String): Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         hasValueChangedForm.bindFromRequest.fold(
           formWithErrors => {
@@ -87,16 +100,16 @@ trait EditLiabilityHasValueChangedController extends PropertyDetailsHelpers with
             val hasValueChanged = propertyDetails.hasValueChanged.getOrElse(false)
             val backLink = Some(controllers.editLiability.routes.EditLiabilityHasValueChangedController.view(oldFormBundleNo).url)
             propertyDetailsService.saveDraftHasValueChanged(oldFormBundleNo, hasValueChanged) flatMap {
-              response =>
+              _ =>
                 if (hasValueChanged) {
-                  RedirectWithBackLink(
-                    PropertyDetailsOwnedBeforeController.controllerId,
+                  redirectWithBackLink(
+                    propertyDetailsOwnedBeforeController.controllerId,
                     controllers.propertyDetails.routes.PropertyDetailsOwnedBeforeController.view(oldFormBundleNo),
                     backLink
                   )
                 } else {
-                  RedirectWithBackLink(
-                    IsFullTaxPeriodController.controllerId,
+                  redirectWithBackLink(
+                    isFullTaxPeriodController.controllerId,
                     controllers.propertyDetails.routes.IsFullTaxPeriodController.view(oldFormBundleNo),
                     backLink
                   )
@@ -109,10 +122,3 @@ trait EditLiabilityHasValueChangedController extends PropertyDetailsHelpers with
   }
 }
 
-object EditLiabilityHasValueChangedController extends EditLiabilityHasValueChangedController {
-  val delegationService: DelegationService = DelegationService
-  val propertyDetailsService: PropertyDetailsService = PropertyDetailsService
-  val dataCacheConnector: DataCacheConnector = DataCacheConnector
-  override val controllerId: String = "EditLiabilityHasValueChangedController"
-  override val backLinkCacheConnector: BackLinkCacheConnector = BackLinkCacheConnector
-}

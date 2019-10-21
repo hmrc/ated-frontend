@@ -16,18 +16,19 @@
 
 package connectors
 
-import config.WSHttp
-import connectors.AtedConnector.baseUrl
+import config.ApplicationConfig
+import javax.inject.Inject
 import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.http._
+import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-trait DelegationConnector {
+class DelegationConnector @Inject()(http: DefaultHttpClient,
+                                    appConfig: ApplicationConfig) {
 
-  val serviceURL = baseUrl("delegation")
-  val http: CoreGet with CorePost with CoreDelete
+  val serviceURL: String = appConfig.conf.baseUrl("delegation")
 
   def delegationDataCall(id: String)(implicit hc: HeaderCarrier): Future[HttpResponse] = {
     val jsonData = Json.parse(s"""{"internalId" : "$id"}""".stripMargin)
@@ -35,8 +36,4 @@ trait DelegationConnector {
 
     http.POST[JsValue, HttpResponse](postUrl, jsonData)
   }
-}
-
-object DelegationConnector extends DelegationConnector {
-  val http = WSHttp
 }

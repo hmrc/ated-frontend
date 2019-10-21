@@ -18,6 +18,8 @@ package models
 
 import org.joda.time.LocalDate
 import play.api.libs.json.Json
+import play.api.libs.json.JodaWrites._
+import play.api.libs.json.JodaReads._
 
 
 case class FormBundleProperty(propertyValue: BigDecimal,dateFrom: LocalDate,dateTo: LocalDate,`type`: String,reliefDescription: Option[String])

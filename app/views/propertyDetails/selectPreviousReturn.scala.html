@@ -24,7 +24,8 @@
 @import views.html.helpers._
 @import views.html.helpers.error._
 
-@(periodKey: Int, returnType: String, addressResultsForm: Form[AddressSelected], prevReturns: Seq[PreviousReturns], backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent])
+@import config.ApplicationConfig
+@(periodKey: Int, returnType: String, addressResultsForm: Form[AddressSelected], prevReturns: Seq[PreviousReturns], backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
 @analyticsJs = {
   ga('set', 'page', document.location.pathname);

@@ -16,24 +16,34 @@
 
 package controllers.editLiability
 
+import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.BackLinkController
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.AtedForms.disposeLiabilityForm
+import javax.inject.Inject
 import models.DisposeLiability
-import play.api.Play.current
-import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{DelegationService, DisposeLiabilityReturnService}
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-trait DisposePropertyController extends BackLinkController with ClientHelper with AuthAction {
+class DisposePropertyController @Inject()(mcc: MessagesControllerComponents,
+                                          disposeLiabilityReturnService: DisposeLiabilityReturnService,
+                                          authAction: AuthAction,
+                                          disposeLiabilityHasBankDetailsController: DisposeLiabilityHasBankDetailsController,
+                                          val dataCacheConnector: DataCacheConnector,
+                                          val backLinkCacheConnector: BackLinkCacheConnector)
+                                         (implicit val appConfig: ApplicationConfig)
+  extends FrontendController(mcc) with BackLinkController with ClientHelper {
 
-  def disposeLiabilityReturnService: DisposeLiabilityReturnService
+  implicit val ec: ExecutionContext = mcc.executionContext
+
+  val controllerId: String = "DisposePropertyController"
 
   def view(oldFormBundleNo: String) : Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         for {
           disposeLiabilityOpt <- disposeLiabilityReturnService.retrieveLiabilityReturn(oldFormBundleNo)
@@ -42,7 +52,7 @@ trait DisposePropertyController extends BackLinkController with ClientHelper wit
             case Some(x) =>
               currentBackLink.map { backLink =>
                 val filledForm = disposeLiabilityForm.fill(x.disposeLiability.fold(DisposeLiability(periodKey = x.formBundleReturn.periodKey.toInt))(a => a))
-                Ok(views.html.editLiability.dataOfDisposal(filledForm, oldFormBundleNo, backLink))
+                Ok(views.html.editLiability.dataOfDisposal(filledForm, oldFormBundleNo, backLink, x.formBundleReturn.periodKey.toInt))
               }
             case None => Future.successful(Redirect(controllers.routes.AccountSummaryController.view()))
           }
@@ -52,7 +62,7 @@ trait DisposePropertyController extends BackLinkController with ClientHelper wit
   }
 
   def editFromSummary(oldFormBundleNo: String): Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         for {
           disposeLiabilityOpt <- disposeLiabilityReturnService.retrieveLiabilityReturn(oldFormBundleNo)
@@ -61,7 +71,7 @@ trait DisposePropertyController extends BackLinkController with ClientHelper wit
             case Some(x) =>
               Future.successful {
                 val backLink = Some(controllers.editLiability.routes.DisposeLiabilitySummaryController.view(oldFormBundleNo).url)
-                Ok(views.html.editLiability.dataOfDisposal(disposeLiabilityForm.fill(x), oldFormBundleNo, backLink))
+                Ok(views.html.editLiability.dataOfDisposal(disposeLiabilityForm.fill(x), oldFormBundleNo, backLink, x.periodKey))
               }
             case None => Future.successful(Redirect(controllers.routes.AccountSummaryController.view()))
           }
@@ -71,16 +81,25 @@ trait DisposePropertyController extends BackLinkController with ClientHelper wit
   }
 
   def save(oldFormBundleNo: String): Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         disposeLiabilityForm.bindFromRequest.fold(
           formWithErrors => {
-            currentBackLink.map(backLink => BadRequest(views.html.editLiability.dataOfDisposal(formWithErrors, oldFormBundleNo, backLink)))
+            currentBackLink.map{ backLink =>
+              BadRequest(
+                views.html.editLiability.dataOfDisposal(
+                  formWithErrors,
+                  oldFormBundleNo,
+                  backLink,
+                  formWithErrors.data("periodKey").toInt
+                )
+              )
+            }
           },
           disposalDate => disposeLiabilityReturnService.cacheDisposeLiabilityReturnDate(oldFormBundleNo, disposalDate) flatMap {
-            response =>
-              RedirectWithBackLink(
-                DisposeLiabilityHasBankDetailsController.controllerId,
+            _ =>
+              redirectWithBackLink(
+                disposeLiabilityHasBankDetailsController.controllerId,
                 controllers.editLiability.routes.DisposeLiabilityHasBankDetailsController.view(oldFormBundleNo),
                 Some(controllers.editLiability.routes.DisposePropertyController.view(oldFormBundleNo).url)
               )
@@ -91,10 +110,4 @@ trait DisposePropertyController extends BackLinkController with ClientHelper wit
   }
 }
 
-object DisposePropertyController extends DisposePropertyController {
-  val delegationService: DelegationService = DelegationService
-  val disposeLiabilityReturnService : DisposeLiabilityReturnService = DisposeLiabilityReturnService
-  val dataCacheConnector: DataCacheConnector = DataCacheConnector
-  override val controllerId: String = "DisposePropertyController"
-  override val backLinkCacheConnector: BackLinkCacheConnector = BackLinkCacheConnector
-}
+

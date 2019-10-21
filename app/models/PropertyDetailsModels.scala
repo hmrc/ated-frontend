@@ -18,7 +18,9 @@ package models
 
 import org.joda.time.LocalDate
 import play.api.libs.functional.syntax._
-import play.api.libs.json.{JsPath, Json, OWrites, Reads}
+import play.api.libs.json.{JsPath, Json, OFormat, OWrites, Reads}
+import play.api.libs.json.JodaWrites._
+import play.api.libs.json.JodaReads._
 
 
 sealed trait PeriodValidity
@@ -29,7 +31,7 @@ case object PeriodValid extends PeriodValidity
 
 case class PropertyDetailsAddress(line_1: String, line_2: String, line_3: Option[String], line_4: Option[String],
                                   postcode: Option[String] = None) {
-  override def toString = {
+  override def toString: String = {
 
     val line3display = line_3.map(line3 => s", $line3, " ).fold("")(x=>x)
     val line4display = line_4.map(line4 => s"$line4, " ).fold("")(x=>x)
@@ -39,13 +41,13 @@ case class PropertyDetailsAddress(line_1: String, line_2: String, line_3: Option
 }
 
 object PropertyDetailsAddress {
-  implicit val formats = Json.format[PropertyDetailsAddress]
+  implicit val formats: OFormat[PropertyDetailsAddress] = Json.format[PropertyDetailsAddress]
 }
 
 case class PropertyDetailsTitle(titleNumber: String)
 
 object PropertyDetailsTitle {
-  implicit val formats = Json.format[PropertyDetailsTitle]
+  implicit val formats: OFormat[PropertyDetailsTitle] = Json.format[PropertyDetailsTitle]
 }
 
 
@@ -68,19 +70,19 @@ case class PropertyDetailsValue( anAcquisition: Option[Boolean] = None,
                                )
 
 object PropertyDetailsValue {
-  implicit val formats = Json.format[PropertyDetailsValue]
+  implicit val formats: OFormat[PropertyDetailsValue] = Json.format[PropertyDetailsValue]
 }
 
 case class PropertyDetailsAcquisition( anAcquisition: Option[Boolean] = None)
 
 object PropertyDetailsAcquisition {
-  implicit val formats = Json.format[PropertyDetailsAcquisition]
+  implicit val formats: OFormat[PropertyDetailsAcquisition] = Json.format[PropertyDetailsAcquisition]
 }
 
 case class HasValueChanged(hasValueChanged: Option[Boolean] = None)
 
 object HasValueChanged {
-  implicit val formats = Json.format[HasValueChanged]
+  implicit val formats: OFormat[HasValueChanged] = Json.format[HasValueChanged]
 }
 
 case class PropertyDetailsRevalued(isPropertyRevalued: Option[Boolean] = None,
@@ -89,7 +91,7 @@ case class PropertyDetailsRevalued(isPropertyRevalued: Option[Boolean] = None,
                                    partAcqDispDate: Option[LocalDate] = None)
 
 object PropertyDetailsRevalued {
-  implicit val formats = Json.format[PropertyDetailsRevalued]
+  implicit val formats: OFormat[PropertyDetailsRevalued] = Json.format[PropertyDetailsRevalued]
 }
 
 case class PropertyDetailsOwnedBefore(isOwnedBeforePolicyYear: Option[Boolean] = None,
@@ -108,7 +110,7 @@ object PropertyDetailsOwnedBefore {
 case class PropertyDetailsProfessionallyValued(isValuedByAgent: Option[Boolean] = None)
 
 object PropertyDetailsProfessionallyValued {
-  implicit val formats = Json.format[PropertyDetailsProfessionallyValued]
+  implicit val formats: OFormat[PropertyDetailsProfessionallyValued] = Json.format[PropertyDetailsProfessionallyValued]
 }
 
 case class PropertyDetailsNewBuild(
@@ -121,34 +123,34 @@ case class PropertyDetailsNewBuild(
                                   )
 
 object PropertyDetailsNewBuild {
-  implicit val formats = Json.format[PropertyDetailsNewBuild]
+  implicit val formats: OFormat[PropertyDetailsNewBuild] = Json.format[PropertyDetailsNewBuild]
 }
 
 case class PropertyDetailsFullTaxPeriod(isFullPeriod: Option[Boolean] = None)
 
 
 object PropertyDetailsFullTaxPeriod {
-  implicit val formats = Json.format[PropertyDetailsFullTaxPeriod]
+  implicit val formats: OFormat[PropertyDetailsFullTaxPeriod] = Json.format[PropertyDetailsFullTaxPeriod]
 }
 
 case class PropertyDetailsDatesLiable(startDate: LocalDate,
                                       endDate: LocalDate)
 
 object PropertyDetailsDatesLiable {
-  implicit val formats = Json.format[PropertyDetailsDatesLiable]
+  implicit val formats: OFormat[PropertyDetailsDatesLiable] = Json.format[PropertyDetailsDatesLiable]
 }
 
 case class IsFullTaxPeriod(isFullPeriod: Boolean, datesLiable: Option[PropertyDetailsDatesLiable])
 
 object IsFullTaxPeriod {
-  implicit val formats = Json.format[IsFullTaxPeriod]
+  implicit val formats: OFormat[IsFullTaxPeriod] = Json.format[IsFullTaxPeriod]
 }
 
 
 case class PeriodChooseRelief(reliefDescription: String)
 
 object PeriodChooseRelief {
-  implicit val formats = Json.format[PeriodChooseRelief]
+  implicit val formats: OFormat[PeriodChooseRelief] = Json.format[PeriodChooseRelief]
 }
 
 
@@ -157,7 +159,7 @@ case class PropertyDetailsDatesInRelief(startDate: LocalDate,
                                         description: Option[String] = None)
 
 object PropertyDetailsDatesInRelief {
-  implicit val formats = Json.format[PropertyDetailsDatesInRelief]
+  implicit val formats: OFormat[PropertyDetailsDatesInRelief] = Json.format[PropertyDetailsDatesInRelief]
 }
 
 
@@ -165,7 +167,7 @@ case class PropertyDetailsInRelief(isInRelief: Option[Boolean] = None)
 
 
 object PropertyDetailsInRelief {
-  implicit val formats = Json.format[PropertyDetailsInRelief]
+  implicit val formats: OFormat[PropertyDetailsInRelief] = Json.format[PropertyDetailsInRelief]
 }
 
 case class PropertyDetailsTaxAvoidance(isTaxAvoidance: Option[Boolean] = None,
@@ -174,26 +176,26 @@ case class PropertyDetailsTaxAvoidance(isTaxAvoidance: Option[Boolean] = None,
 
 
 object PropertyDetailsTaxAvoidance {
-  implicit val formats = Json.format[PropertyDetailsTaxAvoidance]
+  implicit val formats: OFormat[PropertyDetailsTaxAvoidance] = Json.format[PropertyDetailsTaxAvoidance]
 }
 
 case class PropertyDetailsSupportingInfo(supportingInfo: String)
 
 
 object PropertyDetailsSupportingInfo {
-  implicit val formats = Json.format[PropertyDetailsSupportingInfo]
+  implicit val formats: OFormat[PropertyDetailsSupportingInfo] = Json.format[PropertyDetailsSupportingInfo]
 }
 
 case class LineItem(lineItemType: String, startDate: LocalDate, endDate: LocalDate, description: Option[String] = None)
 
 object LineItem {
-  implicit val formats = Json.format[LineItem]
+  implicit val formats: OFormat[LineItem] = Json.format[LineItem]
 }
 
 case class LineItemValue(propertyValue: BigDecimal, dateOfChange: LocalDate)
 
 object LineItemValue {
-  implicit val formats = Json.format[LineItemValue]
+  implicit val formats: OFormat[LineItemValue] = Json.format[LineItemValue]
 }
 
 case class PropertyDetailsPeriod(isFullPeriod: Option[Boolean] = None,
@@ -206,7 +208,7 @@ case class PropertyDetailsPeriod(isFullPeriod: Option[Boolean] = None,
                                  reliefPeriods: List[LineItem] = Nil)
 
 object PropertyDetailsPeriod {
-  implicit val formats = Json.format[PropertyDetailsPeriod]
+  implicit val formats: OFormat[PropertyDetailsPeriod] = Json.format[PropertyDetailsPeriod]
 }
 
 case class CalculatedPeriod(value : BigDecimal,
@@ -217,7 +219,7 @@ case class CalculatedPeriod(value : BigDecimal,
                            )
 
 object CalculatedPeriod {
-  implicit val formats = Json.format[CalculatedPeriod]
+  implicit val formats: OFormat[CalculatedPeriod] = Json.format[CalculatedPeriod]
 }
 
 case class PropertyDetailsCalculated(acquistionValueToUse : Option[BigDecimal] = None,
@@ -229,7 +231,7 @@ case class PropertyDetailsCalculated(acquistionValueToUse : Option[BigDecimal] =
                                      amountDueOrRefund: Option[BigDecimal] = None)
 
 object PropertyDetailsCalculated {
-  implicit val formats = Json.format[PropertyDetailsCalculated]
+  implicit val formats: OFormat[PropertyDetailsCalculated] = Json.format[PropertyDetailsCalculated]
 }
 
 case class PropertyDetails(id: String,
@@ -243,5 +245,5 @@ case class PropertyDetails(id: String,
                            bankDetails: Option[BankDetailsModel] = None)
 
 object PropertyDetails {
-  implicit val formats = Json.format[PropertyDetails]
+  implicit val formats: OFormat[PropertyDetails] = Json.format[PropertyDetails]
 }

@@ -14,7 +14,8 @@
  * limitations under the License.
  *@
 
-@(formItem:Form[_], fieldName: String, label: Html, isNested: Boolean, defaultDateOption: Option[org.joda.time.LocalDate], args: (Symbol,Any)*)(implicit messages: Messages, formInstance: Option[Form[_]] = None, request: Request[AnyContent])
+@import config.ApplicationConfig
+@(formItem:Form[_], fieldName: String, label: Html, isNested: Boolean, defaultDateOption: Option[org.joda.time.LocalDate], periodKey: Int, args: (Symbol,Any)*)(implicit messages: Messages, formInstance: Option[Form[_]] = None, request: Request[AnyContent], appConfig: ApplicationConfig)
 @import uk.gov.hmrc.play.validators._
 @import play.api.i18n._
 @import uk.gov.hmrc.play.views.html._
@@ -63,7 +64,7 @@
       </details>
     }
 
-    @commonHelper(field,errors)
+    @commonHelperBoundary(field,errors, periodKey)
 
     <div>
       @isOptional = {@if(elements.args.contains('_isRequired)) @{ if(elements.args.get('_isRequired).get == true) {true} else {false}} else {false}}
@@ -72,6 +73,7 @@
 
       @dateInput(
       formItem(dayElem),
+        periodKey,
       '_label -> Messages("date.fields.day"),
       '_inputClass -> "text day validate ated-date-width form-control",
       '_divClass -> "date-form-group day inline-fields",
@@ -85,6 +87,7 @@
 
       @dateInput(
       formItem(monthElem),
+        periodKey,
       '_label -> Messages("date.fields.month"),
       '_inputClass -> "text month validate ated-date-width form-control",
       '_divClass -> "date-form-group month inline-fields",
@@ -98,6 +101,7 @@
 
       @dateInput(
       formItem(yearElem),
+        periodKey,
       '_label -> Messages("date.fields.year"),
       '_inputClass -> "text year validate ated-date-width form-control",
       '_divClass -> "date-form-group year form-group-year inline-fields",

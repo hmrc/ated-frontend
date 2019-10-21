@@ -16,19 +16,23 @@
 
 package views.propertyDetails
 
+import config.ApplicationConfig
 import forms.AddressLookupForms._
 import models._
 import org.jsoup.Jsoup
 import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
-import org.scalatestplus.play.OneServerPerSuite
+import org.scalatestplus.play.guice.GuiceOneAppPerSuite
+import play.api.i18n.{Messages, MessagesApi}
 import play.api.test.FakeRequest
 import utils.{AtedUtils, MockAuthUtil}
 
-class addressLookupResultsSpec extends FeatureSpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
+class addressLookupResultsSpec extends FeatureSpec with GuiceOneAppPerSuite with MockitoSugar with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
 
-  implicit lazy val authContext = organisationStandardRetrievals
-  implicit val messages : play.api.i18n.Messages = play.api.i18n.Messages.Implicits.applicationMessages
+  implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
+  implicit val request = FakeRequest()
+  implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
+  implicit val appConfig: ApplicationConfig = mock[ApplicationConfig]
 
   feature("The user can search for an address via the post code") {
 
@@ -86,7 +90,8 @@ class addressLookupResultsSpec extends FeatureSpec with OneServerPerSuite with M
       val address3 = AddressLookupRecord("3", AddressSearchResult(List("3", "result street"), None, None, "XX1 1XX", AddressLookupCountry("UK", "UK")))
       val results = AddressSearchResults(searchCriteria = AddressLookup("XX1 1XX", None),
         results = List(address1, address2, address3))
-           val html = views.html.propertyDetails.addressLookupResults(Some("123456"), 2015, addressSelectedForm, results, Some(AtedUtils.EDIT_SUBMITTED), Some("http://backLink"))
+           val html = views.html.propertyDetails.addressLookupResults(Some("123456"),
+             2015, addressSelectedForm, results, Some(AtedUtils.EDIT_SUBMITTED), Some("http://backLink"))
 
       val document = Jsoup.parse(html.toString())
       Then("Select the address of the property")

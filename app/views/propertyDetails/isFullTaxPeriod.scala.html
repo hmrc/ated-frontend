@@ -15,11 +15,12 @@
  *@
 
 @import models._
+@import config.ApplicationConfig
 @(id: String, periodKey: Int,
   propertyDetailsForm: Form[PropertyDetailsFullTaxPeriod],
   periodStartDate: org.joda.time.LocalDate,
   periodEndDate: org.joda.time.LocalDate,
-  backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent])
+  backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 @import uk.gov.hmrc.play.views.html._
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._

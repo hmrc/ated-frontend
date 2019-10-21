@@ -19,15 +19,15 @@ package controllers
 import java.util.UUID
 
 import builders.SessionBuilder
-import org.mockito.Mockito._
+import config.ApplicationConfig
+import controllers.auth.AuthAction
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
-import play.api.mvc.Result
+import play.api.mvc.{MessagesControllerComponents, Result}
 import play.api.test.Helpers._
-import services.DelegationService
-import uk.gov.hmrc.auth.core.{AffinityGroup, PlayAuthConnector}
+import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.MockAuthUtil
 
@@ -36,28 +36,80 @@ import scala.concurrent.Future
 class HomeControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with MockAuthUtil {
 
   implicit lazy val hc: HeaderCarrier = HeaderCarrier()
+  val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
+  val mockMcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
 
-object TestHomeController extends HomeController {
-    override val authConnector: PlayAuthConnector = mockAuthConnector
-    override val delegationService: DelegationService = mockDelegationService
+  class Setup {
+
+    val mockAuthAction: AuthAction = new AuthAction(
+      mockAppConfig,
+      mockDelegationService,
+      mockAuthConnector
+    )
+
+    val testHomeController: HomeController = new HomeController (
+      mockMcc,
+      mockAuthAction,
+      mockAppConfig
+    )
+
+    def homeWithAuthorisedAgent(test: Future[Result] => Any) {
+      val userId = s"user-${UUID.randomUUID}"
+      val authMock = authResultDefault(AffinityGroup.Agent, agentEnrolmentSet)
+      setAuthMocks(authMock)
+      val result = testHomeController.home().apply(SessionBuilder.buildRequestWithSession(userId))
+      test(result)
+    }
+
+    def homeWithUnsubscribedUser(test: Future[Result] => Any) {
+      val userId = s"user-${UUID.randomUUID}"
+      val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
+      setAuthMocks(authMock)
+      val result = testHomeController.home().apply(SessionBuilder.buildRequestWithSession(userId))
+      test(result)
+    }
+
+    def homeWithUnsubscribedAgent(test: Future[Result] => Any) {
+      val userId = s"user-${UUID.randomUUID}"
+      val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
+      setAuthMocks(authMock)
+      val result = testHomeController.home().apply(SessionBuilder.buildRequestWithSession(userId))
+      test(result)
+    }
+
+    def homeWithAuthorisedUser(test: Future[Result] => Any) {
+      val userId = s"user-${UUID.randomUUID}"
+      val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+      setAuthMocks(authMock)
+      val result = testHomeController.home().apply(SessionBuilder.buildRequestWithSession(userId))
+      test(result)
+    }
+
+    def homeWithAuthorisedUserFromBTA(test: Future[Result] => Any) {
+      val userId = s"user-${UUID.randomUUID}"
+      val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+      setAuthMocks(authMock)
+      val result = testHomeController.home(Some("bta")).apply(SessionBuilder.buildRequestWithSession(userId))
+      test(result)
+    }
+
+    def homeWithUnAuthorisedUser(test: Future[Result] => Any) {
+      val userId = s"user-${UUID.randomUUID}"
+      val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
+      setInvalidAuthMocks(authMock)
+      val result = testHomeController.home().apply(SessionBuilder.buildRequestWithSession(userId))
+      test(result)
+    }
   }
 
   override def beforeEach(): Unit = {
-    reset(mockAuthConnector)
-    reset(mockDelegationService)
-  }
-
-  "HomeController" should {
-    "use correct delegationService" in {
-      HomeController.delegationService mustBe DelegationService
-    }
   }
 
   "HomeController" must {
     "Home" must {
 
       "unauthorised users" must {
-        "be redirected to the unauthorised page" in {
+        "be redirected to the unauthorised page" in new Setup {
           homeWithUnAuthorisedUser { result =>
             status(result) must be(SEE_OTHER)
             redirectLocation(result).get must include("/ated/unauthorised")
@@ -66,14 +118,14 @@ object TestHomeController extends HomeController {
       }
 
       "unsubscribed" must {
-        "users be redirected to the subscription service" in {
+        "users be redirected to the subscription service" in new Setup {
           homeWithUnsubscribedUser { result =>
             status(result) must be(SEE_OTHER)
             redirectLocation(result).get must include("/ated-subscription/start")
           }
         }
 
-        "agents be redirected to the subscription service" in {
+        "agents be redirected to the subscription service" in new Setup {
           homeWithUnsubscribedAgent { result =>
             status(result) must be(SEE_OTHER)
             redirectLocation(result).get must include("/ated-subscription/start")
@@ -83,14 +135,14 @@ object TestHomeController extends HomeController {
 
       "Authenticated users" must {
 
-        "be redirected to the Account Summary page " in {
+        "be redirected to the Account Summary page " in new Setup {
           homeWithAuthorisedUser { result =>
             status(result) must be(SEE_OTHER)
             redirectLocation(result).get must include("/account-summary")
           }
         }
 
-        "be redirected to the Account Summary page with bta in session" in {
+        "be redirected to the Account Summary page with bta in session" in new Setup {
           homeWithAuthorisedUserFromBTA { result =>
             status(result) must be(SEE_OTHER)
             redirectLocation(result).get must include("/account-summary")
@@ -101,7 +153,7 @@ object TestHomeController extends HomeController {
 
       "Authenticated agents" must {
 
-        "be redirected to the Agent Client Summary page " in {
+        "be redirected to the Agent Client Summary page " in new Setup {
           homeWithAuthorisedAgent { result =>
             status(result) must be(SEE_OTHER)
             redirectLocation(result).get must include("/mandate/agent/service")
@@ -109,56 +161,5 @@ object TestHomeController extends HomeController {
         }
       }
     }
-
   }
-
-
-  def homeWithAuthorisedAgent(test: Future[Result] => Any) {
-    val userId = s"user-${UUID.randomUUID}"
-    val authMock = authResultDefault(AffinityGroup.Agent, agentEnrolmentSet)
-    setAuthMocks(authMock)
-    val result = TestHomeController.home().apply(SessionBuilder.buildRequestWithSession(userId))
-    test(result)
-  }
-
-  def homeWithUnsubscribedUser(test: Future[Result] => Any) {
-    val userId = s"user-${UUID.randomUUID}"
-    val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
-    setAuthMocks(authMock)
-    val result = TestHomeController.home().apply(SessionBuilder.buildRequestWithSession(userId))
-    test(result)
-  }
-
-  def homeWithUnsubscribedAgent(test: Future[Result] => Any) {
-    val userId = s"user-${UUID.randomUUID}"
-    val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
-    setAuthMocks(authMock)
-    val result = TestHomeController.home().apply(SessionBuilder.buildRequestWithSession(userId))
-    test(result)
-  }
-
-  def homeWithAuthorisedUser(test: Future[Result] => Any) {
-    val userId = s"user-${UUID.randomUUID}"
-    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
-    setAuthMocks(authMock)
-    val result = TestHomeController.home().apply(SessionBuilder.buildRequestWithSession(userId))
-    test(result)
-  }
-
-  def homeWithAuthorisedUserFromBTA(test: Future[Result] => Any) {
-    val userId = s"user-${UUID.randomUUID}"
-    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
-    setAuthMocks(authMock)
-    val result = TestHomeController.home(Some("bta")).apply(SessionBuilder.buildRequestWithSession(userId))
-    test(result)
-  }
-
-  def homeWithUnAuthorisedUser(test: Future[Result] => Any) {
-    val userId = s"user-${UUID.randomUUID}"
-    val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
-    setInvalidAuthMocks(authMock)
-    val result = TestHomeController.home().apply(SessionBuilder.buildRequestWithSession(userId))
-    test(result)
-  }
-
 }

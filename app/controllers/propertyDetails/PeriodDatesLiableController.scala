@@ -16,24 +16,35 @@
 
 package controllers.propertyDetails
 
+import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms
 import forms.PropertyDetailsForms._
+import javax.inject.Inject
 import models._
-import play.api.Play.current
-import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, AnyContent}
+import play.api.i18n.I18nSupport
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{DelegationService, PropertyDetailsCacheSuccessResponse, PropertyDetailsService}
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-trait PeriodDatesLiableController extends PropertyDetailsHelpers with ClientHelper with AuthAction {
+class PeriodDatesLiableController @Inject()(mcc: MessagesControllerComponents,
+                                            authAction: AuthAction,
+                                            propertyDetailsTaxAvoidanceController: PropertyDetailsTaxAvoidanceController,
+                                            val propertyDetailsService: PropertyDetailsService,
+                                            val dataCacheConnector: DataCacheConnector,
+                                            val backLinkCacheConnector: BackLinkCacheConnector)
+                                           (implicit val appConfig: ApplicationConfig)
+  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with I18nSupport {
+
+  implicit val ec: ExecutionContext = mcc.executionContext
+  val controllerId: String = "PeriodDatesLiableController"
 
   def view(id: String): Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         propertyDetailsCacheResponse(id) {
           case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
@@ -54,7 +65,7 @@ trait PeriodDatesLiableController extends PropertyDetailsHelpers with ClientHelp
   }
 
   def add(id: String, periodKey: Int): Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         val mode = Some("add")
         getBackLink(id, mode).map { backLink =>
@@ -66,11 +77,11 @@ trait PeriodDatesLiableController extends PropertyDetailsHelpers with ClientHelp
   }
 
   def save(id: String, periodKey: Int, mode: Option[String] = None): Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       propertyDetailsCacheResponse(id) {
         case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
           val lineItems = propertyDetails.period.map(_.liabilityPeriods).getOrElse(Nil) ++ propertyDetails.period.map(_.reliefPeriods).getOrElse(Nil)
-          PropertyDetailsForms.validatePropertyDetailsDatesLiable(periodKey, periodDatesLiableForm.bindFromRequest, mode == Some("add"), lineItems).fold(
+          PropertyDetailsForms.validatePropertyDetailsDatesLiable(periodKey, periodDatesLiableForm.bindFromRequest, mode.contains("add"), lineItems).fold(
             formWithError => {
               getBackLink(id, mode).map { backLink =>
                 BadRequest(views.html.propertyDetails.periodDatesLiable(id, periodKey, formWithError,
@@ -88,8 +99,8 @@ trait PeriodDatesLiableController extends PropertyDetailsHelpers with ClientHelp
                 case _ =>
                   for {
                     _ <- propertyDetailsService.saveDraftPropertyDetailsDatesLiable(id, propertyDetails)
-                    result <- ensureClientContext(RedirectWithBackLink(
-                      PropertyDetailsTaxAvoidanceController.controllerId,
+                    result <- ensureClientContext(redirectWithBackLink(
+                      propertyDetailsTaxAvoidanceController.controllerId,
                       controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceController.view(id),
                       Some(controllers.propertyDetails.routes.PeriodDatesLiableController.view(id).url)
                     ))
@@ -112,17 +123,9 @@ trait PeriodDatesLiableController extends PropertyDetailsHelpers with ClientHelp
 
   private def getTitle(mode: Option[String] = None) = {
     mode match {
-      case Some("add") => Messages("ated.property-details-period.datesLiable.add.title")
-      case _ => Messages("ated.property-details-period.datesLiable.title")
+      case Some("add") => "ated.property-details-period.datesLiable.add.title"
+      case _ => "ated.property-details-period.datesLiable.title"
     }
   }
 
-}
-
-object PeriodDatesLiableController extends PeriodDatesLiableController {
-  val delegationService: DelegationService = DelegationService
-  val propertyDetailsService: PropertyDetailsService = PropertyDetailsService
-  val dataCacheConnector: DataCacheConnector = DataCacheConnector
-  override val controllerId = "PeriodDatesLiableController"
-  override val backLinkCacheConnector: BackLinkCacheConnector = BackLinkCacheConnector
 }

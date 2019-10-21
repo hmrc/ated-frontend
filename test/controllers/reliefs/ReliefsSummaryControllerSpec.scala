@@ -19,8 +19,10 @@ package controllers.reliefs
 import java.util.UUID
 
 import builders._
+import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
-import models.{Reliefs, ReliefsTaxAvoidance, SummaryReturnsModel, TaxAvoidance}
+import controllers.auth.AuthAction
+import models.{Reliefs, ReliefsTaxAvoidance, TaxAvoidance}
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.Matchers
@@ -29,60 +31,132 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
-import play.api.mvc.Result
+import play.api.mvc.{MessagesControllerComponents, Result}
 import play.api.test.Helpers._
-import services.{DelegationService, ReliefsService, SubscriptionDataService}
-import uk.gov.hmrc.auth.core.{AffinityGroup, PlayAuthConnector}
+import services.{ReliefsService, SubscriptionDataService}
+import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import utils.{AtedConstants, MockAuthUtil, PeriodUtils}
 
 import scala.concurrent.Future
 
 class ReliefsSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with MockAuthUtil {
-
   implicit lazy val hc: HeaderCarrier = HeaderCarrier()
+  implicit val mockAppConfig: ApplicationConfig = mock[ApplicationConfig]
 
+  val mockMcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
   val mockReliefsService: ReliefsService = mock[ReliefsService]
-  val mockBackLinkCache: BackLinkCacheConnector = mock[BackLinkCacheConnector]
   val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
+  val mockBackLinkCacheConnector: BackLinkCacheConnector = mock[BackLinkCacheConnector]
   val mockSubscriptionDataService: SubscriptionDataService = mock[SubscriptionDataService]
-val organisationName = "ACME Limited"
+  val mockReliefDeclarationController: ReliefDeclarationController = mock[ReliefDeclarationController]
 
-  object TestReliefsSummaryController extends ReliefsSummaryController {
-    override val authConnector: PlayAuthConnector = mockAuthConnector
-    val reliefsService: ReliefsService = mockReliefsService
-    override val delegationService: DelegationService = mockDelegationService
-    override val controllerId = "controllerId"
-    override val backLinkCacheConnector: BackLinkCacheConnector = mockBackLinkCache
-    override val dataCacheConnector: DataCacheConnector = mockDataCacheConnector
-    override val subscriptionDataService: SubscriptionDataService = mockSubscriptionDataService
-  }
-
-  override def beforeEach(): Unit = {
-    reset(mockAuthConnector)
-    reset(mockReliefsService)
-    reset(mockBackLinkCache)
-    reset(mockSubscriptionDataService)
-  }
-
+  val organisationName = "ACME Limited"
   val periodKey = 2015
 
-  "ReliefsSummaryController" must {
+  override def beforeEach(): Unit = {
 
-    "use correct DelegationService" in {
-      ReliefsSummaryController.delegationService must be(DelegationService)
+  }
+
+  class Setup {
+
+    val mockAuthAction: AuthAction = new AuthAction(
+      mockAppConfig,
+      mockDelegationService,
+      mockAuthConnector
+    )
+
+    val testReliefsSummaryController: ReliefsSummaryController = new ReliefsSummaryController(
+      mockMcc,
+      mockAuthAction,
+      mockReliefDeclarationController,
+      mockSubscriptionDataService,
+      mockReliefsService,
+      mockDataCacheConnector,
+      mockBackLinkCacheConnector
+    )
+
+    def getWithUnAuthorisedUser(test: Future[Result] => Any) {
+      val userId = s"user-${UUID.randomUUID}"
+      val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
+      setInvalidAuthMocks(authMock)
+      val result = testReliefsSummaryController.view(periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
+      test(result)
     }
+
+    def getWithAuthorisedUser(testReliefs: Option[ReliefsTaxAvoidance], periodKeyLocal: Int = periodKey)(test: Future[Result] => Any) {
+      val httpValue = 200
+      val userId = s"user-${UUID.randomUUID}"
+      val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+      setAuthMocks(authMock)
+      when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
+      when(mockReliefsService.retrieveDraftReliefs(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(testReliefs))
+      when(mockReliefsService.clearDraftReliefs(Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(httpValue, None)))
+      when(mockBackLinkCacheConnector.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
+      val result = testReliefsSummaryController.view(periodKeyLocal).apply(SessionBuilder.buildRequestWithSession(userId))
+      test(result)
+    }
+
+    def submitWithAuthorisedUser(test: Future[Result] => Any) {
+      val userId = s"user-${UUID.randomUUID}"
+      val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+      setAuthMocks(authMock)
+      when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
+      val result = testReliefsSummaryController.continue(periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
+
+      test(result)
+    }
+
+    def getPrintFriendlyWithAuthorisedUser(testReliefs: Option[ReliefsTaxAvoidance])(test: Future[Result] => Any) {
+      val userId = s"user-${UUID.randomUUID}"
+      val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+      setAuthMocks(authMock)
+      when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
+      when(mockReliefsService.retrieveDraftReliefs(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(testReliefs))
+      when(mockSubscriptionDataService.getOrganisationName(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(organisationName)))
+      val result = testReliefsSummaryController.viewPrintFriendlyReliefReturn(periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
+      test(result)
+    }
+
+    def getWithForbiddenUser(testReliefs: Option[ReliefsTaxAvoidance])(test: Future[Result] => Any) {
+      val userId = s"user-${UUID.randomUUID}"
+      val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
+      setForbiddenAuthMocks(authMock)
+      when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
+      when(mockReliefsService.retrieveDraftReliefs(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(testReliefs))
+      when(mockSubscriptionDataService.getOrganisationName(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(organisationName)))
+      val result = testReliefsSummaryController.viewPrintFriendlyReliefReturn(periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
+      test(result)
+    }
+
+    def getWithDeleteDraftLink(test: Future[Result] => Any) {
+      val periodKey: Int = 2017
+      val userId = s"user-${UUID.randomUUID}"
+      val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+      setAuthMocks(authMock)
+      implicit val hc: HeaderCarrier = HeaderCarrier()
+
+      val result = testReliefsSummaryController.deleteDraft(periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
+      test(result)
+    }
+  }
+
+  "ReliefsSummaryController" must {
 
     "view" must {
 
       "unauthorised users" must {
-        "respond with a redirect" in {
+        "respond with a redirect" in new Setup {
           getWithUnAuthorisedUser { result =>
             status(result) must be(SEE_OTHER)
           }
         }
 
-        "be redirected to the login page" in {
+        "be redirected to the login page" in new Setup {
           getWithUnAuthorisedUser { result =>
             redirectLocation(result).get must include("/ated/unauthorised")
           }
@@ -91,7 +165,7 @@ val organisationName = "ACME Limited"
 
       "for authorised user" must {
 
-        "status should be OK and submit should be enabled" in {
+        "status should be OK and submit should be enabled" in new Setup {
           getWithAuthorisedUser(Some(
             ReliefBuilder.reliefTaxAvoidance(periodKey,
               Reliefs(periodKey = periodKey, isAvoidanceScheme = Some(true), equityRelease = true),
@@ -119,7 +193,7 @@ val organisationName = "ACME Limited"
           }
         }
 
-        "status should be OK and submit should be enabled when tax avoidance 'No' has been chosen" in {
+        "status should be OK and submit should be enabled when tax avoidance 'No' has been chosen" in new Setup {
           getWithAuthorisedUser(Some(
             ReliefBuilder.reliefTaxAvoidance(periodKey,
               Reliefs(periodKey = periodKey, isAvoidanceScheme = Some(false), equityRelease = true)
@@ -137,7 +211,7 @@ val organisationName = "ACME Limited"
           }
         }
 
-        "status should be OK and submit should be disabled when tax avoidance 'Yes' has been chosen and there is no schemes entered" in {
+        "status should be OK and submit should be disabled when tax avoidance 'Yes' has been chosen and there is no schemes entered" in new Setup {
           getWithAuthorisedUser(Some(
             ReliefBuilder.reliefTaxAvoidance(periodKey,
               Reliefs(periodKey = periodKey, isAvoidanceScheme = Some(true), equityRelease = true)
@@ -152,7 +226,7 @@ val organisationName = "ACME Limited"
           }
         }
 
-        "status should be OK and submit should be disabled when tax avoidance hasn't been selected" in {
+        "status should be OK and submit should be disabled when tax avoidance hasn't been selected" in new Setup {
           getWithAuthorisedUser(Some(
             ReliefBuilder.reliefTaxAvoidance(periodKey,
               Reliefs(periodKey = periodKey, isAvoidanceScheme = None, equityRelease = true)
@@ -167,7 +241,7 @@ val organisationName = "ACME Limited"
           }
         }
 
-        "redirect to bad request when the period key is in the future" in {
+        "redirect to bad request when the period key is in the future" in new Setup {
 
           getWithAuthorisedUser(Some(
             ReliefBuilder.reliefTaxAvoidance(periodKey,
@@ -187,25 +261,23 @@ val organisationName = "ACME Limited"
       }
     }
 
-
     "continue" must {
 
-      "redirect to declaration page" in {
-        when(mockBackLinkCache.saveBackLink(Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
+      "redirect to declaration page" in new Setup {
+        when(mockBackLinkCacheConnector.saveBackLink(Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
         submitWithAuthorisedUser {
           result =>
             status(result) must be(SEE_OTHER)
             redirectLocation(result) must be(Some("/ated/reliefs/2015/relief-declaration"))
         }
       }
-
     }
 
     "print friendly view" must {
 
       "called for authorised user" must {
 
-        "status should be OK" in {
+        "status should be OK" in new Setup {
           getPrintFriendlyWithAuthorisedUser(Some(
             ReliefBuilder.reliefTaxAvoidance(periodKey,
               Reliefs(periodKey = periodKey, isAvoidanceScheme = Some(true), openToPublic = true),
@@ -222,7 +294,7 @@ val organisationName = "ACME Limited"
           }
         }
 
-        "respond with a redirect to unauthorised URL" in {
+        "respond with a redirect to unauthorised URL" in new Setup {
           getWithForbiddenUser(Some(
             ReliefBuilder.reliefTaxAvoidance(periodKey,
               Reliefs(periodKey = periodKey, isAvoidanceScheme = Some(true), openToPublic = true),
@@ -231,86 +303,13 @@ val organisationName = "ACME Limited"
             redirectLocation(result).get must include("/ated/unauthorised")
           }
         }
-
       }
-
     }
 
-    "delete the draft redirect to delete confirmation page" in {
+    "delete the draft redirect to delete confirmation page" in new Setup {
       getWithDeleteDraftLink { result =>
         status(result) must be(SEE_OTHER)
       }
     }
-
-    def getWithUnAuthorisedUser(test: Future[Result] => Any) {
-      val userId = s"user-${UUID.randomUUID}"
-      val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
-      setInvalidAuthMocks(authMock)
-      val result = TestReliefsSummaryController.view(periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
-      test(result)
-    }
-
-    def getWithAuthorisedUser(testReliefs: Option[ReliefsTaxAvoidance], periodKeyLocal: Int = periodKey)(test: Future[Result] => Any) {
-      val httpValue = 200
-      val userId = s"user-${UUID.randomUUID}"
-      val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
-    setAuthMocks(authMock)
-      when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
-        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-      when(mockReliefsService.retrieveDraftReliefs(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(testReliefs))
-      when(mockReliefsService.clearDraftReliefs(Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(httpValue, None)))
-      when(mockBackLinkCache.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
-      val result = TestReliefsSummaryController.view(periodKeyLocal).apply(SessionBuilder.buildRequestWithSession(userId))
-      test(result)
-    }
-
-    def submitWithAuthorisedUser(test: Future[Result] => Any) {
-      val userId = s"user-${UUID.randomUUID}"
-      val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
-    setAuthMocks(authMock)
-      when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
-        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-      val result = TestReliefsSummaryController.continue(periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
-
-      test(result)
-    }
-
-    def getPrintFriendlyWithAuthorisedUser(testReliefs: Option[ReliefsTaxAvoidance])(test: Future[Result] => Any) {
-      val userId = s"user-${UUID.randomUUID}"
-      val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
-    setAuthMocks(authMock)
-      when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
-        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-      when(mockReliefsService.retrieveDraftReliefs(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(testReliefs))
-      when(mockSubscriptionDataService.getOrganisationName(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(organisationName)))
-      val result = TestReliefsSummaryController.viewPrintFriendlyReliefReturn(periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
-      test(result)
-    }
-
-    def getWithForbiddenUser(testReliefs: Option[ReliefsTaxAvoidance])(test: Future[Result] => Any) {
-      val userId = s"user-${UUID.randomUUID}"
-      val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
-    setForbiddenAuthMocks(authMock)
-      when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
-        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-      when(mockReliefsService.retrieveDraftReliefs(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(testReliefs))
-      when(mockSubscriptionDataService.getOrganisationName(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(organisationName)))
-      val result = TestReliefsSummaryController.viewPrintFriendlyReliefReturn(periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
-      test(result)
-    }
-
-
-    def getWithDeleteDraftLink(test: Future[Result] => Any) {
-      val periodKey: Int = 2017
-      val userId = s"user-${UUID.randomUUID}"
-      val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
-    setAuthMocks(authMock)
-      implicit val hc: HeaderCarrier = HeaderCarrier()
-
-      val result = TestReliefsSummaryController.deleteDraft(periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
-      test(result)
-    }
-
   }
-
 }

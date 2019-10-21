@@ -17,32 +17,40 @@
 package controllers
 
 import audit.Auditable
-import config.AtedFrontendAuditConnector
+import config.ApplicationConfig
 import controllers.auth.AuthAction
+import javax.inject.Inject
 import models.LeaveFeedback
-import play.api.Play.current
-import play.api._
-import play.api.i18n.Messages.Implicits._
-import play.api.mvc._
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.DelegationService
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.model.{Audit, EventTypes}
-import uk.gov.hmrc.play.config.AppName
+import uk.gov.hmrc.play.bootstrap.audit.DefaultAuditConnector
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 
 
-trait LeaveFeedbackController extends AtedBaseController with Auditable with AuthAction {
+class LeaveFeedbackController @Inject()(mcc: MessagesControllerComponents,
+                                        authAction: AuthAction,
+                                        auditConnector: DefaultAuditConnector)
+                                       (implicit val appConfig: ApplicationConfig)
+
+  extends FrontendController(mcc) with Auditable {
+
+  val appName: String = "ated-frontend"
+  val audit: Audit = new Audit(s"ATED:$appName-Feedback", auditConnector)
+  implicit val ec : ExecutionContext = mcc.executionContext
 
   def view(returnUri: String): Action[AnyContent] = Action.async { implicit request =>
-    authorisedForNoEnrolments { implicit authContext =>
+    authAction.authorisedForNoEnrolments { implicit authContext =>
       Future.successful(Ok(views.html.feedback.leaveFeedback(LeaveFeedback.form, returnUri)))
     }
   }
 
   def submitFeedback(returnUri: String): Action[AnyContent] = Action.async { implicit request =>
-    authorisedForNoEnrolments { implicit authContext =>
+    authAction.authorisedForNoEnrolments { implicit authContext =>
       LeaveFeedback.form.bindFromRequest.fold(
         formWithErrors => Future.successful(BadRequest(views.html.feedback.leaveFeedback(formWithErrors, returnUri))),
         value => {
@@ -64,15 +72,8 @@ trait LeaveFeedbackController extends AtedBaseController with Auditable with Aut
   }
 
   def thanks(returnUri: String) : Action[AnyContent] = Action.async { implicit request =>
-    authorisedForNoEnrolments { implicit authContext =>
+    authAction.authorisedForNoEnrolments { implicit authContext =>
       Future.successful(Ok(views.html.feedback.thanks(returnUri)))
     }
   }
-
-}
-
-object LeaveFeedbackController extends LeaveFeedbackController {
-  val delegationService: DelegationService = DelegationService
-  val appName: String = AppName(Play.current.configuration).appName
-  val audit: Audit = new Audit(s"ATED:$appName-Feedback", AtedFrontendAuditConnector)
 }

@@ -19,186 +19,180 @@ package connectors
 import java.util.UUID
 
 import builders.PropertyDetailsBuilder
+import config.ApplicationConfig
 import models._
 import org.joda.time.LocalDate
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
-import play.api.Mode.Mode
+import org.scalatestplus.play.PlaySpec
+import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.libs.json.{JsValue, Json}
 import play.api.test.Helpers._
-import play.api.{Configuration, Play}
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.http.logging.SessionId
+import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 
 import scala.concurrent.Future
 
-class PropertyDetailsConnectorSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
+class PropertyDetailsConnectorSpec extends PlaySpec with GuiceOneAppPerSuite with MockitoSugar with BeforeAndAfterEach {
 
   implicit val authContext: StandardAuthRetrievals = mock[StandardAuthRetrievals]
-
-  trait MockedVerbs extends CoreGet with CorePost with CoreDelete
-  val mockWSHttp: CoreGet with CorePost with CoreDelete = mock[MockedVerbs]
+  val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
+  val mockHttp: DefaultHttpClient = mock[DefaultHttpClient]
 
   lazy val periodKey = 2015
 
-  object TestAtedConnector extends PropertyDetailsConnector {
-    override val serviceURL: String = baseUrl("ated")
-    override val http: CoreGet with CorePost with CoreDelete = mockWSHttp
-
-    override protected def mode: Mode = Play.current.mode
-
-    override protected def runModeConfiguration: Configuration = Play.current.configuration
+  class Setup {
+    val testPropertyDetailsConnector : PropertyDetailsConnector = new PropertyDetailsConnector(mockAppConfig, mockHttp)
   }
 
   override def beforeEach: Unit = {
-    reset(mockWSHttp)
   }
 
   "PropertyDetailsConnector" must {
 
     "create draft property details" must {
-      "for successful save, return new the id for the property details" in {
-        val propertyDetails = PropertyDetailsBuilder.getPropertyDetailsAddress(Some("testPostCode"))
+      "for successful save, return new the id for the property details" in new Setup {
+        private val propertyDetails: PropertyDetailsAddress = PropertyDetailsBuilder.getPropertyDetailsAddress(Some("testPostCode"))
 
-        val successResponse = Json.toJson(propertyDetails)
+        val successResponse: JsValue = Json.toJson(propertyDetails)
 
         implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
-        when(mockWSHttp.POST[JsValue, HttpResponse]
+        when(mockHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
           (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
 
 
-        val result = TestAtedConnector.createDraftPropertyDetails(periodKey, propertyDetails)
-        val response = await(result)
+        val result: Future[HttpResponse] = testPropertyDetailsConnector.createDraftPropertyDetails(periodKey, propertyDetails)
+        val response: HttpResponse = await(result)
         response.status must be(OK)
       }
 
-      "for an unsuccessful save, return an empty object" in {
-        val propertyDetails = PropertyDetailsBuilder.getPropertyDetailsAddress(Some("testPostCode"))
+      "for an unsuccessful save, return an empty object" in new Setup {
+        val propertyDetails: PropertyDetailsAddress = PropertyDetailsBuilder.getPropertyDetailsAddress(Some("testPostCode"))
 
         implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
-        when(mockWSHttp.POST[JsValue, HttpResponse]
+        when(mockHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
           (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
-        val result = TestAtedConnector.saveDraftPropertyDetailsAddressRef("1", propertyDetails)
-        val response = await(result)
+        val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailsAddressRef("1", propertyDetails)
+        val response: HttpResponse = await(result)
         response.status must be(BAD_REQUEST)
       }
     }
 
     "save property details address ref" must {
-      "for successful save, return PropertyDetails address ref for a user" in {
-        val propertyDetails = PropertyDetailsBuilder.getPropertyDetailsAddress(Some("testPostCode"))
+      "for successful save, return PropertyDetails address ref for a user" in new Setup {
+        val propertyDetails: PropertyDetailsAddress = PropertyDetailsBuilder.getPropertyDetailsAddress(Some("testPostCode"))
 
-        val successResponse = Json.toJson(propertyDetails)
+        val successResponse: JsValue = Json.toJson(propertyDetails)
 
         implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
-        when(mockWSHttp.POST[JsValue, HttpResponse]
+        when(mockHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
           (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
 
 
-        val result = TestAtedConnector.saveDraftPropertyDetailsAddressRef("1", propertyDetails)
-        val response = await(result)
+        val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailsAddressRef("1", propertyDetails)
+        val response: HttpResponse = await(result)
         response.status must be(OK)
       }
 
-      "for an unsuccessful save, return an empty object" in {
-        val propertyDetails = PropertyDetailsBuilder.getPropertyDetailsAddress(Some("testPostCode"))
+      "for an unsuccessful save, return an empty object" in new Setup {
+        val propertyDetails: PropertyDetailsAddress = PropertyDetailsBuilder.getPropertyDetailsAddress(Some("testPostCode"))
 
         implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
-        when(mockWSHttp.POST[JsValue, HttpResponse]
+        when(mockHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
           (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
-        val result = TestAtedConnector.saveDraftPropertyDetailsAddressRef("1", propertyDetails)
-        val response = await(result)
+        val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailsAddressRef("1", propertyDetails)
+        val response: HttpResponse = await(result)
         response.status must be(BAD_REQUEST)
       }
     }
 
     "save property details Has Value Changed" must {
-      "for successful save, return PropertyDetails Has Value Changed for a user" in {
+      "for successful save, return PropertyDetails Has Value Changed for a user" in new Setup {
         val propertyDetails = PropertyDetailsTitle("")
 
-        val successResponse = Json.toJson(propertyDetails)
+        val successResponse: JsValue = Json.toJson(propertyDetails)
 
         implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
-        when(mockWSHttp.POST[JsValue, HttpResponse]
+        when(mockHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
           (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
 
-        val result = TestAtedConnector.saveDraftHasValueChanged("1", propertyDetails = true)
-        val response = await(result)
+        val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftHasValueChanged("1", propertyDetails = true)
+        val response: HttpResponse = await(result)
         response.status must be(OK)
       }
 
-      "for an unsuccessful save, return an empty object" in {
+      "for an unsuccessful save, return an empty object" in new Setup {
         implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
-        when(mockWSHttp.POST[JsValue, HttpResponse]
+        when(mockHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
           (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
 
-        val result = TestAtedConnector.saveDraftHasValueChanged("1", propertyDetails = true)
-        val response = await(result)
+        val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftHasValueChanged("1", propertyDetails = true)
+        val response: HttpResponse = await(result)
         response.status must be(BAD_REQUEST)
       }
     }
 
     "save property details title" must {
-      "for successful save, return PropertyDetails title for a user" in {
+      "for successful save, return PropertyDetails title for a user" in new Setup {
         val propertyDetails = PropertyDetailsTitle("")
 
-        val successResponse = Json.toJson(propertyDetails)
+        val successResponse: JsValue = Json.toJson(propertyDetails)
 
         implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
-        when(mockWSHttp.POST[JsValue, HttpResponse]
+        when(mockHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
           (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
 
-        val result = TestAtedConnector.saveDraftPropertyDetailsTitle("1", propertyDetails)
-        val response = await(result)
+        val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailsTitle("1", propertyDetails)
+        val response: HttpResponse = await(result)
         response.status must be(OK)
       }
 
-      "for an unsuccessful save, return an empty object" in {
+      "for an unsuccessful save, return an empty object" in new Setup {
         val propertyDetails = PropertyDetailsTitle("")
 
         implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
-        when(mockWSHttp.POST[JsValue, HttpResponse]
+        when(mockHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
           (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
 
-        val result = TestAtedConnector.saveDraftPropertyDetailsTitle("1", propertyDetails)
-        val response = await(result)
+        val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailsTitle("1", propertyDetails)
+        val response: HttpResponse = await(result)
         response.status must be(BAD_REQUEST)
       }
     }
 
     "save property details Acquisition" must {
-      "for successful save, return PropertyDetails Acquisition for a user" in {
+      "for successful save, return PropertyDetails Acquisition for a user" in new Setup {
         implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
-        val successResponse = Json.toJson(true)
+        val successResponse: JsValue = Json.toJson(true)
 
-        when(mockWSHttp.POST[JsValue, HttpResponse]
+        when(mockHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
           (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
 
-        val result = TestAtedConnector.saveDraftPropertyDetailsAcquisition("1", overLimit = true)
-        val response = await(result)
+        val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailsAcquisition("1", overLimit = true)
+        val response: HttpResponse = await(result)
         response.status must be(OK)
       }
 
-      "for an unsuccessful save, return an empty object" in {
+      "for an unsuccessful save, return an empty object" in new Setup {
         implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
-        when(mockWSHttp.POST[JsValue, HttpResponse]
+        when(mockHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
           (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
 
-        val result = TestAtedConnector.saveDraftPropertyDetailsAcquisition("1", overLimit = true)
-        val response = await(result)
+        val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailsAcquisition("1", overLimit = true)
+        val response: HttpResponse = await(result)
         response.status must be(BAD_REQUEST)
       }
     }
@@ -207,55 +201,55 @@ class PropertyDetailsConnectorSpec extends PlaySpec with OneServerPerSuite with 
       implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
       val propertyDetails = new PropertyDetailsRevalued()
 
-      "for successful save, return PropertyDetails Revalued for a user" in {
-        val successResponse = Json.toJson(propertyDetails)
+      "for successful save, return PropertyDetails Revalued for a user" in new Setup {
+        val successResponse: JsValue = Json.toJson(propertyDetails)
 
-        when(mockWSHttp.POST[JsValue, HttpResponse]
+        when(mockHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
           (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
 
-        val result = TestAtedConnector.saveDraftPropertyDetailsRevalued("1", propertyDetails)
-        val response = await(result)
+        val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailsRevalued("1", propertyDetails)
+        val response: HttpResponse = await(result)
         response.status must be(OK)
       }
 
-      "for an unsuccessful save, return an empty object" in {
-        when(mockWSHttp.POST[JsValue, HttpResponse]
+      "for an unsuccessful save, return an empty object" in new Setup {
+        when(mockHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
           (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
 
-        val result = TestAtedConnector.saveDraftPropertyDetailsRevalued("1", propertyDetails)
-        val response = await(result)
+        val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailsRevalued("1", propertyDetails)
+        val response: HttpResponse = await(result)
         response.status must be(BAD_REQUEST)
       }
     }
 
     "save property details OwnedBefore" must {
-      "for successful save, return PropertyDetails title for a user" in {
+      "for successful save, return PropertyDetails title for a user" in new Setup {
         val propertyDetails = new PropertyDetailsOwnedBefore()
 
-        val successResponse = Json.toJson(propertyDetails)
+        val successResponse: JsValue = Json.toJson(propertyDetails)
 
         implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
-        when(mockWSHttp.POST[JsValue, HttpResponse]
+        when(mockHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
           (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
 
-        val result = TestAtedConnector.saveDraftPropertyDetailsOwnedBefore("1", propertyDetails)
-        val response = await(result)
+        val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailsOwnedBefore("1", propertyDetails)
+        val response: HttpResponse = await(result)
         response.status must be(OK)
       }
 
-      "for an unsuccessful save, return an empty object" in {
+      "for an unsuccessful save, return an empty object" in new Setup {
         val propertyDetails = new PropertyDetailsOwnedBefore()
 
         implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
-        when(mockWSHttp.POST[JsValue, HttpResponse]
+        when(mockHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
           (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
 
-        val result = TestAtedConnector.saveDraftPropertyDetailsOwnedBefore("1", propertyDetails)
-        val response = await(result)
+        val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailsOwnedBefore("1", propertyDetails)
+        val response: HttpResponse = await(result)
         response.status must be(BAD_REQUEST)
       }
     }
@@ -264,24 +258,24 @@ class PropertyDetailsConnectorSpec extends PlaySpec with OneServerPerSuite with 
       implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
       val propertyDetails = new PropertyDetailsProfessionallyValued()
 
-      "for successful save, return PropertyDetails title for a user" in {
-        val successResponse = Json.toJson(propertyDetails)
-        when(mockWSHttp.POST[JsValue, HttpResponse]
+      "for successful save, return PropertyDetails title for a user" in new Setup {
+        val successResponse: JsValue = Json.toJson(propertyDetails)
+        when(mockHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
           (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
 
-        val result = TestAtedConnector.saveDraftPropertyDetailsProfessionallyValued("1", propertyDetails)
-        val response = await(result)
+        val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailsProfessionallyValued("1", propertyDetails)
+        val response: HttpResponse = await(result)
         response.status must be(OK)
       }
 
-      "for an unsuccessful save, return an empty object" in {
-        when(mockWSHttp.POST[JsValue, HttpResponse]
+      "for an unsuccessful save, return an empty object" in new Setup {
+        when(mockHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
           (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
 
-        val result = TestAtedConnector.saveDraftPropertyDetailsProfessionallyValued("1", propertyDetails)
-        val response = await(result)
+        val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailsProfessionallyValued("1", propertyDetails)
+        val response: HttpResponse = await(result)
         response.status must be(BAD_REQUEST)
       }
     }
@@ -290,24 +284,24 @@ class PropertyDetailsConnectorSpec extends PlaySpec with OneServerPerSuite with 
       implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
       val propertyDetails = new PropertyDetailsNewBuild()
 
-      "for successful save, return PropertyDetails title for a user" in {
-        val successResponse = Json.toJson(propertyDetails)
-        when(mockWSHttp.POST[JsValue, HttpResponse]
+      "for successful save, return PropertyDetails title for a user" in new Setup {
+        val successResponse: JsValue = Json.toJson(propertyDetails)
+        when(mockHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
           (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
 
-        val result = TestAtedConnector.saveDraftPropertyDetailsNewBuild("1", propertyDetails)
-        val response = await(result)
+        val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailsNewBuild("1", propertyDetails)
+        val response: HttpResponse = await(result)
         response.status must be(OK)
       }
 
-      "for an unsuccessful save, return an empty object" in {
-        when(mockWSHttp.POST[JsValue, HttpResponse]
+      "for an unsuccessful save, return an empty object" in new Setup {
+        when(mockHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
           (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
 
-        val result = TestAtedConnector.saveDraftPropertyDetailsNewBuild("1", propertyDetails)
-        val response = await(result)
+        val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailsNewBuild("1", propertyDetails)
+        val response: HttpResponse = await(result)
         response.status must be(BAD_REQUEST)
       }
     }
@@ -316,24 +310,24 @@ class PropertyDetailsConnectorSpec extends PlaySpec with OneServerPerSuite with 
       implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
       val propertyDetails = new IsFullTaxPeriod(false, None)
 
-      "for successful save, return PropertyDetails title for a user" in {
-        val successResponse = Json.toJson(propertyDetails)
-        when(mockWSHttp.POST[JsValue, HttpResponse]
+      "for successful save, return PropertyDetails title for a user" in new Setup {
+        val successResponse: JsValue = Json.toJson(propertyDetails)
+        when(mockHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
           (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
 
-        val result = TestAtedConnector.saveDraftIsFullTaxPeriod("1", propertyDetails)
-        val response = await(result)
+        val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftIsFullTaxPeriod("1", propertyDetails)
+        val response: HttpResponse = await(result)
         response.status must be(OK)
       }
 
-      "for an unsuccessful save, return an empty object" in {
-        when(mockWSHttp.POST[JsValue, HttpResponse]
+      "for an unsuccessful save, return an empty object" in new Setup {
+        when(mockHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
           (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
 
-        val result = TestAtedConnector.saveDraftIsFullTaxPeriod("1", propertyDetails)
-        val response = await(result)
+        val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftIsFullTaxPeriod("1", propertyDetails)
+        val response: HttpResponse = await(result)
         response.status must be(BAD_REQUEST)
       }
     }
@@ -342,24 +336,24 @@ class PropertyDetailsConnectorSpec extends PlaySpec with OneServerPerSuite with 
       implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
       val propertyDetails = new PropertyDetailsInRelief()
 
-      "for successful save, return PropertyDetails title for a user" in {
-        val successResponse = Json.toJson(propertyDetails)
-        when(mockWSHttp.POST[JsValue, HttpResponse]
+      "for successful save, return PropertyDetails title for a user" in new Setup {
+        val successResponse: JsValue = Json.toJson(propertyDetails)
+        when(mockHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
           (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
 
-        val result = TestAtedConnector.saveDraftPropertyDetailsInRelief("1", propertyDetails)
-        val response = await(result)
+        val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailsInRelief("1", propertyDetails)
+        val response: HttpResponse = await(result)
         response.status must be(OK)
       }
 
-      "for an unsuccessful save, return an empty object" in {
-        when(mockWSHttp.POST[JsValue, HttpResponse]
+      "for an unsuccessful save, return an empty object" in new Setup {
+        when(mockHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
           (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
 
-        val result = TestAtedConnector.saveDraftPropertyDetailsInRelief("1", propertyDetails)
-        val response = await(result)
+        val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailsInRelief("1", propertyDetails)
+        val response: HttpResponse = await(result)
         response.status must be(BAD_REQUEST)
       }
     }
@@ -368,24 +362,24 @@ class PropertyDetailsConnectorSpec extends PlaySpec with OneServerPerSuite with 
       implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
       val propertyDetails = new PropertyDetailsTaxAvoidance()
 
-      "for successful save, return PropertyDetails title for a user" in {
-        val successResponse = Json.toJson(propertyDetails)
-        when(mockWSHttp.POST[JsValue, HttpResponse]
+      "for successful save, return PropertyDetails title for a user" in new Setup {
+        val successResponse: JsValue = Json.toJson(propertyDetails)
+        when(mockHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
           (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
 
-        val result = TestAtedConnector.saveDraftPropertyDetailsTaxAvoidance("1", propertyDetails)
-        val response = await(result)
+        val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailsTaxAvoidance("1", propertyDetails)
+        val response: HttpResponse = await(result)
         response.status must be(OK)
       }
 
-      "for an unsuccessful save, return an empty object" in {
-        when(mockWSHttp.POST[JsValue, HttpResponse]
+      "for an unsuccessful save, return an empty object" in new Setup {
+        when(mockHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
           (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
 
-        val result = TestAtedConnector.saveDraftPropertyDetailsTaxAvoidance("1", propertyDetails)
-        val response = await(result)
+        val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailsTaxAvoidance("1", propertyDetails)
+        val response: HttpResponse = await(result)
         response.status must be(BAD_REQUEST)
       }
     }
@@ -394,24 +388,24 @@ class PropertyDetailsConnectorSpec extends PlaySpec with OneServerPerSuite with 
       implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
       val propertyDetails = new PropertyDetailsDatesLiable(new LocalDate("1970-01-01"), new LocalDate("1970-01-01"))
 
-      "for successful save, return PropertyDetails title for a user" in {
-        val successResponse = Json.toJson(propertyDetails)
-        when(mockWSHttp.POST[JsValue, HttpResponse]
+      "for successful save, return PropertyDetails title for a user" in new Setup {
+        val successResponse: JsValue = Json.toJson(propertyDetails)
+        when(mockHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
           (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
 
-        val result = TestAtedConnector.saveDraftPropertyDetailsDatesLiable("1", propertyDetails)
-        val response = await(result)
+        val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailsDatesLiable("1", propertyDetails)
+        val response: HttpResponse = await(result)
         response.status must be(OK)
       }
 
-      "for an unsuccessful save, return an empty object" in {
-        when(mockWSHttp.POST[JsValue, HttpResponse]
+      "for an unsuccessful save, return an empty object" in new Setup {
+        when(mockHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
           (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
 
-        val result = TestAtedConnector.saveDraftPropertyDetailsDatesLiable("1", propertyDetails)
-        val response = await(result)
+        val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailsDatesLiable("1", propertyDetails)
+        val response: HttpResponse = await(result)
         response.status must be(BAD_REQUEST)
       }
     }
@@ -422,24 +416,24 @@ class PropertyDetailsConnectorSpec extends PlaySpec with OneServerPerSuite with 
         new LocalDate("2999-02-03"),new LocalDate("2999-03-04")
       )
 
-      "for successful add, return PropertyDetails title for a user" in {
-        val successResponse = Json.toJson(propertyDetails)
-        when(mockWSHttp.POST[JsValue, HttpResponse]
+      "for successful add, return PropertyDetails title for a user" in new Setup {
+        val successResponse: JsValue = Json.toJson(propertyDetails)
+        when(mockHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
           (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
 
-        val result = TestAtedConnector.addDraftPropertyDetailsDatesLiable("1", propertyDetails)
-        val response = await(result)
+        val result: Future[HttpResponse] = testPropertyDetailsConnector.addDraftPropertyDetailsDatesLiable("1", propertyDetails)
+        val response: HttpResponse = await(result)
         response.status must be(OK)
       }
 
-      "for an unsuccessful add, return an empty object" in {
-        when(mockWSHttp.POST[JsValue, HttpResponse]
+      "for an unsuccessful add, return an empty object" in new Setup {
+        when(mockHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
           (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
 
-        val result = TestAtedConnector.addDraftPropertyDetailsDatesLiable("1", propertyDetails)
-        val response = await(result)
+        val result: Future[HttpResponse] = testPropertyDetailsConnector.addDraftPropertyDetailsDatesLiable("1", propertyDetails)
+        val response: HttpResponse = await(result)
         response.status must be(BAD_REQUEST)
       }
     }
@@ -450,24 +444,24 @@ class PropertyDetailsConnectorSpec extends PlaySpec with OneServerPerSuite with 
         new LocalDate("2999-02-03"),new LocalDate("2999-03-04")
       )
 
-      "for successful delete, return PropertyDetails title for a user" in {
-        val successResponse = Json.toJson(propertyDetails)
-        when(mockWSHttp.POST[JsValue, HttpResponse]
+      "for successful delete, return PropertyDetails title for a user" in new Setup {
+        val successResponse: JsValue = Json.toJson(propertyDetails)
+        when(mockHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
           (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
 
-        val result = TestAtedConnector.deleteDraftPropertyDetailsPeriod("1", propertyDetails.startDate)
-        val response = await(result)
+        val result: Future[HttpResponse] = testPropertyDetailsConnector.deleteDraftPropertyDetailsPeriod("1", propertyDetails.startDate)
+        val response: HttpResponse = await(result)
         response.status must be(OK)
       }
 
-      "for an unsuccessful delete, return an empty object" in {
-        when(mockWSHttp.POST[JsValue, HttpResponse]
+      "for an unsuccessful delete, return an empty object" in new Setup {
+        when(mockHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
           (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
 
-        val result = TestAtedConnector.deleteDraftPropertyDetailsPeriod("1", propertyDetails.startDate)
-        val response = await(result)
+        val result: Future[HttpResponse] = testPropertyDetailsConnector.deleteDraftPropertyDetailsPeriod("1", propertyDetails.startDate)
+        val response: HttpResponse = await(result)
         response.status must be(BAD_REQUEST)
       }
     }
@@ -478,24 +472,24 @@ class PropertyDetailsConnectorSpec extends PlaySpec with OneServerPerSuite with 
         new LocalDate("2999-02-03"),new LocalDate("2999-03-04")
       )
 
-      "for successful add, return PropertyDetails title for a user" in {
-        val successResponse = Json.toJson(propertyDetails)
-        when(mockWSHttp.POST[JsValue, HttpResponse]
+      "for successful add, return PropertyDetails title for a user" in new Setup {
+        val successResponse: JsValue = Json.toJson(propertyDetails)
+        when(mockHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
           (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
 
-        val result = TestAtedConnector.addDraftPropertyDetailsDatesInRelief("1", propertyDetails)
-        val response = await(result)
+        val result: Future[HttpResponse] = testPropertyDetailsConnector.addDraftPropertyDetailsDatesInRelief("1", propertyDetails)
+        val response: HttpResponse = await(result)
         response.status must be(OK)
       }
 
-      "for an unsuccessful add, return an empty object" in {
-        when(mockWSHttp.POST[JsValue, HttpResponse]
+      "for an unsuccessful add, return an empty object" in new Setup {
+        when(mockHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
           (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
 
-        val result = TestAtedConnector.addDraftPropertyDetailsDatesInRelief("1", propertyDetails)
-        val response = await(result)
+        val result: Future[HttpResponse] = testPropertyDetailsConnector.addDraftPropertyDetailsDatesInRelief("1", propertyDetails)
+        val response: HttpResponse = await(result)
         response.status must be(BAD_REQUEST)
       }
     }
@@ -505,122 +499,122 @@ class PropertyDetailsConnectorSpec extends PlaySpec with OneServerPerSuite with 
       implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
       val propertyDetails = new PropertyDetailsSupportingInfo("")
 
-      "for successful save, return PropertyDetails title for a user" in {
-        val successResponse = Json.toJson(propertyDetails)
-        when(mockWSHttp.POST[JsValue, HttpResponse]
+      "for successful save, return PropertyDetails title for a user" in new Setup {
+        val successResponse: JsValue = Json.toJson(propertyDetails)
+        when(mockHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
           (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
 
-        val result = TestAtedConnector.saveDraftPropertyDetailsSupportingInfo("1", propertyDetails)
-        val response = await(result)
+        val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailsSupportingInfo("1", propertyDetails)
+        val response: HttpResponse = await(result)
         response.status must be(OK)
       }
 
-      "for an unsuccessful save, return an empty object" in {
-        when(mockWSHttp.POST[JsValue, HttpResponse]
+      "for an unsuccessful save, return an empty object" in new Setup {
+        when(mockHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
           (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
 
-        val result = TestAtedConnector.saveDraftPropertyDetailsSupportingInfo("1", propertyDetails)
-        val response = await(result)
+        val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailsSupportingInfo("1", propertyDetails)
+        val response: HttpResponse = await(result)
         response.status must be(BAD_REQUEST)
       }
     }
 
     "Calculate property details" must {
-      "return PropertyDetails for a user when we have some" in {
-        val propertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("testPostCode"))
-        val successResponse = Json.toJson(propertyDetails)
+      "return PropertyDetails for a user when we have some" in new Setup {
+        val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("testPostCode"))
+        val successResponse: JsValue = Json.toJson(propertyDetails)
         implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
-        when(mockWSHttp.GET[HttpResponse]
+        when(mockHttp.GET[HttpResponse]
           (Matchers.any())
           (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
 
 
-        val result = TestAtedConnector.calculateDraftPropertyDetails("1")
-        val response = await(result)
+        val result: Future[HttpResponse] = testPropertyDetailsConnector.calculateDraftPropertyDetails("1")
+        val response: HttpResponse = await(result)
         response.status must be(OK)
       }
     }
 
     "Calculate changed Liability" must {
-      "return PropertyDetails for a user when we have some" in {
-        val propertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("testPostCode"))
-        val successResponse = Json.toJson(propertyDetails)
+      "return PropertyDetails for a user when we have some" in new Setup {
+        val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("testPostCode"))
+        val successResponse: JsValue = Json.toJson(propertyDetails)
         implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
-        when(mockWSHttp.GET[HttpResponse]
+        when(mockHttp.GET[HttpResponse]
           (Matchers.any())
           (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
 
 
-        val result = TestAtedConnector.calculateDraftChangeLiability("1")
-        val response = await(result)
+        val result: Future[HttpResponse] = testPropertyDetailsConnector.calculateDraftChangeLiability("1")
+        val response: HttpResponse = await(result)
         response.status must be(OK)
       }
     }
 
     "Retrieve property details" must {
-      "return PropertyDetails for a user when we have some" in {
-        val propertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("testPostCode"))
-        val successResponse = Json.toJson(propertyDetails)
+      "return PropertyDetails for a user when we have some" in new Setup {
+        val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("testPostCode"))
+        val successResponse: JsValue = Json.toJson(propertyDetails)
         implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
-        when(mockWSHttp.GET[HttpResponse]
+        when(mockHttp.GET[HttpResponse]
           (Matchers.any())
           (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
 
 
-        val result = TestAtedConnector.retrieveDraftPropertyDetails("1")
-        val response = await(result)
+        val result: Future[HttpResponse] = testPropertyDetailsConnector.retrieveDraftPropertyDetails("1")
+        val response: HttpResponse = await(result)
         response.status must be(OK)
       }
     }
 
     "submit property details" must {
-      "for successful submit, return submit response" in {
-        val successResponse = Json.toJson(PropertyDetailsBuilder.getPropertyDetails("1", Some("testPostCode")))
+      "for successful submit, return submit response" in new Setup {
+        val successResponse: JsValue = Json.toJson(PropertyDetailsBuilder.getPropertyDetails("1", Some("testPostCode")))
         implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
-        when(mockWSHttp.POST[JsValue, HttpResponse]
+        when(mockHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
           (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
 
 
-        val result = TestAtedConnector.submitDraftPropertyDetails("1")
-        val response = await(result)
+        val result: Future[HttpResponse] = testPropertyDetailsConnector.submitDraftPropertyDetails("1")
+        val response: HttpResponse = await(result)
         response.status must be(OK)
       }
 
-      "for an unsuccessful submit, return an empty object" in {
+      "for an unsuccessful submit, return an empty object" in new Setup {
         implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
-        when(mockWSHttp.POST[JsValue, HttpResponse]
+        when(mockHttp.POST[JsValue, HttpResponse]
           (Matchers.any(), Matchers.any(), Matchers.any())
           (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
 
 
-        val result = TestAtedConnector.submitDraftPropertyDetails("1")
-        val response = await(result)
+        val result: Future[HttpResponse] = testPropertyDetailsConnector.submitDraftPropertyDetails("1")
+        val response: HttpResponse = await(result)
         response.status must be(BAD_REQUEST)
       }
     }
 
     "delete draft chargeable return" must {
-      "for successful submit, return submit response" in {
-        val successResponse = Json.toJson(Seq(PropertyDetailsBuilder.getPropertyDetails("1", Some("testPostCode"))))
+      "for successful submit, return submit response" in new Setup {
+        val successResponse: JsValue = Json.toJson(Seq(PropertyDetailsBuilder.getPropertyDetails("1", Some("testPostCode"))))
         implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
-        when(mockWSHttp.DELETE[HttpResponse]
-          (Matchers.any())
+        when(mockHttp.DELETE[HttpResponse]
+          (Matchers.any(), Matchers.any())
           (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
-        val result = TestAtedConnector.deleteDraftChargeable("ABC12345")
-        val response = await(result)
+        val result: Future[HttpResponse] = testPropertyDetailsConnector.deleteDraftChargeable("ABC12345")
+        val response: HttpResponse = await(result)
         response.status must be(OK)
       }
 
-      "for an inavlid id, return an empty object" in {
+      "for an inavlid id, return an empty object" in new Setup {
         implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
-        when(mockWSHttp.DELETE[HttpResponse]
-          (Matchers.any())
+        when(mockHttp.DELETE[HttpResponse]
+          (Matchers.any(), Matchers.any())
           (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
-        val result = TestAtedConnector.deleteDraftChargeable("XYZ123456")
-        val response = await(result)
+        val result: Future[HttpResponse] = testPropertyDetailsConnector.deleteDraftChargeable("XYZ123456")
+        val response: HttpResponse = await(result)
         response.status must be(BAD_REQUEST)
       }
     }

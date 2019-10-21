@@ -17,7 +17,9 @@
 package models
 
 import org.joda.time.LocalDate
-import play.api.libs.json.Json
+import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json.JodaWrites._
+import play.api.libs.json.JodaReads._
 
 case class RegisteredAddressDetails(addressLine1: String,
                                     addressLine2: String,
@@ -27,7 +29,7 @@ case class RegisteredAddressDetails(addressLine1: String,
                                     countryCode: String)
 
 object RegisteredAddressDetails {
-  implicit val formats = Json.format[RegisteredAddressDetails]
+  implicit val formats: OFormat[RegisteredAddressDetails] = Json.format[RegisteredAddressDetails]
 }
 
 case class RegisteredDetails(isEditable: Boolean,
@@ -35,7 +37,7 @@ case class RegisteredDetails(isEditable: Boolean,
                              addressDetails: RegisteredAddressDetails)
 
 object RegisteredDetails {
-  implicit val formats = Json.format[RegisteredDetails]
+  implicit val formats: OFormat[RegisteredDetails] = Json.format[RegisteredDetails]
 }
 
 case class Individual(firstName: String,
@@ -44,7 +46,7 @@ case class Individual(firstName: String,
                       dateOfBirth: LocalDate)
 
 object Individual {
-  implicit val formats = Json.format[Individual]
+  implicit val formats: OFormat[Individual] = Json.format[Individual]
 }
 
 
@@ -53,13 +55,13 @@ case class Organisation(organisationName: String,
                         organisationType: Option[String] = None)
 
 object Organisation {
-  implicit val formats = Json.format[Organisation]
+  implicit val formats: OFormat[Organisation] = Json.format[Organisation]
 }
 
 case class Identification(idNumber: String, issuingInstitution: String, issuingCountryCode: String)
 
 object Identification {
-  implicit val formats = Json.format[Identification]
+  implicit val formats: OFormat[Identification] = Json.format[Identification]
 }
 
 case class EtmpRegistrationDetails(sapNumber: String,
@@ -84,13 +86,13 @@ case class EtmpRegistrationDetails(sapNumber: String,
 }
 
 object EtmpRegistrationDetails {
-  implicit val formats = Json.format[EtmpRegistrationDetails]
+  implicit val formats: OFormat[EtmpRegistrationDetails] = Json.format[EtmpRegistrationDetails]
 }
 
 case class UpdateOrganisation(organisationName: String)
 
 object UpdateOrganisation {
-  implicit val formats = Json.format[UpdateOrganisation]
+  implicit val formats: OFormat[UpdateOrganisation] = Json.format[UpdateOrganisation]
 }
 
 case class UpdateRegistrationDetailsRequest(isAnIndividual: Boolean,
@@ -106,5 +108,5 @@ case class UpdateRegistrationDetailsRequest(isAnIndividual: Boolean,
 }
 
 object UpdateRegistrationDetailsRequest {
-  implicit val formats = Json.format[UpdateRegistrationDetailsRequest]
+  implicit val formats: OFormat[UpdateRegistrationDetailsRequest] = Json.format[UpdateRegistrationDetailsRequest]
 }

@@ -19,6 +19,9 @@ package controllers.subscriptionData
 import java.util.UUID
 
 import builders.{SessionBuilder, TitleBuilder}
+import config.ApplicationConfig
+import connectors.DataCacheConnector
+import controllers.auth.AuthAction
 import models.{Address, AddressDetails, ContactDetails, EditContactDetails}
 import org.jsoup.Jsoup
 import org.mockito.Matchers
@@ -27,12 +30,12 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
-import play.api.libs.json.Json
-import play.api.mvc.{AnyContentAsJson, Result}
+import play.api.libs.json.{JsValue, Json}
+import play.api.mvc.{AnyContentAsJson, MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.{DelegationService, SubscriptionDataService}
-import uk.gov.hmrc.auth.core.{AffinityGroup, PlayAuthConnector}
+import services.SubscriptionDataService
+import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.MockAuthUtil
 
@@ -40,35 +43,79 @@ import scala.concurrent.Future
 
 class EditContactDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with MockAuthUtil {
 
-  val mockSubscriptionDataService: SubscriptionDataService = mock[SubscriptionDataService]
-implicit lazy val hc: HeaderCarrier = HeaderCarrier()
+  implicit lazy val hc: HeaderCarrier = HeaderCarrier()
+  implicit val mockAppConfig: ApplicationConfig = mock[ApplicationConfig]
 
-  object TestEditAtedContactController extends EditContactDetailsController {
-    override val authConnector: PlayAuthConnector = mockAuthConnector
-    override val delegationService: DelegationService = mockDelegationService
-    override val subscriptionDataService: SubscriptionDataService = mockSubscriptionDataService
+  val mockMcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
+  val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
+  val mockSubscriptionDataService: SubscriptionDataService = mock[SubscriptionDataService]
+
+class Setup {
+
+  val mockAuthAction: AuthAction = new AuthAction(
+    mockAppConfig,
+    mockDelegationService,
+    mockAuthConnector
+  )
+
+  val testEditContactDetailsController: EditContactDetailsController = new EditContactDetailsController(
+    mockMcc,
+    mockAuthAction,
+    mockSubscriptionDataService
+  )
+
+  def getWithUnAuthorisedUser(test: Future[Result] => Any) {
+    val userId = s"user-${UUID.randomUUID}"
+    val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
+    setInvalidAuthMocks(authMock)
+    val result = testEditContactDetailsController.edit().apply(SessionBuilder.buildRequestWithSession(userId))
+    test(result)
   }
 
+  def getWithAuthorisedUser(companyDetails: Option[Address] = None)(test: Future[Result] => Any) {
+    val userId = s"user-${UUID.randomUUID}"
+    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+    setAuthMocks(authMock)
+    implicit val hc: HeaderCarrier = HeaderCarrier()
+    when(mockSubscriptionDataService.getCorrespondenceAddress(Matchers.any(), Matchers.any())).thenReturn(Future.successful(companyDetails))
+    val result = testEditContactDetailsController.edit().apply(SessionBuilder.buildRequestWithSession(userId))
+
+    test(result)
+  }
+
+  def submitWithUnAuthorisedUser(test: Future[Result] => Any) {
+    val userId = s"user-${UUID.randomUUID}"
+    val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
+    setInvalidAuthMocks(authMock)
+    val result = testEditContactDetailsController.submit().apply(SessionBuilder.buildRequestWithSession(userId))
+    test(result)
+  }
+
+  def submitWithAuthorisedUserSuccess(testAddress: Option[EditContactDetails] = None)
+                                     (fakeRequest: FakeRequest[AnyContentAsJson])(test: Future[Result] => Any) {
+    val userId = s"user-${UUID.randomUUID}"
+    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+    setAuthMocks(authMock)
+    when(mockSubscriptionDataService.editContactDetails(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(testAddress))
+    val result = testEditContactDetailsController.submit().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
+
+    test(result)
+  }
+}
+
   override def beforeEach(): Unit = {
-    reset(mockAuthConnector)
-    reset(mockSubscriptionDataService)
   }
 
   "EditContactDetailsController " must {
-
-    "use correct DelegationConnector ...." in {
-      EditContactDetailsController.delegationService must be(DelegationService)
-    }
-
     "unauthorised users" must {
 
-      "respond with a redirect" in {
+      "respond with a redirect" in new Setup {
         getWithUnAuthorisedUser { result =>
           status(result) must be(SEE_OTHER)
         }
       }
 
-      "be redirected to the unauthorised page" in {
+      "be redirected to the unauthorised page" in new Setup {
         getWithUnAuthorisedUser { result =>
           redirectLocation(result).get must include("/ated/unauthorised")
         }
@@ -76,8 +123,7 @@ implicit lazy val hc: HeaderCarrier = HeaderCarrier()
     }
 
     "Authorised Users" must {
-
-      "return business ATED contact details view with empty data" in {
+      "return business ATED contact details view with empty data" in new Setup {
 
         getWithAuthorisedUser(None) {
           result =>
@@ -90,7 +136,7 @@ implicit lazy val hc: HeaderCarrier = HeaderCarrier()
         }
       }
 
-      "show contact address with populated data" in {
+      "show contact address with populated data" in new Setup {
 
         val testContactAddress = ContactDetails(Some("12333"), Some("2333333"), Some("2333334"))
         val testAddressDetails = AddressDetails("Correspondence", "line_1", "line_2", Some("line_3"), Some("line_4"), Some("postCode"), "GB")
@@ -106,7 +152,7 @@ implicit lazy val hc: HeaderCarrier = HeaderCarrier()
         }
       }
 
-      "if contact details in not present in correspondence address, phonenum and emailAddress are empty" in {
+      "if contact details in not present in correspondence address, phonenum and emailAddress are empty" in new Setup {
 
         val testAddressDetails = AddressDetails("Correspondence", "line_1", "line_2", Some("line_3"), Some("line_4"), Some("postCode"), "GB")
         val testAddress = Address(Some("name1"), Some("name2"), addressDetails = testAddressDetails, contactDetails = None)
@@ -121,7 +167,7 @@ implicit lazy val hc: HeaderCarrier = HeaderCarrier()
         }
       }
 
-      "If contact address is not pre-populated, have empty fields on the page" in {
+      "If contact address is not pre-populated, have empty fields on the page" in new Setup {
 
         getWithAuthorisedUser(None) {
           result =>
@@ -135,22 +181,15 @@ implicit lazy val hc: HeaderCarrier = HeaderCarrier()
       }
 
       "submit" must {
-
-        "not respond with NOT_FOUND" in {
-          val result = route(FakeRequest(POST, "/ated/contact-address"))
-          result.isDefined must be(true)
-          status(result.get) must not be NOT_FOUND
-        }
-
         "unauthorised users" must {
 
-          "respond with a redirect" in {
+          "respond with a redirect" in new Setup {
             submitWithUnAuthorisedUser { result =>
               status(result) must be(SEE_OTHER)
             }
           }
 
-          "be redirected to the login page" in {
+          "be redirected to the login page" in new Setup {
             getWithUnAuthorisedUser { result =>
               redirectLocation(result).get must include("/ated/unauthorised")
             }
@@ -161,10 +200,9 @@ implicit lazy val hc: HeaderCarrier = HeaderCarrier()
 
           "validate form" must {
 
-            "First name is not valid when entered spaces" in {
-              implicit val hc: HeaderCarrier = HeaderCarrier()
-              val phoneNum = "a" * 25
-              val inputJson = Json.parse( s"""{ "firstName": " ", "lastName": "TestLastName", "phoneNumber": "$phoneNum"}""")
+            "First name is not valid when entered spaces" in new Setup {
+              val phoneNum: String = "a" * 25
+              val inputJson: JsValue = Json.parse( s"""{ "firstName": " ", "lastName": "TestLastName", "phoneNumber": "$phoneNum"}""")
               val contactAddress: EditContactDetails = inputJson.as[EditContactDetails]
 
               submitWithAuthorisedUserSuccess(Some(contactAddress))(FakeRequest().withJsonBody(inputJson)) {
@@ -174,10 +212,9 @@ implicit lazy val hc: HeaderCarrier = HeaderCarrier()
               }
             }
 
-            "Telephone number must not be more than 24 characters" in {
-              implicit val hc: HeaderCarrier = HeaderCarrier()
-              val phoneNum = "a" * 25
-              val inputJson = Json.parse( s"""{ "firstName": "TestFirstName", "lastName": "TestLastName", "phoneNumber": "$phoneNum"}""")
+            "Telephone number must not be more than 24 characters" in new Setup {
+              val phoneNum: String = "a" * 25
+              val inputJson: JsValue = Json.parse( s"""{ "firstName": "TestFirstName", "lastName": "TestLastName", "phoneNumber": "$phoneNum"}""")
               val contactAddress: EditContactDetails = inputJson.as[EditContactDetails]
 
               submitWithAuthorisedUserSuccess(Some(contactAddress))(FakeRequest().withJsonBody(inputJson)) {
@@ -187,9 +224,8 @@ implicit lazy val hc: HeaderCarrier = HeaderCarrier()
               }
             }
 
-            "Telephone number must not have invalid characters" in {
-              implicit val hc: HeaderCarrier = HeaderCarrier()
-              val inputJson = Json.parse( s"""{ "firstName": "TestFirstName", "lastName": "TestLastName", "phoneNumber": "@@@@@@@@"}""")
+            "Telephone number must not have invalid characters" in new Setup {
+              val inputJson: JsValue = Json.parse( s"""{ "firstName": "TestFirstName", "lastName": "TestLastName", "phoneNumber": "@@@@@@@@"}""")
               val contactAddress: EditContactDetails = inputJson.as[EditContactDetails]
 
               submitWithAuthorisedUserSuccess(Some(contactAddress))(FakeRequest().withJsonBody(inputJson)) {
@@ -199,9 +235,8 @@ implicit lazy val hc: HeaderCarrier = HeaderCarrier()
               }
             }
 
-            "Telephone number must not have lower case characters" in {
-              implicit val hc: HeaderCarrier = HeaderCarrier()
-              val inputJson = Json.parse( s"""{ "firstName": "TestFirstName", "lastName": "TestLastName", "phoneNumber": "0191222x123"}""")
+            "Telephone number must not have lower case characters" in new Setup {
+              val inputJson: JsValue = Json.parse( s"""{ "firstName": "TestFirstName", "lastName": "TestLastName", "phoneNumber": "0191222x123"}""")
               val contactAddress: EditContactDetails = inputJson.as[EditContactDetails]
 
               submitWithAuthorisedUserSuccess(Some(contactAddress))(FakeRequest().withJsonBody(inputJson)) {
@@ -212,10 +247,9 @@ implicit lazy val hc: HeaderCarrier = HeaderCarrier()
             }
 
 
-            "If edited contact address is valid, submit must redirect" in {
+            "If edited contact address is valid, submit must redirect" in new Setup {
 
-              implicit val hc: HeaderCarrier = HeaderCarrier()
-              val inputJson = Json.parse( s"""{ "firstName": "TestFirstName", "lastName": "TestLastName", "phoneNumber": "9999999999" }""")
+              val inputJson: JsValue = Json.parse( s"""{ "firstName": "TestFirstName", "lastName": "TestLastName", "phoneNumber": "9999999999" }""")
               val contactAddress: EditContactDetails = inputJson.as[EditContactDetails]
 
               submitWithAuthorisedUserSuccess(Some(contactAddress))(FakeRequest().withJsonBody(inputJson)) {
@@ -225,10 +259,9 @@ implicit lazy val hc: HeaderCarrier = HeaderCarrier()
               }
             }
 
-            "If contact address is valid but the save fails, throw a validation error" in {
+            "If contact address is valid but the save fails, throw a validation error" in new Setup {
 
-              implicit val hc: HeaderCarrier = HeaderCarrier()
-              val inputJson = Json.parse( s"""{ "firstName": "TestFirstName", "lastName": "TestLastName", "phoneNumber": "9999999999" }""")
+              val inputJson: JsValue = Json.parse( s"""{ "firstName": "TestFirstName", "lastName": "TestLastName", "phoneNumber": "9999999999" }""")
 
               submitWithAuthorisedUserSuccess(None)(FakeRequest().withJsonBody(inputJson)) {
                 result =>
@@ -239,47 +272,6 @@ implicit lazy val hc: HeaderCarrier = HeaderCarrier()
           }
         }
       }
-
     }
-
   }
-
-  def getWithUnAuthorisedUser(test: Future[Result] => Any) {
-    val userId = s"user-${UUID.randomUUID}"
-        val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
-    setInvalidAuthMocks(authMock)
-    val result = TestEditAtedContactController.edit().apply(SessionBuilder.buildRequestWithSession(userId))
-    test(result)
-  }
-
-  def getWithAuthorisedUser(companyDetails: Option[Address] = None)(test: Future[Result] => Any) {
-    val userId = s"user-${UUID.randomUUID}"
-    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
-    setAuthMocks(authMock)
-    implicit val hc: HeaderCarrier = HeaderCarrier()
-    when(mockSubscriptionDataService.getCorrespondenceAddress(Matchers.any(), Matchers.any())).thenReturn(Future.successful(companyDetails))
-    val result = TestEditAtedContactController.edit().apply(SessionBuilder.buildRequestWithSession(userId))
-
-    test(result)
-  }
-
-  def submitWithUnAuthorisedUser(test: Future[Result] => Any) {
-    val userId = s"user-${UUID.randomUUID}"
-        val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
-    setInvalidAuthMocks(authMock)
-    val result = TestEditAtedContactController.submit().apply(SessionBuilder.buildRequestWithSession(userId))
-    test(result)
-  }
-
-  def submitWithAuthorisedUserSuccess(testAddress: Option[EditContactDetails] = None)
-                                     (fakeRequest: FakeRequest[AnyContentAsJson])(test: Future[Result] => Any) {
-    val userId = s"user-${UUID.randomUUID}"
-    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
-    setAuthMocks(authMock)
-    when(mockSubscriptionDataService.editContactDetails(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(testAddress))
-    val result = TestEditAtedContactController.submit().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
-
-    test(result)
-  }
-
 }

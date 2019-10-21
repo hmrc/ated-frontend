@@ -16,33 +16,40 @@
 
 package controllers.editLiability
 
+import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
-import controllers.BackLinkController
+import controllers.{BackLinkController, ControllerIds}
 import controllers.auth.{AuthAction, ClientHelper}
+import javax.inject.Inject
 import models.{PropertyDetails, StandardAuthRetrievals}
-import play.api.Play.current
-import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, AnyContent, Request}
-import services.{DelegationService, PropertyDetailsService, SubscriptionDataService}
+import play.api.i18n.I18nSupport
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request}
+import services.{PropertyDetailsService, SubscriptionDataService}
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.PeriodUtils
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-trait EditLiabilitySummaryController extends BackLinkController
-  with AuthAction with ClientHelper {
+class EditLiabilitySummaryController @Inject()(mcc: MessagesControllerComponents,
+                                               propertyDetailsService: PropertyDetailsService,
+                                               subscriptionDataService: SubscriptionDataService,
+                                               authAction: AuthAction,
+                                               val dataCacheConnector: DataCacheConnector,
+                                               val backLinkCacheConnector: BackLinkCacheConnector)(implicit val appConfig: ApplicationConfig)
+  extends FrontendController(mcc) with BackLinkController with ClientHelper with I18nSupport with ControllerIds {
 
-  def propertyDetailsService: PropertyDetailsService
-  def subscriptionDataService: SubscriptionDataService
+  implicit val ec: ExecutionContext = mcc.executionContext
+  val controllerId: String = editLiabilitySummaryId
 
   def view(oldFormBundleNo: String): Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         propertyDetailsService.calculateDraftChangeLiability(oldFormBundleNo).flatMap { x =>
           x.calculated.flatMap(_.amountDueOrRefund) match {
             case Some(amount) if amount < 0 =>
-              ForwardBackLinkToNextPage(HasBankDetailsController.controllerId, controllers.editLiability.routes.HasBankDetailsController.view(oldFormBundleNo))
-            case Some(amount) => viewSummaryDetails(x)
+              forwardBackLinkToNextPage(hasBankDetailsId, controllers.editLiability.routes.HasBankDetailsController.view(oldFormBundleNo))
+            case Some(_) => viewSummaryDetails(x)
             case None => Future.successful(Redirect(controllers.routes.AccountSummaryController.view()))
           }
         }
@@ -51,7 +58,7 @@ trait EditLiabilitySummaryController extends BackLinkController
   }
 
   def viewSummary(oldFormBundleNo: String): Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         propertyDetailsService.calculateDraftChangeLiability(oldFormBundleNo).flatMap(viewSummaryDetails(_))
       }
@@ -75,10 +82,10 @@ trait EditLiabilitySummaryController extends BackLinkController
   }
 
   def submit(oldFormBundleNo: String): Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
-        RedirectWithBackLink(
-          EditLiabilityDeclarationController.controllerId,
+        redirectWithBackLink(
+          editLiabilityDeclarationId,
           controllers.editLiability.routes.EditLiabilityDeclarationController.view(oldFormBundleNo),
           Some(controllers.editLiability.routes.EditLiabilitySummaryController.viewSummary(oldFormBundleNo).url)
         )
@@ -87,7 +94,7 @@ trait EditLiabilitySummaryController extends BackLinkController
   }
 
   def viewPrintFriendlyEditLiabilityReturn(oldFormBundleNo: String): Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         for {
           calculateDraftLiability <- propertyDetailsService.calculateDraftChangeLiability(oldFormBundleNo)
@@ -103,13 +110,4 @@ trait EditLiabilitySummaryController extends BackLinkController
     }
   }
 
-}
-
-object EditLiabilitySummaryController extends EditLiabilitySummaryController {
-  val delegationService: DelegationService = DelegationService
-  val propertyDetailsService: PropertyDetailsService = PropertyDetailsService
-  val dataCacheConnector: DataCacheConnector = DataCacheConnector
-  val subscriptionDataService: SubscriptionDataService = SubscriptionDataService
-  override val controllerId = "EditLiabilitySummaryController"
-  override val backLinkCacheConnector: BackLinkCacheConnector = BackLinkCacheConnector
 }

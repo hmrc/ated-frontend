@@ -16,10 +16,12 @@
 
 package controllers.auth
 
-import controllers.AtedBaseController
+import config.ApplicationConfig
+import javax.inject.Inject
 import models.StandardAuthRetrievals
 import play.api.Logger
 import play.api.i18n.Messages
+import play.api.mvc.Results.Redirect
 import play.api.mvc.{AnyContent, Request, Result}
 import services.DelegationService
 import uk.gov.hmrc.auth.core._
@@ -30,19 +32,19 @@ import uk.gov.hmrc.http.HeaderCarrier
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{ExecutionContext, Future}
 
-trait AuthAction extends AtedBaseController with AuthorisedFunctions {
+class AuthAction @Inject()(appConfig: ApplicationConfig,
+                           delegationService: DelegationService,
+                           val authConnector: AuthConnector) extends AuthorisedFunctions {
 
   val origin: String = "ated-frontend"
 
   def loginParams(implicit request: Request[AnyContent]): Map[String, Seq[String]] = Map(
-    "continue" -> Seq(ExternalUrls.continueURL),
+    "continue" -> Seq(appConfig.continueURL),
     "origin" -> Seq(origin)
   )
 
 
   def unauthorisedUrl(isSa: Boolean = false): Result = Redirect(controllers.routes.ApplicationController.unauthorised(isSa).url)
-
-  val delegationService: DelegationService
 
   def authorisedForNoEnrolments(body: StandardAuthRetrievals => Future[Result])
                                 (implicit request: Request[AnyContent],
@@ -63,12 +65,12 @@ trait AuthAction extends AtedBaseController with AuthorisedFunctions {
 
   def validateAgainstSaEnrolment(enrolments: Enrolments): Boolean = {
 
-    enrolments.enrolments.count{ enrolment =>
-      enrolment.key match {
+    enrolments.enrolments.count{ _.key match {
         case "HMRC-ATED-ORG" | "HMRC-AGENT-AGENT" | "IR-SA" => true
         case _                                              => false
       }
     } == 1 && enrolments.getEnrolment("IR-SA").isDefined
+
   }
 
   def authorisedAction(body: StandardAuthRetrievals => Future[Result])
@@ -107,12 +109,11 @@ trait AuthAction extends AtedBaseController with AuthorisedFunctions {
       unauthorisedUrl()
     case nas: NoActiveSession =>
       Logger.info("[AuthAction][handleException] DefaultAuthAction:Refine - NoActiveSession" + nas)
-      Redirect(ExternalUrls.loginURL, loginParams)
+      Redirect(appConfig.loginURL, loginParams)
     case e: AuthorisationException =>
       Logger.info("[AuthAction][handleException] DefaultAuthAction:Refine - AuthorisationException:" + e)
       unauthorisedUrl()
-}
-
+  }
 }
 
 

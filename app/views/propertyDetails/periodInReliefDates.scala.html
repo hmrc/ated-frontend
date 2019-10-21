@@ -15,12 +15,13 @@
  *@
 
 @import models._
-@(id: String, periodKey: Int, propertyDetailsForm: Form[PropertyDetailsDatesInRelief], backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent])
+@import config.ApplicationConfig
+@(id: String, periodKey: Int, propertyDetailsForm: Form[PropertyDetailsDatesInRelief], backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 @import uk.gov.hmrc.play.views.html._
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
 @import views.html.helpers.error._
-@import utils._
+@import _root_.utils._
 
 @implicitFormInstance = @{ Some(propertyDetailsForm) }
 
@@ -45,6 +46,7 @@
             label = Html(Messages("ated.property-details-period.datesInRelief.startDate")),
             isNested = false,
             defaultDateOption = None,
+            periodKey,
             '_hintText -> Messages("ated.property-details-period.datesInRelief.startDate.hint",
             PeriodUtils.periodStartDate(periodKey).toString(Messages("ated.date-format.numeric"))),
             '_groupClass -> "form-group date-of-birth",
@@ -57,6 +59,7 @@
             label = Html(Messages("ated.property-details-period.datesInRelief.endDate")),
             isNested = false,
             defaultDateOption = None,
+            periodKey,
             '_hintText -> Messages("ated.property-details-period.datesInRelief.endDate.hint",
             PeriodUtils.periodEndDate(periodKey).toString(Messages("ated.date-format.numeric"))),
             '_groupClass -> "form-group date-of-birth",

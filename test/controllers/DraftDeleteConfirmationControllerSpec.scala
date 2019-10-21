@@ -19,7 +19,9 @@ package controllers
 import java.util.UUID
 
 import builders.{SessionBuilder, TitleBuilder}
+import config.ApplicationConfig
 import connectors.DataCacheConnector
+import controllers.auth.AuthAction
 import forms.AtedForms.YesNoQuestion
 import org.jsoup.Jsoup
 import org.mockito.Matchers
@@ -29,11 +31,11 @@ import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.libs.json.{JsValue, Json}
-import play.api.mvc.Result
+import play.api.mvc.{MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{contentAsString, _}
 import services._
-import uk.gov.hmrc.auth.core.{AffinityGroup, PlayAuthConnector}
+import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import utils.{AtedConstants, MockAuthUtil}
 
@@ -41,48 +43,79 @@ import scala.concurrent.Future
 
 class DraftDeleteConfirmationControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with MockAuthUtil {
 
+
   implicit lazy val hc: HeaderCarrier = HeaderCarrier()
+  implicit val mockAppConfig: ApplicationConfig = mock[ApplicationConfig]
 
-  val periodKey: Int = 2017
-
+  val mockMcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
+  val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
+  val mockDetailsService: DetailsService = mock[DetailsService]
   val mockPropertyDetailsService: PropertyDetailsService = mock[PropertyDetailsService]
   val mockReliefsService: ReliefsService = mock[ReliefsService]
-  val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
+
+  val periodKey: Int = 2017
   val organisationName: String = "OrganisationName"
   val formBundleNo1: String = "123456789012"
   val formBundleNo2: String = "123456789013"
 
-  object TestDraftDeleteConfirmationController extends DraftDeleteConfirmationController {
-    override val authConnector: PlayAuthConnector = mockAuthConnector
-    override val propertyDetailsService: PropertyDetailsService = mockPropertyDetailsService
-    override val reliefsService: ReliefsService = mockReliefsService
-    override val dataCacheConnector: DataCacheConnector = mockDataCacheConnector
-    override val delegationService: DelegationService = mockDelegationService
+  class Setup {
+
+    val mockAuthAction: AuthAction = new AuthAction(
+      mockAppConfig,
+      mockDelegationService,
+      mockAuthConnector
+    )
+
+    val testDraftDeleteConfirmationController: DraftDeleteConfirmationController = new DraftDeleteConfirmationController(
+      mockMcc,
+      mockAuthAction,
+      mockPropertyDetailsService,
+      mockReliefsService,
+      mockDataCacheConnector
+    )
+    def getWithUnAuthorisedUser(test: Future[Result] => Any) {
+      val userId = s"user-${UUID.randomUUID}"
+      val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
+      setInvalidAuthMocks(authMock)
+      val result = testDraftDeleteConfirmationController.view(Some("123456"), periodKey, "draft")
+        .apply(SessionBuilder.buildRequestWithSession(userId))
+      test(result)
+    }
+
+    def viewWithAuthorisedUser(returnType: String, id: Option[String] = None)(test: Future[Result] => Any) {
+      val userId = s"user-${UUID.randomUUID}"
+      val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+      setAuthMocks(authMock)
+      when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
+      val result = testDraftDeleteConfirmationController.view(id, periodKey, returnType).apply(SessionBuilder.buildRequestWithSession(userId))
+      test(result)
+    }
+
+    def submitWithAuthorisedUser(inputJson: JsValue, returnType: String, id: Option[String] = None)(test: Future[Result] => Any) {
+      val userId = s"user-${UUID.randomUUID}"
+      val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+      setAuthMocks(authMock)
+      when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
+      when(mockReliefsService.deleteDraftReliefs(Matchers.eq(periodKey))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(HttpResponse(OK)))
+      when(mockPropertyDetailsService.clearDraftReliefs(Matchers.eq("123456"))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(HttpResponse(OK)))
+      val result = testDraftDeleteConfirmationController.submit(id, periodKey, returnType)
+        .apply(SessionBuilder.updateRequestWithSession(FakeRequest().withJsonBody(inputJson), userId))
+      test(result)
+    }
   }
 
   override def beforeEach(): Unit = {
-    reset(mockAuthConnector)
-    reset(mockPropertyDetailsService)
-    reset(mockReliefsService)
-    reset(mockDataCacheConnector)
-    reset(mockDelegationService)
   }
 
   "DraftDeleteConfirmationController" must {
-
-    "use correct property details service" in {
-      DraftDeleteConfirmationController.propertyDetailsService must be(PropertyDetailsService)
-    }
-
-    "use correct relief service" in {
-      DraftDeleteConfirmationController.reliefsService must be(ReliefsService)
-    }
-
     "view" must {
-
       "unauthorised users" must {
 
-        "respond with a redirect, and be redirected to unauthorised page" in {
+        "respond with a redirect, and be redirected to unauthorised page" in new Setup {
           getWithUnAuthorisedUser { result =>
             status(result) must be(SEE_OTHER)
             redirectLocation(result).get must include("/ated/unauthorised")
@@ -92,7 +125,7 @@ class DraftDeleteConfirmationControllerSpec extends PlaySpec with GuiceOneServer
 
       "authorised users" must {
 
-        "see the confirmation yes/no page for relief" in {
+        "see the confirmation yes/no page for relief" in new Setup {
           viewWithAuthorisedUser("relief", Some("12345")) {
             result =>
               status(result) must be(OK)
@@ -101,8 +134,7 @@ class DraftDeleteConfirmationControllerSpec extends PlaySpec with GuiceOneServer
           }
         }
 
-
-        "see the confirmation yes/no page for charge" in {
+        "see the confirmation yes/no page for charge" in new Setup {
           viewWithAuthorisedUser("charge", Some("12345")) {
             result =>
               status(result) must be(OK)
@@ -111,20 +143,19 @@ class DraftDeleteConfirmationControllerSpec extends PlaySpec with GuiceOneServer
           }
         }
 
-        "throw runtime exception, if no id is not found for charge" in {
+        "throw runtime exception, if no id is not found for charge" in new Setup {
           viewWithAuthorisedUser("charge") {
             result =>
               val thrown = the[RuntimeException] thrownBy await(result)
               thrown.getMessage must include("No id found for draft return")
           }
         }
-
       }
     }
 
     "submit" must {
 
-      "throw a BAD_REQUEST, when nothing is selected" in {
+      "throw a BAD_REQUEST, when nothing is selected" in new Setup {
         submitWithAuthorisedUser(Json.toJson(YesNoQuestion(None)), "relief", Some("12345")) {
           result =>
             status(result) must be(BAD_REQUEST)
@@ -133,7 +164,7 @@ class DraftDeleteConfirmationControllerSpec extends PlaySpec with GuiceOneServer
         }
       }
 
-      "redirect it to period sumary page, for yes in relief" in {
+      "redirect it to period sumary page, for yes in relief" in new Setup {
         submitWithAuthorisedUser(Json.toJson(YesNoQuestion(Some(true))), "relief", Some("12345")) {
           result =>
             status(result) must be(SEE_OTHER)
@@ -141,7 +172,7 @@ class DraftDeleteConfirmationControllerSpec extends PlaySpec with GuiceOneServer
         }
       }
 
-      "redirect it to period sumary page, for yes in charge" in {
+      "redirect it to period sumary page, for yes in charge" in new Setup {
         submitWithAuthorisedUser(Json.toJson(YesNoQuestion(Some(true))), "charge", Some("12345")) {
           result =>
             status(result) must be(SEE_OTHER)
@@ -149,7 +180,7 @@ class DraftDeleteConfirmationControllerSpec extends PlaySpec with GuiceOneServer
         }
       }
 
-      "redirect it to chargable summary page, for no" in {
+      "redirect it to chargable summary page, for no" in new Setup {
         submitWithAuthorisedUser(Json.toJson(YesNoQuestion(Some(false))), "charge", Some("12345")) {
           result =>
             status(result) must be(SEE_OTHER)
@@ -157,7 +188,7 @@ class DraftDeleteConfirmationControllerSpec extends PlaySpec with GuiceOneServer
         }
       }
 
-      "redirect it to relief summary page, for no" in {
+      "redirect it to relief summary page, for no" in new Setup {
         submitWithAuthorisedUser(Json.toJson(YesNoQuestion(Some(false))), "relief", Some("12345")) {
           result =>
             status(result) must be(SEE_OTHER)
@@ -165,7 +196,7 @@ class DraftDeleteConfirmationControllerSpec extends PlaySpec with GuiceOneServer
         }
       }
 
-      "throw runtime exception for charge, when no id is passed and yes is selceted" in {
+      "throw runtime exception for charge, when no id is passed and yes is selceted" in new Setup {
         submitWithAuthorisedUser(Json.toJson(YesNoQuestion(Some(true))), "charge") {
           result =>
             val thrown = the[RuntimeException] thrownBy await(result)
@@ -173,7 +204,7 @@ class DraftDeleteConfirmationControllerSpec extends PlaySpec with GuiceOneServer
         }
       }
 
-      "throw runtime exception for charge, when no id is passed and no is selceted" in {
+      "throw runtime exception for charge, when no id is passed and no is selceted" in new Setup {
         submitWithAuthorisedUser(Json.toJson(YesNoQuestion(Some(false))), "charge") {
           result =>
             val thrown = the[RuntimeException] thrownBy await(result)
@@ -181,40 +212,5 @@ class DraftDeleteConfirmationControllerSpec extends PlaySpec with GuiceOneServer
         }
       }
     }
-
-    def getWithUnAuthorisedUser(test: Future[Result] => Any) {
-      val userId = s"user-${UUID.randomUUID}"
-          val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
-      setInvalidAuthMocks(authMock)
-      val result = TestDraftDeleteConfirmationController.view(Some("123456"), periodKey, "draft")
-        .apply(SessionBuilder.buildRequestWithSession(userId))
-      test(result)
-    }
-
-    def viewWithAuthorisedUser(returnType: String, id: Option[String] = None)(test: Future[Result] => Any) {
-      val userId = s"user-${UUID.randomUUID}"
-      val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
-    setAuthMocks(authMock)
-      when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
-        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-      val result = TestDraftDeleteConfirmationController.view(id, periodKey, returnType).apply(SessionBuilder.buildRequestWithSession(userId))
-      test(result)
-    }
-
-    def submitWithAuthorisedUser(inputJson: JsValue, returnType: String, id: Option[String] = None)(test: Future[Result] => Any) {
-      val userId = s"user-${UUID.randomUUID}"
-      val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
-    setAuthMocks(authMock)
-      when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
-        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-      when(mockReliefsService.deleteDraftReliefs(Matchers.eq(periodKey))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(HttpResponse(OK)))
-      when(mockPropertyDetailsService.clearDraftReliefs(Matchers.eq("123456"))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(HttpResponse(OK)))
-      val result = TestDraftDeleteConfirmationController.submit(id, periodKey, returnType)
-        .apply(SessionBuilder.updateRequestWithSession(FakeRequest().withJsonBody(inputJson), userId))
-      test(result)
-    }
-
   }
 }

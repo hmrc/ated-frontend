@@ -16,26 +16,32 @@
 
 package controllers.subscriptionData
 
+import config.ApplicationConfig
 import connectors.DataCacheConnector
-import controllers.AtedBaseController
 import controllers.auth.AuthAction
 import forms.AtedForms
 import forms.AtedForms._
-import play.api.Play.current
+import javax.inject.Inject
+import play.api.Environment
 import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{DelegationService, SubscriptionDataService}
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.{AtedUtils, CountryCodeUtils}
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-trait CorrespondenceAddressController extends AtedBaseController with AuthAction {
+class CorrespondenceAddressController @Inject()(mcc: MessagesControllerComponents,
+                                                authAction: AuthAction,
+                                                subscriptionDataService: SubscriptionDataService,
+                                                val environment: Environment)
+                                               (implicit val appConfig: ApplicationConfig)
+  extends FrontendController(mcc) with CountryCodeUtils {
 
-  def subscriptionDataService: SubscriptionDataService
+  implicit val ec: ExecutionContext = mcc.executionContext
 
   def editAddress: Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       val correspondenceAddressResponse = subscriptionDataService.getCorrespondenceAddress
       for {
         correspondenceAddress <- correspondenceAddressResponse
@@ -44,16 +50,16 @@ trait CorrespondenceAddressController extends AtedBaseController with AuthAction
           case Some(x) => correspondenceAddressForm.fill(x.addressDetails)
           case None => correspondenceAddressForm
         }
-        Ok(views.html.subcriptionData.correspondenceAddress(populatedForm, CountryCodeUtils.getIsoCodeTupleList, getBackLink))
+        Ok(views.html.subcriptionData.correspondenceAddress(populatedForm, getIsoCodeTupleList, getBackLink))
       }
     }
   }
 
   def submit: Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       AtedForms.verifyUKPostCode(correspondenceAddressForm.bindFromRequest).fold(
         formWithErrors => Future.successful(BadRequest(views.html.subcriptionData.correspondenceAddress(formWithErrors,
-          CountryCodeUtils.getIsoCodeTupleList, getBackLink))),
+          getIsoCodeTupleList, getBackLink))),
         addressData => {
           val trimmedPostCode = AtedUtils.formatPostCode(addressData.postalCode)
           val trimmedAddress = addressData.copy(postalCode = trimmedPostCode)
@@ -62,11 +68,11 @@ trait CorrespondenceAddressController extends AtedBaseController with AuthAction
           }
             yield {
               correspondenceAddress match {
-                case Some(x) => Redirect(controllers.subscriptionData.routes.CompanyDetailsController.view())
+                case Some(_) => Redirect(controllers.subscriptionData.routes.CompanyDetailsController.view())
                 case None =>
                   val errorMsg = Messages("ated.correspondence-address.save.error")
                   val errorForm = correspondenceAddressForm.withError(key = "addressType", message = errorMsg).fill(addressData)
-                  BadRequest(views.html.subcriptionData.correspondenceAddress(errorForm, CountryCodeUtils.getIsoCodeTupleList, getBackLink))
+                  BadRequest(views.html.subcriptionData.correspondenceAddress(errorForm, getIsoCodeTupleList, getBackLink))
               }
             }
         }
@@ -75,12 +81,6 @@ trait CorrespondenceAddressController extends AtedBaseController with AuthAction
   }
 
   private def getBackLink = {
-    Some(controllers.subscriptionData.routes.CompanyDetailsController.view.url)
+    Some(controllers.subscriptionData.routes.CompanyDetailsController.view().url)
   }
-}
-
-object CorrespondenceAddressController extends CorrespondenceAddressController {
-  val delegationService: DelegationService = DelegationService
-  val dataCacheConnector: DataCacheConnector = DataCacheConnector
-  val subscriptionDataService: SubscriptionDataService = SubscriptionDataService
 }

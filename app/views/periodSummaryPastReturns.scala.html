@@ -15,10 +15,11 @@
  *@
 
 @import models._
+@import config.ApplicationConfig
 @(periodKey: Int, periodSummaries: Option[PeriodSummaryReturns],
   organisationName: Option[String],
-  backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent])
-@import utils.PeriodUtils._
+  backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
+@import _root_.utils.PeriodUtils._
 @import views.html.helpers._
 
 @analyticsJs = {
@@ -93,6 +94,6 @@ periodEndDate(periodKey).toString(Messages("ated.date-format.summary"))), subHea
 
 </section>
 
-<script src='@controllers.routes.AssetsController.at("javascript/periodSummaryPastReturns.js")'></script>
+<script src='@controllers.routes.Assets.versioned("javascript/periodSummaryPastReturns.js")'></script>
 
 }

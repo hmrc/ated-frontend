@@ -16,23 +16,36 @@
 
 package controllers.propertyDetails
 
+import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms._
+import javax.inject.Inject
 import models.PropertyDetailsAcquisition
-import play.api.Play.current
-import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services._
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.AtedConstants.SelectedPreviousReturn
 import utils.AtedUtils
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-trait PropertyDetailsAcquisitionController extends PropertyDetailsHelpers with ClientHelper with AuthAction {
+class PropertyDetailsAcquisitionController @Inject()(mcc: MessagesControllerComponents,
+                                                     authAction: AuthAction,
+                                                     isFullTaxPeriodController: IsFullTaxPeriodController,
+                                                     propertyDetailsRevaluedController: PropertyDetailsRevaluedController,
+                                                     val propertyDetailsService: PropertyDetailsService,
+                                                     val dataCacheConnector: DataCacheConnector,
+                                                     val backLinkCacheConnector: BackLinkCacheConnector)
+                                                    (implicit val appConfig: ApplicationConfig)
+
+  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper {
+
+  implicit val ec: ExecutionContext = mcc.executionContext
+  val controllerId: String = "PropertyDetailsAcquisitionController"
 
   def view(id: String): Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         propertyDetailsCacheResponse(id) {
           case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
@@ -53,7 +66,7 @@ trait PropertyDetailsAcquisitionController extends PropertyDetailsHelpers with C
   }
 
   def editFromSummary(id: String): Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         propertyDetailsCacheResponse(id) {
           case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
@@ -71,7 +84,7 @@ trait PropertyDetailsAcquisitionController extends PropertyDetailsHelpers with C
   }
 
   def save(id: String, periodKey: Int, mode: Option[String]): Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         propertyDetailsAcquisitionForm.bindFromRequest.fold(
           formWithError => {
@@ -84,14 +97,14 @@ trait PropertyDetailsAcquisitionController extends PropertyDetailsHelpers with C
               _      <- propertyDetailsService.saveDraftPropertyDetailsAcquisition(id, anAcquisition)
               result <-
               if (anAcquisition) {
-                RedirectWithBackLink(
-                  PropertyDetailsRevaluedController.controllerId,
+                redirectWithBackLink(
+                  propertyDetailsRevaluedController.controllerId,
                   controllers.propertyDetails.routes.PropertyDetailsRevaluedController.view(id),
                   backLink
                 )
               } else {
-                RedirectWithBackLink(
-                  IsFullTaxPeriodController.controllerId,
+                redirectWithBackLink(
+                  isFullTaxPeriodController.controllerId,
                   controllers.propertyDetails.routes.IsFullTaxPeriodController.view(id),
                   backLink
                 )
@@ -103,12 +116,4 @@ trait PropertyDetailsAcquisitionController extends PropertyDetailsHelpers with C
     }
   }
 
-}
-
-object PropertyDetailsAcquisitionController extends PropertyDetailsAcquisitionController {
-  val delegationService: DelegationService = DelegationService
-  val propertyDetailsService: PropertyDetailsService = PropertyDetailsService
-  val dataCacheConnector: DataCacheConnector = DataCacheConnector
-  override val controllerId = "PropertyDetailsAcquisitionController"
-  override val backLinkCacheConnector: BackLinkCacheConnector = BackLinkCacheConnector
 }

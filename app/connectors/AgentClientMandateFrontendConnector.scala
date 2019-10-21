@@ -16,43 +16,35 @@
 
 package connectors
 
-import config.{ApplicationConfig, WSHttp}
-import play.api.Mode.Mode
+import config.ApplicationConfig
+import javax.inject.Inject
 import play.api.mvc.Request
-import play.api.{Configuration, Play}
-import uk.gov.hmrc.crypto.ApplicationCrypto
-import uk.gov.hmrc.http.{CoreGet, HttpResponse}
-import uk.gov.hmrc.play.config.ServicesConfig
-import uk.gov.hmrc.play.frontend.filters.SessionCookieCryptoFilter
-import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
+import uk.gov.hmrc.crypto.PlainText
+import uk.gov.hmrc.http.{CoreGet, HeaderCarrier, HttpResponse}
+import uk.gov.hmrc.play.bootstrap.filters.frontend.crypto.SessionCookieCrypto
+import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 import uk.gov.hmrc.play.partials.{HeaderCarrierForPartialsConverter, HtmlPartial}
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-trait AgentClientMandateFrontendConnector extends ServicesConfig with RawResponseReads with HeaderCarrierForPartialsConverter {
+class AgentClientMandateFrontendConnector @Inject()(appConfig: ApplicationConfig,
+                                                    httpClient: DefaultHttpClient)
+  extends RawResponseReads {
 
-  def serviceUrl: String = baseUrl("agent-client-mandate-frontend")
-  def returnUrlHost: String = ApplicationConfig.atedFrontendHost
-  val http: CoreGet = WSHttp
-  val clientBannerPartialUri = "mandate/client/partial-banner"
+  val serviceUrl: String = appConfig.conf.baseUrl("agent-client-mandate-frontend")
+  val returnUrlHost: String = appConfig.atedFrontendHost
+  val http: CoreGet = httpClient
+  val clientBannerPartialUri = "internal/client/partial-banner"
   val clientDetailsUri = "mandate/client/details"
 
-  def getClientBannerPartial(clientId: String, service: String)(implicit request: Request[_]): Future[HtmlPartial] = {
+  def getClientBannerPartial(clientId: String, service: String)(implicit request: Request[_], hc: HeaderCarrier, ec: ExecutionContext): Future[HtmlPartial] = {
     val getUrl = s"$serviceUrl/$clientBannerPartialUri/$clientId/$service?returnUrl=" + returnUrlHost + controllers.routes.AccountSummaryController.view()
     http.GET[HtmlPartial](getUrl)
   }
 
-  def getClientDetails(clientId: String, service: String)(implicit request: Request[_]): Future[HttpResponse] = {
+  def getClientDetails(clientId: String, service: String)(implicit request: Request[_], hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResponse] = {
     val getUrl =
       s"$serviceUrl/$clientDetailsUri/$clientId/$service?returnUrl=" + returnUrlHost + controllers.subscriptionData.routes.CompanyDetailsController.view()
     http.GET[HttpResponse](getUrl)
   }
-}
-
-object AgentClientMandateFrontendConnector extends AgentClientMandateFrontendConnector{
-  // $COVERAGE-OFF$Trivial and never going to be called by a test that uses it's own object implementation
-  override val crypto = new SessionCookieCryptoFilter(new ApplicationCrypto(Play.current.configuration.underlying)).encrypt _
-  override protected def mode: Mode = Play.current.mode
-  override protected def runModeConfiguration: Configuration = Play.current.configuration
-  // $COVERAGE-ON$
 }

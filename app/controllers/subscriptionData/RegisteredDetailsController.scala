@@ -16,25 +16,31 @@
 
 package controllers.subscriptionData
 
+import config.ApplicationConfig
 import connectors.DataCacheConnector
-import controllers.AtedBaseController
 import controllers.auth.AuthAction
 import forms.AtedForms._
-import play.api.Play.current
+import javax.inject.Inject
+import play.api.Environment
 import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{DelegationService, SubscriptionDataService}
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.CountryCodeUtils
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-trait RegisteredDetailsController extends AtedBaseController with AuthAction {
+class RegisteredDetailsController @Inject()(mcc: MessagesControllerComponents,
+                                            authAction: AuthAction,
+                                            subscriptionDataService: SubscriptionDataService,
+                                            val environment: Environment)
+                                           (implicit val appConfig: ApplicationConfig)
+  extends FrontendController(mcc) with CountryCodeUtils {
 
-  def subscriptionDataService: SubscriptionDataService
+  implicit val ec : ExecutionContext = mcc.executionContext
 
   def edit(): Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       for {
         registeredDetails <- subscriptionDataService.getRegisteredDetails
       } yield {
@@ -42,25 +48,26 @@ trait RegisteredDetailsController extends AtedBaseController with AuthAction {
           case Some(x) => registeredDetailsForm.fill(x)
           case None => registeredDetailsForm
         }
-        Ok(views.html.subcriptionData.registeredDetails(populatedForm, CountryCodeUtils.getIsoCodeTupleList, getBackLink))
+        Ok(views.html.subcriptionData.registeredDetails(populatedForm, getIsoCodeTupleList, getBackLink))
       }
     }
   }
 
   def submit(): Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       registeredDetailsForm.bindFromRequest.fold(
-        formWithErrors => Future.successful(BadRequest(views.html.subcriptionData.registeredDetails(formWithErrors, CountryCodeUtils.getIsoCodeTupleList, getBackLink))),
+        formWithErrors => Future.successful(BadRequest(views.html.subcriptionData
+          .registeredDetails(formWithErrors, getIsoCodeTupleList, getBackLink))),
         updateDetails => {
           for {
             registeredDetails <- subscriptionDataService.updateRegisteredDetails(updateDetails)
           } yield {
             registeredDetails match {
-              case Some(x) => Redirect(controllers.subscriptionData.routes.CompanyDetailsController.view())
+              case Some(_) => Redirect(controllers.subscriptionData.routes.CompanyDetailsController.view())
               case None =>
                 val errorMsg = Messages("ated.registered-details.save.error")
                 val errorForm = registeredDetailsForm.withError(key = "addressType", message = errorMsg).fill(updateDetails)
-                BadRequest(views.html.subcriptionData.registeredDetails(errorForm, CountryCodeUtils.getIsoCodeTupleList, getBackLink))
+                BadRequest(views.html.subcriptionData.registeredDetails(errorForm, getIsoCodeTupleList, getBackLink))
             }
           }
         }
@@ -71,10 +78,4 @@ trait RegisteredDetailsController extends AtedBaseController with AuthAction {
   private def getBackLink = {
     Some(controllers.subscriptionData.routes.CompanyDetailsController.view().url)
   }
-}
-
-object RegisteredDetailsController extends RegisteredDetailsController {
-  val delegationService: DelegationService = DelegationService
-  val dataCacheConnector: DataCacheConnector = DataCacheConnector
-  val subscriptionDataService: SubscriptionDataService = SubscriptionDataService
 }

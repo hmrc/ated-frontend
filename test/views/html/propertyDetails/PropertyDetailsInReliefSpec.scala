@@ -16,14 +16,19 @@
 
 package views.html.propertyDetails
 
+import config.ApplicationConfig
 import forms.PropertyDetailsForms
+import models.StandardAuthRetrievals
 import org.scalatest.mockito.MockitoSugar
+import play.api.i18n.Messages
 import play.twirl.api.Html
 import utils.MockAuthUtil
 import utils.viewHelpers.AtedViewSpec
 
 class PropertyDetailsInReliefSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil {
-  implicit lazy val authContext = organisationStandardRetrievals
+  implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
+
+  implicit val appConfig: ApplicationConfig = mock[ApplicationConfig]
 
 
   "Property Details in-relief view" must {
@@ -32,7 +37,9 @@ class PropertyDetailsInReliefSpec extends AtedViewSpec with MockitoSugar with Mo
     behave like pageWithPreHeading(messages("ated.property-details.pre-header"))
     behave like pageWithBackLink
     behave like pageWithContinueButtonForm("/ated/liability/create/in-relief/save//period/2014")
-    behave like pageWithYesNoRadioButton("isInRelief-true", "isInRelief-false")
+    behave like pageWithYesNoRadioButton("isInRelief-true", "isInRelief-false",
+    messages("ated.property-details-period.yes"),
+    messages("ated.property-details-period.no"))
 
     "check page errors" in {
       doc.getElementsMatchingOwnText(messages("ated.property-details-period.isInRelief.error-field-name")).hasText mustBe true

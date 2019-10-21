@@ -17,7 +17,9 @@
 package models
 
 import org.joda.time.LocalDate
-import play.api.libs.json.Json
+import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json.JodaWrites._
+import play.api.libs.json.JodaReads._
 
 
 case class TaxAvoidance(
@@ -42,7 +44,7 @@ case class TaxAvoidance(
                          )
 
 object TaxAvoidance {
-  implicit val formats = Json.format[TaxAvoidance]
+  implicit val formats: OFormat[TaxAvoidance] = Json.format[TaxAvoidance]
 }
 
 case class Reliefs(periodKey: Int,
@@ -67,7 +69,7 @@ case class Reliefs(periodKey: Int,
                    isAvoidanceScheme: Option[Boolean] = None)
 
 object Reliefs {
-  implicit val formats = Json.format[Reliefs]
+  implicit val formats: OFormat[Reliefs] = Json.format[Reliefs]
 }
 
 
@@ -75,7 +77,7 @@ case class IsTaxAvoidance(isAvoidanceScheme: Option[Boolean] = None)
 
 
 object IsTaxAvoidance {
-  implicit val formats = Json.format[IsTaxAvoidance]
+  implicit val formats: OFormat[IsTaxAvoidance] = Json.format[IsTaxAvoidance]
 }
 
 
@@ -86,5 +88,5 @@ case class ReliefsTaxAvoidance(periodKey: Int,
                                periodEndDate: LocalDate)
 
 object ReliefsTaxAvoidance {
-  implicit val formats = Json.format[ReliefsTaxAvoidance]
+  implicit val formats: OFormat[ReliefsTaxAvoidance] = Json.format[ReliefsTaxAvoidance]
 }

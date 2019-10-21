@@ -16,19 +16,24 @@
 
 package views.propertyDetails
 
+import config.ApplicationConfig
 import forms.PropertyDetailsForms._
+import models.StandardAuthRetrievals
 import org.jsoup.Jsoup
 import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
-import org.scalatestplus.play.OneServerPerSuite
+import org.scalatestplus.play.guice.GuiceOneAppPerSuite
+import play.api.i18n.{Messages, MessagesApi}
 import play.api.test.FakeRequest
 import utils.MockAuthUtil
 
-class periodDatesLiableSpec extends FeatureSpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
+class periodDatesLiableSpec extends FeatureSpec with GuiceOneAppPerSuite with MockitoSugar
+  with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
 
   implicit val request = FakeRequest()
-  implicit val messages : play.api.i18n.Messages = play.api.i18n.Messages.Implicits.applicationMessages
-  implicit lazy val authContext = organisationStandardRetrievals
+  implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
+  implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
+  implicit val appConfig: ApplicationConfig = mock[ApplicationConfig]
 
   feature("The user can add a period that the property is liable") {
 
@@ -51,8 +56,10 @@ class periodDatesLiableSpec extends FeatureSpec with OneServerPerSuite with Mock
       assert(document.getElementById("pre-heading").text() === "This section is: Create return")
 
       Then("The date fields should have the correct titles")
-      assert(document.getElementById("startDate").text === "What was the start date in this chargeable period when the property became liable for a charge? For example, 1 4 2015 Day Month Year")
-      assert(document.getElementById("endDate").text === "What was the end date in this chargeable period when the property stopped being liable for a charge? For example, 31 3 2016 Day Month Year")
+      assert(document.getElementById("startDate")
+        .text === "What was the start date in this chargeable period when the property became liable for a charge? For example, 1 4 2015 Day Month Year")
+      assert(document.getElementById("endDate")
+        .text === "What was the end date in this chargeable period when the property stopped being liable for a charge? For example, 31 3 2016 Day Month Year")
 
       Then("The date fields should have the correct default values")
       assert(document.getElementById("startDate-day").attr("value") === "")
@@ -85,8 +92,10 @@ class periodDatesLiableSpec extends FeatureSpec with OneServerPerSuite with Mock
       Then("The subheader should be - Create return")
       assert(document.getElementById("pre-heading").text() === "This section is: Create return")
       Then("The date fields should have the correct titles")
-      assert(document.getElementById("startDate").text === "What was the start date in this chargeable period when the property became liable for a charge? For example, 1 4 2015 Day Month Year")
-      assert(document.getElementById("endDate").text === "What was the end date in this chargeable period when the property stopped being liable for a charge? For example, 31 3 2016 Day Month Year")
+      assert(document.getElementById("startDate")
+        .text === "What was the start date in this chargeable period when the property became liable for a charge? For example, 1 4 2015 Day Month Year")
+      assert(document.getElementById("endDate")
+        .text === "What was the end date in this chargeable period when the property stopped being liable for a charge? For example, 31 3 2016 Day Month Year")
 
       Then("The date fields should have the correct default values")
       assert(document.getElementById("startDate-day").attr("value") === "")

@@ -17,30 +17,44 @@
 package controllers.propertyDetails
 
 import audit.Auditable
-import config.AtedFrontendAuditConnector
+import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.{AuthAction, ClientHelper}
+import controllers.ControllerIds
 import forms.PropertyDetailsForms._
+import javax.inject.Inject
 import models.{PropertyDetailsAddress, SelectPeriod}
-import play.api.Play
-import play.api.Play.current
-import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services._
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.model.Audit
-import uk.gov.hmrc.play.config.AppName
+import uk.gov.hmrc.play.bootstrap.audit.DefaultAuditConnector
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.AtedConstants._
 import utils.AtedUtils
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-trait PropertyDetailsAddressController extends PropertyDetailsHelpers with ClientHelper with Auditable with AuthAction {
+class PropertyDetailsAddressController @Inject()(mcc: MessagesControllerComponents,
+                                                 propertyDetailsTitleController: PropertyDetailsTitleController,
+                                                 auditConnector: DefaultAuditConnector,
+                                                 authAction: AuthAction,
+                                                 changeLiabilityReturnService: ChangeLiabilityReturnService,
+                                                 val propertyDetailsService: PropertyDetailsService,
+                                                 val dataCacheConnector: DataCacheConnector,
+                                                 val backLinkCacheConnector: BackLinkCacheConnector)
+                                                (implicit val appConfig: ApplicationConfig)
 
-  val changeLiabilityReturnService: ChangeLiabilityReturnService
+  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with Auditable with ControllerIds {
+
+  implicit val ec: ExecutionContext = mcc.executionContext
+
+  val appName: String = "ated-frontend"
+  val controllerId: String = propertyDetailsAddressId
+  val audit: Audit = new Audit(s"ATED:$appName-PropertyDetailsAddress", auditConnector)
 
   def editSubmittedReturn(oldFormBundleNo: String): Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         for {
           answer <- dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn)
@@ -64,9 +78,9 @@ trait PropertyDetailsAddressController extends PropertyDetailsHelpers with Clien
   }
 
   def createNewDraft(periodKey: Int) : Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
-        dataCacheConnector.saveFormData[Boolean](SelectedPreviousReturn, false).flatMap { saved =>
+        dataCacheConnector.saveFormData[Boolean](SelectedPreviousReturn, false).flatMap { _ =>
           currentBackLink.map(backLink =>
             Ok(views.html.propertyDetails.propertyDetailsAddress(None, periodKey, propertyDetailsAddressForm, None, backLink))
           )
@@ -76,7 +90,7 @@ trait PropertyDetailsAddressController extends PropertyDetailsHelpers with Clien
   }
 
   def view(id: String) : Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         propertyDetailsCacheResponse(id) {
           case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
@@ -94,7 +108,7 @@ trait PropertyDetailsAddressController extends PropertyDetailsHelpers with Clien
   }
 
   def editFromSummary(id: String) : Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         propertyDetailsCacheResponse(id) {
           case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
@@ -112,14 +126,14 @@ trait PropertyDetailsAddressController extends PropertyDetailsHelpers with Clien
   }
 
   def addressLookupRedirect(id: Option[String], periodKey: Int, mode: Option[String]) : Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         val returnUrl = id match {
           case Some(x) => Some(controllers.propertyDetails.routes.PropertyDetailsAddressController.view(x).url)
           case None => Some(controllers.propertyDetails.routes.PropertyDetailsAddressController.createNewDraft(periodKey).url)
         }
-        RedirectWithBackLinkDontOverwriteOldLink(
-          AddressLookupController.controllerId,
+        redirectWithBackLinkDontOverwriteOldLink(
+          addressLookupId,
           controllers.propertyDetails.routes.AddressLookupController.view(id, periodKey, mode),
           returnUrl
         )
@@ -128,7 +142,7 @@ trait PropertyDetailsAddressController extends PropertyDetailsHelpers with Clien
   }
 
   def save(id: Option[String], periodKey: Int, mode: Option[String]): Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         propertyDetailsAddressForm.bindFromRequest.fold(
           formWithError => {
@@ -144,8 +158,8 @@ trait PropertyDetailsAddressController extends PropertyDetailsHelpers with Clien
                 propertyDetailsService.saveDraftPropertyDetailsAddress(x, trimmedAddressProperty).flatMap(
                   _ => {
                     auditInputAddress(trimmedAddressProperty, "edit-address")
-                    RedirectWithBackLink(
-                      PropertyDetailsTitleController.controllerId,
+                    redirectWithBackLink(
+                      propertyDetailsTitleId,
                       controllers.propertyDetails.routes.PropertyDetailsTitleController.view(x),
                       Some(controllers.propertyDetails.routes.PropertyDetailsAddressController.view(x).url)
                     )
@@ -155,8 +169,8 @@ trait PropertyDetailsAddressController extends PropertyDetailsHelpers with Clien
                 propertyDetailsService.createDraftPropertyDetailsAddress(periodKey, trimmedAddressProperty).flatMap {
                   newId => {
                     auditInputAddress(trimmedAddressProperty, "create-address")
-                    RedirectWithBackLink(
-                      PropertyDetailsTitleController.controllerId,
+                    redirectWithBackLink(
+                      propertyDetailsTitleId,
                       controllers.propertyDetails.routes.PropertyDetailsTitleController.view(newId),
                       Some(controllers.propertyDetails.routes.PropertyDetailsAddressController.view(newId).url)
                     )
@@ -185,13 +199,4 @@ trait PropertyDetailsAddressController extends PropertyDetailsHelpers with Clien
 
 }
 
-object PropertyDetailsAddressController extends PropertyDetailsAddressController {
-  val appName: String = AppName(Play.current.configuration).appName
-  val delegationService: DelegationService = DelegationService
-  val propertyDetailsService: PropertyDetailsService = PropertyDetailsService
-  val dataCacheConnector: DataCacheConnector.type = DataCacheConnector
-  val changeLiabilityReturnService: ChangeLiabilityReturnService = ChangeLiabilityReturnService
-  override val controllerId: String = "PropertyDetailsAddressController"
-  override val backLinkCacheConnector: BackLinkCacheConnector = BackLinkCacheConnector
-  val audit: Audit = new Audit(s"ATED:${appName}-PropertyDetailsAddress", AtedFrontendAuditConnector)
-}
+

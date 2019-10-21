@@ -16,21 +16,26 @@
 
 package views
 
+import config.ApplicationConfig
 import models._
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
 import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
-import org.scalatestplus.play.OneServerPerSuite
+import org.scalatestplus.play.guice.GuiceOneAppPerSuite
+import play.api.i18n.{Messages, MessagesApi}
 import play.api.test.FakeRequest
 import utils.AtedConstants._
 import utils.MockAuthUtil
 
-class periodSummarySpec extends FeatureSpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
+class periodSummarySpec extends FeatureSpec with GuiceOneAppPerSuite with MockitoSugar
+  with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
 
   implicit val request = FakeRequest()
-  implicit val messages : play.api.i18n.Messages = play.api.i18n.Messages.Implicits.applicationMessages
-  implicit lazy val authContext = organisationStandardRetrievals
+  implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
+
+  implicit val appConfig: ApplicationConfig = mock[ApplicationConfig]
+  implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
 
   val organisationName = "OrganisationName"
   val formBundleNo1 = "123456789012"
@@ -39,9 +44,12 @@ class periodSummarySpec extends FeatureSpec with OneServerPerSuite with MockitoS
 
   val draftReturns1 = DraftReturns(2015, "1", "desc", Some(BigDecimal(100.00)), TypeLiabilityDraft)
   val draftReturns2 = DraftReturns(2015, "", "some relief", None, TypeReliefDraft)
-  val submittedReliefReturns1 = SubmittedReliefReturns(formBundleNo1, "some relief", new LocalDate("2015-05-05"), new LocalDate("2015-05-05"), new LocalDate("2015-05-05"))
-  val submittedLiabilityReturns1 = SubmittedLiabilityReturns(formBundleNo2, "addr1+2", BigDecimal(1234.00), new LocalDate("2015-05-05"), new LocalDate("2015-05-05"), new LocalDate("2015-05-05"), true, "payment-ref-01")
-  val submittedLiabilityReturns2 = SubmittedLiabilityReturns(formBundleNo3, "addr1+2", BigDecimal(1234.00), new LocalDate("2015-05-05"), new LocalDate("2015-05-05"), new LocalDate("2015-06-06"), true, "payment-ref-01")
+  val submittedReliefReturns1 = SubmittedReliefReturns(formBundleNo1, "some relief",
+    new LocalDate("2015-05-05"), new LocalDate("2015-05-05"), new LocalDate("2015-05-05"))
+  val submittedLiabilityReturns1 = SubmittedLiabilityReturns(formBundleNo2, "addr1+2", BigDecimal(1234.00),
+    new LocalDate("2015-05-05"), new LocalDate("2015-05-05"), new LocalDate("2015-05-05"), changeAllowed = true, "payment-ref-01")
+  val submittedLiabilityReturns2 = SubmittedLiabilityReturns(formBundleNo3, "addr1+2", BigDecimal(1234.00),
+    new LocalDate("2015-05-05"), new LocalDate("2015-05-05"), new LocalDate("2015-06-06"), changeAllowed = true, "payment-ref-01")
 
   val submittedReturns = SubmittedReturns(2015, Seq(submittedReliefReturns1), Seq(submittedLiabilityReturns1))
   val submittedReturnsWithOld = SubmittedReturns(2015, Seq(submittedReliefReturns1), Seq(submittedLiabilityReturns1), Seq(submittedLiabilityReturns2))

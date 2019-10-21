@@ -17,20 +17,20 @@
 package services
 
 import connectors.{AtedConnector, DataCacheConnector}
+import javax.inject.Inject
 import models._
 import play.api.Logger
 import play.api.http.Status._
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.AtedConstants._
+import play.api.libs.json.JodaWrites._
+import play.api.libs.json.JodaReads._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-trait SummaryReturnsService {
-
-  def atedConnector: AtedConnector
-
-  def dataCacheConnector: DataCacheConnector
+class SummaryReturnsService @Inject()(atedConnector: AtedConnector,
+                                      dataCacheConnector: DataCacheConnector) {
 
   def getSummaryReturns(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[SummaryReturnsModel] = {
     def convertSeqOfPeriodSummariesToObject(x: Seq[PeriodSummaryReturns]): PeriodSummaryReturns = {
@@ -110,10 +110,4 @@ trait SummaryReturnsService {
   def retrieveCachedPreviousReturnAddressList(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[Option[Seq[PreviousReturns]]] = {
     dataCacheConnector.fetchAndGetFormData[Seq[PreviousReturns]](PreviousReturnsDetailsList)
   }
-
-}
-
-object SummaryReturnsService extends SummaryReturnsService {
-  val atedConnector: AtedConnector = AtedConnector
-  val dataCacheConnector: DataCacheConnector = DataCacheConnector
 }

@@ -17,6 +17,7 @@
 package services
 
 import connectors.{AtedConnector, DataCacheConnector}
+import javax.inject.Inject
 import models._
 import org.joda.time.DateTime
 import play.api.Logger
@@ -27,11 +28,8 @@ import utils.AtedConstants._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-trait DisposeLiabilityReturnService {
-
-  def atedConnector: AtedConnector
-
-  def dataCacheConnector: DataCacheConnector
+class DisposeLiabilityReturnService @Inject()(atedConnector: AtedConnector,
+                                              dataCacheConnector: DataCacheConnector) {
 
   def retrieveLiabilityReturn(oldFormBundleNo: String)
                              (implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[Option[DisposeLiabilityReturn]] = {
@@ -98,9 +96,4 @@ trait DisposeLiabilityReturnService {
     }
   }
 
-}
-
-object DisposeLiabilityReturnService extends DisposeLiabilityReturnService {
-  val atedConnector = AtedConnector
-  val dataCacheConnector = DataCacheConnector
 }

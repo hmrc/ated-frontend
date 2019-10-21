@@ -16,24 +16,35 @@
 
 package controllers.propertyDetails
 
+import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms
 import forms.PropertyDetailsForms._
+import javax.inject.Inject
 import models._
-import play.api.Play.current
-import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{DelegationService, PropertyDetailsCacheSuccessResponse, PropertyDetailsService}
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.AtedConstants.SelectedPreviousReturn
 import utils.AtedUtils
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-trait PropertyDetailsTaxAvoidanceController extends PropertyDetailsHelpers with ClientHelper with AuthAction {
+class PropertyDetailsTaxAvoidanceController @Inject()(mcc: MessagesControllerComponents,
+                                                      authAction: AuthAction,
+                                                      propertyDetailsSupportingInfoController: PropertyDetailsSupportingInfoController,
+                                                      val propertyDetailsService: PropertyDetailsService,
+                                                      val dataCacheConnector: DataCacheConnector,
+                                                      val backLinkCacheConnector: BackLinkCacheConnector)
+                                                     (implicit val appConfig: ApplicationConfig)
+  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper {
+
+  implicit val ec: ExecutionContext = mcc.executionContext
+  val controllerId: String = "PropertyDetailsTaxAvoidanceController"
 
   def view(id: String): Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         propertyDetailsCacheResponse(id) {
           case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
@@ -55,7 +66,7 @@ trait PropertyDetailsTaxAvoidanceController extends PropertyDetailsHelpers with 
   }
 
   def editFromSummary(id: String): Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         propertyDetailsCacheResponse(id) {
           case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
@@ -78,17 +89,17 @@ trait PropertyDetailsTaxAvoidanceController extends PropertyDetailsHelpers with 
   }
 
   def save(id: String, periodKey: Int, mode: Option[String]): Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         PropertyDetailsForms.validatePropertyDetailsTaxAvoidance(propertyDetailsTaxAvoidanceForm.bindFromRequest).fold(
           formWithError =>
             currentBackLink.map(backLink => BadRequest(views.html.propertyDetails.propertyDetailsTaxAvoidance(id, periodKey, formWithError, mode, backLink))),
           propertyDetails => {
             for {
-              savedData <- propertyDetailsService.saveDraftPropertyDetailsTaxAvoidance(id, propertyDetails)
+              _ <- propertyDetailsService.saveDraftPropertyDetailsTaxAvoidance(id, propertyDetails)
               result <-
-              RedirectWithBackLink(
-                PropertyDetailsSupportingInfoController.controllerId,
+              redirectWithBackLink(
+                propertyDetailsSupportingInfoController.controllerId,
                 controllers.propertyDetails.routes.PropertyDetailsSupportingInfoController.view(id),
                 Some(controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceController.view(id).url)
               )
@@ -98,12 +109,4 @@ trait PropertyDetailsTaxAvoidanceController extends PropertyDetailsHelpers with 
       }
     }
   }
-}
-
-object PropertyDetailsTaxAvoidanceController extends PropertyDetailsTaxAvoidanceController {
-  val delegationService: DelegationService = DelegationService
-  val propertyDetailsService: PropertyDetailsService = PropertyDetailsService
-  val dataCacheConnector: DataCacheConnector = DataCacheConnector
-  override val controllerId = "PropertyDetailsTaxAvoidanceController"
-  override val backLinkCacheConnector: BackLinkCacheConnector = BackLinkCacheConnector
 }

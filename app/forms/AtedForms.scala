@@ -18,12 +18,10 @@ package forms
 
 import models._
 import org.joda.time.LocalDate
-import play.api.Play.current
 import play.api.data.Forms._
 import play.api.data.validation.{Constraint, Invalid, Valid, ValidationResult}
 import play.api.data.{Form, FormError}
 import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
 import play.api.libs.json.{Json, OFormat}
 import uk.gov.hmrc.play.mappers.DateTuple._
 import utils.AtedUtils
@@ -58,68 +56,52 @@ object AtedForms {
   val registeredDetailsForm = Form(
     mapping(
       "isEditable" -> boolean,
-      "name" -> text.
-        verifying(Messages("ated.error.mandatory", Messages("ated.registered-details.business-name")), x => checkBlankFieldLength(x))
-        .verifying(Messages("ated.registered-details.businessName.length", businessNameLength),
+      "name" -> text
+        .verifying("ated.registered-details.business-name", x => checkBlankFieldLength(x))
+        .verifying("ated.registered-details.businessName.length",
           x => x.isEmpty || (x.nonEmpty && x.length <= businessNameLength)),
       "addressDetails" -> mapping(
-        "addressLine1" -> text.
-          verifying(Messages("ated.error.mandatory", Messages("ated.address.line-1")), x => checkBlankFieldLength(x))
-          .verifying(Messages("ated.error.address.line-1", Messages("ated.address.line-1"), addressLineLength),
-            x => x.isEmpty || (x.nonEmpty && x.length <= addressLineLength)),
-        "addressLine2" -> text.
-          verifying(Messages("ated.error.mandatory", Messages("ated.address.line-2")), x => checkBlankFieldLength(x))
-          .verifying(Messages("ated.error.address.line-2", Messages("ated.address.line-2"), addressLineLength),
-            x => x.isEmpty || (x.nonEmpty && x.length <= addressLineLength)),
+        "addressLine1" -> text
+          .verifying("ated.address.line-1", x => checkBlankFieldLength(x))
+          .verifying("ated.error.address.line-1",  x => x.nonEmpty && x.length <= addressLineLength),
+        "addressLine2" -> text
+          .verifying("ated.address.line-2", x => checkBlankFieldLength(x))
+          .verifying("ated.error.address.line-2", x => x.isEmpty || (x.nonEmpty && x.length <= addressLineLength)),
         "addressLine3" -> optional(text)
-          .verifying(Messages("ated.error.address.line-3", Messages("ated.address.line-3"), addressLineLength),
-            x => checkFieldLengthIfPopulated(x, addressLineLength)),
+          .verifying("ated.error.address.line-3", x => checkFieldLengthIfPopulated(x, addressLineLength)),
         "addressLine4" -> optional(text)
-          .verifying(Messages("ated.error.address.line-4", Messages("ated.address.line-4"), addressLineLength),
-            x => checkFieldLengthIfPopulated(x, addressLineLength)),
+          .verifying("ated.error.address.line-4", x => checkFieldLengthIfPopulated(x, addressLineLength)),
         "postalCode" -> optional(text)
-          .verifying(Messages("ated.error.address.postalcode", Messages("ated.address.postcode.field"), PostcodeLength),
-            x => checkFieldLengthIfPopulated(x, PostcodeLength))
-          .verifying(Messages("ated.error.address.postalcode.format", Messages("ated.address.postcode.field"), PostcodeLength),
-            x => validatePostCodeFormat(AtedUtils.formatPostCode(x))),
-        "countryCode" -> text.
-          verifying(Messages("ated.error.mandatory", Messages("ated.address.country")), x => x.length > lengthZero).
-          verifying(Messages("ated.error.address.country", Messages("ated.address.country"), addressLineLength),
-            x => x.isEmpty || (x.nonEmpty && x.length <= addressLineLength)).
-          verifying(Messages("ated.error.address.country.non-uk"), x => !x.matches(countryUK))
+          .verifying("ated.error.address.postalcode", x => checkFieldLengthIfPopulated(x, PostcodeLength))
+          .verifying("ated.error.address.postalcode.format", x => validatePostCodeFormat(AtedUtils.formatPostCode(x))),
+        "countryCode" -> text
+          .verifying("ated.address.country", x => x.length > lengthZero)
+          .verifying("ated.error.address.country", x => x.isEmpty || (x.nonEmpty && x.length <= addressLineLength))
+          .verifying("ated.error.address.country.non-uk", x => !x.matches(countryUK))
 
       )(RegisteredAddressDetails.apply)(RegisteredAddressDetails.unapply)
-
     )(RegisteredDetails.apply)(RegisteredDetails.unapply)
   )
 
   val correspondenceAddressForm = Form(
     mapping(
       "addressType" -> text,
-      "addressLine1" -> text.
-        verifying(Messages("ated.error.mandatory", Messages("ated.address.line-1")), x => checkBlankFieldLength(x))
-        .verifying(Messages("ated.error.address.line-1", Messages("ated.address.line-1"), addressLineLength),
-          x => x.isEmpty || (x.nonEmpty && x.length <= addressLineLength)),
-      "addressLine2" -> text.
-        verifying(Messages("ated.error.mandatory", Messages("ated.address.line-2")), x => checkBlankFieldLength(x))
-        .verifying(Messages("ated.error.address.line-2", Messages("ated.address.line-2"), addressLineLength),
-          x => x.isEmpty || (x.nonEmpty && x.length <= addressLineLength)),
+      "addressLine1" -> text
+        .verifying("ated.address.line-1", x => checkBlankFieldLength(x))
+        .verifying("ated.error.address.line-1", x => x.isEmpty || (x.nonEmpty && x.length <= addressLineLength)),
+      "addressLine2" -> text
+        .verifying("ated.address.line-2", x => checkBlankFieldLength(x))
+        .verifying("ated.error.address.line-2", x => x.isEmpty || (x.nonEmpty && x.length <= addressLineLength)),
       "addressLine3" -> optional(text)
-        .verifying(Messages("ated.error.address.line-3", Messages("ated.address.line-3"), addressLineLength),
-          x => checkFieldLengthIfPopulated(x, addressLineLength)),
+        .verifying("ated.error.address.line-3", x => checkFieldLengthIfPopulated(x, addressLineLength)),
       "addressLine4" -> optional(text)
-        .verifying(Messages("ated.error.address.line-4", Messages("ated.address.line-4"), addressLineLength),
-          x => checkFieldLengthIfPopulated(x, addressLineLength)),
+        .verifying("ated.error.address.line-4", x => checkFieldLengthIfPopulated(x, addressLineLength)),
       "postalCode" -> optional(text)
-        .verifying(Messages("ated.error.address.postalcode", Messages("ated.address.postcode.field"), PostcodeLength),
-          x => checkFieldLengthIfPopulated(AtedUtils.formatPostCode(x), PostcodeLength))
-        .verifying(Messages("ated.error.address.postalcode.format", Messages("ated.address.postcode.field"), PostcodeLength),
-          x => validatePostCodeFormat(AtedUtils.formatPostCode(x))),
-      "countryCode" -> text.
-        verifying(Messages("ated.error.mandatory", Messages("ated.address.country")), x => x.length > lengthZero)
-        .verifying(Messages("ated.error.address.country", Messages("ated.address.country"), addressLineLength),
-          x => x.isEmpty || (x.nonEmpty && x.length <= addressLineLength))
-
+        .verifying("ated.error.address.postalcode", x => checkFieldLengthIfPopulated(AtedUtils.formatPostCode(x), PostcodeLength))
+        .verifying("ated.error.address.postalcode.format", x => validatePostCodeFormat(AtedUtils.formatPostCode(x))),
+      "countryCode" -> text
+        .verifying("ated.address.country", x => x.length > lengthZero)
+        .verifying("ated.error.address.country", x => x.isEmpty || (x.nonEmpty && x.length <= addressLineLength))
     )(AddressDetails.apply)(AddressDetails.unapply)
   )
 
@@ -127,15 +109,15 @@ object AtedForms {
   val editContactDetailsForm = Form(
     mapping(
       "firstName" -> text
-        .verifying(Messages("ated.contact-details-first-name.error"), x => checkBlankFieldLength(x))
-        .verifying(Messages("ated.contact-details-first-name.length"), x => x.isEmpty || (x.nonEmpty && x.length <= nameLength)),
+        .verifying("ated.contact-details-first-name.error", x => checkBlankFieldLength(x))
+        .verifying("ated.contact-details-first-name.length", x => x.isEmpty || (x.nonEmpty && x.length <= nameLength)),
       "lastName" -> text
-        .verifying(Messages("ated.contact-details-last-name.error"), x => checkBlankFieldLength(x))
-        .verifying(Messages("ated.contact-details-last-name.length"), x => x.isEmpty || (x.nonEmpty && x.length <= nameLength)),
+        .verifying("ated.contact-details-last-name.error", x => checkBlankFieldLength(x))
+        .verifying("ated.contact-details-last-name.length", x => x.isEmpty || (x.nonEmpty && x.length <= nameLength)),
       "phoneNumber" -> text
-        .verifying(Messages("ated.contact-details-phoneNumber.error"), x => checkBlankFieldLength(x))
-        .verifying(Messages("ated.contact-phoneNumber.length", phoneLength), x => x.isEmpty || (x.nonEmpty && x.length <= phoneLength))
-        .verifying(Messages("ated.contact-phoneNumber.invalidText"), x => {
+        .verifying("ated.contact-details-phoneNumber.error", x => checkBlankFieldLength(x))
+        .verifying("ated.contact-phoneNumber.length", x => x.isEmpty || (x.nonEmpty && x.length <= phoneLength))
+        .verifying("ated.contact-phoneNumber.invalidText", x => {
           val p = telephoneRegex.findFirstMatchIn(x.replaceAll(" ", "")).exists(_ => true)
           val y = x.length == lengthZero
           val z = x.length > phoneLength
@@ -159,16 +141,16 @@ object AtedForms {
         case Some("true") =>
           val email = {f.data.get("emailAddress").getOrElse("")}
           if (email.isEmpty || (email.nonEmpty && email.trim.length == lengthZero)) {
-            Seq(FormError("emailAddress", Messages("ated.contact-details-emailAddress.error")))
+            Seq(FormError("emailAddress", "ated.contact-details-emailAddress.error"))
           } else if (email.length > emailLength) {
-            Seq(FormError("emailAddress", Messages("ated.contact-email.length")))
+            Seq(FormError("emailAddress", "ated.contact-email.length"))
           } else {
-            val x = emailRegex.findFirstMatchIn(email).exists(_ => true)
+            val x = emailRegex.findFirstMatchIn(email).isDefined
             val y = email.length == lengthZero
             if (x || y) {
               Nil
             } else {
-              Seq(FormError("emailAddress", Messages("ated.contact-email.error")))
+              Seq(FormError("emailAddress", "ated.contact-email.error"))
             }
           }
         case _ => Nil
@@ -179,7 +161,7 @@ object AtedForms {
 
   val editReliefForm = Form(
     mapping(
-      "changeRelief" -> optional(text).verifying(Messages("ated.change-relief-return.error.empty"), returnType => returnType.isDefined)
+      "changeRelief" -> optional(text).verifying("ated.change-relief-return.error.empty", returnType => returnType.isDefined)
     )(EditRelief.apply)(EditRelief.unapply)
   )
 
@@ -199,7 +181,7 @@ object AtedForms {
   def validatePostCodeFormat(optionValue: Option[String]): Boolean = {
     optionValue match {
       case Some(value) =>
-        if (PostCodeRegex.findFirstMatchIn(value).exists(_ => true)) true
+        if (PostCodeRegex.findFirstMatchIn(value).isDefined) true
         else false
       case None => true
     }
@@ -208,7 +190,7 @@ object AtedForms {
   def validateAddressLine(optionValue: Option[String]): Boolean = {
     optionValue match {
       case Some(value) =>
-        if (addressLineRegex.findFirstMatchIn(value).exists(_ => true)) true
+        if (addressLineRegex.findFirstMatchIn(value).isDefined) true
         else false
       case None => true
     }
@@ -221,9 +203,9 @@ object AtedForms {
         case Some("GB") =>
           val postCode = correspondenceForm.data.get("postalCode")
           postCode match {
-            case Some(x) if (x == "") => Seq(FormError("postalCode", Messages("ated.correspondence-address.error.uk.postalCode")))
+            case Some(x) if x == "" => Seq(FormError("postalCode", "ated.correspondence-address.error.uk.postalCode"))
             case Some(x) => Nil
-            case _ => Seq(FormError("postalCode", Messages("ated.correspondence-address.error.uk.postalCode")))
+            case _ => Seq(FormError("postalCode", "ated.correspondence-address.error.uk.postalCode"))
           }
         case _ => Nil
       }
@@ -245,15 +227,15 @@ object AtedForms {
   }
 
   val selectPeriodForm = Form(mapping(
-    "period" -> optional(text).verifying(Messages("ated.summary-return.return-type.error"), selectPeriod => selectPeriod.isDefined)
+    "period" -> optional(text).verifying("ated.summary-return.return-type.error", selectPeriod => selectPeriod.isDefined)
   )(SelectPeriod.apply)(SelectPeriod.unapply))
 
   val returnTypeForm = Form(mapping(
-    "returnType" -> optional(text).verifying(Messages("ated.summary-return.return-type.error"), returnType => returnType.isDefined)
+    "returnType" -> optional(text).verifying("ated.summary-return.return-type.error", returnType => returnType.isDefined)
   )(ReturnType.apply)(ReturnType.unapply))
 
   val editLiabilityReturnTypeForm = Form(mapping(
-    "editLiabilityType" -> optional(text).verifying(Messages("ated.edit-liability.edit-return-type.error"), editReturnType => editReturnType.isDefined)
+    "editLiabilityType" -> optional(text).verifying("ated.edit-liability.edit-return-type.error", editReturnType => editReturnType.isDefined)
   )(EditLiabilityReturnType.apply)(EditLiabilityReturnType.unapply))
 
   val disposalDateConstraint: Constraint[DisposeLiability] = Constraint("dateOfDisposal"){
@@ -273,13 +255,13 @@ object AtedForms {
   def validateDisposedProperty(periodKey: Int, disposalDate: Option[LocalDate]): ValidationResult = {
 
     if (disposalDate.isEmpty) {
-      Invalid(Messages("ated.dispose-property.dateOfDisposal.error.empty"), "dateOfDisposal")
+      Invalid("ated.dispose-property.dateOfDisposal.error.empty", "dateOfDisposal")
     } else if (isPeriodTooEarly(periodKey, disposalDate)) {
-      Invalid(Messages("ated.dispose-property.period.dateOfDisposal.date-before-period"), "dateOfDisposal")
+      Invalid("ated.dispose-property.period.dateOfDisposal.date-before-period", "dateOfDisposal")
     } else if (isPeriodTooLate(periodKey, disposalDate)) {
-      Invalid(Messages("ated.dispose-property.period.dateOfDisposal.date-after-period"), "dateOfDisposal")
+      Invalid("ated.dispose-property.period.dateOfDisposal.date-after-period", "dateOfDisposal")
     } else if (isAfterPresentDay(disposalDate)) {
-      Invalid(Messages("ated.dispose-property.period.dateOfDisposal.date-after-today"), "dateOfDisposal")
+      Invalid("ated.dispose-property.period.dateOfDisposal.date-after-today", "dateOfDisposal")
     }
     else {
       Valid
@@ -303,14 +285,22 @@ object AtedForms {
     implicit val formats: OFormat[YesNoQuestion] = Json.format[YesNoQuestion]
   }
 
-  class YesNoQuestionForm(_param: String) {
-
-    private val param:String = Messages(_param)
+  class YesNoQuestionExistingReturnsForm() {
 
     val yesNoQuestionForm =
       Form(
         mapping(
-          "yesNo" -> optional(boolean).verifying(Messages("yes-no.error.mandatory", param), x => x.isDefined)
+          "yesNo" -> optional(boolean).verifying("yes-no.error.mandatory.existing.returns", x => x.isDefined)
+        )(YesNoQuestion.apply)(YesNoQuestion.unapply)
+      )
+  }
+
+  class YesNoQuestionDraftDeleteForm() {
+
+    val yesNoQuestionForm =
+      Form(
+        mapping(
+          "yesNo" -> optional(boolean).verifying("yes-no.error.mandatory.delete.draft", x => x.isDefined)
         )(YesNoQuestion.apply)(YesNoQuestion.unapply)
       )
   }

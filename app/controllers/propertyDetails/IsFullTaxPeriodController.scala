@@ -16,30 +16,44 @@
 
 package controllers.propertyDetails
 
+import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms._
+import javax.inject.Inject
 import models._
-import play.api.Play.current
-import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{DelegationService, PropertyDetailsCacheSuccessResponse, PropertyDetailsService}
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.AtedConstants._
 import utils.{AtedUtils, PeriodUtils}
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-trait IsFullTaxPeriodController extends PropertyDetailsHelpers with ClientHelper with AuthAction {
+class IsFullTaxPeriodController @Inject()(mcc: MessagesControllerComponents,
+                                          authAction: AuthAction,
+                                          propertyDetailsInReliefController: PropertyDetailsInReliefController,
+                                          propertyDetailsTaxAvoidanceController : PropertyDetailsTaxAvoidanceController,
+                                          val propertyDetailsService: PropertyDetailsService,
+                                          val dataCacheConnector: DataCacheConnector,
+                                          val backLinkCacheConnector: BackLinkCacheConnector)
+                                         (implicit val appConfig: ApplicationConfig)
+
+  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper {
+
+  implicit val ec: ExecutionContext = mcc.executionContext
+
+  val controllerId: String = "IsFullTaxPeriodController"
 
   def view(id: String) : Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         propertyDetailsCacheResponse(id) {
           case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
             dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).flatMap { answer =>
               if (AtedUtils.isEditSubmitted(propertyDetails) && answer.isEmpty) {
-                ForwardBackLinkToNextPage(
-                  PropertyDetailsInReliefController.controllerId,
+                forwardBackLinkToNextPage(
+                  propertyDetailsInReliefController.controllerId,
                   controllers.propertyDetails.routes.PropertyDetailsInReliefController.view(id)
                 )
               } else {
@@ -62,7 +76,7 @@ trait IsFullTaxPeriodController extends PropertyDetailsHelpers with ClientHelper
   }
 
   def editFromSummary(id: String) : Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         propertyDetailsCacheResponse(id) {
           case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
@@ -77,7 +91,7 @@ trait IsFullTaxPeriodController extends PropertyDetailsHelpers with ClientHelper
   }
 
   def save(id: String, periodKey: Int): Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         isFullTaxPeriodForm.bindFromRequest.fold(
           formWithError => {
@@ -91,16 +105,16 @@ trait IsFullTaxPeriodController extends PropertyDetailsHelpers with ClientHelper
               case Some(true) =>
                 val isFullTaxPeriod = IsFullTaxPeriod(isFullPeriod = true, Some(PropertyDetailsDatesLiable(PeriodUtils.periodStartDate(periodKey),
                   PeriodUtils.periodEndDate(periodKey))))
-                propertyDetailsService.saveDraftIsFullTaxPeriod(id, isFullTaxPeriod).flatMap(x =>
-                  RedirectWithBackLink(
-                    PropertyDetailsTaxAvoidanceController.controllerId,
+                propertyDetailsService.saveDraftIsFullTaxPeriod(id, isFullTaxPeriod).flatMap(_ =>
+                  redirectWithBackLink(
+                    propertyDetailsTaxAvoidanceController.controllerId,
                     controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceController.view(id),
                     Some(routes.IsFullTaxPeriodController.view(id).url))
                 )
               case _ =>
-                propertyDetailsService.saveDraftIsFullTaxPeriod(id, IsFullTaxPeriod(isFullPeriod = false, None)).flatMap(x =>
-                  RedirectWithBackLink(
-                    PropertyDetailsInReliefController.controllerId,
+                propertyDetailsService.saveDraftIsFullTaxPeriod(id, IsFullTaxPeriod(isFullPeriod = false, None)).flatMap(_ =>
+                  redirectWithBackLink(
+                    propertyDetailsInReliefController.controllerId,
                     controllers.propertyDetails.routes.PropertyDetailsInReliefController.view(id),
                     Some(routes.IsFullTaxPeriodController.view(id).url)))
             }
@@ -109,12 +123,4 @@ trait IsFullTaxPeriodController extends PropertyDetailsHelpers with ClientHelper
       }
     }
   }
-}
-
-object IsFullTaxPeriodController extends IsFullTaxPeriodController {
-  val delegationService: DelegationService = DelegationService
-  val propertyDetailsService: PropertyDetailsService = PropertyDetailsService
-  val dataCacheConnector: DataCacheConnector = DataCacheConnector
-  override val controllerId: String = "IsFullTaxPeriodController"
-  override val backLinkCacheConnector: BackLinkCacheConnector = BackLinkCacheConnector
 }

@@ -15,7 +15,8 @@
  *@
 
 @import models._
-@(periodKey: Int, reliefsForm: Form[Reliefs], periodStartDate: org.joda.time.LocalDate, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent])
+@import config.ApplicationConfig
+@(periodKey: Int, reliefsForm: Form[Reliefs], periodStartDate: org.joda.time.LocalDate, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
 @import uk.gov.hmrc.play.views.html._
 @import uk.gov.hmrc.play.views.html.helpers._
@@ -23,150 +24,157 @@
 @import views.html.helpers.error._
 @import utils._
 
-@formattedPeriodStartDate = @{periodStartDate.toString(Messages("ated.date-format.numeric"))}
+@formattedPeriodStartDate = @{periodStartDate.toString(messages("ated.date-format.numeric"))}
 
 @pageScripts = {
-<script src='@controllers.routes.AssetsController.at("javascript/chooseReliefs.js")'></script>
+<script src='@controllers.routes.Assets.versioned("javascript/chooseReliefs.js")'></script>
 }
 
 @implicitFormInstance = @{ Some(reliefsForm) }
 
-@atedMain(title = Messages("ated.choose-reliefs.title"), pageScripts = Some(pageScripts)) {
-    @pageHeadersAndError(backLink, "pre-heading", Messages("ated.choose-reliefs.subheader"), "choose-reliefs-header", Messages("ated.choose-reliefs.header"),
+@atedMain(title = messages("ated.choose-reliefs.title"), pageScripts = Some(pageScripts)) {
+    @pageHeadersAndError(backLink, "pre-heading", messages("ated.choose-reliefs.subheader"), "choose-reliefs-header", messages("ated.choose-reliefs.header"),
       Some(atedErrorSummary(reliefsForm, "ated.choose-reliefs.error.general")))
 
-        <p id="lede-text">@Messages("ated.choose-reliefs.info")</p>
-        <p id="choose-reliefs-label">@Messages("ated.choose-reliefs.label")</p>
+        <p id="lede-text">@messages("ated.choose-reliefs.info")</p>
+        <p id="choose-reliefs-label">@messages("ated.choose-reliefs.label")</p>
 
         @form(action=controllers.reliefs.routes.ChooseReliefsController.send(periodKey)) {
 
         <fieldset class="form-group">
-            <legend id="choose-reliefs-legend" class="visuallyhidden">@Messages("ated.choose-reliefs.header")</legend>
+            <legend id="choose-reliefs-legend" class="visuallyhidden">@messages("ated.choose-reliefs.header")</legend>
 
             <div id="reliefs">
                 @atedSingleCheckBox(reliefsForm("rentalBusiness"),
-                    '_label -> Messages("ated.choose-reliefs.rentalBusiness"),
+                    '_label -> messages("ated.choose-reliefs.rentalBusiness"),
                     '_labelClass -> "block-label")
 
                     <div id="hidden-rentalBusiness-date" class="panel-indent">
                         @atedDateFieldsFree(
                           formItem = reliefsForm,
                           fieldName = "rentalBusinessDate",
-                          label = Html(Messages("ated.choose-reliefs.date", Messages("ated.choose-single-relief.rentalBusiness"))),
+                          label = Html(messages("ated.choose-reliefs.date", messages("ated.choose-single-relief.rentalBusiness"))),
                           isNested = false,
                           defaultDateOption = Some(periodStartDate),
+                          periodKey,
                           '_fieldsetAttributesHelpQuestion -> "rentalBusiness-help-question",
-                          '_hintText -> Messages("ated.choose-reliefs.relief-hint", formattedPeriodStartDate),
+                          '_hintText -> messages("ated.choose-reliefs.relief-hint", formattedPeriodStartDate),
                           '_groupClass -> "form-group date-of-birth",
                           '_idName -> "rentalBusinessDate"
                         )
                     </div>
 
       @atedSingleCheckBox(reliefsForm("openToPublic"),
-        '_label -> Messages("ated.choose-reliefs.openToPublic"),
+        '_label -> messages("ated.choose-reliefs.openToPublic"),
         '_labelClass -> "block-label")
 
       <div id="hidden-openToPublic-date" class="panel-indent">
         @atedDateFieldsFree(
           formItem = reliefsForm,
           fieldName = "openToPublicDate",
-          label = Html(Messages("ated.choose-reliefs.date", Messages("ated.choose-single-relief.openToPublic"))),
+          label = Html(messages("ated.choose-reliefs.date", messages("ated.choose-single-relief.openToPublic"))),
           isNested = false,
           defaultDateOption = Some(periodStartDate),
+          periodKey,
           '_fieldsetAttributesHelpQuestion -> "openToPublicDate-help-question",
-          '_hintText -> Messages("ated.choose-reliefs.relief-hint", formattedPeriodStartDate),
+          '_hintText -> messages("ated.choose-reliefs.relief-hint", formattedPeriodStartDate),
           '_groupClass -> "form-group date-of-birth",
           '_idName -> "openToPublicDate"
         )
       </div>
 
       @atedSingleCheckBox(reliefsForm("propertyDeveloper"),
-        '_label -> Messages("ated.choose-reliefs.propertyDeveloper"),
+        '_label -> messages("ated.choose-reliefs.propertyDeveloper"),
         '_labelClass -> "block-label")
 
       <div id="hidden-propertyDeveloper-date" class="panel-indent">
         @atedDateFieldsFree(
           formItem = reliefsForm,
           fieldName = "propertyDeveloperDate",
-          label = Html(Messages("ated.choose-reliefs.date", Messages("ated.choose-single-relief.propertyDeveloper"))),
+          label = Html(messages("ated.choose-reliefs.date", messages("ated.choose-single-relief.propertyDeveloper"))),
           isNested = false,
           defaultDateOption = Some(periodStartDate),
+          periodKey,
           '_fieldsetAttributesHelpQuestion -> "propertyDeveloperDate-help-question",
-          '_hintText -> Messages("ated.choose-reliefs.relief-hint", formattedPeriodStartDate),
+          '_hintText -> messages("ated.choose-reliefs.relief-hint", formattedPeriodStartDate),
           '_groupClass -> "form-group date-of-birth",
           '_idName -> "propertyDeveloperDate")
       </div>
 
       @atedSingleCheckBox(reliefsForm("propertyTrading"),
-        '_label -> Messages("ated.choose-reliefs.propertyTrading"),
+        '_label -> messages("ated.choose-reliefs.propertyTrading"),
         '_labelClass -> "block-label")
 
       <div id="hidden-propertyTrading-date" class="panel-indent">
         @atedDateFieldsFree(
           formItem = reliefsForm,
           fieldName = "propertyTradingDate",
-          label = Html(Messages("ated.choose-reliefs.date", Messages("ated.choose-single-relief.propertyTrading"))),
+          label = Html(messages("ated.choose-reliefs.date", messages("ated.choose-single-relief.propertyTrading"))),
           isNested = false,
           defaultDateOption = Some(periodStartDate),
+          periodKey,
           '_fieldsetAttributesHelpQuestion -> "propertyTradingDate-help-question",
-          '_hintText -> Messages("ated.choose-reliefs.relief-hint", formattedPeriodStartDate),
+          '_hintText -> messages("ated.choose-reliefs.relief-hint", formattedPeriodStartDate),
           '_groupClass -> "form-group date-of-birth",
           '_idName -> "propertyTradingDate")
       </div>
 
       @atedSingleCheckBox(reliefsForm("lending"),
-        '_label -> Messages("ated.choose-reliefs.lending"),
+        '_label -> messages("ated.choose-reliefs.lending"),
         '_labelClass -> "block-label")
 
       <div id="hidden-lending-date" class="panel-indent">
         @atedDateFieldsFree(
           formItem = reliefsForm,
           fieldName = "lendingDate",
-          label = Html(Messages("ated.choose-reliefs.date", Messages("ated.choose-single-relief.lending"))),
+          label = Html(messages("ated.choose-reliefs.date", messages("ated.choose-single-relief.lending"))),
           isNested = false,
           defaultDateOption = Some(periodStartDate),
+          periodKey,
           '_fieldsetAttributesHelpQuestion -> "lendingDate-help-question",
-          '_hintText -> Messages("ated.choose-reliefs.relief-hint", formattedPeriodStartDate),
+          '_hintText -> messages("ated.choose-reliefs.relief-hint", formattedPeriodStartDate),
           '_groupClass -> "form-group date-of-birth",
           '_idName -> "lendingDate")
       </div>
 
       @atedSingleCheckBox(reliefsForm("employeeOccupation"),
-        '_label -> Messages("ated.choose-reliefs.employeeOccupation"),
+        '_label -> messages("ated.choose-reliefs.employeeOccupation"),
         '_labelClass -> "block-label")
 
       <div id="hidden-employeeOccupation-date" class="panel-indent">
         @atedDateFieldsFree(
           formItem = reliefsForm,
           fieldName = "employeeOccupationDate",
-          label = Html(Messages("ated.choose-reliefs.date", Messages("ated.choose-single-relief.employeeOccupation"))),
+          label = Html(messages("ated.choose-reliefs.date", messages("ated.choose-single-relief.employeeOccupation"))),
           isNested = false,
           defaultDateOption = Some(periodStartDate),
+          periodKey,
           '_fieldsetAttributesHelpQuestion -> "employeeOccupationDate-help-question",
-          '_hintText -> Messages("ated.choose-reliefs.relief-hint", formattedPeriodStartDate),
+          '_hintText -> messages("ated.choose-reliefs.relief-hint", formattedPeriodStartDate),
           '_groupClass -> "form-group date-of-birth",
           '_idName -> "employeeOccupationDate")
       </div>
 
         @atedSingleCheckBox(reliefsForm("farmHouses"),
-        '_label -> Messages("ated.choose-reliefs.farmHouses"),
+        '_label -> messages("ated.choose-reliefs.farmHouses"),
         '_labelClass -> "block-label")
 
       <div id="hidden-farmHouses-date" class="panel-indent">
         @atedDateFieldsFree(
           formItem = reliefsForm,
           fieldName = "farmHousesDate",
-          label = Html(Messages("ated.choose-reliefs.date", Messages("ated.choose-single-relief.farmHouses"))),
+          label = Html(messages("ated.choose-reliefs.date", messages("ated.choose-single-relief.farmHouses"))),
           isNested = false,
           defaultDateOption = Some(periodStartDate),
+          periodKey,
           '_fieldsetAttributesHelpQuestion -> "farmHousesDate-help-question",
-          '_hintText -> Messages("ated.choose-reliefs.relief-hint", formattedPeriodStartDate),
+          '_hintText -> messages("ated.choose-reliefs.relief-hint", formattedPeriodStartDate),
           '_groupClass -> "form-group date-of-birth",
           '_idName -> "farmHousesDate")
       </div>
 
       @atedSingleCheckBox(reliefsForm("socialHousing"),
-        '_label -> Messages("ated.choose-reliefs.socialHousing"),
+        '_label -> messages("ated.choose-reliefs.socialHousing"),
         '_labelClass -> "block-label")
 
 
@@ -174,17 +182,18 @@
           @atedDateFieldsFree(
             formItem = reliefsForm,
             fieldName = "socialHousingDate",
-            label = Html(Messages("ated.choose-reliefs.date", Messages("ated.choose-single-relief.socialHousing"))),
+            label = Html(messages("ated.choose-reliefs.date", messages("ated.choose-single-relief.socialHousing"))),
             isNested = false,
             defaultDateOption = Some(periodStartDate),
+            periodKey,
             '_fieldsetAttributesHelpQuestion -> "socialHousingDate-help-question",
-            '_hintText -> Messages("ated.choose-reliefs.relief-hint", formattedPeriodStartDate),
+            '_hintText -> messages("ated.choose-reliefs.relief-hint", formattedPeriodStartDate),
             '_groupClass -> "form-group date-of-birth",
             '_idName -> "socialHousingDate")
         </div>
 
       @atedSingleCheckBox(reliefsForm("equityRelease"),
-      '_label -> Messages("ated.choose-reliefs.equityRelease-reversion"),
+      '_label -> messages("ated.choose-reliefs.equityRelease-reversion"),
       '_labelClass -> "block-label")
 
       <div class="form-field">
@@ -192,11 +201,12 @@
           @atedDateFieldsFree(
           formItem = reliefsForm,
           fieldName = "equityReleaseDate",
-          label = Html(Messages("ated.choose-reliefs.date", Messages("ated.choose-single-relief.equityRelease"))),
+          label = Html(messages("ated.choose-reliefs.date", messages("ated.choose-single-relief.equityRelease"))),
           isNested = false,
           defaultDateOption = Some(periodStartDate),
+          periodKey,
           '_fieldsetAttributesHelpQuestion -> "socialHousingDate-help-question",
-          '_hintText -> Messages("ated.choose-reliefs.relief-hint", formattedPeriodStartDate),
+          '_hintText -> messages("ated.choose-reliefs.relief-hint", formattedPeriodStartDate),
           '_groupClass -> "form-group date-of-birth",
           '_idName -> "equityReleaseDate")
         </div>
@@ -209,12 +219,12 @@
     <div class="form-group">
         <p class="confirmation-notice">
             <span class="icon-important"></span>
-            <span class="ated-icon-important-text"><strong>@Messages("ated.choose-reliefs-further.information.text")</strong></span>
+            <span class="ated-icon-important-text"><strong>@messages("ated.choose-reliefs-further.information.text")</strong></span>
         </p>
     </div>
 
     <div class="form-group">
-      <button class="button" id="submit" type="submit">@Messages("ated.choose-reliefs.continue")</button>
+      <button class="button" id="submit" type="submit">@messages("ated.choose-reliefs.continue")</button>
     </div>
 
   }

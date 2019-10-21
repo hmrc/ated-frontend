@@ -16,39 +16,41 @@
 
 package controllers
 
+import config.ApplicationConfig
 import connectors.DataCacheConnector
 import controllers.auth.{AuthAction, ClientHelper}
-import forms.AtedForms.YesNoQuestionForm
+import forms.AtedForms.YesNoQuestionExistingReturnsForm
+import javax.inject.Inject
 import models.SelectPeriod
-import play.api.Play.current
-import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, AnyContent}
-import services.{DelegationService, PropertyDetailsService, ReliefsService}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.AtedConstants.RetrieveSelectPeriodFormId
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-trait ExistingReturnQuestionController extends AtedBaseController with AuthAction with ClientHelper {
+class ExistingReturnQuestionController @Inject()(mcc: MessagesControllerComponents,
+                                                 authAction: AuthAction,
+                                                 val dataCacheConnector: DataCacheConnector)
+                                                (implicit val appConfig: ApplicationConfig)
 
-  def propertyDetailsService: PropertyDetailsService
-  def reliefsService: ReliefsService
+  extends FrontendController(mcc) with ClientHelper {
 
-  def dataCacheConnector: DataCacheConnector
+  implicit val ec: ExecutionContext = mcc.executionContext
 
   def view(periodKey: Int, returnType: String): Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
-        Future.successful(Ok(views.html.confirmPastReturn(new YesNoQuestionForm("client.agent-change.error").yesNoQuestionForm, periodKey,
+        Future.successful(Ok(views.html.confirmPastReturn(new YesNoQuestionExistingReturnsForm().yesNoQuestionForm, periodKey,
           returnType, getBackLink(periodKey, returnType))))
       }
     }
   }
 
   def submit(periodKey: Int, returnType: String): Action[AnyContent] = Action.async { implicit request =>
-    authorisedAction { implicit authContext =>
+    authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         dataCacheConnector.saveFormData[SelectPeriod](RetrieveSelectPeriodFormId, SelectPeriod(Some(periodKey.toString)))
-        val form = new YesNoQuestionForm("ated.confirm-past-return.error")
+        val form = new YesNoQuestionExistingReturnsForm
         form.yesNoQuestionForm.bindFromRequest.fold(
           formWithError =>
             Future.successful(BadRequest(views.html.confirmPastReturn(formWithError, periodKey, returnType, getBackLink(periodKey, returnType)))
@@ -69,11 +71,3 @@ trait ExistingReturnQuestionController extends AtedBaseController with AuthActio
   private def getBackLink(periodKey: Int, returnType: String) = Some(controllers.routes.ReturnTypeController.view(periodKey).url)
 }
 
-object ExistingReturnQuestionController extends ExistingReturnQuestionController {
-  // $COVERAGE-OFF$
-  override val dataCacheConnector: DataCacheConnector = DataCacheConnector
-  val propertyDetailsService: PropertyDetailsService = PropertyDetailsService
-  val reliefsService: ReliefsService = ReliefsService
-  val delegationService: DelegationService = DelegationService
-  // $COVERAGE-ON$
-}
