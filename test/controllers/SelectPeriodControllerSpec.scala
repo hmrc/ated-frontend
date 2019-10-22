@@ -60,7 +60,6 @@ class SelectPeriodControllerSpec extends PlaySpec with GuiceOneAppPerSuite with 
     val testSelectPeriodController: SelectPeriodController = new SelectPeriodController(
       mockMcc,
       mockAuthAction,
-      mockReturnTypeController,
       mockBackLinkCacheConnector,
       mockDataCacheConnector
     )

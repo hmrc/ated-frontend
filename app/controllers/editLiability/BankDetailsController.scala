@@ -41,7 +41,7 @@ class BankDetailsController @Inject()(mcc: MessagesControllerComponents,
 
   implicit val ec: ExecutionContext = mcc.executionContext
 
-  val controllerId: String = bankDetailsController
+  val controllerId: String = bankDetailsControllerId
 
   def view(oldFormBundleNo: String): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>

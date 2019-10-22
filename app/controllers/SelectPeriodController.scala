@@ -33,12 +33,11 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class SelectPeriodController @Inject()(mcc: MessagesControllerComponents,
                                        authAction: AuthAction,
-                                       returnTypeController: ReturnTypeController,
                                        val backLinkCacheConnector: BackLinkCacheConnector,
                                        val dataCacheConnector: DataCacheConnector)
                                       (implicit val appConfig: ApplicationConfig)
 
-  extends FrontendController(mcc) with BackLinkController with ClientHelper {
+  extends FrontendController(mcc) with BackLinkController with ClientHelper with ControllerIds {
 
   implicit val ec : ExecutionContext = mcc.executionContext
   val controllerId = "SelectPeriodController"
@@ -67,7 +66,7 @@ class SelectPeriodController @Inject()(mcc: MessagesControllerComponents,
           periodData => {
             dataCacheConnector.saveFormData[SelectPeriod](RetrieveSelectPeriodFormId, periodData)
             redirectWithBackLink(
-              returnTypeController.controllerId,
+              returnTypeControllerId,
               controllers.routes.ReturnTypeController.view(periodData.period.get.toInt),
               Some(routes.SelectPeriodController.view().url)
             )
