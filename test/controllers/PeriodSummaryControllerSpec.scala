@@ -75,11 +75,6 @@ class PeriodSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite w
       mockAuthAction,
       mockSummaryReturnsService,
       mockSubscriptionDataService,
-      mockReturnTypeController,
-      mockReliefsSummaryController,
-      mockPropertyDetailsSummaryController,
-      mockAddressLookupController,
-      mockDisposePropertyController,
       mockBackLinkCacheConnector
     )
     def createReturnWithAuthorisedUser()(test: Future[Result] => Any) {

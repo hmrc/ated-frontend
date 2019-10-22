@@ -23,5 +23,11 @@ trait ControllerIds {
   val propertyDetailsAddressId: String = "PropertyDetailsAddressController"
   val propertyDetailsTitleId: String = "PropertyDetailsTitleController"
   val addressLookupId: String = "AddressLookupController"
-  val bankDetailsController: String = "BankDetailsController"
+  val bankDetailsControllerId: String = "BankDetailsController"
+  val reliefsSummaryControllerId: String = "ReliefsSummaryController"
+  val returnTypeControllerId: String = "ReturnTypeController"
+  val propertyDetailsSummaryControllerId: String = "PropertyDetailsSummaryController"
+  val disposePropertyControllerId: String = "DisposePropertyController"
+  val chooseReliefsControllerId: String = "ChooseReliefsController"
+
 }

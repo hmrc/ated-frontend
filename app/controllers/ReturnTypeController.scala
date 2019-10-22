@@ -34,15 +34,11 @@ import scala.concurrent.{ExecutionContext, Future}
 class ReturnTypeController @Inject()(mcc: MessagesControllerComponents,
                                      authAction: AuthAction,
                                      summaryReturnService: SummaryReturnsService,
-                                     addressLookupController: AddressLookupController,
-                                     propertyDetailsAddressController: PropertyDetailsAddressController,
-                                     chooseReliefsController: ChooseReliefsController,
                                      val dataCacheConnector: DataCacheConnector,
                                      val backLinkCacheConnector: BackLinkCacheConnector)
                                     (implicit val appConfig: ApplicationConfig)
 
-
-  extends FrontendController(mcc) with BackLinkController with ClientHelper {
+  extends FrontendController(mcc) with BackLinkController with ClientHelper with ControllerIds {
 
   val controllerId: String = "ReturnTypeController"
   implicit val ec : ExecutionContext = mcc.executionContext
@@ -75,21 +71,21 @@ class ReturnTypeController @Inject()(mcc: MessagesControllerComponents,
               (returnTypeData.returnType, pastReturns) match {
                 case (Some("CR"), Nil) =>
                   redirectWithBackLink(
-                    addressLookupController.controllerId,
+                    addressLookupId,
                     controllers.propertyDetails.routes.AddressLookupController.view(None, periodKey),
                     returnUrl,
-                    List(propertyDetailsAddressController.controllerId)
+                    List(propertyDetailsAddressId)
                   )
                 case (Some("CR"), _) =>
                   redirectWithBackLink(
-                    addressLookupController.controllerId,
+                    addressLookupId,
                     controllers.routes.ExistingReturnQuestionController.view(periodKey, returnType = "charge"),
                     returnUrl,
-                    List(propertyDetailsAddressController.controllerId)
+                    List(propertyDetailsAddressId)
                   )
                 case (Some("RR"), _) =>
                   redirectWithBackLink(
-                    chooseReliefsController.controllerId,
+                    chooseReliefsControllerId,
                     controllers.reliefs.routes.ChooseReliefsController.view(periodKey),
                     returnUrl
                   )

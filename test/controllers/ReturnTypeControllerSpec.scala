@@ -70,9 +70,6 @@ class ReturnTypeControllerSpec extends PlaySpec with GuiceOneServerPerSuite with
       mockMcc,
       mockAuthAction,
       mockSummaryReturnsService,
-      mockAddressLookupController,
-      mockPropertyDetailsAddressController,
-      mockChooseReliefsController,
       mockDataCacheConnector,
       mockBackLinkCacheConnector
     )
