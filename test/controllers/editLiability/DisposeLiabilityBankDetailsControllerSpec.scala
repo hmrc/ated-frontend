@@ -24,7 +24,7 @@ import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.AuthAction
 import models._
 import org.jsoup.Jsoup
-import org.mockito.Matchers
+import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
@@ -77,11 +77,11 @@ class DisposeLiabilityBankDetailsControllerSpec extends PlaySpec with GuiceOneSe
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
       implicit val hc: HeaderCarrier = HeaderCarrier()
-      when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
-        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
+      when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+        (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
       when(mockDisposeLiabilityReturnService.retrieveLiabilityReturn
-      (Matchers.eq(oldFormBundleNum))(Matchers.any(), Matchers.any())).thenReturn(Future.successful(disposeLiabilityReturn))
-      when(mockBackLinkCache.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
+      (ArgumentMatchers.eq(oldFormBundleNum))(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(disposeLiabilityReturn))
+      when(mockBackLinkCache.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
       val result = testDisposeLiabilityBankDetailsController.view(oldFormBundleNum).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
@@ -90,11 +90,11 @@ class DisposeLiabilityBankDetailsControllerSpec extends PlaySpec with GuiceOneSe
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
-      when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
-        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
+      when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+        (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
       val disposeLiabilityReturn = DisposeLiabilityReturnBuilder.generateDisposeLiabilityReturn("123456789012")
       when(mockDisposeLiabilityReturnService.cacheDisposeLiabilityReturnBank
-      (Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(disposeLiabilityReturn)))
+      (ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(disposeLiabilityReturn)))
       val result = testDisposeLiabilityBankDetailsController.save(oldFormBundleNum)
         .apply(SessionBuilder.updateRequestWithSession(FakeRequest().withJsonBody(inputJson), userId))
       test(result)
@@ -104,11 +104,11 @@ class DisposeLiabilityBankDetailsControllerSpec extends PlaySpec with GuiceOneSe
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
-      when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
-        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
+      when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+        (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
       when(mockDisposeLiabilityReturnService.retrieveLiabilityReturn
-      (Matchers.eq(oldFormBundleNum))(Matchers.any(), Matchers.any())).thenReturn(Future.successful(disposeLiabilityReturn))
-      when(mockBackLinkCache.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
+      (ArgumentMatchers.eq(oldFormBundleNum))(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(disposeLiabilityReturn))
+      when(mockBackLinkCache.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
       val result = testDisposeLiabilityBankDetailsController.editFromSummary(oldFormBundleNum).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
@@ -159,7 +159,7 @@ class DisposeLiabilityBankDetailsControllerSpec extends PlaySpec with GuiceOneSe
       }
 
       "redirect to account summary page, when that liability return is not-found in cache or ETMP" in new Setup {
-        when(mockBackLinkCache.saveBackLink(Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
+        when(mockBackLinkCache.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
         editFromSummary(None) {
           result =>
             status(result) must be(SEE_OTHER)
@@ -173,23 +173,23 @@ class DisposeLiabilityBankDetailsControllerSpec extends PlaySpec with GuiceOneSe
       "for invalid data, return BAD_REQUEST" in new Setup {
         val inputJson: JsValue = Json.parse(
           """{"dateOfDisposal.day": "30"}""".stripMargin)
-        when(mockBackLinkCache.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
+        when(mockBackLinkCache.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
         saveWithAuthorisedUser(oldFormBundleNum, inputJson) {
           result =>
             status(result) must be(BAD_REQUEST)
-            verify(mockDisposeLiabilityReturnService, times(0)).cacheDisposeLiabilityReturnBank(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())
+            verify(mockDisposeLiabilityReturnService, times(0)).cacheDisposeLiabilityReturnBank(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())
         }
       }
 
       "for valid, redirect to liability summary page" in new Setup {
         val bankDetails = BankDetails(Some(true), Some("ACCOUNTNAME"), Some("123456567890"), Some(SortCode("11", "22", "33")))
         val inputJson: JsValue = Json.toJson(bankDetails)
-        when(mockBackLinkCache.saveBackLink(Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
+        when(mockBackLinkCache.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
         saveWithAuthorisedUser(oldFormBundleNum, inputJson) {
           result =>
             status(result) must be(SEE_OTHER)
             redirectLocation(result) must be(Some("/ated/liability/123456789012/dispose/summary"))
-            verify(mockDisposeLiabilityReturnService, times(1)).cacheDisposeLiabilityReturnBank(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())
+            verify(mockDisposeLiabilityReturnService, times(1)).cacheDisposeLiabilityReturnBank(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())
         }
       }
 

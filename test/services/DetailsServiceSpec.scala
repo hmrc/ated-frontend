@@ -21,7 +21,7 @@ import java.util.UUID
 import builders.RegistrationBuilder
 import connectors.{AgentClientMandateFrontendConnector, AtedConnector, DataCacheConnector}
 import models._
-import org.mockito.Matchers
+import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
@@ -102,26 +102,26 @@ class DetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite with Mocki
   "getDetails" must {
     "for OK response status, return body as Some(EtmpRegistrationDetails)" in new Setup {
       when(mockAtedConnector
-        .getDetails(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponseInd))))
+        .getDetails(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponseInd))))
       val result: Future[Option[EtmpRegistrationDetails]] = testDetailsService.getDetails(identifier, identifierType)
       await(result) must be(Some(successResponseInd.as[EtmpRegistrationDetails]))
     }
     "for NOT_FOUND response status, return body as None" in new Setup {
-      when(mockAtedConnector.getDetails(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockAtedConnector.getDetails(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(HttpResponse(NOT_FOUND, Some(failureResponse))))
       val result: Future[Option[EtmpRegistrationDetails]] = testDetailsService.getDetails(identifier, identifierType)
       await(result) must be(None)
     }
     "for BAD_REQUEST response status, throw bad request exception" in new Setup {
       when(mockAtedConnector
-        .getDetails(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST)))
+        .getDetails(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST)))
       val result: Future[Option[EtmpRegistrationDetails]] = testDetailsService.getDetails(identifier, identifierType)
       val thrown: BadRequestException = the[BadRequestException] thrownBy await(result)
       thrown.message must include("Bad Data")
     }
     "getAgentDetails throws InternalServerException exception for call to ETMP, when BadRequest response is received" in new Setup {
       when(mockAtedConnector
-        .getDetails(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(INTERNAL_SERVER_ERROR)))
+        .getDetails(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(INTERNAL_SERVER_ERROR)))
       val result: Future[Option[EtmpRegistrationDetails]] = testDetailsService.getDetails(identifier, identifierType)
       val thrown: InternalServerException = the[InternalServerException] thrownBy await(result)
       thrown.message must include("Internal server error")
@@ -133,7 +133,7 @@ class DetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite with Mocki
       val indResponse: EtmpRegistrationDetails = RegistrationBuilder.getEtmpRegistrationForIndividual("TestFirstName", "TestLastName")
       val successResponseInd: JsValue = Json.toJson(indResponse)
       when(mockAtedConnector
-        .getDetails(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponseInd))))
+        .getDetails(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponseInd))))
       val result: Future[Option[EtmpRegistrationDetails]] = testDetailsService.getRegisteredDetailsFromSafeId("1234567890")
       val bp: Option[EtmpRegistrationDetails] = await(result)
       bp.isDefined must be(true)
@@ -146,7 +146,7 @@ class DetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite with Mocki
       val orgResponse: EtmpRegistrationDetails = RegistrationBuilder.getEtmpRegistrationForOrganisation("Agents Limited")
       val successResponseOrg: JsValue = Json.toJson(orgResponse)
       when(mockAtedConnector
-        .getDetails(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponseOrg))))
+        .getDetails(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponseOrg))))
       val result: Future[Option[EtmpRegistrationDetails]] = testDetailsService.getRegisteredDetailsFromSafeId("1234567890")
       val bp: Option[EtmpRegistrationDetails] = await(result)
       bp.isDefined must be(true)
@@ -156,7 +156,7 @@ class DetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite with Mocki
     }
 
     "return details for organisation when not found" in new Setup {
-      when(mockAtedConnector.getDetails(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockAtedConnector.getDetails(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(HttpResponse(NOT_FOUND, Some(failureResponse))))
       val result: Future[Option[EtmpRegistrationDetails]] = testDetailsService.getRegisteredDetailsFromSafeId("1234567890")
       val bp: Option[EtmpRegistrationDetails] = await(result)
@@ -174,7 +174,7 @@ class DetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite with Mocki
 
       "save the registration details for an organistaion" in new Setup {
 
-        when(mockAtedConnector.updateRegistrationDetails(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+        when(mockAtedConnector.updateRegistrationDetails(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
 
         val result: Future[Option[UpdateRegistrationDetailsRequest]] = testDetailsService.updateOrganisationRegisteredDetails(oldOrgDetails, registeredDetails)
@@ -183,7 +183,7 @@ class DetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite with Mocki
       }
 
       "save the registration details successful for an organistion" in new Setup {
-        when(mockAtedConnector.updateRegistrationDetails(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+        when(mockAtedConnector.updateRegistrationDetails(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(HttpResponse(OK, None)))
 
         val result: Future[Option[UpdateRegistrationDetailsRequest]] = testDetailsService.updateOrganisationRegisteredDetails(oldOrgDetails, registeredDetails)
@@ -195,7 +195,7 @@ class DetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite with Mocki
       "fail to save the registration details for an organisation without isAGroup defined" in new Setup {
         val oldOrgDetailsNoGroup: EtmpRegistrationDetails = oldOrgDetails.copy(organisation = oldOrgDetails.organisation.map(_.copy(isAGroup = None)))
 
-        when(mockAtedConnector.updateRegistrationDetails(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+        when(mockAtedConnector.updateRegistrationDetails(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(HttpResponse(OK, None)))
 
         val result: Future[Option[UpdateRegistrationDetailsRequest]] = testDetailsService.updateOrganisationRegisteredDetails(oldOrgDetailsNoGroup, registeredDetails)
@@ -206,7 +206,7 @@ class DetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite with Mocki
       "fail to save the registration details for an individual" in new Setup {
         val oldIndDetails: EtmpRegistrationDetails = RegistrationBuilder.getEtmpRegistrationForIndividual("TestFirstName", "TestLastName")
 
-        when(mockAtedConnector.updateRegistrationDetails(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+        when(mockAtedConnector.updateRegistrationDetails(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(HttpResponse(OK, None)))
 
         val result: Future[Option[UpdateRegistrationDetailsRequest]] = testDetailsService.updateOrganisationRegisteredDetails(oldIndDetails, registeredDetails)
@@ -226,7 +226,7 @@ class DetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite with Mocki
 
       "save the details for an organistaion" in new Setup {
 
-        when(mockAtedConnector.updateRegistrationDetails(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+        when(mockAtedConnector.updateRegistrationDetails(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
 
         val result: Future[Option[UpdateRegistrationDetailsRequest]] = testDetailsService.updateOverseasCompanyRegistration(oldOrgDetails, Some(overseasCompanyRegistration))
@@ -235,7 +235,7 @@ class DetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite with Mocki
       }
 
       "save the details successfully for an organistion" in new Setup {
-        when(mockAtedConnector.updateRegistrationDetails(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+        when(mockAtedConnector.updateRegistrationDetails(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(HttpResponse(OK, None)))
 
         val result: Future[Option[UpdateRegistrationDetailsRequest]] = testDetailsService.updateOverseasCompanyRegistration(oldOrgDetails, Some(overseasCompanyRegistration))
@@ -247,7 +247,7 @@ class DetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite with Mocki
       "fail to save the registration details for an organisation without isAGroup defined" in new Setup {
         val oldOrgDetailsNoGroup: EtmpRegistrationDetails = oldOrgDetails.copy(organisation = oldOrgDetails.organisation.map(_.copy(isAGroup = None)))
 
-        when(mockAtedConnector.updateRegistrationDetails(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+        when(mockAtedConnector.updateRegistrationDetails(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(HttpResponse(OK, None)))
 
         val result: Future[Option[UpdateRegistrationDetailsRequest]] = testDetailsService.updateOverseasCompanyRegistration(oldOrgDetailsNoGroup, Some(overseasCompanyRegistration))
@@ -258,7 +258,7 @@ class DetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite with Mocki
       "fail to save the registration details for an individual" in new Setup {
         val oldIndDetails: EtmpRegistrationDetails = RegistrationBuilder.getEtmpRegistrationForIndividual("TestFirstName", "TestLastName")
 
-        when(mockAtedConnector.updateRegistrationDetails(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+        when(mockAtedConnector.updateRegistrationDetails(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(HttpResponse(OK, None)))
 
         val result: Future[Option[UpdateRegistrationDetailsRequest]] = testDetailsService.updateOverseasCompanyRegistration(oldIndDetails, Some(overseasCompanyRegistration))
@@ -272,7 +272,7 @@ class DetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite with Mocki
   "getClientMandateDetails" must {
     "return None when can't find mandate details" in new Setup {
       implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
-      when(mockMandateFrontendConnector.getClientDetails(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+      when(mockMandateFrontendConnector.getClientDetails(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(HttpResponse(NOT_FOUND, None)))
       val result: Future[Option[ClientMandateDetails]] = testDetailsService.getClientMandateDetails("clientId", "ated")
       await(result) must be(None)
@@ -287,7 +287,7 @@ class DetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite with Mocki
 
     "return result when found mandate details" in new Setup {
       implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
-      when(mockMandateFrontendConnector.getClientDetails(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+      when(mockMandateFrontendConnector.getClientDetails(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(HttpResponse(OK, Some(clientMandateDetails))))
       val result: Future[Option[ClientMandateDetails]] = testDetailsService.getClientMandateDetails("clientId", "ated")
       await(result) must be(Some(clientMandateDetails.as[ClientMandateDetails]))
@@ -300,7 +300,7 @@ class DetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite with Mocki
       implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
       implicit val authContext: StandardAuthRetrievals = mock[StandardAuthRetrievals]
 
-      when(mockDataCacheConnector.saveFormData[String](Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+      when(mockDataCacheConnector.saveFormData[String](ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful("XN1200000100001"))
 
       val result: Future[String] = testDetailsService.cacheClientReference("XN1200000100001")(authContext, request, hc)

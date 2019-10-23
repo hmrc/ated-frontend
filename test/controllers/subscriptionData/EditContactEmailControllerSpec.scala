@@ -24,7 +24,7 @@ import connectors.DataCacheConnector
 import controllers.auth.AuthAction
 import models._
 import org.jsoup.Jsoup
-import org.mockito.Matchers
+import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
@@ -78,7 +78,7 @@ class EditContactEmailControllerSpec extends PlaySpec with GuiceOneServerPerSuit
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
       implicit val hc: HeaderCarrier = HeaderCarrier()
-      when(mockSubscriptionDataService.getEmailWithConsent(Matchers.any(), Matchers.any())).thenReturn(Future.successful(contactDetailsEmail))
+      when(mockSubscriptionDataService.getEmailWithConsent(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(contactDetailsEmail))
       val result = testEditContactEmailController.edit().apply(SessionBuilder.buildRequestWithSession(userId))
 
       test(result)
@@ -98,7 +98,7 @@ class EditContactEmailControllerSpec extends PlaySpec with GuiceOneServerPerSuit
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
-      when(mockSubscriptionDataService.editEmailWithConsent(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(testAddress))
+      when(mockSubscriptionDataService.editEmailWithConsent(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(testAddress))
       val result = testEditContactEmailController.submit().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
 
       test(result)

@@ -105,13 +105,13 @@ class AuthAction @Inject()(appConfig: ApplicationConfig,
 
   def handleException(ae: AuthorisationException)(implicit request: Request[AnyContent]): Result  = ae match {
     case usa: UnsupportedAffinityGroup =>
-      Logger.info("[AuthAction][handleException] DefaultAuthAction:Refine - Unsupported Affinity Group" + usa)
+      Logger.info("[AuthAction][handleException] Unsupported Affinity Group" + usa)
       unauthorisedUrl()
     case nas: NoActiveSession =>
-      Logger.info("[AuthAction][handleException] DefaultAuthAction:Refine - NoActiveSession" + nas)
+      Logger.info("[AuthAction][handleException] NoActiveSession" + nas)
       Redirect(appConfig.loginURL, loginParams)
     case e: AuthorisationException =>
-      Logger.info("[AuthAction][handleException] DefaultAuthAction:Refine - AuthorisationException:" + e)
+      Logger.info("[AuthAction][handleException] AuthorisationException:" + e)
       unauthorisedUrl()
   }
 }

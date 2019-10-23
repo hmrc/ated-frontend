@@ -19,7 +19,7 @@ package services
 import builders.DisposeLiabilityReturnBuilder
 import connectors.{AtedConnector, DataCacheConnector}
 import models._
-import org.mockito.Matchers
+import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
@@ -68,14 +68,14 @@ class DisposeLiabilityReturnServiceSpec extends PlaySpec with GuiceOneServerPerS
       "for valid form-bundle-number" must {
 
         "return Some(ChangeLiabilityReturn), if data is found in cache/ETMP, i.e. for status-code OK" in new Setup {
-          when(mockAtedConnector.retrieveAndCacheDisposeLiability(Matchers.any())(Matchers.any(), Matchers.any()))
+          when(mockAtedConnector.retrieveAndCacheDisposeLiability(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
             .thenReturn(Future.successful(HttpResponse(OK, responseJson = Some(disposeLiabilityReturnJson))))
           val result: Option[DisposeLiabilityReturn] = await(testDisposeLiabilityReturnService.retrieveLiabilityReturn(formBundleNo1))
           result must be(Some(disposeLiabilityReturn))
         }
 
         "return None, if data is not-found in cache/ETMP, i.e. for any other status-code" in new Setup {
-          when(mockAtedConnector.retrieveAndCacheDisposeLiability(Matchers.any())(Matchers.any(), Matchers.any()))
+          when(mockAtedConnector.retrieveAndCacheDisposeLiability(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
             .thenReturn(Future.successful(HttpResponse(NOT_FOUND, responseJson = None)))
           val result: Option[DisposeLiabilityReturn] = await(testDisposeLiabilityReturnService.retrieveLiabilityReturn(formBundleNo2))
           result must be(None)
@@ -89,14 +89,14 @@ class DisposeLiabilityReturnServiceSpec extends PlaySpec with GuiceOneServerPerS
       "for valid form-bundle-number" must {
 
         "return Some(ChangeLiabilityReturn), if data is saved in cache, i.e. for status-code OK" in new Setup {
-          when(mockAtedConnector.cacheDraftDisposeLiabilityReturnDate(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+          when(mockAtedConnector.cacheDraftDisposeLiabilityReturnDate(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
             .thenReturn(Future.successful(HttpResponse(OK, responseJson = Some(disposeLiabilityReturnJson))))
           val result: Option[DisposeLiabilityReturn] = await(testDisposeLiabilityReturnService.cacheDisposeLiabilityReturnDate(formBundleNo1, updatedDate))
           result must be(Some(disposeLiabilityReturn))
         }
 
         "return None, if data is not saved in cache, i.e. for any other status-code" in new Setup {
-          when(mockAtedConnector.cacheDraftDisposeLiabilityReturnDate(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+          when(mockAtedConnector.cacheDraftDisposeLiabilityReturnDate(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
             .thenReturn(Future.successful(HttpResponse(NOT_FOUND, responseJson = None)))
           val result: Option[DisposeLiabilityReturn] = await(testDisposeLiabilityReturnService.cacheDisposeLiabilityReturnDate(formBundleNo2, updatedDate))
           result must be(None)
@@ -110,7 +110,7 @@ class DisposeLiabilityReturnServiceSpec extends PlaySpec with GuiceOneServerPerS
       "for valid form-bundle-number" must {
 
         "return Some(ChangeLiabilityReturn), if data is saved in cache, i.e. for status-code OK" in new Setup {
-          when(mockAtedConnector.cacheDraftDisposeLiabilityReturnHasBank(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+          when(mockAtedConnector.cacheDraftDisposeLiabilityReturnHasBank(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
             .thenReturn(Future.successful(HttpResponse(OK, responseJson = Some(disposeLiabilityReturnJson))))
           val result: Option[DisposeLiabilityReturn] = await(testDisposeLiabilityReturnService
             .cacheDisposeLiabilityReturnHasBankDetails(formBundleNo1, hasBankDetails = true))
@@ -118,7 +118,7 @@ class DisposeLiabilityReturnServiceSpec extends PlaySpec with GuiceOneServerPerS
         }
 
         "return None, if data is not saved in cache, i.e. for any other status-code" in new Setup {
-          when(mockAtedConnector.cacheDraftDisposeLiabilityReturnHasBank(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+          when(mockAtedConnector.cacheDraftDisposeLiabilityReturnHasBank(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
             .thenReturn(Future.successful(HttpResponse(NOT_FOUND, responseJson = None)))
           val result: Option[DisposeLiabilityReturn] = await(testDisposeLiabilityReturnService
             .cacheDisposeLiabilityReturnHasBankDetails(formBundleNo2, hasBankDetails = false))
@@ -133,14 +133,14 @@ class DisposeLiabilityReturnServiceSpec extends PlaySpec with GuiceOneServerPerS
       "for valid form-bundle-number" must {
 
         "return Some(ChangeLiabilityReturn), if data is saved in cache, i.e. for status-code OK" in new Setup {
-          when(mockAtedConnector.cacheDraftDisposeLiabilityReturnBank(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+          when(mockAtedConnector.cacheDraftDisposeLiabilityReturnBank(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
             .thenReturn(Future.successful(HttpResponse(OK, responseJson = Some(disposeLiabilityReturnJson))))
           val result: Option[DisposeLiabilityReturn] = await(testDisposeLiabilityReturnService.cacheDisposeLiabilityReturnBank(formBundleNo1, bankDetails1))
           result must be(Some(disposeLiabilityReturn))
         }
 
         "return None, if data is not saved in cache, i.e. for any other status-code" in new Setup {
-          when(mockAtedConnector.cacheDraftDisposeLiabilityReturnBank(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+          when(mockAtedConnector.cacheDraftDisposeLiabilityReturnBank(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
             .thenReturn(Future.successful(HttpResponse(NOT_FOUND, responseJson = None)))
           val result: Option[DisposeLiabilityReturn] = await(testDisposeLiabilityReturnService.cacheDisposeLiabilityReturnBank(formBundleNo2, bankDetails1))
           result must be(None)
@@ -154,14 +154,14 @@ class DisposeLiabilityReturnServiceSpec extends PlaySpec with GuiceOneServerPerS
       "for valid form-bundle-number" must {
 
         "return Some(ChangeLiabilityReturn), if data is saved in cache, i.e. for status-code OK" in new Setup {
-          when(mockAtedConnector.calculateDraftDisposal(Matchers.any())(Matchers.any(), Matchers.any()))
+          when(mockAtedConnector.calculateDraftDisposal(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
             .thenReturn(Future.successful(HttpResponse(OK, responseJson = Some(disposeLiabilityReturnJson))))
           val result: Option[DisposeLiabilityReturn] = await(testDisposeLiabilityReturnService.calculateDraftDisposal(formBundleNo1))
           result must be(Some(disposeLiabilityReturn))
         }
 
         "return None, if data is not saved in cache, i.e. for any other status-code" in new Setup {
-          when(mockAtedConnector.calculateDraftDisposal(Matchers.any())(Matchers.any(), Matchers.any()))
+          when(mockAtedConnector.calculateDraftDisposal(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
             .thenReturn(Future.successful(HttpResponse(NOT_FOUND, responseJson = None)))
           val result: Option[DisposeLiabilityReturn] = await(testDisposeLiabilityReturnService.calculateDraftDisposal(formBundleNo2))
           result must be(None)
@@ -195,18 +195,18 @@ class DisposeLiabilityReturnServiceSpec extends PlaySpec with GuiceOneServerPerS
 
           val response: JsValue = Json.parse(jsonEtmpResponse)
 
-          when(mockDataCacheConnector.clearCache()(Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, None)))
+          when(mockDataCacheConnector.clearCache()(ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, None)))
           when(mockDataCacheConnector.saveFormData[EditLiabilityReturnsResponseModel]
-            (Matchers.eq(SubmitEditedLiabilityReturnsResponseFormId), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+            (ArgumentMatchers.eq(SubmitEditedLiabilityReturnsResponseFormId), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
             .thenReturn(Future.successful(response.as[EditLiabilityReturnsResponseModel]))
-          when(mockAtedConnector.submitDraftDisposeLiabilityReturn(Matchers.eq(formBundleNo1))(Matchers.any(), Matchers.any()))
+          when(mockAtedConnector.submitDraftDisposeLiabilityReturn(ArgumentMatchers.eq(formBundleNo1))(ArgumentMatchers.any(), ArgumentMatchers.any()))
             .thenReturn(Future.successful(HttpResponse(OK, responseJson = Some(response))))
           val result: EditLiabilityReturnsResponseModel = await(testDisposeLiabilityReturnService.submitDraftDisposeLiability(formBundleNo1))
           result.liabilityReturnResponse.length must be(1)
         }
 
         "return empty EditLiabilityReturnsResponseModel, if submit status is not OK" in new Setup {
-          when(mockAtedConnector.submitDraftDisposeLiabilityReturn(Matchers.eq(formBundleNo1))(Matchers.any(), Matchers.any()))
+          when(mockAtedConnector.submitDraftDisposeLiabilityReturn(ArgumentMatchers.eq(formBundleNo1))(ArgumentMatchers.any(), ArgumentMatchers.any()))
             .thenReturn(Future.successful(HttpResponse(BAD_REQUEST)))
           val result: EditLiabilityReturnsResponseModel = await(testDisposeLiabilityReturnService.submitDraftDisposeLiability(formBundleNo1))
           result.liabilityReturnResponse.length must be(0)

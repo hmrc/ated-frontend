@@ -23,7 +23,7 @@ import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.AuthAction
 import models._
-import org.mockito.Matchers
+import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
@@ -81,12 +81,12 @@ class Setup {
     val userId = s"user-${UUID.randomUUID}"
     val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
     setAuthMocks(authMock)
-    when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
-      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-    when(mockDataCacheConnector.fetchAndGetFormData[Boolean](Matchers.any())
-      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
-    when(mockBackLinkCacheConnector.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
-    when(mockPropertyDetailsService.retrieveDraftPropertyDetails(Matchers.any())(Matchers.any(), Matchers.any()))
+    when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+      (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
+    when(mockDataCacheConnector.fetchAndGetFormData[Boolean](ArgumentMatchers.any())
+      (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
+    when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+    when(mockPropertyDetailsService.retrieveDraftPropertyDetails(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
       .thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propertyDetails)))
     val result = testPropertyDetailsNewBuildController.view(id).apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
@@ -104,9 +104,9 @@ class Setup {
 
   def submitWithAuthorisedUser(formBody: List[(String, String)])(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
-    when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
-      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-    when(mockPropertyDetailsService.saveDraftPropertyDetailsNewBuild(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).
+    when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+      (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
+    when(mockPropertyDetailsService.saveDraftPropertyDetailsNewBuild(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).
       thenReturn(Future.successful(OK))
     val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
     setAuthMocks(authMock)
@@ -167,7 +167,7 @@ class Setup {
         "for invalid data, return BAD_REQUEST" in new Setup {
           val formBody = List(
             ("isNewBuild", "false"))
-          when(mockBackLinkCacheConnector.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
+          when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
           submitWithAuthorisedUser(formBody) {
             result =>
               status(result) must be(BAD_REQUEST)
@@ -182,7 +182,7 @@ class Setup {
             ("notNewBuildDate.year", "2016"),
             ("notNewBuildValue", "1500000")
           )
-          when(mockBackLinkCacheConnector.saveBackLink(Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
+          when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
           submitWithAuthorisedUser(formBody) {
             result =>
               status(result) must be(SEE_OTHER)

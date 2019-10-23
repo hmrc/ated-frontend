@@ -18,7 +18,7 @@ package controllers.auth
 
 import config.ApplicationConfig
 import models.StandardAuthRetrievals
-import org.mockito.Matchers
+import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.{reset, _}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
@@ -72,8 +72,8 @@ class AuthActionSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach 
     "return a valid 200 response" when {
       "affinity group is authorised with valid delegation"  in new Setup {
 
-        when(mockDelegationService.delegationCall(Matchers.any())(Matchers.any())).thenReturn(Future.successful(Some(delegationModel)))
-        when(mockAuthConnector.authorise[RetrievalType](Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+        when(mockDelegationService.delegationCall(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(Some(delegationModel)))
+        when(mockAuthConnector.authorise[RetrievalType](ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(buildRetrieval(AffinityGroup.Organisation, atedOnlyEnrolmentSet)) )
 
         val myFuture: Future[Result] = Future.successful(Results.Ok("test"))
@@ -85,8 +85,8 @@ class AuthActionSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach 
 
       "affinity group is authorised with no delegation returned"  in new Setup {
 
-        when(mockDelegationService.delegationCall(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
-        when(mockAuthConnector.authorise[RetrievalType](Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+        when(mockDelegationService.delegationCall(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+        when(mockAuthConnector.authorise[RetrievalType](ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(buildRetrieval(AffinityGroup.Agent, agentOnlyEnrolmentSet)) )
 
         val myFuture: Future[Result] = Future.successful(Results.Ok("test"))
@@ -100,8 +100,8 @@ class AuthActionSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach 
     "return 303 redirect response" when {
       "affinity group fails authorisation for reason UnsupportedAffinityGroup (AuthorisationException)"  in new Setup {
 
-        when(mockDelegationService.delegationCall(Matchers.any())(Matchers.any())).thenReturn(Future.successful(Some(delegationModel)))
-        when(mockAuthConnector.authorise[RetrievalType](Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+        when(mockDelegationService.delegationCall(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(Some(delegationModel)))
+        when(mockAuthConnector.authorise[RetrievalType](ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.failed(UnsupportedAffinityGroup("error")))
 
         val myFuture: Future[Result] = Future.successful(Results.Ok("test"))
@@ -114,8 +114,8 @@ class AuthActionSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach 
 
       "affinity group fails authorisation for reason InvalidBearerToken (NoActiveSession)"  in new Setup {
 
-        when(mockDelegationService.delegationCall(Matchers.any())(Matchers.any())).thenReturn(Future.successful(Some(delegationModel)))
-        when(mockAuthConnector.authorise[RetrievalType](Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+        when(mockDelegationService.delegationCall(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(Some(delegationModel)))
+        when(mockAuthConnector.authorise[RetrievalType](ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.failed(InvalidBearerToken("error")))
 
         val myFuture: Future[Result] = Future.successful(Results.Ok("test"))
@@ -128,8 +128,8 @@ class AuthActionSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach 
 
       "affinity group fails authorisation for reason InsufficientConfidenceLevel (AuthorisationException)"  in new Setup {
 
-        when(mockDelegationService.delegationCall(Matchers.any())(Matchers.any())).thenReturn(Future.successful(Some(delegationModel)))
-        when(mockAuthConnector.authorise[RetrievalType](Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+        when(mockDelegationService.delegationCall(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(Some(delegationModel)))
+        when(mockAuthConnector.authorise[RetrievalType](ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.failed(InsufficientConfidenceLevel("error")))
 
         val myFuture: Future[Result] = Future.successful(Results.Ok("test"))
@@ -182,9 +182,9 @@ class AuthActionSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach 
     "redirect to unauthorised url" when {
       "enrolment is for an individual IR-SA" in new Setup {
 
-        when(mockDelegationService.delegationCall(Matchers.any())(Matchers.any())).thenReturn(Future.successful(Some(delegationModel)))
+        when(mockDelegationService.delegationCall(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(Some(delegationModel)))
 
-        when(mockAuthConnector.authorise[RetrievalType](Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+        when(mockAuthConnector.authorise[RetrievalType](ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(buildRetrieval(AffinityGroup.Individual, saEnrolmentSet)) )
 
         val myFuture: Future[Result] = Future.successful(Results.Ok("test"))
@@ -197,9 +197,9 @@ class AuthActionSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach 
 
       "affinity group fails authorisation for reason InsufficientConfidenceLevel (AuthorisationException)" in new Setup {
 
-        when(mockDelegationService.delegationCall(Matchers.any())(Matchers.any())).thenReturn(Future.successful(Some(delegationModel)))
+        when(mockDelegationService.delegationCall(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(Some(delegationModel)))
 
-        when(mockAuthConnector.authorise[RetrievalType](Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+        when(mockAuthConnector.authorise[RetrievalType](ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.failed(InsufficientConfidenceLevel("error")))
 
         val myFuture: Future[Result] = Future.successful(Results.Ok("test"))
@@ -212,9 +212,9 @@ class AuthActionSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach 
 
       "affinity group fails authorisation for reason BearerTokenExpired (NoActiveSession)" in new Setup {
 
-        when(mockDelegationService.delegationCall(Matchers.any())(Matchers.any())).thenReturn(Future.successful(Some(delegationModel)))
+        when(mockDelegationService.delegationCall(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(Some(delegationModel)))
 
-        when(mockAuthConnector.authorise[RetrievalType](Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+        when(mockAuthConnector.authorise[RetrievalType](ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.failed(BearerTokenExpired("error")))
 
         val myFuture: Future[Result] = Future.successful(Results.Ok("test"))
@@ -233,9 +233,9 @@ class AuthActionSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach 
 
       "affinity Organisation groups are authorised with valid delegation " in new Setup {
 
-        when(mockDelegationService.delegationCall(Matchers.any())(Matchers.any())).thenReturn(Future.successful(Some(delegationModel)))
+        when(mockDelegationService.delegationCall(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(Some(delegationModel)))
 
-        when(mockAuthConnector.authorise[RetrievalType](Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+        when(mockAuthConnector.authorise[RetrievalType](ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(buildRetrieval(AffinityGroup.Organisation, atedAgentEnrolmentSet)) )
 
         val res: Future[Result] = testAuthAction.authorisedAction(func)
@@ -245,9 +245,9 @@ class AuthActionSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach 
 
       "affinity Agent groups are authorised with valid delegation " in new Setup {
 
-        when(mockDelegationService.delegationCall(Matchers.any())(Matchers.any())).thenReturn(Future.successful(Some(delegationModel)))
+        when(mockDelegationService.delegationCall(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(Some(delegationModel)))
 
-        when(mockAuthConnector.authorise[RetrievalType](Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+        when(mockAuthConnector.authorise[RetrievalType](ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(buildRetrieval(AffinityGroup.Agent, atedAgentEnrolmentSet)) )
 
         val myFuture: Future[Result] = Future.successful(Results.Ok("test"))
@@ -260,9 +260,9 @@ class AuthActionSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach 
 
       "affinity group is authorised with no delegation returned " in new Setup {
 
-        when(mockDelegationService.delegationCall(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
+        when(mockDelegationService.delegationCall(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
 
-        when(mockAuthConnector.authorise[RetrievalType](Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+        when(mockAuthConnector.authorise[RetrievalType](ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(buildRetrieval(AffinityGroup.Organisation, atedOnlyEnrolmentSet)) )
 
         val myFuture: Future[Result] = Future.successful(Results.Ok("test"))

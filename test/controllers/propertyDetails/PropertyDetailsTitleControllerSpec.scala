@@ -25,7 +25,7 @@ import controllers.auth.AuthAction
 import controllers.editLiability.EditLiabilityHasValueChangedController
 import models._
 import org.jsoup.Jsoup
-import org.mockito.Matchers
+import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
@@ -85,13 +85,13 @@ class PropertyDetailsTitleControllerSpec extends PlaySpec with GuiceOneServerPer
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
-      when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
-        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-      when(mockDataCacheConnector.fetchAndGetFormData[Boolean](Matchers.any())
-        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
-      when(mockBackLinkCacheConnector.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
+      when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+        (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
+      when(mockDataCacheConnector.fetchAndGetFormData[Boolean](ArgumentMatchers.any())
+        (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
+      when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
       when(mockPropertyDetailsService.retrieveDraftPropertyDetails
-      (Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propertyDetails)))
+      (ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propertyDetails)))
       val result = testPropertyDetailsTitleController.view(id).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
@@ -108,9 +108,9 @@ class PropertyDetailsTitleControllerSpec extends PlaySpec with GuiceOneServerPer
     def submitWithAuthorisedUser(id: String, inputJson: JsValue, mode: Option[String] = None)(test: Future[Result] => Any) {
       val periodKey: Int = 2015
       val userId = s"user-${UUID.randomUUID}"
-      when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
-        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-      when(mockPropertyDetailsService.saveDraftPropertyDetailsTitle(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).
+      when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+        (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
+      when(mockPropertyDetailsService.saveDraftPropertyDetailsTitle(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).
         thenReturn(Future.successful(OK))
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
@@ -123,8 +123,8 @@ class PropertyDetailsTitleControllerSpec extends PlaySpec with GuiceOneServerPer
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
-      when(mockPropertyDetailsService.retrieveDraftPropertyDetails(Matchers.any())
-      (Matchers.any(), Matchers.any())).thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propertyDetails)))
+      when(mockPropertyDetailsService.retrieveDraftPropertyDetails(ArgumentMatchers.any())
+      (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propertyDetails)))
       val result = testPropertyDetailsTitleController.editFromSummary(id).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
@@ -212,7 +212,7 @@ class PropertyDetailsTitleControllerSpec extends PlaySpec with GuiceOneServerPer
         "for invalid data, return BAD_REQUEST" in new Setup {
 
           val inputJson: JsValue = Json.parse( """{"rentalBusiness": true, "isAvoidanceScheme": "true"}""")
-          when(mockBackLinkCacheConnector.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
+          when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
           submitWithAuthorisedUser("1", inputJson) {
             result =>
               status(result) must be(BAD_REQUEST)
@@ -221,7 +221,7 @@ class PropertyDetailsTitleControllerSpec extends PlaySpec with GuiceOneServerPer
 
         "for valid data with no id, return OK" in new Setup {
           val propertyDetails = PropertyDetailsTitle("new Title")
-          when(mockBackLinkCacheConnector.saveBackLink(Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
+          when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
           submitWithAuthorisedUser("1", Json.toJson(propertyDetails)) {
             result =>
               status(result) must be(SEE_OTHER)
@@ -230,7 +230,7 @@ class PropertyDetailsTitleControllerSpec extends PlaySpec with GuiceOneServerPer
 
         "for valid data, forward onto the acquisition page" in new Setup {
           val propDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
-          when(mockBackLinkCacheConnector.saveBackLink(Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
+          when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
           submitWithAuthorisedUser("1", Json.toJson(propDetails.title)) {
             result =>
               status(result) must be(SEE_OTHER)
@@ -239,7 +239,7 @@ class PropertyDetailsTitleControllerSpec extends PlaySpec with GuiceOneServerPer
         }
         "for valid data when editing a previous return, forward onto the value page" in new Setup {
           val propDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
-          when(mockBackLinkCacheConnector.saveBackLink(Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
+          when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
           submitWithAuthorisedUser("1", Json.toJson(propDetails.title), Some("editSubmitted")) {
             result =>
               status(result) must be(SEE_OTHER)

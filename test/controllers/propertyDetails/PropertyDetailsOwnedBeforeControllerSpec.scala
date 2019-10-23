@@ -24,7 +24,7 @@ import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.AuthAction
 import models._
 import org.jsoup.Jsoup
-import org.mockito.Matchers
+import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
@@ -87,12 +87,12 @@ class Setup {
     val userId = s"user-${UUID.randomUUID}"
     val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
     setAuthMocks(authMock)
-    when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
-      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-    when(mockDataCacheConnector.fetchAndGetFormData[Boolean](Matchers.any())
-      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
-    when(mockBackLinkCacheConnector.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
-    when(mockPropertyDetailsService.retrieveDraftPropertyDetails(Matchers.any())(Matchers.any(), Matchers.any()))
+    when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+      (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
+    when(mockDataCacheConnector.fetchAndGetFormData[Boolean](ArgumentMatchers.any())
+      (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
+    when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+    when(mockPropertyDetailsService.retrieveDraftPropertyDetails(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
       .thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propertyDetails)))
     val result = testPropertyDetailsOwnedBeforeController.view(id).apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
@@ -102,9 +102,9 @@ class Setup {
     val userId = s"user-${UUID.randomUUID}"
     val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
     setAuthMocks(authMock)
-    when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
-      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-    when(mockPropertyDetailsService.retrieveDraftPropertyDetails(Matchers.any())(Matchers.any(), Matchers.any()))
+    when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+      (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
+    when(mockPropertyDetailsService.retrieveDraftPropertyDetails(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
       .thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propertyDetails)))
     val result = testPropertyDetailsOwnedBeforeController.editFromSummary(id).apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
@@ -122,9 +122,9 @@ class Setup {
   def submitWithAuthorisedUser(inputJson: JsValue)(test: Future[Result] => Any) {
     val periodKey: Int = 2015
     val userId = s"user-${UUID.randomUUID}"
-    when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
-      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-    when(mockPropertyDetailsService.saveDraftPropertyDetailsOwnedBefore(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).
+    when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+      (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
+    when(mockPropertyDetailsService.saveDraftPropertyDetailsOwnedBefore(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).
       thenReturn(Future.successful(OK))
 
     val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
@@ -203,7 +203,7 @@ class Setup {
       "Authorised users" must {
 
         "for invalid data, return BAD_REQUEST" in new Setup {
-          when(mockBackLinkCacheConnector.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
+          when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
           submitWithAuthorisedUser(Json.toJson(PropertyDetailsOwnedBefore(Some(true)))) {
             result =>
               status(result) must be(BAD_REQUEST)
@@ -212,7 +212,7 @@ class Setup {
 
         "When the owned before is true forward to the Professionally Valued Page" in new Setup {
           val bdValue: Int = 1500000
-          when(mockBackLinkCacheConnector.saveBackLink(Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
+          when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
           submitWithAuthorisedUser(Json.toJson(PropertyDetailsOwnedBefore(Some(true), Some(BigDecimal(bdValue))))) {
             result =>
               status(result) must be(SEE_OTHER)
@@ -221,7 +221,7 @@ class Setup {
         }
 
         "When the owned before is false forward to the New Build Page" in new Setup {
-          when(mockBackLinkCacheConnector.saveBackLink(Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
+          when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
           submitWithAuthorisedUser(Json.toJson(PropertyDetailsOwnedBefore(Some(false)))) {
             result =>
               status(result) must be(SEE_OTHER)

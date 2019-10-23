@@ -23,7 +23,7 @@ import config.ApplicationConfig
 import controllers.auth.AuthAction
 import models.Identification
 import org.jsoup.Jsoup
-import org.mockito.Matchers
+import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
@@ -77,7 +77,7 @@ class OverseasCompanyRegistrationControllerSpec extends PlaySpec with GuiceOneSe
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
-      when(mockSubscriptionDataService.getOverseasCompanyRegistration(Matchers.any(), Matchers.any())).thenReturn(Future.successful(overseasInfo))
+      when(mockSubscriptionDataService.getOverseasCompanyRegistration(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(overseasInfo))
       val result = testOverseasCompanyRegistrationController.edit().apply(SessionBuilder.buildRequestWithSession(userId))
 
       test(result)
@@ -96,7 +96,7 @@ class OverseasCompanyRegistrationControllerSpec extends PlaySpec with GuiceOneSe
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
-      when(mockSubscriptionDataService.updateOverseasCompanyRegistration(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(input))
+      when(mockSubscriptionDataService.updateOverseasCompanyRegistration(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(input))
       val result = testOverseasCompanyRegistrationController.submit().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
 
       test(result)

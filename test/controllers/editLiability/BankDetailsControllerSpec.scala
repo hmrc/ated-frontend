@@ -24,7 +24,7 @@ import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.AuthAction
 import models.{BankDetails, BankDetailsModel, PropertyDetails, SortCode}
 import org.jsoup.Jsoup
-import org.mockito.Matchers
+import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
@@ -71,11 +71,11 @@ class BankDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite wit
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
-      when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
-        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
+      when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+        (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
       when(mockChangeLiabilityReturnService.retrieveSubmittedLiabilityReturnAndCache
-      (Matchers.eq("12345678901"), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(changeLiabilityReturnOpt))
-      when(mockBackLinkCache.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
+      (ArgumentMatchers.eq("12345678901"), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(changeLiabilityReturnOpt))
+      when(mockBackLinkCache.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
       val result = testBankDetailsController.view("12345678901").apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
@@ -84,11 +84,11 @@ class BankDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite wit
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
-      when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
-        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
+      when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+        (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
       val changeLiabilityReturn = ChangeLiabilityReturnBuilder.generateChangeLiabilityReturn("123456789012")
       when(mockChangeLiabilityReturnService.cacheChangeLiabilityReturnBank
-      (Matchers.eq("12345678901"), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(changeLiabilityReturn)))
+      (ArgumentMatchers.eq("12345678901"), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(changeLiabilityReturn)))
       val result = testBankDetailsController.save("12345678901").apply(SessionBuilder.updateRequestWithSession(FakeRequest().withJsonBody(inputJson), userId))
       test(result)
     }
@@ -131,23 +131,23 @@ class BankDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite wit
       "for invalid data, return BAD_REQUEST" in new Setup {
         val bankDetails = BankDetailsModel()
         val inputJson: JsValue = Json.toJson(bankDetails)
-        when(mockBackLinkCache.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
+        when(mockBackLinkCache.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
         saveWithAuthorisedUser(inputJson) {
           result =>
             status(result) must be(BAD_REQUEST)
-            verify(mockChangeLiabilityReturnService, times(0)).cacheChangeLiabilityReturnBank(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())
+            verify(mockChangeLiabilityReturnService, times(0)).cacheChangeLiabilityReturnBank(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())
         }
       }
 
       "for valid, redirect to change in value page" in new Setup {
         val bankDetails = BankDetails(Some(true), Some("ACCOUNTNAME"), Some("123456567890"), Some(SortCode("11", "22", "33")))
         val inputJson: JsValue = Json.toJson(bankDetails)
-        when(mockBackLinkCache.saveBackLink(Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
+        when(mockBackLinkCache.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
         saveWithAuthorisedUser(inputJson) {
           result =>
             status(result) must be(SEE_OTHER)
             redirectLocation(result) must be(Some("/ated/liability/12345678901/change/view-summary"))
-            verify(mockChangeLiabilityReturnService, times(1)).cacheChangeLiabilityReturnBank(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())
+            verify(mockChangeLiabilityReturnService, times(1)).cacheChangeLiabilityReturnBank(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())
         }
       }
     }

@@ -26,7 +26,7 @@ import models.{EditLiabilityReturnsResponse, EditLiabilityReturnsResponseModel}
 import org.joda.time.format.DateTimeFormat
 import org.joda.time.{DateTime, LocalDate}
 import org.jsoup.Jsoup
-import org.mockito.Matchers
+import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.{reset, _}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
@@ -78,7 +78,7 @@ class DisposeLiabilitySentControllerSpec extends PlaySpec with GuiceOneServerPer
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
       when(mockDataCacheConnector.fetchAndGetFormData[EditLiabilityReturnsResponseModel]
-        (Matchers.eq(SubmitEditedLiabilityReturnsResponseFormId))(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(x))
+        (ArgumentMatchers.eq(SubmitEditedLiabilityReturnsResponseFormId))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(x))
       val result = testDisposeLiabilitySentController.view(formBundleNo1).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
@@ -88,8 +88,8 @@ class DisposeLiabilitySentControllerSpec extends PlaySpec with GuiceOneServerPer
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
       when(mockDataCacheConnector.fetchAndGetFormData[EditLiabilityReturnsResponseModel]
-        (Matchers.eq(SubmitEditedLiabilityReturnsResponseFormId))(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(x))
-      when(mockSubscriptionDataService.getOrganisationName(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(organisationName)))
+        (ArgumentMatchers.eq(SubmitEditedLiabilityReturnsResponseFormId))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(x))
+      when(mockSubscriptionDataService.getOrganisationName(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(organisationName)))
       val result = testDisposeLiabilitySentController.viewPrintFriendlyDisposeLiabilitySent(formBundleNo1).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }

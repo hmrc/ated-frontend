@@ -25,7 +25,7 @@ import controllers.auth.AuthAction
 import models.{LiabilityReturnResponse, SubmitReturnsResponse}
 import org.joda.time.DateTime
 import org.jsoup.Jsoup
-import org.mockito.Matchers
+import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
@@ -74,8 +74,8 @@ class Setup {
       liabilityAmount = BigDecimal("123"), paymentReference = Some("Payment-123"), formBundleNumber = "form-bundle-123")
     val submitReturnsResponse = SubmitReturnsResponse(processingDate = DateTime.now().toString, None, liabilityReturnResponse =
       Some(Seq(liabilityReturnResponse)))
-    when(mockDataCacheConnector.fetchAndGetFormData[SubmitReturnsResponse](Matchers.eq(SubmitReturnsResponseFormId))
-      (Matchers.any(), Matchers.any(), Matchers.eq(SubmitReturnsResponse.formats))).thenReturn(Future.successful(Some(submitReturnsResponse)))
+    when(mockDataCacheConnector.fetchAndGetFormData[SubmitReturnsResponse](ArgumentMatchers.eq(SubmitReturnsResponseFormId))
+      (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.eq(SubmitReturnsResponse.formats))).thenReturn(Future.successful(Some(submitReturnsResponse)))
 
     val result = testChargeableReturnConfirmationController.confirmation.apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
@@ -85,8 +85,8 @@ class Setup {
     val userId = s"user-${UUID.randomUUID}"
     val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
     setAuthMocks(authMock)
-    when(mockDataCacheConnector.fetchAndGetFormData[SubmitReturnsResponse](Matchers.eq(SubmitReturnsResponseFormId))
-      (Matchers.any(), Matchers.any(), Matchers.eq(SubmitReturnsResponse.formats))).thenReturn(Future.successful(None))
+    when(mockDataCacheConnector.fetchAndGetFormData[SubmitReturnsResponse](ArgumentMatchers.eq(SubmitReturnsResponseFormId))
+      (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.eq(SubmitReturnsResponse.formats))).thenReturn(Future.successful(None))
 
     val result = testChargeableReturnConfirmationController.confirmation.apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
@@ -113,9 +113,9 @@ class Setup {
       liabilityAmount = BigDecimal("123"), paymentReference = Some("Payment-123"), formBundleNumber = "form-bundle-123")
     val submitReturnsResponse = SubmitReturnsResponse(processingDate = DateTime.now().toString, None, liabilityReturnResponse =
       Some(Seq(liabilityReturnResponse)))
-    when(mockDataCacheConnector.fetchAndGetFormData[SubmitReturnsResponse](Matchers.eq(SubmitReturnsResponseFormId))
-      (Matchers.any(), Matchers.any(), Matchers.eq(SubmitReturnsResponse.formats))).thenReturn(Future.successful(Some(submitReturnsResponse)))
-    when(mockSubscriptionDataService.getOrganisationName(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(organisationName)))
+    when(mockDataCacheConnector.fetchAndGetFormData[SubmitReturnsResponse](ArgumentMatchers.eq(SubmitReturnsResponseFormId))
+      (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.eq(SubmitReturnsResponse.formats))).thenReturn(Future.successful(Some(submitReturnsResponse)))
+    when(mockSubscriptionDataService.getOrganisationName(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(organisationName)))
 
     val result = testChargeableReturnConfirmationController.viewPrintFriendlyChargeableConfirmation.apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)

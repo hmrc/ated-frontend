@@ -25,7 +25,7 @@ import controllers.auth.AuthAction
 import models._
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
-import org.mockito.Matchers
+import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
@@ -73,7 +73,7 @@ class PeriodDatesLiableControllerSpec extends PlaySpec with GuiceOneServerPerSui
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
       setInvalidAuthMocks(authMock)
-      when(mockBackLinkCacheConnector.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
+      when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
       val result = testPeriodDatesLiableController.view("1").apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
@@ -83,11 +83,11 @@ class PeriodDatesLiableControllerSpec extends PlaySpec with GuiceOneServerPerSui
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
 
-      when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
-        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
+      when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+        (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
       when(mockPropertyDetailsService.retrieveDraftPropertyDetails
-      (Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propertyDetails)))
-      when(mockBackLinkCacheConnector.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
+      (ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propertyDetails)))
+      when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
       val result = testPeriodDatesLiableController.view(propertyDetails.id).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
@@ -114,11 +114,11 @@ class PeriodDatesLiableControllerSpec extends PlaySpec with GuiceOneServerPerSui
     def submitWithAuthorisedUser(formBody: List[(String, String)], propDetails: PropertyDetails)(test: Future[Result] => Any) {
       val periodKey: Int = 2015
       val userId = s"user-${UUID.randomUUID}"
-      when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
-        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
+      when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+        (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
       when(mockPropertyDetailsService.retrieveDraftPropertyDetails
-      (Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propDetails)))
-      when(mockPropertyDetailsService.saveDraftPropertyDetailsDatesLiable(Matchers.eq("1"), Matchers.any())(Matchers.any(), Matchers.any())).
+      (ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propDetails)))
+      when(mockPropertyDetailsService.saveDraftPropertyDetailsDatesLiable(ArgumentMatchers.eq("1"), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).
         thenReturn(Future.successful(OK))
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
@@ -130,11 +130,11 @@ class PeriodDatesLiableControllerSpec extends PlaySpec with GuiceOneServerPerSui
     def submitAddWithAuthorisedUser(formBody: List[(String, String)], propDetails: PropertyDetails)(test: Future[Result] => Any) {
       val periodKey: Int = 2015
       val userId = s"user-${UUID.randomUUID}"
-      when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
-        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-      when(mockPropertyDetailsService.retrieveDraftPropertyDetails(Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+        (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
+      when(mockPropertyDetailsService.retrieveDraftPropertyDetails(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propDetails)))
-      when(mockPropertyDetailsService.addDraftPropertyDetailsDatesLiable(Matchers.eq("1"), Matchers.any())(Matchers.any(), Matchers.any())).
+      when(mockPropertyDetailsService.addDraftPropertyDetailsDatesLiable(ArgumentMatchers.eq("1"), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).
         thenReturn(Future.successful(OK))
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
@@ -230,7 +230,7 @@ class PeriodDatesLiableControllerSpec extends PlaySpec with GuiceOneServerPerSui
       "Authorised users" must {
         "for invalid data, return BAD_REQUEST" in new Setup {
           val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
-          when(mockBackLinkCacheConnector.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
+          when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
           submitWithAuthorisedUser(Nil, propertyDetails) {
             result =>
               status(result) must be(BAD_REQUEST)
@@ -247,7 +247,7 @@ class PeriodDatesLiableControllerSpec extends PlaySpec with GuiceOneServerPerSui
             ("endDate.month", "8"),
             ("endDate.year", "2015"))
 
-          when(mockBackLinkCacheConnector.saveBackLink(Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
+          when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
           submitWithAuthorisedUser(formBody, propertyDetails) {
             result =>
               status(result) must be(SEE_OTHER)
@@ -265,7 +265,7 @@ class PeriodDatesLiableControllerSpec extends PlaySpec with GuiceOneServerPerSui
             ("endDate.month", "8"),
             ("endDate.year", "2015"))
 
-          when(mockBackLinkCacheConnector.saveBackLink(Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
+          when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
           submitAddWithAuthorisedUser(formBody, propertyDetails) {
             result =>
               status(result) must be(SEE_OTHER)

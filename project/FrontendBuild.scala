@@ -36,7 +36,7 @@ private object AppDependencies {
         "org.pegdown" % "pegdown" % "1.6.0",
         "org.jsoup" % "jsoup" % "1.8.3" % scope,
         "com.typesafe.play" %% "play-test" % PlayVersion.current % scope,
-        "org.mockito" % "mockito-all" % "1.10.19" % scope,
+        "org.mockito" % "mockito-core" % "3.1.0" % scope,
         "uk.gov.hmrc" %% "hmrctest" % "3.9.0-play-26" % scope
       )
     }.test

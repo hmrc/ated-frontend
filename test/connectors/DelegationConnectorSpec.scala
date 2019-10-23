@@ -17,7 +17,7 @@
 package connectors
 
 import config.ApplicationConfig
-import org.mockito.Matchers.any
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec

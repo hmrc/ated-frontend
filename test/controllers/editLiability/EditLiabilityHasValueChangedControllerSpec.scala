@@ -25,7 +25,7 @@ import controllers.auth.AuthAction
 import controllers.propertyDetails.{IsFullTaxPeriodController, PropertyDetailsOwnedBeforeController, PropertyDetailsTaxAvoidanceController}
 import models.{HasValueChanged, PropertyDetails}
 import org.jsoup.Jsoup
-import org.mockito.Matchers
+import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
@@ -77,13 +77,13 @@ class Setup {
     val userId = s"user-${UUID.randomUUID}"
     val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
     setAuthMocks(authMock)
-    when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
-      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-    when(mockDataCacheConnector.fetchAndGetFormData[Boolean](Matchers.any())
-      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
-    when(mockPropertyDetailsService.retrieveDraftPropertyDetails(Matchers.any())(Matchers.any(), Matchers.any()))
+    when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+      (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
+    when(mockDataCacheConnector.fetchAndGetFormData[Boolean](ArgumentMatchers.any())
+      (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
+    when(mockPropertyDetailsService.retrieveDraftPropertyDetails(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
       .thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propertyDetails)))
-    when(mockBackLinkCacheConnector.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
+    when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
     val result = testEditLiabilityHasValueChangedController.view("12345678901").apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
@@ -92,11 +92,11 @@ class Setup {
     val userId = s"user-${UUID.randomUUID}"
     val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
     setAuthMocks(authMock)
-    when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
-      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-    when(mockDataCacheConnector.fetchAndGetFormData[Boolean](Matchers.any())
-      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
-    when(mockPropertyDetailsService.retrieveDraftPropertyDetails(Matchers.any())(Matchers.any(), Matchers.any()))
+    when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+      (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
+    when(mockDataCacheConnector.fetchAndGetFormData[Boolean](ArgumentMatchers.any())
+      (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
+    when(mockPropertyDetailsService.retrieveDraftPropertyDetails(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
       .thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propertyDetails)))
     val result = testEditLiabilityHasValueChangedController.editFromSummary("12345678901", Some(true)).apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
@@ -107,15 +107,15 @@ class Setup {
     val userId = s"user-${UUID.randomUUID}"
     val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
     setAuthMocks(authMock)
-    when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
-      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
+    when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+      (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
     propertyDetails.map(propVal =>
-      when(mockPropertyDetailsService.retrieveDraftPropertyDetails(Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockPropertyDetailsService.retrieveDraftPropertyDetails(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propVal)))
     )
-    when(mockDataCacheConnector.fetchAndGetFormData[Boolean](Matchers.any())
-      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
-    when(mockPropertyDetailsService.saveDraftHasValueChanged(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).
+    when(mockDataCacheConnector.fetchAndGetFormData[Boolean](ArgumentMatchers.any())
+      (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
+    when(mockPropertyDetailsService.saveDraftHasValueChanged(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).
       thenReturn(Future.successful(OK))
     val result = testEditLiabilityHasValueChangedController.save("12345678901").apply(SessionBuilder.updateRequestWithSession(FakeRequest()
       .withJsonBody(inputJson), userId))
@@ -169,7 +169,7 @@ reset(mockPropertyDetailsService)
       "for invalid data, return BAD_REQUEST" in new Setup {
         val changeLiabilityReturn: PropertyDetails = PropertyDetailsBuilder.getPropertyDetailsWithFormBundleReturn("12345678901")
         val inputJson: JsValue = Json.parse("""{"startDate.day": "31", "startDate.month": "6", "startDate.year": "2015", "periodKey": 2015}""")
-        when(mockBackLinkCacheConnector.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
+        when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
         saveWithAuthorisedUser(Some(changeLiabilityReturn), inputJson) {
           result =>
             status(result) must be(BAD_REQUEST)
@@ -179,7 +179,7 @@ reset(mockPropertyDetailsService)
       "for valid date when we have indicated that the value has changed, save and redirect to change in acquisition page" in new Setup {
         val value1 = HasValueChanged(Some(true))
         val inputJson: JsValue = Json.toJson(value1)
-        when(mockBackLinkCacheConnector.saveBackLink(Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
+        when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
         saveWithAuthorisedUser(None, inputJson) {
           result =>
             status(result) must be(SEE_OTHER)
@@ -190,7 +190,7 @@ reset(mockPropertyDetailsService)
       "for valid date when we have indicated that the value has NOT changed, save and redirect to change in period page" in new Setup {
         val value1 = HasValueChanged(Some(false))
         val inputJson: JsValue = Json.toJson(value1)
-        when(mockBackLinkCacheConnector.saveBackLink(Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
+        when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
         saveWithAuthorisedUser(None, inputJson) {
           result =>
             status(result) must be(SEE_OTHER)

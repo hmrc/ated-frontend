@@ -24,7 +24,7 @@ import connectors.DataCacheConnector
 import controllers.auth.AuthAction
 import models.{Address, AddressDetails, ContactDetails, EditContactDetails}
 import org.jsoup.Jsoup
-import org.mockito.Matchers
+import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
@@ -77,7 +77,7 @@ class Setup {
     val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
     setAuthMocks(authMock)
     implicit val hc: HeaderCarrier = HeaderCarrier()
-    when(mockSubscriptionDataService.getCorrespondenceAddress(Matchers.any(), Matchers.any())).thenReturn(Future.successful(companyDetails))
+    when(mockSubscriptionDataService.getCorrespondenceAddress(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(companyDetails))
     val result = testEditContactDetailsController.edit().apply(SessionBuilder.buildRequestWithSession(userId))
 
     test(result)
@@ -96,7 +96,7 @@ class Setup {
     val userId = s"user-${UUID.randomUUID}"
     val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
     setAuthMocks(authMock)
-    when(mockSubscriptionDataService.editContactDetails(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(testAddress))
+    when(mockSubscriptionDataService.editContactDetails(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(testAddress))
     val result = testEditContactDetailsController.submit().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
 
     test(result)

@@ -19,7 +19,7 @@ package services
 import builders.PropertyDetailsBuilder
 import connectors.{DataCacheConnector, PropertyDetailsConnector}
 import models.{PropertyDetails, PropertyDetailsAddress, PropertyDetailsTitle, StandardAuthRetrievals, SubmitReturnsResponse}
-import org.mockito.Matchers
+import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
@@ -56,10 +56,10 @@ class PropertyDetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite wi
         val periodKey: Int = 2015
         val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
         val successResponse: JsValue = Json.toJson(propertyDetails)
-        when(mockPropertyDetailsConnector.retrieveDraftPropertyDetails(Matchers.eq("1"))(Matchers.any(), Matchers.any()))
+        when(mockPropertyDetailsConnector.retrieveDraftPropertyDetails(ArgumentMatchers.eq("1"))(ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
-        when(mockPropertyDetailsConnector.createDraftPropertyDetails(Matchers.any(), Matchers.any())
-        (Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+        when(mockPropertyDetailsConnector.createDraftPropertyDetails(ArgumentMatchers.any(), ArgumentMatchers.any())
+        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
 
         val result: Future[String] = testPropertyDetailsService.createDraftPropertyDetailsAddress(periodKey, propertyDetails.addressProperty)
         await(result) must be("1")
@@ -70,8 +70,8 @@ class PropertyDetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite wi
         val periodKey: Int = 2015
         val addressProperty: PropertyDetailsAddress = PropertyDetailsBuilder.getPropertyDetailsAddress(Some("postCode"))
         val successResponse: JsValue = Json.toJson("1")
-        when(mockPropertyDetailsConnector.createDraftPropertyDetails(Matchers.any(), Matchers.any())
-        (Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, Some(successResponse))))
+        when(mockPropertyDetailsConnector.createDraftPropertyDetails(ArgumentMatchers.any(), ArgumentMatchers.any())
+        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, Some(successResponse))))
 
         val result: Future[String] = testPropertyDetailsService.createDraftPropertyDetailsAddress(periodKey, addressProperty)
         val thrown: InternalServerException = the[InternalServerException] thrownBy await(result)
@@ -86,8 +86,8 @@ class PropertyDetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite wi
         val addressProperty: PropertyDetailsAddress = PropertyDetailsBuilder.getPropertyDetailsAddress(Some("postCode"))
 
         val successResponse: JsValue = Json.toJson(addressProperty)
-        when(mockPropertyDetailsConnector.saveDraftPropertyDetailsAddressRef(Matchers.any(), Matchers.any())
-        (Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+        when(mockPropertyDetailsConnector.saveDraftPropertyDetailsAddressRef(ArgumentMatchers.any(), ArgumentMatchers.any())
+        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
 
         val result: Future[String] = testPropertyDetailsService.saveDraftPropertyDetailsAddress("1", addressProperty)
         await(result) must be("1")
@@ -97,8 +97,8 @@ class PropertyDetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite wi
       "save and throw an Exception if it fails" in new Setup {
         val addressProperty: PropertyDetailsAddress = PropertyDetailsBuilder.getPropertyDetailsAddress(Some("postCode"))
         val successResponse: JsValue = Json.toJson(addressProperty)
-        when(mockPropertyDetailsConnector.saveDraftPropertyDetailsAddressRef(Matchers.any(), Matchers.any())
-        (Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, Some(successResponse))))
+        when(mockPropertyDetailsConnector.saveDraftPropertyDetailsAddressRef(ArgumentMatchers.any(), ArgumentMatchers.any())
+        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, Some(successResponse))))
 
         val result: Future[String] = testPropertyDetailsService.saveDraftPropertyDetailsAddress("1", addressProperty)
         val thrown: InternalServerException = the[InternalServerException] thrownBy await(result)
@@ -114,8 +114,8 @@ class PropertyDetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite wi
         val propValue: Option[PropertyDetailsTitle] = propertyDetails.title
 
         val successResponse: JsValue = Json.toJson(propertyDetails)
-        when(mockPropertyDetailsConnector.saveDraftPropertyDetailsTitle(Matchers.eq("1"), Matchers.any())
-        (Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+        when(mockPropertyDetailsConnector.saveDraftPropertyDetailsTitle(ArgumentMatchers.eq("1"), ArgumentMatchers.any())
+        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
 
         val result: Future[Int] = testPropertyDetailsService.saveDraftPropertyDetailsTitle("1", propValue.get)
         await(result) must be(OK)
@@ -126,8 +126,8 @@ class PropertyDetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite wi
         val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
         val propValue: Option[PropertyDetailsTitle] = propertyDetails.title
         val successResponse: JsValue = Json.toJson(propValue)
-        when(mockPropertyDetailsConnector.saveDraftPropertyDetailsTitle(Matchers.eq("1"), Matchers.any())
-        (Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, Some(successResponse))))
+        when(mockPropertyDetailsConnector.saveDraftPropertyDetailsTitle(ArgumentMatchers.eq("1"), ArgumentMatchers.any())
+        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, Some(successResponse))))
 
         val result: Future[Int] = testPropertyDetailsService.saveDraftPropertyDetailsTitle("1", propValue.get)
         val thrown: InternalServerException = the[InternalServerException] thrownBy await(result)
@@ -142,10 +142,10 @@ class PropertyDetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite wi
         val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
 
         val successResponse: JsValue = Json.toJson(propertyDetails)
-        when(mockPropertyDetailsConnector.retrieveDraftPropertyDetails(Matchers.eq("1"))(Matchers.any(), Matchers.any()))
+        when(mockPropertyDetailsConnector.retrieveDraftPropertyDetails(ArgumentMatchers.eq("1"))(ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
-        when(mockPropertyDetailsConnector.calculateDraftPropertyDetails(Matchers.any())
-        (Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+        when(mockPropertyDetailsConnector.calculateDraftPropertyDetails(ArgumentMatchers.any())
+        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
 
         val result: Future[HttpResponse] = testPropertyDetailsService.calculateDraftPropertyDetails("1")
         await(result).status must be(OK)
@@ -156,10 +156,10 @@ class PropertyDetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite wi
 
         val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetailsValuedByAgent("1", Some("postCode"))
         val successResponse: JsValue = Json.toJson(propertyDetails)
-        when(mockPropertyDetailsConnector.retrieveDraftPropertyDetails(Matchers.eq("1"))(Matchers.any(), Matchers.any()))
+        when(mockPropertyDetailsConnector.retrieveDraftPropertyDetails(ArgumentMatchers.eq("1"))(ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
-        when(mockPropertyDetailsConnector.calculateDraftPropertyDetails(Matchers.any())
-        (Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+        when(mockPropertyDetailsConnector.calculateDraftPropertyDetails(ArgumentMatchers.any())
+        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
 
         val result: Future[HttpResponse] = testPropertyDetailsService.calculateDraftPropertyDetails("1")
         await(result).status must be(OK)
@@ -173,10 +173,10 @@ class PropertyDetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite wi
 
         val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetailsValuedByAgent("1", Some("postCode"))
         val successResponse: JsValue = Json.toJson(propertyDetails)
-        when(mockPropertyDetailsConnector.retrieveDraftPropertyDetails(Matchers.eq("1"))(Matchers.any(), Matchers.any()))
+        when(mockPropertyDetailsConnector.retrieveDraftPropertyDetails(ArgumentMatchers.eq("1"))(ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
-        when(mockPropertyDetailsConnector.calculateDraftChangeLiability(Matchers.any())
-        (Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+        when(mockPropertyDetailsConnector.calculateDraftChangeLiability(ArgumentMatchers.any())
+        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
 
         val result: Future[PropertyDetails] = testPropertyDetailsService.calculateDraftChangeLiability("1")
         await(result) must be(propertyDetails)
@@ -186,10 +186,10 @@ class PropertyDetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite wi
       "save and throw an Exception if it fails" in new Setup {
         val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetailsValuedByAgent("1", Some("postCode"))
         val successResponse: JsValue = Json.toJson(propertyDetails)
-        when(mockPropertyDetailsConnector.retrieveDraftPropertyDetails(Matchers.eq("1"))(Matchers.any(), Matchers.any()))
+        when(mockPropertyDetailsConnector.retrieveDraftPropertyDetails(ArgumentMatchers.eq("1"))(ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
-        when(mockPropertyDetailsConnector.calculateDraftChangeLiability(Matchers.any())
-        (Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, Some(successResponse))))
+        when(mockPropertyDetailsConnector.calculateDraftChangeLiability(ArgumentMatchers.any())
+        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, Some(successResponse))))
 
         val result: Future[PropertyDetails] = testPropertyDetailsService.calculateDraftChangeLiability("1")
         val thrown: InternalServerException = the[InternalServerException] thrownBy await(result)
@@ -202,7 +202,7 @@ class PropertyDetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite wi
       "return the response from the connector with a Success Response" in new Setup {
         val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("new Prop Det"))
         val successResponse: JsValue = Json.toJson(propertyDetails)
-        when(mockPropertyDetailsConnector.retrieveDraftPropertyDetails(Matchers.eq("1"))(Matchers.any(), Matchers.any()))
+        when(mockPropertyDetailsConnector.retrieveDraftPropertyDetails(ArgumentMatchers.eq("1"))(ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
 
         val result: Future[PropertyDetailsCacheResponse] = testPropertyDetailsService.retrieveDraftPropertyDetails("1")
@@ -213,7 +213,7 @@ class PropertyDetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite wi
         val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("new Prop Det"))
 
         val successResponse: JsValue = Json.toJson(propertyDetails)
-        when(mockPropertyDetailsConnector.retrieveDraftPropertyDetails(Matchers.eq("1"))(Matchers.any(), Matchers.any()))
+        when(mockPropertyDetailsConnector.retrieveDraftPropertyDetails(ArgumentMatchers.eq("1"))(ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(HttpResponse(NOT_FOUND, Some(successResponse))))
 
         val result: Future[PropertyDetailsCacheResponse] = testPropertyDetailsService.retrieveDraftPropertyDetails("1")
@@ -224,7 +224,7 @@ class PropertyDetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite wi
         val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("new Prop Det"))
 
         val successResponse: JsValue = Json.toJson(propertyDetails)
-        when(mockPropertyDetailsConnector.retrieveDraftPropertyDetails(Matchers.eq("1"))(Matchers.any(), Matchers.any()))
+        when(mockPropertyDetailsConnector.retrieveDraftPropertyDetails(ArgumentMatchers.eq("1"))(ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(HttpResponse(INTERNAL_SERVER_ERROR, Some(successResponse))))
 
         val result: Future[PropertyDetailsCacheResponse] = testPropertyDetailsService.retrieveDraftPropertyDetails("1")
@@ -251,21 +251,21 @@ class PropertyDetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite wi
           """.stripMargin
 
         val successResponse: JsValue = Json.parse(jsonEtmpResponse)
-        when(mockPropertyDetailsConnector.submitDraftPropertyDetails(Matchers.any())
-        (Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+        when(mockPropertyDetailsConnector.submitDraftPropertyDetails(ArgumentMatchers.any())
+        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
 
-        when(mockDataCacheConnector.clearCache()(Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, None)))
+        when(mockDataCacheConnector.clearCache()(ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, None)))
 
         val SubmitReturnsResponseFormId = "submit-returns-response-Id"
-        when(mockDataCacheConnector.saveFormData[SubmitReturnsResponse](Matchers.eq(SubmitReturnsResponseFormId),
-          Matchers.eq(successResponse.as[SubmitReturnsResponse]))
-          (Matchers.any(), Matchers.any(), Matchers.eq(SubmitReturnsResponse.formats)))
+        when(mockDataCacheConnector.saveFormData[SubmitReturnsResponse](ArgumentMatchers.eq(SubmitReturnsResponseFormId),
+          ArgumentMatchers.eq(successResponse.as[SubmitReturnsResponse]))
+          (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.eq(SubmitReturnsResponse.formats)))
           .thenReturn(Future.successful(successResponse.as[SubmitReturnsResponse]))
 
         val result: Future[HttpResponse] = testPropertyDetailsService.submitDraftPropertyDetails("1")
         val response: HttpResponse = await(result)
-        verify(mockDataCacheConnector, times(1)).clearCache()(Matchers.any())
-        verify(mockDataCacheConnector, times(1)).saveFormData(Matchers.any(),Matchers.any())(Matchers.any(),Matchers.any(),Matchers.any())
+        verify(mockDataCacheConnector, times(1)).clearCache()(ArgumentMatchers.any())
+        verify(mockDataCacheConnector, times(1)).saveFormData(ArgumentMatchers.any(),ArgumentMatchers.any())(ArgumentMatchers.any(),ArgumentMatchers.any(),ArgumentMatchers.any())
       }
 
     }
@@ -274,12 +274,12 @@ class PropertyDetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite wi
        "valid id is passed" in new Setup {
           val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("new Prop Det"))
          val successResponse: JsValue = Json.toJson(Seq(propertyDetails))
-         when(mockPropertyDetailsConnector.deleteDraftChargeable(Matchers.eq("AB12345"))(Matchers.any(), Matchers.any()))
+         when(mockPropertyDetailsConnector.deleteDraftChargeable(ArgumentMatchers.eq("AB12345"))(ArgumentMatchers.any(), ArgumentMatchers.any()))
            .thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
 
          val result: Future[HttpResponse] = testPropertyDetailsService.clearDraftReliefs("AB12345")
          val response: HttpResponse = await(result)
-         verify(mockPropertyDetailsConnector, times(1)).deleteDraftChargeable(Matchers.any())(Matchers.any(), Matchers.any())
+         verify(mockPropertyDetailsConnector, times(1)).deleteDraftChargeable(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())
        }
     }
 
@@ -287,12 +287,12 @@ class PropertyDetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite wi
       "for a valid form bundle number but property no period is found" in new Setup {
         val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetailsWithNoValue("1", Some("new Prop Det"))
         val successResponse: JsValue = Json.toJson(propertyDetails)
-        when(mockPropertyDetailsConnector.retrieveDraftPropertyDetails(Matchers.any())(Matchers.any(), Matchers.any()))
+        when(mockPropertyDetailsConnector.retrieveDraftPropertyDetails(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
 
         val result: Future[Boolean] = testPropertyDetailsService.validateCalculateDraftPropertyDetails("AB12345")
         val response: Boolean = await(result)
-        verify(mockPropertyDetailsConnector, times(1)).retrieveDraftPropertyDetails(Matchers.any())(Matchers.any(), Matchers.any())
+        verify(mockPropertyDetailsConnector, times(1)).retrieveDraftPropertyDetails(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())
       }
     }
   }

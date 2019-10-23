@@ -25,7 +25,7 @@ import controllers.auth.AuthAction
 import models._
 import org.joda.time.DateTime
 import org.jsoup.Jsoup
-import org.mockito.Matchers
+import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
@@ -82,11 +82,11 @@ class Setup {
     val userId = s"user-${UUID.randomUUID}"
     val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
     noDelegationModelAuthMocks(authMock)
-    when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
-      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
+    when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+      (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
     when(mockChangeLiabilityReturnService.retrieveSubmittedLiabilityReturnAndCache
-    (Matchers.eq(formBundleNo1), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(x))
-    when(mockBackLinkCacheConnector.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
+    (ArgumentMatchers.eq(formBundleNo1), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(x))
+    when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
     val result = testEditLiabilityDeclarationController.view(formBundleNo1).apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
@@ -96,11 +96,11 @@ class Setup {
     implicit val hc: HeaderCarrier = HeaderCarrier(userId = Some(UserId(userId)))
     val authMock = authResultDefault(AffinityGroup.Agent, defaultEnrolmentSet)
     setAuthMocks(authMock)
-    when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
-      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
+    when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+      (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
     when(mockChangeLiabilityReturnService.retrieveSubmittedLiabilityReturnAndCache
-    (Matchers.eq(formBundleNo1), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(x))
-    when(mockBackLinkCacheConnector.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
+    (ArgumentMatchers.eq(formBundleNo1), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(x))
+    when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
     val result = testEditLiabilityDeclarationController.view(formBundleNo1).apply(SessionBuilder.buildRequestWithSessionDelegation(userId))
     test(result)
   }
@@ -109,15 +109,15 @@ class Setup {
     val userId = s"user-${UUID.randomUUID}"
     val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
     setAuthMocks(authMock)
-    when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
-      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
+    when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+      (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
     when(mockChangeLiabilityReturnService.retrieveSubmittedLiabilityReturnAndCache
-    (Matchers.eq(formBundleNo1), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(a))
+    (ArgumentMatchers.eq(formBundleNo1), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(a))
     val r1 = EditLiabilityReturnsResponse(mode = "Post", oldFormBundleNumber = oldForBundle, formBundleNumber =
       Some(formBundleNo2), liabilityAmount = BigDecimal(3500.00), amountDueOrRefund = BigDecimal(0.00), paymentReference = Some("payment-ref-1"))
     val response = EditLiabilityReturnsResponseModel(processingDate = DateTime.now(), liabilityReturnResponse = Seq(r1), BigDecimal(0.00))
     when(mockChangeLiabilityReturnService.submitDraftChangeLiability
-    (Matchers.eq(formBundleNo1))(Matchers.any(), Matchers.any())).thenReturn(Future.successful(response))
+    (ArgumentMatchers.eq(formBundleNo1))(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(response))
     val result = testEditLiabilityDeclarationController.submit(formBundleNo1)
       .apply(SessionBuilder.updateRequestFormWithSession(FakeRequest().withFormUrlEncodedBody(), userId))
     test(result)
@@ -261,7 +261,7 @@ reset(mockDelegationService)
           val cL1: PropertyDetails = PropertyDetailsBuilder.getFullPropertyDetails(formBundleNo1)
           val calc1: PropertyDetailsCalculated = ChangeLiabilityReturnBuilder.generateCalculated
           val cL2: PropertyDetails = cL1.copy(calculated = Some(calc1))
-          when(mockBackLinkCacheConnector.saveBackLink(Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
+          when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
           submitWithAuthorisedUser(Some(cL2)) {
             result =>
               status(result) must be(SEE_OTHER)
@@ -273,7 +273,7 @@ reset(mockDelegationService)
           val cL1: PropertyDetails = PropertyDetailsBuilder.getFullPropertyDetails(formBundleNo1)
           val calc1: PropertyDetailsCalculated = ChangeLiabilityReturnBuilder.generateCalculated
           val cL2: PropertyDetails = cL1.copy(calculated = Some(calc1))
-          when(mockBackLinkCacheConnector.saveBackLink(Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
+          when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
           submitWithAuthorisedUser(Some(cL2), formBundleNo2) {
             result =>
               status(result) must be(SEE_OTHER)

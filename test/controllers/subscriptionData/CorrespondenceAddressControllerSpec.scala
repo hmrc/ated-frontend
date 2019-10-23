@@ -24,7 +24,7 @@ import connectors.DataCacheConnector
 import controllers.auth.AuthAction
 import models._
 import org.jsoup.Jsoup
-import org.mockito.Matchers
+import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
@@ -72,7 +72,7 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
-      when(mockSubscriptionDataService.getCorrespondenceAddress(Matchers.any(), Matchers.any())).thenReturn(Future.successful(companyDetails))
+      when(mockSubscriptionDataService.getCorrespondenceAddress(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(companyDetails))
       val result = testCorrespondenceAddressController.editAddress().apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
@@ -90,7 +90,7 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
-      when(mockSubscriptionDataService.updateCorrespondenceAddressDetails(Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockSubscriptionDataService.updateCorrespondenceAddressDetails(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(testAddress))
       val result = testCorrespondenceAddressController.submit().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
 

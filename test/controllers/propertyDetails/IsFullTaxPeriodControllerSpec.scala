@@ -25,7 +25,7 @@ import controllers.auth.AuthAction
 import models._
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
-import org.mockito.Matchers
+import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
@@ -79,8 +79,8 @@ class IsFullTaxPeriodControllerSpec extends PlaySpec with GuiceOneServerPerSuite
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
       setInvalidAuthMocks(authMock)
-      when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
-        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
+      when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+        (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
       val result = testIsFullTaxPeriodController.view("1").apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
@@ -89,13 +89,13 @@ class IsFullTaxPeriodControllerSpec extends PlaySpec with GuiceOneServerPerSuite
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
-      when(mockBackLinkCacheConnector.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
-      when(mockBackLinkCacheConnector.saveBackLink(Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
+      when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+      when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
 
 
-      when(mockDataCacheConnector.fetchAndGetFormData[Boolean](Matchers.any())
-        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
-      when(mockPropertyDetailsService.retrieveDraftPropertyDetails(Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockDataCacheConnector.fetchAndGetFormData[Boolean](ArgumentMatchers.any())
+        (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
+      when(mockPropertyDetailsService.retrieveDraftPropertyDetails(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propertyDetails)))
       val result = testIsFullTaxPeriodController.view(propertyDetails.id).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
@@ -105,10 +105,10 @@ class IsFullTaxPeriodControllerSpec extends PlaySpec with GuiceOneServerPerSuite
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
-      when(mockBackLinkCacheConnector.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
-      when(mockDataCacheConnector.fetchAndGetFormData[Boolean](Matchers.any())
-        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(true)))
-      when(mockPropertyDetailsService.retrieveDraftPropertyDetails(Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+      when(mockDataCacheConnector.fetchAndGetFormData[Boolean](ArgumentMatchers.any())
+        (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(true)))
+      when(mockPropertyDetailsService.retrieveDraftPropertyDetails(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propertyDetails)))
       val result = testIsFullTaxPeriodController.view(propertyDetails.id).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
@@ -118,9 +118,9 @@ class IsFullTaxPeriodControllerSpec extends PlaySpec with GuiceOneServerPerSuite
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
-      when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
-        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-      when(mockPropertyDetailsService.retrieveDraftPropertyDetails(Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+        (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
+      when(mockPropertyDetailsService.retrieveDraftPropertyDetails(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propertyDetails)))
       val result = testIsFullTaxPeriodController.editFromSummary(propertyDetails.id).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
@@ -136,9 +136,9 @@ class IsFullTaxPeriodControllerSpec extends PlaySpec with GuiceOneServerPerSuite
 
     def submitWithAuthorisedUser(inputJson: JsValue)(test: Future[Result] => Any) {
       val userId = s"user-${UUID.randomUUID}"
-      when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
-        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-      when(mockPropertyDetailsService.saveDraftIsFullTaxPeriod(Matchers.eq("1"), Matchers.any())(Matchers.any(), Matchers.any())).
+      when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+        (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
+      when(mockPropertyDetailsService.saveDraftIsFullTaxPeriod(ArgumentMatchers.eq("1"), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).
         thenReturn(Future.successful(OK))
 
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
@@ -244,7 +244,7 @@ class IsFullTaxPeriodControllerSpec extends PlaySpec with GuiceOneServerPerSuite
     "Authorised users" must {
       "for invalid data, return BAD_REQUEST" in new Setup {
         val inputJson: JsValue = Json.parse( """{"isFullPeriod": "2"}""")
-        when(mockBackLinkCacheConnector.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
+        when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
 
         submitWithAuthorisedUser(inputJson) {
           result =>
@@ -253,7 +253,7 @@ class IsFullTaxPeriodControllerSpec extends PlaySpec with GuiceOneServerPerSuite
       }
       "for valid data set to false forward to the In Relief Page" in new Setup {
         val inputJson: JsValue = Json.toJson(PropertyDetailsFullTaxPeriod(Some(false)))
-        when(mockBackLinkCacheConnector.saveBackLink(Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
+        when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
 
         submitWithAuthorisedUser(inputJson) {
           result =>
@@ -263,7 +263,7 @@ class IsFullTaxPeriodControllerSpec extends PlaySpec with GuiceOneServerPerSuite
       }
       "for valid data set to true forward to the TaxAvoidance Page" in new Setup {
         val inputJson: JsValue = Json.toJson(PropertyDetailsFullTaxPeriod(Some(true)))
-        when(mockBackLinkCacheConnector.saveBackLink(Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
+        when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
 
         submitWithAuthorisedUser(inputJson) {
           result =>

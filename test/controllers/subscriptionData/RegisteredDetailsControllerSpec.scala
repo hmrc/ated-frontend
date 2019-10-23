@@ -24,7 +24,7 @@ import connectors.DataCacheConnector
 import controllers.auth.AuthAction
 import models._
 import org.jsoup.Jsoup
-import org.mockito.Matchers
+import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
@@ -72,7 +72,7 @@ class Setup {
     val userId = s"user-${UUID.randomUUID}"
     val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
     setAuthMocks(authMock)
-    when(mockSubscriptionDataService.getRegisteredDetails(Matchers.any(), Matchers.any())).thenReturn(Future.successful(registeredDetails))
+    when(mockSubscriptionDataService.getRegisteredDetails(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(registeredDetails))
 
     val result = testRegisteredDetailsController.edit().apply(SessionBuilder.buildRequestWithSession(userId))
 
@@ -91,7 +91,7 @@ class Setup {
     val userId = s"user-${UUID.randomUUID}"
     val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
     setAuthMocks(authMock)
-    when(mockSubscriptionDataService.updateRegisteredDetails(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(updatedDetails))
+    when(mockSubscriptionDataService.updateRegisteredDetails(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(updatedDetails))
     val result = testRegisteredDetailsController.submit().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
 
     test(result)

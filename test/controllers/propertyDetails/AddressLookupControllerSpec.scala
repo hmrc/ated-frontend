@@ -24,7 +24,7 @@ import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.AuthAction
 import models._
 import org.jsoup.Jsoup
-import org.mockito.Matchers
+import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
@@ -82,9 +82,9 @@ class Setup {
     val userId = s"user-${UUID.randomUUID}"
     val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
     setInvalidAuthMocks(authMock)
-    when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
-      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-    when(mockBackLinkCacheConnector.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
+    when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+      (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
+    when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
     val result = testAddressLookupController.view(None, periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
@@ -93,9 +93,9 @@ class Setup {
     val userId = s"user-${UUID.randomUUID}"
     val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
     setAuthMocks(authMock)
-    when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
-      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-    when(mockBackLinkCacheConnector.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
+    when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+      (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
+    when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
     val result = testAddressLookupController.view(id, periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
@@ -104,8 +104,8 @@ class Setup {
     val userId = s"user-${UUID.randomUUID}"
     val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
     setInvalidAuthMocks(authMock)
-    when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
-      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
+    when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+      (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
     val result = testAddressLookupController.find(None, periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
@@ -114,9 +114,9 @@ class Setup {
     val userId = s"user-${UUID.randomUUID}"
     val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
     setAuthMocks(authMock)
-    when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
-      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-    when(mockAddressLookupService.find(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(results))
+    when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+      (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
+    when(mockAddressLookupService.find(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(results))
     val result = testAddressLookupController.find(id, periodKey).apply(SessionBuilder.updateRequestWithSession(FakeRequest().withJsonBody(inputJson), userId))
     test(result)
   }
@@ -125,8 +125,8 @@ class Setup {
     val userId = s"user-${UUID.randomUUID}"
     val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
     setInvalidAuthMocks(authMock)
-    when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
-      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
+    when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+      (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
     val result = testAddressLookupController.save(None, periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
@@ -139,10 +139,10 @@ class Setup {
     val userId = s"user-${UUID.randomUUID}"
     val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
     setAuthMocks(authMock)
-    when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
-      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-    when(mockAddressLookupService.retrieveCachedSearchResults()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(results))
-    when(mockAddressLookupService.findById(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(selected))
+    when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+      (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
+    when(mockAddressLookupService.retrieveCachedSearchResults()(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(results))
+    when(mockAddressLookupService.findById(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(selected))
 
     val result = testAddressLookupController.save(id, periodKey).apply(SessionBuilder.updateRequestWithSession(FakeRequest().withJsonBody(inputJson), userId))
     test(result)
@@ -152,10 +152,10 @@ class Setup {
     val userId = s"user-${UUID.randomUUID}"
     val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
     setAuthMocks(authMock)
-    when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
-      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-    when(mockBackLinkCacheConnector.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(Some("http://")))
-    when(mockBackLinkCacheConnector.saveBackLink(Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
+    when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+      (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
+    when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(Some("http://")))
+    when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
     val result = testAddressLookupController.manualAddressRedirect(id, periodKey, None).apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
@@ -208,7 +208,7 @@ class Setup {
 
       "submitting an invalid request should fail and return to the search page" in new Setup {
         val searchCriteria = AddressLookup("", None)
-        when(mockBackLinkCacheConnector.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
+        when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
         findWithAuthorisedUser(None, Json.toJson(searchCriteria), AddressSearchResults(searchCriteria, Nil)) {
           result =>
             status(result) must be(BAD_REQUEST)
@@ -233,7 +233,7 @@ class Setup {
       "submitting a valid request should lookup search results and return them to the screen" in new Setup {
         val searchCriteria = AddressLookup("XX1 1XX", None)
         val results = List(address1, address2, address3)
-        when(mockBackLinkCacheConnector.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
+        when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
         findWithAuthorisedUser(None, Json.toJson(searchCriteria), AddressSearchResults(searchCriteria, results)) {
           result =>
             status(result) must be(OK)
@@ -325,8 +325,8 @@ class Setup {
         val value = 2015
         val foundProperty = PropertyDetailsAddress("", "", None, None, None)
         when(mockPropertyDetailsService.createDraftPropertyDetailsAddress
-        (Matchers.eq(value), Matchers.eq(foundProperty))(Matchers.any(), Matchers.any())).thenReturn(Future.successful("newId"))
-        when(mockBackLinkCacheConnector.saveBackLink(Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
+        (ArgumentMatchers.eq(value), ArgumentMatchers.eq(foundProperty))(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful("newId"))
+        when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
         saveWithAuthorisedUser(None, periodKey, Json.toJson(AddressSelected(Some("1"))), None, Some(foundProperty)) {
           result =>
             status(result) must be(SEE_OTHER)
@@ -336,8 +336,8 @@ class Setup {
       "submitting a valid request should update a return if we have an Id" in new Setup {
         val foundProperty = PropertyDetailsAddress("", "", None, None, None)
         when(mockPropertyDetailsService.saveDraftPropertyDetailsAddress
-        (Matchers.any(), Matchers.eq(foundProperty))(Matchers.any(), Matchers.any())).thenReturn(Future.successful("1"))
-        when(mockBackLinkCacheConnector.saveBackLink(Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
+        (ArgumentMatchers.any(), ArgumentMatchers.eq(foundProperty))(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful("1"))
+        when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
         saveWithAuthorisedUser(Some("1"), periodKey, Json.toJson(AddressSelected(Some("1"))), None, Some(foundProperty)) {
           result =>
             status(result) must be(SEE_OTHER)

@@ -25,7 +25,7 @@ import play.api.i18n.{Messages, MessagesApi}
 import play.api.test.FakeRequest
 import play.twirl.api.Html
 
-trait AtedViewSpec extends PlaySpec with JsoupMatchers with GuiceOneServerPerSuite with MockitoSugar {
+trait AtedViewSpec extends PlaySpec with JsoupArgumentMatchers with GuiceOneServerPerSuite with MockitoSugar {
 
   implicit val request = FakeRequest()
   implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)

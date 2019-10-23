@@ -25,7 +25,7 @@ import controllers.auth.AuthAction
 import models._
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
-import org.mockito.Matchers
+import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
@@ -82,13 +82,13 @@ class PeriodsInAndOutReliefControllerSpec extends PlaySpec with GuiceOneServerPe
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
-      when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
-        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-      when(mockDataCacheConnector.fetchAndGetFormData[Boolean](Matchers.any())
-        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
-      when(mockPropertyDetailsService.retrieveDraftPropertyDetails(Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+        (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
+      when(mockDataCacheConnector.fetchAndGetFormData[Boolean](ArgumentMatchers.any())
+        (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
+      when(mockPropertyDetailsService.retrieveDraftPropertyDetails(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propertyDetails)))
-      when(mockBackLinkCacheConnector.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
+      when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
       val result = testPeriodsInAndOutReliefController.view(propertyDetails.id).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
@@ -97,11 +97,11 @@ class PeriodsInAndOutReliefControllerSpec extends PlaySpec with GuiceOneServerPe
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
-      when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
-        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-      when(mockBackLinkCacheConnector.fetchAndGetBackLink(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
+      when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+        (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
+      when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
       val propertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode")).copy(period = None)
-      when(mockPropertyDetailsService.deleteDraftPropertyDetailsPeriod(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockPropertyDetailsService.deleteDraftPropertyDetailsPeriod(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(propertyDetails))
       val result = testPeriodsInAndOutReliefController.deletePeriod("1", new LocalDate(s"2015-5-1")).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
@@ -119,8 +119,8 @@ class PeriodsInAndOutReliefControllerSpec extends PlaySpec with GuiceOneServerPe
     def continueWithAuthorisedUser()(test: Future[Result] => Any) {
       val periodKey: Int = 2015
       val userId = s"user-${UUID.randomUUID}"
-      when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
-        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
+      when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+        (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
       val result = testPeriodsInAndOutReliefController.continue("1", periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
@@ -195,7 +195,7 @@ class PeriodsInAndOutReliefControllerSpec extends PlaySpec with GuiceOneServerPe
       "Authorised users" must {
 
         "for valid data forward to the TaxAvoidance Page" in new Setup {
-          when(mockBackLinkCacheConnector.saveBackLink(Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
+          when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
           continueWithAuthorisedUser() {
             result =>
               status(result) must be(SEE_OTHER)

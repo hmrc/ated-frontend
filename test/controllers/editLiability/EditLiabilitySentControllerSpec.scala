@@ -26,7 +26,7 @@ import models.{EditLiabilityReturnsResponse, EditLiabilityReturnsResponseModel}
 import org.joda.time.format.DateTimeFormat
 import org.joda.time.{DateTime, LocalDate}
 import org.jsoup.Jsoup
-import org.mockito.Matchers
+import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
@@ -77,10 +77,10 @@ class Setup {
     val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
     setAuthMocks(authMock)
     implicit val hc: HeaderCarrier = HeaderCarrier()
-    when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
-      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
+    when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+      (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
     when(mockDataCacheConnector.fetchAndGetFormData[EditLiabilityReturnsResponseModel]
-      (Matchers.eq(SubmitEditedLiabilityReturnsResponseFormId))(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(x))
+      (ArgumentMatchers.eq(SubmitEditedLiabilityReturnsResponseFormId))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(x))
     val result = testEditLiabilitySentController.view(formBundleNo1).apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
@@ -90,11 +90,11 @@ class Setup {
     val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
     setAuthMocks(authMock)
     implicit val hc: HeaderCarrier = HeaderCarrier()
-    when(mockDataCacheConnector.fetchAtedRefData[String](Matchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
-      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
+    when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+      (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
     when(mockDataCacheConnector.fetchAndGetFormData[EditLiabilityReturnsResponseModel]
-      (Matchers.eq(SubmitEditedLiabilityReturnsResponseFormId))(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(x))
-    when(mockSubscriptionDataService.getOrganisationName(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(organisationName)))
+      (ArgumentMatchers.eq(SubmitEditedLiabilityReturnsResponseFormId))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(x))
+    when(mockSubscriptionDataService.getOrganisationName(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(organisationName)))
 
     val result = testEditLiabilitySentController.viewPrintFriendlyEditLiabilitySent(formBundleNo1).apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
