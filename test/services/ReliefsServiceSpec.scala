@@ -22,9 +22,9 @@ import builders.ReliefBuilder
 import connectors.{AtedConnector, DataCacheConnector}
 import models.{TaxAvoidance, _}
 import org.joda.time.LocalDate
-import org.mockito.Matchers._
+import org.mockito.ArgumentMatchers._
 import org.mockito.Mockito._
-import org.mockito.{ArgumentCaptor, Matchers}
+import org.mockito.{ArgumentCaptor, ArgumentMatchers}
 import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfterEach, PrivateMethodTester}
 import org.scalatestplus.play.PlaySpec
@@ -73,7 +73,7 @@ class ReliefsServiceSpec extends PlaySpec with GuiceOneServerPerSuite with Mocki
 
         val respJson: JsValue = Json.parse("""{"reason": "some reason"}""")
         val responseJson: JsValue = Json.toJson(reliefsTaxAvoidance)
-        when(mockAtedConnector.retrievePeriodDraftReliefs(Matchers.eq("ATED-123"), Matchers.eq(periodKey))(any(), any()))
+        when(mockAtedConnector.retrievePeriodDraftReliefs(ArgumentMatchers.eq("ATED-123"), ArgumentMatchers.eq(periodKey))(any(), any()))
           .thenReturn(Future.successful(HttpResponse(OK, Some(respJson))))
 
         val captor: ArgumentCaptor[ReliefsTaxAvoidance] = ArgumentCaptor.forClass(classOf[ReliefsTaxAvoidance])
@@ -99,7 +99,7 @@ class ReliefsServiceSpec extends PlaySpec with GuiceOneServerPerSuite with Mocki
 
         val respJson: JsValue = Json.parse("""{"reason": "some reason"}""")
         val responseJson: JsValue = Json.toJson(reliefsTaxAvoidance)
-        when(mockAtedConnector.retrievePeriodDraftReliefs(Matchers.eq("ATED-123"), Matchers.eq(periodKey))(any(), any()))
+        when(mockAtedConnector.retrievePeriodDraftReliefs(ArgumentMatchers.eq("ATED-123"), ArgumentMatchers.eq(periodKey))(any(), any()))
           .thenReturn(Future.successful(HttpResponse(OK, Some(respJson))))
 
         val captor: ArgumentCaptor[ReliefsTaxAvoidance] = ArgumentCaptor.forClass(classOf[ReliefsTaxAvoidance])
@@ -378,9 +378,9 @@ class ReliefsServiceSpec extends PlaySpec with GuiceOneServerPerSuite with Mocki
 
 
         val SubmitReturnsResponseFormId = "submit-returns-response-Id"
-        when(mockDataCacheConnector.saveFormData[SubmitReturnsResponse](Matchers.eq(SubmitReturnsResponseFormId),
-          Matchers.eq(successResponse.as[SubmitReturnsResponse]))
-          (any(), any(), Matchers.eq(SubmitReturnsResponse.formats)))
+        when(mockDataCacheConnector.saveFormData[SubmitReturnsResponse](ArgumentMatchers.eq(SubmitReturnsResponseFormId),
+          ArgumentMatchers.eq(successResponse.as[SubmitReturnsResponse]))
+          (any(), any(), ArgumentMatchers.eq(SubmitReturnsResponse.formats)))
           .thenReturn(Future.successful(successResponse.as[SubmitReturnsResponse]))
 
         val result: Future[HttpResponse] = testReliefsService.submitDraftReliefs("ATED-123", periodKey)
@@ -402,7 +402,7 @@ class ReliefsServiceSpec extends PlaySpec with GuiceOneServerPerSuite with Mocki
         val submittedReturns = SubmittedReturns(periodKey, Seq(submittedReliefReturns1), Seq(submittedLiabilityReturns1))
         val periodSummaryReturns = PeriodSummaryReturns(periodKey, Seq(), Some(submittedReturns))
         val data = SummaryReturnsModel(Some(BigDecimal(999.99)), Seq(periodSummaryReturns))
-        when(mockDataCacheConnector.fetchAndGetFormData[SummaryReturnsModel](Matchers.eq(RetrieveReturnsResponseId))
+        when(mockDataCacheConnector.fetchAndGetFormData[SummaryReturnsModel](ArgumentMatchers.eq(RetrieveReturnsResponseId))
           (any(), any(), any())).thenReturn(Future.successful(Some(data)))
         val result: Future[Option[SubmittedReliefReturns]] = testReliefsService.viewReliefReturn(periodKey, formBundleNo1)
         await(result) must be(Some(submittedReliefReturns1))
@@ -415,7 +415,7 @@ class ReliefsServiceSpec extends PlaySpec with GuiceOneServerPerSuite with Mocki
         val submittedReturns = SubmittedReturns(periodKey, Seq(), Seq(submittedLiabilityReturns1))
         val periodSummaryReturns = PeriodSummaryReturns(periodKey, Seq(), Some(submittedReturns))
         val data = SummaryReturnsModel(Some(BigDecimal(999.99)), Seq(periodSummaryReturns))
-        when(mockDataCacheConnector.fetchAndGetFormData[SummaryReturnsModel](Matchers.eq(RetrieveReturnsResponseId))
+        when(mockDataCacheConnector.fetchAndGetFormData[SummaryReturnsModel](ArgumentMatchers.eq(RetrieveReturnsResponseId))
           (any(), any(), any())).thenReturn(Future.successful(Some(data)))
         val result: Future[Option[SubmittedReliefReturns]] = testReliefsService.viewReliefReturn(periodKey, formBundleNo1)
         await(result) must be(None)
@@ -424,7 +424,7 @@ class ReliefsServiceSpec extends PlaySpec with GuiceOneServerPerSuite with Mocki
         implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
         val formBundleNo = "form-123"
         val data = SummaryReturnsModel(None, Nil)
-        when(mockDataCacheConnector.fetchAndGetFormData[SummaryReturnsModel](Matchers.eq(RetrieveReturnsResponseId))
+        when(mockDataCacheConnector.fetchAndGetFormData[SummaryReturnsModel](ArgumentMatchers.eq(RetrieveReturnsResponseId))
           (any(), any(), any())).thenReturn(Future.successful(Some(data)))
         val result: Future[Option[SubmittedReliefReturns]] = testReliefsService.viewReliefReturn(periodKey, formBundleNo)
         await(result) must be(None)
@@ -432,7 +432,7 @@ class ReliefsServiceSpec extends PlaySpec with GuiceOneServerPerSuite with Mocki
       "if no summary data is found in Cache, return None" in new Setup {
         implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
         val formBundleNo = "form-123"
-        when(mockDataCacheConnector.fetchAndGetFormData[SummaryReturnsModel](Matchers.eq(RetrieveReturnsResponseId))
+        when(mockDataCacheConnector.fetchAndGetFormData[SummaryReturnsModel](ArgumentMatchers.eq(RetrieveReturnsResponseId))
           (any(), any(), any())).thenReturn(Future.successful(None))
         val result: Future[Option[SubmittedReliefReturns]] = testReliefsService.viewReliefReturn(periodKey, formBundleNo)
         await(result) must be(None)

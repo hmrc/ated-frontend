@@ -20,7 +20,7 @@ import java.util.UUID
 
 import connectors.AtedConnector
 import models._
-import org.mockito.Matchers
+import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
@@ -184,7 +184,7 @@ class Setup {
       implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
 
       val successResponse: JsValue = Json.parse(successJson)
-      when(mockAtedConnector.retrieveSubscriptionData()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+      when(mockAtedConnector.retrieveSubscriptionData()(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
 
       val result: Future[Option[SubscriptionData]] = testSubscriptionDataAdapterService.retrieveSubscriptionData
       val data: Option[SubscriptionData] = await(result)
@@ -196,7 +196,7 @@ class Setup {
     "return no data if we have none" in new Setup {
       implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID()}")))
 
-      when(mockAtedConnector.retrieveSubscriptionData()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(NOT_FOUND, None)))
+      when(mockAtedConnector.retrieveSubscriptionData()(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(NOT_FOUND, None)))
 
       val result: Future[Option[SubscriptionData]] = testSubscriptionDataAdapterService.retrieveSubscriptionData
       val data: Option[SubscriptionData] = await(result)
@@ -206,7 +206,7 @@ class Setup {
     "throws an exception for a bad request" in new Setup {
       implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID()}")))
 
-      when(mockAtedConnector.retrieveSubscriptionData()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
+      when(mockAtedConnector.retrieveSubscriptionData()(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
 
       val result: Future[Option[SubscriptionData]] = testSubscriptionDataAdapterService.retrieveSubscriptionData
       val thrown: BadRequestException = the[BadRequestException] thrownBy await(result)
@@ -216,7 +216,7 @@ class Setup {
     "throws an exception for a internal server error" in new Setup {
       implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID()}")))
 
-      when(mockAtedConnector.retrieveSubscriptionData()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(NO_CONTENT, None)))
+      when(mockAtedConnector.retrieveSubscriptionData()(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(NO_CONTENT, None)))
 
       val result: Future[Option[SubscriptionData]] = testSubscriptionDataAdapterService.retrieveSubscriptionData
       val thrown: InternalServerException = the[InternalServerException] thrownBy await(result)
@@ -232,7 +232,7 @@ class Setup {
 
         "save the address details" in new Setup {
 
-          when(mockAtedConnector.updateSubscriptionData(Matchers.any())(Matchers.any(), Matchers.any()))
+          when(mockAtedConnector.updateSubscriptionData(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
             .thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
 
           val updateContactDetails = ContactDetails()
@@ -242,7 +242,7 @@ class Setup {
         }
 
         "save the address details successful" in new Setup {
-          when(mockAtedConnector.updateSubscriptionData(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, None)))
+          when(mockAtedConnector.updateSubscriptionData(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, None)))
 
           val result: Future[Option[UpdateSubscriptionDataRequest]] = testSubscriptionDataAdapterService.updateSubscriptionData(updateSubscriptionData)
           val addressDetails: Option[UpdateSubscriptionDataRequest] = await(result)

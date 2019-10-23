@@ -18,7 +18,7 @@ package services
 
 import connectors.{AddressLookupConnector, DataCacheConnector}
 import models._
-import org.mockito.Matchers
+import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
@@ -57,10 +57,10 @@ class AddressLookupServiceSpec extends PlaySpec with GuiceOneServerPerSuite with
       val results = List(addressLookupRecord)
       val addressSearchResults = AddressSearchResults(addressLookup, results)
 
-      when(mockAddressLookupConnector.findByPostcode(Matchers.eq(addressLookup))
-        (Matchers.any())).thenReturn(Future.successful(results))
-      when(mockDataCacheConnector.saveFormData(Matchers.any(), Matchers.eq(addressSearchResults))
-        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(addressSearchResults))
+      when(mockAddressLookupConnector.findByPostcode(ArgumentMatchers.eq(addressLookup))
+        (ArgumentMatchers.any())).thenReturn(Future.successful(results))
+      when(mockDataCacheConnector.saveFormData(ArgumentMatchers.any(), ArgumentMatchers.eq(addressSearchResults))
+        (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(addressSearchResults))
 
       val result: AddressSearchResults = await(testAddressLookupService.find(addressLookup))
 
@@ -74,7 +74,7 @@ class AddressLookupServiceSpec extends PlaySpec with GuiceOneServerPerSuite with
       val addressLookupRecord =  AddressLookupRecord("1", AddressSearchResult(List("line1", "line2"), Some("town"), Some("county"), "postCode",
         AddressLookupCountry("","")))
 
-      when(mockAddressLookupConnector.findById(Matchers.eq(addressLookupRecord.id))(Matchers.any())).thenReturn(Future.successful(Some(addressLookupRecord)))
+      when(mockAddressLookupConnector.findById(ArgumentMatchers.eq(addressLookupRecord.id))(ArgumentMatchers.any())).thenReturn(Future.successful(Some(addressLookupRecord)))
       val result: Option[PropertyDetailsAddress] = await(testAddressLookupService.findById(addressLookupRecord.id))
       result.isDefined must be (true)
       result.get.line_1 must be ("line1")
@@ -88,7 +88,7 @@ class AddressLookupServiceSpec extends PlaySpec with GuiceOneServerPerSuite with
       val addressLookupRecord =  AddressLookupRecord("1", AddressSearchResult(List("line1", "line2", "line3", "line4"), Some("town"), Some("county"),
         "postCode", AddressLookupCountry("","")))
 
-      when(mockAddressLookupConnector.findById(Matchers.eq(addressLookupRecord.id))(Matchers.any())).thenReturn(Future.successful(Some(addressLookupRecord)))
+      when(mockAddressLookupConnector.findById(ArgumentMatchers.eq(addressLookupRecord.id))(ArgumentMatchers.any())).thenReturn(Future.successful(Some(addressLookupRecord)))
 
       val result: Option[PropertyDetailsAddress] = await(testAddressLookupService.findById(addressLookupRecord.id))
 
@@ -104,7 +104,7 @@ class AddressLookupServiceSpec extends PlaySpec with GuiceOneServerPerSuite with
       val addressLookupRecord =  AddressLookupRecord("1", AddressSearchResult(List("line1", "line2", "line3", "line4"), None, None, "postCode",
         AddressLookupCountry("","")))
 
-      when(mockAddressLookupConnector.findById(Matchers.eq(addressLookupRecord.id))(Matchers.any())).thenReturn(Future.successful(Some(addressLookupRecord)))
+      when(mockAddressLookupConnector.findById(ArgumentMatchers.eq(addressLookupRecord.id))(ArgumentMatchers.any())).thenReturn(Future.successful(Some(addressLookupRecord)))
       val result: Option[PropertyDetailsAddress] = await(testAddressLookupService.findById(addressLookupRecord.id))
       result.isDefined must be (true)
       result.get.line_1 must be ("line1")
@@ -119,7 +119,7 @@ class AddressLookupServiceSpec extends PlaySpec with GuiceOneServerPerSuite with
       val addressLookupRecord =  AddressLookupRecord("1", AddressSearchResult(List("line1", "line2", "line3"), None, Some("county"), "postCode",
         AddressLookupCountry("","")))
 
-      when(mockAddressLookupConnector.findById(Matchers.eq(addressLookupRecord.id))(Matchers.any())).thenReturn(Future.successful(Some(addressLookupRecord)))
+      when(mockAddressLookupConnector.findById(ArgumentMatchers.eq(addressLookupRecord.id))(ArgumentMatchers.any())).thenReturn(Future.successful(Some(addressLookupRecord)))
       val result: Option[PropertyDetailsAddress] = await(testAddressLookupService.findById(addressLookupRecord.id))
 
       result.isDefined must be (true)
@@ -134,7 +134,7 @@ class AddressLookupServiceSpec extends PlaySpec with GuiceOneServerPerSuite with
       val addressLookupRecord =  AddressLookupRecord("1", AddressSearchResult(List("line1", "line2", "line3"), Some("town"), None, "postCode",
         AddressLookupCountry("","")))
 
-      when(mockAddressLookupConnector.findById(Matchers.eq(addressLookupRecord.id))(Matchers.any())).thenReturn(Future.successful(Some(addressLookupRecord)))
+      when(mockAddressLookupConnector.findById(ArgumentMatchers.eq(addressLookupRecord.id))(ArgumentMatchers.any())).thenReturn(Future.successful(Some(addressLookupRecord)))
       val result: Option[PropertyDetailsAddress] = await(testAddressLookupService.findById(addressLookupRecord.id))
 
       result.isDefined must be (true)
@@ -149,7 +149,7 @@ class AddressLookupServiceSpec extends PlaySpec with GuiceOneServerPerSuite with
       val addressLookupRecord =  AddressLookupRecord("1", AddressSearchResult(List("line1", "line2", "line3"), None, None, "postCode",
         AddressLookupCountry("","")))
 
-      when(mockAddressLookupConnector.findById(Matchers.eq(addressLookupRecord.id))(Matchers.any())).thenReturn(Future.successful(Some(addressLookupRecord)))
+      when(mockAddressLookupConnector.findById(ArgumentMatchers.eq(addressLookupRecord.id))(ArgumentMatchers.any())).thenReturn(Future.successful(Some(addressLookupRecord)))
       val result: Option[PropertyDetailsAddress] = await(testAddressLookupService.findById(addressLookupRecord.id))
 
       result.isDefined must be (true)
@@ -164,7 +164,7 @@ class AddressLookupServiceSpec extends PlaySpec with GuiceOneServerPerSuite with
       val addressLookupRecord =  AddressLookupRecord("1", AddressSearchResult(List("line1", "line2"), Some("town"), None, "postCode",
         AddressLookupCountry("","")))
 
-      when(mockAddressLookupConnector.findById(Matchers.eq(addressLookupRecord.id))(Matchers.any())).thenReturn(Future.successful(Some(addressLookupRecord)))
+      when(mockAddressLookupConnector.findById(ArgumentMatchers.eq(addressLookupRecord.id))(ArgumentMatchers.any())).thenReturn(Future.successful(Some(addressLookupRecord)))
       val result: Option[PropertyDetailsAddress] = await(testAddressLookupService.findById(addressLookupRecord.id))
 
       result.isDefined must be (true)
@@ -179,7 +179,7 @@ class AddressLookupServiceSpec extends PlaySpec with GuiceOneServerPerSuite with
       val addressLookupRecord =  AddressLookupRecord("1",AddressSearchResult(List("line1", "line2"), None, Some("county"), "postCode",
         AddressLookupCountry("","")))
 
-      when(mockAddressLookupConnector.findById(Matchers.eq(addressLookupRecord.id))(Matchers.any())).thenReturn(Future.successful(Some(addressLookupRecord)))
+      when(mockAddressLookupConnector.findById(ArgumentMatchers.eq(addressLookupRecord.id))(ArgumentMatchers.any())).thenReturn(Future.successful(Some(addressLookupRecord)))
       val result: Option[PropertyDetailsAddress] = await(testAddressLookupService.findById(addressLookupRecord.id))
 
       result.isDefined must be (true)
@@ -193,7 +193,7 @@ class AddressLookupServiceSpec extends PlaySpec with GuiceOneServerPerSuite with
     "return the address from the list if we have 1 lines and a county" in new Setup {
       val addressLookupRecord =  AddressLookupRecord("1", AddressSearchResult(List("line1"), None, Some("county"), "postCode", AddressLookupCountry("","")))
 
-      when(mockAddressLookupConnector.findById(Matchers.eq(addressLookupRecord.id))(Matchers.any())).thenReturn(Future.successful(Some(addressLookupRecord)))
+      when(mockAddressLookupConnector.findById(ArgumentMatchers.eq(addressLookupRecord.id))(ArgumentMatchers.any())).thenReturn(Future.successful(Some(addressLookupRecord)))
       val result: Option[PropertyDetailsAddress] = await(testAddressLookupService.findById(addressLookupRecord.id))
 
       result.isDefined must be (true)
@@ -207,7 +207,7 @@ class AddressLookupServiceSpec extends PlaySpec with GuiceOneServerPerSuite with
     "return the address from the list if we have 1 lines in it and a town" in new Setup {
       val addressLookupRecord =  AddressLookupRecord("1", AddressSearchResult(List("line1"), Some("town"), None, "postCode", AddressLookupCountry("","")))
 
-      when(mockAddressLookupConnector.findById(Matchers.eq(addressLookupRecord.id))(Matchers.any())).thenReturn(Future.successful(Some(addressLookupRecord)))
+      when(mockAddressLookupConnector.findById(ArgumentMatchers.eq(addressLookupRecord.id))(ArgumentMatchers.any())).thenReturn(Future.successful(Some(addressLookupRecord)))
       val result: Option[PropertyDetailsAddress] = await(testAddressLookupService.findById(addressLookupRecord.id))
 
       result.isDefined must be (true)
@@ -223,7 +223,7 @@ class AddressLookupServiceSpec extends PlaySpec with GuiceOneServerPerSuite with
       val addressLookupRecord = AddressLookupRecord("1", address)
       val response = Some(addressLookupRecord)
 
-      when(mockAddressLookupConnector.findById(Matchers.eq(addressLookupRecord.id))(Matchers.any())).thenReturn(Future.successful(response))
+      when(mockAddressLookupConnector.findById(ArgumentMatchers.eq(addressLookupRecord.id))(ArgumentMatchers.any())).thenReturn(Future.successful(response))
 
       val result: Option[PropertyDetailsAddress] = await(testAddressLookupService.findById(addressLookupRecord.id))
 
@@ -239,8 +239,8 @@ class AddressLookupServiceSpec extends PlaySpec with GuiceOneServerPerSuite with
       val addressLookup = AddressLookup("testPostCode", None)
       val addressSearchResults = AddressSearchResults(addressLookup, List(addressLookupRecord) )
 
-      when(mockDataCacheConnector.fetchAndGetFormData[AddressSearchResults](Matchers.any())
-        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(addressSearchResults)))
+      when(mockDataCacheConnector.fetchAndGetFormData[AddressSearchResults](ArgumentMatchers.any())
+        (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(addressSearchResults)))
 
       val result: Option[AddressSearchResults] = await(testAddressLookupService.retrieveCachedSearchResults())
 

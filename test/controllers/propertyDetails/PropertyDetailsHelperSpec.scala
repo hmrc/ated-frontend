@@ -19,7 +19,7 @@ package controllers.propertyDetails
 import builders.PropertyDetailsBuilder
 import connectors.BackLinkCacheConnector
 import models.StandardAuthRetrievals
-import org.mockito.Matchers
+import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.scalatest.PartialFunctionValues
 import org.scalatest.mockito.MockitoSugar
@@ -78,7 +78,7 @@ class PropertyDetailsHelperSpec extends PlaySpec with GuiceOneServerPerSuite wit
 
   def getDataWithAuthorisedUser(cacheSuccessResponse: PropertyDetailsCacheResponse)(test: Future[Result] => Any) {
     when(mockPropertyDetailsService.retrieveDraftPropertyDetails
-    (Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(cacheSuccessResponse))
+    (ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(cacheSuccessResponse))
 
     val result = TestPropertyDetailsHelpers.propertyDetailsCacheResponse("1") {
       case PropertyDetailsCacheSuccessResponse(_) => Future.successful(Ok)

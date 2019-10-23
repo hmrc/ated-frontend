@@ -18,7 +18,7 @@ package services
 
 import connectors.DelegationConnector
 import models.{DelegationModel, Link, PrincipalTaxIdentifiers}
-import org.mockito.Matchers
+import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.{reset, _}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
@@ -74,7 +74,7 @@ class DelegationServiceSpec extends UnitSpec with MockitoSugar with BeforeAndAft
           supplementaryData = Some(Map()),
           internalId = Some("test")
         )
-        when(mockDelegationConnector.delegationDataCall(Matchers.any())(Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(returnJson))))
+        when(mockDelegationConnector.delegationDataCall(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(returnJson))))
         val result: Future[Option[DelegationModel]] = testDelegationService.delegationCall("String")
         await(result) shouldBe Some(expectedModel)
       }
@@ -83,7 +83,7 @@ class DelegationServiceSpec extends UnitSpec with MockitoSugar with BeforeAndAft
     "not return a delegation model" when {
       "no http response is returned" in new Setup {
 
-        when(mockDelegationConnector.delegationDataCall(Matchers.any())(Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, None)))
+        when(mockDelegationConnector.delegationDataCall(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, None)))
         val result: Future[Option[DelegationModel]] = testDelegationService.delegationCall("String")
         await(result) shouldBe None
       }

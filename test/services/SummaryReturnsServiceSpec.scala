@@ -19,7 +19,7 @@ package services
 import connectors.{AtedConnector, DataCacheConnector}
 import models.{PeriodSummaryReturns, _}
 import org.joda.time.LocalDate
-import org.mockito.Matchers
+import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
@@ -80,22 +80,22 @@ class Setup {
 
           "connector returns OK as response, then Return SummaryReturnsModel after filtering out errant period" in new Setup {
 
-            when(mockDataCacheConnector.fetchAndGetFormData[SummaryReturnsModel](Matchers.eq(RetrieveReturnsResponseId))
-              (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
-            when(mockDataCacheConnector.saveFormData[SummaryReturnsModel](Matchers.eq(RetrieveReturnsResponseId),
-              Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(data))
-            when(mockAtedConnector.getFullSummaryReturns(Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(json3))))
+            when(mockDataCacheConnector.fetchAndGetFormData[SummaryReturnsModel](ArgumentMatchers.eq(RetrieveReturnsResponseId))
+              (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
+            when(mockDataCacheConnector.saveFormData[SummaryReturnsModel](ArgumentMatchers.eq(RetrieveReturnsResponseId),
+              ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(data))
+            when(mockAtedConnector.getFullSummaryReturns(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(json3))))
             val result: Future[SummaryReturnsModel] = testSummaryReturnsService.getSummaryReturns
             await(result) must be(data)
           }
 
           "connector returns NON-OK as response, then throw exception" in new Setup {
 
-            when(mockDataCacheConnector.fetchAndGetFormData[SummaryReturnsModel](Matchers.eq(RetrieveReturnsResponseId))
-              (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
-            when(mockDataCacheConnector.saveFormData[SummaryReturnsModel](Matchers.eq(RetrieveReturnsResponseId), Matchers.any())
-              (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(data))
-            when(mockAtedConnector.getFullSummaryReturns(Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, Some(json))))
+            when(mockDataCacheConnector.fetchAndGetFormData[SummaryReturnsModel](ArgumentMatchers.eq(RetrieveReturnsResponseId))
+              (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
+            when(mockDataCacheConnector.saveFormData[SummaryReturnsModel](ArgumentMatchers.eq(RetrieveReturnsResponseId), ArgumentMatchers.any())
+              (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(data))
+            when(mockAtedConnector.getFullSummaryReturns(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, Some(json))))
 
             val result: Future[SummaryReturnsModel] = testSummaryReturnsService.getSummaryReturns
             val thrown: RuntimeException = the[RuntimeException] thrownBy await(result)
@@ -110,27 +110,27 @@ class Setup {
           "connector returns OK as response, then Return SummaryReturnsModel" in new Setup {
 
             val dataCached: SummaryReturnsModel = data.copy(allReturns = data.allReturns.map(_.copy(draftReturns = Nil)))
-            when(mockDataCacheConnector.fetchAndGetFormData[SummaryReturnsModel](Matchers.eq(RetrieveReturnsResponseId))
-              (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(dataCached)))
-            when(mockAtedConnector.getPartialSummaryReturns(Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(json2))))
+            when(mockDataCacheConnector.fetchAndGetFormData[SummaryReturnsModel](ArgumentMatchers.eq(RetrieveReturnsResponseId))
+              (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(dataCached)))
+            when(mockAtedConnector.getPartialSummaryReturns(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(json2))))
             val result: Future[SummaryReturnsModel] = testSummaryReturnsService.getSummaryReturns
             await(result) must be(data)
-            verify(mockDataCacheConnector, times(0)).saveFormData[SummaryReturnsModel](Matchers.eq(RetrieveReturnsResponseId), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())
+            verify(mockDataCacheConnector, times(0)).saveFormData[SummaryReturnsModel](ArgumentMatchers.eq(RetrieveReturnsResponseId), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
           }
 
 
           "connector returns NON-OK as response, then throw exception" in new Setup {
 
             val dataCached: SummaryReturnsModel = data.copy(allReturns = data.allReturns.map(_.copy(draftReturns = Nil)))
-            when(mockDataCacheConnector.fetchAndGetFormData[SummaryReturnsModel](Matchers.eq(RetrieveReturnsResponseId))
-              (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(dataCached)))
-            when(mockAtedConnector.getPartialSummaryReturns(Matchers.any(), Matchers.any()))
+            when(mockDataCacheConnector.fetchAndGetFormData[SummaryReturnsModel](ArgumentMatchers.eq(RetrieveReturnsResponseId))
+              (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(dataCached)))
+            when(mockAtedConnector.getPartialSummaryReturns(ArgumentMatchers.any(), ArgumentMatchers.any()))
               .thenReturn(Future.successful(HttpResponse(BAD_REQUEST, Some(json2))))
             val result: Future[SummaryReturnsModel] = testSummaryReturnsService.getSummaryReturns
             val thrown: RuntimeException = the[RuntimeException] thrownBy await(result)
             thrown.getMessage must include("[SummaryReturnsService][getDraftWithEtmpSummaryReturns] - Status other than 200 returned - Has Cache")
             verify(mockDataCacheConnector, times(0))
-              .saveFormData[SummaryReturnsModel](Matchers.eq(RetrieveReturnsResponseId), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())
+              .saveFormData[SummaryReturnsModel](ArgumentMatchers.eq(RetrieveReturnsResponseId), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
           }
         }
       }
@@ -150,23 +150,23 @@ class Setup {
       val json = Json.toJson(data)
 
       "return Some(PeriodSummaryReturns), if that period is found in SummaryReturnsModel" in new Setup {
-        when(mockDataCacheConnector.saveFormData[SummaryReturnsModel](Matchers.eq(RetrieveReturnsResponseId), Matchers.any())
-          (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(data))
-        when(mockDataCacheConnector.fetchAndGetFormData[SummaryReturnsModel](Matchers.eq(RetrieveReturnsResponseId))
-          (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
-        when(mockDataCacheConnector.saveFormData[SummaryReturnsModel](Matchers.eq(RetrieveReturnsResponseId), Matchers.any())
-          (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(data))
-        when(mockAtedConnector.getFullSummaryReturns(Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(json))))
+        when(mockDataCacheConnector.saveFormData[SummaryReturnsModel](ArgumentMatchers.eq(RetrieveReturnsResponseId), ArgumentMatchers.any())
+          (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(data))
+        when(mockDataCacheConnector.fetchAndGetFormData[SummaryReturnsModel](ArgumentMatchers.eq(RetrieveReturnsResponseId))
+          (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
+        when(mockDataCacheConnector.saveFormData[SummaryReturnsModel](ArgumentMatchers.eq(RetrieveReturnsResponseId), ArgumentMatchers.any())
+          (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(data))
+        when(mockAtedConnector.getFullSummaryReturns(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(json))))
         val result: Future[Option[PeriodSummaryReturns]] = testSummaryReturnsService.getPeriodSummaryReturns(periodKey)
         await(result) must be(Some(periodSummaryReturns))
       }
 
       "return None, if that period is not-found in SummaryReturnsModel" in new Setup {
-        when(mockDataCacheConnector.fetchAndGetFormData[SummaryReturnsModel](Matchers.eq(RetrieveReturnsResponseId))
-          (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
-        when(mockDataCacheConnector.saveFormData[SummaryReturnsModel](Matchers.eq(RetrieveReturnsResponseId), Matchers.any())
-          (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(data))
-        when(mockAtedConnector.getFullSummaryReturns(Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(json))))
+        when(mockDataCacheConnector.fetchAndGetFormData[SummaryReturnsModel](ArgumentMatchers.eq(RetrieveReturnsResponseId))
+          (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
+        when(mockDataCacheConnector.saveFormData[SummaryReturnsModel](ArgumentMatchers.eq(RetrieveReturnsResponseId), ArgumentMatchers.any())
+          (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(data))
+        when(mockAtedConnector.getFullSummaryReturns(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(json))))
         val result: Future[Option[PeriodSummaryReturns]] = testSummaryReturnsService.getPeriodSummaryReturns(periodKey + 1)
         await(result) must be(None)
       }
@@ -186,14 +186,14 @@ class Setup {
       val pastReturnDetails = Seq(prevReturn)
 
       "save and return past submitted liabilities for a valid user" in new Setup {
-        when(mockDataCacheConnector.fetchAndGetFormData[PreviousReturns](Matchers.eq(RetrieveReturnsResponseId))
-          (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
-        when(mockAtedConnector.getFullSummaryReturns(Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(json1))))
-        when(mockDataCacheConnector.saveFormData[SummaryReturnsModel](Matchers.eq(RetrieveReturnsResponseId), Matchers.any())
-          (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(data1))
+        when(mockDataCacheConnector.fetchAndGetFormData[PreviousReturns](ArgumentMatchers.eq(RetrieveReturnsResponseId))
+          (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
+        when(mockAtedConnector.getFullSummaryReturns(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(json1))))
+        when(mockDataCacheConnector.saveFormData[SummaryReturnsModel](ArgumentMatchers.eq(RetrieveReturnsResponseId), ArgumentMatchers.any())
+          (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(data1))
 
-        when(mockDataCacheConnector.saveFormData[Seq[PreviousReturns]](Matchers.eq(PreviousReturnsDetailsList), Matchers.any())
-          (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(pastReturnDetails))
+        when(mockDataCacheConnector.saveFormData[Seq[PreviousReturns]](ArgumentMatchers.eq(PreviousReturnsDetailsList), ArgumentMatchers.any())
+          (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(pastReturnDetails))
 
         val result: Future[Seq[PreviousReturns]] = testSummaryReturnsService.getPreviousSubmittedLiabilityDetails(periodKey + 1)
         await(result) must be(pastReturnDetails)
@@ -205,8 +205,8 @@ class Setup {
       val pastReturnDetails = Some(Seq(prevReturn))
 
       "retrieve cached previous returns address list" in new Setup {
-        when(mockDataCacheConnector.fetchAndGetFormData[Seq[PreviousReturns]](Matchers.eq(PreviousReturnsDetailsList))
-          (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(pastReturnDetails))
+        when(mockDataCacheConnector.fetchAndGetFormData[Seq[PreviousReturns]](ArgumentMatchers.eq(PreviousReturnsDetailsList))
+          (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(pastReturnDetails))
 
         val result: Future[Option[Seq[PreviousReturns]]] = testSummaryReturnsService.retrieveCachedPreviousReturnAddressList
         await(result) must be(pastReturnDetails)

@@ -17,7 +17,7 @@
 package connectors
 
 import config.ApplicationConfig
-import org.mockito.Matchers
+import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
@@ -55,7 +55,7 @@ class AgentClientMandateFrontendConnectorSpec extends PlaySpec with GuiceOneAppP
       implicit val hcwc: HeaderCarrierForPartials = HeaderCarrierForPartials(hc,"")
       val html = "<h1>helloworld</h1>"
       when(mockHttp.GET[HttpResponse]
-        (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, responseString = Some(html))))
+        (ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, responseString = Some(html))))
       testAgentClientMandateFrontendConnector.getClientBannerPartial("clientId", "ated").map {
         response => response.successfulContentOrEmpty must equal(html)
       }
@@ -66,7 +66,7 @@ class AgentClientMandateFrontendConnectorSpec extends PlaySpec with GuiceOneAppP
       implicit val hc: HeaderCarrier = HeaderCarrier()
       implicit val hcwc: HeaderCarrierForPartials = HeaderCarrierForPartials(hc,"")
       when(mockHttp.GET[HttpResponse]
-        (Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, responseString = Some(""))))
+        (ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, responseString = Some(""))))
       val result: Future[HttpResponse] = testAgentClientMandateFrontendConnector.getClientDetails("clientId", "ated")
       await(result).status must be(OK)
     }

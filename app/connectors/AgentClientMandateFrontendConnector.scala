@@ -29,7 +29,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class AgentClientMandateFrontendConnector @Inject()(appConfig: ApplicationConfig,
                                                     httpClient: DefaultHttpClient)
-  extends RawResponseReads {
+  extends RawResponseReads with HeaderCarrierForPartialsConverter {
 
   val serviceUrl: String = appConfig.conf.baseUrl("agent-client-mandate-frontend")
   val returnUrlHost: String = appConfig.atedFrontendHost
@@ -37,12 +37,14 @@ class AgentClientMandateFrontendConnector @Inject()(appConfig: ApplicationConfig
   val clientBannerPartialUri = "internal/client/partial-banner"
   val clientDetailsUri = "mandate/client/details"
 
-  def getClientBannerPartial(clientId: String, service: String)(implicit request: Request[_], hc: HeaderCarrier, ec: ExecutionContext): Future[HtmlPartial] = {
+  override def crypto: String => String = identity
+
+  def getClientBannerPartial(clientId: String, service: String)(implicit request: Request[_], ec: ExecutionContext): Future[HtmlPartial] = {
     val getUrl = s"$serviceUrl/$clientBannerPartialUri/$clientId/$service?returnUrl=" + returnUrlHost + controllers.routes.AccountSummaryController.view()
     http.GET[HtmlPartial](getUrl)
   }
 
-  def getClientDetails(clientId: String, service: String)(implicit request: Request[_], hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResponse] = {
+  def getClientDetails(clientId: String, service: String)(implicit request: Request[_], ec: ExecutionContext): Future[HttpResponse] = {
     val getUrl =
       s"$serviceUrl/$clientDetailsUri/$clientId/$service?returnUrl=" + returnUrlHost + controllers.subscriptionData.routes.CompanyDetailsController.view()
     http.GET[HttpResponse](getUrl)
