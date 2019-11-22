@@ -150,36 +150,36 @@
 </div>
 
 @formBundleReturnObj.taxAvoidanceScheme.map { taxAvoidanceScheme =>
-<div class="form-group">
-  <div class="grid-wrapper">
-    <h2 id="avoidance-scheme-header" class="heading-medium">@messages("ated.form-bundle.view.return.avoidance-scheme.title")</h2>
-  </div>
-
-
-  <div class="grid-wrapper row-border">
-    <div class="grid grid-3-6 cya-question">
-      <span id="th-view-return-tax-avoidance" class="heading-small">@messages("ated.form-bundle.view.return.tax-avoidance-scheme")</span>
+  <div class="form-group">
+    <div class="grid-wrapper">
+      <h2 id="avoidance-scheme-header" class="heading-medium">@messages("ated.form-bundle.view.return.avoidance-scheme.title")</h2>
     </div>
 
-    <div class="grid grid-3-6 cya-answer">
-      <span id="td-view-return-tax-avoidance">@taxAvoidanceScheme</span>
-    </div>
 
-  </div>
-}
-  @formBundleReturnObj.taxAvoidancePromoterReference.map { taxAvoidancePromoterReference =>
     <div class="grid-wrapper row-border">
       <div class="grid grid-3-6 cya-question">
-        <span id="th-view-return-promoter" class="heading-small">@messages("ated.form-bundle.view.return.promoter")</span>
+        <span id="th-view-return-tax-avoidance" class="heading-small">@messages("ated.form-bundle.view.return.tax-avoidance-scheme")</span>
       </div>
 
       <div class="grid grid-3-6 cya-answer">
-        <span id="td-view-return-promoter">@taxAvoidancePromoterReference</span>
+        <span id="td-view-return-tax-avoidance">@taxAvoidanceScheme</span>
       </div>
-    </div>
-  }
-</div>
 
+    </div>
+
+    @formBundleReturnObj.taxAvoidancePromoterReference.map { taxAvoidancePromoterReference =>
+      <div class="grid-wrapper row-border">
+        <div class="grid grid-3-6 cya-question">
+          <span id="th-view-return-promoter" class="heading-small">@messages("ated.form-bundle.view.return.promoter")</span>
+        </div>
+
+        <div class="grid grid-3-6 cya-answer">
+          <span id="td-view-return-promoter">@taxAvoidancePromoterReference</span>
+        </div>
+      </div>
+    }
+  </div>
+}
 
   @formBundleReturnObj.bankDetails.map { bankDetail =>
 
