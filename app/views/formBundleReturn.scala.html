@@ -122,7 +122,6 @@
         }
       </div>
     </div>
-
   }
 
 </div>
@@ -149,6 +148,7 @@
   </div>
     }
 </div>
+
 @formBundleReturnObj.taxAvoidanceScheme.map { taxAvoidanceScheme =>
 <div class="form-group">
   <div class="grid-wrapper">
@@ -166,12 +166,22 @@
     </div>
 
   </div>
+}
+  @formBundleReturnObj.taxAvoidancePromoterReference.map { taxAvoidancePromoterReference =>
+    <div class="grid-wrapper row-border">
+      <div class="grid grid-3-6 cya-question">
+        <span id="th-view-return-promoter" class="heading-small">@messages("ated.form-bundle.view.return.promoter")</span>
+      </div>
 
+      <div class="grid grid-3-6 cya-answer">
+        <span id="td-view-return-promoter">@taxAvoidancePromoterReference</span>
+      </div>
+    </div>
+  }
 </div>
 
-}
 
-@formBundleReturnObj.bankDetails.map { bankDetail =>
+  @formBundleReturnObj.bankDetails.map { bankDetail =>
 
 <div class="form-group">
   <div class="grid-wrapper">
@@ -236,7 +246,6 @@
   }
 
   @formBundleReturnObj.propertyDetails.additionalDetails.map { additionalDetails =>
-
 <div class="form-group">
   <div class="grid-wrapper">
     <h2 id="supporting-info-header" class="heading-medium">@messages("ated.form-bundle.view.return.supporting-info.title")</h2>
@@ -252,19 +261,8 @@
       <span id="td-view-return-additional-info">@additionalDetails</span>
     </div>
   </div>
-  }
-  @formBundleReturnObj.taxAvoidancePromoterReference.map { taxAvoidancePromoterReference =>
-  <div class="grid-wrapper row-border">
-    <div class="grid grid-3-6 cya-question">
-      <span id="th-view-return-promoter" class="heading-small">@messages("ated.form-bundle.view.return.promoter")</span>
-    </div>
-
-    <div class="grid grid-3-6 cya-answer">
-      <span id="td-view-return-promoter">@taxAvoidancePromoterReference</span>
-    </div>
-  </div>
-  }
 </div>
+  }
 
   <div class="form-group">
     <div class="grid-wrapper">
