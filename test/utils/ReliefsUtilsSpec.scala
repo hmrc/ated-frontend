@@ -48,4 +48,26 @@ class ReliefsUtilsSpec extends PlaySpec with GuiceOneServerPerSuite with ReliefC
     }
   }
 
+  "cleanDateTuples" should {
+    "remove date fields where the checkbox is unticked" in {
+      val mapTuple: Map[String, Seq[String]] = ReliefsUtils.dataCleanseMap.keys
+        .toList
+        .zipWithIndex
+        .flatMap {
+          case (key, i) =>
+            val fields = List(key + ".year", key + ".month", key + ".day")
+            if (i % 2 == 0) {
+              fields
+            } else {
+              fields :+ ReliefsUtils.dataCleanseMap(key)
+            }
+        }
+        .map { key => (key, "true") }
+        .toMap
+        .mapValues(str => Seq(str))
+
+      ReliefsUtils.cleanDateTuples(mapTuple).size mustBe 16
+    }
+  }
+
 }

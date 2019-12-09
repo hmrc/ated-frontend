@@ -58,9 +58,9 @@ class ChooseReliefsControllerSpec extends PlaySpec with GuiceOneServerPerSuite w
   val reliefsTaxAvoid: ReliefsTaxAvoidance = ReliefBuilder.reliefTaxAvoidance(periodKey,
     Reliefs(periodKey = periodKey, rentalBusiness = true, isAvoidanceScheme = None))
   val testReliefs: ReliefsTaxAvoidance =
-    ReliefBuilder.reliefTaxAvoidance(periodKey,Reliefs(periodKey = periodKey, rentalBusiness = true, isAvoidanceScheme = Some(false)))
+    ReliefBuilder.reliefTaxAvoidance(periodKey, Reliefs(periodKey = periodKey, rentalBusiness = true, isAvoidanceScheme = Some(false)))
   val testReliefsWithTaxAvoidance: ReliefsTaxAvoidance =
-    ReliefBuilder.reliefTaxAvoidance(periodKey,Reliefs(periodKey = periodKey, rentalBusiness = true, isAvoidanceScheme = Some(true)))
+    ReliefBuilder.reliefTaxAvoidance(periodKey, Reliefs(periodKey = periodKey, rentalBusiness = true, isAvoidanceScheme = Some(true)))
   val testReliefsWithTaxAvoidancePopulated: ReliefsTaxAvoidance = ReliefBuilder.reliefTaxAvoidance(periodKey,
     Reliefs(periodKey = periodKey, rentalBusiness = true, isAvoidanceScheme = Some(true)),
     TaxAvoidance(rentalBusinessScheme = Some("avoid1"))
@@ -97,7 +97,7 @@ class ChooseReliefsControllerSpec extends PlaySpec with GuiceOneServerPerSuite w
       test(result)
     }
 
-    def editFromSummary(reliefs: Option[ReliefsTaxAvoidance]= None)(test: Future[Result] => Any) {
+    def editFromSummary(reliefs: Option[ReliefsTaxAvoidance] = None)(test: Future[Result] => Any) {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
@@ -109,7 +109,7 @@ class ChooseReliefsControllerSpec extends PlaySpec with GuiceOneServerPerSuite w
       test(result)
     }
 
-    def forbiddenEditFromSummary(reliefs: Option[ReliefsTaxAvoidance]= None)(test: Future[Result] => Any) {
+    def forbiddenEditFromSummary(reliefs: Option[ReliefsTaxAvoidance] = None)(test: Future[Result] => Any) {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
       setForbiddenAuthMocks(authMock)
@@ -209,16 +209,16 @@ class ChooseReliefsControllerSpec extends PlaySpec with GuiceOneServerPerSuite w
 
       "Authorised users" must {
 
-          "return a status of OK && Choose reliefs page be displayed empty v2.0" in new Setup {
-            getAuthorisedUserNone {
-              result =>
-                status(result) must be(OK)
-                val document = Jsoup.parse(contentAsString(result))
-                document.getElementById("lede-text")
-                  .text() must be("You can select more than one relief code. A single relief code can cover one or more properties.")
+        "return a status of OK && Choose reliefs page be displayed empty v2.0" in new Setup {
+          getAuthorisedUserNone {
+            result =>
+              status(result) must be(OK)
+              val document = Jsoup.parse(contentAsString(result))
+              document.getElementById("lede-text")
+                .text() must be("You can select more than one relief code. A single relief code can cover one or more properties.")
 
-            }
           }
+        }
 
         "return a status of redirect && Choose reliefs page be displayed filled form, if something has been saved earlier" in new Setup {
           getAuthorisedUserSome {
@@ -313,7 +313,7 @@ class ChooseReliefsControllerSpec extends PlaySpec with GuiceOneServerPerSuite w
         }
 
         "for invalid data, return BAD_REQUEST" in new Setup {
-          val inputJson: JsValue = Json.parse( """{"periodKey": 2015, "rentalBusiness": false, "isAvoidanceScheme": ""}""")
+          val inputJson: JsValue = Json.parse("""{"periodKey": 2015, "rentalBusiness": false, "isAvoidanceScheme": ""}""")
           when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
           submitWithAuthorisedUser(FakeRequest().withFormUrlEncodedBody(), inputJson) {
             result =>
@@ -322,7 +322,7 @@ class ChooseReliefsControllerSpec extends PlaySpec with GuiceOneServerPerSuite w
         }
 
         "for invalid data, return BAD_REQUEST v2.0" in new Setup {
-          val inputJson: JsValue = Json.parse( """{"periodKey": 2015, "rentalBusiness": false, "isAvoidanceScheme": ""}""")
+          val inputJson: JsValue = Json.parse("""{"periodKey": 2015, "rentalBusiness": false, "isAvoidanceScheme": ""}""")
           when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
           submitWithAuthorisedUser(FakeRequest().withFormUrlEncodedBody(), inputJson) {
             result =>
@@ -331,61 +331,93 @@ class ChooseReliefsControllerSpec extends PlaySpec with GuiceOneServerPerSuite w
         }
 
         "for respective relief selected, respective dates become mandatory, so give BAD_REQUEST" in new Setup {
-            val reliefs = Reliefs(periodKey = periodKey, rentalBusiness = true, openToPublic = true, propertyDeveloper = true)
-            val json: JsValue = Json.toJson(reliefs)
-            when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
-            submitWithAuthorisedUser(FakeRequest().withFormUrlEncodedBody(), json) {
-              result =>
-                status(result) must be(BAD_REQUEST)
-                contentAsString(result) must include("There is a problem with the page")
-            }
-          }
-
-          "for all/any dates too early than period, return BAD_REQUEST" in new Setup {
-            val inputJsonOne: JsValue = Json.parse(
-              """{"periodKey": 2015,
-                |"rentalBusiness": true,
-                |"rentalBusinessDate.year": "2014",
-                |"rentalBusinessDate.month": "05",
-                |"rentalBusinessDate.day": "01",
-                |"isAvoidanceScheme": true }""".stripMargin)
-            when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
-            submitWithAuthorisedUser(FakeRequest().withFormUrlEncodedBody(), inputJsonOne) {
-              result =>
-                status(result) must be(BAD_REQUEST)
-                contentAsString(result) must include("There is a problem with the page")
-            }
-          }
-          "for all/any dates too late than period, return BAD_REQUEST" in new Setup {
-            val inputJsonOne: JsValue = Json.parse(
-              """{"periodKey": 2015,
-                |"rentalBusiness": true,
-                |"rentalBusinessDate.year": "2016",
-                |"rentalBusinessDate.month": "05",
-                |"rentalBusinessDate.day": "01",
-                |"isAvoidanceScheme": true }""".stripMargin)
-            when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
-            submitWithAuthorisedUser(FakeRequest().withFormUrlEncodedBody(), inputJsonOne) {
-              result =>
-                status(result) must be(BAD_REQUEST)
-                contentAsString(result) must include("There is a problem with the page")
-            }
-          }
-          "for valid data, return OK" in new Setup {
-            val formBody = List(
-              ("periodKey", "2015"),
-              ("rentalBusiness", "true"),
-              ("isAvoidanceScheme", "true"),
-              ("rentalBusinessDate.year", "2015"),
-              ("rentalBusinessDate.month", "05"),
-              ("rentalBusinessDate.day", "01"))
-            when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
-            submitFormBodyWithAuthorisedUser(FakeRequest().withFormUrlEncodedBody(formBody: _*)) {
-              result =>
-                status(result) must be(SEE_OTHER)
-            }
+          val reliefs = Reliefs(periodKey = periodKey, rentalBusiness = true, openToPublic = true, propertyDeveloper = true)
+          val json: JsValue = Json.toJson(reliefs)
+          when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+          submitWithAuthorisedUser(FakeRequest().withFormUrlEncodedBody(), json) {
+            result =>
+              status(result) must be(BAD_REQUEST)
+              contentAsString(result) must include("There is a problem with the page")
           }
         }
+
+        "for all/any dates too early than period, return BAD_REQUEST" in new Setup {
+          val inputJsonOne: JsValue = Json.parse(
+            """{"periodKey": 2015,
+              |"rentalBusiness": true,
+              |"rentalBusinessDate.year": "2014",
+              |"rentalBusinessDate.month": "05",
+              |"rentalBusinessDate.day": "01",
+              |"isAvoidanceScheme": true }""".stripMargin)
+          when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+          submitWithAuthorisedUser(FakeRequest().withFormUrlEncodedBody(), inputJsonOne) {
+            result =>
+              status(result) must be(BAD_REQUEST)
+              contentAsString(result) must include("There is a problem with the page")
+          }
+        }
+        "for all/any dates too late than period, return BAD_REQUEST" in new Setup {
+          val inputJsonOne: JsValue = Json.parse(
+            """{"periodKey": 2015,
+              |"rentalBusiness": true,
+              |"rentalBusinessDate.year": "2016",
+              |"rentalBusinessDate.month": "05",
+              |"rentalBusinessDate.day": "01",
+              |"isAvoidanceScheme": true }""".stripMargin)
+          when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+          submitWithAuthorisedUser(FakeRequest().withFormUrlEncodedBody(), inputJsonOne) {
+            result =>
+              status(result) must be(BAD_REQUEST)
+              contentAsString(result) must include("There is a problem with the page")
+          }
+        }
+        "for all/any dates which are invalid, return BAD_REQUEST" in new Setup {
+          val inputJsonOne: JsValue = Json.parse(
+            """{"periodKey": 2015,
+              |"rentalBusiness": true,
+              |"rentalBusinessDate.year": "2016",
+              |"rentalBusinessDate.month": "02",
+              |"rentalBusinessDate.day": "31",
+              |"isAvoidanceScheme": true }""".stripMargin)
+          when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+          submitWithAuthorisedUser(FakeRequest().withFormUrlEncodedBody(), inputJsonOne) {
+            result =>
+              status(result) must be(BAD_REQUEST)
+              contentAsString(result) must include("There is a problem with the page")
+          }
+        }
+        "for one date that is invalid but unselected, with valid data, return OK" in new Setup {
+          val formBody = List(
+            ("periodKey", "2015"),
+            ("openToPublicDate.year", "2015"),
+            ("openToPublicDate.month", "02"),
+            ("openToPublicDate.year", "31"),
+            ("rentalBusiness", "true"),
+            ("isAvoidanceScheme", "true"),
+            ("rentalBusinessDate.year", "2015"),
+            ("rentalBusinessDate.month", "05"),
+            ("rentalBusinessDate.day", "01"))
+          when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+          submitFormBodyWithAuthorisedUser(FakeRequest().withFormUrlEncodedBody(formBody: _*)) {
+            result =>
+              status(result) must be(SEE_OTHER)
+          }
+        }
+        "for valid data, return OK" in new Setup {
+          val formBody = List(
+            ("periodKey", "2015"),
+            ("rentalBusiness", "true"),
+            ("isAvoidanceScheme", "true"),
+            ("rentalBusinessDate.year", "2015"),
+            ("rentalBusinessDate.month", "05"),
+            ("rentalBusinessDate.day", "01"))
+          when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+          submitFormBodyWithAuthorisedUser(FakeRequest().withFormUrlEncodedBody(formBody: _*)) {
+            result =>
+              status(result) must be(SEE_OTHER)
+          }
+        }
+      }
     }
   }
 }
