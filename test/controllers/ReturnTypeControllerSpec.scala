@@ -24,6 +24,7 @@ import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.AuthAction
 import controllers.propertyDetails.{AddressLookupController, PropertyDetailsAddressController}
 import controllers.reliefs.ChooseReliefsController
+import testhelpers.MockAuthUtil
 import models.{PreviousReturns, ReturnType}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
@@ -39,7 +40,7 @@ import play.api.test.Helpers._
 import services.{DelegationService, FormBundleReturnsService, SubscriptionDataService, SummaryReturnsService}
 import uk.gov.hmrc.auth.core.{AffinityGroup, PlayAuthConnector}
 import uk.gov.hmrc.http.HeaderCarrier
-import utils.{AtedConstants, MockAuthUtil}
+import utils.AtedConstants
 
 import scala.concurrent.Future
 

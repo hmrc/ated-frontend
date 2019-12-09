@@ -102,7 +102,6 @@ class AuthAction @Inject()(appConfig: ApplicationConfig,
     }
   }
 
-
   def handleException(ae: AuthorisationException)(implicit request: Request[AnyContent]): Result  = ae match {
     case usa: UnsupportedAffinityGroup =>
       Logger.info("[AuthAction][handleException] Unsupported Affinity Group" + usa)

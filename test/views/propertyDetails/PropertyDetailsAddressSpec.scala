@@ -19,6 +19,7 @@ package views.propertyDetails
 import builders.{PropertyDetailsBuilder, TitleBuilder}
 import config.ApplicationConfig
 import forms.PropertyDetailsForms._
+import testhelpers.MockAuthUtil
 import models.StandardAuthRetrievals
 import org.jsoup.Jsoup
 import org.scalatest.mockito.MockitoSugar
@@ -26,7 +27,7 @@ import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.test.FakeRequest
-import utils.{AtedUtils, MockAuthUtil}
+import utils.AtedUtils
 
 class PropertyDetailsAddressSpec extends FeatureSpec with GuiceOneServerPerSuite with MockitoSugar
   with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {

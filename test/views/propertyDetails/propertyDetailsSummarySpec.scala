@@ -18,6 +18,7 @@ package views.propertyDetails
 
 import builders.PropertyDetailsBuilder
 import config.ApplicationConfig
+import testhelpers.MockAuthUtil
 import models.StandardAuthRetrievals
 import org.joda.time.format.DateTimeFormat
 import org.joda.time.{DateTimeZone, LocalDate}
@@ -28,7 +29,7 @@ import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.test.FakeRequest
 import utils.PeriodUtils._
-import utils.{MockAuthUtil, PeriodUtils}
+import utils.PeriodUtils
 
 class propertyDetailsSummarySpec extends FeatureSpec with GuiceOneAppPerSuite with MockitoSugar
   with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {

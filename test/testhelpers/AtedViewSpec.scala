@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package utils.viewHelpers
+package testhelpers
 
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -90,4 +90,3 @@ trait AtedViewSpec extends PlaySpec with JsoupArgumentMatchers with GuiceOneServ
     }
   }
 }
-

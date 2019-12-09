@@ -28,7 +28,7 @@ class ApplicationConfig @Inject()(val conf: ServicesConfig,
 
   private def loadConfig(key: String) = conf.getString(key)
 
-  private val contactHost = conf.getString("contact-frontend.host")
+  private lazy val contactHost = conf.getString("contact-frontend.host")
 
   val contactFormServiceIdentifier = "ATED"
 
@@ -52,16 +52,16 @@ class ApplicationConfig @Inject()(val conf: ServicesConfig,
     "cachable.session-cache.domain", throw new Exception(s"Could not find config 'cachable.session-cache.domain'")
   )
 
-  val companyAuthHost: String = s"${conf.getString("microservice.services.auth.company-auth.host")}"
-  val loginCallback: String = conf.getString("microservice.services.auth.login-callback.url")
-  val loginPath: String = s"${conf.getString("microservice.services.auth.login-path")}"
-  val loginURL: String = s"$companyAuthHost/gg/$loginPath"
-  val continueURL: String = s"$loginCallback"
-  val signIn: String = s"$companyAuthHost/gg/$loginPath?continue=$loginCallback"
-  val signOut: String = s"$companyAuthHost/gg/sign-out"
-  val subscriptionStartPage: String = conf.getString("microservice.services.ated-subscription.serviceRedirectUrl")
-  val clientApproveAgentMandate: String = conf.getString("microservice.services.agent-client-mandate-frontend.atedClientApproveAgentUri")
-  val agentRedirectedToMandate: String = conf.getString("microservice.services.agent-client-mandate-frontend.atedAgentJourneyStartUri")
-  val businessTaxAccountPage: String = s"${conf.getString("microservice.services.auth.business-tax-account.serviceRedirectUrl")}"
+  lazy val companyAuthHost: String = s"${conf.getString("microservice.services.auth.company-auth.host")}"
+  lazy val loginCallback: String = conf.getString("microservice.services.auth.login-callback.url")
+  lazy val loginPath: String = s"${conf.getString("microservice.services.auth.login-path")}"
+  lazy val loginURL: String = s"$companyAuthHost/gg/$loginPath"
+  lazy val continueURL: String = s"$loginCallback"
+  lazy val signIn: String = s"$companyAuthHost/gg/$loginPath?continue=$loginCallback"
+  lazy val signOut: String = s"$companyAuthHost/gg/sign-out"
+  lazy val subscriptionStartPage: String = conf.getString("microservice.services.ated-subscription.serviceRedirectUrl")
+  lazy val clientApproveAgentMandate: String = conf.getString("microservice.services.agent-client-mandate-frontend.atedClientApproveAgentUri")
+  lazy val agentRedirectedToMandate: String = conf.getString("microservice.services.agent-client-mandate-frontend.atedAgentJourneyStartUri")
+  lazy val businessTaxAccountPage: String = s"${conf.getString("microservice.services.auth.business-tax-account.serviceRedirectUrl")}"
 
 }

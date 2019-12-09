@@ -18,6 +18,7 @@ package views.editLiability
 
 import config.ApplicationConfig
 import forms.AtedForms._
+import testhelpers.MockAuthUtil
 import models.StandardAuthRetrievals
 import org.jsoup.Jsoup
 import org.scalatest.mockito.MockitoSugar
@@ -25,7 +26,6 @@ import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.test.FakeRequest
-import utils.MockAuthUtil
 
 class editLiabilitySpec extends FeatureSpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
   implicit val request = FakeRequest()

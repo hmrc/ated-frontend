@@ -20,6 +20,7 @@ import java.util.UUID
 
 import builders._
 import config.ApplicationConfig
+import testhelpers.MockAuthUtil
 import models._
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
@@ -32,7 +33,7 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.http.logging.SessionId
 import uk.gov.hmrc.http.{UnauthorizedException, _}
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
-import utils.{AtedConstants, MockAuthUtil}
+import utils.AtedConstants
 
 import scala.concurrent.Future
 

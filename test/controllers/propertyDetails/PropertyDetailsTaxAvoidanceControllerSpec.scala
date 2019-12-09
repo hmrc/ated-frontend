@@ -22,6 +22,7 @@ import builders.{PropertyDetailsBuilder, SessionBuilder, TitleBuilder}
 import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.AuthAction
+import testhelpers.MockAuthUtil
 import models._
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
@@ -38,7 +39,7 @@ import play.api.test.Helpers._
 import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService, SubscriptionDataService}
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
-import utils.{AtedConstants, MockAuthUtil, PeriodUtils}
+import utils.{AtedConstants, PeriodUtils}
 
 import scala.concurrent.Future
 
@@ -248,8 +249,8 @@ class PropertyDetailsTaxAvoidanceControllerSpec extends PlaySpec with GuiceOneSe
 
       "Authorised users" must {
         "for invalid data, return BAD_REQUEST" in new Setup {
+          val taxAvoidance: PropertyDetailsTaxAvoidance = PropertyDetailsTaxAvoidance(Some(true))
 
-          val taxAvoidance = PropertyDetailsTaxAvoidance(Some(true))
           when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
           submitWithAuthorisedUser(Json.toJson(taxAvoidance)) {
             result =>
@@ -257,8 +258,11 @@ class PropertyDetailsTaxAvoidanceControllerSpec extends PlaySpec with GuiceOneSe
           }
         }
         "for valid data, return OK" in new Setup {
-          val taxAvoidance = PropertyDetailsTaxAvoidance(Some(false))
-          when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+          val taxAvoidance: PropertyDetailsTaxAvoidance = PropertyDetailsTaxAvoidance(Some(false))
+
+          when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
+            .thenReturn(Future.successful(None))
+
           submitWithAuthorisedUser(Json.toJson(taxAvoidance)) {
             result =>
               status(result) must be(SEE_OTHER)

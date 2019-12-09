@@ -25,7 +25,6 @@ trait CountryCodeUtils {
 
   val environment: Environment
 
-  // $COVERAGE-OFF$
   lazy val resourceStream: PropertyResourceBundle =
     (environment.resourceAsStream("country-code.properties") flatMap { stream =>
       val optBundle: Option[PropertyResourceBundle] = Try(new PropertyResourceBundle(stream)) match {
@@ -36,28 +35,20 @@ trait CountryCodeUtils {
       optBundle
     }).getOrElse(throw new RuntimeException("[CountryCodeUtils] Could not retrieve property bundle"))
 
-  // $COVERAGE-ON$
-
   def getIsoCodeTupleList: List[(String, String)] = {
     resourceStream.getKeys.toList.map(key => (key, resourceStream.getString(key))).sortBy{case (_,v) => v}
   }
 
 
   def getSelectedCountry(isoCode: String): String = {
-    def trimCountry(selectedCountry: String) = {
+    def trimCountry(selectedCountry: String): String = {
       val position = selectedCountry.indexOf(":")
-      if (position > 0) {
-        selectedCountry.substring(0, position).trim
-      } else {
-        selectedCountry
-      }
+      if (position > 0) selectedCountry.substring(0, position).trim else selectedCountry
     }
 
     def getCountry(isoCode: String): Option[String] = {
       val country = getIsoCodeTupleList.toMap.get(isoCode.toUpperCase)
-      country.map{ selectedCountry =>
-        trimCountry(selectedCountry)
-      }
+      country map trimCountry
     }
 
     getCountry(isoCode.toUpperCase).fold(isoCode){x=>x}

@@ -22,6 +22,7 @@ import builders.{SessionBuilder, TitleBuilder}
 import config.ApplicationConfig
 import connectors.DataCacheConnector
 import controllers.auth.AuthAction
+import testhelpers.{MockAuthUtil, TestUtil}
 import models._
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
@@ -37,7 +38,6 @@ import play.api.test.Helpers.{contentAsString, _}
 import services.SubscriptionDataService
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
-import utils.{MockAuthUtil, TestUtil}
 
 import scala.concurrent.Future
 

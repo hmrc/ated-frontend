@@ -24,7 +24,7 @@ import play.api.test.FakeRequest
 
 import scala.collection.mutable.ArrayBuffer
 
-class AtedUtilsSpec extends PlaySpec with GuiceOneServerPerSuite {
+class AtedUtilsSpec extends PlaySpec {
 
   "AtedUtils" must {
     "patternCheckARN should validate input ARN" in {

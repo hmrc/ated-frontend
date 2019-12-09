@@ -18,6 +18,7 @@ package views.html.reliefs
 
 import config.ApplicationConfig
 import forms.ReliefForms
+import testhelpers.{AtedViewSpec, MockAuthUtil}
 import models.{Reliefs, StandardAuthRetrievals}
 import org.joda.time.LocalDate
 import org.scalatest.mockito.MockitoSugar
@@ -25,8 +26,6 @@ import play.api.data.Form
 import play.api.i18n.Messages
 import play.api.libs.json.Json
 import play.twirl.api.Html
-import utils.MockAuthUtil
-import utils.viewHelpers.AtedViewSpec
 
 class ChooseReliefsSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil {
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package utils
+package testhelpers
 
 import models.{DelegationModel, Link, PrincipalTaxIdentifiers}
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolment, EnrolmentIdentifier}

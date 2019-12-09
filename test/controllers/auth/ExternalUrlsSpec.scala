@@ -25,7 +25,6 @@ class ExternalUrlsSpec extends PlaySpec with GuiceOneServerPerSuite with Mockito
 
   val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
 
-
   "ExternalUrls" must {
 
     "have companyAuthHost " in {
@@ -49,7 +48,7 @@ class ExternalUrlsSpec extends PlaySpec with GuiceOneServerPerSuite with Mockito
     }
 
     "have signIn " in {
-      mockAppConfig.signIn must be( "http://localhost:9025/gg/sign-in?continue=http://localhost:9916/ated/home")
+      mockAppConfig.signIn must be("http://localhost:9025/gg/sign-in?continue=http://localhost:9916/ated/home")
     }
 
     "have signOut " in {

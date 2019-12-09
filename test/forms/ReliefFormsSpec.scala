@@ -200,7 +200,7 @@ class ReliefFormsSpec extends PlaySpec with GuiceOneServerPerSuite {
 
     "fail if the avoidance scheme is not 8 digits" in {
       val errSize: Int = 4
-      val taxAvoidance = TaxAvoidance(rentalBusinessScheme = Some("123"),
+      val taxAvoidance: TaxAvoidance = TaxAvoidance(rentalBusinessScheme = Some("123"),
         rentalBusinessSchemePromoter = Some("123"),
         openToPublicScheme = Some("123"),
         openToPublicSchemePromoter = Some("123")
@@ -216,7 +216,7 @@ class ReliefFormsSpec extends PlaySpec with GuiceOneServerPerSuite {
 
     "fail if the avoidance scheme is 8 characters" in {
       val errSize: Int = 4
-      val taxAvoidance = TaxAvoidance(rentalBusinessScheme = Some("1234567a"),
+      val taxAvoidance: TaxAvoidance = TaxAvoidance(rentalBusinessScheme = Some("1234567a"),
         rentalBusinessSchemePromoter = Some("1234567a"),
         openToPublicScheme = Some("1234567a"),
         openToPublicSchemePromoter = Some("1234567a")

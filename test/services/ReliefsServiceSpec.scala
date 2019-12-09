@@ -26,9 +26,8 @@ import org.mockito.ArgumentMatchers._
 import org.mockito.Mockito._
 import org.mockito.{ArgumentCaptor, ArgumentMatchers}
 import org.scalatest.mockito.MockitoSugar
-import org.scalatest.{BeforeAndAfterEach, PrivateMethodTester}
+import org.scalatest.PrivateMethodTester
 import org.scalatestplus.play.PlaySpec
-import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.libs.json.{JsValue, Json}
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.logging.SessionId
@@ -37,7 +36,7 @@ import utils.AtedConstants._
 
 import scala.concurrent.Future
 
-class ReliefsServiceSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with PrivateMethodTester {
+class ReliefsServiceSpec extends PlaySpec with MockitoSugar with PrivateMethodTester {
 
   implicit lazy val authContext: StandardAuthRetrievals = mock[StandardAuthRetrievals]
 
@@ -49,26 +48,18 @@ class ReliefsServiceSpec extends PlaySpec with GuiceOneServerPerSuite with Mocki
   val formBundleNo2: String = "123456789013"
 
   class Setup {
-   val testReliefsService: ReliefsService = new ReliefsService(
-   mockAtedConnector,
-   mockDataCacheConnector
-   ) {
+   val testReliefsService: ReliefsService = new ReliefsService(mockAtedConnector, mockDataCacheConnector) {
      val updateReliefsPrivate: PrivateMethod[Future[ReliefsTaxAvoidance]] = PrivateMethod[Future[ReliefsTaxAvoidance]]('updateReliefs)
    }
  }
 
-  override def beforeEach: Unit = {
-  }
-
-
   "ReliefsService" must {
     "save the draft reliefs" must {
       "Create a default Tax Avoidance if we don't already have one" in new Setup {
-
         implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
 
-        val reliefs = Reliefs(periodKey = periodKey, rentalBusiness = true, isAvoidanceScheme = Some(true))
-        val taxAvoidance = TaxAvoidance(rentalBusinessScheme = Some("avoid1"))
+        val reliefs: Reliefs = Reliefs(periodKey = periodKey, rentalBusiness = true, isAvoidanceScheme = Some(true))
+        val taxAvoidance: TaxAvoidance = TaxAvoidance(rentalBusinessScheme = Some("avoid1"))
         val reliefsTaxAvoidance: ReliefsTaxAvoidance = ReliefBuilder.reliefTaxAvoidance(periodKey, reliefs, taxAvoidance)
 
         val respJson: JsValue = Json.parse("""{"reason": "some reason"}""")
@@ -84,7 +75,6 @@ class ReliefsServiceSpec extends PlaySpec with GuiceOneServerPerSuite with Mocki
         retrievedReliefs.isDefined must be(true)
         retrievedReliefs.get.reliefs must be(reliefs)
 
-        //Check the correct object is being saved
         val savedReliefs: ReliefsTaxAvoidance = captor.getValue
         savedReliefs.reliefs.rentalBusiness must be(true)
         savedReliefs.taxAvoidance.rentalBusinessScheme.isDefined must be(false)
@@ -93,8 +83,8 @@ class ReliefsServiceSpec extends PlaySpec with GuiceOneServerPerSuite with Mocki
       "Create a default Tax Avoidance if we don't already have one and taxAvoidance is set to false" in new Setup {
         implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
 
-        val reliefs = Reliefs(periodKey = periodKey, rentalBusiness = true, isAvoidanceScheme = None)
-        val taxAvoidance = TaxAvoidance()
+        val reliefs: Reliefs = Reliefs(periodKey = periodKey, rentalBusiness = true, isAvoidanceScheme = None)
+        val taxAvoidance: TaxAvoidance = TaxAvoidance()
         val reliefsTaxAvoidance: ReliefsTaxAvoidance = ReliefBuilder.reliefTaxAvoidance(periodKey, reliefs, taxAvoidance)
 
         val respJson: JsValue = Json.parse("""{"reason": "some reason"}""")
@@ -119,8 +109,8 @@ class ReliefsServiceSpec extends PlaySpec with GuiceOneServerPerSuite with Mocki
       "overwrite the current Tax Avoidance, if the tax avoidance option isn't set" in new Setup {
         implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
 
-        val reliefs = Reliefs(periodKey = periodKey, rentalBusiness = true, isAvoidanceScheme = Some(true))
-        val taxAvoidance = TaxAvoidance()
+        val reliefs: Reliefs = Reliefs(periodKey = periodKey, rentalBusiness = true, isAvoidanceScheme = Some(true))
+        val taxAvoidance: TaxAvoidance = TaxAvoidance()
         val reliefsTaxAvoidance: ReliefsTaxAvoidance = ReliefBuilder.reliefTaxAvoidance(periodKey, reliefs, taxAvoidance)
 
         val responseJson: JsValue = Json.toJson(reliefsTaxAvoidance)
@@ -144,8 +134,8 @@ class ReliefsServiceSpec extends PlaySpec with GuiceOneServerPerSuite with Mocki
       "throw Internal server exception , for any other status code" in new Setup {
         implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
 
-        val reliefs = Reliefs(periodKey = periodKey, rentalBusiness = true, isAvoidanceScheme = Some(true))
-        val taxAvoidance = TaxAvoidance()
+        val reliefs: Reliefs = Reliefs(periodKey = periodKey, rentalBusiness = true, isAvoidanceScheme = Some(true))
+        val taxAvoidance: TaxAvoidance = TaxAvoidance()
         val reliefsTaxAvoidance: ReliefsTaxAvoidance = ReliefBuilder.reliefTaxAvoidance(periodKey, reliefs, taxAvoidance)
 
         val respJson: JsValue = Json.parse("""{"reason": "some reason"}""")
@@ -164,8 +154,8 @@ class ReliefsServiceSpec extends PlaySpec with GuiceOneServerPerSuite with Mocki
       "keep the current Tax Avoidance if the tax avoidance option is true" in new Setup {
         implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
 
-        val reliefs = Reliefs(periodKey = periodKey, rentalBusiness = true, isAvoidanceScheme = Some(true))
-        val taxAvoidance = TaxAvoidance(rentalBusinessScheme = Some("Avoid-1"))
+        val reliefs: Reliefs = Reliefs(periodKey = periodKey, rentalBusiness = true, isAvoidanceScheme = Some(true))
+        val taxAvoidance: TaxAvoidance = TaxAvoidance(rentalBusinessScheme = Some("Avoid-1"))
         val reliefsTaxAvoidance: ReliefsTaxAvoidance = ReliefBuilder.reliefTaxAvoidance(periodKey, reliefs, taxAvoidance)
 
         val responseJson: JsValue = Json.toJson(reliefsTaxAvoidance)
@@ -192,8 +182,8 @@ class ReliefsServiceSpec extends PlaySpec with GuiceOneServerPerSuite with Mocki
       "Create a default Reliefs if we don't already have one and wipe the tax avoidance" in new Setup {
         implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
 
-        val reliefs = Reliefs(periodKey = periodKey, isAvoidanceScheme = None)
-        val taxAvoidance = TaxAvoidance()
+        val reliefs: Reliefs = Reliefs(periodKey = periodKey, isAvoidanceScheme = None)
+        val taxAvoidance: TaxAvoidance = TaxAvoidance()
         val reliefsTaxAvoidance: ReliefsTaxAvoidance = ReliefBuilder.reliefTaxAvoidance(periodKey, reliefs, taxAvoidance)
 
         val responseJson: JsValue = Json.toJson(reliefsTaxAvoidance)
@@ -219,8 +209,8 @@ class ReliefsServiceSpec extends PlaySpec with GuiceOneServerPerSuite with Mocki
       "Keep the current Reliefs if we have one" in new Setup {
         implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
 
-        val reliefs = Reliefs(periodKey = periodKey, rentalBusiness = true, isAvoidanceScheme = Some(true))
-        val taxAvoidance = TaxAvoidance(rentalBusinessScheme = Some("Avoid-1"))
+        val reliefs: Reliefs = Reliefs(periodKey = periodKey, rentalBusiness = true, isAvoidanceScheme = Some(true))
+        val taxAvoidance: TaxAvoidance = TaxAvoidance(rentalBusinessScheme = Some("Avoid-1"))
         val reliefsTaxAvoidance: ReliefsTaxAvoidance = ReliefBuilder.reliefTaxAvoidance(periodKey, reliefs, taxAvoidance)
 
         val responseJson: JsValue = Json.toJson(reliefsTaxAvoidance)
@@ -245,8 +235,8 @@ class ReliefsServiceSpec extends PlaySpec with GuiceOneServerPerSuite with Mocki
       "throw Internal server exception , for any other status code" in new Setup {
         implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
 
-        val reliefs = Reliefs(periodKey = periodKey, rentalBusiness = true, isAvoidanceScheme = None)
-        val taxAvoidance = TaxAvoidance()
+        val reliefs: Reliefs = Reliefs(periodKey = periodKey, rentalBusiness = true, isAvoidanceScheme = None)
+        val taxAvoidance: TaxAvoidance = TaxAvoidance()
         val reliefsTaxAvoidance: ReliefsTaxAvoidance = ReliefBuilder.reliefTaxAvoidance(periodKey, reliefs, taxAvoidance)
 
         val respJson: JsValue = Json.parse("""{"reason": "some reason"}""")
@@ -280,7 +270,7 @@ class ReliefsServiceSpec extends PlaySpec with GuiceOneServerPerSuite with Mocki
       "Keep the current Reliefs if we have one" in new Setup {
         implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
 
-        val reliefs = Reliefs(periodKey = periodKey, rentalBusiness = true, isAvoidanceScheme = Some(false))
+        val reliefs: Reliefs = Reliefs(periodKey = periodKey, rentalBusiness = true, isAvoidanceScheme = Some(false))
 
         val reliefsTaxAvoidance: ReliefsTaxAvoidance = ReliefBuilder.reliefTaxAvoidance(periodKey, reliefs, TaxAvoidance())
         val responseJson: JsValue = Json.toJson(reliefsTaxAvoidance)
@@ -305,8 +295,8 @@ class ReliefsServiceSpec extends PlaySpec with GuiceOneServerPerSuite with Mocki
       "throw Internal server exception , for any other status code" in new Setup {
         implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
 
-        val reliefs = Reliefs(periodKey = periodKey, rentalBusiness = true, isAvoidanceScheme = None)
-        val taxAvoidance = TaxAvoidance()
+        val reliefs: Reliefs = Reliefs(periodKey = periodKey, rentalBusiness = true, isAvoidanceScheme = None)
+        val taxAvoidance: TaxAvoidance = TaxAvoidance()
         val reliefsTaxAvoidance: ReliefsTaxAvoidance = ReliefBuilder.reliefTaxAvoidance(periodKey, reliefs, taxAvoidance)
 
         val respJson: JsValue = Json.parse("""{"reason": "some reason"}""")
@@ -393,64 +383,72 @@ class ReliefsServiceSpec extends PlaySpec with GuiceOneServerPerSuite with Mocki
     }
 
     "View relief return" must {
-      "if summary data is found in Cache, return Some EtmpReliefReturnsSummary" in new Setup {
-        implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
-        val submittedReliefReturns1 = SubmittedReliefReturns(formBundleNo1, "some relief", new LocalDate("2015-05-05"),
-          new LocalDate("2015-05-05"), new LocalDate("2015-05-05"))
-        val submittedLiabilityReturns1 = SubmittedLiabilityReturns(formBundleNo2, "addr1+2", BigDecimal(1234.00), new LocalDate("2015-05-05"),
+      implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
+      val submittedReliefReturns1: SubmittedReliefReturns = SubmittedReliefReturns(formBundleNo1, "some relief", new LocalDate("2015-05-05"),
+        new LocalDate("2015-05-05"), new LocalDate("2015-05-05"))
+      val submittedLiabilityReturns1: SubmittedLiabilityReturns =
+        SubmittedLiabilityReturns(formBundleNo2, "addr1+2", BigDecimal(1234.00), new LocalDate("2015-05-05"),
           new LocalDate("2015-05-05"), new LocalDate("2015-05-05"), changeAllowed = true, "payment-ref-01")
-        val submittedReturns = SubmittedReturns(periodKey, Seq(submittedReliefReturns1), Seq(submittedLiabilityReturns1))
-        val periodSummaryReturns = PeriodSummaryReturns(periodKey, Seq(), Some(submittedReturns))
-        val data = SummaryReturnsModel(Some(BigDecimal(999.99)), Seq(periodSummaryReturns))
-        when(mockDataCacheConnector.fetchAndGetFormData[SummaryReturnsModel](ArgumentMatchers.eq(RetrieveReturnsResponseId))
-          (any(), any(), any())).thenReturn(Future.successful(Some(data)))
+      val submittedReturns: SubmittedReturns = SubmittedReturns(periodKey, Seq(submittedReliefReturns1), Seq(submittedLiabilityReturns1))
+      val periodSummaryReturns: PeriodSummaryReturns = PeriodSummaryReturns(periodKey, Seq(), Some(submittedReturns))
+      val data: SummaryReturnsModel = SummaryReturnsModel(Some(BigDecimal(999.99)), Seq(periodSummaryReturns))
+
+      "if summary data is found in Cache, return Some EtmpReliefReturnsSummary" in new Setup {
+        when(mockDataCacheConnector.fetchAndGetFormData[SummaryReturnsModel](ArgumentMatchers.eq(RetrieveReturnsResponseId))(any(), any(), any()))
+          .thenReturn(Future.successful(Some(data)))
+
         val result: Future[Option[SubmittedReliefReturns]] = testReliefsService.viewReliefReturn(periodKey, formBundleNo1)
         await(result) must be(Some(submittedReliefReturns1))
       }
 
       "if summary data is found in Cache, but relief return  is None, return None" in new Setup {
         implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
-        val submittedLiabilityReturns1 = SubmittedLiabilityReturns(formBundleNo2, "addr1+2", BigDecimal(1234.00), new LocalDate("2015-05-05"),
+        val submittedLiabilityReturns1: SubmittedLiabilityReturns =
+          SubmittedLiabilityReturns(formBundleNo2, "addr1+2", BigDecimal(1234.00), new LocalDate("2015-05-05"),
           new LocalDate("2015-05-05"), new LocalDate("2015-05-05"), changeAllowed = true, "payment-ref-01")
-        val submittedReturns = SubmittedReturns(periodKey, Seq(), Seq(submittedLiabilityReturns1))
-        val periodSummaryReturns = PeriodSummaryReturns(periodKey, Seq(), Some(submittedReturns))
-        val data = SummaryReturnsModel(Some(BigDecimal(999.99)), Seq(periodSummaryReturns))
-        when(mockDataCacheConnector.fetchAndGetFormData[SummaryReturnsModel](ArgumentMatchers.eq(RetrieveReturnsResponseId))
-          (any(), any(), any())).thenReturn(Future.successful(Some(data)))
+        val submittedReturns: SubmittedReturns = SubmittedReturns(periodKey, Seq(), Seq(submittedLiabilityReturns1))
+        val periodSummaryReturns: PeriodSummaryReturns = PeriodSummaryReturns(periodKey, Seq(), Some(submittedReturns))
+        val data: SummaryReturnsModel = SummaryReturnsModel(Some(BigDecimal(999.99)), Seq(periodSummaryReturns))
+
+        when(mockDataCacheConnector.fetchAndGetFormData[SummaryReturnsModel](ArgumentMatchers.eq(RetrieveReturnsResponseId))(any(), any(), any()))
+          .thenReturn(Future.successful(Some(data)))
+
         val result: Future[Option[SubmittedReliefReturns]] = testReliefsService.viewReliefReturn(periodKey, formBundleNo1)
         await(result) must be(None)
       }
       "if summary data is found in Cache, but it doesn't contain EtmpResponseWrapper, return None" in new Setup {
         implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
         val formBundleNo = "form-123"
-        val data = SummaryReturnsModel(None, Nil)
-        when(mockDataCacheConnector.fetchAndGetFormData[SummaryReturnsModel](ArgumentMatchers.eq(RetrieveReturnsResponseId))
-          (any(), any(), any())).thenReturn(Future.successful(Some(data)))
+        val data: SummaryReturnsModel = SummaryReturnsModel(None, Nil)
+
+        when(mockDataCacheConnector.fetchAndGetFormData[SummaryReturnsModel](ArgumentMatchers.eq(RetrieveReturnsResponseId))(any(), any(), any()))
+          .thenReturn(Future.successful(Some(data)))
+
         val result: Future[Option[SubmittedReliefReturns]] = testReliefsService.viewReliefReturn(periodKey, formBundleNo)
         await(result) must be(None)
       }
       "if no summary data is found in Cache, return None" in new Setup {
         implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
         val formBundleNo = "form-123"
-        when(mockDataCacheConnector.fetchAndGetFormData[SummaryReturnsModel](ArgumentMatchers.eq(RetrieveReturnsResponseId))
-          (any(), any(), any())).thenReturn(Future.successful(None))
+
+        when(mockDataCacheConnector.fetchAndGetFormData[SummaryReturnsModel](ArgumentMatchers.eq(RetrieveReturnsResponseId))(any(), any(), any()))
+          .thenReturn(Future.successful(None))
+
         val result: Future[Option[SubmittedReliefReturns]] = testReliefsService.viewReliefReturn(periodKey, formBundleNo)
         await(result) must be(None)
       }
     }
 
     "delete relief returns" must {
-
       "remove the draft reliefs from the cache" in new Setup {
-
         implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
 
-        when(mockAtedConnector.deleteDraftReliefs(any(), any())) thenReturn Future.successful(HttpResponse(OK, None))
+        when(mockAtedConnector.deleteDraftReliefs(any(), any()))
+          .thenReturn(Future.successful(HttpResponse(OK, None)))
 
         val result: Future[HttpResponse] = testReliefsService.clearDraftReliefs
         await(result).status must be(OK)
       }
-
     }
 
     "delete relief draft returns from period key" must {

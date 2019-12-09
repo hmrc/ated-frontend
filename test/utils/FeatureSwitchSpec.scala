@@ -22,21 +22,17 @@ import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 
-class FeatureSwitchSpec extends PlaySpec with GuiceOneServerPerSuite with BeforeAndAfterEach with MockitoSugar {
+class FeatureSwitchSpec extends PlaySpec with BeforeAndAfterEach with MockitoSugar {
 
-  val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
+  val mockAppConfig: ApplicationConfig = mock[ApplicationConfig]
+
   class Setup {
-    val testFeatureSwitchImpl: FeatureSwitchImpl = new FeatureSwitchImpl(
-      mockAppConfig
-    )
+    val testFeatureSwitchImpl: FeatureSwitchImpl = new FeatureSwitchImpl(mockAppConfig)
   }
 
-  override def beforeEach: Unit = {
-    System.clearProperty("feature.test")
-  }
+  override def beforeEach: Unit = System.clearProperty("feature.test")
 
   "FeatureSwitch" should {
-
     "generate correct system property name for the feature" in new Setup {
       testFeatureSwitchImpl.systemPropertyName("test") must be("features.test")
     }
@@ -61,7 +57,7 @@ class FeatureSwitchSpec extends PlaySpec with GuiceOneServerPerSuite with Before
 
     "support dynamic toggling" in new Setup {
       System.setProperty("features.test", "false")
-      val testFeatureSwitch = FeatureSwitch("test", enabled = true)
+      val testFeatureSwitch: FeatureSwitch = FeatureSwitch("test", enabled = true)
       testFeatureSwitchImpl.enable(testFeatureSwitch)
       testFeatureSwitchImpl.forName("test").enabled must be(true)
 

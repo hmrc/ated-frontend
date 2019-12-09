@@ -34,9 +34,7 @@ class BankDetailsController @Inject()(mcc: MessagesControllerComponents,
                                       changeLiabilityReturnService: ChangeLiabilityReturnService,
                                       authAction: AuthAction,
                                       val dataCacheConnector: DataCacheConnector,
-                                      val backLinkCacheConnector: BackLinkCacheConnector)
-                                     (implicit val appConfig: ApplicationConfig)
-
+                                      val backLinkCacheConnector: BackLinkCacheConnector)(implicit val appConfig: ApplicationConfig)
   extends FrontendController(mcc) with BackLinkController with ClientHelper with ControllerIds {
 
   implicit val ec: ExecutionContext = mcc.executionContext

@@ -18,6 +18,7 @@ package views.reliefs
 
 import config.ApplicationConfig
 import forms.ReliefForms.reliefsForm
+import testhelpers.MockAuthUtil
 import models.{Reliefs, StandardAuthRetrievals}
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
@@ -26,7 +27,7 @@ import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.test.FakeRequest
-import utils.{MockAuthUtil, PeriodUtils}
+import utils.PeriodUtils
 
 class chooseReliefsSpec extends FeatureSpec with GuiceOneAppPerSuite with MockitoSugar
   with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
@@ -121,7 +122,7 @@ class chooseReliefsSpec extends FeatureSpec with GuiceOneAppPerSuite with Mockit
       Given("the client is creating a new relief and want to see the options")
       When("The user views the page")
 
-      val reliefs = Reliefs(periodKey = periodKey, rentalBusiness = true)
+      val reliefs: Reliefs = Reliefs(periodKey = periodKey, rentalBusiness = true)
       val html = views.html.reliefs.chooseReliefs(periodKey, reliefsForm.fill(reliefs), new LocalDate("2015-04-01"), Some("http://backLink"))
 
       val document = Jsoup.parse(html.toString())

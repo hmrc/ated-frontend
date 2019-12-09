@@ -18,6 +18,7 @@ package views
 
 import config.ApplicationConfig
 import forms.AtedForms.selectPeriodForm
+import testhelpers.MockAuthUtil
 import models.StandardAuthRetrievals
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
@@ -26,7 +27,7 @@ import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.test.FakeRequest
-import utils.{MockAuthUtil, PeriodUtils}
+import utils.PeriodUtils
 
 class selectPeriodSpec extends FeatureSpec with GuiceOneServerPerSuite with MockitoSugar
   with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {

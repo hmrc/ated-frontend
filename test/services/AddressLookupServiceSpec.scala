@@ -17,6 +17,7 @@
 package services
 
 import connectors.{AddressLookupConnector, DataCacheConnector}
+import testhelpers.MockAuthUtil
 import models._
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
@@ -26,7 +27,6 @@ import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.HeaderCarrier
-import utils.MockAuthUtil
 
 import scala.concurrent.Future
 

@@ -21,6 +21,7 @@ import java.util.UUID
 import builders.SessionBuilder
 import config.ApplicationConfig
 import controllers.auth.AuthAction
+import testhelpers.MockAuthUtil
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
@@ -30,7 +31,6 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
-import utils.MockAuthUtil
 
 import scala.concurrent.Future
 

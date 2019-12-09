@@ -18,6 +18,7 @@ package controllers.propertyDetails
 
 import builders.PropertyDetailsBuilder
 import connectors.BackLinkCacheConnector
+import testhelpers.MockAuthUtil
 import models.StandardAuthRetrievals
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
@@ -30,7 +31,6 @@ import play.api.mvc.Results._
 import play.api.test.Helpers._
 import services._
 import uk.gov.hmrc.http.HeaderCarrier
-import utils.MockAuthUtil
 
 import scala.concurrent.{ExecutionContext, Future}
 

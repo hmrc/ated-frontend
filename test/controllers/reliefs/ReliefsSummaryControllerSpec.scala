@@ -22,6 +22,7 @@ import builders._
 import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.AuthAction
+import testhelpers.MockAuthUtil
 import models.{Reliefs, ReliefsTaxAvoidance, TaxAvoidance}
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
@@ -36,7 +37,7 @@ import play.api.test.Helpers._
 import services.{ReliefsService, SubscriptionDataService}
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
-import utils.{AtedConstants, MockAuthUtil, PeriodUtils}
+import utils.{AtedConstants, PeriodUtils}
 
 import scala.concurrent.Future
 

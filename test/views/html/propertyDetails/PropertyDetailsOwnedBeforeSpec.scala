@@ -18,13 +18,13 @@ package views.html.propertyDetails
 
 import config.ApplicationConfig
 import forms.PropertyDetailsForms
+import testhelpers.{AtedViewSpec, MockAuthUtil}
 import models.StandardAuthRetrievals
 import org.scalatest.mockito.MockitoSugar
 import play.api.data.{Form, FormError}
 import play.api.i18n.Messages
 import play.twirl.api.Html
-import utils.viewHelpers.AtedViewSpec
-import utils.{MockAuthUtil, PeriodUtils}
+import utils.PeriodUtils
 
 class PropertyDetailsOwnedBeforeSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil {
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
