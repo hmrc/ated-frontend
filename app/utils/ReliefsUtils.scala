@@ -17,9 +17,12 @@
 package utils
 
 import models._
+import play.api.Logger
 import play.api.Play.current
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
+
+import scala.collection.immutable
 
 object ReliefsUtils extends ReliefConstants {
 
@@ -59,6 +62,35 @@ object ReliefsUtils extends ReliefConstants {
       EquityReleaseDesc -> "ated.choose-reliefs.equityRelease"
     )
     reliefsDescription.getOrElse(etmpReliefName, etmpReliefName)
+  }
+
+  private[utils] val dataCleanseMap = Map(
+    "rentalBusinessDate"      -> "rentalBusiness",
+    "openToPublicDate"        -> "openToPublic",
+    "propertyDeveloperDate"   -> "propertyDeveloper",
+    "propertyTradingDate"     -> "propertyTrading",
+    "lendingDate"             -> "lending",
+    "employeeOccupationDate"  -> "employeeOccupation",
+    "farmHousesDate"          -> "farmHouses",
+    "socialHousingDate"       -> "socialHousing",
+    "equityReleaseDate"       -> "equityRelease"
+  )
+
+  def cleanDateTuples(data: Map[String, Seq[String]]): Map[String, Seq[String]] = {
+    val keysToKeep: List[String] = data.flatMap { case (key, entry) =>
+      entry.headOption
+        .filter(_ == "true")
+        .map(_ => key)
+    }.toList
+
+    data.filter { case (key, _) =>
+      val takeWhileKey: String = key.takeWhile(_ != '.')
+
+      dataCleanseMap.get(takeWhileKey) match {
+        case Some(dateField)  => keysToKeep.contains(dateField)
+        case _                => true
+      }
+    }
   }
 
 }

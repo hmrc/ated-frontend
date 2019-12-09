@@ -25,11 +25,11 @@ import javax.inject.Inject
 import models.Reliefs
 import play.api.Logger
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{DelegationService, ReliefsService}
+import services.ReliefsService
 import uk.gov.hmrc.http.ForbiddenException
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.AtedUtils._
-import utils.PeriodUtils
+import utils.{PeriodUtils, ReliefsUtils}
 
 import scala.collection.mutable.ArrayBuffer
 import scala.concurrent.ExecutionContext
@@ -66,58 +66,58 @@ class ChooseReliefsController @Inject()(mcc: MessagesControllerComponents,
     }
   }
 
-    def editFromSummary(periodKey: Int): Action[AnyContent] = Action.async { implicit request =>
-      authAction.authorisedAction { implicit authContext =>
-        ensureClientContext {
-          validatePeriodKey(periodKey) {
-            for {
-              retrievedData <- reliefsService.retrieveDraftReliefs(authContext.atedReferenceNumber, periodKey)
-            } yield {
-              val backLink = Some(controllers.reliefs.routes.ReliefsSummaryController.view(periodKey).url)
-              retrievedData match {
-                case Some(reliefs) =>
-                  Ok(views.html.reliefs.chooseReliefs(reliefs.periodKey, reliefsForm.fill(reliefs.reliefs), PeriodUtils.periodStartDate(periodKey), backLink))
-                case _ => Ok(views.html.reliefs
-                  .chooseReliefs(periodKey, reliefsForm.fill(Reliefs(periodKey)), PeriodUtils.periodStartDate(periodKey), backLink))
-              }
+  def editFromSummary(periodKey: Int): Action[AnyContent] = Action.async { implicit request =>
+    authAction.authorisedAction { implicit authContext =>
+      ensureClientContext {
+        validatePeriodKey(periodKey) {
+          for {
+            retrievedData <- reliefsService.retrieveDraftReliefs(authContext.atedReferenceNumber, periodKey)
+          } yield {
+            val backLink = Some(controllers.reliefs.routes.ReliefsSummaryController.view(periodKey).url)
+            retrievedData match {
+              case Some(reliefs) =>
+                Ok(views.html.reliefs.chooseReliefs(reliefs.periodKey, reliefsForm.fill(reliefs.reliefs), PeriodUtils.periodStartDate(periodKey), backLink))
+              case _ => Ok(views.html.reliefs
+                .chooseReliefs(periodKey, reliefsForm.fill(Reliefs(periodKey)), PeriodUtils.periodStartDate(periodKey), backLink))
             }
           }
         }
-      } recover {
-        case _: ForbiddenException     =>
-          Logger.warn("[ChooseReliefsController][editFromSummary] Forbidden exception")
-          authAction.unauthorisedUrl()
       }
+    } recover {
+      case _: ForbiddenException =>
+        Logger.warn("[ChooseReliefsController][editFromSummary] Forbidden exception")
+        authAction.unauthorisedUrl()
     }
+  }
 
-    def send(periodKey: Int): Action[AnyContent] = Action.async { implicit request =>
-      authAction.authorisedAction { implicit authContext =>
-        ensureClientContext {
-          validatePeriodKey(periodKey) {
-            val data = addParamsToRequest(Map("periodKey" -> ArrayBuffer(periodKey.toString)))
-            reliefsForm.bindFromRequest(data.get).fold(
-              formWithError =>
-                currentBackLink.map { backLink =>
-                  BadRequest(views.html.reliefs.chooseReliefs(periodKey, formWithError, PeriodUtils.periodStartDate(periodKey), backLink))
-                },
-              reliefs => {
-                for {
-                  _ <- reliefsService.saveDraftReliefs(authContext.atedReferenceNumber, periodKey, reliefs)
-                  result <-
+  def send(periodKey: Int): Action[AnyContent] = Action.async { implicit request =>
+    authAction.authorisedAction { implicit authContext =>
+      ensureClientContext {
+        validatePeriodKey(periodKey) {
+          val data = addParamsToRequest(Map("periodKey" -> ArrayBuffer(periodKey.toString)))
+          reliefsForm.bindFromRequest(ReliefsUtils.cleanDateTuples(data.get)).fold(
+            formWithError =>
+              currentBackLink.map { backLink =>
+                BadRequest(views.html.reliefs.chooseReliefs(periodKey, formWithError, PeriodUtils.periodStartDate(periodKey), backLink))
+              },
+            reliefs => {
+              for {
+                _ <- reliefsService.saveDraftReliefs(authContext.atedReferenceNumber, periodKey, reliefs)
+                result <-
                   redirectWithBackLink(avoidanceSchemeBeingUsedController.controllerId,
                     controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.view(periodKey),
                     Some(routes.ChooseReliefsController.view(periodKey).url))
-                } yield {
-                  result
-                }
+              } yield {
+                result
               }
-            )
-          }
+            }
+          )
         }
-      } recover {
-        case _: ForbiddenException     =>
-          Logger.warn("[ChooseReliefsController][send] Forbidden exception")
-          authAction.unauthorisedUrl()
       }
+    } recover {
+      case _: ForbiddenException =>
+        Logger.warn("[ChooseReliefsController][send] Forbidden exception")
+        authAction.unauthorisedUrl()
     }
   }
+}
