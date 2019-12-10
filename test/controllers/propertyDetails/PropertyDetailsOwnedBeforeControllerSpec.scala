@@ -22,6 +22,7 @@ import builders.{PropertyDetailsBuilder, SessionBuilder}
 import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.AuthAction
+import testhelpers.MockAuthUtil
 import models._
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
@@ -38,7 +39,7 @@ import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService}
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.PeriodUtils.calculatePeriod
-import utils.{AtedConstants, MockAuthUtil, PeriodUtils}
+import utils.{AtedConstants, PeriodUtils}
 
 import scala.concurrent.Future
 

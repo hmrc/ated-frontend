@@ -19,6 +19,7 @@ package connectors
 import java.util.UUID
 
 import config.ApplicationConfig
+import testhelpers.MockAuthUtil
 import models._
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
@@ -30,7 +31,6 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.http.logging.SessionId
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
-import utils.MockAuthUtil
 
 import scala.concurrent.Future
 

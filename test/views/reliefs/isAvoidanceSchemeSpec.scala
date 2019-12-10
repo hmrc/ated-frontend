@@ -18,6 +18,7 @@ package views.reliefs
 
 import config.ApplicationConfig
 import forms.ReliefForms._
+import testhelpers.MockAuthUtil
 import models.{IsTaxAvoidance, StandardAuthRetrievals}
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
@@ -26,7 +27,6 @@ import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.test.FakeRequest
-import utils.MockAuthUtil
 
 class isAvoidanceSchemeSpec extends FeatureSpec with GuiceOneAppPerSuite
   with MockitoSugar with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {

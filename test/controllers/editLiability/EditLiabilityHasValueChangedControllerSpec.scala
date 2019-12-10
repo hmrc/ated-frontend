@@ -23,6 +23,7 @@ import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.AuthAction
 import controllers.propertyDetails.{IsFullTaxPeriodController, PropertyDetailsOwnedBeforeController, PropertyDetailsTaxAvoidanceController}
+import testhelpers.MockAuthUtil
 import models.{HasValueChanged, PropertyDetails}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
@@ -38,7 +39,7 @@ import play.api.test.Helpers._
 import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService}
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
-import utils.{AtedConstants, MockAuthUtil}
+import utils.AtedConstants
 
 import scala.concurrent.Future
 

@@ -17,16 +17,20 @@
 package utils
 
 import models._
-import play.api.Logger
-import play.api.Play.current
-import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
 
-import scala.collection.immutable
+object ReliefsUtils extends {
 
-object ReliefsUtils extends ReliefConstants {
+  val RentalBusinessDesc = "Property rental businesses"
+  val OpenToPublicDesc = "Dwellings opened to the public"
+  val PropDevDesc = "Property developers"
+  val EmpOccDesc = "Dwellings used for trade purposes"
+  val PropTradingDesc = "Property traders carrying on a property trading business"
+  val LendingDesc = "Financial institutions acquiring dwellings in the course of lending"
+  val FarmHouseDesc = "Farmhouses"
+  val SocialHouseDesc = "Registered providers of Social Housing"
+  val EquityReleaseDesc = "Equity Release Scheme"
 
-  def createReliefsTaxAvoidance(periodKey: Int, isAvoidanceScheme : Option[Boolean] = None) = {
+  def createReliefsTaxAvoidance(periodKey: Int, isAvoidanceScheme: Option[Boolean] = None): ReliefsTaxAvoidance = {
     ReliefsTaxAvoidance(periodKey = periodKey,
       reliefs = Reliefs(periodKey = periodKey, isAvoidanceScheme = isAvoidanceScheme),
       taxAvoidance = TaxAvoidance(),

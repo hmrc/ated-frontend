@@ -22,11 +22,11 @@ import builders.{ReliefBuilder, SessionBuilder, TitleBuilder}
 import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.AuthAction
+import testhelpers.MockAuthUtil
 import models.{Reliefs, ReliefsTaxAvoidance, TaxAvoidance}
 import org.jsoup.Jsoup
-import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito._
-import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
@@ -36,11 +36,11 @@ import play.api.test.Helpers._
 import services.ReliefsService
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
-import utils.{AtedConstants, MockAuthUtil, PeriodUtils}
+import utils.{AtedConstants, PeriodUtils}
 
 import scala.concurrent.Future
 
-class AvoidanceSchemesControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with MockAuthUtil {
+class AvoidanceSchemesControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with MockAuthUtil {
 
   implicit val mockAppConfig: ApplicationConfig = mock[ApplicationConfig]
   implicit lazy val hc: HeaderCarrier = HeaderCarrier()
@@ -57,7 +57,6 @@ class AvoidanceSchemesControllerSpec extends PlaySpec with GuiceOneServerPerSuit
     TaxAvoidance(rentalBusinessScheme = Some("text")))
 
   class Setup {
-
     val mockAuthAction: AuthAction = new AuthAction(
       mockAppConfig,
       mockDelegationService,
@@ -73,33 +72,48 @@ class AvoidanceSchemesControllerSpec extends PlaySpec with GuiceOneServerPerSuit
       mockBackLinkCacheConnector
     )
 
-    def getWithAuthorisedUser(testReliefs: Option[ReliefsTaxAvoidance])(test: Future[Result] => Any) {
+    def withAuthorisedUser(testReliefs: Option[ReliefsTaxAvoidance])(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
-      when(mockDataCacheConnector.fetchAndGetFormData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
-        (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-      when(mockReliefsService.retrieveDraftReliefs(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(testReliefs))
-      when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
-      when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+
+      when(mockDataCacheConnector.fetchAndGetFormData[String](eqTo(AtedConstants.DelegatedClientAtedRefNumber))(any(), any(), any()))
+        .thenReturn(Future.successful(Some("XN1200000100001")))
+
+      when(mockReliefsService.retrieveDraftReliefs(any(), any())(any(), any()))
+        .thenReturn(Future.successful(testReliefs))
+
+      when(mockBackLinkCacheConnector.fetchAndGetBackLink(any())(any()))
+        .thenReturn(Future.successful(None))
+
+      when(mockBackLinkCacheConnector.saveBackLink(any(), any())(any()))
+        .thenReturn(Future.successful(None))
+
       val result = testAvoidanceSchemesController.view(periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
 
-    def getForbiddenUser(testReliefs: Option[ReliefsTaxAvoidance])(test: Future[Result] => Any) {
+    def withForbiddenUser(testReliefs: Option[ReliefsTaxAvoidance])(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
       setForbiddenAuthMocks(authMock)
-      when(mockDataCacheConnector.fetchAndGetFormData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
-        (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-      when(mockReliefsService.retrieveDraftReliefs(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(testReliefs))
-      when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
-      when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+      when(mockDataCacheConnector.fetchAndGetFormData[String](eqTo(AtedConstants.DelegatedClientAtedRefNumber))(any(), any(), any()))
+        .thenReturn(Future.successful(Some("XN1200000100001")))
+
+      when(mockReliefsService.retrieveDraftReliefs(any(), any())(any(), any()))
+        .thenReturn(Future.successful(testReliefs))
+
+      when(mockBackLinkCacheConnector.fetchAndGetBackLink(any())(any()))
+        .thenReturn(Future.successful(None))
+
+      when(mockBackLinkCacheConnector.saveBackLink(any(), any())(any()))
+        .thenReturn(Future.successful(None))
+
       val result = testAvoidanceSchemesController.view(periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
 
-    def getWithUnAuthorisedUser(test: Future[Result] => Any) {
+    def withUnAuthorisedUser(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
       setInvalidAuthMocks(authMock)
@@ -107,27 +121,34 @@ class AvoidanceSchemesControllerSpec extends PlaySpec with GuiceOneServerPerSuit
       test(result)
     }
 
-    def submitWithUnAuthorisedUser(test: Future[Result] => Any) {
+    def submitWithUnAuthorisedUser(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
       setInvalidAuthMocks(authMock)
-      when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+      when(mockBackLinkCacheConnector.saveBackLink(any(), any())(any())).thenReturn(Future.successful(None))
       val result = testAvoidanceSchemesController.submit(periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
 
-    def submitWithAuthorisedUser(formData: Seq[(String, String)], avoidanceSchemes: ReliefsTaxAvoidance = testAvoidanceScheme)(test: Future[Result] => Any) {
+    def submitWithAuthorisedUser(formData: Seq[(String, String)], avoidanceSchemes: ReliefsTaxAvoidance = testAvoidanceScheme)
+                                (test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
-      when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
-        (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-      when(mockReliefsService.retrieveDraftReliefs(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+
+      when(mockDataCacheConnector.fetchAtedRefData[String](eqTo(AtedConstants.DelegatedClientAtedRefNumber))
+        (any(), any(), any())).thenReturn(Future.successful(Some("XN1200000100001")))
+
+      when(mockReliefsService.retrieveDraftReliefs(any(), any())(any(), any()))
         .thenReturn(Future.successful(Some(avoidanceSchemes)))
-      when(mockReliefsService.saveDraftTaxAvoidance(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+
+      when(mockReliefsService.saveDraftTaxAvoidance(any(), any(), any())(any(), any()))
         .thenReturn(Future.successful(Some(avoidanceSchemes)))
-      when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+
+      when(mockBackLinkCacheConnector.saveBackLink(any(), any())(any()))
+        .thenReturn(Future.successful(None))
 
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
+
       val result = testAvoidanceSchemesController.submit(periodKey)
         .apply(SessionBuilder.updateRequestFormWithSession(FakeRequest().withFormUrlEncodedBody(formData: _*), userId))
 
@@ -136,16 +157,22 @@ class AvoidanceSchemesControllerSpec extends PlaySpec with GuiceOneServerPerSuit
 
     def submitForbiddenUser(formData: Seq[(String, String)], avoidanceSchemes: ReliefsTaxAvoidance = testAvoidanceScheme)(test: Future[Result] => Any) {
       val userId = s"user-${UUID.randomUUID}"
-      when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
-        (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-      when(mockReliefsService.retrieveDraftReliefs(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+
+      when(mockDataCacheConnector.fetchAtedRefData[String](eqTo(AtedConstants.DelegatedClientAtedRefNumber))(any(), any(), any()))
+        .thenReturn(Future.successful(Some("XN1200000100001")))
+
+      when(mockReliefsService.retrieveDraftReliefs(any(), any())(any(), any()))
         .thenReturn(Future.successful(Some(avoidanceSchemes)))
-      when(mockReliefsService.saveDraftTaxAvoidance(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+
+      when(mockReliefsService.saveDraftTaxAvoidance(any(), any(), any())(any(), any()))
         .thenReturn(Future.successful(Some(avoidanceSchemes)))
-      when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+
+      when(mockBackLinkCacheConnector.saveBackLink(any(), any())(any()))
+        .thenReturn(Future.successful(None))
 
       val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
       setForbiddenAuthMocks(authMock)
+
       val result = testAvoidanceSchemesController.submit(periodKey)
         .apply(SessionBuilder.updateRequestFormWithSession(FakeRequest().withFormUrlEncodedBody(formData: _*), userId))
 
@@ -153,37 +180,31 @@ class AvoidanceSchemesControllerSpec extends PlaySpec with GuiceOneServerPerSuit
     }
   }
 
-  override def beforeEach(): Unit = {
-  }
-
   "TaxAvoidanceController" must {
     "reliefSummary" must {
-
       "unauthorised users" must {
-
         "respond with a redirect" in new Setup {
-          getWithUnAuthorisedUser { result =>
+          withUnAuthorisedUser { result =>
             status(result) must be(SEE_OTHER)
           }
         }
 
         "be redirected to the login page" in new Setup {
-          getWithUnAuthorisedUser { result =>
+          withUnAuthorisedUser { result =>
             redirectLocation(result).get must include("/ated/unauthorised")
           }
         }
 
         "respond with a redirect to unauthorised URL" in new Setup {
-          getForbiddenUser(None) { result =>
+          withForbiddenUser(None) { result =>
             redirectLocation(result).get must include("/ated/unauthorised")
           }
         }
       }
 
       "Authorised users" must {
-
         "be redirected to the declaration page if we don't have any data" in new Setup {
-          getWithAuthorisedUser(None) {
+          withAuthorisedUser(None) {
             result =>
               status(result) must be(SEE_OTHER)
               redirectLocation(result).get must include("/ated/reliefs/2015/relief-summary")
@@ -191,22 +212,20 @@ class AvoidanceSchemesControllerSpec extends PlaySpec with GuiceOneServerPerSuit
         }
 
         "be redirected to the declaration page if we don't have tax avoidance checked" in new Setup {
-          getWithAuthorisedUser(Some(ReliefBuilder.reliefTaxAvoidance(periodKey,
+          withAuthorisedUser(Some(ReliefBuilder.reliefTaxAvoidance(periodKey,
             Reliefs(periodKey = periodKey, isAvoidanceScheme = Some(false))
-          ))) {
-            result =>
+          ))){ result =>
               status(result) must be(SEE_OTHER)
               redirectLocation(result).get must include("/ated/reliefs/2015/relief-summary")
           }
         }
 
         "show the tax avoidance scheme view" in new Setup {
-          getWithAuthorisedUser(Some(
+          withAuthorisedUser(Some(
             ReliefBuilder.reliefTaxAvoidance(periodKey,
               Reliefs(periodKey = periodKey, isAvoidanceScheme = Some(true), openToPublic = true),
               taxAvoidance = TaxAvoidance(openToPublicScheme = Some("12345678"))
-            ))) {
-            result =>
+            ))) { result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
               document.title() must be(TitleBuilder.buildTitle("Enter your avoidance scheme number"))
@@ -217,12 +236,10 @@ class AvoidanceSchemesControllerSpec extends PlaySpec with GuiceOneServerPerSuit
               document.getElementById("submit").text() must be("Continue")
           }
         }
-
       }
 
       "Submit" must {
         "unauthorised users" must {
-
           "respond with a redirect" in new Setup {
             submitWithUnAuthorisedUser {
               result =>
@@ -248,9 +265,7 @@ class AvoidanceSchemesControllerSpec extends PlaySpec with GuiceOneServerPerSuit
       }
 
       "submit" must {
-
         "authorised user" must {
-
           "respond with a redirect" in new Setup {
             val formInput: Seq[(String, String)] = Seq(("rentalBusinessScheme", "12345678"), ("rentalBusinessSchemePromoter", "12345678"))
 
@@ -261,7 +276,10 @@ class AvoidanceSchemesControllerSpec extends PlaySpec with GuiceOneServerPerSuit
 
           "for invalid data, return BAD_REQUEST" in new Setup {
             val formInput: Seq[Nothing] = Seq()
-            when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+
+            when(mockBackLinkCacheConnector.fetchAndGetBackLink(any())(any()))
+              .thenReturn(Future.successful(None))
+
             submitWithAuthorisedUser(formInput) { result =>
               status(result) must be(BAD_REQUEST)
               contentAsString(result) must include("You must enter a reference number")
@@ -270,7 +288,10 @@ class AvoidanceSchemesControllerSpec extends PlaySpec with GuiceOneServerPerSuit
 
           "if avoidance scheme is not valid, bad request must be returned" in new Setup {
             val formInput: Seq[(String, String)] = Seq(("rentalBusinessScheme", "ABC123"))
-            when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+
+            when(mockBackLinkCacheConnector.fetchAndGetBackLink(any())(any()))
+              .thenReturn(Future.successful(None))
+
             submitWithAuthorisedUser(formInput) { result =>
               status(result) must be(BAD_REQUEST)
               contentAsString(result) must include("There is a problem with rental business avoidance scheme reference number. Check the number and try again.")
@@ -284,13 +305,16 @@ class AvoidanceSchemesControllerSpec extends PlaySpec with GuiceOneServerPerSuit
               ("lendingScheme", "56")
             )
 
-            val reliefs = ReliefsTaxAvoidance(periodKey,
+            val reliefs: ReliefsTaxAvoidance = ReliefsTaxAvoidance(periodKey,
               periodStartDate = PeriodUtils.periodStartDate(periodKey),
               periodEndDate = PeriodUtils.periodEndDate(periodKey),
               reliefs = Reliefs(periodKey = periodKey,rentalBusiness = true, propertyDeveloper = true, lending = true),
               taxAvoidance = TaxAvoidance()
             )
-            when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+
+            when(mockBackLinkCacheConnector.fetchAndGetBackLink(any())(any()))
+              .thenReturn(Future.successful(None))
+
             submitWithAuthorisedUser(formInput, reliefs) { result =>
               status(result) must be(BAD_REQUEST)
 

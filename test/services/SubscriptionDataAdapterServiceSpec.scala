@@ -20,12 +20,10 @@ import java.util.UUID
 
 import connectors.AtedConnector
 import models._
-import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
-import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
-import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.libs.json.{JsValue, Json}
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.logging.SessionId
@@ -33,17 +31,14 @@ import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, HttpResponse, Inter
 
 import scala.concurrent.Future
 
-class SubscriptionDataAdapterServiceSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
+class SubscriptionDataAdapterServiceSpec extends PlaySpec with MockitoSugar{
 
   val mockAtedConnector: AtedConnector = mock[AtedConnector]
 
-class Setup {
-  val testSubscriptionDataAdapterService: SubscriptionDataAdapterService = new SubscriptionDataAdapterService(
-    mockAtedConnector
-  )
-}
-
-  override def beforeEach: Unit = {
+  class Setup {
+    val testSubscriptionDataAdapterService: SubscriptionDataAdapterService = new SubscriptionDataAdapterService(
+      mockAtedConnector
+    )
   }
 
   val successJson: String =
@@ -184,7 +179,8 @@ class Setup {
       implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
 
       val successResponse: JsValue = Json.parse(successJson)
-      when(mockAtedConnector.retrieveSubscriptionData()(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+      when(mockAtedConnector.retrieveSubscriptionData()(any(), any()))
+        .thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
 
       val result: Future[Option[SubscriptionData]] = testSubscriptionDataAdapterService.retrieveSubscriptionData
       val data: Option[SubscriptionData] = await(result)
@@ -196,7 +192,8 @@ class Setup {
     "return no data if we have none" in new Setup {
       implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID()}")))
 
-      when(mockAtedConnector.retrieveSubscriptionData()(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(NOT_FOUND, None)))
+      when(mockAtedConnector.retrieveSubscriptionData()(any(), any()))
+        .thenReturn(Future.successful(HttpResponse(NOT_FOUND, None)))
 
       val result: Future[Option[SubscriptionData]] = testSubscriptionDataAdapterService.retrieveSubscriptionData
       val data: Option[SubscriptionData] = await(result)
@@ -206,7 +203,8 @@ class Setup {
     "throws an exception for a bad request" in new Setup {
       implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID()}")))
 
-      when(mockAtedConnector.retrieveSubscriptionData()(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
+      when(mockAtedConnector.retrieveSubscriptionData()(any(), any()))
+        .thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
 
       val result: Future[Option[SubscriptionData]] = testSubscriptionDataAdapterService.retrieveSubscriptionData
       val thrown: BadRequestException = the[BadRequestException] thrownBy await(result)
@@ -216,7 +214,8 @@ class Setup {
     "throws an exception for a internal server error" in new Setup {
       implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID()}")))
 
-      when(mockAtedConnector.retrieveSubscriptionData()(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(NO_CONTENT, None)))
+      when(mockAtedConnector.retrieveSubscriptionData()(any(), any()))
+        .thenReturn(Future.successful(HttpResponse(NO_CONTENT, None)))
 
       val result: Future[Option[SubscriptionData]] = testSubscriptionDataAdapterService.retrieveSubscriptionData
       val thrown: InternalServerException = the[InternalServerException] thrownBy await(result)
@@ -232,17 +231,18 @@ class Setup {
 
         "save the address details" in new Setup {
 
-          when(mockAtedConnector.updateSubscriptionData(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+          when(mockAtedConnector.updateSubscriptionData(any())(any(), any()))
             .thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
 
-          val updateContactDetails = ContactDetails()
+          val updateContactDetails: ContactDetails = ContactDetails()
           val result: Future[Option[UpdateSubscriptionDataRequest]] = testSubscriptionDataAdapterService.updateSubscriptionData(updateSubscriptionData)
           val addressDetails: Option[UpdateSubscriptionDataRequest] = await(result)
           addressDetails.isDefined must be(false)
         }
 
         "save the address details successful" in new Setup {
-          when(mockAtedConnector.updateSubscriptionData(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, None)))
+          when(mockAtedConnector.updateSubscriptionData(any())(any(), any()))
+            .thenReturn(Future.successful(HttpResponse(OK, None)))
 
           val result: Future[Option[UpdateSubscriptionDataRequest]] = testSubscriptionDataAdapterService.updateSubscriptionData(updateSubscriptionData)
           val addressDetails: Option[UpdateSubscriptionDataRequest] = await(result)
@@ -252,8 +252,8 @@ class Setup {
 
     "createEditEmailWithConsentRequest" must {
       "return None, if no correspondence address is found" in new Setup {
-        val successResponse = SubscriptionData("", "", address = Nil, emailConsent = Some(true))
-        val updatedDetails = EditContactDetailsEmail(emailAddress = "aa@mail.com", emailConsent = true)
+        val successResponse: SubscriptionData = SubscriptionData("", "", address = Nil, emailConsent = Some(true))
+        val updatedDetails: EditContactDetailsEmail = EditContactDetailsEmail(emailAddress = "aa@mail.com", emailConsent = true)
         val response: Option[UpdateSubscriptionDataRequest] = testSubscriptionDataAdapterService
           .createEditEmailWithConsentRequest(successResponse, updatedDetails)
         response.isDefined must be(false)
@@ -261,7 +261,7 @@ class Setup {
 
       "return Updated Indicators, if correspondence address is found" in new Setup {
         val successResponse: SubscriptionData = Json.parse(successJson1).as[SubscriptionData]
-        val updatedDetails = EditContactDetailsEmail(emailAddress = "aa@mail.com", emailConsent = true)
+        val updatedDetails: EditContactDetailsEmail = EditContactDetailsEmail(emailAddress = "aa@mail.com", emailConsent = true)
         val response: Option[UpdateSubscriptionDataRequest] = testSubscriptionDataAdapterService
           .createEditEmailWithConsentRequest(successResponse, updatedDetails)
         response.isDefined must be(true)
@@ -274,8 +274,8 @@ class Setup {
     }
     "createEditContactDetailsRequest" must {
       "return None, if no correspondence address is found" in new Setup {
-        val successResponse = SubscriptionData("", "", address = Nil, emailConsent = Some(true))
-        val updatedDetails = EditContactDetails("name1", "name2", phoneNumber = "123456789")
+        val successResponse: SubscriptionData = SubscriptionData("", "", address = Nil, emailConsent = Some(true))
+        val updatedDetails: EditContactDetails = EditContactDetails("name1", "name2", phoneNumber = "123456789")
         val response: Option[UpdateSubscriptionDataRequest] = testSubscriptionDataAdapterService
           .createEditContactDetailsRequest(successResponse, updatedDetails)
         response.isDefined must be(false)
@@ -283,7 +283,7 @@ class Setup {
 
       "return Some, if correspondence address is found" in new Setup {
         val successResponse: SubscriptionData = Json.parse(successJson1).as[SubscriptionData]
-        val updatedDetails = EditContactDetails("name1", "name2", phoneNumber = "123456789")
+        val updatedDetails: EditContactDetails = EditContactDetails("name1", "name2", phoneNumber = "123456789")
         val response: Option[UpdateSubscriptionDataRequest] = testSubscriptionDataAdapterService
           .createEditContactDetailsRequest(successResponse, updatedDetails)
         response.isDefined must be(true)
@@ -295,7 +295,7 @@ class Setup {
 
       "return Some, if correspondence address is found but BLANK postCode" in new Setup {
         val successResponse: SubscriptionData = Json.parse(successJson2).as[SubscriptionData]
-        val updatedDetails = EditContactDetails("name1", "name2", phoneNumber = "123456789")
+        val updatedDetails: EditContactDetails = EditContactDetails("name1", "name2", phoneNumber = "123456789")
         val response: Option[UpdateSubscriptionDataRequest] = testSubscriptionDataAdapterService
           .createEditContactDetailsRequest(successResponse, updatedDetails)
         response.isDefined must be(true)
@@ -307,7 +307,7 @@ class Setup {
 
       "return Some, if correspondence address is found but no postCode" in new Setup {
         val successResponse: SubscriptionData = Json.parse(successJson3).as[SubscriptionData]
-        val updatedDetails = EditContactDetails("name1", "name2", phoneNumber = "123456789")
+        val updatedDetails: EditContactDetails = EditContactDetails("name1", "name2", phoneNumber = "123456789")
         val response: Option[UpdateSubscriptionDataRequest] = testSubscriptionDataAdapterService
           .createEditContactDetailsRequest(successResponse, updatedDetails)
         response.isDefined must be(true)
@@ -320,8 +320,8 @@ class Setup {
 
     "createUpdateCorrespondenceAddressRequest" must {
       "return None if no correspondence address is found" in new Setup {
-        val successResponse = SubscriptionData("", "", address = Nil, emailConsent = Some(true))
-        val updatedDetails = AddressDetails(addressType = "", addressLine1 = "", addressLine2 = "", countryCode = "GB")
+        val successResponse: SubscriptionData = SubscriptionData("", "", address = Nil, emailConsent = Some(true))
+        val updatedDetails: AddressDetails = AddressDetails(addressType = "", addressLine1 = "", addressLine2 = "", countryCode = "GB")
         val response: Option[UpdateSubscriptionDataRequest] = testSubscriptionDataAdapterService
           .createUpdateCorrespondenceAddressRequest(successResponse, updatedDetails)
         response.isDefined must be(false)
@@ -329,7 +329,7 @@ class Setup {
 
       "return Some if correspondence address is found" in new Setup {
         val successResponse: SubscriptionData = Json.parse(successJson).as[SubscriptionData]
-        val updatedDetails = AddressDetails(addressType = "", addressLine1 = "", addressLine2 = "", countryCode = "GB")
+        val updatedDetails: AddressDetails = AddressDetails(addressType = "", addressLine1 = "", addressLine2 = "", countryCode = "GB")
         val response: Option[UpdateSubscriptionDataRequest] = testSubscriptionDataAdapterService
           .createUpdateCorrespondenceAddressRequest(successResponse, updatedDetails)
         response.isDefined must be(true)
@@ -342,7 +342,7 @@ class Setup {
 
     "getOrganisationName" must {
       "return organisationName from registration data" in new Setup {
-        val etmpRegistrationDetails = EtmpRegistrationDetails(sapNumber = "12345678", safeId = "X1234567",
+        val etmpRegistrationDetails: EtmpRegistrationDetails = EtmpRegistrationDetails(sapNumber = "12345678", safeId = "X1234567",
           organisation = Some(Organisation("BusinessName")), isAnIndividual = false,
           addressDetails = RegisteredAddressDetails("line 1", "line 2", Some("line 3"), countryCode = "UK"),
           contactDetails = ContactDetails(),

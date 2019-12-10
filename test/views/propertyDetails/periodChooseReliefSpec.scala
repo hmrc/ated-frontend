@@ -18,6 +18,7 @@ package views.propertyDetails
 
 import config.ApplicationConfig
 import forms.PropertyDetailsForms._
+import testhelpers.MockAuthUtil
 import models.{PeriodChooseRelief, StandardAuthRetrievals}
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
@@ -26,10 +27,10 @@ import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.test.FakeRequest
-import utils.{MockAuthUtil, ReliefConstants}
+import utils.ReliefsUtils
 
 class periodChooseReliefSpec extends FeatureSpec with GuiceOneAppPerSuite with MockitoSugar
-  with BeforeAndAfterEach with GivenWhenThen with ReliefConstants with MockAuthUtil {
+  with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
 
   implicit val request = FakeRequest()
   implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
@@ -91,7 +92,7 @@ class periodChooseReliefSpec extends FeatureSpec with GuiceOneAppPerSuite with M
       val periodStartDate = new LocalDate("2015-01-01")
       val periodEndDate = new LocalDate("2016-02-02")
       val html = views.html.propertyDetails.periodChooseRelief("1",
-        2015, periodChooseReliefForm.fill(PeriodChooseRelief(RentalBusinessDesc)), Some("http://backLink"))
+        2015, periodChooseReliefForm.fill(PeriodChooseRelief(ReliefsUtils.RentalBusinessDesc)), Some("http://backLink"))
 
       val document = Jsoup.parse(html.toString())
 

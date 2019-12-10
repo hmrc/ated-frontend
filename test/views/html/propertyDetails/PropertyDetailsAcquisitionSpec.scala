@@ -18,14 +18,13 @@ package views.html.propertyDetails
 
 import config.ApplicationConfig
 import forms.PropertyDetailsForms
+import testhelpers.{AtedViewSpec, MockAuthUtil}
 import models.StandardAuthRetrievals
 import org.scalatest.mockito.MockitoSugar
 import play.api.i18n.Messages
 import play.twirl.api.Html
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
 import uk.gov.hmrc.auth.core.retrieve.~
-import utils.MockAuthUtil
-import utils.viewHelpers.AtedViewSpec
 
 class PropertyDetailsAcquisitionSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil {
 

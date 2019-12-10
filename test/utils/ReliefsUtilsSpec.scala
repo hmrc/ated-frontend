@@ -19,31 +19,30 @@ package utils
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 
-class ReliefsUtilsSpec extends PlaySpec with GuiceOneServerPerSuite with ReliefConstants {
+class ReliefsUtilsSpec extends PlaySpec {
 
   "ReliefsUtils" must {
-
     "return the ATED relief description for multiple properties when passed the ETMP description" in {
-      ReliefsUtils.convertETMPReliefNameForMultipleReliefs(RentalBusinessDesc) must be("ated.choose-reliefs.rentalBusiness")
-      ReliefsUtils.convertETMPReliefNameForMultipleReliefs(OpenToPublicDesc) must be("ated.choose-reliefs.openToPublic")
-      ReliefsUtils.convertETMPReliefNameForMultipleReliefs(PropDevDesc) must be("ated.choose-reliefs.propertyDeveloper")
-      ReliefsUtils.convertETMPReliefNameForMultipleReliefs(EmpOccDesc) must be("ated.choose-reliefs.employeeOccupation")
-      ReliefsUtils.convertETMPReliefNameForMultipleReliefs(PropTradingDesc) must be("ated.choose-reliefs.propertyTrading")
-      ReliefsUtils.convertETMPReliefNameForMultipleReliefs(LendingDesc) must be("ated.choose-reliefs.lending")
-      ReliefsUtils.convertETMPReliefNameForMultipleReliefs(FarmHouseDesc) must be("ated.choose-reliefs.farmHouses")
-      ReliefsUtils.convertETMPReliefNameForMultipleReliefs(SocialHouseDesc) must be("ated.choose-reliefs.socialHousing")
+      ReliefsUtils.convertETMPReliefNameForMultipleReliefs(ReliefsUtils.RentalBusinessDesc) must be("ated.choose-reliefs.rentalBusiness")
+      ReliefsUtils.convertETMPReliefNameForMultipleReliefs(ReliefsUtils.OpenToPublicDesc) must be("ated.choose-reliefs.openToPublic")
+      ReliefsUtils.convertETMPReliefNameForMultipleReliefs(ReliefsUtils.PropDevDesc) must be("ated.choose-reliefs.propertyDeveloper")
+      ReliefsUtils.convertETMPReliefNameForMultipleReliefs(ReliefsUtils.EmpOccDesc) must be("ated.choose-reliefs.employeeOccupation")
+      ReliefsUtils.convertETMPReliefNameForMultipleReliefs(ReliefsUtils.PropTradingDesc) must be("ated.choose-reliefs.propertyTrading")
+      ReliefsUtils.convertETMPReliefNameForMultipleReliefs(ReliefsUtils.LendingDesc) must be("ated.choose-reliefs.lending")
+      ReliefsUtils.convertETMPReliefNameForMultipleReliefs(ReliefsUtils.FarmHouseDesc) must be("ated.choose-reliefs.farmHouses")
+      ReliefsUtils.convertETMPReliefNameForMultipleReliefs(ReliefsUtils.SocialHouseDesc) must be("ated.choose-reliefs.socialHousing")
       ReliefsUtils.convertETMPReliefNameForMultipleReliefs("not found description") must be("not found description")
     }
 
     "return the ATED relief description when passed the ETMP description" in {
-      ReliefsUtils.convertETMPReliefNameForSingleRelief(RentalBusinessDesc) must be("ated.choose-single-relief.rentalBusiness")
-      ReliefsUtils.convertETMPReliefNameForSingleRelief(OpenToPublicDesc) must be("ated.choose-single-relief.openToPublic")
-      ReliefsUtils.convertETMPReliefNameForSingleRelief(PropDevDesc) must be("ated.choose-single-relief.propertyDeveloper")
-      ReliefsUtils.convertETMPReliefNameForSingleRelief(EmpOccDesc) must be("ated.choose-single-relief.employeeOccupation")
-      ReliefsUtils.convertETMPReliefNameForSingleRelief(PropTradingDesc) must be("ated.choose-single-relief.propertyTrading")
-      ReliefsUtils.convertETMPReliefNameForSingleRelief(LendingDesc) must be("ated.choose-single-relief.lending")
-      ReliefsUtils.convertETMPReliefNameForSingleRelief(FarmHouseDesc) must be("ated.choose-single-relief.farmHouses")
-      ReliefsUtils.convertETMPReliefNameForSingleRelief(SocialHouseDesc) must be("ated.choose-single-relief.socialHousing")
+      ReliefsUtils.convertETMPReliefNameForSingleRelief(ReliefsUtils.RentalBusinessDesc) must be("ated.choose-single-relief.rentalBusiness")
+      ReliefsUtils.convertETMPReliefNameForSingleRelief(ReliefsUtils.OpenToPublicDesc) must be("ated.choose-single-relief.openToPublic")
+      ReliefsUtils.convertETMPReliefNameForSingleRelief(ReliefsUtils.PropDevDesc) must be("ated.choose-single-relief.propertyDeveloper")
+      ReliefsUtils.convertETMPReliefNameForSingleRelief(ReliefsUtils.EmpOccDesc) must be("ated.choose-single-relief.employeeOccupation")
+      ReliefsUtils.convertETMPReliefNameForSingleRelief(ReliefsUtils.PropTradingDesc) must be("ated.choose-single-relief.propertyTrading")
+      ReliefsUtils.convertETMPReliefNameForSingleRelief(ReliefsUtils.LendingDesc) must be("ated.choose-single-relief.lending")
+      ReliefsUtils.convertETMPReliefNameForSingleRelief(ReliefsUtils.FarmHouseDesc) must be("ated.choose-single-relief.farmHouses")
+      ReliefsUtils.convertETMPReliefNameForSingleRelief(ReliefsUtils.SocialHouseDesc) must be("ated.choose-single-relief.socialHousing")
       ReliefsUtils.convertETMPReliefNameForSingleRelief("not found description") must be("not found description")
     }
   }

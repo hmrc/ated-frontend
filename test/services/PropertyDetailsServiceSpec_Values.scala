@@ -31,7 +31,7 @@ import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, InternalServerException}
 
 import scala.concurrent.Future
 
-class PropertyDetailsServiceSpec_Values extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
+class PropertyDetailsServiceSpec_Values extends PlaySpec with MockitoSugar with BeforeAndAfterEach {
 
   implicit lazy val authContext: StandardAuthRetrievals = mock[StandardAuthRetrievals]
   implicit val hc: HeaderCarrier = HeaderCarrier()

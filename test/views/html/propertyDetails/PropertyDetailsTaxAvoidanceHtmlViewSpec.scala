@@ -18,13 +18,12 @@ package views.html.propertyDetails
 
 import config.ApplicationConfig
 import forms.PropertyDetailsForms
+import testhelpers.{AtedViewSpec, MockAuthUtil}
 import models.StandardAuthRetrievals
 import org.scalatest.mockito.MockitoSugar
 import play.api.data.{Form, FormError}
 import play.api.i18n.Messages
 import play.twirl.api.Html
-import utils.MockAuthUtil
-import utils.viewHelpers.AtedViewSpec
 
 class PropertyDetailsTaxAvoidanceHtmlViewSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil{
 

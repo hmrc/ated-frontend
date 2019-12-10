@@ -18,6 +18,7 @@ package views.editLiability
 
 import config.ApplicationConfig
 import forms.BankDetailForms._
+import testhelpers.MockAuthUtil
 import models.StandardAuthRetrievals
 import org.jsoup.Jsoup
 import org.scalatest.mockito.MockitoSugar
@@ -27,7 +28,6 @@ import play.api.i18n.{Messages, MessagesApi}
 import play.api.test.FakeRequest
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
 import uk.gov.hmrc.auth.core.retrieve.~
-import utils.MockAuthUtil
 
 class disposeLiabilityBankDetailsSpec extends FeatureSpec with GuiceOneAppPerSuite with MockitoSugar
   with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {

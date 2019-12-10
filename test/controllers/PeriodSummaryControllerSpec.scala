@@ -25,6 +25,7 @@ import controllers.auth.AuthAction
 import controllers.editLiability.DisposePropertyController
 import controllers.propertyDetails.{AddressLookupController, PropertyDetailsSummaryController}
 import controllers.reliefs.ReliefsSummaryController
+import testhelpers.MockAuthUtil
 import models._
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
@@ -38,7 +39,6 @@ import play.api.test.Helpers._
 import services.{SubscriptionDataService, SummaryReturnsService}
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
-import utils.MockAuthUtil
 
 import scala.concurrent.Future
 

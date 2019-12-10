@@ -21,13 +21,15 @@ import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.Environment
 
-class CountryCodeUtilsSpec extends PlaySpec with GuiceOneServerPerSuite with CountryCodeUtils with MockitoSugar {
-  override val environment: Environment = app.injector.instanceOf[Environment]
+class CountryCodeUtilsSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar {
+
+  class Setup extends CountryCodeUtils {
+    val environment: Environment = app.injector.instanceOf[Environment]
+  }
 
   "CountryCodeUtils" must {
-
     "getSelectedCountry" must {
-      "bring the correct country from the file" in {
+      "bring the correct country from the file" in new Setup {
         getSelectedCountry("GB") must be("United Kingdom")
         getSelectedCountry("US") must be("USA")
         getSelectedCountry("VG") must be("British Virgin Islands")
@@ -37,7 +39,7 @@ class CountryCodeUtilsSpec extends PlaySpec with GuiceOneServerPerSuite with Cou
     }
 
     "getIsoCodeMap" must {
-      "return map of country iso-code to country name" in {
+      "return map of country iso-code to country name" in new Setup {
         getIsoCodeTupleList must contain(("US", "USA :United States of America"))
         getIsoCodeTupleList must contain(("GB", "United Kingdom :UK, GB, Great Britain"))
         getIsoCodeTupleList must contain(("UG", "Uganda"))

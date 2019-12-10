@@ -18,7 +18,7 @@ package utils
 
 import config.ApplicationConfig
 import javax.inject.Inject
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json.{Format, Json}
 
 import scala.util.Try
 
@@ -52,5 +52,5 @@ class FeatureSwitchImpl @Inject()(appConfig: ApplicationConfig) {
   def confPropertyName(name: String) = s"features.$name"
   def systemPropertyName(name: String) = s"features.$name"
 
-  implicit val format: OFormat[FeatureSwitch] = Json.format[FeatureSwitch]
+  implicit val format: Format[FeatureSwitch] = Json.format[FeatureSwitch]
 }

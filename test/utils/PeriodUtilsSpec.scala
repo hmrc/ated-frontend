@@ -21,51 +21,55 @@ import org.joda.time.LocalDate
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 
-class PeriodUtilsSpec extends PlaySpec with GuiceOneServerPerSuite with ReliefConstants {
+class PeriodUtilsSpec extends PlaySpec {
+
+  val `2014` = 2014
+  val `2015` = 2015
+  val `2016` = 2016
+  val `2017` = 2017
+  val `2018` = 2018
+
+  val rentalBusinessDesc = "Property rental businesses"
+  val openToPublicDesc = "Dwellings opened to the public"
 
   "PeriodUtils" must {
-
     "are valid start and end Date" in {
-      PeriodUtils.periodStartDate(2015) must be(new LocalDate("2015-04-01"))
-      PeriodUtils.periodStartDate(2016) must be(new LocalDate("2016-04-01"))
+      PeriodUtils.periodStartDate(`2015`) must be(new LocalDate("2015-04-01"))
+      PeriodUtils.periodStartDate(`2016`) must be(new LocalDate("2016-04-01"))
 
-      PeriodUtils.periodEndDate(2015) must be(new LocalDate("2016-03-31"))
-      PeriodUtils.periodEndDate(2016) must be(new LocalDate("2017-03-31"))
+      PeriodUtils.periodEndDate(`2015`) must be(new LocalDate("2016-03-31"))
+      PeriodUtils.periodEndDate(`2016`) must be(new LocalDate("2017-03-31"))
     }
 
     "calculatePeriod" must {
-
       "return the correct periodKey for the current tax year" in {
         PeriodUtils.calculatePeriod() must be(PeriodUtils.calculatePeriod())
       }
 
       "return the correct periodKey for before April" in {
-        PeriodUtils.calculatePeriod(new LocalDate("2016-3-1")) must be(2015)
+        PeriodUtils.calculatePeriod(new LocalDate("2016-3-1")) must be(`2015`)
       }
 
       "return the correct periodKey for after April" in {
-        PeriodUtils.calculatePeriod(new LocalDate("2016-5-1")) must be(2016)
+        PeriodUtils.calculatePeriod(new LocalDate("2016-5-1")) must be(`2016`)
       }
 
       "return the correct periodKey for the previous tax year" in {
-        PeriodUtils.calculatePeriod(new LocalDate("2014-5-1")) must be(2014)
+        PeriodUtils.calculatePeriod(new LocalDate("2014-5-1")) must be(`2014`)
       }
-
     }
 
     "isPeriodTooEarly" must {
-
       "calculate if the period is within the periodDate" in {
         PeriodUtils.isPeriodTooEarly(PeriodUtils.calculatePeriod(), Some(new LocalDate().minusYears(1))) must be(true)
       }
 
       "calculate if the period is too early for the periodDate" in {
-        PeriodUtils.isPeriodTooEarly(2015, None) must be(false)
+        PeriodUtils.isPeriodTooEarly(`2015`, None) must be(false)
       }
-
     }
-    "isPeriodTooEarlyBefore2012" must {
 
+    "isPeriodTooEarlyBefore2012" must {
       "calculate if the period is before the 01-04-2012" in {
         PeriodUtils.isPeriodTooEarlyBefore2012(Some(new LocalDate("2012-03-01"))) must be(true)
       }
@@ -80,7 +84,6 @@ class PeriodUtilsSpec extends PlaySpec with GuiceOneServerPerSuite with ReliefCo
     }
 
     "isAfterPresentDay" must {
-
       "check if the period is after today" in {
         PeriodUtils.isAfterPresentDay(Some(LocalDate.now().plusDays(1))) must be(true)
       }
@@ -90,7 +93,6 @@ class PeriodUtilsSpec extends PlaySpec with GuiceOneServerPerSuite with ReliefCo
       "check false is returned when no date is passed" in {
         PeriodUtils.isAfterPresentDay(None) must be(false)
       }
-
     }
 
     "isPeriodTooLate" must {
@@ -98,7 +100,7 @@ class PeriodUtilsSpec extends PlaySpec with GuiceOneServerPerSuite with ReliefCo
         PeriodUtils.isPeriodTooLate(PeriodUtils.calculatePeriod(), Some(new LocalDate().plusYears(1))) must be(true)
       }
       "calculate if the period is too late for the periodDate" in {
-        PeriodUtils.isPeriodTooLate(2015, None) must be(false)
+        PeriodUtils.isPeriodTooLate(`2015`, None) must be(false)
       }
     }
   }
@@ -149,11 +151,11 @@ class PeriodUtilsSpec extends PlaySpec with GuiceOneServerPerSuite with ReliefCo
       val periodKey = 2015
       val liabilityPeriod1 = FormBundleProperty(BigDecimal(123.45), new LocalDate(s"$periodKey-4-1"),
         new LocalDate(s"$periodKey-8-31"),  AtedConstants.LiabilityReturnType, None)
-      val liabilityPeriod2 = FormBundleProperty(BigDecimal(123.45), new LocalDate(s"${periodKey+1}-2-1"),
+      val liabilityPeriod2 = FormBundleProperty(BigDecimal(123.45), new LocalDate(s"${periodKey + 1}-2-1"),
         new LocalDate(s"${periodKey + 1}-3-01"), AtedConstants.LiabilityReturnType, None)
       val reliefPeriod1 = FormBundleProperty(BigDecimal(123.45), new LocalDate(s"$periodKey-9-1"),
         new LocalDate(s"${periodKey + 1}-1-31"), AtedConstants.ReliefReturnType, Some("Property rental businesses"))
-      val disposePeriod = FormBundleProperty(BigDecimal(123.45), new LocalDate(s"${periodKey+1}-3-02"),
+      val disposePeriod = FormBundleProperty(BigDecimal(123.45), new LocalDate(s"${periodKey + 1}-3-02"),
         new LocalDate(s"${periodKey + 1}-3-31"), AtedConstants.DisposeReturnType, None)
 
       val liabilityPeriods = List(liabilityPeriod2, liabilityPeriod1, disposePeriod)
@@ -178,7 +180,12 @@ class PeriodUtilsSpec extends PlaySpec with GuiceOneServerPerSuite with ReliefCo
         new LocalDate(s"$periodKey-8-31"),  AtedConstants.LiabilityReturnType, None)
       val liabilityPeriods = List(liabilityPeriod1a, liabilityPeriod1b)
       val lineItems = PeriodUtils.getDisplayFormBundleProperties(liabilityPeriods)
-      val mergedLiability =  LineItem(liabilityPeriod1a.`type`, liabilityPeriod1a.dateFrom, liabilityPeriod1b.dateTo, Some("ated.property-details-period.liability.return-type"))
+      val mergedLiability =  LineItem(
+        liabilityPeriod1a.`type`,
+        liabilityPeriod1a.dateFrom,
+        liabilityPeriod1b.dateTo,
+        Some("ated.property-details-period.liability.return-type")
+      )
       val expected = List(
         mergedLiability
       )
@@ -195,12 +202,12 @@ class PeriodUtilsSpec extends PlaySpec with GuiceOneServerPerSuite with ReliefCo
         new LocalDate(s"$periodKey-8-31"),  AtedConstants.LiabilityReturnType, None)
 
       val reliefPeriod1a = FormBundleProperty(BigDecimal(999.45), new LocalDate(s"$periodKey-9-1"),
-        new LocalDate(s"$periodKey-10-31"), AtedConstants.ReliefReturnType, Some(RentalBusinessDesc))
+        new LocalDate(s"$periodKey-10-31"), AtedConstants.ReliefReturnType, Some(rentalBusinessDesc))
       val reliefPeriod1b = FormBundleProperty(BigDecimal(10009.45), new LocalDate(s"$periodKey-10-1"),
-        new LocalDate(s"${periodKey + 1}-12-31"), AtedConstants.ReliefReturnType, Some(RentalBusinessDesc))
+        new LocalDate(s"${periodKey + 1}-12-31"), AtedConstants.ReliefReturnType, Some(rentalBusinessDesc))
 
       val reliefPeriod2 = FormBundleProperty(BigDecimal(10009.45), new LocalDate(s"$periodKey-12-1"),
-        new LocalDate(s"${periodKey + 1}-1-31"), AtedConstants.ReliefReturnType, Some(OpenToPublicDesc))
+        new LocalDate(s"${periodKey + 1}-1-31"), AtedConstants.ReliefReturnType, Some(openToPublicDesc))
 
       val liabilityPeriod2 = FormBundleProperty(BigDecimal(10009.45), new LocalDate(s"${periodKey + 1}-2-1"),
         new LocalDate(s"${periodKey + 1}-3-31"), AtedConstants.LiabilityReturnType, None)
@@ -211,7 +218,12 @@ class PeriodUtilsSpec extends PlaySpec with GuiceOneServerPerSuite with ReliefCo
 
       val lineItems = PeriodUtils.getDisplayFormBundleProperties(liabilityPeriods ++ reliefPeriods)
 
-      val mergedLiability =  LineItem(liabilityPeriod1a.`type`, liabilityPeriod1a.dateFrom, liabilityPeriod1b.dateTo, Some("ated.property-details-period.liability.return-type"))
+      val mergedLiability =  LineItem(
+        liabilityPeriod1a.`type`,
+        liabilityPeriod1a.dateFrom,
+        liabilityPeriod1b.dateTo,
+        Some("ated.property-details-period.liability.return-type")
+      )
       val mergedRelief =  LineItem(reliefPeriod1a.`type`, reliefPeriod1a.dateFrom, reliefPeriod1b.dateTo, Some("ated.choose-single-relief.rentalBusiness"))
       val expected = List(
         mergedLiability,
@@ -228,54 +240,54 @@ class PeriodUtilsSpec extends PlaySpec with GuiceOneServerPerSuite with ReliefCo
 
   "getPeriods" must {
     "return correct list of periods for dates before april" in {
-      val startDate = new LocalDate(2015, 1, 1)
-      val endDate = new LocalDate(2017, 1, 1)
+      val startDate = new LocalDate(`2015`, 1, 1)
+      val endDate = new LocalDate(`2017`, 1, 1)
 
       PeriodUtils.getPeriods(startDate, endDate).reverse must be (List("2014" -> "2014 to 2015", "2015" -> "2015 to 2016", "2016" -> "2016 to 2017"))
     }
 
     "return correct list of periods for dates after april" in {
-      val startDate = new LocalDate(2015, 4, 1)
-      val endDate = new LocalDate(2017, 3, 8)
+      val startDate = new LocalDate(`2015`, 4, 1)
+      val endDate = new LocalDate(`2017`, 3, 8)
 
       PeriodUtils.getPeriods(startDate, endDate).reverse must be (List("2015" -> "2015 to 2016", "2016" -> "2016 to 2017", "2017" -> "2017 to 2018"))
     }
 
     "return correct list of periods for date 1 March (don't show period for next tax year)" in {
-      val startDate = new LocalDate(2015, 4, 1)
-      val endDate = new LocalDate(2017, 3, 1)
+      val startDate = new LocalDate(`2015`, 4, 1)
+      val endDate = new LocalDate(`2017`, 3, 1)
 
       PeriodUtils.getPeriods(startDate, endDate).reverse must be (List("2015" -> "2015 to 2016", "2016" -> "2016 to 2017"))
     }
 
     "return correct list of periods for date 2 March (don't show period for next tax year)" in {
 
-      val startDate = new LocalDate(2015, 4, 1)
-      val endDate = new LocalDate(2017, 3, 2)
+      val startDate = new LocalDate(`2015`, 4, 1)
+      val endDate = new LocalDate(`2017`, 3, 2)
 
       PeriodUtils.getPeriods(startDate, endDate).reverse must be (List("2015" -> "2015 to 2016", "2016" -> "2016 to 2017"))
     }
 
     "return correct list of periods for date 3 March (don't show period for next tax year)" in {
 
-      val startDate = new LocalDate(2015, 4, 1)
-      val endDate = new LocalDate(2017, 3, 3)
+      val startDate = new LocalDate(`2015`, 4, 1)
+      val endDate = new LocalDate(`2017`, 3, 3)
 
       PeriodUtils.getPeriods(startDate, endDate).reverse must be (List("2015" -> "2015 to 2016", "2016" -> "2016 to 2017"))
     }
 
     "return correct list of periods for date  4 March (don't show period for next tax year)" in {
 
-      val startDate = new LocalDate(2015, 4, 1)
-      val endDate = new LocalDate(2017, 3, 4)
+      val startDate = new LocalDate(`2015`, 4, 1)
+      val endDate = new LocalDate(`2017`, 3, 4)
 
       PeriodUtils.getPeriods(startDate, endDate).reverse must be (List("2015" -> "2015 to 2016", "2016" -> "2016 to 2017"))
     }
 
     "return correct list of periods for date after 5 March (show period for next tax year)" in {
 
-      val startDate = new LocalDate(2015, 4, 1)
-      val endDate = new LocalDate(2017, 3, 5)
+      val startDate = new LocalDate(`2015`, 4, 1)
+      val endDate = new LocalDate(`2017`, 3, 5)
 
       PeriodUtils.getPeriods(startDate, endDate).reverse must be (List("2015" -> "2015 to 2016", "2016" -> "2016 to 2017", "2017" -> "2017 to 2018"))
     }
@@ -319,7 +331,7 @@ class PeriodUtilsSpec extends PlaySpec with GuiceOneServerPerSuite with ReliefCo
       val liabilityPeriod1 = FormBundleProperty(BigDecimal(123.45), new LocalDate(s"$periodKey-4-1"),
         new LocalDate(s"$periodKey-8-31"),  AtedConstants.LiabilityReturnType, None)
       val liabilityPeriod2 = FormBundleProperty(BigDecimal(456.45), new LocalDate(s"${periodKey + 1}-2-1"),
-        new LocalDate(s"${periodKey+1}-3-31"), AtedConstants.LiabilityReturnType, None)
+        new LocalDate(s"${periodKey + 1}-3-31"), AtedConstants.LiabilityReturnType, None)
       val reliefPeriod1 = FormBundleProperty(BigDecimal(789.45), new LocalDate(s"$periodKey-9-1"),
         new LocalDate(s"${periodKey + 1}-1-31"), AtedConstants.ReliefReturnType, Some("Property rental businesses"))
       val liabilityPeriods = List(liabilityPeriod2, liabilityPeriod1)
@@ -438,10 +450,10 @@ class PeriodUtilsSpec extends PlaySpec with GuiceOneServerPerSuite with ReliefCo
 
   "calculateLowerTaxYearBoundary" must {
     "return 2017, if periodKey is greater than or equal to 2018 or lesser than or equal 2023" in {
-      PeriodUtils.calculateLowerTaxYearBoundary(2018).getYear.toString() must be ("2017")
+      PeriodUtils.calculateLowerTaxYearBoundary(`2018`).getYear.toString must be ("2017")
     }
     "return 2012, if periodKey is lesser than 2017" in {
-      PeriodUtils.calculateLowerTaxYearBoundary(2015).getYear.toString() must be ("2012")
+      PeriodUtils.calculateLowerTaxYearBoundary(`2015`).getYear.toString must be ("2012")
     }
   }
 }

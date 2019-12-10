@@ -22,6 +22,7 @@ import builders.{SessionBuilder, TitleBuilder}
 import config.ApplicationConfig
 import connectors.{AgentClientMandateFrontendConnector, DataCacheConnector}
 import controllers.auth.AuthAction
+import testhelpers.MockAuthUtil
 import models._
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
@@ -40,7 +41,6 @@ import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, UserId}
 import uk.gov.hmrc.play.partials.HtmlPartial
 import utils.AtedConstants._
-import utils.MockAuthUtil
 
 import scala.concurrent.Future
 

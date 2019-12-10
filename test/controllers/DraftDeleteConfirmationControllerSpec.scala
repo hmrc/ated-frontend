@@ -23,6 +23,7 @@ import config.ApplicationConfig
 import connectors.DataCacheConnector
 import controllers.auth.AuthAction
 import forms.AtedForms.YesNoQuestion
+import testhelpers.MockAuthUtil
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
@@ -37,7 +38,7 @@ import play.api.test.Helpers.{contentAsString, _}
 import services._
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
-import utils.{AtedConstants, MockAuthUtil}
+import utils.AtedConstants
 
 import scala.concurrent.Future
 

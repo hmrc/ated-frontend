@@ -18,12 +18,11 @@ package views.html.editLiability
 
 import config.ApplicationConfig
 import forms.BankDetailForms
+import testhelpers.{AtedViewSpec, MockAuthUtil}
 import models.StandardAuthRetrievals
 import org.scalatest.mockito.MockitoSugar
 import play.api.data.{Form, FormError}
 import play.twirl.api.Html
-import utils.MockAuthUtil
-import utils.viewHelpers.AtedViewSpec
 
 class BankDetailsSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil {
 

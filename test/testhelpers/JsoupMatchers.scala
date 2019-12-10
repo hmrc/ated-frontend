@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package utils.viewHelpers
+package testhelpers
 
 import org.jsoup.nodes.{Attributes, Document}
 import org.jsoup.select.Elements

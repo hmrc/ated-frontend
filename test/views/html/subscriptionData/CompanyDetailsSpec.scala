@@ -17,13 +17,12 @@
 package views.html.subscriptionData
 
 import config.ApplicationConfig
+import testhelpers.{AtedViewSpec, MockAuthUtil}
 import models._
 import org.scalatest.mockito.MockitoSugar
 import play.twirl.api.Html
 import uk.gov.hmrc.auth.core.retrieve.~
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
-import utils.MockAuthUtil
-import utils.viewHelpers.AtedViewSpec
 
 class CompanyDetailsSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil {
 

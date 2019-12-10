@@ -22,6 +22,7 @@ import builders.{SessionBuilder, TitleBuilder}
 import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.AuthAction
+import testhelpers.MockAuthUtil
 import models.{ReliefReturnResponse, SubmitReturnsResponse}
 import org.joda.time.format.DateTimeFormat
 import org.joda.time.{DateTime, LocalDate}
@@ -39,7 +40,6 @@ import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.logging.SessionId
 import utils.AtedConstants._
-import utils.MockAuthUtil
 
 import scala.concurrent.Future
 

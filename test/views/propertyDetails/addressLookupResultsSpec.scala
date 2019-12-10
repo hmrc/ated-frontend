@@ -18,6 +18,7 @@ package views.propertyDetails
 
 import config.ApplicationConfig
 import forms.AddressLookupForms._
+import testhelpers.MockAuthUtil
 import models._
 import org.jsoup.Jsoup
 import org.scalatest.mockito.MockitoSugar
@@ -25,7 +26,7 @@ import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.test.FakeRequest
-import utils.{AtedUtils, MockAuthUtil}
+import utils.AtedUtils
 
 class addressLookupResultsSpec extends FeatureSpec with GuiceOneAppPerSuite with MockitoSugar with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
 

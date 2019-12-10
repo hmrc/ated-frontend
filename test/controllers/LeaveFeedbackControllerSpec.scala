@@ -22,6 +22,7 @@ import builders.{SessionBuilder, TitleBuilder}
 import config.ApplicationConfig
 import connectors.DataCacheConnector
 import controllers.auth.AuthAction
+import testhelpers.MockAuthUtil
 import org.jsoup.Jsoup
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
@@ -32,7 +33,6 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.audit.DefaultAuditConnector
-import utils.MockAuthUtil
 
 import scala.concurrent.Future
 

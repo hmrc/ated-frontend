@@ -18,6 +18,7 @@ package views
 
 import builders.PropertyDetailsBuilder
 import config.ApplicationConfig
+import testhelpers.MockAuthUtil
 import models._
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
@@ -26,7 +27,7 @@ import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.test.FakeRequest
-import utils.{AtedConstants, MockAuthUtil, PeriodUtils}
+import utils.{AtedConstants, PeriodUtils}
 
 class formBundleReturnSpec extends FeatureSpec with GuiceOneServerPerSuite with MockitoSugar
   with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
