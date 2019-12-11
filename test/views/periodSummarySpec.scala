@@ -108,7 +108,7 @@ class periodSummarySpec extends FeatureSpec with GuiceOneAppPerSuite with Mockit
       assert(document.getElementById("view-edit-0").text() === "View or change return, addr1+2")
       assert(document.getElementById("liability-submitted-0").attr("href") === "/ated/form-bundle/123456789013/2015")
 
-      assert(document.getElementById("relief-submitted-0").text() === "View return, some relief")
+      assert(document.getElementById("relief-submitted-0").text() === "View or change return, some relief")
       assert(document.getElementById("draft-liability-0").text() === "View or change return, desc")
       assert(document.getElementById("draft-relief-1").text() === "View or change return, some relief")
 
@@ -136,7 +136,7 @@ class periodSummarySpec extends FeatureSpec with GuiceOneAppPerSuite with Mockit
       assert(document.getElementById("view-edit-0").text() === "View or change return, addr1+2")
       assert(document.getElementById("liability-submitted-0").attr("href") === "/ated/form-bundle/123456789013/2015")
 
-      assert(document.getElementById("relief-submitted-0").text() === "View return, some relief")
+      assert(document.getElementById("relief-submitted-0").text() === "View or change return, some relief")
       assert(document.getElementById("draft-liability-0").text() === "View or change return, desc")
       assert(document.getElementById("draft-relief-1").text() === "View or change return, some relief")
 
