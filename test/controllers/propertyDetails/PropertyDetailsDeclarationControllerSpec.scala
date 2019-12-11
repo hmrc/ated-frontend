@@ -88,6 +88,20 @@ class PropertyDetailsDeclarationControllerSpec extends PlaySpec with GuiceOneSer
       test(result)
     }
 
+    def getWithAuthorisedUserWithNoCalculated(test: Future[Result] => Any): Unit = {
+      val userId = s"user-${UUID.randomUUID}"
+      val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+      noDelegationModelAuthMocks(authMock)
+      when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+        (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
+      when(mockPropertyDetailsService.retrieveDraftPropertyDetails(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())) thenReturn {
+        Future.successful(PropertyDetailsCacheSuccessResponse(PropertyDetailsBuilder.getPropertyDetails("1").copy(calculated = None)))
+      }
+      when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+      val result = testPropertyDetailsDeclarationController.view("1").apply(SessionBuilder.buildRequestWithSession(userId))
+      test(result)
+    }
+
     def getWithAuthorisedDelegatedUser(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       implicit val hc: HeaderCarrier = HeaderCarrier(userId = Some(UserId(userId)))
@@ -116,6 +130,23 @@ class PropertyDetailsDeclarationControllerSpec extends PlaySpec with GuiceOneSer
       when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
         (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
       val propertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+      when(mockPropertyDetailsService.retrieveDraftPropertyDetails(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propertyDetails)))
+      when(mockPropertyDetailsService.submitDraftPropertyDetails(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(HttpResponse(OK, Some(Json.toJson(propertyDetails)))))
+      val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+      setAuthMocks(authMock)
+      val result = testPropertyDetailsDeclarationController.submit("1")
+        .apply(SessionBuilder.updateRequestFormWithSession(FakeRequest().withFormUrlEncodedBody(), userId))
+
+      test(result)
+    }
+
+    def submitWithAuthorisedUserNoCalc(inputJson: JsValue)(test: Future[Result] => Any) {
+      val userId = s"user-${UUID.randomUUID}"
+      when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+        (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
+      val propertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode")).copy(calculated = None)
       when(mockPropertyDetailsService.retrieveDraftPropertyDetails(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propertyDetails)))
       when(mockPropertyDetailsService.submitDraftPropertyDetails(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
@@ -179,6 +210,13 @@ class PropertyDetailsDeclarationControllerSpec extends PlaySpec with GuiceOneSer
               document.getElementById("submit").text() must be("Agree and submit return")
           }
         }
+        "have a status of see other for clients with no calculated value" in new Setup {
+          getWithAuthorisedUserWithNoCalculated {
+            result =>
+              status(result) must be(SEE_OTHER)
+              redirectLocation(result).get must include("/summary/")
+          }
+        }
         "have a status of ok, for agents" in new Setup {
           getWithAuthorisedDelegatedUser {
             result =>
@@ -215,6 +253,15 @@ class PropertyDetailsDeclarationControllerSpec extends PlaySpec with GuiceOneSer
           submitWithAuthorisedUser(inputJson) {
             result =>
               status(result) must be(SEE_OTHER)
+          }
+        }
+        "for valid data, redirect to summary if there is no calculated value" in new Setup {
+          val inputJson: JsValue = Json.parse("""{}""")
+          when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+          submitWithAuthorisedUserNoCalc(inputJson) {
+            result =>
+              status(result) must be(SEE_OTHER)
+              redirectLocation(result).get must include("/summary/")
           }
         }
         "for valid data, return BAD_REQUEST" in new Setup {
