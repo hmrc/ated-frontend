@@ -43,9 +43,12 @@ class PropertyDetailsDeclarationController @Inject()(mcc: MessagesControllerComp
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         propertyDetailsCacheResponse(id) {
-          case PropertyDetailsCacheSuccessResponse(_) =>
+          case PropertyDetailsCacheSuccessResponse(response) =>
             currentBackLink.map(backLink =>
-              Ok(views.html.propertyDetails.propertyDetailsDeclaration(id, backLink))
+              response.calculated match {
+                case Some(_) => Ok(views.html.propertyDetails.propertyDetailsDeclaration(id, backLink))
+                case _       => Redirect(routes.PropertyDetailsSummaryController.view(id))
+              }
             )
         }
       }
@@ -55,13 +58,20 @@ class PropertyDetailsDeclarationController @Inject()(mcc: MessagesControllerComp
   def submit(id: String): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
-        propertyDetailsService.submitDraftPropertyDetails(id) flatMap { response =>
-          response.status match {
-            case OK => Future.successful(Redirect(controllers.propertyDetails.routes.ChargeableReturnConfirmationController.confirmation()))
-            case BAD_REQUEST if response.body.contains("Agent not Valid") =>
-              Future.successful(BadRequest(views.html.global_error("ated.client-problem.title",
-                "ated.client-problem.header", "ated.client-problem.message", Some(appConfig.agentRedirectedToMandate), None, None, appConfig)))
-          }
+        propertyDetailsCacheResponse(id) {
+          case PropertyDetailsCacheSuccessResponse(cacheResponse) =>
+            cacheResponse.calculated match {
+              case Some(_) =>
+                propertyDetailsService.submitDraftPropertyDetails(id) flatMap { response =>
+                  response.status match {
+                    case OK => Future.successful(Redirect(controllers.propertyDetails.routes.ChargeableReturnConfirmationController.confirmation()))
+                    case BAD_REQUEST if response.body.contains("Agent not Valid") =>
+                      Future.successful(BadRequest(views.html.global_error("ated.client-problem.title",
+                        "ated.client-problem.header", "ated.client-problem.message", Some(appConfig.agentRedirectedToMandate), None, None, appConfig)))
+                  }
+                }
+              case _      => Future.successful(Redirect(routes.PropertyDetailsSummaryController.view(id)))
+            }
         }
       }
     }
