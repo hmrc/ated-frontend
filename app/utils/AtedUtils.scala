@@ -29,19 +29,17 @@ object AtedUtils {
 
   //scalastyle:off magic.number
   def isValidARN(arn: String): Boolean = {
-    patternCheckARN(arn) match {
-      case true =>
+    if (patternCheckARN(arn)) {
         val checkCharacter = arn.toUpperCase.charAt(0)
         val weights = List(9, 10, 11, 12, 13, 8, 7, 6, 5, 4)
         val equivalentValue = List(33, 50, 46)
-        val equivalentValues = equivalentValue ++ arn.toList.filter(_ isDigit).map(_ asDigit)
+        val equivalentValues = equivalentValue ++ arn.toList.filter(_.isDigit).map(_.asDigit)
         val SumOfWeightedValues = (for ((w1, d1) <- equivalentValues zip weights) yield w1 * d1).sum
         val remainder = SumOfWeightedValues % 23
         val mapOfRemainders = Map(0 -> "A", 1 -> "B", 2 -> "C", 3 -> "D", 4 -> "E", 5 -> "F", 6 -> "G", 7 -> "H", 8 -> "X", 9 -> "J", 10 -> "K", 11 -> "L",
           12 -> "M", 13 -> "N", 14 -> "Y", 15 -> "P", 16 -> "Q", 17 -> "R", 18 -> "S", 19 -> "T", 20 -> "Z", 21 -> "V", 22 -> "W")
         mapOfRemainders.get(remainder).contains(checkCharacter.toString)
-      case false => false
-    }
+    } else false
   }
 
   def patternCheckARN(arn: String): Boolean = {
@@ -67,7 +65,7 @@ object AtedUtils {
   }
 
   def formatPostCode(postCode: Option[String]): Option[String] = {
-    postCode.map(formatMandatoryPostCode(_))
+    postCode.map(formatMandatoryPostCode)
   }
 
   def formatMandatoryPostCode(postCode: String): String = {
@@ -83,13 +81,13 @@ object AtedUtils {
   def getEditSubmittedMode(propertyDetails: PropertyDetails, isFromPrevReturn: Option[Boolean] = None): Option[String] = {
     isFromPrevReturn match {
       case Some(true) => Some(EDIT_PREV_RETURN)
-      case _ => propertyDetails.formBundleReturn.map(x => EDIT_SUBMITTED)
+      case _ => propertyDetails.formBundleReturn.map(_ => EDIT_SUBMITTED)
     }
   }
 
   def isEditSubmitted(propertyDetails: PropertyDetails): Boolean = propertyDetails.formBundleReturn.isDefined
 
-  def isEditSubmittedMode(mode: Option[String]): Boolean = mode == Some(EDIT_SUBMITTED) || mode == Some(EDIT_PREV_RETURN)
+  def isEditSubmittedMode(mode: Option[String]): Boolean = mode.contains(EDIT_SUBMITTED) || mode.contains(EDIT_PREV_RETURN)
 
   def isEditReturn(mode: Option[String]): Boolean = mode.contains(EDIT_SUBMITTED)
 
@@ -114,24 +112,21 @@ object AtedUtils {
 
   def maskSortCode(inpSortCode: String): String = {
     val sortCode = inpSortCode.trim
-    if (sortCode.length > 0 && sortCode.length >= 6)
+    if (sortCode.length > 0 && sortCode.length >= 6) {
       "XX - XX - " + sortCode.substring(sortCode.length - 2, sortCode.length)
-    else ""
+    } else ""
   }
 
   def maskBankDetails(accountNumber: String, pos: Int): String = {
     val accNum = accountNumber.trim
-    if (accNum.length > 0 && accNum.length >= 6)
+    if (accNum.length > 0 && accNum.length >= 6) {
       accNum.substring(0, accNum.length - pos).replaceAll(".", "X") + accNum.substring(accNum.length - pos, accNum.length)
-    else ""
+    } else ""
   }
 
-  // $COVERAGE-OFF$
   def createDraftId: String = {
     java.util.UUID.randomUUID.toString.take(8).toUpperCase()
   }
-
-  // $COVERAGE-ON$
 
   def createLabel(str: String): String = {
     str match {

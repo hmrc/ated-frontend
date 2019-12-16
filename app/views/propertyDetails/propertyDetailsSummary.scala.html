@@ -62,7 +62,7 @@ backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages
     </div>
 
     <div class="grid grid-1-6 cya-change">
-      <a href="@controllers.propertyDetails.routes.PropertyDetailsAddressController.editFromSummary(propertyDetails.id)" id="edit-property-address-details" data-journey-click="ated-fronted:click:edit-property-address-details">@messages("ated.edit") <span class="visuallyhidden">@messages("ated.property-details-summary.table.property-details.address.label")</span>
+      <a href="@controllers.propertyDetails.routes.PropertyDetailsAddressController.view(propertyDetails.id, true)" id="edit-property-address-details" data-journey-click="ated-fronted:click:edit-property-address-details">@messages("ated.edit") <span class="visuallyhidden">@messages("ated.property-details-summary.table.property-details.address.label")</span>
       </a>
     </div>
   </div>

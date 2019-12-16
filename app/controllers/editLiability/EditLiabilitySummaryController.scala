@@ -23,7 +23,7 @@ import controllers.auth.{AuthAction, ClientHelper}
 import javax.inject.Inject
 import models.{PropertyDetails, StandardAuthRetrievals}
 import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request, Result}
 import services.{PropertyDetailsService, SubscriptionDataService}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
@@ -66,18 +66,21 @@ class EditLiabilitySummaryController @Inject()(mcc: MessagesControllerComponents
   }
 
   private def viewSummaryDetails(propertyDetails: PropertyDetails)
-                                (implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier, request: Request[AnyContent]) = {
+                                (implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier, request: Request[AnyContent]): Future[Result] = {
     currentBackLink.map(
       backLink =>
-        Ok(views.html.editLiability.editLiabilitySummary(propertyDetails,
-          getReturnType(propertyDetails),
-          PeriodUtils.getDisplayPeriods(propertyDetails.period),
-          PeriodUtils.getCalculatedPeriodValues(propertyDetails.calculated),
-          backLink))
+        Ok(
+          views.html.editLiability.editLiabilitySummary(propertyDetails,
+            getReturnType(propertyDetails),
+            PeriodUtils.getDisplayPeriods(propertyDetails.period),
+            PeriodUtils.getCalculatedPeriodValues(propertyDetails.calculated),
+            backLink
+          )
+        )
     )
   }
 
-  private def getReturnType(propertyDetails: PropertyDetails) = {
+  private def getReturnType(propertyDetails: PropertyDetails): String = {
     propertyDetails.calculated.flatMap(_.amountDueOrRefund).fold("C")(a => if (a > 0) "F" else if (a < 0) "A" else "C")
   }
 
@@ -100,11 +103,15 @@ class EditLiabilitySummaryController @Inject()(mcc: MessagesControllerComponents
           calculateDraftLiability <- propertyDetailsService.calculateDraftChangeLiability(oldFormBundleNo)
           organisationName <- subscriptionDataService.getOrganisationName
         } yield {
-          Ok(views.html.editLiability.editLiabilityPrintFriendly(calculateDraftLiability, getReturnType(calculateDraftLiability),
-            PeriodUtils.getDisplayPeriods(calculateDraftLiability.period),
-            PeriodUtils.getCalculatedPeriodValues(calculateDraftLiability.calculated),
-            organisationName
-          ))
+          Ok(
+            views.html.editLiability.editLiabilityPrintFriendly(
+              calculateDraftLiability,
+              getReturnType(calculateDraftLiability),
+              PeriodUtils.getDisplayPeriods(calculateDraftLiability.period),
+              PeriodUtils.getCalculatedPeriodValues(calculateDraftLiability.calculated),
+              organisationName
+            )
+          )
         }
       }
     }

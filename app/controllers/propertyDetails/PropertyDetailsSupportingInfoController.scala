@@ -96,26 +96,38 @@ class PropertyDetailsSupportingInfoController @Inject()(mcc: MessagesControllerC
           propertyDetails => {
             val backLink = Some(controllers.propertyDetails.routes.PropertyDetailsSupportingInfoController.view(id).url)
             for {
-              _ <- propertyDetailsService.validateCalculateDraftPropertyDetails(id)
+              _          <- propertyDetailsService.validateCalculateDraftPropertyDetails(id)
               cachedData <- dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn)
-              _ <- propertyDetailsService.saveDraftPropertyDetailsSupportingInfo(id, propertyDetails)
-              result <-
-              if (AtedUtils.isEditSubmittedMode(mode) && cachedData.isEmpty) {
-                redirectWithBackLink(
-                  editLiabilitySummaryController.controllerId,
-                  controllers.editLiability.routes.EditLiabilitySummaryController.view(id),
-                  backLink)
-              } else {
-                propertyDetailsService.calculateDraftPropertyDetails(id).flatMap { response =>
-                  response.status match {
-                    case OK =>
-                      redirectWithBackLink(
-                        propertyDetailsSummaryController.controllerId,
-                        controllers.propertyDetails.routes.PropertyDetailsSummaryController.view(id),
-                        backLink)
-                    case BAD_REQUEST if response.body.contains("Agent not Valid") =>
-                      Future.successful(BadRequest(views.html.global_error("ated.client-problem.title",
-                        "ated.client-problem.header", "ated.client-problem.message", Some(appConfig.agentRedirectedToMandate), None, None, appConfig)))
+              _          <- propertyDetailsService.saveDraftPropertyDetailsSupportingInfo(id, propertyDetails)
+              result     <- {
+                if (AtedUtils.isEditSubmittedMode(mode) && cachedData.isEmpty) {
+                  redirectWithBackLink(
+                    editLiabilitySummaryController.controllerId,
+                    controllers.editLiability.routes.EditLiabilitySummaryController.view(id),
+                    backLink
+                  )
+                } else {
+                  propertyDetailsService.calculateDraftPropertyDetails(id).flatMap { response =>
+                    response.status match {
+                      case OK =>
+                        redirectWithBackLink(
+                          propertyDetailsSummaryController.controllerId,
+                          controllers.propertyDetails.routes.PropertyDetailsSummaryController.view(id),
+                          backLink
+                        )
+                      case BAD_REQUEST if response.body.contains("Agent not Valid") =>
+                        Future.successful(BadRequest(
+                            views.html.global_error(
+                              "ated.client-problem.title",
+                              "ated.client-problem.header",
+                              "ated.client-problem.message",
+                              Some(appConfig.agentRedirectedToMandate),
+                              None,
+                              None,
+                              appConfig
+                            )
+                        ))
+                    }
                   }
                 }
               }

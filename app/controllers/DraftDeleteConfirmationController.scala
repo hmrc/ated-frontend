@@ -52,9 +52,9 @@ class DraftDeleteConfirmationController @Inject()(mcc: MessagesControllerCompone
       ensureClientContext {
         val form = new YesNoQuestionDraftDeleteForm()
         form.yesNoQuestionForm.bindFromRequest.fold(
-          formWithError =>
-            Future.successful(BadRequest(views.html.confirmDeleteDraft(formWithError, id, periodKey, returnType, getBackLink(id, periodKey, returnType)))
-            ),
+          formWithError => {
+            Future.successful(BadRequest(views.html.confirmDeleteDraft(formWithError, id, periodKey, returnType, getBackLink(id, periodKey, returnType))))
+          },
           data => {
             val deleteDraft = data.yesNo.getOrElse(false)
             (deleteDraft, returnType) match {
@@ -65,8 +65,9 @@ class DraftDeleteConfirmationController @Inject()(mcc: MessagesControllerCompone
                 reliefsService.deleteDraftReliefs(periodKey)
                 Future.successful(Redirect(controllers.routes.PeriodSummaryController.view(periodKey)))
               case (false, "charge") =>
-                Future.successful(Redirect(controllers.propertyDetails.routes.PropertyDetailsSummaryController
-                  .view(id.getOrElse(throw new RuntimeException("No id found for draft return")))))
+                Future.successful(Redirect(controllers.propertyDetails.routes.PropertyDetailsSummaryController.view(
+                  id.getOrElse(throw new RuntimeException("No id found for draft return"))))
+                )
               case (false, "relief") => Future.successful(Redirect(controllers.reliefs.routes.ReliefsSummaryController.view(periodKey)))
             }
           }

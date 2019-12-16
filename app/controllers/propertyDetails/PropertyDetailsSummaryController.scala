@@ -24,7 +24,7 @@ import javax.inject.Inject
 import models.PropertyDetails
 import org.joda.time.LocalDate
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{DelegationService, PropertyDetailsCacheSuccessResponse, PropertyDetailsService, SubscriptionDataService}
+import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService, SubscriptionDataService}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.{AtedUtils, PeriodUtils}
 
@@ -36,9 +36,7 @@ class PropertyDetailsSummaryController @Inject()(mcc: MessagesControllerComponen
                                                  propertyDetailsDeclarationController: PropertyDetailsDeclarationController,
                                                  val propertyDetailsService: PropertyDetailsService,
                                                  val dataCacheConnector: DataCacheConnector,
-                                                 val backLinkCacheConnector: BackLinkCacheConnector)
-                                                (implicit val appConfig: ApplicationConfig)
-
+                                                 val backLinkCacheConnector: BackLinkCacheConnector)(implicit val appConfig: ApplicationConfig)
   extends FrontendController(mcc) with BackLinkController with PropertyDetailsHelpers with ClientHelper {
 
   implicit val ec: ExecutionContext = mcc.executionContext
@@ -50,12 +48,18 @@ class PropertyDetailsSummaryController @Inject()(mcc: MessagesControllerComponen
         propertyDetailsCacheResponse(propertyKey) {
           case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
             currentBackLink.flatMap(backLink =>
-              Future.successful(Ok(views.html.propertyDetails.propertyDetailsSummary(propertyDetails,
-                PeriodUtils.getDisplayPeriods(propertyDetails.period),
-                AtedUtils.canSubmit(propertyDetails.periodKey, LocalDate.now),
-                PeriodUtils.getCalculatedPeriodValues(propertyDetails.calculated),
-                backLink)
-              )))
+              Future.successful(
+                Ok(
+                  views.html.propertyDetails.propertyDetailsSummary(
+                    propertyDetails,
+                    PeriodUtils.getDisplayPeriods(propertyDetails.period),
+                    AtedUtils.canSubmit(propertyDetails.periodKey, LocalDate.now),
+                    PeriodUtils.getCalculatedPeriodValues(propertyDetails.calculated),
+                    backLink
+                  )
+                )
+              )
+            )
         }
       }
     }
@@ -63,11 +67,13 @@ class PropertyDetailsSummaryController @Inject()(mcc: MessagesControllerComponen
 
   def submit(propertyKey: String): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
-      ensureClientContext(redirectWithBackLink(
-        propertyDetailsDeclarationController.controllerId,
-        controllers.propertyDetails.routes.PropertyDetailsDeclarationController.view(propertyKey),
-        Some(controllers.propertyDetails.routes.PropertyDetailsSummaryController.view(propertyKey).url)
-      ))
+      ensureClientContext(
+        redirectWithBackLink(
+          propertyDetailsDeclarationController.controllerId,
+          controllers.propertyDetails.routes.PropertyDetailsDeclarationController.view(propertyKey),
+          Some(controllers.propertyDetails.routes.PropertyDetailsSummaryController.view(propertyKey).url)
+        )
+      )
     }
   }
 
@@ -78,15 +84,17 @@ class PropertyDetailsSummaryController @Inject()(mcc: MessagesControllerComponen
         for {
           calculateDraft <- propertyDetailsService.calculateDraftPropertyDetails(propertyKey)
           organisationName <- subscriptionDataService.getOrganisationName
-        }
-          yield {
-            val propertyDetails = calculateDraft.json.as[PropertyDetails]
-            Ok(views.html.propertyDetails.propertyDetailsPrintFriendly(propertyDetails,
+        } yield {
+          val propertyDetails = calculateDraft.json.as[PropertyDetails]
+          Ok(
+            views.html.propertyDetails.propertyDetailsPrintFriendly(
+              propertyDetails,
               PeriodUtils.getDisplayPeriods(propertyDetails.period),
               PeriodUtils.getCalculatedPeriodValues(propertyDetails.calculated),
               organisationName
-            ))
-          }
+            )
+          )
+        }
       }
     }
   }

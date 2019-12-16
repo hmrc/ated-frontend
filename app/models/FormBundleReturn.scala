@@ -75,9 +75,8 @@ case class FormBundleReturn(periodKey: String,
                             dateOfSubmission: LocalDate,
                             liabilityAmount: BigDecimal,
                             paymentReference: String,
-                            lineItem : Seq[FormBundleProperty],
-                            bankDetails: Option[FormBundleBankDetails] = None
-                           )
+                            lineItem: Seq[FormBundleProperty],
+                            bankDetails: Option[FormBundleBankDetails] = None)
 
 object FormBundleReturn {
   implicit val formats = Json.format[FormBundleReturn]

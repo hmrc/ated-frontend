@@ -64,12 +64,16 @@ class PropertyDetailsAddressController @Inject()(mcc: MessagesControllerComponen
         } yield {
           changeLiabilityReturnOpt match {
             case Some(x) =>
-              Ok(views.html.propertyDetails.propertyDetailsAddress(
-                Some(x.id),
-                x.periodKey,
-                propertyDetailsAddressForm.fill(x.addressProperty),
-                AtedUtils.getEditSubmittedMode(x, answer),
-                backLink, oldFormBundleNo = Some(oldFormBundleNo)))
+              Ok(
+                views.html.propertyDetails.propertyDetailsAddress(
+                  Some(x.id),
+                  x.periodKey,
+                  propertyDetailsAddressForm.fill(x.addressProperty),
+                  AtedUtils.getEditSubmittedMode(x, answer),
+                  backLink,
+                  oldFormBundleNo = Some(oldFormBundleNo)
+                )
+              )
             case None => Redirect(controllers.routes.AccountSummaryController.view())
           }
         }
@@ -89,25 +93,30 @@ class PropertyDetailsAddressController @Inject()(mcc: MessagesControllerComponen
     }
   }
 
-  def view(id: String) : Action[AnyContent] = Action.async { implicit request =>
+  def view(id: String, isDraft: Boolean = false): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         propertyDetailsCacheResponse(id) {
           case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
             currentBackLink.flatMap(backLink =>
-              Future.successful(Ok(views.html.propertyDetails.propertyDetailsAddress(
-                Some(id),
-                propertyDetails.periodKey,
-                propertyDetailsAddressForm.fill(propertyDetails.addressProperty),
-                AtedUtils.getEditSubmittedMode(propertyDetails),
-                backLink)
-              )))
+              Future.successful(
+                Ok(
+                  views.html.propertyDetails.propertyDetailsAddress(
+                    Some(id),
+                    propertyDetails.periodKey,
+                    propertyDetailsAddressForm.fill(propertyDetails.addressProperty),
+                    if(isDraft) None else AtedUtils.getEditSubmittedMode(propertyDetails),
+                    backLink
+                  )
+                )
+              )
+            )
         }
       }
     }
   }
 
-  def editFromSummary(id: String) : Action[AnyContent] = Action.async { implicit request =>
+  def editFromSummary(id: String): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         propertyDetailsCacheResponse(id) {

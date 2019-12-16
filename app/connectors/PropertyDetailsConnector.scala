@@ -61,11 +61,10 @@ class PropertyDetailsConnector @Inject()(appConfig: ApplicationConfig,
   val saveDraftPropertyDetailsSupportingInfoURI = "property-details/supporting-info"
   val saveDraftPropertyDetailsValuedURI = "property-details/valued"
 
-  def createDraftPropertyDetails(periodKey: Int, propertyDetails: PropertyDetailsAddress)
-                                        (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[HttpResponse] = {
-    val authLink = authContext.atedReferenceNumber
+  def createDraftPropertyDetails(periodKey: Int, pd: PropertyDetailsAddress)(implicit ac: StandardAuthRetrievals, hc: HeaderCarrier): Future[HttpResponse] = {
+    val authLink = ac.atedReferenceNumber
     val postUrl = s"""$serviceURL$authLink/$createDraftPropertyDetailsURI/$periodKey"""
-    val jsonData = Json.toJson(propertyDetails)
+    val jsonData = Json.toJson(pd)
     http.POST[JsValue, HttpResponse](postUrl, jsonData)
   }
 
