@@ -222,7 +222,7 @@ class SummaryReturnsServiceSpec extends PlaySpec with MockitoSugar with BeforeAn
       val periodSummaryReturns = PeriodSummaryReturns(periodKey, draftReturns = Nil, Some(submittedReturns))
       val data1 = SummaryReturnsModel(Some(BigDecimal(999.99)), Seq(periodSummaryReturns))
       val json1 = Json.toJson(data1)
-      val prevReturn = PreviousReturns("1 address street", "12345678")
+      val prevReturn = PreviousReturns("1 address street", "12345678",  new LocalDate("2015-04-02"))
       val pastReturnDetails = Seq(prevReturn)
 
       "save and return past submitted liabilities for a valid user" in new Setup {
@@ -244,7 +244,7 @@ class SummaryReturnsServiceSpec extends PlaySpec with MockitoSugar with BeforeAn
     }
 
     "retrieveCachedPreviousReturnAddressList" must {
-      val prevReturn = PreviousReturns("1 address street", "12345678")
+      val prevReturn = PreviousReturns("1 address street", "12345678", new LocalDate("2015-04-02"))
       val pastReturnDetails = Some(Seq(prevReturn))
 
       "retrieve cached previous returns address list" in new Setup {

@@ -16,6 +16,8 @@
 
 package controllers.propertyDetails
 
+import java.time.LocalDate
+
 import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.{AuthAction, ClientHelper}
@@ -26,6 +28,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{DelegationService, FormBundleReturnsService, PropertyDetailsService, SummaryReturnsService}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.AtedConstants._
+
 import scala.concurrent.{ExecutionContext, Future}
 
 class SelectExistingReturnAddressController @Inject()(mcc: MessagesControllerComponents,
@@ -51,8 +54,11 @@ class SelectExistingReturnAddressController @Inject()(mcc: MessagesControllerCom
           previousReturns <- summaryReturnService.retrieveCachedPreviousReturnAddressList
         } yield {
           previousReturns match {
-            case Some(pr) => Ok(views.html.propertyDetails.selectPreviousReturn
-            (periodKey, returnType, addressSelectedForm, pr, getBackLink(periodKey, returnType)))
+            case Some(pr) =>
+              val uniqueAddresses = pr.groupBy(_.address).values.map(_.sortWith((a,b) => a.date.isAfter(b.date)).head).toSeq
+
+              Ok(views.html.propertyDetails.selectPreviousReturn
+            (periodKey, returnType, addressSelectedForm, uniqueAddresses, getBackLink(periodKey, returnType)))
             case None => Ok(views.html.propertyDetails.selectPreviousReturn
             (periodKey, returnType, addressSelectedForm, Nil, getBackLink(periodKey, returnType)))
           }

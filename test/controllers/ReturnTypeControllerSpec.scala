@@ -26,6 +26,7 @@ import controllers.propertyDetails.{AddressLookupController, PropertyDetailsAddr
 import controllers.reliefs.ChooseReliefsController
 import testhelpers.MockAuthUtil
 import models.{PreviousReturns, ReturnType}
+import org.joda.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
@@ -171,7 +172,7 @@ class ReturnTypeControllerSpec extends PlaySpec with GuiceOneServerPerSuite with
 
     "submit" must {
       "for authorised user" must {
-        val prevReturns = Seq(PreviousReturns("1, addressLine1", "12345678"))
+        val prevReturns = Seq(PreviousReturns("1, addressLine1", "12345678",  new LocalDate("2015-04-02")))
         "with valid form data" must {
           "with invalid form, return BadRequest" in new Setup {
             val inputJson: JsValue = Json.parse( """{"returnType": ""}""")

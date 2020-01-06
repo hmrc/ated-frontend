@@ -99,7 +99,7 @@ class SummaryReturnsService @Inject()(atedConnector: AtedConnector,
     val submittedReturns = periodSummaryReturns.flatMap(x => x.submittedReturns).filter(_.periodKey == selectedPeriodKey - 1)
     val oldLiabilityReturns = submittedReturns.flatMap(x => x.oldLiabilityReturns)
     val newLiabilityReturns = submittedReturns.flatMap(x => x.currentLiabilityReturns)
-    val pastReturnDetails = (oldLiabilityReturns ++ newLiabilityReturns) map (r => PreviousReturns(r.description, r.formBundleNo))
+    val pastReturnDetails = (oldLiabilityReturns ++ newLiabilityReturns) map (r => PreviousReturns(r.description, r.formBundleNo, r.dateOfSubmission))
     savePastReturnDetails(pastReturnDetails)
   }
 
