@@ -23,7 +23,7 @@ import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.AuthAction
 import testhelpers.MockAuthUtil
-import models._
+import models.{PreviousReturns, _}
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
@@ -83,7 +83,7 @@ class SelectExistingReturnAddressControllerSpec extends PlaySpec with GuiceOneSe
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
       setInvalidAuthMocks(authMock)
-      val prevReturns = Seq(PreviousReturns("1, addressLine1", "12345678"))
+      val prevReturns = Seq(PreviousReturns("1, addressLine1", "12345678", LocalDate.parse("2018-09-10")))
       when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
         (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
       when(mockSummaryReturnsService.getPreviousSubmittedLiabilityDetails
@@ -111,7 +111,7 @@ class SelectExistingReturnAddressControllerSpec extends PlaySpec with GuiceOneSe
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
       setInvalidAuthMocks(authMock)
-      val prevReturns = Some(Seq(PreviousReturns("1, addressLine1", "12345678")))
+      val prevReturns = Some(Seq(PreviousReturns("1, addressLine1", "12345678", LocalDate.parse("2018-09-10"))))
       when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
         (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
       when(mockSummaryReturnsService.retrieveCachedPreviousReturnAddressList(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(prevReturns))
@@ -145,7 +145,7 @@ class SelectExistingReturnAddressControllerSpec extends PlaySpec with GuiceOneSe
   }
 
   "SelectExistingReturnAddressController" must {
-    val prevReturns = Some(Seq(PreviousReturns("1, addressLine1", "12345678")))
+    val prevReturns = Some(Seq(PreviousReturns("1, addressLine1", "12345678",  new LocalDate("2015-04-02"))))
     "view" must {
       "unauthorised users" must {
 
@@ -160,12 +160,44 @@ class SelectExistingReturnAddressControllerSpec extends PlaySpec with GuiceOneSe
       "Authorised users" must {
 
         "show the address details view if address list is retrieved from cache" in new Setup {
-          val prevReturns: Seq[PreviousReturns] = Seq(PreviousReturns("1, addressLine1", "12345678"))
+          val prevReturns: Seq[PreviousReturns] = Seq(PreviousReturns("1, addressLine1", "12345678", new LocalDate("2015-04-02")))
           viewWithAuthorisedUser(Some(prevReturns)) {
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
               document.title() must be (TitleBuilder.buildTitle("Select the previous return this new return relates to"))
+          }
+        }
+
+        "show latest address sorted by date in address details view if address list is retrieved from cache" in new Setup {
+          val prevReturns: Seq[PreviousReturns] = Seq(
+            PreviousReturns("1, addressLine1", "12345678", new LocalDate("2015-03-12")),
+            PreviousReturns("1, addressLine1", "12345679", new LocalDate("2015-04-12")),
+            PreviousReturns("2, addressLine2", "12345672", new LocalDate("2015-01-12")),
+            PreviousReturns("2, addressLine2", "12345676", new LocalDate("2015-02-12")))
+          viewWithAuthorisedUser(Some(prevReturns)) {
+            result =>
+              status(result) must be(OK)
+              val document = Jsoup.parse(contentAsString(result))
+              document.title() must be (TitleBuilder.buildTitle("Select the previous return this new return relates to"))
+              document.body().getElementsByTag("label").toString must include ("12345676")
+              document.body().getElementsByTag("label").toString must include ("12345679")
+              document.body().getElementsByTag("label").size() must be (2)
+          }
+        }
+
+        "show 3 unique addresses in the address details view if address list is retrieved from cache" in new Setup {
+          val prevReturns: Seq[PreviousReturns] = Seq(
+            PreviousReturns("1, addressLine1", "12345678", new LocalDate("2015-04-02")),
+            PreviousReturns("1, addressLine1", "12345679", new LocalDate("2015-04-02")),
+            PreviousReturns("2, addressLine2", "12345676", new LocalDate("2015-04-02")),
+            PreviousReturns("3, addressLine3", "12345672", new LocalDate("2015-04-02")))
+          viewWithAuthorisedUser(Some(prevReturns)) {
+            result =>
+              status(result) must be(OK)
+              val document = Jsoup.parse(contentAsString(result))
+              document.title() must be (TitleBuilder.buildTitle("Select the previous return this new return relates to"))
+              document.body().getElementsByTag("label").size() must be (3)
           }
         }
 
@@ -177,7 +209,6 @@ class SelectExistingReturnAddressControllerSpec extends PlaySpec with GuiceOneSe
               document.title() must be (TitleBuilder.buildTitle("Select the previous return this new return relates to"))
           }
         }
-
       }
     }
 
