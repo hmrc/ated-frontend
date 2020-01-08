@@ -30,8 +30,8 @@ object ReliefsUtils extends {
   val SocialHouseDesc = "Registered providers of Social Housing"
   val EquityReleaseDesc = "Equity Release Scheme"
 
-  def createReliefsTaxAvoidance(periodKey: Int, isAvoidanceScheme: Option[Boolean] = None): ReliefsTaxAvoidance = {
-    ReliefsTaxAvoidance(periodKey = periodKey,
+  def createReliefsTaxAvoidance(periodKey: Int, isAvoidanceScheme: Option[Boolean] = None, atedRefNo: String): ReliefsTaxAvoidance = {
+    ReliefsTaxAvoidance(atedRefNo, periodKey = periodKey,
       reliefs = Reliefs(periodKey = periodKey, isAvoidanceScheme = isAvoidanceScheme),
       taxAvoidance = TaxAvoidance(),
       periodStartDate = PeriodUtils.periodStartDate(periodKey),

@@ -81,7 +81,8 @@ object IsTaxAvoidance {
 }
 
 
-case class ReliefsTaxAvoidance(periodKey: Int,
+case class ReliefsTaxAvoidance(atedRefNo: String,
+                               periodKey: Int,
                                reliefs: Reliefs,
                                taxAvoidance: TaxAvoidance,
                                periodStartDate: LocalDate,

@@ -30,7 +30,7 @@ object ReliefBuilder {
   def reliefTaxAvoidance(periodKey: Int,
                          reliefs: Reliefs,
                          taxAvoidance: TaxAvoidance = TaxAvoidance(equityReleaseScheme = Some("11111111"))): ReliefsTaxAvoidance = {
-    ReliefsTaxAvoidance(periodKey,
+    ReliefsTaxAvoidance("atedRefNo", periodKey,
       periodStartDate = PeriodUtils.periodStartDate(periodKey),
       periodEndDate = PeriodUtils.periodEndDate(periodKey),
       reliefs = reliefs,

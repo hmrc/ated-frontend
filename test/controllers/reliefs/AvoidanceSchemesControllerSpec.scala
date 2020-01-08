@@ -305,7 +305,7 @@ class AvoidanceSchemesControllerSpec extends PlaySpec with GuiceOneServerPerSuit
               ("lendingScheme", "56")
             )
 
-            val reliefs: ReliefsTaxAvoidance = ReliefsTaxAvoidance(periodKey,
+            val reliefs: ReliefsTaxAvoidance = ReliefsTaxAvoidance("atedRefNo", periodKey,
               periodStartDate = PeriodUtils.periodStartDate(periodKey),
               periodEndDate = PeriodUtils.periodEndDate(periodKey),
               reliefs = Reliefs(periodKey = periodKey,rentalBusiness = true, propertyDeveloper = true, lending = true),

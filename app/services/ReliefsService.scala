@@ -109,7 +109,7 @@ class ReliefsService @Inject()(atedConnector: AtedConnector,
     for {
       draftReliefs <- retrieveDraftReliefs(atedRefNo, periodKey)
     } yield {
-      val reliefsTaxAvoidance = draftReliefs.getOrElse(ReliefsUtils.createReliefsTaxAvoidance(periodKey))
+      val reliefsTaxAvoidance = draftReliefs.getOrElse(ReliefsUtils.createReliefsTaxAvoidance(periodKey, None, atedRefNo))
       reliefsTaxAvoidance.copy(reliefs = reliefs)
     }
   }
@@ -126,13 +126,14 @@ class ReliefsService @Inject()(atedConnector: AtedConnector,
     }
   }
 
-  private def updateTaxAvoidance(atedRefNo: String, periodKey: Int, taxAvoidance: TaxAvoidance)(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier) = {
+  private def updateTaxAvoidance(atedRefNo: String, periodKey: Int, taxAvoidance: TaxAvoidance)
+                                (implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier) = {
     for {
       draftReliefs <- retrieveDraftReliefs(atedRefNo, periodKey)
     } yield {
       draftReliefs.map { oldReliefs =>
         oldReliefs.copy(taxAvoidance = taxAvoidance)
-      }.getOrElse(ReliefsUtils.createReliefsTaxAvoidance(periodKey))
+      }.getOrElse(ReliefsUtils.createReliefsTaxAvoidance(periodKey, None, atedRefNo))
     }
   }
 
