@@ -26,7 +26,6 @@
 @hrefLink = @{href.getOrElse("")}
 @hrefMessages = @{hrefMessage.getOrElse("")}
 @postHref = @{postHrefMessage.getOrElse("")}
- @test = @{Messages(heading)}
 
 
 @contentHeader = {
@@ -37,4 +36,4 @@
  <p class="column-two-thirds">@messages(message)<a href=@messages(hrefLink) target="_blank">@messages(hrefMessages)</a>@messages(postHref)</p>
 }
 
-@global_error_wrapper(appConfig = appConfig, title = pageTitle, contentHeader = Some(contentHeader), mainContent = mainContent)
+@global_error_wrapper(appConfig = appConfig, title = messages(pageTitle), contentHeader = Some(contentHeader), mainContent = mainContent)
