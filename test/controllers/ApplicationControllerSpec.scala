@@ -109,7 +109,7 @@ class ApplicationControllerSpec extends PlaySpec with MockitoSugar with GuiceOne
 
         "load the unauthorised page" in new Setup {
           getWithUnAuthorisedUser { result =>
-            contentAsString(result) must include("You are not authorised to use this service")
+            contentAsString(result) must include("You need to sign in with a different Gateway ID")
           }
         }
       }
@@ -147,6 +147,16 @@ class ApplicationControllerSpec extends PlaySpec with MockitoSugar with GuiceOne
         keepAliveWithAuthorisedUser { result =>
           status(result) must be(OK)
         }
+      }
+    }
+
+    "redirectToGuidance" must {
+      "redirect the user" in new Setup {
+        val userId = s"user-${UUID.randomUUID}"
+        val authMock = authResultDefault(AffinityGroup.Individual, defaultEnrolmentSet)
+        setAuthMocks(authMock)
+        val result = testApplicationController.redirectToGuidance().apply(SessionBuilder.buildRequestWithSession(userId))
+        redirectLocation(result).get must include("/guidance/register-for-the-annual-tax-on-enveloped-dwellings-online-service")
       }
     }
   }

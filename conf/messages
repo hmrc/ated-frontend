@@ -73,9 +73,22 @@ error.invalid.date.format = You must enter a valid date
 
 ##### UNAUTHORISED PAGE
 
-unauthorised.title = Unauthorised
-unauthorised.header = You are not authorised to use this service
+unauthorised.title = You need to sign in with a different Gateway ID
+unauthorised.header = You need to sign in with a different Gateway ID
+unauthorised.UK.h2 = UK businesses, trusts and partnerships
+unauthorised.UK.p = You need to use the Gateway ID you use to access Corporation Tax for a company or Self Assessment for a trust or partnership.
+unauthorised.nonUK.h2 = Non-UK businesses, trusts and partnerships, including non-resident landlords
+unauthorised.nonUK.p1 = If you are registering for ATED for the first time, and you are registering a business based outside the UK, you will need to create an organisation account.
+unauthorised.nonUK.p2.a = First
+unauthorised.nonUK.link = create a new Gateway ID from this page
+unauthorised.nonUK.p2.b = by selecting 'Create sign-in details'. When you are asked what type of account you require, select 'Organisation'.
+unauthorised.nonUK.warning = Do not set up a new Gateway ID if your business is already registered for ATED
+unauthorised.nonUK.p3 = The person or agent who registered your business for ATED should sign in.
+unauthorised.nonUK.p4 = If you are stuck, use the 'Get help with this service' link to find out who registererd your company for ATED and how to get access. Give them your ATED reference number if you have it.
+unauthorised.button.signout = Sign out
+
 unauthorised.sa.header = You are trying to sign in with your Self Assessment ID. If you are an overseas landlord or client you need to use your limited company ID
+
 
 ##### WELCOME
 

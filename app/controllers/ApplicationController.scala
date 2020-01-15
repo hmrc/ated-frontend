@@ -37,17 +37,22 @@ class ApplicationController @Inject()(mcc: MessagesControllerComponents,
   }
 
   def cancel: Action[AnyContent] = Action { implicit request =>
-      val serviceRedirectUrl: String = Try{appConfig.conf.getString("cancelRedirectUrl")}.getOrElse("https://www.gov.uk/")
-      Redirect(serviceRedirectUrl)
-    }
+    val serviceRedirectUrl: String = Try{appConfig.conf.getString("cancelRedirectUrl")}.getOrElse("https://www.gov.uk/")
+    Redirect(serviceRedirectUrl)
+  }
 
-    def logout: Action[AnyContent] = Action { implicit request =>
-      Redirect(appConfig.serviceSignOut).withNewSession
-    }
+  def logout: Action[AnyContent] = Action { implicit request =>
+    Redirect(appConfig.serviceSignOut).withNewSession
+  }
 
-    def keepAlive: Action[AnyContent] = Action.async { implicit request =>
-      authAction.authorisedForNoEnrolments { implicit authContext =>
-        Future.successful(Ok("OK"))
-      }
+  def keepAlive: Action[AnyContent] = Action.async { implicit request =>
+    authAction.authorisedForNoEnrolments { implicit authContext =>
+      Future.successful(Ok("OK"))
     }
   }
+
+  def redirectToGuidance: Action[AnyContent] = Action { implicit request =>
+    Redirect(appConfig.signOutRedirect).withNewSession
+  }
+
+}

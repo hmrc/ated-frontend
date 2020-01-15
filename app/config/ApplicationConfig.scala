@@ -59,9 +59,10 @@ class ApplicationConfig @Inject()(val conf: ServicesConfig,
   lazy val continueURL: String = s"$loginCallback"
   lazy val signIn: String = s"$companyAuthHost/gg/$loginPath?continue=$loginCallback"
   lazy val signOut: String = s"$companyAuthHost/gg/sign-out"
+  lazy val signOutRedirect: String = conf.getString("microservice.services.auth.sign-out-redirect")
+  lazy val createNewGatewayLink: String = conf.getString("microservice.services.auth.create-account")
   lazy val subscriptionStartPage: String = conf.getString("microservice.services.ated-subscription.serviceRedirectUrl")
   lazy val clientApproveAgentMandate: String = conf.getString("microservice.services.agent-client-mandate-frontend.atedClientApproveAgentUri")
   lazy val agentRedirectedToMandate: String = conf.getString("microservice.services.agent-client-mandate-frontend.atedAgentJourneyStartUri")
-  lazy val businessTaxAccountPage: String = s"${conf.getString("microservice.services.auth.business-tax-account.serviceRedirectUrl")}"
-
+  lazy val businessTaxAccountPage: String = conf.getString("microservice.services.auth.business-tax-account.serviceRedirectUrl")
 }
