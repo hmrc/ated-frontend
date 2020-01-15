@@ -1,0 +1,48 @@
+@*
+ * Copyright 2020 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import config.ApplicationConfig
+
+@()(implicit messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
+
+<h1 class="heading-large">@messages("unauthorised.header")</h1>
+
+<h2>@messages("unauthorised.UK.h2")</h2>
+
+<p class="body">@messages("unauthorised.UK.p")</p>
+
+<h2>@messages("unauthorised.nonUK.h2")</h2>
+
+<p>@messages("unauthorised.nonUK.p1")</p>
+
+<p>
+ @messages("unauthorised.nonUK.p2.a")
+ <a href=@appConfig.createNewGatewayLink>@messages("unauthorised.nonUK.link")</a>
+ @messages("unauthorised.nonUK.p2.b")
+</p>
+
+<div class="notice">
+ <i class="icon icon-important">
+  <span class="visuallyhidden">Warning</span>
+ </i>
+ <strong class="bold-small">@messages("unauthorised.nonUK.warning")</strong>
+</div>
+
+<p>@messages("unauthorised.nonUK.p3")</p>
+
+<p>@messages("unauthorised.nonUK.p4")</p>
+
+<button class="button">@messages("unauthorised.button.signout")</button>

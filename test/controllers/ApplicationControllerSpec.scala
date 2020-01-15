@@ -109,7 +109,7 @@ class ApplicationControllerSpec extends PlaySpec with MockitoSugar with GuiceOne
 
         "load the unauthorised page" in new Setup {
           getWithUnAuthorisedUser { result =>
-            contentAsString(result) must include("You are not authorised to use this service")
+            contentAsString(result) must include("You need to sign in with a different Gateway ID")
           }
         }
       }
