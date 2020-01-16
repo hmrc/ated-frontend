@@ -16,10 +16,13 @@
 
 @import models._
 @import config.ApplicationConfig
-@(id: Option[String], periodKey: Int, propertyDetailsForm: Form[PropertyDetailsAddress],
+@(id: Option[String],
+  periodKey: Int,
+  propertyDetailsForm: Form[PropertyDetailsAddress],
   mode: Option[String] = None,
   backLink: Option[String],
-  oldFormBundleNo: Option[String] = None)(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
+  oldFormBundleNo: Option[String] = None,
+  fromConfirmAddressPage: Boolean)(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 @import uk.gov.hmrc.play.views.html._
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
@@ -41,63 +44,71 @@ case _ => oldFormBundleNo.getOrElse("")
   ga('set', 'page', page);
 }
 
-@atedMain(title = Messages("ated.property-details.title"),
-          analyticsAdditionalJs = Some(analyticsJs)) {
+    @pageTitle = @{
+        if(fromConfirmAddressPage) {
+            Messages("ated.property-details.editAddress")
+        } else {
+            Messages("ated.property-details.title")
+        }
+    }
 
-  @pageHeadersAndError(backLink, messages("pre-heading"), messages(AtedUtils.getPropertyDetailsPreHeader(mode)), "property-details-header", Messages("ated.property-details.header"),
-      Some(atedErrorSummary(propertyDetailsForm, "ated.property-details-address-error.general")))
+    @atedMain(title = pageTitle,
+        analyticsAdditionalJs = Some(analyticsJs)) {
 
-  @form(action=controllers.propertyDetails.routes.PropertyDetailsAddressController.save(id, periodKey, mode)) {
+            @pageHeadersAndError(backLink, messages("pre-heading"), messages(AtedUtils.getPropertyDetailsPreHeader(mode)), "property-details-header", pageTitle,
+                Some(atedErrorSummary(propertyDetailsForm, "ated.property-details-address-error.general")))
 
+        @form(action = controllers.propertyDetails.routes.PropertyDetailsAddressController.save(id, periodKey, mode, fromConfirmAddressPage)) {
 
-    <fieldset>
+            <fieldset>
 
-      <legend class="visuallyhidden">@Messages("ated.property-details.header")</legend>
+                <legend class="visuallyhidden">@Messages("ated.property-details.header")</legend>
 
-          @atedInputNew(propertyDetailsForm("line_1"),
-            '_label ->  Html(Messages("ated.addressProperty.line_1")),
-            '_labelClass ->  "form-label-bold",
-            '_id -> "line_1",
-            '_showConstraints -> false)
+                @atedInputNew(propertyDetailsForm("line_1"),
+                    '_label -> Html(Messages("ated.addressProperty.line_1")),
+                    '_labelClass -> "form-label-bold",
+                    '_id -> "line_1",
+                    '_showConstraints -> false)
 
-          @atedInputNew(propertyDetailsForm("line_2"),
-            '_label ->  Html(Messages("ated.addressProperty.line_2")),
-            '_labelClass ->  "form-label-bold",
-            '_id -> "line_2",
-            '_showConstraints -> false)
+                @atedInputNew(propertyDetailsForm("line_2"),
+                    '_label -> Html(Messages("ated.addressProperty.line_2")),
+                    '_labelClass -> "form-label-bold",
+                    '_id -> "line_2",
+                    '_showConstraints -> false)
 
-          @atedInputNew(propertyDetailsForm("line_3"),
-            '_label ->  Html(Messages("ated.addressProperty.line_3")),
-            '_labelClass ->  "form-label-bold",
-            '_id -> "line_3",
-            '_showConstraints -> false)
+                @atedInputNew(propertyDetailsForm("line_3"),
+                    '_label -> Html(Messages("ated.addressProperty.line_3")),
+                    '_labelClass -> "form-label-bold",
+                    '_id -> "line_3",
+                    '_showConstraints -> false)
 
-          @atedInputNew(propertyDetailsForm("line_4"),
-            '_label ->  Html(Messages("ated.addressProperty.line_4")),
-            '_labelClass ->  "form-label-bold",
-            '_id -> "line_4",
-            '_showConstraints -> false)
+                @atedInputNew(propertyDetailsForm("line_4"),
+                    '_label -> Html(Messages("ated.addressProperty.line_4")),
+                    '_labelClass -> "form-label-bold",
+                    '_id -> "line_4",
+                    '_showConstraints -> false)
 
-          @atedInputNew(propertyDetailsForm("postcode"),
-            '_label ->  Html(Messages("ated.addressProperty.postcode")),
-            '_labelClass -> "form-label-bold",
-            '_id -> "postcode",
-            '_inputClass -> "input--normal",
-            '_showConstraints -> false)
-
-
-    </fieldset>
-
-  <div class="form-group">
-    <a href="@controllers.propertyDetails.routes.PropertyDetailsAddressController.addressLookupRedirect(id, periodKey, mode)"
-       id="lookup-address-link"
-       data-journey-click="ated-fronted:click:lookup-address"
-       aria-label='@Messages("ated.property-details.property-address.lookup.title")'>@Messages("ated.property-details.property-address.lookup.title")</a>
-  </div>
-
-  <button class="button" id="submit" type="submit">@Messages("ated.save-and-continue")</button>
+                @atedInputNew(propertyDetailsForm("postcode"),
+                    '_label -> Html(Messages("ated.addressProperty.postcode")),
+                    '_labelClass -> "form-label-bold",
+                    '_id -> "postcode",
+                    '_inputClass -> "input--normal",
+                    '_showConstraints -> false)
 
 
-  }
+            </fieldset>
 
-}
+            @if(!fromConfirmAddressPage) {
+                <div class="form-group">
+                    <a href="@controllers.propertyDetails.routes.PropertyDetailsAddressController.addressLookupRedirect(id, periodKey, mode)"
+                    id="lookup-address-link"
+                    data-journey-click="ated-fronted:click:lookup-address"
+                    aria-label='@Messages("ated.property-details.property-address.lookup.title")'>@Messages("ated.property-details.property-address.lookup.title")</a>
+                </div>
+            }
+
+            <button class="button" id="submit" type="submit">@Messages("ated.save-and-continue")</button>
+
+        }
+    }
+

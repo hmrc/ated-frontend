@@ -114,7 +114,7 @@ class chooseReliefsSpec extends FeatureSpec with GuiceOneAppPerSuite with Mockit
       assert(document.getElementById("rentalBusinessDate_legend").text() === "When did the Rental business start?")
 
       Then("The back link is correct")
-      assert(document.getElementById("backLinkHref") === null)
+      assert(document.getElementById("backLinkHref").text === "Back")
     }
 
     scenario("show the reliefs we have previously chosen") {

@@ -63,6 +63,11 @@ ated.error.address.postalcode.format = You must enter a valid postcode
 ated.error.address.country = You must enter a country
 ated.error.address.country.non-uk = You cannot select United Kingdom when adding a non-UK address
 
+ated.generic.error.header = Sorry, we’re experiencing technical difficulties
+ated.generic.error.title = Sorry, we’re experiencing technical difficulties
+ated.generic.error.message = Please try again in a few minutes.
+
+
 ##### DECLARATION ERROR MESSAGE
 
 ated.checkbox-i-agree.confirm.error = Please confirm that you want to submit this
@@ -391,7 +396,9 @@ ated.property-details.pre-header-dispose = Change return
 ated.property-details.pre-header-change = Change return
 ated.property-details.pre-header = Create return
 ated.property-details.title = Enter the address of the property manually
+ated.property-details.editAddress = Edit address
 ated.property-details.header = Enter the address of the property manually
+ated.property-details.header.2 = Edit address
 ated.property-details.property-address.lookup.title = Lookup address
 ated.property-details.property-address = Property address
 ated.property-details.title.title =  What is the property’s title number? (optional)
@@ -937,6 +944,11 @@ ated.address-lookup.error.non-selected.field = You must select a previous return
 ated.address-lookup.error.general.selected = There is something wrong with the address
 ated.address-lookup.error.general.selected-address = There is something wrong with the selected address
 
+#### CONFIRM ADDRESS
+ated.confirm-address.title = Confirm address
+ated.confirm-address.header = Confirm address
+ated.confirm-address.editAddress = Edit address
+
 ##### EDIT LIABILITY RETURN
 
 ated.edit-liability.change-return.header = Change return
@@ -1360,8 +1372,8 @@ yes-no.error.mandatory.draft.delete = The existing return question must be answe
 
 ##### SELECT PAST RETURNS
 
-ated.confirm-past-return-question.title = Does this new return relate to one of your existing returns in the last chargeable period?
-ated.confirm-past-return-question.header = Does this new return relate to one of your existing returns in the last chargeable period?
+ated.confirm-past-return-question.title = Did you file a return for this property last year?
+ated.confirm-past-return-question.header = Did you file a return for this property last year?
 ated.confirm-past-return.error = existing return
 ated.confirm-past-return-question.error.general.yesNo = The existing return question must be answered
 

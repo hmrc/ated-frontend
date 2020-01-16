@@ -47,7 +47,8 @@ class PropertyDetailsAddressSpec extends FeatureSpec with GuiceOneServerPerSuite
       When("The user views the page")
       implicit val request = FakeRequest()
 
-      val html = views.html.propertyDetails.propertyDetailsAddress(None, 2015, propertyDetailsAddressForm, None, None)
+      val html = views.html.propertyDetails.propertyDetailsAddress(
+        None, 2015, propertyDetailsAddressForm, None, None, fromConfirmAddressPage = false)
 
       val document = Jsoup.parse(html.toString())
       Then("Enter your property details")
@@ -73,7 +74,7 @@ class PropertyDetailsAddressSpec extends FeatureSpec with GuiceOneServerPerSuite
       assert(document.getElementById("submit").text() === "Save and continue")
 
       Then("The back link is correct")
-      assert(document.getElementById("backLinkHref") === null)
+      assert(document.getElementById("backLinkHref").text === "Back")
 
     }
 
@@ -84,8 +85,8 @@ class PropertyDetailsAddressSpec extends FeatureSpec with GuiceOneServerPerSuite
       implicit val request = FakeRequest()
 
       val propertyDetails = PropertyDetailsBuilder.getPropertyDetailsAddress(Some("postCode"))
-      val html = views.html.propertyDetails.propertyDetailsAddress(Some("1"), 2015,
-        propertyDetailsAddressForm.fill(propertyDetails), Some(AtedUtils.EDIT_SUBMITTED), Some("http://backLink"))
+      val html = views.html.propertyDetails.propertyDetailsAddress(
+        Some("1"), 2015, propertyDetailsAddressForm.fill(propertyDetails), Some(AtedUtils.EDIT_SUBMITTED), Some("http://backLink"), fromConfirmAddressPage = false)
 
       val document = Jsoup.parse(html.toString())
       Then("Enter your property details")
@@ -97,6 +98,43 @@ class PropertyDetailsAddressSpec extends FeatureSpec with GuiceOneServerPerSuite
       And("The the link to the lookup pages text is - Lookup address")
       assert(document.getElementById("lookup-address-link").text() === "Lookup address")
       assert(document.getElementById("lookup-address-link").attr("href") === "/ated/liability/create/address/lookup/2015?propertyKey=1&mode=editSubmitted")
+
+      assert(document.getElementById("line_1").attr("value") === "addr1")
+      assert(document.getElementById("line_2").attr("value") === "addr2")
+      assert(document.getElementById("line_3").attr("value") === "addr3")
+      assert(document.getElementById("line_4").attr("value") === "addr4")
+      assert(document.getElementById("postcode").attr("value") === "postCode")
+      assert(document.getElementById("submit").text() === "Save and continue")
+
+      Then("The back link is correct")
+      assert(document.getElementById("backLinkHref").text === "Back")
+      assert(document.getElementById("backLinkHref").attr("href") === "http://backLink")
+
+    }
+  }
+
+  feature("The user can view a pre populated edit address page") {
+
+    info("as a user I want to view the correct page content")
+
+    scenario("user has visited the page to edit address") {
+
+      Given("A user visits the page")
+
+      When("The user views the page")
+
+      implicit val request = FakeRequest()
+      val propertyDetails = PropertyDetailsBuilder.getPropertyDetailsAddress(Some("postCode"))
+      val html = views.html.propertyDetails.propertyDetailsAddress(
+        Some("1"), 2015, propertyDetailsAddressForm.fill(propertyDetails), None, Some("http://backLink"), fromConfirmAddressPage = true)
+
+      val document = Jsoup.parse(html.toString())
+
+      Then("The header should match - Confirm address")
+      assert(document.getElementById("property-details-header").text() === "Edit address")
+
+      Then("The subheader should be - Create return")
+      assert(document.getElementById("pre-heading").text() === "This section is: Create return")
 
       assert(document.getElementById("line_1").attr("value") === "addr1")
       assert(document.getElementById("line_2").attr("value") === "addr2")

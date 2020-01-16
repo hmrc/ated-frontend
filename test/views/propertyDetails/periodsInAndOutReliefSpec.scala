@@ -71,7 +71,7 @@ class periodsInAndOutReliefSpec extends FeatureSpec with GuiceOneAppPerSuite wit
       assert(document.getElementById("submit").text() === "Save and continue")
 
       Then("The back link is correct")
-      assert(document.getElementById("backLinkHref") === null)
+      assert(document.getElementById("backLinkHref").text === "Back")
     }
 
     scenario("return a populated table if we have periods") {

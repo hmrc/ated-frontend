@@ -62,7 +62,7 @@ class ReliefDeclarationSpec extends FeatureSpec with GuiceOneAppPerSuite with Mo
       assert(document.getElementById("submit").text() === "Agree and submit returns")
 
       Then("The back link is correct")
-      assert(document.getElementById("backLinkHref") === null)
+      assert(document.getElementById("backLinkHref").text === "Back")
     }
   }
 

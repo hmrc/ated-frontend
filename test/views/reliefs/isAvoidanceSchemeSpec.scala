@@ -64,7 +64,7 @@ class isAvoidanceSchemeSpec extends FeatureSpec with GuiceOneAppPerSuite
       assert(document.getElementById("submit").text() === "Save and continue")
 
       Then("The back link is correct")
-      assert(document.getElementById("backLinkHref") === null)
+      assert(document.getElementById("backLinkHref").text === "Back")
     }
 
     scenario("show the reliefs we have previously chosen") {

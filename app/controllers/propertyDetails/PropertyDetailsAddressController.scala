@@ -69,7 +69,7 @@ class PropertyDetailsAddressController @Inject()(mcc: MessagesControllerComponen
                 x.periodKey,
                 propertyDetailsAddressForm.fill(x.addressProperty),
                 AtedUtils.getEditSubmittedMode(x, answer),
-                backLink, oldFormBundleNo = Some(oldFormBundleNo)))
+                backLink, oldFormBundleNo = Some(oldFormBundleNo), fromConfirmAddressPage = false))
             case None => Redirect(controllers.routes.AccountSummaryController.view())
           }
         }
@@ -82,30 +82,40 @@ class PropertyDetailsAddressController @Inject()(mcc: MessagesControllerComponen
       ensureClientContext {
         dataCacheConnector.saveFormData[Boolean](SelectedPreviousReturn, false).flatMap { _ =>
           currentBackLink.map(backLink =>
-            Ok(views.html.propertyDetails.propertyDetailsAddress(None, periodKey, propertyDetailsAddressForm, None, backLink))
+            Ok(views.html.propertyDetails.propertyDetailsAddress(None, periodKey, propertyDetailsAddressForm, None, backLink, fromConfirmAddressPage = false))
           )
         }
       }
     }
   }
 
-  def view(id: String) : Action[AnyContent] = Action.async { implicit request =>
+  def view(id: String, fromConfirmAddressPage: Boolean, periodKey: Int, mode: Option[String]) : Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
-        propertyDetailsCacheResponse(id) {
+
+        val backLinkView = {
+          if(fromConfirmAddressPage) {
+            Some(controllers.propertyDetails.routes.ConfirmAddressController.view(id, periodKey, mode).url)
+        } else {
+            Some(controllers.propertyDetails.routes.AddressLookupController.view(Some(id), periodKey, mode).url)
+          }
+        }
+
+          propertyDetailsCacheResponse(id) {
           case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
-            currentBackLink.flatMap(backLink =>
               Future.successful(Ok(views.html.propertyDetails.propertyDetailsAddress(
                 Some(id),
                 propertyDetails.periodKey,
                 propertyDetailsAddressForm.fill(propertyDetails.addressProperty),
                 AtedUtils.getEditSubmittedMode(propertyDetails),
-                backLink)
-              )))
+                backLinkView,
+                fromConfirmAddressPage = fromConfirmAddressPage)
+              ))
+          }
         }
       }
     }
-  }
+
 
   def editFromSummary(id: String) : Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
@@ -118,7 +128,8 @@ class PropertyDetailsAddressController @Inject()(mcc: MessagesControllerComponen
               propertyDetails.periodKey,
               propertyDetailsAddressForm.fill(propertyDetails.addressProperty),
               mode,
-              AtedUtils.getSummaryBackLink(id, None))
+              AtedUtils.getSummaryBackLink(id, None),
+              fromConfirmAddressPage = false)
             ))
           }
         }
@@ -129,7 +140,7 @@ class PropertyDetailsAddressController @Inject()(mcc: MessagesControllerComponen
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         val returnUrl = id match {
-          case Some(x) => Some(controllers.propertyDetails.routes.PropertyDetailsAddressController.view(x).url)
+          case Some(x) => Some(controllers.propertyDetails.routes.PropertyDetailsAddressController.view(x, fromConfirmAddressPage = false, periodKey, mode).url)
           case None => Some(controllers.propertyDetails.routes.PropertyDetailsAddressController.createNewDraft(periodKey).url)
         }
         redirectWithBackLinkDontOverwriteOldLink(
@@ -141,13 +152,19 @@ class PropertyDetailsAddressController @Inject()(mcc: MessagesControllerComponen
     }
   }
 
-  def save(id: Option[String], periodKey: Int, mode: Option[String]): Action[AnyContent] = Action.async { implicit request =>
+  def save(id: Option[String], periodKey: Int, mode: Option[String], fromConfirmAddressPage: Boolean): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         propertyDetailsAddressForm.bindFromRequest.fold(
           formWithError => {
             currentBackLink.map(backLink =>
-              BadRequest(views.html.propertyDetails.propertyDetailsAddress(id, periodKey, formWithError, mode, backLink))
+              BadRequest(views.html.propertyDetails.propertyDetailsAddress(
+                id,
+                periodKey,
+                formWithError,
+                mode,
+                backLink,
+                fromConfirmAddressPage = fromConfirmAddressPage))
             )
           },
           propertyDetails => {
@@ -159,9 +176,9 @@ class PropertyDetailsAddressController @Inject()(mcc: MessagesControllerComponen
                   _ => {
                     auditInputAddress(trimmedAddressProperty, "edit-address")
                     redirectWithBackLink(
-                      propertyDetailsTitleId,
-                      controllers.propertyDetails.routes.PropertyDetailsTitleController.view(x),
-                      Some(controllers.propertyDetails.routes.PropertyDetailsAddressController.view(x).url)
+                      confirmAddressId,
+                      controllers.propertyDetails.routes.ConfirmAddressController.view(x, periodKey, mode),
+                      Some(controllers.propertyDetails.routes.PropertyDetailsAddressController.view(x, fromConfirmAddressPage, periodKey, mode).url)
                     )
                   }
                 )
@@ -170,9 +187,9 @@ class PropertyDetailsAddressController @Inject()(mcc: MessagesControllerComponen
                   newId => {
                     auditInputAddress(trimmedAddressProperty, "create-address")
                     redirectWithBackLink(
-                      propertyDetailsTitleId,
-                      controllers.propertyDetails.routes.PropertyDetailsTitleController.view(newId),
-                      Some(controllers.propertyDetails.routes.PropertyDetailsAddressController.view(newId).url)
+                      confirmAddressId,
+                      controllers.propertyDetails.routes.ConfirmAddressController.view(newId, periodKey, mode),
+                      Some(controllers.propertyDetails.routes.PropertyDetailsAddressController.view(newId, fromConfirmAddressPage, periodKey, mode).url)
                     )
                   }
                 }

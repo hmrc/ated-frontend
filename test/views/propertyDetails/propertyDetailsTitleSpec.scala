@@ -68,7 +68,7 @@ class propertyDetailsTitleSpec extends FeatureSpec with GuiceOneAppPerSuite with
 
 
       Then("The back link is correct")
-      assert(document.getElementById("backLinkHref") === null)
+      assert(document.getElementById("backLinkHref").text === "Back")
     }
 
     scenario("allow editing a title when editing a submitted return") {
