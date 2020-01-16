@@ -456,7 +456,7 @@ ated.property-details-value.anAcquisition.error-field-name = You must answer thi
 ated.property-details-value.anAcquisition.legend = In this chargeable period, have you bought or sold land, or extended an existing lease on the property, for £40,000 or more?
 ated.property-details-value.anAcquisition.what = Why is the £40,000 level important?
 
-ated.property-details-value.anAcquisition.what.text1 = Buying land or extending an existing lease for £40,000 or more (acquistion) would trigger a revaluation. If the property moves into a higher property band this means you have to pay more tax.
+ated.property-details-value.anAcquisition.what.text1 = Buying land or extending an existing lease for £40,000 or more (acquisition) would trigger a revaluation. If the property moves into a higher property band this means you have to pay more tax.
 ated.property-details-value.anAcquisition.what.text2 = Selling any land connected to the property for £40,000 or more (disposal) would trigger a revaluation. If the property moves into a lower property band this means you have to pay less tax.
 ated.property-details-value.anAcquisition.what.text3 = Further information on this can be found in the <a href="https://www.gov.uk/government/publications/annual-tax-on-enveloped-dwellings-technical-guidance">ATED technical guidance</a>.
 

@@ -183,7 +183,7 @@ class IsFullTaxPeriodControllerSpec extends PlaySpec with GuiceOneServerPerSuite
 
         getDataWithAuthorisedUser(propertyDetails) {
           result =>
-            status(result) must be(SEE_OTHER)
+            status(result) must be(OK)
         }
       }
 

@@ -51,11 +51,11 @@
     </tr>
     @for((valueObj, index) <- valuesToDisplay.zipWithIndex) {
     <tr>
-      <td id="property-value-label-@index" class="heading-small">@getPeriodValueMessage(index, valuesToDisplay.size)</td>
+      <td id="property-value-label-@index" class="heading-small">@messages(getPeriodValueMessage(index, valuesToDisplay.size))</td>
       <td id="property-value-value-@index">@formattedPounds(valueObj.propertyValue)</td>
     </tr>
     <tr>
-      <td id="property-date-of-valuation-label-@index" class="heading-small">@getPeriodValueDateMessage(index, valuesToDisplay.size)</td>
+      <td id="property-date-of-valuation-label-@index" class="heading-small">@messages(getPeriodValueDateMessage(index, valuesToDisplay.size))</td>
       <td id="property-date-of-valuation-@index">@valueObj.dateOfChange.toString(messages("ated.date-format"))</td>
     </tr>
     }
@@ -96,7 +96,7 @@
     </tr>
     @for((period, index) <- periods.zipWithIndex) {
     <tr>
-      <td id="return-type-@index" class="td-top heading-small">@period.description</td>
+      <td id="return-type-@index" class="td-top heading-small">@messages(period.description.getOrElse(""))</td>
       <td id="period-@index" class="td-top">@messages("ated.property-details-summary.table.period.text", period.startDate.toString(messages("ated.date-format")), period.endDate.toString(messages("ated.date-format")))</td>
     </tr>
     }

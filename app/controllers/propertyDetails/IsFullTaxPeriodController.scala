@@ -51,24 +51,17 @@ class IsFullTaxPeriodController @Inject()(mcc: MessagesControllerComponents,
         propertyDetailsCacheResponse(id) {
           case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
             dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).flatMap { answer =>
-              if (AtedUtils.isEditSubmitted(propertyDetails) && answer.isEmpty) {
-                forwardBackLinkToNextPage(
-                  propertyDetailsInReliefController.controllerId,
-                  controllers.propertyDetails.routes.PropertyDetailsInReliefController.view(id)
-                )
-              } else {
-                val filledForm = isFullTaxPeriodForm.fill(PropertyDetailsFullTaxPeriod(propertyDetails.period.flatMap(_.isFullPeriod)))
-                currentBackLink.flatMap(backLink =>
-                  answer match {
-                    case Some(true) =>
-                      Future.successful(Ok(views.html.propertyDetails.isFullTaxPeriod(id, propertyDetails.periodKey, isFullTaxPeriodForm,
-                        PeriodUtils.periodStartDate(propertyDetails.periodKey), PeriodUtils.periodEndDate(propertyDetails.periodKey), backLink)))
-                    case _ =>
-                      Future.successful(Ok(views.html.propertyDetails.isFullTaxPeriod(id, propertyDetails.periodKey, filledForm,
-                        PeriodUtils.periodStartDate(propertyDetails.periodKey), PeriodUtils.periodEndDate(propertyDetails.periodKey), backLink)))
-                  }
-                )
-              }
+              val filledForm = isFullTaxPeriodForm.fill(PropertyDetailsFullTaxPeriod(propertyDetails.period.flatMap(_.isFullPeriod)))
+              currentBackLink.flatMap(backLink =>
+                answer match {
+                  case Some(true) =>
+                    Future.successful(Ok(views.html.propertyDetails.isFullTaxPeriod(id, propertyDetails.periodKey, isFullTaxPeriodForm,
+                      PeriodUtils.periodStartDate(propertyDetails.periodKey), PeriodUtils.periodEndDate(propertyDetails.periodKey), backLink)))
+                  case _ =>
+                    Future.successful(Ok(views.html.propertyDetails.isFullTaxPeriod(id, propertyDetails.periodKey, filledForm,
+                      PeriodUtils.periodStartDate(propertyDetails.periodKey), PeriodUtils.periodEndDate(propertyDetails.periodKey), backLink)))
+                }
+              )
             }
         }
       }
