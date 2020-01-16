@@ -115,8 +115,8 @@ reset(mockDelegationService)
           result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
-            document.title must be("How do you want to change your ATED return? - GOV.UK")
-            document.getElementById("edit-liability-header").text() must be("How do you want to change your ATED return?")
+            document.title must be("Have you disposed of the property? - GOV.UK")
+            document.getElementById("edit-liability-header").text() must be("Have you disposed of the property?")
         }
       }
     }
