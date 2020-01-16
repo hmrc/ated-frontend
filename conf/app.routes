@@ -205,6 +205,8 @@ GET      /feedback                                                         contr
 GET      /feedback/thanks                                                  controllers.LeaveFeedbackController.thanks(return: String)
 POST     /feedback/submit                                                  controllers.LeaveFeedbackController.submitFeedback(return: String)
 
+GET      /sign-out-individual                                                controllers.ApplicationController.redirectToGuidance()
+
 GET     /draft/delete/confirmation/view/:periodKey/:returnType           controllers.DraftDeleteConfirmationController.view(propertyKey: Option[String] ?=None, periodKey: Int, returnType: String)
 POST    /draft/delete/confirmation/submit/:periodKey/:returnType         controllers.DraftDeleteConfirmationController.submit(propertyKey: Option[String] ?=None, periodKey: Int, returnType: String)
 

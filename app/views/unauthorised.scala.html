@@ -15,16 +15,17 @@
  *@
 
 @import config.ApplicationConfig
+@import error.individual
+
 @()(implicit isSa: Boolean, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
 
-
-@atedNoAuthMain(title = Messages("unauthorised.title"), supportLinkEnabled = false) {
+@atedNoAuthMain(title = messages("unauthorised.title"), supportLinkEnabled = false) {
 
   @if(isSa) {
-    <h1>@Messages("unauthorised.sa.header")</h1>
+    <h1>@messages("unauthorised.sa.header")</h1>
   } else {
-    <h1>@Messages("unauthorised.header")</h1>
+    @individual()
   }
 
 }
