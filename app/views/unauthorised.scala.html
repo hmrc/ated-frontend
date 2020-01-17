@@ -20,7 +20,7 @@
 @()(implicit isSa: Boolean, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
 
-@atedNoAuthMain(title = messages("unauthorised.title"), supportLinkEnabled = false) {
+@atedNoAuthMain(title = messages("unauthorised.title"), supportLinkEnabled = true) {
 
   @if(isSa) {
     <h1>@messages("unauthorised.sa.header")</h1>
