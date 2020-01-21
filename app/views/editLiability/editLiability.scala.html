@@ -45,11 +45,11 @@
 
     @form(action = controllers.editLiability.routes.EditLiabilityTypeController.continue(oldFormBundleNo, periodKey, editAllowed)) {
 
-        <div id="editLiabilityType">
+
             @*** CR = change-return, DP = dispose-property && MP = move-property ***@
 
             @if(editAllowed) {
-
+                <div class="form-group" id="editLiabilityType">
                 @atedInputRadioGroupNew(
                     editLiabilityReturnTypeForm("editLiabilityType"),
                     Seq(
@@ -64,6 +64,8 @@
                     '_labelAfter -> true,
                     '_trackGA -> true
                 )
+                </div>
+
 
                 <p> <button class="button" id="submit" type="submit">@Messages("ated.save-and-continue")</button> </p>
 
@@ -81,7 +83,6 @@
                 @messages("ated.edit-liability.return-type.no-edit-legend4")</button>.
 
             }
-        </div>
 
     }
 }
