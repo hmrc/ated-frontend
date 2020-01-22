@@ -69,7 +69,7 @@ class PropertyDetailsAddressController @Inject()(mcc: MessagesControllerComponen
                 x.periodKey,
                 propertyDetailsAddressForm.fill(x.addressProperty),
                 AtedUtils.getEditSubmittedMode(x, answer),
-                backLink, oldFormBundleNo = Some(oldFormBundleNo)))
+                backLink, oldFormBundleNo = Some(oldFormBundleNo), fromConfirmAddressPage = false))
             case None => Redirect(controllers.routes.AccountSummaryController.view())
           }
         }
@@ -82,14 +82,14 @@ class PropertyDetailsAddressController @Inject()(mcc: MessagesControllerComponen
       ensureClientContext {
         dataCacheConnector.saveFormData[Boolean](SelectedPreviousReturn, false).flatMap { _ =>
           currentBackLink.map(backLink =>
-            Ok(views.html.propertyDetails.propertyDetailsAddress(None, periodKey, propertyDetailsAddressForm, None, backLink))
+            Ok(views.html.propertyDetails.propertyDetailsAddress(None, periodKey, propertyDetailsAddressForm, None, backLink, fromConfirmAddressPage = false))
           )
         }
       }
     }
   }
 
-  def view(id: String) : Action[AnyContent] = Action.async { implicit request =>
+  def view(id: String, fromConfirmAddressPage: Boolean = false) : Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         propertyDetailsCacheResponse(id) {
@@ -100,7 +100,8 @@ class PropertyDetailsAddressController @Inject()(mcc: MessagesControllerComponen
                 propertyDetails.periodKey,
                 propertyDetailsAddressForm.fill(propertyDetails.addressProperty),
                 AtedUtils.getEditSubmittedMode(propertyDetails),
-                backLink)
+                backLink,
+                fromConfirmAddressPage = fromConfirmAddressPage)
               )))
         }
       }
@@ -118,7 +119,8 @@ class PropertyDetailsAddressController @Inject()(mcc: MessagesControllerComponen
               propertyDetails.periodKey,
               propertyDetailsAddressForm.fill(propertyDetails.addressProperty),
               mode,
-              AtedUtils.getSummaryBackLink(id, None))
+              AtedUtils.getSummaryBackLink(id, None),
+              fromConfirmAddressPage = false)
             ))
           }
         }
@@ -129,7 +131,7 @@ class PropertyDetailsAddressController @Inject()(mcc: MessagesControllerComponen
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         val returnUrl = id match {
-          case Some(x) => Some(controllers.propertyDetails.routes.PropertyDetailsAddressController.view(x).url)
+          case Some(x) => Some(controllers.propertyDetails.routes.PropertyDetailsAddressController.view(x, fromConfirmAddressPage = false).url)
           case None => Some(controllers.propertyDetails.routes.PropertyDetailsAddressController.createNewDraft(periodKey).url)
         }
         redirectWithBackLinkDontOverwriteOldLink(
@@ -147,7 +149,7 @@ class PropertyDetailsAddressController @Inject()(mcc: MessagesControllerComponen
         propertyDetailsAddressForm.bindFromRequest.fold(
           formWithError => {
             currentBackLink.map(backLink =>
-              BadRequest(views.html.propertyDetails.propertyDetailsAddress(id, periodKey, formWithError, mode, backLink))
+              BadRequest(views.html.propertyDetails.propertyDetailsAddress(id, periodKey, formWithError, mode, backLink, fromConfirmAddressPage = false))
             )
           },
           propertyDetails => {
@@ -161,7 +163,7 @@ class PropertyDetailsAddressController @Inject()(mcc: MessagesControllerComponen
                     redirectWithBackLink(
                       propertyDetailsTitleId,
                       controllers.propertyDetails.routes.PropertyDetailsTitleController.view(x),
-                      Some(controllers.propertyDetails.routes.PropertyDetailsAddressController.view(x).url)
+                      Some(controllers.propertyDetails.routes.PropertyDetailsAddressController.view(x, fromConfirmAddressPage = false).url)
                     )
                   }
                 )
@@ -172,7 +174,7 @@ class PropertyDetailsAddressController @Inject()(mcc: MessagesControllerComponen
                     redirectWithBackLink(
                       propertyDetailsTitleId,
                       controllers.propertyDetails.routes.PropertyDetailsTitleController.view(newId),
-                      Some(controllers.propertyDetails.routes.PropertyDetailsAddressController.view(newId).url)
+                      Some(controllers.propertyDetails.routes.PropertyDetailsAddressController.view(newId, fromConfirmAddressPage = false).url)
                     )
                   }
                 }

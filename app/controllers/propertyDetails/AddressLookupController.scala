@@ -89,7 +89,7 @@ extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper wi
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         val redirectUrl = id match {
-          case Some(x) => controllers.propertyDetails.routes.PropertyDetailsAddressController.view(x)
+          case Some(x) => controllers.propertyDetails.routes.PropertyDetailsAddressController.view(x, fromConfirmAddressPage = false)
           case None => controllers.propertyDetails.routes.PropertyDetailsAddressController.createNewDraft(periodKey)
         }
         redirectWithBackLinkDontOverwriteOldLink(
@@ -122,7 +122,8 @@ extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper wi
                       auditInputAddress(found)
                       redirectWithBackLink(
                         propertyDetailsTitleId,
-                        controllers.propertyDetails.routes.PropertyDetailsTitleController.view(x),
+                        controllers.propertyDetails.routes
+                          `.PropertyDetailsTitleController.view(x),
                         backToViewLink
                       )
                     }

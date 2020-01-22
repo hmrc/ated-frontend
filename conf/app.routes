@@ -129,7 +129,7 @@ POST     /liability/address-lookup/save/:periodKey                    controller
 GET      /liability/address-lookup/manual/:periodKey                  controllers.propertyDetails.AddressLookupController.manualAddressRedirect(propertyKey: Option[String] ?=None, periodKey: Int, mode: Option[String] ?=None)
 
 GET      /liability/create/address/edit-summary/:propertyKey                   controllers.propertyDetails.PropertyDetailsAddressController.editFromSummary(propertyKey: String)
-GET      /liability/create/address/view/:propertyKey                           controllers.propertyDetails.PropertyDetailsAddressController.view(propertyKey: String)
+GET      /liability/create/address/view/:propertyKey                           controllers.propertyDetails.PropertyDetailsAddressController.view(propertyKey: String, fromConfirmAddressPage: Boolean)
 POST     /liability/create/address/save/:periodKey                    controllers.propertyDetails.PropertyDetailsAddressController.save(propertyKey: Option[String] ?=None, periodKey: Int, mode: Option[String] ?=None)
 GET      /liability/create/address/:periodKey                         controllers.propertyDetails.PropertyDetailsAddressController.createNewDraft(periodKey: Int)
 GET      /liability/create/address/lookup/:periodKey                  controllers.propertyDetails.PropertyDetailsAddressController.addressLookupRedirect(propertyKey: Option[String] ?=None, periodKey: Int, mode: Option[String] ?=None)
