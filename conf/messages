@@ -940,14 +940,20 @@ ated.address-lookup.error.general.selected-address = There is something wrong wi
 ##### EDIT LIABILITY RETURN
 
 ated.edit-liability.change-return.header = Change return
-ated.edit-liability.title = How do you want to change your ATED return?
-ated.edit-liability.header = How do you want to change your ATED return?
+ated.edit-liability.title = Have you disposed of the property?
+ated.edit-liability.dispose.title = Your return cannot be changed online
+ated.edit-liability.header = Have you disposed of the property?
+ated.edit-liability.header2 = Your return cannot be changed online
+ated.edit-liability.p1 = This includes sale, de-enveloping or demolishing.
 ated.edit-liability.return-type.legend = Select the type of changes you want to make to your return
-ated.edit-liability.return-type.no-edit-legend = Your original return is too complex to edit online. To make any changes contact Customer Support.
-ated.edit-liability.change-return-details.label = Change return details
-ated.edit-liability.dispose-property.label = Dispose of the property
+ated.edit-liability.return-type.no-edit-legend = Your original return is too complex to edit online. To make any changes contact the 
+ated.edit-liability.return-type.no-edit-legend2 = ATED helpline
+ated.edit-liability.return-type.no-edit-legend3 = You can still
+ated.edit-liability.return-type.no-edit-legend4 = report the disposal of the property
+ated.edit-liability.dispose-property.yes = Yes
+ated.edit-liability.dispose-property.no = No
 ated.edit-liability.move-property.label = Move a property into relief
-ated.edit-liability.edit-return-type.error = Return type is required
+ated.edit-liability.edit-return-type.error = Answer yes if you have disposed of the property
 
 ##### AGENT CLIENT RELATIONSHIP DETAILS
 
@@ -1110,7 +1116,7 @@ ated.change-liability.period.endDate.empty-error = You must enter a liability en
 ated.edit-liability-details-period-error.general.taxAvoidanceScheme = There is a problem with the avoidance scheme reference number
 ated.edit-liability-details-period-error.general.taxAvoidancePromoterReference = There is a problem with the promoter reference number
 ated.edit-liability-details-period-error.general.isTaxAvoidance = There is a problem with the avoidance scheme question
-ated.edit-liability.error.general.editLiabilityType = There is a problem with the type of return
+ated.edit-liability.error.general.editLiabilityType = Answer yes if you have disposed of the property
 
 ##### EDIT LIABILITY DECLARATION PAGE
 

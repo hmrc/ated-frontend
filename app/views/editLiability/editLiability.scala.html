@@ -16,66 +16,73 @@
 
 @import models._
 @import config.ApplicationConfig
-@(editLiabilityReturnTypeForm: Form[EditLiabilityReturnType], oldFormBundleNo: String, periodKey: Int, editAllowed: Boolean, backLink:Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
+@(editLiabilityReturnTypeForm: Form[EditLiabilityReturnType], oldFormBundleNo: String, periodKey: Int, editAllowed: Boolean, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 @import uk.gov.hmrc.play.views.html._
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
 @import views.html.helpers.error._
 
-@implicitFormInstance = @{ Some(editLiabilityReturnTypeForm) }
+@implicitFormInstance = @{
+    Some(editLiabilityReturnTypeForm)
+}
 
 @analyticsJs = {
-  var id = "@oldFormBundleNo";
-  var page = document.location.pathname.replace('/' + id, '');
-  ga('set', 'page', page);
+    var id = "@oldFormBundleNo";
+    var page = document.location.pathname.replace('/' + id, '');
+    ga('set', 'page', page);
 }
 
 @atedMain(title = messages("ated.edit-liability.title"),
-          analyticsAdditionalJs = Some(analyticsJs)) {
+    analyticsAdditionalJs = Some(analyticsJs)) {
 
-  @pageHeadersAndError(backLink, "pre-heading", messages("ated.edit-liability.change-return.header"), messages("edit-liability-header"), messages("ated.edit-liability.header"),
-      Some(atedErrorSummary(editLiabilityReturnTypeForm, "ated.edit-liability.error.general")))
+    @if(editAllowed) {
+        @pageHeadersAndError(backLink, "pre-heading", messages("ated.edit-liability.change-return.header"), messages("edit-liability-header"), messages("ated.edit-liability.header"),
+            Some(atedErrorSummary(editLiabilityReturnTypeForm, "ated.edit-liability.error.general")))
+    } else {
+        @pageHeadersAndError(backLink, "pre-heading", messages("ated.edit-liability.change-return.header"), messages("edit-liability-header"), messages("ated.edit-liability.header2"),
+            Some(atedErrorSummary(editLiabilityReturnTypeForm, "ated.edit-liability.error.general")))
+    }
 
-  @if(!editAllowed){
-  <p class="paragraph" id="editliability-text">
-    @messages("ated.edit-liability.return-type.no-edit-legend")
-  </p>
-  }
+    @form(action = controllers.editLiability.routes.EditLiabilityTypeController.continue(oldFormBundleNo, periodKey, editAllowed)) {
 
-  @form(action=controllers.editLiability.routes.EditLiabilityTypeController.continue(oldFormBundleNo, periodKey, editAllowed)) {
-    <div id="editLiabilityType">
-      @*** CR = change-return, DP = dispose-property && MP = move-property ***@
 
-      @if(editAllowed){
-        @atedInputRadioGroupNew(
-        editLiabilityReturnTypeForm("editLiabilityType"),
-        Seq(
-        "CR" -> messages("ated.edit-liability.change-return-details.label"),
-        "DP" -> messages("ated.edit-liability.dispose-property.label")
-        ),
-        '_legend -> messages("ated.edit-liability.header"),
-        '_labelClass -> "block-label",
-        '_legendClass -> "visuallyhidden",
-        '_groupClass -> "form-group",
-        '_labelAfter -> true,
-          '_trackGA -> true
-        )
-      }else {
-        @atedInputRadioGroupNew(
-        editLiabilityReturnTypeForm("editLiabilityType"),
-        Seq(
-        "DP" -> Messages("ated.edit-liability.dispose-property.label")
-        ),
-        '_legend -> Messages("ated.edit-liability.header"),
-        '_labelClass -> "block-label",
-        '_legendClass -> "visuallyhidden",
-        '_groupClass -> "form-group",
-        '_labelAfter -> true,
-          '_trackGA -> true
-        )
-      }
-    </div>
+            @*** CR = change-return, DP = dispose-property && MP = move-property ***@
 
-    <button class="button" id="submit" type="submit">@Messages("ated.continue")</button>
-  }
+            @if(editAllowed) {
+                <div class="form-group" id="editLiabilityType">
+                @atedInputRadioGroupNew(
+                    editLiabilityReturnTypeForm("editLiabilityType"),
+                    Seq(
+                        "DP" -> messages("ated.edit-liability.dispose-property.yes"),
+                        "CR" -> messages("ated.edit-liability.dispose-property.no")
+                    ),
+                    '_hintText -> messages("ated.edit-liability.p1"),
+                    '_legend -> messages("ated.edit-liability.header"),
+                    '_labelClass -> "block-label",
+                    '_legendClass -> "visuallyhidden",
+                    '_groupClass -> "inline",
+                    '_labelAfter -> true,
+                    '_trackGA -> true
+                )
+                </div>
+
+
+                <p> <button class="button" id="submit" type="submit">@Messages("ated.save-and-continue")</button> </p>
+
+
+            } else {
+
+                <p class="paragraph" id="editliability-text">
+                    @messages("ated.edit-liability.return-type.no-edit-legend")
+                    <a href = "https://www.gov.uk/government/organisations/hm-revenue-customs/contact/annual-tax-on-enveloped-dwellings-ated">@messages("ated.edit-liability.return-type.no-edit-legend2")</a>.
+                </p>
+
+                <input type="hidden" name="editLiabilityType" value="DP">
+                @messages("ated.edit-liability.return-type.no-edit-legend3")
+                <button class="button--link-style" id = "reportDisposeLink" type="submit">
+                @messages("ated.edit-liability.return-type.no-edit-legend4")</button>.
+
+            }
+
+    }
 }

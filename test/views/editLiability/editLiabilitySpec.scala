@@ -46,18 +46,18 @@ class editLiabilitySpec extends FeatureSpec with GuiceOneServerPerSuite with Moc
       val html = views.html.editLiability.editLiability(editLiabilityReturnTypeForm, "formBundleNo", 2015, editAllowed = true, None)
 
       val document = Jsoup.parse(html.toString())
-      Then("the page title : How do you want to change your ATED return?")
-      assert(document.title() === "How do you want to change your ATED return? - GOV.UK")
+      Then("the page title : Have you disposed of the property?")
+      assert(document.title() === "Have you disposed of the property? - GOV.UK")
 
 
       assert(document.getElementById("pre-heading").text() === "This section is: Change return")
 
-      assert(document.getElementById("editLiabilityType_legend").text() === "How do you want to change your ATED return?")
+      assert(document.getElementById("editLiabilityType_legend").text() === "Have you disposed of the property?")
       assert(document.getElementById("editLiabilityType-cr").text() === "")
       assert(document.getElementById("editLiabilityType-dp").text() === "")
 
       And("the save button is correct")
-      assert(document.getElementById("submit").text() === "Continue")
+      assert(document.getElementById("submit").text() === "Save and continue")
 
       Then("The back link is correct")
       assert(document.getElementById("backLinkHref") === null)
@@ -79,19 +79,17 @@ class editLiabilitySpec extends FeatureSpec with GuiceOneServerPerSuite with Moc
       val html = views.html.editLiability.editLiability(editLiabilityReturnTypeForm, "formBundleNo", 2015, editAllowed = false, Some("http://backLink"))
 
       val document = Jsoup.parse(html.toString())
-      Then("the page title : How do you want to change your ATED return?")
-      assert(document.title() === "How do you want to change your ATED return? - GOV.UK")
+      Then("the page title : Have you disposed of the property?")
+      assert(document.title() === "Have you disposed of the property? - GOV.UK")
 
       assert(document.getElementById("pre-heading").text() === "This section is: Change return")
 
       assert(document.getElementById("editliability-text")
-        .text() === "Your original return is too complex to edit online. To make any changes contact Customer Support.")
+        .text() === "Your original return is too complex to edit online. To make any changes contact the ATED helpline.")
 
-      assert(document.getElementById("editLiabilityType_legend").text() === "How do you want to change your ATED return?")
-      assert(document.getElementById("editLiabilityType-cr") === null)
-      assert(document.getElementById("editLiabilityType-dp").text() === "")
+      assert(document.getElementById("editLiabilityType-dp") === null)
 
-      assert(document.getElementById("submit").text() === "Continue")
+      assert(document.getElementById("reportDisposeLink").text() === "report the disposal of the property")
 
       Then("The back link is correct")
       assert(document.getElementById("backLinkHref").text === "Back")
