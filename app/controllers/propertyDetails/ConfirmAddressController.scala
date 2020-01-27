@@ -49,17 +49,19 @@ class ConfirmAddressController @Inject()(mcc: MessagesControllerComponents,
            mode: Option[String] = None): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
-        val backToViewLink = Some(routes.AddressLookupController.view(Some(id), periodKey, mode).url)
-        propertyDetailsService.retrieveDraftPropertyDetails(id).map {
-          case successResponse: PropertyDetailsCacheSuccessResponse =>
-            val addressProperty = successResponse.propertyDetails.addressProperty
-            Ok(views.html.propertyDetails.confirmAddress(id, periodKey, addressProperty, mode, backToViewLink))
-          case _ =>
-            Ok(views.html.global_error("", "", "", None, None, None, appConfig))
+        currentBackLink.flatMap { backLink =>
+          propertyDetailsService.retrieveDraftPropertyDetails(id).map {
+            case successResponse: PropertyDetailsCacheSuccessResponse =>
+              val addressProperty = successResponse.propertyDetails.addressProperty
+              Ok(views.html.propertyDetails.confirmAddress(id, periodKey, addressProperty, mode, backLink))
+            case _ =>
+              Ok(views.html.global_error("", "", "", None, None, None, appConfig))
+          }
         }
       }
     }
   }
+
 
   def submit(id: String, periodKey: Int, mode: Option[String] = None): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>

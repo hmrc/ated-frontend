@@ -155,18 +155,18 @@ class ExistingReturnQuestionControllerSpec extends PlaySpec with GuiceOneServerP
           getWithAuthorisedUser { result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be(TitleBuilder.buildTitle("Does this new return relate to one of your existing returns in the last chargeable period?"))
+            document.title() must be(TitleBuilder.buildTitle("Did you file a return for this property last year?"))
             document.getElementById("return-type-header")
-              .text() must be("Does this new return relate to one of your existing returns in the last chargeable period?")
+              .text() must be("Did you file a return for this property last year?")
           }
         }
         "show the return type view with saved data" in new Setup {
           getWithAuthorisedUserWithSomeData { result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be(TitleBuilder.buildTitle("Does this new return relate to one of your existing returns in the last chargeable period?"))
+            document.title() must be(TitleBuilder.buildTitle("Did you file a return for this property last year?"))
             document.getElementById("return-type-header")
-              .text() must be("Does this new return relate to one of your existing returns in the last chargeable period?")
+              .text() must be("Did you file a return for this property last year?")
           }
         }
       }

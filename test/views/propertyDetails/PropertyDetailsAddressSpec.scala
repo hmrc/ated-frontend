@@ -47,7 +47,7 @@ class PropertyDetailsAddressSpec extends FeatureSpec with GuiceOneServerPerSuite
       When("The user views the page")
       implicit val request = FakeRequest()
 
-      val html = views.html.propertyDetails.propertyDetailsAddress(None, 2015, propertyDetailsAddressForm, None, None)
+      val html = views.html.propertyDetails.propertyDetailsAddress(None, 2015, propertyDetailsAddressForm, None, None, fromConfirmAddressPage = false)
 
       val document = Jsoup.parse(html.toString())
       Then("Enter your property details")
@@ -85,7 +85,7 @@ class PropertyDetailsAddressSpec extends FeatureSpec with GuiceOneServerPerSuite
 
       val propertyDetails = PropertyDetailsBuilder.getPropertyDetailsAddress(Some("postCode"))
       val html = views.html.propertyDetails.propertyDetailsAddress(Some("1"), 2015,
-        propertyDetailsAddressForm.fill(propertyDetails), Some(AtedUtils.EDIT_SUBMITTED), Some("http://backLink"))
+        propertyDetailsAddressForm.fill(propertyDetails), Some(AtedUtils.EDIT_SUBMITTED), Some("http://backLink"), fromConfirmAddressPage = false)
 
       val document = Jsoup.parse(html.toString())
       Then("Enter your property details")

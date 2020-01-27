@@ -40,9 +40,9 @@ class AddressLookupController @Inject()(mcc: MessagesControllerComponents,
                                         auditConnector: DefaultAuditConnector,
                                         addressLookupService: AddressLookupService,
                                         authAction: AuthAction,
+                                        confirmAddressController: ConfirmAddressController,
                                         val backLinkCacheConnector: BackLinkCacheConnector,
                                         val propertyDetailsService: PropertyDetailsService,
-                                        confirmAddressController: ConfirmAddressController,
                                         val dataCacheConnector: DataCacheConnector)
                                        (implicit val appConfig: ApplicationConfig)
 extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with Auditable with ControllerIds {
@@ -90,11 +90,11 @@ extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper wi
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         val redirectUrl = id match {
-          case Some(x) => controllers.propertyDetails.routes.PropertyDetailsAddressController.view(x, fromConfirmAddressPage = false)
+          case Some(x) => controllers.propertyDetails.routes.PropertyDetailsAddressController.view(x, fromConfirmAddressPage)
           case None => controllers.propertyDetails.routes.PropertyDetailsAddressController.createNewDraft(periodKey)
         }
         redirectWithBackLinkDontOverwriteOldLink(
-          propertyDetailsAddressId,
+          confirmAddressId,
           redirectUrl,
           Some(controllers.propertyDetails.routes.AddressLookupController.view(id, periodKey, mode).url)
         )
@@ -122,7 +122,7 @@ extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper wi
                     _ => {
                       auditInputAddress(found)
                       redirectWithBackLink(
-                        propertyDetailsTitleId,
+                        confirmAddressId,
                         controllers.propertyDetails.routes.ConfirmAddressController.view(x, periodKey, mode),
                         backToViewLink
                       )
@@ -133,7 +133,7 @@ extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper wi
                     newId =>
                       auditInputAddress(found)
                       redirectWithBackLink(
-                        propertyDetailsTitleId,
+                        confirmAddressId,
                         controllers.propertyDetails.routes.ConfirmAddressController.view(newId, periodKey,mode),
                         backToViewLink
                       )
