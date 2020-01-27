@@ -126,6 +126,10 @@ GET     /liability/:formBundleNo/dispose/sent  controllers.editLiability.Dispose
 GET      /liability/address-lookup/view/:periodKey                    controllers.propertyDetails.AddressLookupController.view(propertyKey: Option[String] ?=None, periodKey: Int, mode: Option[String] ?=None)
 POST     /liability/address-lookup/find/:periodKey                    controllers.propertyDetails.AddressLookupController.find(propertyKey: Option[String] ?=None, periodKey: Int, mode: Option[String] ?=None)
 POST     /liability/address-lookup/save/:periodKey                    controllers.propertyDetails.AddressLookupController.save(propertyKey: Option[String] ?=None, periodKey: Int, mode: Option[String] ?=None)
+
+GET      /liability/confirm-address/view/:periodKey                    controllers.propertyDetails.ConfirmAddressController.view(propertyKey: String, periodKey: Int, mode: Option[String] ?=None)
+POST     /liability/confirm-address/save/:periodKey                    controllers.propertyDetails.ConfirmAddressController.submit(propertyKey: String, periodKey: Int, mode: Option[String] ?=None)
+
 GET      /liability/address-lookup/manual/:periodKey                  controllers.propertyDetails.AddressLookupController.manualAddressRedirect(propertyKey: Option[String] ?=None, periodKey: Int, mode: Option[String] ?=None)
 
 GET      /liability/create/address/edit-summary/:propertyKey                   controllers.propertyDetails.PropertyDetailsAddressController.editFromSummary(propertyKey: String)

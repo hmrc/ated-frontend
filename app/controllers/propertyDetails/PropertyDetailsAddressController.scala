@@ -162,7 +162,7 @@ class PropertyDetailsAddressController @Inject()(mcc: MessagesControllerComponen
                     auditInputAddress(trimmedAddressProperty, "edit-address")
                     redirectWithBackLink(
                       propertyDetailsTitleId,
-                      controllers.propertyDetails.routes.PropertyDetailsTitleController.view(x),
+                      controllers.propertyDetails.routes.ConfirmAddressController.view(x, periodKey, mode),
                       Some(controllers.propertyDetails.routes.PropertyDetailsAddressController.view(x, fromConfirmAddressPage = false).url)
                     )
                   }
@@ -173,7 +173,7 @@ class PropertyDetailsAddressController @Inject()(mcc: MessagesControllerComponen
                     auditInputAddress(trimmedAddressProperty, "create-address")
                     redirectWithBackLink(
                       propertyDetailsTitleId,
-                      controllers.propertyDetails.routes.PropertyDetailsTitleController.view(newId),
+                      controllers.propertyDetails.routes.ConfirmAddressController.view(newId, periodKey, mode),
                       Some(controllers.propertyDetails.routes.PropertyDetailsAddressController.view(newId, fromConfirmAddressPage = false).url)
                     )
                   }

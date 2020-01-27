@@ -35,14 +35,18 @@
     @propertyDetails.line_2<br>
     @propertyDetails.line_3<br>
     @propertyDetails.line_4<br>
-    @propertyDetails.postcode
+    @propertyDetails.postcode<br>
     </div>
 
-    <p><a href="@controllers.propertyDetails.routes.PropertyDetailsAddressController.view(id, fromConfirmAddressPage = true)">@messages("ated.confirm-address.editAddress")</a></p>
+    <div class="form-group">
+        <a href="@controllers.propertyDetails.routes.PropertyDetailsAddressController.view(id, fromConfirmAddressPage = true)"
+        id="enter-address-link"
+        data-journey-click="ated-fronted:click:manual-entry"
+        onkeyup='spaceBarHandler(event,"@controllers.propertyDetails.routes.PropertyDetailsAddressController.view(id, fromConfirmAddressPage = true)")'>
+        <p>@Messages("ated.confirm-address.editAddress")</a></p>
 
-<div>
-
+    @form(action=controllers.propertyDetails.routes.ConfirmAddressController.submit(id, periodKey, mode)) {
         <p><button class="button" id="submit" type="submit">@Messages("ated.confirm-and-continue")</button></p>
-
-</div>
+    }
+    </div>
 }

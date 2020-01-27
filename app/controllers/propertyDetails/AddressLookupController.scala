@@ -42,6 +42,7 @@ class AddressLookupController @Inject()(mcc: MessagesControllerComponents,
                                         authAction: AuthAction,
                                         val backLinkCacheConnector: BackLinkCacheConnector,
                                         val propertyDetailsService: PropertyDetailsService,
+                                        confirmAddressController: ConfirmAddressController,
                                         val dataCacheConnector: DataCacheConnector)
                                        (implicit val appConfig: ApplicationConfig)
 extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with Auditable with ControllerIds {
@@ -122,8 +123,7 @@ extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper wi
                       auditInputAddress(found)
                       redirectWithBackLink(
                         propertyDetailsTitleId,
-                        controllers.propertyDetails.routes
-                          `.PropertyDetailsTitleController.view(x),
+                        controllers.propertyDetails.routes.ConfirmAddressController.view(x, periodKey, mode),
                         backToViewLink
                       )
                     }
@@ -134,7 +134,7 @@ extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper wi
                       auditInputAddress(found)
                       redirectWithBackLink(
                         propertyDetailsTitleId,
-                        controllers.propertyDetails.routes.PropertyDetailsTitleController.view(newId),
+                        controllers.propertyDetails.routes.ConfirmAddressController.view(newId, periodKey,mode),
                         backToViewLink
                       )
                   }
