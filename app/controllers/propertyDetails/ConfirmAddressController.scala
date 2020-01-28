@@ -49,8 +49,8 @@ class ConfirmAddressController @Inject()(mcc: MessagesControllerComponents,
            mode: Option[String] = None): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
-        currentBackLink.flatMap { backLink =>
-          propertyDetailsService.retrieveDraftPropertyDetails(id).map {
+        val backLink = Some(controllers.propertyDetails.routes.AddressLookupController.view(None, periodKey, mode).url)
+        propertyDetailsService.retrieveDraftPropertyDetails(id).map {
             case successResponse: PropertyDetailsCacheSuccessResponse =>
               val addressProperty = successResponse.propertyDetails.addressProperty
               Ok(views.html.propertyDetails.confirmAddress(id, periodKey, addressProperty, mode, backLink))
@@ -60,8 +60,6 @@ class ConfirmAddressController @Inject()(mcc: MessagesControllerComponents,
         }
       }
     }
-  }
-
 
   def submit(id: String, periodKey: Int, mode: Option[String] = None): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>

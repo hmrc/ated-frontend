@@ -58,8 +58,7 @@ case _ => oldFormBundleNo.getOrElse("")
             @pageHeadersAndError(backLink, messages("pre-heading"), messages(AtedUtils.getPropertyDetailsPreHeader(mode)), "property-details-header", pageTitle,
                 Some(atedErrorSummary(propertyDetailsForm, "ated.property-details-address-error.general")))
 
-        @form(action = controllers.propertyDetails.routes.PropertyDetailsAddressController.save(id, periodKey, mode)) {
-
+        @form(action = controllers.propertyDetails.routes.PropertyDetailsAddressController.save(id, periodKey, mode, fromConfirmAddressPage)) {
 
             <fieldset>
 

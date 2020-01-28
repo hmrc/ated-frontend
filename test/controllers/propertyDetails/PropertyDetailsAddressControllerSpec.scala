@@ -108,7 +108,7 @@ class PropertyDetailsAddressControllerSpec extends PlaySpec with GuiceOneServerP
       when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
       when(mockPropertyDetailsService.retrieveDraftPropertyDetails
       (ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propertyDetails)))
-      val result = testPropertyDetailsAddressController.view(id).apply(SessionBuilder.buildRequestWithSession(userId))
+      val result = testPropertyDetailsAddressController.view(id, false, periodKey, None).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
 
@@ -151,7 +151,7 @@ class PropertyDetailsAddressControllerSpec extends PlaySpec with GuiceOneServerP
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
       setInvalidAuthMocks(authMock)
-      val result = testPropertyDetailsAddressController.save(id, periodKey, None).apply(SessionBuilder.buildRequestWithSession(userId))
+      val result = testPropertyDetailsAddressController.save(id, periodKey, None, false).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
 
@@ -169,7 +169,7 @@ class PropertyDetailsAddressControllerSpec extends PlaySpec with GuiceOneServerP
       }
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
-      val result = testPropertyDetailsAddressController.save(id, periodKey, None)
+      val result = testPropertyDetailsAddressController.save(id, periodKey, None, false)
         .apply(SessionBuilder.updateRequestWithSession(FakeRequest().withJsonBody(inputJson), userId))
 
       test(result)
