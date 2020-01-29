@@ -31,7 +31,7 @@ import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.mvc.{MessagesControllerComponents, Result}
 import play.api.test.Helpers.{SEE_OTHER, redirectLocation, status, _}
-import services.{AddressLookupService, PropertyDetailsCacheSuccessResponse, PropertyDetailsService}
+import services.{AddressLookupService, PropertyDetailsCacheNotFoundResponse, PropertyDetailsCacheSuccessResponse, PropertyDetailsService}
 import testhelpers.MockAuthUtil
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
@@ -40,7 +40,7 @@ import utils.AtedConstants
 
 import scala.concurrent.Future
 
-class ConfirmAddressControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with MockAuthUtil {
+class ConfirmAddressControllerSpec extends PlaySpec with GuiceOneServerPerSuite with BeforeAndAfterEach with MockitoSugar with MockAuthUtil {
 
   implicit val mockAppConfig: ApplicationConfig = mock[ApplicationConfig]
   implicit lazy val hc: HeaderCarrier = HeaderCarrier()
@@ -92,6 +92,20 @@ class ConfirmAddressControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
       test(result)
     }
 
+    def getWithAuthorisedUserNotFoundResponse(test: Future[Result] => Any): Unit = {
+      val userId = s"user-${UUID.randomUUID}"
+      val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+      noDelegationModelAuthMocks(authMock)
+      when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+        (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
+      when(mockPropertyDetailsService.retrieveDraftPropertyDetails(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())) thenReturn {
+        Future.successful(PropertyDetailsCacheNotFoundResponse)
+      }
+      when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+      val result = testConfirmAddressController.view("1", 2015).apply(SessionBuilder.buildRequestWithSession(userId))
+      test(result)
+    }
+
     def submitWithAuthorisedUser(test: Future[Result] => Any) {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
@@ -102,10 +116,20 @@ class ConfirmAddressControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
       test(result)
     }
 
+    def submitWithUnAuthorisedUser(test: Future[Result] => Any) {
+      val userId = s"user-${UUID.randomUUID}"
+      val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
+      setInvalidAuthMocks(authMock)
+      when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+        (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
+      val result = testConfirmAddressController.submit("1", 2015).apply(SessionBuilder.buildRequestWithSession(userId))
+      test(result)
+    }
   }
 
 
   "ConfirmAddressController" must {
+
     "view" must {
 
       "unauthorised users" must {
@@ -125,7 +149,7 @@ class ConfirmAddressControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
 
       "Authorised users" must {
 
-        "show correct property details" in new Setup {
+        "show correct property details with a back link" in new Setup {
           getWithAuthorisedUser {
             result =>
               status(result) must be(OK)
@@ -138,10 +162,37 @@ class ConfirmAddressControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
               document.getElementById("address-line3").text() must be("addr3")
               document.getElementById("address-line4").text() must be("addr4")
               document.getElementById("postcode").text() must be("")
+              document.getElementById("backLinkHref").text must be("Back")
+              document.getElementById("backLinkHref").attr("href") must include("/ated/liability/address-lookup/view/2015")
+          }
+        }
+
+        "show error" in new Setup {
+          getWithAuthorisedUserNotFoundResponse {
+            result =>
+              status(result) must be(OK)
+              val document = Jsoup.parse(contentAsString(result))
+              document.title() must be("")
+
+
           }
         }
       }
-      "submit" must {
+    }
+
+    "submit" must {
+
+      "unauthorised users" must {
+
+        "respond with a redirect" in new Setup {
+          submitWithUnAuthorisedUser { result =>
+            status(result) must be(SEE_OTHER)
+            redirectLocation(result).get must include("/ated/unauthorised")
+          }
+        }
+      }
+
+      "authorised users" must {
 
         "redirect to declaration page" in new Setup {
           when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
@@ -150,14 +201,6 @@ class ConfirmAddressControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
               status(result) must be(SEE_OTHER)
               redirectLocation(result) must be(Some("/ated/liability/create/title/view/1"))
           }
-        }
-      }
-
-      "editAddressRedirect" must {
-
-        "redirect to the edit address page" in new Setup {
-
-
         }
       }
     }

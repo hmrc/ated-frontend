@@ -99,7 +99,7 @@ class PropertyDetailsAddressControllerSpec extends PlaySpec with GuiceOneServerP
     }
 
 
-    def viewDataWithAuthorisedUser(id: String, propertyDetails: PropertyDetails)(test: Future[Result] => Any) {
+    def viewDataWithAuthorisedUser(id: String, propertyDetails: PropertyDetails, fromConfirmAddressPage: Boolean)(test: Future[Result] => Any) {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
@@ -108,7 +108,7 @@ class PropertyDetailsAddressControllerSpec extends PlaySpec with GuiceOneServerP
       when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
       when(mockPropertyDetailsService.retrieveDraftPropertyDetails
       (ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propertyDetails)))
-      val result = testPropertyDetailsAddressController.view(id, false, periodKey, None).apply(SessionBuilder.buildRequestWithSession(userId))
+      val result = testPropertyDetailsAddressController.view(id, fromConfirmAddressPage, periodKey, None).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
 
@@ -147,15 +147,15 @@ class PropertyDetailsAddressControllerSpec extends PlaySpec with GuiceOneServerP
       test(result)
     }
 
-    def saveWithUnAuthorisedUser(id: Option[String])(test: Future[Result] => Any) {
+    def saveWithUnAuthorisedUser(id: Option[String], fromConfirmAddressPage: Boolean)(test: Future[Result] => Any) {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
       setInvalidAuthMocks(authMock)
-      val result = testPropertyDetailsAddressController.save(id, periodKey, None, false).apply(SessionBuilder.buildRequestWithSession(userId))
+      val result = testPropertyDetailsAddressController.save(id, periodKey, None, fromConfirmAddressPage).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
 
-    def submitWithAuthorisedUser(id: Option[String], inputJson: JsValue)(test: Future[Result] => Any) {
+    def submitWithAuthorisedUser(id: Option[String], inputJson: JsValue, fromConfirmAddressPage: Boolean)(test: Future[Result] => Any) {
       val userId = s"user-${UUID.randomUUID}"
       when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
         (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
@@ -169,7 +169,7 @@ class PropertyDetailsAddressControllerSpec extends PlaySpec with GuiceOneServerP
       }
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
-      val result = testPropertyDetailsAddressController.save(id, periodKey, None, false)
+      val result = testPropertyDetailsAddressController.save(id, periodKey, None, fromConfirmAddressPage)
         .apply(SessionBuilder.updateRequestWithSession(FakeRequest().withJsonBody(inputJson), userId))
 
       test(result)
@@ -211,8 +211,8 @@ class PropertyDetailsAddressControllerSpec extends PlaySpec with GuiceOneServerP
           }
         }
 
-        "show the chargeable property details view if we id and data" in new Setup {
-          viewDataWithAuthorisedUser("1", PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))) {
+        "show the chargeable property details view if we id and data with fromConfirmAddressPage false" in new Setup {
+          viewDataWithAuthorisedUser("1", PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode")), false) {
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
@@ -225,8 +225,27 @@ class PropertyDetailsAddressControllerSpec extends PlaySpec with GuiceOneServerP
               document.getElementById("postcode").attr("value") must be("postCode")
           }
         }
+
+        "show the chargeable property details view if we id and data with fromConfirmAddressPage true" in new Setup {
+          viewDataWithAuthorisedUser("1", PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode")), true) {
+            result =>
+              status(result) must be(OK)
+              val document = Jsoup.parse(contentAsString(result))
+              document.title() must be(TitleBuilder.buildTitle("Edit address"))
+              document.getElementById("property-details-header").text() must be("Edit address")
+              document.getElementById("submit").text() must be("Save and continue")
+              document.getElementById("line_1").attr("value") must be("addr1")
+              document.getElementById("line_2").attr("value") must be("addr2")
+              document.getElementById("line_3").attr("value") must be("addr3")
+              document.getElementById("line_4").attr("value") must be("addr4")
+              document.getElementById("postcode").attr("value") must be("postCode")
+              document.getElementById("backLinkHref").text must be("Back")
+              document.getElementById("backLinkHref").attr("href") must include("/ated/liability/confirm-address/view")
+          }
+        }
       }
     }
+  }
 
 
     "view submitted" must {
@@ -288,8 +307,15 @@ class PropertyDetailsAddressControllerSpec extends PlaySpec with GuiceOneServerP
     "save" must {
       "unauthorised users" must {
 
-        "be redirected to the login page" in new Setup {
-          saveWithUnAuthorisedUser(None) { result =>
+        "be redirected to the login page with fromConfirmPage false" in new Setup {
+          saveWithUnAuthorisedUser(None, false) { result =>
+            status(result) must be(SEE_OTHER)
+            redirectLocation(result).get must include("/ated/unauthorised")
+          }
+        }
+
+        "be redirected to the login page with fromConfirmPage true" in new Setup {
+          saveWithUnAuthorisedUser(None, true) { result =>
             status(result) must be(SEE_OTHER)
             redirectLocation(result).get must include("/ated/unauthorised")
           }
@@ -298,34 +324,62 @@ class PropertyDetailsAddressControllerSpec extends PlaySpec with GuiceOneServerP
 
       "Authorised users" must {
 
-        "for invalid data, return BAD_REQUEST" in new Setup {
+        "for invalid data, return BAD_REQUEST with fromConfirmAddress false" in new Setup {
 
           val inputJson: JsValue = Json.parse( """{"rentalBusiness": true, "isAvoidanceScheme": "true"}""")
           when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
-          submitWithAuthorisedUser(None, inputJson) {
+          submitWithAuthorisedUser(None, inputJson, false) {
             result =>
               status(result) must be(BAD_REQUEST)
           }
         }
 
-        "for valid data with no id, return OK" in new Setup {
+        "for invalid data, return BAD_REQUEST with fromConfirmAddress true" in new Setup {
+
+          val inputJson: JsValue = Json.parse( """{"rentalBusiness": true, "isAvoidanceScheme": "true"}""")
+          when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+          submitWithAuthorisedUser(None, inputJson, true) {
+            result =>
+              status(result) must be(BAD_REQUEST)
+          }
+        }
+
+        "for valid data with no id, return OK with fromConfirmAddress false" in new Setup {
           val propertyDetails: PropertyDetailsAddress = PropertyDetailsBuilder.getPropertyDetailsAddress(postCode = Some("XX1 1XX"))
           when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
-          submitWithAuthorisedUser(None, Json.toJson(propertyDetails)) {
+          submitWithAuthorisedUser(None, Json.toJson(propertyDetails), false) {
             result =>
               status(result) must be(SEE_OTHER)
           }
         }
 
-        "for valid data, return OK" in new Setup {
+        "for valid data with no id, return OK with fromConfirmAddress true" in new Setup {
           val propertyDetails: PropertyDetailsAddress = PropertyDetailsBuilder.getPropertyDetailsAddress(postCode = Some("XX1 1XX"))
           when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
-          submitWithAuthorisedUser(Some("1"),Json.toJson(propertyDetails)) {
+          submitWithAuthorisedUser(None, Json.toJson(propertyDetails), true) {
+            result =>
+              status(result) must be(SEE_OTHER)
+          }
+        }
+
+        "for valid data, return OK with fromConfirmAddress false" in new Setup {
+          val propertyDetails: PropertyDetailsAddress = PropertyDetailsBuilder.getPropertyDetailsAddress(postCode = Some("XX1 1XX"))
+          when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+          submitWithAuthorisedUser(Some("1"),Json.toJson(propertyDetails), false) {
+            result =>
+              status(result) must be(SEE_OTHER)
+          }
+        }
+
+        "for valid data, return OK with fromConfirmAddress true" in new Setup {
+          val propertyDetails: PropertyDetailsAddress = PropertyDetailsBuilder.getPropertyDetailsAddress(postCode = Some("XX1 1XX"))
+          when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+          submitWithAuthorisedUser(Some("1"),Json.toJson(propertyDetails), true) {
             result =>
               status(result) must be(SEE_OTHER)
           }
         }
       }
-    }
-  }
+
+}
 }
