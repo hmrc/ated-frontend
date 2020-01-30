@@ -74,7 +74,7 @@ class PropertyDetailsAddressSpec extends FeatureSpec with GuiceOneServerPerSuite
       assert(document.getElementById("submit").text() === "Save and continue")
 
       Then("The back link is correct")
-      assert(document.getElementById("backLinkHref") === null)
+      assert(document.getElementById("backLinkHref").text === "Back")
 
     }
 

@@ -80,7 +80,7 @@ class periodSummaryPastReturnsSpec extends FeatureSpec with GuiceOneServerPerSui
       assert(document.getElementById("draft-liability-0") === null)
       assert(document.getElementById("draft-relief-1") === null)
 
-      assert(document.getElementById("backLinkHref") === null)
+      assert(document.getElementById("backLinkHref").text === "Back")
 
       Then("add the link to create a return")
       assert(document.getElementById("create-return").text() === "Create a new return")

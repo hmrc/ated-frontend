@@ -79,7 +79,7 @@ class PropertyDetailsRevaluedViewSpec extends FeatureSpec with GuiceOneAppPerSui
       assert(document.getElementById("notRevalued").text() === "The property must be revalued before you can submit this chargeable return")
 
       Then("The back link is correct")
-      assert(document.getElementById("backLinkHref") === null)
+      assert(document.getElementById("backLinkHref").text === "Back")
     }
 
   }
@@ -170,7 +170,7 @@ class PropertyDetailsRevaluedViewSpec extends FeatureSpec with GuiceOneAppPerSui
         assert(document.getElementById("notRevalued").text() === "The property must be revalued before you can submit this chargeable return")
 
         Then("The back link is correct")
-        assert(document.getElementById("backLinkHref") === null)
+        assert(document.getElementById("backLinkHref").text === "Back")
       }
 
     }

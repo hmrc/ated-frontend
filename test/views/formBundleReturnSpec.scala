@@ -100,7 +100,7 @@ class formBundleReturnSpec extends FeatureSpec with GuiceOneServerPerSuite with 
       Then("The the fields should be correct")
       assert(document.getElementById("th-view-return-property") === null)
 
-      assert(document.getElementById("backLinkHref") === null)
+      assert(document.getElementById("backLinkHref").text === "Back")
     }
     scenario("View the Form Bundle when we have a Form Bundle with a single period") {
 

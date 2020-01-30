@@ -172,9 +172,8 @@ class ConfirmAddressControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
-              document.title() must be("")
-
-
+              document.title() must be("Sorry, we’re experiencing technical difficulties")
+              document.getElementById("header").text() must be("Sorry, we’re experiencing technical difficulties")
           }
         }
       }
