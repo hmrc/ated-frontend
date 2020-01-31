@@ -126,13 +126,17 @@ GET     /liability/:formBundleNo/dispose/sent  controllers.editLiability.Dispose
 GET      /liability/address-lookup/view/:periodKey                    controllers.propertyDetails.AddressLookupController.view(propertyKey: Option[String] ?=None, periodKey: Int, mode: Option[String] ?=None)
 POST     /liability/address-lookup/find/:periodKey                    controllers.propertyDetails.AddressLookupController.find(propertyKey: Option[String] ?=None, periodKey: Int, mode: Option[String] ?=None)
 POST     /liability/address-lookup/save/:periodKey                    controllers.propertyDetails.AddressLookupController.save(propertyKey: Option[String] ?=None, periodKey: Int, mode: Option[String] ?=None)
+
+GET      /liability/confirm-address/view/:periodKey/:propertyKey                   controllers.propertyDetails.ConfirmAddressController.view(propertyKey: String, periodKey: Int, mode: Option[String] ?=None)
+POST     /liability/confirm-address/save/:periodKey/:propertyKey                    controllers.propertyDetails.ConfirmAddressController.submit(propertyKey: String, periodKey: Int, mode: Option[String] ?=None)
+
 GET      /liability/address-lookup/manual/:periodKey                  controllers.propertyDetails.AddressLookupController.manualAddressRedirect(propertyKey: Option[String] ?=None, periodKey: Int, mode: Option[String] ?=None)
 
-GET      /liability/create/address/edit-summary/:propertyKey                   controllers.propertyDetails.PropertyDetailsAddressController.editFromSummary(propertyKey: String)
-GET      /liability/create/address/view/:propertyKey                           controllers.propertyDetails.PropertyDetailsAddressController.view(propertyKey: String)
-POST     /liability/create/address/save/:periodKey                    controllers.propertyDetails.PropertyDetailsAddressController.save(propertyKey: Option[String] ?=None, periodKey: Int, mode: Option[String] ?=None)
-GET      /liability/create/address/:periodKey                         controllers.propertyDetails.PropertyDetailsAddressController.createNewDraft(periodKey: Int)
-GET      /liability/create/address/lookup/:periodKey                  controllers.propertyDetails.PropertyDetailsAddressController.addressLookupRedirect(propertyKey: Option[String] ?=None, periodKey: Int, mode: Option[String] ?=None)
+GET      /liability/create/address/edit-summary/:propertyKey                                controllers.propertyDetails.PropertyDetailsAddressController.editFromSummary(propertyKey: String)
+GET      /liability/create/address/view/:propertyKey/:fromConfirmAddressPage/:periodKey     controllers.propertyDetails.PropertyDetailsAddressController.view(propertyKey: String, fromConfirmAddressPage: Boolean, periodKey: Int, mode: Option[String] ?=None)
+POST     /liability/create/address/save/:periodKey                                          controllers.propertyDetails.PropertyDetailsAddressController.save(propertyKey: Option[String] ?=None, periodKey: Int, mode: Option[String] ?=None, fromConfirmAddressPage: Boolean)
+GET      /liability/create/address/:periodKey                                               controllers.propertyDetails.PropertyDetailsAddressController.createNewDraft(periodKey: Int)
+GET      /liability/create/address/lookup/:periodKey                                        controllers.propertyDetails.PropertyDetailsAddressController.addressLookupRedirect(propertyKey: Option[String] ?=None, periodKey: Int, mode: Option[String] ?=None)
 
 GET      /liability/create/title/view/:propertyKey                             controllers.propertyDetails.PropertyDetailsTitleController.view(propertyKey: String)
 GET      /liability/create/title/edit/:propertyKey                             controllers.propertyDetails.PropertyDetailsTitleController.editFromSummary(propertyKey: String)

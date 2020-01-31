@@ -70,7 +70,7 @@ class addressLookupSpec extends FeatureSpec with GuiceOneAppPerSuite with Mockit
       assert(document.getElementById("submit").text() === "Find address")
 
       Then("The back link is correct")
-      assert(document.getElementById("backLinkHref") === null)
+      assert(document.getElementById("backLinkHref").text === "Back")
     }
 
     scenario("user is editing a chargeable return for an existing property") {

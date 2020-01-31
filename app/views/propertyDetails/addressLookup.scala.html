@@ -16,7 +16,11 @@
 
 @import models._
 @import config.ApplicationConfig
-@(id: Option[String], periodKey: Int, searchForm: Form[AddressLookup], mode: Option[String] = None, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
+@(id: Option[String],
+        periodKey: Int,
+        searchForm: Form[AddressLookup],
+        mode: Option[String] = None,
+        backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 @import uk.gov.hmrc.play.views.html._
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
@@ -74,5 +78,4 @@
     </fieldset>
 
   }
-
 }

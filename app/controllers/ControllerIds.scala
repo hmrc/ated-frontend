@@ -23,6 +23,7 @@ trait ControllerIds {
   val propertyDetailsAddressId: String = "PropertyDetailsAddressController"
   val propertyDetailsTitleId: String = "PropertyDetailsTitleController"
   val addressLookupId: String = "AddressLookupController"
+  val confirmAddressId: String = "ConfirmAddressController"
   val bankDetailsControllerId: String = "BankDetailsController"
   val reliefsSummaryControllerId: String = "ReliefsSummaryController"
   val returnTypeControllerId: String = "ReturnTypeController"

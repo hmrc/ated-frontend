@@ -81,7 +81,7 @@ class periodChooseReliefSpec extends FeatureSpec with GuiceOneAppPerSuite with M
       assert(document.getElementById("submit").text() === "Save and continue")
 
       Then("The back link is correct")
-      assert(document.getElementById("backLinkHref") === null)
+      assert(document.getElementById("backLinkHref").text === "Back")
     }
 
     scenario("display a selected a relief") {

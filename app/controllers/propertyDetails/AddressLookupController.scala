@@ -40,6 +40,7 @@ class AddressLookupController @Inject()(mcc: MessagesControllerComponents,
                                         auditConnector: DefaultAuditConnector,
                                         addressLookupService: AddressLookupService,
                                         authAction: AuthAction,
+                                        confirmAddressController: ConfirmAddressController,
                                         val backLinkCacheConnector: BackLinkCacheConnector,
                                         val propertyDetailsService: PropertyDetailsService,
                                         val dataCacheConnector: DataCacheConnector)
@@ -89,7 +90,7 @@ extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper wi
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         val redirectUrl = id match {
-          case Some(x) => controllers.propertyDetails.routes.PropertyDetailsAddressController.view(x)
+          case Some(x) => controllers.propertyDetails.routes.PropertyDetailsAddressController.view(x, fromConfirmAddressPage = false, periodKey, mode)
           case None => controllers.propertyDetails.routes.PropertyDetailsAddressController.createNewDraft(periodKey)
         }
         redirectWithBackLinkDontOverwriteOldLink(
@@ -121,8 +122,8 @@ extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper wi
                     _ => {
                       auditInputAddress(found)
                       redirectWithBackLink(
-                        propertyDetailsTitleId,
-                        controllers.propertyDetails.routes.PropertyDetailsTitleController.view(x),
+                        confirmAddressId,
+                        controllers.propertyDetails.routes.ConfirmAddressController.view(x, periodKey, mode),
                         backToViewLink
                       )
                     }
@@ -132,8 +133,8 @@ extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper wi
                     newId =>
                       auditInputAddress(found)
                       redirectWithBackLink(
-                        propertyDetailsTitleId,
-                        controllers.propertyDetails.routes.PropertyDetailsTitleController.view(newId),
+                        confirmAddressId,
+                        controllers.propertyDetails.routes.ConfirmAddressController.view(newId, periodKey,mode),
                         backToViewLink
                       )
                   }

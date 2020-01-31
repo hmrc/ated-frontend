@@ -96,7 +96,7 @@ class editLiabilitySummarySpec extends FeatureSpec with GuiceOneServerPerSuite w
       assert(document.getElementById("ated-charge-value").text() === "£1,000")
 
       Then("The back link is correct")
-      assert(document.getElementById("backLinkHref") === null)
+      assert(document.getElementById("backLinkHref").text === "Back")
     }
 
     scenario("Changed charge with periods") {

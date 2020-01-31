@@ -54,6 +54,7 @@ class AddressLookupControllerSpec extends PlaySpec with GuiceOneServerPerSuite w
   val mockBackLinkCacheConnector: BackLinkCacheConnector = mock[BackLinkCacheConnector]
   val mockPropertyDetailsService: PropertyDetailsService = mock[PropertyDetailsService]
   val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
+  val mockConfirmAddressController: ConfirmAddressController = mock[ConfirmAddressController]
 
   val periodKey: Int = 2015
 
@@ -74,6 +75,7 @@ class Setup {
     mockAuditConnector,
     mockAddressLookupService,
     mockAuthAction,
+    mockConfirmAddressController,
     mockBackLinkCacheConnector,
     mockPropertyDetailsService,
     mockDataCacheConnector
@@ -331,7 +333,7 @@ class Setup {
         saveWithAuthorisedUser(None, periodKey, Json.toJson(AddressSelected(Some("1"))), None, Some(foundProperty)) {
           result =>
             status(result) must be(SEE_OTHER)
-            redirectLocation(result).get must include("/ated/liability/create/title/view/newId")
+            redirectLocation(result).get must include("/ated/liability/confirm-address/view/")
         }
       }
       "submitting a valid request should update a return if we have an Id" in new Setup {
@@ -342,7 +344,7 @@ class Setup {
         saveWithAuthorisedUser(Some("1"), periodKey, Json.toJson(AddressSelected(Some("1"))), None, Some(foundProperty)) {
           result =>
             status(result) must be(SEE_OTHER)
-            redirectLocation(result).get must include("/ated/liability/create/title/view/1")
+            redirectLocation(result).get must include("/ated/liability/confirm-address/view/")
 
         }
       }
