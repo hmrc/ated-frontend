@@ -16,10 +16,13 @@
 
 @import play.twirl.api.HtmlFormat
 @import config.ApplicationConfig
+@import uk.gov.hmrc.play.views.helpers.AttorneyRegime
+@import uk.gov.hmrc.play.views.html.{layouts => uiLayouts}
+
 @(title: String,
   userLoggedIn: Boolean = true,
   hasBanner: Boolean = false,
-  showUrBanner:Option[Boolean] = Some(false),
+  showUrBanner: Option[Boolean] = Some(false),
   supportLinkEnabled: Boolean = true,
   banner: Html = HtmlFormat.empty,
   scriptElement: Option[Html] = None,
@@ -27,9 +30,6 @@
   sidebarLinks: Option[Html] = None,
   sidebarClass: Option[String] = None,
   analyticsAdditionalJs: Option[Html] = None)(mainContent: Html)(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
-
-    @import uk.gov.hmrc.play.views.helpers.AttorneyRegime
-@import uk.gov.hmrc.play.views.html.{layouts => uiLayouts}
 
 @scriptElement = {
     <script src='@controllers.routes.Assets.versioned("jquery/jquery-ui.min.js")'></script>
@@ -40,9 +40,9 @@
 }
     <script>
         @if(userLoggedIn) {
-        $.timeoutDialog({timeout: @appConfig.defaultTimeoutSeconds, countdown: @appConfig.timeoutCountdown, keep_alive_url: '@controllers.routes.ApplicationController.keepAlive', logout_url: '@controllers.routes.ApplicationController.logout', logout_redirect_url: '@controllers.routes.ApplicationController.logout', restart_on_yes: true, background_no_scroll: true});
-        var dialogOpen;
-    }
+            $.timeoutDialog({timeout: @appConfig.defaultTimeoutSeconds, countdown: @appConfig.timeoutCountdown, keep_alive_url: '@controllers.routes.ApplicationController.keepAlive', logout_url: '@controllers.routes.ApplicationController.logout', logout_redirect_url: '@controllers.routes.ApplicationController.logout', restart_on_yes: true, background_no_scroll: true});
+            var dialogOpen;
+        }
     </script>
 
 @linkElement = {
@@ -73,6 +73,7 @@
   banner = Some(mainBanner),
   userLoggedIn = userLoggedIn,
   linkElement = Some(linkElement),
-  analyticsJs = analyticsAdditionalJs, isUserResearchBannerVisible = showUrBanner.getOrElse(false)) {
+  analyticsJs = analyticsAdditionalJs,
+  isUserResearchBannerVisible = showUrBanner.getOrElse(false)) {
     @mainContent
   }

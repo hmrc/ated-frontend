@@ -42,7 +42,7 @@ class ApplicationConfig @Inject()(val conf: ServicesConfig,
   lazy val atedFrontendHost: String = conf.getString("microservice.services.ated-frontend.host")
   lazy val defaultTimeoutSeconds: Int = loadConfig("defaultTimeoutSeconds").toInt
   lazy val timeoutCountdown: Int = loadConfig("timeoutCountdown").toInt
-  lazy val urBannerToggle:Boolean = loadConfig("urBanner.toggle").toBoolean
+  lazy val urBannerToggle: Boolean = loadConfig("urBanner.toggle").toBoolean
   lazy val urBannerLink: String = loadConfig("urBanner.link")
   lazy val serviceSignOut:String = loadConfig("service-signout.url")
 
@@ -65,4 +65,6 @@ class ApplicationConfig @Inject()(val conf: ServicesConfig,
   lazy val clientApproveAgentMandate: String = conf.getString("microservice.services.agent-client-mandate-frontend.atedClientApproveAgentUri")
   lazy val agentRedirectedToMandate: String = conf.getString("microservice.services.agent-client-mandate-frontend.atedAgentJourneyStartUri")
   lazy val businessTaxAccountPage: String = conf.getString("microservice.services.auth.business-tax-account.serviceRedirectUrl")
+  lazy val atedPeakStartDay: String = conf.getString(key = "atedPeakStartDay")
+
 }

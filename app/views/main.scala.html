@@ -16,6 +16,10 @@
 
 @import play.twirl.api.HtmlFormat
 @import config.ApplicationConfig
+@import layouts.{govuk_template => hmrcGovUkTemplate}
+@import uk.gov.hmrc.play.views.html.{helpers => uiHelpers, layouts => uiLayouts}
+@import _root_.utils.SessionUtils
+
 @(appConfig: ApplicationConfig,
   supportLinkEnabled: Boolean = false,
   title: String,
@@ -27,12 +31,8 @@
   scriptElement: Option[Html] = None,
   linkElement : Option[Html] = None,
   analyticsJs: Option[Html] = None,
-  isUserResearchBannerVisible:Boolean = false
+  isUserResearchBannerVisible: Boolean = false
   )(mainContent: Html = HtmlFormat.empty)(implicit messages: Messages, request: Request[AnyContent])
-
-@import layouts.{govuk_template => hmrcGovUkTemplate}
-@import uk.gov.hmrc.play.views.html.{helpers => uiHelpers, layouts => uiLayouts}
-@import _root_.utils.SessionUtils
 
 @head = {
   @uiLayouts.head(

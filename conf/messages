@@ -37,6 +37,7 @@ ated.print.name = Print name
 ated.date = Date
 ated.debit = debit
 ated.credit = credit
+ated.warning = Warning
 
 ##### ERROR MESSAGES
 
@@ -123,6 +124,11 @@ ated.account-summary.relief-text = From 1 April 2016 you will be able to use thi
 ated.account-summary.view-change-button = View or change
 ated.account-summary-back = Back to all your clients
 ated.account-summary-screen-reader = the period
+ated.account-summary.peak-guidance.warning = Deadline for {0} to {1} returns: 30 April {0}.
+ated.account-summary.peak-guidance.text.1 = This is the deadline for returns and payments for all ATED-eligible properties that you own on 1 April {0}.
+ated.account-summary.peak-guidance.text.2 = Returns for newly acquired ATED properties must be sent to HMRC within 30 days of the date of acquisition (90 days from start date for new builds).
+ated.account-summary.outside-peak-guidance.warning = Returns for newly acquired ATED properties must be sent to HMRC within 30 days (90 days for new builds).
+ated.account-summary.outside-peak-guidance.text = Returns for {0} to {1} for all properties in the scope of ATED are due by 30 April {0}.
 
 ##### SELECT PERIOD
 
