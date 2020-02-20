@@ -15,8 +15,6 @@
  *@
 
 @import config.ApplicationConfig
-@(periodKey: Int, returnResponse: SubmitReturnsResponse)(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
-
 @import models._
 @import uk.gov.hmrc.play.views.html._
 @import uk.gov.hmrc.play.views.html.helpers._
@@ -25,43 +23,42 @@
 @import org.joda.time.format.DateTimeFormat
 @import org.joda.time.LocalDate
 
-@serviceName = {@Messages("ated.welcome.related.link.first")}
+@(periodKey: Int, returnResponse: SubmitReturnsResponse)(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
-@atedMain(title = Messages("ated.relief-sent.title")) {
+@atedMain(title = messages("ated.relief-sent.title")) {
 
   <div id="banner" class="transaction-banner--complete">
     <h1 id="banner-text">
-        @Messages("ated.relief-sent.banner-text")
-        </h1>
+        @messages("ated.relief-sent.banner-text")
+    </h1>
   </div>
 
+  <p id="completed-returns">@messages("ated.reliefs-sent.completed-message")</p>
+  <p id="email-confirmation">@messages("ated.reliefs-sent.email-message")<p>
 
-    <p id="completed-returns">@Messages("ated.reliefs-sent.completed-message")</p>
-    <p id="email-confirmation">@Messages("ated.reliefs-sent.email-message")<p>
-
-      <a href="@controllers.reliefs.routes.ReliefsSentController.viewPrintFriendlyReliefSent(periodKey)" id="print-friendly-relief-link" data-journey-click="ated-fronted:click:print-friendly-relief-link" target="_blank">
-        @Messages("ated.reliefs-sent.print-link")
-      </a>
-
+  <a href="@controllers.reliefs.routes.ReliefsSentController.viewPrintFriendlyReliefSent(periodKey)"
+  id="print-friendly-relief-link" data-journey-click="ated-fronted:click:print-friendly-relief-link" target="_blank">
+    @messages("ated.reliefs-sent.print-link")
+  </a>
 
   <div class="divider--top--thick"></div>
 
-    <h2 id="receipt-message" class="heading-medium">@Messages("ated.reliefs-sent.charge-heading")</h2>
+  <h2 id="receipt-message" class="heading-medium">@messages("ated.reliefs-sent.charge-heading")</h2>
 
-    <p id="amount-message">@Messages("ated.reliefs-sent.amount-message")</p>
+  <p id="amount-message">@messages("ated.reliefs-sent.amount-message")</p>
 
-    @returnResponse.reliefReturnResponse.map { reliefReturnResponse =>
+  @returnResponse.reliefReturnResponse.map { reliefReturnResponse =>
     <p id="owed-amount">
-      @Html(Messages("ated.reliefs-sent.reference-message",reliefReturnResponse.head.formBundleNumber))
+      @Html(messages("ated.reliefs-sent.reference-message",reliefReturnResponse.head.formBundleNumber))
     </p>
-    }
+  }
 
-    <p id="balance-message">@Messages("ated.reliefs-sent.balance-message")</p>
-
+  <p id="balance-message">@messages("ated.reliefs-sent.balance-message")</p>
 
   <div class="form-field">
-    <a href="@controllers.routes.AccountSummaryController.view()" id="account-link" role="button" class="button">@Messages("ated.reliefs-sent.client-link")</a>
+    <a href="@controllers.routes.AccountSummaryController.view()" id="account-link" role="button" class="button">
+        @messages("ated.reliefs-sent.client-link")
+    </a>
   </div>
-
 
 }
