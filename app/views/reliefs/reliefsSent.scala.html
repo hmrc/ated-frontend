@@ -48,16 +48,22 @@
   <p id="amount-message">@messages("ated.reliefs-sent.amount-message")</p>
 
   @returnResponse.reliefReturnResponse.map { reliefReturnResponse =>
-    <p id="owed-amount">
-      @Html(messages("ated.reliefs-sent.reference-message",reliefReturnResponse.head.formBundleNumber))
+    <p id="reference-number">
+      @Html(messages("ated.reliefs-sent.reference-message", reliefReturnResponse.head.formBundleNumber))
     </p>
   }
 
   <p id="balance-message">@messages("ated.reliefs-sent.balance-message")</p>
+  <br />
+  <h2 class="heading-medium">@messages("ated.reliefs-sent.change-circumstances.p0")</h2>
+  <p>@messages("ated.reliefs-sent.change-circumstances.p1")</p>
+  <p>@messages("ated.reliefs-sent.change-circumstances.p2")</p>
+  <p>@messages("ated.reliefs-sent.change-circumstances.p3")</p>
 
+  <br />
   <div class="form-field">
     <a href="@controllers.routes.AccountSummaryController.view()" id="account-link" role="button" class="button">
-        @messages("ated.reliefs-sent.client-link")
+      @messages("ated.reliefs-sent.client-link")
     </a>
   </div>
 

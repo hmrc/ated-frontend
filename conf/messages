@@ -95,7 +95,6 @@ unauthorised.button.signout = Sign out
 
 unauthorised.sa.header = You are trying to sign in with your Self Assessment ID. If you are an overseas landlord or client you need to use your limited company ID
 
-
 ##### WELCOME
 
 ated.welcome.title = Register for ATED for {0} to {1}
@@ -238,14 +237,18 @@ ated.relief-sent.title = Your returns have been successfully submitted - Annual 
 ated.relief-sent.banner-text = Your returns have been successfully submitted
 ated.relief-sent.header = Your returns have been successfully submitted
 ated.reliefs-sent.button = Finish and sign out
-ated.reliefs-sent.client-link = Your ATED online service
+ated.reliefs-sent.client-link = Your ATED summary
 ated.reliefs-sent.completed-message = You can view your completed returns, payment references and ways to pay in the ATED online service.
 ated.reliefs-sent.email-message = You will not receive an email confirmation.
 ated.reliefs-sent.charge-heading = The ATED charge for these returns is £0
 ated.reliefs-sent.amount-message = This amount does not reflect any payments you have already made or penalties that have been issued.
 ated.reliefs-sent.balance-message = You can view your balance in your ATED online service. There can be a 24-hour delay before you see any updates.
-ated.reliefs-sent.reference-message = Your reference for these returns are  {0}.
+ated.reliefs-sent.reference-message = Your reference for these returns are {0}.
 ated.reliefs-sent.print-link = Print confirmation
+ated.reliefs-sent.change-circumstances.p0 = Change or ending of relief type
+ated.reliefs-sent.change-circumstances.p1 = If any change in your circumstances means you will no longer claim for one or more relief types next year, you need to contact HMRC on atedadditionalinfo.ctiaa@hmrc.gov.uk to tell us which relief types you will not claim.
+ated.reliefs-sent.change-circumstances.p2 = This will help to keep our records up to date so we know not to expect a return for that type of relief next year.
+ated.reliefs-sent.change-circumstances.p3 = When emailing please include your ATED reference number or if you do not have the number please give your company name. Do not include any further personal or financial details. Sending information over the internet is generally not completely secure, and we cannot guarantee the security of your data while it’s in transit. Any data you send is at your own risk.
 
 ##### FEEDBACK
 
