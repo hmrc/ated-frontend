@@ -14,6 +14,22 @@
  * limitations under the License.
  */
 
+/*
+ * Copyright 2020 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package controllers
 
 import java.util.UUID
@@ -155,18 +171,18 @@ class ExistingReturnQuestionControllerSpec extends PlaySpec with GuiceOneServerP
           getWithAuthorisedUser { result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be(TitleBuilder.buildTitle("Did you file a return for this property last year?"))
+            document.title() must be(TitleBuilder.buildTitle("Did you file a return for this property in 2014 to 2015?"))
             document.getElementById("return-type-header")
-              .text() must be("Did you file a return for this property last year?")
+              .text() must be("Did you file a return for this property in 2014 to 2015?")
           }
         }
         "show the return type view with saved data" in new Setup {
           getWithAuthorisedUserWithSomeData { result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be(TitleBuilder.buildTitle("Did you file a return for this property last year?"))
+            document.title() must be(TitleBuilder.buildTitle("Did you file a return for this property in 2014 to 2015?"))
             document.getElementById("return-type-header")
-              .text() must be("Did you file a return for this property last year?")
+              .text() must be("Did you file a return for this property in 2014 to 2015?")
           }
         }
       }
@@ -182,7 +198,7 @@ class ExistingReturnQuestionControllerSpec extends PlaySpec with GuiceOneServerP
               result =>
                 status(result) must be(BAD_REQUEST)
                 val doc = Jsoup.parse(contentAsString(result))
-                doc.getElementsByClass("error-notification").html() must include("The existing return question must be answered")
+                doc.getElementsByClass("error-notification").html() must include("Select yes if you filed a return for this property last year")
             }
           }
 

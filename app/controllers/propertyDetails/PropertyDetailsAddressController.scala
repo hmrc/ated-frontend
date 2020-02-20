@@ -155,18 +155,23 @@ class PropertyDetailsAddressController @Inject()(mcc: MessagesControllerComponen
   def save(id: Option[String], periodKey: Int, mode: Option[String], fromConfirmAddressPage: Boolean): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
+        val backLink = {
+          id match {
+            case Some(id) if fromConfirmAddressPage =>
+              Some(controllers.propertyDetails.routes.ConfirmAddressController.view(id, periodKey, mode).url)
+            case _ =>
+              Some(controllers.propertyDetails.routes.AddressLookupController.view(id, periodKey, mode).url)
+          }
+        }
         propertyDetailsAddressForm.bindFromRequest.fold(
           formWithError => {
-            currentBackLink.map(backLink =>
-              BadRequest(views.html.propertyDetails.propertyDetailsAddress(
+              Future.successful(BadRequest(views.html.propertyDetails.propertyDetailsAddress(
                 id,
                 periodKey,
                 formWithError,
                 mode,
                 backLink,
-                fromConfirmAddressPage = fromConfirmAddressPage))
-            )
-          },
+                fromConfirmAddressPage = fromConfirmAddressPage)))},
           propertyDetails => {
             val trimmedPostCode = AtedUtils.formatPostCode(propertyDetails.postcode)
             val trimmedAddressProperty = propertyDetails.copy(postcode = trimmedPostCode)

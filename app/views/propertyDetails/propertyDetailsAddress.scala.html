@@ -58,9 +58,13 @@ case _ => oldFormBundleNo.getOrElse("")
             @pageHeadersAndError(backLink, messages("pre-heading"), messages(AtedUtils.getPropertyDetailsPreHeader(mode)), "property-details-header", pageTitle,
                 Some(atedErrorSummary(propertyDetailsForm, "ated.property-details-address-error.general")))
 
+        @if(mode.contains("editSubmitted")){
+            <p>@Messages("ated.property-details.p")</p>
+        }
+
         @form(action = controllers.propertyDetails.routes.PropertyDetailsAddressController.save(id, periodKey, mode, fromConfirmAddressPage)) {
 
-            <fieldset>
+            <fieldset class="page-header-margin">
 
                 <legend class="visuallyhidden">@Messages("ated.property-details.header")</legend>
 
@@ -107,7 +111,7 @@ case _ => oldFormBundleNo.getOrElse("")
                 </div>
             }
 
-            <button class="button" id="submit" type="submit">@Messages("ated.save-and-continue")</button>
+            <button class="button page-header-margin" id="submit" type="submit">@Messages("ated.save-and-continue")</button>
 
         }
     }

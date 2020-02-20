@@ -16,24 +16,25 @@
 
 package controllers.propertyDetails
 
-import java.time.LocalDate
-
 import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.AddressLookupForms.addressSelectedForm
 import javax.inject.Inject
+import models.{PropertyDetailsAddress, SelectPeriod}
 import play.api.Logger
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{DelegationService, FormBundleReturnsService, PropertyDetailsService, SummaryReturnsService}
+import services.{ChangeLiabilityReturnService, FormBundleReturnsService, PropertyDetailsService, SummaryReturnsService}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.AtedConstants._
+import utils.AtedUtils
 
 import scala.concurrent.{ExecutionContext, Future}
 
 class SelectExistingReturnAddressController @Inject()(mcc: MessagesControllerComponents,
                                                       authAction: AuthAction,
                                                       summaryReturnService: SummaryReturnsService,
+                                                      confirmAddressController: ConfirmAddressController,
                                                       propertyDetailsAddressController: PropertyDetailsAddressController,
                                                       formBundleReturnService: FormBundleReturnsService,
                                                       val propertyDetailsService: PropertyDetailsService,
@@ -67,6 +68,18 @@ class SelectExistingReturnAddressController @Inject()(mcc: MessagesControllerCom
     }
   }
 
+  def continueWithThisReturnRedirect(periodKey: Int, returnType: String) : Action[AnyContent] = Action.async { implicit request =>
+    authAction.authorisedAction { implicit authContext =>
+      ensureClientContext {
+        redirectWithBackLinkDontOverwriteOldLink(
+          propertyDetailsAddressController.propertyDetailsAddressId,
+          controllers.propertyDetails.routes.PropertyDetailsAddressController.createNewDraft(periodKey),
+          Some(controllers.propertyDetails.routes.SelectExistingReturnAddressController.view(periodKey, returnType).url)
+        )
+      }
+    }
+  }
+
   def continue(periodKey: Int, returnType: String): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
@@ -85,8 +98,8 @@ class SelectExistingReturnAddressController @Inject()(mcc: MessagesControllerCom
                 case Some(_) =>
                   dataCacheConnector.saveFormData[Boolean](SelectedPreviousReturn, true).flatMap { _ =>
                     redirectWithBackLink(
-                      propertyDetailsAddressController.controllerId,
-                      controllers.propertyDetails.routes.PropertyDetailsAddressController.editSubmittedReturn(formBundleNum),
+                      confirmAddressController.controllerId,
+                      controllers.propertyDetails.routes.ConfirmAddressController.editSubmittedReturn(formBundleNum),
                       getBackLink(periodKey, returnType))
                   }
                 case None =>

@@ -22,10 +22,13 @@ import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.ControllerIds
 import controllers.auth.{AuthAction, ClientHelper}
 import javax.inject.Inject
+import models.SelectPeriod
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{AddressLookupService, PropertyDetailsCacheSuccessResponse, PropertyDetailsService}
+import services.{AddressLookupService, ChangeLiabilityReturnService, PropertyDetailsCacheSuccessResponse, PropertyDetailsService}
 import uk.gov.hmrc.play.bootstrap.audit.DefaultAuditConnector
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import utils.AtedConstants.{RetrieveSelectPeriodFormId, SelectedPreviousReturn}
+import utils.AtedUtils
 
 import scala.concurrent.ExecutionContext
 
@@ -33,6 +36,7 @@ class ConfirmAddressController @Inject()(mcc: MessagesControllerComponents,
                                          auditConnector: DefaultAuditConnector,
                                          addressLookupService: AddressLookupService,
                                          authAction: AuthAction,
+                                         changeLiabilityReturnService: ChangeLiabilityReturnService,
                                          val backLinkCacheConnector: BackLinkCacheConnector,
                                          val propertyDetailsService: PropertyDetailsService,
                                          val dataCacheConnector: DataCacheConnector)
@@ -49,7 +53,13 @@ class ConfirmAddressController @Inject()(mcc: MessagesControllerComponents,
            mode: Option[String] = None): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
-        val backLink = Some(controllers.propertyDetails.routes.AddressLookupController.view(None, periodKey, mode).url)
+        val backLink = {
+          if(AtedUtils.isEditSubmittedMode(mode)) {
+            Some(controllers.propertyDetails.routes.SelectExistingReturnAddressController.view(periodKey, "charge").url)
+          } else {
+            Some(controllers.propertyDetails.routes.AddressLookupController.view(None, periodKey, mode).url)
+          }
+        }
         propertyDetailsService.retrieveDraftPropertyDetails(id).map {
             case successResponse: PropertyDetailsCacheSuccessResponse =>
               val addressProperty = successResponse.propertyDetails.addressProperty
@@ -60,6 +70,30 @@ class ConfirmAddressController @Inject()(mcc: MessagesControllerComponents,
         }
       }
     }
+
+  def editSubmittedReturn(oldFormBundleNo: String): Action[AnyContent] = Action.async { implicit request =>
+    authAction.authorisedAction { implicit authContext =>
+      ensureClientContext {
+        for {
+          answer <- dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn)
+          periodKey <- dataCacheConnector.fetchAndGetFormData[SelectPeriod](RetrieveSelectPeriodFormId)
+          changeLiabilityReturnOpt <- changeLiabilityReturnService.retrieveSubmittedLiabilityReturnAndCache(oldFormBundleNo, answer, periodKey)
+          backLink <- currentBackLink
+        } yield {
+          changeLiabilityReturnOpt match {
+            case Some(x) =>
+              Ok(views.html.propertyDetails.confirmAddress(
+                x.id,
+                x.periodKey,
+                x.addressProperty,
+                AtedUtils.getEditSubmittedMode(x, answer),
+                backLink))
+            case None => Redirect(controllers.routes.AccountSummaryController.view())
+          }
+        }
+      }
+    }
+  }
 
   def submit(id: String, periodKey: Int, mode: Option[String] = None): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>

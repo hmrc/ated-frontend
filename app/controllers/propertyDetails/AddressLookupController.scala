@@ -67,10 +67,10 @@ extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper wi
   def find(id: Option[String], periodKey: Int, mode: Option[String] = None): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
+        val backLink = Some(controllers.routes.ExistingReturnQuestionController.view(periodKey, "charge").url)
         addressLookupForm.bindFromRequest.fold(
           formWithError => {
-            currentBackLink.flatMap(backLink =>
-              Future.successful(BadRequest(views.html.propertyDetails.addressLookup(id, periodKey, formWithError, mode, backLink)))
+              Future.successful(BadRequest(views.html.propertyDetails.addressLookup(id, periodKey, formWithError, mode, backLink))
             )
           },
           searchCriteria => {
@@ -93,7 +93,7 @@ extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper wi
           case Some(x) => controllers.propertyDetails.routes.PropertyDetailsAddressController.view(x, fromConfirmAddressPage = false, periodKey, mode)
           case None => controllers.propertyDetails.routes.PropertyDetailsAddressController.createNewDraft(periodKey)
         }
-        redirectWithBackLinkDontOverwriteOldLink(
+        redirectWithBackLink(
           propertyDetailsAddressId,
           redirectUrl,
           Some(controllers.propertyDetails.routes.AddressLookupController.view(id, periodKey, mode).url)

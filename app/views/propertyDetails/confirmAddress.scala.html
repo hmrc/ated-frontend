@@ -28,10 +28,10 @@
 @import _root_.utils._
 
 @atedMain(title = Messages("ated.confirm-address.title")) {
- @pageHeadersAndError(backLink, "pre-heading", Messages(AtedUtils.getPropertyDetailsPreHeader(mode)), "confirm-address-header", Messages("ated.confirm-address.header"))
+    @pageHeadersAndError(backLink, "pre-heading", Messages(AtedUtils.getPropertyDetailsPreHeader(mode)), "confirm-address-header", Messages("ated.confirm-address.header"))
 
     <div id="address">
-        <ul style="list-style-type:none">
+        <ul style="list-style-type: none">
             <li id="address-line1">@propertyDetails.line_1</li>
             <li id="address-line2">@propertyDetails.line_2</li>
             <li id="address-line3">@propertyDetails.line_3</li>
@@ -40,15 +40,23 @@
         </ul>
     </div>
 
-    <div class="form-group">
+    <div class="margin-top-default">
         <a href="@controllers.propertyDetails.routes.PropertyDetailsAddressController.view(id, fromConfirmAddressPage = true, periodKey, mode)"
         id="edit-address-link"
         data-journey-click="ated-fronted:click:manual-entry"
-        onkeyup='spaceBarHandler(event,"@controllers.propertyDetails.routes.PropertyDetailsAddressController.view(id, fromConfirmAddressPage = true, periodKey, mode)")'>
-        <p id="editAddress">@Messages("ated.confirm-address.editAddress")</p></a>
+        onkeyup='spaceBarHandler(event, "@controllers.propertyDetails.routes.PropertyDetailsAddressController.view(id, fromConfirmAddressPage = true, periodKey, mode)")'>
+            <p id="editAddress">@Messages("ated.confirm-address.editAddress")</p>
+        </a>
 
-    @form(action=controllers.propertyDetails.routes.ConfirmAddressController.submit(id, periodKey, mode)) {
-        <p><button class="button" id="submit" type="submit">@Messages("ated.confirm-and-continue")</button></p>
-    }
+        <a href="@controllers.routes.ExistingReturnQuestionController.view(periodKey, "charge")">
+            <p id="selectADifferentProperty">@Messages("ated.confirm-address.selectDifferentProperty")</p>
+        </a>
+
+        @form(action = controllers.propertyDetails.routes.ConfirmAddressController.submit(id, periodKey, mode)) {
+            <p>
+                <button class="button reference-group" id="submit" type="submit">@Messages("ated.confirm-and-continue")</button>
+            </p>
+        }
     </div>
+
 }

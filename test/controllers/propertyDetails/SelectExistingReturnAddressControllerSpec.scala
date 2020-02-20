@@ -55,7 +55,7 @@ class SelectExistingReturnAddressControllerSpec extends PlaySpec with GuiceOneSe
   val mockPropertyDetailsService: PropertyDetailsService = mock[PropertyDetailsService]
   val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
   val mockBackLinkCacheConnector: BackLinkCacheConnector = mock[BackLinkCacheConnector]
-
+  val mockConfirmAddressController: ConfirmAddressController = mock[ConfirmAddressController]
   val returnTypeCharge: String = "CR"
   val returnTypeRelief: String = "RR"
 
@@ -71,6 +71,7 @@ class SelectExistingReturnAddressControllerSpec extends PlaySpec with GuiceOneSe
       mockMcc,
       mockAuthAction,
       mockSummaryReturnsService,
+      mockConfirmAddressController,
       mockPropertyDetailsAddressController,
       mockFormBundleReturnsService,
       mockPropertyDetailsService,
@@ -106,6 +107,18 @@ class SelectExistingReturnAddressControllerSpec extends PlaySpec with GuiceOneSe
       test(result)
     }
 
+    def continueReturnRedirect(id: Option[String])(test: Future[Result] => Any) {
+      val userId = s"user-${UUID.randomUUID}"
+      val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+      setAuthMocks(authMock)
+      when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+        (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
+      when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(Some("http://")))
+      when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+      val result = testSelectExistingReturnAddressController.continueWithThisReturnRedirect(2015, returnTypeCharge).apply(SessionBuilder.buildRequestWithSession(userId))
+      test(result)
+    }
+
     def saveWithUnAuthorisedUser(test: Future[Result] => Any) {
       val periodKey: Int = 2015
       val userId = s"user-${UUID.randomUUID}"
@@ -121,6 +134,9 @@ class SelectExistingReturnAddressControllerSpec extends PlaySpec with GuiceOneSe
 
     def saveWithAuthorisedUser(formBundleReturn: Option[FormBundleReturn],
                                prevReturns: Option[Seq[PreviousReturns]],
+                               answer: Option[Boolean],
+                               pKey: Option[SelectPeriod],
+                               propertyDetails: Option[PropertyDetails],
                                inputJson: JsValue)(test: Future[Result] => Any) {
       val periodKey: Int = 2014
       val userId = s"user-${UUID.randomUUID}"
@@ -129,12 +145,18 @@ class SelectExistingReturnAddressControllerSpec extends PlaySpec with GuiceOneSe
 
       when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
         (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
+      when(mockDataCacheConnector.fetchAndGetFormData[Boolean](ArgumentMatchers.eq(AtedConstants.SelectedPreviousReturn))
+        (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(answer))
+      when(mockDataCacheConnector.fetchAndGetFormData[SelectPeriod](ArgumentMatchers.eq(AtedConstants.RetrieveSelectPeriodFormId))
+        (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(pKey))
       when(mockSummaryReturnsService.retrieveCachedPreviousReturnAddressList(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(prevReturns))
       when(mockFormBundleReturnsService.getFormBundleReturns
       (ArgumentMatchers.eq("12345678"))(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(formBundleReturn))
       when(mockDataCacheConnector.saveFormData[Boolean]
         (ArgumentMatchers.eq(AtedConstants.SelectedPreviousReturn), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(true))
       when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+      when (mockPropertyDetailsService.saveDraftPropertyDetailsAddress(ArgumentMatchers.any(), ArgumentMatchers.any())
+      (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(""))
       val result = testSelectExistingReturnAddressController.continue(periodKey, returnTypeCharge)
         .apply(SessionBuilder.updateRequestWithSession(FakeRequest().withJsonBody(inputJson), userId))
       test(result)
@@ -165,7 +187,7 @@ class SelectExistingReturnAddressControllerSpec extends PlaySpec with GuiceOneSe
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
-              document.title() must be (TitleBuilder.buildTitle("Select the previous return this new return relates to"))
+              document.title() must be (TitleBuilder.buildTitle("Select the property from your previous year returns"))
           }
         }
 
@@ -179,7 +201,7 @@ class SelectExistingReturnAddressControllerSpec extends PlaySpec with GuiceOneSe
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
-              document.title() must be (TitleBuilder.buildTitle("Select the previous return this new return relates to"))
+              document.title() must be (TitleBuilder.buildTitle("Select the property from your previous year returns"))
               document.body().getElementsByTag("label").toString must include ("12345676")
               document.body().getElementsByTag("label").toString must include ("12345679")
               document.body().getElementsByTag("label").size() must be (2)
@@ -196,7 +218,7 @@ class SelectExistingReturnAddressControllerSpec extends PlaySpec with GuiceOneSe
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
-              document.title() must be (TitleBuilder.buildTitle("Select the previous return this new return relates to"))
+              document.title() must be (TitleBuilder.buildTitle("Select the property from your previous year returns"))
               document.body().getElementsByTag("label").size() must be (3)
           }
         }
@@ -206,9 +228,18 @@ class SelectExistingReturnAddressControllerSpec extends PlaySpec with GuiceOneSe
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
-              document.title() must be (TitleBuilder.buildTitle("Select the previous return this new return relates to"))
+              document.title() must be (TitleBuilder.buildTitle("Select the property from your previous year returns"))
           }
         }
+      }
+    }
+
+    "redirect to enter property address" in new Setup {
+      continueReturnRedirect(None) {
+        result =>
+          status(result) must be(SEE_OTHER)
+          redirectLocation(result).get must include("/ated/liability/create/address/2015")
+
       }
     }
 
@@ -225,30 +256,30 @@ class SelectExistingReturnAddressControllerSpec extends PlaySpec with GuiceOneSe
 
 
       "submitting an invalid request should fail and return to the search results page" in new Setup {
-        saveWithAuthorisedUser(None, prevReturns, Json.toJson(AddressSelected(None))) {
+        saveWithAuthorisedUser(None, prevReturns, None, None, None, Json.toJson(AddressSelected(None))) {
           result =>
             status(result) must be(BAD_REQUEST)
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be (TitleBuilder.buildTitle("Select the previous return this new return relates to"))
+            document.title() must be (TitleBuilder.buildTitle("Select the property from your previous year returns"))
         }
       }
 
       "submitting an invalid request should fail and return to the search results page even with cached data" in new Setup {
-        saveWithAuthorisedUser(None, prevReturns, Json.toJson(AddressSelected(None))) {
+        saveWithAuthorisedUser(None, prevReturns, None, None, None, Json.toJson(AddressSelected(None))) {
           result =>
             status(result) must be(BAD_REQUEST)
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be(TitleBuilder.buildTitle("Select the previous return this new return relates to"))
+            document.title() must be(TitleBuilder.buildTitle("Select the property from your previous year returns"))
 
         }
       }
 
       "submitting an invalid request should fail and return to the search results page even with no cached data" in new Setup {
-        saveWithAuthorisedUser(None, None, Json.toJson(AddressSelected(None))) {
+        saveWithAuthorisedUser(None, None, None, None, None, Json.toJson(AddressSelected(None))) {
           result =>
             status(result) must be(BAD_REQUEST)
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be(TitleBuilder.buildTitle("Select the previous return this new return relates to"))
+            document.title() must be(TitleBuilder.buildTitle("Select the property from your previous year returns"))
 
         }
       }
@@ -266,15 +297,19 @@ class SelectExistingReturnAddressControllerSpec extends PlaySpec with GuiceOneSe
           Some("ABCdefgh"),
           Some("PromABCdefgh"),
           Some("1234"), true, true, new LocalDate("2015-05-10"), BigDecimal(9324), "1234567891", List(formBundleProp))
+        val answer = Some(true)
+        val pkey = Some(SelectPeriod(Some("2018")))
+        val propertyDetails = Some(PropertyDetails("12", 2018, PropertyDetailsAddress("1 oak", "Divine court", Some("Leerty"), Some("Berkshire"), Some("ZZ11ZZ"))))
 
-        saveWithAuthorisedUser(Some(viewReturn), prevReturns, Json.toJson(AddressSelected(Some("12345678")))) {
+
+        saveWithAuthorisedUser(Some(viewReturn), prevReturns, answer, pkey, propertyDetails, Json.toJson(AddressSelected(Some("12345678")))) {
           result =>
             status(result) must be(SEE_OTHER)
         }
       }
 
       "submitting an invalid form bundle number request should redirect to Account Summary Page" in new Setup {
-        saveWithAuthorisedUser(formBundleReturn = None, prevReturns, Json.toJson(AddressSelected(Some("12345678")))) {
+        saveWithAuthorisedUser(formBundleReturn = None, prevReturns, None, None, None, Json.toJson(AddressSelected(Some("12345678")))) {
           result =>
             status(result) must be(SEE_OTHER)
         }

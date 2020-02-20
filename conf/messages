@@ -399,6 +399,7 @@ ated.property-details.title = Enter the address of the property manually
 ated.property-details.editAddress = Edit address
 ated.property-details.header = Enter the address of the property manually
 ated.property-details.header.2 = Edit address
+ated.property-details.p = If you change the first line of this address you need to inform HMRC to ensure it is recognised as the same property
 ated.property-details.property-address.lookup.title = Lookup address
 ated.property-details.property-address = Property address
 ated.property-details.title.title =  What is the property’s title number? (optional)
@@ -948,6 +949,7 @@ ated.address-lookup.error.general.selected-address = There is something wrong wi
 ated.confirm-address.title = Confirm address
 ated.confirm-address.header = Confirm address
 ated.confirm-address.editAddress = Edit address
+ated.confirm-address.selectDifferentProperty = Select a different property
 
 ##### EDIT LIABILITY RETURN
 
@@ -1366,20 +1368,27 @@ ated.delete-draft.title = Are you sure you want to delete this draft return?
 ated.delete-draft.error = delete draft return
 ated.delete-drafts.error.general.yesNo = Select if you want to delete this draft or not
 yes-no.error.mandatory.delete.draft = You must answer this question
-yes-no.error.mandatory.existing.returns = The existing return question must be answered
+yes-no.error.mandatory.existing.returns = Select yes if you filed a return for this property last year
 yes-no.error.mandatory.draft.delete = The existing return question must be answered
 
 
 ##### SELECT PAST RETURNS
 
 ated.confirm-past-return-question.title = Did you file a return for this property last year?
-ated.confirm-past-return-question.header = Did you file a return for this property last year?
+ated.confirm-past-return-question.header = Did you file a return for this property in {0} to {1}?
 ated.confirm-past-return.error = existing return
-ated.confirm-past-return-question.error.general.yesNo = The existing return question must be answered
+ated.confirm-past-return.p1 = Did you file a return for this property in the previous chargeable period - April 1 {0} to March 31 {1}
+ated.confirm-past-return-question.error.general.yesNo = Select yes if you filed a return for this property last year
 
-ated.select-past-return.title = Select the previous return this new return relates to
-ated.select-past-return.header = Select the previous return this new return relates to
-ated.select-past-return.general.selected = There is a problem with the previous return question
+ated.select-past-return.title = Select the property from your previous year returns
+ated.select-past-return.header = Select the property from your previous year returns
+ated.select-past-return.general.selected = Select the property from your previous year returns
+ated.select-past-return.reveal = The property I want is not listed
+ated.select-past-return.reveal.text.1 = If the property is not listed, you can
+ated.select-past-return.reveal.text.2 = continue with this return
+ated.select-past-return.reveal.text.3 = but you must contact
+ated.select-past-return.reveal.text.4 = contact the ATED helpline
+ated.select-past-return.reveal.text.5 = to ensure HMRC has this information.
 
 urbanner.message.text = Help improve digital services by joining the HMRC user panel (opens in new window)
 urbanner.message.reject = No thanks

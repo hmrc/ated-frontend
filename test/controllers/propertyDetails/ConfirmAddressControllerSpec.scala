@@ -22,6 +22,7 @@ import builders.{PropertyDetailsBuilder, SessionBuilder, TitleBuilder}
 import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.AuthAction
+import models.PropertyDetails
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
@@ -31,7 +32,7 @@ import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.mvc.{MessagesControllerComponents, Result}
 import play.api.test.Helpers.{SEE_OTHER, redirectLocation, status, _}
-import services.{AddressLookupService, PropertyDetailsCacheNotFoundResponse, PropertyDetailsCacheSuccessResponse, PropertyDetailsService}
+import services.{AddressLookupService, ChangeLiabilityReturnService, PropertyDetailsCacheNotFoundResponse, PropertyDetailsCacheSuccessResponse, PropertyDetailsService}
 import testhelpers.MockAuthUtil
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
@@ -48,6 +49,7 @@ class ConfirmAddressControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
   val mockAuditConnector: DefaultAuditConnector = mock[DefaultAuditConnector]
   val mockAddressLookupService: AddressLookupService = mock[AddressLookupService]
   val mockBackLinkCacheConnector: BackLinkCacheConnector = mock[BackLinkCacheConnector]
+  val mockChangeLiabilityReturnService: ChangeLiabilityReturnService = mock[ChangeLiabilityReturnService]
   val mockPropertyDetailsService: PropertyDetailsService = mock[PropertyDetailsService]
   val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
 
@@ -65,6 +67,7 @@ class ConfirmAddressControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
       mockAuditConnector,
       mockAddressLookupService,
       mockAuthAction,
+      mockChangeLiabilityReturnService,
       mockBackLinkCacheConnector,
       mockPropertyDetailsService,
       mockDataCacheConnector
@@ -89,6 +92,33 @@ class ConfirmAddressControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
       }
       when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
       val result = testConfirmAddressController.view("1", 2015).apply(SessionBuilder.buildRequestWithSession(userId))
+      test(result)
+    }
+
+    def viewSubmittedWithAuthorisedUser(id: String, propertyDetails: Option[PropertyDetails])(test: Future[Result] => Any) {
+      val userId = s"user-${UUID.randomUUID}"
+      val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+      setAuthMocks(authMock)
+      when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+      when(mockDataCacheConnector.fetchAndGetFormData[Boolean](ArgumentMatchers.any())
+        (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
+      when(mockChangeLiabilityReturnService.retrieveSubmittedLiabilityReturnAndCache
+      (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(propertyDetails))
+      val result = testConfirmAddressController.editSubmittedReturn(id).apply(SessionBuilder.buildRequestWithSession(userId))
+      test(result)
+    }
+
+    def getWithAuthorisedUserEditSubmitted(test: Future[Result] => Any): Unit = {
+      val userId = s"user-${UUID.randomUUID}"
+      val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+      noDelegationModelAuthMocks(authMock)
+      when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+        (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
+      when(mockPropertyDetailsService.retrieveDraftPropertyDetails(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())) thenReturn {
+        Future.successful(PropertyDetailsCacheSuccessResponse(PropertyDetailsBuilder.getPropertyDetails("1")))
+      }
+      when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+      val result = testConfirmAddressController.view("1", 2015, Some("editSubmitted")).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
 
@@ -165,6 +195,21 @@ class ConfirmAddressControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
               document.getElementById("backLinkHref").text must be("Back")
               document.getElementById("backLinkHref").attr("href") must include("/ated/liability/address-lookup/view/2015")
           }
+          getWithAuthorisedUserEditSubmitted {
+            result =>
+              status(result) must be(OK)
+              val document = Jsoup.parse(contentAsString(result))
+              document.title() must be(TitleBuilder.buildTitle("Confirm address"))
+              document.getElementById("editAddress").text() must be("Edit address")
+              document.getElementById("submit").text() must be("Confirm and continue")
+              document.getElementById("address-line1").text() must be("addr1")
+              document.getElementById("address-line2").text() must be("addr2")
+              document.getElementById("address-line3").text() must be("addr3")
+              document.getElementById("address-line4").text() must be("addr4")
+              document.getElementById("postcode").text() must be("")
+              document.getElementById("backLinkHref").text must be("Back")
+              document.getElementById("backLinkHref").attr("href") must include("/ated/existing-return/select/2015/charge")
+          }
         }
 
         "show error" in new Setup {
@@ -175,6 +220,32 @@ class ConfirmAddressControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
               document.title() must be("Sorry, we’re experiencing technical difficulties")
               document.getElementById("header").text() must be("Sorry, we’re experiencing technical difficulties")
           }
+        }
+      }
+    }
+
+    "editSubmittedReturn" must {
+      "show the address of a previously used property" in new Setup {
+        viewSubmittedWithAuthorisedUser("1", Some(PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode")))) {
+          result =>
+            status(result) must be(OK)
+            val document = Jsoup.parse(contentAsString(result))
+            document.title() must be(TitleBuilder.buildTitle("Confirm address"))
+            document.getElementById("editAddress").text() must be("Edit address")
+            document.getElementById("submit").text() must be("Confirm and continue")
+            document.getElementById("address-line1").text() must be("addr1")
+            document.getElementById("address-line2").text() must be("addr2")
+            document.getElementById("address-line3").text() must be("addr3")
+            document.getElementById("address-line4").text() must be("addr4")
+            document.getElementById("postcode").text() must be("postCode")
+        }
+      }
+
+      "Return to the account summary if we have no details" in new Setup {
+        viewSubmittedWithAuthorisedUser("1", None) {
+          result =>
+            status(result) must be(SEE_OTHER)
+            redirectLocation(result).get must include("/account-summary")
         }
       }
     }

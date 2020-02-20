@@ -14,17 +14,10 @@
  * limitations under the License.
  *@
 
-@import models._
-@import forms.AtedForms._
-@import uk.gov.hmrc.play.views.html._
-@import uk.gov.hmrc.play.views.html.helpers._
-@import org.joda.time.format.DateTimeFormat
-@import org.joda.time.LocalDate
-@import utils._
-@import views.html.helpers._
-@import views.html.helpers.error._
-
 @import config.ApplicationConfig
+@import models._
+@import uk.gov.hmrc.play.views.html.helpers._
+@import views.html.helpers._
 @(periodKey: Int, returnType: String, addressResultsForm: Form[AddressSelected], prevReturns: Seq[PreviousReturns], backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
 @analyticsJs = {
@@ -48,9 +41,22 @@
           '_labelAfter -> true,
           '_trackGA -> true
         )
+          <details>
+              <summary id="titleNumber-reveal" class="summary" data-journey-click="accordion - click:@messages("ated.select-past-return.header"):@messages("ated.select-past-return.reveal")">
+              @messages("ated.select-past-return.reveal")
+              </summary>
+              <div class="panel-indent">
+                  <p id="titleNumber-text">
+                      @messages("ated.select-past-return.reveal.text.1")
+                      <a href="@controllers.propertyDetails.routes.SelectExistingReturnAddressController.continueWithThisReturnRedirect(periodKey, returnType)">@messages("ated.select-past-return.reveal.text.2")</a>,
+                      @messages("ated.select-past-return.reveal.text.3")
+                      <a href="https://www.gov.uk/government/organisations/hm-revenue-customs/contact/annual-tax-on-enveloped-dwellings-ated">@messages("ated.select-past-return.reveal.text.4")</a>
+                      @messages("ated.select-past-return.reveal.text.5")
 
-      <button class="button margin-top-default" id="submit" type="submit">@Messages("ated.save-and-continue")</button>
+                  </p>
+              </div>
+          </details>
+      <button class="button reference-group" id="submit" type="submit">@Messages("ated.save-and-continue")</button>
     }
-
   }
 }

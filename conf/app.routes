@@ -128,6 +128,7 @@ POST     /liability/address-lookup/find/:periodKey                    controller
 POST     /liability/address-lookup/save/:periodKey                    controllers.propertyDetails.AddressLookupController.save(propertyKey: Option[String] ?=None, periodKey: Int, mode: Option[String] ?=None)
 
 GET      /liability/confirm-address/view/:periodKey/:propertyKey                   controllers.propertyDetails.ConfirmAddressController.view(propertyKey: String, periodKey: Int, mode: Option[String] ?=None)
+GET      /liability/confirm-address/view/:formBundleNo                             controllers.propertyDetails.ConfirmAddressController.editSubmittedReturn(formBundleNo: String)
 POST     /liability/confirm-address/save/:periodKey/:propertyKey                    controllers.propertyDetails.ConfirmAddressController.submit(propertyKey: String, periodKey: Int, mode: Option[String] ?=None)
 
 GET      /liability/address-lookup/manual/:periodKey                  controllers.propertyDetails.AddressLookupController.manualAddressRedirect(propertyKey: Option[String] ?=None, periodKey: Int, mode: Option[String] ?=None)
@@ -222,3 +223,4 @@ POST     /existing-return/confirmation/:periodKey/:returnType                   
 
 GET     /existing-return/select/:periodKey/:returnType                        controllers.propertyDetails.SelectExistingReturnAddressController.view(periodKey: Int, returnType: String)
 POST     /existing-return/select/:periodKey/:returnType                        controllers.propertyDetails.SelectExistingReturnAddressController.continue(periodKey: Int, returnType: String)
+GET     /liability/create/address/:periodKey/:returnType                        controllers.propertyDetails.SelectExistingReturnAddressController.continueWithThisReturnRedirect(periodKey: Int, returnType: String)
