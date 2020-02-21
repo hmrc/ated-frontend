@@ -20,9 +20,10 @@ import config.ApplicationConfig
 import connectors.{AgentClientMandateFrontendConnector, DataCacheConnector}
 import controllers.auth.AuthAction
 import javax.inject.Inject
+import org.joda.time.LocalDate
 import play.api.Logger
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{DetailsService, SubscriptionDataService, SummaryReturnsService}
+import services.{DateService, DetailsService, SubscriptionDataService, SummaryReturnsService}
 import uk.gov.hmrc.http.ForbiddenException
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
@@ -34,7 +35,8 @@ class AccountSummaryController @Inject()(mcc: MessagesControllerComponents,
                                          subscriptionDataService: SubscriptionDataService,
                                          mandateFrontendConnector: AgentClientMandateFrontendConnector,
                                          detailsService: DetailsService,
-                                         dataCacheConnector: DataCacheConnector)
+                                         dataCacheConnector: DataCacheConnector,
+                                         dateService: DateService)
                                         (implicit val appConfig: ApplicationConfig)
   extends FrontendController(mcc) {
 
@@ -47,9 +49,17 @@ class AccountSummaryController @Inject()(mcc: MessagesControllerComponents,
         correspondenceAddress <- subscriptionDataService.getCorrespondenceAddress
         organisationName <- subscriptionDataService.getOrganisationName
         safeId <- subscriptionDataService.getSafeId
-        clientBannerPartial <- mandateFrontendConnector.getClientBannerPartial(safeId.getOrElse(throw new RuntimeException("Could not get safeId")), "ated")
+        clientBannerPartial <- mandateFrontendConnector.getClientBannerPartial(safeId.getOrElse(
+          throw new RuntimeException("Could not get safeId")), "ated"
+        )
       } yield {
-        Ok(views.html.accountSummary(allReturns, correspondenceAddress, organisationName, clientBannerPartial.successfulContentOrEmpty))
+        Ok(views.html.accountSummary(
+          allReturns,
+          correspondenceAddress,
+          organisationName,
+          clientBannerPartial.successfulContentOrEmpty,
+          duringPeak,
+          dateService.now().getYear))
       }
     } recover {
       case _: ForbiddenException     =>
@@ -57,4 +67,19 @@ class AccountSummaryController @Inject()(mcc: MessagesControllerComponents,
         authAction.unauthorisedUrl()
     }
   }
+
+  def duringPeak: Boolean = {
+    val currentDate = dateService.now()
+    val currentYear = currentDate.getYear
+
+    val peakStartDate = LocalDate.parse(
+      s"""$currentYear-03-${appConfig.atedPeakStartDay}"""
+    )
+
+    val peakEndDate = LocalDate.parse(s"""$currentYear-04-30""")
+
+    !currentDate.isBefore(peakStartDate) && !currentDate.isAfter(peakEndDate)
+
+  }
+
 }

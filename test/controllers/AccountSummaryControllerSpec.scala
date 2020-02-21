@@ -22,7 +22,6 @@ import builders.{SessionBuilder, TitleBuilder}
 import config.ApplicationConfig
 import connectors.{AgentClientMandateFrontendConnector, DataCacheConnector}
 import controllers.auth.AuthAction
-import testhelpers.MockAuthUtil
 import models._
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
@@ -35,7 +34,8 @@ import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.mvc.{MessagesControllerComponents, Result}
 import play.api.test.Helpers._
 import play.twirl.api.Html
-import services.{DetailsService, SubscriptionDataService, SummaryReturnsService}
+import services.{DateService, DetailsService, SubscriptionDataService, SummaryReturnsService}
+import testhelpers.MockAuthUtil
 import uk.gov.hmrc.auth.core.retrieve.~
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, UserId}
@@ -47,7 +47,7 @@ import scala.concurrent.Future
 class AccountSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with MockAuthUtil {
 
   implicit lazy val hc: HeaderCarrier = HeaderCarrier()
-  implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
+  implicit val mockAppConfig: ApplicationConfig = mock[ApplicationConfig]
 
   val mockMcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
   val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
@@ -55,6 +55,9 @@ class AccountSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
   val mockSubscriptionDataService: SubscriptionDataService = mock[SubscriptionDataService]
   val mockMandateFrontendConnector: AgentClientMandateFrontendConnector = mock[AgentClientMandateFrontendConnector]
   val mockDetailsService: DetailsService = mock[DetailsService]
+  val mockDateService: DateService = mock[DateService]
+  when(mockDateService.now()).thenReturn(LocalDate.now())
+  when(mockAppConfig.atedPeakStartDay).thenReturn("27")
 
   val organisationName: String = "OrganisationName"
   val formBundleNo1: String = "123456789012"
@@ -75,7 +78,8 @@ class AccountSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
       mockSubscriptionDataService,
       mockMandateFrontendConnector,
       mockDetailsService,
-      mockDataCacheConnector
+      mockDataCacheConnector,
+      mockDateService
     )
 
     def getWithAuthorisedUser(returnsSummaryWithDraft: SummaryReturnsModel,
@@ -309,12 +313,13 @@ class AccountSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
           val submittedReturns = SubmittedReturns(year, Seq(submittedReliefReturns1), Seq(submittedLiabilityReturns1))
           val periodSummaryReturns = PeriodSummaryReturns(year, Seq(draftReturns1, draftReturns2), Some(submittedReturns))
           val data = SummaryReturnsModel(Some(BigDecimal(0)), Seq(periodSummaryReturns))
+          when(mockAppConfig.urBannerToggle).thenReturn(true)
+
           getWithAuthorisedUser(data, Some(address)) {
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
 
-              document.getElementById("ur-panel") must not be null
               document.getElementById("ur-panel")
                 .text() must be ("Help improve digital services by joining the HMRC user panel (opens in new window) No thanks")
               document.getElementsByClass("banner-panel__close").text() must be("No thanks")
@@ -389,6 +394,25 @@ class AccountSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
               document.getElementById("create-return").hasClass("button") must be(false)
               Option(document.getElementById("appoint-agent")) must be(None)
           }
+        }
+      }
+
+      "duringPeak" must {
+        "return true if the current date is within the ated peak period" in new Setup {
+          when(mockAppConfig.atedPeakStartDay).thenReturn("27")
+          when(mockDateService.now()).thenReturn(LocalDate.parse("2020-03-27"))
+          testAccountSummaryController.duringPeak must be(true)
+        }
+
+        "return false if the current date is before the start of the ated peak period" in new Setup {
+          when(mockAppConfig.atedPeakStartDay).thenReturn("28")
+          when(mockDateService.now()).thenReturn(LocalDate.parse("2020-03-27"))
+          testAccountSummaryController.duringPeak must be(false)
+        }
+
+        "return false if the current date is after the end of the ated peak period" in new Setup {
+          when(mockDateService.now()).thenReturn(LocalDate.parse("2020-05-01"))
+          testAccountSummaryController.duringPeak must be(false)
         }
       }
     }
