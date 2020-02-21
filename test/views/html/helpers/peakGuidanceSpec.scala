@@ -37,8 +37,11 @@ class peakGuidanceSpec extends FeatureSpec with GivenWhenThen
 
   feature("The user is viewing returns guidance during peak") {
 
-    val currentYear: Int = 2020
-    lazy val view = views.html.helpers.peakGuidance(currentYear = currentYear, duringPeak = true)
+    lazy val view = views.html.helpers.peakGuidance(
+      duringPeak = true,
+      currentYear = 2020,
+      taxYearStartingYear = 2019
+    )
     lazy implicit val document: Document = Jsoup.parse(view.body)
 
     scenario("User views the returns guidance during peak") {
@@ -56,10 +59,14 @@ class peakGuidanceSpec extends FeatureSpec with GivenWhenThen
     }
   }
 
-  feature("The user is viewing returns guidance outside of peak") {
+  feature("The user is viewing returns outside of peak") {
 
-    val currentYear: Int = 2020
-    lazy val view = views.html.helpers.peakGuidance(currentYear = currentYear, duringPeak = false)
+    lazy val view = views.html.helpers.peakGuidance(
+      duringPeak = false,
+      currentYear = 2020,
+      taxYearStartingYear = 2020
+    )
+
     lazy implicit val document: Document = Jsoup.parse(view.body)
 
     scenario("The user is viewing returns guidance outside of peak") {
