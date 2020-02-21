@@ -26,6 +26,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{DateService, DetailsService, SubscriptionDataService, SummaryReturnsService}
 import uk.gov.hmrc.http.ForbiddenException
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import utils.PeriodUtils
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -59,7 +60,8 @@ class AccountSummaryController @Inject()(mcc: MessagesControllerComponents,
           organisationName,
           clientBannerPartial.successfulContentOrEmpty,
           duringPeak,
-          dateService.now().getYear))
+          currentYear = dateService.now().getYear,
+          taxYearStartingYear = PeriodUtils.calculatePeriod(dateService.now())))
       }
     } recover {
       case _: ForbiddenException     =>

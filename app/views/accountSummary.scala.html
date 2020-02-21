@@ -20,7 +20,8 @@
 @import views.html.helpers._
 
 @(summaryReturnsWithDrafts: SummaryReturnsModel, correspondence: Option[Address], organisationName: Option[String],
-        clientBanner: Html, duringPeak: Boolean, currentYear: Int)(implicit authContext: StandardAuthRetrievals,
+        clientBanner: Html, duringPeak: Boolean, currentYear: Int,
+        taxYearStartingYear: Int)(implicit authContext: StandardAuthRetrievals,
         messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
 @analyticsJs = {
@@ -50,7 +51,7 @@
         subHeaderPrefix = Some(Messages("ated.screen-reader.section-name"))
     )
 
-    @peakGuidance(duringPeak, currentYear)
+    @peakGuidance(duringPeak, currentYear, taxYearStartingYear)
 
     @if(summaryReturnsWithDrafts.allReturns.isEmpty) {
         <h2 class="heading-small" id="return-summary-no-returns">@Messages("ated.account-summary.agent.no-returns")</h2>

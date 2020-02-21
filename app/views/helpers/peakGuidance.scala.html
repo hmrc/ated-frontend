@@ -16,7 +16,7 @@
 
 @import helpers.warning
 
-@(duringPeak: Boolean, currentYear: Int)(implicit messages: Messages)
+@(duringPeak: Boolean, currentYear: Int, taxYearStartingYear: Int)(implicit messages: Messages)
 
 @if(duringPeak){
     @warning(messages("ated.account-summary.peak-guidance.warning", currentYear.toString, (currentYear + 1).toString))
@@ -24,6 +24,6 @@
     <p>@messages("ated.account-summary.peak-guidance.text.2")</p>
 }else{
     @warning(messages("ated.account-summary.outside-peak-guidance.warning"))
-    <p>@messages("ated.account-summary.outside-peak-guidance.text", (currentYear + 1).toString,
-        (currentYear + 2).toString)</p>
+    <p>@messages("ated.account-summary.outside-peak-guidance.text", (taxYearStartingYear + 1).toString,
+        (taxYearStartingYear + 2).toString)</p>
 }
