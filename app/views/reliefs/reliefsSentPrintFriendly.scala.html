@@ -15,8 +15,6 @@
  *@
 
 @import config.ApplicationConfig
-@(periodKey: Int, submittedReturnResponse: Option[SubmitReturnsResponse], organisationName: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
-
 @import models._
 @import uk.gov.hmrc.play.views.html._
 @import uk.gov.hmrc.play.views.html.helpers._
@@ -25,31 +23,37 @@
 @import org.joda.time.format.DateTimeFormat
 @import org.joda.time.LocalDate
 
-@serviceName = {@Messages("ated.welcome.related.link.first")}
+@(periodKey: Int, submittedReturnResponse: Option[SubmitReturnsResponse])(implicit authContext: StandardAuthRetrievals,
+        messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
-@printFriendly(Messages("ated.relief-sent.title")) {
+@printFriendly(messages("ated.relief-sent.title")) {
 
     <script src='@controllers.routes.Assets.versioned("javascript/printFriendly.js")'></script>
 
-    <h1 id="header">@Messages("ated.relief-sent.header")
-    </h1>
+    <h1 id="header">@messages("ated.relief-sent.header")</h1>
 
-    <p id="completed-returns">@Messages("ated.reliefs-sent.completed-message")</p>
-    <p id="email-confirmation">@Messages("ated.reliefs-sent.email-message")<p>
-
+    <p id="completed-returns">@messages("ated.reliefs-sent.completed-message")</p>
+    <p id="email-confirmation">@messages("ated.reliefs-sent.email-message")<p>
 
     <div class="divider--top--thick"></div>
 
-    <p id="receipt-message" class="heading-medium">@Messages("ated.reliefs-sent.charge-heading")</p>
+    <p id="receipt-message" class="heading-medium">@messages("ated.reliefs-sent.charge-heading")</p>
 
-    <p id="amount-message">@Messages("ated.reliefs-sent.amount-message")</p>
+    <p id="amount-message">@messages("ated.reliefs-sent.amount-message")</p>
 
     @submittedReturnResponse.map { returnResponse =>
         @returnResponse.reliefReturnResponse.map { reliefReturnResponse =>
-            <p id="reference-number">@Html(Messages("ated.reliefs-sent.reference-message",reliefReturnResponse.head.formBundleNumber))</p>
+            <p id="reference-number">
+                @Html(messages("ated.reliefs-sent.reference-message", reliefReturnResponse.head.formBundleNumber))
+            </p>
         }
     }
-    <p id="balance-message">@Messages("ated.reliefs-sent.balance-message")</p>
 
+    <p id="balance-message">@messages("ated.reliefs-sent.balance-message")</p>
+
+    <h2 class="heading-medium">@messages("ated.reliefs-sent.change-circumstances.p0")</h2>
+    <p>@messages("ated.reliefs-sent.change-circumstances.p1")</p>
+    <p>@messages("ated.reliefs-sent.change-circumstances.p2")</p>
+    <p>@messages("ated.reliefs-sent.change-circumstances.p3")</p>
 
 }

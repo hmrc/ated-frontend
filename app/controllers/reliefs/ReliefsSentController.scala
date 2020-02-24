@@ -53,10 +53,9 @@ class ReliefsSentController @Inject()(mcc : MessagesControllerComponents,
   def viewPrintFriendlyReliefSent(periodKey: Int): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       for {
-        submitedResponse <- dataCacheConnector.fetchAndGetFormData[SubmitReturnsResponse](SubmitReturnsResponseFormId)
-        organisationName <- subscriptionDataService.getOrganisationName
+        submittedResponse <- dataCacheConnector.fetchAndGetFormData[SubmitReturnsResponse](SubmitReturnsResponseFormId)
       } yield {
-        Ok(views.html.reliefs.reliefsSentPrintFriendly(periodKey, submitedResponse, organisationName))
+        Ok(views.html.reliefs.reliefsSentPrintFriendly(periodKey, submittedResponse))
       }
     }
   }

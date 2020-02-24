@@ -156,14 +156,6 @@ class ReliefsSentControllerSpec extends PlaySpec with GuiceOneServerPerSuite wit
 
             val document = Jsoup.parse(contentAsString(result))
             document.title() must be (TitleBuilder.buildTitle("Your returns have been successfully submitted - Annual Tax on enveloped dwellings"))
-            document.getElementById("banner-text").text() must be(s"Your returns have been successfully submitted")
-            document.getElementById("completed-returns")
-              .text() must be("You can view your completed returns, payment references and ways to pay in the ATED online service.")
-            document.getElementById("email-confirmation").text() must be("You will not receive an email confirmation.")
-            document.getElementById("receipt-message").text() must be("The ATED charge for these returns is £0")
-            document.getElementById("amount-message").text() must be
-            "This amount does not reflect any payments you have already made or penalties that have been issued."
-
           }
         }
 
@@ -173,22 +165,6 @@ class ReliefsSentControllerSpec extends PlaySpec with GuiceOneServerPerSuite wit
 
             val document = Jsoup.parse(contentAsString(result))
             document.title() must be("Your returns have been successfully submitted - Annual Tax on enveloped dwellings")
-            document.getElementById("header").text() must be(s"Your returns have been successfully submitted")
-            document.getElementById("completed-returns")
-              .text() must be("You can view your completed returns, payment references and ways to pay in the ATED online service.")
-            document.getElementById("email-confirmation").text() must be("You will not receive an email confirmation.")
-            document.getElementById("receipt-message").text() must be("The ATED charge for these returns is £0")
-            document.getElementById("amount-message").text() must be
-            "This amount does not reflect any payments you have already made or penalties that have been issued."
-
-          }
-        }
-
-        "contains Ated account summary link" in new Setup {
-          getWithAuthorisedUser { result =>
-            val document = Jsoup.parse(contentAsString(result))
-            document.getElementById("account-link").text() must be("Your ATED online service")
-            document.getElementById("account-link").attr("href") must be("/ated/account-summary")
           }
         }
 
