@@ -15,10 +15,13 @@
  *@
 
 @import models._
-@(balance: Option[BigDecimal], correspondence: Option[Address], organisationName: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent])
+@import config.ApplicationConfig
+@import play.twirl.api.HtmlFormat
+
+@(balance: Option[BigDecimal], correspondence: Option[Address], organisationName: Option[String], clientBanner: Html)(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 @import views.html.helpers._
 
-  <div class="service-info">
+<div class="service-info">
     <h2 class="balance-display heading-medium" id="sidebar.balance-header">@messages("ated.summary-return.sidebar.balance")</h2>
 
     <p class="balance-display heading-large" id="sidebar.balance-content">@formattedPounds(balance.getOrElse(BigDecimal(0)).abs) @if(balance.getOrElse(BigDecimal(0)) > 0){<span class="heading-medium">@messages("ated.debit") </span>} @if(balance.getOrElse(BigDecimal(0)) < 0){<span class="heading-medium">@messages("ated.credit")</span>} </p>
@@ -28,6 +31,14 @@
     @if(balance.getOrElse(BigDecimal(0)) > 0){<p>@Html(messages("ated.summary-return.sidebar.pay.link")) </p>} @if(balance.getOrElse(BigDecimal(0)) < 0){<p class="font-xsmall">@Html(messages("ated.summary-return.sidebar.owed.link"))</p>}
 
     @correspondence.map { _ =>
-    <p class="balance-display"><a href="@controllers.subscriptionData.routes.CompanyDetailsController.view" id="change-details-link" data-journey-click="link - click:@messages("ated.your-ated-online-service"):@messages("ated.summary-return.company-details.link")">@messages("ated.summary-return.company-details.link")</a></p>
+    <p><a href="@controllers.subscriptionData.routes.CompanyDetailsController.view" id="change-details-link" data-journey-click="link - click:@messages("ated.your-ated-online-service"):@messages("ated.summary-return.company-details.link")">@messages("ated.summary-return.company-details.link")</a></p>
     }
-  </div>
+
+    @if(authContext.delegationModel.isEmpty && clientBanner == HtmlFormat.empty) {
+        <p class="balance-display" id="sidebar.appoint">
+            <a id="appoint-agent" href="@appConfig.clientApproveAgentMandate" data-journey-click="link - click:@Messages("ated.your-ated-online-service"):@Messages("ated.account-summary.appoint-agent.text")">
+            @Messages("ated.account-summary.appoint-agent.text")
+            </a>
+        </p>
+    }
+</div>

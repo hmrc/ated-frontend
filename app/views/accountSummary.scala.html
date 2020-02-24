@@ -36,7 +36,7 @@
 @atedMain(
     title = Messages("ated.summary-return.title"),
     pageScripts = Some(pageScripts),
-    sidebarLinks = Some(_accountSummary_sideBar(summaryReturnsWithDrafts.atedBalance, correspondence, organisationName)),
+    sidebarLinks = Some(_accountSummary_sideBar(summaryReturnsWithDrafts.atedBalance, correspondence, organisationName, clientBanner)),
     sidebarClass = Some("related"),
     banner = clientBanner,
     analyticsAdditionalJs = Some(analyticsJs),
@@ -135,14 +135,6 @@
                 </a>
             </div>
         }
-    }
-
-    @if(authContext.delegationModel.isEmpty && clientBanner == HtmlFormat.empty) {
-        <p>
-            <a id="appoint-agent" href="@appConfig.clientApproveAgentMandate" data-journey-click="link - click:@Messages("ated.your-ated-online-service"):@Messages("ated.account-summary.appoint-agent.text")">
-                @Messages("ated.account-summary.appoint-agent.text")
-            </a>
-        </p>
     }
 
 }
