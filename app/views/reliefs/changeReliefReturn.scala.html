@@ -23,6 +23,7 @@
 @import views.html.helpers.error._
 @import utils._
 
+
 @analyticsJs = {
 ga('set', 'page', document.location.pathname);
 ga('set', 'location', document.URL.split("?")[0]);
@@ -33,6 +34,23 @@ ga('set', 'location', document.URL.split("?")[0]);
     Some(atedErrorSummary(editReliefForm, "ated.change-relief-return.error.empty.general")))
 
   <p id="relief-return-change-text">@Messages("ated.change-relief-return.text")</p>
+  <p id="relief-return-change-text-2">@Messages("ated.change-relief-return.text.2")</p>
+    <details>
+        <summary id="titleNumber-reveal" class="summary" data-journey-click="accordion - click:@messages("ated.change-relief-return.header"):@messages("ated.change-relief-return.accordian")">
+        @messages("ated.change-relief-return.accordian")
+        </summary>
+        <div class="panel-indent">
+            <p id="titleNumber-text">
+            @messages("ated.change-relief-return.accordian.2")
+            </p>
+            <p id="titleNumber-text-2">
+            @messages("ated.change-relief-return.accordian.3")
+            </p>
+            <p id="titleNumber-text-3">
+            @messages("ated.change-relief-return.accordian.4")
+            </p>
+        </div>
+    </details>
 
   @form(action=controllers.reliefs.routes.ChangeReliefReturnController.submit(periodKey, formBundleNumber)) {
     <div id="editReliefForm">
