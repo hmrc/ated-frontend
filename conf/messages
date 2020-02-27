@@ -707,7 +707,7 @@ ated.chargeable-return-confirmation.back-to-ated-link.text = Your ATED online se
 ated.chargeable-return-declaration.title = Returns declaration
 ated.chargeable-return-declaration.header = Returns declaration
 
-#ated.chargeable-return-declaration.warning = This draft will be saved for 28 days or until it is submitted.
+#ated.chargeable-return-declaration.warning = This draft will be saved for 60 days or until it is submitted.
 
 ated.chargeable-return-declaration.before-declaration.client = Before you can submit your return to HMRC you must read and agree to the following statement. If you give false information you may have to pay financial penalties and face prosecution.
 ated.chargeable-return-declaration.before-declaration.agent = Before your client’s return can be submitted to HMRC, you must read and agree to the following statement. Your client’s approval may be in electronic or non-electronic form. If your client gives false information, they may have to pay financial penalties and face prosecution.
@@ -1053,7 +1053,7 @@ ated.property-details-summary.table.revised-ated-charge-further.text = Based on 
 ated.property-details-summary.table.revised-ated-charge-amended.text = Based on the information you have given us your revised ATED charge for this amended return is
 ated.property-details-summary.table.revised-ated-charge-changed.text = Based on the information you have given us your revised ATED charge for this changed return is
 ated.property-details-summary.table.revised-ated-charge-to-relief.text = Based on the information you have given us your revised ATED charge is
-ated.property-details-summary.saved-draft.text = This draft is saved for up to 28 days.
+ated.property-details-summary.saved-draft.text = This draft is saved for up to 60 days.
 ated.property-details-summary.print.view = Print this return
 ated.property-details-summary.saved-returns.link.text = Save as draft
 ated.property-details-summary.delete-draft.link.text = Delete this draft
@@ -1094,7 +1094,7 @@ ated.relief-edit-link.screen-reader = relief details
 ated.relief-summary.relief-end-date =  to 31 March
 ated.relief-summary.table.ated-charge.text = Based on the information you have given us your ATED charge is
 ated.relief-summary.table.ated-charge.balance = £0
-ated.relief-summary.saved-draft.text = This draft is saved for up to 28 days.
+ated.relief-summary.saved-draft.text = This draft is saved for up to 60 days.
 ated.relief-summary.submit = Confirm and continue
 ated.relief-summary.print.view = Print this return
 ated.relief-summary.print.header = Relief returns for {0}
