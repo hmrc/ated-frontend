@@ -33,8 +33,9 @@ ga('set', 'location', document.URL.split("?")[0]);
     @pageHeadersAndError(backLink, "pre-heading", Messages("ated.change-return.pre-header"), "relief-return-header", Messages("ated.change-relief-return.title"),
     Some(atedErrorSummary(editReliefForm, "ated.change-relief-return.error.empty.general")))
 
+    <p id="relief-return-change-text-2">@Messages("ated.change-relief-return.text.2")</p>
   <p id="relief-return-change-text">@Messages("ated.change-relief-return.text")</p>
-  <p id="relief-return-change-text-2">@Messages("ated.change-relief-return.text.2")</p>
+
     <details>
         <summary id="titleNumber-reveal" class="summary" data-journey-click="accordion - click:@messages("ated.change-relief-return.header"):@messages("ated.change-relief-return.accordian")">
         @messages("ated.change-relief-return.accordian")
