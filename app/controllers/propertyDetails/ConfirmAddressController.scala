@@ -54,12 +54,21 @@ class ConfirmAddressController @Inject()(mcc: MessagesControllerComponents,
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         val backLink = {
-          if(AtedUtils.isEditSubmittedMode(mode)) {
+          if(AtedUtils.getPropertyDetailsPreHeader(mode).contains("change")){
+            Some(controllers.propertyDetails.routes.PropertyDetailsAddressController.view(id,false,periodKey,mode).url)
+          } else if(AtedUtils.isEditSubmittedMode(mode)) {
             Some(controllers.propertyDetails.routes.SelectExistingReturnAddressController.view(periodKey, "charge").url)
           } else {
             Some(controllers.propertyDetails.routes.AddressLookupController.view(None, periodKey, mode).url)
           }
+
         }
+//          if(AtedUtils.isEditSubmittedMode(mode)) {
+//            Some(controllers.propertyDetails.routes.SelectExistingReturnAddressController.view(periodKey, "charge").url)
+//          } else {
+//            Some(controllers.propertyDetails.routes.AddressLookupController.view(None, periodKey, mode).url)
+//          }
+//        }
         propertyDetailsService.retrieveDraftPropertyDetails(id).map {
             case successResponse: PropertyDetailsCacheSuccessResponse =>
               val addressProperty = successResponse.propertyDetails.addressProperty

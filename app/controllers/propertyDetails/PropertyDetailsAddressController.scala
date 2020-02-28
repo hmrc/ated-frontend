@@ -96,7 +96,9 @@ class PropertyDetailsAddressController @Inject()(mcc: MessagesControllerComponen
         val backLinkView = {
           if(fromConfirmAddressPage) {
             Some(controllers.propertyDetails.routes.ConfirmAddressController.view(id, periodKey, mode).url)
-        } else {
+        } else if(AtedUtils.getPropertyDetailsPreHeader(mode).contains("change")){
+            Some(controllers.editLiability.routes.EditLiabilityTypeController.editLiability(id,periodKey,true).url)
+          } else {
             Some(controllers.propertyDetails.routes.AddressLookupController.view(Some(id), periodKey, mode).url)
           }
         }
