@@ -123,7 +123,7 @@ extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper wi
                       auditInputAddress(found)
                       redirectWithBackLink(
                         confirmAddressId,
-                        controllers.propertyDetails.routes.ConfirmAddressController.view(x, periodKey, mode),
+                        controllers.propertyDetails.routes.ConfirmAddressController.view(x, periodKey, mode, Some(controllerId)),
                         backToViewLink
                       )
                     }
@@ -134,7 +134,7 @@ extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper wi
                       auditInputAddress(found)
                       redirectWithBackLink(
                         confirmAddressId,
-                        controllers.propertyDetails.routes.ConfirmAddressController.view(newId, periodKey,mode),
+                        controllers.propertyDetails.routes.ConfirmAddressController.view(newId, periodKey, mode, Some(controllerId)),
                         backToViewLink
                       )
                   }

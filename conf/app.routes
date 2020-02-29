@@ -125,7 +125,7 @@ GET      /liability/address-lookup/view/:periodKey                    controller
 POST     /liability/address-lookup/find/:periodKey                    controllers.propertyDetails.AddressLookupController.find(propertyKey: Option[String] ?=None, periodKey: Int, mode: Option[String] ?=None)
 POST     /liability/address-lookup/save/:periodKey                    controllers.propertyDetails.AddressLookupController.save(propertyKey: Option[String] ?=None, periodKey: Int, mode: Option[String] ?=None)
 
-GET      /liability/confirm-address/view/:periodKey/:propertyKey                   controllers.propertyDetails.ConfirmAddressController.view(propertyKey: String, periodKey: Int, mode: Option[String] ?=None)
+GET      /liability/confirm-address/view/:periodKey/:propertyKey                   controllers.propertyDetails.ConfirmAddressController.view(propertyKey: String, periodKey: Int, mode: Option[String] ?=None, whereFrom: Option[String] ?=None)
 GET      /liability/confirm-address/view/:formBundleNo                             controllers.propertyDetails.ConfirmAddressController.editSubmittedReturn(formBundleNo: String)
 POST     /liability/confirm-address/save/:periodKey/:propertyKey                    controllers.propertyDetails.ConfirmAddressController.submit(propertyKey: String, periodKey: Int, mode: Option[String] ?=None)
 

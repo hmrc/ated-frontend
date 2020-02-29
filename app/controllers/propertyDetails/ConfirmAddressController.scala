@@ -50,14 +50,17 @@ class ConfirmAddressController @Inject()(mcc: MessagesControllerComponents,
 
   def view(id: String,
            periodKey: Int,
-           mode: Option[String] = None): Action[AnyContent] = Action.async { implicit request =>
+           mode: Option[String] = None,
+           whereFrom: Option[String] = None
+          ): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
-        val backLink = {
-          if(AtedUtils.isEditSubmittedMode(mode)) {
-            Some(controllers.propertyDetails.routes.SelectExistingReturnAddressController.view(periodKey, "charge").url)
-          } else {
+        val backLink = { whereFrom match {
+          case Some("PropertyDetailsAddressController") =>
+            Some(controllers.propertyDetails.routes.PropertyDetailsAddressController.view(id, false, periodKey, mode).url)
+          case Some("AddressLookupController") =>
             Some(controllers.propertyDetails.routes.AddressLookupController.view(None, periodKey, mode).url)
+          case _ => Some(controllers.propertyDetails.routes.PropertyDetailsAddressController.view(id, false, periodKey, mode).url)
           }
         }
         propertyDetailsService.retrieveDraftPropertyDetails(id).map {

@@ -95,7 +95,7 @@ class PropertyDetailsAddressController @Inject()(mcc: MessagesControllerComponen
 
         val backLinkView = {
           if(fromConfirmAddressPage) {
-            Some(controllers.propertyDetails.routes.ConfirmAddressController.view(id, periodKey, mode).url)
+            Some(controllers.propertyDetails.routes.ConfirmAddressController.view(id, periodKey, None, mode).url)
         } else {
             Some(controllers.propertyDetails.routes.AddressLookupController.view(Some(id), periodKey, mode).url)
           }
@@ -182,7 +182,7 @@ class PropertyDetailsAddressController @Inject()(mcc: MessagesControllerComponen
                     auditInputAddress(trimmedAddressProperty, "edit-address")
                     redirectWithBackLink(
                       confirmAddressId,
-                      controllers.propertyDetails.routes.ConfirmAddressController.view(x, periodKey, mode),
+                      controllers.propertyDetails.routes.ConfirmAddressController.view(x, periodKey, mode, Some("PropertyDetailsAddressController")),
                       Some(controllers.propertyDetails.routes.PropertyDetailsAddressController.view(x, fromConfirmAddressPage, periodKey, mode).url)
                     )
                   }
@@ -193,7 +193,7 @@ class PropertyDetailsAddressController @Inject()(mcc: MessagesControllerComponen
                     auditInputAddress(trimmedAddressProperty, "create-address")
                     redirectWithBackLink(
                       confirmAddressId,
-                      controllers.propertyDetails.routes.ConfirmAddressController.view(newId, periodKey, mode),
+                      controllers.propertyDetails.routes.ConfirmAddressController.view(newId, periodKey, mode, Some("PropertyDetailsAddressController")),
                       Some(controllers.propertyDetails.routes.PropertyDetailsAddressController.view(newId, fromConfirmAddressPage, periodKey, mode).url)
                     )
                   }

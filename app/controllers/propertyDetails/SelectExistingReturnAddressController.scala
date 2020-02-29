@@ -71,7 +71,7 @@ class SelectExistingReturnAddressController @Inject()(mcc: MessagesControllerCom
   def continueWithThisReturnRedirect(periodKey: Int, returnType: String) : Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
-        redirectWithBackLinkDontOverwriteOldLink(
+        redirectWithBackLink(
           propertyDetailsAddressController.propertyDetailsAddressId,
           controllers.propertyDetails.routes.PropertyDetailsAddressController.createNewDraft(periodKey),
           Some(controllers.propertyDetails.routes.SelectExistingReturnAddressController.view(periodKey, returnType).url)
