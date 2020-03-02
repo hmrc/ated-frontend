@@ -63,12 +63,6 @@ class ConfirmAddressController @Inject()(mcc: MessagesControllerComponents,
           }
 
         }
-//          if(AtedUtils.isEditSubmittedMode(mode)) {
-//            Some(controllers.propertyDetails.routes.SelectExistingReturnAddressController.view(periodKey, "charge").url)
-//          } else {
-//            Some(controllers.propertyDetails.routes.AddressLookupController.view(None, periodKey, mode).url)
-//          }
-//        }
         propertyDetailsService.retrieveDraftPropertyDetails(id).map {
             case successResponse: PropertyDetailsCacheSuccessResponse =>
               val addressProperty = successResponse.propertyDetails.addressProperty

@@ -95,16 +95,17 @@ class ConfirmAddressControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
       test(result)
     }
 
-    def viewSubmittedWithAuthorisedUser(id: String, propertyDetails: Option[PropertyDetails])(test: Future[Result] => Any) {
+    def getWithAuthorisedUserChangeReturn(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
-      setAuthMocks(authMock)
+      noDelegationModelAuthMocks(authMock)
+      when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+        (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
+      when(mockPropertyDetailsService.retrieveDraftPropertyDetails(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())) thenReturn {
+        Future.successful(PropertyDetailsCacheSuccessResponse(PropertyDetailsBuilder.getPropertyDetailsWithFormBundleReturn("1")))
+      }
       when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
-      when(mockDataCacheConnector.fetchAndGetFormData[Boolean](ArgumentMatchers.any())
-        (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
-      when(mockChangeLiabilityReturnService.retrieveSubmittedLiabilityReturnAndCache
-      (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(propertyDetails))
-      val result = testConfirmAddressController.editSubmittedReturn(id).apply(SessionBuilder.buildRequestWithSession(userId))
+      val result = testConfirmAddressController.view("1", 2015, Some("editSubmitted")).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
 
@@ -115,10 +116,23 @@ class ConfirmAddressControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
       when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
         (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
       when(mockPropertyDetailsService.retrieveDraftPropertyDetails(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())) thenReturn {
-        Future.successful(PropertyDetailsCacheSuccessResponse(PropertyDetailsBuilder.getPropertyDetails("1")))
+        Future.successful(PropertyDetailsCacheSuccessResponse(PropertyDetailsBuilder.getFullPropertyDetails("1")))
       }
       when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
-      val result = testConfirmAddressController.view("1", 2015, Some("editSubmitted")).apply(SessionBuilder.buildRequestWithSession(userId))
+      val result = testConfirmAddressController.view("1", 2015, Some("editPrevReturn")).apply(SessionBuilder.buildRequestWithSession(userId))
+      test(result)
+    }
+
+    def viewSubmittedWithAuthorisedUser(id: String, propertyDetails: Option[PropertyDetails])(test: Future[Result] => Any) {
+      val userId = s"user-${UUID.randomUUID}"
+      val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+      setAuthMocks(authMock)
+      when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+      when(mockDataCacheConnector.fetchAndGetFormData[Boolean](ArgumentMatchers.any())
+        (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
+      when(mockChangeLiabilityReturnService.retrieveSubmittedLiabilityReturnAndCache
+      (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(propertyDetails))
+      val result = testConfirmAddressController.editSubmittedReturn(id).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
 
@@ -179,7 +193,7 @@ class ConfirmAddressControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
 
       "Authorised users" must {
 
-        "show correct property details with a back link" in new Setup {
+        "show correct property details with a back link to address lookup" in new Setup {
           getWithAuthorisedUser {
             result =>
               status(result) must be(OK)
@@ -195,22 +209,41 @@ class ConfirmAddressControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
               document.getElementById("backLinkHref").text must be("Back")
               document.getElementById("backLinkHref").attr("href") must include("/ated/liability/address-lookup/view/2015")
           }
-          getWithAuthorisedUserEditSubmitted {
-            result =>
-              status(result) must be(OK)
-              val document = Jsoup.parse(contentAsString(result))
-              document.title() must be(TitleBuilder.buildTitle("Confirm address"))
-              document.getElementById("editAddress").text() must be("Edit address")
-              document.getElementById("submit").text() must be("Confirm and continue")
-              document.getElementById("address-line1").text() must be("addr1")
-              document.getElementById("address-line2").text() must be("addr2")
-              document.getElementById("address-line3").text() must be("addr3")
-              document.getElementById("address-line4").text() must be("addr4")
-              document.getElementById("postcode").text() must be("")
-              document.getElementById("backLinkHref").text must be("Back")
-              document.getElementById("backLinkHref").attr("href") must include("/ated/existing-return/select/2015/charge")
-          }
         }
+          "show correct property details with a back link to enter address manually" in new Setup {
+            getWithAuthorisedUserChangeReturn {
+              result =>
+                status(result) must be(OK)
+                val document = Jsoup.parse(contentAsString(result))
+                document.title() must be(TitleBuilder.buildTitle("Confirm address"))
+                document.getElementById("editAddress").text() must be("Edit address")
+                document.getElementById("submit").text() must be("Confirm and continue")
+                document.getElementById("address-line1").text() must be("addr1")
+                document.getElementById("address-line2").text() must be("addr2")
+                document.getElementById("address-line3").text() must be("addr3")
+                document.getElementById("address-line4").text() must be("addr4")
+                document.getElementById("postcode").text() must be("")
+                document.getElementById("backLinkHref").text must be("Back")
+                document.getElementById("backLinkHref").attr("href") must include("/ated/liability/create/address/view/1/false/2015?mode=editSubmitted")
+            }
+          }
+            "show correct property details with a back link to select property from previous year" in new Setup {
+              getWithAuthorisedUserEditSubmitted {
+                result =>
+                  status(result) must be(OK)
+                  val document = Jsoup.parse(contentAsString(result))
+                  document.title() must be(TitleBuilder.buildTitle("Confirm address"))
+                  document.getElementById("editAddress").text() must be("Edit address")
+                  document.getElementById("submit").text() must be("Confirm and continue")
+                  document.getElementById("address-line1").text() must be("addr1")
+                  document.getElementById("address-line2").text() must be("addr2")
+                  document.getElementById("address-line3").text() must be("addr3")
+                  document.getElementById("address-line4").text() must be("addr4")
+                  document.getElementById("postcode").text() must be("")
+                  document.getElementById("backLinkHref").text must be("Back")
+                  document.getElementById("backLinkHref").attr("href") must include("/ated/existing-return/select/2015/charge")
+              }
+            }
 
         "show error" in new Setup {
           getWithAuthorisedUserNotFoundResponse {
