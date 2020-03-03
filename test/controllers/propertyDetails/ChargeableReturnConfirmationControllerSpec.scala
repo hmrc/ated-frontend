@@ -166,7 +166,7 @@ reset(mockDelegationService)
               document.getElementById("reference-text").text() must include("The reference to make this payment is")
               document.getElementById("not-receive-email")
                 .text() must be("You can view your balance in your ATED online service. There can be a 24-hour delay before you see any updates.")
-              document.getElementById("submit").text() must be("Your ATED online service")
+              document.getElementById("submit").text() must be("Your ATED summary")
               document.getElementById("submit").attr("href") must be("/ated/account-summary")
           }
         }

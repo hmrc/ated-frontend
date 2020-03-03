@@ -16,10 +16,6 @@
 
 package utils
 
-import play.api.Play.current
-import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
-
 object AtedConstants {
 
   val IdentifierArn: String = "arn"
@@ -63,5 +59,8 @@ object AtedConstants {
   val Change: String = "C"
 
   val SelectedPreviousReturn: String = "selected-previous-return"
+
+  val draftType: String = "ated.draft"
+  val submittedType: String = "ated.submitted"
 
 }

@@ -64,6 +64,7 @@ class SelectPeriodControllerSpec extends PlaySpec with GuiceOneAppPerSuite with 
       mockBackLinkCacheConnector,
       mockDataCacheConnector
     )
+
     def getWithAuthorisedUser(test: Future[Result] => Any) {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
@@ -73,10 +74,13 @@ class SelectPeriodControllerSpec extends PlaySpec with GuiceOneAppPerSuite with 
 
       when(mockDataCacheConnector.fetchAndGetFormData[String](ArgumentMatchers.any())
         (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
+
       when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+
       val result = testSelectPeriodController.view.apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
+
     def getWithAuthorisedUserWithSavedData(test: Future[Result] => Any) {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)

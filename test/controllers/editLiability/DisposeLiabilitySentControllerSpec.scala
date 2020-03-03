@@ -138,7 +138,7 @@ reset(mockDelegationService)
           document.getElementById("view-balance")
             .text() must be("You can view your balance in your ATED online service. There can be a 24-hour delay before you see any updates.")
           document.getElementById("submit")
-            .text() must be("Your ATED online service")
+            .text() must be("Your ATED summary")
       }
     }
 
