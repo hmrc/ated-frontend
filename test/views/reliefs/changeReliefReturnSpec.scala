@@ -44,7 +44,7 @@ class changeReliefReturnSpec extends FeatureSpec with GuiceOneAppPerSuite with M
       Given("the client has clicked change on a relief")
       When("The user views the page")
 
-      val html = views.html.reliefs.changeReliefReturn(2015, "form-bundle-123", editReliefForm, None)
+      val html = views.html.reliefs.changeReliefReturn(2015, "form-bundle-123", editReliefForm, Some("backLink"))
 
       val document = Jsoup.parse(html.toString())
 

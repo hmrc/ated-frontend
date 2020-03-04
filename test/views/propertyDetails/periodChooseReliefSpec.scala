@@ -48,7 +48,7 @@ class periodChooseReliefSpec extends FeatureSpec with GuiceOneAppPerSuite with M
 
       val periodStartDate = new LocalDate("2015-01-01")
       val periodEndDate = new LocalDate("2016-02-02")
-      val html = views.html.propertyDetails.periodChooseRelief("1", 2015, periodChooseReliefForm, None)
+      val html = views.html.propertyDetails.periodChooseRelief("1", 2015, periodChooseReliefForm, Some("backLink"))
 
       val document = Jsoup.parse(html.toString())
 

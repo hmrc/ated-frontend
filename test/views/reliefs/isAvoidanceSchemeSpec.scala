@@ -47,7 +47,7 @@ class isAvoidanceSchemeSpec extends FeatureSpec with GuiceOneAppPerSuite
       Given("the client is creating a new relief and want tell us if an avoidance scheme is being used")
       When("The user views the page")
 
-      val html = views.html.reliefs.avoidanceSchemeBeingUsed(periodKey, isTaxAvoidanceForm , new LocalDate("2015-04-01"), None)
+      val html = views.html.reliefs.avoidanceSchemeBeingUsed(periodKey, isTaxAvoidanceForm , new LocalDate("2015-04-01"), Some("backLink"))
 
       val document = Jsoup.parse(html.toString())
 

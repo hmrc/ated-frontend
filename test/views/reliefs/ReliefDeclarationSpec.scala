@@ -44,7 +44,7 @@ class ReliefDeclarationSpec extends FeatureSpec with GuiceOneAppPerSuite with Mo
       When("The user views the page")
 
 
-      val html = views.html.reliefs.reliefDeclaration(2015, None)
+      val html = views.html.reliefs.reliefDeclaration(2015, Some("backLink"))
 
       val document = Jsoup.parse(html.toString())
 

@@ -64,7 +64,7 @@ class periodSummarySpec extends FeatureSpec with GuiceOneAppPerSuite with Mockit
       Given("the client has no returns")
       When("The user views the page")
 
-      val html = views.html.periodSummary(2015, None, None, None)
+      val html = views.html.periodSummary(2015, None, None, Some("backLink"))
 
       val document = Jsoup.parse(html.toString())
 

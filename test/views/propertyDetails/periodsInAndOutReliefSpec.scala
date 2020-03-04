@@ -46,7 +46,7 @@ class periodsInAndOutReliefSpec extends FeatureSpec with GuiceOneAppPerSuite wit
       Given("the client is creating a new liability and want to add multiple periods")
       When("The user views the page")
 
-      val html = views.html.propertyDetails.periodsInAndOutRelief("1", 2015, periodsInAndOutReliefForm, Nil, None, None)
+      val html = views.html.propertyDetails.periodsInAndOutRelief("1", 2015, periodsInAndOutReliefForm, Nil, None, Some("backLink"))
 
       val document = Jsoup.parse(html.toString())
 

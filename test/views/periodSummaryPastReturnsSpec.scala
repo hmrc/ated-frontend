@@ -62,7 +62,7 @@ class periodSummaryPastReturnsSpec extends FeatureSpec with GuiceOneServerPerSui
       Given("the client has no returns")
       When("The user views the page")
 
-      val html = views.html.periodSummaryPastReturns(2015, None, None, None)
+      val html = views.html.periodSummaryPastReturns(2015, None, None, Some("backLink"))
 
       val document = Jsoup.parse(html.toString())
 

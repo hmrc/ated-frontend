@@ -44,7 +44,7 @@ class propertyDetailsTitleSpec extends FeatureSpec with GuiceOneAppPerSuite with
       Given("the client is adding a dates liable")
       When("The user views the page")
 
-      val html = views.html.propertyDetails.propertyDetailsTitle("1", 2015, propertyDetailsTitleForm, None, None)
+      val html = views.html.propertyDetails.propertyDetailsTitle("1", 2015, propertyDetailsTitleForm, None, Some("backLink"))
 
       val document = Jsoup.parse(html.toString())
 

@@ -46,7 +46,7 @@ class addressLookupResultsSpec extends FeatureSpec with GuiceOneAppPerSuite with
       implicit val request = FakeRequest()
 
       val results = AddressSearchResults(searchCriteria = AddressLookup("XX1 1XX", None), Nil)
-      val html = views.html.propertyDetails.addressLookupResults(None, 2015, addressSelectedForm, results, None, None)
+      val html = views.html.propertyDetails.addressLookupResults(None, 2015, addressSelectedForm, results, None, Some("backLink"))
 
       val document = Jsoup.parse(html.toString())
       Then("Select the address of the property")
