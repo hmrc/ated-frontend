@@ -112,6 +112,19 @@ class PropertyDetailsAddressControllerSpec extends PlaySpec with GuiceOneServerP
       test(result)
     }
 
+    def viewDataWithAuthorisedUserChangeReturn(id: String, propertyDetails: PropertyDetails, fromConfirmAddressPage: Boolean)(test: Future[Result] => Any) {
+      val userId = s"user-${UUID.randomUUID}"
+      val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+      setAuthMocks(authMock)
+      when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+        (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
+      when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+      when(mockPropertyDetailsService.retrieveDraftPropertyDetails
+      (ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propertyDetails)))
+      val result = testPropertyDetailsAddressController.view(id, fromConfirmAddressPage, periodKey, Some("editSubmitted")).apply(SessionBuilder.buildRequestWithSession(userId))
+      test(result)
+    }
+
     def viewSubmittedWithAuthorisedUser(id: String, propertyDetails: Option[PropertyDetails])(test: Future[Result] => Any) {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
@@ -241,6 +254,22 @@ class PropertyDetailsAddressControllerSpec extends PlaySpec with GuiceOneServerP
               document.getElementById("postcode").attr("value") must be("postCode")
               document.getElementById("backLinkHref").text must be("Back")
               document.getElementById("backLinkHref").attr("href") must include("/ated/liability/confirm-address/view")
+          }
+        }
+        "show the chargeable property details view with back link to EditLiabilityType" in new Setup {
+          viewDataWithAuthorisedUserChangeReturn("1",PropertyDetailsBuilder.getPropertyDetailsWithFormBundleReturn("1"), false) {
+            result =>
+              status(result) must be(OK)
+              val document = Jsoup.parse(contentAsString(result))
+              document.title() must be(TitleBuilder.buildTitle("Enter the address of the property manually"))
+              document.getElementById("property-details-header").text() must be("Enter the address of the property manually")
+              document.getElementById("submit").text() must be("Save and continue")
+              document.getElementById("line_1").attr("value") must be("addr1")
+              document.getElementById("line_2").attr("value") must be("addr2")
+              document.getElementById("line_3").attr("value") must be("addr3")
+              document.getElementById("line_4").attr("value") must be("addr4")
+              document.getElementById("backLinkHref").text must be("Back")
+              document.getElementById("backLinkHref").attr("href") must include("/ated/liability/1/edit/2015?editAllowed=true")
           }
         }
       }

@@ -58,7 +58,7 @@ case _ => oldFormBundleNo.getOrElse("")
             @pageHeadersAndError(backLink, messages("pre-heading"), messages(AtedUtils.getPropertyDetailsPreHeader(mode)), "property-details-header", pageTitle,
                 Some(atedErrorSummary(propertyDetailsForm, "ated.property-details-address-error.general")))
 
-        @if(mode.contains("editSubmitted")){
+        @if(fromConfirmAddressPage){
             <p>@Messages("ated.property-details.p")</p>
         }
 

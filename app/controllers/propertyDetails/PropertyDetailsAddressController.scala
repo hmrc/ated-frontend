@@ -92,22 +92,22 @@ class PropertyDetailsAddressController @Inject()(mcc: MessagesControllerComponen
   def view(id: String, fromConfirmAddressPage: Boolean, periodKey: Int, mode: Option[String]) : Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
-
         val backLinkView = {
           if(fromConfirmAddressPage) {
             Some(controllers.propertyDetails.routes.ConfirmAddressController.view(id, periodKey, mode).url)
-        } else {
+        } else if(AtedUtils.getPropertyDetailsPreHeader(mode).contains("change")){
+            Some(controllers.editLiability.routes.EditLiabilityTypeController.editLiability(id,periodKey,true).url)
+          } else {
             Some(controllers.propertyDetails.routes.AddressLookupController.view(Some(id), periodKey, mode).url)
           }
         }
-
           propertyDetailsCacheResponse(id) {
           case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
               Future.successful(Ok(views.html.propertyDetails.propertyDetailsAddress(
                 Some(id),
                 propertyDetails.periodKey,
                 propertyDetailsAddressForm.fill(propertyDetails.addressProperty),
-                AtedUtils.getEditSubmittedMode(propertyDetails),
+                AtedUtils.getEditSubmittedMode(propertyDetails, Some(AtedUtils.isPrevReturn(mode))),
                 backLinkView,
                 fromConfirmAddressPage = fromConfirmAddressPage)
               ))
