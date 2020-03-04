@@ -48,7 +48,7 @@ class PropertyDetailsRevaluedViewSpec extends FeatureSpec with GuiceOneAppPerSui
 
       implicit val request = FakeRequest()
 
-      val html = views.html.propertyDetails.propertyDetailsRevalued("1", 2015, propertyDetailsRevaluedForm, None, None)
+      val html = views.html.propertyDetails.propertyDetailsRevalued("1", 2015, propertyDetailsRevaluedForm, None, Some("backLink"))
 
       val document = Jsoup.parse(html.toString())
       Then("the page title : Have you had the property revalued since you made the £40,000 change?")
@@ -147,7 +147,7 @@ class PropertyDetailsRevaluedViewSpec extends FeatureSpec with GuiceOneAppPerSui
           revaluedDate = None,
           partAcqDispDate = None)
 
-        val html = views.html.propertyDetails.propertyDetailsRevalued("1", 2015, propertyDetailsRevaluedForm.fill(propertyDetailsRevalued), None, None)
+        val html = views.html.propertyDetails.propertyDetailsRevalued("1", 2015, propertyDetailsRevaluedForm.fill(propertyDetailsRevalued), None, Some("backLink"))
 
         val document = Jsoup.parse(html.toString())
         Then("the page title : Have you had the property revalued since you made the £40,000 change?")

@@ -48,7 +48,7 @@ class chooseReliefsSpec extends FeatureSpec with GuiceOneAppPerSuite with Mockit
       Given("the client is creating a new relief and want to see the options")
       When("The user views the page")
 
-      val html = views.html.reliefs.chooseReliefs(periodKey, reliefsForm, new LocalDate("2015-04-01"), None)
+      val html = views.html.reliefs.chooseReliefs(periodKey, reliefsForm, new LocalDate("2015-04-01"), Some("backLink"))
 
       val document = Jsoup.parse(html.toString())
 

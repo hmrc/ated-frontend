@@ -57,7 +57,7 @@ class editLiabilitySummarySpec extends FeatureSpec with GuiceOneServerPerSuite w
       val displayPeriods = PeriodUtils.getDisplayPeriods(propertyDetails.period)
       assert(displayPeriods.size === 2)
       val html = views.html.editLiability.editLiabilitySummary(propertyDetails, "A", displayPeriods,
-        PeriodUtils.getCalculatedPeriodValues(propertyDetails.calculated), None)
+        PeriodUtils.getCalculatedPeriodValues(propertyDetails.calculated), Some("backLink"))
 
       val document = Jsoup.parse(html.toString())
 

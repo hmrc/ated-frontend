@@ -45,7 +45,7 @@ class periodDatesLiableSpec extends FeatureSpec with GuiceOneAppPerSuite with Mo
       When("The user views the page")
 
       val html = views.html.propertyDetails.periodDatesLiable("1", 2015, periodDatesLiableForm,
-        "Enter the dates when the property was liable for an ATED charge", None, None)
+        "Enter the dates when the property was liable for an ATED charge", None, Some("backLink"))
 
       val document = Jsoup.parse(html.toString())
 

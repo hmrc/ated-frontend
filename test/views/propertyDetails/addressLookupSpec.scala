@@ -46,7 +46,7 @@ class addressLookupSpec extends FeatureSpec with GuiceOneAppPerSuite with Mockit
       When("The user views the page")
       implicit val request = FakeRequest()
 
-      val html = views.html.propertyDetails.addressLookup(None, 2015, addressLookupForm, None, None)
+      val html = views.html.propertyDetails.addressLookup(None, 2015, addressLookupForm, None, Some("backLink"))
 
       val document = Jsoup.parse(html.toString())
       Then("The title and header should match - Find the property's address")

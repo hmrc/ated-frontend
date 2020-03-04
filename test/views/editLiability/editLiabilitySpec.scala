@@ -43,7 +43,7 @@ class editLiabilitySpec extends FeatureSpec with GuiceOneServerPerSuite with Moc
       When("The user views the page and clicks yes")
 
       implicit val request = FakeRequest()
-      val html = views.html.editLiability.editLiability(editLiabilityReturnTypeForm, "formBundleNo", 2015, editAllowed = true, None)
+      val html = views.html.editLiability.editLiability(editLiabilityReturnTypeForm, "formBundleNo", 2015, editAllowed = true, Some("backLink"))
 
       val document = Jsoup.parse(html.toString())
       Then("the page title : Have you disposed of the property?")

@@ -84,7 +84,7 @@ class formBundleReturnSpec extends FeatureSpec with GuiceOneServerPerSuite with 
       Then("The config should have - 2 periods")
       val displayPeriods = PeriodUtils.getDisplayPeriods(propertyDetails.period)
       assert(displayPeriods.size === 2)
-      val html = views.html.formBundleReturn(2015, None, "formBundleNo", Some("ACME Ltd"), changeAllowed = false, editAllowed = false, Nil, Nil, None)
+      val html = views.html.formBundleReturn(2015, None, "formBundleNo", Some("ACME Ltd"), changeAllowed = false, editAllowed = false, Nil, Nil, Some("backLink"))
 
       val document = Jsoup.parse(html.toString())
 
