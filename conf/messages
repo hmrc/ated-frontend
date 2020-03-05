@@ -24,7 +24,7 @@ ated.confirm-and-continue = Confirm and continue
 ated.confirm = Confirm
 ated.date.hint = For example, 31 3 2017
 ated.finish-and-sign-out = Finish and sign out
-ated.your-ated-online-service = Your ATED online service
+ated.your-ated-online-service = Your ATED summary
 ated.details-for = details for
 ated.address = Address
 ated.sign-out = Sign out
@@ -125,6 +125,9 @@ ated.account-summary.peak-guidance.text.1 = This is the deadline for returns and
 ated.account-summary.peak-guidance.text.2 = Returns for newly acquired ATED properties must be sent to HMRC within 30 days of the date of acquisition (90 days from start date for new builds).
 ated.account-summary.outside-peak-guidance.warning = Returns for newly acquired ATED properties must be sent to HMRC within 30 days (90 days for new builds).
 ated.account-summary.outside-peak-guidance.text = Returns for {0} to {1} for all properties in the scope of ATED are due by 30 April {0}.
+ated.account-summary.current-year-returns = Current year returns
+ated.account-summary.showing = Currently showing {0} of {1} returns
+ated.account-summary.view-or-change = View or change
 
 ##### SELECT PERIOD
 
@@ -342,8 +345,8 @@ ated.avoidance-scheme-error.general.equityReleaseSchemePromoter = There is a pro
 
 ##### SUMMARY RETURN
 
-ated.summary-return.title = Your ATED online service
-ated.summary-return.header = Your ATED online service
+ated.summary-return.title = Your ATED summary
+ated.summary-return.header = Your ATED summary
 ated.summary-return.sub-header = What type of return would you like to submit for the period from 1 April 2015 to 31 March 2016?
 ated.summary-return.chargeable = Chargeable return
 ated.summary-return.relief-return = Relief return
@@ -358,6 +361,8 @@ ated.account-summary-th.period = Period
 ated.account-summary-th.chargeable = Chargeable
 ated.account-summary-th.reliefs = Relief
 ated.account-summary-th.drafts = Draft
+ated.account-summary.view-all = View all returns for {0} to {1}
+ated.account-summary.create-new-return = Create a new return for {0} to {1}
 
 ated.summary-return.sidebar.contact-details.header = ATED contact
 ated.account-summary.agent.no-returns = You have no returns
@@ -375,6 +380,7 @@ ated.summary-return.contact.details.heading = Contact details
 ated.account-summary.create-relief.text = You can create a relief declaration return where no tax is due.
 ated.account-summary.create-relief.text.indent = You cannot view returns you have previously submitted using this service.
 ated.account-summary.create-return.button = Create a return
+ated.account-summary.create-return-other.link = Create returns for other years
 ated.summary-return.correspondence-address.heading = Correspondence address
 ated.summary-return.no-return.text = You can create a return where an ATED charge is due or a relief return where no ATED charge is due.
 ated.summary-return.table.screen-reader.headings-help = You are on the ATED table, column headings are as follows
@@ -700,7 +706,7 @@ ated.chargeable-return-confirmation.payment-reference-number = Payment reference
 ated.chargeable-return-confirmation.not-receive-text = You can view your balance in your ATED online service. There can be a 24-hour delay before you see any updates.
 ated.chargeable-return-confirmation.ways-to-pay-link.text = Ways to pay your ATED charge
 ated.chargeable-return-confirmation.ways-to-pay-link.link = https://www.gov.uk/guidance/pay-taxes-penalties-and-enquiry-settlements
-ated.chargeable-return-confirmation.back-to-ated-link.text = Your ATED online service
+ated.chargeable-return-confirmation.back-to-ated-link.text = Your ATED summary
 
 ##### CHARGEABLE RETURN DECLARATION
 
@@ -736,7 +742,7 @@ ated.company-details.registered-address = Registered address
 ated.company-details.registered-address.edit = Edit
 ated.company-details.correspondence-address = Correspondence address
 ated.company-details.contact-address = ATED contact details
-ated.company-details.back = Back to your ATED online service
+ated.company-details.back = Back to your ATED summary
 ated.company-details.correspondence-address.edit = Edit
 ated.company-details.contact-preference.label = Email address
 ated.company-details.appointed_agent = Appointed agent
@@ -1191,7 +1197,7 @@ ated.edit.liability.sent.owe-you = HMRC owe you {0} for this amended return.
 ated.edit.liability.sent.repayments = Any repayments will be paid into your nominated bank account. We will contact you if you have a non-UK bank account.
 ated.edit.liability.sent.you-owe = You owe HMRC {0} for this amended return.
 ated.edit.liability.sent.you-owe-change-in-details = You owe HMRC {0} for this changed return.
-ated.edit.liability.sent.button = Your ATED online service
+ated.edit.liability.sent.button = Your ATED summary
 
 ##### BANK DETAILS PAGE
 

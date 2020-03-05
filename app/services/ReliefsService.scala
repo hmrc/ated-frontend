@@ -144,7 +144,8 @@ class ReliefsService @Inject()(atedConnector: AtedConnector,
     } yield {
       cachedReturns match {
         case Some(x) =>
-          x.allReturns.flatMap(a => a.submittedReturns).flatMap(b => b.reliefReturns).find(c => c.formBundleNo == formBundleNo)
+          (x.returnsCurrentTaxYear ++ x.returnsOtherTaxYears)
+            .flatMap(a => a.submittedReturns).flatMap(b => b.reliefReturns).find(c => c.formBundleNo == formBundleNo)
         case None => None
       }
     }

@@ -17,9 +17,11 @@
 package models
 
 import org.joda.time.LocalDate
-import play.api.libs.json.Json
+import play.api.libs.json._
+import play.api.libs.json.Reads._
+import utils.PeriodUtils
 import play.api.libs.json.JodaWrites._
-import play.api.libs.json.JodaReads._
+import play.api.libs.json.JodaReads.DefaultJodaLocalDateReads
 
 case class DraftReturns(periodKey: Int, // periodKey so that we know which draft belongs to which period
                         id: String,
@@ -32,6 +34,13 @@ case class DraftReturns(periodKey: Int, // periodKey so that we know which draft
 object DraftReturns {
   implicit val formats = Json.format[DraftReturns]
 }
+
+case class AccountSummaryRowModel(
+                                 formBundleNo: Option[String] = None,
+                                 returnType: String,
+                                 description: String,
+                                 route: String
+                                 )
 
 case class SubmittedReliefReturns(formBundleNo: String,
                                   reliefType: String,
@@ -76,8 +85,43 @@ object PeriodSummaryReturns {
 }
 
 case class SummaryReturnsModel(atedBalance: Option[BigDecimal] = None,
-                               allReturns: Seq[PeriodSummaryReturns] = Nil)
+                               returnsCurrentTaxYear: Seq[PeriodSummaryReturns] = Nil,
+                               returnsOtherTaxYears: Seq[PeriodSummaryReturns] = Nil
+                              )
 
 object SummaryReturnsModel {
-  implicit val formats = Json.format[SummaryReturnsModel]
+  implicit val reads: Reads[SummaryReturnsModel] = new Reads[SummaryReturnsModel] {
+
+    def reads(json: JsValue): JsResult[SummaryReturnsModel] = {
+
+      val currentTaxYear = PeriodUtils.calculatePeriod(LocalDate.now())
+      val atedBalance: Option[BigDecimal] = (json \ "atedBalance").asOpt[BigDecimal]
+      val allReturns: Seq[PeriodSummaryReturns] = (json \ "allReturns").as[Seq[PeriodSummaryReturns]]
+
+      val returnsCurrentTaxYear: Seq[PeriodSummaryReturns] = allReturns.filter(
+        _.periodKey == currentTaxYear
+      )
+
+      val returnsOtherTaxYears: Seq[PeriodSummaryReturns] = allReturns.filterNot(
+        _.periodKey == currentTaxYear
+      )
+
+      JsSuccess(
+        SummaryReturnsModel(atedBalance, returnsCurrentTaxYear, returnsOtherTaxYears)
+      )
+    }
+  }
+
+  implicit val writes: Writes[SummaryReturnsModel] = Writes { returnsModel =>
+
+    val allReturns = returnsModel.returnsCurrentTaxYear ++ returnsModel.returnsOtherTaxYears
+
+    Json.obj(
+      "atedBalance" -> returnsModel.atedBalance,
+      "allReturns" -> allReturns
+      )
+  }
+
+  implicit val summaryReturnsModelFormat: Format[SummaryReturnsModel] = Format(reads, writes)
+
 }

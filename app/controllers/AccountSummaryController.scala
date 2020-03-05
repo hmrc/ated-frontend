@@ -20,6 +20,7 @@ import config.ApplicationConfig
 import connectors.{AgentClientMandateFrontendConnector, DataCacheConnector}
 import controllers.auth.AuthAction
 import javax.inject.Inject
+import models.SummaryReturnsModel
 import org.joda.time.LocalDate
 import play.api.Logger
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -29,6 +30,7 @@ import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.PeriodUtils
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 class AccountSummaryController @Inject()(mcc: MessagesControllerComponents,
                                          authAction: AuthAction,
@@ -43,9 +45,14 @@ class AccountSummaryController @Inject()(mcc: MessagesControllerComponents,
 
   def view(): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
+
+      val currentDate = dateService.now()
+      val taxYearStartingYear = PeriodUtils.calculatePeriod(currentDate)
+
       for {
         _ <- dataCacheConnector.clearCache()
         allReturns <- summaryReturnsService.getSummaryReturns
+        currentYearReturns <- summaryReturnsService.generateCurrentTaxYearReturns(allReturns.returnsCurrentTaxYear)
         _ <- detailsService.cacheClientReference(authContext.atedReferenceNumber)
         correspondenceAddress <- subscriptionDataService.getCorrespondenceAddress
         organisationName <- subscriptionDataService.getOrganisationName
@@ -55,13 +62,17 @@ class AccountSummaryController @Inject()(mcc: MessagesControllerComponents,
         )
       } yield {
         Ok(views.html.accountSummary(
+          returnsCurrentTaxYear = currentYearReturns._1,
+          totalCurrentYearReturns = currentYearReturns._2,
+          hasPastReturns = currentYearReturns._3,
           allReturns,
           correspondenceAddress,
           organisationName,
           clientBannerPartial.successfulContentOrEmpty,
           duringPeak,
-          currentYear = dateService.now().getYear,
-          taxYearStartingYear = PeriodUtils.calculatePeriod(dateService.now())))
+          currentYear = currentDate.getYear,
+          taxYearStartingYear)
+        )
       }
     } recover {
       case _: ForbiddenException     =>

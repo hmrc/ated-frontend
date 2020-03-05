@@ -25,6 +25,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import utils.AtedConstants._
 import play.api.libs.json.JodaWrites._
 import play.api.libs.json.JodaReads._
+import utils.PeriodUtils
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -52,32 +53,81 @@ class SummaryReturnsService @Inject()(atedConnector: AtedConnector,
               response.status match {
                 case OK =>
                   val returnsResponse = response.json.as[SummaryReturnsModel]
-                  val allPsrs: Seq[PeriodSummaryReturns] = x.allReturns ++ returnsResponse.allReturns
-                  val allPeriodKeys: Seq[Int] = x.allReturns.map(_.periodKey) ++ returnsResponse.allReturns.map(_.periodKey)
-                  if (allPeriodKeys.nonEmpty) {
-                    val allPKsSorted = allPeriodKeys.distinct.sortWith(_.toInt > _.toInt) // all period keys must be integers
-                    val periodSummary = allPKsSorted.map(a => allPsrs.filter(_.periodKey == a)).map(a => convertSeqOfPeriodSummariesToObject(a))
-                    val summaryReturnsModel = x.copy(allReturns = periodSummary)
-                    summaryReturnsModel
-                  } else {
-                    x
-                  }
+
+                  val allCurrentTaxYearReturns: Seq[PeriodSummaryReturns] = x.returnsCurrentTaxYear ++
+                    returnsResponse.returnsCurrentTaxYear
+
+                  val allOtherYearReturns: Seq[PeriodSummaryReturns] = x.returnsOtherTaxYears ++
+                    returnsResponse.returnsOtherTaxYears
+
+                  val currentYearPeriodKeys: Seq[Int] = allCurrentTaxYearReturns.map(_.periodKey)
+                  val allOtherYearPeriodKeys: Seq[Int] = allOtherYearReturns.map(_.periodKey)
+
+                  val currentYearPeriodSummary =
+                    if (currentYearPeriodKeys.nonEmpty) {
+                      val allPKsSorted = currentYearPeriodKeys.distinct.sortWith(_.toInt > _.toInt)
+                      allPKsSorted.map(
+                        a => allCurrentTaxYearReturns.filter(_.periodKey == a)).map(a => convertSeqOfPeriodSummariesToObject(a)
+                      )
+                    } else {
+                      x.returnsCurrentTaxYear
+                    }
+
+                  val otherYearsPeriodSummary =
+                    if (allOtherYearPeriodKeys.nonEmpty) {
+                      val allPKsSorted = allOtherYearPeriodKeys.distinct.sortWith(_.toInt > _.toInt)
+                      allPKsSorted.map(
+                        a => allOtherYearReturns.filter(_.periodKey == a)).map(a => convertSeqOfPeriodSummariesToObject(a)
+                      )
+
+                    } else {
+                      x.returnsOtherTaxYears
+                    }
+
+                  val summaryReturnsModel = x.copy(
+                    returnsCurrentTaxYear = currentYearPeriodSummary,
+                    returnsOtherTaxYears = otherYearsPeriodSummary
+                  )
+
+                  summaryReturnsModel
+
                 case status =>
-                  Logger.warn(s"[SummaryReturnsService][getDraftWithEtmpSummaryReturns] - status: $status & body = ${response.body} & cache = $x")
-                  throw new RuntimeException("[SummaryReturnsService][getDraftWithEtmpSummaryReturns] - Status other than 200 returned - Has Cache")
+                  Logger.warn(s"[SummaryReturnsService][getDraftWithEtmpSummaryReturns] - status: $status " +
+                    s"& body = ${response.body} & cache = $x")
+                  throw new RuntimeException("[SummaryReturnsService][getDraftWithEtmpSummaryReturns] - " +
+                    "Status other than 200 returned - Has Cache")
               }
           }
+
           case None => atedConnector.getFullSummaryReturns flatMap {
             response =>
               response.status match {
                 case OK =>
                   val resp = response.json.as[SummaryReturnsModel]
-                  val summaryReturnsToCache = resp.copy(allReturns = resp.allReturns.filter(x => x.periodKey > 2000).map(a => a.copy(draftReturns = Nil))) // this would be cached in keystore
-                  dataCacheConnector.saveFormData[SummaryReturnsModel](RetrieveReturnsResponseId, summaryReturnsToCache) map (summaryReturn =>
-                    resp.copy(allReturns = resp.allReturns.filter(r => r.periodKey > 2000)))
+
+                  val returnsFilteredCurrentTaxYear: Seq[PeriodSummaryReturns] = resp.returnsCurrentTaxYear.filter(
+                    x => x.periodKey > 2000)
+
+                  val returnsFilteredOtherTaxYears: Seq[PeriodSummaryReturns] = resp.returnsOtherTaxYears.filter(
+                    x => x.periodKey > 2000)
+
+                  val summaryReturnsToCache = resp.copy(
+                    returnsCurrentTaxYear = returnsFilteredCurrentTaxYear.map(a => a.copy(draftReturns = Nil)),
+                    returnsOtherTaxYears = returnsFilteredOtherTaxYears.map(a => a.copy(draftReturns = Nil))
+                  )
+
+                  dataCacheConnector.saveFormData[SummaryReturnsModel](RetrieveReturnsResponseId,
+                    summaryReturnsToCache) map (_ =>
+                    resp.copy(
+                      returnsCurrentTaxYear = returnsFilteredCurrentTaxYear,
+                      returnsOtherTaxYears = returnsFilteredOtherTaxYears)
+                    )
+
                 case status =>
-                  Logger.warn(s"[SummaryReturnsService][getDraftWithEtmpSummaryReturns] - status: $status & body = ${response.body} & cache = None")
-                  throw new RuntimeException(s"[SummaryReturnsService][getDraftWithEtmpSummaryReturns] - Status other than 200 returned - No Cache, status: $status")
+                  Logger.warn("[SummaryReturnsService][getDraftWithEtmpSummaryReturns] - " +
+                    s"status: $status & body = ${response.body} & cache = None")
+                  throw new RuntimeException("[SummaryReturnsService][getDraftWithEtmpSummaryReturns] - " +
+                    s"Status other than 200 returned - No Cache, status: $status")
               }
           }
         }
@@ -89,25 +139,87 @@ class SummaryReturnsService @Inject()(atedConnector: AtedConnector,
     for {
       summaryReturnsModel <- getSummaryReturns
     } yield {
-      summaryReturnsModel.allReturns.find(_.periodKey == period)
+      (summaryReturnsModel.returnsOtherTaxYears ++ summaryReturnsModel.returnsCurrentTaxYear).find(_.periodKey == period)
     }
   }
 
-  def getPreviousSubmittedLiabilityDetails(selectedPeriodKey: Int)(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[Seq[PreviousReturns]] =
+  def getPreviousSubmittedLiabilityDetails(selectedPeriodKey: Int)(implicit authContext: StandardAuthRetrievals,
+                                                                   hc: HeaderCarrier): Future[Seq[PreviousReturns]] =
     getSummaryReturns.flatMap { returnSummary =>
-    val periodSummaryReturns = returnSummary.allReturns
-    val submittedReturns = periodSummaryReturns.flatMap(x => x.submittedReturns).filter(_.periodKey == selectedPeriodKey - 1)
-    val oldLiabilityReturns = submittedReturns.flatMap(x => x.oldLiabilityReturns)
-    val newLiabilityReturns = submittedReturns.flatMap(x => x.currentLiabilityReturns)
-    val pastReturnDetails = (oldLiabilityReturns ++ newLiabilityReturns) map (r => PreviousReturns(r.description, r.formBundleNo, r.dateOfSubmission))
-    savePastReturnDetails(pastReturnDetails)
-  }
+      val periodSummaryReturns = returnSummary.returnsCurrentTaxYear ++ returnSummary.returnsOtherTaxYears
+      val submittedReturns = periodSummaryReturns.flatMap(x => x.submittedReturns).filter(_.periodKey == selectedPeriodKey - 1)
+      val oldLiabilityReturns = submittedReturns.flatMap(x => x.oldLiabilityReturns)
+      val newLiabilityReturns = submittedReturns.flatMap(x => x.currentLiabilityReturns)
+      val pastReturnDetails = (oldLiabilityReturns ++ newLiabilityReturns) map (r => PreviousReturns(r.description, r.formBundleNo, r.dateOfSubmission))
+      savePastReturnDetails(pastReturnDetails)
+    }
 
-  private def savePastReturnDetails(pastReturnDetails: Seq[PreviousReturns])(implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[Seq[PreviousReturns]] = {
+  private def savePastReturnDetails(pastReturnDetails: Seq[PreviousReturns])(
+    implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[Seq[PreviousReturns]] = {
     dataCacheConnector.saveFormData[Seq[PreviousReturns]](PreviousReturnsDetailsList, pastReturnDetails)
   }
 
-  def retrieveCachedPreviousReturnAddressList(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[Option[Seq[PreviousReturns]]] = {
+  def retrieveCachedPreviousReturnAddressList(implicit authContext: StandardAuthRetrievals,
+                                              hc: HeaderCarrier): Future[Option[Seq[PreviousReturns]]] = {
     dataCacheConnector.fetchAndGetFormData[Seq[PreviousReturns]](PreviousReturnsDetailsList)
   }
+
+  def generateCurrentTaxYearReturns(returns: Seq[PeriodSummaryReturns]): Future[(Seq[AccountSummaryRowModel], Int, Boolean)] = {
+
+    val currentTaxYear = PeriodUtils.calculatePeriod()
+
+    val submittedReturns = returns flatMap(_.submittedReturns)
+
+    val draftReturns: Seq[AccountSummaryRowModel] = {
+      returns.flatMap(_.draftReturns.map(
+        rtn => AccountSummaryRowModel(
+          description = rtn.description,
+          returnType = draftType,
+          route = rtn.returnType match {
+            case TypeReliefDraft =>
+              controllers.routes.PeriodSummaryController
+                .viewReturn(currentTaxYear).toString
+            case TypeLiabilityDraft =>
+              controllers.routes.PeriodSummaryController
+                .viewChargeable(currentTaxYear, rtn.id).toString
+            case TypeChangeLiabilityDraft =>
+              controllers.routes.PeriodSummaryController
+                .viewChargeableEdit(currentTaxYear, rtn.id).toString
+            case TypeDisposeLiabilityDraft =>
+              controllers.routes.PeriodSummaryController
+                .viewDisposal(currentTaxYear, rtn.id).toString
+          }
+        )
+      ))
+    }
+
+    val currentLiabilityReturns: Seq[AccountSummaryRowModel] = submittedReturns.flatMap(_.currentLiabilityReturns.map(
+        rtn => AccountSummaryRowModel(
+          description = rtn.description,
+          formBundleNo = Some(rtn.formBundleNo),
+          returnType = submittedType,
+          route = controllers.routes.FormBundleReturnController.view(
+            rtn.formBundleNo, currentTaxYear
+          ).toString
+        )
+      )
+    )
+
+    val reliefReturns: Seq[AccountSummaryRowModel] = submittedReturns.flatMap(_.reliefReturns.map(
+      rtn => AccountSummaryRowModel(
+        description = rtn.reliefType,
+        formBundleNo = Some(rtn.formBundleNo),
+        returnType = submittedType,
+        route = controllers.reliefs.routes.ViewReliefReturnController.viewReliefReturn(
+          currentTaxYear, rtn.formBundleNo).toString)
+      )
+    )
+
+    val hasPreviousReturns: Boolean = submittedReturns.flatMap(_.oldLiabilityReturns).nonEmpty
+
+    val allAccountSummaryCurrentReturns = draftReturns ++ currentLiabilityReturns ++ reliefReturns
+
+    Future(allAccountSummaryCurrentReturns.take(5), allAccountSummaryCurrentReturns.size, hasPreviousReturns)
+  }
+
 }

@@ -18,10 +18,12 @@
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
 @import views.html.helpers._
+@import _root_.utils.AtedConstants._
+@import uk.gov.hmrc.play.views.html.helpers.form
 
-@(summaryReturnsWithDrafts: SummaryReturnsModel, correspondence: Option[Address], organisationName: Option[String],
-        clientBanner: Html, duringPeak: Boolean, currentYear: Int,
-        taxYearStartingYear: Int)(implicit authContext: StandardAuthRetrievals,
+@(returnsCurrentTaxYear: Seq[AccountSummaryRowModel], totalCurrentYearReturns: Int, hasPastReturns: Boolean,
+        otherReturns: SummaryReturnsModel, correspondence: Option[Address], organisationName: Option[String], clientBanner: Html,
+        duringPeak: Boolean, currentYear: Int, taxYearStartingYear: Int)(implicit authContext: StandardAuthRetrievals,
         messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
 @analyticsJs = {
@@ -34,9 +36,9 @@
 }
 
 @atedMain(
-    title = Messages("ated.summary-return.title"),
+    title = messages("ated.summary-return.title"),
     pageScripts = Some(pageScripts),
-    sidebarLinks = Some(_accountSummary_sideBar(summaryReturnsWithDrafts.atedBalance, correspondence, organisationName, clientBanner)),
+    sidebarLinks = Some(_accountSummary_sideBar(otherReturns.atedBalance, correspondence, organisationName, clientBanner)),
     sidebarClass = Some("related"),
     banner = clientBanner,
     analyticsAdditionalJs = Some(analyticsJs),
@@ -47,94 +49,116 @@
         "client-summary-subheader",
         organisationName.getOrElse(""),
         "account-summary-header",
-        Messages("ated.summary-return.header"),
-        subHeaderPrefix = Some(Messages("ated.screen-reader.section-name"))
+        messages("ated.summary-return.header"),
+        subHeaderPrefix = Some(messages("ated.screen-reader.section-name"))
     )
 
     @peakGuidance(duringPeak, currentYear, taxYearStartingYear)
 
-    @if(summaryReturnsWithDrafts.allReturns.isEmpty) {
-        <h2 class="heading-small" id="return-summary-no-returns">@Messages("ated.account-summary.agent.no-returns")</h2>
-    } else {
-        <div class="grid grid-wrapper row-border" id="returns-table">
-            <span class="visuallyhidden">@Messages("ated.summary-return.table.screen-reader.headings-help")</span>
-            <div class="grid grid-1-5 form-label-bold" id="return-summary-period-heading">
-                @Messages("ated.account-summary-th.period")
-            </div>
-            <div class="grid grid-1-5 form-label-bold" id="return-summary-chargeable-heading">
-                @Messages("ated.account-summary-th.chargeable")
-            </div>
-            <div class="grid grid-1-5 form-label-bold" id="return-summary-reliefs-heading">
-                @Messages("ated.account-summary-th.reliefs")
-            </div>
-            <div class="grid grid-2-5 form-label-bold" id="return-summary-drafts-heading">
-                @Messages("ated.account-summary-th.drafts")
-            </div>
+    @if(otherReturns.returnsOtherTaxYears.isEmpty && returnsCurrentTaxYear.isEmpty) {
+        <h2 class="heading-small" id="return-summary-no-returns">@messages("ated.account-summary.agent.no-returns")</h2>
+        @if(authContext.delegationModel.isEmpty) {
+            <p id="return-summary-no-returns-appoint-agent">@messages("ated.account-summary.agent-appoint.text")</p>
+            <p id="return-summary-no-returns-appoint-agent-info">@messages("ated.account-summary.appoint-agent-info.text")</p>
+        }
+
+        <div>
+            <a id="create-return" href="@controllers.routes.PeriodSummaryController.createReturn(taxYearStartingYear)">
+                <button class="govuk-button" id="submit" type="submit" data-journey-click="ated-fronted:click:create-return-current-year">
+                @messages("ated.account-summary.create-new-return",
+                    taxYearStartingYear.toString,
+                    (taxYearStartingYear+1).toString)
+                </button>
+            </a>
         </div>
 
-        <div class="grid grid-wrapper form-group" id="returns-table-data">
-            @summaryReturnsWithDrafts.allReturns.zipWithIndex.map { case (periodSummaryWithDraft, i) =>
+    } else {
+
+        @if(returnsCurrentTaxYear.nonEmpty) {
+            <br />
+            <h2 class="heading-medium">@messages("ated.account-summary.current-year-returns")</h2>
+            <div class="govuk-hint">@messages("ated.account-summary.showing", returnsCurrentTaxYear.size, totalCurrentYearReturns)</div>
+            <dl class="govuk-summary-list govuk-!-margin-bottom-9">
+                @returnsCurrentTaxYear.map { rtn =>
+                    @accountSummaryRow(
+                        rtn.description,
+                        messages(rtn.returnType),
+                        messages("ated.account-summary.view-or-change"),
+                        rtn.route
+                    )
+                }
+            </dl>
+
+            @if(totalCurrentYearReturns > 5 || hasPastReturns) {
+                <a id="view-all-returns" href="@controllers.routes.PeriodSummaryController.view(taxYearStartingYear)">@messages("ated.account-summary.view-all",
+                    taxYearStartingYear.toString,
+                    (taxYearStartingYear + 1).toString)
+                </a>
+            }
+
+        }
+
+        <div>
+            <a id="create-return" href="@controllers.routes.PeriodSummaryController.createReturn(taxYearStartingYear)">
+                <button class="govuk-button" id="submit" type="submit" data-journey-click="ated-fronted:click:create-return-current-year">
+                @messages("ated.account-summary.create-new-return",
+                    taxYearStartingYear.toString,
+                    (taxYearStartingYear+1).toString)
+                </button>
+            </a>
+        </div>
+
+        @if(otherReturns.returnsOtherTaxYears.nonEmpty) {
+
+            <div class="grid grid-wrapper row-border" id="returns-table">
+                <span class="visuallyhidden">@messages("ated.summary-return.table.screen-reader.headings-help")</span>
+                <div class="grid grid-1-5 form-label-bold" id="return-summary-period-heading">
+                @messages("ated.account-summary-th.period")
+                </div>
+                <div class="grid grid-1-5 form-label-bold" id="return-summary-chargeable-heading">
+                @messages("ated.account-summary-th.chargeable")
+                </div>
+                <div class="grid grid-1-5 form-label-bold" id="return-summary-reliefs-heading">
+                @messages("ated.account-summary-th.reliefs")
+                </div>
+                <div class="grid grid-2-5 form-label-bold" id="return-summary-drafts-heading">
+                @messages("ated.account-summary-th.drafts")
+                </div>
+            </div>
+
+            <div class="grid grid-wrapper form-group" id="returns-table-data">
+            @otherReturns.returnsOtherTaxYears.zipWithIndex.map { case (periodSummaryReturns, i) =>
             <section>
                 <div class="grid grid-1-5" id="return-summary-period-data-@i">
-                    <span class="visuallyhidden">@Messages("ated.summary-return.table.screen-reader.period-from")</span>
-                    @periodSummaryWithDraft.periodKey to @(periodSummaryWithDraft.periodKey.toInt + 1)
+                    <span class="visuallyhidden">@messages("ated.summary-return.table.screen-reader.period-from")</span>
+                    @periodSummaryReturns.periodKey to @(periodSummaryReturns.periodKey.toInt + 1)
                 </div>
                 <div class="grid grid-1-5" id="return-summary-chargeable-data-@i">
-                    <span class="visuallyhidden">@Messages("ated.summary-return.table.screen-reader.number-of") @Messages("ated.account-summary-th.chargeable")</span>
-                    @periodSummaryWithDraft.submittedReturns.fold(0)(a => a.currentLiabilityReturns.size + a.oldLiabilityReturns.size)
+                    <span class="visuallyhidden">@messages("ated.summary-return.table.screen-reader.number-of") @messages("ated.account-summary-th.chargeable")</span>
+                    @periodSummaryReturns.submittedReturns.fold(0)(a => a.currentLiabilityReturns.size + a.oldLiabilityReturns.size)
                 </div>
                 <div class="grid grid-1-5" id="return-summary-reliefs-data-@i">
-                    <span class="visuallyhidden">@Messages("ated.summary-return.table.screen-reader.number-of") @Messages("ated.account-summary-th.reliefs")</span>
-                    @periodSummaryWithDraft.submittedReturns.fold(0)(a => a.reliefReturns.size)
+                    <span class="visuallyhidden">@messages("ated.summary-return.table.screen-reader.number-of") @messages("ated.account-summary-th.reliefs")</span>
+                    @periodSummaryReturns.submittedReturns.fold(0)(a => a.reliefReturns.size)
                 </div>
                 <div class="grid grid-1-5" id="return-summary-drafts-data-@i">
-                    <span class="visuallyhidden">@Messages("ated.summary-return.table.screen-reader.number-of") @Messages("ated.account-summary-th.drafts")</span>
-                    @periodSummaryWithDraft.draftReturns.size
+                    <span class="visuallyhidden">@messages("ated.summary-return.table.screen-reader.number-of") @messages("ated.account-summary-th.drafts")</span>
+                    @periodSummaryReturns.draftReturns.size
                 </div>
                 <div class="grid grid-1-5">
-                    <a href="@controllers.routes.PeriodSummaryController.view(periodSummaryWithDraft.periodKey)"
-                        id="view-change-@i"
-                        data-journey-click="ated-fronted:click:view-change">
-                            @Messages("ated.account-summary.view-change-button")
-                            <span class="visuallyhidden">
-                                @Messages("ated.account-summary-screen-reader")
-                                @periodSummaryWithDraft.periodKey to @(periodSummaryWithDraft.periodKey.toInt + 1)
-                            </span>
-                    </a>
-                </div>
+                    <a href="@controllers.routes.PeriodSummaryController.view(periodSummaryReturns.periodKey)"
+                    id="view-change-@i"
+                    data-journey-click="ated-fronted:click:view-change">
+                        @messages("ated.account-summary.view-change-button")
+                    <span class="visuallyhidden">
+                        @messages("ated.account-summary-screen-reader")
+                        @periodSummaryReturns.periodKey to @(periodSummaryReturns.periodKey.toInt + 1)
+            </span>
+            </a>
+            </div>
             </section>
             }
-        </div>
-    }
-
-    @if(summaryReturnsWithDrafts.allReturns.nonEmpty) {
-        <p>
-            <a id="create-return"
-                onkeyup='spaceBarHandler(event,"@controllers.routes.SelectPeriodController.view")'
-                href="@controllers.routes.SelectPeriodController.view"
-                data-journey-click="ated-fronted:click:create-return">
-                    @Messages("ated.account-summary.create-return.link")
-            </a>
-        </p>
-    } else {
-        @if(authContext.delegationModel.isDefined) {
-            <p>
-                <a id="create-return"
-                    onkeyup='spaceBarHandler(event,"@controllers.routes.SelectPeriodController.view")'
-                    href="@controllers.routes.SelectPeriodController.view"
-                    data-journey-click="ated-fronted:click:create-return">
-                        @Messages("ated.account-summary.create-return.button")
-                </a>
-            </p>
-        } else {
-            <div class="form-group">
-                <p id="return-summary-no-returns-appoint-agent">@Messages("ated.account-summary.agent-appoint.text")</p>
-                <p id="return-summary-no-returns-appoint-agent-info">@Messages("ated.account-summary.appoint-agent-info.text")</p>
-                <a id="create-return" href="@controllers.routes.SelectPeriodController.view" data-journey-click="ated-fronted:click:create-return">
-                    @Messages("ated.account-summary.create-return.link")
-                </a>
             </div>
         }
     }
-
 }

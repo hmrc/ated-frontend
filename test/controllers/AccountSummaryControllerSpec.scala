@@ -41,10 +41,12 @@ import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, UserId}
 import uk.gov.hmrc.play.partials.HtmlPartial
 import utils.AtedConstants._
+import utils.TestModels
 
 import scala.concurrent.Future
 
-class AccountSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with MockAuthUtil {
+class AccountSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar
+  with BeforeAndAfterEach with MockAuthUtil with TestModels {
 
   implicit lazy val hc: HeaderCarrier = HeaderCarrier()
   implicit val mockAppConfig: ApplicationConfig = mock[ApplicationConfig]
@@ -59,9 +61,7 @@ class AccountSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
   when(mockDateService.now()).thenReturn(LocalDate.now())
   when(mockAppConfig.atedPeakStartDay).thenReturn("27")
 
-  val organisationName: String = "OrganisationName"
-  val formBundleNo1: String = "123456789012"
-  val formBundleNo2: String = "123456789013"
+  val periodKey2015: Int = 2015
 
   class Setup {
 
@@ -112,6 +112,7 @@ class AccountSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
 
       when(mockDataCacheConnector.clearCache()(ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(httpValue)))
       when(mockSummaryReturnsService.getSummaryReturns(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(returnsSummaryWithDraft))
+      when(mockSummaryReturnsService.generateCurrentTaxYearReturns(ArgumentMatchers.any())).thenReturn(Future.successful(Seq(), 0, false))
       when(mockSubscriptionDataService.getCorrespondenceAddress(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(correspondence))
       when(mockSubscriptionDataService.getOrganisationName(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(organisationName)))
       when(mockSubscriptionDataService.getSafeId(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("safeId")))
@@ -153,268 +154,138 @@ class AccountSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
     }
   }
 
-  "AccountSummaryController" must {
-    "accountSummary" must {
+  ".view" when {
 
-      "unauthorised users" must {
-        "respond with a redirect" in new Setup {
-          getWithUnAuthorisedUser { result =>
-            status(result) must be(SEE_OTHER)
-          }
-        }
-
-        "be redirected to the unauthorised page" in new Setup {
-          getWithUnAuthorisedUser { result =>
-            redirectLocation(result).get must include("/ated/unauthorised")
-          }
-        }
-
-        "respond with a redirect to unauthorised URL" in new Setup {
-          val data = SummaryReturnsModel(None, Seq())
-          getWithForbiddenUser(data, None) { result =>
-            redirectLocation(result).get must include("/ated/unauthorised")
-          }
+    "the user is unauthorised" must {
+      "respond with a redirect" in new Setup {
+        getWithUnAuthorisedUser { result =>
+          status(result) must be(SEE_OTHER)
         }
       }
 
-      "Authorised users" must {
-
-        "show the account summary view V_2_0 with balance (debit) if we have some Summary data" in new Setup {
-          val year = 2015
-          val address: Address = {
-            Address(name1 = Some("name1"),
-              name2 = Some("name2"),
-              contactDetails = Some(ContactDetails(phoneNumber = Some("03000123456789"),
-                mobileNumber = Some("09876543211"),
-                emailAddress = Some("aa@aa.com"),
-                faxNumber = Some("0223344556677"))),
-              addressDetails = AddressDetails(AddressTypeCorrespondence, "addrLine1", "addrLine2", None, None, None, "GB"))}
-
-          val draftReturns1 = DraftReturns(year, "1", "desc", Some(BigDecimal(100.00)), TypeChangeLiabilityDraft)
-          val draftReturns2 = DraftReturns(year, "", "some relief", None, TypeReliefDraft)
-          val submittedReliefReturns1 = SubmittedReliefReturns(
-            formBundleNo1, "some relief", new LocalDate("2015-05-05"), new LocalDate("2015-05-05"), new LocalDate("2015-05-05"))
-          val submittedLiabilityReturns1 = SubmittedLiabilityReturns(
-            formBundleNo2, "addr1+2", BigDecimal(1234.00), new LocalDate("2015-05-05"), new LocalDate("2015-05-05"),
-            new LocalDate("2015-05-05"), changeAllowed = true, "payment-ref-01")
-          val submittedReturns = SubmittedReturns(year, Seq(submittedReliefReturns1), Seq(submittedLiabilityReturns1))
-          val periodSummaryReturns = PeriodSummaryReturns(year, Seq(draftReturns1, draftReturns2), Some(submittedReturns))
-          val data = SummaryReturnsModel(Some(BigDecimal(999.99)), Seq(periodSummaryReturns))
-          getWithAuthorisedUser(data, Some(address)) {
-            result =>
-              status(result) must be(OK)
-              val document = Jsoup.parse(contentAsString(result))
-
-              document.getElementById("sidebar.balance-header").text() must be("Your balance")
-              document.getElementById("sidebar.balance-content").text() must be("£1,000 debit")
-              document.getElementById("sidebar.link-text").text() must be("Deadlines and ways to pay")
-              document.getElementById("sidebar.balance-info").text() must be("There can be a 24-hour delay before you see any updates to your balance.")
-              document.getElementById("sidebar.link-text").text() must be("Deadlines and ways to pay")
-              document.getElementById("sidebar.link-text").attr("href") must be("https://www.gov.uk/guidance/pay-annual-tax-on-enveloped-dwellings")
-              document.title() must be(TitleBuilder.buildTitle("Your ATED online service"))
-              document.getElementById("change-details-link").text() must be("View your ATED details")
-
-              document.title() must be(TitleBuilder.buildTitle("Your ATED online service"))
-              document.getElementById("account-summary-header").text() must be("Your ATED online service")
-              document.getElementById("return-summary-period-heading").text() must be("Period")
-              document.getElementById("return-summary-chargeable-heading").text() must be("Chargeable")
-              document.getElementById("return-summary-reliefs-heading").text() must be("Relief")
-              document.getElementById("return-summary-drafts-heading").text() must be("Draft")
-              document.getElementById("return-summary-chargeable-data-0").text().toLowerCase() must be("number of chargeable 1")
-              document.getElementById("return-summary-reliefs-data-0").text().toLowerCase() must be("number of relief 1")
-              document.getElementById("return-summary-drafts-data-0").text().toLowerCase() must be("number of draft 2")
-              document.getElementById("view-change-0").text() must include("View or change")
-              document.getElementById("create-return").text() must be("Create a new return")
-
-              Option(document.getElementById("return-summary-no-returns")) must be(None)
-          }
+      "redirect to the unauthorised page" in new Setup {
+        getWithUnAuthorisedUser { result =>
+          redirectLocation(result).get must include("/ated/unauthorised")
         }
+      }
+    }
 
-        "show the account summary view V_2_0 with balance (credit) if we have some Summary data" in new Setup {
-          val year = 2015
-          val address = Address(addressDetails = AddressDetails(AddressTypeCorrespondence, "addrLine1", "addrLine2", None, None, None, "GB"))
-          val draftReturns1 = DraftReturns(year, "1", "desc", Some(BigDecimal(100.00)), TypeChangeLiabilityDraft)
-          val draftReturns2 = DraftReturns(year, "", "some relief", None, TypeReliefDraft)
-          val submittedReliefReturns1 = SubmittedReliefReturns(
-            formBundleNo1, "some relief", new LocalDate("2015-05-05"), new LocalDate("2015-05-05"), new LocalDate("2015-05-05"))
-          val submittedLiabilityReturns1 = SubmittedLiabilityReturns(
-            formBundleNo2, "addr1+2", BigDecimal(1234.00), new LocalDate("2015-05-05"), new LocalDate("2015-05-05"),
-            new LocalDate("2015-05-05"), changeAllowed = true, "payment-ref-01")
-          val submittedReturns = SubmittedReturns(year, Seq(submittedReliefReturns1), Seq(submittedLiabilityReturns1))
-          val periodSummaryReturns = PeriodSummaryReturns(year, Seq(draftReturns1, draftReturns2), Some(submittedReturns))
-          val data = SummaryReturnsModel(Some(BigDecimal(-999.99)), Seq(periodSummaryReturns))
-          getWithAuthorisedUser(data, Some(address)) {
-            result =>
-              status(result) must be(OK)
-              val document = Jsoup.parse(contentAsString(result))
-
-              document.getElementById("sidebar.balance-header").text() must be("Your balance")
-              document.getElementById("sidebar.balance-content").text() must be("£1,000 credit")
-              document.getElementById("sidebar.balance-info").text() must be("There can be a 24-hour delay before you see any updates to your balance.")
-              document.getElementById("sidebar.link-text").text() must be("Ways to be paid")
-              document.getElementById("sidebar.link-text").attr("href") must be("https://www.gov.uk/guidance/pay-annual-tax-on-enveloped-dwellings")
-              document.title() must be(TitleBuilder.buildTitle("Your ATED online service"))
-              document.getElementById("account-summary-header").text() must be("Your ATED online service")
-              document.getElementById("return-summary-period-heading").text() must be("Period")
-              document.getElementById("return-summary-chargeable-data-0").text().toLowerCase() must be("number of chargeable 1")
-              document.getElementById("return-summary-reliefs-data-0").text().toLowerCase() must be("number of relief 1")
-              document.getElementById("return-summary-drafts-data-0").text().toLowerCase() must be("number of draft 2")
-
-              Option(document.getElementById("return-summary-no-returns")) must be(None)
-          }
+    "the user has invalid enrolments" must {
+      "redirect to unauthorised URL" in new Setup {
+        val data = SummaryReturnsModel(None, Seq(), Seq())
+        getWithForbiddenUser(data, None) { result =>
+          redirectLocation(result).get must include("/ated/unauthorised")
         }
+      }
+    }
 
-        "show the account summary view V_2_0 with balance if we have some Summary data and balance is 0" in new Setup {
-          val year = 2015
-          val address = Address(addressDetails = AddressDetails(AddressTypeCorrespondence, "addrLine1", "addrLine2", None, None, None, "GB"))
+    "the user is authorised" must {
 
-          val draftReturns1 = DraftReturns(year, "1", "desc", Some(BigDecimal(100.00)), TypeChangeLiabilityDraft)
-          val draftReturns2 = DraftReturns(year, "", "some relief", None, TypeReliefDraft)
-          val submittedReliefReturns1 = SubmittedReliefReturns(
-            formBundleNo1, "some relief", new LocalDate("2015-05-05"), new LocalDate("2015-05-05"), new LocalDate("2015-05-05"))
-          val submittedLiabilityReturns1 = SubmittedLiabilityReturns(
-            formBundleNo2, "addr1+2", BigDecimal(1234.00), new LocalDate("2015-05-05"), new LocalDate("2015-05-05"),
-            new LocalDate("2015-05-05"), changeAllowed = true, "payment-ref-01")
-          val submittedReturns = SubmittedReturns(year, Seq(submittedReliefReturns1), Seq(submittedLiabilityReturns1))
-          val periodSummaryReturns = PeriodSummaryReturns(year, Seq(draftReturns1, draftReturns2), Some(submittedReturns))
-          val data = SummaryReturnsModel(Some(BigDecimal(0)), Seq(periodSummaryReturns))
-          getWithAuthorisedUser(data, Some(address)) {
-            result =>
-              status(result) must be(OK)
-              val document = Jsoup.parse(contentAsString(result))
+      "show the account summary view" in new Setup {
 
-              document.getElementById("sidebar.balance-header").text() must be("Your balance")
-              document.getElementById("sidebar.balance-content").text() must be("£0")
+        getWithAuthorisedUser(summaryReturnsModel(periodKey = periodKey2015), Some(address)) {
+          result =>
+            status(result) must be(OK)
+            val document = Jsoup.parse(contentAsString(result))
 
-
-              document.title() must be(TitleBuilder.buildTitle("Your ATED online service"))
-              document.getElementById("account-summary-header").text() must be("Your ATED online service")
-
-              document.getElementById("return-summary-period-heading").text() must be("Period")
-              document.getElementById("return-summary-chargeable-data-0").text().toLowerCase() must be("number of chargeable 1")
-              document.getElementById("return-summary-reliefs-data-0").text().toLowerCase() must be("number of relief 1")
-              document.getElementById("return-summary-drafts-data-0").text().toLowerCase() must be("number of draft 2")
-
-              Option(document.getElementById("return-summary-no-returns")) must be(None)
-          }
-        }
-
-        "show the account summary view with UR banner" in new Setup {
-          val year = 2015
-          val address = Address(addressDetails = AddressDetails(AddressTypeCorrespondence, "addrLine1", "addrLine2", None, None, None, "GB"))
-
-          val draftReturns1 = DraftReturns(year, "1", "desc", Some(BigDecimal(100.00)), TypeChangeLiabilityDraft)
-          val draftReturns2 = DraftReturns(year, "", "some relief", None, TypeReliefDraft)
-          val submittedReliefReturns1 = SubmittedReliefReturns(
-            formBundleNo1, "some relief", new LocalDate("2015-05-05"), new LocalDate("2015-05-05"), new LocalDate("2015-05-05"))
-          val submittedLiabilityReturns1 = SubmittedLiabilityReturns(
-            formBundleNo2, "addr1+2", BigDecimal(1234.00), new LocalDate("2015-05-05"), new LocalDate("2015-05-05"),
-            new LocalDate("2015-05-05"), changeAllowed = true, "payment-ref-01")
-          val submittedReturns = SubmittedReturns(year, Seq(submittedReliefReturns1), Seq(submittedLiabilityReturns1))
-          val periodSummaryReturns = PeriodSummaryReturns(year, Seq(draftReturns1, draftReturns2), Some(submittedReturns))
-          val data = SummaryReturnsModel(Some(BigDecimal(0)), Seq(periodSummaryReturns))
-          when(mockAppConfig.urBannerToggle).thenReturn(true)
-
-          getWithAuthorisedUser(data, Some(address)) {
-            result =>
-              status(result) must be(OK)
-              val document = Jsoup.parse(contentAsString(result))
-
-              document.getElementById("ur-panel")
-                .text() must be ("Help improve digital services by joining the HMRC user panel (opens in new window) No thanks")
-              document.getElementsByClass("banner-panel__close").text() must be("No thanks")
-          }
-        }
-
-        "show the create a return and appoint an agent link if there are no returns and no delegation" in new Setup {
-          val data = SummaryReturnsModel(None, Seq())
-          getWithAuthorisedUser(data, None) {
-            result =>
-              status(result) must be(OK)
-              val document = Jsoup.parse(contentAsString(result))
-              document.title() must be(TitleBuilder.buildTitle("Your ATED online service"))
-              document.getElementById("create-return") != null
-              document.getElementById("create-return") == null
-              document.getElementById("appoint-agent") != null
-          }
-        }
-
-        "show the create a return button and no appoint an agent link if there are no returns and there is delegation" in new Setup {
-          val data = SummaryReturnsModel(None, Seq())
-          getWithAuthorisedDelegatedUser(data, None) {
-            result =>
-              status(result) must be(OK)
-              val document = Jsoup.parse(contentAsString(result))
-              document.title() must be(TitleBuilder.buildTitle("Your ATED online service"))
-              document.getElementById("create-return").hasClass("link") must be(false)
-              document.getElementById("create-return") != null
-              Option(document.getElementById("appoint-agent")) must be(None)
-          }
-        }
-
-        "throw exception for no safe id" in new Setup {
-          val httpValue = 200
-          val data = SummaryReturnsModel(None, Seq())
-          val userId = s"user-${UUID.randomUUID}"
-          val authMock: Enrolments ~ Some[AffinityGroup] ~ Some[String] = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
-          setAuthMocks(authMock)
-          when(mockDataCacheConnector.clearCache()(ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(httpValue)))
-          when(mockSummaryReturnsService.getSummaryReturns(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(data))
-          when(mockSubscriptionDataService.getCorrespondenceAddress(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
-          when(mockDetailsService.cacheClientReference(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-            .thenReturn(Future.successful("XN1200000100001"))
-          when(mockSubscriptionDataService.getOrganisationName(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(organisationName)))
-          when(mockSubscriptionDataService.getSafeId(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
-          when(mockMandateFrontendConnector.getClientBannerPartial(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
-            .thenReturn(Future.successful(HtmlPartial.Success(Some("thepartial"), Html(""))))
-
-          val result: Future[Result] = testAccountSummaryController.view().apply(SessionBuilder.buildRequestWithSession(userId))
-          val thrown: RuntimeException = the[RuntimeException] thrownBy await(result)
-          thrown.getMessage must be("Could not get safeId")
-        }
-
-        "show the create a return button and no appoint an agent link if there are returns and delegation" in new Setup {
-          val year = 2015
-          val draftReturns1 = DraftReturns(year, "1", "desc", Some(BigDecimal(100.00)), TypeChangeLiabilityDraft)
-          val draftReturns2 = DraftReturns(year, "", "some relief", None, TypeReliefDraft)
-          val submittedReliefReturns1 = SubmittedReliefReturns(
-            formBundleNo1, "some relief", new LocalDate("2015-05-05"), new LocalDate("2015-05-05"), new LocalDate("2015-05-05"))
-          val submittedLiabilityReturns1 = SubmittedLiabilityReturns(
-            formBundleNo2, "addr1+2", BigDecimal(1234.00), new LocalDate("2015-05-05"), new LocalDate("2015-05-05"),
-            new LocalDate("2015-05-05"), changeAllowed = true, "payment-ref-01")
-          val submittedReturns = SubmittedReturns(year, Seq(submittedReliefReturns1), Seq(submittedLiabilityReturns1))
-          val periodSummaryReturns = PeriodSummaryReturns(year, Seq(draftReturns1, draftReturns2), Some(submittedReturns))
-          val data = SummaryReturnsModel(Some(BigDecimal(0)), Seq(periodSummaryReturns))
-          getWithAuthorisedDelegatedUser(data, None) {
-            result =>
-              status(result) must be(OK)
-              val document = Jsoup.parse(contentAsString(result))
-              document.title() must be(TitleBuilder.buildTitle("Your ATED online service"))
-              document.getElementById("create-return") != null
-              document.getElementById("create-return").hasClass("button") must be(false)
-              Option(document.getElementById("appoint-agent")) must be(None)
-          }
+            document.title() must be(TitleBuilder.buildTitle("Your ATED summary"))
+            document.getElementById("account-summary-header").text() must be("Your ATED summary")
         }
       }
 
-      "duringPeak" must {
-        "return true if the current date is within the ated peak period" in new Setup {
-          when(mockAppConfig.atedPeakStartDay).thenReturn("27")
-          when(mockDateService.now()).thenReturn(LocalDate.parse("2020-03-27"))
-          testAccountSummaryController.duringPeak must be(true)
-        }
+      "show the account summary view with UR banner" in new Setup {
+        val data: SummaryReturnsModel = summaryReturnsModel(periodKey = periodKey2015)
 
-        "return false if the current date is before the start of the ated peak period" in new Setup {
-          when(mockAppConfig.atedPeakStartDay).thenReturn("28")
-          when(mockDateService.now()).thenReturn(LocalDate.parse("2020-03-27"))
-          testAccountSummaryController.duringPeak must be(false)
-        }
+        when(mockAppConfig.urBannerToggle).thenReturn(true)
 
-        "return false if the current date is after the end of the ated peak period" in new Setup {
-          when(mockDateService.now()).thenReturn(LocalDate.parse("2020-05-01"))
-          testAccountSummaryController.duringPeak must be(false)
+        getWithAuthorisedUser(data, Some(address)) {
+          result =>
+            status(result) must be(OK)
+            val document = Jsoup.parse(contentAsString(result))
+
+            document.getElementById("ur-panel")
+              .text() must be("Help improve digital services by joining the HMRC user panel (opens in new window) No thanks")
+            document.getElementsByClass("banner-panel__close").text() must be("No thanks")
         }
       }
+
+      "show the create a return and appoint an agent link if there are no returns and no delegation" in new Setup {
+        val data = SummaryReturnsModel(None, Seq())
+        getWithAuthorisedUser(data, None) {
+          result =>
+            status(result) must be(OK)
+            val document = Jsoup.parse(contentAsString(result))
+            document.title() must be(TitleBuilder.buildTitle("Your ATED summary"))
+            document.getElementById("create-return") != null
+            document.getElementById("appoint-agent") != null
+        }
+      }
+
+      "show the create a return button and no appoint an agent link if there are no returns and there is delegation" in new Setup {
+        val data = SummaryReturnsModel(None, Seq())
+        getWithAuthorisedDelegatedUser(data, None) {
+          result =>
+            status(result) must be(OK)
+            val document = Jsoup.parse(contentAsString(result))
+            document.title() must be(TitleBuilder.buildTitle("Your ATED summary"))
+            document.getElementById("create-return") != null
+            Option(document.getElementById("appoint-agent")) must be(None)
+        }
+      }
+
+      "throw exception for no safe id" in new Setup {
+        val httpValue = 200
+        val data = SummaryReturnsModel(None, Seq())
+        val userId = s"user-${UUID.randomUUID}"
+        val authMock: Enrolments ~ Some[AffinityGroup] ~ Some[String] = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+        setAuthMocks(authMock)
+        when(mockDataCacheConnector.clearCache()(ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(httpValue)))
+        when(mockSummaryReturnsService.getSummaryReturns(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(data))
+        when(mockSubscriptionDataService.getCorrespondenceAddress(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
+        when(mockDetailsService.cacheClientReference(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+          .thenReturn(Future.successful("XN1200000100001"))
+        when(mockSubscriptionDataService.getOrganisationName(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(organisationName)))
+        when(mockSubscriptionDataService.getSafeId(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
+        when(mockMandateFrontendConnector.getClientBannerPartial(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+          .thenReturn(Future.successful(HtmlPartial.Success(Some("thepartial"), Html(""))))
+
+        val result: Future[Result] = testAccountSummaryController.view().apply(SessionBuilder.buildRequestWithSession(userId))
+        val thrown: RuntimeException = the[RuntimeException] thrownBy await(result)
+        thrown.getMessage must be("Could not get safeId")
+      }
+
+      "show the create a return button and no appoint an agent link if there are returns and delegation" in new Setup {
+
+        val data: SummaryReturnsModel = summaryReturnsModel(periodKey = periodKey2015)
+
+        getWithAuthorisedDelegatedUser(data, None) {
+          result =>
+            status(result) must be(OK)
+            val document = Jsoup.parse(contentAsString(result))
+            document.title() must be(TitleBuilder.buildTitle("Your ATED summary"))
+            document.getElementById("create-return") != null
+            Option(document.getElementById("appoint-agent")) must be(None)
+        }
+      }
+    }
+  }
+
+  ".duringPeak" must {
+    "return true if the current date is within the ated peak period" in new Setup {
+      when(mockAppConfig.atedPeakStartDay).thenReturn("27")
+      when(mockDateService.now()).thenReturn(LocalDate.parse("2020-03-27"))
+      testAccountSummaryController.duringPeak must be(true)
+    }
+
+    "return false if the current date is before the start of the ated peak period" in new Setup {
+      when(mockAppConfig.atedPeakStartDay).thenReturn("28")
+      when(mockDateService.now()).thenReturn(LocalDate.parse("2020-03-27"))
+      testAccountSummaryController.duringPeak must be(false)
+    }
+
+    "return false if the current date is after the end of the ated peak period" in new Setup {
+      when(mockDateService.now()).thenReturn(LocalDate.parse("2020-05-01"))
+      testAccountSummaryController.duringPeak must be(false)
     }
   }
 }

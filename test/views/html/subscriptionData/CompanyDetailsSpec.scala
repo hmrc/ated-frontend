@@ -109,7 +109,7 @@ class CompanyDetailsSpec extends AtedViewSpec with MockitoSugar with MockAuthUti
         doc must haveLinkWithUrlWithID("contactemail-edit", "/ated/edit-contact-email")
       }
 
-      "display Back to your ATED online services link" in {
+      "display Back to your ATED summary link" in {
         doc must haveLinkWithUrlWithID("back", "/ated/account-summary")
       }
 
