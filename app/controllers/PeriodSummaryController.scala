@@ -47,7 +47,8 @@ class PeriodSummaryController @Inject()(mcc: MessagesControllerComponents,
         periodSummaries <- summaryReturnsService.getPeriodSummaryReturns(periodKey)
         organisationName <- subscriptionDataService.getOrganisationName
       } yield {
-        Ok(views.html.periodSummary(periodKey, periodSummaries, organisationName, getBackLink()))
+        val filteredSummaries = periodSummaries.map(summaryReturnsService.filterPeriodSummaryReturnReliefs(_, past = false))
+        Ok(views.html.periodSummary(periodKey, filteredSummaries, organisationName, getBackLink()))
       }
     }
   }
@@ -58,7 +59,8 @@ class PeriodSummaryController @Inject()(mcc: MessagesControllerComponents,
         periodSummaries <- summaryReturnsService.getPeriodSummaryReturns(periodKey)
         organisationName <- subscriptionDataService.getOrganisationName
       } yield {
-        Ok(views.html.periodSummaryPastReturns(periodKey, periodSummaries, organisationName, getBackLink()))
+        val filteredSummaries = periodSummaries.map(summaryReturnsService.filterPeriodSummaryReturnReliefs(_, past = true))
+        Ok(views.html.periodSummaryPastReturns(periodKey, filteredSummaries, organisationName, getBackLink()))
       }
     }
   }

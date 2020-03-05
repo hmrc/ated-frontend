@@ -16,7 +16,7 @@
 
 @import models._
 @import config.ApplicationConfig
-@(submittedReliefReturn: SubmittedReliefReturns, periodKey: Int, formBundleNumber: String, organisationName: Option[String], backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
+@(submittedReliefReturn: SubmittedReliefReturns, periodKey: Int, formBundleNumber: String, organisationName: Option[String], isEditable: Boolean, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 @import uk.gov.hmrc.play.views.html._
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
@@ -125,8 +125,9 @@
       </span>
     </div>
 
-
-      <button class="button" id="submit" type="submit">@Messages("ated.change-return.button")</button>
+    @if(isEditable) {
+        <button class="button" id="submit" type="submit">@Messages("ated.change-return.button")</button>
+    }
 
 
 }

@@ -25,7 +25,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import utils.AtedConstants._
 import play.api.libs.json.JodaWrites._
 import play.api.libs.json.JodaReads._
-import utils.PeriodUtils
+import utils.{PeriodUtils, ReliefsUtils}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -143,6 +143,23 @@ class SummaryReturnsService @Inject()(atedConnector: AtedConnector,
     }
   }
 
+  def filterPeriodSummaryReturnReliefs(periodSummaryReturns: PeriodSummaryReturns, past: Boolean): PeriodSummaryReturns = {
+    val optFilteredReliefReturns = periodSummaryReturns.submittedReturns
+      .map(_.reliefReturns)
+      .map {reliefReturns =>
+        val partition = ReliefsUtils.partitionNewestReliefForType(reliefReturns)
+
+        if (past) partition._2 else partition._1
+      }
+
+    optFilteredReliefReturns match {
+      case Some(filteredReturns) => periodSummaryReturns.copy(
+        submittedReturns = periodSummaryReturns.submittedReturns.map(_.copy(reliefReturns = filteredReturns))
+      )
+      case _ => periodSummaryReturns
+    }
+  }
+
   def getPreviousSubmittedLiabilityDetails(selectedPeriodKey: Int)(implicit authContext: StandardAuthRetrievals,
                                                                    hc: HeaderCarrier): Future[Seq[PreviousReturns]] =
     getSummaryReturns.flatMap { returnSummary =>
@@ -154,8 +171,8 @@ class SummaryReturnsService @Inject()(atedConnector: AtedConnector,
       savePastReturnDetails(pastReturnDetails)
     }
 
-  private def savePastReturnDetails(pastReturnDetails: Seq[PreviousReturns])(
-    implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[Seq[PreviousReturns]] = {
+  private def savePastReturnDetails(pastReturnDetails: Seq[PreviousReturns])
+                                   (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[Seq[PreviousReturns]] = {
     dataCacheConnector.saveFormData[Seq[PreviousReturns]](PreviousReturnsDetailsList, pastReturnDetails)
   }
 

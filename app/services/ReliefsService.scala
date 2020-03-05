@@ -31,7 +31,8 @@ import scala.concurrent.Future
 class ReliefsService @Inject()(atedConnector: AtedConnector,
                                dataCacheConnector: DataCacheConnector) {
 
-  def saveDraftReliefs(atedRefNo: String, periodKey: Int, reliefs: Reliefs)(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier) = {
+  def saveDraftReliefs(atedRefNo: String, periodKey: Int, reliefs: Reliefs)
+                      (implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[Option[ReliefsTaxAvoidance]] = {
     for {
       newTaxAvoidanceReliefs <- updateReliefs(atedRefNo, periodKey, reliefs)
       response <- atedConnector.saveDraftReliefs(atedRefNo, newTaxAvoidanceReliefs)
@@ -46,7 +47,8 @@ class ReliefsService @Inject()(atedConnector: AtedConnector,
     }
   }
 
-  def saveDraftIsTaxAvoidance(atedRefNo: String, periodKey: Int, isAvoidanceScheme: Boolean)(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier) = {
+  def saveDraftIsTaxAvoidance(atedRefNo: String, periodKey: Int, isAvoidanceScheme: Boolean)
+                             (implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[Option[ReliefsTaxAvoidance]] = {
     for {
       newTaxAvoidanceReliefs <- updateIsTaxAvoidance(atedRefNo, periodKey, isAvoidanceScheme)
       response <- atedConnector.saveDraftReliefs(atedRefNo, newTaxAvoidanceReliefs)
@@ -61,7 +63,8 @@ class ReliefsService @Inject()(atedConnector: AtedConnector,
     }
   }
 
-  def saveDraftTaxAvoidance(atedRefNo: String, periodKey: Int, taxAvoidance: TaxAvoidance)(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier) = {
+  def saveDraftTaxAvoidance(atedRefNo: String, periodKey: Int, taxAvoidance: TaxAvoidance)
+                           (implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[Option[ReliefsTaxAvoidance]] = {
     for {
       newTaxAvoidanceReliefs <- updateTaxAvoidance(atedRefNo, periodKey, taxAvoidance)
       response <- atedConnector.saveDraftReliefs(atedRefNo, newTaxAvoidanceReliefs)
@@ -138,15 +141,19 @@ class ReliefsService @Inject()(atedConnector: AtedConnector,
   }
 
   def viewReliefReturn(periodKey: Int, formBundleNo: String)
-                      (implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[Option[SubmittedReliefReturns]] = {
+                      (implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[(Option[SubmittedReliefReturns], Boolean)] = {
     for {
       cachedReturns <- dataCacheConnector.fetchAndGetFormData[SummaryReturnsModel](RetrieveReturnsResponseId)
     } yield {
       cachedReturns match {
         case Some(x) =>
-          (x.returnsCurrentTaxYear ++ x.returnsOtherTaxYears)
-            .flatMap(a => a.submittedReturns).flatMap(b => b.reliefReturns).find(c => c.formBundleNo == formBundleNo)
-        case None => None
+          val reliefReturns = (x.returnsCurrentTaxYear ++ x.returnsOtherTaxYears)
+            .flatMap(a => a.submittedReturns).flatMap(b => b.reliefReturns)
+          val partitionedReliefs = ReliefsUtils.partitionNewestReliefForType(reliefReturns)
+          val relief = reliefReturns.find(c => c.formBundleNo == formBundleNo)
+
+          (relief, relief.exists(partitionedReliefs._1.contains(_)))
+        case None => (None, false)
       }
     }
   }

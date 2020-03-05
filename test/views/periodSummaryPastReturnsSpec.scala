@@ -44,12 +44,14 @@ class periodSummaryPastReturnsSpec extends FeatureSpec with GuiceOneServerPerSui
   val draftReturns2: DraftReturns = DraftReturns(2015, "", "some relief", None, TypeReliefDraft)
   val submittedReliefReturns1: SubmittedReliefReturns = SubmittedReliefReturns(formBundleNo1, "some relief",
     new LocalDate("2015-05-05"), new LocalDate("2015-05-05"), new LocalDate("2015-05-05"))
+  val submittedReliefReturns1Older = SubmittedReliefReturns(formBundleNo1, "some relief",
+    new LocalDate("2015-05-05"), new LocalDate("2015-05-05"), new LocalDate("2015-04-05"))
   val submittedLiabilityReturns1 = SubmittedLiabilityReturns(formBundleNo2, "addr1+2", BigDecimal(1234.00),
     new LocalDate("2015-05-05"), new LocalDate("2015-05-05"), new LocalDate("2015-05-05"), changeAllowed = true, "payment-ref-01")
   val submittedLiabilityReturns2 = SubmittedLiabilityReturns(formBundleNo3, "addr1+2", BigDecimal(1234.00),
     new LocalDate("2015-05-05"), new LocalDate("2015-05-05"), new LocalDate("2015-06-06"), changeAllowed = true, "payment-ref-01")
 
-  val submittedReturns = SubmittedReturns(2015, Seq(submittedReliefReturns1), Seq(submittedLiabilityReturns1))
+  val submittedReturns = SubmittedReturns(2015, Seq(submittedReliefReturns1, submittedReliefReturns1Older), Seq(submittedLiabilityReturns1))
   val submittedReturnsWithOld = SubmittedReturns(2015, Seq(submittedReliefReturns1), Seq(submittedLiabilityReturns1), Seq(submittedLiabilityReturns2))
   val periodSummaryReturns = PeriodSummaryReturns(2015, Seq(draftReturns1, draftReturns2), Some(submittedReturns))
   val periodSummaryReturnsWithOld = PeriodSummaryReturns(2015, Seq(draftReturns1, draftReturns2), Some(submittedReturnsWithOld))
@@ -105,6 +107,8 @@ class periodSummaryPastReturnsSpec extends FeatureSpec with GuiceOneServerPerSui
       Then("The table should have data")
       assert(document.getElementById("view-edit-0") === null)
       assert(document.getElementById("liability-submitted-0") === null)
+
+      assert(document.getElementById("relief-submitted-0").text() === "View return, some relief")
 
       assert(document.getElementById("backLinkHref").text() === "Back")
       assert(document.getElementById("backLinkHref").attr("href") === "http://backlink")

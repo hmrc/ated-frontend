@@ -397,8 +397,8 @@ class ReliefsServiceSpec extends PlaySpec with MockitoSugar with PrivateMethodTe
         when(mockDataCacheConnector.fetchAndGetFormData[SummaryReturnsModel](ArgumentMatchers.eq(RetrieveReturnsResponseId))(any(), any(), any()))
           .thenReturn(Future.successful(Some(data)))
 
-        val result: Future[Option[SubmittedReliefReturns]] = testReliefsService.viewReliefReturn(periodKey, formBundleNo1)
-        await(result) must be(Some(submittedReliefReturns1))
+        val result: Future[(Option[SubmittedReliefReturns], Boolean)] = testReliefsService.viewReliefReturn(periodKey, formBundleNo1)
+        await(result) must be(Some(submittedReliefReturns1), true)
       }
 
       "if summary data is found in Cache, but relief return  is None, return None" in new Setup {
@@ -413,8 +413,8 @@ class ReliefsServiceSpec extends PlaySpec with MockitoSugar with PrivateMethodTe
         when(mockDataCacheConnector.fetchAndGetFormData[SummaryReturnsModel](ArgumentMatchers.eq(RetrieveReturnsResponseId))(any(), any(), any()))
           .thenReturn(Future.successful(Some(data)))
 
-        val result: Future[Option[SubmittedReliefReturns]] = testReliefsService.viewReliefReturn(periodKey, formBundleNo1)
-        await(result) must be(None)
+        val result: Future[(Option[SubmittedReliefReturns], Boolean)] = testReliefsService.viewReliefReturn(periodKey, formBundleNo1)
+        await(result) must be(None, false)
       }
       "if summary data is found in Cache, but it doesn't contain EtmpResponseWrapper, return None" in new Setup {
         implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
@@ -424,8 +424,8 @@ class ReliefsServiceSpec extends PlaySpec with MockitoSugar with PrivateMethodTe
         when(mockDataCacheConnector.fetchAndGetFormData[SummaryReturnsModel](ArgumentMatchers.eq(RetrieveReturnsResponseId))(any(), any(), any()))
           .thenReturn(Future.successful(Some(data)))
 
-        val result: Future[Option[SubmittedReliefReturns]] = testReliefsService.viewReliefReturn(periodKey, formBundleNo)
-        await(result) must be(None)
+        val result: Future[(Option[SubmittedReliefReturns], Boolean)] = testReliefsService.viewReliefReturn(periodKey, formBundleNo)
+        await(result) must be(None, false)
       }
       "if no summary data is found in Cache, return None" in new Setup {
         implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
@@ -434,8 +434,8 @@ class ReliefsServiceSpec extends PlaySpec with MockitoSugar with PrivateMethodTe
         when(mockDataCacheConnector.fetchAndGetFormData[SummaryReturnsModel](ArgumentMatchers.eq(RetrieveReturnsResponseId))(any(), any(), any()))
           .thenReturn(Future.successful(None))
 
-        val result: Future[Option[SubmittedReliefReturns]] = testReliefsService.viewReliefReturn(periodKey, formBundleNo)
-        await(result) must be(None)
+        val result: Future[(Option[SubmittedReliefReturns], Boolean)] = testReliefsService.viewReliefReturn(periodKey, formBundleNo)
+        await(result) must be(None, false)
       }
     }
 

@@ -16,6 +16,8 @@
 
 package utils
 
+import models.SubmittedReliefReturns
+import org.joda.time.LocalDate
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 
@@ -66,6 +68,52 @@ class ReliefsUtilsSpec extends PlaySpec {
         .mapValues(str => Seq(str))
 
       ReliefsUtils.cleanDateTuples(mapTuple).size mustBe 16
+    }
+  }
+
+  "partitionNewestReliefForType" should {
+    "provide reliefs of one of each most recent type given a set of reliefs" in {
+      val newerType1Return = SubmittedReliefReturns("no1", "type 1", LocalDate.now(), LocalDate.now(), LocalDate.now().minusDays(1))
+      val olderType1Return = SubmittedReliefReturns("no2", "type 1", LocalDate.now(), LocalDate.now(), LocalDate.now().minusDays(2))
+
+      val testReliefReturns = Seq(newerType1Return, olderType1Return)
+
+      ReliefsUtils.partitionNewestReliefForType(testReliefReturns) mustBe (Seq(newerType1Return), Seq(olderType1Return))
+    }
+
+    "provide reliefs of one of each most recent type given a set of reliefs with 2 older 1 new of the same type" in {
+      val newerType1Return = SubmittedReliefReturns("no1", "type 1", LocalDate.now(), LocalDate.now(), LocalDate.now().minusDays(1))
+      val olderType1Return = SubmittedReliefReturns("no2", "type 1", LocalDate.now(), LocalDate.now(), LocalDate.now().minusDays(2))
+      val older2Type1Return = SubmittedReliefReturns("no3", "type 1", LocalDate.now(), LocalDate.now(), LocalDate.now().minusDays(3))
+
+      val testReliefReturns = Seq(newerType1Return, olderType1Return, older2Type1Return)
+
+      ReliefsUtils.partitionNewestReliefForType(testReliefReturns) mustBe (Seq(newerType1Return), Seq(olderType1Return, older2Type1Return))
+    }
+
+    "provide reliefs for 2 types, one with two reliefs, one with just one" in {
+      val newerType1Return = SubmittedReliefReturns("no1", "type 1", LocalDate.now(), LocalDate.now(), LocalDate.now().minusDays(1))
+      val olderType1Return = SubmittedReliefReturns("no2", "type 1", LocalDate.now(), LocalDate.now(), LocalDate.now().minusDays(2))
+      val type2Return = SubmittedReliefReturns("no3", "type 2", LocalDate.now(), LocalDate.now(), LocalDate.now().minusDays(3))
+
+      val testReliefReturns = Seq(newerType1Return, olderType1Return, type2Return)
+
+      ReliefsUtils.partitionNewestReliefForType(testReliefReturns) mustBe (Seq(type2Return, newerType1Return), Seq(olderType1Return))
+    }
+
+    "provide reliefs for 2 types, one with two reliefs of the same date, one with two different dates" in {
+      val sameDate1Type1Return = SubmittedReliefReturns("no1", "type 1", LocalDate.now(), LocalDate.now(), LocalDate.now().minusDays(1))
+      val sameDate2Type1Return = SubmittedReliefReturns("no2", "type 1", LocalDate.now(), LocalDate.now(), LocalDate.now().minusDays(1))
+      val newertype2Return = SubmittedReliefReturns("no3", "type 2", LocalDate.now(), LocalDate.now(), LocalDate.now().minusDays(3))
+      val oldertype2Return = SubmittedReliefReturns("no3", "type 2", LocalDate.now(), LocalDate.now(), LocalDate.now().minusDays(4))
+
+      val testReliefReturns = Seq(sameDate1Type1Return, sameDate2Type1Return, newertype2Return, oldertype2Return)
+
+      val partitioned = ReliefsUtils.partitionNewestReliefForType(testReliefReturns)
+      partitioned._1 must contain(sameDate1Type1Return)
+      partitioned._1 must contain(sameDate2Type1Return)
+      partitioned._1 must contain(newertype2Return)
+      partitioned._2 must contain(oldertype2Return)
     }
   }
 

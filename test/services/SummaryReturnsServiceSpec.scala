@@ -246,5 +246,46 @@ class SummaryReturnsServiceSpec extends PlaySpec with MockitoSugar with BeforeAn
           4, false)
       }
     }
+
+    "filterPeriodSummaryReturnReliefs" must {
+      "filter out unwanted reliefs in the past" in new Setup {
+        val newerType1Return = SubmittedReliefReturns("no1", "type 1", LocalDate.now(), LocalDate.now(), LocalDate.now().minusDays(1))
+        val olderType1Return = SubmittedReliefReturns("no2", "type 1", LocalDate.now(), LocalDate.now(), LocalDate.now().minusDays(2))
+        val older2Type1Return = SubmittedReliefReturns("no3", "type 1", LocalDate.now(), LocalDate.now(), LocalDate.now().minusDays(3))
+
+        val submittedReturns = SubmittedReturns(
+          2018, Seq(newerType1Return, older2Type1Return, olderType1Return)
+        )
+        val periodSummaryReturns = PeriodSummaryReturns(
+          2018,
+          Nil,
+          Some(submittedReturns)
+        )
+
+        val result = testSummaryReturnsService.filterPeriodSummaryReturnReliefs(periodSummaryReturns, true)
+
+        result.submittedReturns.get.reliefReturns.contains(olderType1Return) mustBe true
+        result.submittedReturns.get.reliefReturns.contains(older2Type1Return) mustBe true
+      }
+
+      "filter out unwanted reliefs for the current reliefs" in new Setup {
+        val newerType1Return = SubmittedReliefReturns("no1", "type 1", LocalDate.now(), LocalDate.now(), LocalDate.now().minusDays(1))
+        val olderType1Return = SubmittedReliefReturns("no2", "type 1", LocalDate.now(), LocalDate.now(), LocalDate.now().minusDays(2))
+        val older2Type1Return = SubmittedReliefReturns("no3", "type 1", LocalDate.now(), LocalDate.now(), LocalDate.now().minusDays(3))
+
+        val submittedReturns = SubmittedReturns(
+          2018, Seq(newerType1Return, older2Type1Return, olderType1Return)
+        )
+        val periodSummaryReturns = PeriodSummaryReturns(
+          2018,
+          Nil,
+          Some(submittedReturns)
+        )
+
+        val result = testSummaryReturnsService.filterPeriodSummaryReturnReliefs(periodSummaryReturns, false)
+
+        result.submittedReturns.get.reliefReturns.contains(newerType1Return) mustBe true
+      }
+    }
   }
 }

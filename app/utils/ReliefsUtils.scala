@@ -97,4 +97,29 @@ object ReliefsUtils extends {
     }
   }
 
+  def partitionNewestReliefForType(refReturns: Seq[SubmittedReliefReturns]): (Seq[SubmittedReliefReturns], Seq[SubmittedReliefReturns]) = {
+    @scala.annotation.tailrec
+    def parseRecentReturns(remReturns: Seq[SubmittedReliefReturns], answer: Seq[SubmittedReliefReturns]): Seq[SubmittedReliefReturns] =
+      remReturns match {
+        case remReturn :: rest if answer.nonEmpty =>
+          val newAnswer = answer.head.dateOfSubmission.compareTo(remReturn.dateOfSubmission) match {
+            case -1 => Seq(remReturn)
+            case 0  => answer :+ remReturn
+            case _  => answer
+          }
+
+          parseRecentReturns(rest, newAnswer)
+        case remReturn :: rest => parseRecentReturns(rest, Seq(remReturn))
+        case _ => answer
+      }
+
+    val newestMap = refReturns
+      .groupBy(_.reliefType)
+      .map { case (_, returnsForType) =>
+        val recentReturnsForType: Seq[SubmittedReliefReturns] = parseRecentReturns(returnsForType, Nil)
+        returnsForType.partition(recentReturnsForType.contains(_))
+      }
+
+    (newestMap.keys.flatten.toSeq, newestMap.values.flatten.toSeq)
+  }
 }

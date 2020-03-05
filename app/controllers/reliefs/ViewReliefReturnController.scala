@@ -47,11 +47,11 @@ class ViewReliefReturnController @Inject()(mcc: MessagesControllerComponents,
         val formBundleReturnFuture = reliefsService.viewReliefReturn(periodKey, formBundleNo)
         val organisationNameFuture = subscriptionDataService.getOrganisationName
         for {
-          formBundleReturn <- formBundleReturnFuture
+          (formBundleReturn, isEditable) <- formBundleReturnFuture
           organisationName <- organisationNameFuture
         } yield {
           formBundleReturn match {
-            case Some(x) => Ok(views.html.reliefs.viewReliefReturn(x, periodKey, formBundleNo, organisationName,
+            case Some(x) => Ok(views.html.reliefs.viewReliefReturn(x, periodKey, formBundleNo, organisationName, isEditable,
               Some(controllers.routes.PeriodSummaryController.view(periodKey).url)))
             case None => throw new RuntimeException("No reliefs found in the cache for provided period and form bundle id")
           }

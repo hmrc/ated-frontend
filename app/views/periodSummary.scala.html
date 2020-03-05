@@ -16,6 +16,7 @@
 
 @import models._
 @import config.ApplicationConfig
+@import _root_.utils.ReliefsUtils
 @(periodKey: Int, periodSummaries: Option[PeriodSummaryReturns],
   organisationName: Option[String],
   backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
@@ -41,7 +42,7 @@ periodEndDate(periodKey).toString(Messages("ated.date-format.summary"))), subHea
     <li id="current-returns" class="selected heading-small" role="tab">
       @Messages("ated.period-summary.tabs.current-returns")
     </li>
-    @if(periodSummaries.flatMap(_.submittedReturns.map(_.oldLiabilityReturns.isEmpty)) == Some(false)) {
+    @if(periodSummaries.flatMap(_.submittedReturns.map(_.oldLiabilityReturns.isEmpty)).contains(false)) {
     <li id="past-returns" class="heading-small" role="tab">
       <a href="@controllers.routes.PeriodSummaryController.viewPastReturns(periodKey)" id="past-returns-link" data-journey-click="ated:click:past-returns">
         @Messages("ated.period-summary.tabs.past-returns")

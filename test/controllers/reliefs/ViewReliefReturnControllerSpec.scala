@@ -79,7 +79,7 @@ class ViewReliefReturnControllerSpec extends PlaySpec with GuiceOneServerPerSuit
       mockBackLinkCacheConnector
     )
 
-    def getWithAuthorisedUserSuccess(test: Future[Result] => Any) {
+    def getWithAuthorisedUserSuccess(test: Future[Result] => Any, isEditable: Boolean = true) {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
@@ -88,7 +88,7 @@ class ViewReliefReturnControllerSpec extends PlaySpec with GuiceOneServerPerSuit
       val submittedReturns = SubmittedReliefReturns(
         formBundleNo, "Property rental businesses", new LocalDate("2015-05-01"), new LocalDate("2015-05-01"), new LocalDate("2015-05-01"), None, None)
       when(mockReliefsService.viewReliefReturn(ArgumentMatchers.eq(periodKey), ArgumentMatchers.eq(formBundleNo))(ArgumentMatchers.any(), ArgumentMatchers.any()))
-        .thenReturn(Future.successful(Some(submittedReturns)))
+        .thenReturn(Future.successful(Some(submittedReturns), isEditable))
       when(mockSubscriptionDataService.getOrganisationName(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(organisationName)))
       val result = testViewReliefReturnController.viewReliefReturn(periodKey, formBundleNo).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
@@ -102,7 +102,7 @@ class ViewReliefReturnControllerSpec extends PlaySpec with GuiceOneServerPerSuit
         (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
       when(mockSubscriptionDataService.getOrganisationName(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(organisationName)))
       when(mockReliefsService.viewReliefReturn(ArgumentMatchers.eq(periodKey), ArgumentMatchers.eq(formBundleNo))(ArgumentMatchers.any(), ArgumentMatchers.any()))
-        .thenReturn(Future.successful(None))
+        .thenReturn(Future.successful(None, false))
       val result = testViewReliefReturnController.viewReliefReturn(periodKey, formBundleNo).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
@@ -160,6 +160,20 @@ class ViewReliefReturnControllerSpec extends PlaySpec with GuiceOneServerPerSuit
               doc.getElementById("submit").text() must be("Change return")
               doc.title() must be("View return - GOV.UK")
           }
+        }
+
+        "respond with OK, if summary returns are in cache, but not editable" in new Setup {
+          getWithAuthorisedUserSuccess (
+            result => {
+              status(result) must be(OK)
+              val doc = Jsoup.parse(contentAsString(result))
+              doc.getElementById("relief-return-subheader").text() must be("This section is: " + organisationName)
+              doc.getElementById("relief-return-text").text() must be("For the ATED period from 1 April 2015 to 31 March 2016.")
+              doc.getElementById("relief-return-header").text() must be("View return")
+              assert(doc.getElementById("submit") === null)
+              doc.title() must be("View return - GOV.UK")
+            }, isEditable = false
+          )
         }
 
         "be redirected to change relief page" in new Setup {

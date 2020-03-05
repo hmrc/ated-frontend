@@ -93,6 +93,11 @@ class PeriodSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite w
       setAuthMocks(authMock)
       when(mockSummaryReturnsService.getPeriodSummaryReturns(ArgumentMatchers.eq(period))(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(periodSummaries))
+
+      periodSummaries.foreach{periodSum =>
+        when(mockSummaryReturnsService.filterPeriodSummaryReturnReliefs(periodSum, past = false))
+      }
+
       when(mockSubscriptionDataService.getOrganisationName(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(organisationName)))
 
       val result = testPeriodSummaryController.view(periodKey).apply(SessionBuilder.buildRequestWithSession(userId))

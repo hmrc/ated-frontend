@@ -16,6 +16,7 @@
 
 @import models._
 @import config.ApplicationConfig
+@import _root_.utils.ReliefsUtils
 @(periodKey: Int, periodSummaries: Option[PeriodSummaryReturns],
   organisationName: Option[String],
   backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
@@ -82,6 +83,28 @@ periodEndDate(periodKey).toString(Messages("ated.date-format.summary"))), subHea
           </div>
 
         } @*liability-returns end*@
+
+          <div class="form-group">
+          @b.reliefReturns.zipWithIndex.map { t =>
+              <div class="grid-wrapper row-border">
+                  <div class="grid grid-1-2 psp-return">
+                      <span class="visuallyhidden">@Messages("ated.period-summary.sr.relieftype")</span>
+                      @t._1.reliefType
+                  </div>
+
+                  <div class="grid grid-1-4 psp-status">
+                      <span class="visuallyhidden">@Messages("ated.period-summary-th.status")</span>
+                      @Messages("ated.submitted")
+                  </div>
+
+                  <div class="grid grid-1-4 psp-action">
+                      <a id="relief-submitted-@t._2" href='@controllers.reliefs.routes.ViewReliefReturnController.viewReliefReturn(periodKey, t._1.formBundleNo)'
+                      data-journey-click="ated-fronted:click:liability-submitted">
+                          @Messages("ated.period-summary.view.button") <span class="visuallyhidden">@Messages("ated.period-summary.sr.return") @t._1.reliefType</span>
+                      </a>
+                  </div>
+              </div>
+          }
       } @*all submitted returns end*@
     }
 
