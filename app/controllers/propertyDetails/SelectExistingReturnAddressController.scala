@@ -100,7 +100,7 @@ class SelectExistingReturnAddressController @Inject()(mcc: MessagesControllerCom
                     redirectWithBackLink(
                       confirmAddressController.controllerId,
                       controllers.propertyDetails.routes.ConfirmAddressController.editSubmittedReturn(formBundleNum),
-                      getBackLink(periodKey, returnType))
+                      Some(controllers.propertyDetails.routes.SelectExistingReturnAddressController.view(periodKey, returnType).url))
                   }
                 case None =>
                   Logger.warn(s"[SelectExistingReturnAddressController][continue] - form bundle return not found for form-bundle-no::$formBundleNum")

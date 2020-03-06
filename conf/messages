@@ -90,7 +90,7 @@ unauthorised.nonUK.link = create a new Gateway ID from this page
 unauthorised.nonUK.p2.b = by selecting 'Create sign-in details'. When you are asked what type of account you require, select 'Organisation'.
 unauthorised.nonUK.warning = Do not set up a new Gateway ID if your business is already registered for ATED
 unauthorised.nonUK.p3 = The person or agent who registered your business for ATED should sign in.
-unauthorised.nonUK.p4 = If you are stuck, use the 'Get help with this service' link to find out who registererd your company for ATED and how to get access. Give them your ATED reference number if you have it.
+unauthorised.nonUK.p4 = If you are stuck, use the 'Get help with this service' link to find out who registered your company for ATED and how to get access. Give them your ATED reference number if you have it.
 unauthorised.button.signout = Sign out
 
 unauthorised.sa.header = You are trying to sign in with your Self Assessment ID. If you are an overseas landlord or client you need to use your limited company ID

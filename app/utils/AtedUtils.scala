@@ -93,6 +93,8 @@ object AtedUtils {
 
   def isEditReturn(mode: Option[String]): Boolean = mode.contains(EDIT_SUBMITTED)
 
+  def isPrevReturn(mode: Option[String]): Boolean = mode.contains(EDIT_PREV_RETURN)
+
   def getSummaryBackLink(id: String, mode: Option[String]): Option[String] =
     if (isEditReturn(mode)) {
       Some(controllers.editLiability.routes.EditLiabilitySummaryController.view(id).url)
