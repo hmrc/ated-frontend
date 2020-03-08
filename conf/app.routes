@@ -10,6 +10,7 @@ GET            /keep-alive                                                  cont
 GET            /logout                                                      controllers.ApplicationController.logout
 
 GET            /account-summary                                             controllers.AccountSummaryController.view
+GET            /prev-period-summary                                         controllers.PrevPeriodsSummaryController.view
 GET            /period/select                                               controllers.SelectPeriodController.view
 POST           /period/select                                               controllers.SelectPeriodController.submit
 

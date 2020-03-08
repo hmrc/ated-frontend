@@ -158,30 +158,5 @@ class AccountSummarySpec extends PlaySpec with MockAuthUtil with GuiceOneAppPerT
         assert(document.select("#content > article > div.govuk-hint").text === "Showing 2 of 2 returns")
       }
     }
-
-    "the user has property and relief returns for previous years" should {
-
-      "have the correct table headings on the past returns table" in {
-        document.getElementById("return-summary-period-heading").text() must be("Period")
-        document.getElementById("return-summary-chargeable-heading").text() must be("Chargeable")
-        document.getElementById("return-summary-reliefs-heading").text() must be("Relief")
-        document.getElementById("return-summary-drafts-heading").text() must be("Draft")
-      }
-
-      "have the correct counts under each table heading" in {
-        document.getElementById("return-summary-chargeable-data-0").text().toLowerCase() must be("number of chargeable 1")
-        document.getElementById("return-summary-reliefs-data-0").text().toLowerCase() must be("number of relief 1")
-        document.getElementById("return-summary-drafts-data-0").text().toLowerCase() must be("number of draft 2")
-      }
-
-      "have a view or change link" in {
-        document.getElementById("view-change-0").text() must include("View or change")
-      }
-
-      "not have the no returns content" in {
-        Option(document.getElementById("return-summary-no-returns")) must be(None)
-      }
-    }
   }
-
 }

@@ -108,57 +108,5 @@
             </a>
         </div>
 
-        @if(otherReturns.returnsOtherTaxYears.nonEmpty) {
-
-            <div class="grid grid-wrapper row-border" id="returns-table">
-                <span class="visuallyhidden">@messages("ated.summary-return.table.screen-reader.headings-help")</span>
-                <div class="grid grid-1-5 form-label-bold" id="return-summary-period-heading">
-                @messages("ated.account-summary-th.period")
-                </div>
-                <div class="grid grid-1-5 form-label-bold" id="return-summary-chargeable-heading">
-                @messages("ated.account-summary-th.chargeable")
-                </div>
-                <div class="grid grid-1-5 form-label-bold" id="return-summary-reliefs-heading">
-                @messages("ated.account-summary-th.reliefs")
-                </div>
-                <div class="grid grid-2-5 form-label-bold" id="return-summary-drafts-heading">
-                @messages("ated.account-summary-th.drafts")
-                </div>
-            </div>
-
-            <div class="grid grid-wrapper form-group" id="returns-table-data">
-            @otherReturns.returnsOtherTaxYears.zipWithIndex.map { case (periodSummaryReturns, i) =>
-            <section>
-                <div class="grid grid-1-5" id="return-summary-period-data-@i">
-                    <span class="visuallyhidden">@messages("ated.summary-return.table.screen-reader.period-from")</span>
-                    @periodSummaryReturns.periodKey to @(periodSummaryReturns.periodKey.toInt + 1)
-                </div>
-                <div class="grid grid-1-5" id="return-summary-chargeable-data-@i">
-                    <span class="visuallyhidden">@messages("ated.summary-return.table.screen-reader.number-of") @messages("ated.account-summary-th.chargeable")</span>
-                    @periodSummaryReturns.submittedReturns.fold(0)(a => a.currentLiabilityReturns.size + a.oldLiabilityReturns.size)
-                </div>
-                <div class="grid grid-1-5" id="return-summary-reliefs-data-@i">
-                    <span class="visuallyhidden">@messages("ated.summary-return.table.screen-reader.number-of") @messages("ated.account-summary-th.reliefs")</span>
-                    @periodSummaryReturns.submittedReturns.fold(0)(a => a.reliefReturns.size)
-                </div>
-                <div class="grid grid-1-5" id="return-summary-drafts-data-@i">
-                    <span class="visuallyhidden">@messages("ated.summary-return.table.screen-reader.number-of") @messages("ated.account-summary-th.drafts")</span>
-                    @periodSummaryReturns.draftReturns.size
-                </div>
-                <div class="grid grid-1-5">
-                    <a href="@controllers.routes.PeriodSummaryController.view(periodSummaryReturns.periodKey)"
-                    id="view-change-@i"
-                    data-journey-click="ated-fronted:click:view-change">
-                        @messages("ated.account-summary.view-change-button")
-                    <span class="visuallyhidden">
-                        @messages("ated.account-summary-screen-reader")
-                        @periodSummaryReturns.periodKey to @(periodSummaryReturns.periodKey.toInt + 1)
-            </span>
-            </a>
-            </div>
-            </section>
-            }
-            </div>
-        }
     }
 }

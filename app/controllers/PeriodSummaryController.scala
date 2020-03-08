@@ -26,6 +26,7 @@ import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{DelegationService, SubscriptionDataService, SummaryReturnsService}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import utils.PeriodUtils
 
 import scala.concurrent.ExecutionContext
 
@@ -48,7 +49,7 @@ class PeriodSummaryController @Inject()(mcc: MessagesControllerComponents,
         organisationName <- subscriptionDataService.getOrganisationName
       } yield {
         val filteredSummaries = periodSummaries.map(summaryReturnsService.filterPeriodSummaryReturnReliefs(_, past = false))
-        Ok(views.html.periodSummary(periodKey, filteredSummaries, organisationName, getBackLink()))
+        Ok(views.html.periodSummary(periodKey, filteredSummaries, organisationName, getBackLink(periodKey)))
       }
     }
   }
@@ -60,7 +61,7 @@ class PeriodSummaryController @Inject()(mcc: MessagesControllerComponents,
         organisationName <- subscriptionDataService.getOrganisationName
       } yield {
         val filteredSummaries = periodSummaries.map(summaryReturnsService.filterPeriodSummaryReturnReliefs(_, past = true))
-        Ok(views.html.periodSummaryPastReturns(periodKey, filteredSummaries, organisationName, getBackLink()))
+        Ok(views.html.periodSummaryPastReturns(periodKey, filteredSummaries, organisationName, getBackLink(periodKey)))
       }
     }
   }
@@ -112,7 +113,11 @@ class PeriodSummaryController @Inject()(mcc: MessagesControllerComponents,
     }
   }
 
-  private def getBackLink(): Some[String] = {
-    Some(routes.AccountSummaryController.view().url)
+  private def getBackLink(periodKey: Int): Some[String] = {
+    if (periodKey.equals(PeriodUtils.calculatePeriod())) {
+      Some(routes.AccountSummaryController.view().url)
+    } else {
+      Some(routes.PrevPeriodsSummaryController.view().url)
+    }
   }
 }
