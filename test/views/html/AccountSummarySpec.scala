@@ -39,7 +39,7 @@ class AccountSummarySpec extends PlaySpec with MockAuthUtil with GuiceOneAppPerT
 
   lazy val view = views.html.accountSummary(
     currentYearReturnsForDisplay,
-    totalCurrentYearReturns = 3,
+    totalCurrentYearReturns = 2,
     hasPastReturns = false,
     summaryReturnsModel(periodKey = currentTaxYear),
     Some(address),
@@ -96,36 +96,47 @@ class AccountSummarySpec extends PlaySpec with MockAuthUtil with GuiceOneAppPerT
           "#create-return").attr("href") === s"/ated/period-summary/$currentTaxYear/createReturn"
         )
       }
+
+      "show content to say how many returns are being displayed" in {
+        assert(document.select("#content > article > div.govuk-hint").text === "Showing 2 of 2 returns")
+      }
     }
 
     "more than 5 returns and no past returns" should {
+
+      lazy val fiveReturns = currentYearReturnsForDisplay++currentYearReturnsForDisplay++Seq(currentYearReturnsForDisplay.head)
+
+      lazy val view = views.html.accountSummary(
+        fiveReturns,
+        totalCurrentYearReturns = 6,
+        hasPastReturns = false,
+        summaryReturnsModel(periodKey = currentTaxYear, withPastReturns = true),
+        Some(address),
+        Some(organisationName),
+        Html(""),
+        duringPeak = false,
+        currentYear,
+        currentTaxYear
+      )
+
+      lazy val document: Document = Jsoup.parse(view.body)
+
       "show the view all returns link" in {
-        val view = views.html.accountSummary(
-          currentYearReturnsForDisplay,
-          totalCurrentYearReturns = 6,
-          hasPastReturns = false,
-          summaryReturnsModel(periodKey = currentTaxYear, withPastReturns = true),
-          Some(address),
-          Some(organisationName),
-          Html(""),
-          duringPeak = false,
-          currentYear,
-          currentTaxYear
-        )
-
-        lazy val document: Document = Jsoup.parse(view.body)
-
         assert(document.select("#view-all-returns").text === s"View all returns for $currentTaxYear to ${currentTaxYear + 1}")
         assert(document.select("#view-all-returns").attr("href") === s"/ated/period-summary/$currentTaxYear")
-
       }
+
+      "show content to say how many returns are being displayed" in {
+        assert(document.select("#content > article > div.govuk-hint").text === "Showing 5 of 6 returns")
+      }
+
     }
 
     "less than 6 returns and there is at least 1 past return" should {
       "show the view all returns link" in {
         val view = views.html.accountSummary(
           currentYearReturnsForDisplay,
-          totalCurrentYearReturns = 1,
+          totalCurrentYearReturns = 2,
           hasPastReturns = true,
           summaryReturnsModel(periodKey = currentTaxYear, withPastReturns = true),
           Some(address),
@@ -141,6 +152,10 @@ class AccountSummarySpec extends PlaySpec with MockAuthUtil with GuiceOneAppPerT
         assert(document.select("#view-all-returns").text === s"View all returns for $currentTaxYear to ${currentTaxYear + 1}")
         assert(document.select("#view-all-returns").attr("href") === s"/ated/period-summary/$currentTaxYear")
 
+      }
+
+      "show content to say how many returns are being displayed" in {
+        assert(document.select("#content > article > div.govuk-hint").text === "Showing 2 of 2 returns")
       }
     }
 
