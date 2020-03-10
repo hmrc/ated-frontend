@@ -24,6 +24,7 @@ import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.AuthAction
 import testhelpers.MockAuthUtil
 import models.SelectPeriod
+import org.joda.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
@@ -50,7 +51,9 @@ class SelectPeriodControllerSpec extends PlaySpec with GuiceOneAppPerSuite with 
   val mockReturnTypeController: ReturnTypeController = mock[ReturnTypeController]
   val mockBackLinkCacheConnector: BackLinkCacheConnector = mock[BackLinkCacheConnector]
 
-  class Setup {
+  val baseYear = 2018
+
+  class Setup(endYear : Int = baseYear) {
 
     val mockAuthAction: AuthAction = new AuthAction(
       mockAppConfig,
@@ -63,7 +66,9 @@ class SelectPeriodControllerSpec extends PlaySpec with GuiceOneAppPerSuite with 
       mockAuthAction,
       mockBackLinkCacheConnector,
       mockDataCacheConnector
-    )
+    ) {
+      override def endDate(): LocalDate = LocalDate.parse(s"$endYear-05-20")
+    }
 
     def getWithAuthorisedUser(test: Future[Result] => Any) {
       val userId = s"user-${UUID.randomUUID}"
@@ -151,6 +156,33 @@ class SelectPeriodControllerSpec extends PlaySpec with GuiceOneAppPerSuite with 
           }
         }
 
+        "show the select period view for 2017" in new Setup(2017) {
+          getWithAuthorisedUser { result =>
+            status(result) must be(OK)
+            val document = Jsoup.parse(contentAsString(result))
+            document.title() must be(TitleBuilder.buildTitle("Select an ATED chargeable period"))
+            document.getElementById("header").text() must include("Select an ATED chargeable period")
+            document.getElementById("details-text").text() must be("The chargeable period for a year runs from the 1 April to 31 March.")
+            document.getElementById("period-2015_field").text() must be("2015 to 2016")
+            document.getElementById("period-2016_field").text() must be("2016 to 2017")
+            document.getElementById("submit").text() must be("Continue")
+          }
+        }
+
+        "show the select period view for 2020" in new Setup(2020) {
+          getWithAuthorisedUser { result =>
+            status(result) must be(OK)
+            val document = Jsoup.parse(contentAsString(result))
+            document.title() must be(TitleBuilder.buildTitle("Select an ATED chargeable period"))
+            document.getElementById("header").text() must include("Select an ATED chargeable period")
+            document.getElementById("details-text").text() must be("The chargeable period for a year runs from the 1 April to 31 March.")
+            document.getElementById("period-2015_field").text() must be("2015 to 2016")
+            document.getElementById("period-2016_field").text() must be("2016 to 2017")
+            document.getElementById("period-2019_field").text() must be("2019 to 2020")
+            document.getElementById("submit").text() must be("Continue")
+          }
+        }
+
         "show the select period view with data if we have some" in new Setup {
           getWithAuthorisedUserWithSavedData { result =>
             status(result) must be(OK)
@@ -178,6 +210,10 @@ class SelectPeriodControllerSpec extends PlaySpec with GuiceOneAppPerSuite with 
                 val doc = Jsoup.parse(contentAsString(result))
                 doc.getElementsByClass("error-notification").html() must include("Select an option for type of return")
                 contentAsString(result) must include("Select an option for type of return")
+                doc.getElementById("period-2015_field").text() must be("2015 to 2016")
+                doc.getElementById("period-2016_field").text() must be("2016 to 2017")
+                doc.getElementById("period-2017_field").text() must be("2017 to 2018")
+                assert(doc.getElementById("period-2018_field") === null)
             }
           }
 
