@@ -193,6 +193,15 @@ trait TestModels {
     )
   }
 
+  def summaryReturnsModelCurrentOnly(atedBalance: BigDecimal = BigDecimal(999.99),
+                          periodKey: Int, withDraftReturns: Boolean = true,
+                          withSubmittedReturns: Boolean = true, withPastReturns: Boolean = false): SummaryReturnsModel = {
+    SummaryReturnsModel(
+      Some(atedBalance),
+      Seq(periodSummaryReturns(periodKey, withDraftReturns, withSubmittedReturns, withPastReturns))
+    )
+  }
+
   val prevReturn = PreviousReturns("1 address street", "12345678", new LocalDate("2015-04-02"))
   val pastReturnDetails: Seq[PreviousReturns] = Seq(prevReturn)
 

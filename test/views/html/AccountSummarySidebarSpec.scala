@@ -89,8 +89,8 @@ class AccountSummarySidebarSpec extends PlaySpec with MockAuthUtil
     }
 
     "have a link for creating returns for other years" in {
-      assert(document.select("#create-return-other").text() === "Create returns for other years")
-      assert(document.select("#create-return-other").attr("href") === "/ated/period/select")
+      assert(document.select("#create-return-other").text() === "Create, view or change returns for other years")
+      assert(document.select("#create-return-other").attr("href") === "/ated/prev-period-summary")
     }
   }
 }

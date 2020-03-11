@@ -1,0 +1,146 @@
+@*
+ * Copyright 2020 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import models._
+@import config.ApplicationConfig
+@import play.twirl.api.HtmlFormat
+@import views.html.helpers._
+
+@import org.joda.time.LocalDate
+@(summaryReturnsWithDrafts: SummaryReturnsModel, correspondence: Option[Address], organisationName: Option[String],
+        clientBanner: Html, duringPeak: Boolean, currentYear: Int,
+        taxYearStartingYear: Int, backlink: Option[String])(implicit authContext: StandardAuthRetrievals,
+        messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
+
+@analyticsJs = {
+    ga('set', 'page', document.location.pathname);
+    ga('set', 'location', document.URL.split("?")[0]);
+}
+
+@pageScripts = {
+    <script src='@controllers.routes.Assets.versioned("javascript/accountSummary.js")'></script>
+}
+
+@noReturnHeader = {
+    @Messages("ated.prev-period-summary.headerNoReturns") @(taxYearStartingYear - 1) to @(taxYearStartingYear) or earlier
+}
+
+@atedMain(
+    title = Messages("ated.prev-period-summary.title"),
+    pageScripts = Some(pageScripts),
+    sidebarLinks = Some(_accountSummary_sideBar(summaryReturnsWithDrafts.atedBalance, correspondence, organisationName, clientBanner)),
+    sidebarClass = Some("related"),
+    analyticsAdditionalJs = Some(analyticsJs)) {
+
+    @if(summaryReturnsWithDrafts.returnsOtherTaxYears.isEmpty) {
+        @pageHeadersAndError(backlink,
+            "client-summary-subheader",
+            organisationName.getOrElse(""),
+            "prev-period-summary-header",
+            noReturnHeader.toString(),
+            subHeaderPrefix = Some(Messages("ated.screen-reader.section-name"))
+        )
+    } else {
+        @pageHeadersAndError(backlink,
+            "client-summary-subheader",
+            organisationName.getOrElse(""),
+            "prev-period-summary-header",
+            Messages("ated.prev-period-summary.header"),
+            subHeaderPrefix = Some(Messages("ated.screen-reader.section-name"))
+        )
+    }
+
+
+    @if(summaryReturnsWithDrafts.returnsOtherTaxYears.isEmpty) {
+        <p id="return-summary-no-returns">@Messages("ated.prev-period-summary.agent.no-previous-returns")</p>
+    } else {
+
+        <p class="govuk-body">@Messages("ated.prev-period-summary.chareablePeriods.text")</p>
+
+        <table class="govuk-table">
+        <thead class="govuk-table__head">
+            <tr class="govuk-table__row">
+                <th scope="col" class="govuk-table__header">
+                    <span class="visuallyhidden">@Messages("ated.summary-return.table.screen-reader.headings-help")</span>
+                    @Messages("ated.prev-period-summary-th.period")</th>
+                <th id="charge-title" scope="col" class="govuk-table__header govuk-table__header--numeric">@Messages("ated.prev-period-summary-th.chargeable")</th>
+                <th id="relief-title" scope="col" class="govuk-table__header govuk-table__header--numeric">@Messages("ated.prev-period-summary-th.reliefs")</th>
+                <th id="draft-title" scope="col" class="govuk-table__header govuk-table__header--numeric">@Messages("ated.prev-period-summary-th.drafts")</th>
+            </tr>
+        </thead>
+        <tbody class="govuk-table__body">
+        @summaryReturnsWithDrafts.returnsOtherTaxYears.zipWithIndex.map { case (periodSummaryWithDraft, i) =>
+        <tr class="govuk-table__row">
+            <td class="govuk-table__cell govuk-table__cell--text">
+                <a href="@controllers.routes.PeriodSummaryController.view(periodSummaryWithDraft.periodKey)"
+                id="view-change-@i"
+                data-journey-click="ated-fronted:click:view-change">
+                        Returns for @periodSummaryWithDraft.periodKey to @(periodSummaryWithDraft.periodKey.toInt + 1)
+                    <span class="visuallyhidden">
+                       @Messages("ated.prev-period-summary-screen-reader")
+                    </span>
+                </a>
+            </td>
+            <td id="charge-number-@i" class="govuk-table__cell govuk-table__cell--numeric">
+                <span class="visuallyhidden">@Messages("ated.summary-return.table.screen-reader.number-of") @Messages("ated.prev-period-summary-th.chargeable")</span>
+                @periodSummaryWithDraft.submittedReturns.fold(0)(a => a.currentLiabilityReturns.size + a.oldLiabilityReturns.size)
+            </td>
+            <td id="reliefs-number-@i" class="govuk-table__cell govuk-table__cell--numeric">
+                <span class="visuallyhidden">@Messages("ated.summary-return.table.screen-reader.number-of") @Messages("ated.prev-period-summary-th.reliefs")</span>
+                @periodSummaryWithDraft.submittedReturns.fold(0)(a => a.reliefReturns.size)
+            </td>
+            <td id="draft-number-@i" class="govuk-table__cell govuk-table__cell--numeric">
+                <span class="visuallyhidden">@Messages("ated.summary-return.table.screen-reader.number-of") @Messages("ated.prev-period-summary-th.drafts")</span>
+                @periodSummaryWithDraft.draftReturns.size
+        </td>
+        </tr>
+        </tbody>
+            }
+    </table>
+    }
+        <p>@Messages("ated.prev-period-summary.createRuturn.text") @(taxYearStartingYear - 1) to @(taxYearStartingYear) or earlier.</p>
+
+    @if(summaryReturnsWithDrafts.returnsOtherTaxYears.nonEmpty) {
+        <p>
+            <a id="create-return"
+            class="button margin-top-default"
+            onkeyup='spaceBarHandler(event,"@controllers.routes.SelectPeriodController.view")'
+                href="@controllers.routes.SelectPeriodController.view"
+                data-journey-click="ated-fronted:click:create-return">
+                    @Messages("ated.prev-period-summary.create-return.link")
+            </a>
+        </p>
+    } else {
+        @if(authContext.delegationModel.isDefined) {
+            <p>
+                <a id="create-return"
+                    class="button margin-top-default"
+                    onkeyup='spaceBarHandler(event,"@controllers.routes.SelectPeriodController.view")'
+                    href="@controllers.routes.SelectPeriodController.view"
+                    data-journey-click="ated-fronted:click:create-return">
+                        @Messages("ated.prev-period-summary.create-return.button")
+                </a>
+            </p>
+        } else {
+            <div class="form-group">
+                <a class="button margin-top-default" id="create-return" href="@controllers.routes.SelectPeriodController.view" data-journey-click="ated-fronted:click:create-return">
+                    @Messages("ated.prev-period-summary.create-return.link")
+                </a>
+            </div>
+        }
+    }
+
+}

@@ -48,7 +48,7 @@ class SelectPeriodController @Inject()(mcc: MessagesControllerComponents,
   def view: Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
-        val periods = PeriodUtils.getPeriods(new LocalDate(year, month, day), LocalDate.now().minusYears(1))
+        val periods = PeriodUtils.getPeriods(new LocalDate(year, month, day), LocalDate.now().minusYears(2))
         dataCacheConnector.fetchAndGetFormData[SelectPeriod](RetrieveSelectPeriodFormId) map {
           case Some(data) => Ok(views.html.selectPeriod(selectPeriodForm.fill(data), periods, getBackLink()))
           case _ => Ok(views.html.selectPeriod(selectPeriodForm, periods, getBackLink()))
@@ -77,6 +77,6 @@ class SelectPeriodController @Inject()(mcc: MessagesControllerComponents,
   }
 
   private def getBackLink(): Option[String] = {
-    Some(routes.AccountSummaryController.view().url)
+    Some(routes.PrevPeriodsSummaryController.view().url)
   }
 }

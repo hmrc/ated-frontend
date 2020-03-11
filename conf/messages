@@ -343,6 +343,56 @@ ated.avoidance-scheme-error.general.socialHousingSchemePromoter = There is a pro
 ated.avoidance-scheme-error.general.equityReleaseScheme = There is a problem with equity release avoidance scheme reference number. Check the number and try again.
 ated.avoidance-scheme-error.general.equityReleaseSchemePromoter = There is a problem with equity release promoter reference number. Check the number and try again.
 
+
+##### PREV PERIOD SUMMARY
+ated.prev-period-summary.title = Your previous returns
+ated.prev-period-summary.header = Your previous returns
+ated.prev-period-summary.headerNoReturns = Create an ATED return for
+
+ated.prev-period-summary-screen-reader = the period
+
+
+ated.prev-period-summary.sub-header = What type of return would you like to submit for the period from 1 April 2015 to 31 March 2016?
+ated.prev-period-summary.chargeable = Chargeable return
+ated.prev-period-summary.relief-return = Relief return
+ated.prev-period-summary.sidebar.balance = Your balance
+ated.prev-period-summary.sidebar.correspondence-address = Correspondence Address
+ated.prev-period-summary.sidebar.pay.link = <a id="sidebar.link-text" href="https://www.gov.uk/guidance/pay-annual-tax-on-enveloped-dwellings" data-journey-click="ated-fronted:click:sidebar.link-text">Deadlines and ways to pay</a>
+ated.prev-period-summary.sidebar.owed.link = <a id="sidebar.link-text" href="https://www.gov.uk/guidance/pay-annual-tax-on-enveloped-dwellings" data-journey-click="ated-fronted:click:sidebar.link-text">Ways to be paid</a>
+ated.prev-period-summary.sidebar.question = What does this balance include
+ated.prev-period-summary.sidebar.answer = It can include penalties. It does not include any balance you may have from previous paper returns.
+ated.prev-period-summary.no-returns.text = No returns have been created yet
+ated.prev-period-summary-th.period = Period
+ated.prev-period-summary-th.chargeable = Chargeable
+ated.prev-period-summary-th.reliefs = Relief
+ated.prev-period-summary-th.drafts = Draft
+
+ated.prev-period-summary.sidebar.contact-details.header = ATED contact
+ated.prev-period-summary.agent.no-returns = You have no returns
+ated.prev-period-summary.agent.no-previous-returns = You have no previous returns.
+ated.prev-period-summary.createRuturn.text = Create a new ATED return for the chargeable period
+
+ated.prev-period-summary.agent-appoint.text = You can appoint an agent to act on your behalf or create your own returns.
+ated.prev-period-summary.appoint-agent-info.text = If you want to appoint an agent you need to re-authorise your agent as the 64-8 and the ATED 1 does not cover the new online service.
+ated.prev-period-summary.chareablePeriods.text = View or change returns for these chargeable periods.
+
+ated.prev-period-summary.sidebar.balance-info= There can be a 24-hour delay before you see any updates to your balance.
+ated.prev-period-summary.sidebar.ated-reference.text = ATED reference
+ated.prev-period-summary.button = Continue
+ated.prev-period-summary.success = Your ATED account has been created successfully
+ated.prev-period-summary.company-details.link = View your ATED details
+ated.prev-period-summary.return-type.error = Select an option for type of return
+ated.prev-period-summary.create-return.link = Create a new return
+ated.prev-period-summary.contact.details.heading = Contact details
+ated.prev-period-summary.create-relief.text = You can create a relief declaration return where no tax is due.
+ated.prev-period-summary.create-relief.text.indent = You cannot view returns you have previously submitted using this service.
+ated.prev-period-summary.create-return.button = Create a new return
+ated.prev-period-summary.correspondence-address.heading = Correspondence address
+ated.prev-period-summary.no-return.text = You can create a return where an ATED charge is due or a relief return where no ATED charge is due.
+ated.prev-period-summary.table.screen-reader.headings-help = You are on the ATED table, column headings are as follows
+ated.prev-period-summary.table.screen-reader.number-of = Number of
+ated.prev-period-summary.table.screen-reader.period-from = Period from
+
 ##### SUMMARY RETURN
 
 ated.summary-return.title = Your ATED summary
@@ -380,7 +430,7 @@ ated.summary-return.contact.details.heading = Contact details
 ated.account-summary.create-relief.text = You can create a relief declaration return where no tax is due.
 ated.account-summary.create-relief.text.indent = You cannot view returns you have previously submitted using this service.
 ated.account-summary.create-return.button = Create a return
-ated.account-summary.create-return-other.link = Create returns for other years
+ated.account-summary.create-return-other.link = Create, view or change returns for other years
 ated.summary-return.correspondence-address.heading = Correspondence address
 ated.summary-return.no-return.text = You can create a return where an ATED charge is due or a relief return where no ATED charge is due.
 ated.summary-return.table.screen-reader.headings-help = You are on the ATED table, column headings are as follows
