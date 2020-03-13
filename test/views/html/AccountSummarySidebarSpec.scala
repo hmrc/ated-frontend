@@ -20,6 +20,7 @@ import config.ApplicationConfig
 import models.{Address, StandardAuthRetrievals}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneAppPerTest
 import play.api.i18n.{Lang, Messages, MessagesApi, MessagesImpl}
@@ -28,12 +29,13 @@ import play.api.test.FakeRequest
 import play.twirl.api.{Html, HtmlFormat}
 import testhelpers.MockAuthUtil
 import utils.TestModels
+import org.mockito.Mockito.when
 
 class AccountSummarySidebarSpec extends PlaySpec with MockAuthUtil
-  with GuiceOneAppPerTest with TestModels {
+  with GuiceOneAppPerTest with TestModels with MockitoSugar {
 
+  implicit lazy val mockAppConfig: ApplicationConfig = mock[ApplicationConfig]
   implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
-  implicit val appConfig: ApplicationConfig = mock[ApplicationConfig]
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
   implicit lazy val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
   implicit lazy val messages: Messages = MessagesImpl(Lang("en-GB"), messagesApi)
@@ -52,6 +54,9 @@ class AccountSummarySidebarSpec extends PlaySpec with MockAuthUtil
   lazy val document: Document = Jsoup.parse(createView().body)
 
   "AccountSummarySidebar" should {
+
+    when(mockAppConfig.atedPeakStartDay)
+      .thenReturn("16")
 
     "show a link to your ated details if a correspondence address is present" in {
 

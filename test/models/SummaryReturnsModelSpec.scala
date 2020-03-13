@@ -16,12 +16,16 @@
 
 package models
 
+import config.ApplicationConfig
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.libs.json.Json
 import utils.TestModels
 
-class SummaryReturnsModelSpec extends PlaySpec with GuiceOneServerPerSuite with TestModels {
+class SummaryReturnsModelSpec extends PlaySpec with GuiceOneServerPerSuite with TestModels with MockitoSugar {
+
+  implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
 
   "SummaryReturnsModel" should {
 

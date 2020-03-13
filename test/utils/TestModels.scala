@@ -16,14 +16,14 @@
 
 package utils
 
+import config.ApplicationConfig
 import models._
 import org.joda.time.LocalDate
 import play.api.libs.json.{JsObject, Json}
-import utils.AtedConstants.{AddressTypeCorrespondence, TypeChangeLiabilityDraft,
-  TypeReliefDraft, TypeLiabilityDraft, TypeDisposeLiabilityDraft}
+import utils.AtedConstants.{AddressTypeCorrespondence, TypeChangeLiabilityDraft, TypeDisposeLiabilityDraft, TypeLiabilityDraft, TypeReliefDraft}
 
 trait TestModels {
-
+  implicit val mockAppConfig: ApplicationConfig
   val organisationName: String = "OrganisationName"
 
   val formBundleNo1: String = "123456789012"
@@ -31,7 +31,7 @@ trait TestModels {
   val formBundleNo3: String = "876547696786"
 
   val currentYear: Int = LocalDate.now().getYear
-  val currentTaxYear: Int = PeriodUtils.calculatePeriod(LocalDate.now())
+  lazy val currentTaxYear: Int = PeriodUtils.calculatePeriod(LocalDate.now())
 
   val address: Address = {
     Address(name1 = Some("name1"),

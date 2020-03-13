@@ -34,9 +34,8 @@ class addressLookupSpec extends FeatureSpec with GuiceOneAppPerSuite with Mockit
   implicit val request = FakeRequest()
   implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
-  implicit val appConfig: ApplicationConfig = mock[ApplicationConfig]
-
-  feature("The user can search for an address via the post code") {
+  implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
+feature("The user can search for an address via the post code") {
 
     info("as a user I want to be able to search for an address via the post code")
 

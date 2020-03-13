@@ -29,10 +29,8 @@ class EditLiabilityDatesLiableSpec extends AtedViewSpec with MockitoSugar with M
 
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
 
-  implicit val appConfig: ApplicationConfig = mock[ApplicationConfig]
-
-
-  "Edit Liability Dates Liable view" must {
+  implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
+"Edit Liability Dates Liable view" must {
     behave like pageWithTitle(messages("ated.property-details-period.change-dates-liable.title"))
     behave like pageWithHeader(messages("ated.property-details-period.change-dates-liable.header"))
     behave like pageWithPreHeading(messages("ated.property-details.pre-header-change"))

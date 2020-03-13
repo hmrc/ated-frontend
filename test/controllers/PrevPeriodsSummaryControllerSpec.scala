@@ -50,7 +50,6 @@ class PrevPeriodsSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSu
 
   implicit lazy val hc: HeaderCarrier = HeaderCarrier()
   implicit val mockAppConfig: ApplicationConfig = mock[ApplicationConfig]
-
   val mockMcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
   val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
   val mockSummaryReturnsService: SummaryReturnsService = mock[SummaryReturnsService]
@@ -59,7 +58,7 @@ class PrevPeriodsSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSu
   val mockDetailsService: DetailsService = mock[DetailsService]
   val mockDateService: DateService = mock[DateService]
   when(mockDateService.now()).thenReturn(LocalDate.now())
-  when(mockAppConfig.atedPeakStartDay).thenReturn("27")
+  when(mockAppConfig.atedPeakStartDay).thenReturn("16")
 
   val periodKey2015: Int = 2015
 

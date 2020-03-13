@@ -28,9 +28,8 @@ class PropertyDetailsProfessionallyValuedSpec extends AtedViewSpec with MockitoS
 
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
 
-  implicit val appConfig: ApplicationConfig = mock[ApplicationConfig]
-
-  "Property Details Professionally Valued view" must {
+  implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
+"Property Details Professionally Valued view" must {
     behave like pageWithTitle(messages("ated.property-details-value.isValuedByAgent.title"))
     behave like pageWithHeader(messages("ated.property-details-value.isValuedByAgent.header"))
     behave like pageWithPreHeading(messages("ated.property-details.pre-header"))

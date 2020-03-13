@@ -20,6 +20,7 @@ import config.ApplicationConfig
 import models.{StandardAuthRetrievals, SummaryReturnsModel}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import org.mockito.Mockito.when
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneAppPerTest
 import play.api.i18n.{Lang, Messages, MessagesApi, MessagesImpl}
@@ -31,14 +32,16 @@ import utils.{PeriodUtils, TestModels}
 
 class PrevPeriodsSummarySpec extends PlaySpec with MockAuthUtil with GuiceOneAppPerTest with TestModels {
 
+  implicit val mockAppConfig: ApplicationConfig = mock[ApplicationConfig]
   implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
-  implicit val appConfig: ApplicationConfig = mock[ApplicationConfig]
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
   implicit lazy val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
   implicit lazy val messages: Messages = MessagesImpl(Lang("en-GB"), messagesApi)
+  when(mockAppConfig.atedPeakStartDay)
+    .thenReturn("16")
 
   val periodKey2015: Int = 2015
-  val currentPeriod: Int = PeriodUtils.calculatePeriod()
+  lazy val currentPeriod: Int = PeriodUtils.calculatePeriod()
   val data: SummaryReturnsModel = summaryReturnsModel(periodKey = periodKey2015, withPastReturns = true)
   val currentPeriodDataOnly: SummaryReturnsModel = summaryReturnsModelCurrentOnly(periodKey = currentPeriod)
   val currentPeriodData: SummaryReturnsModel = summaryReturnsModel(periodKey = currentPeriod)
@@ -55,6 +58,7 @@ class PrevPeriodsSummarySpec extends PlaySpec with MockAuthUtil with GuiceOneApp
     None
   )
 
+
   lazy val document: Document = Jsoup.parse(view.body)
 
   "PreviousSummary" when {
@@ -70,7 +74,6 @@ class PrevPeriodsSummarySpec extends PlaySpec with MockAuthUtil with GuiceOneApp
     }
 
     "the user has property and relief returns for the previous years" should {
-
       "show the Create a new return button" in {
         assert(document.getElementById("create-return").text() === s"Create a new return"
         )

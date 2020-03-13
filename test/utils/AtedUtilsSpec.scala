@@ -17,14 +17,17 @@
 package utils
 
 import builders.{ChangeLiabilityReturnBuilder, PropertyDetailsBuilder}
+import config.ApplicationConfig
 import org.joda.time.LocalDate
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.test.FakeRequest
 
 import scala.collection.mutable.ArrayBuffer
 
-class AtedUtilsSpec extends PlaySpec {
+class AtedUtilsSpec extends PlaySpec with MockitoSugar with GuiceOneServerPerSuite {
+  implicit  val mockAppCongfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
 
   "AtedUtils" must {
     "patternCheckARN should validate input ARN" in {

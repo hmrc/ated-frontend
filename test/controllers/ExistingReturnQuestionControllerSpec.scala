@@ -62,8 +62,7 @@ class ExistingReturnQuestionControllerSpec extends PlaySpec with GuiceOneServerP
 
 
   implicit lazy val hc: HeaderCarrier = HeaderCarrier()
-  implicit val mockAppConfig: ApplicationConfig = mock[ApplicationConfig]
-
+  implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
   val mockMcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
   val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
   val mockSummaryReturnsService: SummaryReturnsService = mock[SummaryReturnsService]

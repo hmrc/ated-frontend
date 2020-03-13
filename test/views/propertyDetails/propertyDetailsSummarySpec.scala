@@ -36,8 +36,8 @@ class propertyDetailsSummarySpec extends FeatureSpec with GuiceOneAppPerSuite wi
 
   implicit val request = FakeRequest()
   implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
-  implicit val appConfig: ApplicationConfig = mock[ApplicationConfig]
-  implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
+  implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
+implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
 
   val thisYear: Int = calculatePeriod()
   val nextYear: Int = thisYear + 1

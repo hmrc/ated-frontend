@@ -19,6 +19,7 @@ package services
 import java.util.UUID
 
 import builders.ReliefBuilder
+import config.ApplicationConfig
 import connectors.{AtedConnector, DataCacheConnector}
 import models.{TaxAvoidance, _}
 import org.joda.time.LocalDate
@@ -39,6 +40,7 @@ import scala.concurrent.Future
 class ReliefsServiceSpec extends PlaySpec with MockitoSugar with PrivateMethodTester {
 
   implicit lazy val authContext: StandardAuthRetrievals = mock[StandardAuthRetrievals]
+  implicit  val mockAppCongfig: ApplicationConfig = mock[ApplicationConfig]
 
   val mockAtedConnector: AtedConnector = mock[AtedConnector]
   val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]

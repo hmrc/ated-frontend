@@ -34,7 +34,7 @@ class formBundleReturnSpec extends FeatureSpec with GuiceOneServerPerSuite with 
 
   implicit val request = FakeRequest()
   implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
-  implicit val appConfig: ApplicationConfig = mock[ApplicationConfig]
+  implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
 
   val formBundleProp = FormBundleProperty(BigDecimal(100), new LocalDate("2015-09-08"),

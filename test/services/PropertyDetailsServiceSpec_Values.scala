@@ -17,6 +17,7 @@
 package services
 
 import builders.PropertyDetailsBuilder
+import config.ApplicationConfig
 import connectors.{DataCacheConnector, PropertyDetailsConnector}
 import models._
 import org.mockito.ArgumentMatchers
@@ -31,10 +32,11 @@ import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, InternalServerException}
 
 import scala.concurrent.Future
 
-class PropertyDetailsServiceSpec_Values extends PlaySpec with MockitoSugar with BeforeAndAfterEach {
+class PropertyDetailsServiceSpec_Values extends PlaySpec with MockitoSugar with BeforeAndAfterEach with GuiceOneServerPerSuite {
 
   implicit lazy val authContext: StandardAuthRetrievals = mock[StandardAuthRetrievals]
   implicit val hc: HeaderCarrier = HeaderCarrier()
+  implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
 
   val mockPropertyDetailsConnector: PropertyDetailsConnector = mock[PropertyDetailsConnector]
   val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]

@@ -35,9 +35,8 @@ class periodChooseReliefSpec extends FeatureSpec with GuiceOneAppPerSuite with M
   implicit val request = FakeRequest()
   implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
-  implicit val appConfig: ApplicationConfig = mock[ApplicationConfig]
-
-  feature("The user can add a period that the property is in relief") {
+  implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
+feature("The user can add a period that the property is in relief") {
 
     info("as a client i want to indicate when my property is in relief")
 

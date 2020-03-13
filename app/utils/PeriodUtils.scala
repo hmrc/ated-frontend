@@ -16,6 +16,7 @@
 
 package utils
 
+import config.ApplicationConfig
 import models._
 import org.joda.time.LocalDate
 import play.api.Play.current
@@ -29,9 +30,12 @@ object PeriodUtils {
 
   val lowestBound = 2012
 
-  def calculatePeriod(date: LocalDate = new LocalDate(), month:Int = 4): Int = {
-    if (date.getMonthOfYear < month) date.minusYears(1).getYear
-    else date.getYear
+  def calculatePeriod(date: LocalDate = new LocalDate(), month:Int = 3)(implicit appConfig: ApplicationConfig): Int = {
+    if(date.getMonthOfYear <= month && date.getDayOfMonth < appConfig.atedPeakStartDay.toInt) {
+      date.minusYears(1).getYear
+    } else {
+      date.getYear
+    }
   }
 
   def periodStartDate(periodKey: Int): LocalDate = new LocalDate(s"$periodKey-${AtedConstants.PeriodStartMonth}-${AtedConstants.PeriodStartDay}")
@@ -103,10 +107,9 @@ object PeriodUtils {
 
 
   // from 1st of march add the next period so they can start to submit draft periods
-  def getPeriods(startDate: LocalDate, endDate: LocalDate): List[(String,String)] = {
+  def getPeriods(startDate: LocalDate, endDate: LocalDate, applicationConfig: ApplicationConfig): List[(String,String)] = {
     val startYear = if (startDate.getMonthOfYear >= 4) startDate.getYear else startDate.getYear-1
-    val endYear = if ((endDate.getMonthOfYear >= 3 && endDate.getDayOfMonth > 4) || endDate.getMonthOfYear > 3) endDate.getYear else endDate.getYear-1
-
+    val endYear = if ((endDate.getMonthOfYear >= 3 && endDate.getDayOfMonth >= applicationConfig.atedPeakStartDay.toInt) || endDate.getMonthOfYear > 3) endDate.getYear else endDate.getYear-1
     (startYear to endYear toList).reverse.map(x => s"$x" -> s"$x to ${x + 1}")
   }
 

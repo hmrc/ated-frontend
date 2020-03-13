@@ -17,6 +17,7 @@
 package builders
 
 import builders.ChangeLiabilityReturnBuilder.generateFormBundlePropertyDetails
+import config.ApplicationConfig
 import models._
 import org.joda.time.LocalDate
 import utils.AtedConstants
@@ -126,8 +127,8 @@ object PropertyDetailsBuilder {
 
   def getPropertyDetails(id: String,
                          postCode: Option[String] = None,
-                         liabilityAmount: Option[BigDecimal] = None,
-                         periodKey: Int = calculatePeriod()): PropertyDetails = {
+                         liabilityAmount: Option[BigDecimal] = None)(implicit appConfig: ApplicationConfig): PropertyDetails = {
+    val periodKey: Int = calculatePeriod()
     PropertyDetails(
       id,
       periodKey,
@@ -140,8 +141,9 @@ object PropertyDetailsBuilder {
 
   def getPropertyDetailsValuedByAgent(id: String,
                          postCode: Option[String] = None,
-                         liabilityAmount: Option[BigDecimal] = None,
-                         periodKey: Int = calculatePeriod()): PropertyDetails = {
+                         liabilityAmount: Option[BigDecimal] = None)(implicit appConfig: ApplicationConfig): PropertyDetails = {
+    val periodKey: Int = calculatePeriod()
+
     PropertyDetails(
       id,
       periodKey,
@@ -154,8 +156,9 @@ object PropertyDetailsBuilder {
 
   def getPropertyDetailsWithNoValue(id: String,
                          postCode: Option[String] = None,
-                         liabilityAmount: Option[BigDecimal] = None,
-                         periodKey: Int = calculatePeriod()): PropertyDetails = {
+                         liabilityAmount: Option[BigDecimal] = None)(implicit appConfig: ApplicationConfig): PropertyDetails = {
+    val periodKey: Int = calculatePeriod()
+
     PropertyDetails(
       id,
       periodKey,
@@ -170,9 +173,10 @@ object PropertyDetailsBuilder {
 
   def getFullPropertyDetails(id: String,
                              postCode: Option[String] = None,
-                             liabilityAmount: Option[BigDecimal] = None,
-                             periodKey: Int = calculatePeriod()
-                            ): PropertyDetails = {
+                             liabilityAmount: Option[BigDecimal] = None
+                            )(implicit appConfig: ApplicationConfig): PropertyDetails = {
+    val periodKey: Int = calculatePeriod()
+
     PropertyDetails(
       id,
       periodKey,
@@ -186,9 +190,10 @@ object PropertyDetailsBuilder {
 
   def getPropertyDetailsWithFormBundleReturn(id: String,
                              postCode: Option[String] = None,
-                             liabilityAmount: Option[BigDecimal] = None,
-                             periodKey: Int = calculatePeriod()
-                            ): PropertyDetails = {
+                             liabilityAmount: Option[BigDecimal] = None
+                            )(implicit appConfig: ApplicationConfig): PropertyDetails = {
+    val periodKey: Int = calculatePeriod()
+
     PropertyDetails(
       id,
       periodKey,

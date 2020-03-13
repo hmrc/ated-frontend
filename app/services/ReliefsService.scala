@@ -16,6 +16,7 @@
 
 package services
 
+import config.ApplicationConfig
 import connectors.{AtedConnector, DataCacheConnector}
 import javax.inject.Inject
 import models._
@@ -141,7 +142,7 @@ class ReliefsService @Inject()(atedConnector: AtedConnector,
   }
 
   def viewReliefReturn(periodKey: Int, formBundleNo: String)
-                      (implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[(Option[SubmittedReliefReturns], Boolean)] = {
+                      (implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier, appConfig: ApplicationConfig): Future[(Option[SubmittedReliefReturns], Boolean)] = {
     for {
       cachedReturns <- dataCacheConnector.fetchAndGetFormData[SummaryReturnsModel](RetrieveReturnsResponseId)
     } yield {

@@ -27,9 +27,8 @@ import play.twirl.api.Html
 class BankDetailsSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil {
 
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
-  implicit val appConfig: ApplicationConfig = mock[ApplicationConfig]
-
-  "Bank Details view" must {
+  implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
+"Bank Details view" must {
     behave like pageWithTitle(messages("ated.bank-details.title"))
     behave like pageWithHeader(messages("ated.bank-details.title"))
     behave like pageWithPreHeading(messages("ated.property-details.pre-header-change"))

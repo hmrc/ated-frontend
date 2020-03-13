@@ -27,9 +27,8 @@ import play.twirl.api.Html
 class EditContactDetailsSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil {
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
 
-  implicit val appConfig: ApplicationConfig = mock[ApplicationConfig]
-
-  "Edit contact details view" must {
+  implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
+"Edit contact details view" must {
       behave like pageWithTitle(messages("ated.contact-details.title"))
       behave like pageWithHeader(messages("ated.contact-details.header"))
       behave like pageWithPreHeading(messages("ated.contact-details-edit.subheader"))

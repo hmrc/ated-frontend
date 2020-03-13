@@ -27,10 +27,8 @@ import play.twirl.api.Html
 class PropertyDetailsInReliefSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil {
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
 
-  implicit val appConfig: ApplicationConfig = mock[ApplicationConfig]
-
-
-  "Property Details in-relief view" must {
+  implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
+"Property Details in-relief view" must {
     behave like pageWithTitle(messages("ated.property-details-period.isInRelief.title"))
     behave like pageWithHeader(messages("ated.property-details-period.isInRelief.header"))
     behave like pageWithPreHeading(messages("ated.property-details.pre-header"))

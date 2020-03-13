@@ -26,9 +26,8 @@ import play.twirl.api.Html
 class ReliefDeclarationSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil {
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
 
-  implicit val appConfig: ApplicationConfig = mock[ApplicationConfig]
-
-  "Relief Declaration" must {
+  implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
+"Relief Declaration" must {
     behave like pageWithTitle(messages("ated.relief-summary.declaration.title"))
     behave like pageWithHeader(messages("ated.relief-summary.declaration.header"))
   }

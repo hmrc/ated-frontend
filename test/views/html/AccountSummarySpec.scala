@@ -20,6 +20,7 @@ import config.ApplicationConfig
 import models.StandardAuthRetrievals
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import org.mockito.Mockito.when
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneAppPerTest
 import play.api.i18n.{Lang, Messages, MessagesApi, MessagesImpl}
@@ -31,11 +32,14 @@ import utils.TestModels
 
 class AccountSummarySpec extends PlaySpec with MockAuthUtil with GuiceOneAppPerTest with TestModels {
 
+  implicit val mockAppConfig: ApplicationConfig = mock[ApplicationConfig]
   implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
-  implicit val appConfig: ApplicationConfig = mock[ApplicationConfig]
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
   implicit lazy val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
   implicit lazy val messages: Messages = MessagesImpl(Lang("en-GB"), messagesApi)
+
+  when(mockAppConfig.atedPeakStartDay)
+    .thenReturn("16")
 
   lazy val view = views.html.accountSummary(
     currentYearReturnsForDisplay,

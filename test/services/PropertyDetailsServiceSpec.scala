@@ -17,6 +17,7 @@
 package services
 
 import builders.PropertyDetailsBuilder
+import config.ApplicationConfig
 import connectors.{DataCacheConnector, PropertyDetailsConnector}
 import models.{PropertyDetails, PropertyDetailsAddress, PropertyDetailsTitle, StandardAuthRetrievals, SubmitReturnsResponse}
 import org.mockito.ArgumentMatchers
@@ -35,6 +36,7 @@ class PropertyDetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite wi
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
   implicit lazy val authContext: StandardAuthRetrievals = mock[StandardAuthRetrievals]
+  implicit  val mockAppCongfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
 
   val mockPropertyDetailsConnector : PropertyDetailsConnector = mock[PropertyDetailsConnector]
   val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]

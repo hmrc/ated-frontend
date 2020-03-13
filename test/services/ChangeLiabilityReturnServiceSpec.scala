@@ -17,6 +17,7 @@
 package services
 
 import builders.{ChangeLiabilityReturnBuilder, PropertyDetailsBuilder}
+import config.ApplicationConfig
 import connectors.{AtedConnector, DataCacheConnector}
 import models._
 import org.mockito.ArgumentMatchers
@@ -37,6 +38,7 @@ class ChangeLiabilityReturnServiceSpec extends PlaySpec with GuiceOneServerPerSu
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
   implicit lazy val authContext: StandardAuthRetrievals = mock[StandardAuthRetrievals]
+  implicit  val mockAppCongfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
 
   val mockMcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
   val mockAtedConnector: AtedConnector = mock[AtedConnector]

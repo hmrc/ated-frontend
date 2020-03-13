@@ -29,9 +29,8 @@ class PropertyDetailsNewBuildSpec extends AtedViewSpec with MockitoSugar with Mo
 
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
 
-  implicit val appConfig: ApplicationConfig = mock[ApplicationConfig]
-
-  "Property details New Build view" must {
+  implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
+"Property details New Build view" must {
     behave like pageWithTitle(messages("ated.property-details-value.isNewBuild.title"))
     behave like pageWithHeader(messages("ated.property-details-value.isNewBuild.header"))
     behave like pageWithPreHeading(messages("ated.property-details.pre-header"))

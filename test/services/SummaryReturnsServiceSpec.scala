@@ -16,6 +16,7 @@
 
 package services
 
+import config.ApplicationConfig
 import connectors.{AtedConnector, DataCacheConnector}
 import models.{PeriodSummaryReturns, _}
 import org.joda.time.LocalDate
@@ -24,6 +25,7 @@ import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.libs.json.{JsArray, JsObject, Json, __}
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
@@ -32,11 +34,11 @@ import utils.TestModels
 
 import scala.concurrent.Future
 
-class SummaryReturnsServiceSpec extends PlaySpec with MockitoSugar with BeforeAndAfterEach with TestModels {
+class SummaryReturnsServiceSpec extends PlaySpec with MockitoSugar with BeforeAndAfterEach with TestModels with GuiceOneServerPerSuite {
 
   implicit lazy val authContext: StandardAuthRetrievals = mock[StandardAuthRetrievals]
   implicit val hc: HeaderCarrier = HeaderCarrier()
-
+  implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
   val mockAtedConnector: AtedConnector = mock[AtedConnector]
   val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
 

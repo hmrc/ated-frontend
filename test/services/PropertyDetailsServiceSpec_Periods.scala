@@ -17,6 +17,7 @@
 package services
 
 import builders.PropertyDetailsBuilder
+import config.ApplicationConfig
 import connectors.{DataCacheConnector, PropertyDetailsConnector}
 import models._
 import org.joda.time.LocalDate
@@ -36,6 +37,7 @@ class PropertyDetailsServiceSpec_Periods extends PlaySpec with GuiceOneServerPer
 
   implicit lazy val authContext: StandardAuthRetrievals = mock[StandardAuthRetrievals]
   implicit val hc: HeaderCarrier = HeaderCarrier()
+  implicit  val mockAppCongfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
 
   val mockPropertyDetailsConnector: PropertyDetailsConnector = mock[PropertyDetailsConnector]
   val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]

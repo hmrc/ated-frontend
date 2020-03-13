@@ -33,9 +33,8 @@ class editLiabilityValueSpec extends FeatureSpec with GuiceOneServerPerSuite wit
   implicit val request = FakeRequest()
   implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
-  implicit val appConfig: ApplicationConfig = mock[ApplicationConfig]
-
-  feature("The user can view an edit liability value page") {
+  implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
+feature("The user can view an edit liability value page") {
     info("as a user I want to view the correct page content")
 
     scenario("user has visited the page for the first time") {

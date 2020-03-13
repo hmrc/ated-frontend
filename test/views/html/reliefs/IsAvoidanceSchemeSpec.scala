@@ -31,9 +31,8 @@ class IsAvoidanceSchemeSpec extends AtedViewSpec with MockitoSugar with MockAuth
 
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
 
-  implicit val appConfig: ApplicationConfig = mock[ApplicationConfig]
-
-  val periodKey = 2017
+  implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
+val periodKey = 2017
   val periodStartDate = new LocalDate()
 
   "is avoidance scheme view" must {

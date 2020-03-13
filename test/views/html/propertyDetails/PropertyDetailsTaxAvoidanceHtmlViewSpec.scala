@@ -29,9 +29,8 @@ class PropertyDetailsTaxAvoidanceHtmlViewSpec extends AtedViewSpec with MockitoS
 
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
 
-  implicit val appConfig: ApplicationConfig = mock[ApplicationConfig]
-
-  "Property Details TaxAvoidance view" must {
+  implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
+"Property Details TaxAvoidance view" must {
     behave like pageWithTitle(messages("ated.property-details-period.isTaxAvoidance.title"))
     behave like pageWithHeader(messages("ated.property-details-period.isTaxAvoidance.header"))
     behave like pageWithPreHeading(messages("ated.property-details.pre-header"))

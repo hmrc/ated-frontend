@@ -30,9 +30,8 @@ import play.twirl.api.Html
 class ChooseReliefsSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil {
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
 
-  implicit val appConfig: ApplicationConfig = mock[ApplicationConfig]
-
-  val periodKey = 2017
+  implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
+val periodKey = 2017
   val periodStartDate = new LocalDate()
 
   "choose relief view" must {

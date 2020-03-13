@@ -27,9 +27,8 @@ import play.twirl.api.Html
 class ReturnTypeSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil {
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
 
-  implicit val appConfig: ApplicationConfig = mock[ApplicationConfig]
-
-  "Return Type view" must {
+  implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
+"Return Type view" must {
     behave like pageWithTitle(messages("ated.return-type.title"))
     behave like pageWithHeader(messages("ated.return-type.header"))
     behave like pageWithPreHeading(messages("ated.return-type.pre-header"))

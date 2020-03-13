@@ -20,7 +20,7 @@ import java.util.UUID
 
 import builders.{SessionBuilder, TitleBuilder}
 import config.ApplicationConfig
-import connectors.{AgentClientMandateFrontendConnector, DataCacheConnector}
+import connectors.{AgentClientMandateFrontendConnector, AtedConnector, DataCacheConnector}
 import controllers.auth.AuthAction
 import models._
 import org.joda.time.LocalDate
@@ -39,6 +39,7 @@ import testhelpers.MockAuthUtil
 import uk.gov.hmrc.auth.core.retrieve.~
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, UserId}
+import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 import uk.gov.hmrc.play.partials.HtmlPartial
 import utils.AtedConstants._
 import utils.TestModels

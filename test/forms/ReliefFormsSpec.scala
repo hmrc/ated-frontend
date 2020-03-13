@@ -16,9 +16,11 @@
 
 package forms
 
+import config.ApplicationConfig
 import forms.ReliefForms.taxAvoidanceForm
 import models._
 import org.joda.time.LocalDate
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.data.validation.{Invalid, Valid, ValidationError}
@@ -28,8 +30,9 @@ import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import utils.PeriodUtils
 
-class ReliefFormsSpec extends PlaySpec with GuiceOneServerPerSuite {
+class ReliefFormsSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar {
 
+  implicit  val mockAppCongfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
   implicit lazy val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
   implicit lazy val messages: Messages = messagesApi.preferred(FakeRequest())
 

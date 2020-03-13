@@ -39,12 +39,13 @@ import scala.concurrent.Future
 class PropertyDetailsConnectorSpec extends PlaySpec with GuiceOneAppPerSuite with MockitoSugar with BeforeAndAfterEach {
 
   implicit val authContext: StandardAuthRetrievals = mock[StandardAuthRetrievals]
-  val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
   val mockHttp: DefaultHttpClient = mock[DefaultHttpClient]
 
   lazy val periodKey = 2015
 
   class Setup {
+    implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
+
     val testPropertyDetailsConnector : PropertyDetailsConnector = new PropertyDetailsConnector(mockAppConfig, mockHttp)
   }
 

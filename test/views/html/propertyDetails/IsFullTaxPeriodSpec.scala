@@ -28,9 +28,8 @@ import play.twirl.api.Html
 class IsFullTaxPeriodSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil {
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
 
-  implicit val appConfig: ApplicationConfig = mock[ApplicationConfig]
-
-  "isFullTaxPeriod view" must {
+  implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
+"isFullTaxPeriod view" must {
     behave like pageWithTitle(messages("ated.property-details-period.isFullPeriod.title"))
     behave like pageWithHeader(messages("ated.property-details-period.isFullPeriod.header"))
     behave like pageWithPreHeading(messages("ated.property-details.pre-header"))

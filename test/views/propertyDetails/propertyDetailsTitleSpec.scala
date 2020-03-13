@@ -32,8 +32,8 @@ class propertyDetailsTitleSpec extends FeatureSpec with GuiceOneAppPerSuite with
 
   implicit val request = FakeRequest()
   implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
-  implicit val appConfig: ApplicationConfig = mock[ApplicationConfig]
-  implicit lazy val authContext = organisationStandardRetrievals
+  implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
+implicit lazy val authContext = organisationStandardRetrievals
 
   feature("The user can adit the title") {
 

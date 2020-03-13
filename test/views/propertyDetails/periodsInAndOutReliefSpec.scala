@@ -34,8 +34,8 @@ class periodsInAndOutReliefSpec extends FeatureSpec with GuiceOneAppPerSuite wit
 
   implicit val request = FakeRequest()
   implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
-  implicit val appConfig: ApplicationConfig = mock[ApplicationConfig]
-  implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
+  implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
+implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
 
   feature("The user can view the periods and add the property in and out of relief") {
 

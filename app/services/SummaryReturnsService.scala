@@ -16,6 +16,7 @@
 
 package services
 
+import config.ApplicationConfig
 import connectors.{AtedConnector, DataCacheConnector}
 import javax.inject.Inject
 import models._
@@ -31,7 +32,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class SummaryReturnsService @Inject()(atedConnector: AtedConnector,
-                                      dataCacheConnector: DataCacheConnector) {
+                                      dataCacheConnector: DataCacheConnector)
+                                     (implicit val appConfig: ApplicationConfig) {
 
   def getSummaryReturns(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[SummaryReturnsModel] = {
     def convertSeqOfPeriodSummariesToObject(x: Seq[PeriodSummaryReturns]): PeriodSummaryReturns = {

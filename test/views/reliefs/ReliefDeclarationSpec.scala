@@ -31,9 +31,8 @@ class ReliefDeclarationSpec extends FeatureSpec with GuiceOneAppPerSuite with Mo
 
   implicit val request = FakeRequest()
   implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
-  implicit val appConfig: ApplicationConfig = mock[ApplicationConfig]
-
-  feature("The user can view the relief declaration page") {
+  implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
+feature("The user can view the relief declaration page") {
 
     implicit val authContext: StandardAuthRetrievals = organisationStandardRetrievals.copy(delegationModel = None)
 

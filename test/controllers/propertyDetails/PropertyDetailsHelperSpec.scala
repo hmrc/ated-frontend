@@ -17,6 +17,7 @@
 package controllers.propertyDetails
 
 import builders.PropertyDetailsBuilder
+import config.ApplicationConfig
 import connectors.BackLinkCacheConnector
 import testhelpers.MockAuthUtil
 import models.StandardAuthRetrievals
@@ -38,6 +39,7 @@ class PropertyDetailsHelperSpec extends PlaySpec with GuiceOneServerPerSuite wit
 
   implicit val authContext: StandardAuthRetrievals = organisationStandardRetrievals
   implicit lazy val hc: HeaderCarrier = HeaderCarrier()
+  implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
 
   val mockPropertyDetailsService: PropertyDetailsService = mock[PropertyDetailsService]
   val mockBackLinkCache: BackLinkCacheConnector = mock[BackLinkCacheConnector]

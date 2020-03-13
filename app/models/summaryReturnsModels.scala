@@ -16,12 +16,14 @@
 
 package models
 
+import config.ApplicationConfig
 import org.joda.time.LocalDate
 import play.api.libs.json._
 import play.api.libs.json.Reads._
 import utils.PeriodUtils
 import play.api.libs.json.JodaWrites._
 import play.api.libs.json.JodaReads.DefaultJodaLocalDateReads
+import play.shaded.ahc.io.netty.handler.ssl.ApplicationProtocolConfig
 
 case class DraftReturns(periodKey: Int, // periodKey so that we know which draft belongs to which period
                         id: String,
@@ -90,7 +92,7 @@ case class SummaryReturnsModel(atedBalance: Option[BigDecimal] = None,
                               )
 
 object SummaryReturnsModel {
-  implicit val reads: Reads[SummaryReturnsModel] = new Reads[SummaryReturnsModel] {
+  implicit def reads(implicit applicationConfig: ApplicationConfig): Reads[SummaryReturnsModel] = new Reads[SummaryReturnsModel] {
 
     def reads(json: JsValue): JsResult[SummaryReturnsModel] = {
 
@@ -122,6 +124,7 @@ object SummaryReturnsModel {
       )
   }
 
-  implicit val summaryReturnsModelFormat: Format[SummaryReturnsModel] = Format(reads, writes)
+  implicit def summaryReturnsModelFormat(implicit applicationConfig: ApplicationConfig): Format[SummaryReturnsModel] =
+    Format(reads, writes)
 
 }

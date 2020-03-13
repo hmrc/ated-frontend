@@ -34,8 +34,8 @@ class disposeLiabilityBankDetailsSpec extends FeatureSpec with GuiceOneAppPerSui
 
   implicit val request = FakeRequest()
   implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
-  implicit val appConfig: ApplicationConfig = mock[ApplicationConfig]
-  implicit val authContext: StandardAuthRetrievals = organisationStandardRetrievals
+  implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
+implicit val authContext: StandardAuthRetrievals = organisationStandardRetrievals
 
   val authMock: Enrolments ~ Some[AffinityGroup] ~ Some[String] = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
   setAuthMocks(authMock)

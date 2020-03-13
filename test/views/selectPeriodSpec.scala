@@ -34,7 +34,7 @@ class selectPeriodSpec extends FeatureSpec with GuiceOneServerPerSuite with Mock
 
   implicit val request = FakeRequest()
   implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
-  implicit val appConfig: ApplicationConfig = mock[ApplicationConfig]
+  implicit val appConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
 
   val periodKey = 2015
@@ -49,7 +49,7 @@ class selectPeriodSpec extends FeatureSpec with GuiceOneServerPerSuite with Mock
       When("The user views the page")
 
       val periods = PeriodUtils.getPeriods(new LocalDate(2015,4,1),
-        new LocalDate(2016,4,1))
+        new LocalDate(2016,4,1), appConfig)
       val html = views.html.selectPeriod(selectPeriodForm, periods, Some("http://backLink"))
 
       val document = Jsoup.parse(html.toString())

@@ -33,9 +33,8 @@ class periodDatesLiableSpec extends FeatureSpec with GuiceOneAppPerSuite with Mo
   implicit val request = FakeRequest()
   implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
-  implicit val appConfig: ApplicationConfig = mock[ApplicationConfig]
-
-  feature("The user can add a period that the property is liable") {
+  implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
+feature("The user can add a period that the property is liable") {
 
     info("as a client i to indicate when my property is liable")
 
