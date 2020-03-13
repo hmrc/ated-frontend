@@ -28,7 +28,7 @@ import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.mvc.{MessagesControllerComponents, Result}
@@ -69,7 +69,7 @@ class Setup {
    mockDataCacheConnector,
    mockBackLinkCacheConnector)
 
-  def viewWithAuthorisedUser(propertyDetails: PropertyDetails)(test: Future[Result] => Any) {
+  def viewWithAuthorisedUser(propertyDetails: Option[PropertyDetails])(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
     val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
     setAuthMocks(authMock)
@@ -89,7 +89,7 @@ class Setup {
     when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
       (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
     when(mockPropertyDetailsService.calculateDraftChangeLiability(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
-      .thenReturn(Future.successful(propertyDetails))
+      .thenReturn(Future.successful(Some(propertyDetails)))
     when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
     val result = testEditLiabilitySummaryController.viewSummary("12345678901").apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
@@ -105,7 +105,7 @@ class Setup {
     test(result)
   }
 
-  def getPrintFriendlyWithAuthorisedUser(propertyDetails: PropertyDetails)(test: Future[Result] => Any) {
+  def getPrintFriendlyWithAuthorisedUser(propertyDetails: Option[PropertyDetails])(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
     val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
     setAuthMocks(authMock)
@@ -122,10 +122,10 @@ class Setup {
   "EditLiabilitySummaryController" must {
     "view for authorised user" must {
 
-      "show the edit liabilty summary page, if the return is found in cache is greater than zero" in new Setup {
+      "show the edit liability summary page, if the return is found in cache is greater than zero" in new Setup {
         val changeLiabilityReturn: PropertyDetails = PropertyDetailsBuilder.getFullPropertyDetails("12345678901").
           copy(calculated = Some(PropertyDetailsCalculated(amountDueOrRefund = Some(BigDecimal(123.45)))))
-        viewWithAuthorisedUser(changeLiabilityReturn) {
+        viewWithAuthorisedUser(Some(changeLiabilityReturn)) {
           result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
@@ -133,29 +133,30 @@ class Setup {
         }
       }
 
-      "Redirect to the Account Summary Page of calculated is None" in new Setup {
+      "Redirect to the Account Summary Page if calculated is None" in new Setup {
         val changeLiabilityReturn: PropertyDetails = PropertyDetailsBuilder.getFullPropertyDetails("12345678901").copy(calculated = None)
-        viewWithAuthorisedUser(changeLiabilityReturn) {
+        viewWithAuthorisedUser(Some(changeLiabilityReturn)) {
           result =>
             status(result) must be(SEE_OTHER)
             redirectLocation(result).get must include("/ated/account-summary")
         }
       }
+
       "Redirect to the Bank Details Page if the Amount Due < 0" in new Setup {
         val changeLiabilityReturn: PropertyDetails = PropertyDetailsBuilder.getFullPropertyDetails("12345678901").
           copy(calculated = Some(PropertyDetailsCalculated(amountDueOrRefund = Some(BigDecimal(-123.34)))))
         when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
-        viewWithAuthorisedUser(changeLiabilityReturn) {
+        viewWithAuthorisedUser(Some(changeLiabilityReturn)) {
           result =>
             status(result) must be(SEE_OTHER)
             redirectLocation(result).get must include("/ated/liability/12345678901/change/has-bank-details")
         }
       }
 
-      "return to edit liabilty summary page, if the return is found in cache but calculated is equal to zero" in new Setup {
+      "return to edit liability summary page, if the return is found in cache but calculated is equal to zero" in new Setup {
         val changeLiabilityReturn: PropertyDetails = PropertyDetailsBuilder.getFullPropertyDetails("12345678901").
           copy(calculated = Some(PropertyDetailsCalculated(amountDueOrRefund = Some(BigDecimal(0.00)))))
-        viewWithAuthorisedUser(changeLiabilityReturn) {
+        viewWithAuthorisedUser(Some(changeLiabilityReturn)) {
           result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
@@ -166,11 +167,19 @@ class Setup {
             document.getElementById("address-line-4").text() must be("addr4")
         }
       }
+
+      "redirect to edit liability summary page if the return calculation fails (due to incomplete data)" in new Setup {
+        viewWithAuthorisedUser(None) {
+          result =>
+            status(result) must be(SEE_OTHER)
+            redirectLocation(result) must be( Some("/ated/liability/create/summary/12345678901"))
+        }
+      }
     }
 
     "viewSummary for authorised user" must {
 
-      "view the edit liabilty summary page, if the return is found in cache is greater than zero" in new Setup {
+      "view the edit liability summary page, if the return is found in cache is greater than zero" in new Setup {
         val changeLiabilityReturn: PropertyDetails = PropertyDetailsBuilder.getFullPropertyDetails("12345678901")
         viewSummaryWithAuthorisedUser(changeLiabilityReturn) {
           result =>
@@ -180,7 +189,7 @@ class Setup {
         }
       }
 
-      "view the edit liabilty summary page, if the return is found in cache is < 0" in new Setup {
+      "view the edit liability summary page, if the return is found in cache is < 0" in new Setup {
         val changeLiabilityReturn: PropertyDetails = PropertyDetailsBuilder.getFullPropertyDetails("12345678901").
           copy(calculated = Some(PropertyDetailsCalculated(amountDueOrRefund = Some(BigDecimal(-123.34)))))
         viewSummaryWithAuthorisedUser(changeLiabilityReturn) {
@@ -209,7 +218,7 @@ class Setup {
 
         "return status OK when liability is in cache" in new Setup {
           val changeLiabilityReturn: PropertyDetails = PropertyDetailsBuilder.getFullPropertyDetails("12345678901")
-          getPrintFriendlyWithAuthorisedUser(changeLiabilityReturn) {
+          getPrintFriendlyWithAuthorisedUser(Some(changeLiabilityReturn)) {
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))

@@ -210,19 +210,20 @@ class PropertyDetailsService @Inject()(propertyDetailsConnector: PropertyDetails
         case status =>
           Logger.warn(s"[PropertyDetailsService][saveDraftPropertyDetailsSupportingInfo] Invalid status when saving Property Details" +
             s" - status: $status , response.body : ${propertyDetailsResponse.body}")
-          throw new InternalServerException(s"[PropertyDetailsService][saveDraftPropertyDetailsSupportingInfo] Invalid status when saving Property Details :$status")
+          throw new InternalServerException(s"[PropertyDetailsService][saveDraftPropertyDetailsSupportingInfo]" +
+            s" Invalid status when saving Property Details :$status")
       }
     }
   }
 
-  def calculateDraftChangeLiability(id: String)(implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[PropertyDetails] = {
+  def calculateDraftChangeLiability(id: String)(implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[Option[PropertyDetails]] = {
         propertyDetailsConnector.calculateDraftChangeLiability(id) map { propertyDetailsResponse =>
           propertyDetailsResponse.status match {
-            case OK => propertyDetailsResponse.json.as[PropertyDetails]
-            case status =>
-              Logger.warn(s"[PropertyDetailsService][calculateDraftChangeLiability] Invalid status when calculating Property Details" +
-                s" - status: $status , response.body : ${propertyDetailsResponse.body}")
-              throw new InternalServerException(s"[PropertyDetailsService][calculateDraftChangeLiability] Invalid status when calculating Property Details :$status")
+            case OK => Some(propertyDetailsResponse.json.as[PropertyDetails])
+            case _ =>
+              Logger.info("[PropertyDetailsService][calculateDraftChangeLiability] " +
+                "Return details incomplete - redirecting to summary without calc")
+              None
           }
         }
   }
@@ -367,7 +368,8 @@ class PropertyDetailsService @Inject()(propertyDetailsConnector: PropertyDetails
     }
   }
 
-  def clearDraftReliefs(id: String)(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[HttpResponse] = propertyDetailsConnector.deleteDraftChargeable(id)
+  def clearDraftReliefs(id: String)(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[HttpResponse] =
+    propertyDetailsConnector.deleteDraftChargeable(id)
 
   def validateCalculateDraftPropertyDetails(id : String)(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[Boolean] = {
     retrieveDraftPropertyDetails(id).map {

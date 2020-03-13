@@ -22,7 +22,7 @@ import models.{PropertyDetails, PropertyDetailsAddress, PropertyDetailsTitle, St
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.libs.json.{JsValue, Json}
@@ -168,8 +168,8 @@ class PropertyDetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite wi
 
     }
 
-    "Calculate Change Liablity property Details" must {
-      "save the new calculated data and return the response from the connector" in new Setup {
+    "Calculate Change Liability property Details" must {
+      "return the property details if the calculation is successful" in new Setup {
 
         val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetailsValuedByAgent("1", Some("postCode"))
         val successResponse: JsValue = Json.toJson(propertyDetails)
@@ -178,12 +178,12 @@ class PropertyDetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite wi
         when(mockPropertyDetailsConnector.calculateDraftChangeLiability(ArgumentMatchers.any())
         (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
 
-        val result: Future[PropertyDetails] = testPropertyDetailsService.calculateDraftChangeLiability("1")
-        await(result) must be(propertyDetails)
+        val result: Future[Option[PropertyDetails]] = testPropertyDetailsService.calculateDraftChangeLiability("1")
+        await(result) must be(Some(propertyDetails))
 
       }
 
-      "save and throw an Exception if it fails" in new Setup {
+      "not return property details if the calculation is unsuccessful" in new Setup {
         val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetailsValuedByAgent("1", Some("postCode"))
         val successResponse: JsValue = Json.toJson(propertyDetails)
         when(mockPropertyDetailsConnector.retrieveDraftPropertyDetails(ArgumentMatchers.eq("1"))(ArgumentMatchers.any(), ArgumentMatchers.any()))
@@ -191,9 +191,8 @@ class PropertyDetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite wi
         when(mockPropertyDetailsConnector.calculateDraftChangeLiability(ArgumentMatchers.any())
         (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, Some(successResponse))))
 
-        val result: Future[PropertyDetails] = testPropertyDetailsService.calculateDraftChangeLiability("1")
-        val thrown: InternalServerException = the[InternalServerException] thrownBy await(result)
-        thrown.getMessage must be(s"[PropertyDetailsService][calculateDraftChangeLiability] Invalid status when calculating Property Details :$BAD_REQUEST")
+        val result: Future[Option[PropertyDetails]] = testPropertyDetailsService.calculateDraftChangeLiability("1")
+        await(result) must be(None)
 
       }
     }

@@ -20,7 +20,7 @@ import config.ApplicationConfig
 import models.{ReliefReturnResponse, StandardAuthRetrievals, SubmitReturnsResponse}
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
-import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatest.{FeatureSpec, GivenWhenThen}
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Messages, MessagesApi}

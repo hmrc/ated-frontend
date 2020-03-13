@@ -20,7 +20,7 @@ import config.ApplicationConfig
 import forms.BankDetailForms
 import testhelpers.{AtedViewSpec, MockAuthUtil}
 import models.StandardAuthRetrievals
-import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import play.api.data.{Form, FormError}
 import play.twirl.api.Html
 
