@@ -19,7 +19,7 @@ package views.html.reliefs
 import config.ApplicationConfig
 import testhelpers.{AtedViewSpec, MockAuthUtil}
 import models.StandardAuthRetrievals
-import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import play.api.i18n.Messages
 import play.twirl.api.Html
 

@@ -19,7 +19,7 @@ package connectors
 import config.ApplicationConfig
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
-import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.libs.json.JsValue

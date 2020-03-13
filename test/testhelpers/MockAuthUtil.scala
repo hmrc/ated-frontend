@@ -22,7 +22,7 @@ import models.{DelegationModel, StandardAuthRetrievals}
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
 import org.mockito.stubbing.OngoingStubbing
-import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import services.DelegationService
 import uk.gov.hmrc.auth.core.retrieve.~
 import uk.gov.hmrc.auth.core._

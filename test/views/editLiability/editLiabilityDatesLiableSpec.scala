@@ -21,7 +21,7 @@ import forms.PropertyDetailsForms._
 import testhelpers.MockAuthUtil
 import models.StandardAuthRetrievals
 import org.jsoup.Jsoup
-import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Messages, MessagesApi}

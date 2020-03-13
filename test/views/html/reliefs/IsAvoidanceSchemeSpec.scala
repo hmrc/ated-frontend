@@ -21,7 +21,7 @@ import forms.ReliefForms
 import testhelpers.{AtedViewSpec, MockAuthUtil}
 import models.{IsTaxAvoidance, StandardAuthRetrievals}
 import org.joda.time.LocalDate
-import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import play.api.data.Form
 import play.api.i18n.Messages
 import play.api.libs.json.Json

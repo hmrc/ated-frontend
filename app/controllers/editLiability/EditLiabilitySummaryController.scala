@@ -46,11 +46,20 @@ class EditLiabilitySummaryController @Inject()(mcc: MessagesControllerComponents
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         propertyDetailsService.calculateDraftChangeLiability(oldFormBundleNo).flatMap { x =>
-          x.calculated.flatMap(_.amountDueOrRefund) match {
-            case Some(amount) if amount < 0 =>
-              forwardBackLinkToNextPage(hasBankDetailsId, controllers.editLiability.routes.HasBankDetailsController.view(oldFormBundleNo))
-            case Some(_) => viewSummaryDetails(x)
-            case None => Future.successful(Redirect(controllers.routes.AccountSummaryController.view()))
+          x.fold(
+            Future.successful(
+              Redirect(controllers.propertyDetails.routes.PropertyDetailsSummaryController.view(oldFormBundleNo)))
+          )
+          {
+            propertyDetails =>
+              propertyDetails.calculated.flatMap(_.amountDueOrRefund) match {
+                case Some(amount) if amount < 0 =>
+                  forwardBackLinkToNextPage(
+                    hasBankDetailsId, controllers.editLiability.routes.HasBankDetailsController.view(oldFormBundleNo)
+                  )
+                case Some(_) => viewSummaryDetails(propertyDetails)
+                case None => Future.successful(Redirect(controllers.routes.AccountSummaryController.view()))
+              }
           }
         }
       }
@@ -60,7 +69,14 @@ class EditLiabilitySummaryController @Inject()(mcc: MessagesControllerComponents
   def viewSummary(oldFormBundleNo: String): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
-        propertyDetailsService.calculateDraftChangeLiability(oldFormBundleNo).flatMap(viewSummaryDetails(_))
+        propertyDetailsService.calculateDraftChangeLiability(oldFormBundleNo).flatMap(
+          x => x.fold(
+            Future.successful(
+              Redirect(controllers.propertyDetails.routes.PropertyDetailsSummaryController.view(oldFormBundleNo))
+            )
+          )
+          (y => viewSummaryDetails(y))
+        )
       }
     }
   }
@@ -100,9 +116,9 @@ class EditLiabilitySummaryController @Inject()(mcc: MessagesControllerComponents
           calculateDraftLiability <- propertyDetailsService.calculateDraftChangeLiability(oldFormBundleNo)
           organisationName <- subscriptionDataService.getOrganisationName
         } yield {
-          Ok(views.html.editLiability.editLiabilityPrintFriendly(calculateDraftLiability, getReturnType(calculateDraftLiability),
-            PeriodUtils.getDisplayPeriods(calculateDraftLiability.period),
-            PeriodUtils.getCalculatedPeriodValues(calculateDraftLiability.calculated),
+          Ok(views.html.editLiability.editLiabilityPrintFriendly(calculateDraftLiability.get, getReturnType(calculateDraftLiability.get),
+            PeriodUtils.getDisplayPeriods(calculateDraftLiability.get.period),
+            PeriodUtils.getCalculatedPeriodValues(calculateDraftLiability.get.calculated),
             organisationName
           ))
         }

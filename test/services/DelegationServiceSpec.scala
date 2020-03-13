@@ -21,7 +21,7 @@ import models.{DelegationModel, Link, PrincipalTaxIdentifiers}
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.{reset, _}
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import play.api.libs.json.Json
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
