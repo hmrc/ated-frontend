@@ -35,18 +35,16 @@ class disposeLiabilityBankDetailsSpec extends FeatureSpec with GuiceOneAppPerSui
   implicit val request = FakeRequest()
   implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
-implicit val authContext: StandardAuthRetrievals = organisationStandardRetrievals
+  implicit val authContext: StandardAuthRetrievals = organisationStandardRetrievals
 
   val authMock: Enrolments ~ Some[AffinityGroup] ~ Some[String] = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
   setAuthMocks(authMock)
 
-    feature("The user can whether they have bank details") {
+    feature("The user can provide bank details when disposing a liability") {
 
-    info("as a client i want change whether I send my bank details")
+    scenario("the page allows the user to provide bank details") {
 
-    scenario("allow indicating bank details status") {
-
-      Given("the client is prompted to add thier bank details")
+      Given("the client is prompted to add their bank details")
       When("The user views the page")
 
       val html = views.html.editLiability.disposeLiabilityBankDetails(bankDetailsForm, "1", Some("http://backLink"))
@@ -66,9 +64,9 @@ implicit val authContext: StandardAuthRetrievals = organisationStandardRetrieval
       assert(document.getElementById("hasUKBankAccount-id").text() === "Is the bank account in the UK? Yes No")
       assert(document.getElementById("name-of-person").text() === "Name of bank account holder")
 
-      assert(document.getElementById("hidden-bank-details-uk").text() === "Account number Sort code First two numbers Second two numbers Third two numbers  ")
+      assert(document.getElementById("hidden-bank-details-uk").text() === "Account number Sort code First two numbers Second two numbers Third two numbers")
       assert(document.getElementById("account-number").text() === "Account number")
-      assert(document.getElementById("sort-code").text() === "Sort code First two numbers Second two numbers Third two numbers  ")
+      assert(document.getElementById("sort-code").text() === "Sort code First two numbers Second two numbers Third two numbers")
 
       assert(document.getElementById("hidden-bank-details-non-uk").text() === "IBAN SWIFT code")
       assert(document.getElementById("iban-code").text() === "IBAN")
