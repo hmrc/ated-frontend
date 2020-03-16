@@ -114,7 +114,7 @@ class PeriodSummaryController @Inject()(mcc: MessagesControllerComponents,
   }
 
   private def getBackLink(periodKey: Int): Some[String] = {
-    if (periodKey.equals(PeriodUtils.calculatePeriod())) {
+    if (periodKey.equals(PeriodUtils.calculatePeakStartYear())) {
       Some(routes.AccountSummaryController.view().url)
     } else {
       Some(routes.PrevPeriodsSummaryController.view().url)

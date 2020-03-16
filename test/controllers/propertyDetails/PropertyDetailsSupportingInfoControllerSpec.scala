@@ -56,7 +56,7 @@ class PropertyDetailsSupportingInfoControllerSpec extends PlaySpec with GuiceOne
   val mockEditLiabilitySummaryController: EditLiabilitySummaryController = mock[EditLiabilitySummaryController]
   val mockPropertyDetailsSummaryController: PropertyDetailsSummaryController = mock[PropertyDetailsSummaryController]
 
-  val periodKey: Int = PeriodUtils.calculatePeriod()
+  val periodKey: Int = PeriodUtils.calculatePeakStartYear()
 
   class Setup {
 

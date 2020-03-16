@@ -55,7 +55,7 @@ class PropertyDetailsTaxAvoidanceControllerSpec extends PlaySpec with GuiceOneSe
   val mockSubscriptionDataService: SubscriptionDataService = mock[SubscriptionDataService]
   val mockPropertyDetailsSupportingInfoController: PropertyDetailsSupportingInfoController = mock[PropertyDetailsSupportingInfoController]
 
-  val periodKey: Int = PeriodUtils.calculatePeriod()
+  val periodKey: Int = PeriodUtils.calculatePeakStartYear()
 
   class Setup {
 

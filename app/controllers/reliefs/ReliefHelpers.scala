@@ -34,7 +34,7 @@ trait ReliefHelpers {
 
   def validatePeriodKey(periodKey: Int)(block: Future[Result])
                        (implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier, request: Request[AnyContent], messages: Messages, appConfig: ApplicationConfig): Future[Result] = {
-    if (PeriodUtils.calculatePeriod(month = 3) >= periodKey) {
+    if (PeriodUtils.calculatePeakStartYear(month = 3) >= periodKey) {
       block
     } else {
       for {

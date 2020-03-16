@@ -52,7 +52,7 @@ class PeriodsInAndOutReliefControllerSpec extends PlaySpec with GuiceOneServerPe
   val mockBackLinkCacheConnector: BackLinkCacheConnector = mock[BackLinkCacheConnector]
   val mockPropertyDetailsTaxAvoidanceController: PropertyDetailsTaxAvoidanceController = mock[PropertyDetailsTaxAvoidanceController]
 
-  val periodKey: Int = PeriodUtils.calculatePeriod()
+  val periodKey: Int = PeriodUtils.calculatePeakStartYear()
 
   class Setup {
 

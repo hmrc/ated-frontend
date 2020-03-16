@@ -47,7 +47,7 @@ class AccountSummaryController @Inject()(mcc: MessagesControllerComponents,
     authAction.authorisedAction { implicit authContext =>
 
       val currentDate = dateService.now()
-      val taxYearStartingYear = PeriodUtils.calculatePeriod(currentDate)
+      val peakPeriodStartingYear = PeriodUtils.calculatePeakStartYear(currentDate)
 
       for {
         _ <- dataCacheConnector.clearCache()
@@ -71,7 +71,7 @@ class AccountSummaryController @Inject()(mcc: MessagesControllerComponents,
           clientBannerPartial.successfulContentOrEmpty,
           duringPeak,
           currentYear = currentDate.getYear,
-          taxYearStartingYear)
+          peakPeriodStartingYear)
         )
       }
     } recover {

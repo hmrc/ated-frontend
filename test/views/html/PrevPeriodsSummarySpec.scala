@@ -41,7 +41,7 @@ class PrevPeriodsSummarySpec extends PlaySpec with MockAuthUtil with GuiceOneApp
     .thenReturn("16")
 
   val periodKey2015: Int = 2015
-  lazy val currentPeriod: Int = PeriodUtils.calculatePeriod()
+  lazy val currentPeriod: Int = PeriodUtils.calculatePeakStartYear()
   val data: SummaryReturnsModel = summaryReturnsModel(periodKey = periodKey2015, withPastReturns = true)
   val currentPeriodDataOnly: SummaryReturnsModel = summaryReturnsModelCurrentOnly(periodKey = currentPeriod)
   val currentPeriodData: SummaryReturnsModel = summaryReturnsModel(periodKey = currentPeriod)
@@ -98,7 +98,7 @@ class PrevPeriodsSummarySpec extends PlaySpec with MockAuthUtil with GuiceOneApp
         lazy val document: Document = Jsoup.parse(view.body)
 
         assert(document.getElementById("prev-period-summary-header").text === s"Create an ATED return for " +
-          s"${PeriodUtils.calculatePeriod()-1} to ${PeriodUtils.calculatePeriod()} or earlier")
+          s"${PeriodUtils.calculatePeakStartYear()-1} to ${PeriodUtils.calculatePeakStartYear()} or earlier")
       }
     }
 
@@ -142,8 +142,8 @@ class PrevPeriodsSummarySpec extends PlaySpec with MockAuthUtil with GuiceOneApp
 
         lazy val document: Document = Jsoup.parse(view.body)
 
-        assert(document.getElementById("view-change-0").text.contains(s"Returns for ${PeriodUtils.calculatePeriod() - 1} to ${PeriodUtils.calculatePeriod()}"))
-        assert(document.getElementById("view-change-0").attr("href") === s"/ated/period-summary/${PeriodUtils.calculatePeriod() - 1}")
+        assert(document.getElementById("view-change-0").text.contains(s"Returns for ${PeriodUtils.calculatePeakStartYear() - 1} to ${PeriodUtils.calculatePeakStartYear()}"))
+        assert(document.getElementById("view-change-0").attr("href") === s"/ated/period-summary/${PeriodUtils.calculatePeakStartYear() - 1}")
 
         assert(document.getElementById("charge-number-0").text.contains("1"))
         assert(document.getElementById("draft-number-0").text.contains("2"))

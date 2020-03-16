@@ -19,9 +19,6 @@ package utils
 import config.ApplicationConfig
 import models._
 import org.joda.time.LocalDate
-import play.api.Play.current
-import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
 import utils.AtedConstants._
 
 
@@ -30,7 +27,7 @@ object PeriodUtils {
 
   val lowestBound = 2012
 
-  def calculatePeriod(date: LocalDate = new LocalDate(), month: Int = 3)(implicit appConfig: ApplicationConfig): Int = {
+  def calculatePeakStartYear(date: LocalDate = new LocalDate(), month: Int = 3)(implicit appConfig: ApplicationConfig): Int = {
     if(date.getMonthOfYear <= month && date.getDayOfMonth < appConfig.atedPeakStartDay.toInt) {
       date.minusYears(1).getYear
     } else {

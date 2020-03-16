@@ -51,7 +51,7 @@ class PeriodInReliefDatesControllerSpec extends PlaySpec with GuiceOneAppPerSuit
   val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
   val mockBackLinkCacheConnector: BackLinkCacheConnector = mock[BackLinkCacheConnector]
 
-  val periodKey: Int = PeriodUtils.calculatePeriod()
+  val periodKey: Int = PeriodUtils.calculatePeakStartYear()
 
   class Setup {
 

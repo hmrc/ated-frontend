@@ -46,7 +46,7 @@ class PrevPeriodsSummaryController @Inject()(mcc: MessagesControllerComponents,
       for {
         _ <- dataCacheConnector.clearCache()
         allReturns <- summaryReturnsService.getSummaryReturns
-          previousReturns = allReturns.returnsOtherTaxYears.filterNot(_.periodKey.equals(PeriodUtils.calculatePeriod() + 1))
+          previousReturns = allReturns.returnsOtherTaxYears.filterNot(_.periodKey.equals(PeriodUtils.calculatePeakStartYear() + 1))
         _ <- detailsService.cacheClientReference(authContext.atedReferenceNumber)
         correspondenceAddress <- subscriptionDataService.getCorrespondenceAddress
         organisationName <- subscriptionDataService.getOrganisationName
@@ -62,7 +62,7 @@ class PrevPeriodsSummaryController @Inject()(mcc: MessagesControllerComponents,
           clientBannerPartial.successfulContentOrEmpty,
           duringPeak,
           currentYear = dateService.now().getYear,
-          taxYearStartingYear = PeriodUtils.calculatePeriod(dateService.now()),
+          taxYearStartingYear = PeriodUtils.calculatePeakStartYear(dateService.now()),
           Some(controllers.routes.AccountSummaryController.view().url)
         ))
       }

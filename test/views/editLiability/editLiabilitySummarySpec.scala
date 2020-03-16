@@ -39,7 +39,7 @@ class editLiabilitySummarySpec extends FeatureSpec with GuiceOneServerPerSuite w
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
 
-  val thisYear: Int = calculatePeriod()
+  val thisYear: Int = calculatePeakStartYear()
   val nextYear: Int = thisYear + 1
 
   def formatDate(date: LocalDate): String = DateTimeFormat.forPattern("d MMMM yyyy").withZone(DateTimeZone.forID("Europe/London")).print(date)
@@ -68,7 +68,7 @@ class editLiabilitySummarySpec extends FeatureSpec with GuiceOneServerPerSuite w
       assert(document.getElementById("pre-heading").text() === "This section is: Change return")
 
       assert(document.getElementById("details-text").text() === s"For the ATED period from " +
-        s"${formatDate(periodStartDate(calculatePeriod()))} to ${formatDate(periodEndDate(calculatePeriod()))}.")
+        s"${formatDate(periodStartDate(calculatePeakStartYear()))} to ${formatDate(periodEndDate(calculatePeakStartYear()))}.")
       assert(document.getElementById("edit-liability-header").text() === "Property details")
 
       assert(document.getElementById("property-address-label").text() === "Address")
@@ -120,7 +120,7 @@ class editLiabilitySummarySpec extends FeatureSpec with GuiceOneServerPerSuite w
       assert(document.getElementById("pre-heading").text() === "This section is: Change return")
 
       assert(document.getElementById("details-text").text() === s"For the ATED period from " +
-        s"${formatDate(periodStartDate(calculatePeriod()))} to ${formatDate(periodEndDate(calculatePeriod()))}.")
+        s"${formatDate(periodStartDate(calculatePeakStartYear()))} to ${formatDate(periodEndDate(calculatePeakStartYear()))}.")
       assert(document.getElementById("edit-liability-header").text() === "Property details")
 
       assert(document.getElementById("property-address-label").text() === "Address")
@@ -171,7 +171,7 @@ class editLiabilitySummarySpec extends FeatureSpec with GuiceOneServerPerSuite w
       assert(document.getElementById("pre-heading").text() === "This section is: Change return")
 
       assert(document.getElementById("details-text").text() === s"For the ATED period from " +
-        s"${formatDate(periodStartDate(calculatePeriod()))} to ${formatDate(periodEndDate(calculatePeriod()))}.")
+        s"${formatDate(periodStartDate(calculatePeakStartYear()))} to ${formatDate(periodEndDate(calculatePeakStartYear()))}.")
       assert(document.getElementById("edit-liability-header").text() === "Property details")
 
       assert(document.getElementById("property-address-label").text() === "Address")

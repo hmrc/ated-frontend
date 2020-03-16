@@ -142,7 +142,7 @@ object PropertyDetailsBuilder {
   def getPropertyDetailsValuedByAgent(id: String,
                          postCode: Option[String] = None,
                          liabilityAmount: Option[BigDecimal] = None)(implicit appConfig: ApplicationConfig): PropertyDetails = {
-    val periodKey: Int = calculatePeriod()
+    val periodKey: Int = calculatePeakStartYear()
 
     PropertyDetails(
       id,
@@ -157,7 +157,7 @@ object PropertyDetailsBuilder {
   def getPropertyDetailsWithNoValue(id: String,
                          postCode: Option[String] = None,
                          liabilityAmount: Option[BigDecimal] = None)(implicit appConfig: ApplicationConfig): PropertyDetails = {
-    val periodKey: Int = calculatePeriod()
+    val periodKey: Int = calculatePeakStartYear()
 
     PropertyDetails(
       id,
@@ -175,7 +175,7 @@ object PropertyDetailsBuilder {
                              postCode: Option[String] = None,
                              liabilityAmount: Option[BigDecimal] = None
                             )(implicit appConfig: ApplicationConfig): PropertyDetails = {
-    val periodKey: Int = calculatePeriod()
+    val periodKey: Int = calculatePeakStartYear()
 
     PropertyDetails(
       id,
@@ -192,7 +192,7 @@ object PropertyDetailsBuilder {
                              postCode: Option[String] = None,
                              liabilityAmount: Option[BigDecimal] = None
                             )(implicit appConfig: ApplicationConfig): PropertyDetails = {
-    val periodKey: Int = calculatePeriod()
+    val periodKey: Int = calculatePeakStartYear()
 
     PropertyDetails(
       id,

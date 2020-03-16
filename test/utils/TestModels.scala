@@ -31,7 +31,7 @@ trait TestModels {
   val formBundleNo3: String = "876547696786"
 
   val currentYear: Int = LocalDate.now().getYear
-  lazy val currentTaxYear: Int = PeriodUtils.calculatePeriod(LocalDate.now())
+  lazy val currentTaxYear: Int = PeriodUtils.calculatePeakStartYear(LocalDate.now())
 
   val address: Address = {
     Address(name1 = Some("name1"),

@@ -36,6 +36,7 @@ class PeriodUtilsSpec extends PlaySpec with MockitoSugar with GuiceOneServerPerS
 
   val rentalBusinessDesc = "Property rental businesses"
   val openToPublicDesc = "Dwellings opened to the public"
+  val periodKey = 2015
 
   "PeriodUtils" must {
     "are valid start and end Date" in {
@@ -47,26 +48,19 @@ class PeriodUtilsSpec extends PlaySpec with MockitoSugar with GuiceOneServerPerS
     }
 
     "calculatePeriod" must {
-      "return the correct periodKey for the current tax year" in {
-        PeriodUtils.calculatePeriod() must be(PeriodUtils.calculatePeriod())
+
+      "return the correct periodKey when the current date is on the boundary before the next peak period" in {
+        PeriodUtils.calculatePeakStartYear(new LocalDate("2016-3-15")) must be(`2015`)
       }
 
-      "return the correct periodKey for before April" in {
-        PeriodUtils.calculatePeriod(new LocalDate("2016-3-1")) must be(`2015`)
-      }
-
-      "return the correct periodKey for after April" in {
-        PeriodUtils.calculatePeriod(new LocalDate("2016-5-1")) must be(`2016`)
-      }
-
-      "return the correct periodKey for the previous tax year" in {
-        PeriodUtils.calculatePeriod(new LocalDate("2014-5-1")) must be(`2014`)
+      "return the correct periodKey when the current date is on the boundary within the new peak period" in {
+        PeriodUtils.calculatePeakStartYear(new LocalDate("2016-3-16")) must be(`2016`)
       }
     }
 
     "isPeriodTooEarly" must {
       "calculate if the period is within the periodDate" in {
-        PeriodUtils.isPeriodTooEarly(PeriodUtils.calculatePeriod(), Some(new LocalDate().minusYears(1))) must be(true)
+        PeriodUtils.isPeriodTooEarly(PeriodUtils.calculatePeakStartYear(), Some(new LocalDate().minusYears(1))) must be(true)
       }
 
       "calculate if the period is too early for the periodDate" in {
@@ -110,14 +104,12 @@ class PeriodUtilsSpec extends PlaySpec with MockitoSugar with GuiceOneServerPerS
     }
   }
 
-
   "convert period" must {
     "return None if we have period" in {
       PeriodUtils.getDisplayPeriods(None).isEmpty must be(true)
     }
 
     "return an ordered list if we have periods" in {
-      val periodKey = 2015
       val liabilityPeriod1 = LineItem(AtedConstants.LiabilityReturnType,new LocalDate(s"$periodKey-4-1"),
         new LocalDate(s"$periodKey-8-31"))
       val liabilityPeriod2 = LineItem(AtedConstants.LiabilityReturnType,new LocalDate(s"${periodKey + 1}-2-1"),
@@ -153,7 +145,6 @@ class PeriodUtilsSpec extends PlaySpec with MockitoSugar with GuiceOneServerPerS
     }
 
     "return an ordered list of line items wherever the value or type has changed : Each item has changed and we have disposed of the property" in {
-      val periodKey = 2015
       val liabilityPeriod1 = FormBundleProperty(BigDecimal(123.45), new LocalDate(s"$periodKey-4-1"),
         new LocalDate(s"$periodKey-8-31"),  AtedConstants.LiabilityReturnType, None)
       val liabilityPeriod2 = FormBundleProperty(BigDecimal(123.45), new LocalDate(s"${periodKey + 1}-2-1"),
@@ -178,7 +169,6 @@ class PeriodUtilsSpec extends PlaySpec with MockitoSugar with GuiceOneServerPerS
     }
 
     "return an ordered list of line items wherever the value or type has changed : Merge two periods where value has changed and we have " in {
-      val periodKey = 2015
       val liabilityPeriod1a = FormBundleProperty(BigDecimal(123.45), new LocalDate(s"$periodKey-4-1"),
         new LocalDate(s"$periodKey-6-30"),  AtedConstants.LiabilityReturnType, None)
       val liabilityPeriod1b = FormBundleProperty(BigDecimal(999.45), new LocalDate(s"$periodKey-7-1"),
@@ -200,7 +190,6 @@ class PeriodUtilsSpec extends PlaySpec with MockitoSugar with GuiceOneServerPerS
     }
 
     "return an ordered list of line items wherever the value or type has changed : Merge multiple periods where value has changed" in {
-      val periodKey = 2015
       val liabilityPeriod1a = FormBundleProperty(BigDecimal(123.45), new LocalDate(s"$periodKey-4-1"),
         new LocalDate(s"$periodKey-6-30"),  AtedConstants.LiabilityReturnType, None)
       val liabilityPeriod1b = FormBundleProperty(BigDecimal(999.45), new LocalDate(s"$periodKey-7-1"),
@@ -283,7 +272,6 @@ class PeriodUtilsSpec extends PlaySpec with MockitoSugar with GuiceOneServerPerS
   }
 
   "getOrderedReturnPeriodValues" must {
-    val periodKey = 2015
     val dateOfValuation = new LocalDate(s"${periodKey}-4-1")
 
     "return Nil if we have no line items" in {

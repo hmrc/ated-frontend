@@ -185,7 +185,7 @@ class SummaryReturnsService @Inject()(atedConnector: AtedConnector,
 
   def generateCurrentTaxYearReturns(returns: Seq[PeriodSummaryReturns]): Future[(Seq[AccountSummaryRowModel], Int, Boolean)] = {
 
-    val currentTaxYear = PeriodUtils.calculatePeriod()
+    val currentTaxYear = PeriodUtils.calculatePeakStartYear()
 
     val submittedReturns = returns flatMap(_.submittedReturns)
 

@@ -96,7 +96,7 @@ object SummaryReturnsModel {
 
     def reads(json: JsValue): JsResult[SummaryReturnsModel] = {
 
-      val currentTaxYear = PeriodUtils.calculatePeriod(LocalDate.now())
+      val currentTaxYear = PeriodUtils.calculatePeakStartYear(LocalDate.now())
       val atedBalance: Option[BigDecimal] = (json \ "atedBalance").asOpt[BigDecimal]
       val allReturns: Seq[PeriodSummaryReturns] = (json \ "allReturns").as[Seq[PeriodSummaryReturns]]
 
