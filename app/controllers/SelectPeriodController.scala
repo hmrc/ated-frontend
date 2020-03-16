@@ -41,16 +41,15 @@ class SelectPeriodController @Inject()(mcc: MessagesControllerComponents,
 
   implicit val ec : ExecutionContext = mcc.executionContext
   val controllerId = "SelectPeriodController"
-  val year: Int = 2015
-  val month: Int = 4
-  val day: Int = 1
+
 
   def endDate(): LocalDate = LocalDate.now()
 
   def view: Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
-        val periods = PeriodUtils.getPeriods(new LocalDate(year, month, day), endDate().minusYears(1), appConfig)
+        val peakStartYear = PeriodUtils.calculatePeakStartYear()
+        val periods = PeriodUtils.getPeriods(peakStartYear)
         dataCacheConnector.fetchAndGetFormData[SelectPeriod](RetrieveSelectPeriodFormId) map {
           case Some(data) => Ok(views.html.selectPeriod(selectPeriodForm.fill(data), periods, getBackLink()))
           case _ => Ok(views.html.selectPeriod(selectPeriodForm, periods, getBackLink()))
@@ -62,7 +61,9 @@ class SelectPeriodController @Inject()(mcc: MessagesControllerComponents,
   def submit: Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
-        val periods = PeriodUtils.getPeriods(new LocalDate(year, month, day), endDate().minusYears(1), appConfig)
+
+        val peakStartYear = PeriodUtils.calculatePeakStartYear()
+        val periods = PeriodUtils.getPeriods(peakStartYear)
         selectPeriodForm.bindFromRequest.fold(
           formWithError => Future.successful(BadRequest(views.html.selectPeriod(formWithError, periods, getBackLink()))),
           periodData => {

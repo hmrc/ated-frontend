@@ -37,7 +37,7 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
-import utils.AtedConstants
+import utils.{AtedConstants, PeriodUtils}
 
 import scala.concurrent.Future
 
@@ -203,17 +203,19 @@ class SelectPeriodControllerSpec extends PlaySpec with GuiceOneAppPerSuite with 
         "for authorised user" must {
 
           "with invalid form, return BadRequest" in new Setup {
+            val peakStartYear: Int = PeriodUtils.calculatePeakStartYear()
             val inputJson: JsValue = Json.parse( """{"returnType": ""}""")
             submitWithAuthorisedUser(FakeRequest().withJsonBody(inputJson), Some("XN1200000100001")) {
               result =>
                 status(result) must be(BAD_REQUEST)
                 val doc = Jsoup.parse(contentAsString(result))
+
                 doc.getElementsByClass("error-notification").html() must include("Select an option for type of return")
                 contentAsString(result) must include("Select an option for type of return")
                 doc.getElementById("period-2015_field").text() must be("2015 to 2016")
                 doc.getElementById("period-2016_field").text() must be("2016 to 2017")
                 doc.getElementById("period-2017_field").text() must be("2017 to 2018")
-                assert(doc.getElementById("period-2018_field") === null)
+                assert(doc.getElementById(s"period-${peakStartYear}_field") === null)
             }
           }
 

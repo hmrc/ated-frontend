@@ -20,7 +20,6 @@ import config.ApplicationConfig
 import forms.AtedForms.selectPeriodForm
 import testhelpers.MockAuthUtil
 import models.StandardAuthRetrievals
-import org.joda.time.LocalDate
 import org.jsoup.Jsoup
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
@@ -48,8 +47,7 @@ class selectPeriodSpec extends FeatureSpec with GuiceOneServerPerSuite with Mock
       Given("The client is creating a new return and wants to tell us the year it is for")
       When("The user views the page")
 
-      val periods = PeriodUtils.getPeriods(new LocalDate(2015,4,1),
-        new LocalDate(2016,4,1), appConfig)
+      val periods = List("2015" -> "2015 to 2016", "2016" -> "2016 to 2017")
       val html = views.html.selectPeriod(selectPeriodForm, periods, Some("http://backLink"))
 
       val document = Jsoup.parse(html.toString())
@@ -63,7 +61,8 @@ class selectPeriodSpec extends FeatureSpec with GuiceOneServerPerSuite with Mock
       Then("The the text on the screen should be correct")
       assert(document.getElementById("details-text").text() === "The chargeable period for a year runs from the 1 April to 31 March.")
       assert(document.getElementById("showMoreYears").text() === "I want to submit a return before 2015")
-      assert(document.getElementById("showMoreYearsAnswer").text() === "Any ATED returns before these periods need to be submitted on a paper form. To request a paper form contact the call centre.")
+      assert(document.getElementById("showMoreYearsAnswer").text() === "Any ATED returns before these periods" +
+        " need to be submitted on a paper form. To request a paper form contact the call centre.")
       assert(document.getElementById("period-2015_field").text() == "2015 to 2016")
       assert(document.getElementById("period-2016_field").text() == "2016 to 2017")
       assert(document.getElementById("period-2017_field") == null)

@@ -21,7 +21,6 @@ import models._
 import org.joda.time.LocalDate
 import utils.AtedConstants._
 
-
 object PeriodUtils {
   implicit val localDateOrdering: Ordering[LocalDate] = Ordering.by(_.toDate.getTime)
 
@@ -102,12 +101,8 @@ object PeriodUtils {
     }.sorted
   }
 
-
-  // from 1st of march add the next period so they can start to submit draft periods
-  def getPeriods(startDate: LocalDate, endDate: LocalDate, applicationConfig: ApplicationConfig): List[(String,String)] = {
-    val startYear = if (startDate.getMonthOfYear >= 4) startDate.getYear else startDate.getYear-1
-    val endYear = if ((endDate.getMonthOfYear >= 3 && endDate.getDayOfMonth >= applicationConfig.atedPeakStartDay.toInt) || endDate.getMonthOfYear > 3) endDate.getYear else endDate.getYear-1
-    (startYear to endYear toList).reverse.map(x => s"$x" -> s"$x to ${x + 1}")
+  def getPeriods(peakStartYear: Int): List[(String,String)] = {
+    (2015 until peakStartYear toList).reverse.map(x => s"$x" -> s"$x to ${x + 1}")
   }
 
   def getCalculatedPeriodValues(calculated : Option[PropertyDetailsCalculated]): Seq[LineItemValue] = {
@@ -115,7 +110,7 @@ object PeriodUtils {
       items.map(item => FormBundleProperty(item.value, item.startDate, item.endDate, item.lineItemType, item.description))
     }
     (calculated, calculated.flatMap(_.acquistionDateToUse)) match {
-      case (Some(x), Some(valuationDate)) => getOrderedReturnPeriodValues(convert(x.liabilityPeriods) ++ convert(x.reliefPeriods), None)
+      case (Some(x), Some(_)) => getOrderedReturnPeriodValues(convert(x.liabilityPeriods) ++ convert(x.reliefPeriods), None)
       case _ => Nil
     }
   }

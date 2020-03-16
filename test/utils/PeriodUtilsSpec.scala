@@ -19,13 +19,15 @@ package utils
 import config.ApplicationConfig
 import models._
 import org.joda.time.LocalDate
+import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 
 class PeriodUtilsSpec extends PlaySpec with MockitoSugar with GuiceOneServerPerSuite {
 
-  implicit val appConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
+  implicit val mockAppConfig: ApplicationConfig = mock[ApplicationConfig]
+  when(mockAppConfig.atedPeakStartDay).thenReturn("16")
 
   val `2014` = 2014
   val `2015` = 2015
@@ -233,41 +235,15 @@ class PeriodUtilsSpec extends PlaySpec with MockitoSugar with GuiceOneServerPerS
 
 
   "getPeriods" must {
-    "return correct list of periods for dates before april" in {
-      val startDate = new LocalDate(`2015`, 1, 1)
-      val endDate = new LocalDate(`2017`, 1, 1)
 
-      PeriodUtils.getPeriods(startDate, endDate, appConfig).reverse must be (List("2014" -> "2014 to 2015", "2015" -> "2015 to 2016", "2016" -> "2016 to 2017"))
-    }
+    "include the chargeable periods up to the year of the current peak period / chargeable period" in {
 
-    "return correct list of periods for dates after april" in {
-      val startDate = new LocalDate(`2015`, 4, 1)
-      val endDate = new LocalDate(`2017`, 3, 16)
-
-      PeriodUtils.getPeriods(startDate, endDate, appConfig).reverse must be (List("2015" -> "2015 to 2016", "2016" -> "2016 to 2017", "2017" -> "2017 to 2018"))
-    }
-
-    "return correct list of periods for date 14 March (don't show period for next tax year)" in {
-      val startDate = new LocalDate(`2015`, 4, 1)
-      val endDate = new LocalDate(`2017`, 3, 14)
-
-      PeriodUtils.getPeriods(startDate, endDate, appConfig).reverse must be (List("2015" -> "2015 to 2016", "2016" -> "2016 to 2017"))
-    }
-
-    "return correct list of periods for date 15 March (don't show period for next tax year)" in {
-
-      val startDate = new LocalDate(`2015`, 4, 1)
-      val endDate = new LocalDate(`2017`, 3, 15)
-
-      PeriodUtils.getPeriods(startDate, endDate, appConfig).reverse must be (List("2015" -> "2015 to 2016", "2016" -> "2016 to 2017"))
-    }
-
-    "return correct list of periods for date after 17 March (show period for next tax year)" in {
-
-      val startDate = new LocalDate(`2015`, 4, 1)
-      val endDate = new LocalDate(`2017`, 3, 16)
-
-      PeriodUtils.getPeriods(startDate, endDate, appConfig).reverse must be (List("2015" -> "2015 to 2016", "2016" -> "2016 to 2017", "2017" -> "2017 to 2018"))
+      PeriodUtils.getPeriods(`2019`) must be(List(
+        "2018" -> "2018 to 2019",
+        "2017" -> "2017 to 2018",
+        "2016" -> "2016 to 2017",
+        "2015" -> "2015 to 2016"
+      ))
     }
   }
 

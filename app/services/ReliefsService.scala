@@ -141,8 +141,8 @@ class ReliefsService @Inject()(atedConnector: AtedConnector,
     }
   }
 
-  def viewReliefReturn(periodKey: Int, formBundleNo: String)
-                      (implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier, appConfig: ApplicationConfig): Future[(Option[SubmittedReliefReturns], Boolean)] = {
+  def viewReliefReturn(periodKey: Int, formBundleNo: String)(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier,
+                       appConfig: ApplicationConfig): Future[(Option[SubmittedReliefReturns], Boolean)] = {
     for {
       cachedReturns <- dataCacheConnector.fetchAndGetFormData[SummaryReturnsModel](RetrieveReturnsResponseId)
     } yield {
