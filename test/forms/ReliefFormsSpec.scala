@@ -16,7 +16,6 @@
 
 package forms
 
-import config.ApplicationConfig
 import forms.ReliefForms.taxAvoidanceForm
 import models._
 import org.joda.time.LocalDate
@@ -28,16 +27,16 @@ import play.api.data.{Form, FormError}
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
-import utils.PeriodUtils
 
 class ReliefFormsSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar {
 
-  implicit  val mockAppCongfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
   implicit lazy val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
   implicit lazy val messages: Messages = messagesApi.preferred(FakeRequest())
 
   val noPromoterErrorMessage = "ated.avoidance-schemes.promoter.empty"
   val noSchemeErrorMessage = "ated.avoidance-schemes.scheme.empty"
+  val periodKey: Int = 2019
+
   "validateTaxAvoidance" must {
     "fail if we have no data" in {
 
@@ -252,7 +251,6 @@ class ReliefFormsSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoS
   }
 
   "validatePeriodStartDate" must {
-    val periodKey = PeriodUtils.calculatePeriod()
     val field = "rentalBusiness"
 
     "throw validation error" when {
@@ -272,7 +270,7 @@ class ReliefFormsSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoS
       }
 
       "reliefSelected is true and period is too late" in {
-        val startDate = Some(new LocalDate().plusYears(1))
+        val startDate = Some(new LocalDate(s"${periodKey + 1}-04-01"))
         val validationResult = ReliefForms.validatePeriodStartDate(periodKey, reliefSelected = true, startDate, field, field)
         val expectedError = "ated.choose-reliefs.error.date.chargePeriod"
 
@@ -285,14 +283,21 @@ class ReliefFormsSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoS
         val validationResult = ReliefForms.validatePeriodStartDate(periodKey, reliefSelected = false, None, field, field)
         validationResult mustBe Valid
       }
+
+      "reliefSelected is true and start date is within the taxable period" in {
+        val startDate = Some(new LocalDate(s"$periodKey-03-31"))
+        val validationResult = ReliefForms.validatePeriodStartDate(periodKey, reliefSelected = true, startDate, field, field)
+        val expectedError = "ated.choose-reliefs.error.date.chargePeriod"
+
+        validationResult mustBe Invalid(List(ValidationError(List(expectedError),field)))
+      }
     }
   }
 
   "reliefSelectedConstraint" must {
     "throw validation error" when {
       "there is no relief option selected" in {
-        val year = 2015
-        val form: Form[Reliefs] = ReliefForms.reliefsForm.bind(Json.obj("periodKey" -> year))
+        val form: Form[Reliefs] = ReliefForms.reliefsForm.bind(Json.obj("periodKey" -> periodKey))
         form.hasErrors mustBe true
         form.errors must contain (FormError("", List("ated.choose-reliefs.error"),List("reliefs")))
       }
@@ -300,9 +305,8 @@ class ReliefFormsSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoS
 
     "not throw validation error" when {
       "there is a relief option selected" in {
-        val year = 2015
-        val form: Form[Reliefs] = ReliefForms.reliefsForm.bind(Json.obj("periodKey" -> year,
-          "rentalBusiness" -> true, "rentalBusinessDate" ->  Map("day" -> "1", "month" -> "7", "year" -> year.toString)))
+        val form: Form[Reliefs] = ReliefForms.reliefsForm.bind(Json.obj("periodKey" -> periodKey,
+          "rentalBusiness" -> true, "rentalBusinessDate" ->  Map("day" -> "1", "month" -> "7", "year" -> periodKey.toString)))
         form.hasErrors mustBe false
       }
     }

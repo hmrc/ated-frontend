@@ -30,7 +30,7 @@ object PeriodUtils {
 
   val lowestBound = 2012
 
-  def calculatePeriod(date: LocalDate = new LocalDate(), month:Int = 3)(implicit appConfig: ApplicationConfig): Int = {
+  def calculatePeriod(date: LocalDate = new LocalDate(), month: Int = 3)(implicit appConfig: ApplicationConfig): Int = {
     if(date.getMonthOfYear <= month && date.getDayOfMonth < appConfig.atedPeakStartDay.toInt) {
       date.minusYears(1).getYear
     } else {

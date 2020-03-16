@@ -215,15 +215,15 @@ class SummaryReturnsServiceSpec extends PlaySpec with MockitoSugar with BeforeAn
         await(result) must be(
           List(
             AccountSummaryRowModel(returnType = "ated.draft", description = "desc",
-              route = "/ated/period-summary/2019/view-chargeable-edit/1"),
+              route = s"/ated/period-summary/$currentTaxYear/view-chargeable-edit/1"),
             AccountSummaryRowModel(returnType = "ated.draft", description = "some relief",
-              route = "/ated/period-summary/2019/view-return"),
+              route = s"/ated/period-summary/$currentTaxYear/view-return"),
             AccountSummaryRowModel(returnType = "ated.draft", description = "liability draft",
-              route = "/ated/period-summary/2019/view-chargeable/1"),
+              route = s"/ated/period-summary/$currentTaxYear/view-chargeable/1"),
             AccountSummaryRowModel(returnType = "ated.draft", description = "dispose liability draft",
-              route = "/ated/period-summary/2019/view-disposal/"),
+              route = s"/ated/period-summary/$currentTaxYear/view-disposal/"),
             AccountSummaryRowModel(formBundleNo = Some("123456789013"), returnType = "ated.submitted",
-              description = "addr1+2", route = "/ated/form-bundle/123456789013/2019")),
+              description = "addr1+2", route = s"/ated/form-bundle/123456789013/$currentTaxYear")),
           6, true)
       }
 
@@ -237,14 +237,14 @@ class SummaryReturnsServiceSpec extends PlaySpec with MockitoSugar with BeforeAn
         await(result) must be(
           List(
             AccountSummaryRowModel(returnType = "ated.draft", description = "desc",
-              route = "/ated/period-summary/2019/view-chargeable-edit/1"),
+              route = s"/ated/period-summary/$currentTaxYear/view-chargeable-edit/1"),
             AccountSummaryRowModel(returnType = "ated.draft", description = "some relief",
-              route = "/ated/period-summary/2019/view-return"),
+              route = s"/ated/period-summary/$currentTaxYear/view-return"),
             AccountSummaryRowModel(formBundleNo = Some("123456789013"), returnType = "ated.submitted",
-              description = "addr1+2", route = "/ated/form-bundle/123456789013/2019"),
+              description = "addr1+2", route = s"/ated/form-bundle/123456789013/$currentTaxYear"),
             AccountSummaryRowModel(
               formBundleNo = Some("123456789012"), returnType = "ated.submitted",
-              description = "some relief", route = "/ated/view-relief-return/2019/123456789012")),
+              description = "some relief", route = s"/ated/view-relief-return/$currentTaxYear/123456789012")),
           4, false)
       }
     }

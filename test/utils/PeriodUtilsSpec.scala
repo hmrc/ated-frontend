@@ -22,7 +22,6 @@ import org.joda.time.LocalDate
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
-import play.api.test.FakeRequest
 
 class PeriodUtilsSpec extends PlaySpec with MockitoSugar with GuiceOneServerPerSuite {
 
@@ -33,6 +32,7 @@ class PeriodUtilsSpec extends PlaySpec with MockitoSugar with GuiceOneServerPerS
   val `2016` = 2016
   val `2017` = 2017
   val `2018` = 2018
+  val `2019` = 2019
 
   val rentalBusinessDesc = "Property rental businesses"
   val openToPublicDesc = "Dwellings opened to the public"
@@ -102,7 +102,7 @@ class PeriodUtilsSpec extends PlaySpec with MockitoSugar with GuiceOneServerPerS
 
     "isPeriodTooLate" must {
       "calculate if the period is within the periodDate" in {
-        PeriodUtils.isPeriodTooLate(PeriodUtils.calculatePeriod(), Some(new LocalDate().plusYears(1))) must be(true)
+        PeriodUtils.isPeriodTooLate(`2019`, Some(new LocalDate().plusYears(1))) must be(true)
       }
       "calculate if the period is too late for the periodDate" in {
         PeriodUtils.isPeriodTooLate(`2015`, None) must be(false)
