@@ -373,7 +373,7 @@ ated.prev-period-summary.agent.no-previous-returns = You have no previous return
 ated.prev-period-summary.createRuturn.text = Create a new ATED return for the chargeable period
 
 ated.prev-period-summary.agent-appoint.text = You can appoint an agent to act on your behalf or create your own returns.
-ated.prev-period-summary.appoint-agent-info.text = If you want to appoint an agent you need to re-authorise your agent as the 64-8 and the ATED 1 does not cover the new online service.
+ated.prev-period-summary.appoint-agent-info.text = If you want to appoint an agent you need to re-authorise your agent as the 64-8 and the ATED 1 do not cover the new online service.
 ated.prev-period-summary.chareablePeriods.text = View or change returns for these chargeable periods.
 
 ated.prev-period-summary.sidebar.balance-info= There can be a 24-hour delay before you see any updates to your balance.
@@ -417,7 +417,7 @@ ated.account-summary.create-new-return = Create a new return for {0} to {1}
 ated.summary-return.sidebar.contact-details.header = ATED contact
 ated.account-summary.agent.no-returns = You have no returns
 ated.account-summary.agent-appoint.text = You can appoint an agent to act on your behalf or create your own returns.
-ated.account-summary.appoint-agent-info.text = If you want to appoint an agent you need to re-authorise your agent as the 64-8 and the ATED 1 does not cover the new online service.
+ated.account-summary.appoint-agent-info.text = If you want to appoint an agent you need to re-authorise your agent as the 64-8 and the ATED 1 do not cover the new online service.
 
 ated.summary-return.sidebar.balance-info= There can be a 24-hour delay before you see any updates to your balance.
 ated.summary-return.sidebar.ated-reference.text = ATED reference
