@@ -155,6 +155,18 @@ POST     /liability/create/new-build/save/:propertyKey/period/:periodKey       c
 GET      /liability/create/valued/view/:propertyKey                            controllers.propertyDetails.PropertyDetailsProfessionallyValuedController.view(propertyKey: String)
 GET      /liability/create/valued/edit/:propertyKey                            controllers.propertyDetails.PropertyDetailsProfessionallyValuedController.editFromSummary(propertyKey: String)
 
+GET      /liability/create/new-build-start/view/:propertyKey                   controllers.propertyDetails.PropertyDetailsNewBuildDatesController.view(propertyKey: String)
+POST     /liability/create/new-build-start/save/:propertyKey/period/:periodKey          controllers.propertyDetails.PropertyDetailsNewBuildDatesController.save(propertyKey: String, periodKey: Int, mode: Option[String] ?=None)
+
+GET      /liability/create/new-build-value/view/:propertyKey                   controllers.propertyDetails.PropertyDetailsNewBuildValueController.view(propertyKey: String)
+POST     /liability/create/new-build-value/save/:propertyKey/period/:periodKey/date/:date             controllers.propertyDetails.PropertyDetailsNewBuildValueController.save(propertyKey: String, periodKey: Int, mode: Option[String] ?=None, date: org.joda.time.LocalDate)
+
+GET      /liability/create/when-acquired/view/:propertyKey                     controllers.propertyDetails.PropertyDetailsWhenAcquiredController.view(propertyKey: String)
+POST     /liability/create/when-acquired/save/:propertyKey/period/:periodKey                    controllers.propertyDetails.PropertyDetailsWhenAcquiredController.save(propertyKey: String, periodKey: Int, mode: Option[String] ?=None)
+
+GET      /liability/create/value-acquired/view/:propertyKey                    controllers.propertyDetails.PropertyDetailsValueAcquiredController.view(propertyKey: String)
+POST     /liability/create/value-acquired/save/:propertyKey/period/:periodKey/date/:date                controllers.propertyDetails.PropertyDetailsValueAcquiredController.save(propertyKey: String, periodKey: Int, mode: Option[String] ?=None, date: org.joda.time.LocalDate)
+
 POST     /liability/create/valued/save/:propertyKey/period/:periodKey          controllers.propertyDetails.PropertyDetailsProfessionallyValuedController.save(propertyKey: String, periodKey: Int, mode: Option[String] ?=None)
 
 GET      /liability/create/full-tax-period/edit-summary/:propertyKey           controllers.propertyDetails.IsFullTaxPeriodController.editFromSummary(propertyKey: String)

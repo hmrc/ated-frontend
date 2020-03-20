@@ -61,6 +61,18 @@ trait AtedViewSpec extends PlaySpec with JsoupArgumentMatchers with GuiceOneServ
     }
   }
 
+  def pageWithElementAndText(element: String, value: String): Unit = { //TODO refactor to be nicer
+    s"have a id named $element with value $value" in {
+      doc must haveElementWithIdAndText(value, element)
+    }
+  }
+
+  def pageWithElement(element: String): Unit = {
+    s"have an id named $element" in {
+      doc must haveElementWithId(element)
+    }
+  }
+
   def pageWithYesNoRadioButton(
                                 idYes: String,
                                 idNo: String,

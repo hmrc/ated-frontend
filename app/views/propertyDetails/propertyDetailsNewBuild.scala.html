@@ -53,6 +53,10 @@
   @pageHeadersAndError(backLink, "pre-heading", messages(AtedUtils.getPropertyDetailsPreHeader(mode)), messages("property-details-header"), messages("ated.property-details-value.isNewBuild.header"),
       Some(atedErrorWithBoundarySummary(propertyDetailsForm, "ated.property-details-value-error.general", None, periodKey)))
 
+    <p>
+        @messages("ated.property-details-value.isNewBuild.paragraph")
+    </p>
+
   @form(action = controllers.propertyDetails.routes.PropertyDetailsNewBuildController.save(id, periodKey, mode)) {
 
     <div class="form-group">
@@ -73,61 +77,12 @@
 
       <div class="form-group">
         <div id="newBuild" class="panel-indent js-hidden">
-          @atedDateFieldsFree(
-          formItem = propertyDetailsForm,
-          fieldName = "newBuildDate",
-          label = Html(messages("ated.property-details-value.newBuildDate")),
-          isNested = false,
-          defaultDateOption = None,
-          periodKey,
-          '_groupClass -> "form-group date-of-birth",
-          '_idName -> "newBuildDate"
-          )
-
-          @atedDateFieldsFree(
-          formItem = propertyDetailsForm,
-          fieldName = "localAuthRegDate",
-          label = Html(messages("ated.property-details-value.localAuthRegDate")),
-          isNested = false,
-          defaultDateOption = None,
-          periodKey,
-          '_groupClass -> "form-group date-of-birth",
-          '_idName -> "localAuthRegDate"
-          )
-
-          @atedInputValue(propertyDetailsForm("newBuildValue"),
-          '_label -> Html(messages("ated.property-details-value.newBuildValue")),
-          '_labelClass -> "form-label-bold",
-          '_inputClass -> "form-control-indent",
-          '_hintText -> messages("ated.property-details-value.newBuildValue.hint"),
-          '_id -> "newBuildValue",
-          '_showConstraints -> false,
-          '_type -> "text")
-        </div>
-
-
-
-        <div id="notNewBuild" class="panel-indent js-hidden">
-          @atedDateFieldsFree(
-          formItem = propertyDetailsForm,
-          fieldName = "notNewBuildDate",
-          label = Html(messages("ated.property-details-value.notNewBuildDate")),
-          isNested = false,
-          defaultDateOption = None,
-          periodKey,
-          '_hintText -> messages("ated.property-details-value.notNewBuildDate.hint"),
-          '_groupClass -> "form-group date-of-birth",
-          '_idName -> "notNewBuildDate"
-          )
-
-          @atedInputValue(propertyDetailsForm("notNewBuildValue"),
-          '_label -> Html(messages("ated.property-details-value.notNewBuildValue")),
-          '_labelClass -> "form-label-bold",
-          '_inputClass -> "form-control-indent",
-          '_hintText -> messages("ated.property-details-value.notNewBuildValue.hint"),
-          '_id -> "notNewBuildValue",
-          '_showConstraints -> false,
-          '_type -> "text")
+            <p>@messages("ated.property-details-value.isNewBuild.yesParagraphOne")
+                <a href="https://www.gov.uk/government/publications/stld-annual-tax-on-enveloped-dwellings-ated/annual-tax-on-enveloped-dwellings-returns-guidance#sec2">
+                    @messages("ated.property-details-value.isNewBuild.yesParagraphTwo")
+                </a>
+                @messages("ated.property-details-value.isNewBuild.yesParagraphThree")
+            </p>
         </div>
       </div>
 

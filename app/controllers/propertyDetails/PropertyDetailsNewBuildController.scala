@@ -19,7 +19,6 @@ package controllers.propertyDetails
 import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.{AuthAction, ClientHelper}
-import forms.PropertyDetailsForms
 import forms.PropertyDetailsForms._
 import javax.inject.Inject
 import models.PropertyDetailsNewBuild
@@ -32,9 +31,10 @@ import utils.AtedUtils
 import scala.concurrent.{ExecutionContext, Future}
 
 
-class PropertyDetailsNewBuildController @Inject()(mcc : MessagesControllerComponents,
+class PropertyDetailsNewBuildController @Inject()(mcc: MessagesControllerComponents,
                                                   authAction: AuthAction,
-                                                  propertyDetailsProfessionallyValuedController: PropertyDetailsProfessionallyValuedController,
+                                                  propertyDetailsNewBuildDatesController: PropertyDetailsNewBuildDatesController,
+                                                  propertyDetailsWhenAcquiredController: PropertyDetailsWhenAcquiredController,
                                                   val propertyDetailsService: PropertyDetailsService,
                                                   val dataCacheConnector: DataCacheConnector,
                                                   val backLinkCacheConnector: BackLinkCacheConnector)
@@ -52,12 +52,7 @@ class PropertyDetailsNewBuildController @Inject()(mcc : MessagesControllerCompon
           case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
             currentBackLink.flatMap { backLink =>
               dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
-                val displayData = PropertyDetailsNewBuild(propertyDetails.value.flatMap(_.isNewBuild),
-                  newBuildValue = propertyDetails.value.flatMap(_.newBuildValue),
-                  newBuildDate = propertyDetails.value.flatMap(_.newBuildDate),
-                  localAuthRegDate = propertyDetails.value.flatMap(_.localAuthRegDate),
-                  notNewBuildDate = propertyDetails.value.flatMap(_.notNewBuildDate),
-                  notNewBuildValue = propertyDetails.value.flatMap(_.notNewBuildValue)
+                val displayData = PropertyDetailsNewBuild(propertyDetails.value.flatMap(_.isNewBuild)
                 )
                 Future.successful(Ok(views.html.propertyDetails.propertyDetailsNewBuild(id,
                   propertyDetails.periodKey,
@@ -75,7 +70,7 @@ class PropertyDetailsNewBuildController @Inject()(mcc : MessagesControllerCompon
   def save(id: String, periodKey: Int, mode: Option[String]): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
-        PropertyDetailsForms.validatePropertyDetailsNewBuild(periodKey, propertyDetailsNewBuildForm.bindFromRequest).fold(
+        propertyDetailsNewBuildForm.bindFromRequest.fold(
           formWithError => {
             currentBackLink.map(backLink =>
               BadRequest(views.html.propertyDetails.propertyDetailsNewBuild(id, periodKey, formWithError, mode, backLink))
@@ -85,11 +80,21 @@ class PropertyDetailsNewBuildController @Inject()(mcc : MessagesControllerCompon
             for {
               _ <- propertyDetailsService.saveDraftPropertyDetailsNewBuild(id, propertyDetails)
               result <-
-              redirectWithBackLink(
-                propertyDetailsProfessionallyValuedController.controllerId,
-                controllers.propertyDetails.routes.PropertyDetailsProfessionallyValuedController.view(id),
-                Some(controllers.propertyDetails.routes.PropertyDetailsNewBuildController.view(id).url)
-              )
+                propertyDetails.isNewBuild match {
+                  case Some(true) =>
+                    redirectWithBackLink(
+                      propertyDetailsNewBuildDatesController.controllerId,
+                      controllers.propertyDetails.routes.PropertyDetailsNewBuildDatesController.view(id),
+                      Some(controllers.propertyDetails.routes.PropertyDetailsNewBuildController.view(id).url)
+                    )
+                  case Some(false) =>
+                    redirectWithBackLink(
+                      propertyDetailsWhenAcquiredController.controllerId,
+                      controllers.propertyDetails.routes.PropertyDetailsWhenAcquiredController.view(id),
+                      Some(controllers.propertyDetails.routes.PropertyDetailsNewBuildController.view(id).url)
+                    )
+                  case _ => Future.successful(Ok)
+                }
             } yield result
           }
         )
@@ -97,4 +102,3 @@ class PropertyDetailsNewBuildController @Inject()(mcc : MessagesControllerCompon
     }
   }
 }
-

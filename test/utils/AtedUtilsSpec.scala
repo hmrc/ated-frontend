@@ -223,4 +223,21 @@ class AtedUtilsSpec extends PlaySpec with MockitoSugar with GuiceOneServerPerSui
       }
     }
   }
+
+  "getEarliestDate" should {
+    "return the earliest of two dates" in {
+      val earliestDate = new LocalDate("2009-01-01")
+      val laterDate = new LocalDate("2010-03-03")
+      AtedUtils.getEarliestDate(earliestDate,laterDate) must be(earliestDate)
+    }
+  }
+
+  "intToMonth" should {
+    "return the string representation for a month integer" in {
+      val testIntegerMonth = 3
+
+      AtedUtils.intToMonth(testIntegerMonth) must be("March")
+    }
+  }
+
 }

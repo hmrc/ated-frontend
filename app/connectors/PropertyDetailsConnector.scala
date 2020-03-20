@@ -20,10 +20,12 @@ import config.ApplicationConfig
 import javax.inject.Inject
 import models._
 import org.joda.time.LocalDate
+import play.api.libs.json
 import play.api.libs.json.JodaWrites._
 import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
+
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
@@ -47,6 +49,10 @@ class PropertyDetailsConnector @Inject()(appConfig: ApplicationConfig,
   val saveDraftPropertyDetailsRevaluedURI = "property-details/revalued"
   val saveDraftPropertyDetailsOwnedBeforeURI = "property-details/owned-before"
   val saveDraftPropertyDetailsNewBuildURI = "property-details/new-build"
+  val saveDraftPropertyDetailsNewBuildDatesURI = "property-details/new-build-dates"
+  val saveDraftPropertyDetailsWhenAcquiredDatesURI = "property-details/when-acquired"
+  val saveDraftPropertyDetailsNewBuildValueURI = "property-details/new-build-value"
+  val saveDraftPropertyDetailsValueOnAcquisitionURI = "property-details/value-acquired"
   val saveDraftPropertyDetailsFullTaxPeriodURI = "property-details/full-tax-period"
   val saveDraftPropertyDetailsInReliefURI = "property-details/in-relief"
 
@@ -132,6 +138,38 @@ class PropertyDetailsConnector @Inject()(appConfig: ApplicationConfig,
     val postUrl = s"""$serviceURL$authLink/$saveDraftPropertyDetailsNewBuildURI/$id"""
     val jsonData = Json.toJson(propertyDetails)
     http.POST[JsValue, HttpResponse](postUrl, jsonData)
+  }
+
+  def saveDraftPropertyDetailNewBuildDates(id: String, propertyDetailsNewBuildDates: PropertyDetailsNewBuildDates)
+                                          (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[HttpResponse] = {
+    val authLink = authContext.atedReferenceNumber
+    val postUrl = s"""$serviceURL$authLink/$saveDraftPropertyDetailsNewBuildDatesURI/$id"""
+    val jsonData = Json.toJson(propertyDetailsNewBuildDates)
+    http.POST[JsValue, HttpResponse](postUrl, jsonData)
+  }
+
+  def saveDraftPropertyDetailsWhenAcquiredDates(id: String, propertyDetailsWhenAcquiredDates: PropertyDetailsWhenAcquiredDates)
+                                               (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[HttpResponse] = {
+    val authLink = authContext.atedReferenceNumber
+    val postUrl = s"""$serviceURL$authLink/$saveDraftPropertyDetailsWhenAcquiredDatesURI/$id"""
+    val jsonData = Json.toJson(propertyDetailsWhenAcquiredDates)
+    http.POST[JsValue, HttpResponse](postUrl, jsonData)
+  }
+
+  def saveDraftPropertyDetailsNewBuildValue(id: String, propertyDetailsNewBuildValue: PropertyDetailsNewBuildValue)
+                                           (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[HttpResponse] = {
+    val authLink = authContext.atedReferenceNumber
+    val postUrl = s"""$serviceURL$authLink/$saveDraftPropertyDetailsNewBuildValueURI/$id"""
+    val jsonData = Json.toJson(propertyDetailsNewBuildValue)
+    http.POST[json.JsValue, HttpResponse](postUrl, jsonData)
+  }
+
+  def saveDraftPropertyDetailsValueAcquired(id: String, propertyDetailsValueOnAcquisition: PropertyDetailsValueOnAcquisition)
+                                           (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[HttpResponse] = {
+    val authLink = authContext.atedReferenceNumber
+    val postUrl = s"""$serviceURL$authLink/$saveDraftPropertyDetailsValueOnAcquisitionURI/$id"""
+    val jsonData = Json.toJson(propertyDetailsValueOnAcquisition)
+    http.POST[json.JsValue, HttpResponse](postUrl, jsonData)
   }
 
   def saveDraftIsFullTaxPeriod(id: String, isFullPeriod: IsFullTaxPeriod)

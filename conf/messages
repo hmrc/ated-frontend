@@ -500,6 +500,59 @@ ated.property-details-address-error.general.addressProperty.line_4 = There is a 
 ated.property-details-address-error.general.addressProperty.postcode = There is a problem with the postcode
 ated.property-details-address-error.general.titleNumber = There is a problem with property’s title number
 
+##### PROPERTY DETAILS NEW BUILD DATES
+
+ated.property-details-value.newBuildDates.title = Enter the start date for the property
+ated.property-details-value.newBuildDates.header = Enter the start date for the property
+ated.property-details-value.newBuildDates.paragraphOne = This is the start date we will use to calculate your filing deadline of 90 days. If you have one of these dates but not the other one, enter that date for both questions.
+ated.property-details-value.newBuildDates.paragraphTwo = If you have both dates, enter them both. HMRC will use the earlier date.
+ated.property-details-value.newBuildDates.dateQuestionOne = When was the property first occupied?
+ated.property-details-value.newBuildDates.dateQuestionTwo = When did the local council register the property for council tax (completion date)?
+ated.property-details-value.newBuildDates.exampleDate = For example 31 3 2018
+
+ated.property-details-value.newBuildOccupyDate.error.not-in-period = The date when the property was first occupied must be in the chargeable period
+ated.property-details-value.newBuildOccupyDate.error.too-early = The date when the property was first occupied must be in the chargeable period
+ated.property-details-value.newBuildRegisterDate.error.not-in-period = The registration date must be in the chargeable period
+ated.property-details-value.newBuildRegisterDate.error.too-early = The date when the property was first occupied must be in the chargeable period
+
+ated.property-details-value-error.newBuildDates.errorEmpty = You must enter a property first occupied date or a registration date
+ated.property-details-value-error.newBuildDates.occupiedDateError = The date when the property was first occupied must be in the chargeable period
+ated.property-details-value-error.newBuildDates.councilRegError = The registration date must be in the chargeable period
+ated.property-details-value-error.newBuildDates.futureOccupiedError = The date when the property was first occupied cannot be in the future
+ated.property-details-value-error.newBuildDates.futureRegError = The registration date cannot be in the future
+ated.property-details-value-error.newBuildDates.invalidOccupiedDateError = Enter a real date when the property was first occupied
+ated.property-details-value-error.newBuildDates.invalidRegDateError = Enter a real registration date
+
+##### PROPERTY DETAILS NEW BUILD VALUE
+
+ated.property-details-value.newBuildValue.title = What was the value of the property on {0} {1} {2}?
+ated.property-details-value.newBuildValue.header = What was the value of the property on {0} {1} {2}?
+ated.property-details-value.newBuildValue.paragraphExample = Enter the value in GBP, for example £1,500,000?
+ated.property-details-value.newBuildValue.newBuildValueQuestion = What was the value of the property in GBP at this date?
+ated.property-details-value.newBuildValue.hintText = Enter the value in GBP, for example £1,500,000
+
+ated.property-details-value-error.newBuildValue.emptyValue = You must enter the value of the property on the start date
+ated.property-details-value-error.newBuildValue.invalidValue = The value of the property must be an amount of money
+
+##### PROPERTY DETAILS DATE ACQUIRED
+
+ated.property-details-value.whenAcquired.title = When did you acquire the property?
+ated.property-details-value.whenAcquired.header = When did you acquire the property?
+ated.property-details-value.whenAcquired.dateQuestion = What date was the property acquired?
+ated.property-details-value.whenAcquired.exampleDate = For example 31 3 2013
+
+ated.property-details-value-error.whenAcquired.futureDateError = The date when the property was acquired must be in the past
+ated.property-details-value-error.whenAcquired.invalidDateError = Enter a real date when the property was acquired
+
+##### PROPERTY DETAILS VALUE ACQUIRED
+
+ated.property-details-value.valueAcquired.title = What was the value of the property on {0} {1} {2}?
+ated.property-details-value.valueAcquired.header = What was the value of the property on {0} {1} {2}?
+ated.property-details-value.valueAcquired.valueQuestion = What was the value of the property on the date it was acquired, in GBP?
+ated.property-details-value.valueAcquired.hintText = Enter the value in GBP, for example £1,500,000
+
+ated.property-details-value-error.valueAcquired.emptyValue = You must enter the value of the property on the acquisition date
+ated.property-details-value-error.valueAcquired.invalidValue = The value of the property must be an amount of money
 ##### PROPERTY DETAILS VALUE
 
 ated.property-details-value.revaluedValue.error.too-low = The property value cannot be less than the lowest band
@@ -544,7 +597,7 @@ ated.property-details-value.isPropertyRevalued.no-text = The property must be re
 ated.property-details-value.isPropertyRevalued.error = The property must be revalued before you can submit this chargeable return
 ated.property-details-value.isPropertyRevalued.error.non-selected = You must answer this question
 
-ated.property-details-value.incorrect-format = You must enter a correct value.
+ated.property-details-value.incorrect-format = The value of the property must be an amount of money
 ated.property-details-value.revaluedValue = What is the new valuation of the property in GBP?
 ated.property-details-value.revaluedValue.hint = For example, £1,500,000
 ated.property-details-value.revaluedValue.error.empty = You must enter a valid property value
@@ -560,19 +613,22 @@ ated.property-details-value.revaluedDate.error.in-future = The property revaluat
 ated.property-details-value.partAcqDispDate.error.too-early = The date when you made the £40,000 or more change must be in this chargeable period
 ated.property-details-value.partAcqDispDate.error.too-late = The date when you made the £40,000 or more change must be in this chargeable period
 ated.property-details-value.partAcqDispDate.error.in-future = The date when you made the £40,000 or more change cannot be in the future
-
 ated.property-details-value.isOwnedBeforeValuationYear.title = Did the company own this property on or before 1 April {0}?
 ated.property-details-value.isOwnedBeforeValuationYear.error.non-selected = You must answer this question.
 ated.property-details-value.ownedBeforevaluationYear.Value = What was the value of the property on the 1 April {0}?
 ated.property-details-value.ownedBeforevaluationYear.hint = For example, £1,500,000
 
-ated.property-details-value.isNewBuild.title = Was the property a new build, or a new dwelling produced from other dwellings, in this chargeable period?
-ated.property-details-value.isNewBuild.header = Was the property a new build, or a new dwelling produced from other dwellings, in this chargeable period?
+ated.property-details-value.isNewBuild.title = Is the property a new build?
+ated.property-details-value.isNewBuild.header = Is the property a new build?
+ated.property-details-value.isNewBuild.paragraph = Answer yes only if your ATED liability is beginning in this chargeable period and the property is newly constructed or is a new dwelling adapted from other dwellings.
+ated.property-details-value.isNewBuild.yesParagraphOne = You may be eligible for a
+ated.property-details-value.isNewBuild.yesParagraphTwo = longer filing window of 90 days
+ated.property-details-value.isNewBuild.yesParagraphThree = in which to submit your returns and pay ATED in this chargeable period.
 
 ated.property-details-value.isNewBuild = Was the property a new build, or a new dwelling produced from other dwellings, in this chargeable period?
 ated.property-details-value.isNewBuild.what-is-this = What is a new build?
 ated.property-details-value.isNewBuild.text = A new build or new dwelling means the company or chargeable person are the first to own the property after it was built. If a new build comes into charge for the first time, you must submit a return to HMRC within 90 days of that event. The normal filing deadline is 30 days.
-ated.property-details-value.isNewBuild.error.non-selected = You must answer the question.
+ated.property-details-value.isNewBuild.error.non-selected = Select yes if the property is a new build
 ated.property-details-value.newBuildDate = What was the date the property was first occupied?
 ated.property-details-value.localAuthRegDate = What was the date the local council registered the property for council tax?
 
@@ -613,13 +669,17 @@ ated.property-details-value-error.general.isOwnedBeforePolicyYear = There is a p
 ated.property-details-value-error.general.ownedBeforePolicyYearValue = There is a problem with the property value
 ated.property-details-value-error.general.newBuildDate = There is a problem with the property first occupied date
 ated.property-details-value-error.general.localAuthRegDate = There is a problem with the property local council registered date
-ated.property-details-value-error.general.newBuildValue = There is a problem with the property value
+ated.property-details-value-error.general.newBuildValue = You must enter the value of the property on the start date
+ated.property-details-value-error.general.acquiredValue = You must enter the value of the property on the acquisition date
+ated.property-details-value-error.general.acquiredDate = There is a problem with the date
+ated.property-details-value-error.general.newBuildOccupyDate = There is a problem with the first occupied date
+ated.property-details-value-error.general.newBuildRegisterDate = There is a problem with the local council registration date
 ated.property-details-value-error.general.notNewBuildDate = There is a problem with the property acquired date
 ated.property-details-value-error.general.notNewBuildValue = There is a problem with the property value
 ated.property-details-value-error.general.isValuedByAgent = There is a problem with this question
 ated.property-details-value-error.general.valuationDate = There is a problem with the date of valuation
 ated.property-details-value-error.general.partAcqDispDate = There is a problem with the date for the £40,000 change
-ated.property-details-value-error.general.isNewBuild = There is a problem with the question
+ated.property-details-value-error.general.isNewBuild = Select yes if the property is a new build
 
 ##### PROPERTY DETAILS PERIOD
 

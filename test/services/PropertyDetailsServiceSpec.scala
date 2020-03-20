@@ -19,7 +19,7 @@ package services
 import builders.PropertyDetailsBuilder
 import config.ApplicationConfig
 import connectors.{DataCacheConnector, PropertyDetailsConnector}
-import models.{PropertyDetails, PropertyDetailsAddress, PropertyDetailsTitle, StandardAuthRetrievals, SubmitReturnsResponse}
+import models._
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
@@ -138,8 +138,113 @@ class PropertyDetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite wi
       }
     }
 
+    "Save property details New Build Dates" should {
+      "return OK" in new Setup {
+        val newBuildDates: Option[PropertyDetailsNewBuildDates] = PropertyDetailsBuilder.getPropertyDetailsNewBuildDates
+        val successResponse: JsValue = Json.toJson(newBuildDates)
+
+        when(mockPropertyDetailsConnector.saveDraftPropertyDetailNewBuildDates(ArgumentMatchers.eq("1"), ArgumentMatchers.any())
+        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+
+        val result: Future[Int] = testPropertyDetailsService.saveDraftPropertyDetailsNewBuildDates("1", newBuildDates.get)
+        await(result) must be(OK)
+      }
+
+      "return an exception if the save fails" in new Setup {
+        val newBuildDates: Option[PropertyDetailsNewBuildDates] = PropertyDetailsBuilder.getPropertyDetailsNewBuildDates
+        val successResponse: JsValue = Json.toJson(newBuildDates)
+
+        when(mockPropertyDetailsConnector.saveDraftPropertyDetailNewBuildDates(ArgumentMatchers.eq("1"), ArgumentMatchers.any())
+        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, Some(successResponse))))
+
+        val result: Future[Int] = testPropertyDetailsService.saveDraftPropertyDetailsNewBuildDates("1", newBuildDates.get)
+        val thrown: InternalServerException = the[InternalServerException] thrownBy await(result)
+
+        thrown.getMessage must be(s"[PropertyDetailsService][saveDraftPropertyDetailsNewBuildDates] Invalid status when saving Property Details :$BAD_REQUEST")
+      }
+    }
+
+    "Save property details when acquired dates" should {
+      "return OK" in new Setup {
+        val buildAcquiredDates: Option[PropertyDetailsWhenAcquiredDates] = PropertyDetailsBuilder.getPropertyDetailsWhenAcquired
+        val successResponse: JsValue = Json.toJson(buildAcquiredDates)
+
+        when(mockPropertyDetailsConnector.saveDraftPropertyDetailsWhenAcquiredDates(ArgumentMatchers.eq("1"), ArgumentMatchers.any())
+        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+
+        val result: Future[Int] = testPropertyDetailsService.saveDraftPropertyDetailsWhenAcquiredDates("1", buildAcquiredDates.get)
+        await(result) must be(OK)
+      }
+
+      "return an exception if the save fails" in new Setup {
+        val buildAcquiredDates: Option[PropertyDetailsWhenAcquiredDates] = PropertyDetailsBuilder.getPropertyDetailsWhenAcquired
+        val successResponse: JsValue = Json.toJson(buildAcquiredDates)
+
+        when(mockPropertyDetailsConnector.saveDraftPropertyDetailsWhenAcquiredDates(ArgumentMatchers.eq("1"), ArgumentMatchers.any())
+        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, Some(successResponse))))
+
+        val result: Future[Int] = testPropertyDetailsService.saveDraftPropertyDetailsWhenAcquiredDates("1", buildAcquiredDates.get)
+        val thrown: InternalServerException = the[InternalServerException] thrownBy await(result)
+
+        thrown.getMessage must be(s"[PropertyDetailsService][saveDraftPropertyDetailsWhenAcquiredDates] Invalid status when saving Property Details :$BAD_REQUEST")
+      }
+    }
+
+    "Save property details new build value " should {
+      "return OK" in new Setup {
+        val newBuildValue: Option[PropertyDetailsNewBuildValue] = PropertyDetailsBuilder.getPropertyDetailsNewBuildValue
+        val successResponse: JsValue = Json.toJson(newBuildValue)
+
+        when(mockPropertyDetailsConnector.saveDraftPropertyDetailsNewBuildValue(ArgumentMatchers.eq("1"), ArgumentMatchers.any())
+        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+
+        val result: Future[Int] = testPropertyDetailsService.saveDraftPropertyDetailsNewBuildValue("1",newBuildValue.get)
+        await(result) must be(OK)
+      }
+
+      "return an exception if the save fails" in new Setup {
+        val newBuildValue: Option[PropertyDetailsNewBuildValue] = PropertyDetailsBuilder.getPropertyDetailsNewBuildValue
+        val successResponse: JsValue = Json.toJson(newBuildValue)
+
+        when(mockPropertyDetailsConnector.saveDraftPropertyDetailsNewBuildValue(ArgumentMatchers.eq("1"), ArgumentMatchers.any())
+        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, Some(successResponse))))
+
+        val result: Future[Int] = testPropertyDetailsService.saveDraftPropertyDetailsNewBuildValue("1",newBuildValue.get)
+        val thrown: InternalServerException = the[InternalServerException] thrownBy await(result)
+
+        thrown.getMessage must be(s"[PropertyDetailsService][saveDraftPropertyDetailsNewBuildValue] Invalid status when saving Property Details :$BAD_REQUEST")
+      }
+    }
+
+    "Save property details value acquired" should {
+      "return OK" in new Setup {
+        val valueOnAcquisition : Option[PropertyDetailsValueOnAcquisition] = PropertyDetailsBuilder.getPropertyDetailsValueOnAcquisition
+        val successResponse: JsValue = Json.toJson(valueOnAcquisition)
+
+        when(mockPropertyDetailsConnector.saveDraftPropertyDetailsValueAcquired(ArgumentMatchers.eq("1"), ArgumentMatchers.any())
+        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+
+        val result: Future[Int] = testPropertyDetailsService.saveDraftPropertyDetailsValueAcquired("1",valueOnAcquisition.get)
+        await(result) must be(OK)
+
+      }
+
+      "return an exception if the save fails" in new Setup {
+        val valueOnAcquisition : Option[PropertyDetailsValueOnAcquisition] = PropertyDetailsBuilder.getPropertyDetailsValueOnAcquisition
+        val successResponse: JsValue = Json.toJson(valueOnAcquisition)
+
+        when(mockPropertyDetailsConnector.saveDraftPropertyDetailsValueAcquired(ArgumentMatchers.eq("1"), ArgumentMatchers.any())
+        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, Some(successResponse))))
+
+        val result: Future[Int] = testPropertyDetailsService.saveDraftPropertyDetailsValueAcquired("1",valueOnAcquisition.get)
+        val thrown: InternalServerException = the[InternalServerException] thrownBy await(result)
+
+        thrown.getMessage must be(s"[PropertyDetailsService][saveDraftPropertyDetailsValueAcquired] Invalid status when saving Property Details :$BAD_REQUEST")
+      }
+    }
+
     "Calculate property Details" must {
-      "does not save the new calculated data and return blank OK responsereturn the response from the connector" in new Setup {
+      "does not save the new calculated data and return blank OK response return the response from the connector" in new Setup {
 
         val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
 

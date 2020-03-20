@@ -40,49 +40,6 @@ class PropertyDetailsNewBuildSpec extends AtedViewSpec with MockitoSugar with Mo
     messages("ated.property-details-value.yes"),
     messages("ated.property-details-value.no"))
 
-    "check page errors for uk account" in {
-
-      val eform = Form(form.mapping, Map("isNewBuild" -> "true"),
-        Seq(FormError("newBuildDate", messages("ated.property-details-value.newBuildDate.error.empty")),
-        FormError("localAuthRegDate", messages("ated.property-details-value.localAuthRegDate.error.empty")),
-        FormError("newBuildValue", messages("ated.property-details-value.newBuildValue.error.empty")))
-        , form.value)
-       def view: Html = views.html.propertyDetails.propertyDetailsNewBuild("",0,  eform, None, Some("backLink"))
-      val errorDoc = doc(view)
-
-      errorDoc.getElementsMatchingOwnText(messages("ated.property-details-value.newBuildDate.error.empty")).hasText mustBe true
-      errorDoc.getElementsMatchingOwnText(messages("ated.property-details-value-error.general.newBuildDate")).hasText mustBe true
-      errorDoc.getElementsMatchingOwnText(messages("ated.property-details-value.localAuthRegDate.error.empty")).hasText mustBe true
-      errorDoc.getElementsMatchingOwnText(messages("ated.property-details-value-error.general.localAuthRegDate")).hasText mustBe true
-      errorDoc.getElementsMatchingOwnText(messages("ated.property-details-value.newBuildValue.error.empty")).hasText mustBe true
-      errorDoc.getElementsMatchingOwnText(messages("ated.property-details-value-error.general.newBuildValue")).hasText mustBe true
-
-      errorDoc.getElementsMatchingOwnText(messages("ated.property-details-value.newBuildDate")).hasText mustBe true
-      errorDoc.getElementsMatchingOwnText(messages("ated.property-details-value.localAuthRegDate")).hasText mustBe true
-      errorDoc.getElementsMatchingOwnText(messages("ated.property-details-value.newBuildValue")).hasText mustBe true
-      errorDoc.getElementsMatchingOwnText(messages("ated.property-details-value.newBuildValue.hint")).hasText mustBe true
-
-    }
-
-    "check page errors for non uk account" in {
-
-      val eform = Form(form.mapping, Map("isNewBuild" -> "false"),
-        Seq(FormError("notNewBuildDate", messages("ated.property-details-value.notNewBuildDate.error.empty")),
-        FormError("notNewBuildValue", messages("ated.property-details-value.notNewBuildValue.error.empty")))
-        , form.value)
-       def view: Html = views.html.propertyDetails.propertyDetailsNewBuild("",0,  eform, None, Some("backLink"))
-      val errorDoc = doc(view)
-
-      errorDoc.getElementsMatchingOwnText(messages("ated.property-details-value-error.general.notNewBuildDate")).hasText mustBe true
-      errorDoc.getElementsMatchingOwnText(messages("ated.property-details-value.notNewBuildDate.error.empty")).hasText mustBe true
-      errorDoc.getElementsMatchingOwnText(messages("ated.property-details-value-error.general.notNewBuildValue")).hasText mustBe true
-      errorDoc.getElementsMatchingOwnText(messages("ated.property-details-value.notNewBuildValue.error.empty")).hasText mustBe true
-
-      errorDoc.getElementsMatchingOwnText(messages("ated.property-details-value.notNewBuildDate")).hasText mustBe true
-      errorDoc.getElementsMatchingOwnText(messages("ated.property-details-value.notNewBuildDate.hint")).hasText mustBe true
-      errorDoc.getElementsMatchingOwnText(messages("ated.property-details-value.notNewBuildValue")).hasText mustBe true
-      errorDoc.getElementsMatchingOwnText(messages("ated.property-details-value.notNewBuildValue.hint")).hasText mustBe true
-    }
   }
 
   private val form = PropertyDetailsForms.propertyDetailsNewBuildForm

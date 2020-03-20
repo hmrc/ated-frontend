@@ -49,9 +49,28 @@ object PropertyDetailsBuilder {
     ))
   }
 
+  def getPropertyDetailsNewBuildDates: Option[PropertyDetailsNewBuildDates] = {
+    Some(PropertyDetailsNewBuildDates(
+      Some(new LocalDate("2010-01-01")),
+      Some(new LocalDate("2010-02-01")))
+    )
+  }
 
-  def getPropertyDetailsValueFull(): Option[PropertyDetailsValue] = {
+  def getPropertyDetailsWhenAcquired: Option[PropertyDetailsWhenAcquiredDates] = {
+    Some(PropertyDetailsWhenAcquiredDates(
+      Some(new LocalDate("2010-01-01")))
+    )
+  }
 
+  def getPropertyDetailsNewBuildValue: Option[PropertyDetailsNewBuildValue] = {
+    Some(PropertyDetailsNewBuildValue(Some(BigDecimal(10000000.00))))
+  }
+
+  def getPropertyDetailsValueOnAcquisition: Option[PropertyDetailsValueOnAcquisition] = {
+    Some(PropertyDetailsValueOnAcquisition(Some(BigDecimal(10000000.00))))
+  }
+
+  def getPropertyDetailsValueFull: Option[PropertyDetailsValue] = {
     Some(new PropertyDetailsValue(
       anAcquisition = Some(true),
       isPropertyRevalued = Some(true),
@@ -105,7 +124,7 @@ object PropertyDetailsBuilder {
     ))
   }
 
-  def getPropertyDetailsTitle(): Option[PropertyDetailsTitle] = {
+  def getPropertyDetailsTitle: Option[PropertyDetailsTitle] = {
     Some(new PropertyDetailsTitle("titleNo"))
   }
 
@@ -133,7 +152,7 @@ object PropertyDetailsBuilder {
       id,
       periodKey,
       getPropertyDetailsAddress(postCode),
-      getPropertyDetailsTitle(),
+      getPropertyDetailsTitle,
       getPropertyDetailsValueRevalued(periodKey),
       getPropertyDetailsPeriodFull(periodKey),
       getPropertyDetailsCalculated(liabilityAmount))
@@ -148,7 +167,7 @@ object PropertyDetailsBuilder {
       id,
       periodKey,
       getPropertyDetailsAddress(postCode),
-      getPropertyDetailsTitle(),
+      getPropertyDetailsTitle,
       getPropertyDetailsValueRevaluedByAgent(periodKey),
       getPropertyDetailsPeriod,
       getPropertyDetailsCalculated(liabilityAmount))
@@ -163,7 +182,7 @@ object PropertyDetailsBuilder {
       id,
       periodKey,
       getPropertyDetailsAddress(postCode),
-      getPropertyDetailsTitle(),
+      getPropertyDetailsTitle,
       value = None,
       getPropertyDetailsPeriod,
       getPropertyDetailsCalculated(liabilityAmount))
@@ -181,8 +200,8 @@ object PropertyDetailsBuilder {
       id,
       periodKey,
       getPropertyDetailsAddress(postCode),
-      getPropertyDetailsTitle(),
-      getPropertyDetailsValueFull(),
+      getPropertyDetailsTitle,
+      getPropertyDetailsValueFull,
       getPropertyDetailsPeriodFull(periodKey),
       getPropertyDetailsCalculated(liabilityAmount)
     )
@@ -198,8 +217,8 @@ object PropertyDetailsBuilder {
       id,
       periodKey,
       getPropertyDetailsAddress(postCode),
-      getPropertyDetailsTitle(),
-      getPropertyDetailsValueFull(),
+      getPropertyDetailsTitle,
+      getPropertyDetailsValueFull,
       getPropertyDetailsPeriodFull(periodKey),
       getPropertyDetailsCalculated(liabilityAmount),
       Option(generateFormBundleReturn)

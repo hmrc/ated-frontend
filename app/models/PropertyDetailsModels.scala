@@ -18,7 +18,7 @@ package models
 
 import org.joda.time.LocalDate
 import play.api.libs.functional.syntax._
-import play.api.libs.json.{JsPath, Json, OFormat, OWrites, Reads}
+import play.api.libs.json.{Format, JsPath, Json, OFormat, OWrites, Reads}
 import play.api.libs.json.JodaWrites._
 import play.api.libs.json.JodaReads._
 
@@ -49,7 +49,6 @@ case class PropertyDetailsTitle(titleNumber: String)
 object PropertyDetailsTitle {
   implicit val formats: OFormat[PropertyDetailsTitle] = Json.format[PropertyDetailsTitle]
 }
-
 
 case class PropertyDetailsValue( anAcquisition: Option[Boolean] = None,
                                  isPropertyRevalued: Option[Boolean] = None,
@@ -113,21 +112,38 @@ object PropertyDetailsProfessionallyValued {
   implicit val formats: OFormat[PropertyDetailsProfessionallyValued] = Json.format[PropertyDetailsProfessionallyValued]
 }
 
-case class PropertyDetailsNewBuild(
-                                    isNewBuild: Option[Boolean] = None,
-                                    newBuildValue: Option[BigDecimal] = None,
-                                    newBuildDate: Option[LocalDate] = None,
-                                    localAuthRegDate: Option[LocalDate] = None,
-                                    notNewBuildValue: Option[BigDecimal] = None,
-                                    notNewBuildDate: Option[LocalDate] = None
-                                  )
+case class PropertyDetailsNewBuild(isNewBuild: Option[Boolean] = None)
 
 object PropertyDetailsNewBuild {
   implicit val formats: OFormat[PropertyDetailsNewBuild] = Json.format[PropertyDetailsNewBuild]
 }
 
-case class PropertyDetailsFullTaxPeriod(isFullPeriod: Option[Boolean] = None)
+case class PropertyDetailsNewBuildDates(newBuildOccupyDate: Option[LocalDate],
+                                        newBuildRegisterDate: Option[LocalDate])
 
+object PropertyDetailsNewBuildDates {
+  implicit val formats: Format[PropertyDetailsNewBuildDates] = Json.format[PropertyDetailsNewBuildDates]
+}
+
+case class PropertyDetailsWhenAcquiredDates(acquiredDate: Option[LocalDate])
+
+object PropertyDetailsWhenAcquiredDates{
+  implicit val formats: Format[PropertyDetailsWhenAcquiredDates] = Json.format[PropertyDetailsWhenAcquiredDates]
+}
+
+case class PropertyDetailsNewBuildValue(newBuildValue: Option[BigDecimal])
+
+object PropertyDetailsNewBuildValue {
+  implicit val formats: Format[PropertyDetailsNewBuildValue] = Json.format[PropertyDetailsNewBuildValue]
+}
+
+case class PropertyDetailsValueOnAcquisition(acquiredValue: Option[BigDecimal])
+
+object PropertyDetailsValueOnAcquisition {
+  implicit val formats: Format[PropertyDetailsValueOnAcquisition] = Json.format[PropertyDetailsValueOnAcquisition]
+}
+
+case class PropertyDetailsFullTaxPeriod(isFullPeriod: Option[Boolean] = None)
 
 object PropertyDetailsFullTaxPeriod {
   implicit val formats: OFormat[PropertyDetailsFullTaxPeriod] = Json.format[PropertyDetailsFullTaxPeriod]
