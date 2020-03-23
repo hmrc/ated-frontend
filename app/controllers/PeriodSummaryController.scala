@@ -54,7 +54,7 @@ class PeriodSummaryController @Inject()(mcc: MessagesControllerComponents,
     }
   }
 
-  def viewPastReturns(periodKey: Int) : Action[AnyContent] = Action.async { implicit request =>
+  def viewPastReturns(periodKey: Int): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       for {
         periodSummaries <- summaryReturnsService.getPeriodSummaryReturns(periodKey)
@@ -66,16 +66,22 @@ class PeriodSummaryController @Inject()(mcc: MessagesControllerComponents,
     }
   }
 
-  def createReturn(periodKey: Int) : Action[AnyContent] = Action.async { implicit request =>
+  def createReturn(periodKey: Int, fromAccountSummary: Boolean = false): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
+      val backLink = if (!fromAccountSummary) {
+        routes.PeriodSummaryController.view(periodKey).url
+      } else {
+        routes.AccountSummaryController.view().url
+      }
+
       redirectWithBackLink(returnTypeControllerId,
         routes.ReturnTypeController.view(periodKey),
-        Some(routes.PeriodSummaryController.view(periodKey).url)
+        Some(backLink)
       )
     }
   }
 
-  def viewReturn(periodKey: Int) : Action[AnyContent] = Action.async { implicit request =>
+  def viewReturn(periodKey: Int): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       redirectWithBackLink(reliefsSummaryControllerId,
         controllers.reliefs.routes.ReliefsSummaryController.view(periodKey),
@@ -84,7 +90,7 @@ class PeriodSummaryController @Inject()(mcc: MessagesControllerComponents,
     }
   }
 
-  def viewChargeable(periodKey: Int, propertyKey: String) : Action[AnyContent] = Action.async { implicit request =>
+  def viewChargeable(periodKey: Int, propertyKey: String): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       redirectWithBackLink(propertyDetailsSummaryControllerId,
         controllers.propertyDetails.routes.PropertyDetailsSummaryController.view(propertyKey),
@@ -94,7 +100,7 @@ class PeriodSummaryController @Inject()(mcc: MessagesControllerComponents,
     }
   }
 
-  def viewChargeableEdit(periodKey: Int, propertyKey: String) : Action[AnyContent] = Action.async { implicit request =>
+  def viewChargeableEdit(periodKey: Int, propertyKey: String): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       redirectWithBackLink(propertyDetailsSummaryControllerId,
         controllers.editLiability.routes.EditLiabilitySummaryController.view(propertyKey),
@@ -104,7 +110,7 @@ class PeriodSummaryController @Inject()(mcc: MessagesControllerComponents,
     }
   }
 
-  def viewDisposal(periodKey: Int, propertyKey: String) : Action[AnyContent] = Action.async { implicit request =>
+  def viewDisposal(periodKey: Int, propertyKey: String): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       redirectWithBackLink(disposePropertyControllerId,
         controllers.editLiability.routes.DisposeLiabilitySummaryController.view(propertyKey),

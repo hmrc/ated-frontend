@@ -71,7 +71,8 @@ class AccountSummaryController @Inject()(mcc: MessagesControllerComponents,
           clientBannerPartial.successfulContentOrEmpty,
           duringPeak,
           currentYear = currentDate.getYear,
-          peakPeriodStartingYear)
+          peakPeriodStartingYear,
+          fromAccountSummary = true)
         )
       }
     } recover {

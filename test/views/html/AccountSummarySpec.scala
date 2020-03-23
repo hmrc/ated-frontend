@@ -51,7 +51,8 @@ class AccountSummarySpec extends PlaySpec with MockAuthUtil with GuiceOneAppPerT
     Html(""),
     duringPeak = false,
     currentYear,
-    currentTaxYear
+    currentTaxYear,
+    false
   )
 
   def row(rowNumber: Int) = s"#content > article > dl > div:nth-child($rowNumber)"
@@ -97,7 +98,7 @@ class AccountSummarySpec extends PlaySpec with MockAuthUtil with GuiceOneAppPerT
           "button").text === s"Create a new return for $currentTaxYear to ${currentTaxYear + 1}"
         )
         assert(document.select(
-          "#create-return").attr("href") === s"/ated/period-summary/$currentTaxYear/createReturn"
+          "#create-return").attr("href") === s"/ated/period-summary/$currentTaxYear/createReturn?fromAccountSummary=false"
         )
       }
 
@@ -120,7 +121,8 @@ class AccountSummarySpec extends PlaySpec with MockAuthUtil with GuiceOneAppPerT
         Html(""),
         duringPeak = false,
         currentYear,
-        currentTaxYear
+        currentTaxYear,
+        false
       )
 
       lazy val document: Document = Jsoup.parse(view.body)
@@ -148,7 +150,8 @@ class AccountSummarySpec extends PlaySpec with MockAuthUtil with GuiceOneAppPerT
           Html(""),
           duringPeak = false,
           currentYear,
-          currentTaxYear
+          currentTaxYear,
+          false
         )
 
         lazy val document: Document = Jsoup.parse(view.body)

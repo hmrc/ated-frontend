@@ -23,7 +23,7 @@
 
 @(returnsCurrentTaxYear: Seq[AccountSummaryRowModel], totalCurrentYearReturns: Int, hasPastReturns: Boolean,
         otherReturns: SummaryReturnsModel, correspondence: Option[Address], organisationName: Option[String], clientBanner: Html,
-        duringPeak: Boolean, currentYear: Int, taxYearStartingYear: Int)(implicit authContext: StandardAuthRetrievals,
+        duringPeak: Boolean, currentYear: Int, taxYearStartingYear: Int, fromAccountSummary: Boolean)(implicit authContext: StandardAuthRetrievals,
         messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
 @analyticsJs = {
@@ -63,7 +63,7 @@
         }
 
         <div>
-            <a id="create-return" href="@controllers.routes.PeriodSummaryController.createReturn(taxYearStartingYear)">
+            <a id="create-return" href="@controllers.routes.PeriodSummaryController.createReturn(taxYearStartingYear, fromAccountSummary)">
                 <button class="govuk-button" id="submit" type="submit" data-journey-click="ated-fronted:click:create-return-current-year">
                 @messages("ated.account-summary.create-new-return",
                     taxYearStartingYear.toString,
@@ -99,7 +99,7 @@
         }
 
         <div>
-            <a id="create-return" href="@controllers.routes.PeriodSummaryController.createReturn(taxYearStartingYear)">
+            <a id="create-return" href="@controllers.routes.PeriodSummaryController.createReturn(taxYearStartingYear, fromAccountSummary)">
                 <button class="govuk-button" id="submit" type="submit" data-journey-click="ated-fronted:click:create-return-current-year">
                 @messages("ated.account-summary.create-new-return",
                     taxYearStartingYear.toString,
