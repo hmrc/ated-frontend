@@ -74,7 +74,7 @@ class PropertyDetailsService @Inject()(propertyDetailsConnector: PropertyDetails
   }
 
   def saveDraftPropertyDetailsTitle(id: String, propertyDetails: PropertyDetailsTitle)
-                                        (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[Int] = {
+                                   (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[Int] = {
     val trimmedPropertyDetails = propertyDetails.copy(titleNumber = propertyDetails.titleNumber.replaceAll(" ", ""))
     for {
       propertyDetailsResponse <- propertyDetailsConnector.saveDraftPropertyDetailsTitle(id, trimmedPropertyDetails)
@@ -170,7 +170,7 @@ class PropertyDetailsService @Inject()(propertyDetailsConnector: PropertyDetails
   }
 
   def saveDraftPropertyDetailsNewBuild(id: String, updated: PropertyDetailsNewBuild)
-                                                  (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[Int] = {
+                                      (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[Int] = {
     for {
       propertyDetailsResponse <- propertyDetailsConnector.saveDraftPropertyDetailsNewBuild(id, updated)
     } yield {
@@ -185,8 +185,76 @@ class PropertyDetailsService @Inject()(propertyDetailsConnector: PropertyDetails
     }
   }
 
+  def saveDraftPropertyDetailsNewBuildDates(id: String, updated: PropertyDetailsNewBuildDates)
+                                           (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[Int] = {
+
+    for {
+      propertyDetailsResponse <- propertyDetailsConnector.saveDraftPropertyDetailNewBuildDates(id, updated)
+    } yield {
+      propertyDetailsResponse.status match {
+        case OK => OK
+        case status =>
+          Logger.warn(s"[PropertyDetailsService][saveDraftPropertyDetailsNewBuildDates] " +
+            s"Invalid status when saving Property Details - status: $status , response.body : ${propertyDetailsResponse.body}")
+          throw new InternalServerException(s"[PropertyDetailsService]" +
+            s"[saveDraftPropertyDetailsNewBuildDates] Invalid status when saving Property Details :$status")
+      }
+    }
+  }
+
+  def saveDraftPropertyDetailsWhenAcquiredDates(id: String, updated: PropertyDetailsWhenAcquiredDates)
+                                               (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[Int] = {
+
+    for {
+      propertyDetailsResponse <- propertyDetailsConnector.saveDraftPropertyDetailsWhenAcquiredDates(id, updated)
+    } yield {
+      propertyDetailsResponse.status match {
+        case OK => OK
+        case status =>
+          Logger.warn(s"[PropertyDetailsService][saveDraftPropertyDetailsWhenAcquiredDates] " +
+            s"Invalid status when saving Property Details - status: $status , response.body : ${propertyDetailsResponse.body}")
+          throw new InternalServerException(s"[PropertyDetailsService]" +
+            s"[saveDraftPropertyDetailsWhenAcquiredDates] Invalid status when saving Property Details :$status")
+      }
+    }
+  }
+
+  def saveDraftPropertyDetailsNewBuildValue(id: String, updated: PropertyDetailsNewBuildValue)
+                                           (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[Int] = {
+    for {
+      propertyDetailsResponse <- propertyDetailsConnector.saveDraftPropertyDetailsNewBuildValue(id, updated)
+    } yield {
+      propertyDetailsResponse.status match {
+        case OK => OK
+        case status =>
+          Logger.warn(s"[PropertyDetailsService][saveDraftPropertyDetailsNewBuildValue] " +
+            s"Invalid status when saving Property Details - status: $status , response.body : ${propertyDetailsResponse.body}")
+          throw new InternalServerException(s"[PropertyDetailsService]" +
+            s"[saveDraftPropertyDetailsNewBuildValue] Invalid status when saving Property Details :$status")
+      }
+    }
+  }
+
+  def saveDraftPropertyDetailsValueAcquired(id: String, updated: PropertyDetailsValueOnAcquisition)
+                                           (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[Int] = {
+
+    for {
+      propertyDetailsResponse <- propertyDetailsConnector.saveDraftPropertyDetailsValueAcquired(id, updated)
+    } yield {
+      propertyDetailsResponse.status match {
+        case OK => OK
+        case status =>
+          Logger.warn(s"[PropertyDetailsService][saveDraftPropertyDetailsValueAcquired] " +
+            s"Invalid status when saving Property Details - status: $status , response.body : ${propertyDetailsResponse.body}")
+          throw new InternalServerException(s"[PropertyDetailsService]" +
+            s"[saveDraftPropertyDetailsValueAcquired] Invalid status when saving Property Details :$status")
+      }
+    }
+
+  }
+
   def saveDraftIsFullTaxPeriod(id: String, isFullPeriod: IsFullTaxPeriod)
-                               (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[Int] = {
+                              (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[Int] = {
     for {
       propertyDetailsResponse <- propertyDetailsConnector.saveDraftIsFullTaxPeriod(id, isFullPeriod)
     } yield {
@@ -201,7 +269,7 @@ class PropertyDetailsService @Inject()(propertyDetailsConnector: PropertyDetails
   }
 
   def saveDraftPropertyDetailsSupportingInfo(id: String, propertyDetails: PropertyDetailsSupportingInfo)
-                                           (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[Int] = {
+                                            (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[Int] = {
     for {
       propertyDetailsResponse <- propertyDetailsConnector.saveDraftPropertyDetailsSupportingInfo(id, propertyDetails)
     } yield {
@@ -252,7 +320,7 @@ class PropertyDetailsService @Inject()(propertyDetailsConnector: PropertyDetails
   }
 
   def saveDraftPropertyDetailsTaxAvoidance(id: String, propertyDetails: PropertyDetailsTaxAvoidance)
-                                         (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[Int] = {
+                                          (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[Int] = {
     for {
       propertyDetailsResponse <- propertyDetailsConnector.saveDraftPropertyDetailsTaxAvoidance(id, propertyDetails)
     } yield {
@@ -267,7 +335,7 @@ class PropertyDetailsService @Inject()(propertyDetailsConnector: PropertyDetails
   }
 
   def saveDraftPropertyDetailsDatesLiable(id: String, propertyDetails: PropertyDetailsDatesLiable)
-                                           (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[Int] = {
+                                         (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[Int] = {
     for {
       propertyDetailsResponse <- propertyDetailsConnector.saveDraftPropertyDetailsDatesLiable(id, propertyDetails)
     } yield {
@@ -298,6 +366,7 @@ class PropertyDetailsService @Inject()(propertyDetailsConnector: PropertyDetails
 
 
   val CHOSEN_RELIEF_ID = "PROPERTY-DETAILS-CHOSEN-RELIEF"
+
   def storeChosenRelief(chosenRelief: PeriodChooseRelief)(implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[PeriodChooseRelief] = {
     for {
       result <- dataCacheConnector.saveFormData[PeriodChooseRelief](CHOSEN_RELIEF_ID, chosenRelief)
@@ -307,7 +376,7 @@ class PropertyDetailsService @Inject()(propertyDetailsConnector: PropertyDetails
   }
 
   def addDraftPropertyDetailsDatesInRelief(id: String, propertyDetails: PropertyDetailsDatesInRelief)
-                                        (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[Int] = {
+                                          (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[Int] = {
     for {
       chosenRelief <- dataCacheConnector.fetchAndGetFormData[PeriodChooseRelief](CHOSEN_RELIEF_ID)
       propertyDetailsResponse <- propertyDetailsConnector.addDraftPropertyDetailsDatesInRelief(id, propertyDetails.copy(description = chosenRelief.map(_.reliefDescription)))
@@ -323,7 +392,7 @@ class PropertyDetailsService @Inject()(propertyDetailsConnector: PropertyDetails
   }
 
   def deleteDraftPropertyDetailsPeriod(id: String, propertyDetails: LocalDate)
-                                           (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[PropertyDetails] = {
+                                      (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[PropertyDetails] = {
     for {
       propertyDetailsResponse <- propertyDetailsConnector.deleteDraftPropertyDetailsPeriod(id, propertyDetails)
     } yield {
@@ -371,12 +440,12 @@ class PropertyDetailsService @Inject()(propertyDetailsConnector: PropertyDetails
   def clearDraftReliefs(id: String)(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[HttpResponse] =
     propertyDetailsConnector.deleteDraftChargeable(id)
 
-  def validateCalculateDraftPropertyDetails(id : String)(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[Boolean] = {
+  def validateCalculateDraftPropertyDetails(id: String)(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[Boolean] = {
     retrieveDraftPropertyDetails(id).map {
       case PropertyDetailsCacheSuccessResponse(propertDetailsDraft) =>
         propertDetailsDraft.value match {
           case Some(propVal) => propVal.isValuedByAgent.isDefined
-          case None =>  false
+          case None => false
         }
     }
   }

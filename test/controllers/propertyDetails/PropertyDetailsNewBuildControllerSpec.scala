@@ -49,7 +49,8 @@ class PropertyDetailsNewBuildControllerSpec extends PlaySpec with GuiceOneServer
   val mockPropertyDetailsService: PropertyDetailsService = mock[PropertyDetailsService]
   val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
   val mockBackLinkCacheConnector: BackLinkCacheConnector = mock[BackLinkCacheConnector]
-  val mockPropertyDetailsProfessionallyValuedController: PropertyDetailsProfessionallyValuedController = mock[PropertyDetailsProfessionallyValuedController]
+  val mockPropertyDetailsNewBuildDatesController: PropertyDetailsNewBuildDatesController = mock[PropertyDetailsNewBuildDatesController]
+  val mockPropertyDetailsWhenAcquiredController: PropertyDetailsWhenAcquiredController = mock[PropertyDetailsWhenAcquiredController]
 
   val periodKey: Int = 2016
 
@@ -64,7 +65,8 @@ class Setup {
   val testPropertyDetailsNewBuildController: PropertyDetailsNewBuildController = new PropertyDetailsNewBuildController(
     mockMcc,
     mockAuthAction,
-    mockPropertyDetailsProfessionallyValuedController,
+    mockPropertyDetailsNewBuildDatesController,
+    mockPropertyDetailsWhenAcquiredController,
     mockPropertyDetailsService,
     mockDataCacheConnector,
     mockBackLinkCacheConnector
@@ -124,9 +126,7 @@ class Setup {
 
   "PropertyDetailsNewBuildController" must {
     "propertyDetails" must {
-
       "unauthorised users" must {
-
         "respond with a redirect" in new Setup {
           getWithUnAuthorisedUser { result =>
             status(result) must be(SEE_OTHER)
@@ -141,7 +141,6 @@ class Setup {
       }
 
       "Authorised users" must {
-
         "show the chargeable property details view if we id and data" in new Setup {
           val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
           getDataWithAuthorisedUser("1", propertyDetails) {
@@ -154,7 +153,6 @@ class Setup {
 
     "save" must {
       "unauthorised users" must {
-
         "be redirected to the login page" in new Setup {
           saveWithUnAuthorisedUser { result =>
             status(result) must be(SEE_OTHER)
@@ -164,10 +162,9 @@ class Setup {
       }
 
       "Authorised users" must {
-
         "for invalid data, return BAD_REQUEST" in new Setup {
           val formBody = List(
-            ("isNewBuild", "false"))
+            ("isNewBuild", ""))
           when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
           submitWithAuthorisedUser(formBody) {
             result =>
@@ -175,19 +172,27 @@ class Setup {
           }
         }
 
-        "When the data is valid forward to the Professionally Valued Page" in new Setup {
+        "When the user answers yes to the new build page they should be redirected to the new build start date page" in new Setup {
           val formBody = List(
-            ("isNewBuild", "false"),
-            ("notNewBuildDate.day", "1"),
-            ("notNewBuildDate.month", "4"),
-            ("notNewBuildDate.year", "2016"),
-            ("notNewBuildValue", "1500000")
+            ("isNewBuild", "true")
           )
           when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
           submitWithAuthorisedUser(formBody) {
             result =>
               status(result) must be(SEE_OTHER)
-              redirectLocation(result).get must include("/liability/create/valued/view")
+              redirectLocation(result).get must include("/liability/create/new-build-start/view")
+          }
+        }
+
+        "When the user answers no to the new build page they should be redirected to the when acquired page" in new Setup {
+          val formBody = List(
+            ("isNewBuild", "false")
+          )
+          when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+          submitWithAuthorisedUser(formBody) {
+            result =>
+              status(result) must be(SEE_OTHER)
+              redirectLocation(result).get must include("/liability/create/when-acquired/view")
           }
         }
       }

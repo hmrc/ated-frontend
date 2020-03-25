@@ -18,10 +18,7 @@ package forms
 
 import models.LineItem
 import org.joda.time.LocalDate
-import play.api.Play.current
 import play.api.data.{Form, FormError}
-import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
 import utils.PeriodUtils
 import utils.PeriodUtils._
 
@@ -40,6 +37,7 @@ object PropertyDetailsFormsValidation {
         case _ => Seq(None)
       }
     }
+
     def validatePromoterReference(promoterReference: Option[String]): Seq[Option[FormError]] = {
       promoterReference.getOrElse("") match {
         case a if a.isEmpty => Seq(Some(FormError("taxAvoidancePromoterReference", "ated.property-details-period.taxAvoidancePromoterReference.error.empty")))
@@ -48,21 +46,27 @@ object PropertyDetailsFormsValidation {
         case _ => Seq(None)
       }
     }
+
     isTaxAvoidance match {
       case Some(isAvoidTax) if isAvoidTax => validateAvoidanceScheme(avoidanceSchemeNo) ++ validatePromoterReference(promoterReference)
       case _ => Seq(None)
     }
   }
 
-  def validateBuildDate(periodKey:Int, f: Form[_], isNewBuild: Option[Boolean]): Seq[Option[FormError]] = {
+  def validateBuildDate(periodKey: Int, f: Form[_], isNewBuild: Option[Boolean]): Seq[Option[FormError]] = {
     if (isNewBuild == Some(true))
-      validateDate(periodKey, f, "newBuildDate", mustBeInChargeablePeriod = true, isMandatory = true) ++ validateDate(periodKey, f, "localAuthRegDate", mustBeInChargeablePeriod = true, isMandatory = true)
+      validateDate(periodKey, f, "newBuildDate", mustBeInChargeablePeriod = true, isMandatory = true) ++
+        validateDate(periodKey, f, "localAuthRegDate", mustBeInChargeablePeriod = true, isMandatory = true)
     else
       validateDate(periodKey, f, "notNewBuildDate", isMandatory = true)
   }
 
+  def validatedNewBuildDate(periodKey: Int, f: Form[_]): Seq[Option[FormError]] = {
+    validateDate(periodKey, f, "newBuildOccupyDate", mustBeInChargeablePeriod = true, isMandatory = true) ++
+      validateDate(periodKey, f, "newBuildRegisterDate", mustBeInChargeablePeriod = true, isMandatory = true)
+  }
 
-  def checkRevaluedDate(periodKey: Int, isPropertyRevalued : Option[Boolean], revaluedDate : Option[LocalDate]): Seq[Option[FormError]] = {
+  def checkRevaluedDate(periodKey: Int, isPropertyRevalued: Option[Boolean], revaluedDate: Option[LocalDate]): Seq[Option[FormError]] = {
     if (isPropertyRevalued.contains(true)) {
       if (revaluedDate.isEmpty) {
         Seq(Some(FormError("revaluedDate", "ated.property-details-value.revaluedDate.error.empty")))
@@ -74,7 +78,7 @@ object PropertyDetailsFormsValidation {
     } else Seq(None)
   }
 
-  def checkPartAcqDispDate(periodKey: Int, isPropertyRevalued : Option[Boolean], partAcqDispDate : Option[LocalDate]): Seq[Option[FormError]] = {
+  def checkPartAcqDispDate(periodKey: Int, isPropertyRevalued: Option[Boolean], partAcqDispDate: Option[LocalDate]): Seq[Option[FormError]] = {
     if (isPropertyRevalued.contains(true)) {
       if (partAcqDispDate.isEmpty) {
         Seq(Some(FormError("partAcqDispDate", "ated.property-details-value.partAcqDispDate.error.empty")))
@@ -89,8 +93,8 @@ object PropertyDetailsFormsValidation {
   def validateStartEndDates(messageStart: String, periodKey: Int, form: Form[_]): Seq[Option[FormError]] = {
     val startDate = formDate2Option("startDate", form) match {
       case Right(a) if dateFallsInCurrentPeriod(periodKey, Some(a)) => Seq(None)
-      case Right(a) if isPeriodTooEarly(periodKey, Some(a)) =>  Seq(Some(FormError("startDate", s"$messageStart.startDate.error.too-early")))
-      case Right(a) if isPeriodTooLate(periodKey, Some(a)) =>  Seq(Some(FormError("startDate", s"$messageStart.startDate.error.too-late")))
+      case Right(a) if isPeriodTooEarly(periodKey, Some(a)) => Seq(Some(FormError("startDate", s"$messageStart.startDate.error.too-early")))
+      case Right(a) if isPeriodTooLate(periodKey, Some(a)) => Seq(Some(FormError("startDate", s"$messageStart.startDate.error.too-late")))
       case Right(a) => Seq(Some(FormError("startDate", s"$messageStart.startDate.error")))
       case Left(false) => Seq(Some(FormError("startDate", s"$messageStart.startDate.error.incomplete")))
       case Left(true) => Seq(Some(FormError("startDate", s"$messageStart.startDate.error.empty")))
@@ -99,8 +103,8 @@ object PropertyDetailsFormsValidation {
       case (Right(sd), Right(ed)) if ed.isBefore(sd) && isPeriodTooEarly(periodKey, Some(ed)) => Seq(Some(FormError("endDate", s"$messageStart.endDate.error.before-start-date-and-too-early")))
       case (Right(sd), Right(ed)) if ed.isBefore(sd) => Seq(Some(FormError("endDate", s"$messageStart.endDate.error.before-start-date")))
       case (_, Right(ed)) if dateFallsInCurrentPeriod(periodKey, Some(ed)) => Seq(None)
-      case (_, Right(ed)) if isPeriodTooEarly(periodKey, Some(ed)) =>  Seq(Some(FormError("endDate", s"$messageStart.endDate.error.too-early")))
-      case (_, Right(ed)) if isPeriodTooLate(periodKey, Some(ed)) =>  Seq(Some(FormError("endDate", s"$messageStart.endDate.error.too-late")))
+      case (_, Right(ed)) if isPeriodTooEarly(periodKey, Some(ed)) => Seq(Some(FormError("endDate", s"$messageStart.endDate.error.too-early")))
+      case (_, Right(ed)) if isPeriodTooLate(periodKey, Some(ed)) => Seq(Some(FormError("endDate", s"$messageStart.endDate.error.too-late")))
       case (_, Right(ed)) => Seq(Some(FormError("endDate", s"$messageStart.endDate.error")))
       case (_, Left(false)) => Seq(Some(FormError("endDate", s"$messageStart.endDate.error.incomplete")))
       case (_, Left(true)) => Seq(Some(FormError("endDate", s"$messageStart.endDate.error.empty")))
@@ -109,8 +113,7 @@ object PropertyDetailsFormsValidation {
     startDate ++ endDate
   }
 
-
-  def validateDatesInExistingPeriod(messageStart: String, currentPeriods: List[LineItem], form: Form[_]): Seq[Option[FormError]]  = {
+  def validateDatesInExistingPeriod(messageStart: String, currentPeriods: List[LineItem], form: Form[_]): Seq[Option[FormError]] = {
     def checkDateInBetween(dateToCheck: LocalDate): Boolean = {
       currentPeriods.map(
         period =>
@@ -136,13 +139,12 @@ object PropertyDetailsFormsValidation {
     }
   }
 
-
   def validateDate(periodKey: Int, f: Form[_], dateField: String,
                    noDateTooEarly: Boolean = false,
                    mustBeInChargeablePeriod: Boolean = false,
                    isMandatory: Boolean = false): Seq[Option[FormError]] = {
     val date = formDate2Option(dateField, f)
-   val valuationYear = PeriodUtils.calculateLowerTaxYearBoundary(periodKey)
+    val valuationYear = PeriodUtils.calculateLowerTaxYearBoundary(periodKey)
 
     if (date.right.exists(a => new LocalDate(a).isBefore(new LocalDate(s"$valuationYear")) && !noDateTooEarly)) {
       Seq(Some(FormError(dateField, s"ated.property-details-value.$dateField.error.too-early")))
@@ -151,7 +153,7 @@ object PropertyDetailsFormsValidation {
     } else if (mustBeInChargeablePeriod && date.right.exists(a => PeriodUtils.isPeriodTooEarly(periodKey, Some(a)) ||
       PeriodUtils.isPeriodTooLate(periodKey, Some(a)))) {
       Seq(Some(FormError(dateField, s"ated.property-details-value.$dateField.error.not-in-period")))
-    } else if (isMandatory && date.left.exists(a => a )) {
+    } else if (isMandatory && date.left.exists(a => a)) {
       Seq(Some(FormError(dateField, s"ated.property-details-value.$dateField.error.empty")))
     } else Seq(None)
   }

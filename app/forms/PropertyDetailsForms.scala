@@ -18,12 +18,11 @@ package forms
 
 import forms.AtedForms.validatePostCodeFormat
 import models._
+import org.joda.time.LocalDate
 import play.api.data.Forms._
-import play.api.data.validation.Constraint
 import play.api.data.{Form, FormError, Mapping}
 import uk.gov.hmrc.play.mappers.DateTuple._
 import utils.AtedUtils
-import uk.gov.hmrc.play.mappers.StopOnFirstFail
 
 import scala.annotation.tailrec
 import scala.util.Try
@@ -68,9 +67,9 @@ object PropertyDetailsForms {
         .verifying("ated.address.line-3", x => AtedForms.checkBlankFieldLength(x.toString))
         .verifying("ated.error.address.line-3", x => AtedForms.checkFieldLengthIfPopulated(x, addressLineLength))
         .verifying("ated.error.address.line-3.format", x => AtedForms.validateAddressLine(x)),
-    "line_4" -> optional(text)
-      .verifying("ated.address.line-4", x => AtedForms.checkBlankFieldLength(x.toString))
-      .verifying("ated.error.address.line-4", x => AtedForms.checkFieldLengthIfPopulated(x, addressLineLength))
+      "line_4" -> optional(text)
+        .verifying("ated.address.line-4", x => AtedForms.checkBlankFieldLength(x.toString))
+        .verifying("ated.error.address.line-4", x => AtedForms.checkFieldLengthIfPopulated(x, addressLineLength))
         .verifying("ated.error.address.line-4.format", x => AtedForms.validateAddressLine(x)),
       "postcode" -> optional(text)
         .verifying("ated.error.address.postalcode.format", x => validatePostCodeFormat(AtedUtils.formatPostCode(x)))
@@ -119,13 +118,39 @@ object PropertyDetailsForms {
 
   val propertyDetailsNewBuildForm = Form(
     mapping(
-      "isNewBuild" -> optional(boolean).verifying("ated.property-details-value.isNewBuild.error.non-selected", x => x.isDefined),
-      "newBuildValue" -> valueValidation,
-      "newBuildDate" -> dateTuple,
-      "localAuthRegDate" -> dateTuple,
-      "notNewBuildValue" -> valueValidation,
-      "notNewBuildDate" -> dateTuple
+      "isNewBuild" -> optional(boolean).verifying("ated.property-details-value.isNewBuild.error.non-selected", x => x.isDefined)
     )(PropertyDetailsNewBuild.apply)(PropertyDetailsNewBuild.unapply)
+  )
+
+  val propertyDetailsNewBuildDatesForm = Form(
+    mapping(
+      "newBuildOccupyDate" -> dateTuple
+        .verifying("ated.property-details-value-error.newBuildDates.invalidOccupiedDateError", x => x.isDefined)
+        .verifying("ated.property-details-value-error.newBuildDates.futureOccupiedError", x => isInPast(x)),
+      "newBuildRegisterDate" -> dateTuple
+        .verifying("ated.property-details-value-error.newBuildDates.invalidRegDateError", x => x.isDefined)
+        .verifying("ated.property-details-value-error.newBuildDates.futureRegError", x => isInPast(x))
+    )(PropertyDetailsNewBuildDates.apply)(PropertyDetailsNewBuildDates.unapply)
+  )
+
+  val propertyDetailsNewBuildValueForm = Form(
+    mapping(
+      "newBuildValue" -> valueValidation.verifying("ated.property-details-value-error.newBuildValue.emptyValue", model => model.isDefined)
+    )(PropertyDetailsNewBuildValue.apply)(PropertyDetailsNewBuildValue.unapply)
+  )
+
+  val propertyDetailsValueAcquiredForm = Form(
+    mapping(
+      "acquiredValue" -> valueValidation.verifying("ated.property-details-value-error.valueAcquired.emptyValue", model => model.isDefined )
+    )(PropertyDetailsValueOnAcquisition.apply)(PropertyDetailsValueOnAcquisition.unapply)
+  )
+
+  val propertyDetailsWhenAcquiredDatesForm = Form(
+    mapping(
+      "acquiredDate" -> dateTuple
+        .verifying("ated.property-details-value-error.whenAcquired.invalidDateError", x => x.isDefined)
+        .verifying("ated.property-details-value-error.whenAcquired.futureDateError", x => isInPast(x))
+    )(PropertyDetailsWhenAcquiredDates.apply)(PropertyDetailsWhenAcquiredDates.unapply)
   )
 
   val isFullTaxPeriodForm = Form(
@@ -145,7 +170,6 @@ object PropertyDetailsForms {
       "endDate" -> mandatoryDateTuple("ated.property-details-period.datesLiable.endDate.error.empty")
     )(PropertyDetailsDatesLiable.apply)(PropertyDetailsDatesLiable.unapply)
   )
-
 
   lazy val mandatoryRadio: Mapping[String] = optional(text)
     .verifying("ated.property-details-period.chooseRelief.error.non-selected", _.isDefined)
@@ -196,19 +220,19 @@ object PropertyDetailsForms {
         }
       })
       .transform[Option[BigDecimal]](
-      {
-        case Some(a) =>
-          val noDecimals = a.split("\\.").head
-          val strippedAndTrimmed = noDecimals.trim.replaceAll(" ", "").replace(",", "").replace(".", "")
-          if (strippedAndTrimmed.matches("£?[0-9]*") && isValid(strippedAndTrimmed.replace("£", "")))
-            Some(BigDecimal(strippedAndTrimmed.replace("£", "")))
-          else None
-        case a => None
-      }, {
-        case Some(a) => Some(a.toString)
-        case _ => None
-      }
-    )
+        {
+          case Some(a) =>
+            val noDecimals = a.split("\\.").head
+            val strippedAndTrimmed = noDecimals.trim.replaceAll(" ", "").replace(",", "").replace(".", "")
+            if (strippedAndTrimmed.matches("£?[0-9]*") && isValid(strippedAndTrimmed.replace("£", "")))
+              Some(BigDecimal(strippedAndTrimmed.replace("£", "")))
+            else None
+          case _ => None
+        }, {
+          case Some(a) => Some(a.toString)
+          case _ => None
+        }
+      )
   }
 
   object PropertyValueField {
@@ -219,7 +243,7 @@ object PropertyDetailsForms {
   //scalastyle:off cyclomatic.complexity
   def validatePropertyDetailsRevalued(periodKey: Int, f: Form[PropertyDetailsRevalued]): Form[PropertyDetailsRevalued] = {
     if (!f.hasErrors) {
-      val formErrors = (PropertyDetailsFormsValidation.checkPartAcqDispDate(periodKey, f.get.isPropertyRevalued,  f.get.partAcqDispDate)
+      val formErrors = (PropertyDetailsFormsValidation.checkPartAcqDispDate(periodKey, f.get.isPropertyRevalued, f.get.partAcqDispDate)
         ++ validateValue(f.get.isPropertyRevalued == Some(true), "revaluedValue", f.get.revaluedValue, f)
         ++ PropertyDetailsFormsValidation.checkRevaluedDate(periodKey, f.get.isPropertyRevalued, f.get.revaluedDate)
         ).flatten
@@ -245,11 +269,14 @@ object PropertyDetailsForms {
 
   def validatePropertyDetailsNewBuild(periodKey: Int, f: Form[PropertyDetailsNewBuild]): Form[PropertyDetailsNewBuild] = {
     if (!f.hasErrors) {
-      val formErrors = (
-          PropertyDetailsFormsValidation.validateBuildDate(periodKey, f, f.get.isNewBuild) ++
-          validateValue(f.get.isNewBuild == Some(true), "newBuildValue", f.get.newBuildValue, f) ++
-          validateValue(f.get.isNewBuild == Some(false), "notNewBuildValue", f.get.notNewBuildValue, f)
-        ).flatten
+      val formErrors = PropertyDetailsFormsValidation.validateBuildDate(periodKey, f, f.get.isNewBuild).flatten
+      addErrorsToForm(f, formErrors)
+    } else f
+  }
+
+  def validatePropertyDetailsNewBuildDates(periodKey: Int, f: Form[PropertyDetailsNewBuildDates]): Form[PropertyDetailsNewBuildDates] = {
+    if (!f.hasErrors) {
+      val formErrors = PropertyDetailsFormsValidation.validatedNewBuildDate(periodKey, f).flatten
       addErrorsToForm(f, formErrors)
     } else f
   }
@@ -290,12 +317,20 @@ object PropertyDetailsForms {
     } else Seq(None)
   }
 
+  private def isInPast(maybeDate: Option[LocalDate]): Boolean = {
+    maybeDate match {
+      case Some(x) => x.isBefore(LocalDate.now().plusDays(1))
+      case None => true
+    }
+  }
+
   private def addErrorsToForm[A](form: Form[A], formErrors: Seq[FormError]): Form[A] = {
     @tailrec
     def y(f: Form[A], fe: Seq[FormError]): Form[A] = {
       if (fe.isEmpty) f
       else y(f.withError(fe.head), fe.tail)
     }
+
     y(form, formErrors)
   }
 

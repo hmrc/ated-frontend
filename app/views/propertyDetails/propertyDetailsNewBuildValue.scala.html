@@ -1,0 +1,76 @@
+@*
+ * Copyright 2020 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import org.joda.time.LocalDate
+@import models._
+@import config.ApplicationConfig
+@(id: String, periodKey: Int, propertyDetailsForm: Form[PropertyDetailsNewBuildValue], mode: Option[String], backLink: Option[String], date: LocalDate)(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
+@import uk.gov.hmrc.play.views.html._
+@import uk.gov.hmrc.play.views.html.helpers._
+@import views.html.helpers._
+@import views.html.helpers.error._
+@import _root_.utils._
+@import utils.AtedUtils.intToMonth
+
+@implicitFormInstance = @{
+Some(propertyDetailsForm)
+}
+
+@pageScripts = {
+<script src='@controllers.routes.Assets.versioned("javascript/show-hide-content.js")'></script>
+<script src='@controllers.routes.Assets.versioned("javascript/propertyDetailsNewBuild.js")'></script>
+<script>
+    $(document).ready(function() {
+     // Where .multiple-choice uses the data-target attribute
+      // to toggle hidden content
+      var showHideContent = new GOVUK.ShowHideContent()
+      showHideContent.init()
+    });
+  </script>
+}
+
+@analyticsJs = {
+var id = "@id";
+var page = document.location.pathname.replace('/' + id, '');
+ga('set', 'page', page);
+}
+
+@atedMain(title = messages("ated.property-details-value.newBuildValue.title",date.dayOfMonth().get().toString, intToMonth(date.monthOfYear().get()), date.year().get().toString),
+pageScripts = Some(pageScripts),
+analyticsAdditionalJs = Some(analyticsJs)) {
+
+@pageHeadersAndError(backLink, "pre-heading", messages(AtedUtils.getPropertyDetailsPreHeader(mode)), messages("property-details-header"), messages("ated.property-details-value.newBuildValue.header",  date.dayOfMonth().get().toString, intToMonth(date.monthOfYear().get()), date.year().get().toString),
+Some(atedErrorWithBoundarySummary(propertyDetailsForm, "ated.property-details-value-error.general", None, periodKey)))
+
+@form(action = controllers.propertyDetails.routes.PropertyDetailsNewBuildValueController.save(id, periodKey, mode, date)) {
+
+    <div id="newBuildValue">
+        @atedInputValue(propertyDetailsForm("newBuildValue"),
+        '_label -> messages("ated.property-details-value.newBuildValue.newBuildValueQuestion"),
+        '_labelClass -> "visuallyhidden",
+        '_inputClass -> "form-control-indent",
+        '_hintText -> messages("ated.property-details-value.newBuildValue.hintText"),
+        '_id -> "newBuildValue",
+        '_showConstraints -> false,
+        '_type -> "text")
+    </div>
+
+<button class="button" id="submit" type="submit">@messages("ated.save-and-continue")</button>
+
+
+}
+
+}

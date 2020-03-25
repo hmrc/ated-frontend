@@ -1,0 +1,98 @@
+@*
+ * Copyright 2020 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import models._
+@import config.ApplicationConfig
+@(id: String, periodKey: Int, propertyDetailsForm: Form[PropertyDetailsNewBuildDates], mode: Option[String], backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
+@import uk.gov.hmrc.play.views.html._
+@import uk.gov.hmrc.play.views.html.helpers._
+@import views.html.helpers._
+@import views.html.helpers.error._
+@import _root_.utils._
+
+@implicitFormInstance = @{
+Some(propertyDetailsForm)
+}
+
+@pageScripts = {
+<script src='@controllers.routes.Assets.versioned("javascript/show-hide-content.js")'></script>
+<script src='@controllers.routes.Assets.versioned("javascript/propertyDetailsNewBuild.js")'></script>
+<script>
+    $(document).ready(function() {
+     // Where .multiple-choice uses the data-target attribute
+      // to toggle hidden content
+      var showHideContent = new GOVUK.ShowHideContent()
+      showHideContent.init()
+    });
+
+</script>
+}
+
+@analyticsJs = {
+var id = "@id";
+var page = document.location.pathname.replace('/' + id, '');
+ga('set', 'page', page);
+}
+
+@atedMain(title = messages("ated.property-details-value.newBuildDates.title"),
+pageScripts = Some(pageScripts),
+analyticsAdditionalJs = Some(analyticsJs)) {
+
+@pageHeadersAndError(backLink, "pre-heading", messages(AtedUtils.getPropertyDetailsPreHeader(mode)), messages("property-details-header"), messages("ated.property-details-value.newBuildDates.header"),
+Some(atedErrorWithBoundarySummary(propertyDetailsForm, "ated.property-details-value-error.general", None, periodKey)))
+
+<p id="paragraphFirst">
+    @messages("ated.property-details-value.newBuildDates.paragraphOne")
+</p>
+
+<p id="paragraphTwo">
+    @messages("ated.property-details-value.newBuildDates.paragraphTwo")
+</p>
+
+@form(action = controllers.propertyDetails.routes.PropertyDetailsNewBuildDatesController.save(id, periodKey, mode)) {
+<div id="dateOfFirstOccupation">
+    @atedDateFieldsFree(
+    formItem = propertyDetailsForm,
+    fieldName = "newBuildOccupyDate",
+    label = Html(messages("ated.property-details-value.newBuildDates.dateQuestionOne")),
+    isNested = false,
+    defaultDateOption = None,
+    periodKey,
+    '_hintText -> messages("ated.property-details-value.newBuildDates.exampleDate"),
+    '_groupClass -> "form-group date-of-birth",
+    '_idName -> "newBuildOccupyDate"
+    )
+</div>
+
+<div id="dateOfLocalCouncilReg">
+    @atedDateFieldsFree(
+    formItem = propertyDetailsForm,
+    fieldName = "newBuildRegisterDate",
+    label = Html(messages("ated.property-details-value.newBuildDates.dateQuestionTwo")),
+    isNested = false,
+    defaultDateOption = None,
+    periodKey,
+    '_hintText -> messages("ated.property-details-value.newBuildDates.exampleDate"),
+    '_groupClass -> "form-group date-of-birth",
+    '_idName -> "newBuildRegisterDate"
+    )
+</div>
+
+<button class="button" id="submit" type="submit">@messages("ated.save-and-continue")</button>
+
+}
+
+}
