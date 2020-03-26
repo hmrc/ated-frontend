@@ -67,7 +67,7 @@ POST           /overseas-company                                            cont
 ## Period ##
 GET            /period-summary/:periodKey                                   controllers.PeriodSummaryController.view(periodKey: Int)
 GET            /period-summary/:periodKey/past                              controllers.PeriodSummaryController.viewPastReturns(periodKey: Int)
-GET            /period-summary/:periodKey/createReturn                      controllers.PeriodSummaryController.createReturn(periodKey: Int)
+GET            /period-summary/:periodKey/createReturn                      controllers.PeriodSummaryController.createReturn(periodKey: Int, fromAccountSummary: Boolean)
 GET            /period-summary/:periodKey/view-return                       controllers.PeriodSummaryController.viewReturn(periodKey: Int)
 GET            /period-summary/:periodKey/view-chargeable/:propertyKey          controllers.PeriodSummaryController.viewChargeable(periodKey: Int, propertyKey: String)
 GET            /period-summary/:periodKey/view-chargeable-edit/:propertyKey     controllers.PeriodSummaryController.viewChargeableEdit(periodKey: Int, propertyKey: String)
