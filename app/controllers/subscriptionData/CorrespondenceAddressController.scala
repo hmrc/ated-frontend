@@ -22,7 +22,7 @@ import controllers.auth.AuthAction
 import forms.AtedForms
 import forms.AtedForms._
 import javax.inject.Inject
-import play.api.Environment
+import play.api.{Environment, Logger}
 import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{DelegationService, SubscriptionDataService}
@@ -70,9 +70,8 @@ class CorrespondenceAddressController @Inject()(mcc: MessagesControllerComponent
               correspondenceAddress match {
                 case Some(_) => Redirect(controllers.subscriptionData.routes.CompanyDetailsController.view())
                 case None =>
-                  val errorMsg = Messages("ated.correspondence-address.save.error")
-                  val errorForm = correspondenceAddressForm.withError(key = "addressType", message = errorMsg).fill(addressData)
-                  BadRequest(views.html.subcriptionData.correspondenceAddress(errorForm, getIsoCodeTupleList, getBackLink))
+                  Logger.warn(s"[CorrespondenceAddressController][submit] - Unable to update address")
+                  Ok(views.html.global_error("ated.generic.error.title", "ated.generic.error.header", "ated.generic.error.message", None, None, None, appConfig))
               }
             }
         }

@@ -233,7 +233,7 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
                 }
               }
 
-              "If registration details entered are valid but the save fails, throw a validation error" in new Setup {
+              "If registration details entered are valid but the save fails, throw a global error" in new Setup {
                 val inputJson: JsValue = Json.parse(
                   """{
                     |"addressType": "sadsdf",
@@ -246,7 +246,9 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
 
                 submitWithAuthorisedUserSuccess(None)(FakeRequest().withJsonBody(inputJson)) {
                   result =>
-                    status(result) must be(BAD_REQUEST)
+                    val document = Jsoup.parse(contentAsString(result))
+                    status(result) must be(OK)
+                    document.title() must be ("Sorry, we’re experiencing technical difficulties")
                 }
               }
 
@@ -414,22 +416,6 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
                   contentAsString(result) must include("You must enter Country")
                 }
                }
-              "throw a validation error, if save fails" in new Setup {
-                val inputJson: JsValue = Json.parse(
-                  """{
-                    |"addressType": "Correspondence",
-                    |"addressLine1": "sdfsdf",
-                    |"addressLine2": "asd",
-                    |"addressLine3": "asd",
-                    |"addressLine4": "asd",
-                    |"postalCode": "XX1 1XX",
-                    |"countryCode": "GB"}""".stripMargin)
-                submitWithAuthorisedUserSuccess(None)(FakeRequest().withJsonBody(inputJson)) {
-                  result =>
-                    status(result) must be(BAD_REQUEST)
-                    contentAsString(result) must include("Something has gone wrong, try again later.")
-                }
-              }
              }
           }
         }
