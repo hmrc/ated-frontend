@@ -59,7 +59,7 @@
 @insideHeader = {
   @uiLayouts.header_nav(
     navTitle = Some(Messages("ated.navTitle")),
-    navTitleLink = None,
+    navTitleLink = Some(routes.HomeController.home()),
     showBetaLink = false,
     navLinks = Some(headerNavLinks))
 }
