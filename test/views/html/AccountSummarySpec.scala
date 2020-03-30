@@ -76,6 +76,10 @@ class AccountSummarySpec extends PlaySpec with MockAuthUtil with GuiceOneAppPerT
       "have the correct h1" in {
         assert(document.select("h1").text() === "Your ATED summary")
       }
+
+      "have the correct banner link" in {
+        assert(document.select(".header__menu__proposition-name").attr("href") === "/ated/home")
+      }
     }
 
     "the user has property and relief returns for the current year" should {
