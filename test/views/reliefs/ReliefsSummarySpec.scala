@@ -47,7 +47,7 @@ implicit lazy val authContext = organisationStandardRetrievals
       val document = Jsoup.parse(html.toString())
 
       Then("The text for disabling the submit button should be visible")
-      assert(document.getElementById("submit-disabled-text").text() contains "You cannot submit returns until after the 1 April.")
+      assert(document.getElementById("submit-disabled-text").text() contains "You cannot submit returns until 1 April.")
     }
   }
 }
