@@ -1175,7 +1175,7 @@ ated.property-details-summary.saved-returns.link.text = Save as draft
 ated.property-details-summary.delete-draft.link.text = Delete this draft
 ated.property-details-summary.status.text = Draft
 ated.property-details-summary.print.header = Chargeable return for {0}
-ated.property-details-summary.submit-disabled-text = You cannot submit returns until after the 1 April.
+ated.property-details-summary.submit-disabled-text = You cannot submit returns until 1 April.
 ated.property-details-summary.field-blank = Not provided
 
 ##### RELIEF SUMMARY PAGE
@@ -1214,7 +1214,7 @@ ated.relief-summary.saved-draft.text = This draft is saved for up to 60 days.
 ated.relief-summary.submit = Confirm and continue
 ated.relief-summary.print.view = Print this return
 ated.relief-summary.print.header = Relief returns for {0}
-ated.relief-summary.submit-disabled-text = You cannot submit returns until after the 1 April.
+ated.relief-summary.submit-disabled-text = You cannot submit returns until 1 April.
 
 ##### RELIEFS DECLARATION PAGE
 

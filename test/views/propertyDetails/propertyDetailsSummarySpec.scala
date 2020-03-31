@@ -132,7 +132,7 @@ implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetr
       assert(document.getElementById("return-status-label").text() === "Status")
       assert(document.getElementById("ated-charge-text").text() === "Based on the information you have given us your ATED charge is £1,000")
       assert(document.getElementById("ated-charge-value").text() === "£1,000")
-      assert(document.getElementById("submit-disabled-text").text() == "You cannot submit returns until after the 1 April.")
+      assert(document.getElementById("submit-disabled-text").text() == "You cannot submit returns until 1 April.")
     }
 
     scenario("user comes in during march to create a draft return so submit should be disabled") {
@@ -148,7 +148,7 @@ implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetr
       val document = Jsoup.parse(html.toString())
 
       Then("The text for submit being disabled should appear")
-      assert(document.getElementById("submit-disabled-text").text() === "You cannot submit returns until after the 1 April.")
+      assert(document.getElementById("submit-disabled-text").text() === "You cannot submit returns until 1 April.")
     }
   }
 
