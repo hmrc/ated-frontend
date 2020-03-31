@@ -52,7 +52,7 @@ class AccountSummarySpec extends PlaySpec with MockAuthUtil with GuiceOneAppPerT
     duringPeak = false,
     currentYear,
     currentTaxYear,
-    false
+    true
   )
 
   def row(rowNumber: Int) = s"#content > article > dl > div:nth-child($rowNumber)"
@@ -99,10 +99,10 @@ class AccountSummarySpec extends PlaySpec with MockAuthUtil with GuiceOneAppPerT
 
       "show the Create a new return for current tax year button" in {
         assert(document.select(
-          "button").text === s"Create a new return for $currentTaxYear to ${currentTaxYear + 1}"
+          "#create-return-1").text === s"Create a new return for $currentTaxYear to ${currentTaxYear + 1}"
         )
         assert(document.select(
-          "#create-return").attr("href") === s"/ated/period-summary/$currentTaxYear/createReturn?fromAccountSummary=false"
+          "#create-return-1").attr("href") === s"/ated/period-summary/$currentTaxYear/createReturn?fromAccountSummary=true"
         )
       }
 

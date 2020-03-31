@@ -37,7 +37,7 @@
           }
         ) { anchor :String =>
             @if(i+1 <= maxErrorsToShow) {
-              <li class="validation-message" role="tooltip" data-journey="search-page:error:@error.key" id='@anchor.replaceAll("""[\.\[\]]""", "-")-error'>
+              <li class="validation-message" data-journey="search-page:error:@error.key" id='@anchor.replaceAll("""[\.\[\]]""", "-")-error'>
                 <a href="#@anchor" class="error-list" data-focuses="@error.key">
                 @Messages(s"$errorMessageFieldPrefix.$anchor")
                 </a>

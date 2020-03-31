@@ -38,7 +38,7 @@
   @uiLayouts.head(
     linkElem = linkElement,
     headScripts = None)
-  <meta name="format-detection" content="telephone=no"/>
+  <meta data-name="format-detection" content="telephone=no"/>
 }
 
 @headerNavLinks = {
@@ -53,7 +53,9 @@
 }
 
 @sidebar = {
-  @uiLayouts.sidebar(sidebarLinks = sidebarLinks.fold(HtmlFormat.empty)(x=>x), sidebarClass = sidebarClass)
+    <div class="side-bar">
+        @sidebarLinks
+    </div>
 }
 
 @insideHeader = {

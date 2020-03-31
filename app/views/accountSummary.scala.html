@@ -63,12 +63,11 @@
         }
 
         <div>
-            <a id="create-return" href="@controllers.routes.PeriodSummaryController.createReturn(taxYearStartingYear, fromAccountSummary)">
-                <button class="govuk-button" id="submit" type="submit" data-journey-click="ated-fronted:click:create-return-current-year">
+            <a class="button" id="create-return-0" data-journey-click="ated-frontend:click:create-return-current-year"
+            href="@controllers.routes.PeriodSummaryController.createReturn(taxYearStartingYear, fromAccountSummary)">
                 @messages("ated.account-summary.create-new-return",
                     taxYearStartingYear.toString,
                     (taxYearStartingYear+1).toString)
-                </button>
             </a>
         </div>
 
@@ -99,12 +98,10 @@
         }
 
         <div>
-            <a id="create-return" href="@controllers.routes.PeriodSummaryController.createReturn(taxYearStartingYear, fromAccountSummary)">
-                <button class="govuk-button" id="submit" type="submit" data-journey-click="ated-fronted:click:create-return-current-year">
+            <a class="button" id="create-return-1" href="@controllers.routes.PeriodSummaryController.createReturn(taxYearStartingYear, fromAccountSummary)">
                 @messages("ated.account-summary.create-new-return",
                     taxYearStartingYear.toString,
                     (taxYearStartingYear+1).toString)
-                </button>
             </a>
         </div>
 

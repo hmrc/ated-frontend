@@ -117,13 +117,13 @@ backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages
     </div>
     @if(AtedUtils.isEditSubmitted(propertyDetails)) {
     <div class="grid grid-1-6 cya-change">
-      <a href="@controllers.editLiability.routes.EditLiabilityHasValueChangedController.editFromSummary(propertyDetails.id, Some(true))" id="edit-property-professionally-value">
+      <a href="@controllers.editLiability.routes.EditLiabilityHasValueChangedController.editFromSummary(propertyDetails.id, Some(true))" id="edit-property-professionally-value-0">
         @messages("ated.edit") <span class="visuallyhidden">@PeriodUtils.getPeriodValueMessage(index, valuesToDisplay.size)</span>
       </a>
     </div>
     } else {
     <div class="grid grid-1-6 cya-change">
-      <a href="@controllers.propertyDetails.routes.PropertyDetailsOwnedBeforeController.editFromSummary(propertyDetails.id)" id="edit-property-professionally-value">
+      <a href="@controllers.propertyDetails.routes.PropertyDetailsOwnedBeforeController.editFromSummary(propertyDetails.id)" id="edit-property-professionally-value-1">
         @messages("ated.edit") <span class="visuallyhidden">@PeriodUtils.getPeriodValueMessage(index, valuesToDisplay.size)</span>
       </a>
     </div>
@@ -144,7 +144,7 @@ backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages
     </div>
     }
     <div class="grid grid-1-6 cya-change">
-      <a href="@controllers.propertyDetails.routes.PropertyDetailsProfessionallyValuedController.editFromSummary(propertyDetails.id)" id="edit-property-professionally-valued-details">
+      <a href="@controllers.propertyDetails.routes.PropertyDetailsProfessionallyValuedController.editFromSummary(propertyDetails.id)" id="edit-property-professionally-valued-details-0">
         @messages("ated.edit") <span class="visuallyhidden">@messages("ated.form-bundle.view.isValuedByAgent.message")</span>
       </a>
     </div>
@@ -168,7 +168,7 @@ backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages
                     </div>
                 </div>
                 <div class="grid grid-1-6 cya-change">
-                    <a href="@controllers.propertyDetails.routes.PropertyDetailsProfessionallyValuedController.view(propertyDetails.id)" id="edit-property-professionally-valued-details">
+                    <a href="@controllers.propertyDetails.routes.PropertyDetailsProfessionallyValuedController.view(propertyDetails.id)" id="edit-property-professionally-valued-details-1">
                         @messages("ated.edit")
                         <span class="visuallyhidden">
                             @messages("ated.form-bundle.view.isValuedByAgent.message")
@@ -183,7 +183,7 @@ backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages
                     </div>
                 </div>
                 <div class="grid grid-1-6 cya-change">
-                    <a href="@controllers.propertyDetails.routes.PropertyDetailsProfessionallyValuedController.view(propertyDetails.id)" id="edit-property-professionally-valued-details">
+                    <a href="@controllers.propertyDetails.routes.PropertyDetailsProfessionallyValuedController.view(propertyDetails.id)" id="edit-property-professionally-valued-details-2">
                         @messages("ated.edit")
                         <span class="visuallyhidden">
                             @messages("ated.form-bundle.view.isValuedByAgent.message")
