@@ -262,7 +262,7 @@ class ReliefFormsSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoS
       }
 
       "reliefSelected is true and period is too early" in {
-        val startDate = Some(new LocalDate().minusYears(1))
+        val startDate = Some(new LocalDate(s"${periodKey - 1}-04-01"))
         val validationResult = ReliefForms.validatePeriodStartDate(periodKey, reliefSelected = true, startDate, field, field)
         val expectedError = "ated.choose-reliefs.error.date.chargePeriod"
 
