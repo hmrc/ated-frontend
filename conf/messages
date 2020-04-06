@@ -757,8 +757,8 @@ ated.property-details-period.datesInRelief.endDate.error.too-late = The end date
 ated.property-details-period.datesInRelief.endDate.error.before-start-date = The relief end date cannot be before the relief start date
 ated.property-details-period.datesInRelief.endDate.error.before-start-date-and-too-early = The relief end date cannot be before the liability start date and must be within this chargeable period
 
-ated.property-details-period.peroidsInRelief.title = Add periods when the property was in relief and when it was liable for an ATED charge
-ated.property-details-period.peroidsInRelief.header = Add periods when the property was in relief and when it was liable for an ATED charge
+ated.property-details-period.periodsInRelief.title = Add periods when the property was in relief and when it was liable for an ATED charge
+ated.property-details-period.periodsInRelief.header = Add periods when the property was in relief and when it was liable for an ATED charge
 ated.property-details-period.periodsInRelief.no-periods = No periods of relief or charge have been added yet
 ated.property-details-period.periodsInRelief.date-from-header = Date from
 ated.property-details-period.periodsInRelief.date-to-header = Date to

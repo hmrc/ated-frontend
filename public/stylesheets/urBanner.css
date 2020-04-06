@@ -11,6 +11,9 @@
 .banner-panel a, .banner-panel a:visited {
     color: #fff;
 }
+.banner-panel a:focus {
+    color: #0b0c0c;
+}
 .banner-panel__close {
     font-size: 14px;
     float: right;

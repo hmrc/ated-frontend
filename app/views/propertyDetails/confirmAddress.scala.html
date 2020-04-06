@@ -41,16 +41,22 @@
     </div>
 
     <div class="margin-top-default">
-        <a href="@controllers.propertyDetails.routes.PropertyDetailsAddressController.view(id, fromConfirmAddressPage = true, periodKey, mode)"
-        id="edit-address-link"
-        data-journey-click="ated-fronted:click:manual-entry"
-        onkeyup='spaceBarHandler(event, "@controllers.propertyDetails.routes.PropertyDetailsAddressController.view(id, fromConfirmAddressPage = true, periodKey, mode)")'>
-            <p id="editAddress">@Messages("ated.confirm-address.editAddress")</p>
-        </a>
 
-        <a href="@controllers.routes.ExistingReturnQuestionController.view(periodKey, "charge")">
-            <p id="selectADifferentProperty">@Messages("ated.confirm-address.selectDifferentProperty")</p>
-        </a>
+            <p id="editAddress">
+                <a href="@controllers.propertyDetails.routes.PropertyDetailsAddressController.view(id, fromConfirmAddressPage = true, periodKey, mode)"
+                id="edit-address-link"
+                data-journey-click="ated-fronted:click:manual-entry"
+                onkeyup='spaceBarHandler(
+                    event, "@controllers.propertyDetails.routes.PropertyDetailsAddressController.view(id, fromConfirmAddressPage = true, periodKey, mode)")'>
+                    @Messages("ated.confirm-address.editAddress")
+                </a>
+            </p>
+
+            <p id="selectADifferentProperty">
+                <a href="@controllers.routes.ExistingReturnQuestionController.view(periodKey, "charge")">
+                    @Messages("ated.confirm-address.selectDifferentProperty")
+                </a>
+            </p>
 
         @form(action = controllers.propertyDetails.routes.ConfirmAddressController.submit(id, periodKey, mode)) {
             <p>

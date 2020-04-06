@@ -36,13 +36,13 @@
   ga('set', 'page', page);
 }
 
-@atedMain(title = messages("ated.property-details-period.peroidsInRelief.title"),
+@atedMain(title = messages("ated.property-details-period.periodsInRelief.title"),
           analyticsAdditionalJs = Some(analyticsJs)) {
           @pageHeadersAndError(backLink,
             "pre-heading",
             messages(AtedUtils.getPropertyDetailsPreHeader(mode)),
             "property-details-header",
-            messages("ated.property-details-period.peroidsInRelief.header"),
+            messages("ated.property-details-period.periodsInRelief.header"),
             Some(atedErrorSummary(propertyDetailsForm, "ated.property-details-period-error.general")
           ))
 
@@ -75,12 +75,12 @@
 
   <div class="margin-bottom-default">
     <a href="@controllers.propertyDetails.routes.PeriodDatesLiableController.add(id, periodKey)"
-       id="add-period-charge" class="button button--secondary btn-margin">
+       id="add-period-charge" class="button--secondary btn-margin">
       @messages("ated.property-details-period.periodsInRelief.add-charge")
     </a>
 
     <a href="@controllers.propertyDetails.routes.PeriodChooseReliefController.add(id, periodKey)"
-       id="add-period-in-relief" class="button button--secondary btn-margin">
+       id="add-period-in-relief" class="button--secondary btn-margin">
       @messages("ated.property-details-period.periodsInRelief.add-relief")
     </a>
   </div>
