@@ -17,7 +17,7 @@
 @(form: Form[_], errorMessageFieldPrefix: String, formErrorMessage: Option[String] = None, periodKey: Int, maxErrorsToShow: Int = 999)(implicit messages: Messages, request: Request[AnyContent])
     @import _root_.utils.PeriodUtils._
 
-    <script type="text/javascript" src='@controllers.routes.Assets.versioned("javascript/error-summary.js")'></script>
+    <script src='@controllers.routes.Assets.versioned("javascript/error-summary.js")'></script>
 
 
 @if(form.hasGlobalErrors || form.hasErrors) {

@@ -38,7 +38,7 @@
   @uiLayouts.head(
     linkElem = linkElement,
     headScripts = None)
-  <meta data-name="format-detection" content="telephone=no"/>
+  <meta name="format-detection" data-name="format-detection" content="telephone=no"/>
 }
 
 @headerNavLinks = {
@@ -69,11 +69,11 @@
 @afterHeader = @{
   if(isUserResearchBannerVisible && appConfig.urBannerToggle) {
       helpers.fullWidthBanner(
-      Some(helpers.fullWidthBannerContentUr(
-        messages("urbanner.message.text"),
-        appConfig.urBannerLink,
-        externalLinkWarning = None
-      ))
+        Some(helpers.fullWidthBannerContentUr(
+            messages("urbanner.message.text"),
+            appConfig.urBannerLink,
+            externalLinkWarning = None
+        ))
     )
   }
   else HtmlFormat.empty

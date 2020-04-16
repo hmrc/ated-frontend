@@ -40,7 +40,7 @@ delegatedService: Option[String] = None)(implicit messages: Messages, request: R
 @uiLayouts.head(
 linkElem = Some(linkElement),
 headScripts = None)
-<meta data-name="format-detection" content="telephone=no" />
+<meta name="format-detection" data-name="format-detection" content="telephone=no" />
 }
 
 @headerNavLinks = {
@@ -49,9 +49,9 @@ headScripts = None)
 
 
 @scriptElement = {
-<script type="text/javascript" src='@controllers.routes.Assets.versioned("jquery/jquery-ui-1.12.1.min.js")'></script>
-<script type="text/javascript" src='@controllers.routes.Assets.versioned("javascript/timeout-dialog.js")'></script>
-<script type="text/javascript" charset="utf-8">
+<script src='@controllers.routes.Assets.versioned("jquery/jquery-ui-1.12.1.min.js")'></script>
+<script src='@controllers.routes.Assets.versioned("javascript/timeout-dialog.js")'></script>
+<script charset="utf-8">
   @if(userLoggedIn) {
      $.timeoutDialog({timeout: @appConfig.defaultTimeoutSeconds, countdown: @appConfig.timeoutCountdown, keep_alive_url: '/ated/keep-alive', logout_url: '@routes.ApplicationController.logout', logout_redirect_url: '@routes.ApplicationController.logout', restart_on_yes: true, background_no_scroll: true});
      var dialogOpen;
