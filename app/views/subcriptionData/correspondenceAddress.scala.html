@@ -36,8 +36,8 @@
 
 @implicitFormInstance = @{ Some(correspondenceAddressForm) }
 
-@atedMain(title = Messages("ated.correspondence-address.title"), pageScripts = Some(pageScripts)) {
-  @pageHeadersAndError(backLink, "pre-heading", Messages("ated.correspondence-address.subheader"), "correspondence-address-header", Messages("ated.correspondence-address.header"),
+@atedMain(title = messages("ated.correspondence-address.title"), pageScripts = Some(pageScripts)) {
+  @pageHeadersAndError(backLink, "pre-heading", messages("ated.correspondence-address.subheader"), "correspondence-address-header", messages("ated.correspondence-address.header"),
       Some(atedErrorSummary(correspondenceAddressForm, "ated.correspondence-address.error.general")))
 
   @form(action = controllers.subscriptionData.routes.CorrespondenceAddressController.submit) {
@@ -49,27 +49,27 @@
         <div class="form-field">
           @atedInputNew(correspondenceAddressForm("addressType"),
           '_addressType -> "addressType",
-          '_label ->  Html(Messages("ated.correspondence-address.address-type")),
+          '_label ->  Html(messages("ated.correspondence-address.address-type")),
           '_labelClass ->  "visuallyhidden",
           '_type -> "hidden")
 
           @atedInputNew(correspondenceAddressForm("addressLine1"),
-          '_label ->  Html(Messages("ated.address.address")),
+          '_label ->  Html(messages("ated.address.address")),
           '_labelClass -> "form-label-bold",
           '_showConstraints -> false)
 
           @atedInputNew(correspondenceAddressForm("addressLine2"),
-          '_label ->  Html(Messages("ated.address.line-2")),
+          '_label ->  Html(messages("ated.address.line-2")),
           '_labelClass ->  "visuallyhidden",
           '_showConstraints -> false)
 
           @atedInputNew(correspondenceAddressForm("addressLine3"),
-          '_label ->  Html(Messages("ated.address.line-3")),
+          '_label ->  Html(messages("ated.address.line-3")),
           '_labelClass ->  "visuallyhidden",
           '_showConstraints -> false)
 
           @atedInputNew(correspondenceAddressForm("addressLine4"),
-          '_label ->  Html(Messages("ated.address.line-4")),
+          '_label ->  Html(messages("ated.address.line-4")),
           '_labelClass ->  "visuallyhidden",
           '_showConstraints -> false)
         </div>
@@ -81,12 +81,12 @@
             displayEmptyValue = false,
             '_id -> "countryCode",
             '_labelClass -> "form-label-bold",
-            '_label -> Html(Messages("ated.address.country")))
+            '_label -> Html(messages("ated.address.country")))
         </div>
 
         <div class="form-field">
           @atedInputNew(correspondenceAddressForm("postalCode"),
-          '_label ->  Html(Messages("ated.address.postcode")),
+          '_label ->  Html(messages("ated.address.postcode")),
           '_labelClass -> "form-label-bold",
           '_size ->  "10",
           '_inputClass -> "field-1-4",
@@ -97,7 +97,7 @@
 
     </div>
 
-    <button class="button" id="submit" type="submit">@Messages("ated.save-changes")</button>
+    <button class="button" id="submit" type="submit">@messages("ated.save-changes")</button>
 
 
   }

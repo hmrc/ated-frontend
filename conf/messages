@@ -979,7 +979,7 @@ ated.period-summary.view.button = View
 ated.period-summary.back = Back
 ated.period-summary.sr.relieftype = relief type,
 ated.period-summary.sr.address = address,
-ated.period-summary.sr.return = return,
+ated.period-summary.sr.return = the return for
 
 ##### EDIT CLIENT NAME
 

@@ -36,8 +36,8 @@
 
 @implicitFormInstance = @{ Some(overseasCompanyRegistrationForm) }
 
-@atedMain(title = Messages("ated.non-uk-reg.title"), pageScripts = Some(pageScripts)) {
-    @pageHeadersAndError(backLink, "pre-heading", Messages("ated.non-uk-reg.subheader"), "overseas-company-registration-header", Messages("ated.non-uk-reg.header"),
+@atedMain(title = messages("ated.non-uk-reg.title"), pageScripts = Some(pageScripts)) {
+    @pageHeadersAndError(backLink, "pre-heading", messages("ated.non-uk-reg.subheader"), "overseas-company-registration-header", messages("ated.non-uk-reg.header"),
     Some(atedErrorSummary(overseasCompanyRegistrationForm, "ated.correspondence-address.error.general")))
 
     @form(action = controllers.subscriptionData.routes.OverseasCompanyRegistrationController.submit) {
@@ -45,7 +45,7 @@
         <div class="form-group" id="overseas-company-registration-form">
 
             @atedInputNew(overseasCompanyRegistrationForm("businessUniqueId"),
-            '_label ->  Html(Messages("ated.non-uk-reg.businessUniqueId")),
+            '_label ->  Html(messages("ated.non-uk-reg.businessUniqueId")),
             '_labelClass -> "form-label-bold",
             '_id -> "businessUniqueId",
             '_showConstraints -> false)
@@ -56,16 +56,16 @@
                 displayEmptyValue = false,
                 '_id -> "countryCode",
                 '_labelClass -> "form-label-bold",
-                '_label -> Html(Messages("ated.non-uk-reg.issuingCountry")))
+                '_label -> Html(messages("ated.non-uk-reg.issuingCountry")))
 
             @atedInputNew(overseasCompanyRegistrationForm("issuingInstitution"),
-            '_label ->  Html(Messages("ated.non-uk-reg.issuingInstitution")),
+            '_label ->  Html(messages("ated.non-uk-reg.issuingInstitution")),
             '_labelClass -> "form-label-bold",
             '_id -> "issuingInstitution",
-            '_hintText -> Messages("ated.non-uk-reg.issuingInstitution.hint"),
+            '_hintText -> messages("ated.non-uk-reg.issuingInstitution.hint"),
             '_showConstraints -> false)
         </div>
 
-        <button class="button" id="submit" type="submit">@Messages("ated.save-changes")</button>
+        <button class="button" id="submit" type="submit">@messages("ated.save-changes")</button>
     }
 }

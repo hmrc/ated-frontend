@@ -51,7 +51,7 @@ pageScripts = Some(pageScripts),
 analyticsAdditionalJs = Some(analyticsJs)) {
 
 @pageHeadersAndError(backLink, "pre-heading", messages(AtedUtils.getPropertyDetailsPreHeader(mode)), messages("property-details-header"), messages("ated.property-details-value.whenAcquired.header"),
-Some(atedErrorWithBoundarySummary(propertyDetailsForm, Messages("ated.property-details-value-error.general"), None, periodKey)))
+Some(atedErrorWithBoundarySummary(propertyDetailsForm, messages("ated.property-details-value-error.general"), None, periodKey)))
 
 @form(action = controllers.propertyDetails.routes.PropertyDetailsWhenAcquiredController.save(id, periodKey, mode)) {
 

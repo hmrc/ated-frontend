@@ -20,7 +20,7 @@ import utils.AtedConstants
 
 object EditLiability {
 
-  def createHeaderMessages(returnType: String, prefix: String): String = returnType match {
+  def createHeadermessages(returnType: String, prefix: String): String = returnType match {
     case AtedConstants.Further => s"$prefix.further"
     case AtedConstants.Amend => s"$prefix.amend"
     case  _ => s"$prefix.change"

@@ -52,8 +52,8 @@ class EditLiabilitySentController @Inject()(mcc: MessagesControllerComponents,
                 val returnType = returnTypeFromAmount(resp.amountDueOrRefund)
                 Ok(views.html.editLiability.editLiabilitySent(oldFormBundleNo, returnType, resp.paymentReference,
                   resp.amountDueOrRefund, resp.liabilityAmount,
-                  createHeaderMessages(returnType, "ated.edit-liability.sent.title"),
-                  createHeaderMessages(returnType, "ated.edit-liability.sent.header")))
+                  createHeadermessages(returnType, "ated.edit-liability.sent.title"),
+                  createHeadermessages(returnType, "ated.edit-liability.sent.header")))
               case None => Redirect(controllers.routes.AccountSummaryController.view())
             }
           case None =>

@@ -25,17 +25,17 @@
   ga('set', 'location', document.URL.split("?")[0]);
 }
 
-@atedMain(title = Messages("ated.select-past-return.title"),
+@atedMain(title = messages("ated.select-past-return.title"),
           analyticsAdditionalJs = Some(analyticsJs)) {
 
-@pageHeadersAndError(backLink, "pre-header", Messages("ated.return-type.pre-header"), "header", Messages("ated.select-past-return.header"),
+@pageHeadersAndError(backLink, "pre-header", messages("ated.return-type.pre-header"), "header", messages("ated.select-past-return.header"),
     Some(atedErrorSummary(addressResultsForm, "ated.select-past-return.general")))
 
     @if(!prevReturns.isEmpty) {
       @form(action=controllers.propertyDetails.routes.SelectExistingReturnAddressController.continue(periodKey, returnType)) {
         @atedInputRadioGroupNew(addressResultsForm("selected"),
           prevReturns map (result => result.formBundleNumber -> result.address),
-          '_legend -> Messages("ated.select-past-return.header"),
+          '_legend -> messages("ated.select-past-return.header"),
           '_legendClass -> "visuallyhidden",
           '_labelClass -> "block-label",
           '_labelAfter -> true,
@@ -56,7 +56,7 @@
                   </p>
               </div>
           </details>
-      <button class="button reference-group" id="submit" type="submit">@Messages("ated.save-and-continue")</button>
+      <button class="button reference-group" id="submit" type="submit">@messages("ated.save-and-continue")</button>
     }
   }
 }

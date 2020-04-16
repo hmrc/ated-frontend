@@ -34,7 +34,7 @@
   ga('set', 'page', page);
 }
 
-@atedMain(title = Messages("ated.bank-details.has-bank-details.title"),
+@atedMain(title = messages("ated.bank-details.has-bank-details.title"),
           pageScripts = Some(pageScripts),
           analyticsAdditionalJs = Some(analyticsJs)) {
 
@@ -48,10 +48,10 @@
       @atedInputRadioGroupNew(
         bankDetailsForm("hasBankDetails"),
         Seq(
-        "true" -> Messages("ated.label.yes"),
-        "false" -> Messages("ated.label.no")
+        "true" -> messages("ated.label.yes"),
+        "false" -> messages("ated.label.no")
         ),
-        '_legend -> Messages("ated.bank-details.has-bank-details.header"),
+        '_legend -> messages("ated.bank-details.has-bank-details.header"),
         '_legendClass -> "visuallyhidden",
         '_labelClass -> "block-label",
         '_groupClass -> "inline",

@@ -42,8 +42,8 @@ class PeriodDatesLiableFormSpec extends PlaySpec with MustMatchers with GuiceOne
         PropertyDetailsForms.periodDatesLiableForm.bind(inputDate).fold(
           hasErrors => {
             hasErrors.errors.length mustBe 2
-            Messages(hasErrors.errors.head.message) mustBe Messages("error.invalid.date.format")
-            Messages(hasErrors.errors.last.message) mustBe Messages("error.invalid.date.format")
+            messages(hasErrors.errors.head.message) mustBe messages("error.invalid.date.format")
+            messages(hasErrors.errors.last.message) mustBe messages("error.invalid.date.format")
 
           },
           _ => {

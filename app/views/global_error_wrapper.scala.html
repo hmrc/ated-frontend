@@ -44,7 +44,7 @@ headScripts = None)
 }
 
 @headerNavLinks = {
-<li><a href="@routes.ApplicationController.logout" id="erorLogOutNavHref">@Messages("ated.sign-out")</a></li>
+<li><a href="@routes.ApplicationController.logout" id="erorLogOutNavHref">@messages("ated.sign-out")</a></li>
 }
 
 
@@ -66,7 +66,7 @@ headScripts = None)
 
 @insideHeader = {
 @uiLayouts.header_nav(
-navTitle = delegatedService.map(Messages("ated.navTitle", _)),
+navTitle = delegatedService.map(messages("ated.navTitle", _)),
 navTitleLink = None,
 showBetaLink = false,
 navLinks = Some(headerNavLinks))

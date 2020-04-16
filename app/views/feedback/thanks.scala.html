@@ -17,12 +17,12 @@
 @import config.ApplicationConfig
 @(returnUri: String)(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
-@atedMain(title = Messages("ated.thanks.title")) {
+@atedMain(title = messages("ated.thanks.title")) {
 
-  <h1 class="heading-xlarge" id="feedback-thanks-header">@Messages("ated.thanks.heading")</h1>
+  <h1 class="heading-xlarge" id="feedback-thanks-header">@messages("ated.thanks.heading")</h1>
 
-  <p>@Messages("ated.thanks.text")</p>
+  <p>@messages("ated.thanks.text")</p>
 
-  <a href="@returnUri">@Messages("ated.thanks.link")</a>
+  <a href="@returnUri">@messages("ated.thanks.link")</a>
 
 }

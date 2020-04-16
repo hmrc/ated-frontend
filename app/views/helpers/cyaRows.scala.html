@@ -20,7 +20,7 @@
   @cyaRows.map { row =>
     <div class="grid-wrapper row-border">
       <div class="grid grid-2-6 cya-question">
-        <h3 class="heading-small" id="@row.cyaQuestionId">@Messages(row.cyaQuestion)</h3>
+        <h3 class="heading-small" id="@row.cyaQuestionId">@messages(row.cyaQuestion)</h3>
       </div>
       <div class="grid grid-1-2 cya-answer" id="@row.cyaAnswerId">
         @row.cyaAnswer

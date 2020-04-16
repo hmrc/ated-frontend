@@ -26,17 +26,17 @@ class EditLiabilitySpec extends PlaySpec {
   "createHeaderMessages function" must {
     "return header for further view" in {
 
-      EditLiability.createHeaderMessages(AtedConstants.Further, headerPrefix) mustBe "Foo.further"
+      EditLiability.createHeadermessages(AtedConstants.Further, headerPrefix) mustBe "Foo.further"
     }
 
     "return header for amend view" in {
 
-      EditLiability.createHeaderMessages(AtedConstants.Amend, headerPrefix) mustBe "Foo.amend"
+      EditLiability.createHeadermessages(AtedConstants.Amend, headerPrefix) mustBe "Foo.amend"
     }
 
     "return header for change view" in {
 
-      EditLiability.createHeaderMessages(AtedConstants.Change, headerPrefix) mustBe "Foo.change"
+      EditLiability.createHeadermessages(AtedConstants.Change, headerPrefix) mustBe "Foo.change"
     }
   }
 

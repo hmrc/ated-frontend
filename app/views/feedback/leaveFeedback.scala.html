@@ -19,20 +19,20 @@
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
 
-@atedMain(title = Messages("ated.leave-feedback.heading")) {
+@atedMain(title = messages("ated.leave-feedback.heading")) {
 
   <div class="form-group">
-      <h1 class="heading-xlarge" id="feedback-header">@Messages("ated.leave-feedback.heading")</h1>
+      <h1 class="heading-xlarge" id="feedback-header">@messages("ated.leave-feedback.heading")</h1>
   </div>
 
   @atedErrorSummary(leaveFeedbackForm, "ated.leave-feedback.moreInfo-error.general")
 
-  <p class="paragraph" id="feedback-txt">@Html(Messages("ated.leave-feedback.instruction"))</p>
+  <p class="paragraph" id="feedback-txt">@Html(messages("ated.leave-feedback.instruction"))</p>
 
   @form(action=controllers.routes.LeaveFeedbackController.submitFeedback(returnUri)) {
     <div class="form-group">
       @atedTextArea(leaveFeedbackForm("summaryInfo"),
-        '_label -> Html(Messages("ated.leave-feedback.summaryInfo")),
+        '_label -> Html(messages("ated.leave-feedback.summaryInfo")),
         '_inputClass -> "supporting-info",
         '_labelClass -> "text-bold",
         '_id -> "summaryInfo",
@@ -41,7 +41,7 @@
 
     <div class="form-group">
       @atedTextArea(leaveFeedbackForm("moreInfo"),
-        '_label -> Html(Messages("ated.leave-feedback.moreInfo")),
+        '_label -> Html(messages("ated.leave-feedback.moreInfo")),
         '_inputClass -> "supporting-info",
         '_labelClass -> "text-bold",
         '_id -> "moreInfo",
@@ -51,23 +51,23 @@
     <div class="form-group">
       @atedInputRadioGroupNew(leaveFeedbackForm("experienceLevel"),
         Seq(
-          "4" -> Messages("label.very_satisfied"),
-          "3" -> Messages("label.satisfied"),
-          "2" -> Messages("label.neutral"),
-          "1" -> Messages("label.dissatisfied"),
-          "0" -> Messages("label.very_dissatisfied")
+          "4" -> messages("label.very_satisfied"),
+          "3" -> messages("label.satisfied"),
+          "2" -> messages("label.neutral"),
+          "1" -> messages("label.dissatisfied"),
+          "0" -> messages("label.very_dissatisfied")
         ),
-          '_legend -> Messages("ated.leave-feedback.experience-level.label"),
+          '_legend -> messages("ated.leave-feedback.experience-level.label"),
           '_labelClass -> "block-label",
           '_legendClass -> "text-bold",
          '_labelAfter -> true)
     </div>
 
-      <button class="button" id="submit" type="submit">@Messages("ated.leave-feedback.submit.button")</button>
+      <button class="button" id="submit" type="submit">@messages("ated.leave-feedback.submit.button")</button>
 
 
     <div>
-      <a href="@returnUri" id="back-link" class="link-back">@Messages("ated.back")</a>
+      <a href="@returnUri" id="back-link" class="link-back">@messages("ated.back")</a>
     </div>
 
   }

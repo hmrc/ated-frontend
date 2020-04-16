@@ -25,35 +25,35 @@
         returnType: String,
         backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
-@atedMain(title = Messages("ated.confirm-past-return-question.header", (periodKey-1).toString, periodKey.toString)) {
+@atedMain(title = messages("ated.confirm-past-return-question.header", (periodKey-1).toString, periodKey.toString)) {
 @pageHeadersAndError(
     backLink,
     "pre-header",
-    Messages("ated.return-type.pre-header"),
+    messages("ated.return-type.pre-header"),
     "return-type-header",
-    Messages("ated.confirm-past-return-question.header", (periodKey-1).toString, periodKey.toString),
+    messages("ated.confirm-past-return-question.header", (periodKey-1).toString, periodKey.toString),
     Some(atedErrorSummary(confirmExistingReturn, "ated.confirm-past-return-question.error.general")))
 
     <p class="page-header-margin">
-        @Messages("ated.confirm-past-return.p1", (periodKey-1).toString, periodKey.toString)
+        @messages("ated.confirm-past-return.p1", (periodKey-1).toString, periodKey.toString)
     </p>
 
     @form(action = controllers.routes.ExistingReturnQuestionController.submit(periodKey, returnType)) {
         <div class="form-group" id="pastReturn">
         @atedInputRadioGroupNew(
             confirmExistingReturn("yesNo"),
-            Seq("true" -> Messages("ated.label.yes"),
-                "false" -> Messages("ated.label.no")),
+            Seq("true" -> messages("ated.label.yes"),
+                "false" -> messages("ated.label.no")),
             '_groupClass -> "inline",
             '_legendClass -> "screen-reader-text",
-            '_legend -> Messages("ated.confirm-past-return-question.header"),
+            '_legend -> messages("ated.confirm-past-return-question.header"),
             '_labelClass -> "block-label",
             '_labelAfter -> true,
             '_trackGA -> true
         )
         </div>
 
-        <button class="button" id="submit" type="submit">@Messages("ated.save-and-continue")</button>
+        <button class="button" id="submit" type="submit">@messages("ated.save-and-continue")</button>
 
     }
 }

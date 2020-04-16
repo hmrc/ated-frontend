@@ -198,7 +198,7 @@ val periodKey = 2017
     def view: Html = views.html.reliefs.chooseReliefs(periodKey, formWithErrors, periodStartDate, Some("backLink"))
 
     val errorDoc = doc(view)
-    errorDoc must haveErrorSummary(Messages(s"ated.choose-reliefs.error.general.$fieldStartDate"))
+    errorDoc must haveErrorSummary(messages(s"ated.choose-reliefs.error.general.$fieldStartDate"))
     errorDoc must haveErrorNotification("You must enter a valid date")
   }
 
@@ -210,7 +210,7 @@ val periodKey = 2017
     def view: Html = views.html.reliefs.chooseReliefs(periodKey, formWithErrors, periodStartDate, Some("backLink"))
 
     val errorDoc = doc(view)
-    errorDoc must haveErrorSummary(Messages(s"ated.choose-reliefs.error.general.$fieldStartDate"))
+    errorDoc must haveErrorSummary(messages(s"ated.choose-reliefs.error.general.$fieldStartDate"))
     errorDoc must haveErrorNotification("You must enter a valid date")
   }
 

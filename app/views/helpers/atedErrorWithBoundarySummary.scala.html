@@ -22,7 +22,7 @@
 
 @if(form.hasGlobalErrors || form.hasErrors) {
   <div id="errors" tabindex="-1" role="group" aria-labelledby="form-error-heading" class="validation-summary">
-    <h1 class="heading-medium" id="form-error-heading">@Messages("ated.error.summaryHeader")</h1>
+    <h1 class="heading-medium" id="form-error-heading">@messages("ated.error.summaryHeader")</h1>
     <ul class="error-summary-list">
       @form.errors.zipWithIndex.map { case (error, i) =>
         @defining(

@@ -43,7 +43,7 @@
 
 @headerNavLinks = {
   @if(userLoggedIn){
-    <li><a id="logOutNavHref" href="@routes.ApplicationController.logout">@Messages("ated.sign-out")</a></li>
+    <li><a id="logOutNavHref" href="@routes.ApplicationController.logout">@messages("ated.sign-out")</a></li>
   }
 }
 
@@ -60,7 +60,7 @@
 
 @insideHeader = {
   @uiLayouts.header_nav(
-    navTitle = Some(Messages("ated.navTitle")),
+    navTitle = Some(messages("ated.navTitle")),
     navTitleLink = Some(routes.HomeController.home()),
     showBetaLink = false,
     navLinks = Some(headerNavLinks))
@@ -96,7 +96,7 @@
 
 @btaLink = {
 <div class="bta-link">
-    <a id="btaNavHref" href=@appConfig.businessTaxAccountPage>@Messages("ated.generic.bta_link")</a>
+    <a id="btaNavHref" href=@appConfig.businessTaxAccountPage>@messages("ated.generic.bta_link")</a>
 </div>
 }
 

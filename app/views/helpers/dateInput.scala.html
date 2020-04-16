@@ -37,10 +37,10 @@
     @if(elements.args.contains('_labelDataAttributes)){@elements.args.get('_labelDataAttributes)}
   >
 
-    @elements.errors.map { error => <span class="error-notification">@Messages(error, calculateLowerTaxYearBoundary(periodKey).getYear.toString)</span>}
+    @elements.errors.map { error => <span class="error-notification">@messages(error, calculateLowerTaxYearBoundary(periodKey).getYear.toString)</span>}
 
     @if(parentElements.isDefined) {
-      @parentElements.get.errors.map { error => <span class="error-notification">@Messages(error, calculateLowerTaxYearBoundary(periodKey).getYear.toString)</span>}
+      @parentElements.get.errors.map { error => <span class="error-notification">@messages(error, calculateLowerTaxYearBoundary(periodKey).getYear.toString)</span>}
     }
 
     @if(labelHighlight){<strong>}

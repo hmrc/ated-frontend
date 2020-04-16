@@ -31,10 +31,10 @@
   ga('set', 'page', page);
 }
 
-@atedMain(title = Messages("ated.property-details-period.chooseRelief.title"),
+@atedMain(title = messages("ated.property-details-period.chooseRelief.title"),
           analyticsAdditionalJs = Some(analyticsJs)) {
 
-  @pageHeadersAndError(backLink, "pre-heading", Messages("ated.property-details.pre-header"), "property-details-header", Messages("ated.property-details-period.chooseRelief.header"),
+  @pageHeadersAndError(backLink, "pre-heading", messages("ated.property-details.pre-header"), "property-details-header", messages("ated.property-details-period.chooseRelief.header"),
       Some(atedErrorSummary(propertyDetailsForm, "ated.property-details-period.chooseRelief.error")))
 
   @form(action=controllers.propertyDetails.routes.PeriodChooseReliefController.save(id, periodKey)) {
@@ -42,17 +42,17 @@
       <div class="form-group">
         @atedInputRadioGroupNew(propertyDetailsForm("reliefDescription"),
         Seq(
-        ReliefsUtils.RentalBusinessDesc -> Messages("ated.choose-single-relief.rentalBusiness"),
-        ReliefsUtils.OpenToPublicDesc -> Messages("ated.choose-single-relief.openToPublic"),
-        ReliefsUtils.PropDevDesc -> Messages("ated.choose-single-relief.propertyDeveloper"),
-        ReliefsUtils.PropTradingDesc -> Messages("ated.choose-single-relief.propertyTrading"),
-        ReliefsUtils.LendingDesc -> Messages("ated.choose-single-relief.lending"),
-        ReliefsUtils.EmpOccDesc -> Messages("ated.choose-single-relief.employeeOccupation"),
-        ReliefsUtils.FarmHouseDesc -> Messages("ated.choose-single-relief.farmHouses"),
-        ReliefsUtils.SocialHouseDesc -> Messages("ated.choose-single-relief.socialHousing"),
-        ReliefsUtils.EquityReleaseDesc -> Messages("ated.choose-single-relief.equityRelease")
+        ReliefsUtils.RentalBusinessDesc -> messages("ated.choose-single-relief.rentalBusiness"),
+        ReliefsUtils.OpenToPublicDesc -> messages("ated.choose-single-relief.openToPublic"),
+        ReliefsUtils.PropDevDesc -> messages("ated.choose-single-relief.propertyDeveloper"),
+        ReliefsUtils.PropTradingDesc -> messages("ated.choose-single-relief.propertyTrading"),
+        ReliefsUtils.LendingDesc -> messages("ated.choose-single-relief.lending"),
+        ReliefsUtils.EmpOccDesc -> messages("ated.choose-single-relief.employeeOccupation"),
+        ReliefsUtils.FarmHouseDesc -> messages("ated.choose-single-relief.farmHouses"),
+        ReliefsUtils.SocialHouseDesc -> messages("ated.choose-single-relief.socialHousing"),
+        ReliefsUtils.EquityReleaseDesc -> messages("ated.choose-single-relief.equityRelease")
         ),
-        '_legend ->Messages("ated.property-details-period.chooseRelief.header"),
+        '_legend ->messages("ated.property-details-period.chooseRelief.header"),
         '_legendClass -> "visuallyhidden" ,
         '_labelClass -> "block-label",
         '_labelAfter -> true,
@@ -61,7 +61,7 @@
       </div>
 
       <button class="button" id="submit" type="submit">
-          @Messages("ated.save-and-continue")
+          @messages("ated.save-and-continue")
       </button>
   }
 

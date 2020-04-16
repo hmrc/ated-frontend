@@ -44,14 +44,14 @@
 
    <p class="text-bold" id="declaration-confirmation-text">
      @if(authContext.delegationModel.isDefined) {
-      @Messages("ated.edit-liability.i-confirm-that.bullet-text.agent")
+      @messages("ated.edit-liability.i-confirm-that.bullet-text.agent")
      } else {
-      @Messages("ated.edit-liability.i-declare-that.bullet-text.client")
+      @messages("ated.edit-liability.i-declare-that.bullet-text.client")
      }
   </p>
 
   @form(action=controllers.editLiability.routes.DisposeLiabilityDeclarationController.submit(oldFormBundleNum)) {
-    <button class="button" id="submit" type="submit">@Messages("ated.edit-liability.declaration.submit.amend")</button>
+    <button class="button" id="submit" type="submit">@messages("ated.edit-liability.declaration.submit.amend")</button>
 
   }
 }

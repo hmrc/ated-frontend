@@ -36,10 +36,10 @@
 
 @implicitFormInstance = @{ Some(registeredDetailsForm) }
 
-@atedMain(title = Messages("ated.registered-details.title"), pageScripts = Some(pageScripts)) {
+@atedMain(title = messages("ated.registered-details.title"), pageScripts = Some(pageScripts)) {
 
 
-  @pageHeadersAndError(backLink, "pre-header", Messages("ated.company-details.preheader"), "registered-details-header", Messages("ated.registered-details.header"),
+  @pageHeadersAndError(backLink, "pre-header", messages("ated.company-details.preheader"), "registered-details-header", messages("ated.registered-details.header"),
       Some(atedErrorSummary(registeredDetailsForm, "ated.registered-address.error.general")))
 
   @form(action = controllers.subscriptionData.routes.RegisteredDetailsController.submit) {
@@ -49,31 +49,31 @@
 
         @atedInputNew(registeredDetailsForm("name"),
           '_id -> "business-name",
-          '_label ->  Html(Messages("ated.registered-details.business-name")),
+          '_label ->  Html(messages("ated.registered-details.business-name")),
           '_labelClass -> "form-label-bold",
           '_showConstraints -> false)
 
         @atedInputNew(registeredDetailsForm("addressDetails.addressLine1"),
           '_id -> "registered-address-line-1",
-          '_label ->  Html(Messages("ated.address.address")),
+          '_label ->  Html(messages("ated.address.address")),
           '_labelClass -> "form-label-bold",
           '_showConstraints -> false)
 
         @atedInputNew(registeredDetailsForm("addressDetails.addressLine2"),
           '_id -> "registered-address-line-2",
-          '_label ->  Html(Messages("ated.address.line-2")),
+          '_label ->  Html(messages("ated.address.line-2")),
           '_labelClass ->  "visuallyhidden",
           '_showConstraints -> false)
 
         @atedInputNew(registeredDetailsForm("addressDetails.addressLine3"),
           '_id -> "registered-address-line-3",
-          '_label ->  Html(Messages("ated.address.line-3")),
+          '_label ->  Html(messages("ated.address.line-3")),
           '_labelClass ->  "visuallyhidden",
           '_showConstraints -> false)
 
         @atedInputNew(registeredDetailsForm("addressDetails.addressLine4"),
           '_id -> "registered-address-line-4",
-          '_label ->  Html(Messages("ated.address.line-4")),
+          '_label ->  Html(messages("ated.address.line-4")),
           '_labelClass ->  "visuallyhidden",
           '_showConstraints -> false)
 
@@ -83,32 +83,32 @@
           displayEmptyValue = false,
           '_id -> "registered-country",
           '_labelClass -> "form-label-bold",
-          '_label -> Html(Messages("ated.address.country")))
+          '_label -> Html(messages("ated.address.country")))
 
       </div>
 
     </div>
 
     <div class="form-group">
-        <button class="button" id="submit" type="submit">@Messages("ated.registered-details.save")</button>
+        <button class="button" id="submit" type="submit">@messages("ated.registered-details.save")</button>
     </div>
 
     <div class="form-group">
       @atedInput(registeredDetailsForm("safeid"),
         '_type -> "hidden",
-        '_label ->  Html(Messages("ated.registered-details.safeId")),
+        '_label ->  Html(messages("ated.registered-details.safeId")),
         '_labelClass ->  "visuallyhidden",
         '_showConstraints -> false)
 
       @atedInput(registeredDetailsForm("isEditable"),
         '_type -> "hidden",
-        '_label ->  Html(Messages("ated.registered-details.isEditable")),
+        '_label ->  Html(messages("ated.registered-details.isEditable")),
         '_labelClass ->  "visuallyhidden",
         '_showConstraints -> false)
 
       @atedInput(registeredDetailsForm("addressDetails.postalCode"),
         '_type -> "hidden",
-        '_label ->  Html(Messages("ated.registered-details.postcode")),
+        '_label ->  Html(messages("ated.registered-details.postcode")),
         '_labelClass ->  "visuallyhidden",
         '_showConstraints -> false)
     </div>

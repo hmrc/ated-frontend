@@ -37,7 +37,7 @@
 @atedMain(title = messages("ated.property-details-period.change-dates-liable.title"),
           analyticsAdditionalJs = Some(analyticsJs)) {
 
-  @pageHeadersAndError(backLink, "pre-heading", Messages("ated.property-details.pre-header-change"), "property-details-header", Messages("ated.property-details-period.change-dates-liable.header"),
+  @pageHeadersAndError(backLink, "pre-heading", messages("ated.property-details.pre-header-change"), "property-details-header", messages("ated.property-details-period.change-dates-liable.header"),
     Some(atedErrorSummary(propertyDetailsForm, "ated.property-details-period.datesLiable.general.error")))
 
   @form(action = controllers.editLiability.routes.EditLiabilityDatesLiableController.save(formBundleNo, periodKey)) {
@@ -46,11 +46,11 @@
       @atedDateFieldsFree(
         formItem = propertyDetailsForm,
         fieldName = "startDate",
-        label = Html(Messages("ated.property-details-period.change-dates-liable.startDate")),
+        label = Html(messages("ated.property-details-period.change-dates-liable.startDate")),
         isNested = false,
         defaultDateOption = None,
         periodKey,
-        '_hintText -> Messages("ated.property-details-period.datesLiable.startDate.hint", periodStartDate(periodKey).toString(Messages("ated.date-format.numeric"))),
+        '_hintText -> messages("ated.property-details-period.datesLiable.startDate.hint", periodStartDate(periodKey).toString(messages("ated.date-format.numeric"))),
         '_groupClass -> "form-group date-of-birth",
         '_idName -> "startDate"
       )
@@ -58,18 +58,18 @@
       @atedDateFieldsFree(
         formItem = propertyDetailsForm,
         fieldName = "endDate",
-        label = Html(Messages("ated.property-details-period.change-dates-liable.endDate")),
+        label = Html(messages("ated.property-details-period.change-dates-liable.endDate")),
         isNested = false,
         defaultDateOption = Some(periodEndDate(periodKey)),
         periodKey,
-        '_hintText -> Messages("ated.property-details-period.datesLiable.endDate.hint", periodEndDate(periodKey).toString(Messages("ated.date-format.numeric"))),
+        '_hintText -> messages("ated.property-details-period.datesLiable.endDate.hint", periodEndDate(periodKey).toString(messages("ated.date-format.numeric"))),
         '_groupClass -> "form-group date-of-birth",
         '_idName -> "endDate"
       )
     </div>
 
-    <button class="button" id="submit" type="submit" data-journey-click="button - click:@Messages("ated.property-details-period.change-dates-liable.title"):@Messages("ated.save-and-continue")">
-    @Messages("ated.save-and-continue")
+    <button class="button" id="submit" type="submit" data-journey-click="button - click:@messages("ated.property-details-period.change-dates-liable.title"):@messages("ated.save-and-continue")">
+    @messages("ated.save-and-continue")
     </button>
 
   }

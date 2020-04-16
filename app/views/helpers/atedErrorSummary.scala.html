@@ -22,7 +22,7 @@
 
 @if(form.hasGlobalErrors || form.hasErrors) {
   <div id="errors" tabindex="-1" role="group" aria-labelledby="form-error-heading" class="validation-summary">
-    <h1 class="heading-medium" id="form-error-heading">@Messages("ated.error.summaryHeader")</h1>
+    <h1 class="heading-medium" id="form-error-heading">@messages("ated.error.summaryHeader")</h1>
     <ul class="error-summary-list">
       @form.errors.zipWithIndex.map { case (error, i) =>
         @defining(
@@ -39,7 +39,7 @@
             @if(i+1 <= maxErrorsToShow) {
               <li class="validation-message" data-journey="search-page:error:@error.key" id='@anchor.replaceAll("""[\.\[\]]""", "-")-error'>
                 <a href="#@anchor" class="error-list" data-focuses="@error.key">
-                @Messages(s"$errorMessageFieldPrefix.$anchor")
+                @messages(s"$errorMessageFieldPrefix.$anchor")
                 </a>
               </li>
             }
