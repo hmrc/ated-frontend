@@ -27,8 +27,8 @@
 @import views.html.helpers._
 @import _root_.utils._
 
-@atedMain(title = Messages("ated.confirm-address.title")) {
-    @pageHeadersAndError(backLink, "pre-heading", Messages(AtedUtils.getPropertyDetailsPreHeader(mode)), "confirm-address-header", Messages("ated.confirm-address.header"))
+@atedMain(title = messages("ated.confirm-address.title")) {
+    @pageHeadersAndError(backLink, "pre-heading", messages(AtedUtils.getPropertyDetailsPreHeader(mode)), "confirm-address-header", messages("ated.confirm-address.header"))
 
     <div id="address">
         <ul style="list-style-type: none">
@@ -48,19 +48,19 @@
                 data-journey-click="ated-fronted:click:manual-entry"
                 onkeyup='spaceBarHandler(
                     event, "@controllers.propertyDetails.routes.PropertyDetailsAddressController.view(id, fromConfirmAddressPage = true, periodKey, mode)")'>
-                    @Messages("ated.confirm-address.editAddress")
+                    @messages("ated.confirm-address.editAddress")
                 </a>
             </p>
 
             <p id="selectADifferentProperty">
                 <a href="@controllers.routes.ExistingReturnQuestionController.view(periodKey, "charge")">
-                    @Messages("ated.confirm-address.selectDifferentProperty")
+                    @messages("ated.confirm-address.selectDifferentProperty")
                 </a>
             </p>
 
         @form(action = controllers.propertyDetails.routes.ConfirmAddressController.submit(id, periodKey, mode)) {
             <p>
-                <button class="button reference-group" id="submit" type="submit">@Messages("ated.confirm-and-continue")</button>
+                <button class="button reference-group" id="submit" type="submit">@messages("ated.confirm-and-continue")</button>
             </p>
         }
     </div>

@@ -25,32 +25,32 @@
 @import org.joda.time.format.DateTimeFormat
 @import org.joda.time.LocalDate
 
-@atedMain(title = Messages("ated.relief-summary.declaration.title")) {
+@atedMain(title = messages("ated.relief-summary.declaration.title")) {
 
-  @pageHeadersAndError(backLink, "pre-header", Messages("ated.choose-reliefs.subheader"), "relief-declaration-confirmation-header", Messages("ated.relief-summary.declaration.header"))
+  @pageHeadersAndError(backLink, "pre-header", messages("ated.choose-reliefs.subheader"), "relief-declaration-confirmation-header", messages("ated.relief-summary.declaration.header"))
 
 
     <p id="relief-declaration-before-declaration-text">
-      @if(authContext.delegationModel.isDefined) { @Messages("ated.relief-summary.before-declaration.agent")} else { @Messages("ated.relief-summary.before-declaration.client")}
+      @if(authContext.delegationModel.isDefined) { @messages("ated.relief-summary.before-declaration.agent")} else { @messages("ated.relief-summary.before-declaration.client")}
     </p>
 
-    <p id="relief-declaration-mid-declaration-text">@Messages("ated.relief-summary.mid-declaration.agent")</p>
+    <p id="relief-declaration-mid-declaration-text">@messages("ated.relief-summary.mid-declaration.agent")</p>
 
 
 
      <p id="declare-or-confirm">
-      @if(authContext.delegationModel.isDefined) { @Messages("ated.relief-summary.i-confirm-that.agent")} else { @Messages("ated.relief-summary.i-declare-that.client")}
+      @if(authContext.delegationModel.isDefined) { @messages("ated.relief-summary.i-confirm-that.agent")} else { @messages("ated.relief-summary.i-declare-that.client")}
     </p>
     @if(authContext.delegationModel.isDefined) {
     <ul class="list-bullet">
       <li id="declaration-confirmation-text">
-        @Messages("ated.relief-summary.i-confirm-that.bullet-text.agent")
+        @messages("ated.relief-summary.i-confirm-that.bullet-text.agent")
       </li>
       <li id="declaration-confirmation-text">
-        @Messages("ated.relief-summary.i-confirm-that.bulletb-text.agent")
+        @messages("ated.relief-summary.i-confirm-that.bulletb-text.agent")
       </li>
       <li id="declaration-confirmation-text">
-        @Messages("ated.relief-summary.i-confirm-that.bulletc-text.agent")
+        @messages("ated.relief-summary.i-confirm-that.bulletc-text.agent")
       </li>
     </ul>
 
@@ -58,10 +58,10 @@
 
     <ul class="list-bullet">
       <li id="declaration-confirmation-text">
-        @Messages("ated.relief-summary.i-declare-that.bullet-text.client")
+        @messages("ated.relief-summary.i-declare-that.bullet-text.client")
       </li>
       <li id="declaration-confirmation-textb">
-        @Messages("ated.relief-summary.i-declare-that.bulletb-text.client")
+        @messages("ated.relief-summary.i-declare-that.bulletb-text.client")
       </li>
     </ul>
 
@@ -70,7 +70,7 @@
   @form(action=controllers.reliefs.routes.ReliefDeclarationController.submit(periodKey)) {
 
 
-  <button class="button" id="submit" type="submit">@Messages("ated.relief-summary.declaration.submit")</button>
+  <button class="button" id="submit" type="submit">@messages("ated.relief-summary.declaration.submit")</button>
 
   }
 }

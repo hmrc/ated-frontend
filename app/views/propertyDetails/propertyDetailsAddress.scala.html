@@ -46,9 +46,9 @@ case _ => oldFormBundleNo.getOrElse("")
 
     @pageTitle = @{
         if(fromConfirmAddressPage) {
-            Messages("ated.property-details.editAddress")
+            messages("ated.property-details.editAddress")
         } else {
-            Messages("ated.property-details.title")
+            messages("ated.property-details.title")
         }
     }
 
@@ -59,41 +59,41 @@ case _ => oldFormBundleNo.getOrElse("")
                 Some(atedErrorSummary(propertyDetailsForm, "ated.property-details-address-error.general")))
 
         @if(fromConfirmAddressPage){
-            <p>@Messages("ated.property-details.p")</p>
+            <p>@messages("ated.property-details.p")</p>
         }
 
         @form(action = controllers.propertyDetails.routes.PropertyDetailsAddressController.save(id, periodKey, mode, fromConfirmAddressPage)) {
 
             <fieldset class="page-header-margin">
 
-                <legend class="visuallyhidden">@Messages("ated.property-details.header")</legend>
+                <legend class="visuallyhidden">@messages("ated.property-details.header")</legend>
 
                 @atedInputNew(propertyDetailsForm("line_1"),
-                    '_label -> Html(Messages("ated.addressProperty.line_1")),
+                    '_label -> Html(messages("ated.addressProperty.line_1")),
                     '_labelClass -> "form-label-bold",
                     '_id -> "line_1",
                     '_showConstraints -> false)
 
                 @atedInputNew(propertyDetailsForm("line_2"),
-                    '_label -> Html(Messages("ated.addressProperty.line_2")),
+                    '_label -> Html(messages("ated.addressProperty.line_2")),
                     '_labelClass -> "form-label-bold",
                     '_id -> "line_2",
                     '_showConstraints -> false)
 
                 @atedInputNew(propertyDetailsForm("line_3"),
-                    '_label -> Html(Messages("ated.addressProperty.line_3")),
+                    '_label -> Html(messages("ated.addressProperty.line_3")),
                     '_labelClass -> "form-label-bold",
                     '_id -> "line_3",
                     '_showConstraints -> false)
 
                 @atedInputNew(propertyDetailsForm("line_4"),
-                    '_label -> Html(Messages("ated.addressProperty.line_4")),
+                    '_label -> Html(messages("ated.addressProperty.line_4")),
                     '_labelClass -> "form-label-bold",
                     '_id -> "line_4",
                     '_showConstraints -> false)
 
                 @atedInputNew(propertyDetailsForm("postcode"),
-                    '_label -> Html(Messages("ated.addressProperty.postcode")),
+                    '_label -> Html(messages("ated.addressProperty.postcode")),
                     '_labelClass -> "form-label-bold",
                     '_id -> "postcode",
                     '_inputClass -> "input--normal",
@@ -107,11 +107,11 @@ case _ => oldFormBundleNo.getOrElse("")
                     <a href="@controllers.propertyDetails.routes.PropertyDetailsAddressController.addressLookupRedirect(id, periodKey, mode)"
                     id="lookup-address-link"
                     data-journey-click="ated-fronted:click:lookup-address"
-                    aria-label='@Messages("ated.property-details.property-address.lookup.title")'>@Messages("ated.property-details.property-address.lookup.title")</a>
+                    aria-label='@messages("ated.property-details.property-address.lookup.title")'>@messages("ated.property-details.property-address.lookup.title")</a>
                 </div>
             }
 
-            <button class="button page-header-margin" id="submit" type="submit">@Messages("ated.save-and-continue")</button>
+            <button class="button page-header-margin" id="submit" type="submit">@messages("ated.save-and-continue")</button>
 
         }
     }

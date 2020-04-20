@@ -33,21 +33,21 @@
   ga('set', 'location', document.URL.split("?")[0]);
 }
 
-@atedMain(title = Messages("ated.chargeable-return-confirmation.title"),
+@atedMain(title = messages("ated.chargeable-return-confirmation.title"),
           analyticsAdditionalJs = Some(analyticsJs)) {
 
   <div id="banner" class="transaction-banner--complete form-group">
     <h1 class="heading-large" id="value-text">
-      @Messages("ated.chargeable-return-confirmation.submitted.text")
+      @messages("ated.chargeable-return-confirmation.submitted.text")
     </h1>
   </div>
 
   <div class="form-group">
-    <p id="completed-message">@Messages("ated.chargeable-return-confirmation.completed.message")</p>
-    <p id="email-message">@Messages("ated.chargeable-return-confirmation.email.message")</p>
+    <p id="completed-message">@messages("ated.chargeable-return-confirmation.completed.message")</p>
+    <p id="email-message">@messages("ated.chargeable-return-confirmation.email.message")</p>
 
     <a href="@controllers.propertyDetails.routes.ChargeableReturnConfirmationController.viewPrintFriendlyChargeableConfirmation()" id="print-friendly-relief-link" data-journey-click="ated-fronted:click:print-friendly-relief-link" target="_blank">
-      @Messages("ated.reliefs-sent.print-link")
+      @messages("ated.reliefs-sent.print-link")
     </a>
   </div>
 
@@ -55,24 +55,24 @@
 
 
 
-    <h2 id="receipt-message-title" class="heading-medium">@Messages("ated.chargeable-return-confirmation.charge.heading")</h2>
+    <h2 id="receipt-message-title" class="heading-medium">@messages("ated.chargeable-return-confirmation.charge.heading")</h2>
 
-    <p id="adjusted-amount">@Messages("ated.chargeable-return-confirmation.amount.message")</p>
+    <p id="adjusted-amount">@messages("ated.chargeable-return-confirmation.amount.message")</p>
 
 
       @returnResponse.liabilityReturnResponse.map { liabilityReturnResponse =>
-        <p id="owed-amount">@Messages("ated.chargeable-return-confirmation.owe.text", MoneyPounds(liabilityReturnResponse.head.liabilityAmount, 2).quantity)</p>
-        <p id="reference-text">@Html(Messages("ated.chargeable-return-confirmation.reference.text", liabilityReturnResponse.head.paymentReference.getOrElse("")))</p>
-        <p id="late-payment">@Html(Messages("ated.chargeable-return-late-payment.text"))</p>
+        <p id="owed-amount">@messages("ated.chargeable-return-confirmation.owe.text", MoneyPounds(liabilityReturnResponse.head.liabilityAmount, 2).quantity)</p>
+        <p id="reference-text">@Html(messages("ated.chargeable-return-confirmation.reference.text", liabilityReturnResponse.head.paymentReference.getOrElse("")))</p>
+        <p id="late-payment">@Html(messages("ated.chargeable-return-late-payment.text"))</p>
       }
 
 
   <div class="form-group">
     <p id="not-receive-email">
-      @Messages("ated.chargeable-return-confirmation.not-receive-text")
+      @messages("ated.chargeable-return-confirmation.not-receive-text")
     </p>
   </div>
 
-  <a href="@controllers.routes.AccountSummaryController.view()" id="submit" role="button" class="button">@Messages("ated.chargeable-return-confirmation.back-to-ated-link.text")</a>
+  <a href="@controllers.routes.AccountSummaryController.view()" id="submit" role="button" class="button">@messages("ated.chargeable-return-confirmation.back-to-ated-link.text")</a>
 
 }

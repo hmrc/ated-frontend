@@ -35,9 +35,9 @@
   ga('set', 'page', page);
 }
 
-@atedMain(title = Messages("ated.property-details-period.isFullPeriod.title"),
+@atedMain(title = messages("ated.property-details-period.isFullPeriod.title"),
           analyticsAdditionalJs = Some(analyticsJs)) {
-  @pageHeadersAndError(backLink, "pre-heading", Messages("ated.property-details.pre-header"), "property-details-header", Messages("ated.property-details-period.isFullPeriod.header"),
+  @pageHeadersAndError(backLink, "pre-heading", messages("ated.property-details.pre-header"), "property-details-header", messages("ated.property-details-period.isFullPeriod.header"),
     Some(atedErrorSummary(propertyDetailsForm, "ated.property-details-period-error.general")))
 
   @form(action=controllers.propertyDetails.routes.IsFullTaxPeriodController.save(id, periodKey)) {
@@ -45,9 +45,9 @@
     <div class="form-group" id="isFullPeriod">
       @atedInputRadioGroupNew(propertyDetailsForm("isFullPeriod"),
       Seq(
-        "true" -> Messages("ated.property-details-period.yes"),
-        "false" -> Messages("ated.property-details-period.no")),
-        '_legend -> Messages("ated.property-details-period.isFullPeriod.header"),
+        "true" -> messages("ated.property-details-period.yes"),
+        "false" -> messages("ated.property-details-period.no")),
+        '_legend -> messages("ated.property-details-period.isFullPeriod.header"),
         '_legendClass -> "visuallyhidden",
         '_groupClass -> "inline",
         '_labelClass -> "block-label",
@@ -56,7 +56,7 @@
       )
     </div>
 
-    <button class="button" id="submit" type="submit">@Messages("ated.save-and-continue")</button>
+    <button class="button" id="submit" type="submit">@messages("ated.save-and-continue")</button>
 
 
   }

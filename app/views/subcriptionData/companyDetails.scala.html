@@ -27,15 +27,15 @@
 <script src='@controllers.routes.Assets.versioned("javascript/companyDetails.js")'></script>
 }
 
-@atedMain(title = Messages("ated.company-details.title"), showUrBanner= Some(true),
+@atedMain(title = messages("ated.company-details.title"), showUrBanner= Some(true),
 pageScripts = Some(pageScripts)) {
-  @pageHeadersAndError(backLink, "pre-heading", Messages("ated.company-details.preheader"), "company-details-header", Messages("ated.company-details.header"))
+  @pageHeadersAndError(backLink, "pre-heading", messages("ated.company-details.preheader"), "company-details-header", messages("ated.company-details.header"))
 
 <div class="form-group">
 
   <div class="grid-wrapper row-border">
     <div class="grid grid-2-6 cya-question">
-      <span id="company-name-header" class="heading-small">@Messages("ated.company-details.name")</span>
+      <span id="company-name-header" class="heading-small">@messages("ated.company-details.name")</span>
     </div>
 
     <div class="grid grid-1-2 cya-answer">
@@ -45,7 +45,7 @@ pageScripts = Some(pageScripts)) {
 
   <div class="grid-wrapper row-border">
     <div class="grid grid-2-6 cya-question">
-      <span id="ated-reference-number" class="heading-small">@Messages("ated.company-details.ated-reference-number")</span>
+      <span id="ated-reference-number" class="heading-small">@messages("ated.company-details.ated-reference-number")</span>
     </div>
 
     <div class="grid grid-1-2 cya-answer">
@@ -56,7 +56,7 @@ pageScripts = Some(pageScripts)) {
 
   <div class="grid-wrapper row-border">
     <div class="grid grid-2-6 cya-question">
-      <span id="registered-address-label" class="heading-small">@Messages("ated.company-details.registered-address")</span>
+      <span id="registered-address-label" class="heading-small">@messages("ated.company-details.registered-address")</span>
     </div>
 
     <div class="grid grid-1-2 cya-answer">
@@ -79,7 +79,7 @@ pageScripts = Some(pageScripts)) {
     <div class="grid grid-1-6 cya-change">
       @registrationDetails.map{ regDetails=>
         @if(regDetails.isEditable){
-          <a href='@controllers.subscriptionData.routes.RegisteredDetailsController.edit' id="registered-edit" data-journey-click="link - click:@Messages("ated.company-details.title"):@Messages("ated.company-details.registered-address.edit") - @Messages("ated.company-details.registered-address")">@Messages("ated.company-details.registered-address.edit") <span class="visuallyhidden">@Messages("ated.company-details.registered-address")</span></a></td>
+          <a href='@controllers.subscriptionData.routes.RegisteredDetailsController.edit' id="registered-edit" data-journey-click="link - click:@messages("ated.company-details.title"):@messages("ated.company-details.registered-address.edit") - @messages("ated.company-details.registered-address")">@messages("ated.company-details.registered-address.edit") <span class="visuallyhidden">@messages("ated.company-details.registered-address")</span></a></td>
         }
       }
     </div>
@@ -89,7 +89,7 @@ pageScripts = Some(pageScripts)) {
 
     <div class="grid-wrapper row-border">
       <div class="grid grid-2-6 cya-question">
-        <span id="non-uk-company-registration-label" class="heading-small">@Messages("ated.company-details.overseas_reg_number")</span>
+        <span id="non-uk-company-registration-label" class="heading-small">@messages("ated.company-details.overseas_reg_number")</span>
       </div>
 
       <div class="grid grid-1-2 cya-answer">
@@ -103,7 +103,7 @@ pageScripts = Some(pageScripts)) {
       <div class="grid grid-1-6 cya-change">
         @registrationDetails.map{ regDetails=>
           @if(regDetails.isEditable){
-            <a href='@controllers.subscriptionData.routes.OverseasCompanyRegistrationController.edit' id="registered-edit-os">@Messages("ated.company-details.registered-address.edit") <span class="visuallyhidden">@Messages("ated.company-details.overseas_reg_number")</span></a></td>
+            <a href='@controllers.subscriptionData.routes.OverseasCompanyRegistrationController.edit' id="registered-edit-os">@messages("ated.company-details.registered-address.edit") <span class="visuallyhidden">@messages("ated.company-details.overseas_reg_number")</span></a></td>
           }
         }
       </div>
@@ -112,7 +112,7 @@ pageScripts = Some(pageScripts)) {
 
   <div class="grid-wrapper row-border">
     <div class="grid grid-2-6 cya-question">
-      <span id="correspondence-address-label" class="heading-small">@Messages("ated.company-details.correspondence-address")</span>
+      <span id="correspondence-address-label" class="heading-small">@messages("ated.company-details.correspondence-address")</span>
     </div>
 
   <div id="correspondence-address" class="grid grid-1-2 cya-answer">
@@ -133,13 +133,13 @@ pageScripts = Some(pageScripts)) {
   </div>
 
     <div class="grid grid-1-6 cya-change">
-      <a href='@controllers.subscriptionData.routes.CorrespondenceAddressController.editAddress' id="correspondence-edit" data-journey-click="link - click:@Messages("ated.company-details.title"):@Messages("ated.company-details.registered-address.edit") - @Messages("ated.company-details.correspondence-address")">@Messages("ated.company-details.correspondence-address.edit") <span class="visuallyhidden">@Messages("ated.company-details.correspondence-address")</span></a></td>
+      <a href='@controllers.subscriptionData.routes.CorrespondenceAddressController.editAddress' id="correspondence-edit" data-journey-click="link - click:@messages("ated.company-details.title"):@messages("ated.company-details.registered-address.edit") - @messages("ated.company-details.correspondence-address")">@messages("ated.company-details.correspondence-address.edit") <span class="visuallyhidden">@messages("ated.company-details.correspondence-address")</span></a></td>
     </div>
   </div>
 
    <div class="grid-wrapper row-border">
      <div class="grid grid-2-6 cya-question">
-       <span id="contact-details-label" class="heading-small">@Messages("ated.company-details.contact-address")</span>
+       <span id="contact-details-label" class="heading-small">@messages("ated.company-details.contact-address")</span>
      </div>
 
      <div class="grid grid-1-2 cya-answer">
@@ -161,14 +161,14 @@ pageScripts = Some(pageScripts)) {
      </div>
 
      <div class="grid grid-1-6 cya-change">
-       <a href='@controllers.subscriptionData.routes.EditContactDetailsController.edit' id="contactdetails-edit" data-journey-click="link - click:@Messages("ated.company-details.title"):@Messages("ated.company-details.registered-address.edit") - @Messages("ated.company-details.contact-address")">@Messages("ated.contact-address.edit") <span class="visuallyhidden">@Messages("ated.company-details.contact-address")</span></a>
+       <a href='@controllers.subscriptionData.routes.EditContactDetailsController.edit' id="contactdetails-edit" data-journey-click="link - click:@messages("ated.company-details.title"):@messages("ated.company-details.registered-address.edit") - @messages("ated.company-details.contact-address")">@messages("ated.contact-address.edit") <span class="visuallyhidden">@messages("ated.company-details.contact-address")</span></a>
      </div>
    </div>
 
   <div class="grid-wrapper row-border">
 
     <div class="grid grid-2-6 cya-question">
-      <span id="contact-pref-label" class="heading-small">@Messages("ated.company-details.contact-preference.label")</span>
+      <span id="contact-pref-label" class="heading-small">@messages("ated.company-details.contact-preference.label")</span>
     </div>
 
     <div class="grid grid-1-2 cya-answer">
@@ -176,13 +176,13 @@ pageScripts = Some(pageScripts)) {
         @if(emailConsent) {
           @correspondence.map(_.contactDetails.map(_.emailAddress))
         } else {
-          @Messages("ated.property-details-summary.field-blank")
+          @messages("ated.property-details-summary.field-blank")
         }
       </span>
     </div>
 
     <div class="grid grid-1-6 cya-change">
-      <a href='@controllers.subscriptionData.routes.EditContactEmailController.edit' id="contactemail-edit" data-journey-click="link - click:@Messages("ated.company-details.title"):@Messages("ated.company-details.registered-address.edit") - @Messages("ated.company-details.contact-preference.label")">@Messages("ated.contact-address.edit") <span class="visuallyhidden">@Messages("ated.company-details.contact-preference.label")</span></a>
+      <a href='@controllers.subscriptionData.routes.EditContactEmailController.edit' id="contactemail-edit" data-journey-click="link - click:@messages("ated.company-details.title"):@messages("ated.company-details.registered-address.edit") - @messages("ated.company-details.contact-preference.label")">@messages("ated.contact-address.edit") <span class="visuallyhidden">@messages("ated.company-details.contact-preference.label")</span></a>
     </div>
 
   </div>
@@ -191,7 +191,7 @@ pageScripts = Some(pageScripts)) {
     <div class="grid-wrapper row-border">
 
       <div class="grid grid-2-6 cya-question">
-        <span id="appointed-agent-label" class="heading-small">@Messages("ated.company-details.appointed_agent")</span>
+        <span id="appointed-agent-label" class="heading-small">@messages("ated.company-details.appointed_agent")</span>
       </div>
 
       <div class="grid grid-1-2 cya-answer">
@@ -199,14 +199,14 @@ pageScripts = Some(pageScripts)) {
       </div>
 
       <div class="grid grid-1-6 cya-change">
-        <a href='@details.changeAgentLink' id="appointed-agent-link" data-journey-click="link - click:@Messages("ated.company-details.title"):@Messages("ated.company-details.registered-address.edit") - @Messages("ated.company-details.appointed_agent")">@Messages("ated.contact-address.edit") <span class="visuallyhidden">@Messages("ated.company-details.appointed_agent")</span></a>
+        <a href='@details.changeAgentLink' id="appointed-agent-link" data-journey-click="link - click:@messages("ated.company-details.title"):@messages("ated.company-details.registered-address.edit") - @messages("ated.company-details.appointed_agent")">@messages("ated.contact-address.edit") <span class="visuallyhidden">@messages("ated.company-details.appointed_agent")</span></a>
       </div>
     </div>
 
 
     <div class="grid-wrapper row-border">
       <div class="grid grid-2-6 cya-question">
-        <span id="email-label" class="heading-small">@Messages("ated.company-details.mandate_email")</span>
+        <span id="email-label" class="heading-small">@messages("ated.company-details.mandate_email")</span>
       </div>
 
       <div class="grid grid-1-2 cya-answer">
@@ -214,7 +214,7 @@ pageScripts = Some(pageScripts)) {
       </div>
 
       <div class="grid grid-1-6 cya-change">
-        <a href='@details.changeEmailLink' id="email-link" data-journey-click="link - click:@Messages("ated.company-details.title"):@Messages("ated.company-details.registered-address.edit") - @Messages("ated.company-details.agent-email-address")">@Messages("ated.contact-address.edit") <span class="visuallyhidden">@Messages("ated.company-details.mandate_email")</span></a>
+        <a href='@details.changeEmailLink' id="email-link" data-journey-click="link - click:@messages("ated.company-details.title"):@messages("ated.company-details.registered-address.edit") - @messages("ated.company-details.agent-email-address")">@messages("ated.contact-address.edit") <span class="visuallyhidden">@messages("ated.company-details.mandate_email")</span></a>
       </div>
     </div>
 
@@ -223,7 +223,7 @@ pageScripts = Some(pageScripts)) {
 </div>
 
   <div class="form-group">
-    <a class="button" href="@controllers.routes.AccountSummaryController.view()" class="link-back" id="back" onkeyup='spaceBarHandler(event,"@controllers.routes.AccountSummaryController.view()")'>@Messages("ated.company-details.back")</a>
+    <a class="button" href="@controllers.routes.AccountSummaryController.view()" class="link-back" id="back" onkeyup='spaceBarHandler(event,"@controllers.routes.AccountSummaryController.view()")'>@messages("ated.company-details.back")</a>
   </div>
 
 

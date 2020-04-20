@@ -29,12 +29,12 @@ ga('set', 'page', document.location.pathname);
 ga('set', 'location', document.URL.split("?")[0]);
 }
 
-@atedMain(title = Messages("ated.change-relief-return.title"), analyticsAdditionalJs = Some(analyticsJs)) {
-    @pageHeadersAndError(backLink, "pre-heading", Messages("ated.change-return.pre-header"), "relief-return-header", Messages("ated.change-relief-return.title"),
+@atedMain(title = messages("ated.change-relief-return.title"), analyticsAdditionalJs = Some(analyticsJs)) {
+    @pageHeadersAndError(backLink, "pre-heading", messages("ated.change-return.pre-header"), "relief-return-header", messages("ated.change-relief-return.title"),
     Some(atedErrorSummary(editReliefForm, "ated.change-relief-return.error.empty.general")))
 
-    <p id="relief-return-change-text-2">@Messages("ated.change-relief-return.text.2")</p>
-  <p id="relief-return-change-text">@Messages("ated.change-relief-return.text")</p>
+    <p id="relief-return-change-text-2">@messages("ated.change-relief-return.text.2")</p>
+  <p id="relief-return-change-text">@messages("ated.change-relief-return.text")</p>
 
     <details>
         <summary id="titleNumber-reveal" class="summary" data-journey-click="accordion - click:@messages("ated.change-relief-return.header"):@messages("ated.change-relief-return.accordian")">
@@ -57,10 +57,10 @@ ga('set', 'location', document.URL.split("?")[0]);
     <div id="editReliefForm">
       @atedInputRadioGroupNew(editReliefForm("changeRelief"),
       Seq(
-      "changeDetails" -> Messages("ated.change-relief-return.select-change-details"),
-      "createChargeable" -> Messages("ated.change-relief-return.select-create-chargeable")
+      "changeDetails" -> messages("ated.change-relief-return.select-change-details"),
+      "createChargeable" -> messages("ated.change-relief-return.select-create-chargeable")
       ),
-      '_legend -> Messages("ated.change-relief-return.title"),
+      '_legend -> messages("ated.change-relief-return.title"),
       '_labelClass -> "block-label",
       '_legendClass -> "visuallyhidden",
       '_groupClass -> "form-group",
@@ -71,7 +71,7 @@ ga('set', 'location', document.URL.split("?")[0]);
     </div>
 
 
-    <button class="button" id="submit" type="submit">@Messages("ated.change-relief-return.continue")</button>
+    <button class="button" id="submit" type="submit">@messages("ated.change-relief-return.continue")</button>
 
 }
 

@@ -51,9 +51,9 @@
     </span>
     }
 
-    @elements.errors.map { error => <span class="error-notification">@Messages(error)</span>}
+    @elements.errors.map { error => <span class="error-notification">@messages(error)</span>}
     @if(parentElements.isDefined) {
-    @parentElements.get.errors.map { error => <span class="error-notification">@Messages(error)</span>}
+    @parentElements.get.errors.map { error => <span class="error-notification">@messages(error)</span>}
     }
     </label>
     <select id="@if( elements.args.get('_id) ) {@elements.args.get('_id)} else {@elements.field.name}" name="@elements.field.name"

@@ -31,10 +31,10 @@
   ga('set', 'page', page);
 }
 
-@atedMain(title = Messages("ated.property-details-period.datesInRelief.title"),
+@atedMain(title = messages("ated.property-details-period.datesInRelief.title"),
           analyticsAdditionalJs = Some(analyticsJs)) {
 
-    @pageHeadersAndError(backLink, "pre-heading", Messages("ated.property-details.pre-header"), "property-details-header", Messages("ated.property-details-period.datesInRelief.header"),
+    @pageHeadersAndError(backLink, "pre-heading", messages("ated.property-details.pre-header"), "property-details-header", messages("ated.property-details-period.datesInRelief.header"),
     Some(atedErrorSummary(propertyDetailsForm, "ated.property-details-period.datesInRelief.general.error")))
 
     @form(action=controllers.propertyDetails.routes.PeriodInReliefDatesController.save(id, periodKey)) {
@@ -43,12 +43,12 @@
             @atedDateFieldsFree(
             formItem = propertyDetailsForm,
             fieldName = "startDate",
-            label = Html(Messages("ated.property-details-period.datesInRelief.startDate")),
+            label = Html(messages("ated.property-details-period.datesInRelief.startDate")),
             isNested = false,
             defaultDateOption = None,
             periodKey,
-            '_hintText -> Messages("ated.property-details-period.datesInRelief.startDate.hint",
-            PeriodUtils.periodStartDate(periodKey).toString(Messages("ated.date-format.numeric"))),
+            '_hintText -> messages("ated.property-details-period.datesInRelief.startDate.hint",
+            PeriodUtils.periodStartDate(periodKey).toString(messages("ated.date-format.numeric"))),
             '_groupClass -> "form-group date-of-birth",
             '_idName -> "startDate"
             )
@@ -56,18 +56,18 @@
             @atedDateFieldsFree(
             formItem = propertyDetailsForm,
             fieldName = "endDate",
-            label = Html(Messages("ated.property-details-period.datesInRelief.endDate")),
+            label = Html(messages("ated.property-details-period.datesInRelief.endDate")),
             isNested = false,
             defaultDateOption = None,
             periodKey,
-            '_hintText -> Messages("ated.property-details-period.datesInRelief.endDate.hint",
-            PeriodUtils.periodEndDate(periodKey).toString(Messages("ated.date-format.numeric"))),
+            '_hintText -> messages("ated.property-details-period.datesInRelief.endDate.hint",
+            PeriodUtils.periodEndDate(periodKey).toString(messages("ated.date-format.numeric"))),
             '_groupClass -> "form-group date-of-birth",
             '_idName -> "endDate"
             )
         </div>
 
-        <button class="button" id="submit" type="submit">@Messages("ated.save-and-continue")</button>
+        <button class="button" id="submit" type="submit">@messages("ated.save-and-continue")</button>
 
 
     }

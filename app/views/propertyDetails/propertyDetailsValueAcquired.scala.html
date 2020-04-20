@@ -58,7 +58,7 @@ Some(atedErrorWithBoundarySummary(propertyDetailsForm, "ated.property-details-va
 
 @form(action = controllers.propertyDetails.routes.PropertyDetailsValueAcquiredController.save(id, periodKey, mode, date)) {
 
-<div id="acquiredValue">
+<div>
     @atedInputValue(propertyDetailsForm("acquiredValue"),
     '_label -> messages("ated.property-details-value.valueAcquired.valueQuestion"),
     '_labelClass -> "visuallyhidden",

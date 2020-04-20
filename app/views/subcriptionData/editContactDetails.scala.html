@@ -24,13 +24,13 @@
 
 @implicitFormInstance = @{ Some(editContactDetailsForm) }
 
-@atedMain(title = Messages("ated.contact-details.title")) {
+@atedMain(title = messages("ated.contact-details.title")) {
 
-  @pageHeadersAndError(backLink, "pre-heading", Messages("ated.contact-details-edit.subheader"), "contact-details-header", Messages("ated.contact-details.header"),
+  @pageHeadersAndError(backLink, "pre-heading", messages("ated.contact-details-edit.subheader"), "contact-details-header", messages("ated.contact-details.header"),
       Some(atedErrorSummary(editContactDetailsForm, "ated.contact-details.error.general")))
 
   <div class="form-group">
-    <p id="contact-details-subheader"> @Messages("ated.contact-details.subheader")</p>
+    <p id="contact-details-subheader"> @messages("ated.contact-details.subheader")</p>
   </div>
 
   @form(action = controllers.subscriptionData.routes.EditContactDetailsController.submit) {
@@ -40,27 +40,27 @@
       <div id="contact-address-form">
 
         @atedInputNew(editContactDetailsForm("firstName"),
-        '_label -> Html(Messages("ated.contact-details.firstName")),
+        '_label -> Html(messages("ated.contact-details.firstName")),
         '_labelClass -> "form-label-bold",
         '_showConstraints -> false)
 
         @atedInputNew(editContactDetailsForm("lastName"),
-        '_label -> Html(Messages("ated.contact-details.lastName")),
+        '_label -> Html(messages("ated.contact-details.lastName")),
         '_labelClass -> "form-label-bold",
         '_showConstraints -> false)
 
         @atedInputNew(editContactDetailsForm("phoneNumber"),
-        '_label -> Html(Messages("ated.contact-details.phoneNumber")),
+        '_label -> Html(messages("ated.contact-details.phoneNumber")),
         '_labelClass -> "form-label-bold",
         '_showConstraints -> false,
-        '_type -> "number")
+        '_type -> "tel")
 
       </div>
 
     </div>
 
 
-    <button class="button" id="submit" type="submit">@Messages("ated.save-changes")</button>
+    <button class="button" id="submit" type="submit">@messages("ated.save-changes")</button>
 
 
   }

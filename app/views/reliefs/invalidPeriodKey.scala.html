@@ -17,10 +17,10 @@
 @import config.ApplicationConfig
 @()(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
-@atedMain(title = Messages("ated.reliefs.error.title")) {
+@atedMain(title = messages("ated.reliefs.error.title")) {
 
-  <h1 id="relief-error-title">@Messages("ated.reliefs.error.wrong-period")</h1>
+  <h1 id="relief-error-title">@messages("ated.reliefs.error.wrong-period")</h1>
 
-  <a href="@controllers.routes.HomeController.home()" id="relief-error-ated-home-link">@Messages("ated.reliefs.error.ated-home")</a>
+  <a href="@controllers.routes.HomeController.home()" id="relief-error-ated-home-link">@messages("ated.reliefs.error.ated-home")</a>
 
 }

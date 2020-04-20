@@ -18,7 +18,7 @@
 
 @if(form.hasGlobalErrors || form.hasErrors) {
    <div id="errors" class="validation-summary">
-     <h2 class="heading-small">@Messages("ated.error.summaryHeader")</h2>
+     <h2 class="heading-small">@messages("ated.error.summaryHeader")</h2>
      <ul>
        @for(validationError <- form.errors) {
          <li class="validation-message" id='#@validationError.key'>

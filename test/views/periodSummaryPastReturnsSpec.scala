@@ -108,7 +108,7 @@ implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetr
       assert(document.getElementById("view-edit-0") === null)
       assert(document.getElementById("liability-submitted-0") === null)
 
-      assert(document.getElementById("relief-submitted-0").text() === "View return, some relief")
+      assert(document.getElementById("relief-submitted-0").text() === "View")
 
       assert(document.getElementById("backLinkHref").text() === "Back")
       assert(document.getElementById("backLinkHref").attr("href") === "http://backlink")
@@ -134,8 +134,8 @@ implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetr
       assert(document.getElementById("past-returns").text() === "Past returns")
 
       Then("The table should have data")
-      assert(document.getElementById("view-edit-0").text() === "View or change return, addr1+2")
-      assert(document.getElementById("liability-submitted-0").attr("href") === "/ated/form-bundle/123456789014/2015")
+      assert(document.select("#liability-submitted-0 a").text() === "View or change")
+      assert(document.select("#liability-submitted-0 a").attr("href") === "/ated/form-bundle/123456789014/2015")
 
       assert(document.getElementById("backLinkHref").text() === "Back")
       assert(document.getElementById("backLinkHref").attr("href") === "http://backlink")

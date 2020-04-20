@@ -29,16 +29,16 @@
   ga('set', 'page', page);
 }
 
-@atedMain(title = Messages("ated.view-relief-return.title"),
+@atedMain(title = messages("ated.view-relief-return.title"),
           analyticsAdditionalJs = Some(analyticsJs)) {
 
-  @pageHeadersAndError(backLink, "relief-return-subheader", organisationName.getOrElse(""), "relief-return-header", Messages("ated.view-relief-return.header"))
+  @pageHeadersAndError(backLink, "relief-return-subheader", organisationName.getOrElse(""), "relief-return-header", messages("ated.view-relief-return.header"))
 
   <div class="form-group">
     @form(action=controllers.reliefs.routes.ViewReliefReturnController.submit(periodKey: Int, formBundleNumber: String)) {
-    <div class="paragraph" id="relief-return-text">@Messages("ated.view-relief-return.subheader",
-      PeriodUtils.periodStartDate(periodKey).toString(Messages("ated.date-format")),
-      PeriodUtils.periodEndDate(periodKey).toString(Messages("ated.date-format")))
+    <div class="paragraph" id="relief-return-text">@messages("ated.view-relief-return.subheader",
+      PeriodUtils.periodStartDate(periodKey).toString(messages("ated.date-format")),
+      PeriodUtils.periodEndDate(periodKey).toString(messages("ated.date-format")))
     </div>
   </div>
 <div class="form-group">
@@ -48,75 +48,75 @@
 
   <div class="grid-wrapper row-border">
     <div class="grid grid-3-4 cya-question">
-      <span class="heading-small" id="th-view-relief-return-from-date-label">@Messages("ated.view-relief-return.date.from")</span>
+      <span class="heading-small" id="th-view-relief-return-from-date-label">@messages("ated.view-relief-return.date.from")</span>
     </div>
 
     <div class="grid grid-1-4 cya-answer" id="td-view-relief-from-date-0">
-      <span class="visuallyhidden">@Messages("ated.view-relief-return.date.from")</span>
-      @submittedReliefReturn.dateFrom.toString(Messages("ated.date-format"))
+      <span class="visuallyhidden">@messages("ated.view-relief-return.date.from")</span>
+      @submittedReliefReturn.dateFrom.toString(messages("ated.date-format"))
     </div>
   </div>
 
 
   <div class="grid-wrapper row-border">
     <div class="grid grid-3-4 cya-question">
-      <span class="heading-small" id="th-view-relief-date-to-label">@Messages("ated.view-relief-return.date.to")</span>
+      <span class="heading-small" id="th-view-relief-date-to-label">@messages("ated.view-relief-return.date.to")</span>
     </div>
 
     <div class="grid grid-1-4 cya-answer" id="td-view-relief-from-date-1">
-        <span id="td-view-relief-date-to"> <span class="visuallyhidden">@Messages("ated.view-relief-return.date.to")</span> @submittedReliefReturn.dateTo.toString(Messages("ated.date-format"))</span>
+        <span id="td-view-relief-date-to"> <span class="visuallyhidden">@messages("ated.view-relief-return.date.to")</span> @submittedReliefReturn.dateTo.toString(messages("ated.date-format"))</span>
     </div>
   </div>
 
 
   <div class="grid-wrapper row-border">
     <div class="grid grid-3-4 cya-question">
-      <span id="th-view-relief-avoidance-label" class="heading-small">@Messages("ated.view-relief-return.avoidance.no")</span>
+      <span id="th-view-relief-avoidance-label" class="heading-small">@messages("ated.view-relief-return.avoidance.no")</span>
     </div>
 
     <div class="grid grid-1-4 cya-answer" id="td-view-relief-from-date-2">
-      <span id="td-view-relief-avoidance">  <span class="visuallyhidden">@Messages("ated.view-relief-return.avoidance.no")</span> @submittedReliefReturn.avoidanceSchemeNumber</span>
+      <span id="td-view-relief-avoidance">  <span class="visuallyhidden">@messages("ated.view-relief-return.avoidance.no")</span> @submittedReliefReturn.avoidanceSchemeNumber</span>
     </div>
   </div>
 
   <div class="grid-wrapper row-border">
     <div class="grid grid-3-4 cya-question">
-      <span id="th-view-relief-avoidance-promoter-label" class="heading-small">@Messages("ated.view-relief-return.promoter.no")</span>
+      <span id="th-view-relief-avoidance-promoter-label" class="heading-small">@messages("ated.view-relief-return.promoter.no")</span>
     </div>
 
     <div class="grid grid-1-4 cya-answer" id="td-view-relief-from-date-3">
 
-      <span id="td-view-relief-avoidance-promoter"> <span class="visuallyhidden">@Messages("ated.view-relief-return.promoter.no")</span> @submittedReliefReturn.promoterReferenceNumber</span>
+      <span id="td-view-relief-avoidance-promoter"> <span class="visuallyhidden">@messages("ated.view-relief-return.promoter.no")</span> @submittedReliefReturn.promoterReferenceNumber</span>
     </div>
   </div>
 
 
   <div class="grid-wrapper row-border">
     <div class="grid grid-3-4 cya-question">
-      <span class="heading-small" id="th-view-relief-status-label">@Messages("ated.view-relief-return.status")</span>
+      <span class="heading-small" id="th-view-relief-status-label">@messages("ated.view-relief-return.status")</span>
     </div>
 
     <div class="grid grid-1-4 cya-answer" id="td-view-relief-from-date-4">
 
-      <span id="td-view-relief-status"> <span class="visuallyhidden">@Messages("ated.view-relief-return.status")</span> @Messages("ated.view-relief-return.status.submitted")</span>
+      <span id="td-view-relief-status"> <span class="visuallyhidden">@messages("ated.view-relief-return.status")</span> @messages("ated.view-relief-return.status.submitted")</span>
     </div>
   </div>
 
 
   <div class="grid-wrapper row-border">
     <div class="grid grid-3-4 cya-question">
-      <span id="th-view-relief-submission-date-label" class="heading-small">@Messages("ated.view-relief-return.submission-date")</span>
+      <span id="th-view-relief-submission-date-label" class="heading-small">@messages("ated.view-relief-return.submission-date")</span>
     </div>
 
     <div class="grid grid-1-4 cya-answer" id="td-view-relief-from-date-5">
-      <span id="td-view-relief-submission-date"> <span class="visuallyhidden">@Messages("ated.view-relief-return.submission-date")</span> @submittedReliefReturn.dateOfSubmission.toString(Messages("ated.date-format"))</span>
+      <span id="td-view-relief-submission-date"> <span class="visuallyhidden">@messages("ated.view-relief-return.submission-date")</span> @submittedReliefReturn.dateOfSubmission.toString(messages("ated.date-format"))</span>
     </div>
   </div>
 
 </div>
 
     <div class="form-group">
-      <div id="return-charge-text">@Messages("ated.form-bundle.view.return.ated.charge")</div>
+      <div id="return-charge-text">@messages("ated.form-bundle.view.return.ated.charge")</div>
     </div>
 
     <div class="form-group">
@@ -126,7 +126,7 @@
     </div>
 
     @if(isEditable) {
-        <button class="button" id="submit" type="submit">@Messages("ated.change-return.button")</button>
+        <button class="button" id="submit" type="submit">@messages("ated.change-return.button")</button>
         }
 
     }

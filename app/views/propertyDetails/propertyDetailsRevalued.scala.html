@@ -46,11 +46,11 @@
   ga('set', 'page', page);
 }
 
-@atedMain(title = Messages("ated.property-details-value.isPropertyRevalued.title"),
+@atedMain(title = messages("ated.property-details-value.isPropertyRevalued.title"),
           pageScripts = Some(pageScripts),
           analyticsAdditionalJs = Some(analyticsJs)) {
 
-  @pageHeadersAndError(backLink, "pre-heading", messages(AtedUtils.getPropertyDetailsPreHeader(mode)), "property-details-header", Messages("ated.property-details-value.isPropertyRevalued.header"),
+  @pageHeadersAndError(backLink, "pre-heading", messages(AtedUtils.getPropertyDetailsPreHeader(mode)), "property-details-header", messages("ated.property-details-value.isPropertyRevalued.header"),
       Some(atedErrorSummary(propertyDetailsForm, "ated.property-details-value-error.general")))
 
   @form(action = controllers.propertyDetails.routes.PropertyDetailsRevaluedController.save(id, periodKey, mode)) {
@@ -59,9 +59,9 @@
       <div class="form-group" id="isPropertyRevalued">
       @atedInputRadioGroupReveal(
         propertyDetailsForm("isPropertyRevalued"),
-        Seq("true" -> (Messages("ated.property-details-value.yes"), Some("revalued")),
-          "false" -> (Messages("ated.property-details-value.no"), Some("notRevalued"))),
-        '_legend -> Messages("ated.property-details-value.isPropertyRevalued.header"),
+        Seq("true" -> (messages("ated.property-details-value.yes"), Some("revalued")),
+          "false" -> (messages("ated.property-details-value.no"), Some("notRevalued"))),
+        '_legend -> messages("ated.property-details-value.isPropertyRevalued.header"),
         '_legendClass -> "visuallyhidden",
         '_groupClass -> "inline",
         '_labelClass -> "block-label",
@@ -76,21 +76,21 @@
             @atedDateFieldsFree(
             formItem = propertyDetailsForm,
             fieldName = "partAcqDispDate",
-            label = Html(Messages("ated.property-details-value.partAcqDispDate")),
+            label = Html(messages("ated.property-details-value.partAcqDispDate")),
             isNested = false,
             defaultDateOption = None,
             periodKey,
-            '_hintText -> Messages("ated.property-details-value.partAcqDispDate.hint", PeriodUtils.periodEndDate(periodKey).toString(Messages("ated.date-format.numeric"))),
+            '_hintText -> messages("ated.property-details-value.partAcqDispDate.hint", PeriodUtils.periodEndDate(periodKey).toString(messages("ated.date-format.numeric"))),
             '_groupClass -> "form-group date-of-birth",
             '_idName -> "partAcqDispDate"
             )
           </div>
 
             @atedInputValue(propertyDetailsForm("revaluedValue"),
-            '_label -> Html(Messages("ated.property-details-value.revaluedValue")),
+            '_label -> Html(messages("ated.property-details-value.revaluedValue")),
             '_labelClass -> "form-label-bold",
             '_inputClass -> "form-control-indent",
-            '_hintText -> Messages("ated.property-details-value.revaluedValue.hint"),
+            '_hintText -> messages("ated.property-details-value.revaluedValue.hint"),
             '_id -> "revaluedValue",
             '_showConstraints -> false,
             '_type -> "text")
@@ -99,11 +99,11 @@
             @atedDateFieldsFree(
             formItem = propertyDetailsForm,
             fieldName = "revaluedDate",
-            label = Html(Messages("ated.property-details-value.revaluedDate")),
+            label = Html(messages("ated.property-details-value.revaluedDate")),
             isNested = false,
             defaultDateOption = None,
             periodKey,
-            '_hintText -> Messages("ated.property-details-value.revaluedDate.hint", PeriodUtils.periodEndDate(periodKey).toString(Messages("ated.date-format.numeric"))),
+            '_hintText -> messages("ated.property-details-value.revaluedDate.hint", PeriodUtils.periodEndDate(periodKey).toString(messages("ated.date-format.numeric"))),
             '_groupClass -> "form-group date-of-birth",
             '_idName -> "revaluedDate"
             )
@@ -116,14 +116,14 @@
 
         <div class="form-group">
           <div class="confirmation-notice">
-            <div class="important-notice">@Messages("ated.property-details-value.isPropertyRevalued.no-text")</div>
+            <div class="important-notice">@messages("ated.property-details-value.isPropertyRevalued.no-text")</div>
           </div>
         </div>
 
       </div>
 
-     <p id="back-to-ated"><a class="button " id="back-to-ated-link" href="@controllers.routes.AccountSummaryController.view()" data-journey-click="button - click:@Messages("ated.property-details-value.isPropertyRevalued.title"):@Messages("ated.company-details.back")">@Messages("ated.company-details.back")</a></p>
-     <button class="button" id="submit" type="submit" data-journey-click="button - click:@Messages("ated.property-details-value.isPropertyRevalued.title"):@Messages("ated.save-and-continue")">@Messages("ated.save-and-continue")</button>
+     <p id="back-to-ated"><a class="button " id="back-to-ated-link" href="@controllers.routes.AccountSummaryController.view()" data-journey-click="button - click:@messages("ated.property-details-value.isPropertyRevalued.title"):@messages("ated.company-details.back")">@messages("ated.company-details.back")</a></p>
+     <button class="button" id="submit" type="submit" data-journey-click="button - click:@messages("ated.property-details-value.isPropertyRevalued.title"):@messages("ated.save-and-continue")">@messages("ated.save-and-continue")</button>
 
   }
 

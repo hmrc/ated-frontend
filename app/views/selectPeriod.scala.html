@@ -25,13 +25,13 @@
   ga('set', 'location', document.URL.split("?")[0]);
 }
 
-@atedMain(title = Messages("ated.select-period.title"),
+@atedMain(title = messages("ated.select-period.title"),
           analyticsAdditionalJs = Some(analyticsJs)) {
 
-  @pageHeadersAndError(backLink, "pre-heading", Messages("ated.return-type.pre-header"), "header", Messages("ated.select-period.header"),
+  @pageHeadersAndError(backLink, "pre-heading", messages("ated.return-type.pre-header"), "header", messages("ated.select-period.header"),
     Some(atedErrorSummary(selectPeriodForm, "ated.select-period.error.general")))
 
-  <p id="details-text">@Messages("ated.select-period.text")</p>
+  <p id="details-text">@messages("ated.select-period.text")</p>
 
   @form(action=controllers.routes.SelectPeriodController.submit()) {
 
@@ -39,9 +39,9 @@
     @atedInputRadioGroupNew(selectPeriodForm("period"),
     periods,
     '_fieldsetAttributesHelpQuestion -> "showMoreYears",
-    '_legend -> Messages("ated.select-period.header"),
-    '_fieldsetQuestion -> Messages("ated.select-period.more-years"),
-    '_HelpQuestionAnswer -> Html(Messages("ated.select-period.more-years.answer")),
+    '_legend -> messages("ated.select-period.header"),
+    '_fieldsetQuestion -> messages("ated.select-period.more-years"),
+    '_HelpQuestionAnswer -> Html(messages("ated.select-period.more-years.answer")),
     '_labelClass -> "block-label",
     '_legendClass -> "visuallyhidden",
     '_groupClass -> "form-group",
@@ -50,7 +50,7 @@
     )
   </div>
 
-  <button class="button" id="submit" type="submit">@Messages("ated.return-type.button")</button>
+  <button class="button" id="submit" type="submit">@messages("ated.return-type.button")</button>
 
   }
 

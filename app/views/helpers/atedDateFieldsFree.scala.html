@@ -52,8 +52,8 @@
 
 
     @if(elements.args.get('_fieldsetQuestion).isDefined) {
-      <details role="group">
-        <summary role="button" aria-controls="details-content-0" tabindex="0" class="summary" id="@if(elements.args.get('_fieldsetAttributesHelpQuestion).isDefined) {@elements.args.get('_fieldsetAttributesHelpQuestion)}">
+      <details>
+        <summary aria-controls="details-content-0" tabindex="0" class="summary" id="@if(elements.args.get('_fieldsetAttributesHelpQuestion).isDefined) {@elements.args.get('_fieldsetAttributesHelpQuestion)}">
             @elements.args.get('_fieldsetQuestion)
         </summary>
         <div id="details-content-0">
@@ -74,7 +74,7 @@
       @dateInput(
       formItem(dayElem),
         periodKey,
-      '_label -> Messages("date.fields.day"),
+      '_label -> messages("date.fields.day"),
       '_inputClass -> "text day validate ated-date-width form-control",
       '_divClass -> "date-form-group day inline-fields",
       '_emptyValueText -> defaultDateOption.map(_.getDayOfMonth.toString).getOrElse(""),
@@ -88,7 +88,7 @@
       @dateInput(
       formItem(monthElem),
         periodKey,
-      '_label -> Messages("date.fields.month"),
+      '_label -> messages("date.fields.month"),
       '_inputClass -> "text month validate ated-date-width form-control",
       '_divClass -> "date-form-group month inline-fields",
       '_emptyValueText -> defaultDateOption.map(_.getMonthOfYear.toString).getOrElse(""),
@@ -102,7 +102,7 @@
       @dateInput(
       formItem(yearElem),
         periodKey,
-      '_label -> Messages("date.fields.year"),
+      '_label -> messages("date.fields.year"),
       '_inputClass -> "text year validate ated-date-width form-control",
       '_divClass -> "date-form-group year form-group-year inline-fields",
       '_emptyValueText -> defaultDateOption.map(_.getYear.toString).getOrElse(""),
