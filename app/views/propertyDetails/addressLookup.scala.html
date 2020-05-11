@@ -47,35 +47,32 @@
 
   @form(action=controllers.propertyDetails.routes.AddressLookupController.find(id, periodKey, mode)) {
 
-    <fieldset class="form-group">
-      <legend class="visuallyhidden">@messages("ated.address-lookup.header")</legend>
-        <div class="form-field">
-          @atedInputNew(searchForm("houseName"),
-          '_label ->  Html(messages("ated.address-lookup.house-name")),
-          '_labelClass -> "form-label-bold",
-          '_id -> "house-name",
-          '_inputClass -> "",
-          '_showConstraints -> false)
-        </div>
+    <div class="form-field">
+        @atedInputNew(searchForm("houseName"),
+        '_label ->  Html(messages("ated.address-lookup.house-name")),
+        '_labelClass -> "form-label-bold",
+        '_id -> "house-name",
+        '_inputClass -> "",
+        '_showConstraints -> false)
+    </div>
 
-        <div class="form-field">
+    <div class="form-field">
         @atedInputNew(searchForm("postcode"),
-          '_label ->  Html(messages("ated.address-lookup.postcode")),
-          '_labelClass -> "form-label-bold",
-          '_id -> "postcode",
-          '_inputClass -> "input--normal uppercase",
-          '_showConstraints -> false)
-        </div>
+        '_label ->  Html(messages("ated.address-lookup.postcode")),
+        '_labelClass -> "form-label-bold",
+        '_id -> "postcode",
+        '_inputClass -> "input--normal uppercase",
+        '_showConstraints -> false)
+    </div>
 
-        <div class="form-field">
-          <a href="@controllers.propertyDetails.routes.AddressLookupController.manualAddressRedirect(id, periodKey, mode)"
-             id="enter-address-link"
-             data-journey-click="ated-fronted:click:manual-entry"
-             onkeyup='spaceBarHandler(event,"@controllers.propertyDetails.routes.AddressLookupController.manualAddressRedirect(id, periodKey, mode)")'>
+    <div class="form-field">
+        <a href="@controllers.propertyDetails.routes.AddressLookupController.manualAddressRedirect(id, periodKey, mode)"
+           id="enter-address-link"
+           data-journey-click="ated-fronted:click:manual-entry"
+           onkeyup='spaceBarHandler(event,"@controllers.propertyDetails.routes.AddressLookupController.manualAddressRedirect(id, periodKey, mode)")'>
             @messages("ated.address-lookup.no-postcode-link.title")</a>
-        </div>
-       <button class="button" id="submit" type="submit" data-journey-click="button - click:@messages("ated.address-lookup.title"):@messages("ated.address-lookup.find-button")">@messages("ated.address-lookup.find-button")</button>
-    </fieldset>
+    </div>
 
+    <button class="button" id="submit" type="submit" data-journey-click="button - click:@messages("ated.address-lookup.title"):@messages("ated.address-lookup.find-button")">@messages("ated.address-lookup.find-button")</button>
   }
 }

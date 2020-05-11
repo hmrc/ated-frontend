@@ -100,7 +100,6 @@ class LeaveFeedbackControllerSpec extends PlaySpec with MockitoSugar with GuiceO
             .text() must be("You will not get a reply to any feedback. If you want to raise a technical problem or get a response use the get help with this page link. Do not include any personal or financial information.")
           document.getElementById("summaryInfo_field").text() must be("What were you trying to do today?")
           document.getElementById("moreInfo_field").text() must be("What would you like to tell us?")
-          document.getElementById("experienceLevel_legend").text() must be("Overall, how do you feel about your experience using the service today?")
           document.getElementById("submit").text() must be("Send feedback")
           document.getElementById("back-link").attr("href") must be("/ated/home")
       }

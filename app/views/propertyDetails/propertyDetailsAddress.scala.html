@@ -64,43 +64,36 @@ case _ => oldFormBundleNo.getOrElse("")
 
         @form(action = controllers.propertyDetails.routes.PropertyDetailsAddressController.save(id, periodKey, mode, fromConfirmAddressPage)) {
 
-            <fieldset class="page-header-margin">
+            @atedInputNew(propertyDetailsForm("line_1"),
+                '_label -> Html(messages("ated.addressProperty.line_1")),
+                '_labelClass -> "form-label-bold",
+                '_id -> "line_1",
+                '_showConstraints -> false)
 
-                <legend class="visuallyhidden">@messages("ated.property-details.header")</legend>
+            @atedInputNew(propertyDetailsForm("line_2"),
+                '_label -> Html(messages("ated.addressProperty.line_2")),
+                '_labelClass -> "form-label-bold",
+                '_id -> "line_2",
+                '_showConstraints -> false)
 
-                @atedInputNew(propertyDetailsForm("line_1"),
-                    '_label -> Html(messages("ated.addressProperty.line_1")),
-                    '_labelClass -> "form-label-bold",
-                    '_id -> "line_1",
-                    '_showConstraints -> false)
+            @atedInputNew(propertyDetailsForm("line_3"),
+                '_label -> Html(messages("ated.addressProperty.line_3")),
+                '_labelClass -> "form-label-bold",
+                '_id -> "line_3",
+                '_showConstraints -> false)
 
-                @atedInputNew(propertyDetailsForm("line_2"),
-                    '_label -> Html(messages("ated.addressProperty.line_2")),
-                    '_labelClass -> "form-label-bold",
-                    '_id -> "line_2",
-                    '_showConstraints -> false)
+            @atedInputNew(propertyDetailsForm("line_4"),
+                '_label -> Html(messages("ated.addressProperty.line_4")),
+                '_labelClass -> "form-label-bold",
+                '_id -> "line_4",
+                '_showConstraints -> false)
 
-                @atedInputNew(propertyDetailsForm("line_3"),
-                    '_label -> Html(messages("ated.addressProperty.line_3")),
-                    '_labelClass -> "form-label-bold",
-                    '_id -> "line_3",
-                    '_showConstraints -> false)
-
-                @atedInputNew(propertyDetailsForm("line_4"),
-                    '_label -> Html(messages("ated.addressProperty.line_4")),
-                    '_labelClass -> "form-label-bold",
-                    '_id -> "line_4",
-                    '_showConstraints -> false)
-
-                @atedInputNew(propertyDetailsForm("postcode"),
-                    '_label -> Html(messages("ated.addressProperty.postcode")),
-                    '_labelClass -> "form-label-bold",
-                    '_id -> "postcode",
-                    '_inputClass -> "input--normal",
-                    '_showConstraints -> false)
-
-
-            </fieldset>
+            @atedInputNew(propertyDetailsForm("postcode"),
+                '_label -> Html(messages("ated.addressProperty.postcode")),
+                '_labelClass -> "form-label-bold",
+                '_id -> "postcode",
+                '_inputClass -> "input--normal",
+                '_showConstraints -> false)
 
             @if(!fromConfirmAddressPage) {
                 <div class="form-group">

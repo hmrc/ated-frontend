@@ -59,8 +59,8 @@ object PeriodUtils {
   }
 
 
-  lazy val liabilityReturnTypeDesc = "ated.property-details-period.liability.return-type"
-  lazy val disposeReturnTypeDesc = "ated.property-details-period.dispose.return-type"
+  val liabilityReturnTypeDesc = "ated.property-details-period.liability.return-type"
+  val disposeReturnTypeDesc = "ated.property-details-period.dispose.return-type"
 
   def getDisplayPeriods(propertyDetails: Option[PropertyDetailsPeriod]): Seq[LineItem] = {
 

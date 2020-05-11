@@ -51,7 +51,6 @@ feature("The user can view an edit liability type page") {
 
       assert(document.getElementById("pre-heading").text() === "This section is: Change return")
 
-      assert(document.getElementById("editLiabilityType_legend").text() === "Have you disposed of the property?")
       assert(document.getElementById("editLiabilityType-cr").text() === "")
       assert(document.getElementById("editLiabilityType-dp").text() === "")
 

@@ -57,7 +57,7 @@ implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetr
 
       Then("The date fields should have the correct titles")
       And("No data is populated")
-      assert(document.getElementById("hasBankDetails-id").text() === "Do you have a bank account where we could pay a refund? Yes No")
+      assert(document.getElementById("hasBankDetails-id").text() === "Yes No")
       assert(document.getElementById("hasBankDetails-true").text() === "")
       assert(document.getElementById("hasBankDetails-false").text() === "")
 

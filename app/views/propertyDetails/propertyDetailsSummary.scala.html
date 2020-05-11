@@ -54,10 +54,10 @@ backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages
     </div>
 
     <div class="grid grid-1-2 cya-answer">
-      <span id="address-line-1">@propertyDetails.addressProperty.line_1</span>,<br>
-      <span id="address-line-2">@propertyDetails.addressProperty.line_2</span>,<br>
-      @if(propertyDetails.addressProperty.line_3.isDefined){<span id="address-line-3">@propertyDetails.addressProperty.line_3</span>,<br/>}
-      @if(propertyDetails.addressProperty.line_4.isDefined){<span id="address-line-4">@propertyDetails.addressProperty.line_4</span>,<br/>}
+      <span id="address-line-1">@propertyDetails.addressProperty.line_1</span><br>
+      <span id="address-line-2">@propertyDetails.addressProperty.line_2</span><br>
+      @if(propertyDetails.addressProperty.line_3.isDefined){<span id="address-line-3">@propertyDetails.addressProperty.line_3</span><br/>}
+      @if(propertyDetails.addressProperty.line_4.isDefined){<span id="address-line-4">@propertyDetails.addressProperty.line_4</span><br/>}
       @if(propertyDetails.addressProperty.postcode.isDefined){<span id="address-postcode">@propertyDetails.addressProperty.postcode</span>}
     </div>
 
@@ -124,7 +124,10 @@ backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages
     } else {
     <div class="grid grid-1-6 cya-change">
       <a href="@controllers.propertyDetails.routes.PropertyDetailsOwnedBeforeController.editFromSummary(propertyDetails.id)" id="edit-property-professionally-value-1">
-        @messages("ated.edit") <span class="visuallyhidden">@PeriodUtils.getPeriodValueMessage(index, valuesToDisplay.size)</span>
+          @messages("ated.edit")
+          <span class="visuallyhidden">
+              @messages(PeriodUtils.getPeriodValueMessage(index, valuesToDisplay.size))
+          </span>
       </a>
     </div>
     }
@@ -221,7 +224,11 @@ backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages
     </div>
 
     <div class="grid grid-1-6 cya-change">
-      <a href="@controllers.propertyDetails.routes.IsFullTaxPeriodController.editFromSummary(propertyDetails.id)" id="edit-dates-of-liablity-@index">@messages("ated.edit") <span class="visuallyhidden">@period.description</span>
+      <a href="@controllers.propertyDetails.routes.IsFullTaxPeriodController.editFromSummary(propertyDetails.id)" id="edit-dates-of-liablity-@index">
+          @messages("ated.edit")
+          <span class="visuallyhidden">
+              @messages((period.description).getOrElse(""))
+          </span>
       </a>
     </div>
   </div>

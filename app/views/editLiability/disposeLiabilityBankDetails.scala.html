@@ -58,8 +58,6 @@
         "true" -> (messages("ated.label.yes"), Some("hidden-bank-details")),
         "false" -> (messages("ated.label.no"), Some("hidden-bank-details"))
         ),
-        '_legend -> messages("ated.bank-details.header"),
-        '_legendClass -> "visuallyhidden",
         '_labelClass -> "block-label",
         '_groupClass -> "inline",
         '_labelAfter -> true
@@ -68,7 +66,6 @@
 
     <div id="hidden-bank-details" class="panel-indent form-control-indent js-hidden">
       <fieldset>
-        <legend class="visuallyhidden">@messages("ated.bank-details.legend")</legend>
         <div id="name-of-person" class="form-field">
           @atedInputNew(bankDetailsForm("accountName"),
           '_label -> messages("ated.bank-details.uk-bank-account.name.label"),

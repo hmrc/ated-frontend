@@ -62,8 +62,7 @@ implicit val authContext: StandardAuthRetrievals = organisationStandardRetrieval
 
       Then("The fields should have the correct titles")
       And("No data is populated")
-
-      assert(document.getElementById("hasUKBankAccount-id").text() === "Is the bank account in the UK? Yes No")
+      assert(document.getElementById("hasUKBankAccount-id").text() === "Yes No")
       assert(document.getElementById("name-of-person").text() === "Name of bank account holder")
 
       assert(document.getElementById("hidden-bank-details-uk").text() === "Account number Sort code First two numbers Second two numbers Third two numbers  ")

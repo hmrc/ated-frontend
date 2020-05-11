@@ -41,29 +41,23 @@
 
     <p id="title-text">@messages("ated.property-details.references")</p>
 
-      <fieldset id="title">
-
-        <legend class="visuallyhidden">@messages("ated.property-details.title.header")</legend>
-
-        <details>
-          <summary id="titleNumber-reveal" class="summary" data-journey-click="accordion - click:@messages("ated.property-details.title.header"):@messages("ated.property-details-titleNumber.reveal")">
+    <details>
+        <summary id="titleNumber-reveal" class="summary" data-journey-click="accordion - click:@messages("ated.property-details.title.header"):@messages("ated.property-details-titleNumber.reveal")">
             @messages("ated.property-details-titleNumber.reveal")
-          </summary>
-          <div class="panel-indent">
+        </summary>
+        <div class="panel-indent">
             <p id="titleNumber-text">@Html(messages("ated.property-details-titleNumber-reveal.text"))</p>
-          </div>
-        </details>
+        </div>
+    </details>
 
-        @atedInputNew(propertyDetailsForm("titleNumber"),
-          '_label -> messages("ated.propertyReference.titleNumber"),
-          '_labelClass -> "visuallyhidden",
-          '_hintText -> messages("ated.propertyReference.titleNumber.hint"),
-          '_id -> "references.titleNumber",
-          '_showConstraints -> false)
-      </fieldset>
+    @atedInputNew(propertyDetailsForm("titleNumber"),
+        '_label -> messages("ated.propertyReference.titleNumber"),
+        '_labelClass -> "visuallyhidden",
+        '_hintText -> messages("ated.propertyReference.titleNumber.hint"),
+        '_id -> "references.titleNumber",
+        '_showConstraints -> false)
 
-      <button class="button" id="submit" type="submit" data-journey-click="button - click:@messages("ated.property-details.title.title"):@messages("ated.save-and-continue")">@messages("ated.save-and-continue")</button>
-
+    <button class="button" id="submit" type="submit" data-journey-click="button - click:@messages("ated.property-details.title.title"):@messages("ated.save-and-continue")">@messages("ated.save-and-continue")</button>
   }
 
 }

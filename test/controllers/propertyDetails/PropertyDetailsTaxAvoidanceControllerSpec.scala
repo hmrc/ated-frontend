@@ -167,7 +167,7 @@ class PropertyDetailsTaxAvoidanceControllerSpec extends PlaySpec with GuiceOneSe
               document.title() must be(TitleBuilder.buildTitle("Is a tax avoidance scheme being used?"))
 
 
-              document.getElementById("isTaxAvoidance").text() must be("Is a tax avoidance scheme being used? Yes No")
+              document.getElementById("isTaxAvoidance").text() must be("Yes No")
               document.getElementById("isTaxAvoidance-true").attr("checked") must be("")
               document.getElementById("isTaxAvoidance-false").attr("checked") must be("")
 

@@ -18,9 +18,6 @@ package utils
 
 import models._
 import org.joda.time.LocalDate
-import play.api.Play.current
-import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{AnyContent, Request}
 import utils.AtedConstants._
 

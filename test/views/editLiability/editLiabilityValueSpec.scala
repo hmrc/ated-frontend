@@ -56,7 +56,7 @@ feature("The user can view an edit liability value page") {
         .text() === "Based on the information you have previously given us the value of your property for the purposes of ATED is £123")
 
       And("No data is populated")
-      assert(document.getElementById("hasValueChanged").text() === "Has the value of your property changed for the purposes of ATED? Yes No")
+      assert(document.getElementById("hasValueChanged").text() === "Yes No")
       assert(document.getElementById("hasValueChanged-true").text() === "")
       assert(document.getElementById("hasValueChanged-false").text() === "")
 
@@ -94,7 +94,7 @@ feature("The user can view an edit liability value page") {
         .text() === "Based on the information you have previously given us the value of your property for the purposes of ATED is £45,678")
 
       And("The data is populated for a property value set to true")
-      assert(document.getElementById("hasValueChanged").text() === "Has the value of your property changed for the purposes of ATED? Yes No")
+      assert(document.getElementById("hasValueChanged").text() === "Yes No")
       assert(document.getElementById("hasValueChanged-true").attr("checked") === "checked")
       assert(document.getElementById("hasValueChanged-false").attr("checked") === "")
 

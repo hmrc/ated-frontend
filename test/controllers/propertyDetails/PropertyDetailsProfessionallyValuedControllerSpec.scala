@@ -163,7 +163,7 @@ class PropertyDetailsProfessionallyValuedControllerSpec extends PlaySpec with Gu
               val document = Jsoup.parse(contentAsString(result))
               document.getElementById("property-details-header").text() must be("Was the property professionally valued?")
 
-              document.getElementById("isValuedByAgent").text() must be("Was the property professionally valued? Yes No")
+              document.getElementById("isValuedByAgent").text() must be("Yes No")
           }
         }
 
@@ -175,7 +175,7 @@ class PropertyDetailsProfessionallyValuedControllerSpec extends PlaySpec with Gu
               val document = Jsoup.parse(contentAsString(result))
               document.getElementById("property-details-header").text() must be("Was the property professionally valued?")
 
-              document.getElementById("isValuedByAgent").text() must be("Was the property professionally valued? Yes No")
+              document.getElementById("isValuedByAgent").text() must be("Yes No")
           }
         }
       }
