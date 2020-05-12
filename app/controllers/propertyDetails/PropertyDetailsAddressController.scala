@@ -19,8 +19,8 @@ package controllers.propertyDetails
 import audit.Auditable
 import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
-import controllers.auth.{AuthAction, ClientHelper}
 import controllers.ControllerIds
+import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms._
 import javax.inject.Inject
 import models.{PropertyDetailsAddress, SelectPeriod}

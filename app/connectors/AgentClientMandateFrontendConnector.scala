@@ -19,9 +19,7 @@ package connectors
 import config.ApplicationConfig
 import javax.inject.Inject
 import play.api.mvc.Request
-import uk.gov.hmrc.crypto.PlainText
-import uk.gov.hmrc.http.{CoreGet, HeaderCarrier, HttpResponse}
-import uk.gov.hmrc.play.bootstrap.filters.frontend.crypto.SessionCookieCrypto
+import uk.gov.hmrc.http.{CoreGet, HttpResponse}
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 import uk.gov.hmrc.play.partials.{HeaderCarrierForPartialsConverter, HtmlPartial}
 

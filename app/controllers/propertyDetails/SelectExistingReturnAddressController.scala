@@ -21,13 +21,11 @@ import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.AddressLookupForms.addressSelectedForm
 import javax.inject.Inject
-import models.{PropertyDetailsAddress, SelectPeriod}
 import play.api.Logger
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{ChangeLiabilityReturnService, FormBundleReturnsService, PropertyDetailsService, SummaryReturnsService}
+import services.{FormBundleReturnsService, PropertyDetailsService, SummaryReturnsService}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.AtedConstants._
-import utils.AtedUtils
 
 import scala.concurrent.{ExecutionContext, Future}
 

@@ -23,8 +23,8 @@ import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.bootstrap.http.{DefaultHttpClient, HttpClient}
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 class AtedConnector @Inject()(appConfig: ApplicationConfig,
                               httpClient: DefaultHttpClient) extends RawResponseReads {

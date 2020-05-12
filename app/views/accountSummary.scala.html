@@ -16,10 +16,7 @@
 
 @import models._
 @import config.ApplicationConfig
-@import play.twirl.api.HtmlFormat
 @import views.html.helpers._
-@import _root_.utils.AtedConstants._
-@import uk.gov.hmrc.play.views.html.helpers.form
 
 @(returnsCurrentTaxYear: Seq[AccountSummaryRowModel], totalCurrentYearReturns: Int, hasPastReturns: Boolean,
         otherReturns: SummaryReturnsModel, correspondence: Option[Address], organisationName: Option[String], clientBanner: Html,

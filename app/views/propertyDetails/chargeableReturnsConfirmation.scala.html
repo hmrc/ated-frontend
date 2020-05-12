@@ -17,15 +17,6 @@
 @import config.ApplicationConfig
 @(returnResponse: SubmitReturnsResponse)(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
-@import models._
-@import uk.gov.hmrc.play.views.html._
-@import uk.gov.hmrc.play.views.html.helpers._
-@import org.joda.time.format.DateTimeFormat
-@import org.joda.time.LocalDate
-@import utils._
-@import views.html.helpers._
-@import views.html.helpers.error._
-
 @import uk.gov.hmrc.play.views.helpers.MoneyPounds
 
 @analyticsJs = {

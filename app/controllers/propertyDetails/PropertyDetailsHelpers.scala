@@ -19,9 +19,10 @@ package controllers.propertyDetails
 import controllers.BackLinkController
 import models.StandardAuthRetrievals
 import play.api.mvc.Result
+import play.api.mvc.Results._
 import services._
 import uk.gov.hmrc.http.HeaderCarrier
-import play.api.mvc.Results._
+
 import scala.concurrent.Future
 
 trait PropertyDetailsHelpers extends BackLinkController {

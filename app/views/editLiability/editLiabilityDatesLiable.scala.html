@@ -15,13 +15,10 @@
  *@
 
 @import models._
-@import org.joda.time.LocalDate
 @import config.ApplicationConfig
 @(formBundleNo: String, periodKey: Int, propertyDetailsForm: Form[PropertyDetailsDatesLiable], backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
-@import uk.gov.hmrc.play.views.html._
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
-@import views.html.helpers.error._
 @import utils._
 @import _root_.utils.PeriodUtils._
 

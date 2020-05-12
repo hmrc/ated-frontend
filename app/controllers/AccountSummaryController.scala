@@ -20,7 +20,6 @@ import config.ApplicationConfig
 import connectors.{AgentClientMandateFrontendConnector, DataCacheConnector}
 import controllers.auth.AuthAction
 import javax.inject.Inject
-import models.SummaryReturnsModel
 import org.joda.time.LocalDate
 import play.api.Logger
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -30,7 +29,6 @@ import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.PeriodUtils
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
 
 class AccountSummaryController @Inject()(mcc: MessagesControllerComponents,
                                          authAction: AuthAction,

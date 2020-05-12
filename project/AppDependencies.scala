@@ -1,19 +1,12 @@
 import sbt._
 
-object FrontendBuild extends Build with MicroService {
-
-  val appName = "ated-frontend"
-
-  override lazy val appDependencies: Seq[ModuleID] = AppDependencies()
-}
-
-private object AppDependencies {
+object AppDependencies {
   import play.core.PlayVersion
   import play.sbt.PlayImport._
 
-  val compile = Seq(
+  val compile: Seq[ModuleID] = Seq(
     ws,
-    "uk.gov.hmrc" %% "bootstrap-play-26" % "1.7.0",
+     "uk.gov.hmrc" %% "bootstrap-play-26" % "1.7.0",
     "uk.gov.hmrc" %% "auth-client" % "2.35.0-play-26",
     "uk.gov.hmrc" %% "play-ui" % "8.8.0-play-26",
     "uk.gov.hmrc" %% "play-partials" % "6.10.0-play-26",
@@ -30,8 +23,8 @@ private object AppDependencies {
   }
 
   object Test {
-    def apply() = new TestDependencies {
-      override lazy val test = Seq(
+    def apply(): Seq[ModuleID] = new TestDependencies {
+      override lazy val test: Seq[ModuleID] = Seq(
         "org.scalatestplus.play" %% "scalatestplus-play" % "3.1.3" % scope,
         "org.pegdown" % "pegdown" % "1.6.0",
         "org.jsoup" % "jsoup" % "1.8.3" % scope,
@@ -42,7 +35,5 @@ private object AppDependencies {
     }.test
   }
 
-  def apply() = compile ++ Test()
+  def apply(): Seq[ModuleID] = compile ++ Test()
 }
-
-

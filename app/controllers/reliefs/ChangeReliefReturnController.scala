@@ -24,7 +24,7 @@ import controllers.propertyDetails.AddressLookupController
 import forms.AtedForms.editReliefForm
 import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{DelegationService, ReliefsService}
+import services.ReliefsService
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
 import scala.concurrent.{ExecutionContext, Future}

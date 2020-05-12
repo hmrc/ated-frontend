@@ -24,7 +24,7 @@ import javax.inject.Inject
 import models.PropertyDetails
 import org.joda.time.LocalDate
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{DelegationService, PropertyDetailsCacheSuccessResponse, PropertyDetailsService, SubscriptionDataService}
+import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService, SubscriptionDataService}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.{AtedUtils, PeriodUtils}
 

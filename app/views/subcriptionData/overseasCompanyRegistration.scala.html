@@ -16,10 +16,8 @@
 
 @import config.ApplicationConfig
 @(overseasCompanyRegistrationForm: Form[models.OverseasCompanyRegistration], listOfIsoCode: List[(String, String)], backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
-@import uk.gov.hmrc.play.views.html._
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
-@import views.html.helpers.error._
 
 @pageScripts = {
   <script src='@controllers.routes.Assets.versioned("javascript/accessible-autocomplete.min.js")'></script>

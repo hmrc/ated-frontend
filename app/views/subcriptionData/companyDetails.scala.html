@@ -16,12 +16,8 @@
 
 @import config.ApplicationConfig
 @(correspondence: Option[Address], registrationDetails: Option[RegisteredDetails], emailConsent: Boolean, clientDetails: Option[ClientMandateDetails], overseasCompanyRegistration: Option[Identification], backLink:Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
-@import uk.gov.hmrc.play.views.html._
 @import views.html.helpers._
-@import views.html.helpers.error._
-@import utils._
 @import _root_.utils.AtedUtils._
-@import _root_.utils.CountryCodeUtils
 
 @pageScripts = {
 <script src='@controllers.routes.Assets.versioned("javascript/companyDetails.js")'></script>

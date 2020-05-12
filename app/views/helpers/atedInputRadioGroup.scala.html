@@ -16,7 +16,6 @@
 
 @(field: Field, radioOptions: Seq[(String, String)], args: (Symbol, Any)*)(implicit messages: Messages, request: Request[AnyContent])
 
-@import play.api.i18n._
 @import views.html.helper._
 
 @elements = @{FieldElements(field.id, field, Html(""), args.toMap, messages) }

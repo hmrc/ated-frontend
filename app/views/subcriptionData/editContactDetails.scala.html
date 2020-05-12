@@ -16,11 +16,8 @@
 
 @import config.ApplicationConfig
 @(editContactDetailsForm: Form[models.EditContactDetails], backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
-@import uk.gov.hmrc.play.views.html._
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
-@import views.html.helpers.error._
-@import utils._
 
 @implicitFormInstance = @{ Some(editContactDetailsForm) }
 

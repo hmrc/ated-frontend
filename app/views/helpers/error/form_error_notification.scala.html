@@ -15,10 +15,8 @@
  *@
 
 @(form: Form[_], errorMessageFieldPrefix: String, formErrorMessage:Option[String] =None)(implicit messages: Messages)
-@import play.twirl.api.Html
 
 <script src='@controllers.routes.Assets.versioned("javascript/error-summary.js")'></script>
-
 
 @if(form.hasErrors) {
   <div id="errors" tabindex="-1" role="group" aria-labelledby="form-error-heading" class="column-two-thirds validation-summary">

@@ -22,7 +22,7 @@ import controllers.auth.{AuthAction, ClientHelper}
 import javax.inject.Inject
 import models.EditLiabilityReturnsResponseModel
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{DelegationService, SubscriptionDataService}
+import services.SubscriptionDataService
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.AtedConstants._
 

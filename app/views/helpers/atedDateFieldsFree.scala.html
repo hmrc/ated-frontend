@@ -16,10 +16,6 @@
 
 @import config.ApplicationConfig
 @(formItem:Form[_], fieldName: String, label: Html, isNested: Boolean, defaultDateOption: Option[org.joda.time.LocalDate], periodKey: Int, args: (Symbol,Any)*)(implicit messages: Messages, formInstance: Option[Form[_]] = None, request: Request[AnyContent], appConfig: ApplicationConfig)
-@import uk.gov.hmrc.play.validators._
-@import play.api.i18n._
-@import uk.gov.hmrc.play.views.html._
-@import uk.gov.hmrc.play.mappers.DateFormatSymbols._
 @import uk.gov.hmrc.play.mappers.DateFields._
 @import views.html.helper._
 @import views.helpers._

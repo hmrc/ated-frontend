@@ -17,10 +17,8 @@
 @import models._
 @import config.ApplicationConfig
 @(id: String, periodKey: Int, propertyDetailsForm: Form[PropertyDetailsTitle], mode: Option[String], backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
-@import uk.gov.hmrc.play.views.html._
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
-@import views.html.helpers.error._
 @import _root_.utils._
 
 @implicitFormInstance = @{ Some(propertyDetailsForm) }

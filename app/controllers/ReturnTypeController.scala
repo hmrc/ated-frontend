@@ -19,13 +19,11 @@ package controllers
 import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.{AuthAction, ClientHelper}
-import controllers.propertyDetails.{AddressLookupController, PropertyDetailsAddressController}
-import controllers.reliefs.ChooseReliefsController
 import forms.AtedForms.returnTypeForm
 import javax.inject.Inject
 import models.ReturnType
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{DelegationService, SummaryReturnsService}
+import services.SummaryReturnsService
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.AtedConstants._
 
