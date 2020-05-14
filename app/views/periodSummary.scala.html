@@ -39,32 +39,91 @@
         periodEndDate(periodKey).toString(messages("ated.date-format.summary"))),
         subHeaderPrefix = Some(messages("ated.screen-reader.section-name")))
 
-    <div class="form-group">
-        <ul class="ated-tabs" role="tablist">
+    <div class="tabbed">
 
-            <li id="current-returns" class="selected heading-small" role="tab">
-                @messages("ated.period-summary.tabs.current-returns")
-            </li>
+        <div class="form-group">
+            <ul class="ated-tabs" role="tablist">
 
-            @if(periodSummaries.flatMap(_.submittedReturns.map(_.oldLiabilityReturns.isEmpty)).contains(false)) {
-                <li id="past-returns" class="heading-small" role="tab">
-                    <a href="@controllers.routes.PeriodSummaryController.viewPastReturns(periodKey)"
-                        id="past-returns-link" data-journey-click="ated:click:past-returns">
-                        @messages("ated.period-summary.tabs.past-returns")
-                    </a>
+                <li id="current-returns" class="tablinks heading-small selected" aria-controls="current-returns-tab" role="tab">
+                    <a href="#current-returns-tab">@messages("ated.period-summary.tabs.current-returns")</a>
                 </li>
-            }
-        </ul>
-    </div>
 
-    <div id="current-returns-tab" tabindex="-1">
+                @if(periodSummaries.flatMap(_.submittedReturns.map(_.oldLiabilityReturns.isEmpty)).contains(false)) {
+                    <li id="past-returns" class="tablinks heading-small" aria-controls="past-returns-tab" role="tab">
+                        <a href="#past-returns-tab">
+                            @messages("ated.period-summary.tabs.past-returns")
+                        </a>
+                    </li>
+                }
+            </ul>
+        </div>
 
-        @periodSummaries.map { data =>
+        <section id="current-returns-tab" class="tabcontent" role="tabpanel">
+            @periodSummaries.map { data =>
 
-            @data.submittedReturns.map { b =>
+                @data.submittedReturns.map { b =>
 
-                @b.currentLiabilityReturns.zipWithIndex.map { t =>
+                    @b.currentLiabilityReturns.zipWithIndex.map { t =>
 
+                        <div class="grid-wrapper row-border">
+                            <div class="grid grid-1-2 psp-return">
+                                <span class="visuallyhidden">@messages("ated.period-summary.sr.address")</span>
+                                @t._1.description
+                            </div>
+
+                            <div class="grid grid-1-4 psp-status">
+                                <span class="visuallyhidden">@messages("ated.period-summary-th.status")</span>
+                                @messages("ated.submitted")
+                            </div>
+
+
+                            <div class="grid grid-1-4 psp-action">
+                                <div id="liability-submitted-@t._2">
+                                    @if(t._1.changeAllowed) {
+                                        <a href='@controllers.routes.FormBundleReturnController.view(t._1.formBundleNo, periodKey)'
+                                            data-journey-click="ated-frontend:click:liability-submitted"
+                                            aria-label="@messages("ated.period-summary.view-edit.button") @messages(
+                                                "ated.period-summary.sr.return") @t._1.description">
+                                            @messages("ated.period-summary.view-edit.button")
+                                        </a>
+                                        } else {
+                                        <a href='@controllers.routes.FormBundleReturnController.view(t._1.formBundleNo, periodKey)'
+                                            data-journey-click="ated-frontend:click:liability-submitted"
+                                            aria-label="@messages("ated.period-summary.view.button") @messages(
+                                                "ated.period-summary.sr.return") @t._1.description">
+                                            @messages("ated.period-summary.view.button")
+                                        </a>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    } @*liability-returns end*@
+
+                    @b.reliefReturns.zipWithIndex.map { t =>
+                        <div class="grid-wrapper row-border">
+                            <div class="grid grid-1-2 psp-return">
+                                <span class="visuallyhidden">@messages("ated.period-summary.sr.relieftype")</span>
+                                @t._1.reliefType
+                            </div>
+
+                            <div class="grid grid-1-4 psp-status">
+                                <span class="visuallyhidden">@messages("ated.period-summary-th.status")</span>
+                                @messages("ated.submitted")
+                            </div>
+
+                            <div class="grid grid-1-4 psp-action">
+                                <a id="relief-submitted-@t._2" href='@controllers.reliefs.routes.ViewReliefReturnController.viewReliefReturn(periodKey, t._1.formBundleNo)'
+                                    data-journey-click="ated-frontend:click:liability-submitted"
+                                    aria-label="@messages("ated.period-summary.view-edit.button") @messages(
+                                        "ated.period-summary.sr.return") @t._1.reliefType">
+                                    @messages("ated.period-summary.view-edit.button")
+                                </a>
+                            </div>
+                        </div>
+                    } @*relief-returns end*@
+                } @*all submitted returns end*@
+
+                @data.draftReturns.zipWithIndex.map { t =>
                     <div class="grid-wrapper row-border">
                         <div class="grid grid-1-2 psp-return">
                             <span class="visuallyhidden">@messages("ated.period-summary.sr.address")</span>
@@ -73,108 +132,120 @@
 
                         <div class="grid grid-1-4 psp-status">
                             <span class="visuallyhidden">@messages("ated.period-summary-th.status")</span>
-                            @messages("ated.submitted")
+                            @messages("ated.draft")
                         </div>
 
-
                         <div class="grid grid-1-4 psp-action">
-                            <div id="liability-submitted-@t._2">
-                                @if(t._1.changeAllowed) {
-                                    <a href='@controllers.routes.FormBundleReturnController.view(t._1.formBundleNo, periodKey)'
-                                        data-journey-click="ated-frontend:click:liability-submitted"
+                            @t._1.returnType match {
+                                case TypeReliefDraft => {
+                                    <a id="draft-relief-@t._2" href='@controllers.routes.PeriodSummaryController.viewReturn(periodKey)'
+                                        data-journey-click="ated-frontend:click:draft-relief"
                                         aria-label="@messages("ated.period-summary.view-edit.button") @messages(
                                             "ated.period-summary.sr.return") @t._1.description">
                                         @messages("ated.period-summary.view-edit.button")
                                     </a>
-                                    } else {
-                                    <a href='@controllers.routes.FormBundleReturnController.view(t._1.formBundleNo, periodKey)'
-                                        data-journey-click="ated-frontend:click:liability-submitted"
-                                        aria-label="@messages("ated.period-summary.view.button") @messages(
+                                }
+                                case TypeLiabilityDraft => {
+                                    <a id="draft-liability-@t._2" href='@controllers.routes.PeriodSummaryController.viewChargeable(periodKey, t._1.id)'
+                                        data-journey-click="ated-frontend:click:draft-liability"
+                                        aria-label="@messages("ated.period-summary.view-edit.button") @messages(
                                             "ated.period-summary.sr.return") @t._1.description">
-                                        @messages("ated.period-summary.view.button")
+                                        @messages("ated.period-summary.view-edit.button")
                                     </a>
                                 }
+                                case TypeChangeLiabilityDraft => {
+                                    <a id="draft-change-liability-@t._2" href='@controllers.routes.PeriodSummaryController.viewChargeableEdit(periodKey, t._1.id)'
+                                        data-journey-click="ated-frontend:click:draft-liability-change"
+                                    aria-label="@messages("ated.period-summary.view-edit.button") @messages(
+                                        "ated.period-summary.sr.return") @t._1.description">
+                                    @messages("ated.period-summary.view-edit.button")
+                                    </a>
+                                }
+                                case TypeDisposeLiabilityDraft => {
+                                    <a id="draft-dispose-liability-@t._2" href='@controllers.routes.PeriodSummaryController.viewDisposal(periodKey, t._1.id)'
+                                        data-journey-click="ated-frontend:click:draft-dispose-liability"
+                                    aria-label="@messages("ated.period-summary.view-edit.button") @messages(
+                                        "ated.period-summary.sr.return") @t._1.description">
+                                    @messages("ated.period-summary.view-edit.button")
+                                    </a>
+                                }
+                            }
+
+                        </div>
+                    </div>
+
+                } @*all drafts end*@
+            }
+        </section>
+
+        @if(periodSummaries.flatMap(_.submittedReturns.map(_.oldLiabilityReturns.isEmpty)).contains(false)) {
+
+            <section id="past-returns-tab" class="tabcontent" role="tabpanel">
+
+                @periodSummaries.map { data =>
+                    @data.submittedReturns.map { b =>
+                        @b.oldLiabilityReturns.zipWithIndex.map { t =>
+
+                            <div class="grid-wrapper row-border">
+                                <div class="grid grid-1-2 psp-return">
+                                    <span class="visuallyhidden">@messages("ated.period-summary.sr.address")</span>
+                                    @t._1.description
+                                </div>
+
+                                <div class="grid grid-1-4 psp-status">
+                                    <span class="visuallyhidden">@messages("ated.period-summary-th.status")</span>
+                                    @messages("ated.submitted")
+                                </div>
+
+                                <div class="grid grid-1-4 psp-action">
+                                    <div id="liability-submitted-@t._2">
+                                        @if(t._1.changeAllowed) {
+                                            <a href='@controllers.routes.FormBundleReturnController.view(t._1.formBundleNo, periodKey)'
+                                            data-journey-click="ated-frontend:click:liability-submitted"
+                                            aria-label="@messages("ated.period-summary.view-edit.button") @messages(
+                                                "ated.period-summary.sr.return") @t._1.description">
+                                                @messages("ated.period-summary.view-edit.button")
+                                            </a>
+                                        } else {
+                                            <a href='@controllers.routes.FormBundleReturnController.view(t._1.formBundleNo, periodKey)'
+                                            data-journey-click="ated-frontend:click:liability-submitted"
+                                            aria-label="@messages("ated.period-summary.view.button") @messages(
+                                            "ated.period-summary.sr.return") @t._1.description">
+                                                @messages("ated.period-summary.view.button")
+                                            </a>
+                                        }
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                } @*liability-returns end*@
 
-                @b.reliefReturns.zipWithIndex.map { t =>
-                    <div class="grid-wrapper row-border">
-                        <div class="grid grid-1-2 psp-return">
-                            <span class="visuallyhidden">@messages("ated.period-summary.sr.relieftype")</span>
-                            @t._1.reliefType
-                        </div>
+                        } @*liability-returns end*@
+            
+                        @b.reliefReturns.zipWithIndex.map { t =>
+                            <div class="grid-wrapper row-border">
+                                <div class="grid grid-1-2 psp-return">
+                                    <span class="visuallyhidden">@messages("ated.period-summary.sr.relieftype")</span>
+                                    @t._1.reliefType
+                                </div>
 
-                        <div class="grid grid-1-4 psp-status">
-                            <span class="visuallyhidden">@messages("ated.period-summary-th.status")</span>
-                            @messages("ated.submitted")
-                        </div>
+                                <div class="grid grid-1-4 psp-status">
+                                    <span class="visuallyhidden">@messages("ated.period-summary-th.status")</span>
+                                    @messages("ated.submitted")
+                                </div>
 
-                        <div class="grid grid-1-4 psp-action">
-                            <a id="relief-submitted-@t._2" href='@controllers.reliefs.routes.ViewReliefReturnController.viewReliefReturn(periodKey, t._1.formBundleNo)'
-                                data-journey-click="ated-frontend:click:liability-submitted"
-                                aria-label="@messages("ated.period-summary.view-edit.button") @messages(
-                                    "ated.period-summary.sr.return") @t._1.reliefType">
-                                @messages("ated.period-summary.view-edit.button")
-                            </a>
-                        </div>
-                    </div>
-                } @*relief-returns end*@
-            } @*all submitted returns end*@
-
-            @data.draftReturns.zipWithIndex.map { t =>
-            <div class="grid-wrapper row-border">
-                <div class="grid grid-1-2 psp-return">
-                    <span class="visuallyhidden">@messages("ated.period-summary.sr.address")</span>
-                    @t._1.description
-                </div>
-
-                <div class="grid grid-1-4 psp-status">
-                    <span class="visuallyhidden">@messages("ated.period-summary-th.status")</span>
-                    @messages("ated.draft")
-                </div>
-
-                <div class="grid grid-1-4 psp-action">
-                    @t._1.returnType match {
-                        case TypeReliefDraft => {
-                            <a id="draft-relief-@t._2" href='@controllers.routes.PeriodSummaryController.viewReturn(periodKey)'
-                                data-journey-click="ated-frontend:click:draft-relief"
-                                aria-label="@messages("ated.period-summary.view-edit.button") @messages(
-                                    "ated.period-summary.sr.return") @t._1.description">
-                                @messages("ated.period-summary.view-edit.button")
-                            </a>
+                                <div class="grid grid-1-4 psp-action">
+                                    <a id="relief-submitted-@t._2" href='@controllers.reliefs.routes.ViewReliefReturnController.viewReliefReturn(periodKey, t._1.formBundleNo)'
+                                    data-journey-click="ated-frontend:click:liability-submitted"
+                                    aria-label="@messages("ated.period-summary.view-edit.button") @messages(
+                                        "ated.period-summary.sr.return") @t._1.reliefType">
+                                    @messages("ated.period-summary.view.button")
+                                    </a>
+                                </div>
+                            </div>
                         }
-                        case TypeLiabilityDraft => {
-                            <a id="draft-liability-@t._2" href='@controllers.routes.PeriodSummaryController.viewChargeable(periodKey, t._1.id)'
-                                data-journey-click="ated-frontend:click:draft-liability"
-                                aria-label="@messages("ated.period-summary.view-edit.button") @messages(
-                                    "ated.period-summary.sr.return") @t._1.description">
-                                @messages("ated.period-summary.view-edit.button")
-                            </a>
-                        }
-                        case TypeChangeLiabilityDraft => {
-                            <a id="draft-change-liability-@t._2" href='@controllers.routes.PeriodSummaryController.viewChargeableEdit(periodKey, t._1.id)'
-                                data-journey-click="ated-frontend:click:draft-liability-change"
-                            aria-label="@messages("ated.period-summary.view-edit.button") @messages(
-                                "ated.period-summary.sr.return") @t._1.description">
-                            @messages("ated.period-summary.view-edit.button")
-                            </a>
-                        }
-                        case TypeDisposeLiabilityDraft => {
-                            <a id="draft-dispose-liability-@t._2" href='@controllers.routes.PeriodSummaryController.viewDisposal(periodKey, t._1.id)'
-                                data-journey-click="ated-frontend:click:draft-dispose-liability"
-                            aria-label="@messages("ated.period-summary.view-edit.button") @messages(
-                                "ated.period-summary.sr.return") @t._1.description">
-                            @messages("ated.period-summary.view-edit.button")
-                            </a>
-                        }
-                    }
+                    } @*all submitted returns end*@
+                }
 
-                </div>
-            </div>
-
-            } @*all drafts end*@
+            </section>
         }
 
         <br />
@@ -182,9 +253,6 @@
             @messages("ated.account-summary.create-return.link")
         </a>
 
-
     </div>
-
-    <script src='@controllers.routes.Assets.versioned("javascript/periodSummary.js")'></script>
-
+    
 }
