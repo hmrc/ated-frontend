@@ -86,13 +86,15 @@
     </tr>
   </table>
 
-  <p id="ated-charge-text">
+  @if(disposeLiability.calculated.isDefined) {
+    <p id="ated-charge-text">
     @messages("ated.property-details-summary.table.ated-charge.text")
-  </p>
+    </p>
 
-  <p id="ated-charge-value" class="heading-xlarge">
+    <p id="ated-charge-value" class="heading-xlarge">
     @disposeLiability.calculated.map(x => formattedPounds(x.liabilityAmount))
-  </p>
+    </p>
+  }
 
   <div class="sign-labels">@messages("ated.sign.here")</div>
   <div class="sign-labels">@messages("ated.print.name")</div>
