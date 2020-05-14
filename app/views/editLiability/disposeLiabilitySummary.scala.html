@@ -249,7 +249,7 @@
           CyaRow(
             cyaQuestion = "ated.edit-liability.summary.bank-details.supply-bank-details",
             cyaQuestionId = "supply-bank-label",
-            cyaAnswer = Html(messages("ated.label.incomplete")),
+            cyaAnswer = Html("<span class=\"status\">" + messages("ated.label.incomplete") + "</span>"),
             cyaAnswerId = "supply-bank-value",
             cyaChange = Some(bankDetailsIncompleteEdit)
           )
@@ -275,14 +275,16 @@
     )
   </section>
 
-  <div class="margin-bottom-default">
-    <p id="ated-charge-text">
-      @messages("ated.property-details-summary.table.ated-charge.text")
-      <span class="heading-xlarge" id="ated-charge-value">
+  @if(disposeLiability.calculated.isDefined) {
+    <div class="margin-bottom-default">
+      <p id="ated-charge-text">
+        @messages("ated.property-details-summary.table.ated-charge.text")
+        <span class="heading-xlarge" id="ated-charge-value">
         @disposeLiability.calculated.map(x => formattedPounds(x.liabilityAmount))
-      </span>
-    </p>
-  </div>
+        </span>
+      </p>
+    </div>
+  }
 
   <div class="margin-bottom-default">
     <span class="panel-indent">@messages("ated.property-details-summary.saved-draft.text")</span>
