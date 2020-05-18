@@ -16,17 +16,7 @@
 
 @import config.ApplicationConfig
 @(submittedReturnResponse: Option[EditLiabilityReturnsResponseModel], returnType: String, organisationName: Option[String], paymentReference: Option[String], amountDueOrRefund: BigDecimal, liabilityAmount : BigDecimal)(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
-
-@import org.joda.time.format.DateTimeFormat
-@import org.joda.time.LocalDate
-@import utils._
-
-@import models._
-@import uk.gov.hmrc.play.views.html._
-@import utils._
 @import views.html.helpers._
-@import views.html.helpers.error._
-
 
 @printFriendly(messages("ated.relief-sent.title")) {
 

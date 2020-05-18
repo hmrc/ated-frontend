@@ -19,12 +19,9 @@ package controllers
 import config.ApplicationConfig
 import connectors.BackLinkCacheConnector
 import controllers.auth.AuthAction
-import controllers.editLiability.DisposePropertyController
-import controllers.propertyDetails.{AddressLookupController, PropertyDetailsSummaryController}
-import controllers.reliefs.ReliefsSummaryController
 import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{DelegationService, SubscriptionDataService, SummaryReturnsService}
+import services.{SubscriptionDataService, SummaryReturnsService}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.PeriodUtils
 

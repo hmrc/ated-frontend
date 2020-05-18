@@ -15,7 +15,7 @@
  */
 
 package views.editLiability
-
+ 
 import config.ApplicationConfig
 import forms.BankDetailForms._
 import testhelpers.MockAuthUtil

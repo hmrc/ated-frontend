@@ -18,12 +18,10 @@ package models
 
 import config.ApplicationConfig
 import org.joda.time.LocalDate
-import play.api.libs.json._
-import play.api.libs.json.Reads._
-import utils.PeriodUtils
 import play.api.libs.json.JodaWrites._
-import play.api.libs.json.JodaReads.DefaultJodaLocalDateReads
-import play.shaded.ahc.io.netty.handler.ssl.ApplicationProtocolConfig
+import play.api.libs.json.JodaReads._
+import play.api.libs.json._
+import utils.PeriodUtils
 
 case class DraftReturns(periodKey: Int, // periodKey so that we know which draft belongs to which period
                         id: String,

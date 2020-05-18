@@ -16,14 +16,7 @@
 
 @import config.ApplicationConfig
 @(submittedReturnResponse: Option[SubmitReturnsResponse], organisationName: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
-@import org.joda.time.format.DateTimeFormat
-@import org.joda.time.LocalDate
-
-@import models._
-@import uk.gov.hmrc.play.views.html._
-@import utils._
 @import views.html.helpers._
-@import views.html.helpers.error._
 
 @printFriendly(messages("ated.relief-sent.title")) {
 

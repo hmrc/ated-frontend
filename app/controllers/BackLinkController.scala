@@ -18,10 +18,11 @@ package controllers
 
 import connectors.BackLinkCacheConnector
 import models.StandardAuthRetrievals
+import play.api.mvc.Results.Redirect
 import play.api.mvc.{Call, Result}
 import uk.gov.hmrc.http.HeaderCarrier
+
 import scala.concurrent.{ExecutionContext, Future}
-import play.api.mvc.Results.Redirect
 
 trait BackLinkController {
 

@@ -24,7 +24,6 @@ import controllers.propertyDetails.{AddressLookupController, PropertyDetailsAddr
 import forms.AtedForms._
 import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.DelegationService
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
 import scala.concurrent.{ExecutionContext, Future}

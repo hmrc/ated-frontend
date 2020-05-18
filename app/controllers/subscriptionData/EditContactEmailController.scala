@@ -17,12 +17,11 @@
 package controllers.subscriptionData
 
 import config.ApplicationConfig
-import connectors.DataCacheConnector
 import controllers.auth.AuthAction
 import forms.AtedForms._
 import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{DelegationService, SubscriptionDataService}
+import services.SubscriptionDataService
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
 import scala.concurrent.{ExecutionContext, Future}

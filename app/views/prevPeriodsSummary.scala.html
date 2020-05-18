@@ -16,10 +16,8 @@
 
 @import models._
 @import config.ApplicationConfig
-@import play.twirl.api.HtmlFormat
 @import views.html.helpers._
 
-@import org.joda.time.LocalDate
 @(summaryReturnsWithDrafts: SummaryReturnsModel, correspondence: Option[Address], organisationName: Option[String],
         clientBanner: Html, duringPeak: Boolean, currentYear: Int,
         taxYearStartingYear: Int, backlink: Option[String])(implicit authContext: StandardAuthRetrievals,

@@ -23,7 +23,7 @@ import forms.PropertyDetailsForms
 import forms.PropertyDetailsForms._
 import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{DelegationService, PropertyDetailsCacheSuccessResponse, PropertyDetailsService}
+import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
 import scala.concurrent.{ExecutionContext, Future}

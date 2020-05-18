@@ -18,12 +18,9 @@ package forms
 
 import models._
 import org.joda.time.LocalDate
-import play.api.Play.current
 import play.api.data.Forms._
 import play.api.data.validation.{Constraint, Invalid, Valid, ValidationResult}
 import play.api.data.{Form, FormError}
-import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
 import uk.gov.hmrc.play.mappers.DateTuple._
 import utils.PeriodUtils
 

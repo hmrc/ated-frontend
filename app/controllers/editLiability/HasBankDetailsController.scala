@@ -18,8 +18,8 @@ package controllers.editLiability
 
 import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
-import controllers.{BackLinkController, ControllerIds}
 import controllers.auth.{AuthAction, ClientHelper}
+import controllers.{BackLinkController, ControllerIds}
 import forms.BankDetailForms.hasBankDetailsForm
 import javax.inject.Inject
 import models.HasBankDetails

@@ -24,8 +24,6 @@ import play.api.Logger
 import play.api.http.Status._
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.AtedConstants._
-import play.api.libs.json.JodaWrites._
-import play.api.libs.json.JodaReads._
 import utils.{PeriodUtils, ReliefsUtils}
 
 import scala.concurrent.ExecutionContext.Implicits.global

@@ -21,7 +21,6 @@ import play.api.libs.json.{Json, OFormat}
 import play.api.libs.json.JodaWrites._
 import play.api.libs.json.JodaReads._
 
-
 case class TaxAvoidance(
                          rentalBusinessScheme: Option[String] = None,
                          rentalBusinessSchemePromoter: Option[String] = None,

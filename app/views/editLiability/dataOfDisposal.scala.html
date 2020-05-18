@@ -17,10 +17,8 @@
 @import models._
 @import config.ApplicationConfig
 @(disposeLiabilityForm: Form[DisposeLiability], oldFormBundleNo: String, backLink: Option[String], periodKey: Int)(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
-@import uk.gov.hmrc.play.views.html._
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
-@import views.html.helpers.error._
 
 @implicitFormInstance = @{ Some(disposeLiabilityForm) }
 

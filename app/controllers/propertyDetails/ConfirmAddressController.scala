@@ -16,7 +16,6 @@
 
 package controllers.propertyDetails
 
-import audit.Auditable
 import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.ControllerIds

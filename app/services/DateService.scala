@@ -16,8 +16,8 @@
 
 package services
 
-import org.joda.time.LocalDate
 import javax.inject.Singleton
+import org.joda.time.LocalDate
 
 @Singleton
 class DateService {
