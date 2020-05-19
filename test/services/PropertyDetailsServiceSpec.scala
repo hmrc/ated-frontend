@@ -296,7 +296,7 @@ class PropertyDetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite wi
         when(mockPropertyDetailsConnector.retrieveDraftPropertyDetails(ArgumentMatchers.eq("1"))(ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
         when(mockPropertyDetailsConnector.calculateDraftChangeLiability(ArgumentMatchers.any())
-        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, Some(successResponse))))
+        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(NO_CONTENT, Some(successResponse))))
 
         val result: Future[Option[PropertyDetails]] = testPropertyDetailsService.calculateDraftChangeLiability("1")
         await(result) must be(None)

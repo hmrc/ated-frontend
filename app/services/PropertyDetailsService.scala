@@ -41,6 +41,8 @@ class PropertyDetailsService @Inject()(propertyDetailsConnector: PropertyDetails
                                        dataCacheConnector: DataCacheConnector) {
 
 
+  val CHOSEN_RELIEF_ID = "PROPERTY-DETAILS-CHOSEN-RELIEF"
+
   def createDraftPropertyDetailsAddress(periodKey: Int, propertyDetailsAddress: PropertyDetailsAddress)
                                        (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[String] = {
     for {
@@ -285,15 +287,15 @@ class PropertyDetailsService @Inject()(propertyDetailsConnector: PropertyDetails
   }
 
   def calculateDraftChangeLiability(id: String)(implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[Option[PropertyDetails]] = {
-        propertyDetailsConnector.calculateDraftChangeLiability(id) map { propertyDetailsResponse =>
-          propertyDetailsResponse.status match {
-            case OK => Some(propertyDetailsResponse.json.as[PropertyDetails])
-            case _ =>
-              Logger.info("[PropertyDetailsService][calculateDraftChangeLiability] " +
-                "Return details incomplete - redirecting to summary without calc")
-              None
-          }
-        }
+    propertyDetailsConnector.calculateDraftChangeLiability(id) map { propertyDetailsResponse =>
+      propertyDetailsResponse.status match {
+        case OK => Some(propertyDetailsResponse.json.as[PropertyDetails])
+        case NO_CONTENT =>
+          Logger.info("[PropertyDetailsService][calculateDraftChangeLiability] " +
+            "Return details incomplete - redirecting to summary without calc")
+          None
+      }
+    }
   }
 
   def calculateDraftPropertyDetails(id: String)(implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[HttpResponse] = {
@@ -302,6 +304,36 @@ class PropertyDetailsService @Inject()(propertyDetailsConnector: PropertyDetails
       case false => Future.successful(HttpResponse(OK, None))
     }
 
+  }
+
+  def validateCalculateDraftPropertyDetails(id: String)(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[Boolean] = {
+    retrieveDraftPropertyDetails(id).map {
+      case PropertyDetailsCacheSuccessResponse(propertDetailsDraft) =>
+        propertDetailsDraft.value match {
+          case Some(propVal) => propVal.isValuedByAgent.isDefined
+          case None => false
+        }
+    }
+  }
+
+  def retrieveDraftPropertyDetails(id: String)
+                                  (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[PropertyDetailsCacheResponse] = {
+    for {
+      propertyDetailsResponse <- propertyDetailsConnector.retrieveDraftPropertyDetails(id)
+    } yield {
+      propertyDetailsResponse.status match {
+        case OK =>
+          PropertyDetailsCacheSuccessResponse(propertyDetailsResponse.json.as[PropertyDetails])
+        case NOT_FOUND =>
+          Logger.warn(s"[PropertyDetailsService][retrieveDraftPropertyDetails] NOT FOUND when retrieving Property Details" +
+            s" - status = 404, response.body = ${propertyDetailsResponse.body}")
+          PropertyDetailsCacheNotFoundResponse
+        case status =>
+          Logger.warn(s"[PropertyDetailsService][retrieveDraftPropertyDetails] Invalid status when retrieving Property Details" +
+            s" - status = $status, response.body = ${propertyDetailsResponse.body}")
+          PropertyDetailsCacheErrorResponse
+      }
+    }
   }
 
   def saveDraftPropertyDetailsInRelief(id: String, propertyDetails: PropertyDetailsInRelief)
@@ -364,10 +396,8 @@ class PropertyDetailsService @Inject()(propertyDetailsConnector: PropertyDetails
     }
   }
 
-
-  val CHOSEN_RELIEF_ID = "PROPERTY-DETAILS-CHOSEN-RELIEF"
-
-  def storeChosenRelief(chosenRelief: PeriodChooseRelief)(implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[PeriodChooseRelief] = {
+  def storeChosenRelief(chosenRelief: PeriodChooseRelief)
+                       (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[PeriodChooseRelief] = {
     for {
       result <- dataCacheConnector.saveFormData[PeriodChooseRelief](CHOSEN_RELIEF_ID, chosenRelief)
     } yield {
@@ -406,26 +436,6 @@ class PropertyDetailsService @Inject()(propertyDetailsConnector: PropertyDetails
     }
   }
 
-  def retrieveDraftPropertyDetails(id: String)
-                                  (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[PropertyDetailsCacheResponse] = {
-    for {
-      propertyDetailsResponse <- propertyDetailsConnector.retrieveDraftPropertyDetails(id)
-    } yield {
-      propertyDetailsResponse.status match {
-        case OK =>
-          PropertyDetailsCacheSuccessResponse(propertyDetailsResponse.json.as[PropertyDetails])
-        case NOT_FOUND =>
-          Logger.warn(s"[PropertyDetailsService][retrieveDraftPropertyDetails] NOT FOUND when retrieving Property Details" +
-            s" - status = 404, response.body = ${propertyDetailsResponse.body}")
-          PropertyDetailsCacheNotFoundResponse
-        case status =>
-          Logger.warn(s"[PropertyDetailsService][retrieveDraftPropertyDetails] Invalid status when retrieving Property Details" +
-            s" - status = $status, response.body = ${propertyDetailsResponse.body}")
-          PropertyDetailsCacheErrorResponse
-      }
-    }
-  }
-
   def submitDraftPropertyDetails(id: String)
                                 (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[HttpResponse] = {
     for {
@@ -439,14 +449,4 @@ class PropertyDetailsService @Inject()(propertyDetailsConnector: PropertyDetails
 
   def clearDraftReliefs(id: String)(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[HttpResponse] =
     propertyDetailsConnector.deleteDraftChargeable(id)
-
-  def validateCalculateDraftPropertyDetails(id: String)(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[Boolean] = {
-    retrieveDraftPropertyDetails(id).map {
-      case PropertyDetailsCacheSuccessResponse(propertDetailsDraft) =>
-        propertDetailsDraft.value match {
-          case Some(propVal) => propVal.isValuedByAgent.isDefined
-          case None => false
-        }
-    }
-  }
 }
