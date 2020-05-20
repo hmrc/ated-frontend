@@ -368,7 +368,6 @@ class ReliefsServiceSpec extends PlaySpec with MockitoSugar with PrivateMethodTe
 
         when(mockDataCacheConnector.clearCache()(any())).thenReturn(Future.successful(HttpResponse(OK, None)))
 
-
         val SubmitReturnsResponseFormId = "submit-returns-response-Id"
         when(mockDataCacheConnector.saveFormData[SubmitReturnsResponse](ArgumentMatchers.eq(SubmitReturnsResponseFormId),
           ArgumentMatchers.eq(successResponse.as[SubmitReturnsResponse]))
@@ -380,8 +379,61 @@ class ReliefsServiceSpec extends PlaySpec with MockitoSugar with PrivateMethodTe
 
         verify(mockDataCacheConnector, times(1)).clearCache()(any())
         verify(mockDataCacheConnector, times(1)).saveFormData(any(),any())(any(),any(),any())
+        response.status must be (OK)
+        response.body must include ("processingDate")
+        response.body must include ("reliefReturnResponse")
       }
 
+      "Return 404 when there are no reliefs to submit" in new Setup{
+        val jsonEtmpNotFoundResponse: String =
+          """
+            |{
+            |"reason" : "No Reliefs to submit"
+            |}
+          """.stripMargin
+        implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
+        val notFoundResponse: JsValue = Json.parse(jsonEtmpNotFoundResponse)
+
+        when(mockAtedConnector.submitDraftReliefs(any(), any())
+        (any(), any())).thenReturn(Future.successful(HttpResponse(NOT_FOUND, Some(notFoundResponse))))
+
+        when(mockDataCacheConnector.clearCache()(any())).thenReturn(Future.successful(HttpResponse(OK, None)))
+
+        val AlreadySubmittedReturnsResponseFormId = "already-submitted-returns-response-Id"
+        when(mockDataCacheConnector.saveFormData[AlreadySubmittedReturnsResponse](ArgumentMatchers.eq(AlreadySubmittedReturnsResponseFormId),
+          ArgumentMatchers.eq(notFoundResponse.as[AlreadySubmittedReturnsResponse]))
+          (any(), any(), ArgumentMatchers.eq(AlreadySubmittedReturnsResponse.formats)))
+          .thenReturn(Future.successful(notFoundResponse.as[AlreadySubmittedReturnsResponse]))
+
+        val result: Future[HttpResponse] = testReliefsService.submitDraftReliefs("ATED-123", periodKey)
+        val response: HttpResponse = await(result)
+
+        //1 invocation for succssful submission test and 2nd invocation for 404 test
+        verify(mockDataCacheConnector, times(2)).clearCache()(any())
+        verify(mockDataCacheConnector, times(2)).saveFormData(any(),any())(any(),any(),any())
+        response.status must be (NOT_FOUND)
+        response.body must include ("No Reliefs to submit")
+      }
+
+      "throw Internal Server Error for any other status code" in new Setup {
+        val jsonEtmpBadRequestResponse: String =
+          """
+            |{
+            |}
+          """.stripMargin
+        implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
+        val badRequestResponse: JsValue = Json.parse(jsonEtmpBadRequestResponse)
+
+        when(mockAtedConnector.submitDraftReliefs(any(), any())
+        (any(), any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, Some(badRequestResponse))))
+
+        when(mockDataCacheConnector.clearCache()(any())).thenReturn(Future.successful(HttpResponse(OK, None)))
+
+        val result: Future[HttpResponse] = testReliefsService.submitDraftReliefs("ATED-123", periodKey)
+
+        val thrown: InternalServerException = the[InternalServerException] thrownBy await(result)
+        thrown.message must include("[ReliefsService][submitDraftReliefs] - status : 400")
+      }
     }
 
     "View relief return" must {

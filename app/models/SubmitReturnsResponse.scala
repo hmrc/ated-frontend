@@ -51,3 +51,12 @@ object SubmitReturnsResponse {
   implicit val jodaDateTimeWrites = Writes.jodaDateWrites(dateFormat)
   implicit val formats = Json.format[SubmitReturnsResponse]
 }
+
+case class AlreadySubmittedReturnsResponse(
+                                  reliefReturnResponse: Option[Seq[ReliefReturnResponse]] = None,
+                                  liabilityReturnResponse: Option[Seq[LiabilityReturnResponse]] = None
+                                )
+
+object AlreadySubmittedReturnsResponse {
+  implicit val formats = Json.format[AlreadySubmittedReturnsResponse]
+}

@@ -23,6 +23,7 @@ import models._
 import play.api.Logger
 import play.mvc.Http.Status._
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, InternalServerException}
+import uk.gov.hmrc.play.http.ws.WSHttpResponse
 import utils.AtedConstants._
 import utils.ReliefsUtils
 
@@ -101,7 +102,17 @@ class ReliefsService @Inject()(atedConnector: AtedConnector,
     for {
       httpResponse <- atedConnector.submitDraftReliefs(atedRefNo, periodKey)
       _ <- dataCacheConnector.clearCache()
-      _ <-  dataCacheConnector.saveFormData[SubmitReturnsResponse](formId = SubmitReturnsResponseFormId, data = httpResponse.json.as[SubmitReturnsResponse])
+      _ <-  {
+        httpResponse.status match {
+          case OK => dataCacheConnector.saveFormData[SubmitReturnsResponse](formId = SubmitReturnsResponseFormId, data = httpResponse.json.as[SubmitReturnsResponse])
+          case NOT_FOUND =>
+            Logger.warn(s"[ReliefsService][submitDraftReliefs] - No reliefs to submit - " + s"status = ${httpResponse.status}, body = ${httpResponse.body}")
+            dataCacheConnector.saveFormData[AlreadySubmittedReturnsResponse](formId = AlreadySubmittedReturnsResponseFormId, data = httpResponse.json.as[AlreadySubmittedReturnsResponse])
+          case _ =>
+            Logger.warn(s"[ReliefsService][submitDraftReliefs] - Invalid status returned when submitting draft relief - " + s"status = ${httpResponse.status}, body = ${httpResponse.body}")
+            throw new InternalServerException(s"[ReliefsService][submitDraftReliefs] - status : ${httpResponse.status}")
+        }
+      }
     } yield {
       httpResponse
     }
