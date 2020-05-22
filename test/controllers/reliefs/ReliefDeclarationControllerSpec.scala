@@ -104,6 +104,22 @@ class ReliefDeclarationControllerSpec extends PlaySpec with GuiceOneServerPerSui
         .apply(SessionBuilder.updateRequestFormWithSession(FakeRequest().withFormUrlEncodedBody(), userId))
       test(result)
     }
+
+    def submitWithAuthorisedUserNotFoundResponse(test: Future[Result] => Any) {
+      val userId = s"user-${UUID.randomUUID}"
+      val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+      setAuthMocks(authMock)
+      when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+        (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
+      when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+      when(mockReliefsService.submitDraftReliefs(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(HttpResponse(NOT_FOUND, Some(Json.toJson(userId)))))
+
+      val result = testReliefDeclarationController.submit(periodKey)
+        .apply(SessionBuilder.updateRequestFormWithSession(FakeRequest().withFormUrlEncodedBody(), userId))
+      test(result)
+    }
+
     def submitWithAuthorisedUserInvalidAgent(test: Future[Result] => Any) {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
@@ -261,6 +277,14 @@ reset(mockReliefsService)
               status(result) must be(BAD_REQUEST)
               val document = Jsoup.parse(contentAsString(result))
               document.body().getElementById("header").text() must include("There was a problem when you set up this client")
+          }
+        }
+
+        "for valid data, redirect to multiple users page" in new Setup {
+          submitWithAuthorisedUserNotFoundResponse {
+            result =>
+              status(result) must be(SEE_OTHER)
+              redirectLocation(result).get must include(s"/ated/reliefs/$periodKey/sent-reliefs")
           }
         }
       }

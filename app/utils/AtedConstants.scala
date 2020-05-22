@@ -23,6 +23,7 @@ object AtedConstants {
   val IdentifierSafeId: String = "safeid"
   val LoggedInUser: String = "loggedInUser"
   val SubmitReturnsResponseFormId: String = "submit-returns-response-Id"
+  val AlreadySubmittedReturnsResponseFormId: String = "already-submitted-returns-response-Id"
   val SubmitEditedLiabilityReturnsResponseFormId: String = "submit-edited-liability-returns-response-Id"
   val RetrieveReturnsResponseId: String = "get-returns-response-Id"
   val PreviousReturnsDetailsList: String = "previous-return-details-list"

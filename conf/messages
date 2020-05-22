@@ -1504,7 +1504,7 @@ yes-no.error.mandatory.draft.delete = The existing return question must be answe
 ated.confirm-past-return-question.title = Did you file a return for this property last year?
 ated.confirm-past-return-question.header = Did you file a return for this property in {0} to {1}?
 ated.confirm-past-return.error = existing return
-ated.confirm-past-return.p1 = Did you file a return for this property in the previous chargeable period - April 1 {0} to March 31 {1}
+ated.confirm-past-return.p1 = Did you file a return for this property in the previous chargeable period - April 1 {0} to March 31 {1}?
 ated.confirm-past-return-question.error.general.yesNo = Select yes if you filed a return for this property last year
 
 ated.select-past-return.title = Select the property from your previous year returns

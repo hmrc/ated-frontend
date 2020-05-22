@@ -64,6 +64,7 @@ class ReliefDeclarationController @Inject()(mcc: MessagesControllerComponents,
               Future.successful(BadRequest(views.html.global_error("ated.client-problem.title",
                 "ated.client-problem.header", "ated.client-problem.message",
                 Some(appConfig.agentRedirectedToMandate), Some("ated.client-problem.HrefMessage"), None, appConfig)))
+            case NOT_FOUND => Future.successful(Redirect(controllers.reliefs.routes.ReliefsSentController.view(periodKey)))
           }
         }
       }
