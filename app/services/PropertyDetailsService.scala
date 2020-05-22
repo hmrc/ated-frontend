@@ -287,30 +287,48 @@ class PropertyDetailsService @Inject()(propertyDetailsConnector: PropertyDetails
   }
 
   def calculateDraftChangeLiability(id: String)(implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[Option[PropertyDetails]] = {
-    propertyDetailsConnector.calculateDraftChangeLiability(id) map { propertyDetailsResponse =>
-      propertyDetailsResponse.status match {
-        case OK => Some(propertyDetailsResponse.json.as[PropertyDetails])
-        case NO_CONTENT =>
-          Logger.info("[PropertyDetailsService][calculateDraftChangeLiability] " +
-            "Return details incomplete - redirecting to summary without calc")
-          None
+
+    validateCalculateDraftPropertyDetails(id, isChangeLiability = true).flatMap {
+      case true =>
+      propertyDetailsConnector.calculateDraftChangeLiability(id) map { propertyDetailsResponse =>
+        propertyDetailsResponse.status match {
+          case OK => Some(propertyDetailsResponse.json.as[PropertyDetails])
+          case NO_CONTENT =>
+            Logger.info("[PropertyDetailsService][calculateDraftChangeLiability] " +
+              "Return details incomplete - redirecting to summary without calc")
+            None
+        }
       }
+      case false => Future.successful(None)
+
     }
   }
 
   def calculateDraftPropertyDetails(id: String)(implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[HttpResponse] = {
-    validateCalculateDraftPropertyDetails(id).flatMap {
+    validateCalculateDraftPropertyDetails(id, isChangeLiability = false).flatMap {
       case true => propertyDetailsConnector.calculateDraftPropertyDetails(id)
       case false => Future.successful(HttpResponse(OK, None))
     }
-
   }
 
-  def validateCalculateDraftPropertyDetails(id: String)(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[Boolean] = {
+  def validateCalculateDraftPropertyDetails(id: String, isChangeLiability: Boolean)(
+    implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[Boolean] = {
     retrieveDraftPropertyDetails(id).map {
-      case PropertyDetailsCacheSuccessResponse(propertDetailsDraft) =>
-        propertDetailsDraft.value match {
-          case Some(propVal) => propVal.isValuedByAgent.isDefined
+      case PropertyDetailsCacheSuccessResponse(propertyDetailsDraft) =>
+        propertyDetailsDraft.value match {
+          case Some(value) =>
+            if (isChangeLiability && value.hasValueChanged.isEmpty) {
+              false
+            } else {
+              val ownedBefore = PropertyDetailsOwnedBefore(value.isOwnedBeforePolicyYear, value.ownedBeforePolicyYearValue)
+              (ownedBefore.isOwnedBeforePolicyYear, value.isNewBuild, value.isPropertyRevalued) match {
+                case (Some(true), _, _) => ownedBefore.ownedBeforePolicyYearValue.isDefined
+                case (Some(false), Some(true), _) => value.newBuildValue.isDefined
+                case (Some(false), Some(false), _) => value.notNewBuildValue.isDefined
+                case (_, _, Some(_)) => value.revaluedValue.isDefined
+                case _ => false
+              }
+            }
           case None => false
         }
     }
