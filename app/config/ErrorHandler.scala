@@ -18,7 +18,7 @@ package config
 
 import javax.inject.Inject
 import play.api.Configuration
-import play.api.i18n.MessagesApi
+import play.api.i18n.{MessagesApi, Messages}
 import play.api.mvc.Request
 import play.twirl.api.Html
 import uk.gov.hmrc.play.bootstrap.http.FrontendErrorHandler
@@ -27,7 +27,19 @@ class ErrorHandler @Inject()(val messagesApi: MessagesApi,
 														 val configuration: Configuration,
 														 val applicationConfig: ApplicationConfig) extends FrontendErrorHandler {
 
-	override def standardErrorTemplate(pageTitle: String, heading: String, message: String)(implicit request: Request[_]): Html = {
-		views.html.global_error(pageTitle, heading, message, None, None, None, applicationConfig)
+	override def standardErrorTemplate(pageTitle: String, heading: String, message: String)
+																		(implicit request: Request[_]): Html = {
+		views.html.global_error(pageTitle, heading, message, None, None, None, None, applicationConfig)
+	}
+
+	override def internalServerErrorTemplate(implicit request: Request[_]): Html = {
+		views.html.global_error(Messages("ated.generic.error.title"),
+			Messages("ated.generic.error.header"),
+			Messages("ated.generic.error.message"),
+			Some(Messages("ated.generic.error.message2")),
+			None,
+			None,
+			None,
+			applicationConfig)
 	}
 }

@@ -19,6 +19,7 @@ package controllers.subscriptionData
 import java.util.UUID
 
 import builders.{SessionBuilder, TitleBuilder}
+import com.fasterxml.jackson.annotation.JsonInclude.Include
 import config.ApplicationConfig
 import connectors.DataCacheConnector
 import controllers.auth.AuthAction
@@ -85,6 +86,18 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
     }
 
     def submitWithAuthorisedUserSuccess(testAddress: Option[AddressDetails] = None)
+                                       (fakeRequest: FakeRequest[AnyContentAsJson])(test: Future[Result] => Any) {
+      val userId = s"user-${UUID.randomUUID}"
+      val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+      setAuthMocks(authMock)
+      when(mockSubscriptionDataService.updateCorrespondenceAddressDetails(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(testAddress))
+      val result = testCorrespondenceAddressController.submit().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
+
+      test(result)
+    }
+
+    def submitWithAuthorisedUserError(testAddress: Option[AddressDetails] = None)
                                        (fakeRequest: FakeRequest[AnyContentAsJson])(test: Future[Result] => Any) {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
@@ -248,8 +261,18 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
                   result =>
                     val document = Jsoup.parse(contentAsString(result))
                     status(result) must be(OK)
-                    document.title() must be ("Sorry, we’re experiencing technical difficulties")
+                    document.title() must be ("Sorry, there is a problem with the service")
                 }
+                submitWithAuthorisedUserError(None)(FakeRequest().withJsonBody(inputJson)) {
+                  result =>
+                    val document = Jsoup.parse(contentAsString(result))
+                    status(result) must be(OK)
+                    document.title() must be ("Sorry, there is a problem with the service")
+                    contentAsString(result) must include("Sorry, there is a problem with the service")
+                    contentAsString(result) must include("You will be able to use the service later.")
+                    contentAsString(result) must include("Your saved returns and drafts are not affected by this problem.")
+                }
+
               }
 
 

@@ -64,9 +64,10 @@ ated.error.address.postalcode.format = You must enter a valid postcode
 ated.error.address.country = You must enter a country
 ated.error.address.country.non-uk = You cannot select United Kingdom when adding a non-UK address
 
-ated.generic.error.header = Sorry, we’re experiencing technical difficulties
-ated.generic.error.title = Sorry, we’re experiencing technical difficulties
-ated.generic.error.message = Please try again in a few minutes.
+ated.generic.error.header = Sorry, there is a problem with the service
+ated.generic.error.title = Sorry, there is a problem with the service
+ated.generic.error.message = You will be able to use the service later.
+ated.generic.error.message2 = Your saved returns and drafts are not affected by this problem.
 
 
 ##### DECLARATION ERROR MESSAGE

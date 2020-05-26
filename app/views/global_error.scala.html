@@ -18,11 +18,13 @@
 @(pageTitle: String,
   heading: String,
   message: String,
+        message2: Option[String] = None,
   href: Option[String],
   hrefMessage: Option[String],
   postHrefMessage: Option[String],
   appConfig: ApplicationConfig)(implicit request: Request[_], messages: Messages)
 
+@secondParagraph = @{message2.getOrElse("")}
 @hrefLink = @{href.getOrElse("")}
 @hrefMessages = @{hrefMessage.getOrElse("")}
 @postHref = @{postHrefMessage.getOrElse("")}
@@ -33,7 +35,8 @@
 }
 
 @mainContent = {
- <p class="column-two-thirds">@messages(message)<a href=@messages(hrefLink) target="_blank">@messages(hrefMessages)</a>@messages(postHref)</p>
+ <p class="column-two-thirds" id="message1">@messages(message)<a href=@messages(hrefLink) target="_blank">@messages(hrefMessages)</a>@messages(postHref)</p>
+ <p class="column-two-thirds" id="message2">@messages(secondParagraph)<a href=@messages(hrefLink) target="_blank">@messages(hrefMessages)</a>@messages(postHref)</p>
 }
 
 @global_error_wrapper(appConfig = appConfig, title = messages(pageTitle), contentHeader = Some(contentHeader), mainContent = mainContent)

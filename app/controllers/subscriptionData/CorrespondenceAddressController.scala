@@ -69,7 +69,8 @@ class CorrespondenceAddressController @Inject()(mcc: MessagesControllerComponent
                 case Some(_) => Redirect(controllers.subscriptionData.routes.CompanyDetailsController.view())
                 case None =>
                   Logger.warn(s"[CorrespondenceAddressController][submit] - Unable to update address")
-                  Ok(views.html.global_error("ated.generic.error.title", "ated.generic.error.header", "ated.generic.error.message", None, None, None, appConfig))
+                  Ok(views.html.global_error("ated.generic.error.title", "ated.generic.error.header",
+                    "ated.generic.error.message", Some("ated.generic.error.message2"), None, None, None, appConfig))
               }
             }
         }
