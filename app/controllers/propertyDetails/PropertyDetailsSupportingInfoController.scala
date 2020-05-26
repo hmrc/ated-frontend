@@ -80,9 +80,9 @@ class PropertyDetailsSupportingInfoController @Inject()(mcc: MessagesControllerC
               Future.successful(Ok(views.html.propertyDetails.propertyDetailsSupportingInfo(id, propertyDetails.periodKey, filledForm,
                 mode, AtedUtils.getSummaryBackLink(id, None))))
             }
-          }
         }
       }
+    }
   }
 
   def save(id: String, periodKey: Int, mode: Option[String]): Action[AnyContent] = Action.async { implicit request =>
@@ -95,8 +95,8 @@ class PropertyDetailsSupportingInfoController @Inject()(mcc: MessagesControllerC
           propertyDetails => {
             val backLink = Some(controllers.propertyDetails.routes.PropertyDetailsSupportingInfoController.view(id).url)
             for {
-              _ <- propertyDetailsService.validateCalculateDraftPropertyDetails(id)
               cachedData <- dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn)
+              _ <- propertyDetailsService.validateCalculateDraftPropertyDetails(id, AtedUtils.isEditSubmittedMode(mode) && cachedData.isEmpty)
               _ <- propertyDetailsService.saveDraftPropertyDetailsSupportingInfo(id, propertyDetails)
               result <-
               if (AtedUtils.isEditSubmittedMode(mode) && cachedData.isEmpty) {

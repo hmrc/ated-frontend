@@ -43,8 +43,6 @@ case class SubmitReturnsResponse(
                                   liabilityReturnResponse: Option[Seq[LiabilityReturnResponse]] = None
                                   )
 
-
-
 object SubmitReturnsResponse {
   val dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ" //DateTime
   implicit val jodaDateTimeReads = Reads.jodaDateReads(dateFormat)

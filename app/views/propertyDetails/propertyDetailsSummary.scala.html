@@ -98,11 +98,17 @@ backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages
     <div class="grid grid-1-2 cya-answer">
       <div class="status">@messages("ated.label.incomplete")</div>
     </div>
-
-    <div class="grid grid-1-6 cya-change">
-      <a href="@controllers.editLiability.routes.EditLiabilityHasValueChangedController.view(propertyDetails.id)" id="edit-property-value-incomplete" data-journey-click="ated-fronted:click:edit-property-value">@messages("ated.edit") <span class="visuallyhidden">@messages("ated.form-bundle.view.return.value.only")</span>
-      </a>
-    </div>
+    @if(AtedUtils.isEditSubmitted(propertyDetails)) {
+        <div class="grid grid-1-6 cya-change">
+            <a href="@controllers.editLiability.routes.EditLiabilityHasValueChangedController.editFromSummary(propertyDetails.id, Some(true))" id="edit-property-value-incomplete" data-journey-click="ated-fronted:click:edit-property-value">@messages("ated.edit") <span class="visuallyhidden">@messages("ated.form-bundle.view.return.value.only")</span>
+            </a>
+        </div>
+    }else{
+        <div class="grid grid-1-6 cya-change">
+            <a href="@controllers.propertyDetails.routes.PropertyDetailsOwnedBeforeController.editFromSummary(propertyDetails.id)" id="edit-property-value-incomplete" data-journey-click="ated-fronted:click:edit-property-value">@messages("ated.edit") <span class="visuallyhidden">@messages("ated.form-bundle.view.return.value.only")</span>
+            </a>
+        </div>
+    }
   </div>
 
   } else {
@@ -116,20 +122,20 @@ backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages
       <span id="property-value-value-@index">@formattedPounds(valueObj.propertyValue)</span>
     </div>
     @if(AtedUtils.isEditSubmitted(propertyDetails)) {
-    <div class="grid grid-1-6 cya-change">
-      <a href="@controllers.editLiability.routes.EditLiabilityHasValueChangedController.editFromSummary(propertyDetails.id, Some(true))" id="edit-property-professionally-value-0">
-        @messages("ated.edit") <span class="visuallyhidden">@PeriodUtils.getPeriodValueMessage(index, valuesToDisplay.size)</span>
-      </a>
-    </div>
+        <div class="grid grid-1-6 cya-change">
+          <a href="@controllers.editLiability.routes.EditLiabilityHasValueChangedController.editFromSummary(propertyDetails.id, Some(true))" id="edit-property-professionally-value-0">
+            @messages("ated.edit") <span class="visuallyhidden">@PeriodUtils.getPeriodValueMessage(index, valuesToDisplay.size)</span>
+          </a>
+        </div>
     } else {
-    <div class="grid grid-1-6 cya-change">
-      <a href="@controllers.propertyDetails.routes.PropertyDetailsOwnedBeforeController.editFromSummary(propertyDetails.id)" id="edit-property-professionally-value-1">
-          @messages("ated.edit")
-          <span class="visuallyhidden">
-              @messages(PeriodUtils.getPeriodValueMessage(index, valuesToDisplay.size))
-          </span>
-      </a>
-    </div>
+        <div class="grid grid-1-6 cya-change">
+          <a href="@controllers.propertyDetails.routes.PropertyDetailsOwnedBeforeController.editFromSummary(propertyDetails.id)" id="edit-property-professionally-value-1">
+              @messages("ated.edit")
+              <span class="visuallyhidden">
+                  @messages(PeriodUtils.getPeriodValueMessage(index, valuesToDisplay.size))
+              </span>
+          </a>
+        </div>
     }
   </div>
   }
