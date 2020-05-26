@@ -40,12 +40,13 @@ object PropertyDetailsBuilder {
     ))
   }
 
-  def getPropertyDetailsValueRevaluedByAgent(periodKey: Int): Option[PropertyDetailsValue] = {
+  def getPropertyDetailsValueRevaluedByAgent(periodKey: Int, valueChanged: Option[Boolean] = Some(true)): Option[PropertyDetailsValue] = {
     Some(PropertyDetailsValue(anAcquisition = Some(true),
       isPropertyRevalued = Some(true),
       revaluedValue = Some(BigDecimal(1500000)),
       revaluedDate = Some(new LocalDate(s"$periodKey-04-01")),
-      isValuedByAgent =  Some(true)
+      isValuedByAgent =  Some(true),
+      hasValueChanged = valueChanged
     ))
   }
 
@@ -160,7 +161,8 @@ object PropertyDetailsBuilder {
 
   def getPropertyDetailsValuedByAgent(id: String,
                          postCode: Option[String] = None,
-                         liabilityAmount: Option[BigDecimal] = None)(implicit appConfig: ApplicationConfig): PropertyDetails = {
+                         liabilityAmount: Option[BigDecimal] = None,
+                         valueChanged: Option[Boolean] = Some(true))(implicit appConfig: ApplicationConfig): PropertyDetails = {
     val periodKey: Int = calculatePeakStartYear()
 
     PropertyDetails(
@@ -168,7 +170,7 @@ object PropertyDetailsBuilder {
       periodKey,
       getPropertyDetailsAddress(postCode),
       getPropertyDetailsTitle,
-      getPropertyDetailsValueRevaluedByAgent(periodKey),
+      getPropertyDetailsValueRevaluedByAgent(periodKey, valueChanged),
       getPropertyDetailsPeriod,
       getPropertyDetailsCalculated(liabilityAmount))
   }

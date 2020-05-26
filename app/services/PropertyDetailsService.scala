@@ -311,8 +311,19 @@ class PropertyDetailsService @Inject()(propertyDetailsConnector: PropertyDetails
     }
   }
 
-  def validateCalculateDraftPropertyDetails(id: String, isChangeLiability: Boolean)(
-    implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[Boolean] = {
+  private def checkOwnedBefore(value: PropertyDetailsValue): Boolean = {
+    val ownedBefore = PropertyDetailsOwnedBefore(value.isOwnedBeforePolicyYear, value.ownedBeforePolicyYearValue)
+    (ownedBefore.isOwnedBeforePolicyYear, value.isNewBuild, value.isPropertyRevalued) match {
+      case (Some(true), _, _) => ownedBefore.ownedBeforePolicyYearValue.isDefined
+      case (Some(false), Some(true), _) => value.newBuildValue.isDefined
+      case (Some(false), Some(false), _) => value.notNewBuildValue.isDefined
+      case (_, _, Some(_)) => value.revaluedValue.isDefined
+      case _ => false
+    }
+  }
+
+  def validateCalculateDraftPropertyDetails(id: String, isChangeLiability: Boolean)
+                                           (implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[Boolean] = {
     retrieveDraftPropertyDetails(id).map {
       case PropertyDetailsCacheSuccessResponse(propertyDetailsDraft) =>
         propertyDetailsDraft.value match {
@@ -320,14 +331,7 @@ class PropertyDetailsService @Inject()(propertyDetailsConnector: PropertyDetails
             if (isChangeLiability && value.hasValueChanged.isEmpty) {
               false
             } else {
-              val ownedBefore = PropertyDetailsOwnedBefore(value.isOwnedBeforePolicyYear, value.ownedBeforePolicyYearValue)
-              (ownedBefore.isOwnedBeforePolicyYear, value.isNewBuild, value.isPropertyRevalued) match {
-                case (Some(true), _, _) => ownedBefore.ownedBeforePolicyYearValue.isDefined
-                case (Some(false), Some(true), _) => value.newBuildValue.isDefined
-                case (Some(false), Some(false), _) => value.notNewBuildValue.isDefined
-                case (_, _, Some(_)) => value.revaluedValue.isDefined
-                case _ => false
-              }
+              checkOwnedBefore(value)
             }
           case None => false
         }

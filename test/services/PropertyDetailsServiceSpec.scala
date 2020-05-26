@@ -275,9 +275,13 @@ class PropertyDetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite wi
 
     }
 
+    def modifyPropertyDetailsValue(propertyDetails: PropertyDetails)
+                                  (mod: PropertyDetailsValue => PropertyDetailsValue): PropertyDetails = {
+      propertyDetails.copy(value = propertyDetails.value map mod)
+    }
+
     "Calculate Change Liability property Details" must {
       "return the property details if the calculation is successful" in new Setup {
-
         val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetailsValuedByAgent("1", Some("postCode"))
         val successResponse: JsValue = Json.toJson(propertyDetails)
         when(mockPropertyDetailsConnector.retrieveDraftPropertyDetails(ArgumentMatchers.eq("1"))(ArgumentMatchers.any(), ArgumentMatchers.any()))
@@ -287,7 +291,83 @@ class PropertyDetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite wi
 
         val result: Future[Option[PropertyDetails]] = testPropertyDetailsService.calculateDraftChangeLiability("1")
         await(result) must be(Some(propertyDetails))
+      }
 
+      "return the property details if the calculation is successful for owned before policy year" in new Setup {
+        val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetailsValuedByAgent("1", Some("postCode"))
+        val newDetails: PropertyDetails = modifyPropertyDetailsValue(propertyDetails) { value =>
+          value.copy(
+            isOwnedBeforePolicyYear = Some(true),
+            ownedBeforePolicyYearValue = Some(BigDecimal(5.00))
+          )
+        }
+
+        val successResponse: JsValue = Json.toJson(newDetails)
+        when(mockPropertyDetailsConnector.retrieveDraftPropertyDetails(ArgumentMatchers.eq("1"))(ArgumentMatchers.any(), ArgumentMatchers.any()))
+          .thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+        when(mockPropertyDetailsConnector.calculateDraftChangeLiability(ArgumentMatchers.any())
+        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+
+        val result: Future[Option[PropertyDetails]] = testPropertyDetailsService.calculateDraftChangeLiability("1")
+        await(result) must be(Some(newDetails))
+      }
+
+      "return the property details if the calculation is successful for new build" in new Setup {
+        val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetailsValuedByAgent("1", Some("postCode"))
+        val newDetails: PropertyDetails = modifyPropertyDetailsValue(propertyDetails) { value =>
+          value.copy(
+            isOwnedBeforePolicyYear = Some(false),
+            isNewBuild = Some(true),
+            newBuildValue = Some(BigDecimal(15.00))
+          )
+        }
+
+        val successResponse: JsValue = Json.toJson(newDetails)
+        when(mockPropertyDetailsConnector.retrieveDraftPropertyDetails(ArgumentMatchers.eq("1"))(ArgumentMatchers.any(), ArgumentMatchers.any()))
+          .thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+        when(mockPropertyDetailsConnector.calculateDraftChangeLiability(ArgumentMatchers.any())
+        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+
+        val result: Future[Option[PropertyDetails]] = testPropertyDetailsService.calculateDraftChangeLiability("1")
+        await(result) must be(Some(newDetails))
+      }
+
+      "return the property details if the calculation is successful for not new build" in new Setup {
+        val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetailsValuedByAgent("1", Some("postCode"))
+        val newDetails: PropertyDetails = modifyPropertyDetailsValue(propertyDetails) { value =>
+          value.copy(
+            isOwnedBeforePolicyYear = Some(false),
+            isNewBuild = Some(false),
+            notNewBuildValue = Some(BigDecimal(15.00))
+          )
+        }
+
+        val successResponse: JsValue = Json.toJson(newDetails)
+        when(mockPropertyDetailsConnector.retrieveDraftPropertyDetails(ArgumentMatchers.eq("1"))(ArgumentMatchers.any(), ArgumentMatchers.any()))
+          .thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+        when(mockPropertyDetailsConnector.calculateDraftChangeLiability(ArgumentMatchers.any())
+        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+
+        val result: Future[Option[PropertyDetails]] = testPropertyDetailsService.calculateDraftChangeLiability("1")
+        await(result) must be(Some(newDetails))
+      }
+
+      "return the property details if the calculation is not successful with no value for ispropertyrevalued" in new Setup {
+        val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetailsValuedByAgent("1", Some("postCode"))
+        val newDetails: PropertyDetails = modifyPropertyDetailsValue(propertyDetails) { value =>
+          value.copy(
+            isPropertyRevalued = None
+          )
+        }
+
+        val successResponse: JsValue = Json.toJson(newDetails)
+        when(mockPropertyDetailsConnector.retrieveDraftPropertyDetails(ArgumentMatchers.eq("1"))(ArgumentMatchers.any(), ArgumentMatchers.any()))
+          .thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+        when(mockPropertyDetailsConnector.calculateDraftChangeLiability(ArgumentMatchers.any())
+        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+
+        val result: Future[Option[PropertyDetails]] = testPropertyDetailsService.calculateDraftChangeLiability("1")
+        await(result) must be(None)
       }
 
       "not return property details if the calculation is unsuccessful" in new Setup {
@@ -300,7 +380,15 @@ class PropertyDetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite wi
 
         val result: Future[Option[PropertyDetails]] = testPropertyDetailsService.calculateDraftChangeLiability("1")
         await(result) must be(None)
+      }
 
+      "not return property details if the validation is unsuccessful" in new Setup {
+        val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetailsValuedByAgent("1", Some("postCode"), valueChanged = None)
+        val successResponse: JsValue = Json.toJson(propertyDetails)
+        when(mockPropertyDetailsConnector.retrieveDraftPropertyDetails(ArgumentMatchers.eq("1"))(ArgumentMatchers.any(), ArgumentMatchers.any()))
+          .thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+        val result: Future[Option[PropertyDetails]] = testPropertyDetailsService.calculateDraftChangeLiability("1")
+        await(result) must be(None)
       }
     }
 
@@ -396,7 +484,7 @@ class PropertyDetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite wi
         when(mockPropertyDetailsConnector.retrieveDraftPropertyDetails(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
 
-        val result: Future[Boolean] = testPropertyDetailsService.validateCalculateDraftPropertyDetails("AB12345")
+        val result: Future[Boolean] = testPropertyDetailsService.validateCalculateDraftPropertyDetails("AB12345", true)
         val response: Boolean = await(result)
         verify(mockPropertyDetailsConnector, times(1)).retrieveDraftPropertyDetails(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())
       }
