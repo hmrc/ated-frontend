@@ -18,6 +18,7 @@ package connectors
 
 import config.ApplicationConfig
 import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
@@ -26,6 +27,7 @@ import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import play.twirl.api.Html
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 import uk.gov.hmrc.play.partials.HeaderCarrierForPartials
@@ -54,10 +56,22 @@ class AgentClientMandateFrontendConnectorSpec extends PlaySpec with GuiceOneAppP
       implicit val hc: HeaderCarrier = HeaderCarrier()
       implicit val hcwc: HeaderCarrierForPartials = HeaderCarrierForPartials(hc,"")
       val html = "<h1>helloworld</h1>"
-      when(mockHttp.GET[HttpResponse]
-        (ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, responseString = Some(html))))
+      when(mockHttp.GET[HttpResponse](any())(any(), any(), any()))
+        .thenReturn(Future.successful(HttpResponse(OK, responseString = Some(html))))
       testAgentClientMandateFrontendConnector.getClientBannerPartial("clientId", "ated").map {
         response => response.successfulContentOrEmpty must equal(html)
+      }
+    }
+
+    "return no partial silently" in new Setup {
+      implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
+      implicit val hc: HeaderCarrier = HeaderCarrier()
+      implicit val hcwc: HeaderCarrierForPartials = HeaderCarrierForPartials(hc,"")
+
+      when(mockHttp.GET[HttpResponse](any())(any(), any(), any()))
+        .thenReturn(Future.successful(HttpResponse(NOT_FOUND)))
+      testAgentClientMandateFrontendConnector.getClientBannerPartial("clientId", "ated").map {
+        response => response.successfulContentOrEmpty must equal(Html(""))
       }
     }
 
@@ -65,8 +79,8 @@ class AgentClientMandateFrontendConnectorSpec extends PlaySpec with GuiceOneAppP
       implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
       implicit val hc: HeaderCarrier = HeaderCarrier()
       implicit val hcwc: HeaderCarrierForPartials = HeaderCarrierForPartials(hc,"")
-      when(mockHttp.GET[HttpResponse]
-        (ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, responseString = Some(""))))
+      when(mockHttp.GET[HttpResponse](any())(any(), any(), any()))
+        .thenReturn(Future.successful(HttpResponse(OK, responseString = Some(""))))
       val result: Future[HttpResponse] = testAgentClientMandateFrontendConnector.getClientDetails("clientId", "ated")
       await(result).status must be(OK)
     }

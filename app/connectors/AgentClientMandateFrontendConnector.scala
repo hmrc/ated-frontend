@@ -18,9 +18,13 @@ package connectors
 
 import config.ApplicationConfig
 import javax.inject.Inject
+import play.api.Logger
 import play.api.mvc.Request
+import play.twirl.api.Html
+import play.utils.UriEncoding
 import uk.gov.hmrc.http.{CoreGet, HttpResponse}
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
+import uk.gov.hmrc.play.partials.HtmlPartial.{Failure, Success}
 import uk.gov.hmrc.play.partials.{HeaderCarrierForPartialsConverter, HtmlPartial}
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -37,14 +41,34 @@ class AgentClientMandateFrontendConnector @Inject()(appConfig: ApplicationConfig
 
   override def crypto: String => String = identity
 
-  def getClientBannerPartial(clientId: String, service: String)(implicit request: Request[_], ec: ExecutionContext): Future[HtmlPartial] = {
-    val getUrl = s"$serviceUrl/$clientBannerPartialUri/$clientId/$service?returnUrl=" + returnUrlHost + controllers.routes.AccountSummaryController.view()
-    http.GET[HtmlPartial](getUrl)
+  def getClientBannerPartial(clientId: String, service: String)
+                            (implicit request: Request[_], ec: ExecutionContext): Future[HtmlPartial] = {
+    val getUrl = s"$serviceUrl/$clientBannerPartialUri/$clientId/$service?returnUrl=" +
+      returnUrlHost +
+      controllers.routes.AccountSummaryController.view()
+
+    http.GET[HttpResponse](getUrl) map { response =>
+      response.status match {
+        case s if s >= 200 && s <= 299 => Success(
+          title = response.header("X-Title").map(UriEncoding.decodePathSegment(_, "UTF-8")),
+          content = Html(response.body)
+        )
+        case s @ 404 =>
+          Failure(Some(s), response.body)
+        case other =>
+          Logger.warn(s"Failed to load partial from $getUrl, received $other")
+          Failure(Some(other), response.body)
+      }
+    }
   }
 
-  def getClientDetails(clientId: String, service: String)(implicit request: Request[_], ec: ExecutionContext): Future[HttpResponse] = {
+  def getClientDetails(clientId: String, service: String)
+                      (implicit request: Request[_], ec: ExecutionContext): Future[HttpResponse] = {
     val getUrl =
-      s"$serviceUrl/$clientDetailsUri/$clientId/$service?returnUrl=" + returnUrlHost + controllers.subscriptionData.routes.CompanyDetailsController.view()
+      s"$serviceUrl/$clientDetailsUri/$clientId/$service?returnUrl=" +
+        returnUrlHost +
+        controllers.subscriptionData.routes.CompanyDetailsController.view()
+
     http.GET[HttpResponse](getUrl)
   }
 }
