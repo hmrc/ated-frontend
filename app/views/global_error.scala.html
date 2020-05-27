@@ -18,7 +18,7 @@
 @(pageTitle: String,
   heading: String,
   message: String,
-        message2: Option[String] = None,
+  message2: Option[String] = None,
   href: Option[String],
   hrefMessage: Option[String],
   postHrefMessage: Option[String],
@@ -35,8 +35,12 @@
 }
 
 @mainContent = {
- <p class="column-two-thirds" id="message1">@messages(message)<a href=@messages(hrefLink) target="_blank">@messages(hrefMessages)</a>@messages(postHref)</p>
- <p class="column-two-thirds" id="message2">@messages(secondParagraph)<a href=@messages(hrefLink) target="_blank">@messages(hrefMessages)</a>@messages(postHref)</p>
+ <p class="column-two-thirds" id="message1">@messages(message)
+ @if(href.isDefined){
+    <a href=@messages(hrefLink) target="_blank">@messages(hrefMessages)</a> @messages(postHref)
+     }
+ </p>
+ <p class="column-two-thirds" id="message2">@messages(secondParagraph)</p>
 }
 
 @global_error_wrapper(appConfig = appConfig, title = messages(pageTitle), contentHeader = Some(contentHeader), mainContent = mainContent)
