@@ -66,7 +66,7 @@ class PropertyDetailsDeclarationController @Inject()(mcc: MessagesControllerComp
                     case OK => Future.successful(Redirect(controllers.propertyDetails.routes.ChargeableReturnConfirmationController.confirmation()))
                     case BAD_REQUEST if response.body.contains("Agent not Valid") =>
                       Future.successful(BadRequest(views.html.global_error("ated.client-problem.title",
-                        "ated.client-problem.header", "ated.client-problem.message", Some(appConfig.agentRedirectedToMandate), None, None, appConfig)))
+                        "ated.client-problem.header", "ated.client-problem.message", None, Some(appConfig.agentRedirectedToMandate), None, None, appConfig)))
                   }
                 }
               case _      => Future.successful(Redirect(routes.PropertyDetailsSummaryController.view(id)))

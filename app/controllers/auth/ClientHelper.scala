@@ -46,6 +46,7 @@ trait ClientHelper {
           "ated.selected-client-error.wrong.client.header",
           "ated.selected-client-error.wrong.client.title",
           "ated.selected-client-error.wrong.client.message",
+          None,
           Some("ated.selected-client-error.wrong.client.HrefLink"),
           Some("ated.selected-client-error.wrong.client.HrefMessage"),
           Some("ated.selected-client-error.wrong.client.PostHrefMessage"),

@@ -67,7 +67,8 @@ class ConfirmAddressController @Inject()(mcc: MessagesControllerComponents,
               val addressProperty = successResponse.propertyDetails.addressProperty
               Ok(views.html.propertyDetails.confirmAddress(id, periodKey, addressProperty, mode, backLink))
             case _ =>
-              Ok(views.html.global_error("ated.generic.error.title", "ated.generic.error.header", "ated.generic.error.message", None, None, None, appConfig))
+              Ok(views.html.global_error("ated.generic.error.title", "ated.generic.error.header",
+                "ated.generic.error.message", Some("ated.generic.error.message2"), None, None, None, appConfig))
           }
         }
       }

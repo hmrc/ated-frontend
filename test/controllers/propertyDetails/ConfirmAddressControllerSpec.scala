@@ -150,6 +150,20 @@ class ConfirmAddressControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
       test(result)
     }
 
+    def getWithAuthorisedUserErrorResponse(test: Future[Result] => Any): Unit = {
+      val userId = s"user-${UUID.randomUUID}"
+      val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+      noDelegationModelAuthMocks(authMock)
+      when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+        (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
+      when(mockPropertyDetailsService.retrieveDraftPropertyDetails(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())) thenReturn {
+        Future.successful(PropertyDetailsCacheNotFoundResponse)
+      }
+      when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+      val result = testConfirmAddressController.view("1", 2015).apply(SessionBuilder.buildRequestWithSession(userId))
+      test(result)
+    }
+
     def submitWithAuthorisedUser(test: Future[Result] => Any) {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
@@ -250,8 +264,21 @@ class ConfirmAddressControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
-              document.title() must be("Sorry, we’re experiencing technical difficulties")
-              document.getElementById("header").text() must be("Sorry, we’re experiencing technical difficulties")
+              document.title() must be("Sorry, there is a problem with the service")
+              document.getElementById("header").text() must be("Sorry, there is a problem with the service")
+          }
+        }
+
+        "return to error page where Internal Error thrown" in new Setup {
+          getWithAuthorisedUserErrorResponse {
+            result =>
+              status(result) must be(OK)
+              val document = Jsoup.parse(contentAsString(result))
+              document.title() must be("Sorry, there is a problem with the service")
+              document.getElementsByTag("h1").text() must be("Sorry, there is a problem with the service")
+              document.getElementById("message1").text() must be("You will be able to use the service later.")
+              document.getElementById("message2").text must be ("Your saved returns and drafts are not affected by this problem.")
+
           }
         }
       }
