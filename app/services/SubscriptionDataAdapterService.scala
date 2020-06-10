@@ -63,10 +63,9 @@ class SubscriptionDataAdapterService @Inject()(atedConnector: AtedConnector) {
     getCorrespondenceAddress(Some(oldData)).map { foundCorrespondence =>
       val editedContactDetail = foundCorrespondence.contactDetails.map(_.copy(emailAddress = Some(editedContactDetails.emailAddress)))
       val updatedAddress = foundCorrespondence.copy(contactDetails = editedContactDetail)
-      val filteredAddresses = oldData.address.filterNot(_.addressDetails.addressType == AtedConstants.AddressTypeCorrespondence)
       val emailConsent = editedContactDetails.emailConsent
-      new UpdateSubscriptionDataRequest(emailConsent = emailConsent, changeIndicators = ChangeIndicators(nameChanged = false,contactDetailsChanged = true),
-        address = filteredAddresses :+ updatedAddress)
+      new UpdateSubscriptionDataRequest(emailConsent = emailConsent, changeIndicators = ChangeIndicators(contactDetailsChanged = true),
+        address = Seq(updatedAddress))
     }
   }
 
@@ -74,7 +73,7 @@ class SubscriptionDataAdapterService @Inject()(atedConnector: AtedConnector) {
     getCorrespondenceAddress(Some(oldData)).map { foundCorrespondence =>
       val editedContactDetail = foundCorrespondence.contactDetails.map(_.copy(phoneNumber = Some(editedContactDetails.phoneNumber)))
       val postCode = foundCorrespondence.addressDetails.postalCode match {
-        case Some(pc) if(pc == "") => None
+        case Some(pc) if pc == "" => None
         case Some(pc) => Some(pc)
         case None => None
       }

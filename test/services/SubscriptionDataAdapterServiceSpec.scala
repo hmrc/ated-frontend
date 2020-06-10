@@ -28,6 +28,7 @@ import play.api.libs.json.{JsValue, Json}
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.logging.SessionId
 import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, HttpResponse, InternalServerException}
+import utils.AtedConstants
 
 import scala.concurrent.Future
 
@@ -265,6 +266,8 @@ class SubscriptionDataAdapterServiceSpec extends PlaySpec with MockitoSugar{
         val response: Option[UpdateSubscriptionDataRequest] = testSubscriptionDataAdapterService
           .createEditEmailWithConsentRequest(successResponse, updatedDetails)
         response.isDefined must be(true)
+        response.get.address.exists(addr => addr.addressDetails.addressType == AtedConstants.AddressTypeCorrespondence) must be(true)
+        response.get.address.size mustBe 1
         response.get.changeIndicators.contactDetailsChanged must be(true)
         response.get.changeIndicators.nameChanged must be(false)
         response.get.changeIndicators.correspondenceChanged must be(false)
