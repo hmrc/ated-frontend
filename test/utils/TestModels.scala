@@ -19,7 +19,7 @@ package utils
 import config.ApplicationConfig
 import models._
 import org.joda.time.LocalDate
-import play.api.libs.json.{JsObject, Json}
+import play.api.libs.json.{JsArray, JsObject, Json}
 import utils.AtedConstants._
 
 trait TestModels {
@@ -42,10 +42,10 @@ trait TestModels {
         faxNumber = Some("0223344556677"))),
       addressDetails = AddressDetails(AddressTypeCorrespondence, "addrLine1", "addrLine2", None, None, None, "GB"))}
 
-  def draftReturns1(periodKey: Int) = DraftReturns(periodKey, "1", "desc", Some(BigDecimal(100.00)), TypeChangeLiabilityDraft)
-  def draftReturns2(periodKey: Int) = DraftReturns(periodKey, "", "some relief", None, TypeReliefDraft)
-  def draftReturns3(periodKey: Int) = DraftReturns(periodKey, "1", "liability draft", Some(BigDecimal(100.00)), TypeLiabilityDraft)
-  def draftReturns4(periodKey: Int) = DraftReturns(periodKey, "", "dispose liability draft", None, TypeDisposeLiabilityDraft)
+  def draftReturns1(periodKey: Int) = DraftReturns(periodKey, "1", "desc", Some(BigDecimal(100.00)), TypeChangeLiabilityDraft, LocalDate.now())
+  def draftReturns2(periodKey: Int) = DraftReturns(periodKey, "", "some relief", None, TypeReliefDraft, LocalDate.now())
+  def draftReturns3(periodKey: Int) = DraftReturns(periodKey, "1", "liability draft", Some(BigDecimal(100.00)), TypeLiabilityDraft, LocalDate.now())
+  def draftReturns4(periodKey: Int) = DraftReturns(periodKey, "", "dispose liability draft", None, TypeDisposeLiabilityDraft, LocalDate.now())
 
   val submittedReliefReturns1 = SubmittedReliefReturns(
     formBundleNo1, "some relief", new LocalDate("2015-05-05"), new LocalDate("2015-05-05"), new LocalDate("2015-05-05"))
@@ -58,7 +58,7 @@ trait TestModels {
     new LocalDate("2015-05-05"), new LocalDate("2015-05-05"), changeAllowed = false, "payment-ref"
   )
 
-  def submittedReturns(periodKey: Int, withPastReturns: Boolean = false) =
+  def submittedReturns(periodKey: Int, withPastReturns: Boolean = false): SubmittedReturns =
 
     if(withPastReturns){
       SubmittedReturns(periodKey, Seq(submittedReliefReturns1), Seq(submittedLiabilityReturns1), Seq(previousReturns))
@@ -66,23 +66,25 @@ trait TestModels {
       SubmittedReturns(periodKey, Seq(submittedReliefReturns1), Seq(submittedLiabilityReturns1), Seq())
     }
 
-  def draftReturnsJson(periodKey: Int) = Json.arr(
+  def draftReturnsJson(periodKey: Int): JsArray = Json.arr(
     Json.obj(
       "periodKey" -> periodKey,
       "id" -> "1",
       "description" -> "desc",
       "charge" -> 100.0,
-      "returnType" -> "Change_Liability"
+      "returnType" -> "Change_Liability",
+      "lastModified" -> LocalDate.now().toString()
     ),
     Json.obj(
       "periodKey" -> periodKey,
       "id" -> "",
       "description" -> "some relief",
-      "returnType" -> "Relief"
+      "returnType" -> "Relief",
+      "lastModified" -> LocalDate.now().toString()
     )
   )
 
-  def submittedReturnsJson(periodKey: Int) = Json.obj(
+  def submittedReturnsJson(periodKey: Int): JsObject = Json.obj(
     "periodKey" -> periodKey,
     "reliefReturns" -> Json.arr(
       Json.obj(

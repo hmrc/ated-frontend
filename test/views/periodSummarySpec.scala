@@ -42,9 +42,9 @@ class periodSummarySpec extends FeatureSpec with GuiceOneAppPerSuite with Mockit
   val formBundleNo1 = "123456789012"
   val formBundleNo2 = "123456789013"
   val formBundleNo3 = "123456789014"
-
-  val draftReturns1 = DraftReturns(2015, "1", "desc", Some(BigDecimal(100.00)), TypeLiabilityDraft)
-  val draftReturns2 = DraftReturns(2015, "", "some relief", None, TypeReliefDraft)
+  
+  val draftReturns1 = DraftReturns(2015, "1", "desc", Some(BigDecimal(100.00)), TypeLiabilityDraft, LocalDate.now())
+  val draftReturns2 = DraftReturns(2015, "", "some relief", None, TypeReliefDraft, LocalDate.now())
 
   val submittedReliefReturns1 = SubmittedReliefReturns(formBundleNo1, "some relief",
     new LocalDate("2015-05-05"), new LocalDate("2015-05-05"), new LocalDate("2015-05-05"))

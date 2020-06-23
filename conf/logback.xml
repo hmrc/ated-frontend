@@ -45,7 +45,9 @@
 
     <logger name="com.ning.http.client" level="WARN"/>
     <logger name="org.asynchttpclient.netty.channel.DefaultChannelPool" level="WARN"/>
+    <logger name="play.shaded.ahc.org.asynchttpclient.netty.channel.DefaultChannelPool" level="WARN"/>
     <logger name="play.core.netty.utils.ServerCookieDecoder" level="WARN"/>
+    <logger name="play.shaded.ahc.org.asynchttpclient.netty.handler.HttpHandler" level="WARN"/>
     <logger name="org.asynchttpclient.netty" level="WARN"/>
 
     <logger name="uk.gov" level="INFO"/>

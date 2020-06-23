@@ -19,7 +19,7 @@ package services
 import config.ApplicationConfig
 import connectors.{AtedConnector, DataCacheConnector}
 import javax.inject.Inject
-import models._
+import models.{SubmittedLiabilityReturns, _}
 import play.api.Logger
 import play.api.http.Status._
 import uk.gov.hmrc.http.HeaderCarrier
@@ -31,95 +31,110 @@ import scala.concurrent.Future
 
 class SummaryReturnsService @Inject()(atedConnector: AtedConnector, dataCacheConnector: DataCacheConnector)(implicit val appConfig: ApplicationConfig) {
 
-  def getSummaryReturns(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[SummaryReturnsModel] = {
-    def convertSeqOfPeriodSummariesToObject(x: Seq[PeriodSummaryReturns]): PeriodSummaryReturns = {
-      val allDrafts = x.flatMap(a => a.draftReturns)
-      val allSubmitted = x.flatMap(a => a.submittedReturns)
-      val currentLiabilities = allSubmitted.flatMap(a => a.currentLiabilityReturns)
-      val oldLiabilities = allSubmitted.flatMap(a => a.oldLiabilityReturns)
-      val allReliefs = allSubmitted.flatMap(a => a.reliefReturns)
-      val submitted = SubmittedReturns(x.head.periodKey, allReliefs, currentLiabilities, oldLiabilities)
-      PeriodSummaryReturns(x.head.periodKey, allDrafts, Some(submitted))
+  private[services] def sortPeriodSummaryReturns(sumReturns: PeriodSummaryReturns): PeriodSummaryReturns = {
+    val sortedDrafts = sumReturns.draftReturns.sortWith {
+      (s1, s2) => s1.lastModified.isAfter(s2.lastModified)
+    }
+    val submittedReturns = sumReturns.submittedReturns.map { submitReturns =>
+      submitReturns.copy(
+        reliefReturns = submitReturns.reliefReturns.sortWith {
+          (s1, s2) => s1.dateOfSubmission.compareTo(s2.dateOfSubmission) match {
+            case 1 => true
+            case 0 => s2.reliefType.compareTo(s1.reliefType) > 0
+            case -1 => false
+          }
+        },
+        currentLiabilityReturns = submitReturns.currentLiabilityReturns.sortWith {
+          (s1, s2) => s1.dateOfSubmission.isAfter(s2.dateOfSubmission)
+        }
+      )
     }
 
+    sumReturns.copy(draftReturns = sortedDrafts, submittedReturns = submittedReturns)
+  }
+
+  private[services] def convertSeqOfPeriodSummariesToObject(x: Seq[PeriodSummaryReturns]): PeriodSummaryReturns = {
+    val allDrafts = x.flatMap(a => a.draftReturns)
+
+    val allSubmitted = x.flatMap(a => a.submittedReturns)
+    val currentLiabilities = allSubmitted.flatMap(a => a.currentLiabilityReturns)
+    val oldLiabilities = allSubmitted.flatMap(a => a.oldLiabilityReturns)
+    val allReliefs = allSubmitted.flatMap(a => a.reliefReturns)
+
+    val submitted = SubmittedReturns(x.head.periodKey, allReliefs, currentLiabilities, oldLiabilities)
+    PeriodSummaryReturns(x.head.periodKey, allDrafts, Some(submitted))
+  }
+
+  def handleCachedSummaryReturns(cached: SummaryReturnsModel)
+                                (implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[SummaryReturnsModel] = {
+    atedConnector.getPartialSummaryReturns map { response =>
+      response.status match {
+        case OK =>
+          val returnsResponse = response.json.as[SummaryReturnsModel]
+
+          val allCurrentTaxYearReturns: Seq[PeriodSummaryReturns] = cached.returnsCurrentTaxYear ++ returnsResponse.returnsCurrentTaxYear
+          val allOtherYearReturns: Seq[PeriodSummaryReturns] = cached.returnsOtherTaxYears ++ returnsResponse.returnsOtherTaxYears
+
+          val currentYearPeriodSummary: Seq[PeriodSummaryReturns] =
+            if (allCurrentTaxYearReturns.nonEmpty) {
+              Seq(convertSeqOfPeriodSummariesToObject(allCurrentTaxYearReturns))
+            } else {
+              cached.returnsCurrentTaxYear
+            }
+
+          val allOtherYearPeriodKeys: Seq[Int] = allOtherYearReturns.map(_.periodKey)
+          val otherYearsPeriodSummary =
+            if (allOtherYearPeriodKeys.nonEmpty) {
+              val allPKsSorted = allOtherYearPeriodKeys.distinct.sortWith(_ > _)
+              allPKsSorted
+                .map(a => allOtherYearReturns.filter(_.periodKey == a))
+                .map(a => convertSeqOfPeriodSummariesToObject(a))
+            } else {
+              cached.returnsOtherTaxYears
+            }
+
+          cached.copy(
+            returnsCurrentTaxYear = currentYearPeriodSummary.map(sortPeriodSummaryReturns),
+            returnsOtherTaxYears = otherYearsPeriodSummary
+          )
+        case status =>
+          Logger.warn(s"[SummaryReturnsService][getDraftWithEtmpSummaryReturns] - status: $status " +
+            s"& body = ${response.body} & cache = $cached")
+          throw new RuntimeException("[SummaryReturnsService][getDraftWithEtmpSummaryReturns] - " +
+            "Status other than 200 returned - Has Cache")
+      }
+    }
+  }
+
+  def getSummaryReturns(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[SummaryReturnsModel] = {
     for {
       cachedReturns <- dataCacheConnector.fetchAndGetFormData[SummaryReturnsModel](RetrieveReturnsResponseId)
       summaryReturns: SummaryReturnsModel <- {
         cachedReturns match {
-          case Some(x) => atedConnector.getPartialSummaryReturns map {
-            response =>
-              response.status match {
-                case OK =>
-                  val returnsResponse = response.json.as[SummaryReturnsModel]
-
-                  val allCurrentTaxYearReturns: Seq[PeriodSummaryReturns] = x.returnsCurrentTaxYear ++
-                    returnsResponse.returnsCurrentTaxYear
-
-                  val allOtherYearReturns: Seq[PeriodSummaryReturns] = x.returnsOtherTaxYears ++
-                    returnsResponse.returnsOtherTaxYears
-
-                  val currentYearPeriodKeys: Seq[Int] = allCurrentTaxYearReturns.map(_.periodKey)
-                  val allOtherYearPeriodKeys: Seq[Int] = allOtherYearReturns.map(_.periodKey)
-
-                  val currentYearPeriodSummary =
-                    if (currentYearPeriodKeys.nonEmpty) {
-                      val allPKsSorted = currentYearPeriodKeys.distinct.sortWith(_.toInt > _.toInt)
-                      allPKsSorted.map(
-                        a => allCurrentTaxYearReturns.filter(_.periodKey == a)).map(a => convertSeqOfPeriodSummariesToObject(a)
-                      )
-                    } else {
-                      x.returnsCurrentTaxYear
-                    }
-
-                  val otherYearsPeriodSummary =
-                    if (allOtherYearPeriodKeys.nonEmpty) {
-                      val allPKsSorted = allOtherYearPeriodKeys.distinct.sortWith(_.toInt > _.toInt)
-                      allPKsSorted.map(
-                        a => allOtherYearReturns.filter(_.periodKey == a)).map(a => convertSeqOfPeriodSummariesToObject(a)
-                      )
-
-                    } else {
-                      x.returnsOtherTaxYears
-                    }
-
-                  val summaryReturnsModel = x.copy(
-                    returnsCurrentTaxYear = currentYearPeriodSummary,
-                    returnsOtherTaxYears = otherYearsPeriodSummary
-                  )
-
-                  summaryReturnsModel
-
-                case status =>
-                  Logger.warn(s"[SummaryReturnsService][getDraftWithEtmpSummaryReturns] - status: $status " +
-                    s"& body = ${response.body} & cache = $x")
-                  throw new RuntimeException("[SummaryReturnsService][getDraftWithEtmpSummaryReturns] - " +
-                    "Status other than 200 returned - Has Cache")
-              }
-          }
-
+          case Some(cached) => handleCachedSummaryReturns(cached)
           case None => atedConnector.getFullSummaryReturns flatMap {
             response =>
               response.status match {
                 case OK =>
                   val resp = response.json.as[SummaryReturnsModel]
 
-                  val returnsFilteredCurrentTaxYear: Seq[PeriodSummaryReturns] = resp.returnsCurrentTaxYear.filter(
-                    x => x.periodKey > 2000)
+                  val returnsFilteredCurrentTaxYear: Seq[PeriodSummaryReturns] = resp.returnsCurrentTaxYear
+                    .filter(_.periodKey > 2000)
+                    .map(sortPeriodSummaryReturns)
 
-                  val returnsFilteredOtherTaxYears: Seq[PeriodSummaryReturns] = resp.returnsOtherTaxYears.filter(
-                    x => x.periodKey > 2000)
+                  val returnsFilteredOtherTaxYears: Seq[PeriodSummaryReturns] = resp.returnsOtherTaxYears
+                    .filter(_.periodKey > 2000)
 
                   val summaryReturnsToCache = resp.copy(
                     returnsCurrentTaxYear = returnsFilteredCurrentTaxYear.map(a => a.copy(draftReturns = Nil)),
                     returnsOtherTaxYears = returnsFilteredOtherTaxYears.map(a => a.copy(draftReturns = Nil))
                   )
 
-                  dataCacheConnector.saveFormData[SummaryReturnsModel](RetrieveReturnsResponseId,
-                    summaryReturnsToCache) map (_ =>
-                    resp.copy(
+                  dataCacheConnector.saveFormData[SummaryReturnsModel](RetrieveReturnsResponseId, summaryReturnsToCache)
+                    .map {_ => resp.copy(
                       returnsCurrentTaxYear = returnsFilteredCurrentTaxYear,
-                      returnsOtherTaxYears = returnsFilteredOtherTaxYears)
-                    )
+                      returnsOtherTaxYears = returnsFilteredOtherTaxYears
+                    )}
 
                 case status =>
                   Logger.warn("[SummaryReturnsService][getDraftWithEtmpSummaryReturns] - " +
@@ -209,15 +224,15 @@ class SummaryReturnsService @Inject()(atedConnector: AtedConnector, dataCacheCon
     }
 
     val currentLiabilityReturns: Seq[AccountSummaryRowModel] = submittedReturns.flatMap(_.currentLiabilityReturns.map(
-        rtn => AccountSummaryRowModel(
-          description = rtn.description,
-          formBundleNo = Some(rtn.formBundleNo),
-          returnType = submittedType,
-          route = controllers.routes.FormBundleReturnController.view(
-            rtn.formBundleNo, currentTaxYear
-          ).toString
-        )
+      rtn => AccountSummaryRowModel(
+        description = rtn.description,
+        formBundleNo = Some(rtn.formBundleNo),
+        returnType = submittedType,
+        route = controllers.routes.FormBundleReturnController.view(
+          rtn.formBundleNo, currentTaxYear
+        ).toString
       )
+    )
     )
 
     val reliefReturns: Seq[AccountSummaryRowModel] = submittedReturns.flatMap(_.reliefReturns.map(
@@ -227,7 +242,7 @@ class SummaryReturnsService @Inject()(atedConnector: AtedConnector, dataCacheCon
         returnType = submittedType,
         route = controllers.reliefs.routes.ViewReliefReturnController.viewReliefReturn(
           currentTaxYear, rtn.formBundleNo).toString)
-      )
+    )
     )
 
     val hasPreviousReturns: Boolean = submittedReturns.flatMap(_.oldLiabilityReturns).nonEmpty

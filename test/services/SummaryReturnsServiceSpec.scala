@@ -73,6 +73,44 @@ class SummaryReturnsServiceSpec extends PlaySpec with MockitoSugar with BeforeAn
 
       val jsonWithErrantReturnPeriod = allReturnsJson().transform(jsonTransformer)
 
+      "sortPeriodSummaryReturns" must {
+        "convert a seq of period summaries to object and reorder them via date and relief name" when {
+          "they are not in order" in new Setup {
+            val period: Int = 2018
+            val return1: SubmittedLiabilityReturns = SubmittedLiabilityReturns(
+              formBundleNo2, "addr1+2", BigDecimal(1234.00), new LocalDate("2015-05-05"), new LocalDate("2015-05-05"),
+              new LocalDate("2018-05-10"), changeAllowed = true, "payment-ref-01"
+            )
+            val return2: SubmittedLiabilityReturns = SubmittedLiabilityReturns(
+              formBundleNo2, "addr1+2", BigDecimal(1234.00), new LocalDate("2015-05-05"), new LocalDate("2015-05-05"),
+              new LocalDate("2018-04-10"), changeAllowed = true, "payment-ref-01"
+            )
+            val liabilityReturns = Seq(return2, return1)
+            val submittedReturns: Option[SubmittedReturns] = Some(SubmittedReturns(period, currentLiabilityReturns = liabilityReturns))
+            val sequence = PeriodSummaryReturns(period, Nil, submittedReturns)
+
+            val periodSummaryObj: PeriodSummaryReturns = testSummaryReturnsService.sortPeriodSummaryReturns(sequence)
+            periodSummaryObj.submittedReturns.get.currentLiabilityReturns mustBe Seq(return1, return2)
+          }
+
+          "reliefs that are on the same date but have different types" in new Setup {
+            val period: Int = 2018
+            val relief1: SubmittedReliefReturns = SubmittedReliefReturns(
+              formBundleNo1, "zzzz relief type", new LocalDate("2015-05-05"), new LocalDate("2015-05-05"), new LocalDate("2015-05-05")
+            )
+            val relief2: SubmittedReliefReturns = SubmittedReliefReturns(
+              formBundleNo1, "aaaa relief type", new LocalDate("2015-05-05"), new LocalDate("2015-05-05"), new LocalDate("2015-05-05")
+            )
+            val liabilityReturns = Seq(relief1, relief2)
+            val submittedReturns: Option[SubmittedReturns] = Some(SubmittedReturns(period, reliefReturns = liabilityReturns))
+            val sequence = PeriodSummaryReturns(period, Nil, submittedReturns)
+
+            val periodSummaryObj: PeriodSummaryReturns = testSummaryReturnsService.sortPeriodSummaryReturns(sequence)
+            periodSummaryObj.submittedReturns.get.reliefReturns mustBe Seq(relief2, relief1)
+          }
+        }
+      }
+
       "when 1st time this method is called, it calls ated and saves submitted returns data into cache" must {
         "data returned from cache would be None, and we call full summary return URL in ated" must {
           "connector returns OK as response, then Return SummaryReturnsModel after filtering out errant period" in new Setup {

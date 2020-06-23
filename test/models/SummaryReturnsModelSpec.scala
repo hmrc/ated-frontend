@@ -31,7 +31,7 @@ class SummaryReturnsModelSpec extends PlaySpec with GuiceOneServerPerSuite with 
 
     "read correctly from json" in {
 
-      allReturnsJson(true, true)
+      allReturnsJson()
         .as[SummaryReturnsModel] must be(summaryReturnsModel(periodKey = currentTaxYear))
 
     }

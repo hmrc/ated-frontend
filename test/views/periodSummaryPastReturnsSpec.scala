@@ -41,8 +41,8 @@ implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetr
   val formBundleNo1: String = "123456789012"
   val formBundleNo2: String = "123456789013"
   val formBundleNo3: String = "123456789014"
-  val draftReturns1: DraftReturns = DraftReturns(2015, "1", "desc", Some(BigDecimal(100.00)), TypeChangeLiabilityDraft)
-  val draftReturns2: DraftReturns = DraftReturns(2015, "", "some relief", None, TypeReliefDraft)
+  val draftReturns1: DraftReturns = DraftReturns(2015, "1", "desc", Some(BigDecimal(100.00)), TypeChangeLiabilityDraft, LocalDate.now())
+  val draftReturns2: DraftReturns = DraftReturns(2015, "", "some relief", None, TypeReliefDraft, LocalDate.now())
   val submittedReliefReturns1: SubmittedReliefReturns = SubmittedReliefReturns(formBundleNo1, "some relief",
     new LocalDate("2015-05-05"), new LocalDate("2015-05-05"), new LocalDate("2015-05-05"))
   val submittedReliefReturns1Older = SubmittedReliefReturns(formBundleNo1, "some relief",
