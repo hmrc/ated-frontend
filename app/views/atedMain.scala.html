@@ -36,12 +36,15 @@
     <script src='@controllers.routes.Assets.versioned("jquery/jquery-ui-1.12.1.min.js")'></script>
     <script src='@controllers.routes.Assets.versioned("javascript/timeout-dialog.js")'></script>
     <script src='@controllers.routes.Assets.versioned("javascript/urBanner.js")'></script>
+    <script src='@controllers.routes.Assets.versioned("javascript/tabs.js")'></script>
 @pageScripts
 }
     <script>
         @if(userLoggedIn) {
-            $.timeoutDialog({timeout: @appConfig.defaultTimeoutSeconds, countdown: @appConfig.timeoutCountdown, keep_alive_url: '@controllers.routes.ApplicationController.keepAlive', logout_url: '@controllers.routes.ApplicationController.logout', logout_redirect_url: '@controllers.routes.ApplicationController.logout', restart_on_yes: true, background_no_scroll: true});
-            var dialogOpen;
+            document.addEventListener('DOMContentLoaded', function(event) {
+                $.timeoutDialog({timeout: @appConfig.defaultTimeoutSeconds, countdown: @appConfig.timeoutCountdown, keep_alive_url: '@controllers.routes.ApplicationController.keepAlive', logout_url: '@controllers.routes.ApplicationController.logout', logout_redirect_url: '@controllers.routes.ApplicationController.logout', restart_on_yes: true, background_no_scroll: true});
+                var dialogOpen;
+            });
         }
     </script>
 
@@ -53,6 +56,8 @@
     <link rel="stylesheet" href='@controllers.routes.Assets.versioned("stylesheets/_checkAnswers.css")'/>
     <link rel="stylesheet" href='@controllers.routes.Assets.versioned("jquery/jquery-ui.min.css")'/>
     <link rel="stylesheet" href='@controllers.routes.Assets.versioned("jquery/jquery-ui.structure.min.css")'/>
+    <link rel="stylesheet" href='@controllers.routes.Assets.versioned("stylesheets/tabs.css")'/>
+
 }
 
     @mainBanner = {
