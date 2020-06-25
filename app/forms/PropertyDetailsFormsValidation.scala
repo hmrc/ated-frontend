@@ -158,10 +158,10 @@ object PropertyDetailsFormsValidation {
     } else Seq(None)
   }
 
-  private def formDate2Option[A](dateField: String, f: Form[A]): Either[Boolean, LocalDate] = {
+  private[forms] def formDate2Option[A](dateField: String, f: Form[A]): Either[Boolean, LocalDate] = {
     (f.data.getOrElse(s"$dateField.day", ""), f.data.getOrElse(s"$dateField.month", ""), f.data.getOrElse(s"$dateField.year", "")) match {
       case (day, month, year) if day != "" && month != "" && year != "" =>
-        Right(new LocalDate(s"$year-$month-$day"))
+        Right(new LocalDate(s"${year.trim.toInt}-${month.trim.toInt}-${day.trim.toInt}"))
       case (day, month, year) if day != "" || month != "" || year != "" =>
         Left(false) //FIXME using booleans to denote whether the field is empty or not. Need a better way
       case _ => Left(true)
