@@ -23,7 +23,7 @@ import javax.inject.Inject
 import org.joda.time.LocalDate
 import play.api.Logger
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{DateService, DetailsService, SubscriptionDataService, SummaryReturnsService}
+import services.{DateService, DetailsService, ServiceInfoService, SubscriptionDataService, SummaryReturnsService}
 import uk.gov.hmrc.http.ForbiddenException
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.PeriodUtils
@@ -37,6 +37,7 @@ class PrevPeriodsSummaryController @Inject()(mcc: MessagesControllerComponents,
                                              mandateFrontendConnector: AgentClientMandateFrontendConnector,
                                              detailsService: DetailsService,
                                              dataCacheConnector: DataCacheConnector,
+                                             serviceInfoService: ServiceInfoService,
                                              dateService: DateService)
                                             (implicit val appConfig: ApplicationConfig)
   extends FrontendController(mcc) {
@@ -51,6 +52,7 @@ class PrevPeriodsSummaryController @Inject()(mcc: MessagesControllerComponents,
         correspondenceAddress <- subscriptionDataService.getCorrespondenceAddress
         organisationName <- subscriptionDataService.getOrganisationName
         safeId <- subscriptionDataService.getSafeId
+        serviceInfoContent <- serviceInfoService.getPartial
         clientBannerPartial <- mandateFrontendConnector.getClientBannerPartial(safeId.getOrElse(
           throw new RuntimeException("Could not get safeId")), "ated"
         )
@@ -59,6 +61,7 @@ class PrevPeriodsSummaryController @Inject()(mcc: MessagesControllerComponents,
           allReturns.copy(returnsOtherTaxYears = previousReturns),
           correspondenceAddress,
           organisationName,
+          serviceInfoContent,
           clientBannerPartial.successfulContentOrEmpty,
           duringPeak,
           currentYear = dateService.now().getYear,

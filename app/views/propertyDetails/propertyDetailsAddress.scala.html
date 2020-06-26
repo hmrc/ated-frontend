@@ -16,10 +16,12 @@
 
 @import models._
 @import config.ApplicationConfig
+@import play.twirl.api.HtmlFormat
 @(id: Option[String],
   periodKey: Int,
   propertyDetailsForm: Form[PropertyDetailsAddress],
   mode: Option[String] = None,
+  serviceInfoContent: Html = HtmlFormat.empty,
   backLink: Option[String],
   oldFormBundleNo: Option[String] = None,
   fromConfirmAddressPage: Boolean)(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
@@ -51,6 +53,7 @@ case _ => oldFormBundleNo.getOrElse("")
     }
 
     @atedMain(title = pageTitle,
+        serviceInfoContent = serviceInfoContent,
         analyticsAdditionalJs = Some(analyticsJs)) {
 
             @pageHeadersAndError(backLink, messages("pre-heading"), messages(AtedUtils.getPropertyDetailsPreHeader(mode)), "property-details-header", pageTitle,

@@ -31,6 +31,10 @@ class ExternalUrlsSpec extends PlaySpec with GuiceOneServerPerSuite with Mockito
       mockAppConfig.companyAuthHost must be("http://localhost:9025")
     }
 
+//    "bta" in {
+//      mockAppConfig.btaBaseUrl must be ("test")
+//    }
+
     "have loginCallback " in {
       mockAppConfig.loginCallback must be("http://localhost:9916/ated/home")
     }

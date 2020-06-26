@@ -22,7 +22,7 @@ import controllers.BackLinkController
 import controllers.auth.{AuthAction, ClientHelper}
 import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.DisposeLiabilityReturnService
+import services.{DisposeLiabilityReturnService, ServiceInfoService}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
 import scala.concurrent.ExecutionContext
@@ -30,6 +30,7 @@ import scala.concurrent.ExecutionContext
 class DisposeLiabilityDeclarationController @Inject()(mcc: MessagesControllerComponents,
                                                       disposeLiabilityReturnService: DisposeLiabilityReturnService,
                                                       authAction: AuthAction,
+                                                      serviceInfoService: ServiceInfoService,
                                                       val dataCacheConnector: DataCacheConnector,
                                                       val backLinkCacheConnector: BackLinkCacheConnector)
                                                       (implicit val appConfig: ApplicationConfig)
@@ -42,9 +43,11 @@ class DisposeLiabilityDeclarationController @Inject()(mcc: MessagesControllerCom
   def view(oldFormBundleNo: String): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
-        currentBackLink.map(backLink =>
-          Ok(views.html.editLiability.disposeLiabilityDeclaration(oldFormBundleNo, backLink))
-        )
+        serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+          currentBackLink.map(backLink =>
+            Ok(views.html.editLiability.disposeLiabilityDeclaration(oldFormBundleNo, serviceInfoContent, backLink))
+          )
+        }
       }
     }
   }

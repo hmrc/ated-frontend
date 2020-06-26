@@ -34,6 +34,7 @@ class PropertyDetailsAcquisitionController @Inject()(mcc: MessagesControllerComp
                                                      authAction: AuthAction,
                                                      isFullTaxPeriodController: IsFullTaxPeriodController,
                                                      propertyDetailsRevaluedController: PropertyDetailsRevaluedController,
+                                                     serviceInfoService: ServiceInfoService,
                                                      val propertyDetailsService: PropertyDetailsService,
                                                      val dataCacheConnector: DataCacheConnector,
                                                      val backLinkCacheConnector: BackLinkCacheConnector)
@@ -47,19 +48,22 @@ class PropertyDetailsAcquisitionController @Inject()(mcc: MessagesControllerComp
   def view(id: String): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
-        propertyDetailsCacheResponse(id) {
-          case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
-            currentBackLink.flatMap { backLink =>
-              dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).map { isPrevReturn =>
-                val filledForm = propertyDetailsAcquisitionForm.fill(PropertyDetailsAcquisition(propertyDetails.value.flatMap(_.anAcquisition)))
-                Ok(views.html.propertyDetails.propertyDetailsAcquisition(id,
-                  propertyDetails.periodKey,
-                  filledForm,
-                  AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn),
-                  backLink)
-                )
+        serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+          propertyDetailsCacheResponse(id) {
+            case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
+              currentBackLink.flatMap { backLink =>
+                dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).map { isPrevReturn =>
+                  val filledForm = propertyDetailsAcquisitionForm.fill(PropertyDetailsAcquisition(propertyDetails.value.flatMap(_.anAcquisition)))
+                  Ok(views.html.propertyDetails.propertyDetailsAcquisition(id,
+                    propertyDetails.periodKey,
+                    filledForm,
+                    AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn),
+                    serviceInfoContent,
+                    backLink)
+                  )
+                }
               }
-            }
+          }
         }
       }
     }
@@ -68,16 +72,19 @@ class PropertyDetailsAcquisitionController @Inject()(mcc: MessagesControllerComp
   def editFromSummary(id: String): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
-        propertyDetailsCacheResponse(id) {
-          case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
-            val mode = AtedUtils.getEditSubmittedMode(propertyDetails)
-            val filledForm = propertyDetailsAcquisitionForm.fill(PropertyDetailsAcquisition(propertyDetails.value.flatMap(_.anAcquisition)))
-            Future.successful(Ok(views.html.propertyDetails.propertyDetailsAcquisition(id,
-              propertyDetails.periodKey,
-              filledForm,
-              mode,
-              AtedUtils.getSummaryBackLink(id, None))
-            ))
+        serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+          propertyDetailsCacheResponse(id) {
+            case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
+              val mode = AtedUtils.getEditSubmittedMode(propertyDetails)
+              val filledForm = propertyDetailsAcquisitionForm.fill(PropertyDetailsAcquisition(propertyDetails.value.flatMap(_.anAcquisition)))
+              Future.successful(Ok(views.html.propertyDetails.propertyDetailsAcquisition(id,
+                propertyDetails.periodKey,
+                filledForm,
+                mode,
+                serviceInfoContent,
+                AtedUtils.getSummaryBackLink(id, None))
+              ))
+          }
         }
       }
     }
@@ -86,32 +93,34 @@ class PropertyDetailsAcquisitionController @Inject()(mcc: MessagesControllerComp
   def save(id: String, periodKey: Int, mode: Option[String]): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
-        propertyDetailsAcquisitionForm.bindFromRequest.fold(
-          formWithError => {
-            currentBackLink.map(backLink => BadRequest(views.html.propertyDetails.propertyDetailsAcquisition(id, periodKey, formWithError, mode, backLink)))
-          },
-          propertyDetails => {
-            val anAcquisition = propertyDetails.anAcquisition.getOrElse(false)
-            val backLink = Some(controllers.propertyDetails.routes.PropertyDetailsAcquisitionController.view(id).url)
-            for {
-              _      <- propertyDetailsService.saveDraftPropertyDetailsAcquisition(id, anAcquisition)
-              result <-
-              if (anAcquisition) {
-                redirectWithBackLink(
-                  propertyDetailsRevaluedController.controllerId,
-                  controllers.propertyDetails.routes.PropertyDetailsRevaluedController.view(id),
-                  backLink
-                )
-              } else {
-                redirectWithBackLink(
-                  isFullTaxPeriodController.controllerId,
-                  controllers.propertyDetails.routes.IsFullTaxPeriodController.view(id),
-                  backLink
-                )
-              }
-            } yield result
-          }
-        )
+        serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+          propertyDetailsAcquisitionForm.bindFromRequest.fold(
+            formWithError => {
+              currentBackLink.map(backLink => BadRequest(views.html.propertyDetails.propertyDetailsAcquisition(id, periodKey, formWithError, mode, serviceInfoContent, backLink)))
+            },
+            propertyDetails => {
+              val anAcquisition = propertyDetails.anAcquisition.getOrElse(false)
+              val backLink = Some(controllers.propertyDetails.routes.PropertyDetailsAcquisitionController.view(id).url)
+              for {
+                _ <- propertyDetailsService.saveDraftPropertyDetailsAcquisition(id, anAcquisition)
+                result <-
+                  if (anAcquisition) {
+                    redirectWithBackLink(
+                      propertyDetailsRevaluedController.controllerId,
+                      controllers.propertyDetails.routes.PropertyDetailsRevaluedController.view(id),
+                      backLink
+                    )
+                  } else {
+                    redirectWithBackLink(
+                      isFullTaxPeriodController.controllerId,
+                      controllers.propertyDetails.routes.IsFullTaxPeriodController.view(id),
+                      backLink
+                    )
+                  }
+              } yield result
+            }
+          )
+        }
       }
     }
   }

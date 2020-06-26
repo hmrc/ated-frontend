@@ -18,18 +18,18 @@ package views.propertyDetails
 
 import builders.PropertyDetailsBuilder
 import config.ApplicationConfig
-import testhelpers.MockAuthUtil
 import models.StandardAuthRetrievals
 import org.joda.time.format.DateTimeFormat
 import org.joda.time.{DateTimeZone, LocalDate}
 import org.jsoup.Jsoup
-import org.scalatestplus.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.test.FakeRequest
-import utils.PeriodUtils._
+import testhelpers.MockAuthUtil
 import utils.PeriodUtils
+import utils.PeriodUtils._
 
 class propertyDetailsPrintFriendlySpec extends FeatureSpec with GuiceOneServerPerSuite with MockitoSugar
   with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {

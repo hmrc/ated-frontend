@@ -16,7 +16,8 @@
 
 @import models._
 @import config.ApplicationConfig
-@(oldFormBundleNum: String, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
+@import play.twirl.api.HtmlFormat
+@(oldFormBundleNum: String, serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
 
@@ -27,6 +28,7 @@
 }
 
 @atedMain(title = messages("ated.edit-liability.declaration.header.amend"),
+          serviceInfoContent = serviceInfoContent,
           analyticsAdditionalJs = Some(analyticsJs)) {
 
   @pageHeadersAndError(backLink, "pre-heading", messages("ated.property-details.pre-header-dispose"), "dispose-liability-declaration-confirmation-header", messages("ated.edit-liability.declaration.header.amend"))

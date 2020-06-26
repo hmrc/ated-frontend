@@ -16,27 +16,17 @@
 
 package views.propertyDetails
 
-import config.ApplicationConfig
-import models.{PropertyDetailsAddress, StandardAuthRetrievals}
-import org.scalatestplus.mockito.MockitoSugar
-import org.scalatestplus.play.guice.GuiceOneAppPerSuite
-import play.api.i18n.{Messages, MessagesApi}
-import play.api.test.FakeRequest
-import testhelpers.MockAuthUtil
 import builders.PropertyDetailsBuilder
 import config.ApplicationConfig
-import testhelpers.MockAuthUtil
-import models.StandardAuthRetrievals
-import org.joda.time.format.DateTimeFormat
-import org.joda.time.{DateTimeZone, LocalDate}
+import models.{PropertyDetailsAddress, StandardAuthRetrievals}
 import org.jsoup.Jsoup
-import org.scalatestplus.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.test.FakeRequest
-import utils.PeriodUtils._
-import utils.PeriodUtils
+import play.twirl.api.Html
+import testhelpers.MockAuthUtil
 
 class confirmAddressSpec extends FeatureSpec with GuiceOneAppPerSuite with MockitoSugar
   with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
@@ -55,7 +45,7 @@ implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetr
       Given("the client has entered an address")
       When("The user views the confirm address page")
       val propertyDetails: PropertyDetailsAddress = PropertyDetailsBuilder.getPropertyDetailsAddress(postCode = Some("XX1 1XX"))
-      val html = views.html.propertyDetails.confirmAddress("1", 2015, propertyDetails, mode = None, Some("http://backLink"))
+      val html = views.html.propertyDetails.confirmAddress("1", 2015, propertyDetails, mode = None, Html(""), Some("http://backLink"))
       val document = Jsoup.parse(html.toString())
 
       Then("The header should match - Confirm address")

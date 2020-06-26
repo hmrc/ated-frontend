@@ -18,20 +18,21 @@ package views.editLiability
  
 import config.ApplicationConfig
 import forms.BankDetailForms._
-import testhelpers.MockAuthUtil
 import models.StandardAuthRetrievals
 import org.jsoup.Jsoup
-import org.scalatestplus.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.test.FakeRequest
+import play.twirl.api.Html
+import testhelpers.MockAuthUtil
 
 class bankDetailsSpec extends FeatureSpec with GuiceOneAppPerSuite with MockitoSugar with BeforeAndAfterEach
   with GivenWhenThen with MockAuthUtil {
 
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
-implicit val request = FakeRequest()
+  implicit val request = FakeRequest()
   implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
 
@@ -44,7 +45,7 @@ implicit val request = FakeRequest()
       Given("the client is prompted to add thier bank details")
       When("The user views the page")
 
-      val html = views.html.editLiability.bankDetails(bankDetailsForm, "1", Some("http://backLink"))
+      val html = views.html.editLiability.bankDetails(bankDetailsForm, "1", Html(""), Some("http://backLink"))
 
       val document = Jsoup.parse(html.toString())
 

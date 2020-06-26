@@ -19,7 +19,6 @@ package utils
 import models.SubmittedReliefReturns
 import org.joda.time.LocalDate
 import org.scalatestplus.play.PlaySpec
-import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 
 class ReliefsUtilsSpec extends PlaySpec {
 

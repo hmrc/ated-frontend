@@ -18,11 +18,10 @@ package views.html.propertyDetails
 
 import config.ApplicationConfig
 import forms.PropertyDetailsForms
-import testhelpers.{AtedViewSpec, MockAuthUtil}
 import models.StandardAuthRetrievals
 import org.scalatestplus.mockito.MockitoSugar
-import play.api.i18n.Messages
 import play.twirl.api.Html
+import testhelpers.{AtedViewSpec, MockAuthUtil}
 
 class PropertyDetailsProfessionallyValuedSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil {
 
@@ -47,6 +46,6 @@ class PropertyDetailsProfessionallyValuedSpec extends AtedViewSpec with MockitoS
 
   private val form = PropertyDetailsForms.propertyDetailsProfessionallyValuedForm.withError("isValuedByAgent",
     messages("ated.property-details-value.isValuedByAgent.error.non-selected"))
-  override def view: Html = views.html.propertyDetails.propertyDetailsProfessionallyValued("",0,  form, None, Some("backLink"))
+  override def view: Html = views.html.propertyDetails.propertyDetailsProfessionallyValued("",0,  form, None, Html(""), Some("backLink"))
 
 }

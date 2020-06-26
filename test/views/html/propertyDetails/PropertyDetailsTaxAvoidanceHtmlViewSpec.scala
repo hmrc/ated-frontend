@@ -18,12 +18,11 @@ package views.html.propertyDetails
 
 import config.ApplicationConfig
 import forms.PropertyDetailsForms
-import testhelpers.{AtedViewSpec, MockAuthUtil}
 import models.StandardAuthRetrievals
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.data.{Form, FormError}
-import play.api.i18n.Messages
 import play.twirl.api.Html
+import testhelpers.{AtedViewSpec, MockAuthUtil}
 
 class PropertyDetailsTaxAvoidanceHtmlViewSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil{
 
@@ -54,7 +53,7 @@ class PropertyDetailsTaxAvoidanceHtmlViewSpec extends AtedViewSpec with MockitoS
         Seq(FormError("isTaxAvoidance", messages("ated.property-details-period.isTaxAvoidance.error-field-name")))
         , form.value)
 
-      def view: Html = views.html.propertyDetails.propertyDetailsTaxAvoidance("", 0, eform, None, Some("backLink"))
+      def view: Html = views.html.propertyDetails.propertyDetailsTaxAvoidance("", 0, eform, None, Html(""), Some("backLink"))
 
       val errorDoc = doc(view)
 
@@ -68,7 +67,7 @@ class PropertyDetailsTaxAvoidanceHtmlViewSpec extends AtedViewSpec with MockitoS
           FormError("taxAvoidancePromoterReference", messages("ated.property-details-period.taxAvoidancePromoterReference.error.empty")))
         , form.value)
 
-      def view: Html = views.html.propertyDetails.propertyDetailsTaxAvoidance("", 0, eform, None, Some("backLink"))
+      def view: Html = views.html.propertyDetails.propertyDetailsTaxAvoidance("", 0, eform, None, Html(""), Some("backLink"))
 
       val errorDoc = doc(view)
 
@@ -88,6 +87,6 @@ class PropertyDetailsTaxAvoidanceHtmlViewSpec extends AtedViewSpec with MockitoS
   private val form = PropertyDetailsForms.propertyDetailsTaxAvoidanceForm
     .withError("isTaxAvoidance", "ated.property-details-period.isTaxAvoidance.error-field-name")
 
-  override def view: Html = views.html.propertyDetails.propertyDetailsTaxAvoidance("", 0, form, None, Some("backLink"))
+  override def view: Html = views.html.propertyDetails.propertyDetailsTaxAvoidance("", 0, form, None, Html(""), Some("backLink"))
 
 }

@@ -25,7 +25,7 @@ import forms.PropertyDetailsForms._
 import javax.inject.Inject
 import models._
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService}
+import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
 import scala.concurrent.ExecutionContext
@@ -33,6 +33,7 @@ import scala.concurrent.ExecutionContext
 class EditLiabilityDatesLiableController @Inject()(mcc: MessagesControllerComponents,
                                                    authAction: AuthAction,
                                                    propertyDetailsTaxAvoidanceController: PropertyDetailsTaxAvoidanceController,
+                                                   serviceInfoService: ServiceInfoService,
                                                    val propertyDetailsService: PropertyDetailsService,
                                                    val dataCacheConnector: DataCacheConnector,
                                                    val backLinkCacheConnector: BackLinkCacheConnector)
@@ -47,17 +48,19 @@ class EditLiabilityDatesLiableController @Inject()(mcc: MessagesControllerCompon
   def view(formBundleNo: String) : Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
-        propertyDetailsCacheResponse(formBundleNo) {
-          case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
-            val liabilityPeriod = propertyDetails.period.flatMap(_.liabilityPeriods.headOption)
+        serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+          propertyDetailsCacheResponse(formBundleNo) {
+            case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
+              val liabilityPeriod = propertyDetails.period.flatMap(_.liabilityPeriods.headOption)
 
-            val filledForm = liabilityPeriod match {
-              case Some(lineItem) => periodDatesLiableForm.fill(PropertyDetailsDatesLiable(lineItem.startDate, lineItem.endDate))
-              case _ => periodDatesLiableForm
-            }
-            currentBackLink.map(backLink =>
-              Ok(views.html.editLiability.editLiabilityDatesLiable(formBundleNo, propertyDetails.periodKey, filledForm, backLink))
-            )
+              val filledForm = liabilityPeriod match {
+                case Some(lineItem) => periodDatesLiableForm.fill(PropertyDetailsDatesLiable(lineItem.startDate, lineItem.endDate))
+                case _ => periodDatesLiableForm
+              }
+              currentBackLink.map(backLink =>
+                Ok(views.html.editLiability.editLiabilityDatesLiable(formBundleNo, propertyDetails.periodKey, filledForm, serviceInfoContent, backLink))
+              )
+          }
         }
       }
     }
@@ -66,24 +69,26 @@ class EditLiabilityDatesLiableController @Inject()(mcc: MessagesControllerCompon
   def save(formBundleNo: String, periodKey: Int) : Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
-        PropertyDetailsForms.validatePropertyDetailsDatesLiable(periodKey, periodDatesLiableForm.bindFromRequest, periodsCheck = false).fold(
-          formWithError => {
-            currentBackLink.map(backLink =>
-              BadRequest(views.html.editLiability.editLiabilityDatesLiable(formBundleNo, periodKey, formWithError, backLink))
-            )
-          },
-          propertyDetails => {
-            for {
-              _ <- propertyDetailsService.saveDraftPropertyDetailsDatesLiable(formBundleNo, propertyDetails)
-              result <-
-              redirectWithBackLink(
-                propertyDetailsTaxAvoidanceController.controllerId,
-                controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceController.view(formBundleNo),
-                Some(controllers.editLiability.routes.EditLiabilityDatesLiableController.view(formBundleNo).url)
+        serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+          PropertyDetailsForms.validatePropertyDetailsDatesLiable(periodKey, periodDatesLiableForm.bindFromRequest, periodsCheck = false).fold(
+            formWithError => {
+              currentBackLink.map(backLink =>
+                BadRequest(views.html.editLiability.editLiabilityDatesLiable(formBundleNo, periodKey, formWithError, serviceInfoContent, backLink))
               )
-            } yield result
-          }
-        )
+            },
+            propertyDetails => {
+              for {
+                _ <- propertyDetailsService.saveDraftPropertyDetailsDatesLiable(formBundleNo, propertyDetails)
+                result <-
+                  redirectWithBackLink(
+                    propertyDetailsTaxAvoidanceController.controllerId,
+                    controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceController.view(formBundleNo),
+                    Some(controllers.editLiability.routes.EditLiabilityDatesLiableController.view(formBundleNo).url)
+                  )
+              } yield result
+            }
+          )
+        }
       }
     }
   }

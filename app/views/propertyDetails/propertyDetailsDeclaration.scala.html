@@ -16,7 +16,8 @@
 
 @import models._
 @import config.ApplicationConfig
-@(id: String, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
+@import play.twirl.api.HtmlFormat
+@(id: String, serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
 
@@ -27,6 +28,7 @@
 }
 
 @atedMain(title = messages("ated.chargeable-return-declaration.title"),
+          serviceInfoContent = serviceInfoContent,
           analyticsAdditionalJs = Some(analyticsJs)) {
 
   @pageHeadersAndError(backLink, "pre-heading", messages("ated.property-details.pre-header"), "chargeable-return-confirmation-header", messages("ated.chargeable-return-declaration.header"))

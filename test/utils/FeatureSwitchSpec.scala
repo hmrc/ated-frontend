@@ -20,7 +20,6 @@ import config.ApplicationConfig
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
-import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 
 class FeatureSwitchSpec extends PlaySpec with BeforeAndAfterEach with MockitoSugar {
 

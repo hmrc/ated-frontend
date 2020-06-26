@@ -25,7 +25,7 @@ import javax.inject.Inject
 import models.Reliefs
 import play.api.Logger
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.ReliefsService
+import services.{ReliefsService, ServiceInfoService}
 import uk.gov.hmrc.http.ForbiddenException
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.AtedUtils._
@@ -37,6 +37,7 @@ import scala.concurrent.ExecutionContext
 class ChooseReliefsController @Inject()(mcc: MessagesControllerComponents,
                                         authAction: AuthAction,
                                         avoidanceSchemeBeingUsedController: AvoidanceSchemeBeingUsedController,
+                                        serviceInfoService: ServiceInfoService,
                                         val reliefsService: ReliefsService,
                                         val dataCacheConnector: DataCacheConnector,
                                         val backLinkCacheConnector: BackLinkCacheConnector)
@@ -53,12 +54,13 @@ class ChooseReliefsController @Inject()(mcc: MessagesControllerComponents,
         validatePeriodKey(periodKey) {
           for {
             backLink <- currentBackLink
+            serviceInfoContent <- serviceInfoService.getPartial
             retrievedData <- reliefsService.retrieveDraftReliefs(authContext.atedReferenceNumber, periodKey)
           } yield {
             retrievedData match {
               case Some(reliefs) =>
-                Ok(views.html.reliefs.chooseReliefs(reliefs.periodKey, reliefsForm.fill(reliefs.reliefs), PeriodUtils.periodStartDate(periodKey), backLink))
-              case _ => Ok(views.html.reliefs.chooseReliefs(periodKey, reliefsForm.fill(Reliefs(periodKey)), PeriodUtils.periodStartDate(periodKey), backLink))
+                Ok(views.html.reliefs.chooseReliefs(reliefs.periodKey, reliefsForm.fill(reliefs.reliefs), PeriodUtils.periodStartDate(periodKey), serviceInfoContent, backLink))
+              case _ => Ok(views.html.reliefs.chooseReliefs(periodKey, reliefsForm.fill(Reliefs(periodKey)), PeriodUtils.periodStartDate(periodKey), serviceInfoContent, backLink))
             }
           }
         }
@@ -72,13 +74,14 @@ class ChooseReliefsController @Inject()(mcc: MessagesControllerComponents,
         validatePeriodKey(periodKey) {
           for {
             retrievedData <- reliefsService.retrieveDraftReliefs(authContext.atedReferenceNumber, periodKey)
+            serviceInfoContent <- serviceInfoService.getPartial
           } yield {
             val backLink = Some(controllers.reliefs.routes.ReliefsSummaryController.view(periodKey).url)
             retrievedData match {
               case Some(reliefs) =>
-                Ok(views.html.reliefs.chooseReliefs(reliefs.periodKey, reliefsForm.fill(reliefs.reliefs), PeriodUtils.periodStartDate(periodKey), backLink))
+                Ok(views.html.reliefs.chooseReliefs(reliefs.periodKey, reliefsForm.fill(reliefs.reliefs), PeriodUtils.periodStartDate(periodKey), serviceInfoContent, backLink))
               case _ => Ok(views.html.reliefs
-                .chooseReliefs(periodKey, reliefsForm.fill(Reliefs(periodKey)), PeriodUtils.periodStartDate(periodKey), backLink))
+                .chooseReliefs(periodKey, reliefsForm.fill(Reliefs(periodKey)), PeriodUtils.periodStartDate(periodKey), serviceInfoContent, backLink))
             }
           }
         }
@@ -93,25 +96,27 @@ class ChooseReliefsController @Inject()(mcc: MessagesControllerComponents,
   def send(periodKey: Int): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
-        validatePeriodKey(periodKey) {
-          val data = addParamsToRequest(Map("periodKey" -> ArrayBuffer(periodKey.toString)))
-          reliefsForm.bindFromRequest(ReliefsUtils.cleanDateTuples(data.get)).fold(
-            formWithError =>
-              currentBackLink.map { backLink =>
-                BadRequest(views.html.reliefs.chooseReliefs(periodKey, formWithError, PeriodUtils.periodStartDate(periodKey), backLink))
-              },
-            reliefs => {
-              for {
-                _ <- reliefsService.saveDraftReliefs(authContext.atedReferenceNumber, periodKey, reliefs)
-                result <-
-                  redirectWithBackLink(avoidanceSchemeBeingUsedController.controllerId,
-                    controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.view(periodKey),
-                    Some(routes.ChooseReliefsController.view(periodKey).url))
-              } yield {
-                result
+        serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+          validatePeriodKey(periodKey) {
+            val data = addParamsToRequest(Map("periodKey" -> ArrayBuffer(periodKey.toString)))
+            reliefsForm.bindFromRequest(ReliefsUtils.cleanDateTuples(data.get)).fold(
+              formWithError =>
+                currentBackLink.map { backLink =>
+                  BadRequest(views.html.reliefs.chooseReliefs(periodKey, formWithError, PeriodUtils.periodStartDate(periodKey), serviceInfoContent, backLink))
+                },
+              reliefs => {
+                for {
+                  _ <- reliefsService.saveDraftReliefs(authContext.atedReferenceNumber, periodKey, reliefs)
+                  result <-
+                    redirectWithBackLink(avoidanceSchemeBeingUsedController.controllerId,
+                      controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.view(periodKey),
+                      Some(routes.ChooseReliefsController.view(periodKey).url))
+                } yield {
+                  result
+                }
               }
-            }
-          )
+            )
+          }
         }
       }
     } recover {

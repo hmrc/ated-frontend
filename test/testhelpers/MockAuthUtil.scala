@@ -24,8 +24,8 @@ import org.mockito.Mockito.when
 import org.mockito.stubbing.OngoingStubbing
 import org.scalatestplus.mockito.MockitoSugar
 import services.DelegationService
-import uk.gov.hmrc.auth.core.retrieve.~
 import uk.gov.hmrc.auth.core._
+import uk.gov.hmrc.auth.core.retrieve.~
 
 import scala.concurrent.Future
 

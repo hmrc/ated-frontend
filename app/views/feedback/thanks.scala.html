@@ -15,9 +15,10 @@
  *@
 
 @import config.ApplicationConfig
-@(returnUri: String)(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
+@import play.twirl.api.HtmlFormat
+@(returnUri: String, serviceInfoContent: Html = HtmlFormat.empty)(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
-@atedMain(title = messages("ated.thanks.title")) {
+@atedMain(title = messages("ated.thanks.title"), serviceInfoContent = serviceInfoContent) {
 
   <h1 class="heading-xlarge" id="feedback-thanks-header">@messages("ated.thanks.heading")</h1>
 

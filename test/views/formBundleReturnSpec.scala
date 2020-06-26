@@ -18,15 +18,16 @@ package views
 
 import builders.PropertyDetailsBuilder
 import config.ApplicationConfig
-import testhelpers.MockAuthUtil
 import models._
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
-import org.scalatestplus.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.test.FakeRequest
+import play.twirl.api.Html
+import testhelpers.MockAuthUtil
 import utils.{AtedConstants, PeriodUtils}
 
 class formBundleReturnSpec extends FeatureSpec with GuiceOneServerPerSuite with MockitoSugar
@@ -84,7 +85,7 @@ class formBundleReturnSpec extends FeatureSpec with GuiceOneServerPerSuite with 
       Then("The config should have - 2 periods")
       val displayPeriods = PeriodUtils.getDisplayPeriods(propertyDetails.period)
       assert(displayPeriods.size === 2)
-      val html = views.html.formBundleReturn(2015, None, "formBundleNo", Some("ACME Ltd"), changeAllowed = false, editAllowed = false, Nil, Nil, Some("backLink"))
+      val html = views.html.formBundleReturn(2015, None, "formBundleNo", Some("ACME Ltd"), changeAllowed = false, editAllowed = false, Nil, Nil, Html(""), Some("backLink"))
 
       val document = Jsoup.parse(html.toString())
 
@@ -113,7 +114,7 @@ class formBundleReturnSpec extends FeatureSpec with GuiceOneServerPerSuite with 
       assert(displayPeriods.size === 2)
       val valuesToDisplay = PeriodUtils.getOrderedReturnPeriodValues(viewReturnWithSinglePeriod.lineItem, viewReturnWithSinglePeriod.dateOfAcquisition)
       val periodsToDisplay = PeriodUtils.getDisplayFormBundleProperties(viewReturnWithSinglePeriod.lineItem)
-      val html = views.html.formBundleReturn(2015, Some(viewReturnWithSinglePeriod), "formBundleNo", None, changeAllowed = false, editAllowed =  false, valuesToDisplay, periodsToDisplay, Some("http://backLink"))
+      val html = views.html.formBundleReturn(2015, Some(viewReturnWithSinglePeriod), "formBundleNo", None, changeAllowed = false, editAllowed =  false, valuesToDisplay, periodsToDisplay, Html(""), Some("http://backLink"))
 
       val document = Jsoup.parse(html.toString())
 
@@ -184,7 +185,7 @@ class formBundleReturnSpec extends FeatureSpec with GuiceOneServerPerSuite with 
       assert(displayPeriods.size === 2)
       val valuesToDisplay = PeriodUtils.getOrderedReturnPeriodValues(viewReturnWithSinglePeriod.lineItem, viewReturnWithSinglePeriod.dateOfAcquisition)
       val periodsToDisplay = PeriodUtils.getDisplayFormBundleProperties(viewReturnWithSinglePeriod.lineItem)
-      val html = views.html.formBundleReturn(2015, Some(viewReturnWithSinglePeriod), "formBundleNo", Some("ACME Ltd"), changeAllowed = true, editAllowed = true, valuesToDisplay, periodsToDisplay, None)
+      val html = views.html.formBundleReturn(2015, Some(viewReturnWithSinglePeriod), "formBundleNo", Some("ACME Ltd"), changeAllowed = true, editAllowed = true, valuesToDisplay, periodsToDisplay,  Html(""), None)
 
       val document = Jsoup.parse(html.toString())
 
@@ -252,7 +253,7 @@ class formBundleReturnSpec extends FeatureSpec with GuiceOneServerPerSuite with 
       assert(displayPeriods.size === 2)
       val valuesToDisplay = PeriodUtils.getOrderedReturnPeriodValues(viewReturnWithMultiPeriod.lineItem, viewReturnWithMultiPeriod.dateOfAcquisition)
       val periodsToDisplay = PeriodUtils.getDisplayFormBundleProperties(viewReturnWithMultiPeriod.lineItem)
-      val html = views.html.formBundleReturn(2015, Some(viewReturnWithMultiPeriod), "formBundleNo", Some("ACME Ltd"), changeAllowed = true, editAllowed = true, valuesToDisplay, periodsToDisplay, None)
+      val html = views.html.formBundleReturn(2015, Some(viewReturnWithMultiPeriod), "formBundleNo", Some("ACME Ltd"), changeAllowed = true, editAllowed = true, valuesToDisplay, periodsToDisplay, Html(""), None)
 
       val document = Jsoup.parse(html.toString())
 
@@ -327,7 +328,7 @@ class formBundleReturnSpec extends FeatureSpec with GuiceOneServerPerSuite with 
       assert(displayPeriods.size === 2)
       val valuesToDisplay = PeriodUtils.getOrderedReturnPeriodValues(viewWithDisposePeriod.lineItem, viewReturnWithMultiPeriod.dateOfAcquisition)
       val periodsToDisplay = PeriodUtils.getDisplayFormBundleProperties(viewWithDisposePeriod.lineItem)
-      val html = views.html.formBundleReturn(2015, Some(viewWithDisposePeriod), "formBundleNo", Some("ACME Ltd"), changeAllowed = false, editAllowed = false, valuesToDisplay, periodsToDisplay, None)
+      val html = views.html.formBundleReturn(2015, Some(viewWithDisposePeriod), "formBundleNo", Some("ACME Ltd"), changeAllowed = false, editAllowed = false, valuesToDisplay, periodsToDisplay, Html(""), None)
 
       val document = Jsoup.parse(html.toString())
 

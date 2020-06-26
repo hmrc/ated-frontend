@@ -22,7 +22,6 @@ import builders.{SessionBuilder, TitleBuilder}
 import config.ApplicationConfig
 import connectors.DataCacheConnector
 import controllers.auth.AuthAction
-import testhelpers.MockAuthUtil
 import models.{Address, AddressDetails, ContactDetails, EditContactDetails}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
@@ -31,13 +30,16 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
+import play.api.i18n.{Lang, MessagesApi, MessagesImpl}
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{AnyContentAsJson, MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.SubscriptionDataService
+import services.{ServiceInfoService, SubscriptionDataService}
+import testhelpers.MockAuthUtil
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
+import views.html.BtaNavigationLinks
 
 import scala.concurrent.Future
 
@@ -48,6 +50,10 @@ class EditContactDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSu
   val mockMcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
   val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
   val mockSubscriptionDataService: SubscriptionDataService = mock[SubscriptionDataService]
+    val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
+  val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
+  val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
 
 class Setup {
 
@@ -60,6 +66,7 @@ class Setup {
   val testEditContactDetailsController: EditContactDetailsController = new EditContactDetailsController(
     mockMcc,
     mockAuthAction,
+    mockServiceInfoService,
     mockSubscriptionDataService
   )
 
@@ -76,6 +83,7 @@ class Setup {
     val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
     setAuthMocks(authMock)
     implicit val hc: HeaderCarrier = HeaderCarrier()
+    when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(btaNavigationLinksView()(messages,mockAppConfig)))
     when(mockSubscriptionDataService.getCorrespondenceAddress(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(companyDetails))
     val result = testEditContactDetailsController.edit().apply(SessionBuilder.buildRequestWithSession(userId))
 
@@ -129,6 +137,7 @@ class Setup {
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
             document.title() must be (TitleBuilder.buildTitle("Edit your ATED contact details"))
+            assert(document.getElementById("service-info-list").text() === "Home Manage account Messages Help and contact")
 
             document.getElementById("phoneNumber").attr("value") must be("")
 

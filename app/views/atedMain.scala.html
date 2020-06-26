@@ -24,7 +24,8 @@
   hasBanner: Boolean = false,
   showUrBanner: Option[Boolean] = Some(false),
   supportLinkEnabled: Boolean = true,
-  banner: Html = HtmlFormat.empty,
+        serviceInfoContent: Html = HtmlFormat.empty,
+        banner: Html = HtmlFormat.empty,
   scriptElement: Option[Html] = None,
   pageScripts: Option[Html] = None,
   sidebarLinks: Option[Html] = None,
@@ -52,6 +53,7 @@
     <link rel="stylesheet" href='@controllers.routes.Assets.versioned("stylesheets/palette.css")'/>
     <link rel="stylesheet" href='@controllers.routes.Assets.versioned("stylesheets/focus.css")'/>
     <link rel="stylesheet" href='@controllers.routes.Assets.versioned("stylesheets/main.css")'/>
+    <link rel="stylesheet" href='@controllers.routes.Assets.versioned("stylesheets/bta.css")'/>
     <link rel="stylesheet" href='@controllers.routes.Assets.versioned("stylesheets/urBanner.css")'/>
     <link rel="stylesheet" href='@controllers.routes.Assets.versioned("stylesheets/_checkAnswers.css")'/>
     <link rel="stylesheet" href='@controllers.routes.Assets.versioned("jquery/jquery-ui.min.css")'/>
@@ -78,7 +80,8 @@
   sidebarLinks = sidebarLinks,
   sidebarClass = sidebarClass,
   scriptElement = Some(scriptElement),
-  banner = Some(mainBanner),
+    serviceInfoContent = serviceInfoContent,
+            banner = Some(mainBanner),
   userLoggedIn = userLoggedIn,
   linkElement = Some(linkElement),
   analyticsJs = analyticsAdditionalJs,

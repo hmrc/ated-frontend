@@ -22,13 +22,14 @@ import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms._
 import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.PropertyDetailsService
+import services.{PropertyDetailsService, ServiceInfoService}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
 import scala.concurrent.{ExecutionContext, Future}
 
 class PeriodChooseReliefController @Inject()(mcc: MessagesControllerComponents,
                                              authAction: AuthAction,
+                                             serviceInfoService: ServiceInfoService,
                                              val propertyDetailsService: PropertyDetailsService,
                                              val dataCacheConnector: DataCacheConnector,
                                              val backLinkCacheConnector: BackLinkCacheConnector)
@@ -42,26 +43,30 @@ class PeriodChooseReliefController @Inject()(mcc: MessagesControllerComponents,
 
   def add(id: String, periodKey: Int): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
-      ensureClientContext(Future.successful(Ok(views.html.propertyDetails.periodChooseRelief(id, periodKey, periodChooseReliefForm, getBackLink(id)))))
+      serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+        ensureClientContext(Future.successful(Ok(views.html.propertyDetails.periodChooseRelief(id, periodKey, periodChooseReliefForm, serviceInfoContent, getBackLink(id)))))
+      }
     }
   }
 
   def save(id: String, periodKey: Int): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
-        periodChooseReliefForm.bindFromRequest.fold(
-          formWithError =>
-            Future.successful(
-              BadRequest(views.html.propertyDetails.periodChooseRelief(id, periodKey, formWithError, getBackLink(id)))
-            ),
-          chosenRelief => {
-            for {
-              _ <- propertyDetailsService.storeChosenRelief(chosenRelief)
-            } yield {
-              Redirect(controllers.propertyDetails.routes.PeriodInReliefDatesController.add(id, periodKey))
+        serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+          periodChooseReliefForm.bindFromRequest.fold(
+            formWithError =>
+              Future.successful(
+                BadRequest(views.html.propertyDetails.periodChooseRelief(id, periodKey, formWithError, serviceInfoContent, getBackLink(id)))
+              ),
+            chosenRelief => {
+              for {
+                _ <- propertyDetailsService.storeChosenRelief(chosenRelief)
+              } yield {
+                Redirect(controllers.propertyDetails.routes.PeriodInReliefDatesController.add(id, periodKey))
+              }
             }
-          }
-        )
+          )
+        }
       }
     }
   }

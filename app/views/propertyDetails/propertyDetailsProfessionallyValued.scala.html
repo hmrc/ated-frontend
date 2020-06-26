@@ -16,8 +16,10 @@
 
 @import models._
 @import config.ApplicationConfig
+@import play.twirl.api.HtmlFormat
 @(id: String, periodKey: Int, propertyDetailsForm: Form[PropertyDetailsProfessionallyValued],
   mode: Option[String],
+  serviceInfoContent: Html = HtmlFormat.empty,
   backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
@@ -34,6 +36,7 @@
 }
 
 @atedMain(title = messages("ated.property-details-value.isValuedByAgent.title"),
+          serviceInfoContent = serviceInfoContent,
           analyticsAdditionalJs = Some(analyticsJs)) {
 
   @pageHeadersAndError(backLink, "pre-heading", messages(AtedUtils.getPropertyDetailsPreHeader(mode)), "property-details-header", messages("ated.property-details-value.isValuedByAgent.header"),

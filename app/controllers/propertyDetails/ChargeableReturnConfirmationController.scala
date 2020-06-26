@@ -23,7 +23,7 @@ import javax.inject.Inject
 import models.SubmitReturnsResponse
 import play.api.Logger
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.SubscriptionDataService
+import services.{ServiceInfoService, SubscriptionDataService}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.AtedConstants._
 
@@ -32,6 +32,7 @@ import scala.concurrent.ExecutionContext
 class ChargeableReturnConfirmationController @Inject()(mcc: MessagesControllerComponents,
                                                        subscriptionDataService: SubscriptionDataService,
                                                        authAction: AuthAction,
+                                                       serviceInfoService: ServiceInfoService,
                                                        val dataCacheConnector: DataCacheConnector)
                                                       (implicit val appConfig: ApplicationConfig)
 
@@ -41,12 +42,14 @@ class ChargeableReturnConfirmationController @Inject()(mcc: MessagesControllerCo
 
   def confirmation : Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
-      dataCacheConnector.fetchAndGetFormData[SubmitReturnsResponse](SubmitReturnsResponseFormId) map {
-        case Some(submitResponse) =>
-          Ok(views.html.propertyDetails.chargeableReturnsConfirmation(submitResponse))
-        case None =>
-          Logger.warn("[ChargeableReturnConfirmationController][confirmation] - Return Response not found in cache")
-          Redirect(controllers.routes.AccountSummaryController.view())
+      serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+        dataCacheConnector.fetchAndGetFormData[SubmitReturnsResponse](SubmitReturnsResponseFormId) map {
+          case Some(submitResponse) =>
+            Ok(views.html.propertyDetails.chargeableReturnsConfirmation(submitResponse, serviceInfoContent))
+          case None =>
+            Logger.warn("[ChargeableReturnConfirmationController][confirmation] - Return Response not found in cache")
+            Redirect(controllers.routes.AccountSummaryController.view())
+        }
       }
     }
   }

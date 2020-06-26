@@ -23,7 +23,7 @@ import forms.AddressLookupForms.addressSelectedForm
 import javax.inject.Inject
 import play.api.Logger
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{FormBundleReturnsService, PropertyDetailsService, SummaryReturnsService}
+import services.{FormBundleReturnsService, PropertyDetailsService, ServiceInfoService, SummaryReturnsService}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.AtedConstants._
 
@@ -35,6 +35,7 @@ class SelectExistingReturnAddressController @Inject()(mcc: MessagesControllerCom
                                                       confirmAddressController: ConfirmAddressController,
                                                       propertyDetailsAddressController: PropertyDetailsAddressController,
                                                       formBundleReturnService: FormBundleReturnsService,
+                                                      serviceInfoService: ServiceInfoService,
                                                       val propertyDetailsService: PropertyDetailsService,
                                                       val dataCacheConnector: DataCacheConnector,
                                                       val backLinkCacheConnector: BackLinkCacheConnector)
@@ -51,15 +52,16 @@ class SelectExistingReturnAddressController @Inject()(mcc: MessagesControllerCom
       ensureClientContext {
         for {
           previousReturns <- summaryReturnService.retrieveCachedPreviousReturnAddressList
+          serviceInfoContent <- serviceInfoService.getPartial
         } yield {
           previousReturns match {
             case Some(pr) =>
               val uniqueAddresses = pr.groupBy(_.address).values.map(_.sortWith((a,b) => a.date.isAfter(b.date)).head).toSeq
 
               Ok(views.html.propertyDetails.selectPreviousReturn
-            (periodKey, returnType, addressSelectedForm, uniqueAddresses, getBackLink(periodKey, returnType)))
+            (periodKey, returnType, addressSelectedForm, uniqueAddresses, serviceInfoContent, getBackLink(periodKey, returnType)))
             case None => Ok(views.html.propertyDetails.selectPreviousReturn
-            (periodKey, returnType, addressSelectedForm, Nil, getBackLink(periodKey, returnType)))
+            (periodKey, returnType, addressSelectedForm, Nil, serviceInfoContent, getBackLink(periodKey, returnType)))
           }
         }
       }
@@ -81,32 +83,34 @@ class SelectExistingReturnAddressController @Inject()(mcc: MessagesControllerCom
   def continue(periodKey: Int, returnType: String): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
-        addressSelectedForm.bindFromRequest.fold(
-          formWithError => {
-            summaryReturnService.retrieveCachedPreviousReturnAddressList.map { prevReturns =>
-              val addressList = prevReturns.getOrElse(Nil)
-              BadRequest(views.html.propertyDetails.selectPreviousReturn(periodKey, returnType, formWithError, addressList, getBackLink(periodKey, returnType)))
-            }
-          },
-          addressSelectForm => {
-            val formBundleNum = addressSelectForm.selected.get
-            for {
-              formBundleReturnOpt <- formBundleReturnService.getFormBundleReturns(formBundleNum)
-              result <- formBundleReturnOpt match {
-                case Some(_) =>
-                  dataCacheConnector.saveFormData[Boolean](SelectedPreviousReturn, true).flatMap { _ =>
-                    redirectWithBackLink(
-                      confirmAddressController.controllerId,
-                      controllers.propertyDetails.routes.ConfirmAddressController.editSubmittedReturn(formBundleNum),
-                      Some(controllers.propertyDetails.routes.SelectExistingReturnAddressController.view(periodKey, returnType).url))
-                  }
-                case None =>
-                  Logger.warn(s"[SelectExistingReturnAddressController][continue] - form bundle return not found for form-bundle-no::$formBundleNum")
-                  Future.successful(Redirect(controllers.routes.AccountSummaryController.view()))
+        serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+          addressSelectedForm.bindFromRequest.fold(
+            formWithError => {
+              summaryReturnService.retrieveCachedPreviousReturnAddressList.map { prevReturns =>
+                val addressList = prevReturns.getOrElse(Nil)
+                BadRequest(views.html.propertyDetails.selectPreviousReturn(periodKey, returnType, formWithError, addressList, serviceInfoContent, getBackLink(periodKey, returnType)))
               }
-            } yield result
-          }
-        )
+            },
+            addressSelectForm => {
+              val formBundleNum = addressSelectForm.selected.get
+              for {
+                formBundleReturnOpt <- formBundleReturnService.getFormBundleReturns(formBundleNum)
+                result <- formBundleReturnOpt match {
+                  case Some(_) =>
+                    dataCacheConnector.saveFormData[Boolean](SelectedPreviousReturn, true).flatMap { _ =>
+                      redirectWithBackLink(
+                        confirmAddressController.controllerId,
+                        controllers.propertyDetails.routes.ConfirmAddressController.editSubmittedReturn(formBundleNum),
+                        Some(controllers.propertyDetails.routes.SelectExistingReturnAddressController.view(periodKey, returnType).url))
+                    }
+                  case None =>
+                    Logger.warn(s"[SelectExistingReturnAddressController][continue] - form bundle return not found for form-bundle-no::$formBundleNum")
+                    Future.successful(Redirect(controllers.routes.AccountSummaryController.view()))
+                }
+              } yield result
+            }
+          )
+        }
       }
     }
   }

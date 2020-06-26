@@ -24,7 +24,7 @@ import forms.AtedForms.disposeLiabilityForm
 import javax.inject.Inject
 import models.DisposeLiability
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.DisposeLiabilityReturnService
+import services.{DisposeLiabilityReturnService, ServiceInfoService}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -33,6 +33,7 @@ class DisposePropertyController @Inject()(mcc: MessagesControllerComponents,
                                           disposeLiabilityReturnService: DisposeLiabilityReturnService,
                                           authAction: AuthAction,
                                           disposeLiabilityHasBankDetailsController: DisposeLiabilityHasBankDetailsController,
+                                          serviceInfoService: ServiceInfoService,
                                           val dataCacheConnector: DataCacheConnector,
                                           val backLinkCacheConnector: BackLinkCacheConnector)
                                          (implicit val appConfig: ApplicationConfig)
@@ -47,12 +48,13 @@ class DisposePropertyController @Inject()(mcc: MessagesControllerComponents,
       ensureClientContext {
         for {
           disposeLiabilityOpt <- disposeLiabilityReturnService.retrieveLiabilityReturn(oldFormBundleNo)
+          serviceInfoContent <- serviceInfoService.getPartial
           result <-
           disposeLiabilityOpt match {
             case Some(x) =>
               currentBackLink.map { backLink =>
                 val filledForm = disposeLiabilityForm.fill(x.disposeLiability.fold(DisposeLiability(periodKey = x.formBundleReturn.periodKey.toInt))(a => a))
-                Ok(views.html.editLiability.dataOfDisposal(filledForm, oldFormBundleNo, backLink, x.formBundleReturn.periodKey.toInt))
+                Ok(views.html.editLiability.dataOfDisposal(filledForm, oldFormBundleNo, serviceInfoContent, backLink, x.formBundleReturn.periodKey.toInt))
               }
             case None => Future.successful(Redirect(controllers.routes.AccountSummaryController.view()))
           }
@@ -66,12 +68,13 @@ class DisposePropertyController @Inject()(mcc: MessagesControllerComponents,
       ensureClientContext {
         for {
           disposeLiabilityOpt <- disposeLiabilityReturnService.retrieveLiabilityReturn(oldFormBundleNo)
+          serviceInfoContent <- serviceInfoService.getPartial
           result <-
           disposeLiabilityOpt.flatMap(_.disposeLiability) match {
             case Some(x) =>
               Future.successful {
                 val backLink = Some(controllers.editLiability.routes.DisposeLiabilitySummaryController.view(oldFormBundleNo).url)
-                Ok(views.html.editLiability.dataOfDisposal(disposeLiabilityForm.fill(x), oldFormBundleNo, backLink, x.periodKey))
+                Ok(views.html.editLiability.dataOfDisposal(disposeLiabilityForm.fill(x), oldFormBundleNo, serviceInfoContent, backLink, x.periodKey))
               }
             case None => Future.successful(Redirect(controllers.routes.AccountSummaryController.view()))
           }
@@ -83,28 +86,31 @@ class DisposePropertyController @Inject()(mcc: MessagesControllerComponents,
   def save(oldFormBundleNo: String): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
-        disposeLiabilityForm.bindFromRequest.fold(
-          formWithErrors => {
-            currentBackLink.map{ backLink =>
-              BadRequest(
-                views.html.editLiability.dataOfDisposal(
-                  formWithErrors,
-                  oldFormBundleNo,
-                  backLink,
-                  formWithErrors.data("periodKey").toInt
+        serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+          disposeLiabilityForm.bindFromRequest.fold(
+            formWithErrors => {
+              currentBackLink.map { backLink =>
+                BadRequest(
+                  views.html.editLiability.dataOfDisposal(
+                    formWithErrors,
+                    oldFormBundleNo,
+                    serviceInfoContent,
+                    backLink,
+                    formWithErrors.data("periodKey").toInt
+                  )
                 )
-              )
+              }
+            },
+            disposalDate => disposeLiabilityReturnService.cacheDisposeLiabilityReturnDate(oldFormBundleNo, disposalDate) flatMap {
+              _ =>
+                redirectWithBackLink(
+                  disposeLiabilityHasBankDetailsController.controllerId,
+                  controllers.editLiability.routes.DisposeLiabilityHasBankDetailsController.view(oldFormBundleNo),
+                  Some(controllers.editLiability.routes.DisposePropertyController.view(oldFormBundleNo).url)
+                )
             }
-          },
-          disposalDate => disposeLiabilityReturnService.cacheDisposeLiabilityReturnDate(oldFormBundleNo, disposalDate) flatMap {
-            _ =>
-              redirectWithBackLink(
-                disposeLiabilityHasBankDetailsController.controllerId,
-                controllers.editLiability.routes.DisposeLiabilityHasBankDetailsController.view(oldFormBundleNo),
-                Some(controllers.editLiability.routes.DisposePropertyController.view(oldFormBundleNo).url)
-              )
-          }
-        )
+          )
+        }
       }
     }
   }

@@ -35,6 +35,7 @@ class PropertyDetailsNewBuildController @Inject()(mcc: MessagesControllerCompone
                                                   authAction: AuthAction,
                                                   propertyDetailsNewBuildDatesController: PropertyDetailsNewBuildDatesController,
                                                   propertyDetailsWhenAcquiredController: PropertyDetailsWhenAcquiredController,
+                                                  serviceInfoService: ServiceInfoService,
                                                   val propertyDetailsService: PropertyDetailsService,
                                                   val dataCacheConnector: DataCacheConnector,
                                                   val backLinkCacheConnector: BackLinkCacheConnector)
@@ -48,20 +49,23 @@ class PropertyDetailsNewBuildController @Inject()(mcc: MessagesControllerCompone
   def view(id: String): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
-        propertyDetailsCacheResponse(id) {
-          case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
-            currentBackLink.flatMap { backLink =>
-              dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
-                val displayData = PropertyDetailsNewBuild(propertyDetails.value.flatMap(_.isNewBuild)
-                )
-                Future.successful(Ok(views.html.propertyDetails.propertyDetailsNewBuild(id,
-                  propertyDetails.periodKey,
-                  propertyDetailsNewBuildForm.fill(displayData),
-                  AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn),
-                  backLink)
-                ))
+        serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+          propertyDetailsCacheResponse(id) {
+            case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
+              currentBackLink.flatMap { backLink =>
+                dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
+                  val displayData = PropertyDetailsNewBuild(propertyDetails.value.flatMap(_.isNewBuild)
+                  )
+                  Future.successful(Ok(views.html.propertyDetails.propertyDetailsNewBuild(id,
+                    propertyDetails.periodKey,
+                    propertyDetailsNewBuildForm.fill(displayData),
+                    AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn),
+                    serviceInfoContent,
+                    backLink)
+                  ))
+                }
               }
-            }
+          }
         }
       }
     }
@@ -70,34 +74,36 @@ class PropertyDetailsNewBuildController @Inject()(mcc: MessagesControllerCompone
   def save(id: String, periodKey: Int, mode: Option[String]): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
-        propertyDetailsNewBuildForm.bindFromRequest.fold(
-          formWithError => {
-            currentBackLink.map(backLink =>
-              BadRequest(views.html.propertyDetails.propertyDetailsNewBuild(id, periodKey, formWithError, mode, backLink))
-            )
-          },
-          propertyDetails => {
-            for {
-              _ <- propertyDetailsService.saveDraftPropertyDetailsNewBuild(id, propertyDetails)
-              result <-
-                propertyDetails.isNewBuild match {
-                  case Some(true) =>
-                    redirectWithBackLink(
-                      propertyDetailsNewBuildDatesController.controllerId,
-                      controllers.propertyDetails.routes.PropertyDetailsNewBuildDatesController.view(id),
-                      Some(controllers.propertyDetails.routes.PropertyDetailsNewBuildController.view(id).url)
-                    )
-                  case Some(false) =>
-                    redirectWithBackLink(
-                      propertyDetailsWhenAcquiredController.controllerId,
-                      controllers.propertyDetails.routes.PropertyDetailsWhenAcquiredController.view(id),
-                      Some(controllers.propertyDetails.routes.PropertyDetailsNewBuildController.view(id).url)
-                    )
-                  case _ => Future.successful(Ok)
-                }
-            } yield result
-          }
-        )
+        serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+          propertyDetailsNewBuildForm.bindFromRequest.fold(
+            formWithError => {
+              currentBackLink.map(backLink =>
+                BadRequest(views.html.propertyDetails.propertyDetailsNewBuild(id, periodKey, formWithError, mode, serviceInfoContent, backLink))
+              )
+            },
+            propertyDetails => {
+              for {
+                _ <- propertyDetailsService.saveDraftPropertyDetailsNewBuild(id, propertyDetails)
+                result <-
+                  propertyDetails.isNewBuild match {
+                    case Some(true) =>
+                      redirectWithBackLink(
+                        propertyDetailsNewBuildDatesController.controllerId,
+                        controllers.propertyDetails.routes.PropertyDetailsNewBuildDatesController.view(id),
+                        Some(controllers.propertyDetails.routes.PropertyDetailsNewBuildController.view(id).url)
+                      )
+                    case Some(false) =>
+                      redirectWithBackLink(
+                        propertyDetailsWhenAcquiredController.controllerId,
+                        controllers.propertyDetails.routes.PropertyDetailsWhenAcquiredController.view(id),
+                        Some(controllers.propertyDetails.routes.PropertyDetailsNewBuildController.view(id).url)
+                      )
+                    case _ => Future.successful(Ok)
+                  }
+              } yield result
+            }
+          )
+        }
       }
     }
   }

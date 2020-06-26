@@ -48,18 +48,18 @@ class PropertyDetailsNewBuildValueSpec extends AtedViewSpec with MockAuthUtil {
   "provide an error message for when the value is empty" in {
     val form = PropertyDetailsForms.propertyDetailsNewBuildValueForm.withError("newBuildValue",
       "ated.property-details-value-error.newBuildValue.emptyValue")
-    val newDoc = doc(views.html.propertyDetails.propertyDetailsNewBuildValue("0", periodKey, form, None, Some("backLink"), testDate))
+    val newDoc = doc(views.html.propertyDetails.propertyDetailsNewBuildValue("0", periodKey, form, None, Html(""), Some("backLink"), testDate))
     newDoc.getElementsMatchingOwnText(messages("ated.property-details-value-error.newBuildValue.emptyValue")).hasText mustBe true
   }
 
   "provide an error message for when the value is invalid" in {
     val form = PropertyDetailsForms.propertyDetailsNewBuildValueForm.withError("newBuildValue",
       "ated.property-details-value-error.newBuildValue.invalidValue")
-    val newDoc = doc(views.html.propertyDetails.propertyDetailsNewBuildValue("0", periodKey, form, None, Some("backLink"), testDate))
+    val newDoc = doc(views.html.propertyDetails.propertyDetailsNewBuildValue("0", periodKey, form, None, Html(""), Some("backLink"), testDate))
     newDoc.getElementsMatchingOwnText(messages("ated.property-details-value-error.newBuildValue.invalidValue")).hasText mustBe true
   }
 
   private val form = PropertyDetailsForms.propertyDetailsNewBuildValueForm
-  override def view: Html = views.html.propertyDetails.propertyDetailsNewBuildValue(id, periodKey,  form, None, Some("backLink"), testDate)
+  override def view: Html = views.html.propertyDetails.propertyDetailsNewBuildValue(id, periodKey,  form, None, Html(""), Some("backLink"), testDate)
 
 }

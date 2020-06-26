@@ -23,7 +23,7 @@ import forms.AtedForms.returnTypeForm
 import javax.inject.Inject
 import models.ReturnType
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.SummaryReturnsService
+import services.{ServiceInfoService, SummaryReturnsService}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.AtedConstants._
 
@@ -32,6 +32,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class ReturnTypeController @Inject()(mcc: MessagesControllerComponents,
                                      authAction: AuthAction,
                                      summaryReturnService: SummaryReturnsService,
+                                     serviceInfoService: ServiceInfoService,
                                      val dataCacheConnector: DataCacheConnector,
                                      val backLinkCacheConnector: BackLinkCacheConnector)
                                     (implicit val appConfig: ApplicationConfig)
@@ -39,17 +40,19 @@ class ReturnTypeController @Inject()(mcc: MessagesControllerComponents,
   extends FrontendController(mcc) with BackLinkController with ClientHelper with ControllerIds {
 
   val controllerId: String = "ReturnTypeController"
-  implicit val ec : ExecutionContext = mcc.executionContext
+  implicit val ec: ExecutionContext = mcc.executionContext
 
   def view(periodKey: Int): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
-        currentBackLink.flatMap(backLink =>
-          dataCacheConnector.fetchAndGetFormData[ReturnType](RetrieveReturnTypeFormId) map {
-            case Some(data) => Ok(views.html.returnType(periodKey, returnTypeForm.fill(data), backLink))
-            case _ => Ok(views.html.returnType(periodKey, returnTypeForm, backLink))
-          }
-        )
+        serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+          currentBackLink.flatMap(backLink =>
+            dataCacheConnector.fetchAndGetFormData[ReturnType](RetrieveReturnTypeFormId) map {
+              case Some(data) => Ok(views.html.returnType(periodKey, returnTypeForm.fill(data), serviceInfoContent, backLink))
+              case _ => Ok(views.html.returnType(periodKey, returnTypeForm, serviceInfoContent, backLink))
+            }
+          )
+        }
       }
     }
   }
@@ -57,41 +60,43 @@ class ReturnTypeController @Inject()(mcc: MessagesControllerComponents,
   def submit(periodKey: Int): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
-        returnTypeForm.bindFromRequest.fold(
-          formWithError =>
-            currentBackLink.map(backLink =>
-              BadRequest(views.html.returnType(periodKey, formWithError, backLink))
-            ),
-          returnTypeData => {
-            dataCacheConnector.saveFormData[ReturnType](RetrieveReturnTypeFormId, returnTypeData)
-            val returnUrl = Some(routes.ReturnTypeController.view(periodKey).url)
-            summaryReturnService.getPreviousSubmittedLiabilityDetails(periodKey).flatMap { pastReturns =>
-              (returnTypeData.returnType, pastReturns) match {
-                case (Some("CR"), Nil) =>
-                  redirectWithBackLink(
-                    addressLookupId,
-                    controllers.propertyDetails.routes.AddressLookupController.view(None, periodKey),
-                    returnUrl,
-                    List(propertyDetailsAddressId)
-                  )
-                case (Some("CR"), _) =>
-                  redirectWithBackLink(
-                    addressLookupId,
-                    controllers.routes.ExistingReturnQuestionController.view(periodKey, returnType = "charge"),
-                    returnUrl,
-                    List(propertyDetailsAddressId)
-                  )
-                case (Some("RR"), _) =>
-                  redirectWithBackLink(
-                    chooseReliefsControllerId,
-                    controllers.reliefs.routes.ChooseReliefsController.view(periodKey),
-                    returnUrl
-                  )
-                case _ => Future.successful(Redirect(controllers.routes.ReturnTypeController.view(periodKey)))
+        serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+          returnTypeForm.bindFromRequest.fold(
+            formWithError =>
+              currentBackLink.map(backLink =>
+                BadRequest(views.html.returnType(periodKey, formWithError, serviceInfoContent, backLink))
+              ),
+            returnTypeData => {
+              dataCacheConnector.saveFormData[ReturnType](RetrieveReturnTypeFormId, returnTypeData)
+              val returnUrl = Some(routes.ReturnTypeController.view(periodKey).url)
+              summaryReturnService.getPreviousSubmittedLiabilityDetails(periodKey).flatMap { pastReturns =>
+                (returnTypeData.returnType, pastReturns) match {
+                  case (Some("CR"), Nil) =>
+                    redirectWithBackLink(
+                      addressLookupId,
+                      controllers.propertyDetails.routes.AddressLookupController.view(None, periodKey),
+                      returnUrl,
+                      List(propertyDetailsAddressId)
+                    )
+                  case (Some("CR"), _) =>
+                    redirectWithBackLink(
+                      addressLookupId,
+                      controllers.routes.ExistingReturnQuestionController.view(periodKey, returnType = "charge"),
+                      returnUrl,
+                      List(propertyDetailsAddressId)
+                    )
+                  case (Some("RR"), _) =>
+                    redirectWithBackLink(
+                      chooseReliefsControllerId,
+                      controllers.reliefs.routes.ChooseReliefsController.view(periodKey),
+                      returnUrl
+                    )
+                  case _ => Future.successful(Redirect(controllers.routes.ReturnTypeController.view(periodKey)))
+                }
               }
             }
-          }
-        )
+          )
+        }
       }
     }
   }

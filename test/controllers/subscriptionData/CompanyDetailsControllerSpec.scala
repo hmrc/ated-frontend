@@ -22,7 +22,6 @@ import builders.{SessionBuilder, TitleBuilder}
 import config.ApplicationConfig
 import connectors.DataCacheConnector
 import controllers.auth.AuthAction
-import testhelpers.MockAuthUtil
 import models._
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
@@ -31,12 +30,15 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
+import play.api.i18n.{Lang, MessagesApi, MessagesImpl}
 import play.api.mvc.{MessagesControllerComponents, Result}
 import play.api.test.Helpers._
-import services.{DetailsService, SubscriptionDataService}
+import services.{DetailsService, ServiceInfoService, SubscriptionDataService}
+import testhelpers.MockAuthUtil
 import uk.gov.hmrc.auth.core.retrieve.~
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
 import uk.gov.hmrc.http.HeaderCarrier
+import views.html.BtaNavigationLinks
 
 import scala.concurrent.Future
 
@@ -49,6 +51,10 @@ class CompanyDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
   val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
   val mockSubscriptionDataService: SubscriptionDataService = mock[SubscriptionDataService]
   val mockDetailsService: DetailsService = mock[DetailsService]
+    val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
+  val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
+  val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
 
 class Setup {
 
@@ -62,6 +68,7 @@ class Setup {
       mockMcc,
       mockAuthAction,
       mockSubscriptionDataService,
+      mockServiceInfoService,
       mockDetailsService
   )
 
@@ -79,6 +86,7 @@ class Setup {
     val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
     setAuthMocks(authMock)
     implicit val hc: HeaderCarrier = HeaderCarrier()
+    when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(btaNavigationLinksView()(messages,mockAppConfig)))
     when(mockSubscriptionDataService.getEmailConsent(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(true))
     when(mockSubscriptionDataService.getCorrespondenceAddress(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(correspondence))
     when(mockSubscriptionDataService.getRegisteredDetails(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(registeredDetails))
@@ -145,7 +153,6 @@ class Setup {
 
             document.title() must be (TitleBuilder.buildTitle("Your ATED details"))
             document.getElementById("company-details-header").text() must be("Your ATED details")
-
             document.getElementById("registered-edit").text() must be("Edit Registered address")
             document.getElementById("registered-edit").attr("href") must be("/ated/registered-details")
         }

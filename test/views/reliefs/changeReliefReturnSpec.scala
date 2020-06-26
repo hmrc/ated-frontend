@@ -19,11 +19,12 @@ package views.reliefs
 import config.ApplicationConfig
 import forms.AtedForms.editReliefForm
 import org.jsoup.Jsoup
-import org.scalatestplus.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.test.FakeRequest
+import play.twirl.api.Html
 import testhelpers.MockAuthUtil
 
 
@@ -44,7 +45,7 @@ implicit lazy val authContext = organisationStandardRetrievals
       Given("the client has clicked change on a relief")
       When("The user views the page")
 
-      val html = views.html.reliefs.changeReliefReturn(2015, "form-bundle-123", editReliefForm, Some("backLink"))
+      val html = views.html.reliefs.changeReliefReturn(2015, "form-bundle-123", editReliefForm,  Html(""), Some("backLink"))
 
       val document = Jsoup.parse(html.toString())
 

@@ -18,11 +18,10 @@ package views.html.subscriptionData
 
 import config.ApplicationConfig
 import forms.AtedForms.editContactDetailsEmailForm
-import testhelpers.{AtedViewSpec, MockAuthUtil}
 import models._
 import org.scalatestplus.mockito.MockitoSugar
-import play.api.i18n.Messages
 import play.twirl.api.Html
+import testhelpers.{AtedViewSpec, MockAuthUtil}
 
 class EditContactEmailSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil {
   implicit lazy val authContxt: StandardAuthRetrievals = organisationStandardRetrievals
@@ -70,6 +69,6 @@ class EditContactEmailSpec extends AtedViewSpec with MockitoSugar with MockAuthU
   val prePopulatedData = EditContactDetailsEmail(emailAddress = "test@test.com",
     emailConsent = true
   )
-  override def view: Html = views.html.subcriptionData.editContactEmail(editContactDetailsEmailForm.fill(prePopulatedData), Some("http://backLink"))
+  override def view: Html = views.html.subcriptionData.editContactEmail(editContactDetailsEmailForm.fill(prePopulatedData), Html(""), Some("http://backLink"))
 
 }

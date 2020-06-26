@@ -21,7 +21,7 @@ import connectors.BackLinkCacheConnector
 import controllers.auth.AuthAction
 import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{SubscriptionDataService, SummaryReturnsService}
+import services.{ServiceInfoService, SubscriptionDataService, SummaryReturnsService}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.PeriodUtils
 
@@ -31,6 +31,7 @@ class PeriodSummaryController @Inject()(mcc: MessagesControllerComponents,
                                         authAction: AuthAction,
                                         summaryReturnsService: SummaryReturnsService,
                                         subscriptionDataService: SubscriptionDataService,
+                                        serviceInfoService: ServiceInfoService,
                                         val backLinkCacheConnector: BackLinkCacheConnector)
                                        (implicit val appConfig: ApplicationConfig)
 
@@ -44,10 +45,11 @@ class PeriodSummaryController @Inject()(mcc: MessagesControllerComponents,
       for {
         periodSummaries <- summaryReturnsService.getPeriodSummaryReturns(periodKey)
         organisationName <- subscriptionDataService.getOrganisationName
+        serviceInfoContent <- serviceInfoService.getPartial
       } yield {
         val currentSummaries = periodSummaries.map(summaryReturnsService.filterPeriodSummaryReturnReliefs(_, past = false))
         val previousSummaries = periodSummaries.map(summaryReturnsService.filterPeriodSummaryReturnReliefs(_, past = true))
-        Ok(views.html.periodSummary(periodKey, currentSummaries,previousSummaries, organisationName, getBackLink(periodKey)))
+        Ok(views.html.periodSummary(periodKey, currentSummaries,previousSummaries, organisationName, serviceInfoContent, getBackLink(periodKey)))
       }
     }
   }
@@ -57,9 +59,10 @@ class PeriodSummaryController @Inject()(mcc: MessagesControllerComponents,
       for {
         periodSummaries <- summaryReturnsService.getPeriodSummaryReturns(periodKey)
         organisationName <- subscriptionDataService.getOrganisationName
+        serviceInfoContent <- serviceInfoService.getPartial
       } yield {
         val filteredSummaries = periodSummaries.map(summaryReturnsService.filterPeriodSummaryReturnReliefs(_, past = true))
-        Ok(views.html.periodSummaryPastReturns(periodKey, filteredSummaries, organisationName, getBackLink(periodKey)))
+        Ok(views.html.periodSummaryPastReturns(periodKey, filteredSummaries, organisationName, serviceInfoContent, getBackLink(periodKey)))
       }
     }
   }

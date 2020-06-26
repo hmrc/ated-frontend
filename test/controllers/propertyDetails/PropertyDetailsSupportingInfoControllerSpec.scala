@@ -23,7 +23,6 @@ import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.AuthAction
 import controllers.editLiability.EditLiabilitySummaryController
-import testhelpers.MockAuthUtil
 import models._
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
@@ -33,14 +32,17 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
+import play.api.i18n.{Lang, MessagesApi, MessagesImpl}
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService}
+import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService}
+import testhelpers.MockAuthUtil
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import utils.{AtedConstants, AtedUtils, PeriodUtils}
+import views.html.BtaNavigationLinks
 
 import scala.concurrent.Future
 
@@ -55,6 +57,10 @@ class PropertyDetailsSupportingInfoControllerSpec extends PlaySpec with GuiceOne
   val mockBackLinkCacheConnector: BackLinkCacheConnector = mock[BackLinkCacheConnector]
   val mockEditLiabilitySummaryController: EditLiabilitySummaryController = mock[EditLiabilitySummaryController]
   val mockPropertyDetailsSummaryController: PropertyDetailsSummaryController = mock[PropertyDetailsSummaryController]
+    val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
+  val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
+  val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
 
   val periodKey: Int = PeriodUtils.calculatePeakStartYear()
 
@@ -71,6 +77,7 @@ class PropertyDetailsSupportingInfoControllerSpec extends PlaySpec with GuiceOne
       mockAuthAction,
       mockEditLiabilitySummaryController,
       mockPropertyDetailsSummaryController,
+      mockServiceInfoService,
       mockPropertyDetailsService,
       mockDataCacheConnector,
       mockBackLinkCacheConnector
@@ -88,6 +95,7 @@ class PropertyDetailsSupportingInfoControllerSpec extends PlaySpec with GuiceOne
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
+      when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(btaNavigationLinksView()(messages,mockAppConfig)))
       when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
         (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
       when(mockDataCacheConnector.fetchAndGetFormData[Boolean](ArgumentMatchers.any())
@@ -211,6 +219,7 @@ class PropertyDetailsSupportingInfoControllerSpec extends PlaySpec with GuiceOne
               document.title() must be(TitleBuilder.buildTitle("Do you have any supporting information to add? (optional)"))
 
               document.getElementById("supportingInfo").attr("value") must be("")
+              assert(document.getElementById("service-info-list").text() === "Home Manage account Messages Help and contact")
 
               document.getElementById("submit").text() must be("Save and continue")
           }

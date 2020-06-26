@@ -18,15 +18,16 @@ package views.reliefs
 
 import config.ApplicationConfig
 import forms.ReliefForms.reliefsForm
-import testhelpers.MockAuthUtil
 import models.{Reliefs, StandardAuthRetrievals}
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
-import org.scalatestplus.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.test.FakeRequest
+import play.twirl.api.Html
+import testhelpers.MockAuthUtil
 import utils.PeriodUtils
 
 class chooseReliefsSpec extends FeatureSpec with GuiceOneAppPerSuite with MockitoSugar
@@ -48,7 +49,7 @@ implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetr
       Given("the client is creating a new relief and want to see the options")
       When("The user views the page")
 
-      val html = views.html.reliefs.chooseReliefs(periodKey, reliefsForm, new LocalDate("2015-04-01"), Some("backLink"))
+      val html = views.html.reliefs.chooseReliefs(periodKey, reliefsForm, new LocalDate("2015-04-01"), Html(""), Some("backLink"))
 
       val document = Jsoup.parse(html.toString())
 
@@ -123,7 +124,7 @@ implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetr
       When("The user views the page")
 
       val reliefs: Reliefs = Reliefs(periodKey = periodKey, rentalBusiness = true)
-      val html = views.html.reliefs.chooseReliefs(periodKey, reliefsForm.fill(reliefs), new LocalDate("2015-04-01"), Some("http://backLink"))
+      val html = views.html.reliefs.chooseReliefs(periodKey, reliefsForm.fill(reliefs), new LocalDate("2015-04-01"), Html(""), Some("http://backLink"))
 
       val document = Jsoup.parse(html.toString())
 

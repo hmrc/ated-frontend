@@ -24,7 +24,7 @@ import forms.PropertyDetailsForms.hasValueChangedForm
 import javax.inject.Inject
 import models.HasValueChanged
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService}
+import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.AtedConstants.SelectedPreviousReturn
 import utils.AtedUtils
@@ -35,6 +35,7 @@ class EditLiabilityHasValueChangedController @Inject()(mcc: MessagesControllerCo
                                                        propertyDetailsOwnedBeforeController: PropertyDetailsOwnedBeforeController,
                                                        isFullTaxPeriodController: IsFullTaxPeriodController,
                                                        authAction: AuthAction,
+                                                       serviceInfoService: ServiceInfoService,
                                                        val propertyDetailsService: PropertyDetailsService,
                                                        val dataCacheConnector: DataCacheConnector,
                                                        val backLinkCacheConnector: BackLinkCacheConnector)
@@ -48,16 +49,18 @@ class EditLiabilityHasValueChangedController @Inject()(mcc: MessagesControllerCo
   def view(oldFormBundleNo: String): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
-        propertyDetailsCacheResponse(oldFormBundleNo) {
-          case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
-            dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
-              currentBackLink.map { backLink =>
-                val filledForm = hasValueChangedForm.fill(HasValueChanged(propertyDetails.value.flatMap(_.hasValueChanged)))
-                val previousValue = propertyDetails.formBundleReturn.map(_.lineItem.head.propertyValue)
-                Ok(views.html.editLiability.editLiabilityHasValueChanged(previousValue, oldFormBundleNo, filledForm,
-                  AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn), backLink))
+        serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+          propertyDetailsCacheResponse(oldFormBundleNo) {
+            case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
+              dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
+                currentBackLink.map { backLink =>
+                  val filledForm = hasValueChangedForm.fill(HasValueChanged(propertyDetails.value.flatMap(_.hasValueChanged)))
+                  val previousValue = propertyDetails.formBundleReturn.map(_.lineItem.head.propertyValue)
+                  Ok(views.html.editLiability.editLiabilityHasValueChanged(previousValue, oldFormBundleNo, filledForm,
+                    AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn), serviceInfoContent, backLink))
+                }
               }
-            }
+          }
         }
       }
     }
@@ -66,15 +69,17 @@ class EditLiabilityHasValueChangedController @Inject()(mcc: MessagesControllerCo
   def editFromSummary(oldFormBundleNo: String, isPrevReturn: Option[Boolean] = None): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
-        propertyDetailsCacheResponse(oldFormBundleNo) {
-          case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
-            Future.successful {
-              val mode = AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn)
-              val filledForm = hasValueChangedForm.fill(HasValueChanged(propertyDetails.value.flatMap(_.hasValueChanged)))
-              val previousValue = propertyDetails.formBundleReturn.map(_.lineItem.head.propertyValue)
-              Ok(views.html.editLiability.editLiabilityHasValueChanged(previousValue, oldFormBundleNo, filledForm,
-                mode, AtedUtils.getSummaryBackLink(oldFormBundleNo, mode)))
-            }
+        serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+          propertyDetailsCacheResponse(oldFormBundleNo) {
+            case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
+              Future.successful {
+                val mode = AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn)
+                val filledForm = hasValueChangedForm.fill(HasValueChanged(propertyDetails.value.flatMap(_.hasValueChanged)))
+                val previousValue = propertyDetails.formBundleReturn.map(_.lineItem.head.propertyValue)
+                Ok(views.html.editLiability.editLiabilityHasValueChanged(previousValue, oldFormBundleNo, filledForm,
+                  mode, serviceInfoContent, AtedUtils.getSummaryBackLink(oldFormBundleNo, mode)))
+              }
+          }
         }
       }
     }
@@ -83,40 +88,42 @@ class EditLiabilityHasValueChangedController @Inject()(mcc: MessagesControllerCo
   def save(oldFormBundleNo: String): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
-        hasValueChangedForm.bindFromRequest.fold(
-          formWithErrors => {
-            propertyDetailsCacheResponse(oldFormBundleNo) {
-              case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
-                dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
-                  currentBackLink.map { backLink =>
-                    val previousValue = propertyDetails.formBundleReturn.map(_.lineItem.head.propertyValue)
-                    BadRequest(views.html.editLiability.editLiabilityHasValueChanged(previousValue, oldFormBundleNo,
-                      formWithErrors, AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn), backLink))
+        serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+          hasValueChangedForm.bindFromRequest.fold(
+            formWithErrors => {
+              propertyDetailsCacheResponse(oldFormBundleNo) {
+                case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
+                  dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
+                    currentBackLink.map { backLink =>
+                      val previousValue = propertyDetails.formBundleReturn.map(_.lineItem.head.propertyValue)
+                      BadRequest(views.html.editLiability.editLiabilityHasValueChanged(previousValue, oldFormBundleNo,
+                        formWithErrors, AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn), serviceInfoContent, backLink))
+                    }
                   }
-                }
+              }
+            },
+            propertyDetails => {
+              val hasValueChanged = propertyDetails.hasValueChanged.getOrElse(false)
+              val backLink = Some(controllers.editLiability.routes.EditLiabilityHasValueChangedController.view(oldFormBundleNo).url)
+              propertyDetailsService.saveDraftHasValueChanged(oldFormBundleNo, hasValueChanged) flatMap {
+                _ =>
+                  if (hasValueChanged) {
+                    redirectWithBackLink(
+                      propertyDetailsOwnedBeforeController.controllerId,
+                      controllers.propertyDetails.routes.PropertyDetailsOwnedBeforeController.view(oldFormBundleNo),
+                      backLink
+                    )
+                  } else {
+                    redirectWithBackLink(
+                      isFullTaxPeriodController.controllerId,
+                      controllers.propertyDetails.routes.IsFullTaxPeriodController.view(oldFormBundleNo),
+                      backLink
+                    )
+                  }
+              }
             }
-          },
-          propertyDetails => {
-            val hasValueChanged = propertyDetails.hasValueChanged.getOrElse(false)
-            val backLink = Some(controllers.editLiability.routes.EditLiabilityHasValueChangedController.view(oldFormBundleNo).url)
-            propertyDetailsService.saveDraftHasValueChanged(oldFormBundleNo, hasValueChanged) flatMap {
-              _ =>
-                if (hasValueChanged) {
-                  redirectWithBackLink(
-                    propertyDetailsOwnedBeforeController.controllerId,
-                    controllers.propertyDetails.routes.PropertyDetailsOwnedBeforeController.view(oldFormBundleNo),
-                    backLink
-                  )
-                } else {
-                  redirectWithBackLink(
-                    isFullTaxPeriodController.controllerId,
-                    controllers.propertyDetails.routes.IsFullTaxPeriodController.view(oldFormBundleNo),
-                    backLink
-                  )
-                }
-            }
-          }
-        )
+          )
+        }
       }
     }
   }

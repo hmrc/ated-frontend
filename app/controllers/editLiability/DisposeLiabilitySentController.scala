@@ -22,7 +22,7 @@ import controllers.auth.{AuthAction, ClientHelper}
 import javax.inject.Inject
 import models.EditLiabilityReturnsResponseModel
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.SubscriptionDataService
+import services.{ServiceInfoService, SubscriptionDataService}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.AtedConstants._
 
@@ -32,6 +32,7 @@ import scala.concurrent.ExecutionContext
 class DisposeLiabilitySentController @Inject()(mcc: MessagesControllerComponents,
                                                subscriptionDataService: SubscriptionDataService,
                                                authAction: AuthAction,
+                                               serviceInfoService: ServiceInfoService,
                                                val dataCacheConnector: DataCacheConnector)
                                               (implicit val appConfig: ApplicationConfig)
   extends FrontendController(mcc) with ClientHelper {
@@ -40,14 +41,16 @@ class DisposeLiabilitySentController @Inject()(mcc: MessagesControllerComponents
 
   def view(oldFormBundleNo: String): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
-      dataCacheConnector.fetchAndGetFormData[EditLiabilityReturnsResponseModel](SubmitEditedLiabilityReturnsResponseFormId) map {
-        case Some(submitResponse) =>
-          submitResponse.liabilityReturnResponse.find(_.oldFormBundleNumber == oldFormBundleNo) match {
-            case Some(r) => Ok(views.html.editLiability.disposeLiabilitySent(oldFormBundleNo, r.amountDueOrRefund, r.liabilityAmount, r.paymentReference))
-            case None => Redirect(controllers.routes.AccountSummaryController.view())
-          }
-        case None =>
-          throw new RuntimeException("Return Response not found in cache")
+      serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+        dataCacheConnector.fetchAndGetFormData[EditLiabilityReturnsResponseModel](SubmitEditedLiabilityReturnsResponseFormId) map {
+          case Some(submitResponse) =>
+            submitResponse.liabilityReturnResponse.find(_.oldFormBundleNumber == oldFormBundleNo) match {
+              case Some(r) => Ok(views.html.editLiability.disposeLiabilitySent(oldFormBundleNo, serviceInfoContent, r.amountDueOrRefund, r.liabilityAmount, r.paymentReference))
+              case None => Redirect(controllers.routes.AccountSummaryController.view())
+            }
+          case None =>
+            throw new RuntimeException("Return Response not found in cache")
+        }
       }
     }
   }

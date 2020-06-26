@@ -18,18 +18,19 @@ package views.propertyDetails
 
 import builders.PropertyDetailsBuilder
 import config.ApplicationConfig
-import testhelpers.MockAuthUtil
 import models.StandardAuthRetrievals
 import org.joda.time.format.DateTimeFormat
 import org.joda.time.{DateTimeZone, LocalDate}
 import org.jsoup.Jsoup
-import org.scalatestplus.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.test.FakeRequest
-import utils.PeriodUtils._
+import play.twirl.api.Html
+import testhelpers.MockAuthUtil
 import utils.PeriodUtils
+import utils.PeriodUtils._
 
 class propertyDetailsSummarySpec extends FeatureSpec with GuiceOneAppPerSuite with MockitoSugar
   with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
@@ -37,7 +38,7 @@ class propertyDetailsSummarySpec extends FeatureSpec with GuiceOneAppPerSuite wi
   implicit val request = FakeRequest()
   implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
-implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
+  implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
 
   val thisYear: Int = calculatePeakStartYear()
   val nextYear: Int = thisYear + 1
@@ -58,7 +59,7 @@ implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetr
       assert(displayPeriods.size === 2)
 
       val html = views.html.propertyDetails.propertyDetailsSummary(propertyDetails, displayPeriods,
-        canSubmit = true, PeriodUtils.getCalculatedPeriodValues(propertyDetails.calculated), Some("http://backLink"))
+        canSubmit = true, PeriodUtils.getCalculatedPeriodValues(propertyDetails.calculated), Html(""), Some("http://backLink"))
 
       val document = Jsoup.parse(html.toString())
 
@@ -103,7 +104,7 @@ implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetr
       val propertyDetails = PropertyDetailsBuilder.getFullPropertyDetails(id = "1", postCode = Some("123456"), liabilityAmount = Some(BigDecimal(1000.20)))
 
       val html = views.html.propertyDetails.propertyDetailsSummary(propertyDetails, Nil,
-        canSubmit = true, PeriodUtils.getCalculatedPeriodValues(propertyDetails.calculated), None)
+        canSubmit = true, PeriodUtils.getCalculatedPeriodValues(propertyDetails.calculated), Html(""), None)
 
       val document = Jsoup.parse(html.toString())
 
@@ -145,7 +146,7 @@ implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetr
       val propertyDetails = PropertyDetailsBuilder.getFullPropertyDetails(id = "1", postCode = Some("123456"), liabilityAmount = Some(BigDecimal(1000.20)))
 
       val html = views.html.propertyDetails.propertyDetailsSummary(propertyDetails, Nil,
-        canSubmit = false, PeriodUtils.getCalculatedPeriodValues(propertyDetails.calculated), None)
+        canSubmit = false, PeriodUtils.getCalculatedPeriodValues(propertyDetails.calculated), Html(""), None)
 
       val document = Jsoup.parse(html.toString())
 

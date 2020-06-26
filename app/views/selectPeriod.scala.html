@@ -15,7 +15,9 @@
  *@
 
 @import config.ApplicationConfig
-@(selectPeriodForm: Form[SelectPeriod], periods: List[(String, String)], backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
+@import play.twirl.api.HtmlFormat
+
+@(selectPeriodForm: Form[SelectPeriod], periods: List[(String, String)],  serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
@@ -26,7 +28,8 @@
 }
 
 @atedMain(title = messages("ated.select-period.title"),
-          analyticsAdditionalJs = Some(analyticsJs)) {
+    serviceInfoContent = serviceInfoContent,
+    analyticsAdditionalJs = Some(analyticsJs)) {
 
   @pageHeadersAndError(backLink, "pre-heading", messages("ated.return-type.pre-header"), "header", messages("ated.select-period.header"),
     Some(atedErrorSummary(selectPeriodForm, "ated.select-period.error.general")))

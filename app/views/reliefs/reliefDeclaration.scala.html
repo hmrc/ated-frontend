@@ -16,7 +16,8 @@
 
 @import models._
 @import config.ApplicationConfig
-@(periodKey: Int, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
+@import play.twirl.api.HtmlFormat
+@(periodKey: Int, serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 @import uk.gov.hmrc.play.views.html.helpers._
 @import uk.gov.hmrc.play.views.helpers.MoneyPounds
 @import uk.gov.hmrc.play.views.formatting.Money._
@@ -26,7 +27,7 @@
 @import org.joda.time.format.DateTimeFormat
 @import org.joda.time.LocalDate
 
-@atedMain(title = messages("ated.relief-summary.declaration.title")) {
+@atedMain(title = messages("ated.relief-summary.declaration.title"), serviceInfoContent = serviceInfoContent) {
 
   @pageHeadersAndError(backLink, "pre-header", messages("ated.choose-reliefs.subheader"), "relief-declaration-confirmation-header", messages("ated.relief-summary.declaration.header"))
 

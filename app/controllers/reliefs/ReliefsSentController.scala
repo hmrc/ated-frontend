@@ -22,7 +22,7 @@ import controllers.auth.AuthAction
 import javax.inject.Inject
 import models.SubmitReturnsResponse
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{ReliefsService, SubscriptionDataService}
+import services.{ReliefsService, ServiceInfoService, SubscriptionDataService}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.AtedConstants._
 
@@ -31,6 +31,7 @@ import scala.concurrent.ExecutionContext
 class ReliefsSentController @Inject()(mcc : MessagesControllerComponents,
                                       authAction: AuthAction,
                                       subscriptionDataService: SubscriptionDataService,
+                                      serviceInfoService: ServiceInfoService,
                                       val dataCacheConnector: DataCacheConnector,
                                       val reliefsService: ReliefsService)
                                      (implicit val appConfig: ApplicationConfig)
@@ -41,11 +42,13 @@ class ReliefsSentController @Inject()(mcc : MessagesControllerComponents,
 
   def view(periodKey: Int): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
-      dataCacheConnector.fetchAndGetFormData[SubmitReturnsResponse](SubmitReturnsResponseFormId) map {
-        case Some(submitResponse) =>
-          Ok(views.html.reliefs.reliefsSent(periodKey, submitResponse))
-        case None =>
-          Redirect(controllers.reliefs.routes.ReliefDeclarationController.view(periodKey))
+      serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+        dataCacheConnector.fetchAndGetFormData[SubmitReturnsResponse](SubmitReturnsResponseFormId) map {
+          case Some(submitResponse) =>
+            Ok(views.html.reliefs.reliefsSent(periodKey, serviceInfoContent, submitResponse))
+          case None =>
+            Redirect(controllers.reliefs.routes.ReliefDeclarationController.view(periodKey))
+        }
       }
     }
   }

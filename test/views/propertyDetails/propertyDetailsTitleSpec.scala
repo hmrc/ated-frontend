@@ -18,13 +18,14 @@ package views.propertyDetails
 
 import config.ApplicationConfig
 import forms.PropertyDetailsForms._
-import testhelpers.MockAuthUtil
 import org.jsoup.Jsoup
-import org.scalatestplus.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.test.FakeRequest
+import play.twirl.api.Html
+import testhelpers.MockAuthUtil
 import utils.AtedUtils
 
 class propertyDetailsTitleSpec extends FeatureSpec with GuiceOneAppPerSuite with MockitoSugar
@@ -33,7 +34,7 @@ class propertyDetailsTitleSpec extends FeatureSpec with GuiceOneAppPerSuite with
   implicit val request = FakeRequest()
   implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
-implicit lazy val authContext = organisationStandardRetrievals
+  implicit lazy val authContext = organisationStandardRetrievals
 
   feature("The user can adit the title") {
 
@@ -44,7 +45,7 @@ implicit lazy val authContext = organisationStandardRetrievals
       Given("the client is adding a dates liable")
       When("The user views the page")
 
-      val html = views.html.propertyDetails.propertyDetailsTitle("1", 2015, propertyDetailsTitleForm, None, Some("backLink"))
+      val html = views.html.propertyDetails.propertyDetailsTitle("1", 2015, propertyDetailsTitleForm, None, Html(""), Some("backLink"))
 
       val document = Jsoup.parse(html.toString())
 
@@ -77,7 +78,7 @@ implicit lazy val authContext = organisationStandardRetrievals
       When("The user views the page")
 
       val html = views.html.propertyDetails.propertyDetailsTitle("1", 2015,
-        propertyDetailsTitleForm, Some(AtedUtils.EDIT_SUBMITTED), Some("http://backLink"))
+        propertyDetailsTitleForm, Some(AtedUtils.EDIT_SUBMITTED), Html(""), Some("http://backLink"))
 
       val document = Jsoup.parse(html.toString())
 

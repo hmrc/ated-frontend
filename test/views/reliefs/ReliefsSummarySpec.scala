@@ -17,13 +17,14 @@
 package views.reliefs
 
 import config.ApplicationConfig
-import testhelpers.MockAuthUtil
 import org.jsoup.Jsoup
-import org.scalatestplus.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.test.FakeRequest
+import play.twirl.api.Html
+import testhelpers.MockAuthUtil
 
 class ReliefsSummarySpec extends FeatureSpec with GuiceOneAppPerSuite with MockitoSugar with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
 
@@ -42,7 +43,7 @@ implicit lazy val authContext = organisationStandardRetrievals
       Given("the client has created a new relief return and is viewing the summary of entered info")
       When("The user views the page")
 
-      val html = views.html.reliefs.reliefsSummary(2015, None, canSubmit = false, isComplete = true, None)
+      val html = views.html.reliefs.reliefsSummary(2015, None, canSubmit = false, isComplete = true, Html(""), None)
 
       val document = Jsoup.parse(html.toString())
 

@@ -18,14 +18,13 @@ package views.html.reliefs
 
 import config.ApplicationConfig
 import forms.ReliefForms
-import testhelpers.{AtedViewSpec, MockAuthUtil}
 import models.{IsTaxAvoidance, StandardAuthRetrievals}
 import org.joda.time.LocalDate
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.data.Form
-import play.api.i18n.Messages
 import play.api.libs.json.Json
 import play.twirl.api.Html
+import testhelpers.{AtedViewSpec, MockAuthUtil}
 
 class IsAvoidanceSchemeSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil {
 
@@ -51,7 +50,7 @@ val periodKey = 2017
   "display error" when {
     "continuing without selecting an option" in {
       val formWithErrors = ReliefForms.isTaxAvoidanceForm.bind(Json.obj("isAvoidanceScheme" -> ""))
-      def view: Html = views.html.reliefs.avoidanceSchemeBeingUsed(periodKey,formWithErrors,periodStartDate,Some("backlink"))
+      def view: Html = views.html.reliefs.avoidanceSchemeBeingUsed(periodKey,formWithErrors,periodStartDate,Html(""),Some("backlink"))
 
       val errorDoc = doc(view)
 
@@ -63,5 +62,5 @@ val periodKey = 2017
 
   val isTaxAvoidanceForm: Form[IsTaxAvoidance] = ReliefForms.isTaxAvoidanceForm
 
-  override def view: Html = views.html.reliefs.avoidanceSchemeBeingUsed(periodKey, isTaxAvoidanceForm, periodStartDate, Some("backLink"))
+  override def view: Html = views.html.reliefs.avoidanceSchemeBeingUsed(periodKey, isTaxAvoidanceForm, periodStartDate, Html(""), Some("backLink"))
 }

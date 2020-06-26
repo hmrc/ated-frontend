@@ -24,6 +24,7 @@ import controllers.propertyDetails.{AddressLookupController, PropertyDetailsAddr
 import forms.AtedForms._
 import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import services.ServiceInfoService
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -33,6 +34,7 @@ class EditLiabilityTypeController @Inject()(mcc: MessagesControllerComponents,
                                             addressLookupController: AddressLookupController,
                                             authAction: AuthAction,
                                             disposePropertyController: DisposePropertyController,
+                                            serviceInfoService: ServiceInfoService,
                                             val dataCacheConnector: DataCacheConnector,
                                             val backLinkCacheConnector: BackLinkCacheConnector)
                                            (implicit val appConfig: ApplicationConfig)
@@ -46,10 +48,12 @@ class EditLiabilityTypeController @Inject()(mcc: MessagesControllerComponents,
   def editLiability(oldFormBundleNo: String, periodKey: Int, editAllowed: Boolean) : Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
-        Future.successful(
-          Ok(views.html.editLiability
-            .editLiability(editLiabilityReturnTypeForm, oldFormBundleNo, periodKey, editAllowed, returnToFormBundle(oldFormBundleNo, periodKey)))
-        )
+        serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+          Future.successful(
+            Ok(views.html.editLiability
+              .editLiability(editLiabilityReturnTypeForm, oldFormBundleNo, periodKey, editAllowed, serviceInfoContent, returnToFormBundle(oldFormBundleNo, periodKey)))
+          )
+        }
       }
     }
   }
@@ -57,31 +61,33 @@ class EditLiabilityTypeController @Inject()(mcc: MessagesControllerComponents,
   def continue(oldFormBundleNo: String, periodKey: Int, editAllowed: Boolean) : Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
-        editLiabilityReturnTypeForm.bindFromRequest.fold(
-          formWithErrors =>
-            Future.successful(BadRequest(
-              views.html.editLiability.editLiability(formWithErrors, oldFormBundleNo, periodKey, editAllowed, returnToFormBundle(oldFormBundleNo, periodKey)))),
-          data => {
-            val backLink = Some(controllers.editLiability.routes.EditLiabilityTypeController.editLiability(oldFormBundleNo, periodKey, editAllowed).url)
-            data.editLiabilityType match {
-              case Some("CR") =>
-                redirectWithBackLink(
-                  propertyDetailsAddressController.controllerId,
-                  controllers.propertyDetails.routes.PropertyDetailsAddressController.editSubmittedReturn(oldFormBundleNo),
-                  backLink,
-                  List(addressLookupController.controllerId)
-                )
-              case Some("DP") =>
-                redirectWithBackLink(
-                  disposePropertyController.controllerId,
-                  controllers.editLiability.routes.DisposePropertyController.view(oldFormBundleNo),
-                  backLink
-                )
-              case _ =>
-                Future.successful(Redirect(controllers.editLiability.routes.EditLiabilityTypeController.editLiability(oldFormBundleNo, periodKey, editAllowed)))
+        serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+          editLiabilityReturnTypeForm.bindFromRequest.fold(
+            formWithErrors =>
+              Future.successful(BadRequest(
+                views.html.editLiability.editLiability(formWithErrors, oldFormBundleNo, periodKey, editAllowed, serviceInfoContent, returnToFormBundle(oldFormBundleNo, periodKey)))),
+            data => {
+              val backLink = Some(controllers.editLiability.routes.EditLiabilityTypeController.editLiability(oldFormBundleNo, periodKey, editAllowed).url)
+              data.editLiabilityType match {
+                case Some("CR") =>
+                  redirectWithBackLink(
+                    propertyDetailsAddressController.controllerId,
+                    controllers.propertyDetails.routes.PropertyDetailsAddressController.editSubmittedReturn(oldFormBundleNo),
+                    backLink,
+                    List(addressLookupController.controllerId)
+                  )
+                case Some("DP") =>
+                  redirectWithBackLink(
+                    disposePropertyController.controllerId,
+                    controllers.editLiability.routes.DisposePropertyController.view(oldFormBundleNo),
+                    backLink
+                  )
+                case _ =>
+                  Future.successful(Redirect(controllers.editLiability.routes.EditLiabilityTypeController.editLiability(oldFormBundleNo, periodKey, editAllowed)))
+              }
             }
-          }
-        )
+          )
+        }
       }
     }
   }

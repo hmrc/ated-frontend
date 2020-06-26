@@ -24,14 +24,17 @@ import javax.inject.Inject
 import play.api.Logger
 import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{DelegationService, ReliefsService}
+import play.twirl.api.Html
+import services.{DelegationService, ReliefsService, ServiceInfoService}
 import uk.gov.hmrc.http.ForbiddenException
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+
 import scala.concurrent.{ExecutionContext, Future}
 
 
 class ReliefDeclarationController @Inject()(mcc: MessagesControllerComponents,
                                             authAction: AuthAction,
+                                            serviceInfoService: ServiceInfoService,
                                             val reliefsService: ReliefsService,
                                             val delegationService: DelegationService,
                                             val dataCacheConnector: DataCacheConnector,
@@ -46,10 +49,12 @@ class ReliefDeclarationController @Inject()(mcc: MessagesControllerComponents,
   def view(periodKey: Int): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
-        currentBackLink.flatMap(
-          backLink =>
-            Future.successful(Ok(views.html.reliefs.reliefDeclaration(periodKey, backLink)))
-        )
+        serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+          currentBackLink.flatMap(
+            backLink =>
+              Future.successful(Ok(views.html.reliefs.reliefDeclaration(periodKey, serviceInfoContent, backLink)))
+          )
+        }
       }
     }
   }
@@ -57,16 +62,19 @@ class ReliefDeclarationController @Inject()(mcc: MessagesControllerComponents,
   def submit(periodKey: Int): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
-        reliefsService.submitDraftReliefs(authContext.atedReferenceNumber, periodKey) flatMap { response =>
-          response.status match {
-            case OK => Future.successful(Redirect(controllers.reliefs.routes.ReliefsSentController.view(periodKey)))
-            case BAD_REQUEST if response.body.contains("Agent not Valid") =>
-              Future.successful(BadRequest(views.html.global_error("ated.client-problem.title",
-                "ated.client-problem.header", "ated.client-problem.message", None,
-                Some(appConfig.agentRedirectedToMandate), Some("ated.client-problem.HrefMessage"), None, appConfig)))
-            case NOT_FOUND => Future.successful(Redirect(controllers.reliefs.routes.ReliefsSentController.view(periodKey)))
+          reliefsService.submitDraftReliefs(authContext.atedReferenceNumber, periodKey) flatMap { response =>
+            response.status match {
+              case OK => Future.successful(Redirect(controllers.reliefs.routes.ReliefsSentController.view(periodKey)))
+              case BAD_REQUEST if response.body.contains("Agent not Valid") => {
+                serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+                  Future.successful(BadRequest(views.html.global_error("ated.client-problem.title",
+                    "ated.client-problem.header", "ated.client-problem.message", None,
+                    Some(appConfig.agentRedirectedToMandate), Some("ated.client-problem.HrefMessage"), None, serviceInfoContent, appConfig)))
+                }
+              }
+              case NOT_FOUND => Future.successful(Redirect(controllers.reliefs.routes.ReliefsSentController.view(periodKey)))
+            }
           }
-        }
       }
     } recover {
       case _: ForbiddenException     =>

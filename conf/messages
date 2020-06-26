@@ -28,7 +28,6 @@ ated.your-ated-online-service = Your ATED summary
 ated.details-for = details for
 ated.address = Address
 ated.sign-out = Sign out
-ated.generic.bta_link = Business tax account home
 ated.unknow-amount.text = Not yet calculated
 ated.screen-reader.section-name = You have logged in as:
 ated.screen-reader.section = This section is:
@@ -1526,3 +1525,9 @@ ated.property-details-value.notNewBuildDate.error.too-early = The property acqui
 ated.property-details-value.valuationDate.error.too-early = The property valuation date cannot be before 1 April {0}
 
 
+##### BTA BANNER
+
+btaNavLinks.home = Home
+btaNavLinks.manageAccount = Manage account
+btaNavLinks.messages = Messages
+btaNavLinks.helpAndContact = Help and contact

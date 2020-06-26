@@ -18,7 +18,6 @@ package services
 
 import builders.DisposeLiabilityReturnBuilder
 import connectors.{AtedConnector, DataCacheConnector}
-import testhelpers.MockAuthUtil
 import models._
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
@@ -28,6 +27,7 @@ import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.libs.json.{JsValue, Json}
 import play.api.test.Helpers._
+import testhelpers.MockAuthUtil
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import utils.AtedConstants._
 

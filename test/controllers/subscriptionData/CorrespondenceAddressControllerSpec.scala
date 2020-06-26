@@ -19,11 +19,9 @@ package controllers.subscriptionData
 import java.util.UUID
 
 import builders.{SessionBuilder, TitleBuilder}
-import com.fasterxml.jackson.annotation.JsonInclude.Include
 import config.ApplicationConfig
 import connectors.DataCacheConnector
 import controllers.auth.AuthAction
-import testhelpers.MockAuthUtil
 import models._
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
@@ -33,13 +31,16 @@ import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.Environment
+import play.api.i18n.{Lang, MessagesApi, MessagesImpl}
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{AnyContentAsJson, MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.{DetailsService, SubscriptionDataService}
+import services.{DetailsService, ServiceInfoService, SubscriptionDataService}
+import testhelpers.MockAuthUtil
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
+import views.html.BtaNavigationLinks
 
 import scala.concurrent.Future
 
@@ -52,6 +53,10 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
   val mockSubscriptionDataService: SubscriptionDataService = mock[SubscriptionDataService]
   val mockDetailsService: DetailsService = mock[DetailsService]
   val mockEnvironment: Environment = app.injector.instanceOf[Environment]
+    val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
+  val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
+  val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
 
   class Setup {
 
@@ -65,6 +70,7 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
       mockMcc,
       mockAuthAction,
       mockSubscriptionDataService,
+      mockServiceInfoService,
       mockEnvironment
     )
 
@@ -72,6 +78,7 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
+      when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(btaNavigationLinksView()(messages,mockAppConfig)))
       when(mockSubscriptionDataService.getCorrespondenceAddress(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(companyDetails))
       val result = testCorrespondenceAddressController.editAddress().apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
@@ -155,6 +162,7 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
 
               document.title() must be (TitleBuilder.buildTitle("Edit your correspondence address"))
               document.getElementById("correspondence-address-header").text() must include("Edit your correspondence address")
+              assert(document.getElementById("service-info-list").text() === "Home Manage account Messages Help and contact")
               document.getElementById("addressLine1").attr("value") must be("")
               document.getElementById("addressLine2").attr("value") must be("")
               document.getElementById("addressLine3").attr("value") must be("")

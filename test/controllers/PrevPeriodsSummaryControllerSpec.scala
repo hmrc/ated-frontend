@@ -31,17 +31,18 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
+import play.api.i18n.{Lang, MessagesApi, MessagesImpl}
 import play.api.mvc.{MessagesControllerComponents, Result}
 import play.api.test.Helpers._
 import play.twirl.api.Html
-import services.{DateService, DetailsService, SubscriptionDataService, SummaryReturnsService}
+import services._
 import testhelpers.MockAuthUtil
 import uk.gov.hmrc.auth.core.retrieve.~
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, UserId}
 import uk.gov.hmrc.play.partials.HtmlPartial
-import utils.AtedConstants._
 import utils.TestModels
+import views.html.BtaNavigationLinks
 
 import scala.concurrent.Future
 
@@ -57,6 +58,10 @@ class PrevPeriodsSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSu
   val mockMandateFrontendConnector: AgentClientMandateFrontendConnector = mock[AgentClientMandateFrontendConnector]
   val mockDetailsService: DetailsService = mock[DetailsService]
   val mockDateService: DateService = mock[DateService]
+    val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
+  val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
+  val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
   when(mockDateService.now()).thenReturn(LocalDate.now())
   when(mockAppConfig.atedPeakStartDay).thenReturn("16")
 
@@ -78,6 +83,7 @@ class PrevPeriodsSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSu
       mockMandateFrontendConnector,
       mockDetailsService,
       mockDataCacheConnector,
+      mockServiceInfoService,
       mockDateService
     )
 
@@ -97,6 +103,7 @@ class PrevPeriodsSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSu
         .thenReturn(Future.successful(HtmlPartial.Success(Some("thepartial"), Html(""))))
       when(mockDetailsService.cacheClientReference(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful("XN1200000100001"))
+      when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Html("")))
 
       val result = testPrevPreviousSummaryController.view().apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)

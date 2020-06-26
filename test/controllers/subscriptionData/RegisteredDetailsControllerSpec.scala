@@ -22,7 +22,6 @@ import builders.{SessionBuilder, TitleBuilder}
 import config.ApplicationConfig
 import connectors.DataCacheConnector
 import controllers.auth.AuthAction
-import testhelpers.MockAuthUtil
 import models._
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
@@ -32,13 +31,16 @@ import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.Environment
+import play.api.i18n.{Lang, MessagesApi, MessagesImpl}
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{AnyContentAsJson, MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.{DetailsService, SubscriptionDataService}
+import services.{DetailsService, ServiceInfoService, SubscriptionDataService}
+import testhelpers.MockAuthUtil
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
+import views.html.BtaNavigationLinks
 
 import scala.concurrent.Future
 
@@ -52,6 +54,10 @@ class RegisteredDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSui
   val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
   val mockDetailsService: DetailsService = mock[DetailsService]
   val mockSubscriptionDataService: SubscriptionDataService = mock[SubscriptionDataService]
+    val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
+  val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
+  val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
 
 class Setup {
 
@@ -65,6 +71,7 @@ class Setup {
       mockMcc,
       mockAuthAction,
       mockSubscriptionDataService,
+      mockServiceInfoService,
       mockEnvironment
   )
 
@@ -73,6 +80,7 @@ class Setup {
     val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
     setAuthMocks(authMock)
     when(mockSubscriptionDataService.getRegisteredDetails(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(registeredDetails))
+    when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(btaNavigationLinksView()(messages,mockAppConfig)))
 
     val result = testRegisteredDetailsController.edit().apply(SessionBuilder.buildRequestWithSession(userId))
 
@@ -138,6 +146,7 @@ class Setup {
               val document = Jsoup.parse(contentAsString(result))
 
               document.title() must be (TitleBuilder.buildTitle("Edit business name and address"))
+              assert(document.getElementById("service-info-list").text() === "Home Manage account Messages Help and contact")
               document.getElementById("registered-details-header").text() must be("Edit business name and address")
               document.getElementById("registered-address-line-1").attr("value") must be("")
               document.getElementById("registered-address-line-2").attr("value") must be("")

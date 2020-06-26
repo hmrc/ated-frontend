@@ -25,7 +25,7 @@ import javax.inject.Inject
 import models.TaxAvoidance
 import play.api.Logger
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.ReliefsService
+import services.{ReliefsService, ServiceInfoService}
 import uk.gov.hmrc.http.ForbiddenException
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
@@ -34,6 +34,7 @@ import scala.concurrent.ExecutionContext
 class AvoidanceSchemesController @Inject()(mcc: MessagesControllerComponents,
                                            reliefsSummaryController: ReliefsSummaryController,
                                            authAction: AuthAction,
+                                           serviceInfoService: ServiceInfoService,
                                            val reliefsService: ReliefsService,
                                            val dataCacheConnector: DataCacheConnector,
                                            val backLinkCacheConnector: BackLinkCacheConnector)
@@ -46,24 +47,26 @@ class AvoidanceSchemesController @Inject()(mcc: MessagesControllerComponents,
 
   def view(periodKey: Int): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
-      validatePeriodKey(periodKey) {
-        reliefsService.retrieveDraftReliefs(authContext.atedReferenceNumber, periodKey).flatMap {
-          case Some(x) if x.reliefs.isAvoidanceScheme.contains(true) =>
-            currentBackLink.map(backLink =>
-              Ok(views.html.reliefs.avoidanceSchemes(x.periodKey, taxAvoidanceForm.fill(x.taxAvoidance), backLink)(Some(x)))
-            )
-          case _ =>
-            reliefsService.saveDraftTaxAvoidance(authContext.atedReferenceNumber, periodKey, TaxAvoidance())
-            forwardBackLinkToNextPage(
-              reliefsSummaryController.controllerId,
-              controllers.reliefs.routes.ReliefsSummaryController.view(periodKey)
-            )
+      serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+        validatePeriodKey(periodKey) {
+          reliefsService.retrieveDraftReliefs(authContext.atedReferenceNumber, periodKey).flatMap {
+            case Some(x) if x.reliefs.isAvoidanceScheme.contains(true) =>
+              currentBackLink.map(backLink =>
+                Ok(views.html.reliefs.avoidanceSchemes(x.periodKey, taxAvoidanceForm.fill(x.taxAvoidance), serviceInfoContent, backLink)(Some(x)))
+              )
+            case _ =>
+              reliefsService.saveDraftTaxAvoidance(authContext.atedReferenceNumber, periodKey, TaxAvoidance())
+              forwardBackLinkToNextPage(
+                reliefsSummaryController.controllerId,
+                controllers.reliefs.routes.ReliefsSummaryController.view(periodKey)
+              )
+          }
         }
+      } recover {
+        case _: ForbiddenException =>
+          Logger.warn("[AvoidanceSchemesController][view] Forbidden exception")
+          authAction.unauthorisedUrl()
       }
-    } recover {
-      case _: ForbiddenException     =>
-        Logger.warn("[AvoidanceSchemesController][view] Forbidden exception")
-        authAction.unauthorisedUrl()
     }
   }
 
@@ -75,9 +78,10 @@ class AvoidanceSchemesController @Inject()(mcc: MessagesControllerComponents,
             formWithError => {
               for {
                 backLink <- currentBackLink
+                serviceInfoContent <- serviceInfoService.getPartial
                 retrievedData <- reliefsService.retrieveDraftReliefs(authContext.atedReferenceNumber, periodKey)
               } yield {
-                BadRequest(views.html.reliefs.avoidanceSchemes(periodKey, formWithError, backLink)(retrievedData))
+                BadRequest(views.html.reliefs.avoidanceSchemes(periodKey, formWithError, serviceInfoContent, backLink)(retrievedData))
               }
             },
             taxAvoidance => {

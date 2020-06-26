@@ -16,22 +16,36 @@
 
 package config
 
-import javax.inject.Inject
-import play.api.Environment
+import config.{ConfigKeys => Keys}
+import javax.inject.{Inject, Singleton}
+import play.api.{Configuration, Environment}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import utils.CountryCodeUtils
 
 import scala.util.Try
 
+trait AppConfig {
+  val btaBaseUrl: String
+  val btaHomeUrl: String
+  val btaMessagesUrl: String
+  val btaManageAccountUrl: String
+  val btaHelpAndContactUrl: String
+}
+
 class ApplicationConfig @Inject()(val conf: ServicesConfig,
-                                  val environment: Environment) extends CountryCodeUtils {
+                                  val environment: Environment) extends CountryCodeUtils with AppConfig {
 
   private def loadConfig(key: String) = conf.getString(key)
 
   private lazy val contactHost = conf.getString("contact-frontend.host")
+  private lazy val helpAndContactFrontendUrl: String = conf.getString(Keys.helpAndContactFrontendBase)
 
   val contactFormServiceIdentifier = "ATED"
-
+  override lazy val btaBaseUrl: String = conf.baseUrl(Keys.businessTaxAccountBase)
+  override lazy val btaHomeUrl: String = conf.getString(Keys.businessTaxAccountHost) + conf.getString(Keys.businessTaxAccountUrl)
+  override lazy val btaMessagesUrl: String = btaHomeUrl + conf.getString(Keys.businessTaxAccountMessagesUrl)
+  override lazy val btaManageAccountUrl: String = btaHomeUrl + conf.getString(Keys.businessTaxAccountManageAccountUrl)
+  override lazy val btaHelpAndContactUrl: String = helpAndContactFrontendUrl + conf.getString(Keys.helpAndContactHelpUrl)
   lazy val assetsPrefix: String = loadConfig("assets.url") + loadConfig("assets.version")
   lazy val betaFeedbackUrl = s"$contactHost/contact/beta-feedback"
   lazy val betaFeedbackUnauthenticatedUrl = s"$contactHost/contact/beta-feedback-unauthenticated"
@@ -64,7 +78,6 @@ class ApplicationConfig @Inject()(val conf: ServicesConfig,
   lazy val subscriptionStartPage: String = conf.getString("microservice.services.ated-subscription.serviceRedirectUrl")
   lazy val clientApproveAgentMandate: String = conf.getString("microservice.services.agent-client-mandate-frontend.atedClientApproveAgentUri")
   lazy val agentRedirectedToMandate: String = conf.getString("microservice.services.agent-client-mandate-frontend.atedAgentJourneyStartUri")
-  lazy val businessTaxAccountPage: String = conf.getString("microservice.services.auth.business-tax-account.serviceRedirectUrl")
   lazy val atedPeakStartDay: String = conf.getString(key = "atedPeakStartDay")
 
 }

@@ -30,14 +30,16 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
+import play.api.i18n.{Lang, MessagesApi, MessagesImpl}
 import play.api.mvc.{MessagesControllerComponents, Result}
 import play.api.test.Helpers.{SEE_OTHER, redirectLocation, status, _}
-import services.{AddressLookupService, ChangeLiabilityReturnService, PropertyDetailsCacheNotFoundResponse, PropertyDetailsCacheSuccessResponse, PropertyDetailsService}
+import services._
 import testhelpers.MockAuthUtil
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.audit.DefaultAuditConnector
 import utils.AtedConstants
+import views.html.BtaNavigationLinks
 
 import scala.concurrent.Future
 
@@ -52,6 +54,10 @@ class ConfirmAddressControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
   val mockChangeLiabilityReturnService: ChangeLiabilityReturnService = mock[ChangeLiabilityReturnService]
   val mockPropertyDetailsService: PropertyDetailsService = mock[PropertyDetailsService]
   val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
+    val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
+  val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
+  val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
 
 
   class Setup {
@@ -68,6 +74,7 @@ class ConfirmAddressControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
       mockAddressLookupService,
       mockAuthAction,
       mockChangeLiabilityReturnService,
+      mockServiceInfoService,
       mockBackLinkCacheConnector,
       mockPropertyDetailsService,
       mockDataCacheConnector
@@ -85,6 +92,7 @@ class ConfirmAddressControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       noDelegationModelAuthMocks(authMock)
+      when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(btaNavigationLinksView()(messages,mockAppConfig)))
       when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
         (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
       when(mockPropertyDetailsService.retrieveDraftPropertyDetails(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())) thenReturn {
@@ -213,6 +221,7 @@ class ConfirmAddressControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
               document.title() must be(TitleBuilder.buildTitle("Confirm address"))
+              assert(document.getElementById("service-info-list").text() === "Home Manage account Messages Help and contact")
               document.getElementById("editAddress").text() must be("Edit address")
               document.getElementById("submit").text() must be("Confirm and continue")
               document.getElementById("address-line1").text() must be("addr1")

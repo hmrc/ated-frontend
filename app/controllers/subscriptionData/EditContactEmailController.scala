@@ -21,13 +21,14 @@ import controllers.auth.AuthAction
 import forms.AtedForms._
 import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.SubscriptionDataService
+import services.{ServiceInfoService, SubscriptionDataService}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
 import scala.concurrent.{ExecutionContext, Future}
 
 class EditContactEmailController @Inject()(mcc: MessagesControllerComponents,
                                            authAction: AuthAction,
+                                           serviceInfoService: ServiceInfoService,
                                            subscriptionDataService: SubscriptionDataService)
                                           (implicit val appConfig: ApplicationConfig)
 
@@ -37,14 +38,16 @@ class EditContactEmailController @Inject()(mcc: MessagesControllerComponents,
 
   def edit : Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
-      for {
-        emailWithConsent <- subscriptionDataService.getEmailWithConsent
-      } yield {
-        val populatedForm = emailWithConsent match {
-          case Some(x) => editContactDetailsEmailForm.fill(x)
-          case _ => editContactDetailsEmailForm
+      serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+        for {
+          emailWithConsent <- subscriptionDataService.getEmailWithConsent
+        } yield {
+          val populatedForm = emailWithConsent match {
+            case Some(x) => editContactDetailsEmailForm.fill(x)
+            case _ => editContactDetailsEmailForm
+          }
+          Ok(views.html.subcriptionData.editContactEmail(populatedForm, serviceInfoContent, getBackLink))
         }
-        Ok(views.html.subcriptionData.editContactEmail(populatedForm, getBackLink))
       }
     }
   }
@@ -52,17 +55,18 @@ class EditContactEmailController @Inject()(mcc: MessagesControllerComponents,
 
   def submit : Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
-
-      validateEmail(editContactDetailsEmailForm.bindFromRequest).fold(
-        formWithErrors => Future.successful(BadRequest(views.html.subcriptionData.editContactEmail(formWithErrors, getBackLink))),
-        editedClientData => {
-          for {
-            _ <- subscriptionDataService.editEmailWithConsent(editedClientData)
-          } yield {
-            Redirect(controllers.subscriptionData.routes.CompanyDetailsController.view())
+      serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+        validateEmail(editContactDetailsEmailForm.bindFromRequest).fold(
+          formWithErrors => Future.successful(BadRequest(views.html.subcriptionData.editContactEmail(formWithErrors, serviceInfoContent, getBackLink))),
+          editedClientData => {
+            for {
+              _ <- subscriptionDataService.editEmailWithConsent(editedClientData)
+            } yield {
+              Redirect(controllers.subscriptionData.routes.CompanyDetailsController.view())
+            }
           }
-        }
-      )
+        )
+      }
     }
   }
 

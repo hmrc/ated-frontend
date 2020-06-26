@@ -22,7 +22,7 @@ import controllers.BackLinkController
 import controllers.auth.{AuthAction, ClientHelper}
 import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{DisposeLiabilityReturnService, SubscriptionDataService}
+import services.{DisposeLiabilityReturnService, ServiceInfoService, SubscriptionDataService}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -32,6 +32,7 @@ class DisposeLiabilitySummaryController @Inject()(mcc: MessagesControllerCompone
                                                   subscriptionDataService: SubscriptionDataService,
                                                   authAction: AuthAction,
                                                   disposeLiabilityDeclarationController: DisposeLiabilityDeclarationController,
+                                                  serviceInfoService: ServiceInfoService,
                                                   val dataCacheConnector: DataCacheConnector,
                                                   val backLinkCacheConnector: BackLinkCacheConnector)
                                                  (implicit val appConfig: ApplicationConfig)
@@ -44,12 +45,14 @@ class DisposeLiabilitySummaryController @Inject()(mcc: MessagesControllerCompone
   def view(oldFormBundleNo: String): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
-        disposeLiabilityReturnService.retrieveLiabilityReturn(oldFormBundleNo) flatMap {
-          case Some(x) =>
-            currentBackLink.map { backLink =>
-              Ok(views.html.editLiability.disposeLiabilitySummary(x, backLink))
-            }
-          case None => Future.successful(Redirect(controllers.routes.AccountSummaryController.view()))
+        serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+          disposeLiabilityReturnService.retrieveLiabilityReturn(oldFormBundleNo) flatMap {
+            case Some(x) =>
+              currentBackLink.map { backLink =>
+                Ok(views.html.editLiability.disposeLiabilitySummary(x, serviceInfoContent, backLink))
+              }
+            case None => Future.successful(Redirect(controllers.routes.AccountSummaryController.view()))
+          }
         }
       }
     }

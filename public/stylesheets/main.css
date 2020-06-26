@@ -486,7 +486,7 @@ li.inactive {
 
 .form-field--error .error-notification {
     font-weight: 700;
-    
+
 }
 
 
@@ -716,12 +716,6 @@ table th {
         margin-left: 0px;
         margin-right: 0px;
     }
-}
-
-.bta-link {
-    margin-top:20px;
-    display:inline-block;
-    float: left;
 }
 
 /*Create additional grid unit*/

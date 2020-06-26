@@ -18,8 +18,9 @@
 @import config.ApplicationConfig
 @import _root_.utils.PeriodUtils._
 @import views.html.helpers._
-
+@import play.twirl.api.HtmlFormat
 @(periodKey: Int, periodSummaries: Option[PeriodSummaryReturns], organisationName: Option[String],
+        serviceInfoContent: Html = HtmlFormat.empty,
     backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages,
     request: Request[AnyContent], appConfig: ApplicationConfig)
 
@@ -29,7 +30,7 @@
 }
 
 @atedMain(title = messages("ated.period-summary.title", periodStartDate(periodKey).getYear.toString,
-    periodEndDate(periodKey).getYear.toString), analyticsAdditionalJs = Some(analyticsJs)){
+    periodEndDate(periodKey).getYear.toString), serviceInfoContent = serviceInfoContent, analyticsAdditionalJs = Some(analyticsJs)){
 
     @pageHeadersAndError(backLink, "period-summary-subheader", organisationName.getOrElse(""), "period-summary-header",
         messages("ated.period-summary.header", periodStartDate(periodKey).toString(messages("ated.date-format.summary")),

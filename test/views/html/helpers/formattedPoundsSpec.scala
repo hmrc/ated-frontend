@@ -20,8 +20,8 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.scalatestplus.play.guice.GuiceOneAppPerTest
 import play.api.i18n.{Lang, Messages, MessagesApi, MessagesImpl}
-import uk.gov.hmrc.play.test.UnitSpec
 import play.api.test.Helpers.{contentAsString, defaultAwaitTimeout}
+import uk.gov.hmrc.play.test.UnitSpec
 
 class formattedPoundsSpec extends UnitSpec with GuiceOneAppPerTest {
 

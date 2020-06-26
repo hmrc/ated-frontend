@@ -15,6 +15,7 @@
  *@
 
 @import config.ApplicationConfig
+@import play.twirl.api.HtmlFormat
 @(pageTitle: String,
   heading: String,
   message: String,
@@ -22,13 +23,13 @@
   href: Option[String],
   hrefMessage: Option[String],
   postHrefMessage: Option[String],
+  serviceInfoContent: Html = HtmlFormat.empty,
   appConfig: ApplicationConfig)(implicit request: Request[_], messages: Messages)
 
 @secondParagraph = @{message2.getOrElse("")}
 @hrefLink = @{href.getOrElse("")}
 @hrefMessages = @{hrefMessage.getOrElse("")}
 @postHref = @{postHrefMessage.getOrElse("")}
-
 
 @contentHeader = {
 <h1 id="header" class="column-two-thirds">@messages(heading)</h1>
@@ -43,4 +44,4 @@
  <p class="column-two-thirds" id="message2">@messages(secondParagraph)</p>
 }
 
-@global_error_wrapper(appConfig = appConfig, title = messages(pageTitle), contentHeader = Some(contentHeader), mainContent = mainContent)
+@global_error_wrapper(appConfig = appConfig, title = messages(pageTitle), contentHeader = Some(contentHeader), serviceInfoContent = serviceInfoContent, mainContent = mainContent)

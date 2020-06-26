@@ -18,15 +18,15 @@ package views
 
 import config.ApplicationConfig
 import forms.AtedForms.selectPeriodForm
-import testhelpers.MockAuthUtil
 import models.StandardAuthRetrievals
 import org.jsoup.Jsoup
-import org.scalatestplus.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.test.FakeRequest
-import utils.PeriodUtils
+import play.twirl.api.Html
+import testhelpers.MockAuthUtil
 
 class selectPeriodSpec extends FeatureSpec with GuiceOneServerPerSuite with MockitoSugar
   with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
@@ -48,7 +48,7 @@ class selectPeriodSpec extends FeatureSpec with GuiceOneServerPerSuite with Mock
       When("The user views the page")
 
       val periods = List("2015" -> "2015 to 2016", "2016" -> "2016 to 2017")
-      val html = views.html.selectPeriod(selectPeriodForm, periods, Some("http://backLink"))
+      val html = views.html.selectPeriod(selectPeriodForm, periods, Html(""), Some("http://backLink"))
 
       val document = Jsoup.parse(html.toString())
 

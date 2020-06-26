@@ -22,7 +22,6 @@ import builders._
 import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.AuthAction
-import testhelpers.MockAuthUtil
 import models._
 import org.joda.time.DateTime
 import org.jsoup.Jsoup
@@ -32,13 +31,16 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
+import play.api.i18n.{Lang, MessagesApi, MessagesImpl}
 import play.api.mvc.{MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.DisposeLiabilityReturnService
+import services.{DisposeLiabilityReturnService, ServiceInfoService}
+import testhelpers.MockAuthUtil
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.{HeaderCarrier, UserId}
 import utils.AtedConstants
+import views.html.BtaNavigationLinks
 
 import scala.concurrent.Future
 
@@ -49,6 +51,10 @@ class DisposeLiabilityDeclarationControllerSpec extends PlaySpec with GuiceOneSe
   val mockDisposeLiabilityReturnService: DisposeLiabilityReturnService = mock[DisposeLiabilityReturnService]
   val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
   val mockBackLinkCacheConnector: BackLinkCacheConnector = mock[BackLinkCacheConnector]
+    val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
+  val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
+  val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
 
   val oldFormBundleNum = "123456789012"
   val newFormBundleNum = "123456789011"
@@ -65,6 +71,7 @@ class Setup {
     mockMcc,
     mockDisposeLiabilityReturnService,
     mockAuthAction,
+    mockServiceInfoService,
     mockDataCacheConnector,
     mockBackLinkCacheConnector
   )
@@ -73,6 +80,7 @@ class Setup {
     val userId = s"user-${UUID.randomUUID}"
     val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
     noDelegationModelAuthMocks(authMock)
+    when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(btaNavigationLinksView()(messages,mockAppConfig)))
     when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
       (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
     when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
@@ -123,6 +131,7 @@ class Setup {
           status(result) must be(OK)
           val document = Jsoup.parse(contentAsString(result))
           document.title must be("Amended return declaration - GOV.UK")
+          assert(document.getElementById("service-info-list").text() === "Home Manage account Messages Help and contact")
           document.getElementById("dispose-liability-declaration-confirmation-header").text() must be("Amended return declaration")
           document.getElementById("dispose-liability-declaration-before-declaration-text")
             .text() must be("Before you can submit your return to HMRC you must read and agree to the following statement. " +

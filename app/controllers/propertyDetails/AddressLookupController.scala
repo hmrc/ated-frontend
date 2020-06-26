@@ -41,6 +41,7 @@ class AddressLookupController @Inject()(mcc: MessagesControllerComponents,
                                         addressLookupService: AddressLookupService,
                                         authAction: AuthAction,
                                         confirmAddressController: ConfirmAddressController,
+                                        serviceInfoService: ServiceInfoService,
                                         val backLinkCacheConnector: BackLinkCacheConnector,
                                         val propertyDetailsService: PropertyDetailsService,
                                         val dataCacheConnector: DataCacheConnector)
@@ -57,9 +58,11 @@ extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper wi
   def view(id: Option[String], periodKey: Int, mode: Option[String] = None): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
-        currentBackLink.map(backLink =>
-          Ok(views.html.propertyDetails.addressLookup(id, periodKey, addressLookupForm, mode, backLink))
-        )
+        serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+          currentBackLink.map(backLink =>
+            Ok(views.html.propertyDetails.addressLookup(id, periodKey, addressLookupForm, mode, serviceInfoContent, backLink))
+          )
+        }
       }
     }
   }
@@ -67,21 +70,23 @@ extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper wi
   def find(id: Option[String], periodKey: Int, mode: Option[String] = None): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
-        val backLink = Some(controllers.routes.ExistingReturnQuestionController.view(periodKey, "charge").url)
-        addressLookupForm.bindFromRequest.fold(
-          formWithError => {
-              Future.successful(BadRequest(views.html.propertyDetails.addressLookup(id, periodKey, formWithError, mode, backLink))
-            )
-          },
-          searchCriteria => {
-            val trimmedPostCode = AtedUtils.formatMandatoryPostCode(searchCriteria.postcode)
-            val trimmedSearchCriteria = searchCriteria.copy(postcode = trimmedPostCode)
-            addressLookupService.find(trimmedSearchCriteria).flatMap { results =>
-              val backToViewLink = Some(routes.AddressLookupController.view(id, periodKey, mode).url)
-              Future.successful(Ok(views.html.propertyDetails.addressLookupResults(id, periodKey, addressSelectedForm, results, mode, backToViewLink)))
+        serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+          val backLink = Some(controllers.routes.ExistingReturnQuestionController.view(periodKey, "charge").url)
+          addressLookupForm.bindFromRequest.fold(
+            formWithError => {
+              Future.successful(BadRequest(views.html.propertyDetails.addressLookup(id, periodKey, formWithError, mode, serviceInfoContent, backLink))
+              )
+            },
+            searchCriteria => {
+              val trimmedPostCode = AtedUtils.formatMandatoryPostCode(searchCriteria.postcode)
+              val trimmedSearchCriteria = searchCriteria.copy(postcode = trimmedPostCode)
+              addressLookupService.find(trimmedSearchCriteria).flatMap { results =>
+                val backToViewLink = Some(routes.AddressLookupController.view(id, periodKey, mode).url)
+                Future.successful(Ok(views.html.propertyDetails.addressLookupResults(id, periodKey, addressSelectedForm, results, mode, serviceInfoContent, backToViewLink)))
+              }
             }
-          }
-        )
+          )
+        }
       }
     }
   }
@@ -106,49 +111,51 @@ extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper wi
   def save(id: Option[String], periodKey: Int, mode: Option[String] = None): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
-        val backToViewLink = Some(routes.AddressLookupController.view(id, periodKey, mode).url)
-        addressSelectedForm.bindFromRequest.fold(
-          formWithError => {
-            addressLookupService.retrieveCachedSearchResults.map { results =>
-              val searchResults = results.fold(new AddressSearchResults(AddressLookup("", None), Nil))(a => a)
-              BadRequest(views.html.propertyDetails.addressLookupResults(id, periodKey, formWithError, searchResults, mode, backToViewLink))
-            }
-          },
-          searchCriteria => {
-            addressLookupService.findById(searchCriteria.selected.get).flatMap(foundProperty =>
-              (id, foundProperty) match {
-                case (Some(x), Some(found)) =>
-                  propertyDetailsService.saveDraftPropertyDetailsAddress(x, found).flatMap(
-                    _ => {
-                      auditInputAddress(found)
-                      redirectWithBackLink(
-                        confirmAddressId,
-                        controllers.propertyDetails.routes.ConfirmAddressController.view(x, periodKey, mode),
-                        backToViewLink
-                      )
-                    }
-                  )
-                case (None, Some(found)) =>
-                  propertyDetailsService.createDraftPropertyDetailsAddress(periodKey, found).flatMap {
-                    newId =>
-                      auditInputAddress(found)
-                      redirectWithBackLink(
-                        confirmAddressId,
-                        controllers.propertyDetails.routes.ConfirmAddressController.view(newId, periodKey,mode),
-                        backToViewLink
-                      )
-                  }
-                case _ =>
-                  addressLookupService.retrieveCachedSearchResults.map { results =>
-                    val searchResults = results.fold(new AddressSearchResults(AddressLookup("", None), Nil))(a => a)
-                    val errorForm = addressSelectedForm.fill(searchCriteria)
-                      .withError(FormError("selected", Messages("ated.address-lookup.error.general.selected-address")))
-                    BadRequest(views.html.propertyDetails.addressLookupResults(id, periodKey, errorForm, searchResults, mode, backToViewLink))
-                  }
+        serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+          val backToViewLink = Some(routes.AddressLookupController.view(id, periodKey, mode).url)
+          addressSelectedForm.bindFromRequest.fold(
+            formWithError => {
+              addressLookupService.retrieveCachedSearchResults.map { results =>
+                val searchResults = results.fold(new AddressSearchResults(AddressLookup("", None), Nil))(a => a)
+                BadRequest(views.html.propertyDetails.addressLookupResults(id, periodKey, formWithError, searchResults, mode, serviceInfoContent, backToViewLink))
               }
-            )
-          }
-        )
+            },
+            searchCriteria => {
+              addressLookupService.findById(searchCriteria.selected.get).flatMap(foundProperty =>
+                (id, foundProperty) match {
+                  case (Some(x), Some(found)) =>
+                    propertyDetailsService.saveDraftPropertyDetailsAddress(x, found).flatMap(
+                      _ => {
+                        auditInputAddress(found)
+                        redirectWithBackLink(
+                          confirmAddressId,
+                          controllers.propertyDetails.routes.ConfirmAddressController.view(x, periodKey, mode),
+                          backToViewLink
+                        )
+                      }
+                    )
+                  case (None, Some(found)) =>
+                    propertyDetailsService.createDraftPropertyDetailsAddress(periodKey, found).flatMap {
+                      newId =>
+                        auditInputAddress(found)
+                        redirectWithBackLink(
+                          confirmAddressId,
+                          controllers.propertyDetails.routes.ConfirmAddressController.view(newId, periodKey, mode),
+                          backToViewLink
+                        )
+                    }
+                  case _ =>
+                    addressLookupService.retrieveCachedSearchResults.map { results =>
+                      val searchResults = results.fold(new AddressSearchResults(AddressLookup("", None), Nil))(a => a)
+                      val errorForm = addressSelectedForm.fill(searchCriteria)
+                        .withError(FormError("selected", Messages("ated.address-lookup.error.general.selected-address")))
+                      BadRequest(views.html.propertyDetails.addressLookupResults(id, periodKey, errorForm, searchResults, mode, serviceInfoContent, backToViewLink))
+                    }
+                }
+              )
+            }
+          )
+        }
       }
     }
   }

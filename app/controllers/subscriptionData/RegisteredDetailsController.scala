@@ -23,7 +23,7 @@ import javax.inject.Inject
 import play.api.Environment
 import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.SubscriptionDataService
+import services.{ServiceInfoService, SubscriptionDataService}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.CountryCodeUtils
 
@@ -32,6 +32,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class RegisteredDetailsController @Inject()(mcc: MessagesControllerComponents,
                                             authAction: AuthAction,
                                             subscriptionDataService: SubscriptionDataService,
+                                            serviceInfoService: ServiceInfoService,
                                             val environment: Environment)
                                            (implicit val appConfig: ApplicationConfig)
   extends FrontendController(mcc) with CountryCodeUtils {
@@ -40,37 +41,41 @@ class RegisteredDetailsController @Inject()(mcc: MessagesControllerComponents,
 
   def edit(): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
-      for {
-        registeredDetails <- subscriptionDataService.getRegisteredDetails
-      } yield {
-        val populatedForm = registeredDetails match {
-          case Some(x) => registeredDetailsForm.fill(x)
-          case None => registeredDetailsForm
+      serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+        for {
+          registeredDetails <- subscriptionDataService.getRegisteredDetails
+        } yield {
+          val populatedForm = registeredDetails match {
+            case Some(x) => registeredDetailsForm.fill(x)
+            case None => registeredDetailsForm
+          }
+          Ok(views.html.subcriptionData.registeredDetails(populatedForm, getIsoCodeTupleList, serviceInfoContent, getBackLink))
         }
-        Ok(views.html.subcriptionData.registeredDetails(populatedForm, getIsoCodeTupleList, getBackLink))
       }
     }
   }
 
   def submit(): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
-      registeredDetailsForm.bindFromRequest.fold(
-        formWithErrors => Future.successful(BadRequest(views.html.subcriptionData
-          .registeredDetails(formWithErrors, getIsoCodeTupleList, getBackLink))),
-        updateDetails => {
-          for {
-            registeredDetails <- subscriptionDataService.updateRegisteredDetails(updateDetails)
-          } yield {
-            registeredDetails match {
-              case Some(_) => Redirect(controllers.subscriptionData.routes.CompanyDetailsController.view())
-              case None =>
-                val errorMsg = Messages("ated.registered-details.save.error")
-                val errorForm = registeredDetailsForm.withError(key = "addressType", message = errorMsg).fill(updateDetails)
-                BadRequest(views.html.subcriptionData.registeredDetails(errorForm, getIsoCodeTupleList, getBackLink))
+      serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+        registeredDetailsForm.bindFromRequest.fold(
+          formWithErrors => Future.successful(BadRequest(views.html.subcriptionData
+            .registeredDetails(formWithErrors, getIsoCodeTupleList, serviceInfoContent, getBackLink))),
+          updateDetails => {
+            for {
+              registeredDetails <- subscriptionDataService.updateRegisteredDetails(updateDetails)
+            } yield {
+              registeredDetails match {
+                case Some(_) => Redirect(controllers.subscriptionData.routes.CompanyDetailsController.view())
+                case None =>
+                  val errorMsg = Messages("ated.registered-details.save.error")
+                  val errorForm = registeredDetailsForm.withError(key = "addressType", message = errorMsg).fill(updateDetails)
+                  BadRequest(views.html.subcriptionData.registeredDetails(errorForm, getIsoCodeTupleList, serviceInfoContent, getBackLink))
+              }
             }
           }
-        }
-      )
+        )
+      }
     }
   }
 

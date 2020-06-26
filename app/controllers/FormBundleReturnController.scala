@@ -20,7 +20,7 @@ import config.ApplicationConfig
 import controllers.auth.AuthAction
 import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{FormBundleReturnsService, SubscriptionDataService, SummaryReturnsService}
+import services.{FormBundleReturnsService, ServiceInfoService, SubscriptionDataService, SummaryReturnsService}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.PeriodUtils
 
@@ -30,6 +30,7 @@ class FormBundleReturnController @Inject()(mcc: MessagesControllerComponents,
                                            authAction: AuthAction,
                                            formBundleReturnsService: FormBundleReturnsService,
                                            summaryReturnsService: SummaryReturnsService,
+                                           serviceInfoService: ServiceInfoService,
                                            subscriptionDataService: SubscriptionDataService)
                                           (implicit val appConfig: ApplicationConfig)
 
@@ -43,6 +44,7 @@ class FormBundleReturnController @Inject()(mcc: MessagesControllerComponents,
         formBundleReturn <- formBundleReturnsService.getFormBundleReturns(formBundleNumber)
         periodSummaries <- summaryReturnsService.getPeriodSummaryReturns(periodKey)
         organisationName <- subscriptionDataService.getOrganisationName
+        serviceInfoContent <- serviceInfoService.getPartial
       } yield {
         val valuesToDisplay = formBundleReturn.map(x => PeriodUtils.getOrderedReturnPeriodValues(x.lineItem, x.dateOfAcquisition)).getOrElse(Nil)
         val periodsToDisplay = formBundleReturn.map(x => PeriodUtils.getDisplayFormBundleProperties(x.lineItem)).getOrElse(Nil)
@@ -60,6 +62,7 @@ class FormBundleReturnController @Inject()(mcc: MessagesControllerComponents,
         Ok(views.html.formBundleReturn(periodKey, formBundleReturn, formBundleNumber, organisationName, changeAllowed, editAllowed,
           valuesToDisplay,
           periodsToDisplay,
+          serviceInfoContent,
           getBackLink(periodKey)))
         }
       }

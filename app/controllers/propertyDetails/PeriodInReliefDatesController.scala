@@ -23,13 +23,14 @@ import forms.PropertyDetailsForms
 import forms.PropertyDetailsForms._
 import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService}
+import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
 import scala.concurrent.{ExecutionContext, Future}
 
 class PeriodInReliefDatesController @Inject()(mcc: MessagesControllerComponents,
                                               authAction: AuthAction,
+                                              serviceInfoService: ServiceInfoService,
                                               val dataCacheConnector: DataCacheConnector,
                                               val propertyDetailsService: PropertyDetailsService,
                                               val backLinkCacheConnector: BackLinkCacheConnector)
@@ -42,32 +43,37 @@ class PeriodInReliefDatesController @Inject()(mcc: MessagesControllerComponents,
 
   def add(id: String, periodKey: Int) : Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
-      ensureClientContext(Future.successful(Ok(views.html.propertyDetails.periodInReliefDates(id,
-        periodKey, periodInReliefDatesForm, getBackLink(id, periodKey)))))
+      serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+        ensureClientContext(Future.successful(Ok(views.html.propertyDetails.periodInReliefDates(id,
+          periodKey, periodInReliefDatesForm, serviceInfoContent, getBackLink(id, periodKey)))))
+      }
     }
   }
-  def save(id: String, periodKey: Int) : Action[AnyContent] = Action.async { implicit request =>
+
+  def save(id: String, periodKey: Int): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
-        propertyDetailsCacheResponse(id) {
-          case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
-            val lineItems = propertyDetails.period.map(_.liabilityPeriods).getOrElse(Nil) ++ propertyDetails.period.map(_.reliefPeriods).getOrElse(Nil)
-            PropertyDetailsForms.validatePropertyDetailsDatesInRelief(periodKey, periodInReliefDatesForm.bindFromRequest, lineItems).fold(
-              formWithError => {
-                Future.successful(BadRequest(views.html.propertyDetails.periodInReliefDates(id, periodKey, formWithError, getBackLink(id, periodKey))))
-              },
-              datesInRelief => {
-                for {
-                  _ <- propertyDetailsService.addDraftPropertyDetailsDatesInRelief(id, datesInRelief)
-                } yield {
-                  Redirect(controllers.propertyDetails.routes.PeriodsInAndOutReliefController.view(id))
+        serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+          propertyDetailsCacheResponse(id) {
+            case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
+              val lineItems = propertyDetails.period.map(_.liabilityPeriods).getOrElse(Nil) ++ propertyDetails.period.map(_.reliefPeriods).getOrElse(Nil)
+              PropertyDetailsForms.validatePropertyDetailsDatesInRelief(periodKey, periodInReliefDatesForm.bindFromRequest, lineItems).fold(
+                formWithError => {
+                  Future.successful(BadRequest(views.html.propertyDetails.periodInReliefDates(id, periodKey, formWithError, serviceInfoContent, getBackLink(id, periodKey))))
+                },
+                datesInRelief => {
+                  for {
+                    _ <- propertyDetailsService.addDraftPropertyDetailsDatesInRelief(id, datesInRelief)
+                  } yield {
+                    Redirect(controllers.propertyDetails.routes.PeriodsInAndOutReliefController.view(id))
+                  }
                 }
-              }
-            )
+              )
           }
         }
       }
     }
+  }
   private def getBackLink(id: String, periodKey: Int) = {
     Some(controllers.propertyDetails.routes.PeriodChooseReliefController.add(id, periodKey).url)
   }

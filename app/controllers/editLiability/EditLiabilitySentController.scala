@@ -24,7 +24,7 @@ import javax.inject.Inject
 import models.EditLiabilityReturnsResponseModel
 import play.api.Logger
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{DelegationService, SubscriptionDataService}
+import services.{DelegationService, ServiceInfoService, SubscriptionDataService}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.AtedConstants._
 
@@ -33,6 +33,7 @@ import scala.concurrent.ExecutionContext
 class EditLiabilitySentController @Inject()(mcc: MessagesControllerComponents,
                                             subscriptionDataService: SubscriptionDataService,
                                             authAction: AuthAction,
+                                            serviceInfoService: ServiceInfoService,
                                             val delegationService: DelegationService,
                                             val dataCacheConnector: DataCacheConnector)
                                            (implicit val appConfig: ApplicationConfig)
@@ -44,13 +45,13 @@ class EditLiabilitySentController @Inject()(mcc: MessagesControllerComponents,
   def view(oldFormBundleNo: String)
           : Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
-
+      serviceInfoService.getPartial.flatMap { serviceInfoContent =>
         dataCacheConnector.fetchAndGetFormData[EditLiabilityReturnsResponseModel](SubmitEditedLiabilityReturnsResponseFormId) map {
           case Some(submitResponse) =>
             submitResponse.liabilityReturnResponse.find(_.oldFormBundleNumber == oldFormBundleNo) match {
               case Some(resp) =>
                 val returnType = returnTypeFromAmount(resp.amountDueOrRefund)
-                Ok(views.html.editLiability.editLiabilitySent(oldFormBundleNo, returnType, resp.paymentReference,
+                Ok(views.html.editLiability.editLiabilitySent(oldFormBundleNo, serviceInfoContent, returnType, resp.paymentReference,
                   resp.amountDueOrRefund, resp.liabilityAmount,
                   createHeadermessages(returnType, "ated.edit-liability.sent.title"),
                   createHeadermessages(returnType, "ated.edit-liability.sent.header")))
@@ -59,6 +60,7 @@ class EditLiabilitySentController @Inject()(mcc: MessagesControllerComponents,
           case None =>
             Logger.warn("[EditLiabilitySentController][view] - Return Response not found in cache")
             throw new RuntimeException("Return Response not found in cache")
+        }
       }
     }
   }

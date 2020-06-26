@@ -22,7 +22,6 @@ import builders.{PropertyDetailsBuilder, SessionBuilder, TitleBuilder}
 import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.AuthAction
-import testhelpers.MockAuthUtil
 import models._
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
@@ -32,14 +31,17 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
+import play.api.i18n.{Lang, MessagesApi, MessagesImpl}
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService, SubscriptionDataService}
+import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService, SubscriptionDataService}
+import testhelpers.MockAuthUtil
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.{AtedConstants, PeriodUtils}
+import views.html.BtaNavigationLinks
 
 import scala.concurrent.Future
 
@@ -54,6 +56,10 @@ class PropertyDetailsTaxAvoidanceControllerSpec extends PlaySpec with GuiceOneSe
   val mockBackLinkCacheConnector: BackLinkCacheConnector = mock[BackLinkCacheConnector]
   val mockSubscriptionDataService: SubscriptionDataService = mock[SubscriptionDataService]
   val mockPropertyDetailsSupportingInfoController: PropertyDetailsSupportingInfoController = mock[PropertyDetailsSupportingInfoController]
+    val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
+  val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
+  val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
 
   val periodKey: Int = PeriodUtils.calculatePeakStartYear()
 
@@ -69,6 +75,7 @@ class PropertyDetailsTaxAvoidanceControllerSpec extends PlaySpec with GuiceOneSe
       mockMcc,
       mockAuthAction,
       mockPropertyDetailsSupportingInfoController,
+      mockServiceInfoService,
       mockPropertyDetailsService,
       mockDataCacheConnector,
       mockBackLinkCacheConnector
@@ -87,6 +94,7 @@ class PropertyDetailsTaxAvoidanceControllerSpec extends PlaySpec with GuiceOneSe
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
+      when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(btaNavigationLinksView()(messages,mockAppConfig)))
       when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
         (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
       when(mockDataCacheConnector.fetchAndGetFormData[Boolean](ArgumentMatchers.any())
@@ -170,6 +178,7 @@ class PropertyDetailsTaxAvoidanceControllerSpec extends PlaySpec with GuiceOneSe
               document.getElementById("isTaxAvoidance").text() must be("Yes No")
               document.getElementById("isTaxAvoidance-true").attr("checked") must be("")
               document.getElementById("isTaxAvoidance-false").attr("checked") must be("")
+              assert(document.getElementById("service-info-list").text() === "Home Manage account Messages Help and contact")
 
               document.getElementById("taxAvoidanceScheme").attr("value") must be("")
 

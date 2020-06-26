@@ -34,6 +34,7 @@ import scala.concurrent.ExecutionContext
 class PropertyDetailsRevaluedController @Inject()(mcc: MessagesControllerComponents,
                                                   authAction: AuthAction,
                                                   isFullTaxPeriodController: IsFullTaxPeriodController,
+                                                  serviceInfoService: ServiceInfoService,
                                                   val propertyDetailsService: PropertyDetailsService,
                                                   val dataCacheConnector: DataCacheConnector,
                                                   val backLinkCacheConnector: BackLinkCacheConnector)
@@ -47,22 +48,25 @@ class PropertyDetailsRevaluedController @Inject()(mcc: MessagesControllerCompone
   def view(id: String): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
-        propertyDetailsCacheResponse(id) {
-          case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
-            currentBackLink.flatMap { backLink =>
-              dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).map { isPrevReturn =>
-                val displayData = PropertyDetailsRevalued(isPropertyRevalued = propertyDetails.value.flatMap(_.isPropertyRevalued),
-                  revaluedValue = propertyDetails.value.flatMap(_.revaluedValue),
-                  revaluedDate = propertyDetails.value.flatMap(_.revaluedDate),
-                  partAcqDispDate = propertyDetails.value.flatMap(_.partAcqDispDate))
+        serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+          propertyDetailsCacheResponse(id) {
+            case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
+              currentBackLink.flatMap { backLink =>
+                dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).map { isPrevReturn =>
+                  val displayData = PropertyDetailsRevalued(isPropertyRevalued = propertyDetails.value.flatMap(_.isPropertyRevalued),
+                    revaluedValue = propertyDetails.value.flatMap(_.revaluedValue),
+                    revaluedDate = propertyDetails.value.flatMap(_.revaluedDate),
+                    partAcqDispDate = propertyDetails.value.flatMap(_.partAcqDispDate))
 
-                Ok(views.html.propertyDetails.propertyDetailsRevalued(id,
-                  propertyDetails.periodKey,
-                  propertyDetailsRevaluedForm.fill(displayData),
-                  AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn),
-                  backLink))
+                  Ok(views.html.propertyDetails.propertyDetailsRevalued(id,
+                    propertyDetails.periodKey,
+                    propertyDetailsRevaluedForm.fill(displayData),
+                    AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn),
+                    serviceInfoContent,
+                    backLink))
+                }
               }
-            }
+          }
         }
       }
     }
@@ -71,22 +75,24 @@ class PropertyDetailsRevaluedController @Inject()(mcc: MessagesControllerCompone
   def save(id: String, periodKey: Int, mode: Option[String]): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
-        PropertyDetailsForms.validatePropertyDetailsRevalued(periodKey, propertyDetailsRevaluedForm.bindFromRequest).fold(
-          formWithError => {
-            currentBackLink.map(backLink => BadRequest(views.html.propertyDetails.propertyDetailsRevalued(id, periodKey, formWithError, mode, backLink)))
-          },
-          propertyDetails => {
-            for {
-              _ <- propertyDetailsService.saveDraftPropertyDetailsRevalued(id, propertyDetails)
-              result <-
-              redirectWithBackLink(
-                isFullTaxPeriodController.controllerId,
-                controllers.propertyDetails.routes.IsFullTaxPeriodController.view(id),
-                Some(controllers.propertyDetails.routes.PropertyDetailsRevaluedController.view(id).url)
-              )
-            } yield result
-          }
-        )
+        serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+          PropertyDetailsForms.validatePropertyDetailsRevalued(periodKey, propertyDetailsRevaluedForm.bindFromRequest).fold(
+            formWithError => {
+              currentBackLink.map(backLink => BadRequest(views.html.propertyDetails.propertyDetailsRevalued(id, periodKey, formWithError, mode, serviceInfoContent, backLink)))
+            },
+            propertyDetails => {
+              for {
+                _ <- propertyDetailsService.saveDraftPropertyDetailsRevalued(id, propertyDetails)
+                result <-
+                  redirectWithBackLink(
+                    isFullTaxPeriodController.controllerId,
+                    controllers.propertyDetails.routes.IsFullTaxPeriodController.view(id),
+                    Some(controllers.propertyDetails.routes.PropertyDetailsRevaluedController.view(id).url)
+                  )
+              } yield result
+            }
+          )
+        }
       }
     }
   }

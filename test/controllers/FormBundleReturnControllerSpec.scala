@@ -22,7 +22,6 @@ import builders.SessionBuilder
 import config.ApplicationConfig
 import connectors.DataCacheConnector
 import controllers.auth.AuthAction
-import testhelpers.MockAuthUtil
 import models._
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
@@ -32,11 +31,14 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
+import play.api.i18n.{Lang, MessagesApi, MessagesImpl}
 import play.api.mvc.{MessagesControllerComponents, Result}
 import play.api.test.Helpers._
-import services.{FormBundleReturnsService, SubscriptionDataService, SummaryReturnsService}
+import services.{FormBundleReturnsService, ServiceInfoService, SubscriptionDataService, SummaryReturnsService}
+import testhelpers.MockAuthUtil
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
+import views.html.BtaNavigationLinks
 
 import scala.concurrent.Future
 
@@ -49,6 +51,10 @@ class FormBundleReturnControllerSpec extends PlaySpec with GuiceOneServerPerSuit
   val mockFormBundleReturnsService: FormBundleReturnsService = mock[FormBundleReturnsService]
   val mockSummaryReturnsService: SummaryReturnsService = mock[SummaryReturnsService]
   val mockSubscriptionDataService: SubscriptionDataService = mock[SubscriptionDataService]
+    val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
+  val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
+  val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
 
   val periodKey: Int = 2015
   val formBundleNo1: String = "123456789012"
@@ -67,6 +73,7 @@ class FormBundleReturnControllerSpec extends PlaySpec with GuiceOneServerPerSuit
       mockAuthAction,
       mockFormBundleReturnsService,
       mockSummaryReturnsService,
+      mockServiceInfoService,
       mockSubscriptionDataService
     )
 
@@ -74,6 +81,8 @@ class FormBundleReturnControllerSpec extends PlaySpec with GuiceOneServerPerSuit
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
+
+      when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(btaNavigationLinksView()(messages,mockAppConfig)))
 
       when(mockFormBundleReturnsService.getFormBundleReturns(ArgumentMatchers.eq(formBundleNo1))(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(formBundleReturn))

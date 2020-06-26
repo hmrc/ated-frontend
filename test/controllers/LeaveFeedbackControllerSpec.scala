@@ -22,17 +22,22 @@ import builders.{SessionBuilder, TitleBuilder}
 import config.ApplicationConfig
 import connectors.DataCacheConnector
 import controllers.auth.AuthAction
-import testhelpers.MockAuthUtil
 import org.jsoup.Jsoup
+import org.mockito.ArgumentMatchers
+import org.mockito.Mockito.when
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
+import play.api.i18n.{Lang, MessagesApi, MessagesImpl}
 import play.api.mvc.{MessagesControllerComponents, Result}
 import play.api.test.Helpers._
+import services.ServiceInfoService
+import testhelpers.MockAuthUtil
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.audit.DefaultAuditConnector
+import views.html.BtaNavigationLinks
 
 import scala.concurrent.Future
 
@@ -43,6 +48,10 @@ class LeaveFeedbackControllerSpec extends PlaySpec with MockitoSugar with GuiceO
   val mockMcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
   val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
   val mockAuditConnector: DefaultAuditConnector = mock[DefaultAuditConnector]
+    val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
+  val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
+  val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
 
 
   class Setup {
@@ -56,6 +65,7 @@ class LeaveFeedbackControllerSpec extends PlaySpec with MockitoSugar with GuiceO
     val testLeaveFeedbackController: LeaveFeedbackController = new LeaveFeedbackController (
       mockMcc,
       mockAuthAction,
+      mockServiceInfoService,
       mockAuditConnector
     )
 
@@ -63,6 +73,7 @@ class LeaveFeedbackControllerSpec extends PlaySpec with MockitoSugar with GuiceO
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
+      when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(btaNavigationLinksView()(messages,mockAppConfig)))
       val result = testLeaveFeedbackController.view("/ated/home").apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
@@ -95,6 +106,7 @@ class LeaveFeedbackControllerSpec extends PlaySpec with MockitoSugar with GuiceO
           status(result) must be(OK)
           val document = Jsoup.parse(contentAsString(result))
           document.title() must be(TitleBuilder.buildTitle("Leave Feedback"))
+          assert(document.getElementById("service-info-list").text() === "Home Manage account Messages Help and contact")
           document.getElementById("feedback-header").text() must be("Leave Feedback")
           document.getElementById("feedback-txt")
             .text() must be("You will not get a reply to any feedback. If you want to raise a technical problem or get a response use the get help with this page link. Do not include any personal or financial information.")

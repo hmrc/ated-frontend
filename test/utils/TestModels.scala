@@ -20,7 +20,7 @@ import config.ApplicationConfig
 import models._
 import org.joda.time.LocalDate
 import play.api.libs.json.{JsObject, Json}
-import utils.AtedConstants.{AddressTypeCorrespondence, TypeChangeLiabilityDraft, TypeDisposeLiabilityDraft, TypeLiabilityDraft, TypeReliefDraft}
+import utils.AtedConstants._
 
 trait TestModels {
   implicit val mockAppConfig: ApplicationConfig

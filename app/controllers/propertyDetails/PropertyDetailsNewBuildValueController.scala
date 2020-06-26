@@ -37,6 +37,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class PropertyDetailsNewBuildValueController @Inject()(mcc: MessagesControllerComponents,
                                                        authAction: AuthAction,
                                                        propertyDetailsProfessionallyValuedController: PropertyDetailsProfessionallyValuedController,
+                                                       serviceInfoService: ServiceInfoService,
                                                        val propertyDetailsService: PropertyDetailsService,
                                                        val dataCacheConnector: DataCacheConnector,
                                                        val backLinkCacheConnector: BackLinkCacheConnector)
@@ -50,23 +51,26 @@ class PropertyDetailsNewBuildValueController @Inject()(mcc: MessagesControllerCo
   def view(id: String): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
-        propertyDetailsCacheResponse(id) {
-          case PropertyDetailsCacheSuccessResponse(propertyDetails) => currentBackLink.flatMap { backLink =>
-            dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
-              val displayData = PropertyDetailsNewBuildValue(propertyDetails.value.flatMap(_.newBuildValue))
+        serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+          propertyDetailsCacheResponse(id) {
+            case PropertyDetailsCacheSuccessResponse(propertyDetails) => currentBackLink.flatMap { backLink =>
+              dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
+                val displayData = PropertyDetailsNewBuildValue(propertyDetails.value.flatMap(_.newBuildValue))
 
-              val newBuildDate = propertyDetails.value.flatMap(_.newBuildDate).getOrElse(new LocalDate())
-              val localRegDate = propertyDetails.value.flatMap(_.localAuthRegDate).getOrElse(new LocalDate())
+                val newBuildDate = propertyDetails.value.flatMap(_.newBuildDate).getOrElse(new LocalDate())
+                val localRegDate = propertyDetails.value.flatMap(_.localAuthRegDate).getOrElse(new LocalDate())
 
-              val dynamicDate = getEarliestDate(newBuildDate, localRegDate)
+                val dynamicDate = getEarliestDate(newBuildDate, localRegDate)
 
-              Future.successful(Ok(html.propertyDetails.propertyDetailsNewBuildValue(id,
-                propertyDetails.periodKey,
-                propertyDetailsNewBuildValueForm.fill(displayData),
-                AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn),
-                backLink,
-                dynamicDate)
-              ))
+                Future.successful(Ok(html.propertyDetails.propertyDetailsNewBuildValue(id,
+                  propertyDetails.periodKey,
+                  propertyDetailsNewBuildValueForm.fill(displayData),
+                  AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn),
+                  serviceInfoContent,
+                  backLink,
+                  dynamicDate)
+                ))
+              }
             }
           }
         }
@@ -78,24 +82,26 @@ class PropertyDetailsNewBuildValueController @Inject()(mcc: MessagesControllerCo
     authAction.authorisedAction {
       implicit authContext => {
         ensureClientContext {
-          propertyDetailsNewBuildValueForm.bindFromRequest.fold(
-            formWithError => {
-              currentBackLink.map(backLink =>
-                BadRequest(views.html.propertyDetails.propertyDetailsNewBuildValue(id, periodKey, formWithError, mode, backLink, date))
-              )
-            },
-            propertyDetails => {
-              for {
-                _ <- propertyDetailsService.saveDraftPropertyDetailsNewBuildValue(id, propertyDetails)
-                result <-
-                  redirectWithBackLink(
-                    propertyDetailsProfessionallyValuedController.controllerId,
-                    controllers.propertyDetails.routes.PropertyDetailsProfessionallyValuedController.view(id),
-                    Some(controllers.propertyDetails.routes.PropertyDetailsNewBuildValueController.view(id).url)
-                  )
-              } yield result
-            }
-          )
+          serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+            propertyDetailsNewBuildValueForm.bindFromRequest.fold(
+              formWithError => {
+                currentBackLink.map(backLink =>
+                  BadRequest(views.html.propertyDetails.propertyDetailsNewBuildValue(id, periodKey, formWithError, mode, serviceInfoContent, backLink, date))
+                )
+              },
+              propertyDetails => {
+                for {
+                  _ <- propertyDetailsService.saveDraftPropertyDetailsNewBuildValue(id, propertyDetails)
+                  result <-
+                    redirectWithBackLink(
+                      propertyDetailsProfessionallyValuedController.controllerId,
+                      controllers.propertyDetails.routes.PropertyDetailsProfessionallyValuedController.view(id),
+                      Some(controllers.propertyDetails.routes.PropertyDetailsNewBuildValueController.view(id).url)
+                    )
+                } yield result
+              }
+            )
+          }
         }
       }
     }

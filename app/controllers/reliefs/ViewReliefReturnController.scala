@@ -22,7 +22,7 @@ import controllers.BackLinkController
 import controllers.auth.{AuthAction, ClientHelper}
 import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{ReliefsService, SubscriptionDataService}
+import services.{ReliefsService, ServiceInfoService, SubscriptionDataService}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
 import scala.concurrent.ExecutionContext
@@ -31,6 +31,7 @@ class ViewReliefReturnController @Inject()(mcc: MessagesControllerComponents,
                                            authAction: AuthAction,
                                            subscriptionDataService: SubscriptionDataService,
                                            changeReliefReturnController: ChangeReliefReturnController,
+                                           serviceInfoService: ServiceInfoService,
                                            val reliefsService: ReliefsService,
                                            val dataCacheConnector: DataCacheConnector,
                                            val backLinkCacheConnector: BackLinkCacheConnector)
@@ -48,10 +49,11 @@ class ViewReliefReturnController @Inject()(mcc: MessagesControllerComponents,
         val organisationNameFuture = subscriptionDataService.getOrganisationName
         for {
           (formBundleReturn, isEditable) <- formBundleReturnFuture
+          serviceInfoContent <- serviceInfoService.getPartial
           organisationName <- organisationNameFuture
         } yield {
           formBundleReturn match {
-            case Some(x) => Ok(views.html.reliefs.viewReliefReturn(x, periodKey, formBundleNo, organisationName, isEditable,
+            case Some(x) => Ok(views.html.reliefs.viewReliefReturn(x, periodKey, formBundleNo, organisationName, isEditable, serviceInfoContent,
               Some(controllers.routes.PeriodSummaryController.view(periodKey).url)))
             case None => throw new RuntimeException("No reliefs found in the cache for provided period and form bundle id")
           }

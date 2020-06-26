@@ -22,7 +22,7 @@ import controllers.auth.{AuthAction, ClientHelper}
 import controllers.{BackLinkController, ControllerIds}
 import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.ChangeLiabilityReturnService
+import services.{ChangeLiabilityReturnService, ServiceInfoService}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -30,6 +30,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class EditLiabilityDeclarationController @Inject()(mcc: MessagesControllerComponents,
                                                    changeLiabilityReturnService: ChangeLiabilityReturnService,
                                                    authAction: AuthAction,
+                                                   serviceInfoService: ServiceInfoService,
                                                    val dataCacheConnector: DataCacheConnector,
                                                    val backLinkCacheConnector: BackLinkCacheConnector)
                                                   (implicit val appConfig: ApplicationConfig)
@@ -41,13 +42,15 @@ class EditLiabilityDeclarationController @Inject()(mcc: MessagesControllerCompon
   def view(oldFormBundleNo: String): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
-        changeLiabilityReturnService.retrieveSubmittedLiabilityReturnAndCache(oldFormBundleNo) flatMap {
-          case Some(x) =>
-            val returnType = getReturnType(x.calculated.flatMap(_.amountDueOrRefund))
-            currentBackLink.map(backLink =>
-              Ok(views.html.editLiability.editLiabilityDeclaration(oldFormBundleNo, returnType, backLink))
-            )
-          case None => Future.successful(Redirect(controllers.routes.AccountSummaryController.view()))
+        serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+          changeLiabilityReturnService.retrieveSubmittedLiabilityReturnAndCache(oldFormBundleNo) flatMap {
+            case Some(x) =>
+              val returnType = getReturnType(x.calculated.flatMap(_.amountDueOrRefund))
+              currentBackLink.map(backLink =>
+                Ok(views.html.editLiability.editLiabilityDeclaration(oldFormBundleNo, returnType, serviceInfoContent, backLink))
+              )
+            case None => Future.successful(Redirect(controllers.routes.AccountSummaryController.view()))
+          }
         }
       }
     }

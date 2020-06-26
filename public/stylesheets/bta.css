@@ -1,0 +1,30 @@
+@media print {
+    header, #notice-banner, .centered-content, .button, .breadcrumbs, #content > .float--right, button, #get-help-action, .link-back, p {
+        display: none;
+    }
+}
+
+.bta-navigation {
+    padding: 10px 0 8px 0;
+    border-bottom: 1px solid #bfc1c3;
+}
+
+.bta-navigation ul{
+    margin-top: 0;
+}
+
+.bta-navigation li{
+    display: inline-block;
+    margin: 0 0.5em;
+}
+
+.bta-navigation a{
+    font-size: 16px;
+}
+
+@media(max-width: 768px) {
+    .bta-navigation li{
+        display: block;
+        margin: 0.5em 0 0.5em 0.5em;
+    }
+}
