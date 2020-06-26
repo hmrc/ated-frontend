@@ -33,6 +33,7 @@ import scala.concurrent.ExecutionContext
 class PropertyDetailsProfessionallyValuedController @Inject()(mcc: MessagesControllerComponents,
                                                               authAction: AuthAction,
                                                               propertyDetailsAcquisitionController: PropertyDetailsAcquisitionController,
+                                                              serviceInfoService: ServiceInfoService,
                                                               val propertyDetailsService: PropertyDetailsService,
                                                               val dataCacheConnector: DataCacheConnector,
                                                               val backLinkCacheConnector: BackLinkCacheConnector)
@@ -47,18 +48,21 @@ class PropertyDetailsProfessionallyValuedController @Inject()(mcc: MessagesContr
   def view(id: String) : Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
-        propertyDetailsCacheResponse(id) {
-          case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
-            currentBackLink.flatMap { backLink =>
-              dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).map { isPrevReturn =>
-                val displayData = PropertyDetailsProfessionallyValued(propertyDetails.value.flatMap(_.isValuedByAgent))
-                Ok(views.html.propertyDetails.propertyDetailsProfessionallyValued(id,
-                  propertyDetails.periodKey,
-                  propertyDetailsProfessionallyValuedForm.fill(displayData),
-                  AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn),
-                  backLink))
+        serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+          propertyDetailsCacheResponse(id) {
+            case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
+              currentBackLink.flatMap { backLink =>
+                dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).map { isPrevReturn =>
+                  val displayData = PropertyDetailsProfessionallyValued(propertyDetails.value.flatMap(_.isValuedByAgent))
+                  Ok(views.html.propertyDetails.propertyDetailsProfessionallyValued(id,
+                    propertyDetails.periodKey,
+                    propertyDetailsProfessionallyValuedForm.fill(displayData),
+                    AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn),
+                    serviceInfoContent,
+                    backLink))
+                }
               }
-            }
+          }
         }
       }
     }
@@ -67,16 +71,19 @@ class PropertyDetailsProfessionallyValuedController @Inject()(mcc: MessagesContr
   def editFromSummary(id: String) : Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
-        propertyDetailsCacheResponse(id) {
-          case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
-            dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).map { isPrevReturn =>
-              val displayData = PropertyDetailsProfessionallyValued(propertyDetails.value.flatMap(_.isValuedByAgent))
-              Ok(views.html.propertyDetails.propertyDetailsProfessionallyValued(id,
-                propertyDetails.periodKey,
-                propertyDetailsProfessionallyValuedForm.fill(displayData),
-                AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn),
-                AtedUtils.getSummaryBackLink(id, None)))
-            }
+        serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+          propertyDetailsCacheResponse(id) {
+            case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
+              dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).map { isPrevReturn =>
+                val displayData = PropertyDetailsProfessionallyValued(propertyDetails.value.flatMap(_.isValuedByAgent))
+                Ok(views.html.propertyDetails.propertyDetailsProfessionallyValued(id,
+                  propertyDetails.periodKey,
+                  propertyDetailsProfessionallyValuedForm.fill(displayData),
+                  AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn),
+                  serviceInfoContent,
+                  AtedUtils.getSummaryBackLink(id, None)))
+              }
+          }
         }
       }
     }
@@ -85,23 +92,25 @@ class PropertyDetailsProfessionallyValuedController @Inject()(mcc: MessagesContr
   def save(id: String, periodKey: Int, mode: Option[String]) : Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
-        propertyDetailsProfessionallyValuedForm.bindFromRequest.fold(
-          formWithError => {
-            currentBackLink
-              .map(backLink => BadRequest(views.html.propertyDetails.propertyDetailsProfessionallyValued(id, periodKey, formWithError, mode, backLink)))
-          },
-          propertyDetails => {
-            for {
-              _ <- propertyDetailsService.saveDraftPropertyDetailsProfessionallyValued(id, propertyDetails)
-              result <-
-              redirectWithBackLink(
-                propertyDetailsAcquisitionController.controllerId,
-                controllers.propertyDetails.routes.PropertyDetailsAcquisitionController.view(id),
-                Some(controllers.propertyDetails.routes.PropertyDetailsProfessionallyValuedController.view(id).url)
-              )
-            } yield result
-          }
-        )
+        serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+          propertyDetailsProfessionallyValuedForm.bindFromRequest.fold(
+            formWithError => {
+              currentBackLink
+                .map(backLink => BadRequest(views.html.propertyDetails.propertyDetailsProfessionallyValued(id, periodKey, formWithError, mode, serviceInfoContent, backLink)))
+            },
+            propertyDetails => {
+              for {
+                _ <- propertyDetailsService.saveDraftPropertyDetailsProfessionallyValued(id, propertyDetails)
+                result <-
+                  redirectWithBackLink(
+                    propertyDetailsAcquisitionController.controllerId,
+                    controllers.propertyDetails.routes.PropertyDetailsAcquisitionController.view(id),
+                    Some(controllers.propertyDetails.routes.PropertyDetailsProfessionallyValuedController.view(id).url)
+                  )
+              } yield result
+            }
+          )
+        }
       }
     }
   }

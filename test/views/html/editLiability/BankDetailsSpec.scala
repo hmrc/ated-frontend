@@ -18,17 +18,18 @@ package views.html.editLiability
 
 import config.ApplicationConfig
 import forms.BankDetailForms
-import testhelpers.{AtedViewSpec, MockAuthUtil}
 import models.StandardAuthRetrievals
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.data.{Form, FormError}
 import play.twirl.api.Html
+import testhelpers.{AtedViewSpec, MockAuthUtil}
 
 class BankDetailsSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil {
 
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
 "Bank Details view" must {
+
     behave like pageWithTitle(messages("ated.bank-details.title"))
     behave like pageWithHeader(messages("ated.bank-details.title"))
     behave like pageWithPreHeading(messages("ated.property-details.pre-header-change"))
@@ -44,7 +45,7 @@ class BankDetailsSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil {
         FormError("accountNumber", messages("ated.bank-details.error-key.accountNumber.empty")),
         FormError("sortCode", messages("ated.bank-details.error-key.sortCode.empty")))
         , form.value)
-       def view: Html = views.html.editLiability.bankDetails(eform, "oldFormBundleNo", Some("backLink"))
+       def view: Html = views.html.editLiability.bankDetails(eform, "oldFormBundleNo", Html(""), Some("backLink"))
       val errorDoc = doc(view)
 
       errorDoc.getElementsMatchingOwnText(messages("ated.bank-details.error-key.accountName.empty")).hasText mustBe true
@@ -61,7 +62,7 @@ class BankDetailsSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil {
         FormError("bicSwiftCode", messages("ated.bank-details.error-key.iban.empty")),
         FormError("iban", messages("ated.bank-details.error-key.bicSwiftCode.empty")))
         , form.value)
-       def view: Html = views.html.editLiability.bankDetails(eform, "oldFormBundleNo", Some("backLink"))
+       def view: Html = views.html.editLiability.bankDetails(eform, "oldFormBundleNo", Html(""), Some("backLink"))
       val errorDoc = doc(view)
 
       errorDoc.getElementsMatchingOwnText(messages("ated.bank-details.error-key.accountName.empty")).hasText mustBe true
@@ -100,6 +101,6 @@ class BankDetailsSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil {
 
 
   private val form = BankDetailForms.bankDetailsForm
-  override def view: Html = views.html.editLiability.bankDetails(form, "oldFormBundleNo", Some("backLink"))
+  override def view: Html = views.html.editLiability.bankDetails(form, "oldFormBundleNo", Html(""), Some("backLink"))
 
 }

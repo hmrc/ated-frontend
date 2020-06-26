@@ -18,11 +18,10 @@ package views.html.propertyDetails
 
 import config.ApplicationConfig
 import forms.PropertyDetailsForms
-import testhelpers.{AtedViewSpec, MockAuthUtil}
 import models.StandardAuthRetrievals
 import org.scalatestplus.mockito.MockitoSugar
-import play.api.i18n.Messages
 import play.twirl.api.Html
+import testhelpers.{AtedViewSpec, MockAuthUtil}
 
 class PropertyDetailsInReliefSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil {
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
@@ -46,6 +45,6 @@ class PropertyDetailsInReliefSpec extends AtedViewSpec with MockitoSugar with Mo
 
   private val form = PropertyDetailsForms.periodsInAndOutReliefForm.withError("isInRelief",
     messages("ated.property-details-period.isInRelief.error-field-name"))
-  override def view: Html = views.html.propertyDetails.propertyDetailsInRelief("",2014,  form, None, Some("backLink"))
+  override def view: Html = views.html.propertyDetails.propertyDetailsInRelief("",2014,  form, None, Html(""), Some("backLink"))
 
 }

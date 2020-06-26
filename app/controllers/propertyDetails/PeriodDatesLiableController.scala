@@ -25,7 +25,7 @@ import javax.inject.Inject
 import models._
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService}
+import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
@@ -34,6 +34,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class PeriodDatesLiableController @Inject()(mcc: MessagesControllerComponents,
                                             authAction: AuthAction,
                                             propertyDetailsTaxAvoidanceController: PropertyDetailsTaxAvoidanceController,
+                                            serviceInfoService: ServiceInfoService,
                                             val propertyDetailsService: PropertyDetailsService,
                                             val dataCacheConnector: DataCacheConnector,
                                             val backLinkCacheConnector: BackLinkCacheConnector)
@@ -46,19 +47,21 @@ class PeriodDatesLiableController @Inject()(mcc: MessagesControllerComponents,
   def view(id: String): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
-        propertyDetailsCacheResponse(id) {
-          case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
-            val liabilityPeriod = propertyDetails.period.flatMap(_.liabilityPeriods.headOption)
+        serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+          propertyDetailsCacheResponse(id) {
+            case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
+              val liabilityPeriod = propertyDetails.period.flatMap(_.liabilityPeriods.headOption)
 
-            val filledForm = liabilityPeriod match {
-              case Some(lineItem) => periodDatesLiableForm.fill(PropertyDetailsDatesLiable(lineItem.startDate, lineItem.endDate))
-              case _ => periodDatesLiableForm
-            }
-            val mode = None
-            getBackLink(id, mode).map { backLink =>
-              Ok(views.html.propertyDetails.periodDatesLiable(id, propertyDetails.periodKey, filledForm,
-                getTitle(mode), mode, backLink))
-            }
+              val filledForm = liabilityPeriod match {
+                case Some(lineItem) => periodDatesLiableForm.fill(PropertyDetailsDatesLiable(lineItem.startDate, lineItem.endDate))
+                case _ => periodDatesLiableForm
+              }
+              val mode = None
+              getBackLink(id, mode).map { backLink =>
+                Ok(views.html.propertyDetails.periodDatesLiable(id, propertyDetails.periodKey, filledForm,
+                  getTitle(mode), mode, serviceInfoContent, backLink))
+              }
+          }
         }
       }
     }
@@ -67,10 +70,12 @@ class PeriodDatesLiableController @Inject()(mcc: MessagesControllerComponents,
   def add(id: String, periodKey: Int): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
-        val mode = Some("add")
-        getBackLink(id, mode).map { backLink =>
-          Ok(views.html.propertyDetails.periodDatesLiable(id, periodKey, periodDatesLiableForm,
-            getTitle(mode), mode, backLink))
+        serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+          val mode = Some("add")
+          getBackLink(id, mode).map { backLink =>
+            Ok(views.html.propertyDetails.periodDatesLiable(id, periodKey, periodDatesLiableForm,
+              getTitle(mode), mode, serviceInfoContent, backLink))
+          }
         }
       }
     }
@@ -78,38 +83,40 @@ class PeriodDatesLiableController @Inject()(mcc: MessagesControllerComponents,
 
   def save(id: String, periodKey: Int, mode: Option[String] = None): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
-      propertyDetailsCacheResponse(id) {
-        case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
-          val lineItems = propertyDetails.period.map(_.liabilityPeriods).getOrElse(Nil) ++ propertyDetails.period.map(_.reliefPeriods).getOrElse(Nil)
-          PropertyDetailsForms.validatePropertyDetailsDatesLiable(periodKey, periodDatesLiableForm.bindFromRequest, mode.contains("add"), lineItems).fold(
-            formWithError => {
-              getBackLink(id, mode).map { backLink =>
-                BadRequest(views.html.propertyDetails.periodDatesLiable(id, periodKey, formWithError,
-                  getTitle(mode), mode, backLink))
+      serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+        propertyDetailsCacheResponse(id) {
+          case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
+            val lineItems = propertyDetails.period.map(_.liabilityPeriods).getOrElse(Nil) ++ propertyDetails.period.map(_.reliefPeriods).getOrElse(Nil)
+            PropertyDetailsForms.validatePropertyDetailsDatesLiable(periodKey, periodDatesLiableForm.bindFromRequest, mode.contains("add"), lineItems).fold(
+              formWithError => {
+                getBackLink(id, mode).map { backLink =>
+                  BadRequest(views.html.propertyDetails.periodDatesLiable(id, periodKey, formWithError,
+                    getTitle(mode), mode, serviceInfoContent, backLink))
+                }
+              },
+              propertyDetails => {
+                mode match {
+                  case Some("add") =>
+                    for {
+                      _ <- propertyDetailsService.addDraftPropertyDetailsDatesLiable(id, propertyDetails)
+                    } yield {
+                      Redirect(controllers.propertyDetails.routes.PeriodsInAndOutReliefController.view(id))
+                    }
+                  case _ =>
+                    for {
+                      _ <- propertyDetailsService.saveDraftPropertyDetailsDatesLiable(id, propertyDetails)
+                      result <- ensureClientContext(redirectWithBackLink(
+                        propertyDetailsTaxAvoidanceController.controllerId,
+                        controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceController.view(id),
+                        Some(controllers.propertyDetails.routes.PeriodDatesLiableController.view(id).url)
+                      ))
+                    } yield {
+                      result
+                    }
+                }
               }
-            },
-            propertyDetails => {
-              mode match {
-                case Some("add") =>
-                  for {
-                    _ <- propertyDetailsService.addDraftPropertyDetailsDatesLiable(id, propertyDetails)
-                  } yield {
-                    Redirect(controllers.propertyDetails.routes.PeriodsInAndOutReliefController.view(id))
-                  }
-                case _ =>
-                  for {
-                    _ <- propertyDetailsService.saveDraftPropertyDetailsDatesLiable(id, propertyDetails)
-                    result <- ensureClientContext(redirectWithBackLink(
-                      propertyDetailsTaxAvoidanceController.controllerId,
-                      controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceController.view(id),
-                      Some(controllers.propertyDetails.routes.PeriodDatesLiableController.view(id).url)
-                    ))
-                  } yield {
-                    result
-                  }
-              }
-            }
-          )
+            )
+        }
       }
     }
   }

@@ -15,7 +15,8 @@
  *@
 
 @import config.ApplicationConfig
-@(editContactDetailsEmailForm: Form[models.EditContactDetailsEmail], backLink:Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
+@import play.twirl.api.HtmlFormat
+@(editContactDetailsEmailForm: Form[models.EditContactDetailsEmail], serviceInfoContent: Html = HtmlFormat.empty, backLink:Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
 
@@ -25,7 +26,7 @@
 <script src='@controllers.routes.Assets.versioned("javascript/edit-contact-email.js")'></script>
 }
 
-@atedMain(title = messages("ated.contact-details-edit-email.header"), pageScripts = Some(pageScripts)) {
+@atedMain(title = messages("ated.contact-details-edit-email.header"), serviceInfoContent = serviceInfoContent, pageScripts = Some(pageScripts)) {
     @pageHeadersAndError(backLink, "pre-heading", messages("ated.contact-details-edit-email.subheader"), "contact-details-email-header", messages("ated.contact-details-edit-email.header"))
 
     <p id="lede">@messages("ated.contact-details-email-lede")</p>

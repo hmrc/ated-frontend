@@ -24,7 +24,7 @@ import javax.inject.Inject
 import models.PropertyDetails
 import org.joda.time.LocalDate
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService, SubscriptionDataService}
+import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService, SubscriptionDataService}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.{AtedUtils, PeriodUtils}
 
@@ -34,6 +34,7 @@ class PropertyDetailsSummaryController @Inject()(mcc: MessagesControllerComponen
                                                  authAction: AuthAction,
                                                  subscriptionDataService: SubscriptionDataService,
                                                  propertyDetailsDeclarationController: PropertyDetailsDeclarationController,
+                                                 serviceInfoService: ServiceInfoService,
                                                  val propertyDetailsService: PropertyDetailsService,
                                                  val dataCacheConnector: DataCacheConnector,
                                                  val backLinkCacheConnector: BackLinkCacheConnector)
@@ -47,15 +48,18 @@ class PropertyDetailsSummaryController @Inject()(mcc: MessagesControllerComponen
   def view(propertyKey: String): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
-        propertyDetailsCacheResponse(propertyKey) {
-          case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
-            currentBackLink.flatMap(backLink =>
-              Future.successful(Ok(views.html.propertyDetails.propertyDetailsSummary(propertyDetails,
-                PeriodUtils.getDisplayPeriods(propertyDetails.period),
-                AtedUtils.canSubmit(propertyDetails.periodKey, LocalDate.now),
-                PeriodUtils.getCalculatedPeriodValues(propertyDetails.calculated),
-                backLink)
-              )))
+        serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+          propertyDetailsCacheResponse(propertyKey) {
+            case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
+              currentBackLink.flatMap(backLink =>
+                Future.successful(Ok(views.html.propertyDetails.propertyDetailsSummary(propertyDetails,
+                  PeriodUtils.getDisplayPeriods(propertyDetails.period),
+                  AtedUtils.canSubmit(propertyDetails.periodKey, LocalDate.now),
+                  PeriodUtils.getCalculatedPeriodValues(propertyDetails.calculated),
+                  serviceInfoContent,
+                  backLink)
+                )))
+          }
         }
       }
     }

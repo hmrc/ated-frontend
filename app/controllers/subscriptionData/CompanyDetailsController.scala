@@ -20,7 +20,7 @@ import config.ApplicationConfig
 import controllers.auth.AuthAction
 import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{DetailsService, SubscriptionDataService}
+import services.{DetailsService, ServiceInfoService, SubscriptionDataService}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -28,6 +28,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class CompanyDetailsController @Inject()(mcc: MessagesControllerComponents,
                                          authAction: AuthAction,
                                          subscriptionDataService: SubscriptionDataService,
+                                         serviceInfoService: ServiceInfoService,
                                          detailsDataService: DetailsService)
                                         (implicit val appConfig: ApplicationConfig)
 
@@ -38,6 +39,7 @@ class CompanyDetailsController @Inject()(mcc: MessagesControllerComponents,
   def view : Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       for {
+        serviceInfoContent <- serviceInfoService.getPartial
         emailConsent <- subscriptionDataService.getEmailConsent
         correspondenceAddress <- subscriptionDataService.getCorrespondenceAddress
         registeredDetails <- subscriptionDataService.getRegisteredDetails
@@ -50,6 +52,7 @@ class CompanyDetailsController @Inject()(mcc: MessagesControllerComponents,
           emailConsent,
           clientMandateDetails,
           overseasCompanyRegistration,
+          serviceInfoContent,
           Some(controllers.routes.AccountSummaryController.view().url)
         ))
       }

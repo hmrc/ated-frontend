@@ -19,17 +19,18 @@ package controllers
 import config.ApplicationConfig
 import connectors.{AgentClientMandateFrontendConnector, DataCacheConnector}
 import controllers.auth.AuthAction
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 import org.joda.time.LocalDate
 import play.api.Logger
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{DateService, DetailsService, SubscriptionDataService, SummaryReturnsService}
+import services.{DateService, DetailsService, SubscriptionDataService, SummaryReturnsService, ServiceInfoService}
 import uk.gov.hmrc.http.ForbiddenException
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.PeriodUtils
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
+@Singleton
 class AccountSummaryController @Inject()(mcc: MessagesControllerComponents,
                                          authAction: AuthAction,
                                          summaryReturnsService: SummaryReturnsService,
@@ -37,7 +38,8 @@ class AccountSummaryController @Inject()(mcc: MessagesControllerComponents,
                                          mandateFrontendConnector: AgentClientMandateFrontendConnector,
                                          detailsService: DetailsService,
                                          dataCacheConnector: DataCacheConnector,
-                                         dateService: DateService)
+                                         dateService: DateService,
+                                         serviceInfoService: ServiceInfoService)
                                         (implicit val appConfig: ApplicationConfig)
   extends FrontendController(mcc) {
 
@@ -55,6 +57,7 @@ class AccountSummaryController @Inject()(mcc: MessagesControllerComponents,
         correspondenceAddress <- subscriptionDataService.getCorrespondenceAddress
         organisationName <- subscriptionDataService.getOrganisationName
         safeId <- subscriptionDataService.getSafeId
+        serviceInfoContent <- serviceInfoService.getPartial
         clientBannerPartial <- mandateFrontendConnector.getClientBannerPartial(safeId.getOrElse(
           throw new RuntimeException("Could not get safeId")), "ated"
         )
@@ -66,6 +69,7 @@ class AccountSummaryController @Inject()(mcc: MessagesControllerComponents,
           allReturns,
           correspondenceAddress,
           organisationName,
+          serviceInfoContent,
           clientBannerPartial.successfulContentOrEmpty,
           duringPeak,
           currentYear = currentDate.getYear,

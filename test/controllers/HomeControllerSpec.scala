@@ -21,13 +21,13 @@ import java.util.UUID
 import builders.SessionBuilder
 import config.ApplicationConfig
 import controllers.auth.AuthAction
-import testhelpers.MockAuthUtil
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.mvc.{MessagesControllerComponents, Result}
 import play.api.test.Helpers._
+import testhelpers.MockAuthUtil
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 

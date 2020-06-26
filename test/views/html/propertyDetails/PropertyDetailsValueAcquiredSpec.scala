@@ -49,7 +49,7 @@ class PropertyDetailsValueAcquiredSpec extends AtedViewSpec with MockAuthUtil {
     val form = PropertyDetailsForms.propertyDetailsValueAcquiredForm.withError("acquiredValue",
       "ated.property-details-value-error.valueAcquired.emptyValue")
 
-    val newDoc = doc(views.html.propertyDetails.propertyDetailsValueAcquired("0", 0, form, None, Some("backLink"), testDate))
+    val newDoc = doc(views.html.propertyDetails.propertyDetailsValueAcquired("0", 0, form, None, Html(""), Some("backLink"), testDate))
 
     newDoc.getElementsMatchingOwnText(messages("ated.property-details-value-error.valueAcquired.emptyValue")).hasText mustBe true
 
@@ -59,11 +59,11 @@ class PropertyDetailsValueAcquiredSpec extends AtedViewSpec with MockAuthUtil {
     val form = PropertyDetailsForms.propertyDetailsValueAcquiredForm.withError("acquiredValue",
       "ated.property-details-value-error.valueAcquired.invalidValue")
 
-    val newDoc = doc(views.html.propertyDetails.propertyDetailsValueAcquired("0", 0,form,None, Some("backLink"), testDate))
+    val newDoc = doc(views.html.propertyDetails.propertyDetailsValueAcquired("0", 0,form,None, Html(""), Some("backLink"), testDate))
     newDoc.getElementsMatchingOwnText(messages("ated.property-details-value-error.valueAcquired.invalidValue")).hasText mustBe true
   }
 
   private val form = PropertyDetailsForms.propertyDetailsValueAcquiredForm
-  override def view: Html = views.html.propertyDetails.propertyDetailsValueAcquired("0", 0,form, None, Some("backLink"), testDate)
+  override def view: Html = views.html.propertyDetails.propertyDetailsValueAcquired("0", 0,form, None, Html(""), Some("backLink"), testDate)
 
 }

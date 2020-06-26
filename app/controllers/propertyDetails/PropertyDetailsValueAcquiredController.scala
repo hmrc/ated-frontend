@@ -36,6 +36,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class PropertyDetailsValueAcquiredController @Inject()(mcc: MessagesControllerComponents,
                                                        authAction: AuthAction,
                                                        propertyDetailsProfessionallyValuedController: PropertyDetailsProfessionallyValuedController,
+                                                       serviceInfoService: ServiceInfoService,
                                                        val propertyDetailsService: PropertyDetailsService,
                                                        val dataCacheConnector: DataCacheConnector,
                                                        val backLinkCacheConnector: BackLinkCacheConnector)
@@ -49,18 +50,21 @@ class PropertyDetailsValueAcquiredController @Inject()(mcc: MessagesControllerCo
   def view(id: String): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
-        propertyDetailsCacheResponse(id) {
-          case PropertyDetailsCacheSuccessResponse(propertyDetails) => currentBackLink.flatMap { backLink =>
-            dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
-              val displayData = PropertyDetailsValueOnAcquisition(propertyDetails.value.flatMap(_.notNewBuildValue))
-              val dynamicDate = PropertyDetailsWhenAcquiredDates(propertyDetails.value.flatMap(_.notNewBuildDate)).acquiredDate.getOrElse(new LocalDate())
-              Future.successful(Ok(html.propertyDetails.propertyDetailsValueAcquired(id,
-                propertyDetails.periodKey,
-                propertyDetailsValueAcquiredForm.fill(displayData),
-                AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn),
-                backLink,
-                dynamicDate)
-              ))
+        serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+          propertyDetailsCacheResponse(id) {
+            case PropertyDetailsCacheSuccessResponse(propertyDetails) => currentBackLink.flatMap { backLink =>
+              dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
+                val displayData = PropertyDetailsValueOnAcquisition(propertyDetails.value.flatMap(_.notNewBuildValue))
+                val dynamicDate = PropertyDetailsWhenAcquiredDates(propertyDetails.value.flatMap(_.notNewBuildDate)).acquiredDate.getOrElse(new LocalDate())
+                Future.successful(Ok(html.propertyDetails.propertyDetailsValueAcquired(id,
+                  propertyDetails.periodKey,
+                  propertyDetailsValueAcquiredForm.fill(displayData),
+                  AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn),
+                  serviceInfoContent,
+                  backLink,
+                  dynamicDate)
+                ))
+              }
             }
           }
         }
@@ -72,23 +76,25 @@ class PropertyDetailsValueAcquiredController @Inject()(mcc: MessagesControllerCo
     authAction.authorisedAction {
       implicit authContext => {
         ensureClientContext {
-          propertyDetailsValueAcquiredForm.bindFromRequest.fold(
-            formWithError => {
-              currentBackLink.map(backLink =>
-                BadRequest(views.html.propertyDetails.propertyDetailsValueAcquired(id, periodKey, formWithError, mode, backLink, date)))
-            },
-            propertyDetails => {
-              for {
-                _ <- propertyDetailsService.saveDraftPropertyDetailsValueAcquired(id, propertyDetails)
-                result <-
-                  redirectWithBackLink(
-                    propertyDetailsProfessionallyValuedController.controllerId,
-                    controllers.propertyDetails.routes.PropertyDetailsProfessionallyValuedController.view(id),
-                    Some(controllers.propertyDetails.routes.PropertyDetailsValueAcquiredController.view(id).url)
-                  )
-              } yield result
-            }
-          )
+          serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+            propertyDetailsValueAcquiredForm.bindFromRequest.fold(
+              formWithError => {
+                currentBackLink.map(backLink =>
+                  BadRequest(views.html.propertyDetails.propertyDetailsValueAcquired(id, periodKey, formWithError, mode, serviceInfoContent, backLink, date)))
+              },
+              propertyDetails => {
+                for {
+                  _ <- propertyDetailsService.saveDraftPropertyDetailsValueAcquired(id, propertyDetails)
+                  result <-
+                    redirectWithBackLink(
+                      propertyDetailsProfessionallyValuedController.controllerId,
+                      controllers.propertyDetails.routes.PropertyDetailsProfessionallyValuedController.view(id),
+                      Some(controllers.propertyDetails.routes.PropertyDetailsValueAcquiredController.view(id).url)
+                    )
+                } yield result
+              }
+            )
+          }
         }
       }
     }

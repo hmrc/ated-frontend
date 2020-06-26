@@ -15,7 +15,8 @@
  *@
 
 @import config.ApplicationConfig
-@(returnResponse: SubmitReturnsResponse)(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
+@import play.twirl.api.HtmlFormat
+@(returnResponse: SubmitReturnsResponse, serviceInfoContent: Html = HtmlFormat.empty)(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
 @import uk.gov.hmrc.play.views.helpers.MoneyPounds
 
@@ -25,6 +26,7 @@
 }
 
 @atedMain(title = messages("ated.chargeable-return-confirmation.title"),
+          serviceInfoContent = serviceInfoContent,
           analyticsAdditionalJs = Some(analyticsJs)) {
 
   <div id="banner" class="transaction-banner--complete form-group">

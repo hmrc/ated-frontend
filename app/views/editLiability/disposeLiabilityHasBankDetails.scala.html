@@ -16,7 +16,8 @@
 
 @import models._
 @import config.ApplicationConfig
-@(bankDetailsForm: Form[HasBankDetails], oldFormBundleNo: String, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
+@import play.twirl.api.HtmlFormat
+@(bankDetailsForm: Form[HasBankDetails], oldFormBundleNo: String, serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
 
@@ -33,6 +34,7 @@
 }
 
 @atedMain(title = messages("ated.bank-details.has-bank-details.title"),
+          serviceInfoContent = serviceInfoContent,
           pageScripts = Some(pageScripts),
           analyticsAdditionalJs = Some(analyticsJs)) {
 

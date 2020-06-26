@@ -19,7 +19,6 @@ package controllers.propertyDetails
 import builders.PropertyDetailsBuilder
 import config.ApplicationConfig
 import connectors.BackLinkCacheConnector
-import testhelpers.MockAuthUtil
 import models.StandardAuthRetrievals
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
@@ -27,10 +26,11 @@ import org.scalatest.PartialFunctionValues
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
-import play.api.mvc.{MessagesControllerComponents, Result}
 import play.api.mvc.Results._
+import play.api.mvc.{MessagesControllerComponents, Result}
 import play.api.test.Helpers._
 import services._
+import testhelpers.MockAuthUtil
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.{ExecutionContext, Future}

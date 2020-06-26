@@ -18,12 +18,11 @@ package views.html.propertyDetails
 
 import config.ApplicationConfig
 import forms.PropertyDetailsForms
-import testhelpers.{AtedViewSpec, MockAuthUtil}
 import models.StandardAuthRetrievals
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.data.{Form, FormError}
-import play.api.i18n.Messages
 import play.twirl.api.Html
+import testhelpers.{AtedViewSpec, MockAuthUtil}
 import utils.PeriodUtils
 
 class PropertyDetailsOwnedBeforeSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil {
@@ -44,7 +43,7 @@ class PropertyDetailsOwnedBeforeSpec extends AtedViewSpec with MockitoSugar with
       val eform = Form(form.mapping, Map("isOwnedBeforePolicyYear" -> "true"),
         Seq(FormError("ownedBeforePolicyYearValue", messages("ated.property-details-value.ownedBeforePolicyYearValue.error.empty")))
         , form.value)
-      def view: Html = views.html.propertyDetails.propertyDetailsOwnedBefore("",2014,  eform, None, Some("backLink"))
+      def view: Html = views.html.propertyDetails.propertyDetailsOwnedBefore("",2014,  eform, None, Html(""), Some("backLink"))
       val errorDoc = doc(view)
 
       errorDoc.getElementsMatchingOwnText(messages("ated.property-details-value-error.general.ownedBeforePolicyYearValue")).hasText mustBe true
@@ -57,6 +56,6 @@ class PropertyDetailsOwnedBeforeSpec extends AtedViewSpec with MockitoSugar with
   }
 
   private val form = PropertyDetailsForms.propertyDetailsOwnedBeforeForm
-  override def view: Html = views.html.propertyDetails.propertyDetailsOwnedBefore("",2014,  form, None, Some("backLink"))
+  override def view: Html = views.html.propertyDetails.propertyDetailsOwnedBefore("",2014,  form, None, Html(""), Some("backLink"))
 
 }

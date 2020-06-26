@@ -25,7 +25,7 @@ import forms.BankDetailForms.bankDetailsForm
 import javax.inject.Inject
 import models.BankDetails
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.ChangeLiabilityReturnService
+import services.{ChangeLiabilityReturnService, ServiceInfoService}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -33,6 +33,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class BankDetailsController @Inject()(mcc: MessagesControllerComponents,
                                       changeLiabilityReturnService: ChangeLiabilityReturnService,
                                       authAction: AuthAction,
+                                      serviceInfoService: ServiceInfoService,
                                       val dataCacheConnector: DataCacheConnector,
                                       val backLinkCacheConnector: BackLinkCacheConnector)(implicit val appConfig: ApplicationConfig)
   extends FrontendController(mcc) with BackLinkController with ClientHelper with ControllerIds {
@@ -43,36 +44,40 @@ class BankDetailsController @Inject()(mcc: MessagesControllerComponents,
 
   def view(oldFormBundleNo: String): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
-        ensureClientContext {
+      ensureClientContext {
+        serviceInfoService.getPartial.flatMap { serviceInfoContent =>
           changeLiabilityReturnService.retrieveSubmittedLiabilityReturnAndCache(oldFormBundleNo) flatMap {
             case Some(x) =>
               currentBackLink.map { backLink =>
                 val bankDetails = x.bankDetails.flatMap(_.bankDetails).fold(BankDetails())(a => a)
-                Ok(views.html.editLiability.bankDetails(bankDetailsForm.fill(bankDetails), oldFormBundleNo, backLink))
+                Ok(views.html.editLiability.bankDetails(bankDetailsForm.fill(bankDetails), oldFormBundleNo, serviceInfoContent, backLink))
               }
             case None => Future.successful(Redirect(controllers.routes.AccountSummaryController.view()))
           }
         }
       }
+    }
   }
 
   def save(oldFormBundleNo: String): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
-        BankDetailForms.validateBankDetails(bankDetailsForm.bindFromRequest).fold(
-          formWithErrors =>
-            currentBackLink.map(backLink => BadRequest(views.html.editLiability.bankDetails(formWithErrors, oldFormBundleNo, backLink))),
-          bankData => {
-            changeLiabilityReturnService.cacheChangeLiabilityReturnBank(oldFormBundleNo, bankData) flatMap { _ => {
-              redirectWithBackLink(
-                editLiabilitySummaryId,
-                controllers.editLiability.routes.EditLiabilitySummaryController.viewSummary(oldFormBundleNo),
-                Some(controllers.editLiability.routes.BankDetailsController.view(oldFormBundleNo).url)
-              )
+        serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+          BankDetailForms.validateBankDetails(bankDetailsForm.bindFromRequest).fold(
+            formWithErrors =>
+              currentBackLink.map(backLink => BadRequest(views.html.editLiability.bankDetails(formWithErrors, oldFormBundleNo, serviceInfoContent, backLink))),
+            bankData => {
+              changeLiabilityReturnService.cacheChangeLiabilityReturnBank(oldFormBundleNo, bankData) flatMap { _ => {
+                redirectWithBackLink(
+                  editLiabilitySummaryId,
+                  controllers.editLiability.routes.EditLiabilitySummaryController.viewSummary(oldFormBundleNo),
+                  Some(controllers.editLiability.routes.BankDetailsController.view(oldFormBundleNo).url)
+                )
+              }
+              }
             }
-            }
-          }
-        )
+          )
+        }
       }
     }
   }

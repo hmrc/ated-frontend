@@ -16,7 +16,8 @@
 
 @import models._
 @import config.ApplicationConfig
-@(periodKey: Int, reliefsForm: Form[Reliefs], periodStartDate: org.joda.time.LocalDate, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
+@import play.twirl.api.HtmlFormat
+@(periodKey: Int, reliefsForm: Form[Reliefs], periodStartDate: org.joda.time.LocalDate, serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 @import uk.gov.hmrc.play.views.html.helpers._
 @import uk.gov.hmrc.play.views.html._
 @import uk.gov.hmrc.play.views.html.helpers._
@@ -32,7 +33,7 @@
 
 @implicitFormInstance = @{ Some(reliefsForm) }
 
-@atedMain(title = messages("ated.choose-reliefs.title"), pageScripts = Some(pageScripts)) {
+@atedMain(title = messages("ated.choose-reliefs.title"), serviceInfoContent = serviceInfoContent, pageScripts = Some(pageScripts)) {
     @pageHeadersAndError(backLink, "pre-heading", messages("ated.choose-reliefs.subheader"), "choose-reliefs-header", messages("ated.choose-reliefs.header"),
       Some(atedErrorSummary(reliefsForm, "ated.choose-reliefs.error.general")))
 

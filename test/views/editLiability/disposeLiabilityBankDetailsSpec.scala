@@ -18,16 +18,17 @@ package views.editLiability
  
 import config.ApplicationConfig
 import forms.BankDetailForms._
-import testhelpers.MockAuthUtil
 import models.StandardAuthRetrievals
 import org.jsoup.Jsoup
-import org.scalatestplus.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.test.FakeRequest
-import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
+import play.twirl.api.Html
+import testhelpers.MockAuthUtil
 import uk.gov.hmrc.auth.core.retrieve.~
+import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
 
 class disposeLiabilityBankDetailsSpec extends FeatureSpec with GuiceOneAppPerSuite with MockitoSugar
   with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
@@ -35,7 +36,7 @@ class disposeLiabilityBankDetailsSpec extends FeatureSpec with GuiceOneAppPerSui
   implicit val request = FakeRequest()
   implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
-implicit val authContext: StandardAuthRetrievals = organisationStandardRetrievals
+  implicit val authContext: StandardAuthRetrievals = organisationStandardRetrievals
 
   val authMock: Enrolments ~ Some[AffinityGroup] ~ Some[String] = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
   setAuthMocks(authMock)
@@ -49,7 +50,7 @@ implicit val authContext: StandardAuthRetrievals = organisationStandardRetrieval
       Given("the client is prompted to add thier bank details")
       When("The user views the page")
 
-      val html = views.html.editLiability.disposeLiabilityBankDetails(bankDetailsForm, "1", Some("http://backLink"))
+      val html = views.html.editLiability.disposeLiabilityBankDetails(bankDetailsForm, "1", Html(""), Some("http://backLink"))
 
       val document = Jsoup.parse(html.toString())
 

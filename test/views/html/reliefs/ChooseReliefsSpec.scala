@@ -18,14 +18,13 @@ package views.html.reliefs
 
 import config.ApplicationConfig
 import forms.ReliefForms
-import testhelpers.{AtedViewSpec, MockAuthUtil}
 import models.{Reliefs, StandardAuthRetrievals}
 import org.joda.time.LocalDate
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.data.Form
-import play.api.i18n.Messages
 import play.api.libs.json.Json
 import play.twirl.api.Html
+import testhelpers.{AtedViewSpec, MockAuthUtil}
 
 class ChooseReliefsSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil {
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
@@ -195,7 +194,7 @@ val periodKey = 2017
     val fieldStartDate = field + "Date"
     val formWithErrors: Form[Reliefs] = ReliefForms.reliefsForm.bind(Json.obj("periodKey" -> periodKey, field -> true))
 
-    def view: Html = views.html.reliefs.chooseReliefs(periodKey, formWithErrors, periodStartDate, Some("backLink"))
+    def view: Html = views.html.reliefs.chooseReliefs(periodKey, formWithErrors, periodStartDate, Html(""), Some("backLink"))
 
     val errorDoc = doc(view)
     errorDoc must haveErrorSummary(messages(s"ated.choose-reliefs.error.general.$fieldStartDate"))
@@ -207,7 +206,7 @@ val periodKey = 2017
     val formWithErrors: Form[Reliefs] = ReliefForms.reliefsForm.bind(Json.obj("periodKey" -> periodKey, field -> true,
       fieldStartDate -> Map("day" -> "1")))
 
-    def view: Html = views.html.reliefs.chooseReliefs(periodKey, formWithErrors, periodStartDate, Some("backLink"))
+    def view: Html = views.html.reliefs.chooseReliefs(periodKey, formWithErrors, periodStartDate, Html(""), Some("backLink"))
 
     val errorDoc = doc(view)
     errorDoc must haveErrorSummary(messages(s"ated.choose-reliefs.error.general.$fieldStartDate"))
@@ -216,6 +215,6 @@ val periodKey = 2017
 
   val reliefsForm: Form[Reliefs] = ReliefForms.reliefsForm
 
-  override def view: Html = views.html.reliefs.chooseReliefs(periodKey, reliefsForm, periodStartDate, Some("backLink"))
+  override def view: Html = views.html.reliefs.chooseReliefs(periodKey, reliefsForm, periodStartDate, Html(""), Some("backLink"))
 
 }

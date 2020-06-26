@@ -17,7 +17,8 @@
 @import org.joda.time.LocalDate
 @import models._
 @import config.ApplicationConfig
-@(id: String, periodKey: Int, propertyDetailsForm: Form[PropertyDetailsNewBuildValue], mode: Option[String], backLink: Option[String], date: LocalDate)(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
+@import play.twirl.api.HtmlFormat
+@(id: String, periodKey: Int, propertyDetailsForm: Form[PropertyDetailsNewBuildValue], mode: Option[String], serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String], date: LocalDate)(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
 @import _root_.utils._
@@ -47,6 +48,7 @@ ga('set', 'page', page);
 }
 
 @atedMain(title = messages("ated.property-details-value.newBuildValue.title",date.dayOfMonth().get().toString, intToMonth(date.monthOfYear().get()), date.year().get().toString),
+serviceInfoContent = serviceInfoContent,
 pageScripts = Some(pageScripts),
 analyticsAdditionalJs = Some(analyticsJs)) {
 

@@ -16,10 +16,11 @@
 
 @import config.ApplicationConfig
 @import models._
+@import play.twirl.api.HtmlFormat
 
-@(periodKey: Int, returnResponse: SubmitReturnsResponse)(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
+@(periodKey: Int, serviceInfoContent: Html = HtmlFormat.empty, returnResponse: SubmitReturnsResponse)(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
-@atedMain(title = messages("ated.relief-sent.title")) {
+@atedMain(title = messages("ated.relief-sent.title"), serviceInfoContent = serviceInfoContent) {
 
   <div id="banner" class="transaction-banner--complete">
     <h1 id="banner-text">

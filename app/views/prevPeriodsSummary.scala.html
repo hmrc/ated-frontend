@@ -17,8 +17,9 @@
 @import models._
 @import config.ApplicationConfig
 @import views.html.helpers._
+@import play.twirl.api.HtmlFormat
 
-@(summaryReturnsWithDrafts: SummaryReturnsModel, correspondence: Option[Address], organisationName: Option[String],
+@(summaryReturnsWithDrafts: SummaryReturnsModel, correspondence: Option[Address], organisationName: Option[String], serviceInfoContent: Html = HtmlFormat.empty,
         clientBanner: Html, duringPeak: Boolean, currentYear: Int,
         taxYearStartingYear: Int, backlink: Option[String])(implicit authContext: StandardAuthRetrievals,
         messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
@@ -41,6 +42,7 @@
     pageScripts = Some(pageScripts),
     sidebarLinks = Some(_accountSummary_sideBar(summaryReturnsWithDrafts.atedBalance, correspondence, organisationName, clientBanner)),
     sidebarClass = Some("related"),
+    serviceInfoContent = serviceInfoContent,
     analyticsAdditionalJs = Some(analyticsJs)) {
 
     @if(summaryReturnsWithDrafts.returnsOtherTaxYears.isEmpty) {

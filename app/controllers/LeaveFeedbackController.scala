@@ -22,6 +22,7 @@ import controllers.auth.AuthAction
 import javax.inject.Inject
 import models.LeaveFeedback
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import services.ServiceInfoService
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.model.{Audit, EventTypes}
 import uk.gov.hmrc.play.bootstrap.audit.DefaultAuditConnector
@@ -33,6 +34,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class LeaveFeedbackController @Inject()(mcc: MessagesControllerComponents,
                                         authAction: AuthAction,
+                                        serviceInfoService: ServiceInfoService,
                                         auditConnector: DefaultAuditConnector)
                                        (implicit val appConfig: ApplicationConfig)
 
@@ -44,19 +46,23 @@ class LeaveFeedbackController @Inject()(mcc: MessagesControllerComponents,
 
   def view(returnUri: String): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedForNoEnrolments { implicit authContext =>
-      Future.successful(Ok(views.html.feedback.leaveFeedback(LeaveFeedback.form, returnUri)))
+      serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+        Future.successful(Ok(views.html.feedback.leaveFeedback(LeaveFeedback.form, serviceInfoContent, returnUri)))
+      }
     }
   }
 
   def submitFeedback(returnUri: String): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedForNoEnrolments { implicit authContext =>
-      LeaveFeedback.form.bindFromRequest.fold(
-        formWithErrors => Future.successful(BadRequest(views.html.feedback.leaveFeedback(formWithErrors, returnUri))),
-        value => {
-          auditFeedback(value, returnUri)
-          Future.successful(Redirect(routes.LeaveFeedbackController.thanks(returnUri)))
-        }
-      )
+      serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+        LeaveFeedback.form.bindFromRequest.fold(
+          formWithErrors => Future.successful(BadRequest(views.html.feedback.leaveFeedback(formWithErrors, serviceInfoContent, returnUri))),
+          value => {
+            auditFeedback(value, returnUri)
+            Future.successful(Redirect(routes.LeaveFeedbackController.thanks(returnUri)))
+          }
+        )
+      }
     }
   }
 
@@ -72,7 +78,9 @@ class LeaveFeedbackController @Inject()(mcc: MessagesControllerComponents,
 
   def thanks(returnUri: String) : Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedForNoEnrolments { implicit authContext =>
-      Future.successful(Ok(views.html.feedback.thanks(returnUri)))
+      serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+        Future.successful(Ok(views.html.feedback.thanks(returnUri, serviceInfoContent)))
+      }
     }
   }
 }

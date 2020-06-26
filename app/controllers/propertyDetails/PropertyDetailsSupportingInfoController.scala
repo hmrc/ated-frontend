@@ -24,7 +24,7 @@ import forms.PropertyDetailsForms._
 import javax.inject.Inject
 import models._
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService}
+import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.AtedConstants._
 import utils.AtedUtils
@@ -35,6 +35,7 @@ class PropertyDetailsSupportingInfoController @Inject()(mcc: MessagesControllerC
                                                         authAction: AuthAction,
                                                         editLiabilitySummaryController: EditLiabilitySummaryController,
                                                         propertyDetailsSummaryController: PropertyDetailsSummaryController,
+                                                        serviceInfoService: ServiceInfoService,
                                                         val propertyDetailsService: PropertyDetailsService,
                                                         val dataCacheConnector: DataCacheConnector,
                                                         val backLinkCacheConnector: BackLinkCacheConnector)
@@ -49,18 +50,20 @@ class PropertyDetailsSupportingInfoController @Inject()(mcc: MessagesControllerC
   def view(id: String) : Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
-        propertyDetailsCacheResponse(id) {
-          case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
-            val filledForm = propertyDetails.period.flatMap(_.supportingInfo) match {
-              case Some(supportingInfo) => propertyDetailsSupportingInfoForm.fill(PropertyDetailsSupportingInfo(supportingInfo))
-              case _ => propertyDetailsSupportingInfoForm
-            }
-            currentBackLink.flatMap(backLink =>
-              dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).map { isPrevReturn =>
-                Ok(views.html.propertyDetails.propertyDetailsSupportingInfo(id, propertyDetails.periodKey, filledForm,
-                  AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn), backLink))
+        serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+          propertyDetailsCacheResponse(id) {
+            case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
+              val filledForm = propertyDetails.period.flatMap(_.supportingInfo) match {
+                case Some(supportingInfo) => propertyDetailsSupportingInfoForm.fill(PropertyDetailsSupportingInfo(supportingInfo))
+                case _ => propertyDetailsSupportingInfoForm
               }
-            )
+              currentBackLink.flatMap(backLink =>
+                dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).map { isPrevReturn =>
+                  Ok(views.html.propertyDetails.propertyDetailsSupportingInfo(id, propertyDetails.periodKey, filledForm,
+                    AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn), serviceInfoContent, backLink))
+                }
+              )
+          }
         }
       }
     }
@@ -69,17 +72,19 @@ class PropertyDetailsSupportingInfoController @Inject()(mcc: MessagesControllerC
   def editFromSummary(id: String) : Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
-        propertyDetailsCacheResponse(id) {
-          case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
-            dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
-              val filledForm = propertyDetails.period.flatMap(_.supportingInfo) match {
-                case Some(supportingInfo) => propertyDetailsSupportingInfoForm.fill(PropertyDetailsSupportingInfo(supportingInfo))
-                case _ => propertyDetailsSupportingInfoForm
+        serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+          propertyDetailsCacheResponse(id) {
+            case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
+              dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
+                val filledForm = propertyDetails.period.flatMap(_.supportingInfo) match {
+                  case Some(supportingInfo) => propertyDetailsSupportingInfoForm.fill(PropertyDetailsSupportingInfo(supportingInfo))
+                  case _ => propertyDetailsSupportingInfoForm
+                }
+                val mode = AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn)
+                Future.successful(Ok(views.html.propertyDetails.propertyDetailsSupportingInfo(id, propertyDetails.periodKey, filledForm,
+                  mode, serviceInfoContent, AtedUtils.getSummaryBackLink(id, None))))
               }
-              val mode = AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn)
-              Future.successful(Ok(views.html.propertyDetails.propertyDetailsSupportingInfo(id, propertyDetails.periodKey, filledForm,
-                mode, AtedUtils.getSummaryBackLink(id, None))))
-            }
+          }
         }
       }
     }
@@ -88,39 +93,41 @@ class PropertyDetailsSupportingInfoController @Inject()(mcc: MessagesControllerC
   def save(id: String, periodKey: Int, mode: Option[String]): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
-        propertyDetailsSupportingInfoForm.bindFromRequest.fold(
-          formWithError => {
-            currentBackLink.map(backLink => BadRequest(views.html.propertyDetails.propertyDetailsSupportingInfo(id, periodKey, formWithError, mode, backLink)))
-          },
-          propertyDetails => {
-            val backLink = Some(controllers.propertyDetails.routes.PropertyDetailsSupportingInfoController.view(id).url)
-            for {
-              cachedData <- dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn)
-              _ <- propertyDetailsService.validateCalculateDraftPropertyDetails(id, AtedUtils.isEditSubmittedMode(mode) && cachedData.isEmpty)
-              _ <- propertyDetailsService.saveDraftPropertyDetailsSupportingInfo(id, propertyDetails)
-              result <-
-              if (AtedUtils.isEditSubmittedMode(mode) && cachedData.isEmpty) {
-                redirectWithBackLink(
-                  editLiabilitySummaryController.controllerId,
-                  controllers.editLiability.routes.EditLiabilitySummaryController.view(id),
-                  backLink)
-              } else {
-                propertyDetailsService.calculateDraftPropertyDetails(id).flatMap { response =>
-                  response.status match {
-                    case OK =>
-                      redirectWithBackLink(
-                        propertyDetailsSummaryController.controllerId,
-                        controllers.propertyDetails.routes.PropertyDetailsSummaryController.view(id),
-                        backLink)
-                    case BAD_REQUEST if response.body.contains("Agent not Valid") =>
-                      Future.successful(BadRequest(views.html.global_error("ated.client-problem.title",
-                        "ated.client-problem.header", "ated.client-problem.message", None, Some(appConfig.agentRedirectedToMandate), None, None, appConfig)))
+        serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+          propertyDetailsSupportingInfoForm.bindFromRequest.fold(
+            formWithError => {
+              currentBackLink.map(backLink => BadRequest(views.html.propertyDetails.propertyDetailsSupportingInfo(id, periodKey, formWithError, mode, serviceInfoContent, backLink)))
+            },
+            propertyDetails => {
+              val backLink = Some(controllers.propertyDetails.routes.PropertyDetailsSupportingInfoController.view(id).url)
+              for {
+                cachedData <- dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn)
+                _ <- propertyDetailsService.validateCalculateDraftPropertyDetails(id, AtedUtils.isEditSubmittedMode(mode) && cachedData.isEmpty)
+                _ <- propertyDetailsService.saveDraftPropertyDetailsSupportingInfo(id, propertyDetails)
+                result <-
+                  if (AtedUtils.isEditSubmittedMode(mode) && cachedData.isEmpty) {
+                    redirectWithBackLink(
+                      editLiabilitySummaryController.controllerId,
+                      controllers.editLiability.routes.EditLiabilitySummaryController.view(id),
+                      backLink)
+                  } else {
+                    propertyDetailsService.calculateDraftPropertyDetails(id).flatMap { response =>
+                      response.status match {
+                        case OK =>
+                          redirectWithBackLink(
+                            propertyDetailsSummaryController.controllerId,
+                            controllers.propertyDetails.routes.PropertyDetailsSummaryController.view(id),
+                            backLink)
+                        case BAD_REQUEST if response.body.contains("Agent not Valid") =>
+                          Future.successful(BadRequest(views.html.global_error("ated.client-problem.title",
+                            "ated.client-problem.header", "ated.client-problem.message", None, Some(appConfig.agentRedirectedToMandate), None, None, serviceInfoContent, appConfig)))
+                      }
+                    }
                   }
-                }
-              }
-            } yield result
-          }
-        )
+              } yield result
+            }
+          )
+        }
       }
     }
   }

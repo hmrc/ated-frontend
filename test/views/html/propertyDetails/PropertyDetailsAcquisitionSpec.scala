@@ -18,20 +18,19 @@ package views.html.propertyDetails
 
 import config.ApplicationConfig
 import forms.PropertyDetailsForms
-import testhelpers.{AtedViewSpec, MockAuthUtil}
 import models.StandardAuthRetrievals
 import org.scalatestplus.mockito.MockitoSugar
-import play.api.i18n.Messages
 import play.twirl.api.Html
-import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
+import testhelpers.{AtedViewSpec, MockAuthUtil}
 import uk.gov.hmrc.auth.core.retrieve.~
+import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
 
 class PropertyDetailsAcquisitionSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil {
 
   implicit val authContext: StandardAuthRetrievals = organisationStandardRetrievals
 
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
-val authMock: Enrolments ~ Some[AffinityGroup] ~ Some[String] = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+  val authMock: Enrolments ~ Some[AffinityGroup] ~ Some[String] = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
   setAuthMocks(authMock)
 
   "Property Details Acquisition view" must {
@@ -60,6 +59,6 @@ val authMock: Enrolments ~ Some[AffinityGroup] ~ Some[String] = authResultDefaul
 
   private val form = PropertyDetailsForms.propertyDetailsAcquisitionForm.withError("anAcquisition",
     messages("ated.property-details-value.anAcquisition.error-field-name"))
-  override def view: Html = views.html.propertyDetails.propertyDetailsAcquisition("",0,  form, None, Some("backLink"))
+  override def view: Html = views.html.propertyDetails.propertyDetailsAcquisition("",0,  form, None, Html(""), Some("backLink"))
 
 }

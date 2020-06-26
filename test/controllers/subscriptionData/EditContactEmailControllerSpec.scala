@@ -22,7 +22,6 @@ import builders.{SessionBuilder, TitleBuilder}
 import config.ApplicationConfig
 import connectors.DataCacheConnector
 import controllers.auth.AuthAction
-import testhelpers.{MockAuthUtil, TestUtil}
 import models._
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
@@ -31,13 +30,16 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
+import play.api.i18n.{Lang, MessagesApi, MessagesImpl}
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{AnyContentAsJson, MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{contentAsString, _}
-import services.SubscriptionDataService
+import services.{ServiceInfoService, SubscriptionDataService}
+import testhelpers.{MockAuthUtil, TestUtil}
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
+import views.html.BtaNavigationLinks
 
 import scala.concurrent.Future
 
@@ -49,6 +51,10 @@ class EditContactEmailControllerSpec extends PlaySpec with GuiceOneServerPerSuit
   val mockMcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
   val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
   val mockSubscriptionDataService: SubscriptionDataService = mock[SubscriptionDataService]
+    val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
+  val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
+  val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
 
   class Setup {
 
@@ -61,6 +67,7 @@ class EditContactEmailControllerSpec extends PlaySpec with GuiceOneServerPerSuit
     val testEditContactEmailController: EditContactEmailController = new EditContactEmailController(
       mockMcc,
       mockAuthAction,
+      mockServiceInfoService,
       mockSubscriptionDataService
     )
 
@@ -77,6 +84,7 @@ class EditContactEmailControllerSpec extends PlaySpec with GuiceOneServerPerSuit
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
       implicit val hc: HeaderCarrier = HeaderCarrier()
+      when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(btaNavigationLinksView()(messages,mockAppConfig)))
       when(mockSubscriptionDataService.getEmailWithConsent(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(contactDetailsEmail))
       val result = testEditContactEmailController.edit().apply(SessionBuilder.buildRequestWithSession(userId))
 
@@ -129,6 +137,7 @@ class EditContactEmailControllerSpec extends PlaySpec with GuiceOneServerPerSuit
             document.getElementById("emailConsent-true").attr("checked") must be("")
             document.getElementById("emailConsent-false").attr("checked") must be("")
             document.getElementById("emailAddress").attr("value") must be("")
+            assert(document.getElementById("service-info-list").text() === "Home Manage account Messages Help and contact")
         }
       }
 

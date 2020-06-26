@@ -23,6 +23,7 @@ import forms.AtedForms.YesNoQuestionExistingReturnsForm
 import javax.inject.Inject
 import models.SelectPeriod
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import services.ServiceInfoService
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.AtedConstants.RetrieveSelectPeriodFormId
 
@@ -30,6 +31,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class ExistingReturnQuestionController @Inject()(mcc: MessagesControllerComponents,
                                                  authAction: AuthAction,
+                                                 serviceInfoService: ServiceInfoService,
                                                  val dataCacheConnector: DataCacheConnector)
                                                 (implicit val appConfig: ApplicationConfig)
 
@@ -40,8 +42,10 @@ class ExistingReturnQuestionController @Inject()(mcc: MessagesControllerComponen
   def view(periodKey: Int, returnType: String): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
-        Future.successful(Ok(views.html.confirmPastReturn(new YesNoQuestionExistingReturnsForm().yesNoQuestionForm, periodKey,
-          returnType, getBackLink(periodKey, returnType))))
+        serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+          Future.successful(Ok(views.html.confirmPastReturn(new YesNoQuestionExistingReturnsForm().yesNoQuestionForm, periodKey,
+            returnType, serviceInfoContent, getBackLink(periodKey, returnType))))
+        }
       }
     }
   }
@@ -49,21 +53,23 @@ class ExistingReturnQuestionController @Inject()(mcc: MessagesControllerComponen
   def submit(periodKey: Int, returnType: String): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
-        dataCacheConnector.saveFormData[SelectPeriod](RetrieveSelectPeriodFormId, SelectPeriod(Some(periodKey.toString)))
-        val form = new YesNoQuestionExistingReturnsForm
-        form.yesNoQuestionForm.bindFromRequest.fold(
-          formWithError =>
-            Future.successful(BadRequest(views.html.confirmPastReturn(formWithError, periodKey, returnType, getBackLink(periodKey, returnType)))
-            ),
-          data => {
-            val existingPastReturn = data.yesNo.getOrElse(false)
-            if (existingPastReturn) {
-              Future.successful(Redirect(controllers.propertyDetails.routes.SelectExistingReturnAddressController.view(periodKey, returnType)))
-            } else {
-              Future.successful(Redirect(controllers.propertyDetails.routes.AddressLookupController.view(None, periodKey)))
+        serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+          dataCacheConnector.saveFormData[SelectPeriod](RetrieveSelectPeriodFormId, SelectPeriod(Some(periodKey.toString)))
+          val form = new YesNoQuestionExistingReturnsForm
+          form.yesNoQuestionForm.bindFromRequest.fold(
+            formWithError =>
+              Future.successful(BadRequest(views.html.confirmPastReturn(formWithError, periodKey, returnType, serviceInfoContent, getBackLink(periodKey, returnType)))
+              ),
+            data => {
+              val existingPastReturn = data.yesNo.getOrElse(false)
+              if (existingPastReturn) {
+                Future.successful(Redirect(controllers.propertyDetails.routes.SelectExistingReturnAddressController.view(periodKey, returnType)))
+              } else {
+                Future.successful(Redirect(controllers.propertyDetails.routes.AddressLookupController.view(None, periodKey)))
+              }
             }
-          }
-        )
+          )
+        }
       }
     }
   }

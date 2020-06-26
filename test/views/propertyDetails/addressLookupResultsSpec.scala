@@ -18,14 +18,15 @@ package views.propertyDetails
 
 import config.ApplicationConfig
 import forms.AddressLookupForms._
-import testhelpers.MockAuthUtil
 import models._
 import org.jsoup.Jsoup
-import org.scalatestplus.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.test.FakeRequest
+import play.twirl.api.Html
+import testhelpers.MockAuthUtil
 import utils.AtedUtils
 
 class addressLookupResultsSpec extends FeatureSpec with GuiceOneAppPerSuite with MockitoSugar with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
@@ -45,7 +46,7 @@ feature("The user can search for an address via the post code") {
       implicit val request = FakeRequest()
 
       val results = AddressSearchResults(searchCriteria = AddressLookup("XX1 1XX", None), Nil)
-      val html = views.html.propertyDetails.addressLookupResults(None, 2015, addressSelectedForm, results, None, Some("backLink"))
+      val html = views.html.propertyDetails.addressLookupResults(None, 2015, addressSelectedForm, results, None, Html(""), Some("backLink"))
 
       val document = Jsoup.parse(html.toString())
       Then("Select the address of the property")
@@ -91,7 +92,7 @@ feature("The user can search for an address via the post code") {
       val results = AddressSearchResults(searchCriteria = AddressLookup("XX1 1XX", None),
         results = List(address1, address2, address3))
            val html = views.html.propertyDetails.addressLookupResults(Some("123456"),
-             2015, addressSelectedForm, results, Some(AtedUtils.EDIT_SUBMITTED), Some("http://backLink"))
+             2015, addressSelectedForm, results, Some(AtedUtils.EDIT_SUBMITTED), Html(""), Some("http://backLink"))
 
       val document = Jsoup.parse(html.toString())
       Then("Select the address of the property")

@@ -17,7 +17,6 @@
 package controllers.auth
 
 import config.ApplicationConfig
-import testhelpers.TestUtil
 import models.StandardAuthRetrievals
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, _}
@@ -28,6 +27,7 @@ import play.api.mvc.{AnyContentAsEmpty, Result, Results}
 import play.api.test.Helpers.redirectLocation
 import play.api.test.{DefaultAwaitTimeout, FakeRequest}
 import services.DelegationService
+import testhelpers.TestUtil
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.retrieve.~
 import uk.gov.hmrc.http.HeaderCarrier

@@ -23,6 +23,7 @@ import play.api.Logger
 import play.api.i18n.Messages
 import play.api.mvc.Results._
 import play.api.mvc.{AnyContent, Request, Result}
+import play.twirl.api.Html
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.AtedConstants._
 
@@ -50,6 +51,7 @@ trait ClientHelper {
           Some("ated.selected-client-error.wrong.client.HrefLink"),
           Some("ated.selected-client-error.wrong.client.HrefMessage"),
           Some("ated.selected-client-error.wrong.client.PostHrefMessage"),
+          Html(""),
           appConfig
         )))
     }

@@ -24,7 +24,7 @@ import controllers.propertyDetails.AddressLookupController
 import forms.AtedForms.editReliefForm
 import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.ReliefsService
+import services.{ReliefsService, ServiceInfoService}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -33,6 +33,7 @@ class ChangeReliefReturnController @Inject()(mcc: MessagesControllerComponents,
                                              chooseReliefsController: ChooseReliefsController,
                                              authAction: AuthAction,
                                              addressLookupController: AddressLookupController,
+                                             serviceInfoService: ServiceInfoService,
                                              val reliefsService: ReliefsService,
                                              val dataCacheConnector: DataCacheConnector,
                                              val backLinkCacheConnector: BackLinkCacheConnector)
@@ -47,9 +48,11 @@ class ChangeReliefReturnController @Inject()(mcc: MessagesControllerComponents,
   def viewChangeReliefReturn(periodKey: Int, formBundleNumber: String): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
-        currentBackLink.flatMap(backLink =>
-          Future.successful(Ok(views.html.reliefs.changeReliefReturn(periodKey, formBundleNumber, editReliefForm, backLink)))
-        )
+        serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+          currentBackLink.flatMap(backLink =>
+            Future.successful(Ok(views.html.reliefs.changeReliefReturn(periodKey, formBundleNumber, editReliefForm, serviceInfoContent, backLink)))
+          )
+        }
       }
     }
   }
@@ -57,30 +60,32 @@ class ChangeReliefReturnController @Inject()(mcc: MessagesControllerComponents,
   def submit(periodKey: Int, formBundleNumber: String): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
-        editReliefForm.bindFromRequest.fold(
-          formWithError =>
-            currentBackLink.flatMap(backLink =>
-              Future.successful(BadRequest(views.html.reliefs.changeReliefReturn(periodKey, formBundleNumber, formWithError, backLink)))
-            ),
-          editReliefData => {
-            val returnUrl = Some(routes.ChangeReliefReturnController.viewChangeReliefReturn(periodKey, formBundleNumber).url)
-            editReliefData.changeRelief match {
-              case Some("changeDetails") =>
-                redirectWithBackLink(
-                  chooseReliefsController.controllerId,
-                  controllers.reliefs.routes.ChooseReliefsController.view(periodKey),
-                  returnUrl
-                )
-              case Some("createChargeable") =>
-                redirectWithBackLink(
-                  addressLookupController.controllerId,
-                  controllers.propertyDetails.routes.AddressLookupController.view(None, periodKey),
-                  returnUrl
-                )
+        serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+          editReliefForm.bindFromRequest.fold(
+            formWithError =>
+              currentBackLink.flatMap(backLink =>
+                Future.successful(BadRequest(views.html.reliefs.changeReliefReturn(periodKey, formBundleNumber, formWithError, serviceInfoContent, backLink)))
+              ),
+            editReliefData => {
+              val returnUrl = Some(routes.ChangeReliefReturnController.viewChangeReliefReturn(periodKey, formBundleNumber).url)
+              editReliefData.changeRelief match {
+                case Some("changeDetails") =>
+                  redirectWithBackLink(
+                    chooseReliefsController.controllerId,
+                    controllers.reliefs.routes.ChooseReliefsController.view(periodKey),
+                    returnUrl
+                  )
+                case Some("createChargeable") =>
+                  redirectWithBackLink(
+                    addressLookupController.controllerId,
+                    controllers.propertyDetails.routes.AddressLookupController.view(None, periodKey),
+                    returnUrl
+                  )
+              }
             }
-          }
-        )
+          )
 
+        }
       }
     }
   }

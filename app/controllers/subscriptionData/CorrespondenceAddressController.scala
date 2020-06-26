@@ -23,7 +23,7 @@ import forms.AtedForms._
 import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import play.api.{Environment, Logger}
-import services.SubscriptionDataService
+import services.{ServiceInfoService, SubscriptionDataService}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.{AtedUtils, CountryCodeUtils}
 
@@ -32,6 +32,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class CorrespondenceAddressController @Inject()(mcc: MessagesControllerComponents,
                                                 authAction: AuthAction,
                                                 subscriptionDataService: SubscriptionDataService,
+                                                serviceInfoService: ServiceInfoService,
                                                 val environment: Environment)
                                                (implicit val appConfig: ApplicationConfig)
   extends FrontendController(mcc) with CountryCodeUtils {
@@ -40,41 +41,45 @@ class CorrespondenceAddressController @Inject()(mcc: MessagesControllerComponent
 
   def editAddress: Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
-      val correspondenceAddressResponse = subscriptionDataService.getCorrespondenceAddress
-      for {
-        correspondenceAddress <- correspondenceAddressResponse
-      } yield {
-        val populatedForm = correspondenceAddress match {
-          case Some(x) => correspondenceAddressForm.fill(x.addressDetails)
-          case None => correspondenceAddressForm
+      serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+        val correspondenceAddressResponse = subscriptionDataService.getCorrespondenceAddress
+        for {
+          correspondenceAddress <- correspondenceAddressResponse
+        } yield {
+          val populatedForm = correspondenceAddress match {
+            case Some(x) => correspondenceAddressForm.fill(x.addressDetails)
+            case None => correspondenceAddressForm
+          }
+          Ok(views.html.subcriptionData.correspondenceAddress(populatedForm, getIsoCodeTupleList, serviceInfoContent, getBackLink))
         }
-        Ok(views.html.subcriptionData.correspondenceAddress(populatedForm, getIsoCodeTupleList, getBackLink))
       }
     }
   }
 
   def submit: Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
-      AtedForms.verifyUKPostCode(correspondenceAddressForm.bindFromRequest).fold(
-        formWithErrors => Future.successful(BadRequest(views.html.subcriptionData.correspondenceAddress(formWithErrors,
-          getIsoCodeTupleList, getBackLink))),
-        addressData => {
-          val trimmedPostCode = AtedUtils.formatPostCode(addressData.postalCode)
-          val trimmedAddress = addressData.copy(postalCode = trimmedPostCode)
-          for {
-            correspondenceAddress <- subscriptionDataService.updateCorrespondenceAddressDetails(trimmedAddress)
-          }
-            yield {
-              correspondenceAddress match {
-                case Some(_) => Redirect(controllers.subscriptionData.routes.CompanyDetailsController.view())
-                case None =>
-                  Logger.warn(s"[CorrespondenceAddressController][submit] - Unable to update address")
-                  Ok(views.html.global_error("ated.generic.error.title", "ated.generic.error.header",
-                    "ated.generic.error.message", Some("ated.generic.error.message2"), None, None, None, appConfig))
-              }
+      serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+        AtedForms.verifyUKPostCode(correspondenceAddressForm.bindFromRequest).fold(
+          formWithErrors => Future.successful(BadRequest(views.html.subcriptionData.correspondenceAddress(formWithErrors,
+            getIsoCodeTupleList, serviceInfoContent, getBackLink))),
+          addressData => {
+            val trimmedPostCode = AtedUtils.formatPostCode(addressData.postalCode)
+            val trimmedAddress = addressData.copy(postalCode = trimmedPostCode)
+            for {
+              correspondenceAddress <- subscriptionDataService.updateCorrespondenceAddressDetails(trimmedAddress)
             }
-        }
-      )
+              yield {
+                correspondenceAddress match {
+                  case Some(_) => Redirect(controllers.subscriptionData.routes.CompanyDetailsController.view())
+                  case None =>
+                    Logger.warn(s"[CorrespondenceAddressController][submit] - Unable to update address")
+                    Ok(views.html.global_error("ated.generic.error.title", "ated.generic.error.header",
+                      "ated.generic.error.message", Some("ated.generic.error.message2"), None, None, None, serviceInfoContent, appConfig))
+                }
+              }
+          }
+        )
+      }
     }
   }
 

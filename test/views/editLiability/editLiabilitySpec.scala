@@ -18,14 +18,15 @@ package views.editLiability
 
 import config.ApplicationConfig
 import forms.AtedForms._
-import testhelpers.MockAuthUtil
 import models.StandardAuthRetrievals
 import org.jsoup.Jsoup
-import org.scalatestplus.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.test.FakeRequest
+import play.twirl.api.Html
+import testhelpers.MockAuthUtil
 
 class editLiabilitySpec extends FeatureSpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
   implicit val request = FakeRequest()
@@ -42,7 +43,7 @@ feature("The user can view an edit liability type page") {
       When("The user views the page and clicks yes")
 
       implicit val request = FakeRequest()
-      val html = views.html.editLiability.editLiability(editLiabilityReturnTypeForm, "formBundleNo", 2015, editAllowed = true, Some("backLink"))
+      val html = views.html.editLiability.editLiability(editLiabilityReturnTypeForm, "formBundleNo", 2015, editAllowed = true, Html(""), Some("backLink"))
 
       val document = Jsoup.parse(html.toString())
       Then("the page title : Have you disposed of the property?")
@@ -74,7 +75,7 @@ feature("The user can view an edit liability type page") {
 
       implicit val request = FakeRequest()
 
-      val html = views.html.editLiability.editLiability(editLiabilityReturnTypeForm, "formBundleNo", 2015, editAllowed = false, Some("http://backLink"))
+      val html = views.html.editLiability.editLiability(editLiabilityReturnTypeForm, "formBundleNo", 2015, editAllowed = false,  Html(""), Some("http://backLink"))
 
       val document = Jsoup.parse(html.toString())
       Then("the page title : Have you disposed of the property?")

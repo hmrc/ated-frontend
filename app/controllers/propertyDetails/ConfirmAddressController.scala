@@ -23,7 +23,7 @@ import controllers.auth.{AuthAction, ClientHelper}
 import javax.inject.Inject
 import models.SelectPeriod
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{AddressLookupService, ChangeLiabilityReturnService, PropertyDetailsCacheSuccessResponse, PropertyDetailsService}
+import services.{AddressLookupService, ChangeLiabilityReturnService, PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService}
 import uk.gov.hmrc.play.bootstrap.audit.DefaultAuditConnector
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.AtedConstants.{RetrieveSelectPeriodFormId, SelectedPreviousReturn}
@@ -36,6 +36,7 @@ class ConfirmAddressController @Inject()(mcc: MessagesControllerComponents,
                                          addressLookupService: AddressLookupService,
                                          authAction: AuthAction,
                                          changeLiabilityReturnService: ChangeLiabilityReturnService,
+                                         serviceInfoService: ServiceInfoService,
                                          val backLinkCacheConnector: BackLinkCacheConnector,
                                          val propertyDetailsService: PropertyDetailsService,
                                          val dataCacheConnector: DataCacheConnector)
@@ -52,26 +53,29 @@ class ConfirmAddressController @Inject()(mcc: MessagesControllerComponents,
            mode: Option[String] = None): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
-        val backLink = { mode match {
-          case mode if AtedUtils.getPropertyDetailsPreHeader(mode).contains("change") =>
-            Some(controllers.propertyDetails.routes.PropertyDetailsAddressController.view(id,false,periodKey,mode).url)
-          case mode if AtedUtils.isEditSubmittedMode(mode) =>
-           Some(controllers.propertyDetails.routes.SelectExistingReturnAddressController.view(periodKey, "charge").url)
-        case _ =>
-           Some(controllers.propertyDetails.routes.AddressLookupController.view(None, periodKey, mode).url)
+        serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+          val backLink = {
+            mode match {
+              case mode if AtedUtils.getPropertyDetailsPreHeader(mode).contains("change") =>
+                Some(controllers.propertyDetails.routes.PropertyDetailsAddressController.view(id, false, periodKey, mode).url)
+              case mode if AtedUtils.isEditSubmittedMode(mode) =>
+                Some(controllers.propertyDetails.routes.SelectExistingReturnAddressController.view(periodKey, "charge").url)
+              case _ =>
+                Some(controllers.propertyDetails.routes.AddressLookupController.view(None, periodKey, mode).url)
+            }
           }
-        }
 
-        propertyDetailsService.retrieveDraftPropertyDetails(id).map {
+          propertyDetailsService.retrieveDraftPropertyDetails(id).map {
             case successResponse: PropertyDetailsCacheSuccessResponse =>
               val addressProperty = successResponse.propertyDetails.addressProperty
-              Ok(views.html.propertyDetails.confirmAddress(id, periodKey, addressProperty, mode, backLink))
+              Ok(views.html.propertyDetails.confirmAddress(id, periodKey, addressProperty, mode, serviceInfoContent, backLink))
             case _ =>
               Ok(views.html.global_error("ated.generic.error.title", "ated.generic.error.header",
-                "ated.generic.error.message", Some("ated.generic.error.message2"), None, None, None, appConfig))
+                "ated.generic.error.message", Some("ated.generic.error.message2"), None, None, None, serviceInfoContent, appConfig))
           }
         }
       }
+    }
     }
 
   def editSubmittedReturn(oldFormBundleNo: String): Action[AnyContent] = Action.async { implicit request =>
@@ -81,6 +85,7 @@ class ConfirmAddressController @Inject()(mcc: MessagesControllerComponents,
           answer <- dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn)
           periodKey <- dataCacheConnector.fetchAndGetFormData[SelectPeriod](RetrieveSelectPeriodFormId)
           changeLiabilityReturnOpt <- changeLiabilityReturnService.retrieveSubmittedLiabilityReturnAndCache(oldFormBundleNo, answer, periodKey)
+          serviceInfoContent <- serviceInfoService.getPartial
           backLink <- currentBackLink
         } yield {
           changeLiabilityReturnOpt match {
@@ -90,6 +95,7 @@ class ConfirmAddressController @Inject()(mcc: MessagesControllerComponents,
                 x.periodKey,
                 x.addressProperty,
                 AtedUtils.getEditSubmittedMode(x, answer),
+                serviceInfoContent,
                 backLink))
             case None => Redirect(controllers.routes.AccountSummaryController.view())
           }

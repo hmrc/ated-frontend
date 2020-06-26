@@ -25,7 +25,7 @@ import models.ReliefsTaxAvoidance
 import org.joda.time.LocalDate
 import play.api.Logger
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{ReliefsService, SubscriptionDataService}
+import services.{ReliefsService, ServiceInfoService, SubscriptionDataService}
 import uk.gov.hmrc.http.ForbiddenException
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.AtedUtils
@@ -36,6 +36,7 @@ class ReliefsSummaryController @Inject()(mcc: MessagesControllerComponents,
                                          authAction: AuthAction,
                                          reliefDeclarationController: ReliefDeclarationController,
                                          subscriptionDataService: SubscriptionDataService,
+                                         serviceInfoService: ServiceInfoService,
                                          val reliefsService: ReliefsService,
                                          val dataCacheConnector: DataCacheConnector,
                                          val backLinkCacheConnector: BackLinkCacheConnector)
@@ -51,12 +52,14 @@ class ReliefsSummaryController @Inject()(mcc: MessagesControllerComponents,
         validatePeriodKey(periodKey) {
           for {
             backLink <- currentBackLink
+            serviceInfoContent <- serviceInfoService.getPartial
             retrievedData <- reliefsService.retrieveDraftReliefs(authContext.atedReferenceNumber, periodKey)
           } yield {
             val canSubmit = AtedUtils.canSubmit(periodKey, LocalDate.now)
             Ok(views.html.reliefs.reliefsSummary(retrievedData.map(_.periodKey).getOrElse(periodKey),
               retrievedData, canSubmit,
               isComplete(retrievedData),
+              serviceInfoContent,
               backLink))
           }
         }

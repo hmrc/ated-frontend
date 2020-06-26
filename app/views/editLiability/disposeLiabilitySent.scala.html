@@ -15,7 +15,8 @@
  *@
 
 @import config.ApplicationConfig
-@(formBundleNum:String, amountDueOrRefund: BigDecimal, liabilityAmount: BigDecimal, paymentReference: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
+@import play.twirl.api.HtmlFormat
+@(formBundleNum:String, serviceInfoContent: Html = HtmlFormat.empty, amountDueOrRefund: BigDecimal, liabilityAmount: BigDecimal, paymentReference: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 @import views.html.helpers._
 
 @analyticsJs = {
@@ -25,6 +26,7 @@
 }
 
 @atedMain(title = messages("ated.edit-liability.sent.title.dispose"),
+          serviceInfoContent = serviceInfoContent,
           analyticsAdditionalJs = Some(analyticsJs)) {
 
   <div id="banner" class="transaction-banner--complete">

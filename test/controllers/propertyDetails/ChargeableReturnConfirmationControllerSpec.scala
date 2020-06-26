@@ -22,7 +22,6 @@ import builders.SessionBuilder
 import config.ApplicationConfig
 import connectors.DataCacheConnector
 import controllers.auth.AuthAction
-import testhelpers.MockAuthUtil
 import models.{LiabilityReturnResponse, SubmitReturnsResponse}
 import org.joda.time.DateTime
 import org.jsoup.Jsoup
@@ -32,12 +31,15 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
+import play.api.i18n.{Lang, MessagesApi, MessagesImpl}
 import play.api.mvc.{MessagesControllerComponents, Result}
 import play.api.test.Helpers._
-import services.SubscriptionDataService
+import services.{ServiceInfoService, SubscriptionDataService}
+import testhelpers.MockAuthUtil
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.AtedConstants._
+import views.html.BtaNavigationLinks
 
 import scala.concurrent.Future
 
@@ -49,6 +51,10 @@ class ChargeableReturnConfirmationControllerSpec extends PlaySpec with GuiceOneS
   val mockMcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
   val mockSubscriptionDataService: SubscriptionDataService = mock[SubscriptionDataService]
   val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
+    val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
+  val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
+  val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
   val organisationName: String = "ACME Limited"
 
 class Setup {
@@ -63,6 +69,7 @@ class Setup {
     mockMcc,
     mockSubscriptionDataService,
     mockAuthAction,
+    mockServiceInfoService,
     mockDataCacheConnector
   )
 
@@ -74,6 +81,7 @@ class Setup {
       liabilityAmount = BigDecimal("123"), paymentReference = Some("Payment-123"), formBundleNumber = "form-bundle-123")
     val submitReturnsResponse = SubmitReturnsResponse(processingDate = DateTime.now().toString, None, liabilityReturnResponse =
       Some(Seq(liabilityReturnResponse)))
+    when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(btaNavigationLinksView()(messages,mockAppConfig)))
     when(mockDataCacheConnector.fetchAndGetFormData[SubmitReturnsResponse](ArgumentMatchers.eq(SubmitReturnsResponseFormId))
       (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.eq(SubmitReturnsResponse.formats))).thenReturn(Future.successful(Some(submitReturnsResponse)))
 
@@ -156,6 +164,7 @@ reset(mockDelegationService)
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
               document.getElementById("banner").text() must include("Your return has been successfully submitted")
+              assert(document.getElementById("service-info-list").text() === "Home Manage account Messages Help and contact")
               document.getElementById("completed-message")
                 .text() must be("You can view your completed returns, payment references and ways to pay in the ATED online service.")
               document.getElementById("email-message").text() must include("You will not receive an email confirmation.")

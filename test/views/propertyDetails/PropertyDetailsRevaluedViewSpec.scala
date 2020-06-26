@@ -18,15 +18,16 @@ package views.propertyDetails
 
 import config.ApplicationConfig
 import forms.PropertyDetailsForms._
-import testhelpers.MockAuthUtil
 import models.{PropertyDetailsRevalued, StandardAuthRetrievals}
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
-import org.scalatestplus.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.test.FakeRequest
+import play.twirl.api.Html
+import testhelpers.MockAuthUtil
 import utils.AtedUtils
 
 class PropertyDetailsRevaluedViewSpec extends FeatureSpec with GuiceOneAppPerSuite with MockitoSugar
@@ -47,7 +48,7 @@ feature("The user can view an empty property revalue page") {
 
       implicit val request = FakeRequest()
 
-      val html = views.html.propertyDetails.propertyDetailsRevalued("1", 2015, propertyDetailsRevaluedForm, None, Some("backLink"))
+      val html = views.html.propertyDetails.propertyDetailsRevalued("1", 2015, propertyDetailsRevaluedForm, None, Html(""), Some("backLink"))
 
       val document = Jsoup.parse(html.toString())
       Then("the page title : Have you had the property revalued since you made the £40,000 change?")
@@ -100,7 +101,7 @@ feature("The user can view an empty property revalue page") {
         partAcqDispDate = Some(new LocalDate("1972-02-02")))
 
       val html = views.html.propertyDetails.propertyDetailsRevalued("1", 2015,
-        propertyDetailsRevaluedForm.fill(propertyDetailsRevalued), Some(AtedUtils.EDIT_SUBMITTED), Some("http://backLink"))
+        propertyDetailsRevaluedForm.fill(propertyDetailsRevalued), Some(AtedUtils.EDIT_SUBMITTED), Html(""), Some("http://backLink"))
 
       val document = Jsoup.parse(html.toString())
       Then("the page title : Have you had the property revalued since you made the £40,000 change?")
@@ -146,7 +147,7 @@ feature("The user can view an empty property revalue page") {
           revaluedDate = None,
           partAcqDispDate = None)
 
-        val html = views.html.propertyDetails.propertyDetailsRevalued("1", 2015, propertyDetailsRevaluedForm.fill(propertyDetailsRevalued), None, Some("backLink"))
+        val html = views.html.propertyDetails.propertyDetailsRevalued("1", 2015, propertyDetailsRevaluedForm.fill(propertyDetailsRevalued), None, Html(""), Some("backLink"))
 
         val document = Jsoup.parse(html.toString())
         Then("the page title : Have you had the property revalued since you made the £40,000 change?")

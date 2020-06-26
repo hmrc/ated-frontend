@@ -16,7 +16,8 @@
 
 @import models._
 @import config.ApplicationConfig
-@(id: String, periodKey: Int, propertyDetailsForm: Form[PropertyDetailsWhenAcquiredDates], mode: Option[String], backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
+@import play.twirl.api.HtmlFormat
+@(id: String, periodKey: Int, propertyDetailsForm: Form[PropertyDetailsWhenAcquiredDates], mode: Option[String], serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
 @import _root_.utils._
@@ -45,6 +46,7 @@ ga('set', 'page', page);
 }
 
 @atedMain(title = messages("ated.property-details-value.whenAcquired.title"),
+serviceInfoContent = serviceInfoContent,
 pageScripts = Some(pageScripts),
 analyticsAdditionalJs = Some(analyticsJs)) {
 

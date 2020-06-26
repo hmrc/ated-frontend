@@ -18,18 +18,19 @@ package views.editLiability
 
 import builders.PropertyDetailsBuilder
 import config.ApplicationConfig
-import testhelpers.MockAuthUtil
 import models.StandardAuthRetrievals
 import org.joda.time.format.DateTimeFormat
 import org.joda.time.{DateTimeZone, LocalDate}
 import org.jsoup.Jsoup
-import org.scalatestplus.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.test.FakeRequest
-import utils.PeriodUtils._
+import play.twirl.api.Html
+import testhelpers.MockAuthUtil
 import utils.PeriodUtils
+import utils.PeriodUtils._
 
 class editLiabilitySummarySpec extends FeatureSpec with GuiceOneServerPerSuite with MockitoSugar
   with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
@@ -57,7 +58,7 @@ class editLiabilitySummarySpec extends FeatureSpec with GuiceOneServerPerSuite w
       val displayPeriods = PeriodUtils.getDisplayPeriods(propertyDetails.period)
       assert(displayPeriods.size === 2)
       val html = views.html.editLiability.editLiabilitySummary(propertyDetails, "A", displayPeriods,
-        PeriodUtils.getCalculatedPeriodValues(propertyDetails.calculated), Some("backLink"))
+        PeriodUtils.getCalculatedPeriodValues(propertyDetails.calculated), Html(""), Some("backLink"))
 
       val document = Jsoup.parse(html.toString())
 
@@ -109,7 +110,7 @@ class editLiabilitySummarySpec extends FeatureSpec with GuiceOneServerPerSuite w
       val displayPeriods = PeriodUtils.getDisplayPeriods(propertyDetails.period)
       assert(displayPeriods.size === 2)
       val html = views.html.editLiability.editLiabilitySummary(propertyDetails, "C", displayPeriods,
-        PeriodUtils.getCalculatedPeriodValues(propertyDetails.calculated), Some("http://backLink"))
+        PeriodUtils.getCalculatedPeriodValues(propertyDetails.calculated), Html(""), Some("http://backLink"))
 
       val document = Jsoup.parse(html.toString())
 
@@ -160,7 +161,7 @@ class editLiabilitySummarySpec extends FeatureSpec with GuiceOneServerPerSuite w
       val propertyDetails = PropertyDetailsBuilder.getFullPropertyDetails(id = "1", postCode = Some("123456"), liabilityAmount = Some(BigDecimal(1000.20)))
 
       val html = views.html.editLiability.editLiabilitySummary(propertyDetails, "F", Nil,
-        PeriodUtils.getCalculatedPeriodValues(propertyDetails.calculated), Some("http://backLink"))
+        PeriodUtils.getCalculatedPeriodValues(propertyDetails.calculated), Html(""), Some("http://backLink"))
 
       val document = Jsoup.parse(html.toString())
 

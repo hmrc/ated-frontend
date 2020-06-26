@@ -23,7 +23,7 @@ import forms.PropertyDetailsForms._
 import javax.inject.Inject
 import org.joda.time.LocalDate
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService}
+import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.AtedConstants.SelectedPreviousReturn
 import utils.{AtedUtils, PeriodUtils}
@@ -33,6 +33,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class PeriodsInAndOutReliefController @Inject()(mcc: MessagesControllerComponents,
                                                 authAction: AuthAction,
                                                 propertyDetailsTaxAvoidanceController: PropertyDetailsTaxAvoidanceController,
+                                                serviceInfoService: ServiceInfoService,
                                                 val propertyDetailsService: PropertyDetailsService,
                                                 val dataCacheConnector: DataCacheConnector,
                                                 val backLinkCacheConnector: BackLinkCacheConnector)
@@ -46,17 +47,20 @@ class PeriodsInAndOutReliefController @Inject()(mcc: MessagesControllerComponent
   def view(id: String) : Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
-        propertyDetailsCacheResponse(id) {
-          case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
-            currentBackLink.flatMap { backLink =>
-              dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
-                Future.successful(Ok(views.html.propertyDetails.periodsInAndOutRelief(id, propertyDetails.periodKey,
-                  periodsInAndOutReliefForm,
-                  PeriodUtils.getDisplayPeriods(propertyDetails.period),
-                  AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn),
-                  backLink)))
+        serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+          propertyDetailsCacheResponse(id) {
+            case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
+              currentBackLink.flatMap { backLink =>
+                dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
+                  Future.successful(Ok(views.html.propertyDetails.periodsInAndOutRelief(id, propertyDetails.periodKey,
+                    periodsInAndOutReliefForm,
+                    PeriodUtils.getDisplayPeriods(propertyDetails.period),
+                    AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn),
+                    serviceInfoContent,
+                    backLink)))
+                }
               }
-            }
+          }
         }
       }
     }
@@ -67,12 +71,14 @@ class PeriodsInAndOutReliefController @Inject()(mcc: MessagesControllerComponent
       ensureClientContext {
         for {
           propertyDetails <- propertyDetailsService.deleteDraftPropertyDetailsPeriod(id, startDate)
+          serviceInfoContent <- serviceInfoService.getPartial
           result <-
           currentBackLink.flatMap(backLink =>
             Future.successful(Ok(views.html.propertyDetails.periodsInAndOutRelief(id, propertyDetails.periodKey,
               periodsInAndOutReliefForm,
               PeriodUtils.getDisplayPeriods(propertyDetails.period),
               AtedUtils.getEditSubmittedMode(propertyDetails),
+              serviceInfoContent,
               backLink))
             ))
         } yield {

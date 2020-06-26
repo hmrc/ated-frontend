@@ -17,11 +17,12 @@
 @import models._
 @import config.ApplicationConfig
 @import views.html.helpers._
+@import play.twirl.api.HtmlFormat
 
 @(returnsCurrentTaxYear: Seq[AccountSummaryRowModel], totalCurrentYearReturns: Int, hasPastReturns: Boolean,
-        otherReturns: SummaryReturnsModel, correspondence: Option[Address], organisationName: Option[String], clientBanner: Html,
+        otherReturns: SummaryReturnsModel, correspondence: Option[Address], organisationName: Option[String], serviceInfoContent: Html = HtmlFormat.empty, clientBanner: Html,
         duringPeak: Boolean, currentYear: Int, taxYearStartingYear: Int, fromAccountSummary: Boolean)(implicit authContext: StandardAuthRetrievals,
-        messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
+        messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig, applicationConfig: config.AppConfig)
 
 @analyticsJs = {
     ga('set', 'page', document.location.pathname);
@@ -37,6 +38,7 @@
     pageScripts = Some(pageScripts),
     sidebarLinks = Some(_accountSummary_sideBar(otherReturns.atedBalance, correspondence, organisationName, clientBanner)),
     sidebarClass = Some("related"),
+    serviceInfoContent = serviceInfoContent,
     banner = clientBanner,
     analyticsAdditionalJs = Some(analyticsJs),
     showUrBanner = Some(true)

@@ -18,15 +18,16 @@ package views.propertyDetails
 
 import config.ApplicationConfig
 import forms.PropertyDetailsForms._
-import testhelpers.MockAuthUtil
 import models.{PeriodChooseRelief, StandardAuthRetrievals}
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
-import org.scalatestplus.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.test.FakeRequest
+import play.twirl.api.Html
+import testhelpers.MockAuthUtil
 import utils.ReliefsUtils
 
 class periodChooseReliefSpec extends FeatureSpec with GuiceOneAppPerSuite with MockitoSugar
@@ -47,7 +48,7 @@ feature("The user can add a period that the property is in relief") {
 
       val periodStartDate = new LocalDate("2015-01-01")
       val periodEndDate = new LocalDate("2016-02-02")
-      val html = views.html.propertyDetails.periodChooseRelief("1", 2015, periodChooseReliefForm, Some("backLink"))
+      val html = views.html.propertyDetails.periodChooseRelief("1", 2015, periodChooseReliefForm, Html(""), Some("backLink"))
 
       val document = Jsoup.parse(html.toString())
 
@@ -91,7 +92,7 @@ feature("The user can add a period that the property is in relief") {
       val periodStartDate = new LocalDate("2015-01-01")
       val periodEndDate = new LocalDate("2016-02-02")
       val html = views.html.propertyDetails.periodChooseRelief("1",
-        2015, periodChooseReliefForm.fill(PeriodChooseRelief(ReliefsUtils.RentalBusinessDesc)), Some("http://backLink"))
+        2015, periodChooseReliefForm.fill(PeriodChooseRelief(ReliefsUtils.RentalBusinessDesc)), Html(""), Some("http://backLink"))
 
       val document = Jsoup.parse(html.toString())
 

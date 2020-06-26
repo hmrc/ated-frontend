@@ -23,7 +23,7 @@ import javax.inject.Inject
 import models.{Identification, OverseasCompanyRegistration}
 import play.api.Environment
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.SubscriptionDataService
+import services.{ServiceInfoService, SubscriptionDataService}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.CountryCodeUtils
 
@@ -33,6 +33,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class OverseasCompanyRegistrationController @Inject()(mcc: MessagesControllerComponents,
                                                       authAction: AuthAction,
                                                       subscriptionDataService: SubscriptionDataService,
+                                                      serviceInfoService: ServiceInfoService,
                                                       val environment: Environment)
                                                      (implicit val appConfig: ApplicationConfig)
   extends FrontendController(mcc) with CountryCodeUtils {
@@ -43,30 +44,33 @@ class OverseasCompanyRegistrationController @Inject()(mcc: MessagesControllerCom
     authAction.authorisedAction { implicit authContext =>
       for {
         overseasCompanyRegistration <- subscriptionDataService.getOverseasCompanyRegistration
+        serviceInfoContent <- serviceInfoService.getPartial
       } yield {
         val result = OverseasCompanyRegistration(overseasCompanyRegistration
           .map(_.idNumber), overseasCompanyRegistration.map(_.issuingInstitution), overseasCompanyRegistration.map(_.issuingCountryCode))
         Ok(views.html.subcriptionData.overseasCompanyRegistration
-        (overseasCompanyRegistrationForm.fill(result), getIsoCodeTupleList, getBackLink()))
+        (overseasCompanyRegistrationForm.fill(result), getIsoCodeTupleList, serviceInfoContent, getBackLink()))
       }
     }
   }
 
   def submit: Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
-      overseasCompanyRegistrationForm.bindFromRequest().fold(
-        formWithErrors =>
-          Future.successful(BadRequest(views.html.subcriptionData.overseasCompanyRegistration
-          (formWithErrors, getIsoCodeTupleList, getBackLink()))),
-        data => {
-          for {
-            _ <- subscriptionDataService.updateOverseasCompanyRegistration(Identification(data.businessUniqueId
-              .getOrElse(""),data.issuingInstitution.getOrElse(""), data.countryCode.getOrElse("")))
-          } yield {
-            Redirect(controllers.subscriptionData.routes.CompanyDetailsController.view())
+      serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+        overseasCompanyRegistrationForm.bindFromRequest().fold(
+          formWithErrors =>
+            Future.successful(BadRequest(views.html.subcriptionData.overseasCompanyRegistration
+            (formWithErrors, getIsoCodeTupleList, serviceInfoContent, getBackLink()))),
+          data => {
+            for {
+              _ <- subscriptionDataService.updateOverseasCompanyRegistration(Identification(data.businessUniqueId
+                .getOrElse(""), data.issuingInstitution.getOrElse(""), data.countryCode.getOrElse("")))
+            } yield {
+              Redirect(controllers.subscriptionData.routes.CompanyDetailsController.view())
+            }
           }
-        }
-      )
+        )
+      }
     }
   }
 

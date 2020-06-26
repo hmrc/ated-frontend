@@ -19,14 +19,15 @@ package views.propertyDetails
 import builders.{PropertyDetailsBuilder, TitleBuilder}
 import config.ApplicationConfig
 import forms.PropertyDetailsForms._
-import testhelpers.MockAuthUtil
 import models.StandardAuthRetrievals
 import org.jsoup.Jsoup
-import org.scalatestplus.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.test.FakeRequest
+import play.twirl.api.Html
+import testhelpers.MockAuthUtil
 import utils.AtedUtils
 
 class PropertyDetailsAddressSpec extends FeatureSpec with GuiceOneServerPerSuite with MockitoSugar
@@ -47,7 +48,7 @@ feature("The user can view an empty property details page") {
       implicit val request = FakeRequest()
 
       val html = views.html.propertyDetails.propertyDetailsAddress(
-        None, 2015, propertyDetailsAddressForm, None, Some("backLink"), fromConfirmAddressPage = false)
+        None, 2015, propertyDetailsAddressForm, None, Html(""), Some("backLink"), fromConfirmAddressPage = false)
 
       val document = Jsoup.parse(html.toString())
       Then("Enter your property details")
@@ -85,7 +86,7 @@ feature("The user can view an empty property details page") {
 
       val propertyDetails = PropertyDetailsBuilder.getPropertyDetailsAddress(Some("postCode"))
       val html = views.html.propertyDetails.propertyDetailsAddress(
-        Some("1"), 2015, propertyDetailsAddressForm.fill(propertyDetails), Some(AtedUtils.EDIT_SUBMITTED), Some("http://backLink"), fromConfirmAddressPage = false)
+        Some("1"), 2015, propertyDetailsAddressForm.fill(propertyDetails), Some(AtedUtils.EDIT_SUBMITTED), Html(""), Some("http://backLink"), fromConfirmAddressPage = false)
 
       val document = Jsoup.parse(html.toString())
       Then("Enter your property details")
@@ -125,7 +126,7 @@ feature("The user can view an empty property details page") {
       implicit val request = FakeRequest()
       val propertyDetails = PropertyDetailsBuilder.getPropertyDetailsAddress(Some("postCode"))
       val html = views.html.propertyDetails.propertyDetailsAddress(
-        Some("1"), 2015, propertyDetailsAddressForm.fill(propertyDetails), None, Some("http://backLink"), fromConfirmAddressPage = true)
+        Some("1"), 2015, propertyDetailsAddressForm.fill(propertyDetails), None, Html(""), Some("http://backLink"), fromConfirmAddressPage = true)
 
       val document = Jsoup.parse(html.toString())
 

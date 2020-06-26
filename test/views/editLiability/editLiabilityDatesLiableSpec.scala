@@ -18,14 +18,15 @@ package views.editLiability
 
 import config.ApplicationConfig
 import forms.PropertyDetailsForms._
-import testhelpers.MockAuthUtil
 import models.StandardAuthRetrievals
 import org.jsoup.Jsoup
-import org.scalatestplus.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.test.FakeRequest
+import play.twirl.api.Html
+import testhelpers.MockAuthUtil
 
 class editLiabilityDatesLiableSpec extends FeatureSpec with GuiceOneAppPerSuite with MockitoSugar
   with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil{
@@ -44,7 +45,7 @@ implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetr
       Given("the client is adding a dates liable")
       When("The user views the page")
 
-      val html = views.html.editLiability.editLiabilityDatesLiable("1", 2015, periodDatesLiableForm, Some("http://backLink"))
+      val html = views.html.editLiability.editLiabilityDatesLiable("1", 2015, periodDatesLiableForm,  Html(""), Some("http://backLink"))
 
       val document = Jsoup.parse(html.toString())
 

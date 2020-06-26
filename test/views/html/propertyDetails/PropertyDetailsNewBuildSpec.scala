@@ -18,12 +18,10 @@ package views.html.propertyDetails
 
 import config.ApplicationConfig
 import forms.PropertyDetailsForms
-import testhelpers.{AtedViewSpec, MockAuthUtil}
 import models.StandardAuthRetrievals
 import org.scalatestplus.mockito.MockitoSugar
-import play.api.data.{Form, FormError}
-import play.api.i18n.Messages
 import play.twirl.api.Html
+import testhelpers.{AtedViewSpec, MockAuthUtil}
 
 class PropertyDetailsNewBuildSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil {
 
@@ -43,6 +41,6 @@ class PropertyDetailsNewBuildSpec extends AtedViewSpec with MockitoSugar with Mo
   }
 
   private val form = PropertyDetailsForms.propertyDetailsNewBuildForm
-  override def view: Html = views.html.propertyDetails.propertyDetailsNewBuild("",0,  form, None, Some("backLink"))
+  override def view: Html = views.html.propertyDetails.propertyDetailsNewBuild("",0,  form, None, Html(""), Some("backLink"))
 
 }

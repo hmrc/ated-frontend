@@ -17,11 +17,10 @@
 package views.html.reliefs
 
 import config.ApplicationConfig
-import testhelpers.{AtedViewSpec, MockAuthUtil}
 import models.StandardAuthRetrievals
 import org.scalatestplus.mockito.MockitoSugar
-import play.api.i18n.Messages
 import play.twirl.api.Html
+import testhelpers.{AtedViewSpec, MockAuthUtil}
 
 class ReliefDeclarationSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil {
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
@@ -33,6 +32,6 @@ class ReliefDeclarationSpec extends AtedViewSpec with MockitoSugar with MockAuth
   }
 
   private val periodKey = 2017
-  override def view: Html = views.html.reliefs.reliefDeclaration(periodKey, None)
+  override def view: Html = views.html.reliefs.reliefDeclaration(periodKey, Html(""), None)
 
 }

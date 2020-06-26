@@ -30,6 +30,7 @@ object AppDependencies {
         "org.jsoup" % "jsoup" % "1.8.3" % scope,
         "com.typesafe.play" %% "play-test" % PlayVersion.current % scope,
         "org.mockito" % "mockito-core" % "3.3.3" % scope,
+        "org.scalamock" %% "scalamock-scalatest-support" % "3.6.0" % scope,
         "uk.gov.hmrc" %% "hmrctest" % "3.9.0-play-26" % scope
       )
     }.test

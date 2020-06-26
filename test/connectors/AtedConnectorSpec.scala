@@ -20,7 +20,6 @@ import java.util.UUID
 
 import builders._
 import config.ApplicationConfig
-import testhelpers.MockAuthUtil
 import models._
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
@@ -30,6 +29,7 @@ import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.libs.json.{JsValue, Json}
 import play.api.test.Helpers._
+import testhelpers.MockAuthUtil
 import uk.gov.hmrc.http.logging.SessionId
 import uk.gov.hmrc.http.{UnauthorizedException, _}
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient

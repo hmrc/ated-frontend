@@ -18,12 +18,11 @@ package views.html.propertyDetails
 
 import config.ApplicationConfig
 import forms.PropertyDetailsForms
-import testhelpers.{AtedViewSpec, MockAuthUtil}
 import models.StandardAuthRetrievals
 import org.joda.time.LocalDate
 import org.scalatestplus.mockito.MockitoSugar
-import play.api.i18n.Messages
 import play.twirl.api.Html
+import testhelpers.{AtedViewSpec, MockAuthUtil}
 
 class IsFullTaxPeriodSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil {
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
@@ -47,6 +46,6 @@ class IsFullTaxPeriodSpec extends AtedViewSpec with MockitoSugar with MockAuthUt
 
   private val form = PropertyDetailsForms.isFullTaxPeriodForm.withError("isFullPeriod",
     messages("ated.property-details-period.isFullPeriod.error-field-name"))
-  override def view: Html = views.html.propertyDetails.isFullTaxPeriod("",0,  form, new LocalDate, new LocalDate, Some("backLink"))
+  override def view: Html = views.html.propertyDetails.isFullTaxPeriod("",0,  form, new LocalDate, new LocalDate, Html(""), Some("backLink"))
 
 }

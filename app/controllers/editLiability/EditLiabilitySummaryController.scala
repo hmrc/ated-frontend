@@ -24,7 +24,7 @@ import javax.inject.Inject
 import models.{PropertyDetails, StandardAuthRetrievals}
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request}
-import services.{PropertyDetailsService, SubscriptionDataService}
+import services.{PropertyDetailsService, ServiceInfoService, SubscriptionDataService}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.PeriodUtils
@@ -35,6 +35,7 @@ class EditLiabilitySummaryController @Inject()(mcc: MessagesControllerComponents
                                                propertyDetailsService: PropertyDetailsService,
                                                subscriptionDataService: SubscriptionDataService,
                                                authAction: AuthAction,
+                                               serviceInfoService: ServiceInfoService,
                                                val dataCacheConnector: DataCacheConnector,
                                                val backLinkCacheConnector: BackLinkCacheConnector)(implicit val appConfig: ApplicationConfig)
   extends FrontendController(mcc) with BackLinkController with ClientHelper with I18nSupport with ControllerIds {
@@ -83,14 +84,17 @@ class EditLiabilitySummaryController @Inject()(mcc: MessagesControllerComponents
 
   private def viewSummaryDetails(propertyDetails: PropertyDetails)
                                 (implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier, request: Request[AnyContent]) = {
-    currentBackLink.map(
-      backLink =>
-        Ok(views.html.editLiability.editLiabilitySummary(propertyDetails,
-          getReturnType(propertyDetails),
-          PeriodUtils.getDisplayPeriods(propertyDetails.period),
-          PeriodUtils.getCalculatedPeriodValues(propertyDetails.calculated),
-          backLink))
-    )
+    serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+      currentBackLink.map(
+        backLink =>
+          Ok(views.html.editLiability.editLiabilitySummary(propertyDetails,
+            getReturnType(propertyDetails),
+            PeriodUtils.getDisplayPeriods(propertyDetails.period),
+            PeriodUtils.getCalculatedPeriodValues(propertyDetails.calculated),
+            serviceInfoContent,
+            backLink))
+      )
+    }
   }
 
   private def getReturnType(propertyDetails: PropertyDetails) = {

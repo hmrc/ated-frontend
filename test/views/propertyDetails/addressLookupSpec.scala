@@ -18,14 +18,15 @@ package views.propertyDetails
 
 import config.ApplicationConfig
 import forms.AddressLookupForms._
-import testhelpers.MockAuthUtil
 import models.StandardAuthRetrievals
 import org.jsoup.Jsoup
-import org.scalatestplus.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.test.FakeRequest
+import play.twirl.api.Html
+import testhelpers.MockAuthUtil
 import utils.AtedUtils
 
 class addressLookupSpec extends FeatureSpec with GuiceOneAppPerSuite with MockitoSugar
@@ -45,7 +46,7 @@ feature("The user can search for an address via the post code") {
       When("The user views the page")
       implicit val request = FakeRequest()
 
-      val html = views.html.propertyDetails.addressLookup(None, 2015, addressLookupForm, None, Some("backLink"))
+      val html = views.html.propertyDetails.addressLookup(None, 2015, addressLookupForm, None, Html(""), Some("backLink"))
 
       val document = Jsoup.parse(html.toString())
       Then("The title and header should match - Find the property's address")
@@ -79,7 +80,7 @@ feature("The user can search for an address via the post code") {
       implicit val request = FakeRequest()
 
       val html = views.html.propertyDetails
-        .addressLookup(Some("123456"), 2015, addressLookupForm, Some(AtedUtils.EDIT_SUBMITTED), Some("http://backLink"))
+        .addressLookup(Some("123456"), 2015, addressLookupForm, Some(AtedUtils.EDIT_SUBMITTED), Html(""), Some("http://backLink"))
 
       val document = Jsoup.parse(html.toString())
       Then("The title and header should match - Find the property's address")

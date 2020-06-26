@@ -29,7 +29,7 @@ class ErrorHandler @Inject()(val messagesApi: MessagesApi,
 
 	override def standardErrorTemplate(pageTitle: String, heading: String, message: String)
 																		(implicit request: Request[_]): Html = {
-		views.html.global_error(pageTitle, heading, message, None, None, None, None, applicationConfig)
+		views.html.global_error(pageTitle, heading, message, None, None, None, None, Html(""), applicationConfig)
 	}
 
 	override def internalServerErrorTemplate(implicit request: Request[_]): Html = {
@@ -40,6 +40,7 @@ class ErrorHandler @Inject()(val messagesApi: MessagesApi,
 			None,
 			None,
 			None,
+			Html(""),
 			applicationConfig)
 	}
 }

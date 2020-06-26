@@ -19,11 +19,11 @@
 @import _root_.utils.AtedConstants._
 @import _root_.utils.PeriodUtils._
 @import views.html.helpers._
+@import play.twirl.api.HtmlFormat
 
 @(periodKey: Int, currentSummaries: Option[PeriodSummaryReturns],
     previousSummaries: Option[PeriodSummaryReturns],
-    organisationName: Option[String], backLink: Option[String])(implicit authContext: StandardAuthRetrievals,
-    messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
+    organisationName: Option[String], serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
 @analyticsJs = {
     ga('set', 'page', document.location.pathname);
@@ -31,7 +31,7 @@
 }
 
 @atedMain(title = messages("ated.period-summary.title", periodStartDate(periodKey).getYear.toString,
-    periodEndDate(periodKey).getYear.toString), analyticsAdditionalJs = Some(analyticsJs)){
+    periodEndDate(periodKey).getYear.toString), serviceInfoContent = serviceInfoContent, analyticsAdditionalJs = Some(analyticsJs)){
 
     @pageHeadersAndError(
         backLink, "period-summary-subheader", organisationName.getOrElse(""), "period-summary-header",

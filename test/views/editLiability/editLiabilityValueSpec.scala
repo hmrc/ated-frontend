@@ -18,14 +18,15 @@ package views.editLiability
 
 import config.ApplicationConfig
 import forms.PropertyDetailsForms._
-import testhelpers.MockAuthUtil
 import models.{HasValueChanged, StandardAuthRetrievals}
 import org.jsoup.Jsoup
-import org.scalatestplus.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.test.FakeRequest
+import play.twirl.api.Html
+import testhelpers.MockAuthUtil
 
 class editLiabilityValueSpec extends FeatureSpec with GuiceOneServerPerSuite with MockitoSugar
   with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
@@ -44,7 +45,7 @@ feature("The user can view an edit liability value page") {
 
       implicit val request = FakeRequest()
 
-      val html = views.html.editLiability.editLiabilityHasValueChanged(Some(BigDecimal(123.45)), "1", hasValueChangedForm, None, Some("http://backLink"))
+      val html = views.html.editLiability.editLiabilityHasValueChanged(Some(BigDecimal(123.45)), "1", hasValueChangedForm, None, Html(""), Some("http://backLink"))
 
       val document = Jsoup.parse(html.toString())
       Then("the page title : Has the value of your property changed for the purposes of ATED?")
@@ -82,7 +83,7 @@ feature("The user can view an edit liability value page") {
       implicit val request = FakeRequest()
 
       val html = views.html.editLiability.editLiabilityHasValueChanged(Some(BigDecimal(45678.12)), "1",
-        hasValueChangedForm.fill(HasValueChanged(Some(true))), None, Some("http://backLink"))
+        hasValueChangedForm.fill(HasValueChanged(Some(true))), None,  Html(""), Some("http://backLink"))
 
       val document = Jsoup.parse(html.toString())
       Then("the page title : Has the value of your property changed for the purposes of ATED?")

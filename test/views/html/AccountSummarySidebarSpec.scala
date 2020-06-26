@@ -20,6 +20,7 @@ import config.ApplicationConfig
 import models.{Address, StandardAuthRetrievals}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneAppPerTest
@@ -29,7 +30,6 @@ import play.api.test.FakeRequest
 import play.twirl.api.{Html, HtmlFormat}
 import testhelpers.MockAuthUtil
 import utils.TestModels
-import org.mockito.Mockito.when
 
 class AccountSummarySidebarSpec extends PlaySpec with MockAuthUtil
   with GuiceOneAppPerTest with TestModels with MockitoSugar {

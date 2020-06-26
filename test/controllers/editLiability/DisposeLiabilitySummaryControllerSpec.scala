@@ -22,7 +22,6 @@ import builders._
 import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.AuthAction
-import testhelpers.MockAuthUtil
 import models.DisposeLiabilityReturn
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
@@ -31,12 +30,15 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
+import play.api.i18n.{Lang, MessagesApi, MessagesImpl}
 import play.api.mvc.{MessagesControllerComponents, Result}
 import play.api.test.Helpers._
-import services.{DisposeLiabilityReturnService, SubscriptionDataService}
+import services.{DisposeLiabilityReturnService, ServiceInfoService, SubscriptionDataService}
+import testhelpers.MockAuthUtil
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.AtedConstants
+import views.html.BtaNavigationLinks
 
 import scala.concurrent.Future
 
@@ -51,6 +53,10 @@ class DisposeLiabilitySummaryControllerSpec extends PlaySpec with GuiceOneServer
   val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
   val mockBackLinkCacheConnector: BackLinkCacheConnector = mock[BackLinkCacheConnector]
   val mockDisposeLiabilityDeclarationController: DisposeLiabilityDeclarationController = mock[DisposeLiabilityDeclarationController]
+    val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
+  val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
+  val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
 
   val organisationName: String = "ACME Limited"
   val oldFormBundleNum = "123456789012"
@@ -69,6 +75,7 @@ class DisposeLiabilitySummaryControllerSpec extends PlaySpec with GuiceOneServer
       mockSubscriptionDataService,
       mockAuthAction,
       mockDisposeLiabilityDeclarationController,
+      mockServiceInfoService,
       mockDataCacheConnector,
       mockBackLinkCacheConnector
     )
@@ -77,6 +84,7 @@ class DisposeLiabilitySummaryControllerSpec extends PlaySpec with GuiceOneServer
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
+      when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(btaNavigationLinksView()(messages,mockAppConfig)))
       when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
         (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
       when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
@@ -131,6 +139,7 @@ class DisposeLiabilitySummaryControllerSpec extends PlaySpec with GuiceOneServer
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
             document.title must be("Check your details are correct - GOV.UK")
+            assert(document.getElementById("service-info-list").text() === "Home Manage account Messages Help and contact")
             document.getElementById("edit-liability-summary-header").text() must be("Check your details are correct")
             document.getElementById("details-text").text() must be("For the ATED period from 1 April 2015 to 31 March 2016.")
             document.getElementById("cya-bank-details").text() must include("Supply bank details INCOMPLETE Edit")

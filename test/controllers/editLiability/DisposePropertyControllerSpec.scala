@@ -22,7 +22,6 @@ import builders._
 import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.AuthAction
-import testhelpers.MockAuthUtil
 import models._
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
@@ -32,14 +31,17 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
+import play.api.i18n.{Lang, MessagesApi, MessagesImpl}
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.{DisposeLiabilityReturnService, SubscriptionDataService}
+import services.{DisposeLiabilityReturnService, ServiceInfoService, SubscriptionDataService}
+import testhelpers.MockAuthUtil
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.AtedConstants
+import views.html.BtaNavigationLinks
 
 import scala.concurrent.Future
 
@@ -54,6 +56,10 @@ class DisposePropertyControllerSpec extends PlaySpec with GuiceOneServerPerSuite
   val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
   val mockBackLinkCacheConnector: BackLinkCacheConnector = mock[BackLinkCacheConnector]
   val mockDisposeLiabilityHasBankDetailsController: DisposeLiabilityHasBankDetailsController = mock[DisposeLiabilityHasBankDetailsController]
+    val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
+  val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
+  val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
 
   class Setup {
 
@@ -68,6 +74,7 @@ class DisposePropertyControllerSpec extends PlaySpec with GuiceOneServerPerSuite
       mockDisposeLiabilityReturnService,
       mockAuthAction,
       mockDisposeLiabilityHasBankDetailsController,
+      mockServiceInfoService,
       mockDataCacheConnector,
       mockBackLinkCacheConnector
     )
@@ -81,6 +88,7 @@ class DisposePropertyControllerSpec extends PlaySpec with GuiceOneServerPerSuite
       when(mockDisposeLiabilityReturnService.retrieveLiabilityReturn(ArgumentMatchers.eq(oldFormBundleNum))
       (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(disposeLiabilityReturn))
       when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+      when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(btaNavigationLinksView()(messages,mockAppConfig)))
       val result = testDisposePropertyController.view(oldFormBundleNum).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
@@ -135,6 +143,7 @@ class DisposePropertyControllerSpec extends PlaySpec with GuiceOneServerPerSuite
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
             document.title() must be(TitleBuilder.buildTitle("When did you dispose of the property?"))
+            assert(document.getElementById("service-info-list").text() === "Home Manage account Messages Help and contact")
             document.getElementById("dispose-property-header").text() must be("When did you dispose of the property?")
             document.getElementById("dateOfDisposal_hint").text() must be("For example, 31 3 2017")
             document.getElementById("submit").text() must be("Save and continue")

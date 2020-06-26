@@ -16,18 +16,19 @@
 
 @import models._
 @import config.ApplicationConfig
-
+@import play.twirl.api.HtmlFormat
 @(id: String,
         periodKey: Int,
         propertyDetails: PropertyDetailsAddress,
         mode: Option[String] = None,
+        serviceInfoContent: Html = HtmlFormat.empty,
         backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
 @import _root_.utils._
 
-@atedMain(title = messages("ated.confirm-address.title")) {
+@atedMain(title = messages("ated.confirm-address.title"), serviceInfoContent = serviceInfoContent) {
     @pageHeadersAndError(backLink, "pre-heading", messages(AtedUtils.getPropertyDetailsPreHeader(mode)), "confirm-address-header", messages("ated.confirm-address.header"))
 
     <div id="address">

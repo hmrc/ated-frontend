@@ -16,7 +16,8 @@
 
 @import models._
 @import config.ApplicationConfig
-@(submittedReliefReturn: SubmittedReliefReturns, periodKey: Int, formBundleNumber: String, organisationName: Option[String], isEditable: Boolean, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
+@import play.twirl.api.HtmlFormat
+@(submittedReliefReturn: SubmittedReliefReturns, periodKey: Int, formBundleNumber: String, organisationName: Option[String], isEditable: Boolean, serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 @import uk.gov.hmrc.play.views.html._
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
@@ -30,6 +31,7 @@
 }
 
 @atedMain(title = messages("ated.view-relief-return.title"),
+          serviceInfoContent = serviceInfoContent,
           analyticsAdditionalJs = Some(analyticsJs)) {
 
   @pageHeadersAndError(backLink, "relief-return-subheader", organisationName.getOrElse(""), "relief-return-header", messages("ated.view-relief-return.header"))

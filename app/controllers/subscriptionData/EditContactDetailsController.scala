@@ -23,13 +23,14 @@ import javax.inject.Inject
 import models.EditContactDetails
 import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.SubscriptionDataService
+import services.{ServiceInfoService, SubscriptionDataService}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
 import scala.concurrent.{ExecutionContext, Future}
 
 class EditContactDetailsController @Inject()(mcc: MessagesControllerComponents,
                                              authAction: AuthAction,
+                                             serviceInfoService: ServiceInfoService,
                                              subscriptionDataService: SubscriptionDataService)
                                             (implicit val appConfig: ApplicationConfig)
 
@@ -39,38 +40,43 @@ implicit val ec: ExecutionContext = mcc.executionContext
 
   def edit: Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
-      for {
-        contactAddress <- subscriptionDataService.getCorrespondenceAddress
-      } yield {
-        val populatedForm = contactAddress.fold(editContactDetailsForm) { x =>
-          val editContactDetails = EditContactDetails(firstName = x.name1.getOrElse(""),
-            lastName = x.name2.getOrElse(""),
-            phoneNumber = x.contactDetails.fold("")(a => a.phoneNumber.getOrElse("")))
-          editContactDetailsForm.fill(editContactDetails)
+      serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+        for {
+          contactAddress <- subscriptionDataService.getCorrespondenceAddress
+
+        } yield {
+          val populatedForm = contactAddress.fold(editContactDetailsForm) { x =>
+            val editContactDetails = EditContactDetails(firstName = x.name1.getOrElse(""),
+              lastName = x.name2.getOrElse(""),
+              phoneNumber = x.contactDetails.fold("")(a => a.phoneNumber.getOrElse("")))
+            editContactDetailsForm.fill(editContactDetails)
+          }
+          Ok(views.html.subcriptionData.editContactDetails(populatedForm, serviceInfoContent, getBackLink))
         }
-        Ok(views.html.subcriptionData.editContactDetails(populatedForm, getBackLink))
       }
     }
   }
 
   def submit: Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
-      editContactDetailsForm.bindFromRequest.fold(
-        formWithErrors => Future.successful(BadRequest(views.html.subcriptionData.editContactDetails(formWithErrors, getBackLink))),
-        editedClientData => {
-          for {
-            editedContact <- subscriptionDataService.editContactDetails(editedClientData)
-          } yield {
-            editedContact match {
-              case Some(_) => Redirect(controllers.subscriptionData.routes.CompanyDetailsController.view())
-              case None =>
-                val errorMsg = Messages("ated.contact-details.error.general.addressType")
-                val errorForm = editContactDetailsForm.withError(key = "addressType", message = errorMsg).fill(editedClientData)
-                BadRequest(views.html.subcriptionData.editContactDetails(errorForm, getBackLink))
+      serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+        editContactDetailsForm.bindFromRequest.fold(
+          formWithErrors => Future.successful(BadRequest(views.html.subcriptionData.editContactDetails(formWithErrors, serviceInfoContent, getBackLink))),
+          editedClientData => {
+            for {
+              editedContact <- subscriptionDataService.editContactDetails(editedClientData)
+            } yield {
+              editedContact match {
+                case Some(_) => Redirect(controllers.subscriptionData.routes.CompanyDetailsController.view())
+                case None =>
+                  val errorMsg = Messages("ated.contact-details.error.general.addressType")
+                  val errorForm = editContactDetailsForm.withError(key = "addressType", message = errorMsg).fill(editedClientData)
+                  BadRequest(views.html.subcriptionData.editContactDetails(errorForm, serviceInfoContent, getBackLink))
+              }
             }
           }
-        }
-      )
+        )
+      }
     }
   }
 

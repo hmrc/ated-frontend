@@ -25,7 +25,7 @@ import forms.BankDetailForms._
 import javax.inject.Inject
 import models.BankDetails
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.DisposeLiabilityReturnService
+import services.{DisposeLiabilityReturnService, ServiceInfoService}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -34,6 +34,7 @@ class DisposeLiabilityBankDetailsController @Inject()(mcc: MessagesControllerCom
                                                       disposeLiabilityReturnService: DisposeLiabilityReturnService,
                                                       authAction: AuthAction,
                                                       disposeLiabilitySummaryController: DisposeLiabilitySummaryController,
+                                                      serviceInfoService: ServiceInfoService,
                                                       val dataCacheConnector: DataCacheConnector,
                                                       val backLinkCacheConnector: BackLinkCacheConnector)
                                                      (implicit val appConfig: ApplicationConfig)
@@ -46,14 +47,16 @@ class DisposeLiabilityBankDetailsController @Inject()(mcc: MessagesControllerCom
   def view(oldFormBundleNo: String): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
-        disposeLiabilityReturnService.retrieveLiabilityReturn(oldFormBundleNo) flatMap {
-          case Some(x) =>
-            currentBackLink.map { backLink =>
-              val bankDetails = x.bankDetails.flatMap(_.bankDetails).fold(BankDetails())(a => a)
-              Ok(views.html.editLiability.disposeLiabilityBankDetails
-              (bankDetailsForm.fill(bankDetails), oldFormBundleNo, backLink)(authContext, implicitly, request, implicitly))
-            }
-          case None => Future.successful(Redirect(controllers.routes.AccountSummaryController.view()))
+        serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+          disposeLiabilityReturnService.retrieveLiabilityReturn(oldFormBundleNo) flatMap {
+            case Some(x) =>
+              currentBackLink.map { backLink =>
+                val bankDetails = x.bankDetails.flatMap(_.bankDetails).fold(BankDetails())(a => a)
+                Ok(views.html.editLiability.disposeLiabilityBankDetails
+                (bankDetailsForm.fill(bankDetails), oldFormBundleNo, serviceInfoContent, backLink)(authContext, implicitly, request, implicitly))
+              }
+            case None => Future.successful(Redirect(controllers.routes.AccountSummaryController.view()))
+          }
         }
       }
     }
@@ -62,14 +65,16 @@ class DisposeLiabilityBankDetailsController @Inject()(mcc: MessagesControllerCom
   def editFromSummary(oldFormBundleNo: String): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
-        disposeLiabilityReturnService.retrieveLiabilityReturn(oldFormBundleNo) flatMap {
-          case Some(x) =>
-            Future.successful {
-              val backLink = Some(controllers.editLiability.routes.DisposeLiabilitySummaryController.view(oldFormBundleNo).url)
-              val bankDetails = x.bankDetails.flatMap(_.bankDetails).fold(BankDetails())(a => a)
-              Ok(views.html.editLiability.disposeLiabilityBankDetails(bankDetailsForm.fill(bankDetails), oldFormBundleNo, backLink))
-            }
-          case None => Future.successful(Redirect(controllers.routes.AccountSummaryController.view()))
+        serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+          disposeLiabilityReturnService.retrieveLiabilityReturn(oldFormBundleNo) flatMap {
+            case Some(x) =>
+              Future.successful {
+                val backLink = Some(controllers.editLiability.routes.DisposeLiabilitySummaryController.view(oldFormBundleNo).url)
+                val bankDetails = x.bankDetails.flatMap(_.bankDetails).fold(BankDetails())(a => a)
+                Ok(views.html.editLiability.disposeLiabilityBankDetails(bankDetailsForm.fill(bankDetails), oldFormBundleNo, serviceInfoContent, backLink))
+              }
+            case None => Future.successful(Redirect(controllers.routes.AccountSummaryController.view()))
+          }
         }
       }
     }
@@ -78,21 +83,23 @@ class DisposeLiabilityBankDetailsController @Inject()(mcc: MessagesControllerCom
   def save(oldFormBundleNo: String): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
-        BankDetailForms.validateBankDetails(bankDetailsForm.bindFromRequest).fold(
-          formWithErrors =>
-            currentBackLink.map(backLink => BadRequest(views.html.editLiability.disposeLiabilityBankDetails(formWithErrors, oldFormBundleNo, backLink))),
-          bankData => {
-            disposeLiabilityReturnService.cacheDisposeLiabilityReturnBank(oldFormBundleNo, bankData) flatMap {
-              _ => {
-                redirectWithBackLink(
-                  disposeLiabilitySummaryController.controllerId,
-                  controllers.editLiability.routes.DisposeLiabilitySummaryController.view(oldFormBundleNo),
-                  Some(controllers.editLiability.routes.DisposeLiabilityBankDetailsController.view(oldFormBundleNo).url)
-                )
+        serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+          BankDetailForms.validateBankDetails(bankDetailsForm.bindFromRequest).fold(
+            formWithErrors =>
+              currentBackLink.map(backLink => BadRequest(views.html.editLiability.disposeLiabilityBankDetails(formWithErrors, oldFormBundleNo, serviceInfoContent, backLink))),
+            bankData => {
+              disposeLiabilityReturnService.cacheDisposeLiabilityReturnBank(oldFormBundleNo, bankData) flatMap {
+                _ => {
+                  redirectWithBackLink(
+                    disposeLiabilitySummaryController.controllerId,
+                    controllers.editLiability.routes.DisposeLiabilitySummaryController.view(oldFormBundleNo),
+                    Some(controllers.editLiability.routes.DisposeLiabilityBankDetailsController.view(oldFormBundleNo).url)
+                  )
+                }
               }
             }
-          }
-        )
+          )
+        }
       }
     }
   }

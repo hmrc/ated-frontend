@@ -23,6 +23,7 @@
 @(appConfig: ApplicationConfig,
   supportLinkEnabled: Boolean = false,
   title: String,
+        serviceInfoContent: Html = HtmlFormat.empty,
   banner: Option[Html] = Some(HtmlFormat.empty),
   sidebarLinks: Option[Html] = None,
   sidebarClass: Option[String] = None,
@@ -92,17 +93,6 @@
 @footerTop = {}
 
 @footerLinks = {}
-
-
-@btaLink = {
-<div class="bta-link">
-    <a id="btaNavHref" href=@appConfig.businessTaxAccountPage>@messages("ated.generic.bta_link")</a>
-</div>
-}
-
-@serviceInfoContent = {
-  @request.session.get(SessionUtils.sessionCallerId).map(x => btaLink)
-}
 
 @serviceInfo = {
   @uiLayouts.serviceInfo(

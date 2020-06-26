@@ -20,11 +20,12 @@ import config.ApplicationConfig
 import models.{ReliefReturnResponse, StandardAuthRetrievals, SubmitReturnsResponse}
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
-import org.scalatestplus.mockito.MockitoSugar
 import org.scalatest.{FeatureSpec, GivenWhenThen}
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.test.FakeRequest
+import play.twirl.api.Html
 import testhelpers.MockAuthUtil
 
 class ReliefsSentSpec extends FeatureSpec with GuiceOneAppPerSuite with MockitoSugar
@@ -48,6 +49,7 @@ implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetr
 
       val html = views.html.reliefs.reliefsSent(
         periodKey,
+        Html(""),
         SubmitReturnsResponse(
           LocalDate.now().toString,
           Some(Seq(ReliefReturnResponse("Test Description", "123456789"))),

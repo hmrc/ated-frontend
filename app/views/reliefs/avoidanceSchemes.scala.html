@@ -16,7 +16,8 @@
 
 @import models._
 @import config.ApplicationConfig
-@(periodKey: Int, taxAvoidanceForm: Form[TaxAvoidance], backLink: Option[String])(reliefsTaxAvoidance : Option[ReliefsTaxAvoidance])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
+@import play.twirl.api.HtmlFormat
+@(periodKey: Int, taxAvoidanceForm: Form[TaxAvoidance], serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(reliefsTaxAvoidance : Option[ReliefsTaxAvoidance])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 @import uk.gov.hmrc.play.views.html._
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
@@ -51,7 +52,7 @@
     }
 }
 
-@atedMain(title = messages("ated.avoidance-schemes.title")) {
+@atedMain(title = messages("ated.avoidance-schemes.title"), serviceInfoContent = serviceInfoContent) {
     @pageHeadersAndError(
         backLink,
         "pre-header",

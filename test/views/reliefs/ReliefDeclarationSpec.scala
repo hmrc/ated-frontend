@@ -17,14 +17,15 @@
 package views.reliefs
 
 import config.ApplicationConfig
-import testhelpers.MockAuthUtil
 import models.StandardAuthRetrievals
 import org.jsoup.Jsoup
-import org.scalatestplus.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.test.FakeRequest
+import play.twirl.api.Html
+import testhelpers.MockAuthUtil
 
 class ReliefDeclarationSpec extends FeatureSpec with GuiceOneAppPerSuite with MockitoSugar
   with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
@@ -43,13 +44,12 @@ feature("The user can view the relief declaration page") {
       When("The user views the page")
 
 
-      val html = views.html.reliefs.reliefDeclaration(2015, Some("backLink"))
+      val html = views.html.reliefs.reliefDeclaration(2015, Html(""), Some("backLink"))
 
       val document = Jsoup.parse(html.toString())
 
       Then("Returns declaration")
       assert(document.title() === "Returns declaration - GOV.UK")
-
       And("The pre-header text is - Create relief return")
       assert(document.getElementById("relief-declaration-confirmation-header").text() === "Returns declaration")
       assert(document.getElementById("relief-declaration-before-declaration-text")
@@ -75,7 +75,7 @@ feature("The user can view the relief declaration page") {
       Given("An agent visits the page")
       When("The agent views the page")
 
-      val html = views.html.reliefs.reliefDeclaration(2015, Some("http://backLink"))
+      val html = views.html.reliefs.reliefDeclaration(2015, Html(""), Some("http://backLink"))
 
       val document = Jsoup.parse(html.toString())
       Then("Returns declaration")

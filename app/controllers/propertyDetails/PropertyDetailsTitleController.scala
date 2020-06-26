@@ -36,6 +36,7 @@ class PropertyDetailsTitleController @Inject()(mcc: MessagesControllerComponents
                                                authAction: AuthAction,
                                                editLiabilityHasValueChangedController: EditLiabilityHasValueChangedController,
                                                propertyDetailsOwnedBeforeController: PropertyDetailsOwnedBeforeController,
+                                               serviceInfoService: ServiceInfoService,
                                                val propertyDetailsService: PropertyDetailsService,
                                                val dataCacheConnector: DataCacheConnector,
                                                val backLinkCacheConnector: BackLinkCacheConnector)(implicit val appConfig: ApplicationConfig)
@@ -47,16 +48,18 @@ class PropertyDetailsTitleController @Inject()(mcc: MessagesControllerComponents
   def view(id: String): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
-        propertyDetailsCacheResponse(id) {
-          case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
-            currentBackLink.flatMap { backLink =>
-              dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).map { isPrevReturn =>
-                val displayData = propertyDetails.title.getOrElse(new PropertyDetailsTitle(""))
-                Ok(views.html.propertyDetails.propertyDetailsTitle(id, propertyDetails.periodKey, propertyDetailsTitleForm.fill(displayData),
-                  AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn),
-                  backLink))
+        serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+          propertyDetailsCacheResponse(id) {
+            case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
+              currentBackLink.flatMap { backLink =>
+                dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).map { isPrevReturn =>
+                  val displayData = propertyDetails.title.getOrElse(new PropertyDetailsTitle(""))
+                  Ok(views.html.propertyDetails.propertyDetailsTitle(id, propertyDetails.periodKey, propertyDetailsTitleForm.fill(displayData),
+                    AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn), serviceInfoContent,
+                    backLink))
+                }
               }
-            }
+          }
         }
       }
     }
@@ -65,20 +68,23 @@ class PropertyDetailsTitleController @Inject()(mcc: MessagesControllerComponents
 
   def editFromSummary(id: String): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
-      propertyDetailsCacheResponse(id) {
-        case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
-          dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
-            val mode = AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn)
-            Future.successful(
-              Ok(views.html.propertyDetails.propertyDetailsTitle(
-                id,
-                propertyDetails.periodKey,
-                propertyDetailsTitleForm.fill(propertyDetails.title.getOrElse(PropertyDetailsTitle(""))),
-                mode,
-                AtedUtils.getSummaryBackLink(id, None))
+      serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+        propertyDetailsCacheResponse(id) {
+          case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
+            dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
+              val mode = AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn)
+              Future.successful(
+                Ok(views.html.propertyDetails.propertyDetailsTitle(
+                  id,
+                  propertyDetails.periodKey,
+                  propertyDetailsTitleForm.fill(propertyDetails.title.getOrElse(PropertyDetailsTitle(""))),
+                  mode,
+                  serviceInfoContent,
+                  AtedUtils.getSummaryBackLink(id, None))
+                )
               )
-            )
-          }
+            }
+        }
       }
     }
   }
@@ -86,29 +92,31 @@ class PropertyDetailsTitleController @Inject()(mcc: MessagesControllerComponents
   def save(id: String, periodKey: Int, mode: Option[String] = None): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
-        propertyDetailsTitleForm.bindFromRequest.fold(
-          formWithError => {
-            currentBackLink.map(backLink => BadRequest(views.html.propertyDetails.propertyDetailsTitle(id, periodKey, formWithError, mode, backLink)))
-          },
-          propertyDetails => {
-            val backLink = Some(controllers.propertyDetails.routes.PropertyDetailsTitleController.view(id).url)
-            for {
-              _ <- propertyDetailsService.saveDraftPropertyDetailsTitle(id, propertyDetails)
-              result <-
-              if (AtedUtils.isEditSubmittedMode(mode)) {
-                redirectWithBackLink(
-                  editLiabilityHasValueChangedController.controllerId,
-                  controllers.editLiability.routes.EditLiabilityHasValueChangedController.view(id),
-                  backLink)
-            } else {
-                redirectWithBackLink(
-                  propertyDetailsOwnedBeforeController.controllerId,
-                  controllers.propertyDetails.routes.PropertyDetailsOwnedBeforeController.view(id),
-                  backLink)
-              }
-            } yield result
-          }
-        )
+        serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+          propertyDetailsTitleForm.bindFromRequest.fold(
+            formWithError => {
+              currentBackLink.map(backLink => BadRequest(views.html.propertyDetails.propertyDetailsTitle(id, periodKey, formWithError, mode, serviceInfoContent, backLink)))
+            },
+            propertyDetails => {
+              val backLink = Some(controllers.propertyDetails.routes.PropertyDetailsTitleController.view(id).url)
+              for {
+                _ <- propertyDetailsService.saveDraftPropertyDetailsTitle(id, propertyDetails)
+                result <-
+                  if (AtedUtils.isEditSubmittedMode(mode)) {
+                    redirectWithBackLink(
+                      editLiabilityHasValueChangedController.controllerId,
+                      controllers.editLiability.routes.EditLiabilityHasValueChangedController.view(id),
+                      backLink)
+                  } else {
+                    redirectWithBackLink(
+                      propertyDetailsOwnedBeforeController.controllerId,
+                      controllers.propertyDetails.routes.PropertyDetailsOwnedBeforeController.view(id),
+                      backLink)
+                  }
+              } yield result
+            }
+          )
+        }
       }
     }
   }

@@ -18,15 +18,16 @@ package views.propertyDetails
 
 import config.ApplicationConfig
 import forms.PropertyDetailsForms._
-import testhelpers.MockAuthUtil
 import models.{LineItem, StandardAuthRetrievals}
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
-import org.scalatestplus.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.test.FakeRequest
+import play.twirl.api.Html
+import testhelpers.MockAuthUtil
 import utils.AtedUtils
 
 class periodsInAndOutReliefSpec extends FeatureSpec with GuiceOneAppPerSuite with MockitoSugar
@@ -35,7 +36,7 @@ class periodsInAndOutReliefSpec extends FeatureSpec with GuiceOneAppPerSuite wit
   implicit val request = FakeRequest()
   implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
-implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
+  implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
 
   feature("The user can view the periods and add the property in and out of relief") {
 
@@ -46,7 +47,7 @@ implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetr
       Given("the client is creating a new liability and want to add multiple periods")
       When("The user views the page")
 
-      val html = views.html.propertyDetails.periodsInAndOutRelief("1", 2015, periodsInAndOutReliefForm, Nil, None, Some("backLink"))
+      val html = views.html.propertyDetails.periodsInAndOutRelief("1", 2015, periodsInAndOutReliefForm, Nil, None, Html(""), Some("backLink"))
 
       val document = Jsoup.parse(html.toString())
 
@@ -84,7 +85,7 @@ implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetr
         LineItem("relief", new LocalDate(s"2016-4-1"), new LocalDate(s"2016-5-1"), Some("Rental property"))
       )
       val html = views.html.propertyDetails.periodsInAndOutRelief("1", 2015,
-        periodsInAndOutReliefForm, periods, Some(AtedUtils.EDIT_SUBMITTED), Some("http://backLink"))
+        periodsInAndOutReliefForm, periods, Some(AtedUtils.EDIT_SUBMITTED), Html(""), Some("http://backLink"))
 
       val document = Jsoup.parse(html.toString())
 

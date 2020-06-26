@@ -15,7 +15,8 @@
  *@
 
 @import config.ApplicationConfig
-@(overseasCompanyRegistrationForm: Form[models.OverseasCompanyRegistration], listOfIsoCode: List[(String, String)], backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
+@import play.twirl.api.HtmlFormat
+@(overseasCompanyRegistrationForm: Form[models.OverseasCompanyRegistration], listOfIsoCode: List[(String, String)], serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
 
@@ -34,7 +35,7 @@
 
 @implicitFormInstance = @{ Some(overseasCompanyRegistrationForm) }
 
-@atedMain(title = messages("ated.non-uk-reg.title"), pageScripts = Some(pageScripts)) {
+@atedMain(title = messages("ated.non-uk-reg.title"), serviceInfoContent = serviceInfoContent, pageScripts = Some(pageScripts)) {
     @pageHeadersAndError(backLink, "pre-heading", messages("ated.non-uk-reg.subheader"), "overseas-company-registration-header", messages("ated.non-uk-reg.header"),
     Some(atedErrorSummary(overseasCompanyRegistrationForm, "ated.correspondence-address.error.general")))
 

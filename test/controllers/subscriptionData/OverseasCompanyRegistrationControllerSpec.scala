@@ -21,7 +21,6 @@ import java.util.UUID
 import builders.{SessionBuilder, TitleBuilder}
 import config.ApplicationConfig
 import controllers.auth.AuthAction
-import testhelpers.MockAuthUtil
 import models.Identification
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
@@ -31,13 +30,16 @@ import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.Environment
+import play.api.i18n.{Lang, MessagesApi, MessagesImpl}
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{AnyContentAsJson, MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.SubscriptionDataService
+import services.{ServiceInfoService, SubscriptionDataService}
+import testhelpers.MockAuthUtil
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
+import views.html.BtaNavigationLinks
 
 import scala.concurrent.Future
 
@@ -48,6 +50,10 @@ class OverseasCompanyRegistrationControllerSpec extends PlaySpec with GuiceOneSe
   val mockMcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
   val mockEnvironment: Environment = app.injector.instanceOf[Environment]
   val mockSubscriptionDataService: SubscriptionDataService = mock[SubscriptionDataService]
+    val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
+  val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
+  val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
 
   class Setup {
 
@@ -61,6 +67,7 @@ class OverseasCompanyRegistrationControllerSpec extends PlaySpec with GuiceOneSe
       mockMcc,
       mockAuthAction,
       mockSubscriptionDataService,
+      mockServiceInfoService,
       mockEnvironment
     )
 
@@ -76,6 +83,7 @@ class OverseasCompanyRegistrationControllerSpec extends PlaySpec with GuiceOneSe
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
+      when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(btaNavigationLinksView()(messages,mockAppConfig)))
       when(mockSubscriptionDataService.getOverseasCompanyRegistration(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(overseasInfo))
       val result = testOverseasCompanyRegistrationController.edit().apply(SessionBuilder.buildRequestWithSession(userId))
 
@@ -120,6 +128,7 @@ class OverseasCompanyRegistrationControllerSpec extends PlaySpec with GuiceOneSe
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
             document.title() must be (TitleBuilder.buildTitle("Edit your overseas company registration number"))
+            assert(document.getElementById("service-info-list").text() === "Home Manage account Messages Help and contact")
             document.getElementById("businessUniqueId").attr("value") must be("")
             document.getElementById("issuingInstitution").attr("value") must be("")
         }

@@ -24,6 +24,7 @@ import javax.inject.Inject
 import models.SelectPeriod
 import org.joda.time.LocalDate
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import services.ServiceInfoService
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.AtedConstants._
 import utils.PeriodUtils
@@ -32,6 +33,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class SelectPeriodController @Inject()(mcc: MessagesControllerComponents,
                                        authAction: AuthAction,
+                                       serviceInfoService: ServiceInfoService,
                                        val backLinkCacheConnector: BackLinkCacheConnector,
                                        val dataCacheConnector: DataCacheConnector)
                                       (implicit val appConfig: ApplicationConfig)
@@ -47,11 +49,13 @@ class SelectPeriodController @Inject()(mcc: MessagesControllerComponents,
   def view: Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
-        val peakStartYear = PeriodUtils.calculatePeakStartYear()
-        val periods = PeriodUtils.getPeriods(peakStartYear)
-        dataCacheConnector.fetchAndGetFormData[SelectPeriod](RetrieveSelectPeriodFormId) map {
-          case Some(data) => Ok(views.html.selectPeriod(selectPeriodForm.fill(data), periods, getBackLink()))
-          case _ => Ok(views.html.selectPeriod(selectPeriodForm, periods, getBackLink()))
+        serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+          val peakStartYear = PeriodUtils.calculatePeakStartYear()
+          val periods = PeriodUtils.getPeriods(peakStartYear)
+          dataCacheConnector.fetchAndGetFormData[SelectPeriod](RetrieveSelectPeriodFormId) map {
+            case Some(data) => Ok(views.html.selectPeriod(selectPeriodForm.fill(data), periods, serviceInfoContent, getBackLink()))
+            case _ => Ok(views.html.selectPeriod(selectPeriodForm, periods, serviceInfoContent, getBackLink()))
+          }
         }
       }
     }
@@ -60,20 +64,21 @@ class SelectPeriodController @Inject()(mcc: MessagesControllerComponents,
   def submit: Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
-
-        val peakStartYear = PeriodUtils.calculatePeakStartYear()
-        val periods = PeriodUtils.getPeriods(peakStartYear)
-        selectPeriodForm.bindFromRequest.fold(
-          formWithError => Future.successful(BadRequest(views.html.selectPeriod(formWithError, periods, getBackLink()))),
-          periodData => {
-            dataCacheConnector.saveFormData[SelectPeriod](RetrieveSelectPeriodFormId, periodData)
-            redirectWithBackLink(
-              returnTypeControllerId,
-              controllers.routes.ReturnTypeController.view(periodData.period.get.toInt),
-              Some(routes.SelectPeriodController.view().url)
-            )
-          }
-        )
+        serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+          val peakStartYear = PeriodUtils.calculatePeakStartYear()
+          val periods = PeriodUtils.getPeriods(peakStartYear)
+          selectPeriodForm.bindFromRequest.fold(
+            formWithError => Future.successful(BadRequest(views.html.selectPeriod(formWithError, periods, serviceInfoContent, getBackLink()))),
+            periodData => {
+              dataCacheConnector.saveFormData[SelectPeriod](RetrieveSelectPeriodFormId, periodData)
+              redirectWithBackLink(
+                returnTypeControllerId,
+                controllers.routes.ReturnTypeController.view(periodData.period.get.toInt),
+                Some(routes.SelectPeriodController.view().url)
+              )
+            }
+          )
+        }
       }
     }
   }

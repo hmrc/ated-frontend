@@ -17,15 +17,16 @@
 package views
 
 import config.ApplicationConfig
-import testhelpers.MockAuthUtil
 import models._
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
-import org.scalatestplus.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.test.FakeRequest
+import play.twirl.api.Html
+import testhelpers.MockAuthUtil
 import utils.AtedConstants._
 
 class periodSummarySpec extends FeatureSpec with GuiceOneAppPerSuite with MockitoSugar
@@ -83,7 +84,8 @@ class periodSummarySpec extends FeatureSpec with GuiceOneAppPerSuite with Mockit
       Given("the client has no returns")
       When("The user views the page")
 
-      val html = views.html.periodSummary(2015, None, None, None, Some("backLink"))
+      val html = views.html.periodSummary(2015, None, None, None, Html(""), Some("backLink"))
+
 
       val document = Jsoup.parse(html.toString())
 
@@ -112,7 +114,7 @@ class periodSummarySpec extends FeatureSpec with GuiceOneAppPerSuite with Mockit
       Given("The client has no previous returns")
       When("The user views the page")
 
-      val html = views.html.periodSummary(2015, Some(periodSummaryReturns), None, Some(organisationName), Some("http://backlink"))
+      val html = views.html.periodSummary(2015, Some(periodSummaryReturns), None, Some(organisationName), Html(""), Some("http://backlink"))
 
       val document = Jsoup.parse(html.toString())
 
@@ -138,7 +140,7 @@ class periodSummarySpec extends FeatureSpec with GuiceOneAppPerSuite with Mockit
       Given("the client has no returns")
       When("The user views the page")
 
-      val html = views.html.periodSummary(2015, Some(periodSummaryReturnsWithOld), Some(previousPeriodSummaryReturns), Some(organisationName), Some("http://backlink"))
+      val html = views.html.periodSummary(2015, Some(periodSummaryReturnsWithOld), Some(previousPeriodSummaryReturns), Some(organisationName), Html(""), Some("http://backlink"))
 
       val document = Jsoup.parse(html.toString())
 

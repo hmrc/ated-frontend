@@ -18,11 +18,10 @@ package views.html
 
 import config.ApplicationConfig
 import forms.AtedForms
-import testhelpers.{AtedViewSpec, MockAuthUtil}
 import models.StandardAuthRetrievals
 import org.scalatestplus.mockito.MockitoSugar
-import play.api.i18n.Messages
 import play.twirl.api.Html
+import testhelpers.{AtedViewSpec, MockAuthUtil}
 
 class ReturnTypeSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil {
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
@@ -50,6 +49,6 @@ class ReturnTypeSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil {
 
   private val form = AtedForms.returnTypeForm.withError("returnType",
     messages("ated.summary-return.return-type.error"))
-  override def view: Html = views.html.returnType(2014,  form, Some("backLink"))
+  override def view: Html = views.html.returnType(2014,  form, Html(""), Some("backLink"))
 
 }

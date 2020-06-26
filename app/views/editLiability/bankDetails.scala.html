@@ -16,7 +16,8 @@
 
 @import models._
 @import config.ApplicationConfig
-@(bankDetailsForm: Form[BankDetails], oldFormBundleNo: String, backLink: Option[String])(implicit authorisedRequest: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
+@import play.twirl.api.HtmlFormat
+@(bankDetailsForm: Form[BankDetails], oldFormBundleNo: String, serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authorisedRequest: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
 
@@ -43,6 +44,7 @@
 
 @atedMain(title = messages("ated.bank-details.title"),
           pageScripts = Some(pageScripts),
+          serviceInfoContent = serviceInfoContent,
           analyticsAdditionalJs = Some(analyticsJs)) {
 
   @pageHeadersAndError(backLink, "pre-heading", messages("ated.property-details.pre-header-change"), "bank-details-header", messages("ated.bank-details.title"),

@@ -15,11 +15,12 @@
  *@
 
 @import config.ApplicationConfig
-@(leaveFeedbackForm: Form[models.LeaveFeedback], returnUri: String)(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
+@import play.twirl.api.HtmlFormat
+@(leaveFeedbackForm: Form[models.LeaveFeedback], serviceInfoContent: Html = HtmlFormat.empty, returnUri: String)(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
 
-@atedMain(title = messages("ated.leave-feedback.heading")) {
+@atedMain(title = messages("ated.leave-feedback.heading"), serviceInfoContent = serviceInfoContent) {
 
   <div class="form-group">
       <h1 class="heading-xlarge" id="feedback-header">@messages("ated.leave-feedback.heading")</h1>

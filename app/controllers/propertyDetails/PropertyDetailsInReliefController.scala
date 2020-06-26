@@ -24,7 +24,7 @@ import forms.PropertyDetailsForms._
 import javax.inject.Inject
 import models._
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService}
+import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.AtedConstants.SelectedPreviousReturn
 import utils.AtedUtils
@@ -36,6 +36,7 @@ class PropertyDetailsInReliefController @Inject()(mcc: MessagesControllerCompone
                                                   periodsInAndOutReliefController: PeriodsInAndOutReliefController,
                                                   periodDatesLiableController: PeriodDatesLiableController,
                                                   editLiabilityDatesLiableController: EditLiabilityDatesLiableController,
+                                                  serviceInfoService: ServiceInfoService,
                                                   val propertyDetailsService: PropertyDetailsService,
                                                   val dataCacheConnector: DataCacheConnector,
                                                   val backLinkCacheConnector: BackLinkCacheConnector)
@@ -50,16 +51,18 @@ class PropertyDetailsInReliefController @Inject()(mcc: MessagesControllerCompone
   def view(id: String): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
-        propertyDetailsCacheResponse(id) {
-          case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
-            val filledForm = periodsInAndOutReliefForm.fill(PropertyDetailsInRelief(propertyDetails.period.flatMap(_.isInRelief)))
-            currentBackLink.flatMap(backLink =>
-              dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).map { isPrevReturn =>
-                Ok(views.html.propertyDetails.propertyDetailsInRelief(id, propertyDetails.periodKey, filledForm,
-                  AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn), backLink)
-                )
-              }
-            )
+        serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+          propertyDetailsCacheResponse(id) {
+            case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
+              val filledForm = periodsInAndOutReliefForm.fill(PropertyDetailsInRelief(propertyDetails.period.flatMap(_.isInRelief)))
+              currentBackLink.flatMap(backLink =>
+                dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).map { isPrevReturn =>
+                  Ok(views.html.propertyDetails.propertyDetailsInRelief(id, propertyDetails.periodKey, filledForm,
+                    AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn), serviceInfoContent, backLink)
+                  )
+                }
+              )
+          }
         }
       }
     }
@@ -68,37 +71,39 @@ class PropertyDetailsInReliefController @Inject()(mcc: MessagesControllerCompone
   def save(id: String, periodKey: Int, mode: Option[String]): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
-        periodsInAndOutReliefForm.bindFromRequest.fold(
-          formWithError => {
-            currentBackLink.map(backLink =>
-              BadRequest(views.html.propertyDetails.propertyDetailsInRelief(id, periodKey, formWithError, mode, backLink))
-            )
-          },
-          propertyDetails => {
-            val backLink = Some(controllers.propertyDetails.routes.PropertyDetailsInReliefController.view(id).url)
-            for {
-              _ <- propertyDetailsService.saveDraftPropertyDetailsInRelief(id, propertyDetails)
-              result <-
-              (propertyDetails.isInRelief.getOrElse(false), AtedUtils.isEditSubmittedMode(mode)) match {
-                case (true, _) =>
-                  redirectWithBackLink(periodsInAndOutReliefController.controllerId,
-                    controllers.propertyDetails.routes.PeriodsInAndOutReliefController.view(id),
-                    backLink
-                  )
-                case (false, false) =>
-                  redirectWithBackLink(periodDatesLiableController.controllerId,
-                    controllers.propertyDetails.routes.PeriodDatesLiableController.view(id),
-                    backLink
-                  )
-                case (false, true) =>
-                  redirectWithBackLink(editLiabilityDatesLiableController.controllerId,
-                    controllers.editLiability.routes.EditLiabilityDatesLiableController.view(id),
-                    backLink
-                  )
-              }
-            } yield result
-          }
-        )
+        serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+          periodsInAndOutReliefForm.bindFromRequest.fold(
+            formWithError => {
+              currentBackLink.map(backLink =>
+                BadRequest(views.html.propertyDetails.propertyDetailsInRelief(id, periodKey, formWithError, mode, serviceInfoContent, backLink))
+              )
+            },
+            propertyDetails => {
+              val backLink = Some(controllers.propertyDetails.routes.PropertyDetailsInReliefController.view(id).url)
+              for {
+                _ <- propertyDetailsService.saveDraftPropertyDetailsInRelief(id, propertyDetails)
+                result <-
+                  (propertyDetails.isInRelief.getOrElse(false), AtedUtils.isEditSubmittedMode(mode)) match {
+                    case (true, _) =>
+                      redirectWithBackLink(periodsInAndOutReliefController.controllerId,
+                        controllers.propertyDetails.routes.PeriodsInAndOutReliefController.view(id),
+                        backLink
+                      )
+                    case (false, false) =>
+                      redirectWithBackLink(periodDatesLiableController.controllerId,
+                        controllers.propertyDetails.routes.PeriodDatesLiableController.view(id),
+                        backLink
+                      )
+                    case (false, true) =>
+                      redirectWithBackLink(editLiabilityDatesLiableController.controllerId,
+                        controllers.editLiability.routes.EditLiabilityDatesLiableController.view(id),
+                        backLink
+                      )
+                  }
+              } yield result
+            }
+          )
+        }
       }
     }
   }

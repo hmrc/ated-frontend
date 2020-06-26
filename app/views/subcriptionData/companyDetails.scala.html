@@ -15,7 +15,8 @@
  *@
 
 @import config.ApplicationConfig
-@(correspondence: Option[Address], registrationDetails: Option[RegisteredDetails], emailConsent: Boolean, clientDetails: Option[ClientMandateDetails], overseasCompanyRegistration: Option[Identification], backLink:Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
+@import play.twirl.api.HtmlFormat
+@(correspondence: Option[Address], registrationDetails: Option[RegisteredDetails], emailConsent: Boolean, clientDetails: Option[ClientMandateDetails], overseasCompanyRegistration: Option[Identification], serviceInfoContent: Html = HtmlFormat.empty, backLink:Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 @import views.html.helpers._
 @import _root_.utils.AtedUtils._
 
@@ -23,7 +24,7 @@
 <script src='@controllers.routes.Assets.versioned("javascript/companyDetails.js")'></script>
 }
 
-@atedMain(title = messages("ated.company-details.title"), showUrBanner= Some(true),
+@atedMain(title = messages("ated.company-details.title"), serviceInfoContent = serviceInfoContent, showUrBanner= Some(true),
 pageScripts = Some(pageScripts)) {
   @pageHeadersAndError(backLink, "pre-heading", messages("ated.company-details.preheader"), "company-details-header", messages("ated.company-details.header"))
 

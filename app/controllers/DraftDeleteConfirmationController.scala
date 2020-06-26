@@ -22,7 +22,7 @@ import controllers.auth.{AuthAction, ClientHelper}
 import forms.AtedForms.YesNoQuestionDraftDeleteForm
 import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{PropertyDetailsService, ReliefsService}
+import services.{PropertyDetailsService, ReliefsService, ServiceInfoService}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -31,6 +31,7 @@ class DraftDeleteConfirmationController @Inject()(mcc: MessagesControllerCompone
                                                   authAction: AuthAction,
                                                   propertyDetailsService: PropertyDetailsService,
                                                   reliefsService: ReliefsService,
+                                                  serviceInfoService: ServiceInfoService,
                                                   val dataCacheConnector: DataCacheConnector)
                                                  (implicit val appConfig: ApplicationConfig)
 
@@ -41,8 +42,10 @@ class DraftDeleteConfirmationController @Inject()(mcc: MessagesControllerCompone
   def view(id: Option[String], periodKey: Int, returnType: String): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
-        Future.successful(Ok(views.html.confirmDeleteDraft(new YesNoQuestionDraftDeleteForm().yesNoQuestionForm, id, periodKey,
-          returnType, getBackLink(id, periodKey, returnType))))
+        serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+          Future.successful(Ok(views.html.confirmDeleteDraft(new YesNoQuestionDraftDeleteForm().yesNoQuestionForm, id, periodKey,
+            returnType, serviceInfoContent, getBackLink(id, periodKey, returnType))))
+        }
       }
     }
   }
@@ -50,27 +53,29 @@ class DraftDeleteConfirmationController @Inject()(mcc: MessagesControllerCompone
   def submit(id: Option[String], periodKey: Int, returnType: String) : Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
-        val form = new YesNoQuestionDraftDeleteForm()
-        form.yesNoQuestionForm.bindFromRequest.fold(
-          formWithError =>
-            Future.successful(BadRequest(views.html.confirmDeleteDraft(formWithError, id, periodKey, returnType, getBackLink(id, periodKey, returnType)))
-            ),
-          data => {
-            val deleteDraft = data.yesNo.getOrElse(false)
-            (deleteDraft, returnType) match {
-              case (true, "charge") =>
-                propertyDetailsService.clearDraftReliefs(id.getOrElse(throw new RuntimeException("No id found for draft return")))
-                Future.successful(Redirect(controllers.routes.PeriodSummaryController.view(periodKey)))
-              case (true, "relief") =>
-                reliefsService.deleteDraftReliefs(periodKey)
-                Future.successful(Redirect(controllers.routes.PeriodSummaryController.view(periodKey)))
-              case (false, "charge") =>
-                Future.successful(Redirect(controllers.propertyDetails.routes.PropertyDetailsSummaryController
-                  .view(id.getOrElse(throw new RuntimeException("No id found for draft return")))))
-              case (false, "relief") => Future.successful(Redirect(controllers.reliefs.routes.ReliefsSummaryController.view(periodKey)))
+        serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+          val form = new YesNoQuestionDraftDeleteForm()
+          form.yesNoQuestionForm.bindFromRequest.fold(
+            formWithError =>
+              Future.successful(BadRequest(views.html.confirmDeleteDraft(formWithError, id, periodKey, returnType, serviceInfoContent, getBackLink(id, periodKey, returnType)))
+              ),
+            data => {
+              val deleteDraft = data.yesNo.getOrElse(false)
+              (deleteDraft, returnType) match {
+                case (true, "charge") =>
+                  propertyDetailsService.clearDraftReliefs(id.getOrElse(throw new RuntimeException("No id found for draft return")))
+                  Future.successful(Redirect(controllers.routes.PeriodSummaryController.view(periodKey)))
+                case (true, "relief") =>
+                  reliefsService.deleteDraftReliefs(periodKey)
+                  Future.successful(Redirect(controllers.routes.PeriodSummaryController.view(periodKey)))
+                case (false, "charge") =>
+                  Future.successful(Redirect(controllers.propertyDetails.routes.PropertyDetailsSummaryController
+                    .view(id.getOrElse(throw new RuntimeException("No id found for draft return")))))
+                case (false, "relief") => Future.successful(Redirect(controllers.reliefs.routes.ReliefsSummaryController.view(periodKey)))
+              }
             }
-          }
-        )
+          )
+        }
       }
     }
   }

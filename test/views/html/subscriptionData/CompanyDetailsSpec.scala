@@ -17,10 +17,10 @@
 package views.html.subscriptionData
 
 import config.ApplicationConfig
-import testhelpers.{AtedViewSpec, MockAuthUtil}
 import models._
 import org.scalatestplus.mockito.MockitoSugar
 import play.twirl.api.Html
+import testhelpers.{AtedViewSpec, MockAuthUtil}
 import uk.gov.hmrc.auth.core.retrieve.~
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
 
@@ -140,5 +140,5 @@ class CompanyDetailsSpec extends AtedViewSpec with MockitoSugar with MockAuthUti
 
 
   override def view: Html = views.html.subcriptionData.companyDetails(Some(correspondence),
-    Some(businessPartnerDetails), emailConsent = true, None, None, Some("http://backLink"))
+    Some(businessPartnerDetails), emailConsent = true, None, None, Html(""), Some("http://backLink"))
 }
