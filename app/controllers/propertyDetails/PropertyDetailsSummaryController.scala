@@ -79,18 +79,16 @@ class PropertyDetailsSummaryController @Inject()(mcc: MessagesControllerComponen
   def viewPrintFriendlyLiabilityReturn(propertyKey: String): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
-        for {
-          calculateDraft <- propertyDetailsService.calculateDraftPropertyDetails(propertyKey)
-          organisationName <- subscriptionDataService.getOrganisationName
-        }
-          yield {
-            val propertyDetails = calculateDraft.json.as[PropertyDetails]
-            Ok(views.html.propertyDetails.propertyDetailsPrintFriendly(propertyDetails,
-              PeriodUtils.getDisplayPeriods(propertyDetails.period),
-              PeriodUtils.getCalculatedPeriodValues(propertyDetails.calculated),
-              organisationName
-            ))
+        subscriptionDataService.getOrganisationName.flatMap { organisationName =>
+          propertyDetailsCacheResponse(propertyKey) {
+            case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
+              Future.successful(Ok(views.html.propertyDetails.propertyDetailsPrintFriendly(propertyDetails,
+                PeriodUtils.getDisplayPeriods(propertyDetails.period),
+                PeriodUtils.getCalculatedPeriodValues(propertyDetails.calculated),
+                organisationName
+              )))
           }
+        }
       }
     }
   }

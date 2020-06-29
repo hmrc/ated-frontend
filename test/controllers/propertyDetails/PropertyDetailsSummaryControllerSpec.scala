@@ -109,6 +109,10 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
+      when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+        (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
+      when(mockSubscriptionDataService.getOrganisationName(ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(Some(organisationName)))
       implicit val hc: HeaderCarrier = HeaderCarrier()
 
       val result = testPropertyDetailsSummaryController.deleteDraft("123456", periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
@@ -143,6 +147,9 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
   }
 
   override def beforeEach: Unit = {
+    reset(mockDelegationService, mockDelegationService,
+      mockDataCacheConnector, mockSubscriptionDataService, mockPropertyDetailsService, mockServiceInfoService
+    )
   }
 
   "PropertyDetailsSummaryController" must {
