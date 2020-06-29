@@ -17,8 +17,12 @@
 package forms
 
 import forms.PropertyDetailsForms._
+import forms.PropertyDetailsFormsValidation.formDate2Option
+import models.PropertyDetailsDatesLiable
+import org.joda.time.LocalDate
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
+import play.api.data.Form
 
 class PropertyDetailsFormsValidationSpec extends PlaySpec with GuiceOneServerPerSuite {
 
@@ -77,6 +81,37 @@ class PropertyDetailsFormsValidationSpec extends PlaySpec with GuiceOneServerPer
 
       testPropertyDetailsValueAcquiredForm.errors.last.message mustBe "ated.property-details-value-error.valueAcquired.emptyValue"
 
+    }
+  }
+
+  "formDate2Option" should {
+    "return a local date" when {
+      "supplied with a date with a space" in {
+        val bindedForm: Form[PropertyDetailsDatesLiable] = periodDatesLiableForm.bind(Map(
+          "datefield.day" -> "25 ",
+          "datefield.month" -> "05",
+          "datefield.year" -> "2005"
+        ))
+
+        formDate2Option("datefield", bindedForm) mustBe Right(LocalDate.parse("2005-05-25"))
+      }
+    }
+
+    "return a boolean" when {
+      "a field is missing" in {
+        val bindedForm: Form[PropertyDetailsDatesLiable] = periodDatesLiableForm.bind(Map(
+          "datefield.month" -> "05",
+          "datefield.year" -> "2005"
+        ))
+
+        formDate2Option("datefield", bindedForm) mustBe Left(false)
+      }
+
+      "all fields are missing" in {
+        val bindedForm: Form[PropertyDetailsDatesLiable] = periodDatesLiableForm
+
+        formDate2Option("datefield", bindedForm) mustBe Left(true)
+      }
     }
   }
 
