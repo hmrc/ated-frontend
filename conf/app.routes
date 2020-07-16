@@ -102,7 +102,7 @@ POST    /liability/:formBundleNo/change/declaration                         cont
 GET     /liability/:formBundleNo/change/sent                                controllers.editLiability.EditLiabilitySentController.view(formBundleNo: String)
 
 GET     /liability/:formBundleNo/confirmation-print                         controllers.editLiability.EditLiabilitySentController.viewPrintFriendlyEditLiabilitySent(formBundleNo: String)
-GET     /liability/:formBundleNo/confirmation-dipsose-print                 controllers.editLiability.DisposeLiabilitySentController.viewPrintFriendlyDisposeLiabilitySent(formBundleNo: String)
+GET     /liability/:formBundleNo/confirmation-dispose-print                 controllers.editLiability.DisposeLiabilitySentController.viewPrintFriendlyDisposeLiabilitySent(formBundleNo: String)
 
 ## edit-liability - dispose journey ##
 GET     /liability/:formBundleNo/dispose/edit-summary  controllers.editLiability.DisposePropertyController.editFromSummary(formBundleNo: String)
