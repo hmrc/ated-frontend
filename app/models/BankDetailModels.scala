@@ -117,7 +117,7 @@ object BankDetails {
 }
 
 
-case class BankDetailsModel(hasBankDetails: Boolean = false,
+case class BankDetailsModel(hasBankDetails: Boolean,
                             bankDetails: Option[BankDetails] = None)
 
 object BankDetailsModel {

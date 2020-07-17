@@ -17,8 +17,8 @@
 package config
 
 import config.{ConfigKeys => Keys}
-import javax.inject.{Inject, Singleton}
-import play.api.{Configuration, Environment}
+import javax.inject.Inject
+import play.api.Environment
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import utils.CountryCodeUtils
 

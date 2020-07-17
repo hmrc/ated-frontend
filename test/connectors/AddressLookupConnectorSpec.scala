@@ -69,7 +69,6 @@ class AddressLookupConnectorSpec extends PlaySpec with GuiceOneAppPerSuite with 
 
       "return nil if something goes wrong" in new Setup {
 
-        val response = List(addressLookupRecord)
         implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
         when(mockHttp.GET[List[AddressLookupRecord]]
           (ArgumentMatchers.any())
@@ -96,7 +95,6 @@ class AddressLookupConnectorSpec extends PlaySpec with GuiceOneAppPerSuite with 
 
       "return None if something goes wrong" in new Setup {
 
-        val response = List(AddressLookupRecord("1", address))
         implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
         when(mockHttp.GET[Option[AddressLookupRecord]]
           (ArgumentMatchers.any())

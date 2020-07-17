@@ -155,7 +155,6 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
             assert(document.getElementById("ated-charge-value") === null)
             document.getElementById("print-friendly-edit-liability-link").text() must be("Print this return")
             document.getElementById("saved-returns-link").text() must be("Save as draft")
-            document.getElementById("submit").text() must be("Confirm and continue")
         }
       }
 

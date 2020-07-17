@@ -133,7 +133,8 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
 
       "return a status of OK, when that liability return is found in cache or ETMP" in new Setup {
         val disposeLiabilityReturn: DisposeLiabilityReturn = DisposeLiabilityReturnBuilder
-          .generateDisposeLiabilityReturn("12345678901").copy(bankDetails = Some(BankDetailsModel()))
+          .generateDisposeLiabilityReturn("12345678901")
+          .copy(bankDetails = Some(BankDetailsModel(hasBankDetails = false)))
         viewWithAuthorisedUser(Some(disposeLiabilityReturn)) {
           result =>
             status(result) must be(OK)
@@ -157,7 +158,8 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
 
       "navigate to bank details page, if liablity is retrieved, show the summary back link" in new Setup {
         val disposeLiabilityReturn: DisposeLiabilityReturn = DisposeLiabilityReturnBuilder
-          .generateDisposeLiabilityReturn("12345678901").copy(bankDetails = Some(BankDetailsModel()))
+          .generateDisposeLiabilityReturn("12345678901")
+          .copy(bankDetails = Some(BankDetailsModel(hasBankDetails = false)))
         editFromSummary(Some(disposeLiabilityReturn)) {
           result =>
             status(result) must be(OK)

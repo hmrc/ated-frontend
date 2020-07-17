@@ -46,8 +46,6 @@ feature("The user can add a period that the property is in relief") {
       Given("the client is adding a relief")
       When("The user views the page")
 
-      val periodStartDate = new LocalDate("2015-01-01")
-      val periodEndDate = new LocalDate("2016-02-02")
       val html = views.html.propertyDetails.periodChooseRelief("1", 2015, periodChooseReliefForm, Html(""), Some("backLink"))
 
       val document = Jsoup.parse(html.toString())
@@ -88,9 +86,7 @@ feature("The user can add a period that the property is in relief") {
 
       Given("the client is adding a relief")
       When("The user views the page")
-
-      val periodStartDate = new LocalDate("2015-01-01")
-      val periodEndDate = new LocalDate("2016-02-02")
+      
       val html = views.html.propertyDetails.periodChooseRelief("1",
         2015, periodChooseReliefForm.fill(PeriodChooseRelief(ReliefsUtils.RentalBusinessDesc)), Html(""), Some("http://backLink"))
 

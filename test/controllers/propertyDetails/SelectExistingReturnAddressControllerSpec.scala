@@ -296,8 +296,6 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
       "submitting an valid request should get the form bundle return and save in keystore" in new Setup {
         val formBundleProp = FormBundleProperty(BigDecimal(100), new LocalDate("2015-09-08"),
           new LocalDate("2015-10-12"), "Relief", Some("Property developers"))
-        val formBundleProp2 = FormBundleProperty(BigDecimal(200), new LocalDate("2015-10-12"),
-          new LocalDate("2015-12-12"), "Relief", Some("Property developers"))
         val formBundleAddress = FormBundleAddress("1 addressLine1", "addressLine2", Some("addressLine3"), Some("AddressLine4"), Some("XX11XX"), "GB")
         val formBundlePropertyDetails = FormBundlePropertyDetails(Some("title here"), formBundleAddress, Some("additional details"))
         val viewReturn = FormBundleReturn("2014", formBundlePropertyDetails,

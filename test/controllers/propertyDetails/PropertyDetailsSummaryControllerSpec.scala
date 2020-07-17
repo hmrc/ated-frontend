@@ -113,7 +113,6 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
         (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
       when(mockSubscriptionDataService.getOrganisationName(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(Some(organisationName)))
-      implicit val hc: HeaderCarrier = HeaderCarrier()
 
       val result = testPropertyDetailsSummaryController.deleteDraft("123456", periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
 

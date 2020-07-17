@@ -457,7 +457,7 @@ class PropertyDetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite wi
           .thenReturn(Future.successful(successResponse.as[SubmitReturnsResponse]))
 
         val result: Future[HttpResponse] = testPropertyDetailsService.submitDraftPropertyDetails("1")
-        val response: HttpResponse = await(result)
+        await(result)
         verify(mockDataCacheConnector, times(1)).clearCache()(ArgumentMatchers.any())
         verify(mockDataCacheConnector, times(1)).saveFormData(ArgumentMatchers.any(),ArgumentMatchers.any())(ArgumentMatchers.any(),ArgumentMatchers.any(),ArgumentMatchers.any())
       }
@@ -472,7 +472,7 @@ class PropertyDetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite wi
            .thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
 
          val result: Future[HttpResponse] = testPropertyDetailsService.clearDraftReliefs("AB12345")
-         val response: HttpResponse = await(result)
+         await(result)
          verify(mockPropertyDetailsConnector, times(1)).deleteDraftChargeable(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())
        }
     }
@@ -485,7 +485,7 @@ class PropertyDetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite wi
           .thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
 
         val result: Future[Boolean] = testPropertyDetailsService.validateCalculateDraftPropertyDetails("AB12345", true)
-        val response: Boolean = await(result)
+        await(result)
         verify(mockPropertyDetailsConnector, times(1)).retrieveDraftPropertyDetails(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())
       }
     }
