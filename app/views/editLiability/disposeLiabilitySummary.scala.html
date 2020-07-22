@@ -22,7 +22,7 @@
 @import _root_.utils.PeriodUtils._
 @import views.html.helpers._
 
-@incomplete = {@messages("ated.label.incomplete")}
+@incomplete = {@Html("<span class=\"status\">" + messages("ated.label.incomplete") + "</span>")}
 
 @analyticsJs = {
   ga('set', 'page', document.location.pathname.replace(/[0-9]/g ,'').replace(/\/\//g, '/'));
@@ -38,19 +38,17 @@
 }
 
 @disposeLiabilityDate = {
-  @disposeLiability.disposeLiability.flatMap(x => x.dateOfDisposal.map(y => y.toString(messages("ated.date-format"))))
+  @disposeLiability.disposeLiability.map(x => x.dateOfDisposal.fold(
+    incomplete
+  )
+  (date => Html(date.toString(messages("ated.date-format"))))
+  )
 }
 
 @disposeLiabilityDateEdit = {
   <a href="@controllers.editLiability.routes.DisposePropertyController.editFromSummary(disposeLiability.id.toString)"   id="edit-property-disposal-date" data-journey-click="ated-frontend:click:edit-property-disposal-date">
     @messages("ated.edit") <span class="visuallyhidden">@messages("ated.dispose-property.summary.disposal-date-label")</span>
   </a>
-}
-
-@bankDetailsTypeOfAccountNONEEdit = {
-<a href="@controllers.editLiability.routes.DisposePropertyController.editFromSummary(disposeLiability.id.toString)" id="edit-bank-details-type" data-journey-click="ated-frontend:click:edit-bank-details">
-  @messages("ated.edit") <span class="visuallyhidden">@messages("ated.edit-liability.summary.bank-details.type-of-account")</span>
-</a>
 }
 
 @bankDetailsTypeOfAccountEdit = {
@@ -160,7 +158,7 @@
           CyaRow(
             cyaQuestion = "ated.edit-liability.summary.bank-details.type-of-account",
             cyaQuestionId = "type-of-account-label",
-            cyaAnswer = Html(messages("ated.label.incomplete")),
+            cyaAnswer = incomplete,
             cyaAnswerId = "type-of-account-value",
             cyaChange = Some(bankDetailsTypeOfAccountEdit)
           )
@@ -251,7 +249,7 @@
           CyaRow(
             cyaQuestion = "ated.edit-liability.summary.bank-details.supply-bank-details",
             cyaQuestionId = "supply-bank-label",
-            cyaAnswer = Html("<span class=\"status\">" + messages("ated.label.incomplete") + "</span>"),
+            cyaAnswer = incomplete,
             cyaAnswerId = "supply-bank-value",
             cyaChange = Some(bankDetailsIncompleteEdit)
           )
@@ -302,8 +300,9 @@
     <a href="@controllers.routes.AccountSummaryController.view()" id="saved-returns-link">@messages("ated.dispose-property.summary.save-as-draft-link")</a>
   </p>
 
-  @form(action=controllers.editLiability.routes.DisposeLiabilitySummaryController.submit(disposeLiability.id.toString)) {
-    <button class="button" id="submit" type="submit">@messages("ated.confirm-and-continue")</button>
+  @if(DisposeLiabilityReturn.isComplete(disposeLiability)) {
+    @form(action = controllers.editLiability.routes.DisposeLiabilitySummaryController.submit(disposeLiability.id.toString)) {
+      <button class="button" id="submit" type="submit">@messages("ated.confirm-and-continue")</button>
+    }
   }
-
 }

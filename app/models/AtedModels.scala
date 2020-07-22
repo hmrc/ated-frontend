@@ -66,6 +66,28 @@ case class DisposeLiabilityReturn(id: String,
 
 object DisposeLiabilityReturn {
   implicit val formats: OFormat[DisposeLiabilityReturn] = Json.format[DisposeLiabilityReturn]
+
+  def isComplete(dlr: DisposeLiabilityReturn): Boolean = {
+    val addressProvided = dlr.formBundleReturn.propertyDetails.address.addressLine1 > ""
+    val dateProvided = dlr.disposeLiability.fold[Boolean](false)(_.dateOfDisposal.isDefined)
+    val bankDetailsSectionComplete = dlr.bankDetails.fold(false)(details =>
+      if(details.hasBankDetails){
+        bankDetailsComplete(details)
+      }else{
+        true
+      }
+    )
+
+    addressProvided && dateProvided && bankDetailsSectionComplete
+
+  }
+
+  def bankDetailsComplete(bdm: BankDetailsModel): Boolean = {
+    bdm.bankDetails.fold(false)(details =>
+      details.hasUKBankAccount.isDefined
+    )
+  }
+
 }
 
 case class CyaRow(

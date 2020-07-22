@@ -126,7 +126,7 @@ class Setup {
     "view - for authorised users" must {
 
       "navigate to bank details page, if liability is retrieved" in new Setup {
-        val bankDetails = BankDetailsModel()
+        val bankDetails = BankDetailsModel(hasBankDetails = false)
         val changeLiabilityReturn: PropertyDetails = ChangeLiabilityReturnBuilder
           .generateChangeLiabilityReturn("12345678901").copy(bankDetails = Some(bankDetails))
         viewWithAuthorisedUser(Some(changeLiabilityReturn)) {
@@ -153,7 +153,7 @@ class Setup {
     "editFromSummary - for authorised users" must {
 
       "navigate to bank details page, if liability is retrieved, show the summary back link" in new Setup {
-        val bankDetails = BankDetailsModel()
+        val bankDetails = BankDetailsModel(hasBankDetails = false)
         val changeLiabilityReturn: PropertyDetails = ChangeLiabilityReturnBuilder
           .generateChangeLiabilityReturn("12345678901").copy(bankDetails = Some(bankDetails))
         editFromSummary(Some(changeLiabilityReturn)) {

@@ -53,7 +53,6 @@ class AgentClientMandateFrontendConnectorSpec extends PlaySpec with GuiceOneAppP
     "return the partial successfully" in new Setup {
       implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
       implicit val hc: HeaderCarrier = HeaderCarrier()
-      implicit val hcwc: HeaderCarrierForPartials = HeaderCarrierForPartials(hc,"")
       val html = "<h1>helloworld</h1>"
       when(mockHttp.GET[HttpResponse](any())(any(), any(), any()))
         .thenReturn(Future.successful(HttpResponse(OK, responseString = Some(html))))
@@ -65,7 +64,6 @@ class AgentClientMandateFrontendConnectorSpec extends PlaySpec with GuiceOneAppP
     "return no partial silently" in new Setup {
       implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
       implicit val hc: HeaderCarrier = HeaderCarrier()
-      implicit val hcwc: HeaderCarrierForPartials = HeaderCarrierForPartials(hc,"")
 
       when(mockHttp.GET[HttpResponse](any())(any(), any(), any()))
         .thenReturn(Future.successful(HttpResponse(NOT_FOUND)))
@@ -77,7 +75,6 @@ class AgentClientMandateFrontendConnectorSpec extends PlaySpec with GuiceOneAppP
     "return the client mandate details succcessfully" in new Setup {
       implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
       implicit val hc: HeaderCarrier = HeaderCarrier()
-      implicit val hcwc: HeaderCarrierForPartials = HeaderCarrierForPartials(hc,"")
       when(mockHttp.GET[HttpResponse](any())(any(), any(), any()))
         .thenReturn(Future.successful(HttpResponse(OK, responseString = Some(""))))
       val result: Future[HttpResponse] = testAgentClientMandateFrontendConnector.getClientDetails("clientId", "ated")

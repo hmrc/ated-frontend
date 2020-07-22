@@ -153,7 +153,7 @@ class editLiabilitySummarySpec extends FeatureSpec with GuiceOneServerPerSuite w
       assert(document.getElementById("backLinkHref").attr("href") === "http://backLink")
     }
 
-    scenario("Futher Charge the basic summary with no periods") {
+    scenario("Further Charge the basic summary with no periods") {
 
       Given("the client is creating a new liability and want to add multiple periods")
       When("The user views the page")

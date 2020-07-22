@@ -116,7 +116,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
     "view - for authorised users" must {
 
       "navigate to bank details page, if liablity is retrieved" in new Setup {
-        val bankDetails: BankDetailsModel = BankDetailsModel()
+        val bankDetails: BankDetailsModel = BankDetailsModel(hasBankDetails = false)
         val changeLiabilityReturn: PropertyDetails = ChangeLiabilityReturnBuilder
           .generateChangeLiabilityReturn("12345678901").copy(bankDetails = Some(bankDetails))
         viewWithAuthorisedUser(Some(changeLiabilityReturn)) {
@@ -140,7 +140,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
 
     "save - for authorised user" must {
       "for invalid data, return BAD_REQUEST" in new Setup {
-        val bankDetails: BankDetailsModel = BankDetailsModel()
+        val bankDetails: BankDetailsModel = BankDetailsModel(hasBankDetails = false)
         val inputJson: JsValue = Json.toJson(bankDetails)
         when(mockBackLinkCache.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
         saveWithAuthorisedUser(inputJson) {

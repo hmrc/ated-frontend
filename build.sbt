@@ -26,6 +26,8 @@ lazy val scoverageSettings = {
     )
   }
 
+val silencerVersion = "1.7.0"
+
 lazy val microservice = Project(appName, file("."))
     .enablePlugins(Seq(play.sbt.PlayScala, SbtAutoBuildPlugin, SbtGitVersioning, SbtDistributablesPlugin, SbtArtifactory) ++ plugins: _*)
     .settings(playSettings: _*)
@@ -52,7 +54,12 @@ lazy val microservice = Project(appName, file("."))
     .disablePlugins(JUnitXmlReportPlugin)
     .settings(
       resolvers += Resolver.bintrayRepo("hmrc", "releases"),
-      resolvers += Resolver.jcenterRepo
+      resolvers += Resolver.jcenterRepo,
+      scalacOptions += "-P:silencer:pathFilters=views;routes",
+      libraryDependencies ++= Seq(
+        compilerPlugin("com.github.ghik" % "silencer-plugin" % silencerVersion cross CrossVersion.full),
+        "com.github.ghik" % "silencer-lib" % silencerVersion % Provided cross CrossVersion.full
+      )
     )
     .disablePlugins(JUnitXmlReportPlugin)
 

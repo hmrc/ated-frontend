@@ -193,7 +193,8 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
 
       "return a status of OK and have the back link set to the summary page" in new Setup {
         val disposeLiabilityReturn: DisposeLiabilityReturn = DisposeLiabilityReturnBuilder
-          .generateDisposeLiabilityReturn("12345678901").copy(bankDetails = Some(BankDetailsModel()))
+          .generateDisposeLiabilityReturn("12345678901")
+          .copy(bankDetails = Some(BankDetailsModel(hasBankDetails = false)))
         editFromSummary(Some(disposeLiabilityReturn)) {
           result =>
             status(result) must be(OK)

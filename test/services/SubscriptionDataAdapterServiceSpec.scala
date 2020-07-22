@@ -235,7 +235,6 @@ class SubscriptionDataAdapterServiceSpec extends PlaySpec with MockitoSugar{
           when(mockAtedConnector.updateSubscriptionData(any())(any(), any()))
             .thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
 
-          val updateContactDetails: ContactDetails = ContactDetails()
           val result: Future[Option[UpdateSubscriptionDataRequest]] = testSubscriptionDataAdapterService.updateSubscriptionData(updateSubscriptionData)
           val addressDetails: Option[UpdateSubscriptionDataRequest] = await(result)
           addressDetails.isDefined must be(false)
@@ -246,7 +245,7 @@ class SubscriptionDataAdapterServiceSpec extends PlaySpec with MockitoSugar{
             .thenReturn(Future.successful(HttpResponse(OK, None)))
 
           val result: Future[Option[UpdateSubscriptionDataRequest]] = testSubscriptionDataAdapterService.updateSubscriptionData(updateSubscriptionData)
-          val addressDetails: Option[UpdateSubscriptionDataRequest] = await(result)
+          await(result)
         }
       }
     }

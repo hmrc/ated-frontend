@@ -147,7 +147,7 @@ object PropertyDetailsBuilder {
 
   def getPropertyDetails(id: String,
                          postCode: Option[String] = None,
-                         liabilityAmount: Option[BigDecimal] = None)(implicit appConfig: ApplicationConfig): PropertyDetails = {
+                         liabilityAmount: Option[BigDecimal] = None): PropertyDetails = {
     val periodKey: Int = 2019
     PropertyDetails(
       id,

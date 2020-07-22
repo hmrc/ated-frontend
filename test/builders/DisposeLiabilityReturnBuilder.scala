@@ -32,11 +32,10 @@ object DisposeLiabilityReturnBuilder {
     val fReturn = FormBundleReturn("2015", fProperty, dateOfAcquisition = None, valueAtAcquisition = None, taxAvoidanceScheme = None, localAuthorityCode = None, professionalValuation = true, ninetyDayRuleApplies = false,
       dateOfSubmission = new LocalDate("2015-04-02"), liabilityAmount = BigDecimal(123.45), paymentReference = "payment-ref-123", lineItem = Seq())
 
-    DisposeLiabilityReturn(id = oldFormBundleNum, fReturn, Some(dispDate))
+    DisposeLiabilityReturn(id = oldFormBundleNum, fReturn, Some(dispDate), None, None)
   }
 
 
   def generateCalculated = DisposeCalculated(liabilityAmount = BigDecimal(2500.00), amountDueOrRefund = -500.00)
-
 
 }

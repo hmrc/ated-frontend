@@ -20,7 +20,7 @@ import java.util.PropertyResourceBundle
 
 import play.api.Environment
 
-import scala.collection.JavaConversions._
+import scala.collection.JavaConverters._
 import scala.util.{Success, Try}
 
 trait CountryCodeUtils {
@@ -38,7 +38,7 @@ trait CountryCodeUtils {
     }).getOrElse(throw new RuntimeException("[CountryCodeUtils] Could not retrieve property bundle"))
 
   def getIsoCodeTupleList: List[(String, String)] = {
-    resourceStream.getKeys.toList.map(key => (key, resourceStream.getString(key))).sortBy{case (_,v) => v}
+    resourceStream.getKeys.asScala.toList.map(key => (key, resourceStream.getString(key))).sortBy{case (_,v) => v}
   }
 
 

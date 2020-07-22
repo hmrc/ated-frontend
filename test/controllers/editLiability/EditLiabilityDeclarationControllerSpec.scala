@@ -18,15 +18,13 @@ package controllers.editLiability
 
 import java.util.UUID
 
-import builders._
+import builders.{SessionBuilder, TitleBuilder, _}
 import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.AuthAction
-import mocks.MockAppConfig
 import models._
 import org.joda.time.DateTime
 import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
@@ -37,34 +35,10 @@ import play.api.i18n.{Lang, MessagesApi, MessagesImpl}
 import play.api.mvc.{MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import play.twirl.api.Html
 import services.{ChangeLiabilityReturnService, ServiceInfoService}
 import testhelpers.MockAuthUtil
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.{HeaderCarrier, UserId}
-import utils.AtedConstants
-import views.html.BtaNavigationLinks
-import builders.{SessionBuilder, TitleBuilder}
-import config.ApplicationConfig
-import connectors.{AgentClientMandateFrontendConnector, BackLinkCacheConnector, DataCacheConnector}
-import controllers.auth.AuthAction
-import models.ReturnType
-import org.jsoup.Jsoup
-import org.mockito.ArgumentMatchers
-import org.mockito.Mockito._
-import org.scalatest.BeforeAndAfterEach
-import org.scalatestplus.mockito.MockitoSugar
-import org.scalatestplus.play.PlaySpec
-import org.scalatestplus.play.guice.GuiceOneServerPerSuite
-import play.api.i18n.{Lang, MessagesApi, MessagesImpl}
-import play.api.libs.json.{JsValue, Json}
-import play.api.mvc.{AnyContentAsJson, MessagesControllerComponents, Result}
-import play.api.test.FakeRequest
-import play.api.test.Helpers._
-import services._
-import testhelpers.MockAuthUtil
-import uk.gov.hmrc.auth.core.AffinityGroup
-import uk.gov.hmrc.http.HeaderCarrier
 import utils.AtedConstants
 import views.html.BtaNavigationLinks
 
@@ -129,7 +103,6 @@ class Setup {
 
   def viewWithAuthorisedDelegatedUser(x: Option[PropertyDetails] = None)(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
-    implicit val hc: HeaderCarrier = HeaderCarrier(userId = Some(UserId(userId)))
     val authMock = authResultDefault(AffinityGroup.Agent, defaultEnrolmentSet)
     setAuthMocks(authMock)
     when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
