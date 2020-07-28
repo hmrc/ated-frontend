@@ -20,9 +20,9 @@
 @import views.html.helpers._
 @import _root_.utils.PeriodUtils._
 
-<script src='@controllers.routes.Assets.versioned("javascript/printFriendly.js")'></script>
 @printFriendly(messages("ated.property-details-summary.title")) {
 
+<script src='@controllers.routes.Assets.versioned("javascript/printFriendly.js")'></script>
 
   <p id="dispose-liability-ated-ref" class="font-xsmall">@messages("ated.refNo", authContext.atedReferenceNumber)</p>
 

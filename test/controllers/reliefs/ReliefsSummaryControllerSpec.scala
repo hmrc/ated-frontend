@@ -289,7 +289,24 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
 
       "called for authorised user" must {
 
-        "status should be OK" in new Setup {
+        "status should be OK where full data completed" in new Setup {
+          getPrintFriendlyWithAuthorisedUser(Some(
+            ReliefBuilder.reliefTaxAvoidance(periodKey,
+              Reliefs(periodKey = periodKey, isAvoidanceScheme = Some(true), openToPublic = true),
+              taxAvoidance = TaxAvoidance(openToPublicScheme = Some("12345678"), openToPublicSchemePromoter = Some("87654321"))
+            ))) {
+            result =>
+              status(result) must be(OK)
+              val document = Jsoup.parse(contentAsString(result))
+              document.title() must be("Check your details are correct")
+              document.getElementById("property-details-summary-header").text() must be("Relief returns for ACME Limited")
+              document.getElementById("details-text").text() must be("For the ATED period from 1 April 2015 to 31 March 2016.")
+              document.getElementById("tas-otp-val").text() must be("12345678")
+              document.getElementById("reliefs-print-charge-value").text() must be("£0")
+          }
+        }
+
+        "status should be OK where partial data completed" in new Setup {
           getPrintFriendlyWithAuthorisedUser(Some(
             ReliefBuilder.reliefTaxAvoidance(periodKey,
               Reliefs(periodKey = periodKey, isAvoidanceScheme = Some(true), openToPublic = true),
@@ -302,7 +319,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
               document.getElementById("property-details-summary-header").text() must be("Relief returns for ACME Limited")
               document.getElementById("details-text").text() must be("For the ATED period from 1 April 2015 to 31 March 2016.")
               document.getElementById("tas-otp-val").text() must be("12345678")
-              document.getElementById("reliefs-print-charge-value").text() must be("£0")
+              document.getElementById("reliefs-print-charge-value").text() must be("Not yet calculated")
           }
         }
 

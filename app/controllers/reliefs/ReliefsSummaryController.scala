@@ -113,7 +113,7 @@ class ReliefsSummaryController @Inject()(mcc: MessagesControllerComponents,
             retrievedData <- reliefsService.retrieveDraftReliefs(authContext.atedReferenceNumber, periodKey)
             organisationName <- subscriptionDataService.getOrganisationName
           } yield {
-            Ok(views.html.reliefs.reliefsPrintFriendly(periodKey, retrievedData, organisationName))
+            Ok(views.html.reliefs.reliefsPrintFriendly(periodKey, retrievedData, isComplete(retrievedData), organisationName))
           }
         }
       }

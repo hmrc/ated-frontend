@@ -15,9 +15,10 @@
  *@
 
 @import config.ApplicationConfig
-@(periodKey: Int, reliefsTaxAvoidance : Option[ReliefsTaxAvoidance], organisationName: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
+@(periodKey: Int, reliefsTaxAvoidance : Option[ReliefsTaxAvoidance], isComplete: Boolean, organisationName: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
 @import _root_.utils.PeriodUtils._
+@import views.html.helpers._
 
 @printFriendly(messages("ated.relief-summary.title")) {
 
@@ -31,7 +32,6 @@
     periodStartDate(periodKey).toString(messages("ated.date-format")),
     periodEndDate(periodKey).toString(messages("ated.date-format")))
   </p>
-
 
   <table id="table-reliefs">
     @reliefsTaxAvoidance.map { reliefData =>
@@ -212,7 +212,7 @@
 
       @if(reliefData.reliefs.socialHousing) {
         <tr>
-          <td class="ated-table-padding-top"><p class="heading-medium" id="socialHosuing">@messages("ated.relief-summary-types.socialHousing")</p></td>
+          <td class="ated-table-padding-top"><p class="heading-medium" id="socialHousing">@messages("ated.relief-summary-types.socialHousing")</p></td>
           <td class="ated-table-padding-top"></td>
         </tr>
         <tr>
@@ -234,53 +234,61 @@
           <td><p id="status-sh-draft">@messages("ated.relief-summary.draft")</p></td>
         </tr>
       }
-    @if(reliefData.reliefs.equityRelease) {
-    <tr>
-      <td class="ated-table-padding-top"><p class="heading-medium" id="equityRlease">@messages("ated.relief-summary-types.equityRelease")</p></td>
-      <td class="ated-table-padding-top"></td>
-    </tr>
-    <tr>
-      <td><p id="taxAvd-dateofrel-er" class="heading-small">@messages("ated.relief-summary.datesOfRelief")</p></td>
-      <td id="dateFromTo-er">
-        @reliefData.reliefs.equityReleaseDate.getOrElse(reliefData.periodStartDate).toString(messages("ated.date-format.short"))  @messages("ated.relief-summary.relief-end-date")
-      </td>
-    </tr>
-    <tr>
-      <td><p id="tas-er" class="heading-small">@messages("ated.relief-summary.avoidanceSchmRefNum")</p></td>
-      <td id="tas-er-val">@reliefData.reliefs.isAvoidanceScheme.fold("None")(x=>reliefData.taxAvoidance.equityReleaseScheme.fold("None")(a=>a))</td>
-    </tr>
-    <tr>
-      <td><p id="tas-promoter-er" class="heading-small">@messages("ated.relief-summary.avoidanceSchmRefNum-promoter")</p></td>
-      <td id="tas-promoter-er-val">@reliefData.taxAvoidance.equityReleaseSchemePromoter.fold("None")(x=>reliefData.taxAvoidance.equityReleaseSchemePromoter.fold("None")(a=>a))</td>
-    </tr>
-    <tr>
-      <td><p id="status-er" class="heading-small">@messages("ated.relief-summary.status")</p></td>
-      <td><p id="status-er-draft">@messages("ated.relief-summary.draft")</p></td>
-    </tr>
-    }
 
+      @if(reliefData.reliefs.equityRelease) {
+        <tr>
+          <td class="ated-table-padding-top"><p class="heading-medium" id="equityRelease">@messages("ated.relief-summary-types.equityRelease")</p></td>
+          <td class="ated-table-padding-top"></td>
+        </tr>
+        <tr>
+          <td><p id="taxAvd-dateofrel-er" class="heading-small">@messages("ated.relief-summary.datesOfRelief")</p></td>
+          <td id="dateFromTo-er">
+            @reliefData.reliefs.equityReleaseDate.getOrElse(reliefData.periodStartDate).toString(messages("ated.date-format.short"))  @messages("ated.relief-summary.relief-end-date")
+          </td>
+        </tr>
+        <tr>
+          <td><p id="tas-er" class="heading-small">@messages("ated.relief-summary.avoidanceSchmRefNum")</p></td>
+          <td id="tas-er-val">@reliefData.reliefs.isAvoidanceScheme.fold("None")(x=>reliefData.taxAvoidance.equityReleaseScheme.fold("None")(a=>a))</td>
+        </tr>
+        <tr>
+          <td><p id="tas-promoter-er" class="heading-small">@messages("ated.relief-summary.avoidanceSchmRefNum-promoter")</p></td>
+          <td id="tas-promoter-er-val">@reliefData.taxAvoidance.equityReleaseSchemePromoter.fold("None")(x=>reliefData.taxAvoidance.equityReleaseSchemePromoter.fold("None")(a=>a))</td>
+        </tr>
+        <tr>
+          <td><p id="status-er" class="heading-small">@messages("ated.relief-summary.status")</p></td>
+          <td><p id="status-er-draft">@messages("ated.relief-summary.draft")</p></td>
+        </tr>
+      }
     }
   </table>
 
   <p id="reliefs-print-charge-text">@messages("ated.relief-summary.table.ated-charge.text")</p>
 
-  <p id="reliefs-print-charge-value" class="heading-xlarge">@messages("ated.relief-summary.table.ated-charge.balance")</p>
+  <p id="reliefs-print-charge-value" class="heading-xlarge">
+  @if(isComplete) {
+    @messages("ated.relief-summary.table.ated-charge.balance")
+  } else {
+    @messages("ated.unknow-amount.text")}
+  </p>
 
-<div class="form-group">
-  <div class="confirmation-notice">
-    <div class="icon-important"></div>
-    <div class="ated-icon-important-text"><strong>@messages("ated.choose-reliefs-further.information.text")</strong></div>
+  <div class="form-group">
+    <div class="image-important">
+      <img src='@controllers.routes.Assets.versioned("/images/icon-important.png")' alt="icon-important" />
+    </div>
+
+    <div class="confirmation-notice">
+      <div class="ated-icon-important-text"><strong>@messages("ated.choose-reliefs-further.information.text")</strong></div>
+    </div>
   </div>
-</div>
 
   <div class="sign-labels">@messages("ated.sign.here")</div>
   <div class="sign-labels">@messages("ated.print.name")</div>
   <div class="sign-labels">@messages("ated.date")</div>
 
-<div class="form-group">
-  <div class="sign-box"></div>
-  <div class="sign-box"></div>
-  <div class="sign-box"></div>
-</div>
+  <div class="form-group">
+    <div class="sign-box"></div>
+    <div class="sign-box"></div>
+    <div class="sign-box"></div>
+  </div>
 
 }

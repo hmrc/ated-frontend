@@ -20,6 +20,8 @@
 @(periodKey: Int, submittedReturnResponse: Option[SubmitReturnsResponse])(implicit authContext: StandardAuthRetrievals,
         messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
+@import views.html.helpers._
+
 @printFriendly(messages("ated.relief-sent.title")) {
 
     <script src='@controllers.routes.Assets.versioned("javascript/printFriendly.js")'></script>

@@ -80,7 +80,7 @@ class DisposeLiabilitySummaryController @Inject()(mcc: MessagesControllerCompone
         }
           yield {
             retrieveLiabilityReturn match {
-              case Some(x) => Ok(views.html.editLiability.disposeLiabilityPrintFriendly(x, organisationName))
+              case Some(_) => Ok(views.html.editLiability.disposeLiabilityPrintFriendly(retrieveLiabilityReturn.get, organisationName))
               case None => Redirect(controllers.routes.AccountSummaryController.view())
             }
           }
