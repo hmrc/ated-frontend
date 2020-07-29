@@ -61,6 +61,8 @@ class AddressLookupControllerSpec extends PlaySpec with GuiceOneServerPerSuite w
 lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
+  val injectedViewInstance = app.injector.instanceOf[views.html.propertyDetails.addressLookup]
+  val injectedViewInstanceResults = app.injector.instanceOf[views.html.propertyDetails.addressLookupResults]
 
   val periodKey: Int = 2015
 
@@ -81,11 +83,12 @@ class Setup {
     mockAuditConnector,
     mockAddressLookupService,
     mockAuthAction,
-    mockConfirmAddressController,
     mockServiceInfoService,
     mockBackLinkCacheConnector,
     mockPropertyDetailsService,
-    mockDataCacheConnector
+    mockDataCacheConnector,
+    injectedViewInstance,
+    injectedViewInstanceResults
   )
 
   def viewWithUnAuthorisedUser(test: Future[Result] => Any) {

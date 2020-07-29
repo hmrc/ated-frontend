@@ -57,6 +57,8 @@ class AvoidanceSchemesControllerSpec extends PlaySpec with GuiceOneServerPerSuit
 lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
+  val injectedViewInstance = app.injector.instanceOf[views.html.reliefs.avoidanceSchemes]
+  val injectedViewInstanceKey = app.injector.instanceOf[views.html.reliefs.invalidPeriodKey]
 
   val periodKey = 2015
   val testAvoidanceScheme: ReliefsTaxAvoidance = ReliefBuilder.reliefTaxAvoidance(periodKey,
@@ -77,7 +79,9 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
       mockServiceInfoService,
       mockReliefsService,
       mockDataCacheConnector,
-      mockBackLinkCacheConnector
+      mockBackLinkCacheConnector,
+      injectedViewInstance,
+      injectedViewInstanceKey
     )
 
     def withAuthorisedUser(testReliefs: Option[ReliefsTaxAvoidance])(test: Future[Result] => Any): Unit = {

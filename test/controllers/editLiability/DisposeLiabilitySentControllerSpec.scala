@@ -57,6 +57,7 @@ class DisposeLiabilitySentControllerSpec extends PlaySpec with GuiceOneServerPer
 lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
+  val injectedViewInstance = app.injector.instanceOf[views.html.editLiability.disposeLiabilitySent]
 
   val formBundleNo1: String = "123456789012"
   val formBundleNo2: String = "123456789011"
@@ -77,7 +78,8 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
       mockSubscriptionDataService,
       mockAuthAction,
       mockServiceInfoService,
-      mockDataCacheConnector
+      mockDataCacheConnector,
+      injectedViewInstance
     )
 
      def viewWithAuthorisedUser(x: Option[EditLiabilityReturnsResponseModel] = None)(test: Future[Result] => Any): Any = {

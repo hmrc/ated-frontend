@@ -39,7 +39,8 @@ class PropertyDetailsOwnedBeforeController @Inject()(mcc: MessagesControllerComp
                                                      serviceInfoService: ServiceInfoService,
                                                      val propertyDetailsService: PropertyDetailsService,
                                                      val dataCacheConnector: DataCacheConnector,
-                                                     val backLinkCacheConnector: BackLinkCacheConnector)
+                                                     val backLinkCacheConnector: BackLinkCacheConnector,
+                                                     template: views.html.propertyDetails.propertyDetailsOwnedBefore)
                                                     (implicit val appConfig: ApplicationConfig)
 
   extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper {
@@ -58,7 +59,7 @@ class PropertyDetailsOwnedBeforeController @Inject()(mcc: MessagesControllerComp
                 dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
                   val displayData = PropertyDetailsOwnedBefore(propertyDetails.value.flatMap(_.isOwnedBeforePolicyYear),
                     propertyDetails.value.flatMap(_.ownedBeforePolicyYearValue))
-                  Future.successful(Ok(views.html.propertyDetails.propertyDetailsOwnedBefore(id,
+                  Future.successful(Ok(template(id,
                     propertyDetails.periodKey,
                     propertyDetailsOwnedBeforeForm.fill(displayData),
                     AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn),
@@ -83,7 +84,7 @@ class PropertyDetailsOwnedBeforeController @Inject()(mcc: MessagesControllerComp
                 val displayData = PropertyDetailsOwnedBefore(propertyDetails.value.flatMap(_.isOwnedBeforePolicyYear),
                   propertyDetails.value.flatMap(_.ownedBeforePolicyYearValue))
                 val mode = AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn)
-                Future.successful(Ok(views.html.propertyDetails.propertyDetailsOwnedBefore(id,
+                Future.successful(Ok(template(id,
                   propertyDetails.periodKey,
                   propertyDetailsOwnedBeforeForm.fill(displayData),
                   mode,
@@ -104,7 +105,7 @@ class PropertyDetailsOwnedBeforeController @Inject()(mcc: MessagesControllerComp
           PropertyDetailsForms.validatePropertyDetailsOwnedBefore(propertyDetailsOwnedBeforeForm.bindFromRequest).fold(
             formWithError => {
               currentBackLink.map(backLink =>
-                BadRequest(views.html.propertyDetails.propertyDetailsOwnedBefore(id, periodKey, formWithError, mode, serviceInfoContent, backLink))
+                BadRequest(template(id, periodKey, formWithError, mode, serviceInfoContent, backLink))
               )
             },
             propertyDetails => {

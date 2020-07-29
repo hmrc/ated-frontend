@@ -110,6 +110,7 @@ object ReliefsUtils extends {
 
           parseRecentReturns(rest, newAnswer)
         case remReturn :: rest => parseRecentReturns(rest, Seq(remReturn))
+        case _ if remReturns.size == 1 => Seq(remReturns.head)
         case _ => answer
       }
 

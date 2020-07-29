@@ -33,7 +33,9 @@ class CorrespondenceAddressController @Inject()(mcc: MessagesControllerComponent
                                                 authAction: AuthAction,
                                                 subscriptionDataService: SubscriptionDataService,
                                                 serviceInfoService: ServiceInfoService,
-                                                val environment: Environment)
+                                                val environment: Environment,
+                                                template: views.html.subcriptionData.correspondenceAddress,
+                                                templateError: views.html.global_error)
                                                (implicit val appConfig: ApplicationConfig)
   extends FrontendController(mcc) with CountryCodeUtils {
 
@@ -50,7 +52,7 @@ class CorrespondenceAddressController @Inject()(mcc: MessagesControllerComponent
             case Some(x) => correspondenceAddressForm.fill(x.addressDetails)
             case None => correspondenceAddressForm
           }
-          Ok(views.html.subcriptionData.correspondenceAddress(populatedForm, getIsoCodeTupleList, serviceInfoContent, getBackLink))
+          Ok(template(populatedForm, getIsoCodeTupleList, serviceInfoContent, getBackLink))
         }
       }
     }
@@ -60,7 +62,7 @@ class CorrespondenceAddressController @Inject()(mcc: MessagesControllerComponent
     authAction.authorisedAction { implicit authContext =>
       serviceInfoService.getPartial.flatMap { serviceInfoContent =>
         AtedForms.verifyUKPostCode(correspondenceAddressForm.bindFromRequest).fold(
-          formWithErrors => Future.successful(BadRequest(views.html.subcriptionData.correspondenceAddress(formWithErrors,
+          formWithErrors => Future.successful(BadRequest(template(formWithErrors,
             getIsoCodeTupleList, serviceInfoContent, getBackLink))),
           addressData => {
             val trimmedPostCode = AtedUtils.formatPostCode(addressData.postalCode)
@@ -73,7 +75,7 @@ class CorrespondenceAddressController @Inject()(mcc: MessagesControllerComponent
                   case Some(_) => Redirect(controllers.subscriptionData.routes.CompanyDetailsController.view())
                   case None =>
                     Logger.warn(s"[CorrespondenceAddressController][submit] - Unable to update address")
-                    Ok(views.html.global_error("ated.generic.error.title", "ated.generic.error.header",
+                    Ok(templateError("ated.generic.error.title", "ated.generic.error.header",
                       "ated.generic.error.message", Some("ated.generic.error.message2"), None, None, None, serviceInfoContent, appConfig))
                 }
               }

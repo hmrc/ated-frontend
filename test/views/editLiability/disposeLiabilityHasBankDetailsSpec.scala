@@ -36,6 +36,8 @@ class disposeLiabilityHasBankDetailsSpec extends FeatureSpec with GuiceOneAppPer
   implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
 
+  val injectedViewInstance = app.injector.instanceOf[views.html.editLiability.disposeLiabilityHasBankDetails]
+
   feature("The user can whether they have bank details") {
 
     info("as a client i want change whether I send my bank details")
@@ -45,7 +47,7 @@ class disposeLiabilityHasBankDetailsSpec extends FeatureSpec with GuiceOneAppPer
       Given("the client is prompted to add thier bank details")
       When("The user views the page")
 
-      val html = views.html.editLiability.disposeLiabilityHasBankDetails(hasBankDetailsForm, "1", Html(""), Some("http://backLink"))
+      val html = injectedViewInstance(hasBankDetailsForm, "1", Html(""), Some("http://backLink"))
 
       val document = Jsoup.parse(html.toString())
 

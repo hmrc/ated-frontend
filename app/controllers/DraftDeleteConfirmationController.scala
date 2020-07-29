@@ -32,7 +32,8 @@ class DraftDeleteConfirmationController @Inject()(mcc: MessagesControllerCompone
                                                   propertyDetailsService: PropertyDetailsService,
                                                   reliefsService: ReliefsService,
                                                   serviceInfoService: ServiceInfoService,
-                                                  val dataCacheConnector: DataCacheConnector)
+                                                  val dataCacheConnector: DataCacheConnector,
+                                                  template: views.html.confirmDeleteDraft)
                                                  (implicit val appConfig: ApplicationConfig)
 
   extends FrontendController(mcc) with ClientHelper {
@@ -43,7 +44,7 @@ class DraftDeleteConfirmationController @Inject()(mcc: MessagesControllerCompone
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
-          Future.successful(Ok(views.html.confirmDeleteDraft(new YesNoQuestionDraftDeleteForm().yesNoQuestionForm, id, periodKey,
+          Future.successful(Ok(template(new YesNoQuestionDraftDeleteForm().yesNoQuestionForm, id, periodKey,
             returnType, serviceInfoContent, getBackLink(id, periodKey, returnType))))
         }
       }
@@ -57,7 +58,7 @@ class DraftDeleteConfirmationController @Inject()(mcc: MessagesControllerCompone
           val form = new YesNoQuestionDraftDeleteForm()
           form.yesNoQuestionForm.bindFromRequest.fold(
             formWithError =>
-              Future.successful(BadRequest(views.html.confirmDeleteDraft(formWithError, id, periodKey, returnType, serviceInfoContent, getBackLink(id, periodKey, returnType)))
+              Future.successful(BadRequest(template(formWithError, id, periodKey, returnType, serviceInfoContent, getBackLink(id, periodKey, returnType)))
               ),
             data => {
               val deleteDraft = data.yesNo.getOrElse(false)

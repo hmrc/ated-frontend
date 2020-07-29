@@ -20,14 +20,14 @@ import mocks.MockAppConfig
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.scalamock.scalatest.MockFactory
+import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Lang, MessagesApi, MessagesImpl}
 import play.api.inject.Injector
 import play.twirl.api.Html
-import uk.gov.hmrc.play.test.UnitSpec
 import views.html.BtaNavigationLinks
 
-class BtaNavigationLinksTemplateSpec extends UnitSpec with MockFactory with GuiceOneAppPerSuite {
+class BtaNavigationLinksTemplateSpec extends PlaySpec with MockFactory with GuiceOneAppPerSuite {
 
   val injector: Injector = app.injector
   val messagesApi: MessagesApi = injector.instanceOf[MessagesApi]
@@ -54,11 +54,11 @@ class BtaNavigationLinksTemplateSpec extends UnitSpec with MockFactory with Guic
       lazy val homeLink = document.getElementById("service-info-home-link")
 
       "should have the text home" in {
-        homeLink.text() shouldBe btaHome
+        homeLink.text() mustBe btaHome
       }
 
       "should have a link to home" in {
-        homeLink.attr("href") shouldBe mockAppConfig.btaHomeUrl
+        homeLink.attr("href") mustBe mockAppConfig.btaHomeUrl
       }
 
     }
@@ -68,11 +68,11 @@ class BtaNavigationLinksTemplateSpec extends UnitSpec with MockFactory with Guic
       lazy val manageAccountLink = document.getElementById("service-info-manage-account-link")
 
       "should have the text Manage account" in {
-        manageAccountLink.text() shouldBe btaManageAccount
+        manageAccountLink.text() mustBe btaManageAccount
       }
 
       "should have a link to Manage account" in {
-        manageAccountLink.attr("href") shouldBe mockAppConfig.btaManageAccountUrl
+        manageAccountLink.attr("href") mustBe mockAppConfig.btaManageAccountUrl
       }
 
     }
@@ -82,11 +82,11 @@ class BtaNavigationLinksTemplateSpec extends UnitSpec with MockFactory with Guic
       lazy val messagesLink = document.getElementById("service-info-messages-link")
 
       "should have the text Messages" in {
-        messagesLink.text() shouldBe btaMessages
+        messagesLink.text() mustBe btaMessages
       }
 
       "should have a link to Messages" in {
-        messagesLink.attr("href") shouldBe mockAppConfig.btaMessagesUrl
+        messagesLink.attr("href") mustBe mockAppConfig.btaMessagesUrl
       }
 
     }
@@ -96,11 +96,11 @@ class BtaNavigationLinksTemplateSpec extends UnitSpec with MockFactory with Guic
       lazy val helpAndContactLink = document.getElementById("service-info-help-and-contact-link")
 
       "should have the text Help and contact" in {
-        helpAndContactLink.text() shouldBe btaHelpAndContact
+        helpAndContactLink.text() mustBe btaHelpAndContact
       }
 
       "should have a link to Help and contact" in {
-        helpAndContactLink.attr("href") shouldBe mockAppConfig.btaHelpAndContactUrl
+        helpAndContactLink.attr("href") mustBe mockAppConfig.btaHelpAndContactUrl
       }
 
     }

@@ -25,6 +25,7 @@ import testhelpers.{AtedViewSpec, MockAuthUtil}
 
 class PropertyDetailsInReliefSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil {
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
+  val injectedViewInstance = app.injector.instanceOf[views.html.propertyDetails.propertyDetailsInRelief]
 
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
 "Property Details in-relief view" must {
@@ -45,6 +46,6 @@ class PropertyDetailsInReliefSpec extends AtedViewSpec with MockitoSugar with Mo
 
   private val form = PropertyDetailsForms.periodsInAndOutReliefForm.withError("isInRelief",
     messages("ated.property-details-period.isInRelief.error-field-name"))
-  override def view: Html = views.html.propertyDetails.propertyDetailsInRelief("",2014,  form, None, Html(""), Some("backLink"))
+  override def view: Html = injectedViewInstance("",2014,  form, None, Html(""), Some("backLink"))
 
 }

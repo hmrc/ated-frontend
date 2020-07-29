@@ -36,7 +36,8 @@ class EditLiabilityDatesLiableController @Inject()(mcc: MessagesControllerCompon
                                                    serviceInfoService: ServiceInfoService,
                                                    val propertyDetailsService: PropertyDetailsService,
                                                    val dataCacheConnector: DataCacheConnector,
-                                                   val backLinkCacheConnector: BackLinkCacheConnector)
+                                                   val backLinkCacheConnector: BackLinkCacheConnector,
+                                                   template: views.html.editLiability.editLiabilityDatesLiable)
                                                   (implicit val appConfig: ApplicationConfig)
 
   extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper {
@@ -58,7 +59,7 @@ class EditLiabilityDatesLiableController @Inject()(mcc: MessagesControllerCompon
                 case _ => periodDatesLiableForm
               }
               currentBackLink.map(backLink =>
-                Ok(views.html.editLiability.editLiabilityDatesLiable(formBundleNo, propertyDetails.periodKey, filledForm, serviceInfoContent, backLink))
+                Ok(template(formBundleNo, propertyDetails.periodKey, filledForm, serviceInfoContent, backLink))
               )
           }
         }
@@ -73,7 +74,7 @@ class EditLiabilityDatesLiableController @Inject()(mcc: MessagesControllerCompon
           PropertyDetailsForms.validatePropertyDetailsDatesLiable(periodKey, periodDatesLiableForm.bindFromRequest, periodsCheck = false).fold(
             formWithError => {
               currentBackLink.map(backLink =>
-                BadRequest(views.html.editLiability.editLiabilityDatesLiable(formBundleNo, periodKey, formWithError, serviceInfoContent, backLink))
+                BadRequest(template(formBundleNo, periodKey, formWithError, serviceInfoContent, backLink))
               )
             },
             propertyDetails => {

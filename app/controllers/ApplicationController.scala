@@ -26,14 +26,15 @@ import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Try
 
 class ApplicationController @Inject()(mcc: MessagesControllerComponents,
-                                      authAction: AuthAction)
+                                      authAction: AuthAction,
+                                      template: views.html.unauthorised)
                                      (implicit val appConfig: ApplicationConfig)
   extends FrontendController(mcc) {
 
   implicit val ec: ExecutionContext = mcc.executionContext
 
   def unauthorised(isSa: Boolean): Action[AnyContent] = Action.async { implicit request =>
-    Future.successful(Ok(views.html.unauthorised()(isSa, implicitly, implicitly, implicitly)))
+    Future.successful(Ok(template()(isSa, implicitly, implicitly, implicitly)))
   }
 
   def cancel: Action[AnyContent] = Action { implicit request =>

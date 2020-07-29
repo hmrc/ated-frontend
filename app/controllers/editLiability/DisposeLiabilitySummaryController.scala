@@ -34,7 +34,8 @@ class DisposeLiabilitySummaryController @Inject()(mcc: MessagesControllerCompone
                                                   disposeLiabilityDeclarationController: DisposeLiabilityDeclarationController,
                                                   serviceInfoService: ServiceInfoService,
                                                   val dataCacheConnector: DataCacheConnector,
-                                                  val backLinkCacheConnector: BackLinkCacheConnector)
+                                                  val backLinkCacheConnector: BackLinkCacheConnector,
+                                                  template: views.html.editLiability.disposeLiabilitySummary)
                                                  (implicit val appConfig: ApplicationConfig)
   extends FrontendController(mcc) with BackLinkController with ClientHelper {
 
@@ -49,7 +50,7 @@ class DisposeLiabilitySummaryController @Inject()(mcc: MessagesControllerCompone
           disposeLiabilityReturnService.retrieveLiabilityReturn(oldFormBundleNo) flatMap {
             case Some(x) =>
               currentBackLink.map { backLink =>
-                Ok(views.html.editLiability.disposeLiabilitySummary(x, serviceInfoContent, backLink))
+                Ok(template(x, serviceInfoContent, backLink))
               }
             case None => Future.successful(Redirect(controllers.routes.AccountSummaryController.view()))
           }

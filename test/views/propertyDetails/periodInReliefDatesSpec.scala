@@ -36,6 +36,8 @@ class periodInReliefDatesSpec extends FeatureSpec with GuiceOneAppPerSuite with 
 
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
+  val injectedViewInstance = app.injector.instanceOf[views.html.propertyDetails.periodInReliefDates]
+
 feature("The user can add a period that the property is in relief") {
 
     info("as a client i want to indicate when my property is in relief")
@@ -45,7 +47,7 @@ feature("The user can add a period that the property is in relief") {
       Given("the client is adding a dates liable")
       When("The user views the page")
 
-      val html = views.html.propertyDetails.periodInReliefDates("1", 2015, periodInReliefDatesForm, Html(""), Some("http://backLink"))
+      val html = injectedViewInstance("1", 2015, periodInReliefDatesForm, Html(""), Some("http://backLink"))
 
       val document = Jsoup.parse(html.toString())
 

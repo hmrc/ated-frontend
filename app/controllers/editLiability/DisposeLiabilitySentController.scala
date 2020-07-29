@@ -33,7 +33,8 @@ class DisposeLiabilitySentController @Inject()(mcc: MessagesControllerComponents
                                                subscriptionDataService: SubscriptionDataService,
                                                authAction: AuthAction,
                                                serviceInfoService: ServiceInfoService,
-                                               val dataCacheConnector: DataCacheConnector)
+                                               val dataCacheConnector: DataCacheConnector,
+                                               template: views.html.editLiability.disposeLiabilitySent)
                                               (implicit val appConfig: ApplicationConfig)
   extends FrontendController(mcc) with ClientHelper {
 
@@ -45,7 +46,7 @@ class DisposeLiabilitySentController @Inject()(mcc: MessagesControllerComponents
         dataCacheConnector.fetchAndGetFormData[EditLiabilityReturnsResponseModel](SubmitEditedLiabilityReturnsResponseFormId) map {
           case Some(submitResponse) =>
             submitResponse.liabilityReturnResponse.find(_.oldFormBundleNumber == oldFormBundleNo) match {
-              case Some(r) => Ok(views.html.editLiability.disposeLiabilitySent(oldFormBundleNo, serviceInfoContent, r.amountDueOrRefund, r.liabilityAmount, r.paymentReference))
+              case Some(r) => Ok(template(oldFormBundleNo, serviceInfoContent, r.amountDueOrRefund, r.liabilityAmount, r.paymentReference))
               case None => Redirect(controllers.routes.AccountSummaryController.view())
             }
           case None =>

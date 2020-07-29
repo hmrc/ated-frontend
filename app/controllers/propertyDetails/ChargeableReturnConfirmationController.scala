@@ -33,7 +33,8 @@ class ChargeableReturnConfirmationController @Inject()(mcc: MessagesControllerCo
                                                        subscriptionDataService: SubscriptionDataService,
                                                        authAction: AuthAction,
                                                        serviceInfoService: ServiceInfoService,
-                                                       val dataCacheConnector: DataCacheConnector)
+                                                       val dataCacheConnector: DataCacheConnector,
+                                                       template: views.html.propertyDetails.chargeableReturnsConfirmation)
                                                       (implicit val appConfig: ApplicationConfig)
 
   extends FrontendController(mcc) {
@@ -45,7 +46,7 @@ class ChargeableReturnConfirmationController @Inject()(mcc: MessagesControllerCo
       serviceInfoService.getPartial.flatMap { serviceInfoContent =>
         dataCacheConnector.fetchAndGetFormData[SubmitReturnsResponse](SubmitReturnsResponseFormId) map {
           case Some(submitResponse) =>
-            Ok(views.html.propertyDetails.chargeableReturnsConfirmation(submitResponse, serviceInfoContent))
+            Ok(template(submitResponse, serviceInfoContent))
           case None =>
             Logger.warn("[ChargeableReturnConfirmationController][confirmation] - Return Response not found in cache")
             Redirect(controllers.routes.AccountSummaryController.view())

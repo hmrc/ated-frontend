@@ -117,7 +117,7 @@ val periodKey = 2017
 
     "display error" when {
       "rental business is selected but no date is populated" in {
-        haveChooseReliefFormError("rentalBusiness", "rental business")
+        haveChooseReliefFormError("rentalBusiness")
       }
 
       "rental business start date is invalid" in {
@@ -125,7 +125,7 @@ val periodKey = 2017
       }
 
       "open to public is selected but no date is populated" in {
-        haveChooseReliefFormError("openToPublic", "open to the public")
+        haveChooseReliefFormError("openToPublic")
       }
 
       "open to public start date is invalid" in {
@@ -133,7 +133,7 @@ val periodKey = 2017
       }
 
       "property developer is selected but no date is populated" in {
-        haveChooseReliefFormError("propertyDeveloper", "property developers")
+        haveChooseReliefFormError("propertyDeveloper")
       }
 
       "property developer start date is invalid" in {
@@ -141,7 +141,7 @@ val periodKey = 2017
       }
 
       "property trading is selected but no date is populated" in {
-        haveChooseReliefFormError("propertyTrading", "property trading")
+        haveChooseReliefFormError("propertyTrading")
       }
 
       "property trading start date is invalid" in {
@@ -149,7 +149,7 @@ val periodKey = 2017
       }
 
       "lending is selected but no date is populated" in {
-        haveChooseReliefFormError("lending", "lending")
+        haveChooseReliefFormError("lending")
       }
 
       "lending start date is invalid" in {
@@ -157,7 +157,7 @@ val periodKey = 2017
       }
 
       "employee occupation is selected but no date is populated" in {
-        haveChooseReliefFormError("employeeOccupation", "employee occupation")
+        haveChooseReliefFormError("employeeOccupation")
       }
 
       "employee occupation start date is invalid" in {
@@ -165,7 +165,7 @@ val periodKey = 2017
       }
 
       "farm houses is selected but no date is populated" in {
-        haveChooseReliefFormError("farmHouses", "farmhouses")
+        haveChooseReliefFormError("farmHouses")
       }
 
       "farm houses start date is invalid" in {
@@ -173,7 +173,7 @@ val periodKey = 2017
       }
 
       "social housing is selected but no date is populated" in {
-        haveChooseReliefFormError("socialHousing", "social housing")
+        haveChooseReliefFormError("socialHousing")
       }
 
       "social housing start date is invalid" in {
@@ -181,7 +181,7 @@ val periodKey = 2017
       }
 
       "equity release is selected but no date is populated" in {
-        haveChooseReliefFormError("equityRelease", "equity release scheme")
+        haveChooseReliefFormError("equityRelease")
       }
 
       "equity release start date is invalid" in {
@@ -190,11 +190,13 @@ val periodKey = 2017
     }
   }
 
-  def haveChooseReliefFormError(field: String, partialFieldError: String): Unit = {
+  val injectedViewInstance = app.injector.instanceOf[views.html.reliefs.chooseReliefs]
+
+  def haveChooseReliefFormError(field: String): Unit = {
     val fieldStartDate = field + "Date"
     val formWithErrors: Form[Reliefs] = ReliefForms.reliefsForm.bind(Json.obj("periodKey" -> periodKey, field -> true))
 
-    def view: Html = views.html.reliefs.chooseReliefs(periodKey, formWithErrors, periodStartDate, Html(""), Some("backLink"))
+    def view: Html = injectedViewInstance(periodKey, formWithErrors, periodStartDate, Html(""), Some("backLink"))
 
     val errorDoc = doc(view)
     errorDoc must haveErrorSummary(messages(s"ated.choose-reliefs.error.general.$fieldStartDate"))
@@ -206,7 +208,7 @@ val periodKey = 2017
     val formWithErrors: Form[Reliefs] = ReliefForms.reliefsForm.bind(Json.obj("periodKey" -> periodKey, field -> true,
       fieldStartDate -> Map("day" -> "1")))
 
-    def view: Html = views.html.reliefs.chooseReliefs(periodKey, formWithErrors, periodStartDate, Html(""), Some("backLink"))
+    def view: Html = injectedViewInstance(periodKey, formWithErrors, periodStartDate, Html(""), Some("backLink"))
 
     val errorDoc = doc(view)
     errorDoc must haveErrorSummary(messages(s"ated.choose-reliefs.error.general.$fieldStartDate"))
@@ -215,6 +217,6 @@ val periodKey = 2017
 
   val reliefsForm: Form[Reliefs] = ReliefForms.reliefsForm
 
-  override def view: Html = views.html.reliefs.chooseReliefs(periodKey, reliefsForm, periodStartDate, Html(""), Some("backLink"))
+  override def view: Html = injectedViewInstance(periodKey, reliefsForm, periodStartDate, Html(""), Some("backLink"))
 
 }

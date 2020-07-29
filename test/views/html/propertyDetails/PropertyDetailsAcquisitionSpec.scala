@@ -32,6 +32,7 @@ class PropertyDetailsAcquisitionSpec extends AtedViewSpec with MockitoSugar with
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
   val authMock: Enrolments ~ Some[AffinityGroup] ~ Some[String] = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
   setAuthMocks(authMock)
+  val injectedViewInstance = app.injector.instanceOf[views.html.propertyDetails.propertyDetailsAcquisition]
 
   "Property Details Acquisition view" must {
     behave like pageWithTitle(messages("ated.property-details-value.anAcquisition.title"))
@@ -59,6 +60,6 @@ class PropertyDetailsAcquisitionSpec extends AtedViewSpec with MockitoSugar with
 
   private val form = PropertyDetailsForms.propertyDetailsAcquisitionForm.withError("anAcquisition",
     messages("ated.property-details-value.anAcquisition.error-field-name"))
-  override def view: Html = views.html.propertyDetails.propertyDetailsAcquisition("",0,  form, None, Html(""), Some("backLink"))
+  override def view: Html = injectedViewInstance("",0,  form, None, Html(""), Some("backLink"))
 
 }

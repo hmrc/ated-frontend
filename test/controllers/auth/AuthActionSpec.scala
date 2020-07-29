@@ -22,6 +22,7 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, _}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
+import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc.{AnyContentAsEmpty, Result, Results}
 import play.api.test.Helpers.redirectLocation
@@ -31,12 +32,12 @@ import testhelpers.TestUtil
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.retrieve.~
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.test.UnitSpec
+import play.api.test.Helpers._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class AuthActionSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with TestUtil with DefaultAwaitTimeout {
+class AuthActionSpec extends PlaySpec with MockitoSugar with BeforeAndAfterEach with TestUtil with DefaultAwaitTimeout {
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
   implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
@@ -79,7 +80,7 @@ class AuthActionSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach 
         val func: StandardAuthRetrievals => Future[Result] = (_: StandardAuthRetrievals) => myFuture
 
         val res: Future[Result] = testAuthAction.authorisedForNoEnrolments(func)
-        status(res) shouldBe 200
+        status(res) mustBe 200
       }
 
       "affinity group is authorised with no delegation returned"  in new Setup {
@@ -92,7 +93,7 @@ class AuthActionSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach 
         val func: StandardAuthRetrievals => Future[Result] = (_: StandardAuthRetrievals) => myFuture
 
         val res: Future[Result] = testAuthAction.authorisedForNoEnrolments(func)
-        status(res) shouldBe 200
+        status(res) mustBe 200
       }
     }
 
@@ -107,8 +108,8 @@ class AuthActionSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach 
         val func: StandardAuthRetrievals => Future[Result] = (_: StandardAuthRetrievals) => myFuture
         val res: Future[Result] = testAuthAction.authorisedForNoEnrolments(func)
 
-        status(res) shouldBe 303
-        redirectLocation(res) shouldBe Some("/ated/unauthorised")
+        status(res) mustBe 303
+        redirectLocation(res) mustBe Some("/ated/unauthorised")
       }
 
       "affinity group fails authorisation for reason InvalidBearerToken (NoActiveSession)"  in new Setup {
@@ -124,8 +125,8 @@ class AuthActionSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach 
         val func: StandardAuthRetrievals => Future[Result] = (_: StandardAuthRetrievals) => myFuture
         val res: Future[Result] = testAuthAction.authorisedForNoEnrolments(func)
 
-        status(res) shouldBe 303
-        redirectLocation(res) shouldBe Some("http://localhost:9025/gg/sign-in?continue=http%3A%2F%2Flocalhost%3A9916%2Fated%2Fhome&origin=ated-frontend")
+        status(res) mustBe 303
+        redirectLocation(res) mustBe Some("http://localhost:9025/gg/sign-in?continue=http%3A%2F%2Flocalhost%3A9916%2Fated%2Fhome&origin=ated-frontend")
       }
 
       "affinity group fails authorisation for reason InsufficientConfidenceLevel (AuthorisationException)"  in new Setup {
@@ -139,8 +140,8 @@ class AuthActionSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach 
         val func: StandardAuthRetrievals => Future[Result] = (_: StandardAuthRetrievals) => myFuture
         val res: Future[Result] = testAuthAction.authorisedForNoEnrolments(func)
 
-        status(res) shouldBe 303
-        redirectLocation(res) shouldBe Some("/ated/unauthorised")
+        status(res) mustBe 303
+        redirectLocation(res) mustBe Some("/ated/unauthorised")
       }
     }
   }
@@ -149,34 +150,34 @@ class AuthActionSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach 
     "return true" when {
       "the only enrolment is  in new Setup IR-SA "  in new Setup {
         val enrolments: Enrolments = Enrolments(saEnrolmentSet)
-        testAuthAction.validateAgainstSaEnrolment(enrolments) shouldBe true
+        testAuthAction.validateAgainstSaEnrolment(enrolments) mustBe true
       }
 
       "the enrolments for  in new Setup IR-CT and IR-SA "  in new Setup {
         val enrolments: Enrolments = Enrolments(irSaCtEnrolmentSet)
-        testAuthAction.validateAgainstSaEnrolment(enrolments) shouldBe true
+        testAuthAction.validateAgainstSaEnrolment(enrolments) mustBe true
       }
     }
 
     "return false" when {
       "the only enrolment is  in new Setup Ated enrolment"  in new Setup {
         val enrolments: Enrolments = Enrolments(atedOnlyEnrolmentSet)
-        testAuthAction.validateAgainstSaEnrolment(enrolments) shouldBe false
+        testAuthAction.validateAgainstSaEnrolment(enrolments) mustBe false
       }
 
       "the only enrolment is  in new Setup Agent enrolment"  in new Setup {
         val enrolments: Enrolments = Enrolments(agentOnlyEnrolmentSet)
-        testAuthAction.validateAgainstSaEnrolment(enrolments) shouldBe false
+        testAuthAction.validateAgainstSaEnrolment(enrolments) mustBe false
       }
 
       "the there are enrolments for IR-SA and Ated enrolment"  in new Setup {
         val enrolments: Enrolments = Enrolments(irSaAtedEnrolmentSet)
-        testAuthAction.validateAgainstSaEnrolment(enrolments) shouldBe false
+        testAuthAction.validateAgainstSaEnrolment(enrolments) mustBe false
       }
 
       "there are enrolments for Ated and Agents"  in new Setup {
         val enrolments: Enrolments = Enrolments(atedAgentEnrolmentSet)
-        testAuthAction.validateAgainstSaEnrolment(enrolments) shouldBe false
+        testAuthAction.validateAgainstSaEnrolment(enrolments) mustBe false
       }
     }
   }
@@ -196,7 +197,7 @@ class AuthActionSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach 
           .thenReturn(Future.successful(buildRetrieval(AffinityGroup.Individual, saEnrolmentSet)) )
 
         val res: Future[Result] = testAuthAction.authorisedAction(func)
-        status(res) shouldBe 303
+        status(res) mustBe 303
 
       }
 
@@ -208,7 +209,7 @@ class AuthActionSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach 
           .thenReturn(Future.failed(InsufficientConfidenceLevel("error")))
 
         val res: Future[Result] = testAuthAction.authorisedAction(func)
-        status(res) shouldBe 303
+        status(res) mustBe 303
 
       }
 
@@ -222,7 +223,7 @@ class AuthActionSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach 
           .thenReturn(Future.failed(BearerTokenExpired("error")))
 
         val res: Future[Result] = testAuthAction.authorisedAction(func)
-        status(res) shouldBe 303
+        status(res) mustBe 303
 
       }
 
@@ -238,7 +239,7 @@ class AuthActionSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach 
           .thenReturn(Future.successful(buildRetrieval(AffinityGroup.Organisation, atedAgentEnrolmentSet)) )
 
         val res: Future[Result] = testAuthAction.authorisedAction(func)
-        status(res) shouldBe 200
+        status(res) mustBe 200
       }
 
       "affinity Agent groups are authorised with valid delegation " in new Setup {
@@ -249,7 +250,7 @@ class AuthActionSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach 
           .thenReturn(Future.successful(buildRetrieval(AffinityGroup.Agent, atedAgentEnrolmentSet)) )
 
         val res: Future[Result] = testAuthAction.authorisedAction(func)
-        status(res) shouldBe 200
+        status(res) mustBe 200
       }
 
       "affinity group is authorised with no delegation returned " in new Setup {
@@ -260,7 +261,7 @@ class AuthActionSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach 
           .thenReturn(Future.successful(buildRetrieval(AffinityGroup.Organisation, atedOnlyEnrolmentSet)) )
 
         val res: Future[Result] = testAuthAction.authorisedAction(func)
-        status(res) shouldBe 200
+        status(res) mustBe 200
       }
     }
 

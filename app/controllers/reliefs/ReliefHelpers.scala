@@ -31,15 +31,18 @@ import scala.concurrent.Future
 trait ReliefHelpers {
 
   def reliefsService: ReliefsService
+  val templateInvalidPeriodKey: views.html.reliefs.invalidPeriodKey
 
   def validatePeriodKey(periodKey: Int)(block: Future[Result])
-                       (implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier, request: Request[AnyContent], messages: Messages, appConfig: ApplicationConfig): Future[Result] = {
-    if (PeriodUtils.calculatePeakStartYear(month = 3) >= periodKey) {
+                       (implicit authContext: StandardAuthRetrievals,
+                        hc: HeaderCarrier, request: Request[AnyContent],
+                        messages: Messages, appConfig: ApplicationConfig): Future[Result] = {
+    if (PeriodUtils.calculatePeakStartYear() >= periodKey) {
       block
     } else {
       for {
         _ <- reliefsService.clearDraftReliefs
-      } yield BadRequest(views.html.reliefs.invalidPeriodKey())
+      } yield BadRequest(templateInvalidPeriodKey())
     }
   }
 

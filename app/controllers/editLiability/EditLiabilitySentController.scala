@@ -35,7 +35,8 @@ class EditLiabilitySentController @Inject()(mcc: MessagesControllerComponents,
                                             authAction: AuthAction,
                                             serviceInfoService: ServiceInfoService,
                                             val delegationService: DelegationService,
-                                            val dataCacheConnector: DataCacheConnector)
+                                            val dataCacheConnector: DataCacheConnector,
+                                            template: views.html.editLiability.editLiabilitySent)
                                            (implicit val appConfig: ApplicationConfig)
 
   extends FrontendController(mcc) with ClientHelper {
@@ -51,7 +52,7 @@ class EditLiabilitySentController @Inject()(mcc: MessagesControllerComponents,
             submitResponse.liabilityReturnResponse.find(_.oldFormBundleNumber == oldFormBundleNo) match {
               case Some(resp) =>
                 val returnType = returnTypeFromAmount(resp.amountDueOrRefund)
-                Ok(views.html.editLiability.editLiabilitySent(oldFormBundleNo, serviceInfoContent, returnType, resp.paymentReference,
+                Ok(template(oldFormBundleNo, serviceInfoContent, returnType, resp.paymentReference,
                   resp.amountDueOrRefund, resp.liabilityAmount,
                   createHeadermessages(returnType, "ated.edit-liability.sent.title"),
                   createHeadermessages(returnType, "ated.edit-liability.sent.header")))

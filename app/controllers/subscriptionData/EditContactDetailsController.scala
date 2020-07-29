@@ -31,7 +31,8 @@ import scala.concurrent.{ExecutionContext, Future}
 class EditContactDetailsController @Inject()(mcc: MessagesControllerComponents,
                                              authAction: AuthAction,
                                              serviceInfoService: ServiceInfoService,
-                                             subscriptionDataService: SubscriptionDataService)
+                                             subscriptionDataService: SubscriptionDataService,
+                                             template: views.html.subcriptionData.editContactDetails)
                                             (implicit val appConfig: ApplicationConfig)
 
   extends FrontendController(mcc) {
@@ -51,7 +52,7 @@ implicit val ec: ExecutionContext = mcc.executionContext
               phoneNumber = x.contactDetails.fold("")(a => a.phoneNumber.getOrElse("")))
             editContactDetailsForm.fill(editContactDetails)
           }
-          Ok(views.html.subcriptionData.editContactDetails(populatedForm, serviceInfoContent, getBackLink))
+          Ok(template(populatedForm, serviceInfoContent, getBackLink))
         }
       }
     }
@@ -61,7 +62,7 @@ implicit val ec: ExecutionContext = mcc.executionContext
     authAction.authorisedAction { implicit authContext =>
       serviceInfoService.getPartial.flatMap { serviceInfoContent =>
         editContactDetailsForm.bindFromRequest.fold(
-          formWithErrors => Future.successful(BadRequest(views.html.subcriptionData.editContactDetails(formWithErrors, serviceInfoContent, getBackLink))),
+          formWithErrors => Future.successful(BadRequest(template(formWithErrors, serviceInfoContent, getBackLink))),
           editedClientData => {
             for {
               editedContact <- subscriptionDataService.editContactDetails(editedClientData)
@@ -71,7 +72,7 @@ implicit val ec: ExecutionContext = mcc.executionContext
                 case None =>
                   val errorMsg = Messages("ated.contact-details.error.general.addressType")
                   val errorForm = editContactDetailsForm.withError(key = "addressType", message = errorMsg).fill(editedClientData)
-                  BadRequest(views.html.subcriptionData.editContactDetails(errorForm, serviceInfoContent, getBackLink))
+                  BadRequest(template(errorForm, serviceInfoContent, getBackLink))
               }
             }
           }

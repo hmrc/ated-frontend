@@ -27,6 +27,7 @@ import testhelpers.{AtedViewSpec, MockAuthUtil}
 class EditLiabilityDatesLiableSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil {
 
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
+  val injectedViewInstance = app.injector.instanceOf[views.html.editLiability.editLiabilityDatesLiable]
 
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
 "Edit Liability Dates Liable view" must {
@@ -42,7 +43,7 @@ class EditLiabilityDatesLiableSpec extends AtedViewSpec with MockitoSugar with M
         Seq(FormError("startDate", messages("ated.property-details-value.startDate.error.empty")),
         FormError("endDate", messages("ated.property-details-value.endDate.error.empty")))
         , form.value)
-       def view: Html = views.html.editLiability.editLiabilityDatesLiable("",0,  eform, Html(""), Some("backLink"))
+       def view: Html = injectedViewInstance("",0,  eform, Html(""), Some("backLink"))
       val errorDoc = doc(view)
 
       errorDoc must haveErrorNotification(messages("ated.property-details-value.startDate.error.empty"))
@@ -59,6 +60,6 @@ class EditLiabilityDatesLiableSpec extends AtedViewSpec with MockitoSugar with M
   }
 
   private val form = PropertyDetailsForms.periodDatesLiableForm
-  override def view: Html = views.html.editLiability.editLiabilityDatesLiable("",0,  form, Html(""), Some("backLink"))
+  override def view: Html = injectedViewInstance("",0,  form, Html(""), Some("backLink"))
 
 }

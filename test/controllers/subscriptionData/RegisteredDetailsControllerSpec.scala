@@ -58,6 +58,7 @@ class RegisteredDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSui
 lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
+  val injectedViewInstance = app.injector.instanceOf[views.html.subcriptionData.registeredDetails]
 
 class Setup {
 
@@ -72,7 +73,8 @@ class Setup {
       mockAuthAction,
       mockSubscriptionDataService,
       mockServiceInfoService,
-      mockEnvironment
+      mockEnvironment,
+      injectedViewInstance
   )
 
   def getWithAuthorisedUser(registeredDetails: Option[RegisteredDetails]=None)(test: Future[Result] => Any) {

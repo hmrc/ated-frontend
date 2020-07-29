@@ -59,6 +59,7 @@ class ReliefsSentControllerSpec extends PlaySpec with GuiceOneServerPerSuite wit
 lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
+  val injectedViewInstance = app.injector.instanceOf[views.html.reliefs.reliefsSent]
 
   val periodKey = 2015
   val submittedDate: String = LocalDate.now().toString(DateTimeFormat.forPattern("d MMMM yyyy"))
@@ -78,10 +79,10 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
     val testReliefsSentController: ReliefsSentController = new ReliefsSentController(
       mockMcc,
       mockAuthAction,
-      mockSubscriptionDataService,
       mockServiceInfoService,
       mockDataCacheConnector,
-      mockReliefsService
+      mockReliefsService,
+      injectedViewInstance
     )
 
     def getWithAuthorisedUser(test: Future[Result] => Any) {

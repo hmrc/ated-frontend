@@ -63,6 +63,8 @@ class AccountSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
 lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
+  val injectedViewInstance = app.injector.instanceOf[views.html.accountSummary]
+
   when(mockDateService.now()).thenReturn(LocalDate.now())
   when(mockAppConfig.atedPeakStartDay).thenReturn("27")
 
@@ -85,7 +87,8 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
       mockDetailsService,
       mockDataCacheConnector,
       mockDateService,
-      mockServiceInfoService
+      mockServiceInfoService,
+      injectedViewInstance
     )
 
     def getWithAuthorisedUser(returnsSummaryWithDraft: SummaryReturnsModel,

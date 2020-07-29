@@ -36,14 +36,14 @@ import utils.AtedUtils
 import scala.concurrent.{ExecutionContext, Future}
 
 class PropertyDetailsAddressController @Inject()(mcc: MessagesControllerComponents,
-                                                 propertyDetailsTitleController: PropertyDetailsTitleController,
                                                  auditConnector: DefaultAuditConnector,
                                                  authAction: AuthAction,
                                                  changeLiabilityReturnService: ChangeLiabilityReturnService,
                                                  serviceInfoService: ServiceInfoService,
                                                  val propertyDetailsService: PropertyDetailsService,
                                                  val dataCacheConnector: DataCacheConnector,
-                                                 val backLinkCacheConnector: BackLinkCacheConnector)
+                                                 val backLinkCacheConnector: BackLinkCacheConnector,
+                                                 template: views.html.propertyDetails.propertyDetailsAddress)
                                                 (implicit val appConfig: ApplicationConfig)
 
   extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with Auditable with ControllerIds {
@@ -66,7 +66,7 @@ class PropertyDetailsAddressController @Inject()(mcc: MessagesControllerComponen
         } yield {
           changeLiabilityReturnOpt match {
             case Some(x) =>
-              Ok(views.html.propertyDetails.propertyDetailsAddress(
+              Ok(template(
                 Some(x.id),
                 x.periodKey,
                 propertyDetailsAddressForm.fill(x.addressProperty),
@@ -85,7 +85,7 @@ class PropertyDetailsAddressController @Inject()(mcc: MessagesControllerComponen
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
           dataCacheConnector.saveFormData[Boolean](SelectedPreviousReturn, false).flatMap { _ =>
             currentBackLink.map(backLink =>
-              Ok(views.html.propertyDetails.propertyDetailsAddress(None, periodKey, propertyDetailsAddressForm, None, serviceInfoContent, backLink, fromConfirmAddressPage = false))
+              Ok(template(None, periodKey, propertyDetailsAddressForm, None, serviceInfoContent, backLink, fromConfirmAddressPage = false))
             )
           }
         }
@@ -108,7 +108,7 @@ class PropertyDetailsAddressController @Inject()(mcc: MessagesControllerComponen
           }
           propertyDetailsCacheResponse(id) {
             case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
-              Future.successful(Ok(views.html.propertyDetails.propertyDetailsAddress(
+              Future.successful(Ok(template(
                 Some(id),
                 propertyDetails.periodKey,
                 propertyDetailsAddressForm.fill(propertyDetails.addressProperty),
@@ -130,7 +130,7 @@ class PropertyDetailsAddressController @Inject()(mcc: MessagesControllerComponen
           propertyDetailsCacheResponse(id) {
             case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
               val mode = AtedUtils.getEditSubmittedMode(propertyDetails)
-              Future.successful(Ok(views.html.propertyDetails.propertyDetailsAddress(
+              Future.successful(Ok(template(
                 Some(id),
                 propertyDetails.periodKey,
                 propertyDetailsAddressForm.fill(propertyDetails.addressProperty),
@@ -175,7 +175,7 @@ class PropertyDetailsAddressController @Inject()(mcc: MessagesControllerComponen
           }
           propertyDetailsAddressForm.bindFromRequest.fold(
             formWithError => {
-              Future.successful(BadRequest(views.html.propertyDetails.propertyDetailsAddress(
+              Future.successful(BadRequest(template(
                 id,
                 periodKey,
                 formWithError,

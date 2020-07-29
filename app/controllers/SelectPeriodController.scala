@@ -35,7 +35,8 @@ class SelectPeriodController @Inject()(mcc: MessagesControllerComponents,
                                        authAction: AuthAction,
                                        serviceInfoService: ServiceInfoService,
                                        val backLinkCacheConnector: BackLinkCacheConnector,
-                                       val dataCacheConnector: DataCacheConnector)
+                                       val dataCacheConnector: DataCacheConnector,
+                                       template: views.html.selectPeriod)
                                       (implicit val appConfig: ApplicationConfig)
 
   extends FrontendController(mcc) with BackLinkController with ClientHelper with ControllerIds {
@@ -53,8 +54,8 @@ class SelectPeriodController @Inject()(mcc: MessagesControllerComponents,
           val peakStartYear = PeriodUtils.calculatePeakStartYear()
           val periods = PeriodUtils.getPeriods(peakStartYear)
           dataCacheConnector.fetchAndGetFormData[SelectPeriod](RetrieveSelectPeriodFormId) map {
-            case Some(data) => Ok(views.html.selectPeriod(selectPeriodForm.fill(data), periods, serviceInfoContent, getBackLink()))
-            case _ => Ok(views.html.selectPeriod(selectPeriodForm, periods, serviceInfoContent, getBackLink()))
+            case Some(data) => Ok(template(selectPeriodForm.fill(data), periods, serviceInfoContent, getBackLink()))
+            case _ => Ok(template(selectPeriodForm, periods, serviceInfoContent, getBackLink()))
           }
         }
       }
@@ -68,7 +69,7 @@ class SelectPeriodController @Inject()(mcc: MessagesControllerComponents,
           val peakStartYear = PeriodUtils.calculatePeakStartYear()
           val periods = PeriodUtils.getPeriods(peakStartYear)
           selectPeriodForm.bindFromRequest.fold(
-            formWithError => Future.successful(BadRequest(views.html.selectPeriod(formWithError, periods, serviceInfoContent, getBackLink()))),
+            formWithError => Future.successful(BadRequest(template(formWithError, periods, serviceInfoContent, getBackLink()))),
             periodData => {
               dataCacheConnector.saveFormData[SelectPeriod](RetrieveSelectPeriodFormId, periodData)
               redirectWithBackLink(

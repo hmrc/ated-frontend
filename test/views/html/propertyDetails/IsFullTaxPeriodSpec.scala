@@ -26,6 +26,7 @@ import testhelpers.{AtedViewSpec, MockAuthUtil}
 
 class IsFullTaxPeriodSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil {
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
+  val injectedViewInstance = app.injector.instanceOf[views.html.propertyDetails.isFullTaxPeriod]
 
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
 "isFullTaxPeriod view" must {
@@ -46,6 +47,6 @@ class IsFullTaxPeriodSpec extends AtedViewSpec with MockitoSugar with MockAuthUt
 
   private val form = PropertyDetailsForms.isFullTaxPeriodForm.withError("isFullPeriod",
     messages("ated.property-details-period.isFullPeriod.error-field-name"))
-  override def view: Html = views.html.propertyDetails.isFullTaxPeriod("",0,  form, new LocalDate, new LocalDate, Html(""), Some("backLink"))
+  override def view: Html = injectedViewInstance("",0,  form, new LocalDate, new LocalDate, Html(""), Some("backLink"))
 
 }

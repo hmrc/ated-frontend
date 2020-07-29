@@ -40,7 +40,8 @@ class PropertyDetailsNewBuildValueController @Inject()(mcc: MessagesControllerCo
                                                        serviceInfoService: ServiceInfoService,
                                                        val propertyDetailsService: PropertyDetailsService,
                                                        val dataCacheConnector: DataCacheConnector,
-                                                       val backLinkCacheConnector: BackLinkCacheConnector)
+                                                       val backLinkCacheConnector: BackLinkCacheConnector,
+                                                       template: html.propertyDetails.propertyDetailsNewBuildValue)
                                                       (implicit val appConfig: ApplicationConfig)
 
   extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper {
@@ -62,7 +63,7 @@ class PropertyDetailsNewBuildValueController @Inject()(mcc: MessagesControllerCo
 
                 val dynamicDate = getEarliestDate(newBuildDate, localRegDate)
 
-                Future.successful(Ok(html.propertyDetails.propertyDetailsNewBuildValue(id,
+                Future.successful(Ok(template(id,
                   propertyDetails.periodKey,
                   propertyDetailsNewBuildValueForm.fill(displayData),
                   AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn),
@@ -86,7 +87,7 @@ class PropertyDetailsNewBuildValueController @Inject()(mcc: MessagesControllerCo
             propertyDetailsNewBuildValueForm.bindFromRequest.fold(
               formWithError => {
                 currentBackLink.map(backLink =>
-                  BadRequest(views.html.propertyDetails.propertyDetailsNewBuildValue(id, periodKey, formWithError, mode, serviceInfoContent, backLink, date))
+                  BadRequest(template(id, periodKey, formWithError, mode, serviceInfoContent, backLink, date))
                 )
               },
               propertyDetails => {

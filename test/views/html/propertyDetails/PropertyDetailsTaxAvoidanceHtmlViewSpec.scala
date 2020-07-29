@@ -28,6 +28,8 @@ class PropertyDetailsTaxAvoidanceHtmlViewSpec extends AtedViewSpec with MockitoS
 
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
 
+  val injectedViewInstance = app.injector.instanceOf[views.html.propertyDetails.propertyDetailsTaxAvoidance]
+
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
 "Property Details TaxAvoidance view" must {
     behave like pageWithTitle(messages("ated.property-details-period.isTaxAvoidance.title"))
@@ -53,7 +55,7 @@ class PropertyDetailsTaxAvoidanceHtmlViewSpec extends AtedViewSpec with MockitoS
         Seq(FormError("isTaxAvoidance", messages("ated.property-details-period.isTaxAvoidance.error-field-name")))
         , form.value)
 
-      def view: Html = views.html.propertyDetails.propertyDetailsTaxAvoidance("", 0, eform, None, Html(""), Some("backLink"))
+      def view: Html = injectedViewInstance("", 0, eform, None, Html(""), Some("backLink"))
 
       val errorDoc = doc(view)
 
@@ -67,7 +69,7 @@ class PropertyDetailsTaxAvoidanceHtmlViewSpec extends AtedViewSpec with MockitoS
           FormError("taxAvoidancePromoterReference", messages("ated.property-details-period.taxAvoidancePromoterReference.error.empty")))
         , form.value)
 
-      def view: Html = views.html.propertyDetails.propertyDetailsTaxAvoidance("", 0, eform, None, Html(""), Some("backLink"))
+      def view: Html = injectedViewInstance("", 0, eform, None, Html(""), Some("backLink"))
 
       val errorDoc = doc(view)
 
@@ -87,6 +89,6 @@ class PropertyDetailsTaxAvoidanceHtmlViewSpec extends AtedViewSpec with MockitoS
   private val form = PropertyDetailsForms.propertyDetailsTaxAvoidanceForm
     .withError("isTaxAvoidance", "ated.property-details-period.isTaxAvoidance.error-field-name")
 
-  override def view: Html = views.html.propertyDetails.propertyDetailsTaxAvoidance("", 0, form, None, Html(""), Some("backLink"))
+  override def view: Html = injectedViewInstance("", 0, form, None, Html(""), Some("backLink"))
 
 }

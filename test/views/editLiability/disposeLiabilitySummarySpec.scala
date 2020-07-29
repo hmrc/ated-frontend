@@ -18,24 +18,25 @@ package views.editLiability
 
 import builders.ChangeLiabilityReturnBuilder
 import config.ApplicationConfig
-import models.{BankDetails, BankDetailsModel, DisposeLiability, DisposeLiabilityReturn, SortCode, StandardAuthRetrievals}
+import models._
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
 import org.scalatest.BeforeAndAfterEach
+import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.test.FakeRequest
 import play.twirl.api.Html
 import testhelpers.MockAuthUtil
-import uk.gov.hmrc.play.test.UnitSpec
 
-class disposeLiabilitySummarySpec extends UnitSpec with GuiceOneAppPerSuite
+class disposeLiabilitySummarySpec extends PlaySpec with GuiceOneAppPerSuite
   with BeforeAndAfterEach with MockAuthUtil {
 
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
   implicit val request = FakeRequest()
   implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
+  val injectedViewInstance = app.injector.instanceOf[views.html.editLiability.disposeLiabilitySummary]
 
   val bankDetailsYesButNoDetails: Option[BankDetailsModel] = Some(BankDetailsModel(hasBankDetails = true, bankDetails = None))
   val completedBankDetails: Option[BankDetailsModel] = Some(BankDetailsModel(hasBankDetails = true,
@@ -58,14 +59,14 @@ class disposeLiabilitySummarySpec extends UnitSpec with GuiceOneAppPerSuite
   "disposeLiabilitySummary" should {
     "hide the submit button and show incomplete for bank details" when {
       "the user has not answered the bank details question" in {
-        val html = views.html.editLiability.disposeLiabilitySummary(disposeLiabilityReturn(None), Html(""), Some("http://backLink"))
+        val html = injectedViewInstance(disposeLiabilityReturn(None), Html(""), Some("http://backLink"))
         val document = Jsoup.parse(html.toString())
         assert(document.getElementsByClass("button").size() === 0)
         assert(document.getElementById("supply-bank-value").text() === "INCOMPLETE")
       }
 
       "the user has answered yes to the bank details question but not provided bank details" in {
-        val html = views.html.editLiability.disposeLiabilitySummary(disposeLiabilityReturn(bankDetailsYesButNoDetails),
+        val html = injectedViewInstance(disposeLiabilityReturn(bankDetailsYesButNoDetails),
           Html(""), Some("http://backLink"))
         val document = Jsoup.parse(html.toString())
         assert(document.getElementsByClass("button").size() === 0)
@@ -75,7 +76,7 @@ class disposeLiabilitySummarySpec extends UnitSpec with GuiceOneAppPerSuite
 
     "show the submit button" when {
       "all required disposal details have been provided" in {
-        val html = views.html.editLiability.disposeLiabilitySummary(disposeLiabilityReturn(completedBankDetails),
+        val html = injectedViewInstance(disposeLiabilityReturn(completedBankDetails),
           Html(""), Some("http://backLink"))
         val document = Jsoup.parse(html.toString())
         assert(document.getElementsByClass("button").size() === 1)
@@ -84,7 +85,7 @@ class disposeLiabilitySummarySpec extends UnitSpec with GuiceOneAppPerSuite
 
     "show incomplete next to the disposal date" when {
       "the disposal date has not been provided" in {
-        val html = views.html.editLiability.disposeLiabilitySummary(disposeLiabilityReturn(completedBankDetails, None),
+        val html = injectedViewInstance(disposeLiabilityReturn(completedBankDetails, None),
           Html(""), Some("http://backLink"))
         val document = Jsoup.parse(html.toString())
         assert(document.getElementById("property-title-disposal-date").text() === "INCOMPLETE")

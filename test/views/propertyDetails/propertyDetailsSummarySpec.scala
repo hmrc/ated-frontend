@@ -43,6 +43,8 @@ class propertyDetailsSummarySpec extends FeatureSpec with GuiceOneAppPerSuite wi
   val thisYear: Int = calculatePeakStartYear()
   val nextYear: Int = thisYear + 1
 
+  val injectedViewInstance = app.injector.instanceOf[views.html.propertyDetails.propertyDetailsSummary]
+
   def formatDate(date: LocalDate): String = DateTimeFormat.forPattern("d MMMM yyyy").withZone(DateTimeZone.forID("Europe/London")).print(date)
   feature("The user can view their property details summary before they submit it") {
 
@@ -58,7 +60,7 @@ class propertyDetailsSummarySpec extends FeatureSpec with GuiceOneAppPerSuite wi
       val displayPeriods = PeriodUtils.getDisplayPeriods(propertyDetails.period)
       assert(displayPeriods.size === 2)
 
-      val html = views.html.propertyDetails.propertyDetailsSummary(propertyDetails, displayPeriods,
+      val html = injectedViewInstance(propertyDetails, displayPeriods,
         canSubmit = true, PeriodUtils.getCalculatedPeriodValues(propertyDetails.calculated), Html(""), Some("http://backLink"))
 
       val document = Jsoup.parse(html.toString())
@@ -103,7 +105,7 @@ class propertyDetailsSummarySpec extends FeatureSpec with GuiceOneAppPerSuite wi
 
       val propertyDetails = PropertyDetailsBuilder.getFullPropertyDetails(id = "1", postCode = Some("123456"), liabilityAmount = Some(BigDecimal(1000.20)))
 
-      val html = views.html.propertyDetails.propertyDetailsSummary(propertyDetails, Nil,
+      val html = injectedViewInstance(propertyDetails, Nil,
         canSubmit = true, PeriodUtils.getCalculatedPeriodValues(propertyDetails.calculated), Html(""), None)
 
       val document = Jsoup.parse(html.toString())
@@ -145,7 +147,7 @@ class propertyDetailsSummarySpec extends FeatureSpec with GuiceOneAppPerSuite wi
 
       val propertyDetails = PropertyDetailsBuilder.getFullPropertyDetails(id = "1", postCode = Some("123456"), liabilityAmount = Some(BigDecimal(1000.20)))
 
-      val html = views.html.propertyDetails.propertyDetailsSummary(propertyDetails, Nil,
+      val html = injectedViewInstance(propertyDetails, Nil,
         canSubmit = false, PeriodUtils.getCalculatedPeriodValues(propertyDetails.calculated), Html(""), None)
 
       val document = Jsoup.parse(html.toString())

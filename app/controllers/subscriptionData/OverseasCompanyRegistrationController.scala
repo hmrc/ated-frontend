@@ -34,7 +34,8 @@ class OverseasCompanyRegistrationController @Inject()(mcc: MessagesControllerCom
                                                       authAction: AuthAction,
                                                       subscriptionDataService: SubscriptionDataService,
                                                       serviceInfoService: ServiceInfoService,
-                                                      val environment: Environment)
+                                                      val environment: Environment,
+                                                      template: views.html.subcriptionData.overseasCompanyRegistration)
                                                      (implicit val appConfig: ApplicationConfig)
   extends FrontendController(mcc) with CountryCodeUtils {
 
@@ -48,7 +49,7 @@ class OverseasCompanyRegistrationController @Inject()(mcc: MessagesControllerCom
       } yield {
         val result = OverseasCompanyRegistration(overseasCompanyRegistration
           .map(_.idNumber), overseasCompanyRegistration.map(_.issuingInstitution), overseasCompanyRegistration.map(_.issuingCountryCode))
-        Ok(views.html.subcriptionData.overseasCompanyRegistration
+        Ok(template
         (overseasCompanyRegistrationForm.fill(result), getIsoCodeTupleList, serviceInfoContent, getBackLink()))
       }
     }
@@ -59,7 +60,7 @@ class OverseasCompanyRegistrationController @Inject()(mcc: MessagesControllerCom
       serviceInfoService.getPartial.flatMap { serviceInfoContent =>
         overseasCompanyRegistrationForm.bindFromRequest().fold(
           formWithErrors =>
-            Future.successful(BadRequest(views.html.subcriptionData.overseasCompanyRegistration
+            Future.successful(BadRequest(template
             (formWithErrors, getIsoCodeTupleList, serviceInfoContent, getBackLink()))),
           data => {
             for {

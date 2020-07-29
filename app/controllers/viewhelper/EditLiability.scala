@@ -26,10 +26,10 @@ object EditLiability {
     case  _ => s"$prefix.change"
   }
 
-  def returnTypeFromAmount(amount: BigDecimal): String = amount match {
-    case lessThanZero if amount < BigDecimal(0) => AtedConstants.Amend
-    case greaterThanZero if amount > BigDecimal(0) => AtedConstants.Further
-    case eqaulsZero => AtedConstants.Change
+  def returnTypeFromAmount(amount: BigDecimal): String = amount.signum match {
+    case 0 => AtedConstants.Change
+    case 1 => AtedConstants.Further
+    case -1 => AtedConstants.Amend
   }
 
 }

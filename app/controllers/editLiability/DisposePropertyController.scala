@@ -35,7 +35,8 @@ class DisposePropertyController @Inject()(mcc: MessagesControllerComponents,
                                           disposeLiabilityHasBankDetailsController: DisposeLiabilityHasBankDetailsController,
                                           serviceInfoService: ServiceInfoService,
                                           val dataCacheConnector: DataCacheConnector,
-                                          val backLinkCacheConnector: BackLinkCacheConnector)
+                                          val backLinkCacheConnector: BackLinkCacheConnector,
+                                          template: views.html.editLiability.dataOfDisposal)
                                          (implicit val appConfig: ApplicationConfig)
   extends FrontendController(mcc) with BackLinkController with ClientHelper {
 
@@ -54,7 +55,7 @@ class DisposePropertyController @Inject()(mcc: MessagesControllerComponents,
             case Some(x) =>
               currentBackLink.map { backLink =>
                 val filledForm = disposeLiabilityForm.fill(x.disposeLiability.fold(DisposeLiability(periodKey = x.formBundleReturn.periodKey.toInt))(a => a))
-                Ok(views.html.editLiability.dataOfDisposal(filledForm, oldFormBundleNo, serviceInfoContent, backLink, x.formBundleReturn.periodKey.toInt))
+                Ok(template(filledForm, oldFormBundleNo, serviceInfoContent, backLink, x.formBundleReturn.periodKey.toInt))
               }
             case None => Future.successful(Redirect(controllers.routes.AccountSummaryController.view()))
           }
@@ -74,7 +75,7 @@ class DisposePropertyController @Inject()(mcc: MessagesControllerComponents,
             case Some(x) =>
               Future.successful {
                 val backLink = Some(controllers.editLiability.routes.DisposeLiabilitySummaryController.view(oldFormBundleNo).url)
-                Ok(views.html.editLiability.dataOfDisposal(disposeLiabilityForm.fill(x), oldFormBundleNo, serviceInfoContent, backLink, x.periodKey))
+                Ok(template(disposeLiabilityForm.fill(x), oldFormBundleNo, serviceInfoContent, backLink, x.periodKey))
               }
             case None => Future.successful(Redirect(controllers.routes.AccountSummaryController.view()))
           }
@@ -91,7 +92,7 @@ class DisposePropertyController @Inject()(mcc: MessagesControllerComponents,
             formWithErrors => {
               currentBackLink.map { backLink =>
                 BadRequest(
-                  views.html.editLiability.dataOfDisposal(
+                  template(
                     formWithErrors,
                     oldFormBundleNo,
                     serviceInfoContent,

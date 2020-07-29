@@ -27,6 +27,7 @@ class EditContactEmailSpec extends AtedViewSpec with MockitoSugar with MockAuthU
   implicit lazy val authContxt: StandardAuthRetrievals = organisationStandardRetrievals
 
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
+  val injectedViewInstance = app.injector.instanceOf[views.html.subcriptionData.editContactEmail]
 "Edit contact email view" must {
       behave like pageWithTitle(messages("ated.contact-details-edit-email.title"))
       behave like pageWithHeader(messages("ated.contact-details-edit-email.header"))
@@ -69,6 +70,6 @@ class EditContactEmailSpec extends AtedViewSpec with MockitoSugar with MockAuthU
   val prePopulatedData = EditContactDetailsEmail(emailAddress = "test@test.com",
     emailConsent = true
   )
-  override def view: Html = views.html.subcriptionData.editContactEmail(editContactDetailsEmailForm.fill(prePopulatedData), Html(""), Some("http://backLink"))
+  override def view: Html = injectedViewInstance(editContactDetailsEmailForm.fill(prePopulatedData), Html(""), Some("http://backLink"))
 
 }

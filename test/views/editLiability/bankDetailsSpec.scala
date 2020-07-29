@@ -36,6 +36,8 @@ class bankDetailsSpec extends FeatureSpec with GuiceOneAppPerSuite with MockitoS
   implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
 
+  val injectedViewInstance = app.injector.instanceOf[views.html.editLiability.bankDetails]
+
   feature("The user can whether they have bank details") {
 
     info("as a client i want change whether I send my bank details")
@@ -45,7 +47,7 @@ class bankDetailsSpec extends FeatureSpec with GuiceOneAppPerSuite with MockitoS
       Given("the client is prompted to add thier bank details")
       When("The user views the page")
 
-      val html = views.html.editLiability.bankDetails(bankDetailsForm, "1", Html(""), Some("http://backLink"))
+      val html = injectedViewInstance(bankDetailsForm, "1", Html(""), Some("http://backLink"))
 
       val document = Jsoup.parse(html.toString())
 
@@ -62,9 +64,9 @@ class bankDetailsSpec extends FeatureSpec with GuiceOneAppPerSuite with MockitoS
       assert(document.getElementById("hasUKBankAccount-id").text() === "Is the bank account in the UK? Yes No")
       assert(document.getElementById("name-of-person").text() === "Name of bank account holder")
 
-      assert(document.getElementById("hidden-bank-details-uk").text() === "Account number Sort code First two numbers Second two numbers Third two numbers  ")
+      assert(document.getElementById("hidden-bank-details-uk").text() === "Account number Sort code First two numbers Second two numbers Third two numbers")
       assert(document.getElementById("account-number").text() === "Account number")
-      assert(document.getElementById("sort-code").text() === "Sort code First two numbers Second two numbers Third two numbers  ")
+      assert(document.getElementById("sort-code").text() === "Sort code First two numbers Second two numbers Third two numbers")
       assert(document.getElementById("accountNumber").attr("type") === "number")
 
       assert(document.getElementById("hidden-bank-details-non-uk").text() === "IBAN SWIFT code")

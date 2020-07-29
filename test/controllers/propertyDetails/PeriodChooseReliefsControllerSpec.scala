@@ -56,6 +56,7 @@ class PeriodChooseReliefsControllerSpec extends PlaySpec with GuiceOneServerPerS
 lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
+  val injectedViewInstance = app.injector.instanceOf[views.html.propertyDetails.periodChooseRelief]
 
   val periodKey: Int = 2016
 
@@ -73,7 +74,8 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
       mockServiceInfoService,
       mockPropertyDetailsService,
       mockDataCacheConnector,
-      mockBackLinkCacheConnector
+      mockBackLinkCacheConnector,
+      injectedViewInstance
     )
 
     def getWithUnAuthorisedUser(test: Future[Result] => Any) {

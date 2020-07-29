@@ -61,6 +61,8 @@ class PeriodSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite w
 lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
+  val injectedViewInstance = app.injector.instanceOf[views.html.periodSummary]
+  val injectedViewInstancePast = app.injector.instanceOf[views.html.periodSummaryPastReturns]
 
   val periodKey: Int = 2015
   val organisationName: String = "OrganisationName"
@@ -81,7 +83,9 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
       mockSummaryReturnsService,
       mockSubscriptionDataService,
       mockServiceInfoService,
-      mockBackLinkCacheConnector
+      mockBackLinkCacheConnector,
+      injectedViewInstance,
+      injectedViewInstancePast
     )
     def createReturnWithAuthorisedUser()(test: Future[Result] => Any) {
       val userId = s"user-${UUID.randomUUID}"

@@ -41,6 +41,7 @@ class ApplicationControllerSpec extends PlaySpec with MockitoSugar with GuiceOne
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
 
   val mockMcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
+  val injectedViewInstance = app.injector.instanceOf[views.html.unauthorised]
 
   class Setup {
 
@@ -52,7 +53,8 @@ class ApplicationControllerSpec extends PlaySpec with MockitoSugar with GuiceOne
 
     val testApplicationController: ApplicationController = new ApplicationController(
       mockMcc,
-      mockAuthAction
+      mockAuthAction,
+      injectedViewInstance
     )
 
     def getWithUnAuthorisedUser(test: Future[Result] => Any) {

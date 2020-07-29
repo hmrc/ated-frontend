@@ -36,7 +36,8 @@ class EditLiabilityTypeController @Inject()(mcc: MessagesControllerComponents,
                                             disposePropertyController: DisposePropertyController,
                                             serviceInfoService: ServiceInfoService,
                                             val dataCacheConnector: DataCacheConnector,
-                                            val backLinkCacheConnector: BackLinkCacheConnector)
+                                            val backLinkCacheConnector: BackLinkCacheConnector,
+                                            template: views.html.editLiability.editLiability)
                                            (implicit val appConfig: ApplicationConfig)
 
   extends FrontendController(mcc) with BackLinkController with ClientHelper {
@@ -50,8 +51,7 @@ class EditLiabilityTypeController @Inject()(mcc: MessagesControllerComponents,
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
           Future.successful(
-            Ok(views.html.editLiability
-              .editLiability(editLiabilityReturnTypeForm, oldFormBundleNo, periodKey, editAllowed, serviceInfoContent, returnToFormBundle(oldFormBundleNo, periodKey)))
+            Ok(template(editLiabilityReturnTypeForm, oldFormBundleNo, periodKey, editAllowed, serviceInfoContent, returnToFormBundle(oldFormBundleNo, periodKey)))
           )
         }
       }
@@ -65,7 +65,7 @@ class EditLiabilityTypeController @Inject()(mcc: MessagesControllerComponents,
           editLiabilityReturnTypeForm.bindFromRequest.fold(
             formWithErrors =>
               Future.successful(BadRequest(
-                views.html.editLiability.editLiability(formWithErrors, oldFormBundleNo, periodKey, editAllowed, serviceInfoContent, returnToFormBundle(oldFormBundleNo, periodKey)))),
+                template(formWithErrors, oldFormBundleNo, periodKey, editAllowed, serviceInfoContent, returnToFormBundle(oldFormBundleNo, periodKey)))),
             data => {
               val backLink = Some(controllers.editLiability.routes.EditLiabilityTypeController.editLiability(oldFormBundleNo, periodKey, editAllowed).url)
               data.editLiabilityType match {

@@ -36,6 +36,7 @@ class periodSummarySpec extends FeatureSpec with GuiceOneAppPerSuite with Mockit
   implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
 
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
+  val injectedViewInstance = app.injector.instanceOf[views.html.periodSummary]
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
 
   val organisationName = "OrganisationName"
@@ -84,7 +85,7 @@ class periodSummarySpec extends FeatureSpec with GuiceOneAppPerSuite with Mockit
       Given("the client has no returns")
       When("The user views the page")
 
-      val html = views.html.periodSummary(2015, None, None, None, Html(""), Some("backLink"))
+      val html = injectedViewInstance(2015, None, None, None, Html(""), Some("backLink"))
 
 
       val document = Jsoup.parse(html.toString())
@@ -114,7 +115,7 @@ class periodSummarySpec extends FeatureSpec with GuiceOneAppPerSuite with Mockit
       Given("The client has no previous returns")
       When("The user views the page")
 
-      val html = views.html.periodSummary(2015, Some(periodSummaryReturns), None, Some(organisationName), Html(""), Some("http://backlink"))
+      val html = injectedViewInstance(2015, Some(periodSummaryReturns), None, Some(organisationName), Html(""), Some("http://backlink"))
 
       val document = Jsoup.parse(html.toString())
 
@@ -140,7 +141,7 @@ class periodSummarySpec extends FeatureSpec with GuiceOneAppPerSuite with Mockit
       Given("the client has no returns")
       When("The user views the page")
 
-      val html = views.html.periodSummary(2015, Some(periodSummaryReturnsWithOld), Some(previousPeriodSummaryReturns), Some(organisationName), Html(""), Some("http://backlink"))
+      val html = injectedViewInstance(2015, Some(periodSummaryReturnsWithOld), Some(previousPeriodSummaryReturns), Some(organisationName), Html(""), Some("http://backlink"))
 
       val document = Jsoup.parse(html.toString())
 

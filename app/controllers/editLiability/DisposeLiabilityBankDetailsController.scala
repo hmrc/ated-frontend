@@ -36,7 +36,8 @@ class DisposeLiabilityBankDetailsController @Inject()(mcc: MessagesControllerCom
                                                       disposeLiabilitySummaryController: DisposeLiabilitySummaryController,
                                                       serviceInfoService: ServiceInfoService,
                                                       val dataCacheConnector: DataCacheConnector,
-                                                      val backLinkCacheConnector: BackLinkCacheConnector)
+                                                      val backLinkCacheConnector: BackLinkCacheConnector,
+                                                      template: views.html.editLiability.disposeLiabilityBankDetails)
                                                      (implicit val appConfig: ApplicationConfig)
   extends FrontendController(mcc) with ClientHelper with BackLinkController {
 
@@ -52,7 +53,7 @@ class DisposeLiabilityBankDetailsController @Inject()(mcc: MessagesControllerCom
             case Some(x) =>
               currentBackLink.map { backLink =>
                 val bankDetails = x.bankDetails.flatMap(_.bankDetails).fold(BankDetails())(a => a)
-                Ok(views.html.editLiability.disposeLiabilityBankDetails
+                Ok(template
                 (bankDetailsForm.fill(bankDetails), oldFormBundleNo, serviceInfoContent, backLink)(authContext, implicitly, request, implicitly))
               }
             case None => Future.successful(Redirect(controllers.routes.AccountSummaryController.view()))
@@ -71,7 +72,7 @@ class DisposeLiabilityBankDetailsController @Inject()(mcc: MessagesControllerCom
               Future.successful {
                 val backLink = Some(controllers.editLiability.routes.DisposeLiabilitySummaryController.view(oldFormBundleNo).url)
                 val bankDetails = x.bankDetails.flatMap(_.bankDetails).fold(BankDetails())(a => a)
-                Ok(views.html.editLiability.disposeLiabilityBankDetails(bankDetailsForm.fill(bankDetails), oldFormBundleNo, serviceInfoContent, backLink))
+                Ok(template(bankDetailsForm.fill(bankDetails), oldFormBundleNo, serviceInfoContent, backLink))
               }
             case None => Future.successful(Redirect(controllers.routes.AccountSummaryController.view()))
           }
@@ -86,7 +87,7 @@ class DisposeLiabilityBankDetailsController @Inject()(mcc: MessagesControllerCom
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
           BankDetailForms.validateBankDetails(bankDetailsForm.bindFromRequest).fold(
             formWithErrors =>
-              currentBackLink.map(backLink => BadRequest(views.html.editLiability.disposeLiabilityBankDetails(formWithErrors, oldFormBundleNo, serviceInfoContent, backLink))),
+              currentBackLink.map(backLink => BadRequest(template(formWithErrors, oldFormBundleNo, serviceInfoContent, backLink))),
             bankData => {
               disposeLiabilityReturnService.cacheDisposeLiabilityReturnBank(oldFormBundleNo, bankData) flatMap {
                 _ => {

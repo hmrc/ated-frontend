@@ -40,6 +40,8 @@ class PrevPeriodsSummarySpec extends PlaySpec with MockAuthUtil with GuiceOneApp
   when(mockAppConfig.atedPeakStartDay)
     .thenReturn("16")
 
+  lazy val injectedViewInstance = app.injector.instanceOf[views.html.prevPeriodsSummary]
+
   val periodKey2015: Int = 2015
   lazy val currentPeriod: Int = PeriodUtils.calculatePeakStartYear()
   val data: SummaryReturnsModel = summaryReturnsModel(periodKey = periodKey2015, withPastReturns = true)
@@ -47,7 +49,7 @@ class PrevPeriodsSummarySpec extends PlaySpec with MockAuthUtil with GuiceOneApp
   val currentPeriodData: SummaryReturnsModel = summaryReturnsModel(periodKey = currentPeriod)
 
 
-  lazy val view = views.html.prevPeriodsSummary(
+  lazy val view = injectedViewInstance(
     data,
     Some(address),
     Some(organisationName),
@@ -85,7 +87,7 @@ class PrevPeriodsSummarySpec extends PlaySpec with MockAuthUtil with GuiceOneApp
 
     "current period only" should {
       "show the you have no returns" in {
-        lazy val view = views.html.prevPeriodsSummary(
+        lazy val view = injectedViewInstance(
           currentPeriodDataOnly,
           Some(address),
           Some(organisationName),
@@ -106,7 +108,7 @@ class PrevPeriodsSummarySpec extends PlaySpec with MockAuthUtil with GuiceOneApp
 
     "with past returns" should {
       "show Returns for past periods" in {
-        lazy val view = views.html.prevPeriodsSummary(
+        lazy val view = injectedViewInstance(
           data,
           Some(address),
           Some(organisationName),
@@ -132,7 +134,7 @@ class PrevPeriodsSummarySpec extends PlaySpec with MockAuthUtil with GuiceOneApp
     "with Current and past returns" should {
       "Only show current year -1 returns" in {
 
-        lazy val view = views.html.prevPeriodsSummary(
+        lazy val view = injectedViewInstance(
           currentPeriodData,
           Some(address),
           Some(organisationName),

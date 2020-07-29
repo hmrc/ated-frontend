@@ -40,11 +40,12 @@ class AddressLookupController @Inject()(mcc: MessagesControllerComponents,
                                         auditConnector: DefaultAuditConnector,
                                         addressLookupService: AddressLookupService,
                                         authAction: AuthAction,
-                                        confirmAddressController: ConfirmAddressController,
                                         serviceInfoService: ServiceInfoService,
                                         val backLinkCacheConnector: BackLinkCacheConnector,
                                         val propertyDetailsService: PropertyDetailsService,
-                                        val dataCacheConnector: DataCacheConnector)
+                                        val dataCacheConnector: DataCacheConnector,
+                                        template: views.html.propertyDetails.addressLookup,
+                                        templateResults: views.html.propertyDetails.addressLookupResults)
                                        (implicit val appConfig: ApplicationConfig)
 extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with Auditable with ControllerIds {
 
@@ -60,7 +61,7 @@ extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper wi
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
           currentBackLink.map(backLink =>
-            Ok(views.html.propertyDetails.addressLookup(id, periodKey, addressLookupForm, mode, serviceInfoContent, backLink))
+            Ok(template(id, periodKey, addressLookupForm, mode, serviceInfoContent, backLink))
           )
         }
       }
@@ -74,7 +75,7 @@ extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper wi
           val backLink = Some(controllers.routes.ExistingReturnQuestionController.view(periodKey, "charge").url)
           addressLookupForm.bindFromRequest.fold(
             formWithError => {
-              Future.successful(BadRequest(views.html.propertyDetails.addressLookup(id, periodKey, formWithError, mode, serviceInfoContent, backLink))
+              Future.successful(BadRequest(template(id, periodKey, formWithError, mode, serviceInfoContent, backLink))
               )
             },
             searchCriteria => {
@@ -82,7 +83,7 @@ extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper wi
               val trimmedSearchCriteria = searchCriteria.copy(postcode = trimmedPostCode)
               addressLookupService.find(trimmedSearchCriteria).flatMap { results =>
                 val backToViewLink = Some(routes.AddressLookupController.view(id, periodKey, mode).url)
-                Future.successful(Ok(views.html.propertyDetails.addressLookupResults(id, periodKey, addressSelectedForm, results, mode, serviceInfoContent, backToViewLink)))
+                Future.successful(Ok(templateResults(id, periodKey, addressSelectedForm, results, mode, serviceInfoContent, backToViewLink)))
               }
             }
           )
@@ -117,7 +118,7 @@ extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper wi
             formWithError => {
               addressLookupService.retrieveCachedSearchResults.map { results =>
                 val searchResults = results.fold(new AddressSearchResults(AddressLookup("", None), Nil))(a => a)
-                BadRequest(views.html.propertyDetails.addressLookupResults(id, periodKey, formWithError, searchResults, mode, serviceInfoContent, backToViewLink))
+                BadRequest(templateResults(id, periodKey, formWithError, searchResults, mode, serviceInfoContent, backToViewLink))
               }
             },
             searchCriteria => {
@@ -149,7 +150,7 @@ extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper wi
                       val searchResults = results.fold(new AddressSearchResults(AddressLookup("", None), Nil))(a => a)
                       val errorForm = addressSelectedForm.fill(searchCriteria)
                         .withError(FormError("selected", Messages("ated.address-lookup.error.general.selected-address")))
-                      BadRequest(views.html.propertyDetails.addressLookupResults(id, periodKey, errorForm, searchResults, mode, serviceInfoContent, backToViewLink))
+                      BadRequest(templateResults(id, periodKey, errorForm, searchResults, mode, serviceInfoContent, backToViewLink))
                     }
                 }
               )

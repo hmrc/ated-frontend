@@ -29,7 +29,8 @@ class CompanyDetailsController @Inject()(mcc: MessagesControllerComponents,
                                          authAction: AuthAction,
                                          subscriptionDataService: SubscriptionDataService,
                                          serviceInfoService: ServiceInfoService,
-                                         detailsDataService: DetailsService)
+                                         detailsDataService: DetailsService,
+                                         template: views.html.subcriptionData.companyDetails)
                                         (implicit val appConfig: ApplicationConfig)
 
   extends FrontendController(mcc) {
@@ -47,7 +48,7 @@ class CompanyDetailsController @Inject()(mcc: MessagesControllerComponents,
         overseasCompanyRegistration <- subscriptionDataService.getOverseasCompanyRegistration
         clientMandateDetails <- detailsDataService.getClientMandateDetails(safeId.getOrElse(throw new RuntimeException("Could not get safeId")), "ated")
       } yield {
-        Ok(views.html.subcriptionData.companyDetails(correspondenceAddress,
+        Ok(template(correspondenceAddress,
           registeredDetails,
           emailConsent,
           clientMandateDetails,

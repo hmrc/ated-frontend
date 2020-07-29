@@ -33,6 +33,8 @@ class editLiabilitySpec extends FeatureSpec with GuiceOneServerPerSuite with Moc
   implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
+  val injectedViewInstance = app.injector.instanceOf[views.html.editLiability.editLiability]
+
 feature("The user can view an edit liability type page") {
 
     info("as a user I want to view the correct page content")
@@ -43,7 +45,7 @@ feature("The user can view an edit liability type page") {
       When("The user views the page and clicks yes")
 
       implicit val request = FakeRequest()
-      val html = views.html.editLiability.editLiability(editLiabilityReturnTypeForm, "formBundleNo", 2015, editAllowed = true, Html(""), Some("backLink"))
+      val html = injectedViewInstance(editLiabilityReturnTypeForm, "formBundleNo", 2015, editAllowed = true, Html(""), Some("backLink"))
 
       val document = Jsoup.parse(html.toString())
       Then("the page title : Have you disposed of the property?")
@@ -75,7 +77,7 @@ feature("The user can view an edit liability type page") {
 
       implicit val request = FakeRequest()
 
-      val html = views.html.editLiability.editLiability(editLiabilityReturnTypeForm, "formBundleNo", 2015, editAllowed = false,  Html(""), Some("http://backLink"))
+      val html = injectedViewInstance(editLiabilityReturnTypeForm, "formBundleNo", 2015, editAllowed = false,  Html(""), Some("http://backLink"))
 
       val document = Jsoup.parse(html.toString())
       Then("the page title : Have you disposed of the property?")

@@ -56,6 +56,7 @@ class DisposeLiabilityBankDetailsControllerSpec extends PlaySpec with GuiceOneSe
 lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
+  val injectedViewInstance = app.injector.instanceOf[views.html.editLiability.disposeLiabilityBankDetails]
 
   override def beforeEach: Unit = {
   }
@@ -75,7 +76,8 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
       mockDisposeLiabilitySummaryController,
       mockServiceInfoService,
       mockDataCacheConnector,
-      mockBackLinkCache
+      mockBackLinkCache,
+      injectedViewInstance
     )
 
 

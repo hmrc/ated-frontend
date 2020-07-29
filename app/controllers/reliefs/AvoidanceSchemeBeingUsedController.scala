@@ -39,7 +39,9 @@ class AvoidanceSchemeBeingUsedController @Inject()(mcc: MessagesControllerCompon
                                                    avoidanceSchemesController: AvoidanceSchemesController,
                                                    val reliefsService: ReliefsService,
                                                    val dataCacheConnector: DataCacheConnector,
-                                                   val backLinkCacheConnector: BackLinkCacheConnector)
+                                                   val backLinkCacheConnector: BackLinkCacheConnector,
+                                                   template: views.html.reliefs.avoidanceSchemeBeingUsed,
+                                                   val templateInvalidPeriodKey: views.html.reliefs.invalidPeriodKey)
                                                   (implicit val appConfig: ApplicationConfig)
   extends FrontendController(mcc) with BackLinkController with ReliefHelpers with ClientHelper {
 
@@ -58,7 +60,7 @@ class AvoidanceSchemeBeingUsedController @Inject()(mcc: MessagesControllerCompon
             retrievedData <- reliefsService.retrieveDraftReliefs(atedRefNum, periodKey)
           } yield {
             val isAvoidanceScheme = IsTaxAvoidance(retrievedData.flatMap(_.reliefs.isAvoidanceScheme))
-            Ok(views.html.reliefs.avoidanceSchemeBeingUsed(periodKey, isTaxAvoidanceForm.fill(isAvoidanceScheme),
+            Ok(template(periodKey, isTaxAvoidanceForm.fill(isAvoidanceScheme),
               PeriodUtils.periodStartDate(periodKey), serviceInfoContent, backLink))
           }
         }
@@ -105,7 +107,7 @@ class AvoidanceSchemeBeingUsedController @Inject()(mcc: MessagesControllerCompon
             isTaxAvoidanceForm.bindFromRequest(data.get).fold(
               formWithError =>
                 currentBackLink.map(backLink =>
-                  BadRequest(views.html.reliefs.avoidanceSchemeBeingUsed(periodKey, formWithError, PeriodUtils.periodStartDate(periodKey), serviceInfoContent, backLink))
+                  BadRequest(template(periodKey, formWithError, PeriodUtils.periodStartDate(periodKey), serviceInfoContent, backLink))
                 ),
               isTaxAvoidance => {
                 reliefsService.saveDraftIsTaxAvoidance(authContext.atedReferenceNumber, periodKey, isTaxAvoidance.isAvoidanceScheme.getOrElse(false)).

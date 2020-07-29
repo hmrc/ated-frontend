@@ -17,6 +17,7 @@
 @import config.ApplicationConfig
 @import models._
 @import play.twirl.api.HtmlFormat
+@this(atedMain: atedMain)
 
 @(periodKey: Int, serviceInfoContent: Html = HtmlFormat.empty, returnResponse: SubmitReturnsResponse)(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 

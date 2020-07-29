@@ -22,14 +22,14 @@ import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.{reset, _}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
+import org.scalatestplus.play.PlaySpec
 import play.api.libs.json.Json
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
-import uk.gov.hmrc.play.test.UnitSpec
 
 import scala.concurrent.Future
 
-class DelegationServiceSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach {
+class DelegationServiceSpec extends PlaySpec with MockitoSugar with BeforeAndAfterEach {
 
   val mockDelegationConnector: DelegationConnector = mock[DelegationConnector]
   implicit val hc: HeaderCarrier = HeaderCarrier()
@@ -76,7 +76,7 @@ class DelegationServiceSpec extends UnitSpec with MockitoSugar with BeforeAndAft
         )
         when(mockDelegationConnector.delegationDataCall(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(returnJson))))
         val result: Future[Option[DelegationModel]] = testDelegationService.delegationCall("String")
-        await(result) shouldBe Some(expectedModel)
+        await(result) mustBe Some(expectedModel)
       }
     }
 
@@ -85,7 +85,7 @@ class DelegationServiceSpec extends UnitSpec with MockitoSugar with BeforeAndAft
 
         when(mockDelegationConnector.delegationDataCall(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, None)))
         val result: Future[Option[DelegationModel]] = testDelegationService.delegationCall("String")
-        await(result) shouldBe None
+        await(result) mustBe None
       }
     }
   }

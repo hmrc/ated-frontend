@@ -51,10 +51,13 @@ class PropertyDetailsDeclarationControllerSpec extends PlaySpec with GuiceOneSer
   val mockPropertyDetailsService: PropertyDetailsService = mock[PropertyDetailsService]
   val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
   val mockBackLinkCacheConnector: BackLinkCacheConnector = mock[BackLinkCacheConnector]
-    val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
+  val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
+  val injectedViewInstance = app.injector.instanceOf[views.html.propertyDetails.propertyDetailsDeclaration]
+  val injectedViewInstanceError = app.injector.instanceOf[views.html.global_error]
+
 
   class Setup {
 
@@ -65,13 +68,15 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
     )
 
     val testPropertyDetailsDeclarationController: PropertyDetailsDeclarationController = new PropertyDetailsDeclarationController (
-     mockMcc,
-     mockAuthAction,
-     mockServiceInfoService,
-     mockPropertyDetailsService,
-     mockDataCacheConnector,
-     mockBackLinkCacheConnector
-   )
+      mockMcc,
+      mockAuthAction,
+      mockServiceInfoService,
+      mockPropertyDetailsService,
+      mockDataCacheConnector,
+      mockBackLinkCacheConnector,
+      injectedViewInstance,
+      injectedViewInstanceError
+    )
 
     def getWithUnAuthorisedUser(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"

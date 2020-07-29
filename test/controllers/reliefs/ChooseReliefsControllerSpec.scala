@@ -60,6 +60,8 @@ class ChooseReliefsControllerSpec extends PlaySpec with GuiceOneServerPerSuite w
 lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
+  val injectedViewInstance = app.injector.instanceOf[views.html.reliefs.invalidPeriodKey]
+  val injectedViewInstanceChooseChoose = app.injector.instanceOf[views.html.reliefs.chooseReliefs]
 
   val periodKey = 2015
 
@@ -89,7 +91,9 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
       mockServiceInfoService,
       mockReliefsService,
       mockDataCacheConnector,
-      mockBackLinkCacheConnector
+      mockBackLinkCacheConnector,
+      injectedViewInstance,
+      injectedViewInstanceChooseChoose
     )
 
     def authorisedUserNone(test: Future[Result] => Any): Unit = {

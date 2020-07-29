@@ -58,7 +58,8 @@ class ConfirmAddressControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
 lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
-
+  val injectedViewInstance = app.injector.instanceOf[views.html.propertyDetails.confirmAddress]
+  val injectedViewInstanceError = app.injector.instanceOf[views.html.global_error]
 
   class Setup {
 
@@ -70,14 +71,14 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
 
     val testConfirmAddressController: ConfirmAddressController = new ConfirmAddressController(
       mockMcc,
-      mockAuditConnector,
-      mockAddressLookupService,
       mockAuthAction,
       mockChangeLiabilityReturnService,
       mockServiceInfoService,
       mockBackLinkCacheConnector,
       mockPropertyDetailsService,
-      mockDataCacheConnector
+      mockDataCacheConnector,
+      injectedViewInstance,
+      injectedViewInstanceError
     )
 
     def getWithUnAuthorisedUser(test: Future[Result] => Any): Unit = {

@@ -39,6 +39,8 @@ class isAvoidanceSchemeSpec extends FeatureSpec with GuiceOneAppPerSuite
 implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
   val periodKey = 2015
 
+  val injectedViewInstance = app.injector.instanceOf[views.html.reliefs.avoidanceSchemeBeingUsed]
+
   feature("The user can view the is avoidance scheme page") {
 
     info("as a client i want to be able to select whether or not I am using an avoidance scheme")
@@ -48,7 +50,7 @@ implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetr
       Given("the client is creating a new relief and want tell us if an avoidance scheme is being used")
       When("The user views the page")
 
-      val html = views.html.reliefs.avoidanceSchemeBeingUsed(periodKey, isTaxAvoidanceForm , new LocalDate("2015-04-01"), Html(""), Some("backLink"))
+      val html = injectedViewInstance(periodKey, isTaxAvoidanceForm , new LocalDate("2015-04-01"), Html(""), Some("backLink"))
 
       val document = Jsoup.parse(html.toString())
 
@@ -74,7 +76,7 @@ implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetr
       When("The user views the page")
 
       val isTaxAvoidance = IsTaxAvoidance(isAvoidanceScheme = Some(true))
-      val html = views.html.reliefs.avoidanceSchemeBeingUsed(periodKey, isTaxAvoidanceForm.fill(isTaxAvoidance),
+      val html = injectedViewInstance(periodKey, isTaxAvoidanceForm.fill(isTaxAvoidance),
         new LocalDate("2015-04-01"), Html(""), Some("http://backLink"))
 
       val document = Jsoup.parse(html.toString())

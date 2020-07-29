@@ -17,10 +17,13 @@
 @import models._
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
-@(id: String, periodKey: Int, propertyDetailsForm: Form[PropertyDetailsSupportingInfo], mode: Option[String], serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
 @import _root_.utils._
+
+@this(atedMain: atedMain)
+@(id: String, periodKey: Int, propertyDetailsForm: Form[PropertyDetailsSupportingInfo], mode: Option[String], serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
+
 
 @implicitFormInstance = @{ Some(propertyDetailsForm) }
 @pageScripts = {

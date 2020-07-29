@@ -64,6 +64,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
   when(mockDateService.now()).thenReturn(LocalDate.now())
   when(mockAppConfig.atedPeakStartDay).thenReturn("16")
+  val injectedViewInstance = app.injector.instanceOf[views.html.prevPeriodsSummary]
 
   val periodKey2015: Int = 2015
 
@@ -84,7 +85,8 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
       mockDetailsService,
       mockDataCacheConnector,
       mockServiceInfoService,
-      mockDateService
+      mockDateService,
+      injectedViewInstance
     )
 
     def getWithAuthorisedUser(returnsSummaryWithDraft: SummaryReturnsModel,

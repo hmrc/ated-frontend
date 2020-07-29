@@ -62,6 +62,7 @@ class SelectExistingReturnAddressControllerSpec extends PlaySpec with GuiceOneSe
 lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
+  val injectedViewInstance = app.injector.instanceOf[views.html.propertyDetails.selectPreviousReturn]
   val returnTypeCharge: String = "CR"
   val returnTypeRelief: String = "RR"
 
@@ -83,7 +84,8 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
       mockServiceInfoService,
       mockPropertyDetailsService,
       mockDataCacheConnector,
-      mockBackLinkCacheConnector
+      mockBackLinkCacheConnector,
+      injectedViewInstance
     )
 
     def viewWithUnAuthorisedUser(test: Future[Result] => Any) {

@@ -43,7 +43,7 @@ trait ClientHelper {
     dataCacheConnector.fetchAtedRefData[String](DelegatedClientAtedRefNumber) flatMap {
       case refNo @ Some(_) if refNo.get == authorisedRequest.atedReferenceNumber => result
       case _ => Logger.warn(s"[ClientHelper][compareClient] - Client different from context")
-        Future.successful(Ok(views.html.global_error(
+        Future.successful(Ok(appConfig.templateError(
           "ated.selected-client-error.wrong.client.header",
           "ated.selected-client-error.wrong.client.title",
           "ated.selected-client-error.wrong.client.message",

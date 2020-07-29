@@ -58,6 +58,7 @@ class DraftDeleteConfirmationControllerSpec extends PlaySpec with GuiceOneServer
 lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
+  val injectedViewInstance = app.injector.instanceOf[views.html.confirmDeleteDraft]
 
   val periodKey: Int = 2017
   val organisationName: String = "OrganisationName"
@@ -78,7 +79,8 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
       mockPropertyDetailsService,
       mockReliefsService,
       mockServiceInfoService,
-      mockDataCacheConnector
+      mockDataCacheConnector,
+      injectedViewInstance
     )
     def getWithUnAuthorisedUser(test: Future[Result] => Any) {
       val userId = s"user-${UUID.randomUUID}"

@@ -34,7 +34,8 @@ class changeReliefReturnSpec extends FeatureSpec with GuiceOneAppPerSuite with M
   implicit val request = FakeRequest()
   implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
-implicit lazy val authContext = organisationStandardRetrievals
+  implicit lazy val authContext = organisationStandardRetrievals
+  val injectedViewInstance = app.injector.instanceOf[views.html.reliefs.changeReliefReturn]
 
   feature("The user can change their relief return") {
 
@@ -45,7 +46,7 @@ implicit lazy val authContext = organisationStandardRetrievals
       Given("the client has clicked change on a relief")
       When("The user views the page")
 
-      val html = views.html.reliefs.changeReliefReturn(2015, "form-bundle-123", editReliefForm,  Html(""), Some("backLink"))
+      val html = injectedViewInstance(2015, "form-bundle-123", editReliefForm,  Html(""), Some("backLink"))
 
       val document = Jsoup.parse(html.toString())
 

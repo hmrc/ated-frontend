@@ -35,6 +35,7 @@ class propertyDetailsTitleSpec extends FeatureSpec with GuiceOneAppPerSuite with
   implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
   implicit lazy val authContext = organisationStandardRetrievals
+  val injectedViewInstance = app.injector.instanceOf[views.html.propertyDetails.propertyDetailsTitle]
 
   feature("The user can adit the title") {
 
@@ -45,7 +46,7 @@ class propertyDetailsTitleSpec extends FeatureSpec with GuiceOneAppPerSuite with
       Given("the client is adding a dates liable")
       When("The user views the page")
 
-      val html = views.html.propertyDetails.propertyDetailsTitle("1", 2015, propertyDetailsTitleForm, None, Html(""), Some("backLink"))
+      val html = injectedViewInstance("1", 2015, propertyDetailsTitleForm, None, Html(""), Some("backLink"))
 
       val document = Jsoup.parse(html.toString())
 
@@ -77,7 +78,7 @@ class propertyDetailsTitleSpec extends FeatureSpec with GuiceOneAppPerSuite with
       Given("the client is adding a dates liable")
       When("The user views the page")
 
-      val html = views.html.propertyDetails.propertyDetailsTitle("1", 2015,
+      val html = injectedViewInstance("1", 2015,
         propertyDetailsTitleForm, Some(AtedUtils.EDIT_SUBMITTED), Html(""), Some("http://backLink"))
 
       val document = Jsoup.parse(html.toString())

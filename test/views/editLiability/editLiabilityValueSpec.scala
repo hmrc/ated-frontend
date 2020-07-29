@@ -35,6 +35,7 @@ class editLiabilityValueSpec extends FeatureSpec with GuiceOneServerPerSuite wit
   implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
+  val injectedViewInstance = app.injector.instanceOf[views.html.editLiability.editLiabilityHasValueChanged]
 feature("The user can view an edit liability value page") {
     info("as a user I want to view the correct page content")
 
@@ -45,7 +46,7 @@ feature("The user can view an edit liability value page") {
 
       implicit val request = FakeRequest()
 
-      val html = views.html.editLiability.editLiabilityHasValueChanged(Some(BigDecimal(123.45)), "1", hasValueChangedForm, None, Html(""), Some("http://backLink"))
+      val html = injectedViewInstance(Some(BigDecimal(123.45)), "1", hasValueChangedForm, None, Html(""), Some("http://backLink"))
 
       val document = Jsoup.parse(html.toString())
       Then("the page title : Has the value of your property changed for the purposes of ATED?")
@@ -82,7 +83,7 @@ feature("The user can view an edit liability value page") {
 
       implicit val request = FakeRequest()
 
-      val html = views.html.editLiability.editLiabilityHasValueChanged(Some(BigDecimal(45678.12)), "1",
+      val html = injectedViewInstance(Some(BigDecimal(45678.12)), "1",
         hasValueChangedForm.fill(HasValueChanged(Some(true))), None,  Html(""), Some("http://backLink"))
 
       val document = Jsoup.parse(html.toString())

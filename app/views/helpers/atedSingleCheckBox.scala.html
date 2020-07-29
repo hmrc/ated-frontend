@@ -24,8 +24,8 @@
 @if(elements.errors.nonEmpty) {
 <div class="@if(elements.errors.nonEmpty){ form-field--error} " style="float:left;">
 }
-    @elements.errors.map { error =>
-    <span style="display: block" class="error-notification">@messages(error)</span>
+    @elements.errors.collect { case error: String =>
+        <span style="display: block" class="error-notification">@messages(error)</span>
     }
     <label class="@if(elements.args.get('_labelClass)){@elements.args.get('_labelClass)}" for="@elements.id" id='@(elements.id)_field'>
     <input type="checkbox" id="@elements.id"

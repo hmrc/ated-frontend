@@ -52,6 +52,8 @@ class LeaveFeedbackControllerSpec extends PlaySpec with MockitoSugar with GuiceO
 lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
+  val injectedViewInstance = app.injector.instanceOf[views.html.feedback.leaveFeedback]
+  val injectedViewInstanceThanks = app.injector.instanceOf[views.html.feedback.thanks]
 
 
   class Setup {
@@ -66,7 +68,9 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
       mockMcc,
       mockAuthAction,
       mockServiceInfoService,
-      mockAuditConnector
+      mockAuditConnector,
+      injectedViewInstance,
+      injectedViewInstanceThanks
     )
 
     def getWithAuthorisedUser(test: Future[Result] => Any) {

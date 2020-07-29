@@ -69,6 +69,7 @@ class ExistingReturnQuestionControllerSpec extends PlaySpec with GuiceOneServerP
   implicit lazy val hc: HeaderCarrier = HeaderCarrier()
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
   val mockMcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
+  val template = app.injector.instanceOf[views.html.confirmPastReturn]
   val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
   val mockSummaryReturnsService: SummaryReturnsService = mock[SummaryReturnsService]
   val mockSubscriptionDataService: SubscriptionDataService = mock[SubscriptionDataService]
@@ -95,7 +96,8 @@ class ExistingReturnQuestionControllerSpec extends PlaySpec with GuiceOneServerP
       mockMcc,
       mockAuthAction,
       mockServiceInfoService,
-      mockDataCacheConnector
+      mockDataCacheConnector,
+      template
     )
 
     def getWithAuthorisedUser(test: Future[Result] => Any) {

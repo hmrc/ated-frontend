@@ -38,7 +38,8 @@ class PrevPeriodsSummaryController @Inject()(mcc: MessagesControllerComponents,
                                              detailsService: DetailsService,
                                              dataCacheConnector: DataCacheConnector,
                                              serviceInfoService: ServiceInfoService,
-                                             dateService: DateService)
+                                             dateService: DateService,
+                                             template: views.html.prevPeriodsSummary)
                                             (implicit val appConfig: ApplicationConfig)
   extends FrontendController(mcc) {
 
@@ -47,7 +48,7 @@ class PrevPeriodsSummaryController @Inject()(mcc: MessagesControllerComponents,
       for {
         _ <- dataCacheConnector.clearCache()
         allReturns <- summaryReturnsService.getSummaryReturns
-          previousReturns = allReturns.returnsOtherTaxYears.filterNot(_.periodKey.equals(PeriodUtils.calculatePeakStartYear() + 1))
+        previousReturns = allReturns.returnsOtherTaxYears.filterNot(_.periodKey.equals(PeriodUtils.calculatePeakStartYear() + 1))
         _ <- detailsService.cacheClientReference(authContext.atedReferenceNumber)
         correspondenceAddress <- subscriptionDataService.getCorrespondenceAddress
         organisationName <- subscriptionDataService.getOrganisationName
@@ -57,7 +58,7 @@ class PrevPeriodsSummaryController @Inject()(mcc: MessagesControllerComponents,
           throw new RuntimeException("Could not get safeId")), "ated"
         )
       } yield {
-        Ok(views.html.prevPeriodsSummary(
+        Ok(template(
           allReturns.copy(returnsOtherTaxYears = previousReturns),
           correspondenceAddress,
           organisationName,

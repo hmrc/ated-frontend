@@ -26,6 +26,7 @@ import testhelpers.{AtedViewSpec, MockAuthUtil}
 class PropertyDetailsRevaluedHtmlViewSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil {
 
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
+  val injectedViewInstance = app.injector.instanceOf[views.html.propertyDetails.propertyDetailsRevalued]
 
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
 "Property Details Revalued view" must {
@@ -47,6 +48,6 @@ class PropertyDetailsRevaluedHtmlViewSpec extends AtedViewSpec with MockitoSugar
   private val form = PropertyDetailsForms.propertyDetailsRevaluedForm.withError("isPropertyRevalued",
     messages("ated.property-details-value.isPropertyRevalued.error.non-selected"))
 
-  override def view: Html = views.html.propertyDetails.propertyDetailsRevalued("",0,  form, None, Html(""), Some("backLink"))
+  override def view: Html = injectedViewInstance("",0,  form, None, Html(""), Some("backLink"))
 
 }

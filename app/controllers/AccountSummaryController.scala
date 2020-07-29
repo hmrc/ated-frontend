@@ -39,7 +39,8 @@ class AccountSummaryController @Inject()(mcc: MessagesControllerComponents,
                                          detailsService: DetailsService,
                                          dataCacheConnector: DataCacheConnector,
                                          dateService: DateService,
-                                         serviceInfoService: ServiceInfoService)
+                                         serviceInfoService: ServiceInfoService,
+                                         template: views.html.accountSummary)
                                         (implicit val appConfig: ApplicationConfig)
   extends FrontendController(mcc) {
 
@@ -62,7 +63,7 @@ class AccountSummaryController @Inject()(mcc: MessagesControllerComponents,
           throw new RuntimeException("Could not get safeId")), "ated"
         )
       } yield {
-        Ok(views.html.accountSummary(
+        Ok(template(
           returnsCurrentTaxYear = currentYearReturns._1,
           totalCurrentYearReturns = currentYearReturns._2,
           hasPastReturns = currentYearReturns._3,

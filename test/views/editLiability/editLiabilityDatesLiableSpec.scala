@@ -36,6 +36,8 @@ class editLiabilityDatesLiableSpec extends FeatureSpec with GuiceOneAppPerSuite 
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
 implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
 
+  val injectedViewInstance = app.injector.instanceOf[views.html.editLiability.editLiabilityDatesLiable]
+
   feature("The user can edit the period that the property is liable") {
 
     info("as a client i want to indicate when my property is liable")
@@ -45,7 +47,7 @@ implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetr
       Given("the client is adding a dates liable")
       When("The user views the page")
 
-      val html = views.html.editLiability.editLiabilityDatesLiable("1", 2015, periodDatesLiableForm,  Html(""), Some("http://backLink"))
+      val html = injectedViewInstance("1", 2015, periodDatesLiableForm,  Html(""), Some("http://backLink"))
 
       val document = Jsoup.parse(html.toString())
 

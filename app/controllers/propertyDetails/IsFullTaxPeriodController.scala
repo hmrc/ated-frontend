@@ -37,7 +37,8 @@ class IsFullTaxPeriodController @Inject()(mcc: MessagesControllerComponents,
                                           serviceInfoService: ServiceInfoService,
                                           val propertyDetailsService: PropertyDetailsService,
                                           val dataCacheConnector: DataCacheConnector,
-                                          val backLinkCacheConnector: BackLinkCacheConnector)
+                                          val backLinkCacheConnector: BackLinkCacheConnector,
+                                          template: views.html.propertyDetails.isFullTaxPeriod)
                                          (implicit val appConfig: ApplicationConfig)
 
   extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper {
@@ -57,10 +58,10 @@ class IsFullTaxPeriodController @Inject()(mcc: MessagesControllerComponents,
                 currentBackLink.flatMap(backLink =>
                   answer match {
                     case Some(true) =>
-                      Future.successful(Ok(views.html.propertyDetails.isFullTaxPeriod(id, propertyDetails.periodKey, isFullTaxPeriodForm,
+                      Future.successful(Ok(template(id, propertyDetails.periodKey, isFullTaxPeriodForm,
                         PeriodUtils.periodStartDate(propertyDetails.periodKey), PeriodUtils.periodEndDate(propertyDetails.periodKey), serviceInfoContent, backLink)))
                     case _ =>
-                      Future.successful(Ok(views.html.propertyDetails.isFullTaxPeriod(id, propertyDetails.periodKey, filledForm,
+                      Future.successful(Ok(template(id, propertyDetails.periodKey, filledForm,
                         PeriodUtils.periodStartDate(propertyDetails.periodKey), PeriodUtils.periodEndDate(propertyDetails.periodKey), serviceInfoContent, backLink)))
                   }
                 )
@@ -78,7 +79,7 @@ class IsFullTaxPeriodController @Inject()(mcc: MessagesControllerComponents,
           propertyDetailsCacheResponse(id) {
             case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
               val filledForm = isFullTaxPeriodForm.fill(PropertyDetailsFullTaxPeriod(propertyDetails.period.flatMap(_.isFullPeriod)))
-              Future.successful(Ok(views.html.propertyDetails.isFullTaxPeriod(id, propertyDetails.periodKey, filledForm,
+              Future.successful(Ok(template(id, propertyDetails.periodKey, filledForm,
                 PeriodUtils.periodStartDate(propertyDetails.periodKey), PeriodUtils.periodEndDate(propertyDetails.periodKey),
                 serviceInfoContent,
                 AtedUtils.getSummaryBackLink(id, None)))
@@ -96,7 +97,7 @@ class IsFullTaxPeriodController @Inject()(mcc: MessagesControllerComponents,
           isFullTaxPeriodForm.bindFromRequest.fold(
             formWithError => {
               currentBackLink.map(backLink =>
-                BadRequest(views.html.propertyDetails.isFullTaxPeriod(id, periodKey, formWithError,
+                BadRequest(template(id, periodKey, formWithError,
                   PeriodUtils.periodStartDate(periodKey), PeriodUtils.periodEndDate(periodKey), serviceInfoContent, backLink))
               )
             },

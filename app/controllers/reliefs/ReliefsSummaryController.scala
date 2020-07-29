@@ -39,7 +39,9 @@ class ReliefsSummaryController @Inject()(mcc: MessagesControllerComponents,
                                          serviceInfoService: ServiceInfoService,
                                          val reliefsService: ReliefsService,
                                          val dataCacheConnector: DataCacheConnector,
-                                         val backLinkCacheConnector: BackLinkCacheConnector)
+                                         val backLinkCacheConnector: BackLinkCacheConnector,
+                                         template: views.html.reliefs.reliefsSummary,
+                                         val templateInvalidPeriodKey: views.html.reliefs.invalidPeriodKey)
                                         (implicit val appConfig: ApplicationConfig)
   extends FrontendController(mcc) with BackLinkController with ReliefHelpers with ClientHelper {
 
@@ -56,7 +58,7 @@ class ReliefsSummaryController @Inject()(mcc: MessagesControllerComponents,
             retrievedData <- reliefsService.retrieveDraftReliefs(authContext.atedReferenceNumber, periodKey)
           } yield {
             val canSubmit = AtedUtils.canSubmit(periodKey, LocalDate.now)
-            Ok(views.html.reliefs.reliefsSummary(retrievedData.map(_.periodKey).getOrElse(periodKey),
+            Ok(template(retrievedData.map(_.periodKey).getOrElse(periodKey),
               retrievedData, canSubmit,
               isComplete(retrievedData),
               serviceInfoContent,

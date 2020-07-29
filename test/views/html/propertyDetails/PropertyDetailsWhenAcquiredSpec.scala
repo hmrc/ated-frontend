@@ -27,6 +27,7 @@ class PropertyDetailsWhenAcquiredSpec extends AtedViewSpec with MockAuthUtil {
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
 
   implicit val appConfig: ApplicationConfig = mock[ApplicationConfig]
+  val injectedViewInstance = app.injector.instanceOf[views.html.propertyDetails.propertyDetailsWhenAcquired]
 
   "Property Details New Build Value view" must {
     behave like pageWithTitle(messages("ated.property-details-value.whenAcquired.title"))
@@ -37,19 +38,19 @@ class PropertyDetailsWhenAcquiredSpec extends AtedViewSpec with MockAuthUtil {
 
     "return an error when the date is in the future" in {
       val form = PropertyDetailsForms.propertyDetailsWhenAcquiredDatesForm.withError("acquiredDate", "ated.property-details-value-error.whenAcquired.futureDateError")
-      val newDoc = doc(views.html.propertyDetails.propertyDetailsWhenAcquired("0", 0, form, None, Html(""), Some("backLink")))
+      val newDoc = doc(injectedViewInstance("0", 0, form, None, Html(""), Some("backLink")))
       newDoc.getElementsMatchingOwnText(messages("ated.property-details-value-error.whenAcquired.futureDateError")).hasText mustBe true
     }
 
     "return an error when the date is invalid" in {
       val form = PropertyDetailsForms.propertyDetailsWhenAcquiredDatesForm.withError("acquiredDate", "ated.property-details-value-error.whenAcquired.invalidDateError")
-      val newDoc = doc(views.html.propertyDetails.propertyDetailsWhenAcquired("0", 0, form, None, Html(""), Some("backLink")))
+      val newDoc = doc(injectedViewInstance("0", 0, form, None, Html(""), Some("backLink")))
       newDoc.getElementsMatchingOwnText(messages("ated.property-details-value-error.whenAcquired.invalidDateError")).hasText mustBe true
     }
   }
 
   private val form = PropertyDetailsForms.propertyDetailsWhenAcquiredDatesForm
 
-  override def view: Html = views.html.propertyDetails.propertyDetailsWhenAcquired("0", 0, form, None, Html(""), Some("backLink"))
+  override def view: Html = injectedViewInstance("0", 0, form, None, Html(""), Some("backLink"))
 
 }

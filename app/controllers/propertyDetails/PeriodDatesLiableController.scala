@@ -37,7 +37,8 @@ class PeriodDatesLiableController @Inject()(mcc: MessagesControllerComponents,
                                             serviceInfoService: ServiceInfoService,
                                             val propertyDetailsService: PropertyDetailsService,
                                             val dataCacheConnector: DataCacheConnector,
-                                            val backLinkCacheConnector: BackLinkCacheConnector)
+                                            val backLinkCacheConnector: BackLinkCacheConnector,
+                                            template: views.html.propertyDetails.periodDatesLiable)
                                            (implicit val appConfig: ApplicationConfig)
   extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with I18nSupport {
 
@@ -58,7 +59,7 @@ class PeriodDatesLiableController @Inject()(mcc: MessagesControllerComponents,
               }
               val mode = None
               getBackLink(id, mode).map { backLink =>
-                Ok(views.html.propertyDetails.periodDatesLiable(id, propertyDetails.periodKey, filledForm,
+                Ok(template(id, propertyDetails.periodKey, filledForm,
                   getTitle(mode), mode, serviceInfoContent, backLink))
               }
           }
@@ -73,7 +74,7 @@ class PeriodDatesLiableController @Inject()(mcc: MessagesControllerComponents,
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
           val mode = Some("add")
           getBackLink(id, mode).map { backLink =>
-            Ok(views.html.propertyDetails.periodDatesLiable(id, periodKey, periodDatesLiableForm,
+            Ok(template(id, periodKey, periodDatesLiableForm,
               getTitle(mode), mode, serviceInfoContent, backLink))
           }
         }
@@ -90,7 +91,7 @@ class PeriodDatesLiableController @Inject()(mcc: MessagesControllerComponents,
             PropertyDetailsForms.validatePropertyDetailsDatesLiable(periodKey, periodDatesLiableForm.bindFromRequest, mode.contains("add"), lineItems).fold(
               formWithError => {
                 getBackLink(id, mode).map { backLink =>
-                  BadRequest(views.html.propertyDetails.periodDatesLiable(id, periodKey, formWithError,
+                  BadRequest(template(id, periodKey, formWithError,
                     getTitle(mode), mode, serviceInfoContent, backLink))
                 }
               },

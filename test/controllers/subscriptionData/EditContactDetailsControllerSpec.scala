@@ -54,6 +54,7 @@ class EditContactDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSu
 lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
+  val injectedViewInstance = app.injector.instanceOf[views.html.subcriptionData.editContactDetails]
 
 class Setup {
 
@@ -67,7 +68,8 @@ class Setup {
     mockMcc,
     mockAuthAction,
     mockServiceInfoService,
-    mockSubscriptionDataService
+    mockSubscriptionDataService,
+    injectedViewInstance
   )
 
   def getWithUnAuthorisedUser(test: Future[Result] => Any) {

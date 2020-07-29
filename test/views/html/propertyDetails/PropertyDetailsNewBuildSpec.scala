@@ -26,6 +26,7 @@ import testhelpers.{AtedViewSpec, MockAuthUtil}
 class PropertyDetailsNewBuildSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil {
 
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
+  val injectedViewInstance = app.injector.instanceOf[views.html.propertyDetails.propertyDetailsNewBuild]
 
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
 "Property details New Build view" must {
@@ -41,6 +42,6 @@ class PropertyDetailsNewBuildSpec extends AtedViewSpec with MockitoSugar with Mo
   }
 
   private val form = PropertyDetailsForms.propertyDetailsNewBuildForm
-  override def view: Html = views.html.propertyDetails.propertyDetailsNewBuild("",0,  form, None, Html(""), Some("backLink"))
+  override def view: Html = injectedViewInstance("",0,  form, None, Html(""), Some("backLink"))
 
 }

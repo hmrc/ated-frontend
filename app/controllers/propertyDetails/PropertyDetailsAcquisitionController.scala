@@ -37,7 +37,8 @@ class PropertyDetailsAcquisitionController @Inject()(mcc: MessagesControllerComp
                                                      serviceInfoService: ServiceInfoService,
                                                      val propertyDetailsService: PropertyDetailsService,
                                                      val dataCacheConnector: DataCacheConnector,
-                                                     val backLinkCacheConnector: BackLinkCacheConnector)
+                                                     val backLinkCacheConnector: BackLinkCacheConnector,
+                                                     template: views.html.propertyDetails.propertyDetailsAcquisition)
                                                     (implicit val appConfig: ApplicationConfig)
 
   extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper {
@@ -54,7 +55,7 @@ class PropertyDetailsAcquisitionController @Inject()(mcc: MessagesControllerComp
               currentBackLink.flatMap { backLink =>
                 dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).map { isPrevReturn =>
                   val filledForm = propertyDetailsAcquisitionForm.fill(PropertyDetailsAcquisition(propertyDetails.value.flatMap(_.anAcquisition)))
-                  Ok(views.html.propertyDetails.propertyDetailsAcquisition(id,
+                  Ok(template(id,
                     propertyDetails.periodKey,
                     filledForm,
                     AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn),
@@ -77,7 +78,7 @@ class PropertyDetailsAcquisitionController @Inject()(mcc: MessagesControllerComp
             case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
               val mode = AtedUtils.getEditSubmittedMode(propertyDetails)
               val filledForm = propertyDetailsAcquisitionForm.fill(PropertyDetailsAcquisition(propertyDetails.value.flatMap(_.anAcquisition)))
-              Future.successful(Ok(views.html.propertyDetails.propertyDetailsAcquisition(id,
+              Future.successful(Ok(template(id,
                 propertyDetails.periodKey,
                 filledForm,
                 mode,
@@ -96,7 +97,7 @@ class PropertyDetailsAcquisitionController @Inject()(mcc: MessagesControllerComp
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
           propertyDetailsAcquisitionForm.bindFromRequest.fold(
             formWithError => {
-              currentBackLink.map(backLink => BadRequest(views.html.propertyDetails.propertyDetailsAcquisition(id, periodKey, formWithError, mode, serviceInfoContent, backLink)))
+              currentBackLink.map(backLink => BadRequest(template(id, periodKey, formWithError, mode, serviceInfoContent, backLink)))
             },
             propertyDetails => {
               val anAcquisition = propertyDetails.anAcquisition.getOrElse(false)

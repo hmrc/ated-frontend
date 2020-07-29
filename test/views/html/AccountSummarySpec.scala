@@ -38,10 +38,12 @@ class AccountSummarySpec extends PlaySpec with MockAuthUtil with GuiceOneAppPerT
   implicit lazy val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
   implicit lazy val messages: Messages = MessagesImpl(Lang("en-GB"), messagesApi)
 
+  lazy val injectedViewInstance = app.injector.instanceOf[views.html.accountSummary]
+
   when(mockAppConfig.atedPeakStartDay)
     .thenReturn("16")
 
-  lazy val view = views.html.accountSummary(
+  lazy val view = injectedViewInstance(
     currentYearReturnsForDisplay,
     totalCurrentYearReturns = 2,
     hasPastReturns = false,
@@ -116,7 +118,7 @@ class AccountSummarySpec extends PlaySpec with MockAuthUtil with GuiceOneAppPerT
 
       lazy val fiveReturns = currentYearReturnsForDisplay++currentYearReturnsForDisplay++Seq(currentYearReturnsForDisplay.head)
 
-      lazy val view = views.html.accountSummary(
+      lazy val view = injectedViewInstance(
         fiveReturns,
         totalCurrentYearReturns = 6,
         hasPastReturns = false,
@@ -146,7 +148,7 @@ class AccountSummarySpec extends PlaySpec with MockAuthUtil with GuiceOneAppPerT
 
     "less than 6 returns and there is at least 1 past return" should {
       "show the view all returns link" in {
-        val view = views.html.accountSummary(
+        val view = injectedViewInstance(
           currentYearReturnsForDisplay,
           totalCurrentYearReturns = 2,
           hasPastReturns = true,

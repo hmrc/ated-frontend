@@ -16,6 +16,8 @@
 
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
+
+@this(atedMain: atedMain)
 @(returnUri: String, serviceInfoContent: Html = HtmlFormat.empty)(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
 @atedMain(title = messages("ated.thanks.title"), serviceInfoContent = serviceInfoContent) {

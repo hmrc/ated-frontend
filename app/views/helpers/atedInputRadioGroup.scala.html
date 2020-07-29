@@ -29,7 +29,7 @@
 @elements.args.get('_legend)
 </legend>
 }
-@elements.errors.map{error => <span class="error-notification">@messages(error)</span>}
+@elements.errors.collect { case error: String => <span class="error-notification">@messages(error)</span>}
 
 @radioOptions.map { case (value, label) =>
 @defining(s"${elements.field.name}-${value.toLowerCase.replace(" ","_")}")  { inputId =>

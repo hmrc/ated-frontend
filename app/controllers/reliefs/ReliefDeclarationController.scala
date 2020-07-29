@@ -38,7 +38,9 @@ class ReliefDeclarationController @Inject()(mcc: MessagesControllerComponents,
                                             val reliefsService: ReliefsService,
                                             val delegationService: DelegationService,
                                             val dataCacheConnector: DataCacheConnector,
-                                            val backLinkCacheConnector: BackLinkCacheConnector)
+                                            val backLinkCacheConnector: BackLinkCacheConnector,
+                                            template: views.html.reliefs.reliefDeclaration,
+                                            templateError: views.html.global_error)
                                            (implicit val appConfig: ApplicationConfig)
 
   extends FrontendController(mcc) with BackLinkController with ClientHelper {
@@ -52,7 +54,7 @@ class ReliefDeclarationController @Inject()(mcc: MessagesControllerComponents,
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
           currentBackLink.flatMap(
             backLink =>
-              Future.successful(Ok(views.html.reliefs.reliefDeclaration(periodKey, serviceInfoContent, backLink)))
+              Future.successful(Ok(template(periodKey, serviceInfoContent, backLink)))
           )
         }
       }
@@ -67,7 +69,7 @@ class ReliefDeclarationController @Inject()(mcc: MessagesControllerComponents,
               case OK => Future.successful(Redirect(controllers.reliefs.routes.ReliefsSentController.view(periodKey)))
               case BAD_REQUEST if response.body.contains("Agent not Valid") => {
                 serviceInfoService.getPartial.flatMap { serviceInfoContent =>
-                  Future.successful(BadRequest(views.html.global_error("ated.client-problem.title",
+                  Future.successful(BadRequest(templateError("ated.client-problem.title",
                     "ated.client-problem.header", "ated.client-problem.message", None,
                     Some(appConfig.agentRedirectedToMandate), Some("ated.client-problem.HrefMessage"), None, serviceInfoContent, appConfig)))
                 }

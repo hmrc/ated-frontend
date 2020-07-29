@@ -34,7 +34,8 @@ class ReturnTypeController @Inject()(mcc: MessagesControllerComponents,
                                      summaryReturnService: SummaryReturnsService,
                                      serviceInfoService: ServiceInfoService,
                                      val dataCacheConnector: DataCacheConnector,
-                                     val backLinkCacheConnector: BackLinkCacheConnector)
+                                     val backLinkCacheConnector: BackLinkCacheConnector,
+                                     template: views.html.returnType)
                                     (implicit val appConfig: ApplicationConfig)
 
   extends FrontendController(mcc) with BackLinkController with ClientHelper with ControllerIds {
@@ -48,8 +49,8 @@ class ReturnTypeController @Inject()(mcc: MessagesControllerComponents,
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
           currentBackLink.flatMap(backLink =>
             dataCacheConnector.fetchAndGetFormData[ReturnType](RetrieveReturnTypeFormId) map {
-              case Some(data) => Ok(views.html.returnType(periodKey, returnTypeForm.fill(data), serviceInfoContent, backLink))
-              case _ => Ok(views.html.returnType(periodKey, returnTypeForm, serviceInfoContent, backLink))
+              case Some(data) => Ok(template(periodKey, returnTypeForm.fill(data), serviceInfoContent, backLink))
+              case _ => Ok(template(periodKey, returnTypeForm, serviceInfoContent, backLink))
             }
           )
         }
@@ -64,7 +65,7 @@ class ReturnTypeController @Inject()(mcc: MessagesControllerComponents,
           returnTypeForm.bindFromRequest.fold(
             formWithError =>
               currentBackLink.map(backLink =>
-                BadRequest(views.html.returnType(periodKey, formWithError, serviceInfoContent, backLink))
+                BadRequest(template(periodKey, formWithError, serviceInfoContent, backLink))
               ),
             returnTypeData => {
               dataCacheConnector.saveFormData[ReturnType](RetrieveReturnTypeFormId, returnTypeData)

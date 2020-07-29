@@ -38,7 +38,8 @@ class SelectExistingReturnAddressController @Inject()(mcc: MessagesControllerCom
                                                       serviceInfoService: ServiceInfoService,
                                                       val propertyDetailsService: PropertyDetailsService,
                                                       val dataCacheConnector: DataCacheConnector,
-                                                      val backLinkCacheConnector: BackLinkCacheConnector)
+                                                      val backLinkCacheConnector: BackLinkCacheConnector,
+                                                      template: views.html.propertyDetails.selectPreviousReturn)
                                                      (implicit val appConfig: ApplicationConfig)
 
   extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper {
@@ -58,9 +59,9 @@ class SelectExistingReturnAddressController @Inject()(mcc: MessagesControllerCom
             case Some(pr) =>
               val uniqueAddresses = pr.groupBy(_.address).values.map(_.sortWith((a,b) => a.date.isAfter(b.date)).head).toSeq
 
-              Ok(views.html.propertyDetails.selectPreviousReturn
+              Ok(template
             (periodKey, returnType, addressSelectedForm, uniqueAddresses, serviceInfoContent, getBackLink(periodKey, returnType)))
-            case None => Ok(views.html.propertyDetails.selectPreviousReturn
+            case None => Ok(template
             (periodKey, returnType, addressSelectedForm, Nil, serviceInfoContent, getBackLink(periodKey, returnType)))
           }
         }
@@ -88,7 +89,7 @@ class SelectExistingReturnAddressController @Inject()(mcc: MessagesControllerCom
             formWithError => {
               summaryReturnService.retrieveCachedPreviousReturnAddressList.map { prevReturns =>
                 val addressList = prevReturns.getOrElse(Nil)
-                BadRequest(views.html.propertyDetails.selectPreviousReturn(periodKey, returnType, formWithError, addressList, serviceInfoContent, getBackLink(periodKey, returnType)))
+                BadRequest(template(periodKey, returnType, formWithError, addressList, serviceInfoContent, getBackLink(periodKey, returnType)))
               }
             },
             addressSelectForm => {

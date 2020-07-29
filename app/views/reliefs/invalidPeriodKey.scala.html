@@ -15,6 +15,7 @@
  *@
 
 @import config.ApplicationConfig
+@this(atedMain: atedMain)
 @()(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
 @atedMain(title = messages("ated.reliefs.error.title")) {

@@ -17,6 +17,8 @@
 @import models._
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
+
+@this(atedMain: atedMain)
 @(id: String, periodKey: Int,
   propertyDetailsForm: Form[PropertyDetailsFullTaxPeriod],
   periodStartDate: org.joda.time.LocalDate,

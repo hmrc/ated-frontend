@@ -56,6 +56,7 @@ class EditLiabilitySummaryControllerSpec extends PlaySpec with GuiceOneServerPer
 lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
+  val injectedViewInstance = app.injector.instanceOf[views.html.editLiability.editLiabilitySummary]
 
   val organisationName: String = "ACME Limited"
 
@@ -74,7 +75,9 @@ class Setup {
    mockAuthAction,
    mockServiceInfoService,
    mockDataCacheConnector,
-   mockBackLinkCacheConnector)
+   mockBackLinkCacheConnector,
+    injectedViewInstance
+  )
 
   def viewWithAuthorisedUser(propertyDetails: Option[PropertyDetails])(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
