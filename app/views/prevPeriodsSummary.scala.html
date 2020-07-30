@@ -18,7 +18,9 @@
 @import config.ApplicationConfig
 @import views.html.helpers._
 @import play.twirl.api.HtmlFormat
+@import views.html.atedMain
 
+@this(atedMain: atedMain)
 @(summaryReturnsWithDrafts: SummaryReturnsModel, correspondence: Option[Address], organisationName: Option[String], serviceInfoContent: Html = HtmlFormat.empty,
         clientBanner: Html, duringPeak: Boolean, currentYear: Int,
         taxYearStartingYear: Int, backlink: Option[String])(implicit authContext: StandardAuthRetrievals,

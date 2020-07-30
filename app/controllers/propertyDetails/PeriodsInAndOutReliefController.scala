@@ -36,7 +36,8 @@ class PeriodsInAndOutReliefController @Inject()(mcc: MessagesControllerComponent
                                                 serviceInfoService: ServiceInfoService,
                                                 val propertyDetailsService: PropertyDetailsService,
                                                 val dataCacheConnector: DataCacheConnector,
-                                                val backLinkCacheConnector: BackLinkCacheConnector)
+                                                val backLinkCacheConnector: BackLinkCacheConnector,
+                                                template: views.html.propertyDetails.periodsInAndOutRelief)
                                                (implicit val appConfig: ApplicationConfig)
 
   extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper {
@@ -52,7 +53,7 @@ class PeriodsInAndOutReliefController @Inject()(mcc: MessagesControllerComponent
             case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
               currentBackLink.flatMap { backLink =>
                 dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
-                  Future.successful(Ok(views.html.propertyDetails.periodsInAndOutRelief(id, propertyDetails.periodKey,
+                  Future.successful(Ok(template(id, propertyDetails.periodKey,
                     periodsInAndOutReliefForm,
                     PeriodUtils.getDisplayPeriods(propertyDetails.period),
                     AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn),
@@ -74,7 +75,7 @@ class PeriodsInAndOutReliefController @Inject()(mcc: MessagesControllerComponent
           serviceInfoContent <- serviceInfoService.getPartial
           result <-
           currentBackLink.flatMap(backLink =>
-            Future.successful(Ok(views.html.propertyDetails.periodsInAndOutRelief(id, propertyDetails.periodKey,
+            Future.successful(Ok(template(id, propertyDetails.periodKey,
               periodsInAndOutReliefForm,
               PeriodUtils.getDisplayPeriods(propertyDetails.period),
               AtedUtils.getEditSubmittedMode(propertyDetails),

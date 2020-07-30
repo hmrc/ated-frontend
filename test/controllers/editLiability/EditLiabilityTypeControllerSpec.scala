@@ -59,6 +59,7 @@ class EditLiabilityTypeControllerSpec extends PlaySpec with GuiceOneServerPerSui
 lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
+  val injectedViewInstance = app.injector.instanceOf[views.html.editLiability.editLiability]
 
 class Setup {
 
@@ -76,7 +77,8 @@ class Setup {
     mockDisposePropertyController,
     mockServiceInfoService,
     mockDataCacheConnector,
-    mockBackLinkCacheConnector
+    mockBackLinkCacheConnector,
+    injectedViewInstance
   )
 
     def editLiabilityWithAuthorisedUser(test: Future[Result] => Any) {

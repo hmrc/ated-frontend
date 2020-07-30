@@ -26,12 +26,13 @@ class ReliefDeclarationSpec extends AtedViewSpec with MockitoSugar with MockAuth
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
 
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
+  val injectedViewInstance = app.injector.instanceOf[views.html.reliefs.reliefDeclaration]
 "Relief Declaration" must {
     behave like pageWithTitle(messages("ated.relief-summary.declaration.title"))
     behave like pageWithHeader(messages("ated.relief-summary.declaration.header"))
   }
 
   private val periodKey = 2017
-  override def view: Html = views.html.reliefs.reliefDeclaration(periodKey, Html(""), None)
+  override def view: Html = injectedViewInstance(periodKey, Html(""), None)
 
 }

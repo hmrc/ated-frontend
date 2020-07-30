@@ -40,7 +40,9 @@ class ChooseReliefsController @Inject()(mcc: MessagesControllerComponents,
                                         serviceInfoService: ServiceInfoService,
                                         val reliefsService: ReliefsService,
                                         val dataCacheConnector: DataCacheConnector,
-                                        val backLinkCacheConnector: BackLinkCacheConnector)
+                                        val backLinkCacheConnector: BackLinkCacheConnector,
+                                        val templateInvalidPeriodKey: views.html.reliefs.invalidPeriodKey,
+                                        template: views.html.reliefs.chooseReliefs)
                                        (implicit val appConfig: ApplicationConfig)
 
   extends FrontendController(mcc) with BackLinkController with ReliefHelpers with ClientHelper {
@@ -59,8 +61,8 @@ class ChooseReliefsController @Inject()(mcc: MessagesControllerComponents,
           } yield {
             retrievedData match {
               case Some(reliefs) =>
-                Ok(views.html.reliefs.chooseReliefs(reliefs.periodKey, reliefsForm.fill(reliefs.reliefs), PeriodUtils.periodStartDate(periodKey), serviceInfoContent, backLink))
-              case _ => Ok(views.html.reliefs.chooseReliefs(periodKey, reliefsForm.fill(Reliefs(periodKey)), PeriodUtils.periodStartDate(periodKey), serviceInfoContent, backLink))
+                Ok(template(reliefs.periodKey, reliefsForm.fill(reliefs.reliefs), PeriodUtils.periodStartDate(periodKey), serviceInfoContent, backLink))
+              case _ => Ok(template(periodKey, reliefsForm.fill(Reliefs(periodKey)), PeriodUtils.periodStartDate(periodKey), serviceInfoContent, backLink))
             }
           }
         }
@@ -79,9 +81,8 @@ class ChooseReliefsController @Inject()(mcc: MessagesControllerComponents,
             val backLink = Some(controllers.reliefs.routes.ReliefsSummaryController.view(periodKey).url)
             retrievedData match {
               case Some(reliefs) =>
-                Ok(views.html.reliefs.chooseReliefs(reliefs.periodKey, reliefsForm.fill(reliefs.reliefs), PeriodUtils.periodStartDate(periodKey), serviceInfoContent, backLink))
-              case _ => Ok(views.html.reliefs
-                .chooseReliefs(periodKey, reliefsForm.fill(Reliefs(periodKey)), PeriodUtils.periodStartDate(periodKey), serviceInfoContent, backLink))
+                Ok(template(reliefs.periodKey, reliefsForm.fill(reliefs.reliefs), PeriodUtils.periodStartDate(periodKey), serviceInfoContent, backLink))
+              case _ => Ok(template(periodKey, reliefsForm.fill(Reliefs(periodKey)), PeriodUtils.periodStartDate(periodKey), serviceInfoContent, backLink))
             }
           }
         }
@@ -102,7 +103,7 @@ class ChooseReliefsController @Inject()(mcc: MessagesControllerComponents,
             reliefsForm.bindFromRequest(ReliefsUtils.cleanDateTuples(data.get)).fold(
               formWithError =>
                 currentBackLink.map { backLink =>
-                  BadRequest(views.html.reliefs.chooseReliefs(periodKey, formWithError, PeriodUtils.periodStartDate(periodKey), serviceInfoContent, backLink))
+                  BadRequest(template(periodKey, formWithError, PeriodUtils.periodStartDate(periodKey), serviceInfoContent, backLink))
                 },
               reliefs => {
                 for {

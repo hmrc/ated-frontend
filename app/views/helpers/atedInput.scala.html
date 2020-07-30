@@ -38,9 +38,9 @@
         @if(elements.args.contains('_label)) { @elements.label }
         @if(labelHighlight){</strong>}
 
-        @elements.errors.map { error => <span class="error-notification">@messages(error)</span>}
+        @elements.errors.collect { case error: String => <span class="error-notification">@messages(error)</span>}
         @if(parentElements.isDefined) {
-        @parentElements.get.errors.map { error => <span class="error-notification">@messages(error)</span>}
+        @parentElements.get.errors.map { case error: String => <span class="error-notification">@messages(error)</span>}
         }
 
         @if(elements.args.contains('_hintText)) {

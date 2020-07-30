@@ -16,11 +16,12 @@
 
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
-
-@(selectPeriodForm: Form[SelectPeriod], periods: List[(String, String)],  serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
-
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
+
+@this(atedMain: atedMain)
+@(selectPeriodForm: Form[SelectPeriod], periods: List[(String, String)],  serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
+
 
 @analyticsJs = {
   ga('set', 'page', document.location.pathname);

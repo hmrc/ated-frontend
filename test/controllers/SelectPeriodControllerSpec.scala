@@ -57,6 +57,7 @@ class SelectPeriodControllerSpec extends PlaySpec with GuiceOneAppPerSuite with 
 lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
+  val injectedViewInstance = app.injector.instanceOf[views.html.selectPeriod]
 
   val baseYear = 2018
 
@@ -73,7 +74,8 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
       mockAuthAction,
       mockServiceInfoService,
       mockBackLinkCacheConnector,
-      mockDataCacheConnector
+      mockDataCacheConnector,
+      injectedViewInstance
     ) {
       override def endDate(): LocalDate = LocalDate.parse(s"$endYear-05-20")
     }

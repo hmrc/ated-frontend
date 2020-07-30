@@ -30,10 +30,10 @@ import scala.concurrent.ExecutionContext
 
 class ReliefsSentController @Inject()(mcc : MessagesControllerComponents,
                                       authAction: AuthAction,
-                                      subscriptionDataService: SubscriptionDataService,
                                       serviceInfoService: ServiceInfoService,
                                       val dataCacheConnector: DataCacheConnector,
-                                      val reliefsService: ReliefsService)
+                                      val reliefsService: ReliefsService,
+                                      template: views.html.reliefs.reliefsSent)
                                      (implicit val appConfig: ApplicationConfig)
 
   extends FrontendController(mcc) {
@@ -45,7 +45,7 @@ class ReliefsSentController @Inject()(mcc : MessagesControllerComponents,
       serviceInfoService.getPartial.flatMap { serviceInfoContent =>
         dataCacheConnector.fetchAndGetFormData[SubmitReturnsResponse](SubmitReturnsResponseFormId) map {
           case Some(submitResponse) =>
-            Ok(views.html.reliefs.reliefsSent(periodKey, serviceInfoContent, submitResponse))
+            Ok(template(periodKey, serviceInfoContent, submitResponse))
           case None =>
             Redirect(controllers.reliefs.routes.ReliefDeclarationController.view(periodKey))
         }

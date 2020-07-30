@@ -27,6 +27,7 @@ import utils.PeriodUtils
 
 class PropertyDetailsOwnedBeforeSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil {
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
+  val injectedViewInstance = app.injector.instanceOf[views.html.propertyDetails.propertyDetailsOwnedBefore]
 
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
 "Property Details Owned Before view" must {
@@ -43,7 +44,7 @@ class PropertyDetailsOwnedBeforeSpec extends AtedViewSpec with MockitoSugar with
       val eform = Form(form.mapping, Map("isOwnedBeforePolicyYear" -> "true"),
         Seq(FormError("ownedBeforePolicyYearValue", messages("ated.property-details-value.ownedBeforePolicyYearValue.error.empty")))
         , form.value)
-      def view: Html = views.html.propertyDetails.propertyDetailsOwnedBefore("",2014,  eform, None, Html(""), Some("backLink"))
+      def view: Html = injectedViewInstance("",2014,  eform, None, Html(""), Some("backLink"))
       val errorDoc = doc(view)
 
       errorDoc.getElementsMatchingOwnText(messages("ated.property-details-value-error.general.ownedBeforePolicyYearValue")).hasText mustBe true
@@ -56,6 +57,6 @@ class PropertyDetailsOwnedBeforeSpec extends AtedViewSpec with MockitoSugar with
   }
 
   private val form = PropertyDetailsForms.propertyDetailsOwnedBeforeForm
-  override def view: Html = views.html.propertyDetails.propertyDetailsOwnedBefore("",2014,  form, None, Html(""), Some("backLink"))
+  override def view: Html = injectedViewInstance("",2014,  form, None, Html(""), Some("backLink"))
 
 }

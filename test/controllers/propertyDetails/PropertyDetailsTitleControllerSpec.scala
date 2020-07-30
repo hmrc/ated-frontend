@@ -60,6 +60,7 @@ class PropertyDetailsTitleControllerSpec extends PlaySpec with GuiceOneServerPer
 lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
+  val injectedViewInstance = app.injector.instanceOf[views.html.propertyDetails.propertyDetailsTitle]
 
   class Setup {
 
@@ -77,7 +78,8 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
       mockServiceInfoService,
       mockPropertyDetailsService,
       mockDataCacheConnector,
-      mockBackLinkCacheConnector
+      mockBackLinkCacheConnector,
+      injectedViewInstance
     )
 
 

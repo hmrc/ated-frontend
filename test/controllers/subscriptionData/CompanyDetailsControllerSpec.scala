@@ -55,6 +55,7 @@ class CompanyDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
 lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
+  val injectedViewInstance = app.injector.instanceOf[views.html.subcriptionData.companyDetails]
 
 class Setup {
 
@@ -69,7 +70,8 @@ class Setup {
       mockAuthAction,
       mockSubscriptionDataService,
       mockServiceInfoService,
-      mockDetailsService
+      mockDetailsService,
+    injectedViewInstance
   )
 
   def getWithUnAuthorisedUser(test: Future[Result] => Any) {

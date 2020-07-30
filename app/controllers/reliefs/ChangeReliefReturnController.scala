@@ -36,7 +36,8 @@ class ChangeReliefReturnController @Inject()(mcc: MessagesControllerComponents,
                                              serviceInfoService: ServiceInfoService,
                                              val reliefsService: ReliefsService,
                                              val dataCacheConnector: DataCacheConnector,
-                                             val backLinkCacheConnector: BackLinkCacheConnector)
+                                             val backLinkCacheConnector: BackLinkCacheConnector,
+                                             template: views.html.reliefs.changeReliefReturn)
                                             (implicit val appConfig: ApplicationConfig)
 
   extends FrontendController(mcc) with BackLinkController with ClientHelper {
@@ -50,7 +51,7 @@ class ChangeReliefReturnController @Inject()(mcc: MessagesControllerComponents,
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
           currentBackLink.flatMap(backLink =>
-            Future.successful(Ok(views.html.reliefs.changeReliefReturn(periodKey, formBundleNumber, editReliefForm, serviceInfoContent, backLink)))
+            Future.successful(Ok(template(periodKey, formBundleNumber, editReliefForm, serviceInfoContent, backLink)))
           )
         }
       }
@@ -64,7 +65,7 @@ class ChangeReliefReturnController @Inject()(mcc: MessagesControllerComponents,
           editReliefForm.bindFromRequest.fold(
             formWithError =>
               currentBackLink.flatMap(backLink =>
-                Future.successful(BadRequest(views.html.reliefs.changeReliefReturn(periodKey, formBundleNumber, formWithError, serviceInfoContent, backLink)))
+                Future.successful(BadRequest(template(periodKey, formBundleNumber, formWithError, serviceInfoContent, backLink)))
               ),
             editReliefData => {
               val returnUrl = Some(routes.ChangeReliefReturnController.viewChangeReliefReturn(periodKey, formBundleNumber).url)

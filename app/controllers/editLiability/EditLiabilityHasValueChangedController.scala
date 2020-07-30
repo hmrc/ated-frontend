@@ -38,7 +38,8 @@ class EditLiabilityHasValueChangedController @Inject()(mcc: MessagesControllerCo
                                                        serviceInfoService: ServiceInfoService,
                                                        val propertyDetailsService: PropertyDetailsService,
                                                        val dataCacheConnector: DataCacheConnector,
-                                                       val backLinkCacheConnector: BackLinkCacheConnector)
+                                                       val backLinkCacheConnector: BackLinkCacheConnector,
+                                                       template: views.html.editLiability.editLiabilityHasValueChanged)
                                                       (implicit val appConfig: ApplicationConfig)
   extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper {
 
@@ -56,7 +57,7 @@ class EditLiabilityHasValueChangedController @Inject()(mcc: MessagesControllerCo
                 currentBackLink.map { backLink =>
                   val filledForm = hasValueChangedForm.fill(HasValueChanged(propertyDetails.value.flatMap(_.hasValueChanged)))
                   val previousValue = propertyDetails.formBundleReturn.map(_.lineItem.head.propertyValue)
-                  Ok(views.html.editLiability.editLiabilityHasValueChanged(previousValue, oldFormBundleNo, filledForm,
+                  Ok(template(previousValue, oldFormBundleNo, filledForm,
                     AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn), serviceInfoContent, backLink))
                 }
               }
@@ -76,7 +77,7 @@ class EditLiabilityHasValueChangedController @Inject()(mcc: MessagesControllerCo
                 val mode = AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn)
                 val filledForm = hasValueChangedForm.fill(HasValueChanged(propertyDetails.value.flatMap(_.hasValueChanged)))
                 val previousValue = propertyDetails.formBundleReturn.map(_.lineItem.head.propertyValue)
-                Ok(views.html.editLiability.editLiabilityHasValueChanged(previousValue, oldFormBundleNo, filledForm,
+                Ok(template(previousValue, oldFormBundleNo, filledForm,
                   mode, serviceInfoContent, AtedUtils.getSummaryBackLink(oldFormBundleNo, mode)))
               }
           }
@@ -96,7 +97,7 @@ class EditLiabilityHasValueChangedController @Inject()(mcc: MessagesControllerCo
                   dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
                     currentBackLink.map { backLink =>
                       val previousValue = propertyDetails.formBundleReturn.map(_.lineItem.head.propertyValue)
-                      BadRequest(views.html.editLiability.editLiabilityHasValueChanged(previousValue, oldFormBundleNo,
+                      BadRequest(template(previousValue, oldFormBundleNo,
                         formWithErrors, AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn), serviceInfoContent, backLink))
                     }
                   }

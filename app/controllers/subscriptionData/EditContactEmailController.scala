@@ -29,7 +29,8 @@ import scala.concurrent.{ExecutionContext, Future}
 class EditContactEmailController @Inject()(mcc: MessagesControllerComponents,
                                            authAction: AuthAction,
                                            serviceInfoService: ServiceInfoService,
-                                           subscriptionDataService: SubscriptionDataService)
+                                           subscriptionDataService: SubscriptionDataService,
+                                           template: views.html.subcriptionData.editContactEmail)
                                           (implicit val appConfig: ApplicationConfig)
 
   extends FrontendController(mcc) {
@@ -46,7 +47,7 @@ class EditContactEmailController @Inject()(mcc: MessagesControllerComponents,
             case Some(x) => editContactDetailsEmailForm.fill(x)
             case _ => editContactDetailsEmailForm
           }
-          Ok(views.html.subcriptionData.editContactEmail(populatedForm, serviceInfoContent, getBackLink))
+          Ok(template(populatedForm, serviceInfoContent, getBackLink))
         }
       }
     }
@@ -57,7 +58,7 @@ class EditContactEmailController @Inject()(mcc: MessagesControllerComponents,
     authAction.authorisedAction { implicit authContext =>
       serviceInfoService.getPartial.flatMap { serviceInfoContent =>
         validateEmail(editContactDetailsEmailForm.bindFromRequest).fold(
-          formWithErrors => Future.successful(BadRequest(views.html.subcriptionData.editContactEmail(formWithErrors, serviceInfoContent, getBackLink))),
+          formWithErrors => Future.successful(BadRequest(template(formWithErrors, serviceInfoContent, getBackLink))),
           editedClientData => {
             for {
               _ <- subscriptionDataService.editEmailWithConsent(editedClientData)

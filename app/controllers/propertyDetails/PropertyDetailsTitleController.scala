@@ -39,7 +39,9 @@ class PropertyDetailsTitleController @Inject()(mcc: MessagesControllerComponents
                                                serviceInfoService: ServiceInfoService,
                                                val propertyDetailsService: PropertyDetailsService,
                                                val dataCacheConnector: DataCacheConnector,
-                                               val backLinkCacheConnector: BackLinkCacheConnector)(implicit val appConfig: ApplicationConfig)
+                                               val backLinkCacheConnector: BackLinkCacheConnector,
+                                               template: views.html.propertyDetails.propertyDetailsTitle)
+                                              (implicit val appConfig: ApplicationConfig)
   extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with ControllerIds {
 
   implicit val ec: ExecutionContext = mcc.executionContext
@@ -54,7 +56,7 @@ class PropertyDetailsTitleController @Inject()(mcc: MessagesControllerComponents
               currentBackLink.flatMap { backLink =>
                 dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).map { isPrevReturn =>
                   val displayData = propertyDetails.title.getOrElse(new PropertyDetailsTitle(""))
-                  Ok(views.html.propertyDetails.propertyDetailsTitle(id, propertyDetails.periodKey, propertyDetailsTitleForm.fill(displayData),
+                  Ok(template(id, propertyDetails.periodKey, propertyDetailsTitleForm.fill(displayData),
                     AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn), serviceInfoContent,
                     backLink))
                 }
@@ -74,7 +76,7 @@ class PropertyDetailsTitleController @Inject()(mcc: MessagesControllerComponents
             dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
               val mode = AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn)
               Future.successful(
-                Ok(views.html.propertyDetails.propertyDetailsTitle(
+                Ok(template(
                   id,
                   propertyDetails.periodKey,
                   propertyDetailsTitleForm.fill(propertyDetails.title.getOrElse(PropertyDetailsTitle(""))),
@@ -95,7 +97,7 @@ class PropertyDetailsTitleController @Inject()(mcc: MessagesControllerComponents
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
           propertyDetailsTitleForm.bindFromRequest.fold(
             formWithError => {
-              currentBackLink.map(backLink => BadRequest(views.html.propertyDetails.propertyDetailsTitle(id, periodKey, formWithError, mode, serviceInfoContent, backLink)))
+              currentBackLink.map(backLink => BadRequest(template(id, periodKey, formWithError, mode, serviceInfoContent, backLink)))
             },
             propertyDetails => {
               val backLink = Some(controllers.propertyDetails.routes.PropertyDetailsTitleController.view(id).url)

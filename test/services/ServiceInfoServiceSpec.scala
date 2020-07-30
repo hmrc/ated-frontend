@@ -20,6 +20,7 @@ import connectors.ServiceInfoPartialConnector
 import controllers.ControllerBaseSpec
 import play.api.mvc.Request
 import play.twirl.api.{Html, HtmlFormat}
+import play.api.test.Helpers._
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -39,7 +40,7 @@ class ServiceInfoServiceSpec extends ControllerBaseSpec {
       val result: Html = await(service.getPartial(fakeRequest, organisationStandardRetrievals, ec))
       val expectedResult: Html = validHtml
 
-      result shouldBe expectedResult
+      result mustBe expectedResult
     }
     "return empty HTML for an agent" in {
       (mockConnector.getServiceInfoPartial()(_:Request[_], _:ExecutionContext))
@@ -49,7 +50,7 @@ class ServiceInfoServiceSpec extends ControllerBaseSpec {
       val result: Html = await(service.getPartial(fakeRequest, agentStandardRetrievals, ec))
       val expectedResult: Html = HtmlFormat.empty
 
-      result shouldBe expectedResult
+      result mustBe expectedResult
     }
   }
 

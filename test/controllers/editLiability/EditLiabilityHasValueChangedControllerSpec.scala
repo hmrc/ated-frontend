@@ -61,6 +61,7 @@ class EditLiabilityHasValueChangedControllerSpec extends PlaySpec with GuiceOneS
 lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
+  val injectedViewInstance = app.injector.instanceOf[views.html.editLiability.editLiabilityHasValueChanged]
 
 class Setup {
 
@@ -78,7 +79,8 @@ class Setup {
     mockServiceInfoService,
     mockPropertyDetailsService,
     mockDataCacheConnector,
-    mockBackLinkCacheConnector
+    mockBackLinkCacheConnector,
+    injectedViewInstance
   )
 
   def viewWithAuthorisedUser(propertyDetails: PropertyDetails)(test: Future[Result] => Any) {

@@ -35,6 +35,8 @@ class periodDatesLiableSpec extends FeatureSpec with GuiceOneAppPerSuite with Mo
   implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
+  val injectedViewInstance = app.injector.instanceOf[views.html.propertyDetails.periodDatesLiable]
+
 feature("The user can add a period that the property is liable") {
 
     info("as a client i to indicate when my property is liable")
@@ -44,7 +46,7 @@ feature("The user can add a period that the property is liable") {
       Given("the client is adding a dates liable")
       When("The user views the page")
 
-      val html = views.html.propertyDetails.periodDatesLiable("1", 2015, periodDatesLiableForm,
+      val html = injectedViewInstance("1", 2015, periodDatesLiableForm,
         "Enter the dates when the property was liable for an ATED charge", None, Html(""), Some("backLink"))
 
       val document = Jsoup.parse(html.toString())
@@ -81,7 +83,7 @@ feature("The user can add a period that the property is liable") {
       Given("the client is adding a dates liable")
       When("The user views the page")
 
-      val html = views.html.propertyDetails.periodDatesLiable("1", 2015, periodDatesLiableForm,
+      val html = injectedViewInstance("1", 2015, periodDatesLiableForm,
         "Add the dates when the property was liable for an ATED charge", Some("add"), Html(""), Some("http://backLink"))
 
       val document = Jsoup.parse(html.toString())

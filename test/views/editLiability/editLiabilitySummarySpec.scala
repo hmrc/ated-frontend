@@ -40,6 +40,8 @@ class editLiabilitySummarySpec extends FeatureSpec with GuiceOneServerPerSuite w
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
 
+  val injectedViewInstance = app.injector.instanceOf[views.html.editLiability.editLiabilitySummary]
+
   val thisYear: Int = calculatePeakStartYear()
   val nextYear: Int = thisYear + 1
 
@@ -57,7 +59,7 @@ class editLiabilitySummarySpec extends FeatureSpec with GuiceOneServerPerSuite w
       Then("The config should have - 2 periods")
       val displayPeriods = PeriodUtils.getDisplayPeriods(propertyDetails.period)
       assert(displayPeriods.size === 2)
-      val html = views.html.editLiability.editLiabilitySummary(propertyDetails, "A", displayPeriods,
+      val html = injectedViewInstance(propertyDetails, "A", displayPeriods,
         PeriodUtils.getCalculatedPeriodValues(propertyDetails.calculated), Html(""), Some("backLink"))
 
       val document = Jsoup.parse(html.toString())
@@ -109,7 +111,7 @@ class editLiabilitySummarySpec extends FeatureSpec with GuiceOneServerPerSuite w
       Then("The config should have - 2 periods")
       val displayPeriods = PeriodUtils.getDisplayPeriods(propertyDetails.period)
       assert(displayPeriods.size === 2)
-      val html = views.html.editLiability.editLiabilitySummary(propertyDetails, "C", displayPeriods,
+      val html = injectedViewInstance(propertyDetails, "C", displayPeriods,
         PeriodUtils.getCalculatedPeriodValues(propertyDetails.calculated), Html(""), Some("http://backLink"))
 
       val document = Jsoup.parse(html.toString())
@@ -160,7 +162,7 @@ class editLiabilitySummarySpec extends FeatureSpec with GuiceOneServerPerSuite w
 
       val propertyDetails = PropertyDetailsBuilder.getFullPropertyDetails(id = "1", postCode = Some("123456"), liabilityAmount = Some(BigDecimal(1000.20)))
 
-      val html = views.html.editLiability.editLiabilitySummary(propertyDetails, "F", Nil,
+      val html = injectedViewInstance(propertyDetails, "F", Nil,
         PeriodUtils.getCalculatedPeriodValues(propertyDetails.calculated), Html(""), Some("http://backLink"))
 
       val document = Jsoup.parse(html.toString())

@@ -38,6 +38,8 @@ class disposeLiabilityBankDetailsSpec extends FeatureSpec with GuiceOneAppPerSui
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
   implicit val authContext: StandardAuthRetrievals = organisationStandardRetrievals
 
+  val injectedViewInstance = app.injector.instanceOf[views.html.editLiability.disposeLiabilityBankDetails]
+
   val authMock: Enrolments ~ Some[AffinityGroup] ~ Some[String] = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
   setAuthMocks(authMock)
 
@@ -50,7 +52,7 @@ class disposeLiabilityBankDetailsSpec extends FeatureSpec with GuiceOneAppPerSui
       Given("the client is prompted to add thier bank details")
       When("The user views the page")
 
-      val html = views.html.editLiability.disposeLiabilityBankDetails(bankDetailsForm, "1", Html(""), Some("http://backLink"))
+      val html = injectedViewInstance(bankDetailsForm, "1", Html(""), Some("http://backLink"))
 
       val document = Jsoup.parse(html.toString())
 
@@ -66,9 +68,9 @@ class disposeLiabilityBankDetailsSpec extends FeatureSpec with GuiceOneAppPerSui
       assert(document.getElementById("hasUKBankAccount-id").text() === "Yes No")
       assert(document.getElementById("name-of-person").text() === "Name of bank account holder")
 
-      assert(document.getElementById("hidden-bank-details-uk").text() === "Account number Sort code First two numbers Second two numbers Third two numbers  ")
+      assert(document.getElementById("hidden-bank-details-uk").text() === "Account number Sort code First two numbers Second two numbers Third two numbers")
       assert(document.getElementById("account-number").text() === "Account number")
-      assert(document.getElementById("sort-code").text() === "Sort code First two numbers Second two numbers Third two numbers  ")
+      assert(document.getElementById("sort-code").text() === "Sort code First two numbers Second two numbers Third two numbers")
 
       assert(document.getElementById("hidden-bank-details-non-uk").text() === "IBAN SWIFT code")
       assert(document.getElementById("iban-code").text() === "IBAN")

@@ -55,6 +55,7 @@ class EditLiabilityDeclarationControllerSpec extends PlaySpec with GuiceOneServe
   val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
   lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
+  val injectedViewInstance = app.injector.instanceOf[views.html.editLiability.editLiabilityDeclaration]
 
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
 
@@ -75,7 +76,8 @@ class Setup {
     mockAuthAction,
     mockServiceInfoService,
     mockDataCacheConnector,
-    mockBackLinkCacheConnector
+    mockBackLinkCacheConnector,
+    injectedViewInstance
   )
 
   def viewWithUnAuthorisedUser(test: Future[Result] => Any) {

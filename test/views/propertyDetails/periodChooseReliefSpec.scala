@@ -37,6 +37,8 @@ class periodChooseReliefSpec extends FeatureSpec with GuiceOneAppPerSuite with M
   implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
+  val injectedViewInstance = app.injector.instanceOf[views.html.propertyDetails.periodChooseRelief]
+
 feature("The user can add a period that the property is in relief") {
 
     info("as a client i want to indicate when my property is in relief")
@@ -46,7 +48,7 @@ feature("The user can add a period that the property is in relief") {
       Given("the client is adding a relief")
       When("The user views the page")
 
-      val html = views.html.propertyDetails.periodChooseRelief("1", 2015, periodChooseReliefForm, Html(""), Some("backLink"))
+      val html = injectedViewInstance("1", 2015, periodChooseReliefForm, Html(""), Some("backLink"))
 
       val document = Jsoup.parse(html.toString())
 
@@ -86,9 +88,8 @@ feature("The user can add a period that the property is in relief") {
 
       Given("the client is adding a relief")
       When("The user views the page")
-      
-      val html = views.html.propertyDetails.periodChooseRelief("1",
-        2015, periodChooseReliefForm.fill(PeriodChooseRelief(ReliefsUtils.RentalBusinessDesc)), Html(""), Some("http://backLink"))
+
+      val html = injectedViewInstance("1", 2015, periodChooseReliefForm.fill(PeriodChooseRelief(ReliefsUtils.RentalBusinessDesc)), Html(""), Some("http://backLink"))
 
       val document = Jsoup.parse(html.toString())
 

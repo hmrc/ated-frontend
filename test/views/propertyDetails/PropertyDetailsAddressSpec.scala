@@ -37,6 +37,8 @@ class PropertyDetailsAddressSpec extends FeatureSpec with GuiceOneServerPerSuite
   implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
+  val injectedViewInstance = app.injector.instanceOf[views.html.propertyDetails.propertyDetailsAddress]
+
 feature("The user can view an empty property details page") {
 
     info("as a user I want to view the correct page content")
@@ -47,7 +49,7 @@ feature("The user can view an empty property details page") {
       When("The user views the page")
       implicit val request = FakeRequest()
 
-      val html = views.html.propertyDetails.propertyDetailsAddress(
+      val html = injectedViewInstance(
         None, 2015, propertyDetailsAddressForm, None, Html(""), Some("backLink"), fromConfirmAddressPage = false)
 
       val document = Jsoup.parse(html.toString())
@@ -85,7 +87,7 @@ feature("The user can view an empty property details page") {
       implicit val request = FakeRequest()
 
       val propertyDetails = PropertyDetailsBuilder.getPropertyDetailsAddress(Some("postCode"))
-      val html = views.html.propertyDetails.propertyDetailsAddress(
+      val html = injectedViewInstance(
         Some("1"), 2015, propertyDetailsAddressForm.fill(propertyDetails), Some(AtedUtils.EDIT_SUBMITTED), Html(""), Some("http://backLink"), fromConfirmAddressPage = false)
 
       val document = Jsoup.parse(html.toString())
@@ -125,7 +127,7 @@ feature("The user can view an empty property details page") {
 
       implicit val request = FakeRequest()
       val propertyDetails = PropertyDetailsBuilder.getPropertyDetailsAddress(Some("postCode"))
-      val html = views.html.propertyDetails.propertyDetailsAddress(
+      val html = injectedViewInstance(
         Some("1"), 2015, propertyDetailsAddressForm.fill(propertyDetails), None, Html(""), Some("http://backLink"), fromConfirmAddressPage = true)
 
       val document = Jsoup.parse(html.toString())

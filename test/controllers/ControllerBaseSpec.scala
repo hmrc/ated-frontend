@@ -23,6 +23,7 @@ import mocks.MockAppConfig
 import models.StandardAuthRetrievals
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.BeforeAndAfterEach
+import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Lang, Messages, MessagesApi}
 import play.api.inject.Injector
@@ -30,11 +31,10 @@ import play.api.mvc.{AnyContentAsEmpty, AnyContentAsFormUrlEncoded, MessagesCont
 import play.api.test.FakeRequest
 import testhelpers.TestUtil
 import uk.gov.hmrc.http.{SessionKeys => GovUKSessionKeys}
-import uk.gov.hmrc.play.test.UnitSpec
 
 import scala.concurrent.ExecutionContext
 
-class ControllerBaseSpec extends UnitSpec with MockFactory with GuiceOneAppPerSuite with BeforeAndAfterEach with TestUtil {
+class ControllerBaseSpec extends PlaySpec with MockFactory with GuiceOneAppPerSuite with BeforeAndAfterEach with TestUtil {
 
   lazy val injector: Injector = app.injector
   lazy val messagesApi: MessagesApi = injector.instanceOf[MessagesApi]

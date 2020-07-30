@@ -32,6 +32,7 @@ class ReliefsSummarySpec extends FeatureSpec with GuiceOneAppPerSuite with Mocki
   implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
 
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
+  val injectedViewInstance = app.injector.instanceOf[views.html.reliefs.reliefsSummary]
 implicit lazy val authContext = organisationStandardRetrievals
 
   feature("The user can view the relief summary page") {
@@ -43,7 +44,7 @@ implicit lazy val authContext = organisationStandardRetrievals
       Given("the client has created a new relief return and is viewing the summary of entered info")
       When("The user views the page")
 
-      val html = views.html.reliefs.reliefsSummary(2015, None, canSubmit = false, isComplete = true, Html(""), None)
+      val html = injectedViewInstance(2015, None, canSubmit = false, isComplete = true, Html(""), None)
 
       val document = Jsoup.parse(html.toString())
 

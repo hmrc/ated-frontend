@@ -62,6 +62,7 @@ class ReturnTypeControllerSpec extends PlaySpec with GuiceOneServerPerSuite with
 lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
+  val injectedViewInstance = app.injector.instanceOf[views.html.returnType]
 
   val periodKey: Int = 2015
 
@@ -79,7 +80,8 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
       mockSummaryReturnsService,
       mockServiceInfoService,
       mockDataCacheConnector,
-      mockBackLinkCacheConnector
+      mockBackLinkCacheConnector,
+      injectedViewInstance
     )
 
     def getWithAuthorisedUser(test: Future[Result] => Any) {

@@ -55,6 +55,7 @@ class FormBundleReturnControllerSpec extends PlaySpec with GuiceOneServerPerSuit
 lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
+  val injectedViewInstance = app.injector.instanceOf[views.html.formBundleReturn]
 
   val periodKey: Int = 2015
   val formBundleNo1: String = "123456789012"
@@ -74,7 +75,8 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
       mockFormBundleReturnsService,
       mockSummaryReturnsService,
       mockServiceInfoService,
-      mockSubscriptionDataService
+      mockSubscriptionDataService,
+      injectedViewInstance
     )
 
     def getWithAuthorisedUser(formBundleReturn: Option[FormBundleReturn], periodSummaries: Option[PeriodSummaryReturns] = None)(test: Future[Result] => Any) {

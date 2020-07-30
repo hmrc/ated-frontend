@@ -38,7 +38,9 @@ class PropertyDetailsSupportingInfoController @Inject()(mcc: MessagesControllerC
                                                         serviceInfoService: ServiceInfoService,
                                                         val propertyDetailsService: PropertyDetailsService,
                                                         val dataCacheConnector: DataCacheConnector,
-                                                        val backLinkCacheConnector: BackLinkCacheConnector)
+                                                        val backLinkCacheConnector: BackLinkCacheConnector,
+                                                        template: views.html.propertyDetails.propertyDetailsSupportingInfo,
+                                                        templateError: views.html.global_error)
                                                        (implicit val appConfig: ApplicationConfig)
 
   extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper {
@@ -59,7 +61,7 @@ class PropertyDetailsSupportingInfoController @Inject()(mcc: MessagesControllerC
               }
               currentBackLink.flatMap(backLink =>
                 dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).map { isPrevReturn =>
-                  Ok(views.html.propertyDetails.propertyDetailsSupportingInfo(id, propertyDetails.periodKey, filledForm,
+                  Ok(template(id, propertyDetails.periodKey, filledForm,
                     AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn), serviceInfoContent, backLink))
                 }
               )
@@ -81,7 +83,7 @@ class PropertyDetailsSupportingInfoController @Inject()(mcc: MessagesControllerC
                   case _ => propertyDetailsSupportingInfoForm
                 }
                 val mode = AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn)
-                Future.successful(Ok(views.html.propertyDetails.propertyDetailsSupportingInfo(id, propertyDetails.periodKey, filledForm,
+                Future.successful(Ok(template(id, propertyDetails.periodKey, filledForm,
                   mode, serviceInfoContent, AtedUtils.getSummaryBackLink(id, None))))
               }
           }
@@ -96,7 +98,7 @@ class PropertyDetailsSupportingInfoController @Inject()(mcc: MessagesControllerC
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
           propertyDetailsSupportingInfoForm.bindFromRequest.fold(
             formWithError => {
-              currentBackLink.map(backLink => BadRequest(views.html.propertyDetails.propertyDetailsSupportingInfo(id, periodKey, formWithError, mode, serviceInfoContent, backLink)))
+              currentBackLink.map(backLink => BadRequest(template(id, periodKey, formWithError, mode, serviceInfoContent, backLink)))
             },
             propertyDetails => {
               val backLink = Some(controllers.propertyDetails.routes.PropertyDetailsSupportingInfoController.view(id).url)
@@ -119,7 +121,7 @@ class PropertyDetailsSupportingInfoController @Inject()(mcc: MessagesControllerC
                             controllers.propertyDetails.routes.PropertyDetailsSummaryController.view(id),
                             backLink)
                         case BAD_REQUEST if response.body.contains("Agent not Valid") =>
-                          Future.successful(BadRequest(views.html.global_error("ated.client-problem.title",
+                          Future.successful(BadRequest(templateError("ated.client-problem.title",
                             "ated.client-problem.header", "ated.client-problem.message", None, Some(appConfig.agentRedirectedToMandate), None, None, serviceInfoContent, appConfig)))
                       }
                     }

@@ -244,7 +244,7 @@ object PropertyDetailsForms {
   def validatePropertyDetailsRevalued(periodKey: Int, f: Form[PropertyDetailsRevalued]): Form[PropertyDetailsRevalued] = {
     if (!f.hasErrors) {
       val formErrors = (PropertyDetailsFormsValidation.checkPartAcqDispDate(periodKey, f.get.isPropertyRevalued, f.get.partAcqDispDate)
-        ++ validateValue(f.get.isPropertyRevalued == Some(true), "revaluedValue", f.get.revaluedValue, f)
+        ++ validateValue(f.get.isPropertyRevalued.contains(true), "revaluedValue", f.get.revaluedValue, f)
         ++ PropertyDetailsFormsValidation.checkRevaluedDate(periodKey, f.get.isPropertyRevalued, f.get.revaluedDate)
         ).flatten
       addErrorsToForm(f, formErrors)
@@ -262,7 +262,7 @@ object PropertyDetailsForms {
 
   def validatePropertyDetailsOwnedBefore(f: Form[PropertyDetailsOwnedBefore]): Form[PropertyDetailsOwnedBefore] = {
     if (!f.hasErrors) {
-      val formErrors = (validateValue(f.get.isOwnedBeforePolicyYear == Some(true), "ownedBeforePolicyYearValue", f.get.ownedBeforePolicyYearValue, f)).flatten
+      val formErrors = (validateValue(f.get.isOwnedBeforePolicyYear.contains(true), "ownedBeforePolicyYearValue", f.get.ownedBeforePolicyYearValue, f)).flatten
       addErrorsToForm(f, formErrors)
     } else f
   }
@@ -307,7 +307,7 @@ object PropertyDetailsForms {
 
   private def validateValue(requiresValidation: Boolean, fieldName: String, fieldValue: Option[BigDecimal], f: Form[_]): Seq[Option[FormError]] = {
     if (requiresValidation) {
-      if (f.data.get(fieldName).isDefined && !f.data.get(fieldName).contains("")) {
+      if (f.data.contains(fieldName) && !f.data.get(fieldName).contains("")) {
         if (fieldValue.exists(a => a.toDouble >= maximumPropertyValue)) {
           Seq(Some(FormError(fieldName, s"ated.property-details-value.$fieldName.error.too-high")))
         } else if (fieldValue.exists(a => a.toDouble < minimumPropertyValue)) {

@@ -34,7 +34,8 @@ class ViewReliefReturnController @Inject()(mcc: MessagesControllerComponents,
                                            serviceInfoService: ServiceInfoService,
                                            val reliefsService: ReliefsService,
                                            val dataCacheConnector: DataCacheConnector,
-                                           val backLinkCacheConnector: BackLinkCacheConnector)
+                                           val backLinkCacheConnector: BackLinkCacheConnector,
+                                           template: views.html.reliefs.viewReliefReturn)
                                           (implicit val appConfig: ApplicationConfig)
 
   extends FrontendController(mcc) with BackLinkController with ClientHelper {
@@ -53,7 +54,7 @@ class ViewReliefReturnController @Inject()(mcc: MessagesControllerComponents,
           organisationName <- organisationNameFuture
         } yield {
           formBundleReturn match {
-            case Some(x) => Ok(views.html.reliefs.viewReliefReturn(x, periodKey, formBundleNo, organisationName, isEditable, serviceInfoContent,
+            case Some(x) => Ok(template(x, periodKey, formBundleNo, organisationName, isEditable, serviceInfoContent,
               Some(controllers.routes.PeriodSummaryController.view(periodKey).url)))
             case None => throw new RuntimeException("No reliefs found in the cache for provided period and form bundle id")
           }

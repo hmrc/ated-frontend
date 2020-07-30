@@ -56,6 +56,8 @@ class ReliefDeclarationControllerSpec extends PlaySpec with GuiceOneServerPerSui
 lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
+  lazy val injectedViewInstance = app.injector.instanceOf[views.html.reliefs.reliefDeclaration]
+  lazy val injectedViewInstanceError = app.injector.instanceOf[views.html.global_error]
 
   val periodKey = 2015
 
@@ -74,7 +76,9 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
       mockReliefsService,
       mockDelegationService,
       mockDataCacheConnector,
-      mockBackLinkCacheConnector
+      mockBackLinkCacheConnector,
+      injectedViewInstance,
+      injectedViewInstanceError
     )
 
     def getWithAuthorisedUser(test: Future[Result] => Any) {

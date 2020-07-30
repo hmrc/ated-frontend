@@ -58,6 +58,7 @@ class PropertyDetailsSummaryControllerSpec extends PlaySpec with GuiceOneServerP
 lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
+  val injectedViewInstance = app.injector.instanceOf[views.html.propertyDetails.propertyDetailsSummary]
 
   val organisationName = "ACME Limited"
 
@@ -77,7 +78,8 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
       mockServiceInfoService,
       mockPropertyDetailsService,
       mockDataCacheConnector,
-      mockBackLinkCacheConnector
+      mockBackLinkCacheConnector,
+      injectedViewInstance
     )
 
     def getWithUnAuthorisedUser(test: Future[Result] => Any) {

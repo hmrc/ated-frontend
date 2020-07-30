@@ -37,7 +37,8 @@ class PropertyDetailsRevaluedController @Inject()(mcc: MessagesControllerCompone
                                                   serviceInfoService: ServiceInfoService,
                                                   val propertyDetailsService: PropertyDetailsService,
                                                   val dataCacheConnector: DataCacheConnector,
-                                                  val backLinkCacheConnector: BackLinkCacheConnector)
+                                                  val backLinkCacheConnector: BackLinkCacheConnector,
+                                                  template: views.html.propertyDetails.propertyDetailsRevalued)
                                                  (implicit val appConfig: ApplicationConfig)
 
   extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper {
@@ -58,7 +59,7 @@ class PropertyDetailsRevaluedController @Inject()(mcc: MessagesControllerCompone
                     revaluedDate = propertyDetails.value.flatMap(_.revaluedDate),
                     partAcqDispDate = propertyDetails.value.flatMap(_.partAcqDispDate))
 
-                  Ok(views.html.propertyDetails.propertyDetailsRevalued(id,
+                  Ok(template(id,
                     propertyDetails.periodKey,
                     propertyDetailsRevaluedForm.fill(displayData),
                     AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn),
@@ -78,7 +79,7 @@ class PropertyDetailsRevaluedController @Inject()(mcc: MessagesControllerCompone
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
           PropertyDetailsForms.validatePropertyDetailsRevalued(periodKey, propertyDetailsRevaluedForm.bindFromRequest).fold(
             formWithError => {
-              currentBackLink.map(backLink => BadRequest(views.html.propertyDetails.propertyDetailsRevalued(id, periodKey, formWithError, mode, serviceInfoContent, backLink)))
+              currentBackLink.map(backLink => BadRequest(template(id, periodKey, formWithError, mode, serviceInfoContent, backLink)))
             },
             propertyDetails => {
               for {

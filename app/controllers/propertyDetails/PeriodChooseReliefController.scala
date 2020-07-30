@@ -32,7 +32,8 @@ class PeriodChooseReliefController @Inject()(mcc: MessagesControllerComponents,
                                              serviceInfoService: ServiceInfoService,
                                              val propertyDetailsService: PropertyDetailsService,
                                              val dataCacheConnector: DataCacheConnector,
-                                             val backLinkCacheConnector: BackLinkCacheConnector)
+                                             val backLinkCacheConnector: BackLinkCacheConnector,
+                                             template: views.html.propertyDetails.periodChooseRelief)
                                             (implicit val appConfig: ApplicationConfig)
 
   extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper {
@@ -44,7 +45,7 @@ class PeriodChooseReliefController @Inject()(mcc: MessagesControllerComponents,
   def add(id: String, periodKey: Int): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       serviceInfoService.getPartial.flatMap { serviceInfoContent =>
-        ensureClientContext(Future.successful(Ok(views.html.propertyDetails.periodChooseRelief(id, periodKey, periodChooseReliefForm, serviceInfoContent, getBackLink(id)))))
+        ensureClientContext(Future.successful(Ok(template(id, periodKey, periodChooseReliefForm, serviceInfoContent, getBackLink(id)))))
       }
     }
   }
@@ -56,7 +57,7 @@ class PeriodChooseReliefController @Inject()(mcc: MessagesControllerComponents,
           periodChooseReliefForm.bindFromRequest.fold(
             formWithError =>
               Future.successful(
-                BadRequest(views.html.propertyDetails.periodChooseRelief(id, periodKey, formWithError, serviceInfoContent, getBackLink(id)))
+                BadRequest(template(id, periodKey, formWithError, serviceInfoContent, getBackLink(id)))
               ),
             chosenRelief => {
               for {

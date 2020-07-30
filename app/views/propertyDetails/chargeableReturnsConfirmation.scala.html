@@ -16,6 +16,8 @@
 
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
+
+@this(atedMain: atedMain)
 @(returnResponse: SubmitReturnsResponse, serviceInfoContent: Html = HtmlFormat.empty)(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
 @import uk.gov.hmrc.play.views.helpers.MoneyPounds

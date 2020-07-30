@@ -36,6 +36,8 @@ class ReliefsSentSpec extends FeatureSpec with GuiceOneAppPerSuite with MockitoS
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
 implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
 
+  val injectedViewInstance = app.injector.instanceOf[views.html.reliefs.reliefsSent]
+
   val periodKey = 2015
 
   feature("The user can view the relief sent page") {
@@ -47,7 +49,7 @@ implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetr
       Given("the client submits a relief return")
       When("the return is successfully received")
 
-      val html = views.html.reliefs.reliefsSent(
+      val html = injectedViewInstance(
         periodKey,
         Html(""),
         SubmitReturnsResponse(

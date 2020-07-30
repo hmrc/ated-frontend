@@ -32,7 +32,9 @@ class PeriodSummaryController @Inject()(mcc: MessagesControllerComponents,
                                         summaryReturnsService: SummaryReturnsService,
                                         subscriptionDataService: SubscriptionDataService,
                                         serviceInfoService: ServiceInfoService,
-                                        val backLinkCacheConnector: BackLinkCacheConnector)
+                                        val backLinkCacheConnector: BackLinkCacheConnector,
+                                        template: views.html.periodSummary,
+                                        templatePastReturns: views.html.periodSummaryPastReturns)
                                        (implicit val appConfig: ApplicationConfig)
 
   extends FrontendController(mcc) with BackLinkController with ControllerIds {
@@ -49,7 +51,7 @@ class PeriodSummaryController @Inject()(mcc: MessagesControllerComponents,
       } yield {
         val currentSummaries = periodSummaries.map(summaryReturnsService.filterPeriodSummaryReturnReliefs(_, past = false))
         val previousSummaries = periodSummaries.map(summaryReturnsService.filterPeriodSummaryReturnReliefs(_, past = true))
-        Ok(views.html.periodSummary(periodKey, currentSummaries,previousSummaries, organisationName, serviceInfoContent, getBackLink(periodKey)))
+        Ok(template(periodKey, currentSummaries,previousSummaries, organisationName, serviceInfoContent, getBackLink(periodKey)))
       }
     }
   }
@@ -62,7 +64,7 @@ class PeriodSummaryController @Inject()(mcc: MessagesControllerComponents,
         serviceInfoContent <- serviceInfoService.getPartial
       } yield {
         val filteredSummaries = periodSummaries.map(summaryReturnsService.filterPeriodSummaryReturnReliefs(_, past = true))
-        Ok(views.html.periodSummaryPastReturns(periodKey, filteredSummaries, organisationName, serviceInfoContent, getBackLink(periodKey)))
+        Ok(templatePastReturns(periodKey, filteredSummaries, organisationName, serviceInfoContent, getBackLink(periodKey)))
       }
     }
   }

@@ -56,6 +56,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
   val organisationName: String = "ACME Limited"
+  val injectedViewInstance = app.injector.instanceOf[views.html.propertyDetails.chargeableReturnsConfirmation]
 
 class Setup {
 
@@ -70,7 +71,8 @@ class Setup {
     mockSubscriptionDataService,
     mockAuthAction,
     mockServiceInfoService,
-    mockDataCacheConnector
+    mockDataCacheConnector,
+    injectedViewInstance
   )
 
   def confirmationWithAuthorisedUser(test: Future[Result] => Any) {

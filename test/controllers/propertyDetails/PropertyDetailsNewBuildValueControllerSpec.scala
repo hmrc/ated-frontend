@@ -57,6 +57,7 @@ class PropertyDetailsNewBuildValueControllerSpec extends PlaySpec with GuiceOneS
 lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
+  val injectedViewInstance = app.injector.instanceOf[views.html.propertyDetails.propertyDetailsNewBuildValue]
 
   val periodKey: Int = 2016
   val testDate = new LocalDate("2020-02-02")
@@ -76,7 +77,8 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
       mockServiceInfoService,
       mockPropertyDetailsService,
       mockDataCacheConnector,
-      mockBackLinkCacheConnector
+      mockBackLinkCacheConnector,
+      injectedViewInstance
     )
 
     def getWithUnAuthorisedUser(test: Future[Result] => Any) {

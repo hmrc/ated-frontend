@@ -36,7 +36,8 @@ class HasBankDetailsController @Inject()(mcc: MessagesControllerComponents,
                                          bankDetailsController: BankDetailsController,
                                          serviceInfoService: ServiceInfoService,
                                          val dataCacheConnector: DataCacheConnector,
-                                         val backLinkCacheConnector: BackLinkCacheConnector)
+                                         val backLinkCacheConnector: BackLinkCacheConnector,
+                                         template: views.html.editLiability.hasBankDetails)
                                         (implicit val appConfig: ApplicationConfig)
   extends FrontendController(mcc) with BackLinkController with ClientHelper with ControllerIds {
 
@@ -52,7 +53,7 @@ class HasBankDetailsController @Inject()(mcc: MessagesControllerComponents,
             case Some(x) =>
               currentBackLink.map { backLink =>
                 val bankDetails = x.bankDetails.map(_.hasBankDetails)
-                Ok(views.html.editLiability.hasBankDetails(hasBankDetailsForm.fill(HasBankDetails(bankDetails)), oldFormBundleNo, serviceInfoContent, backLink))
+                Ok(template(hasBankDetailsForm.fill(HasBankDetails(bankDetails)), oldFormBundleNo, serviceInfoContent, backLink))
               }
             case None => Future.successful(Redirect(controllers.routes.AccountSummaryController.view()))
           }
@@ -70,7 +71,7 @@ class HasBankDetailsController @Inject()(mcc: MessagesControllerComponents,
               Future.successful {
                 val mode = AtedUtils.getEditSubmittedMode(x)
                 val bankDetails = x.bankDetails.map(_.hasBankDetails)
-                Ok(views.html.editLiability.hasBankDetails(hasBankDetailsForm.fill(HasBankDetails(bankDetails)), oldFormBundleNo, serviceInfoContent,
+                Ok(template(hasBankDetailsForm.fill(HasBankDetails(bankDetails)), oldFormBundleNo, serviceInfoContent,
                   AtedUtils.getSummaryBackLink(oldFormBundleNo, mode)))
               }
             case None => Future.successful(Redirect(controllers.routes.AccountSummaryController.view()))
@@ -86,7 +87,7 @@ class HasBankDetailsController @Inject()(mcc: MessagesControllerComponents,
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
           hasBankDetailsForm.bindFromRequest.fold(
             formWithErrors => currentBackLink.map(backLink => BadRequest(
-              views.html.editLiability.hasBankDetails(formWithErrors, oldFormBundleNo, serviceInfoContent, backLink))),
+              template(formWithErrors, oldFormBundleNo, serviceInfoContent, backLink))),
             bankData => {
               val hasBankDetails = bankData.hasBankDetails.getOrElse(false)
               val backLink = Some(controllers.editLiability.routes.HasBankDetailsController.view(oldFormBundleNo).url)

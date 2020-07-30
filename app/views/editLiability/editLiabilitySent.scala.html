@@ -16,6 +16,7 @@
 
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
+@this(atedMain: atedMain)
 @(formBundleNum:String, serviceInfoContent: Html = HtmlFormat.empty, returnType: String, paymentReference: Option[String], amountDueOrRefund: BigDecimal, liabilityAmount : BigDecimal, returnTitleMessage: String, returnHeaderMessage: String)(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
 @import views.html.helpers._

@@ -33,7 +33,8 @@ class PeriodInReliefDatesController @Inject()(mcc: MessagesControllerComponents,
                                               serviceInfoService: ServiceInfoService,
                                               val dataCacheConnector: DataCacheConnector,
                                               val propertyDetailsService: PropertyDetailsService,
-                                              val backLinkCacheConnector: BackLinkCacheConnector)
+                                              val backLinkCacheConnector: BackLinkCacheConnector,
+                                              template: views.html.propertyDetails.periodInReliefDates)
                                              (implicit val appConfig: ApplicationConfig)
 
   extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper {
@@ -44,7 +45,7 @@ class PeriodInReliefDatesController @Inject()(mcc: MessagesControllerComponents,
   def add(id: String, periodKey: Int) : Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       serviceInfoService.getPartial.flatMap { serviceInfoContent =>
-        ensureClientContext(Future.successful(Ok(views.html.propertyDetails.periodInReliefDates(id,
+        ensureClientContext(Future.successful(Ok(template(id,
           periodKey, periodInReliefDatesForm, serviceInfoContent, getBackLink(id, periodKey)))))
       }
     }
@@ -59,7 +60,7 @@ class PeriodInReliefDatesController @Inject()(mcc: MessagesControllerComponents,
               val lineItems = propertyDetails.period.map(_.liabilityPeriods).getOrElse(Nil) ++ propertyDetails.period.map(_.reliefPeriods).getOrElse(Nil)
               PropertyDetailsForms.validatePropertyDetailsDatesInRelief(periodKey, periodInReliefDatesForm.bindFromRequest, lineItems).fold(
                 formWithError => {
-                  Future.successful(BadRequest(views.html.propertyDetails.periodInReliefDates(id, periodKey, formWithError, serviceInfoContent, getBackLink(id, periodKey))))
+                  Future.successful(BadRequest(template(id, periodKey, formWithError, serviceInfoContent, getBackLink(id, periodKey))))
                 },
                 datesInRelief => {
                   for {

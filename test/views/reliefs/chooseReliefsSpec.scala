@@ -37,6 +37,7 @@ class chooseReliefsSpec extends FeatureSpec with GuiceOneAppPerSuite with Mockit
   implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
 implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
+  val injectedViewInstance = app.injector.instanceOf[views.html.reliefs.chooseReliefs]
 
   val periodKey = 2015
 
@@ -49,7 +50,7 @@ implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetr
       Given("the client is creating a new relief and want to see the options")
       When("The user views the page")
 
-      val html = views.html.reliefs.chooseReliefs(periodKey, reliefsForm, new LocalDate("2015-04-01"), Html(""), Some("backLink"))
+      val html = injectedViewInstance(periodKey, reliefsForm, new LocalDate("2015-04-01"), Html(""), Some("backLink"))
 
       val document = Jsoup.parse(html.toString())
 
@@ -124,7 +125,7 @@ implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetr
       When("The user views the page")
 
       val reliefs: Reliefs = Reliefs(periodKey = periodKey, rentalBusiness = true)
-      val html = views.html.reliefs.chooseReliefs(periodKey, reliefsForm.fill(reliefs), new LocalDate("2015-04-01"), Html(""), Some("http://backLink"))
+      val html = injectedViewInstance(periodKey, reliefsForm.fill(reliefs), new LocalDate("2015-04-01"), Html(""), Some("http://backLink"))
 
       val document = Jsoup.parse(html.toString())
 

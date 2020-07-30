@@ -31,6 +31,8 @@ class CompanyDetailsSpec extends AtedViewSpec with MockitoSugar with MockAuthUti
   val authMock: Enrolments ~ Some[AffinityGroup] ~ Some[String] = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
   setAuthMocks(authMock)
 
+  val injectedViewInstance = app.injector.instanceOf[views.html.subcriptionData.companyDetails]
+
   "Company Details view" must {
     behave like pageWithTitle(messages("ated.company-details.title"))
     behave like pageWithHeader(messages("ated.company-details.header"))
@@ -139,6 +141,6 @@ class CompanyDetailsSpec extends AtedViewSpec with MockitoSugar with MockAuthUti
 
 
 
-  override def view: Html = views.html.subcriptionData.companyDetails(Some(correspondence),
+  override def view: Html = injectedViewInstance(Some(correspondence),
     Some(businessPartnerDetails), emailConsent = true, None, None, Html(""), Some("http://backLink"))
 }

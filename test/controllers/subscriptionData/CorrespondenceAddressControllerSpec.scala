@@ -57,6 +57,9 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
 lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
+  val injectedViewInstance = app.injector.instanceOf[views.html.subcriptionData.correspondenceAddress]
+  val injectedViewInstanceError = app.injector.instanceOf[views.html.global_error]
+
 
   class Setup {
 
@@ -71,7 +74,9 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
       mockAuthAction,
       mockSubscriptionDataService,
       mockServiceInfoService,
-      mockEnvironment
+      mockEnvironment,
+      injectedViewInstance,
+      injectedViewInstanceError
     )
 
     def getWithAuthorisedUser(companyDetails: Option[Address]=None)(test: Future[Result] => Any) {

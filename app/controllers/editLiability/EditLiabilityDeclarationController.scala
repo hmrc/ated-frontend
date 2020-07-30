@@ -32,7 +32,8 @@ class EditLiabilityDeclarationController @Inject()(mcc: MessagesControllerCompon
                                                    authAction: AuthAction,
                                                    serviceInfoService: ServiceInfoService,
                                                    val dataCacheConnector: DataCacheConnector,
-                                                   val backLinkCacheConnector: BackLinkCacheConnector)
+                                                   val backLinkCacheConnector: BackLinkCacheConnector,
+                                                   template: views.html.editLiability.editLiabilityDeclaration)
                                                   (implicit val appConfig: ApplicationConfig)
   extends FrontendController(mcc) with BackLinkController with ClientHelper with ControllerIds {
 
@@ -47,7 +48,7 @@ class EditLiabilityDeclarationController @Inject()(mcc: MessagesControllerCompon
             case Some(x) =>
               val returnType = getReturnType(x.calculated.flatMap(_.amountDueOrRefund))
               currentBackLink.map(backLink =>
-                Ok(views.html.editLiability.editLiabilityDeclaration(oldFormBundleNo, returnType, serviceInfoContent, backLink))
+                Ok(template(oldFormBundleNo, returnType, serviceInfoContent, backLink))
               )
             case None => Future.successful(Redirect(controllers.routes.AccountSummaryController.view()))
           }

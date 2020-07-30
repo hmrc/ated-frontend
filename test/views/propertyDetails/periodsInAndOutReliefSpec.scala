@@ -37,6 +37,7 @@ class periodsInAndOutReliefSpec extends FeatureSpec with GuiceOneAppPerSuite wit
   implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
+  val injectedViewInstance = app.injector.instanceOf[views.html.propertyDetails.periodsInAndOutRelief]
 
   feature("The user can view the periods and add the property in and out of relief") {
 
@@ -47,7 +48,7 @@ class periodsInAndOutReliefSpec extends FeatureSpec with GuiceOneAppPerSuite wit
       Given("the client is creating a new liability and want to add multiple periods")
       When("The user views the page")
 
-      val html = views.html.propertyDetails.periodsInAndOutRelief("1", 2015, periodsInAndOutReliefForm, Nil, None, Html(""), Some("backLink"))
+      val html = injectedViewInstance("1", 2015, periodsInAndOutReliefForm, Nil, None, Html(""), Some("backLink"))
 
       val document = Jsoup.parse(html.toString())
 
@@ -84,7 +85,7 @@ class periodsInAndOutReliefSpec extends FeatureSpec with GuiceOneAppPerSuite wit
         LineItem("liability", new LocalDate(s"2015-4-1"), new LocalDate(s"2015-5-1"), Some("Liable for charge")),
         LineItem("relief", new LocalDate(s"2016-4-1"), new LocalDate(s"2016-5-1"), Some("Rental property"))
       )
-      val html = views.html.propertyDetails.periodsInAndOutRelief("1", 2015,
+      val html = injectedViewInstance("1", 2015,
         periodsInAndOutReliefForm, periods, Some(AtedUtils.EDIT_SUBMITTED), Html(""), Some("http://backLink"))
 
       val document = Jsoup.parse(html.toString())

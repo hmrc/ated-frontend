@@ -17,6 +17,7 @@
 @import models._
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
+@this(atedMain: atedMain)
 @(disposeLiabilityForm: Form[DisposeLiability], oldFormBundleNo: String, serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String], periodKey: Int)(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._

@@ -37,7 +37,8 @@ class PropertyDetailsSummaryController @Inject()(mcc: MessagesControllerComponen
                                                  serviceInfoService: ServiceInfoService,
                                                  val propertyDetailsService: PropertyDetailsService,
                                                  val dataCacheConnector: DataCacheConnector,
-                                                 val backLinkCacheConnector: BackLinkCacheConnector)
+                                                 val backLinkCacheConnector: BackLinkCacheConnector,
+                                                 template: views.html.propertyDetails.propertyDetailsSummary)
                                                 (implicit val appConfig: ApplicationConfig)
 
   extends FrontendController(mcc) with BackLinkController with PropertyDetailsHelpers with ClientHelper {
@@ -52,7 +53,7 @@ class PropertyDetailsSummaryController @Inject()(mcc: MessagesControllerComponen
           propertyDetailsCacheResponse(propertyKey) {
             case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
               currentBackLink.flatMap(backLink =>
-                Future.successful(Ok(views.html.propertyDetails.propertyDetailsSummary(propertyDetails,
+                Future.successful(Ok(template(propertyDetails,
                   PeriodUtils.getDisplayPeriods(propertyDetails.period),
                   AtedUtils.canSubmit(propertyDetails.periodKey, LocalDate.now),
                   PeriodUtils.getCalculatedPeriodValues(propertyDetails.calculated),

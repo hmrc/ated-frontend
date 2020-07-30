@@ -31,7 +31,8 @@ class FormBundleReturnController @Inject()(mcc: MessagesControllerComponents,
                                            formBundleReturnsService: FormBundleReturnsService,
                                            summaryReturnsService: SummaryReturnsService,
                                            serviceInfoService: ServiceInfoService,
-                                           subscriptionDataService: SubscriptionDataService)
+                                           subscriptionDataService: SubscriptionDataService,
+                                           template: views.html.formBundleReturn)
                                           (implicit val appConfig: ApplicationConfig)
 
   extends FrontendController(mcc) {
@@ -59,7 +60,7 @@ class FormBundleReturnController @Inject()(mcc: MessagesControllerComponents,
         val changeAllowed = formBundlePeriodReturn.exists(_.changeAllowed)
         val editAllowed = valuesToDisplay.size <= 1
 
-        Ok(views.html.formBundleReturn(periodKey, formBundleReturn, formBundleNumber, organisationName, changeAllowed, editAllowed,
+        Ok(template(periodKey, formBundleReturn, formBundleNumber, organisationName, changeAllowed, editAllowed,
           valuesToDisplay,
           periodsToDisplay,
           serviceInfoContent,

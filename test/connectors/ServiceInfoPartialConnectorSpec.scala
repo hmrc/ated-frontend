@@ -25,6 +25,7 @@ import uk.gov.hmrc.play.bootstrap.http.HttpClient
 import uk.gov.hmrc.play.partials.HtmlPartial
 import uk.gov.hmrc.play.partials.HtmlPartial.{Failure, Success}
 import views.html.BtaNavigationLinks
+import play.api.test.Helpers._
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -48,7 +49,7 @@ class ServiceInfoPartialConnectorSpec extends ControllerBaseSpec {
 
   "ServiceInfoPartialConnector" should {
     "generate the correct url" in new Test {
-      connector.btaUrl shouldBe "/business-account/partial/service-info"
+      connector.btaUrl mustBe "/business-account/partial/service-info"
     }
   }
 
@@ -56,20 +57,20 @@ class ServiceInfoPartialConnectorSpec extends ControllerBaseSpec {
     "a connectionExceptionsAsHtmlPartialFailure error is returned" should {
       "return the fall back partial" in new Test{
         override val result: Future[Failure] = Future.successful(Failure(Some(Status.GATEWAY_TIMEOUT)))
-        await(connector.getServiceInfoPartial()) shouldBe btanl()
+        await(connector.getServiceInfoPartial()) mustBe btanl()
       }
     }
 
     "an unexpected Exception is returned" should {
       "return the fall back partial" in new Test{
         override val result: Future[Failure] = Future.successful(Failure(Some(Status.INTERNAL_SERVER_ERROR)))
-        await(connector.getServiceInfoPartial()) shouldBe btanl()
+        await(connector.getServiceInfoPartial()) mustBe btanl()
       }
     }
 
     "a successful response is returned" should {
       "return the Bta partial" in new Test{
-        await(connector.getServiceInfoPartial()) shouldBe validHtml
+        await(connector.getServiceInfoPartial()) mustBe validHtml
       }
     }
   }

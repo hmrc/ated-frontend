@@ -39,7 +39,8 @@ class PropertyDetailsInReliefController @Inject()(mcc: MessagesControllerCompone
                                                   serviceInfoService: ServiceInfoService,
                                                   val propertyDetailsService: PropertyDetailsService,
                                                   val dataCacheConnector: DataCacheConnector,
-                                                  val backLinkCacheConnector: BackLinkCacheConnector)
+                                                  val backLinkCacheConnector: BackLinkCacheConnector,
+                                                  template: views.html.propertyDetails.propertyDetailsInRelief)
                                                  (implicit val appConfig: ApplicationConfig)
 
   extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper {
@@ -57,7 +58,7 @@ class PropertyDetailsInReliefController @Inject()(mcc: MessagesControllerCompone
               val filledForm = periodsInAndOutReliefForm.fill(PropertyDetailsInRelief(propertyDetails.period.flatMap(_.isInRelief)))
               currentBackLink.flatMap(backLink =>
                 dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).map { isPrevReturn =>
-                  Ok(views.html.propertyDetails.propertyDetailsInRelief(id, propertyDetails.periodKey, filledForm,
+                  Ok(template(id, propertyDetails.periodKey, filledForm,
                     AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn), serviceInfoContent, backLink)
                   )
                 }
@@ -75,7 +76,7 @@ class PropertyDetailsInReliefController @Inject()(mcc: MessagesControllerCompone
           periodsInAndOutReliefForm.bindFromRequest.fold(
             formWithError => {
               currentBackLink.map(backLink =>
-                BadRequest(views.html.propertyDetails.propertyDetailsInRelief(id, periodKey, formWithError, mode, serviceInfoContent, backLink))
+                BadRequest(template(id, periodKey, formWithError, mode, serviceInfoContent, backLink))
               )
             },
             propertyDetails => {

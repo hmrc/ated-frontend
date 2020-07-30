@@ -58,6 +58,7 @@ class ChangeReliefReturnControllerSpec extends PlaySpec with GuiceOneServerPerSu
 lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
+  val injectedViewInstance = app.injector.instanceOf[views.html.reliefs.changeReliefReturn]
 
   val periodKey: Int = 2015
 
@@ -77,7 +78,8 @@ class Setup {
     mockServiceInfoService,
     mockReliefsService,
     mockDataCacheConnector,
-    mockBackLinkCacheConnector
+    mockBackLinkCacheConnector,
+    injectedViewInstance
   )
 
 

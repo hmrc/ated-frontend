@@ -37,7 +37,9 @@ class AvoidanceSchemesController @Inject()(mcc: MessagesControllerComponents,
                                            serviceInfoService: ServiceInfoService,
                                            val reliefsService: ReliefsService,
                                            val dataCacheConnector: DataCacheConnector,
-                                           val backLinkCacheConnector: BackLinkCacheConnector)
+                                           val backLinkCacheConnector: BackLinkCacheConnector,
+                                           template: views.html.reliefs.avoidanceSchemes,
+                                           val templateInvalidPeriodKey: views.html.reliefs.invalidPeriodKey)
                                           (implicit val appConfig: ApplicationConfig)
 
   extends FrontendController(mcc) with BackLinkController with ReliefHelpers with ClientHelper {
@@ -52,7 +54,7 @@ class AvoidanceSchemesController @Inject()(mcc: MessagesControllerComponents,
           reliefsService.retrieveDraftReliefs(authContext.atedReferenceNumber, periodKey).flatMap {
             case Some(x) if x.reliefs.isAvoidanceScheme.contains(true) =>
               currentBackLink.map(backLink =>
-                Ok(views.html.reliefs.avoidanceSchemes(x.periodKey, taxAvoidanceForm.fill(x.taxAvoidance), serviceInfoContent, backLink)(Some(x)))
+                Ok(template(x.periodKey, taxAvoidanceForm.fill(x.taxAvoidance), serviceInfoContent, backLink)(Some(x)))
               )
             case _ =>
               reliefsService.saveDraftTaxAvoidance(authContext.atedReferenceNumber, periodKey, TaxAvoidance())
@@ -81,7 +83,7 @@ class AvoidanceSchemesController @Inject()(mcc: MessagesControllerComponents,
                 serviceInfoContent <- serviceInfoService.getPartial
                 retrievedData <- reliefsService.retrieveDraftReliefs(authContext.atedReferenceNumber, periodKey)
               } yield {
-                BadRequest(views.html.reliefs.avoidanceSchemes(periodKey, formWithError, serviceInfoContent, backLink)(retrievedData))
+                BadRequest(template(periodKey, formWithError, serviceInfoContent, backLink)(retrievedData))
               }
             },
             taxAvoidance => {

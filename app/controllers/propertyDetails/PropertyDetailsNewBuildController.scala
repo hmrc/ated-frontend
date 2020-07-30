@@ -38,7 +38,8 @@ class PropertyDetailsNewBuildController @Inject()(mcc: MessagesControllerCompone
                                                   serviceInfoService: ServiceInfoService,
                                                   val propertyDetailsService: PropertyDetailsService,
                                                   val dataCacheConnector: DataCacheConnector,
-                                                  val backLinkCacheConnector: BackLinkCacheConnector)
+                                                  val backLinkCacheConnector: BackLinkCacheConnector,
+                                                  template: views.html.propertyDetails.propertyDetailsNewBuild)
                                                  (implicit val appConfig: ApplicationConfig)
 
   extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper {
@@ -56,7 +57,7 @@ class PropertyDetailsNewBuildController @Inject()(mcc: MessagesControllerCompone
                 dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
                   val displayData = PropertyDetailsNewBuild(propertyDetails.value.flatMap(_.isNewBuild)
                   )
-                  Future.successful(Ok(views.html.propertyDetails.propertyDetailsNewBuild(id,
+                  Future.successful(Ok(template(id,
                     propertyDetails.periodKey,
                     propertyDetailsNewBuildForm.fill(displayData),
                     AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn),
@@ -78,7 +79,7 @@ class PropertyDetailsNewBuildController @Inject()(mcc: MessagesControllerCompone
           propertyDetailsNewBuildForm.bindFromRequest.fold(
             formWithError => {
               currentBackLink.map(backLink =>
-                BadRequest(views.html.propertyDetails.propertyDetailsNewBuild(id, periodKey, formWithError, mode, serviceInfoContent, backLink))
+                BadRequest(template(id, periodKey, formWithError, mode, serviceInfoContent, backLink))
               )
             },
             propertyDetails => {

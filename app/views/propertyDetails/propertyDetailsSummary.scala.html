@@ -16,6 +16,8 @@
 
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
+
+@this(atedMain: atedMain)
 @(propertyDetails: models.PropertyDetails,
 periods : Seq[models.LineItem],
 canSubmit: Boolean,

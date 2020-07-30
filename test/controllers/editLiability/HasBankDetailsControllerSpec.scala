@@ -58,6 +58,7 @@ class HasBankDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
 lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
+  val injectedViewInstance = app.injector.instanceOf[views.html.editLiability.hasBankDetails]
 
 class Setup {
 
@@ -74,7 +75,8 @@ class Setup {
     mockBankDetailsController,
     mockServiceInfoService,
     mockDataCacheConnector,
-    mockBackLinkCacheConnector
+    mockBackLinkCacheConnector,
+    injectedViewInstance
   )
 
   def viewWithAuthorisedUser(changeLiabilityReturnOpt: Option[PropertyDetails])(test: Future[Result] => Any) {

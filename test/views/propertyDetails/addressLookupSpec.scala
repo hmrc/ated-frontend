@@ -36,6 +36,8 @@ class addressLookupSpec extends FeatureSpec with GuiceOneAppPerSuite with Mockit
   implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
+  val injectedViewInstance = app.injector.instanceOf[views.html.propertyDetails.addressLookup]
+
 feature("The user can search for an address via the post code") {
 
     info("as a user I want to be able to search for an address via the post code")
@@ -46,7 +48,7 @@ feature("The user can search for an address via the post code") {
       When("The user views the page")
       implicit val request = FakeRequest()
 
-      val html = views.html.propertyDetails.addressLookup(None, 2015, addressLookupForm, None, Html(""), Some("backLink"))
+      val html = injectedViewInstance(None, 2015, addressLookupForm, None, Html(""), Some("backLink"))
 
       val document = Jsoup.parse(html.toString())
       Then("The title and header should match - Find the property's address")
@@ -79,8 +81,7 @@ feature("The user can search for an address via the post code") {
       When("The user views the page")
       implicit val request = FakeRequest()
 
-      val html = views.html.propertyDetails
-        .addressLookup(Some("123456"), 2015, addressLookupForm, Some(AtedUtils.EDIT_SUBMITTED), Html(""), Some("http://backLink"))
+      val html = injectedViewInstance(Some("123456"), 2015, addressLookupForm, Some(AtedUtils.EDIT_SUBMITTED), Html(""), Some("http://backLink"))
 
       val document = Jsoup.parse(html.toString())
       Then("The title and header should match - Find the property's address")

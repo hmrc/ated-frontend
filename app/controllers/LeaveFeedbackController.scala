@@ -35,7 +35,9 @@ import scala.concurrent.{ExecutionContext, Future}
 class LeaveFeedbackController @Inject()(mcc: MessagesControllerComponents,
                                         authAction: AuthAction,
                                         serviceInfoService: ServiceInfoService,
-                                        auditConnector: DefaultAuditConnector)
+                                        auditConnector: DefaultAuditConnector,
+                                        template: views.html.feedback.leaveFeedback,
+                                        templateThanks: views.html.feedback.thanks)
                                        (implicit val appConfig: ApplicationConfig)
 
   extends FrontendController(mcc) with Auditable {
@@ -47,7 +49,7 @@ class LeaveFeedbackController @Inject()(mcc: MessagesControllerComponents,
   def view(returnUri: String): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedForNoEnrolments { implicit authContext =>
       serviceInfoService.getPartial.flatMap { serviceInfoContent =>
-        Future.successful(Ok(views.html.feedback.leaveFeedback(LeaveFeedback.form, serviceInfoContent, returnUri)))
+        Future.successful(Ok(template(LeaveFeedback.form, serviceInfoContent, returnUri)))
       }
     }
   }
@@ -56,7 +58,7 @@ class LeaveFeedbackController @Inject()(mcc: MessagesControllerComponents,
     authAction.authorisedForNoEnrolments { implicit authContext =>
       serviceInfoService.getPartial.flatMap { serviceInfoContent =>
         LeaveFeedback.form.bindFromRequest.fold(
-          formWithErrors => Future.successful(BadRequest(views.html.feedback.leaveFeedback(formWithErrors, serviceInfoContent, returnUri))),
+          formWithErrors => Future.successful(BadRequest(template(formWithErrors, serviceInfoContent, returnUri))),
           value => {
             auditFeedback(value, returnUri)
             Future.successful(Redirect(routes.LeaveFeedbackController.thanks(returnUri)))
@@ -79,7 +81,7 @@ class LeaveFeedbackController @Inject()(mcc: MessagesControllerComponents,
   def thanks(returnUri: String) : Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedForNoEnrolments { implicit authContext =>
       serviceInfoService.getPartial.flatMap { serviceInfoContent =>
-        Future.successful(Ok(views.html.feedback.thanks(returnUri, serviceInfoContent)))
+        Future.successful(Ok(templateThanks(returnUri, serviceInfoContent)))
       }
     }
   }

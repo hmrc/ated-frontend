@@ -33,7 +33,8 @@ trait AppConfig {
 }
 
 class ApplicationConfig @Inject()(val conf: ServicesConfig,
-                                  val environment: Environment) extends CountryCodeUtils with AppConfig {
+                                  val environment: Environment,
+                                  val templateError: views.html.global_error) extends CountryCodeUtils with AppConfig {
 
   private def loadConfig(key: String) = conf.getString(key)
 

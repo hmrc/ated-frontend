@@ -32,7 +32,8 @@ import scala.concurrent.{ExecutionContext, Future}
 class ExistingReturnQuestionController @Inject()(mcc: MessagesControllerComponents,
                                                  authAction: AuthAction,
                                                  serviceInfoService: ServiceInfoService,
-                                                 val dataCacheConnector: DataCacheConnector)
+                                                 val dataCacheConnector: DataCacheConnector,
+                                                 template: views.html.confirmPastReturn)
                                                 (implicit val appConfig: ApplicationConfig)
 
   extends FrontendController(mcc) with ClientHelper {
@@ -43,7 +44,7 @@ class ExistingReturnQuestionController @Inject()(mcc: MessagesControllerComponen
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
-          Future.successful(Ok(views.html.confirmPastReturn(new YesNoQuestionExistingReturnsForm().yesNoQuestionForm, periodKey,
+          Future.successful(Ok(template(new YesNoQuestionExistingReturnsForm().yesNoQuestionForm, periodKey,
             returnType, serviceInfoContent, getBackLink(periodKey, returnType))))
         }
       }
@@ -58,7 +59,7 @@ class ExistingReturnQuestionController @Inject()(mcc: MessagesControllerComponen
           val form = new YesNoQuestionExistingReturnsForm
           form.yesNoQuestionForm.bindFromRequest.fold(
             formWithError =>
-              Future.successful(BadRequest(views.html.confirmPastReturn(formWithError, periodKey, returnType, serviceInfoContent, getBackLink(periodKey, returnType)))
+              Future.successful(BadRequest(template(formWithError, periodKey, returnType, serviceInfoContent, getBackLink(periodKey, returnType)))
               ),
             data => {
               val existingPastReturn = data.yesNo.getOrElse(false)

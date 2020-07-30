@@ -36,7 +36,8 @@ class PropertyDetailsProfessionallyValuedController @Inject()(mcc: MessagesContr
                                                               serviceInfoService: ServiceInfoService,
                                                               val propertyDetailsService: PropertyDetailsService,
                                                               val dataCacheConnector: DataCacheConnector,
-                                                              val backLinkCacheConnector: BackLinkCacheConnector)
+                                                              val backLinkCacheConnector: BackLinkCacheConnector,
+                                                              template: views.html.propertyDetails.propertyDetailsProfessionallyValued)
                                                              (implicit val appConfig: ApplicationConfig)
 
   extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper {
@@ -54,7 +55,7 @@ class PropertyDetailsProfessionallyValuedController @Inject()(mcc: MessagesContr
               currentBackLink.flatMap { backLink =>
                 dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).map { isPrevReturn =>
                   val displayData = PropertyDetailsProfessionallyValued(propertyDetails.value.flatMap(_.isValuedByAgent))
-                  Ok(views.html.propertyDetails.propertyDetailsProfessionallyValued(id,
+                  Ok(template(id,
                     propertyDetails.periodKey,
                     propertyDetailsProfessionallyValuedForm.fill(displayData),
                     AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn),
@@ -76,7 +77,7 @@ class PropertyDetailsProfessionallyValuedController @Inject()(mcc: MessagesContr
             case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
               dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).map { isPrevReturn =>
                 val displayData = PropertyDetailsProfessionallyValued(propertyDetails.value.flatMap(_.isValuedByAgent))
-                Ok(views.html.propertyDetails.propertyDetailsProfessionallyValued(id,
+                Ok(template(id,
                   propertyDetails.periodKey,
                   propertyDetailsProfessionallyValuedForm.fill(displayData),
                   AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn),
@@ -96,7 +97,7 @@ class PropertyDetailsProfessionallyValuedController @Inject()(mcc: MessagesContr
           propertyDetailsProfessionallyValuedForm.bindFromRequest.fold(
             formWithError => {
               currentBackLink
-                .map(backLink => BadRequest(views.html.propertyDetails.propertyDetailsProfessionallyValued(id, periodKey, formWithError, mode, serviceInfoContent, backLink)))
+                .map(backLink => BadRequest(template(id, periodKey, formWithError, mode, serviceInfoContent, backLink)))
             },
             propertyDetails => {
               for {

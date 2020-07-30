@@ -33,6 +33,8 @@ class ReliefDeclarationSpec extends FeatureSpec with GuiceOneAppPerSuite with Mo
   implicit val request = FakeRequest()
   implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
+
+  val injectedViewInstance = app.injector.instanceOf[views.html.reliefs.reliefDeclaration]
 feature("The user can view the relief declaration page") {
 
     implicit val authContext: StandardAuthRetrievals = organisationStandardRetrievals.copy(delegationModel = None)
@@ -44,7 +46,7 @@ feature("The user can view the relief declaration page") {
       When("The user views the page")
 
 
-      val html = views.html.reliefs.reliefDeclaration(2015, Html(""), Some("backLink"))
+      val html = injectedViewInstance(2015, Html(""), Some("backLink"))
 
       val document = Jsoup.parse(html.toString())
 
@@ -75,7 +77,7 @@ feature("The user can view the relief declaration page") {
       Given("An agent visits the page")
       When("The agent views the page")
 
-      val html = views.html.reliefs.reliefDeclaration(2015, Html(""), Some("http://backLink"))
+      val html = injectedViewInstance(2015, Html(""), Some("http://backLink"))
 
       val document = Jsoup.parse(html.toString())
       Then("Returns declaration")

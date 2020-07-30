@@ -33,7 +33,8 @@ class RegisteredDetailsController @Inject()(mcc: MessagesControllerComponents,
                                             authAction: AuthAction,
                                             subscriptionDataService: SubscriptionDataService,
                                             serviceInfoService: ServiceInfoService,
-                                            val environment: Environment)
+                                            val environment: Environment,
+                                            template: views.html.subcriptionData.registeredDetails)
                                            (implicit val appConfig: ApplicationConfig)
   extends FrontendController(mcc) with CountryCodeUtils {
 
@@ -49,7 +50,7 @@ class RegisteredDetailsController @Inject()(mcc: MessagesControllerComponents,
             case Some(x) => registeredDetailsForm.fill(x)
             case None => registeredDetailsForm
           }
-          Ok(views.html.subcriptionData.registeredDetails(populatedForm, getIsoCodeTupleList, serviceInfoContent, getBackLink))
+          Ok(template(populatedForm, getIsoCodeTupleList, serviceInfoContent, getBackLink))
         }
       }
     }
@@ -59,8 +60,7 @@ class RegisteredDetailsController @Inject()(mcc: MessagesControllerComponents,
     authAction.authorisedAction { implicit authContext =>
       serviceInfoService.getPartial.flatMap { serviceInfoContent =>
         registeredDetailsForm.bindFromRequest.fold(
-          formWithErrors => Future.successful(BadRequest(views.html.subcriptionData
-            .registeredDetails(formWithErrors, getIsoCodeTupleList, serviceInfoContent, getBackLink))),
+          formWithErrors => Future.successful(BadRequest(template(formWithErrors, getIsoCodeTupleList, serviceInfoContent, getBackLink))),
           updateDetails => {
             for {
               registeredDetails <- subscriptionDataService.updateRegisteredDetails(updateDetails)
@@ -70,7 +70,7 @@ class RegisteredDetailsController @Inject()(mcc: MessagesControllerComponents,
                 case None =>
                   val errorMsg = Messages("ated.registered-details.save.error")
                   val errorForm = registeredDetailsForm.withError(key = "addressType", message = errorMsg).fill(updateDetails)
-                  BadRequest(views.html.subcriptionData.registeredDetails(errorForm, getIsoCodeTupleList, serviceInfoContent, getBackLink))
+                  BadRequest(template(errorForm, getIsoCodeTupleList, serviceInfoContent, getBackLink))
               }
             }
           }

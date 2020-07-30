@@ -39,7 +39,8 @@ class PropertyDetailsValueAcquiredController @Inject()(mcc: MessagesControllerCo
                                                        serviceInfoService: ServiceInfoService,
                                                        val propertyDetailsService: PropertyDetailsService,
                                                        val dataCacheConnector: DataCacheConnector,
-                                                       val backLinkCacheConnector: BackLinkCacheConnector)
+                                                       val backLinkCacheConnector: BackLinkCacheConnector,
+                                                       template: html.propertyDetails.propertyDetailsValueAcquired)
                                                       (implicit val appConfig: ApplicationConfig)
 
   extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper {
@@ -56,7 +57,7 @@ class PropertyDetailsValueAcquiredController @Inject()(mcc: MessagesControllerCo
               dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
                 val displayData = PropertyDetailsValueOnAcquisition(propertyDetails.value.flatMap(_.notNewBuildValue))
                 val dynamicDate = PropertyDetailsWhenAcquiredDates(propertyDetails.value.flatMap(_.notNewBuildDate)).acquiredDate.getOrElse(new LocalDate())
-                Future.successful(Ok(html.propertyDetails.propertyDetailsValueAcquired(id,
+                Future.successful(Ok(template(id,
                   propertyDetails.periodKey,
                   propertyDetailsValueAcquiredForm.fill(displayData),
                   AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn),
@@ -80,7 +81,7 @@ class PropertyDetailsValueAcquiredController @Inject()(mcc: MessagesControllerCo
             propertyDetailsValueAcquiredForm.bindFromRequest.fold(
               formWithError => {
                 currentBackLink.map(backLink =>
-                  BadRequest(views.html.propertyDetails.propertyDetailsValueAcquired(id, periodKey, formWithError, mode, serviceInfoContent, backLink, date)))
+                  BadRequest(template(id, periodKey, formWithError, mode, serviceInfoContent, backLink, date)))
               },
               propertyDetails => {
                 for {

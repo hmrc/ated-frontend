@@ -49,6 +49,7 @@ class ReturnTypeSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil {
 
   private val form = AtedForms.returnTypeForm.withError("returnType",
     messages("ated.summary-return.return-type.error"))
-  override def view: Html = views.html.returnType(2014,  form, Html(""), Some("backLink"))
+  val injectedViewInstance = app.injector.instanceOf[views.html.returnType]
+  override def view: Html = injectedViewInstance(2014,  form, Html(""), Some("backLink"))
 
 }

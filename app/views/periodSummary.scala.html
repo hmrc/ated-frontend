@@ -20,6 +20,9 @@
 @import _root_.utils.PeriodUtils._
 @import views.html.helpers._
 @import play.twirl.api.HtmlFormat
+@import views.html.atedMain
+
+@this(atedMain: atedMain)
 
 @(periodKey: Int, currentSummaries: Option[PeriodSummaryReturns],
     previousSummaries: Option[PeriodSummaryReturns],

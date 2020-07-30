@@ -35,7 +35,9 @@ class BankDetailsController @Inject()(mcc: MessagesControllerComponents,
                                       authAction: AuthAction,
                                       serviceInfoService: ServiceInfoService,
                                       val dataCacheConnector: DataCacheConnector,
-                                      val backLinkCacheConnector: BackLinkCacheConnector)(implicit val appConfig: ApplicationConfig)
+                                      val backLinkCacheConnector: BackLinkCacheConnector,
+                                      template: views.html.editLiability.bankDetails)
+                                     (implicit val appConfig: ApplicationConfig)
   extends FrontendController(mcc) with BackLinkController with ClientHelper with ControllerIds {
 
   implicit val ec: ExecutionContext = mcc.executionContext
@@ -50,7 +52,7 @@ class BankDetailsController @Inject()(mcc: MessagesControllerComponents,
             case Some(x) =>
               currentBackLink.map { backLink =>
                 val bankDetails = x.bankDetails.flatMap(_.bankDetails).fold(BankDetails())(a => a)
-                Ok(views.html.editLiability.bankDetails(bankDetailsForm.fill(bankDetails), oldFormBundleNo, serviceInfoContent, backLink))
+                Ok(template(bankDetailsForm.fill(bankDetails), oldFormBundleNo, serviceInfoContent, backLink))
               }
             case None => Future.successful(Redirect(controllers.routes.AccountSummaryController.view()))
           }
@@ -65,7 +67,7 @@ class BankDetailsController @Inject()(mcc: MessagesControllerComponents,
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
           BankDetailForms.validateBankDetails(bankDetailsForm.bindFromRequest).fold(
             formWithErrors =>
-              currentBackLink.map(backLink => BadRequest(views.html.editLiability.bankDetails(formWithErrors, oldFormBundleNo, serviceInfoContent, backLink))),
+              currentBackLink.map(backLink => BadRequest(template(formWithErrors, oldFormBundleNo, serviceInfoContent, backLink))),
             bankData => {
               changeLiabilityReturnService.cacheChangeLiabilityReturnBank(oldFormBundleNo, bankData) flatMap { _ => {
                 redirectWithBackLink(

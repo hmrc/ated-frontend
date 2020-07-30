@@ -37,6 +37,8 @@ class periodSummaryPastReturnsSpec extends FeatureSpec with GuiceOneServerPerSui
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
 implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
 
+  val injectedViewInstance = app.injector.instanceOf[views.html.periodSummaryPastReturns]
+
   val organisationName: String = "OrganisationName"
   val formBundleNo1: String = "123456789012"
   val formBundleNo2: String = "123456789013"
@@ -65,7 +67,7 @@ implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetr
       Given("the client has no returns")
       When("The user views the page")
 
-      val html = views.html.periodSummaryPastReturns(2015, None, None,  Html(""), Some("backLink"))
+      val html = injectedViewInstance(2015, None, None,  Html(""), Some("backLink"))
 
       val document = Jsoup.parse(html.toString())
 
@@ -94,7 +96,7 @@ implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetr
       Given("the client has no returns")
       When("The user views the page")
 
-      val html = views.html.periodSummaryPastReturns(2015, Some(periodSummaryReturns), Some(organisationName), Html(""), Some("http://backlink"))
+      val html = injectedViewInstance(2015, Some(periodSummaryReturns), Some(organisationName), Html(""), Some("http://backlink"))
 
       val document = Jsoup.parse(html.toString())
 
@@ -123,7 +125,7 @@ implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetr
       Given("the client has no returns")
       When("The user views the page")
 
-      val html = views.html.periodSummaryPastReturns(2015, Some(periodSummaryReturnsWithOld), Some(organisationName), Html(""), Some("http://backlink"))
+      val html = injectedViewInstance(2015, Some(periodSummaryReturnsWithOld), Some(organisationName), Html(""), Some("http://backlink"))
 
       val document = Jsoup.parse(html.toString())
 

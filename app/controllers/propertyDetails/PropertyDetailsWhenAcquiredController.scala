@@ -38,7 +38,8 @@ class PropertyDetailsWhenAcquiredController @Inject()(mcc: MessagesControllerCom
                                                       serviceInfoService: ServiceInfoService,
                                                       val propertyDetailsService: PropertyDetailsService,
                                                       val dataCacheConnector: DataCacheConnector,
-                                                      val backLinkCacheConnector: BackLinkCacheConnector)
+                                                      val backLinkCacheConnector: BackLinkCacheConnector,
+                                                      template: html.propertyDetails.propertyDetailsWhenAcquired)
                                                      (implicit val appConfig: ApplicationConfig)
 
   extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper {
@@ -54,7 +55,7 @@ class PropertyDetailsWhenAcquiredController @Inject()(mcc: MessagesControllerCom
             case PropertyDetailsCacheSuccessResponse(propertyDetails) => currentBackLink.flatMap { backLink =>
               dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
                 val displayData = PropertyDetailsWhenAcquiredDates(propertyDetails.value.flatMap(_.notNewBuildDate))
-                Future.successful(Ok(html.propertyDetails.propertyDetailsWhenAcquired(id,
+                Future.successful(Ok(template(id,
                   propertyDetails.periodKey,
                   propertyDetailsWhenAcquiredDatesForm.fill(displayData),
                   AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn),
@@ -77,7 +78,7 @@ class PropertyDetailsWhenAcquiredController @Inject()(mcc: MessagesControllerCom
             propertyDetailsWhenAcquiredDatesForm.bindFromRequest.fold(
               formWithError => {
                 currentBackLink.map(backLink =>
-                  BadRequest(views.html.propertyDetails.propertyDetailsWhenAcquired(id, periodKey, formWithError, mode, serviceInfoContent, backLink))
+                  BadRequest(template(id, periodKey, formWithError, mode, serviceInfoContent, backLink))
                 )
               },
               propertyDetails => {

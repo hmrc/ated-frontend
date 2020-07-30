@@ -32,7 +32,8 @@ class DisposeLiabilityDeclarationController @Inject()(mcc: MessagesControllerCom
                                                       authAction: AuthAction,
                                                       serviceInfoService: ServiceInfoService,
                                                       val dataCacheConnector: DataCacheConnector,
-                                                      val backLinkCacheConnector: BackLinkCacheConnector)
+                                                      val backLinkCacheConnector: BackLinkCacheConnector,
+                                                      template: views.html.editLiability.disposeLiabilityDeclaration)
                                                       (implicit val appConfig: ApplicationConfig)
   extends FrontendController(mcc) with BackLinkController with ClientHelper {
 
@@ -45,7 +46,7 @@ class DisposeLiabilityDeclarationController @Inject()(mcc: MessagesControllerCom
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
           currentBackLink.map(backLink =>
-            Ok(views.html.editLiability.disposeLiabilityDeclaration(oldFormBundleNo, serviceInfoContent, backLink))
+            Ok(template(oldFormBundleNo, serviceInfoContent, backLink))
           )
         }
       }

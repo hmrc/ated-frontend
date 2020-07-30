@@ -17,6 +17,8 @@
 @import models._
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
+
+@this(atedMain: atedMain)
 @(periodKey: Int, taxAvoidanceForm: Form[TaxAvoidance], serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(reliefsTaxAvoidance : Option[ReliefsTaxAvoidance])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 @import uk.gov.hmrc.play.views.html._
 @import uk.gov.hmrc.play.views.html.helpers._

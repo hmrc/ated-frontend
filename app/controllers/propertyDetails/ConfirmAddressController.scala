@@ -32,14 +32,14 @@ import utils.AtedUtils
 import scala.concurrent.ExecutionContext
 
 class ConfirmAddressController @Inject()(mcc: MessagesControllerComponents,
-                                         auditConnector: DefaultAuditConnector,
-                                         addressLookupService: AddressLookupService,
                                          authAction: AuthAction,
                                          changeLiabilityReturnService: ChangeLiabilityReturnService,
                                          serviceInfoService: ServiceInfoService,
                                          val backLinkCacheConnector: BackLinkCacheConnector,
                                          val propertyDetailsService: PropertyDetailsService,
-                                         val dataCacheConnector: DataCacheConnector)
+                                         val dataCacheConnector: DataCacheConnector,
+                                         template: views.html.propertyDetails.confirmAddress,
+                                         templateError: views.html.global_error)
                                         (implicit val appConfig: ApplicationConfig)
   extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with ControllerIds {
 
@@ -68,9 +68,9 @@ class ConfirmAddressController @Inject()(mcc: MessagesControllerComponents,
           propertyDetailsService.retrieveDraftPropertyDetails(id).map {
             case successResponse: PropertyDetailsCacheSuccessResponse =>
               val addressProperty = successResponse.propertyDetails.addressProperty
-              Ok(views.html.propertyDetails.confirmAddress(id, periodKey, addressProperty, mode, serviceInfoContent, backLink))
+              Ok(template(id, periodKey, addressProperty, mode, serviceInfoContent, backLink))
             case _ =>
-              Ok(views.html.global_error("ated.generic.error.title", "ated.generic.error.header",
+              Ok(templateError("ated.generic.error.title", "ated.generic.error.header",
                 "ated.generic.error.message", Some("ated.generic.error.message2"), None, None, None, serviceInfoContent, appConfig))
           }
         }
@@ -90,7 +90,7 @@ class ConfirmAddressController @Inject()(mcc: MessagesControllerComponents,
         } yield {
           changeLiabilityReturnOpt match {
             case Some(x) =>
-              Ok(views.html.propertyDetails.confirmAddress(
+              Ok(template(
                 x.id,
                 x.periodKey,
                 x.addressProperty,

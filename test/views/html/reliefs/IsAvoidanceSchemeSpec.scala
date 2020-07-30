@@ -33,6 +33,7 @@ class IsAvoidanceSchemeSpec extends AtedViewSpec with MockitoSugar with MockAuth
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
 val periodKey = 2017
   val periodStartDate = new LocalDate()
+  val injectedViewInstance = app.injector.instanceOf[views.html.reliefs.avoidanceSchemeBeingUsed]
 
   "is avoidance scheme view" must {
     behave like pageWithTitle(messages("ated.choose-reliefs.avoidance-title"))
@@ -50,7 +51,7 @@ val periodKey = 2017
   "display error" when {
     "continuing without selecting an option" in {
       val formWithErrors = ReliefForms.isTaxAvoidanceForm.bind(Json.obj("isAvoidanceScheme" -> ""))
-      def view: Html = views.html.reliefs.avoidanceSchemeBeingUsed(periodKey,formWithErrors,periodStartDate,Html(""),Some("backlink"))
+      def view: Html = injectedViewInstance(periodKey,formWithErrors,periodStartDate,Html(""),Some("backlink"))
 
       val errorDoc = doc(view)
 
@@ -62,5 +63,5 @@ val periodKey = 2017
 
   val isTaxAvoidanceForm: Form[IsTaxAvoidance] = ReliefForms.isTaxAvoidanceForm
 
-  override def view: Html = views.html.reliefs.avoidanceSchemeBeingUsed(periodKey, isTaxAvoidanceForm, periodStartDate, Html(""), Some("backLink"))
+  override def view: Html = injectedViewInstance(periodKey, isTaxAvoidanceForm, periodStartDate, Html(""), Some("backLink"))
 }

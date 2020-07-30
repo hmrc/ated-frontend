@@ -37,7 +37,9 @@ class EditLiabilitySummaryController @Inject()(mcc: MessagesControllerComponents
                                                authAction: AuthAction,
                                                serviceInfoService: ServiceInfoService,
                                                val dataCacheConnector: DataCacheConnector,
-                                               val backLinkCacheConnector: BackLinkCacheConnector)(implicit val appConfig: ApplicationConfig)
+                                               val backLinkCacheConnector: BackLinkCacheConnector,
+                                               template: views.html.editLiability.editLiabilitySummary)
+                                              (implicit val appConfig: ApplicationConfig)
   extends FrontendController(mcc) with BackLinkController with ClientHelper with I18nSupport with ControllerIds {
 
   implicit val ec: ExecutionContext = mcc.executionContext
@@ -87,7 +89,7 @@ class EditLiabilitySummaryController @Inject()(mcc: MessagesControllerComponents
     serviceInfoService.getPartial.flatMap { serviceInfoContent =>
       currentBackLink.map(
         backLink =>
-          Ok(views.html.editLiability.editLiabilitySummary(propertyDetails,
+          Ok(template(propertyDetails,
             getReturnType(propertyDetails),
             PeriodUtils.getDisplayPeriods(propertyDetails.period),
             PeriodUtils.getCalculatedPeriodValues(propertyDetails.calculated),

@@ -35,6 +35,7 @@ class hasBankDetailsSpec extends FeatureSpec with GuiceOneAppPerSuite with Mocki
   implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
 implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
+  val injectedViewInstance = app.injector.instanceOf[views.html.editLiability.hasBankDetails]
 
   feature("The user can whether they have bank details") {
 
@@ -45,7 +46,7 @@ implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetr
       Given("the client is prompted to add thier bank details")
       When("The user views the page")
 
-      val html = views.html.editLiability.hasBankDetails(hasBankDetailsForm, "1",  Html(""), Some("http://backLink"))
+      val html = injectedViewInstance(hasBankDetailsForm, "1",  Html(""), Some("http://backLink"))
 
       val document = Jsoup.parse(html.toString())
 

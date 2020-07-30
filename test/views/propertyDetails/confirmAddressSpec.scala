@@ -35,6 +35,7 @@ class confirmAddressSpec extends FeatureSpec with GuiceOneAppPerSuite with Mocki
   implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
 implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
+  val injectedViewInstance = app.injector.instanceOf[views.html.propertyDetails.confirmAddress]
 
   feature("The user can view their property address details before they confirm and continue") {
 
@@ -45,7 +46,7 @@ implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetr
       Given("the client has entered an address")
       When("The user views the confirm address page")
       val propertyDetails: PropertyDetailsAddress = PropertyDetailsBuilder.getPropertyDetailsAddress(postCode = Some("XX1 1XX"))
-      val html = views.html.propertyDetails.confirmAddress("1", 2015, propertyDetails, mode = None, Html(""), Some("http://backLink"))
+      val html = injectedViewInstance("1", 2015, propertyDetails, mode = None, Html(""), Some("http://backLink"))
       val document = Jsoup.parse(html.toString())
 
       Then("The header should match - Confirm address")

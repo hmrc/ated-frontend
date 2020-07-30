@@ -28,6 +28,8 @@ class PropertyDetailsNewBuildDatesSpec extends AtedViewSpec with MockAuthUtil {
 
   implicit val appConfig: ApplicationConfig = mock[ApplicationConfig]
 
+  val injectedViewInstance = app.injector.instanceOf[views.html.propertyDetails.propertyDetailsNewBuildDates]
+
   val periodKey = 2019
 
   "Property Details New Build Dates view" must {
@@ -44,7 +46,7 @@ class PropertyDetailsNewBuildDatesSpec extends AtedViewSpec with MockAuthUtil {
 
     val form = PropertyDetailsForms.propertyDetailsNewBuildDatesForm.withError("newBuildOccupyDate",
       "ated.property-details-value-error.newBuildDates.errorEmpty")
-    val newDoc = doc(views.html.propertyDetails.propertyDetailsNewBuildDates("0", periodKey, form, None, Html(""), Some("backLink")))
+    val newDoc = doc(injectedViewInstance("0", periodKey, form, None, Html(""), Some("backLink")))
     newDoc.getElementsMatchingOwnText(messages("ated.property-details-value-error.newBuildDates.errorEmpty")).hasText mustBe true
 
     }
@@ -52,14 +54,14 @@ class PropertyDetailsNewBuildDatesSpec extends AtedViewSpec with MockAuthUtil {
     "provide an error message for when there is an error with the occupied dates" in {
       val form = PropertyDetailsForms.propertyDetailsNewBuildDatesForm.withError("newBuildOccupyDate",
         "ated.property-details-value-error.newBuildDates.occupiedDateError")
-      val newDoc = doc(views.html.propertyDetails.propertyDetailsNewBuildDates("0", periodKey, form, None, Html(""), Some("backLink")))
+      val newDoc = doc(injectedViewInstance("0", periodKey, form, None, Html(""), Some("backLink")))
       newDoc.getElementsMatchingOwnText(messages("ated.property-details-value-error.newBuildDates.occupiedDateError")).hasText mustBe true
     }
 
     "provided an error message for when there is an error with the council registration date " in {
       val form = PropertyDetailsForms.propertyDetailsNewBuildDatesForm.withError("newBuildOccupyDate",
         "ated.property-details-value-error.newBuildDates.councilRegError")
-      val newDoc = doc(views.html.propertyDetails.propertyDetailsNewBuildDates("0", periodKey, form, None, Html(""), Some("backLink")))
+      val newDoc = doc(injectedViewInstance("0", periodKey, form, None, Html(""), Some("backLink")))
       newDoc.getElementsMatchingOwnText(messages("ated.property-details-value-error.newBuildDates.councilRegError")).hasText mustBe true
     }
 
@@ -67,7 +69,7 @@ class PropertyDetailsNewBuildDatesSpec extends AtedViewSpec with MockAuthUtil {
       val form = PropertyDetailsForms.propertyDetailsNewBuildDatesForm.withError("newBuildOccupyDate",
         "ated.property-details-value-error.newBuildDates.futureOccupiedError"
       )
-      val newDoc = doc(views.html.propertyDetails.propertyDetailsNewBuildDates("0", periodKey, form, None, Html(""), Some("backLink")))
+      val newDoc = doc(injectedViewInstance("0", periodKey, form, None, Html(""), Some("backLink")))
       newDoc.getElementsMatchingOwnText(messages("ated.property-details-value-error.newBuildDates.futureOccupiedError")).hasText mustBe true
     }
 
@@ -75,7 +77,7 @@ class PropertyDetailsNewBuildDatesSpec extends AtedViewSpec with MockAuthUtil {
       val form = PropertyDetailsForms.propertyDetailsNewBuildDatesForm.withError("newBuildRegisterDate",
         "ated.property-details-value-error.newBuildDates.futureRegError"
       )
-      val newDoc = doc(views.html.propertyDetails.propertyDetailsNewBuildDates("0", periodKey, form, None, Html(""), Some("backLink")))
+      val newDoc = doc(injectedViewInstance("0", periodKey, form, None, Html(""), Some("backLink")))
       newDoc.getElementsMatchingOwnText(messages("ated.property-details-value-error.newBuildDates.futureRegError")).hasText mustBe true
     }
 
@@ -83,7 +85,7 @@ class PropertyDetailsNewBuildDatesSpec extends AtedViewSpec with MockAuthUtil {
       val form = PropertyDetailsForms.propertyDetailsNewBuildDatesForm.withError("newBuildRegisterDate",
         "ated.property-details-value-error.newBuildDates.invalidOccupiedDateError"
       )
-      val newDoc = doc(views.html.propertyDetails.propertyDetailsNewBuildDates("0", periodKey, form, None, Html(""), Some("backLink")))
+      val newDoc = doc(injectedViewInstance("0", periodKey, form, None, Html(""), Some("backLink")))
       newDoc.getElementsMatchingOwnText(messages("ated.property-details-value-error.newBuildDates.invalidOccupiedDateError")).hasText mustBe true
     }
 
@@ -91,13 +93,13 @@ class PropertyDetailsNewBuildDatesSpec extends AtedViewSpec with MockAuthUtil {
       val form = PropertyDetailsForms.propertyDetailsNewBuildDatesForm.withError("newBuildRegisterDate",
         "ated.property-details-value-error.newBuildDates.invalidRegDateError"
       )
-      val newDoc = doc(views.html.propertyDetails.propertyDetailsNewBuildDates("0", periodKey, form, None, Html(""), Some("backLink")))
+      val newDoc = doc(injectedViewInstance("0", periodKey, form, None, Html(""), Some("backLink")))
       newDoc.getElementsMatchingOwnText(messages("ated.property-details-value-error.newBuildDates.invalidRegDateError")).hasText mustBe true
     }
   }
 
   val form = PropertyDetailsForms.propertyDetailsNewBuildDatesForm
 
-  override def view: Html = views.html.propertyDetails.propertyDetailsNewBuildDates("0", 2019, form, None, Html(""), Some("backLink"))
+  override def view: Html = injectedViewInstance("0", 2019, form, None, Html(""), Some("backLink"))
 
 }

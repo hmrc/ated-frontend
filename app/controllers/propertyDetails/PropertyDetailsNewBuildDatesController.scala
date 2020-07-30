@@ -38,7 +38,8 @@ class PropertyDetailsNewBuildDatesController @Inject()(mcc: MessagesControllerCo
                                                        serviceInfoService: ServiceInfoService,
                                                        val propertyDetailsService: PropertyDetailsService,
                                                        val dataCacheConnector: DataCacheConnector,
-                                                       val backLinkCacheConnector: BackLinkCacheConnector)
+                                                       val backLinkCacheConnector: BackLinkCacheConnector,
+                                                       template: views.html.propertyDetails.propertyDetailsNewBuildDates)
                                                       (implicit val appConfig: ApplicationConfig)
 
   extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper {
@@ -56,7 +57,7 @@ class PropertyDetailsNewBuildDatesController @Inject()(mcc: MessagesControllerCo
                 val newBuildOccupyDate = propertyDetails.value.flatMap(_.newBuildDate)
                 val newBuildRegisterDate = propertyDetails.value.flatMap(_.localAuthRegDate)
                 val displayData = PropertyDetailsNewBuildDates(newBuildOccupyDate, newBuildRegisterDate)
-                Future.successful(Ok(views.html.propertyDetails.propertyDetailsNewBuildDates(id,
+                Future.successful(Ok(template(id,
                   propertyDetails.periodKey,
                   propertyDetailsNewBuildDatesForm.fill(displayData),
                   AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn),
@@ -79,7 +80,7 @@ class PropertyDetailsNewBuildDatesController @Inject()(mcc: MessagesControllerCo
             PropertyDetailsForms.validatePropertyDetailsNewBuildDates(periodKey, propertyDetailsNewBuildDatesForm.bindFromRequest).fold(
               formWithError => {
                 currentBackLink.map(backLink =>
-                  BadRequest(views.html.propertyDetails.propertyDetailsNewBuildDates(id, periodKey, formWithError, mode, serviceInfoContent, backLink))
+                  BadRequest(template(id, periodKey, formWithError, mode, serviceInfoContent, backLink))
                 )
               },
               propertyDetails => {
