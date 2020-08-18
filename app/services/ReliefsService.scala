@@ -20,10 +20,9 @@ import config.ApplicationConfig
 import connectors.{AtedConnector, DataCacheConnector}
 import javax.inject.Inject
 import models._
-import play.api.Logger
+import play.api.Logging
 import play.mvc.Http.Status._
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, InternalServerException}
-import uk.gov.hmrc.play.http.ws.WSHttpResponse
 import utils.AtedConstants._
 import utils.ReliefsUtils
 
@@ -31,7 +30,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class ReliefsService @Inject()(atedConnector: AtedConnector,
-                               dataCacheConnector: DataCacheConnector) {
+                               dataCacheConnector: DataCacheConnector) extends Logging {
 
   def saveDraftReliefs(atedRefNo: String, periodKey: Int, reliefs: Reliefs)
                       (implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[Option[ReliefsTaxAvoidance]] = {
@@ -42,7 +41,7 @@ class ReliefsService @Inject()(atedConnector: AtedConnector,
       response.status match {
         case OK => response.json.asOpt[ReliefsTaxAvoidance]
         case status =>
-          Logger.warn(s"[ReliefsService][saveDraftReliefs] - Invalid status returned when retrieving all drafts - " +
+          logger.warn(s"[ReliefsService][saveDraftReliefs] - Invalid status returned when retrieving all drafts - " +
             s"status = $status, body = ${response.body}")
           throw new InternalServerException(s"[ReliefsService][saveDraftReliefs] - status : $status")
       }
@@ -58,7 +57,7 @@ class ReliefsService @Inject()(atedConnector: AtedConnector,
       response.status match {
         case OK => response.json.asOpt[ReliefsTaxAvoidance]
         case status =>
-          Logger.warn(s"[ReliefsService][saveDraftReliefs] - Invalid status returned when retrieving all drafts - " +
+          logger.warn(s"[ReliefsService][saveDraftReliefs] - Invalid status returned when retrieving all drafts - " +
             s"status = $status, body = ${response.body}")
           throw new InternalServerException(s"[ReliefsService][saveDraftReliefs] - status : $status")
       }
@@ -74,7 +73,7 @@ class ReliefsService @Inject()(atedConnector: AtedConnector,
       response.status match {
         case OK => response.json.asOpt[ReliefsTaxAvoidance]
         case status =>
-          Logger.warn(s"[ReliefsService][saveDraftTaxAvoidance] - Invalid status returned when retrieving all drafts - " +
+          logger.warn(s"[ReliefsService][saveDraftTaxAvoidance] - Invalid status returned when retrieving all drafts - " +
             s"status = $status, body = ${response.body}")
           throw new InternalServerException(s"[ReliefsService][saveDraftTaxAvoidance] - status : $status")
       }
@@ -91,7 +90,7 @@ class ReliefsService @Inject()(atedConnector: AtedConnector,
         response.status match {
           case OK  => response.json.asOpt[ReliefsTaxAvoidance]
           case status =>
-            Logger.info(s"[ReliefsService][retrieveDraftReliefs] - Invalid status returned when retrieving all drafts - " +
+            logger.info(s"[ReliefsService][retrieveDraftReliefs] - Invalid status returned when retrieving all drafts - " +
               s"status = $status, body = ${response.body}")
             None
         }
@@ -106,10 +105,10 @@ class ReliefsService @Inject()(atedConnector: AtedConnector,
         httpResponse.status match {
           case OK => dataCacheConnector.saveFormData[SubmitReturnsResponse](formId = SubmitReturnsResponseFormId, data = httpResponse.json.as[SubmitReturnsResponse])
           case NOT_FOUND =>
-            Logger.warn(s"[ReliefsService][submitDraftReliefs] - No reliefs to submit - " + s"status = ${httpResponse.status}, body = ${httpResponse.body}")
+            logger.warn(s"[ReliefsService][submitDraftReliefs] - No reliefs to submit - " + s"status = ${httpResponse.status}, body = ${httpResponse.body}")
             dataCacheConnector.saveFormData[AlreadySubmittedReturnsResponse](formId = AlreadySubmittedReturnsResponseFormId, data = httpResponse.json.as[AlreadySubmittedReturnsResponse])
           case _ =>
-            Logger.warn(s"[ReliefsService][submitDraftReliefs] - Invalid status returned when submitting draft relief - " + s"status = ${httpResponse.status}, body = ${httpResponse.body}")
+            logger.warn(s"[ReliefsService][submitDraftReliefs] - Invalid status returned when submitting draft relief - " + s"status = ${httpResponse.status}, body = ${httpResponse.body}")
             throw new InternalServerException(s"[ReliefsService][submitDraftReliefs] - status : ${httpResponse.status}")
         }
       }

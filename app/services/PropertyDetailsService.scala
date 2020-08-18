@@ -20,7 +20,7 @@ import connectors.{DataCacheConnector, PropertyDetailsConnector}
 import javax.inject.Inject
 import models._
 import org.joda.time.LocalDate
-import play.api.Logger
+import play.api.Logging
 import play.api.http.Status._
 import play.mvc.Http.Status.OK
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, InternalServerException}
@@ -38,7 +38,7 @@ case object PropertyDetailsCacheNotFoundResponse extends PropertyDetailsCacheRes
 case object PropertyDetailsCacheErrorResponse extends PropertyDetailsCacheResponse
 
 class PropertyDetailsService @Inject()(propertyDetailsConnector: PropertyDetailsConnector,
-                                       dataCacheConnector: DataCacheConnector) {
+                                       dataCacheConnector: DataCacheConnector) extends Logging {
 
 
   val CHOSEN_RELIEF_ID = "PROPERTY-DETAILS-CHOSEN-RELIEF"
@@ -51,7 +51,7 @@ class PropertyDetailsService @Inject()(propertyDetailsConnector: PropertyDetails
       propertyDetailsResponse.status match {
         case OK => propertyDetailsResponse.json.as[PropertyDetails].id
         case status =>
-          Logger.warn(s"[PropertyDetailsService][createDraftPropertyDetails] " +
+          logger.warn(s"[PropertyDetailsService][createDraftPropertyDetails] " +
             s"Invalid status when saving Property Details - status: $status , response.body : ${propertyDetailsResponse.body}")
           throw new InternalServerException(s"[PropertyDetailsService]" +
             s"[createDraftPropertyDetails] Invalid status when saving Property Details :$status")
@@ -67,7 +67,7 @@ class PropertyDetailsService @Inject()(propertyDetailsConnector: PropertyDetails
       propertyDetailsResponse.status match {
         case OK => id
         case status =>
-          Logger.warn(s"[PropertyDetailsService][saveDraftPropertyDetailsAddressRef] " +
+          logger.warn(s"[PropertyDetailsService][saveDraftPropertyDetailsAddressRef] " +
             s"Invalid status when saving Property Details - status: $status , response.body : ${propertyDetailsResponse.body}")
           throw new InternalServerException(s"[PropertyDetailsService]" +
             s"[saveDraftPropertyDetailsAddressRef] Invalid status when saving Property Details :$status")
@@ -84,7 +84,7 @@ class PropertyDetailsService @Inject()(propertyDetailsConnector: PropertyDetails
       propertyDetailsResponse.status match {
         case OK => OK
         case status =>
-          Logger.warn(s"[PropertyDetailsService][saveDraftPropertyDetailsTitle] " +
+          logger.warn(s"[PropertyDetailsService][saveDraftPropertyDetailsTitle] " +
             s"Invalid status when saving Property Details - status: $status , response.body : ${propertyDetailsResponse.body}")
           throw new InternalServerException(s"[PropertyDetailsService]" +
             s"[saveDraftPropertyDetailsTitle] Invalid status when saving Property Details :$status")
@@ -100,7 +100,7 @@ class PropertyDetailsService @Inject()(propertyDetailsConnector: PropertyDetails
       propertyDetailsResponse.status match {
         case OK => OK
         case status =>
-          Logger.warn(s"[PropertyDetailsService][saveDraftHasValueChanged] Invalid status when saving Property Details" +
+          logger.warn(s"[PropertyDetailsService][saveDraftHasValueChanged] Invalid status when saving Property Details" +
             s" - status: $status , response.body : ${propertyDetailsResponse.body}")
           throw new InternalServerException(s"[PropertyDetailsService][saveDraftHasValueChanged] Invalid status when saving Property Details :$status")
       }
@@ -115,7 +115,7 @@ class PropertyDetailsService @Inject()(propertyDetailsConnector: PropertyDetails
       propertyDetailsResponse.status match {
         case OK => OK
         case status =>
-          Logger.warn(s"[PropertyDetailsService][saveDraftPropertyDetailsAcquisition] " +
+          logger.warn(s"[PropertyDetailsService][saveDraftPropertyDetailsAcquisition] " +
             s"Invalid status when saving Property Details - status: $status , response.body : ${propertyDetailsResponse.body}")
           throw new InternalServerException(s"[PropertyDetailsService]" +
             s"[saveDraftPropertyDetailsAcquisition] Invalid status when saving Property Details :$status")
@@ -131,7 +131,7 @@ class PropertyDetailsService @Inject()(propertyDetailsConnector: PropertyDetails
       propertyDetailsResponse.status match {
         case OK => OK
         case status =>
-          Logger.warn(s"[PropertyDetailsService][saveDraftPropertyDetailsOwnedBefore] " +
+          logger.warn(s"[PropertyDetailsService][saveDraftPropertyDetailsOwnedBefore] " +
             s"Invalid status when saving Property Details - status: $status , response.body : ${propertyDetailsResponse.body}")
           throw new InternalServerException(s"[PropertyDetailsService]" +
             s"[saveDraftPropertyDetailsOwnedBefore] Invalid status when saving Property Details :$status")
@@ -147,7 +147,7 @@ class PropertyDetailsService @Inject()(propertyDetailsConnector: PropertyDetails
       propertyDetailsResponse.status match {
         case OK => OK
         case status =>
-          Logger.warn(s"[PropertyDetailsService][saveDraftPropertyDetailsRevalued] " +
+          logger.warn(s"[PropertyDetailsService][saveDraftPropertyDetailsRevalued] " +
             s"Invalid status when saving Property Details - status: $status , response.body : ${propertyDetailsResponse.body}")
           throw new InternalServerException(s"[PropertyDetailsService]" +
             s"[saveDraftPropertyDetailsRevalued] Invalid status when saving Property Details :$status")
@@ -163,7 +163,7 @@ class PropertyDetailsService @Inject()(propertyDetailsConnector: PropertyDetails
       propertyDetailsResponse.status match {
         case OK => OK
         case status =>
-          Logger.warn(s"[PropertyDetailsService][saveDraftPropertyDetailsProfessionallyValued] " +
+          logger.warn(s"[PropertyDetailsService][saveDraftPropertyDetailsProfessionallyValued] " +
             s"Invalid status when saving Property Details - status: $status , response.body : ${propertyDetailsResponse.body}")
           throw new InternalServerException(s"[PropertyDetailsService]" +
             s"[saveDraftPropertyDetailsProfessionallyValued] Invalid status when saving Property Details :$status")
@@ -179,7 +179,7 @@ class PropertyDetailsService @Inject()(propertyDetailsConnector: PropertyDetails
       propertyDetailsResponse.status match {
         case OK => OK
         case status =>
-          Logger.warn(s"[PropertyDetailsService][saveDraftPropertyDetailsNewBuild] " +
+          logger.warn(s"[PropertyDetailsService][saveDraftPropertyDetailsNewBuild] " +
             s"Invalid status when saving Property Details - status: $status , response.body : ${propertyDetailsResponse.body}")
           throw new InternalServerException(s"[PropertyDetailsService]" +
             s"[saveDraftPropertyDetailsNewBuild] Invalid status when saving Property Details :$status")
@@ -196,7 +196,7 @@ class PropertyDetailsService @Inject()(propertyDetailsConnector: PropertyDetails
       propertyDetailsResponse.status match {
         case OK => OK
         case status =>
-          Logger.warn(s"[PropertyDetailsService][saveDraftPropertyDetailsNewBuildDates] " +
+          logger.warn(s"[PropertyDetailsService][saveDraftPropertyDetailsNewBuildDates] " +
             s"Invalid status when saving Property Details - status: $status , response.body : ${propertyDetailsResponse.body}")
           throw new InternalServerException(s"[PropertyDetailsService]" +
             s"[saveDraftPropertyDetailsNewBuildDates] Invalid status when saving Property Details :$status")
@@ -213,7 +213,7 @@ class PropertyDetailsService @Inject()(propertyDetailsConnector: PropertyDetails
       propertyDetailsResponse.status match {
         case OK => OK
         case status =>
-          Logger.warn(s"[PropertyDetailsService][saveDraftPropertyDetailsWhenAcquiredDates] " +
+          logger.warn(s"[PropertyDetailsService][saveDraftPropertyDetailsWhenAcquiredDates] " +
             s"Invalid status when saving Property Details - status: $status , response.body : ${propertyDetailsResponse.body}")
           throw new InternalServerException(s"[PropertyDetailsService]" +
             s"[saveDraftPropertyDetailsWhenAcquiredDates] Invalid status when saving Property Details :$status")
@@ -229,7 +229,7 @@ class PropertyDetailsService @Inject()(propertyDetailsConnector: PropertyDetails
       propertyDetailsResponse.status match {
         case OK => OK
         case status =>
-          Logger.warn(s"[PropertyDetailsService][saveDraftPropertyDetailsNewBuildValue] " +
+          logger.warn(s"[PropertyDetailsService][saveDraftPropertyDetailsNewBuildValue] " +
             s"Invalid status when saving Property Details - status: $status , response.body : ${propertyDetailsResponse.body}")
           throw new InternalServerException(s"[PropertyDetailsService]" +
             s"[saveDraftPropertyDetailsNewBuildValue] Invalid status when saving Property Details :$status")
@@ -246,7 +246,7 @@ class PropertyDetailsService @Inject()(propertyDetailsConnector: PropertyDetails
       propertyDetailsResponse.status match {
         case OK => OK
         case status =>
-          Logger.warn(s"[PropertyDetailsService][saveDraftPropertyDetailsValueAcquired] " +
+          logger.warn(s"[PropertyDetailsService][saveDraftPropertyDetailsValueAcquired] " +
             s"Invalid status when saving Property Details - status: $status , response.body : ${propertyDetailsResponse.body}")
           throw new InternalServerException(s"[PropertyDetailsService]" +
             s"[saveDraftPropertyDetailsValueAcquired] Invalid status when saving Property Details :$status")
@@ -263,7 +263,7 @@ class PropertyDetailsService @Inject()(propertyDetailsConnector: PropertyDetails
       propertyDetailsResponse.status match {
         case OK => OK
         case status =>
-          Logger.warn(s"[PropertyDetailsService][saveDraftIsFullTaxPeriod] Invalid status when saving Property Details" +
+          logger.warn(s"[PropertyDetailsService][saveDraftIsFullTaxPeriod] Invalid status when saving Property Details" +
             s" - status: $status , response.body : ${propertyDetailsResponse.body}")
           throw new InternalServerException(s"[PropertyDetailsService][saveDraftIsFullTaxPeriod] Invalid status when saving Property Details :$status")
       }
@@ -278,7 +278,7 @@ class PropertyDetailsService @Inject()(propertyDetailsConnector: PropertyDetails
       propertyDetailsResponse.status match {
         case OK => OK
         case status =>
-          Logger.warn(s"[PropertyDetailsService][saveDraftPropertyDetailsSupportingInfo] Invalid status when saving Property Details" +
+          logger.warn(s"[PropertyDetailsService][saveDraftPropertyDetailsSupportingInfo] Invalid status when saving Property Details" +
             s" - status: $status , response.body : ${propertyDetailsResponse.body}")
           throw new InternalServerException(s"[PropertyDetailsService][saveDraftPropertyDetailsSupportingInfo]" +
             s" Invalid status when saving Property Details :$status")
@@ -294,7 +294,7 @@ class PropertyDetailsService @Inject()(propertyDetailsConnector: PropertyDetails
         propertyDetailsResponse.status match {
           case OK => Some(propertyDetailsResponse.json.as[PropertyDetails])
           case NO_CONTENT =>
-            Logger.info("[PropertyDetailsService][calculateDraftChangeLiability] " +
+            logger.info("[PropertyDetailsService][calculateDraftChangeLiability] " +
               "Return details incomplete - redirecting to summary without calc")
             None
         }
@@ -307,7 +307,7 @@ class PropertyDetailsService @Inject()(propertyDetailsConnector: PropertyDetails
   def calculateDraftPropertyDetails(id: String)(implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[HttpResponse] = {
     validateCalculateDraftPropertyDetails(id, isChangeLiability = false).flatMap {
       case true => propertyDetailsConnector.calculateDraftPropertyDetails(id)
-      case false => Future.successful(HttpResponse(OK, None))
+      case false => Future.successful(HttpResponse(OK, ""))
     }
   }
 
@@ -347,11 +347,11 @@ class PropertyDetailsService @Inject()(propertyDetailsConnector: PropertyDetails
         case OK =>
           PropertyDetailsCacheSuccessResponse(propertyDetailsResponse.json.as[PropertyDetails])
         case NOT_FOUND =>
-          Logger.warn(s"[PropertyDetailsService][retrieveDraftPropertyDetails] NOT FOUND when retrieving Property Details" +
+          logger.warn(s"[PropertyDetailsService][retrieveDraftPropertyDetails] NOT FOUND when retrieving Property Details" +
             s" - status = 404, response.body = ${propertyDetailsResponse.body}")
           PropertyDetailsCacheNotFoundResponse
         case status =>
-          Logger.warn(s"[PropertyDetailsService][retrieveDraftPropertyDetails] Invalid status when retrieving Property Details" +
+          logger.warn(s"[PropertyDetailsService][retrieveDraftPropertyDetails] Invalid status when retrieving Property Details" +
             s" - status = $status, response.body = ${propertyDetailsResponse.body}")
           PropertyDetailsCacheErrorResponse
       }
@@ -366,7 +366,7 @@ class PropertyDetailsService @Inject()(propertyDetailsConnector: PropertyDetails
       propertyDetailsResponse.status match {
         case OK => OK
         case status =>
-          Logger.warn(s"[PropertyDetailsService][saveDraftPropertyDetailsInRelief] Invalid status when saving Property Details" +
+          logger.warn(s"[PropertyDetailsService][saveDraftPropertyDetailsInRelief] Invalid status when saving Property Details" +
             s" - status: $status , response.body : ${propertyDetailsResponse.body}")
           throw new InternalServerException(s"[PropertyDetailsService][saveDraftPropertyDetailsInRelief] Invalid status when saving Property Details :$status")
       }
@@ -381,7 +381,7 @@ class PropertyDetailsService @Inject()(propertyDetailsConnector: PropertyDetails
       propertyDetailsResponse.status match {
         case OK => OK
         case status =>
-          Logger.warn(s"[PropertyDetailsService][saveDraftPropertyDetailsTaxAvoidance] Invalid status when saving Property Details" +
+          logger.warn(s"[PropertyDetailsService][saveDraftPropertyDetailsTaxAvoidance] Invalid status when saving Property Details" +
             s" - status: $status , response.body : ${propertyDetailsResponse.body}")
           throw new InternalServerException(s"[PropertyDetailsService][saveDraftPropertyDetailsTaxAvoidance] Invalid status when saving Property Details :$status")
       }
@@ -396,7 +396,7 @@ class PropertyDetailsService @Inject()(propertyDetailsConnector: PropertyDetails
       propertyDetailsResponse.status match {
         case OK => OK
         case status =>
-          Logger.warn(s"[PropertyDetailsService][saveDraftPropertyDetailsDatesLiable] Invalid status when saving Property Details" +
+          logger.warn(s"[PropertyDetailsService][saveDraftPropertyDetailsDatesLiable] Invalid status when saving Property Details" +
             s" - status: $status , response.body : ${propertyDetailsResponse.body}")
           throw new InternalServerException(s"[PropertyDetailsService][saveDraftPropertyDetailsDatesLiable] Invalid status when saving Property Details :$status")
       }
@@ -411,7 +411,7 @@ class PropertyDetailsService @Inject()(propertyDetailsConnector: PropertyDetails
       propertyDetailsResponse.status match {
         case OK => OK
         case status =>
-          Logger.warn(s"[PropertyDetailsService][addDraftPropertyDetailsDatesLiable] Invalid status when saving Property Details" +
+          logger.warn(s"[PropertyDetailsService][addDraftPropertyDetailsDatesLiable] Invalid status when saving Property Details" +
             s" - status: $status , response.body : ${propertyDetailsResponse.body}")
           throw new InternalServerException(s"[PropertyDetailsService][addDraftPropertyDetailsDatesLiable] Invalid status when saving Property Details :$status")
       }
@@ -436,7 +436,7 @@ class PropertyDetailsService @Inject()(propertyDetailsConnector: PropertyDetails
       propertyDetailsResponse.status match {
         case OK => OK
         case status =>
-          Logger.warn(s"[PropertyDetailsService][addDraftPropertyDetailsDatesInRelief] Invalid status when saving Property Details" +
+          logger.warn(s"[PropertyDetailsService][addDraftPropertyDetailsDatesInRelief] Invalid status when saving Property Details" +
             s" - status: $status , response.body : ${propertyDetailsResponse.body}")
           throw new InternalServerException(s"[PropertyDetailsService][addDraftPropertyDetailsDatesInRelief] Invalid status when saving Property Details :$status")
       }
@@ -451,7 +451,7 @@ class PropertyDetailsService @Inject()(propertyDetailsConnector: PropertyDetails
       propertyDetailsResponse.status match {
         case OK => propertyDetailsResponse.json.as[PropertyDetails]
         case status =>
-          Logger.warn(s"[PropertyDetailsService][deleteDraftPropertyDetailsPeriod] Invalid status when saving Property Details" +
+          logger.warn(s"[PropertyDetailsService][deleteDraftPropertyDetailsPeriod] Invalid status when saving Property Details" +
             s" - status: $status , response.body : ${propertyDetailsResponse.body}")
           throw new InternalServerException(s"[PropertyDetailsService][deleteDraftPropertyDetailsPeriod] Invalid status when saving Property Details :$status")
       }

@@ -18,7 +18,7 @@ package connectors
 
 import config.ApplicationConfig
 import javax.inject.Inject
-import play.api.Logger
+import play.api.Logging
 import play.api.mvc.Request
 import play.twirl.api.Html
 import play.utils.UriEncoding
@@ -31,7 +31,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class AgentClientMandateFrontendConnector @Inject()(appConfig: ApplicationConfig,
                                                     httpClient: DefaultHttpClient)
-  extends RawResponseReads with HeaderCarrierForPartialsConverter {
+  extends RawResponseReads with HeaderCarrierForPartialsConverter with Logging {
 
   val serviceUrl: String = appConfig.conf.baseUrl("agent-client-mandate-frontend")
   val returnUrlHost: String = appConfig.atedFrontendHost
@@ -56,7 +56,7 @@ class AgentClientMandateFrontendConnector @Inject()(appConfig: ApplicationConfig
         case s @ 404 =>
           Failure(Some(s), response.body)
         case other =>
-          Logger.warn(s"Failed to load partial from $getUrl, received $other")
+          logger.warn(s"Failed to load partial from $getUrl, received $other")
           Failure(Some(other), response.body)
       }
     }

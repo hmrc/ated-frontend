@@ -24,7 +24,7 @@ import javax.inject.Inject
 import models.SelectPeriod
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.ServiceInfoService
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants.RetrieveSelectPeriodFormId
 
 import scala.concurrent.{ExecutionContext, Future}

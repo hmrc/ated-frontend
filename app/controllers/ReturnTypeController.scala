@@ -24,7 +24,7 @@ import javax.inject.Inject
 import models.ReturnType
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{ServiceInfoService, SummaryReturnsService}
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants._
 
 import scala.concurrent.{ExecutionContext, Future}

@@ -38,7 +38,6 @@ import play.api.test.Helpers._
 import services.{DisposeLiabilityReturnService, ServiceInfoService}
 import testhelpers.MockAuthUtil
 import uk.gov.hmrc.auth.core.AffinityGroup
-import uk.gov.hmrc.http.{HeaderCarrier, UserId}
 import utils.AtedConstants
 import views.html.BtaNavigationLinks
 
@@ -86,14 +85,12 @@ class Setup {
     when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
       (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
     when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
-    implicit val hc: HeaderCarrier = HeaderCarrier()
     val result = testDisposeLiabilityDeclarationController.view(oldFormBundleNum).apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
   def viewWithAuthorisedDelegatedUser(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
-    implicit val hc: HeaderCarrier = HeaderCarrier(userId = Some(UserId(userId)))
     val authMock = authResultDefault(AffinityGroup.Agent, defaultEnrolmentSet)
     setAuthMocks(authMock)
     when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))

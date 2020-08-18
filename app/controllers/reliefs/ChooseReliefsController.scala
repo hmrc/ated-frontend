@@ -23,11 +23,10 @@ import controllers.auth.{AuthAction, ClientHelper}
 import forms.ReliefForms._
 import javax.inject.Inject
 import models.Reliefs
-import play.api.Logger
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{ReliefsService, ServiceInfoService}
 import uk.gov.hmrc.http.ForbiddenException
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedUtils._
 import utils.{PeriodUtils, ReliefsUtils}
 
@@ -89,7 +88,7 @@ class ChooseReliefsController @Inject()(mcc: MessagesControllerComponents,
       }
     } recover {
       case _: ForbiddenException =>
-        Logger.warn("[ChooseReliefsController][editFromSummary] Forbidden exception")
+        logger.warn("[ChooseReliefsController][editFromSummary] Forbidden exception")
         authAction.unauthorisedUrl()
     }
   }
@@ -122,7 +121,7 @@ class ChooseReliefsController @Inject()(mcc: MessagesControllerComponents,
       }
     } recover {
       case _: ForbiddenException =>
-        Logger.warn("[ChooseReliefsController][send] Forbidden exception")
+        logger.warn("[ChooseReliefsController][send] Forbidden exception")
         authAction.unauthorisedUrl()
     }
   }

@@ -27,7 +27,7 @@ import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService}
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -122,14 +122,14 @@ class PeriodDatesLiableController @Inject()(mcc: MessagesControllerComponents,
     }
   }
 
-  private def getBackLink(id: String, mode: Option[String] = None)(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier) = {
+  private def getBackLink(id: String, mode: Option[String])(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier) = {
     mode match {
       case Some("add") => Future.successful(Some(controllers.propertyDetails.routes.PeriodsInAndOutReliefController.view(id).url))
       case _ => currentBackLink
     }
   }
 
-  private def getTitle(mode: Option[String] = None) = {
+  private def getTitle(mode: Option[String]) = {
     mode match {
       case Some("add") => "ated.property-details-period.datesLiable.add.title"
       case _ => "ated.property-details-period.datesLiable.title"

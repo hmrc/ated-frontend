@@ -20,7 +20,7 @@ import config.ApplicationConfig
 import connectors.{AtedConnector, DataCacheConnector}
 import javax.inject.Inject
 import models._
-import play.api.Logger
+import play.api.Logging
 import play.api.http.Status._
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.AtedConstants._
@@ -29,7 +29,8 @@ import utils.{PeriodUtils, ReliefsUtils}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class SummaryReturnsService @Inject()(atedConnector: AtedConnector, dataCacheConnector: DataCacheConnector)(implicit val appConfig: ApplicationConfig) {
+class SummaryReturnsService @Inject()(atedConnector: AtedConnector, dataCacheConnector: DataCacheConnector)(
+  implicit val appConfig: ApplicationConfig) extends Logging {
 
   def getSummaryReturns(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[SummaryReturnsModel] = {
     def convertSeqOfPeriodSummariesToObject(x: Seq[PeriodSummaryReturns]): PeriodSummaryReturns = {
@@ -90,7 +91,7 @@ class SummaryReturnsService @Inject()(atedConnector: AtedConnector, dataCacheCon
                   summaryReturnsModel
 
                 case status =>
-                  Logger.warn(s"[SummaryReturnsService][getDraftWithEtmpSummaryReturns] - status: $status " +
+                  logger.warn(s"[SummaryReturnsService][getDraftWithEtmpSummaryReturns] - status: $status " +
                     s"& body = ${response.body} & cache = $x")
                   throw new RuntimeException("[SummaryReturnsService][getDraftWithEtmpSummaryReturns] - " +
                     "Status other than 200 returned - Has Cache")
@@ -122,7 +123,7 @@ class SummaryReturnsService @Inject()(atedConnector: AtedConnector, dataCacheCon
                     )
 
                 case status =>
-                  Logger.warn("[SummaryReturnsService][getDraftWithEtmpSummaryReturns] - " +
+                  logger.warn("[SummaryReturnsService][getDraftWithEtmpSummaryReturns] - " +
                     s"status: $status & body = ${response.body} & cache = None")
                   throw new RuntimeException("[SummaryReturnsService][getDraftWithEtmpSummaryReturns] - " +
                     s"Status other than 200 returned - No Cache, status: $status")
@@ -234,7 +235,9 @@ class SummaryReturnsService @Inject()(atedConnector: AtedConnector, dataCacheCon
 
     val allAccountSummaryCurrentReturns = draftReturns ++ currentLiabilityReturns ++ reliefReturns
 
-    Future(allAccountSummaryCurrentReturns.take(5), allAccountSummaryCurrentReturns.size, hasPreviousReturns)
+    val amountToTake: Int = 5
+
+    Future(Tuple3(allAccountSummaryCurrentReturns.take(amountToTake), allAccountSummaryCurrentReturns.size, hasPreviousReturns))
   }
 
 }

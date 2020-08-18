@@ -39,7 +39,6 @@ import services.{ReliefsService, ServiceInfoService, SubscriptionDataService}
 import testhelpers.MockAuthUtil
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.http.logging.SessionId
 import utils.AtedConstants._
 import views.html.BtaNavigationLinks
 

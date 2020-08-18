@@ -70,7 +70,6 @@ class AddressLookupService @Inject()(addressLookupConnector: AddressLookupConnec
     dataCacheConnector.fetchAndGetFormData[AddressSearchResults](ADDRESS_LOOKUP_SEARCH_RESULTS)
   }
 
-
   private def storeSearchResults(searchResults: AddressSearchResults)(implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[AddressSearchResults] = {
     dataCacheConnector.saveFormData[AddressSearchResults](ADDRESS_LOOKUP_SEARCH_RESULTS, searchResults)
   }

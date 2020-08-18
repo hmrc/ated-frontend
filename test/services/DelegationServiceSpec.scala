@@ -74,7 +74,8 @@ class DelegationServiceSpec extends PlaySpec with MockitoSugar with BeforeAndAft
           supplementaryData = Some(Map()),
           internalId = Some("test")
         )
-        when(mockDelegationConnector.delegationDataCall(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(returnJson))))
+        when(mockDelegationConnector.delegationDataCall(ArgumentMatchers.any())(ArgumentMatchers.any()))
+          .thenReturn(Future.successful(HttpResponse(OK, returnJson.toString)))
         val result: Future[Option[DelegationModel]] = testDelegationService.delegationCall("String")
         await(result) mustBe Some(expectedModel)
       }
@@ -83,7 +84,7 @@ class DelegationServiceSpec extends PlaySpec with MockitoSugar with BeforeAndAft
     "not return a delegation model" when {
       "no http response is returned" in new Setup {
 
-        when(mockDelegationConnector.delegationDataCall(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, None)))
+        when(mockDelegationConnector.delegationDataCall(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, "")))
         val result: Future[Option[DelegationModel]] = testDelegationService.delegationCall("String")
         await(result) mustBe None
       }

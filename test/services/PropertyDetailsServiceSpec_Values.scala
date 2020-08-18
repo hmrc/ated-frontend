@@ -58,7 +58,7 @@ class PropertyDetailsServiceSpec_Values extends PlaySpec with MockitoSugar with 
         val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
         val successResponse: JsValue = Json.toJson(propertyDetails)
         when(mockPropertyDetailsConnector.saveDraftHasValueChanged(ArgumentMatchers.eq("1"), ArgumentMatchers.any())
-        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))
 
         val result: Future[Int] = testPropertyDetailsService.saveDraftHasValueChanged("1", hasValueChanged = true)
         await(result) must be(OK)
@@ -70,7 +70,7 @@ class PropertyDetailsServiceSpec_Values extends PlaySpec with MockitoSugar with 
         val propValue: Option[PropertyDetailsTitle] = propertyDetails.title
         val successResponse: JsValue = Json.toJson(propValue)
         when(mockPropertyDetailsConnector.saveDraftHasValueChanged(ArgumentMatchers.eq("1"), ArgumentMatchers.any())
-        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, Some(successResponse))))
+        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, successResponse.toString)))
 
         val result: Future[Int] = testPropertyDetailsService.saveDraftHasValueChanged("1", hasValueChanged = true)
         val thrown: InternalServerException = the[InternalServerException] thrownBy await(result)
@@ -84,7 +84,7 @@ class PropertyDetailsServiceSpec_Values extends PlaySpec with MockitoSugar with 
         val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
         val successResponse: JsValue = Json.toJson(propertyDetails)
         when(mockPropertyDetailsConnector.saveDraftPropertyDetailsAcquisition(ArgumentMatchers.eq("1"), ArgumentMatchers.any())
-        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))
 
         val result: Future[Int] = testPropertyDetailsService.saveDraftPropertyDetailsAcquisition("1", overLimit = true)
         await(result) must be(OK)
@@ -96,7 +96,7 @@ class PropertyDetailsServiceSpec_Values extends PlaySpec with MockitoSugar with 
         val propValue: Option[PropertyDetailsTitle] = propertyDetails.title
         val successResponse: JsValue = Json.toJson(propValue)
         when(mockPropertyDetailsConnector.saveDraftPropertyDetailsAcquisition(ArgumentMatchers.eq("1"), ArgumentMatchers.any())
-        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, Some(successResponse))))
+        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, successResponse.toString)))
 
         val result: Future[Int] = testPropertyDetailsService.saveDraftPropertyDetailsAcquisition("1", overLimit = true)
         val thrown: InternalServerException = the[InternalServerException] thrownBy await(result)
@@ -111,7 +111,7 @@ class PropertyDetailsServiceSpec_Values extends PlaySpec with MockitoSugar with 
         val propValue = new PropertyDetailsRevalued()
         val successResponse: JsValue = Json.toJson(propertyDetails)
         when(mockPropertyDetailsConnector.saveDraftPropertyDetailsRevalued(ArgumentMatchers.eq("1"), ArgumentMatchers.any())
-        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))
 
         val result: Future[Int] = testPropertyDetailsService.saveDraftPropertyDetailsRevalued("1", propValue)
         await(result) must be(OK)
@@ -122,7 +122,7 @@ class PropertyDetailsServiceSpec_Values extends PlaySpec with MockitoSugar with 
         val propValue = new PropertyDetailsRevalued()
         val successResponse: JsValue = Json.toJson(propValue)
         when(mockPropertyDetailsConnector.saveDraftPropertyDetailsRevalued(ArgumentMatchers.eq("1"), ArgumentMatchers.any())
-        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, Some(successResponse))))
+        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, successResponse.toString)))
 
         val result: Future[Int] = testPropertyDetailsService.saveDraftPropertyDetailsRevalued("1", propValue)
         val thrown: InternalServerException = the[InternalServerException] thrownBy await(result)
@@ -137,7 +137,7 @@ class PropertyDetailsServiceSpec_Values extends PlaySpec with MockitoSugar with 
         val propValue = new PropertyDetailsOwnedBefore()
         val successResponse: JsValue = Json.toJson(propertyDetails)
         when(mockPropertyDetailsConnector.saveDraftPropertyDetailsOwnedBefore(ArgumentMatchers.eq("1"), ArgumentMatchers.any())
-        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))
 
         val result: Future[Int] = testPropertyDetailsService.saveDraftPropertyDetailsOwnedBefore("1", propValue)
         await(result) must be(OK)
@@ -148,7 +148,7 @@ class PropertyDetailsServiceSpec_Values extends PlaySpec with MockitoSugar with 
         val propValue = new PropertyDetailsOwnedBefore()
         val successResponse: JsValue = Json.toJson(propValue)
         when(mockPropertyDetailsConnector.saveDraftPropertyDetailsOwnedBefore(ArgumentMatchers.eq("1"), ArgumentMatchers.any())
-        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, Some(successResponse))))
+        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, successResponse.toString)))
 
         val result: Future[Int] = testPropertyDetailsService.saveDraftPropertyDetailsOwnedBefore("1", propValue)
         val thrown: InternalServerException = the[InternalServerException] thrownBy await(result)
@@ -165,7 +165,7 @@ class PropertyDetailsServiceSpec_Values extends PlaySpec with MockitoSugar with 
 
         val successResponse: JsValue = Json.toJson(propertyDetails)
         when(mockPropertyDetailsConnector.saveDraftPropertyDetailsNewBuild(ArgumentMatchers.eq("1"), ArgumentMatchers.any())
-        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))
 
         val result: Future[Int] = testPropertyDetailsService.saveDraftPropertyDetailsNewBuild("1", propValue)
         await(result) must be(OK)
@@ -176,7 +176,7 @@ class PropertyDetailsServiceSpec_Values extends PlaySpec with MockitoSugar with 
         val propValue = new PropertyDetailsNewBuild()
         val successResponse: JsValue = Json.toJson(propValue)
         when(mockPropertyDetailsConnector.saveDraftPropertyDetailsNewBuild(ArgumentMatchers.eq("1"), ArgumentMatchers.any())
-        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, Some(successResponse))))
+        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, successResponse.toString)))
 
         val result: Future[Int] = testPropertyDetailsService.saveDraftPropertyDetailsNewBuild("1", propValue)
         val thrown: InternalServerException = the[InternalServerException] thrownBy await(result)
@@ -191,7 +191,7 @@ class PropertyDetailsServiceSpec_Values extends PlaySpec with MockitoSugar with 
         val propValue = new PropertyDetailsProfessionallyValued()
         val successResponse: JsValue = Json.toJson(propertyDetails)
         when(mockPropertyDetailsConnector.saveDraftPropertyDetailsProfessionallyValued(ArgumentMatchers.eq("1"), ArgumentMatchers.any())
-        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))
 
         val result: Future[Int] = testPropertyDetailsService.saveDraftPropertyDetailsProfessionallyValued("1", propValue)
         await(result) must be(OK)
@@ -202,7 +202,7 @@ class PropertyDetailsServiceSpec_Values extends PlaySpec with MockitoSugar with 
         val propValue = new PropertyDetailsProfessionallyValued()
         val successResponse: JsValue = Json.toJson(propValue)
         when(mockPropertyDetailsConnector.saveDraftPropertyDetailsProfessionallyValued(ArgumentMatchers.eq("1"), ArgumentMatchers.any())
-        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, Some(successResponse))))
+        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, successResponse.toString)))
 
         val result: Future[Int] = testPropertyDetailsService.saveDraftPropertyDetailsProfessionallyValued("1", propValue)
         val thrown: InternalServerException = the[InternalServerException] thrownBy await(result)

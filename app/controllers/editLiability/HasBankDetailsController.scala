@@ -25,7 +25,7 @@ import javax.inject.Inject
 import models.HasBankDetails
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{ChangeLiabilityReturnService, ServiceInfoService}
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedUtils
 
 import scala.concurrent.{ExecutionContext, Future}

@@ -234,7 +234,7 @@ class SubscriptionDataServiceSpec extends PlaySpec with MockitoSugar with Before
           .thenReturn(Future.successful(Some(cacheDataResponse)))
 
         when(mockDataCacheConnector.clearCache()(any()))
-          .thenReturn(Future.successful(HttpResponse(OK, None)))
+          .thenReturn(Future.successful(HttpResponse(OK, "")))
 
         when(mockSubscriptionDataAdapterService.createUpdateCorrespondenceAddressRequest(any(), any()))
           .thenReturn(None)
@@ -261,7 +261,7 @@ class SubscriptionDataServiceSpec extends PlaySpec with MockitoSugar with Before
           .thenReturn(Future.successful(Some(updateRequest)))
 
         when(mockDataCacheConnector.clearCache()(any()))
-          .thenReturn(Future.successful(HttpResponse(OK, None)))
+          .thenReturn(Future.successful(HttpResponse(OK, "")))
 
         val updatedDetails: AddressDetails = AddressDetails("Correspondence", "line1", "line2", None, None, None, "GB")
         val result: Future[Option[AddressDetails]] = testSubscriptionDataService.updateCorrespondenceAddressDetails(updatedDetails)
@@ -286,7 +286,7 @@ class SubscriptionDataServiceSpec extends PlaySpec with MockitoSugar with Before
         when(mockDetailsService.updateOrganisationRegisteredDetails(any(), any())(any(), any()))
           .thenReturn(Future.successful(None))
         when(mockDataCacheConnector.clearCache()(any()))
-          .thenReturn(Future.successful(HttpResponse(OK, None)))
+          .thenReturn(Future.successful(HttpResponse(OK, "")))
 
         val result: Future[Option[RegisteredDetails]] = testSubscriptionDataService.updateRegisteredDetails(registrationDetails.registeredDetails)
         await(result).isDefined must be(false)
@@ -305,7 +305,7 @@ class SubscriptionDataServiceSpec extends PlaySpec with MockitoSugar with Before
           .thenReturn(Future.successful(None))
 
         when(mockDataCacheConnector.clearCache()(any()))
-          .thenReturn(Future.successful(HttpResponse(OK, None)))
+          .thenReturn(Future.successful(HttpResponse(OK, "")))
 
         val result: Future[Option[RegisteredDetails]] = testSubscriptionDataService.updateRegisteredDetails(registrationDetails.registeredDetails)
         await(result).isDefined must be(false)
@@ -322,7 +322,7 @@ class SubscriptionDataServiceSpec extends PlaySpec with MockitoSugar with Before
           .thenReturn(Future.successful(None))
 
         when(mockDataCacheConnector.clearCache()(any()))
-          .thenReturn(Future.successful(HttpResponse(OK, None)))
+          .thenReturn(Future.successful(HttpResponse(OK, "")))
 
         val result: Future[Option[RegisteredDetails]] = testSubscriptionDataService.updateRegisteredDetails(registrationDetails.registeredDetails)
         await(result).isDefined must be(false)
@@ -338,7 +338,7 @@ class SubscriptionDataServiceSpec extends PlaySpec with MockitoSugar with Before
         val updateDataResponse: UpdateRegistrationDetailsRequest = RegistrationBuilder.getEtmpRegistrationUpdateRequest("testResonse")
         when(mockDetailsService.updateOrganisationRegisteredDetails(any(), any())(any(), any()))
           .thenReturn(Future.successful(Some(updateDataResponse)))
-        when(mockDataCacheConnector.clearCache()(any())).thenReturn(Future.successful(HttpResponse(OK, None)))
+        when(mockDataCacheConnector.clearCache()(any())).thenReturn(Future.successful(HttpResponse(OK, "")))
 
         val result: Future[Option[RegisteredDetails]] = testSubscriptionDataService.updateRegisteredDetails(registrationDetails.registeredDetails)
         await(result).isDefined must be(true)
@@ -362,7 +362,7 @@ class SubscriptionDataServiceSpec extends PlaySpec with MockitoSugar with Before
           .thenReturn(Future.successful(Some(updateDataResponse)))
 
         when(mockDataCacheConnector.clearCache()(any()))
-          .thenReturn(Future.successful(HttpResponse(OK, None)))
+          .thenReturn(Future.successful(HttpResponse(OK, "")))
 
         val result: Future[Option[Identification]] = testSubscriptionDataService.updateOverseasCompanyRegistration(registrationDetails.nonUKIdentification.get)
         await(result).isDefined must be(false)
@@ -387,7 +387,7 @@ class SubscriptionDataServiceSpec extends PlaySpec with MockitoSugar with Before
           .thenReturn(Future.successful(Some(updateDataResponse)))
 
         when(mockDataCacheConnector.clearCache()(any()))
-          .thenReturn(Future.successful(HttpResponse(OK, None)))
+          .thenReturn(Future.successful(HttpResponse(OK, "")))
 
         val result: Future[Option[Identification]] = testSubscriptionDataService.updateOverseasCompanyRegistration(registrationDetails.nonUKIdentification.get)
         await(result).isDefined must be(true)
@@ -561,7 +561,7 @@ class SubscriptionDataServiceSpec extends PlaySpec with MockitoSugar with Before
           .thenReturn(Future.successful(Some(cacheDataResponse)))
 
         when(mockDataCacheConnector.clearCache()(any()))
-          .thenReturn(Future.successful(HttpResponse(OK, None)))
+          .thenReturn(Future.successful(HttpResponse(OK, "")))
 
         when(mockSubscriptionDataAdapterService.createEditEmailWithConsentRequest(any(), any()))
           .thenReturn(None)
@@ -588,7 +588,7 @@ class SubscriptionDataServiceSpec extends PlaySpec with MockitoSugar with Before
           .thenReturn(Future.successful(Some(updateRequest)))
 
         when(mockDataCacheConnector.clearCache()(any()))
-          .thenReturn(Future.successful(HttpResponse(OK, None)))
+          .thenReturn(Future.successful(HttpResponse(OK, "")))
 
         val editDetails: EditContactDetailsEmail = EditContactDetailsEmail(emailAddress = "aa@mail.com", emailConsent = true)
 
@@ -611,7 +611,7 @@ class SubscriptionDataServiceSpec extends PlaySpec with MockitoSugar with Before
           .thenReturn(Future.successful(Some(cacheDataResponse)))
 
         when(mockDataCacheConnector.clearCache()(any()))
-          .thenReturn(Future.successful(HttpResponse(OK, None)))
+          .thenReturn(Future.successful(HttpResponse(OK, "")))
 
         when(mockSubscriptionDataAdapterService.createEditContactDetailsRequest(any(), any()))
           .thenReturn(None)
@@ -638,7 +638,7 @@ class SubscriptionDataServiceSpec extends PlaySpec with MockitoSugar with Before
           .thenReturn(Future.successful(Some(updateRequest)))
 
         when(mockDataCacheConnector.clearCache()(any()))
-          .thenReturn(Future.successful(HttpResponse(OK, None)))
+          .thenReturn(Future.successful(HttpResponse(OK, "")))
 
         val editDetails: EditContactDetails = EditContactDetails(firstName = "TestFirstName", lastName = "TestLastName", phoneNumber = "123456779")
         val result: Future[Option[EditContactDetails]] = testSubscriptionDataService.editContactDetails(editDetails)

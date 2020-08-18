@@ -17,7 +17,7 @@
 package models
 
 import org.joda.time.DateTime
-import play.api.libs.json.{Json, Reads, Writes}
+import play.api.libs.json.{JodaReads, JodaWrites, Json}
 
 case class EditLiabilityReturnsResponse(mode: String,
                                         oldFormBundleNumber: String,
@@ -37,7 +37,7 @@ case class EditLiabilityReturnsResponseModel(processingDate: DateTime,
 object EditLiabilityReturnsResponseModel {
   //  implicit val jodaLocalDateTimeReads = Reads[LocalDateTime](x => x.validate[String].map(y => LocalDateTime.parse(y, ISODateTimeFormat.dateTimeNoMillis())))
   //  implicit val jodaLocalDateTimeWrites = Writes[LocalDateTime](x => Json.parse(x.toString("yyyy-MM-dd'T'HH:mm:ss'Z'")))
-  implicit val yourJodaDateWrites = Writes.jodaDateWrites("yyyy-MM-dd'T'HH:mm:ss'Z'") // DateTime
-  implicit val yourJodaDateReads = Reads.jodaDateReads("yyyy-MM-dd'T'HH:mm:ss'Z'") // DateTime
+  implicit val yourJodaDateWrites = JodaWrites.jodaDateWrites("yyyy-MM-dd'T'HH:mm:ss'Z'") // DateTime
+  implicit val yourJodaDateReads = JodaReads.jodaDateReads("yyyy-MM-dd'T'HH:mm:ss'Z'") // DateTime
   implicit val formats = Json.format[EditLiabilityReturnsResponseModel]
 }

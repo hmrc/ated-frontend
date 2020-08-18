@@ -168,7 +168,6 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
         "validate form" must {
 
           "overseas company registration number must not be more than 60 chars and issuing institution must not be more than 40 chars" in new Setup {
-            implicit val hc: HeaderCarrier = HeaderCarrier()
             val regNumber: String = "a" * 61
             val issuingInst: String = "a" * 41
             val inputJson: JsValue = Json.parse( s"""{"businessUniqueId": "$regNumber", "issuingInstitution": "$issuingInst", "countryCode": "FR" }""")
@@ -183,7 +182,6 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
 
           "If input is valid, submit must redirect" in new Setup {
 
-            implicit val hc: HeaderCarrier = HeaderCarrier()
             val inputJson: JsValue = Json.parse( s"""{"businessUniqueId": "AAAAAAAA", "issuingInstitution": "Some Place", "countryCode": "FR" }""")
 
             submitWithAuthorisedUserSuccess()(FakeRequest().withJsonBody(inputJson)) {

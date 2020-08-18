@@ -20,17 +20,17 @@ import connectors.{AtedConnector, DataCacheConnector}
 import javax.inject.Inject
 import models._
 import org.joda.time.DateTime
-import play.api.Logger
+import play.api.Logging
 import play.api.mvc.MessagesControllerComponents
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants._
 
 import scala.concurrent.{ExecutionContext, Future}
 
 class ChangeLiabilityReturnService @Inject()(mcc: MessagesControllerComponents,
                                              atedConnector: AtedConnector,
-                                             dataCacheConnector: DataCacheConnector) extends FrontendController(mcc) {
+                                             dataCacheConnector: DataCacheConnector) extends FrontendController(mcc) with Logging {
   implicit val ec: ExecutionContext = mcc.executionContext
 
 
@@ -42,7 +42,7 @@ class ChangeLiabilityReturnService @Inject()(mcc: MessagesControllerComponents,
           response => response.status match {
             case OK => response.json.asOpt[PropertyDetails]
             case status =>
-              Logger.warn(s"[ChangeLiabilityReturnService][retrieveLiabilityReturn] - status : $status, body = ${response.body}")
+              logger.warn(s"[ChangeLiabilityReturnService][retrieveLiabilityReturn] - status : $status, body = ${response.body}")
               None
           }
         }
@@ -51,7 +51,7 @@ class ChangeLiabilityReturnService @Inject()(mcc: MessagesControllerComponents,
           response => response.status match {
             case OK => response.json.asOpt[PropertyDetails]
             case status =>
-              Logger.warn(s"[ChangeLiabilityReturnService][retrieveLiabilityReturn] - status : $status, body = ${response.body}")
+              logger.warn(s"[ChangeLiabilityReturnService][retrieveLiabilityReturn] - status : $status, body = ${response.body}")
               None
           }
         }

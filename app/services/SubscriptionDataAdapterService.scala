@@ -19,7 +19,7 @@ package services
 import connectors.AtedConnector
 import javax.inject.Inject
 import models._
-import play.api.Logger
+import play.api.Logging
 import play.api.http.Status._
 import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, InternalServerException}
 import utils.AtedConstants
@@ -27,7 +27,7 @@ import utils.AtedConstants
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class SubscriptionDataAdapterService @Inject()(atedConnector: AtedConnector) {
+class SubscriptionDataAdapterService @Inject()(atedConnector: AtedConnector) extends Logging {
 
 
   def retrieveSubscriptionData(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[Option[SubscriptionData]] = {
@@ -36,11 +36,11 @@ class SubscriptionDataAdapterService @Inject()(atedConnector: AtedConnector) {
         case OK => Some(response.json.as[SubscriptionData])
         case NOT_FOUND => None
         case BAD_REQUEST =>
-          Logger.warn(s"[SubscriptionDataService] [retrieveSubscriptionData] BadRequestException: [response.body] = ${response.body}")
+          logger.warn(s"[SubscriptionDataService] [retrieveSubscriptionData] BadRequestException: [response.body] = ${response.body}")
           throw new BadRequestException(s"[SubscriptionDataService] [retrieveSubscriptionData] " +
             s"Bad Request: Failed to retrieve Subscription Data [response.body] = ${response.body}")
         case status =>
-          Logger.warn(s"[SubscriptionDataService] [retrieveSubscriptionData] [status] = $status && [response.body] = ${response.body}")
+          logger.warn(s"[SubscriptionDataService] [retrieveSubscriptionData] [status] = $status && [response.body] = ${response.body}")
           throw new InternalServerException(s"[SubscriptionDataService] [retrieveSubscriptionData]" +
             s"Internal Server Exception : Failed to retrieve Subscription Data [status] = $status && [response.body] = ${response.body}")
       }
@@ -53,7 +53,7 @@ class SubscriptionDataAdapterService @Inject()(atedConnector: AtedConnector) {
       response.status match {
         case OK => Some(request)
         case status =>
-          Logger.warn(s"[SubscriptionDataService] [updateSubscriptionData] [status] = $status && [response.body] = ${response.body}")
+          logger.warn(s"[SubscriptionDataService] [updateSubscriptionData] [status] = $status && [response.body] = ${response.body}")
           None
       }
     }

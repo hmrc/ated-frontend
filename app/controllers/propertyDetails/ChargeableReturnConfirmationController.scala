@@ -21,10 +21,10 @@ import connectors.DataCacheConnector
 import controllers.auth.AuthAction
 import javax.inject.Inject
 import models.SubmitReturnsResponse
-import play.api.Logger
+import play.api.Logging
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{ServiceInfoService, SubscriptionDataService}
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants._
 
 import scala.concurrent.ExecutionContext
@@ -37,7 +37,7 @@ class ChargeableReturnConfirmationController @Inject()(mcc: MessagesControllerCo
                                                        template: views.html.propertyDetails.chargeableReturnsConfirmation)
                                                       (implicit val appConfig: ApplicationConfig)
 
-  extends FrontendController(mcc) {
+  extends FrontendController(mcc) with Logging {
 
   implicit val ec: ExecutionContext = mcc.executionContext
 
@@ -48,7 +48,7 @@ class ChargeableReturnConfirmationController @Inject()(mcc: MessagesControllerCo
           case Some(submitResponse) =>
             Ok(template(submitResponse, serviceInfoContent))
           case None =>
-            Logger.warn("[ChargeableReturnConfirmationController][confirmation] - Return Response not found in cache")
+            logger.warn("[ChargeableReturnConfirmationController][confirmation] - Return Response not found in cache")
             Redirect(controllers.routes.AccountSummaryController.view())
         }
       }

@@ -24,7 +24,7 @@ import javax.inject.Inject
 import models.PropertyDetailsProfessionallyValued
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services._
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants.SelectedPreviousReturn
 import utils.AtedUtils
 

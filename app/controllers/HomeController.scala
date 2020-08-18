@@ -20,9 +20,9 @@ import config.ApplicationConfig
 import controllers.auth.AuthAction
 import javax.inject.Inject
 import models.StandardAuthRetrievals
-import play.api.Logger
+import play.api.Logging
 import play.api.mvc._
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.SessionUtils
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -31,7 +31,7 @@ import scala.util.Try
 class HomeController @Inject()(mcc: MessagesControllerComponents,
                                authAction: AuthAction,
                                applicationConfig: ApplicationConfig)
-  extends FrontendController(mcc) {
+  extends FrontendController(mcc) with Logging {
 
   implicit val ec : ExecutionContext = mcc.executionContext
 
@@ -50,11 +50,11 @@ class HomeController @Inject()(mcc: MessagesControllerComponents,
 
   private def redirectSubscribedUser(callerId: Option[String])(implicit authContext: StandardAuthRetrievals, request: Request[AnyContent]): Result = {
     if (authContext.isAgent) {
-      Logger.debug("[redirectSubscribedUser] agent redirected to mandate:" + authContext)
+      logger.debug("[redirectSubscribedUser] agent redirected to mandate:" + authContext)
       Redirect(applicationConfig.agentRedirectedToMandate)
     }
     else {
-      Logger.debug("[redirectSubscribedUser] user redirected to account summary:" + authContext)
+      logger.debug("[redirectSubscribedUser] user redirected to account summary:" + authContext)
       callerId match {
         case Some(x) => Redirect(controllers.routes.AccountSummaryController.view()).addingToSession(SessionUtils.sessionCallerId -> x)
         case None => Redirect(controllers.routes.AccountSummaryController.view())

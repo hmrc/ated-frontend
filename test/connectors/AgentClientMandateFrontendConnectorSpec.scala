@@ -29,7 +29,6 @@ import play.api.test.Helpers._
 import play.twirl.api.Html
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
-import uk.gov.hmrc.play.partials.HeaderCarrierForPartials
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -52,10 +51,9 @@ class AgentClientMandateFrontendConnectorSpec extends PlaySpec with GuiceOneAppP
   "AgentClientMandateFrontendConnector" must {
     "return the partial successfully" in new Setup {
       implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
-      implicit val hc: HeaderCarrier = HeaderCarrier()
       val html = "<h1>helloworld</h1>"
       when(mockHttp.GET[HttpResponse](any())(any(), any(), any()))
-        .thenReturn(Future.successful(HttpResponse(OK, responseString = Some(html))))
+        .thenReturn(Future.successful(HttpResponse(OK, html)))
       testAgentClientMandateFrontendConnector.getClientBannerPartial("clientId", "ated").map {
         response => response.successfulContentOrEmpty must equal(html)
       }
@@ -63,20 +61,18 @@ class AgentClientMandateFrontendConnectorSpec extends PlaySpec with GuiceOneAppP
 
     "return no partial silently" in new Setup {
       implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
-      implicit val hc: HeaderCarrier = HeaderCarrier()
 
       when(mockHttp.GET[HttpResponse](any())(any(), any(), any()))
-        .thenReturn(Future.successful(HttpResponse(NOT_FOUND)))
+        .thenReturn(Future.successful(HttpResponse(NOT_FOUND, "")))
       testAgentClientMandateFrontendConnector.getClientBannerPartial("clientId", "ated").map {
         response => response.successfulContentOrEmpty must equal(Html(""))
       }
     }
 
-    "return the client mandate details succcessfully" in new Setup {
+    "return the client mandate details successfully" in new Setup {
       implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
-      implicit val hc: HeaderCarrier = HeaderCarrier()
       when(mockHttp.GET[HttpResponse](any())(any(), any(), any()))
-        .thenReturn(Future.successful(HttpResponse(OK, responseString = Some(""))))
+        .thenReturn(Future.successful(HttpResponse(OK, "")))
       val result: Future[HttpResponse] = testAgentClientMandateFrontendConnector.getClientDetails("clientId", "ated")
       await(result).status must be(OK)
     }

@@ -20,7 +20,7 @@ import config.ApplicationConfig
 import controllers.auth.AuthAction
 import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Try
@@ -37,12 +37,12 @@ class ApplicationController @Inject()(mcc: MessagesControllerComponents,
     Future.successful(Ok(template()(isSa, implicitly, implicitly, implicitly)))
   }
 
-  def cancel: Action[AnyContent] = Action { implicit request =>
+  def cancel: Action[AnyContent] = Action {
     val serviceRedirectUrl: String = Try{appConfig.conf.getString("cancelRedirectUrl")}.getOrElse("https://www.gov.uk/")
     Redirect(serviceRedirectUrl)
   }
 
-  def logout: Action[AnyContent] = Action { implicit request =>
+  def logout: Action[AnyContent] = Action {
     Redirect(appConfig.serviceSignOut).withNewSession
   }
 
@@ -52,7 +52,7 @@ class ApplicationController @Inject()(mcc: MessagesControllerComponents,
     }
   }
 
-  def redirectToGuidance: Action[AnyContent] = Action { implicit request =>
+  def redirectToGuidance: Action[AnyContent] = Action {
     Redirect(appConfig.signOutRedirect).withNewSession
   }
 

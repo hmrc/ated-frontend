@@ -97,7 +97,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
       val submittedReturns = SubmittedReliefReturns(
         formBundleNo, "Property rental businesses", new LocalDate("2015-05-01"), new LocalDate("2015-05-01"), new LocalDate("2015-05-01"), None, None)
       when(mockReliefsService.viewReliefReturn(ArgumentMatchers.eq(periodKey), ArgumentMatchers.eq(formBundleNo))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.eq(mockAppConfig)))
-        .thenReturn(Future.successful(Some(submittedReturns), isEditable))
+        .thenReturn(Future.successful(Tuple2(Some(submittedReturns), isEditable)))
       when(mockSubscriptionDataService.getOrganisationName(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(organisationName)))
       val result = testViewReliefReturnController.viewReliefReturn(periodKey, formBundleNo).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
@@ -112,7 +112,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
         (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
       when(mockSubscriptionDataService.getOrganisationName(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(organisationName)))
       when(mockReliefsService.viewReliefReturn(ArgumentMatchers.eq(periodKey), ArgumentMatchers.eq(formBundleNo))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.eq(mockAppConfig)))
-        .thenReturn(Future.successful(None, false))
+        .thenReturn(Future.successful(Tuple2(None, false)))
       val result = testViewReliefReturnController.viewReliefReturn(periodKey, formBundleNo).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }

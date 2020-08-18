@@ -19,8 +19,7 @@ package controllers.auth
 import config.ApplicationConfig
 import javax.inject.Inject
 import models.StandardAuthRetrievals
-import play.api.Logger
-import play.api.i18n.Messages
+import play.api.Logging
 import play.api.mvc.Results.Redirect
 import play.api.mvc.{AnyContent, Request, Result}
 import services.DelegationService
@@ -33,11 +32,11 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class AuthAction @Inject()(appConfig: ApplicationConfig,
                            delegationService: DelegationService,
-                           val authConnector: AuthConnector) extends AuthorisedFunctions {
+                           val authConnector: AuthConnector) extends AuthorisedFunctions with Logging {
 
   val origin: String = "ated-frontend"
 
-  def loginParams(implicit request: Request[AnyContent]): Map[String, Seq[String]] = Map(
+  def loginParams: Map[String, Seq[String]] = Map(
     "continue" -> Seq(appConfig.continueURL),
     "origin" -> Seq(origin)
   )
@@ -48,8 +47,7 @@ class AuthAction @Inject()(appConfig: ApplicationConfig,
   def authorisedForNoEnrolments(body: StandardAuthRetrievals => Future[Result])
                                 (implicit request: Request[AnyContent],
                   ex: ExecutionContext,
-                  hc: HeaderCarrier,
-                  messages: Messages): Future[Result] = {
+                  hc: HeaderCarrier): Future[Result] = {
     authorised(
       AffinityGroup.Organisation or AffinityGroup.Agent
     ).retrieve(
@@ -75,8 +73,7 @@ class AuthAction @Inject()(appConfig: ApplicationConfig,
   def authorisedAction(body: StandardAuthRetrievals => Future[Result])
                       (implicit request: Request[AnyContent],
                        ex: ExecutionContext,
-                       hc: HeaderCarrier,
-                       messages: Messages): Future[Result] = {
+                       hc: HeaderCarrier): Future[Result] = {
     authorised(
       (Enrolment("HMRC-ATED-ORG") or Enrolment("HMRC-AGENT-AGENT") or Enrolment("IR-SA")) and
       ConfidenceLevel.L50 and
@@ -101,17 +98,15 @@ class AuthAction @Inject()(appConfig: ApplicationConfig,
     }
   }
 
-  def handleException(ae: AuthorisationException)(implicit request: Request[AnyContent]): Result  = ae match {
+  def handleException(ae: AuthorisationException): Result  = ae match {
     case usa: UnsupportedAffinityGroup =>
-      Logger.info("[AuthAction][handleException] Unsupported Affinity Group" + usa)
+      logger.info("[AuthAction][handleException] Unsupported Affinity Group" + usa)
       unauthorisedUrl()
     case nas: NoActiveSession =>
-      Logger.info("[AuthAction][handleException] NoActiveSession" + nas)
+      logger.info("[AuthAction][handleException] NoActiveSession" + nas)
       Redirect(appConfig.loginURL, loginParams)
     case e: AuthorisationException =>
-      Logger.info("[AuthAction][handleException] AuthorisationException:" + e)
+      logger.info("[AuthAction][handleException] AuthorisationException:" + e)
       unauthorisedUrl()
   }
 }
-
-

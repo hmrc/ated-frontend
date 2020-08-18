@@ -34,6 +34,6 @@ class DelegationConnector @Inject()(http: DefaultHttpClient,
     val jsonData = Json.parse(s"""{"internalId" : "$id"}""".stripMargin)
     val postUrl = s"""$serviceURL/oid"""
 
-    http.POST[JsValue, HttpResponse](postUrl, jsonData)
+    http.POST[JsValue, HttpResponse](postUrl, jsonData)(implicitly, rds = HttpReads.Implicits.readRaw, implicitly, implicitly)
   }
 }

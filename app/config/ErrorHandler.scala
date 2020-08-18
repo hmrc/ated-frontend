@@ -21,7 +21,7 @@ import play.api.Configuration
 import play.api.i18n.{MessagesApi, Messages}
 import play.api.mvc.Request
 import play.twirl.api.Html
-import uk.gov.hmrc.play.bootstrap.http.FrontendErrorHandler
+import uk.gov.hmrc.play.bootstrap.frontend.http.FrontendErrorHandler
 
 class ErrorHandler @Inject()(val messagesApi: MessagesApi,
                              val configuration: Configuration,

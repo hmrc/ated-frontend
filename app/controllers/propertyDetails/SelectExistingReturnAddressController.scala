@@ -21,10 +21,9 @@ import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.AddressLookupForms.addressSelectedForm
 import javax.inject.Inject
-import play.api.Logger
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{FormBundleReturnsService, PropertyDetailsService, ServiceInfoService, SummaryReturnsService}
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants._
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -105,7 +104,7 @@ class SelectExistingReturnAddressController @Inject()(mcc: MessagesControllerCom
                         Some(controllers.propertyDetails.routes.SelectExistingReturnAddressController.view(periodKey, returnType).url))
                     }
                   case None =>
-                    Logger.warn(s"[SelectExistingReturnAddressController][continue] - form bundle return not found for form-bundle-no::$formBundleNum")
+                    logger.warn(s"[SelectExistingReturnAddressController][continue] - form bundle return not found for form-bundle-no::$formBundleNum")
                     Future.successful(Redirect(controllers.routes.AccountSummaryController.view()))
                 }
               } yield result

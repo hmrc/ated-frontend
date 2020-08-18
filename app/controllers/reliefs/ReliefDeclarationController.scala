@@ -21,13 +21,11 @@ import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.BackLinkController
 import controllers.auth.{AuthAction, ClientHelper}
 import javax.inject.Inject
-import play.api.Logger
-import play.api.i18n.Messages
+import play.api.Logging
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import play.twirl.api.Html
 import services.{DelegationService, ReliefsService, ServiceInfoService}
 import uk.gov.hmrc.http.ForbiddenException
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -43,7 +41,7 @@ class ReliefDeclarationController @Inject()(mcc: MessagesControllerComponents,
                                             templateError: views.html.global_error)
                                            (implicit val appConfig: ApplicationConfig)
 
-  extends FrontendController(mcc) with BackLinkController with ClientHelper {
+  extends FrontendController(mcc) with BackLinkController with ClientHelper with Logging {
 
   implicit val ec: ExecutionContext = mcc.executionContext
   val controllerId: String = "ReliefDeclarationController"
@@ -80,7 +78,7 @@ class ReliefDeclarationController @Inject()(mcc: MessagesControllerComponents,
       }
     } recover {
       case _: ForbiddenException     =>
-        Logger.warn("[ReliefDeclarationController][submit] Forbidden exception")
+        logger.warn("[ReliefDeclarationController][submit] Forbidden exception")
         authAction.unauthorisedUrl()
     }
   }

@@ -61,7 +61,7 @@ class PropertyDetailsServiceSpec_Periods extends PlaySpec with GuiceOneServerPer
       "save the value and return the response from the connector" in new Setup {
         val successResponse: JsValue = Json.toJson(propertyDetails)
         when(mockPropertyDetailsConnector.saveDraftIsFullTaxPeriod(ArgumentMatchers.eq("1"), ArgumentMatchers.any())
-          (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+          (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))
 
         val result: Future[Int] = testPropertyDetailsService.saveDraftIsFullTaxPeriod("1", propValue)
         await(result) must be(OK)
@@ -71,7 +71,7 @@ class PropertyDetailsServiceSpec_Periods extends PlaySpec with GuiceOneServerPer
       "save and throw an Exception if it fails" in new Setup {
         val successResponse: JsValue = Json.toJson(propValue)
         when(mockPropertyDetailsConnector.saveDraftIsFullTaxPeriod(ArgumentMatchers.eq("1"), ArgumentMatchers.any())
-          (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, Some(successResponse))))
+          (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, successResponse.toString)))
 
         val result: Future[Int] = testPropertyDetailsService.saveDraftIsFullTaxPeriod("1", propValue)
         val thrown: InternalServerException = the[InternalServerException] thrownBy await(result)
@@ -88,7 +88,7 @@ class PropertyDetailsServiceSpec_Periods extends PlaySpec with GuiceOneServerPer
       "save the value and return the response from the connector" in new Setup {
         val successResponse: JsValue = Json.toJson(propertyDetails)
         when(mockPropertyDetailsConnector.saveDraftPropertyDetailsInRelief(ArgumentMatchers.eq("1"), ArgumentMatchers.any())
-        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))
 
         val result: Future[Int] = testPropertyDetailsService.saveDraftPropertyDetailsInRelief("1", propValue)
         await(result) must be(OK)
@@ -98,7 +98,7 @@ class PropertyDetailsServiceSpec_Periods extends PlaySpec with GuiceOneServerPer
       "save and throw an Exception if it fails" in new Setup {
         val successResponse: JsValue = Json.toJson(propValue)
         when(mockPropertyDetailsConnector.saveDraftPropertyDetailsInRelief(ArgumentMatchers.eq("1"), ArgumentMatchers.any())
-        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, Some(successResponse))))
+        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, successResponse.toString)))
 
         val result: Future[Int] = testPropertyDetailsService.saveDraftPropertyDetailsInRelief("1", propValue)
         val thrown: InternalServerException = the[InternalServerException] thrownBy await(result)
@@ -115,7 +115,7 @@ class PropertyDetailsServiceSpec_Periods extends PlaySpec with GuiceOneServerPer
       "save the value and return the response from the connector" in new Setup {
         val successResponse: JsValue = Json.toJson(propertyDetails)
         when(mockPropertyDetailsConnector.saveDraftPropertyDetailsTaxAvoidance(ArgumentMatchers.eq("1"), ArgumentMatchers.any())
-        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))
 
         val result: Future[Int] = testPropertyDetailsService.saveDraftPropertyDetailsTaxAvoidance("1", propValue)
         await(result) must be(OK)
@@ -125,7 +125,7 @@ class PropertyDetailsServiceSpec_Periods extends PlaySpec with GuiceOneServerPer
       "save and throw an Exception if it fails" in new Setup {
         val successResponse: JsValue = Json.toJson(propValue)
         when(mockPropertyDetailsConnector.saveDraftPropertyDetailsTaxAvoidance(ArgumentMatchers.eq("1"), ArgumentMatchers.any())
-        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, Some(successResponse))))
+        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, successResponse.toString)))
 
         val result: Future[Int] = testPropertyDetailsService.saveDraftPropertyDetailsTaxAvoidance("1", propValue)
         val thrown: InternalServerException = the[InternalServerException] thrownBy await(result)
@@ -142,7 +142,7 @@ class PropertyDetailsServiceSpec_Periods extends PlaySpec with GuiceOneServerPer
       "save the value and return the response from the connector" in new Setup {
         val successResponse: JsValue = Json.toJson(propertyDetails)
         when(mockPropertyDetailsConnector.saveDraftPropertyDetailsDatesLiable(ArgumentMatchers.eq("1"), ArgumentMatchers.any())
-        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))
 
         val result: Future[Int] = testPropertyDetailsService.saveDraftPropertyDetailsDatesLiable("1", propValue)
         await(result) must be(OK)
@@ -152,7 +152,7 @@ class PropertyDetailsServiceSpec_Periods extends PlaySpec with GuiceOneServerPer
       "save and throw an Exception if it fails" in new Setup {
         val successResponse: JsValue = Json.toJson(propValue)
         when(mockPropertyDetailsConnector.saveDraftPropertyDetailsDatesLiable(ArgumentMatchers.eq("1"), ArgumentMatchers.any())
-        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, Some(successResponse))))
+        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, successResponse.toString)))
 
         val result: Future[Int] = testPropertyDetailsService.saveDraftPropertyDetailsDatesLiable("1", propValue)
         val thrown: InternalServerException = the[InternalServerException] thrownBy await(result)
@@ -169,7 +169,7 @@ class PropertyDetailsServiceSpec_Periods extends PlaySpec with GuiceOneServerPer
       "add the value and return the response from the connector" in new Setup {
         val successResponse: JsValue = Json.toJson(propertyDetails)
         when(mockPropertyDetailsConnector.addDraftPropertyDetailsDatesLiable(ArgumentMatchers.eq("1"), ArgumentMatchers.any())
-        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))
 
         val result: Future[Int] = testPropertyDetailsService.addDraftPropertyDetailsDatesLiable("1", propValue)
         await(result) must be(OK)
@@ -179,7 +179,7 @@ class PropertyDetailsServiceSpec_Periods extends PlaySpec with GuiceOneServerPer
       "add and throw an Exception if it fails" in new Setup {
         val successResponse: JsValue = Json.toJson(propValue)
         when(mockPropertyDetailsConnector.addDraftPropertyDetailsDatesLiable(ArgumentMatchers.eq("1"), ArgumentMatchers.any())
-        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, Some(successResponse))))
+        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, successResponse.toString)))
 
         val result: Future[Int] = testPropertyDetailsService.addDraftPropertyDetailsDatesLiable("1", propValue)
         val thrown: InternalServerException = the[InternalServerException] thrownBy await(result)
@@ -213,7 +213,7 @@ class PropertyDetailsServiceSpec_Periods extends PlaySpec with GuiceOneServerPer
         when(mockDataCacheConnector.fetchAndGetFormData[PeriodChooseRelief](ArgumentMatchers.any())
           (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(PeriodChooseRelief("reliefDescription"))))
         when(mockPropertyDetailsConnector.addDraftPropertyDetailsDatesInRelief(ArgumentMatchers.eq("1"), ArgumentMatchers.any())
-          (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+          (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))
 
         val result: Future[Int] = testPropertyDetailsService.addDraftPropertyDetailsDatesInRelief("1", propValue)
         await(result) must be(OK)
@@ -225,7 +225,7 @@ class PropertyDetailsServiceSpec_Periods extends PlaySpec with GuiceOneServerPer
         when(mockDataCacheConnector.fetchAndGetFormData[PeriodChooseRelief](ArgumentMatchers.any())
           (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(PeriodChooseRelief("reliefDescription"))))
         when(mockPropertyDetailsConnector.addDraftPropertyDetailsDatesInRelief(ArgumentMatchers.eq("1"), ArgumentMatchers.any())
-          (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, Some(successResponse))))
+          (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, successResponse.toString)))
 
         val result: Future[Int] = testPropertyDetailsService.addDraftPropertyDetailsDatesInRelief("1", propValue)
         val thrown: InternalServerException = the[InternalServerException] thrownBy await(result)
@@ -242,7 +242,7 @@ class PropertyDetailsServiceSpec_Periods extends PlaySpec with GuiceOneServerPer
       "delete the value and return the response from the connector" in new Setup {
         val successResponse: JsValue = Json.toJson(propertyDetails)
         when(mockPropertyDetailsConnector.deleteDraftPropertyDetailsPeriod(ArgumentMatchers.eq("1"), ArgumentMatchers.any())
-        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))
 
         val result: Future[PropertyDetails] = testPropertyDetailsService.deleteDraftPropertyDetailsPeriod("1", propValue.startDate)
         await(result) must be(propertyDetails)
@@ -252,7 +252,7 @@ class PropertyDetailsServiceSpec_Periods extends PlaySpec with GuiceOneServerPer
       "delete and throw an Exception if it fails" in new Setup {
         val successResponse: JsValue = Json.toJson(propValue)
         when(mockPropertyDetailsConnector.deleteDraftPropertyDetailsPeriod(ArgumentMatchers.eq("1"), ArgumentMatchers.any())
-        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, Some(successResponse))))
+        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, successResponse.toString)))
 
         val result: Future[PropertyDetails] = testPropertyDetailsService.deleteDraftPropertyDetailsPeriod("1", propValue.startDate)
         val thrown: InternalServerException = the[InternalServerException] thrownBy await(result)
@@ -269,7 +269,7 @@ class PropertyDetailsServiceSpec_Periods extends PlaySpec with GuiceOneServerPer
       "save the value and return the response from the connector" in new Setup {
         val successResponse: JsValue = Json.toJson(propertyDetails)
         when(mockPropertyDetailsConnector.saveDraftPropertyDetailsSupportingInfo(ArgumentMatchers.eq("1"), ArgumentMatchers.any())
-        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))
 
         val result: Future[Int] = testPropertyDetailsService.saveDraftPropertyDetailsSupportingInfo("1", propValue)
         await(result) must be(OK)
@@ -279,7 +279,7 @@ class PropertyDetailsServiceSpec_Periods extends PlaySpec with GuiceOneServerPer
       "save and throw an Exception if it fails" in new Setup {
         val successResponse: JsValue = Json.toJson(propValue)
         when(mockPropertyDetailsConnector.saveDraftPropertyDetailsSupportingInfo(ArgumentMatchers.eq("1"), ArgumentMatchers.any())
-        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, Some(successResponse))))
+        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, successResponse.toString)))
 
         val result: Future[Int] = testPropertyDetailsService.saveDraftPropertyDetailsSupportingInfo("1", propValue)
         val thrown: InternalServerException = the[InternalServerException] thrownBy await(result)

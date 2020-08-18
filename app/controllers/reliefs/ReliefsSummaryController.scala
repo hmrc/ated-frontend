@@ -23,11 +23,10 @@ import controllers.auth.{AuthAction, ClientHelper}
 import javax.inject.Inject
 import models.ReliefsTaxAvoidance
 import org.joda.time.LocalDate
-import play.api.Logger
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{ReliefsService, ServiceInfoService, SubscriptionDataService}
 import uk.gov.hmrc.http.ForbiddenException
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedUtils
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -119,7 +118,7 @@ class ReliefsSummaryController @Inject()(mcc: MessagesControllerComponents,
       }
     } recover {
       case _: ForbiddenException     =>
-        Logger.warn("[ReliefsSummaryController][viewPrintFriendlyReliefReturn] Forbidden exception")
+        logger.warn("[ReliefsSummaryController][viewPrintFriendlyReliefReturn] Forbidden exception")
         authAction.unauthorisedUrl()
     }
   }

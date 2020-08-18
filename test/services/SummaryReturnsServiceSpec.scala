@@ -83,7 +83,7 @@ class SummaryReturnsServiceSpec extends PlaySpec with MockitoSugar with BeforeAn
               .thenReturn(Future.successful(allSummaryReturns))
 
             when(mockAtedConnector.getFullSummaryReturns(any(), any()))
-              .thenReturn(Future.successful(HttpResponse(OK, Some(jsonWithErrantReturnPeriod.get))))
+              .thenReturn(Future.successful(HttpResponse(OK, jsonWithErrantReturnPeriod.get.toString)))
 
             val result: Future[SummaryReturnsModel] = testSummaryReturnsService.getSummaryReturns
             await(result) must be(allSummaryReturns)
@@ -104,7 +104,7 @@ class SummaryReturnsServiceSpec extends PlaySpec with MockitoSugar with BeforeAn
               .thenReturn(Future.successful(Some(dataCached)))
 
             when(mockAtedConnector.getPartialSummaryReturns(any(), any()))
-              .thenReturn(Future.successful(HttpResponse(OK, Some(partialDataReturned))))
+              .thenReturn(Future.successful(HttpResponse(OK, partialDataReturned.toString)))
 
             val result: Future[SummaryReturnsModel] = testSummaryReturnsService.getSummaryReturns
 
@@ -122,7 +122,7 @@ class SummaryReturnsServiceSpec extends PlaySpec with MockitoSugar with BeforeAn
               .thenReturn(Future.successful(Some(dataCached)))
 
             when(mockAtedConnector.getPartialSummaryReturns(any(), any()))
-              .thenReturn(Future.successful(HttpResponse(BAD_REQUEST, Some(allReturnsJson()))))
+              .thenReturn(Future.successful(HttpResponse(BAD_REQUEST, allReturnsJson().toString)))
 
             val result: Future[SummaryReturnsModel] = testSummaryReturnsService.getSummaryReturns
             val thrown: RuntimeException = the[RuntimeException] thrownBy await(result)
@@ -148,7 +148,7 @@ class SummaryReturnsServiceSpec extends PlaySpec with MockitoSugar with BeforeAn
           .thenReturn(Future.successful(allSummaryReturns))
 
         when(mockAtedConnector.getFullSummaryReturns(any(), any()))
-          .thenReturn(Future.successful(HttpResponse(OK, Some(allSummaryReturnsJson))))
+          .thenReturn(Future.successful(HttpResponse(OK, allSummaryReturnsJson.toString)))
 
         val result: Future[Option[PeriodSummaryReturns]] = testSummaryReturnsService.getPeriodSummaryReturns(currentTaxYear)
         await(result) must be(Some(allSummaryReturns.returnsCurrentTaxYear.head))
@@ -163,7 +163,7 @@ class SummaryReturnsServiceSpec extends PlaySpec with MockitoSugar with BeforeAn
           .thenReturn(Future.successful(allSummaryReturns))
 
         when(mockAtedConnector.getFullSummaryReturns(any(), any()))
-          .thenReturn(Future.successful(HttpResponse(OK, Some(allSummaryReturnsJson))))
+          .thenReturn(Future.successful(HttpResponse(OK, allSummaryReturnsJson.toString)))
 
         val result: Future[Option[PeriodSummaryReturns]] = testSummaryReturnsService.getPeriodSummaryReturns(currentTaxYear + 1)
         await(result) must be(None)
@@ -178,7 +178,7 @@ class SummaryReturnsServiceSpec extends PlaySpec with MockitoSugar with BeforeAn
           .thenReturn(Future.successful(None))
 
         when(mockAtedConnector.getFullSummaryReturns(any(), any()))
-          .thenReturn(Future.successful(HttpResponse(OK, Some(allSummaryReturnsJson))))
+          .thenReturn(Future.successful(HttpResponse(OK, allSummaryReturnsJson.toString)))
 
         when(mockDataCacheConnector.saveFormData[SummaryReturnsModel](eqTo(RetrieveReturnsResponseId), any())(any(), any(), any()))
           .thenReturn(Future.successful(allSummaryReturns))
@@ -212,7 +212,7 @@ class SummaryReturnsServiceSpec extends PlaySpec with MockitoSugar with BeforeAn
 
         val result = testSummaryReturnsService.generateCurrentTaxYearReturns(currentYearReturns)
 
-        await(result) must be(
+        await(result) must be(Tuple3(
           List(
             AccountSummaryRowModel(returnType = "ated.draft", description = "desc",
               route = s"/ated/period-summary/$currentTaxYear/view-chargeable-edit/1"),
@@ -224,7 +224,7 @@ class SummaryReturnsServiceSpec extends PlaySpec with MockitoSugar with BeforeAn
               route = s"/ated/period-summary/$currentTaxYear/view-disposal/"),
             AccountSummaryRowModel(formBundleNo = Some("123456789013"), returnType = "ated.submitted",
               description = "addr1+2", route = s"/ated/form-bundle/123456789013/$currentTaxYear")),
-          6, true)
+          6, true))
       }
 
       "return all returns for a period in order of draft, currentLiability and relief" +
@@ -234,7 +234,7 @@ class SummaryReturnsServiceSpec extends PlaySpec with MockitoSugar with BeforeAn
 
         val result = testSummaryReturnsService.generateCurrentTaxYearReturns(currentYearReturns)
 
-        await(result) must be(
+        await(result) must be(Tuple3(
           List(
             AccountSummaryRowModel(returnType = "ated.draft", description = "desc",
               route = s"/ated/period-summary/$currentTaxYear/view-chargeable-edit/1"),
@@ -245,7 +245,7 @@ class SummaryReturnsServiceSpec extends PlaySpec with MockitoSugar with BeforeAn
             AccountSummaryRowModel(
               formBundleNo = Some("123456789012"), returnType = "ated.submitted",
               description = "some relief", route = s"/ated/view-relief-return/$currentTaxYear/123456789012")),
-          4, false)
+          4, false))
       }
     }
 

@@ -45,7 +45,7 @@ class FeatureSwitchImpl @Inject()(appConfig: ApplicationConfig) {
   def disable(switch: FeatureSwitch): FeatureSwitch = setProp(switch.name, value = false)
 
   def setProp(name: String, value: Boolean): FeatureSwitch = {
-    val systemProps = sys.props.+= ((systemPropertyName(name), value.toString))
+    sys.props.+= ((systemPropertyName(name), value.toString))
     forName(name)
   }
 

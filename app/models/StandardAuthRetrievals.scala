@@ -16,14 +16,14 @@
 
 package models
 
-import play.api.Logger
+import play.api.Logging
 import uk.gov.hmrc.auth.core.AffinityGroup.Agent
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolment, EnrolmentIdentifier}
 import uk.gov.hmrc.http.ForbiddenException
 
 case class StandardAuthRetrievals(enrolments: Set[Enrolment],
                                   affinityGroup: Option[AffinityGroup],
-                                  delegationModel: Option[DelegationModel]) {
+                                  delegationModel: Option[DelegationModel]) extends Logging {
 
   private val agentKey = "HMRC-AGENT-AGENT"
   private val saKey = "IR-SA"
@@ -43,7 +43,7 @@ case class StandardAuthRetrievals(enrolments: Set[Enrolment],
 
   def agentLink: String = {
     "/ated/" + agentRefNo.getOrElse {
-      Logger.warn(s"[AtedContext][agentLink] Exception - Agent does not have the correct authorisation")
+      logger.warn(s"[AtedContext][agentLink] Exception - Agent does not have the correct authorisation")
       throw new RuntimeException("Agent does not have the correct authorisation")
     }
   }
@@ -54,12 +54,12 @@ case class StandardAuthRetrievals(enrolments: Set[Enrolment],
       agentRefNumber.flatMap {
         case Enrolment(_, ids, _, _) =>
           val numberOfAgentRefs = ids.count{case EnrolmentIdentifier(k, _) => k.equals(agentNumberKey)}
-          Logger.info(s"[StandardAuthRetrievals][agentRefNo] Number of Agent Reference numbers: $numberOfAgentRefs")
+          logger.info(s"[StandardAuthRetrievals][agentRefNo] Number of Agent Reference numbers: $numberOfAgentRefs")
 
           ids.collectFirst { case EnrolmentIdentifier(k, v) if k.equals(agentNumberKey) => v }
       }
     } else None
-    Logger.info(s"[StandardAuthRetrievals][agentRefNo] Agent ref was: $optionRef")
+    logger.info(s"[StandardAuthRetrievals][agentRefNo] Agent ref was: $optionRef")
     optionRef
   }
 
@@ -73,7 +73,7 @@ case class StandardAuthRetrievals(enrolments: Set[Enrolment],
     val optionRef = atedRefNumber.flatMap {
       case Enrolment(_, ids, _, _) => ids.collectFirst { case EnrolmentIdentifier(k, v) if k.equals(atedNumberKey) => v }
     }
-    Logger.info(s"[StandardAuthRetrievals][clientAtedRefNo] Client ref was: $optionRef")
+    logger.info(s"[StandardAuthRetrievals][clientAtedRefNo] Client ref was: $optionRef")
     optionRef
   }
 
@@ -82,18 +82,18 @@ case class StandardAuthRetrievals(enrolments: Set[Enrolment],
       case Some(delModel) =>
         (isAgent, delModel) match {
           case (true, DelegationModel(_, _, _, taxIdentifiers, _, _)) =>
-            Logger.info(s"[StandardAuthRetrievals][atedReferenceNumber] Agent with Delegation model ${taxIdentifiers}")
+            logger.info(s"[StandardAuthRetrievals][atedReferenceNumber] Agent with Delegation model ${taxIdentifiers}")
             taxIdentifiers.ated.map(_.value)
           case _ =>
-            Logger.info(s"[StandardAuthRetrievals][atedReferenceNumber] client with ated ref first case ${clientAtedRefNo}")
+            logger.info(s"[StandardAuthRetrievals][atedReferenceNumber] client with ated ref first case ${clientAtedRefNo}")
             clientAtedRefNo
         }
       case _ =>
-        Logger.info(s"[StandardAuthRetrievals][atedReferenceNumber] client with ated ref second case ${clientAtedRefNo}")
+        logger.info(s"[StandardAuthRetrievals][atedReferenceNumber] client with ated ref second case ${clientAtedRefNo}")
         clientAtedRefNo
     }
   }.getOrElse {
-    Logger.warn(s"[StandardAuthRetrieval][atedReferenceNumber] Exception - User forbidden exception")
+    logger.warn(s"[StandardAuthRetrieval][atedReferenceNumber] Exception - User forbidden exception")
     throw new ForbiddenException("Forbidden")
   }
 

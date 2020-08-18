@@ -22,10 +22,9 @@ import controllers.auth.{AuthAction, ClientHelper}
 import controllers.viewhelper.EditLiability._
 import javax.inject.Inject
 import models.EditLiabilityReturnsResponseModel
-import play.api.Logger
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{DelegationService, ServiceInfoService, SubscriptionDataService}
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants._
 
 import scala.concurrent.ExecutionContext
@@ -59,7 +58,7 @@ class EditLiabilitySentController @Inject()(mcc: MessagesControllerComponents,
               case None => Redirect(controllers.routes.AccountSummaryController.view())
             }
           case None =>
-            Logger.warn("[EditLiabilitySentController][view] - Return Response not found in cache")
+            logger.warn("[EditLiabilitySentController][view] - Return Response not found in cache")
             throw new RuntimeException("Return Response not found in cache")
         }
       }

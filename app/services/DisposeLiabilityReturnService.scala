@@ -20,7 +20,7 @@ import connectors.{AtedConnector, DataCacheConnector}
 import javax.inject.Inject
 import models._
 import org.joda.time.DateTime
-import play.api.Logger
+import play.api.Logging
 import play.api.http.Status._
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.AtedConstants._
@@ -29,7 +29,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class DisposeLiabilityReturnService @Inject()(atedConnector: AtedConnector,
-                                              dataCacheConnector: DataCacheConnector) {
+                                              dataCacheConnector: DataCacheConnector) extends Logging {
 
   def retrieveLiabilityReturn(oldFormBundleNo: String)
                              (implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[Option[DisposeLiabilityReturn]] = {
@@ -37,7 +37,7 @@ class DisposeLiabilityReturnService @Inject()(atedConnector: AtedConnector,
       response => response.status match {
         case OK => response.json.asOpt[DisposeLiabilityReturn]
         case status =>
-          Logger.warn(s"[DisposeLiabilityReturnService][retrieveLiabilityReturn] - status : $status, body = ${response.body}")
+          logger.warn(s"[DisposeLiabilityReturnService][retrieveLiabilityReturn] - status : $status, body = ${response.body}")
           None
       }
     }
