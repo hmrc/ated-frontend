@@ -23,9 +23,8 @@ import controllers.auth.{AuthAction, ClientHelper}
 import javax.inject.Inject
 import models.SelectPeriod
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{AddressLookupService, ChangeLiabilityReturnService, PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService}
-import uk.gov.hmrc.play.bootstrap.audit.DefaultAuditConnector
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import services.{ChangeLiabilityReturnService, PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService}
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants.{RetrieveSelectPeriodFormId, SelectedPreviousReturn}
 import utils.AtedUtils
 

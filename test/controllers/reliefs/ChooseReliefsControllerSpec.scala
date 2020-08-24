@@ -102,7 +102,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
       setAuthMocks(authMock)
       when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(btaNavigationLinksView()(messages,mockAppConfig)))
       when(mockDataCacheConnector.fetchAtedRefData[String](eqTo(AtedConstants.DelegatedClientAtedRefNumber))
-        (any(), any(), any())).thenReturn(Future.successful(Some("XN1200000100001")))
+        (any(), any())).thenReturn(Future.successful(Some("XN1200000100001")))
       when(mockBackLinkCacheConnector.fetchAndGetBackLink(any())(any())).thenReturn(Future.successful(None))
       when(mockBackLinkCacheConnector.saveBackLink(any(), any())(any())).thenReturn(Future.successful(None))
       when(mockReliefsService.retrieveDraftReliefs(any(), any())(any(), any())).thenReturn(Future.successful(None))
@@ -116,7 +116,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
       when(mockDataCacheConnector.fetchAtedRefData[String](eqTo(AtedConstants.DelegatedClientAtedRefNumber))
-        (any(), any(), any())).thenReturn(Future.successful(Some("XN1200000100001")))
+        (any(), any())).thenReturn(Future.successful(Some("XN1200000100001")))
       when(mockReliefsService.retrieveDraftReliefs(any(), any())(any(), any())).thenReturn(Future.successful(reliefs))
       val result = testChooseReliefsController.editFromSummary(periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
 
@@ -128,7 +128,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
       val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
       setForbiddenAuthMocks(authMock)
       when(mockDataCacheConnector.fetchAtedRefData[String](eqTo(AtedConstants.DelegatedClientAtedRefNumber))
-        (any(), any(), any())).thenReturn(Future.successful(Some("XN1200000100001")))
+        (any(), any())).thenReturn(Future.successful(Some("XN1200000100001")))
       when(mockReliefsService.retrieveDraftReliefs(any(), any())(any(), any())).thenReturn(Future.successful(reliefs))
       val result = testChooseReliefsController.editFromSummary(periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
 
@@ -141,7 +141,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
       setAuthMocks(authMock)
       when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(btaNavigationLinksView()(messages,mockAppConfig)))
       when(mockDataCacheConnector.fetchAtedRefData[String](eqTo(AtedConstants.DelegatedClientAtedRefNumber))
-        (any(), any(), any())).thenReturn(Future.successful(Some("XN1200000100001")))
+        (any(), any())).thenReturn(Future.successful(Some("XN1200000100001")))
       when(mockBackLinkCacheConnector.fetchAndGetBackLink(any())(any())).thenReturn(Future.successful(None))
       when(mockBackLinkCacheConnector.saveBackLink(any(), any())(any())).thenReturn(Future.successful(None))
       when(mockReliefsService.retrieveDraftReliefs(any(), any())(any(), any()))
@@ -162,7 +162,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
     def submitWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded], inputJson: JsValue)(test: Future[Result] => Any) {
       val userId = s"user-${UUID.randomUUID}"
       when(mockDataCacheConnector.fetchAtedRefData[String](eqTo(AtedConstants.DelegatedClientAtedRefNumber))
-        (any(), any(), any())).thenReturn(Future.successful(Some("XN1200000100001")))
+        (any(), any())).thenReturn(Future.successful(Some("XN1200000100001")))
       when(mockReliefsService.saveDraftReliefs(any(), any(), any())(any(), any()))
         .thenReturn(Future.successful(Some(testReliefs)))
       when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(btaNavigationLinksView()(messages,mockAppConfig)))
@@ -177,7 +177,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
     def submitFormBodyWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
       val userId = s"user-${UUID.randomUUID}"
       when(mockDataCacheConnector.fetchAtedRefData[String](eqTo(AtedConstants.DelegatedClientAtedRefNumber))
-        (any(), any(), any())).thenReturn(Future.successful(Some("XN1200000100001")))
+        (any(), any())).thenReturn(Future.successful(Some("XN1200000100001")))
       when(mockReliefsService.saveDraftReliefs(any(), any(), any())(any(), any()))
         .thenReturn(Future.successful(Some(testReliefs)))
 
@@ -191,7 +191,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
     def forbiddenSubmitUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
       val userId = s"user-${UUID.randomUUID}"
       when(mockDataCacheConnector.fetchAtedRefData[String](eqTo(AtedConstants.DelegatedClientAtedRefNumber))
-        (any(), any(), any())).thenReturn(Future.successful(Some("XN1200000100001")))
+        (any(), any())).thenReturn(Future.successful(Some("XN1200000100001")))
       when(mockReliefsService.saveDraftReliefs(any(), any(), any())(any(), any()))
         .thenReturn(Future.successful(Some(testReliefs)))
 

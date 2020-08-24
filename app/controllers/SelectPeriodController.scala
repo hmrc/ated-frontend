@@ -25,7 +25,7 @@ import models.SelectPeriod
 import org.joda.time.LocalDate
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.ServiceInfoService
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants._
 import utils.PeriodUtils
 

@@ -19,7 +19,7 @@ package services
 import connectors.{AgentClientMandateFrontendConnector, AtedConnector, DataCacheConnector}
 import javax.inject.Inject
 import models._
-import play.api.Logger
+import play.api.Logging
 import play.api.mvc.Request
 import play.mvc.Http.Status._
 import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, InternalServerException}
@@ -30,24 +30,25 @@ import scala.concurrent.Future
 
 class DetailsService @Inject()(atedConnector: AtedConnector,
                                mandateFrontendConnector: AgentClientMandateFrontendConnector,
-                               dataCacheConnector: DataCacheConnector) {
+                               dataCacheConnector: DataCacheConnector) extends Logging {
 
 
   val delegatedClientAtedRefNumber = "delegatedClientAtedRefNumber"
 
 
-  def getDetails(identifier: String, identifierType: String)(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[Option[EtmpRegistrationDetails]] = {
+  def getDetails(identifier: String, identifierType: String)(
+    implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[Option[EtmpRegistrationDetails]] = {
     atedConnector.getDetails(identifier = identifier, identifierType = identifierType) map {
       response =>
         response.status match {
           case OK => response.json.asOpt[EtmpRegistrationDetails]
           case NOT_FOUND => response.json.asOpt[EtmpRegistrationDetails]
           case BAD_REQUEST =>
-            Logger.warn(s"[DetailsService][getDetails] status = ${response.status} - body = ${response.body}")
+            logger.warn(s"[DetailsService][getDetails] status = ${response.status} - body = ${response.body}")
             throw new BadRequestException(s"[DetailsService][getDetails] Bad Data, " +
               s"status = ${response.status} - body = ${response.body}")
           case _ =>
-            Logger.warn(s"[DetailsService][getDetails] status = ${response.status} - body = ${response.body}")
+            logger.warn(s"[DetailsService][getDetails] status = ${response.status} - body = ${response.body}")
             throw new InternalServerException(s"[DetailsService][getDetails] Internal server error, " +
               s"status = ${response.status} - body = ${response.body}")
         }
@@ -58,10 +59,10 @@ class DetailsService @Inject()(atedConnector: AtedConnector,
                                          (implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[Option[UpdateRegistrationDetailsRequest]] = {
 
     if (oldDetails.isAnIndividual) {
-      Logger.warn(s"[DetailsService] [updateRegisteredDetails] tried to update an individual")
+      logger.warn(s"[DetailsService] [updateRegisteredDetails] tried to update an individual")
       Future.successful(None)
     } else if (oldDetails.organisation.flatMap(_.isAGroup).isEmpty) {
-      Logger.warn(s"[DetailsService] [updateRegisteredDetails] tried to update an organisation with no isAGroup setting")
+      logger.warn(s"[DetailsService] [updateRegisteredDetails] tried to update an organisation with no isAGroup setting")
       Future.successful(None)
     } else {
       val updateData = UpdateRegistrationDetailsRequest(isAnIndividual = oldDetails.isAnIndividual,
@@ -78,7 +79,7 @@ class DetailsService @Inject()(atedConnector: AtedConnector,
           response.status match {
             case OK => Some(updateData)
             case status =>
-              Logger.warn(s"[DetailsService] [updateRegisteredDetails] [status] = ${status} && [response.body] = ${response.body}")
+              logger.warn(s"[DetailsService] [updateRegisteredDetails] [status] = ${status} && [response.body] = ${response.body}")
               None
           }
       }
@@ -89,10 +90,10 @@ class DetailsService @Inject()(atedConnector: AtedConnector,
                                          (implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[Option[UpdateRegistrationDetailsRequest]] = {
 
     if (oldDetails.isAnIndividual) {
-      Logger.warn(s"[DetailsService] [updateRegisteredDetails] tried to update an individual")
+      logger.warn(s"[DetailsService] [updateRegisteredDetails] tried to update an individual")
       Future.successful(None)
     } else if (oldDetails.organisation.flatMap(_.isAGroup).isEmpty) {
-      Logger.warn(s"[DetailsService] [updateRegisteredDetails] tried to update an organisation with no isAGroup setting")
+      logger.warn(s"[DetailsService] [updateRegisteredDetails] tried to update an organisation with no isAGroup setting")
       Future.successful(None)
     } else {
       val updateData = UpdateRegistrationDetailsRequest(isAnIndividual = oldDetails.isAnIndividual,
@@ -109,7 +110,7 @@ class DetailsService @Inject()(atedConnector: AtedConnector,
           response.status match {
             case OK => Some(updateData)
             case status =>
-              Logger.warn(s"[DetailsService] [updateRegisteredDetails] [status] = ${status} && [response.body] = ${response.body}")
+              logger.warn(s"[DetailsService] [updateRegisteredDetails] [status] = ${status} && [response.body] = ${response.body}")
               None
           }
       }
@@ -124,7 +125,7 @@ class DetailsService @Inject()(atedConnector: AtedConnector,
     }
   }
 
-  def getClientMandateDetails(clientId: String, service: String)(implicit authContext: StandardAuthRetrievals, request: Request[_], hc: HeaderCarrier): Future[Option[ClientMandateDetails]] = {
+  def getClientMandateDetails(clientId: String, service: String)(implicit authContext: StandardAuthRetrievals, request: Request[_]): Future[Option[ClientMandateDetails]] = {
     if (authContext.isAgent) {
       Future.successful(None)
     } else {
@@ -137,7 +138,7 @@ class DetailsService @Inject()(atedConnector: AtedConnector,
     }
   }
 
-  def cacheClientReference(atedRef: String)(implicit authContext: StandardAuthRetrievals, request: Request[_], hc: HeaderCarrier): Future[String] = {
+  def cacheClientReference(atedRef: String)(implicit hc: HeaderCarrier): Future[String] = {
       dataCacheConnector.saveFormData[String](delegatedClientAtedRefNumber, atedRef)
   }
 }

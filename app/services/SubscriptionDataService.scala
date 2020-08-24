@@ -29,7 +29,7 @@ class SubscriptionDataService @Inject()(dataCacheConnector: DataCacheConnector,
                                         subscriptionDataAdapterService: SubscriptionDataAdapterService,
                                         detailsService: DetailsService) {
 
-  private def retrieveCachedData(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[Option[CachedData]] = {
+  private def retrieveCachedData(implicit hc: HeaderCarrier): Future[Option[CachedData]] = {
     dataCacheConnector.fetchAndGetFormData[CachedData](RetrieveSubscriptionDataId)
   }
 
@@ -123,7 +123,7 @@ class SubscriptionDataService @Inject()(dataCacheConnector: DataCacheConnector,
   }
 
   private def updateDetails[T](performUpdate: (CachedData, T) => Future[Option[Any]])(updatedData: T)
-                              (implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[Option[T]] = {
+                              (implicit hc: HeaderCarrier): Future[Option[T]] = {
     for {
       cachedData <- retrieveCachedData
       updatedDataResponse <- {

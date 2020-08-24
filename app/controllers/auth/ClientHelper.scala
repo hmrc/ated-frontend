@@ -19,7 +19,7 @@ package controllers.auth
 import config.ApplicationConfig
 import connectors.DataCacheConnector
 import models.StandardAuthRetrievals
-import play.api.Logger
+import play.api.Logging
 import play.api.i18n.Messages
 import play.api.mvc.Results._
 import play.api.mvc.{AnyContent, Request, Result}
@@ -30,7 +30,7 @@ import utils.AtedConstants._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-trait ClientHelper {
+trait ClientHelper extends Logging {
 
   val dataCacheConnector: DataCacheConnector
   val appConfig: ApplicationConfig
@@ -42,7 +42,7 @@ trait ClientHelper {
                           messages: Messages): Future[Result] = {
     dataCacheConnector.fetchAtedRefData[String](DelegatedClientAtedRefNumber) flatMap {
       case refNo @ Some(_) if refNo.get == authorisedRequest.atedReferenceNumber => result
-      case _ => Logger.warn(s"[ClientHelper][compareClient] - Client different from context")
+      case _ => logger.warn(s"[ClientHelper][compareClient] - Client different from context")
         Future.successful(Ok(appConfig.templateError(
           "ated.selected-client-error.wrong.client.header",
           "ated.selected-client-error.wrong.client.title",

@@ -77,7 +77,7 @@ class ReliefsUtilsSpec extends PlaySpec {
 
       val testReliefReturns = Seq(newerType1Return, olderType1Return)
 
-      ReliefsUtils.partitionNewestReliefForType(testReliefReturns) mustBe (Seq(newerType1Return), Seq(olderType1Return))
+      ReliefsUtils.partitionNewestReliefForType(testReliefReturns) mustBe Tuple2(Seq(newerType1Return), Seq(olderType1Return))
     }
 
     "provide reliefs of one of each most recent type given a set of reliefs with 2 older 1 new of the same type" in {
@@ -87,7 +87,7 @@ class ReliefsUtilsSpec extends PlaySpec {
 
       val testReliefReturns = Seq(newerType1Return, olderType1Return, older2Type1Return)
 
-      ReliefsUtils.partitionNewestReliefForType(testReliefReturns) mustBe (Seq(newerType1Return), Seq(olderType1Return, older2Type1Return))
+      ReliefsUtils.partitionNewestReliefForType(testReliefReturns) mustBe Tuple2(Seq(newerType1Return), Seq(olderType1Return, older2Type1Return))
     }
 
     "provide reliefs for 2 types, one with two reliefs, one with just one" in {
@@ -97,7 +97,7 @@ class ReliefsUtilsSpec extends PlaySpec {
 
       val testReliefReturns = Seq(newerType1Return, olderType1Return, type2Return)
 
-      ReliefsUtils.partitionNewestReliefForType(testReliefReturns) mustBe (Seq(type2Return, newerType1Return), Seq(olderType1Return))
+      ReliefsUtils.partitionNewestReliefForType(testReliefReturns) mustBe Tuple2(Seq(type2Return, newerType1Return), Seq(olderType1Return))
     }
 
     "provide reliefs for 2 types, one with two reliefs of the same date, one with two different dates" in {

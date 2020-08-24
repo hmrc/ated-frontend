@@ -21,11 +21,11 @@ import connectors.{AgentClientMandateFrontendConnector, DataCacheConnector}
 import controllers.auth.AuthAction
 import javax.inject.{Inject, Singleton}
 import org.joda.time.LocalDate
-import play.api.Logger
+import play.api.Logging
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{DateService, DetailsService, SubscriptionDataService, SummaryReturnsService, ServiceInfoService}
+import services._
 import uk.gov.hmrc.http.ForbiddenException
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.PeriodUtils
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -42,7 +42,7 @@ class AccountSummaryController @Inject()(mcc: MessagesControllerComponents,
                                          serviceInfoService: ServiceInfoService,
                                          template: views.html.accountSummary)
                                         (implicit val appConfig: ApplicationConfig)
-  extends FrontendController(mcc) {
+  extends FrontendController(mcc) with Logging {
 
   def view(): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
@@ -80,7 +80,7 @@ class AccountSummaryController @Inject()(mcc: MessagesControllerComponents,
       }
     } recover {
       case _: ForbiddenException     =>
-        Logger.warn("[AccountSummaryController][view] Forbidden exception")
+        logger.warn("[AccountSummaryController][view] Forbidden exception")
         authAction.unauthorisedUrl()
     }
   }

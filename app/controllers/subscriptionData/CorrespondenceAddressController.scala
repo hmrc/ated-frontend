@@ -22,9 +22,9 @@ import forms.AtedForms
 import forms.AtedForms._
 import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import play.api.{Environment, Logger}
+import play.api.{Environment, Logging}
 import services.{ServiceInfoService, SubscriptionDataService}
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{AtedUtils, CountryCodeUtils}
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -37,7 +37,7 @@ class CorrespondenceAddressController @Inject()(mcc: MessagesControllerComponent
                                                 template: views.html.subcriptionData.correspondenceAddress,
                                                 templateError: views.html.global_error)
                                                (implicit val appConfig: ApplicationConfig)
-  extends FrontendController(mcc) with CountryCodeUtils {
+  extends FrontendController(mcc) with CountryCodeUtils with Logging {
 
   implicit val ec: ExecutionContext = mcc.executionContext
 
@@ -74,7 +74,7 @@ class CorrespondenceAddressController @Inject()(mcc: MessagesControllerComponent
                 correspondenceAddress match {
                   case Some(_) => Redirect(controllers.subscriptionData.routes.CompanyDetailsController.view())
                   case None =>
-                    Logger.warn(s"[CorrespondenceAddressController][submit] - Unable to update address")
+                    logger.warn(s"[CorrespondenceAddressController][submit] - Unable to update address")
                     Ok(templateError("ated.generic.error.title", "ated.generic.error.header",
                       "ated.generic.error.message", Some("ated.generic.error.message2"), None, None, None, serviceInfoContent, appConfig))
                 }

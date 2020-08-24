@@ -43,7 +43,7 @@ class DelegationConnectorSpec extends PlaySpec with GuiceOneAppPerSuite with Moc
   "DelegationDataCall" should {
     "POST with the correct information" in new Setup {
       when(mockHttp.POST[JsValue, HttpResponse](any(), any(), any())(any(), any(), any(), any()))
-        .thenReturn(Future.successful(HttpResponse(OK)))
+        .thenReturn(Future.successful(HttpResponse(OK, "")))
 
       val testCall: Future[HttpResponse] = testDelegationConnector.delegationDataCall("testID")
       await(testCall).status mustBe OK

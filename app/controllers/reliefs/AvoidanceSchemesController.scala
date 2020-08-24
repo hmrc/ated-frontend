@@ -23,11 +23,10 @@ import controllers.auth.{AuthAction, ClientHelper}
 import forms.ReliefForms._
 import javax.inject.Inject
 import models.TaxAvoidance
-import play.api.Logger
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{ReliefsService, ServiceInfoService}
 import uk.gov.hmrc.http.ForbiddenException
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
 import scala.concurrent.ExecutionContext
 
@@ -66,7 +65,7 @@ class AvoidanceSchemesController @Inject()(mcc: MessagesControllerComponents,
         }
       } recover {
         case _: ForbiddenException =>
-          Logger.warn("[AvoidanceSchemesController][view] Forbidden exception")
+          logger.warn("[AvoidanceSchemesController][view] Forbidden exception")
           authAction.unauthorisedUrl()
       }
     }
@@ -104,7 +103,7 @@ class AvoidanceSchemesController @Inject()(mcc: MessagesControllerComponents,
       }
     } recover {
       case _: ForbiddenException     =>
-        Logger.warn("[AvoidanceSchemesController][submit] Forbidden exception")
+        logger.warn("[AvoidanceSchemesController][submit] Forbidden exception")
         authAction.unauthorisedUrl()
     }
   }

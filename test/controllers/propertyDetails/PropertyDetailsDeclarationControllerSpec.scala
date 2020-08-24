@@ -37,7 +37,7 @@ import play.api.test.Helpers._
 import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService}
 import testhelpers.MockAuthUtil
 import uk.gov.hmrc.auth.core.AffinityGroup
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, UserId}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import utils.AtedConstants
 import views.html.BtaNavigationLinks
 
@@ -92,7 +92,7 @@ class PropertyDetailsDeclarationControllerSpec extends PlaySpec with GuiceOneSer
       noDelegationModelAuthMocks(authMock)
       when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(btaNavigationLinksView()(messages,mockAppConfig)))
       when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
-        (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
+        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
       when(mockPropertyDetailsService.retrieveDraftPropertyDetails(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(PropertyDetailsBuilder.getPropertyDetails("1"))))
 
@@ -106,7 +106,7 @@ class PropertyDetailsDeclarationControllerSpec extends PlaySpec with GuiceOneSer
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       noDelegationModelAuthMocks(authMock)
       when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
-        (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
+        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
       when(mockPropertyDetailsService.retrieveDraftPropertyDetails(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())) thenReturn {
         Future.successful(PropertyDetailsCacheSuccessResponse(PropertyDetailsBuilder.getPropertyDetails("1").copy(calculated = None)))
       }
@@ -120,7 +120,7 @@ class PropertyDetailsDeclarationControllerSpec extends PlaySpec with GuiceOneSer
       val authMock = authResultDefault(AffinityGroup.Agent, defaultEnrolmentSet)
       setAuthMocks(authMock)
       when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
-        (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
+        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
       when(mockPropertyDetailsService.retrieveDraftPropertyDetails(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())) thenReturn {
         Future.successful(PropertyDetailsCacheSuccessResponse(PropertyDetailsBuilder.getPropertyDetails("1")))
       }
@@ -140,12 +140,12 @@ class PropertyDetailsDeclarationControllerSpec extends PlaySpec with GuiceOneSer
     def submitWithAuthorisedUser(inputJson: JsValue)(test: Future[Result] => Any) {
       val userId = s"user-${UUID.randomUUID}"
       when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
-        (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
+        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
       val propertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
       when(mockPropertyDetailsService.retrieveDraftPropertyDetails(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propertyDetails)))
       when(mockPropertyDetailsService.submitDraftPropertyDetails(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
-        .thenReturn(Future.successful(HttpResponse(OK, Some(Json.toJson(propertyDetails)))))
+        .thenReturn(Future.successful(HttpResponse(OK, Json.toJson(propertyDetails).toString())))
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
       val result = testPropertyDetailsDeclarationController.submit("1")
@@ -157,12 +157,12 @@ class PropertyDetailsDeclarationControllerSpec extends PlaySpec with GuiceOneSer
     def submitWithAuthorisedUserNoCalc(inputJson: JsValue)(test: Future[Result] => Any) {
       val userId = s"user-${UUID.randomUUID}"
       when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
-        (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
+        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
       val propertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode")).copy(calculated = None)
       when(mockPropertyDetailsService.retrieveDraftPropertyDetails(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propertyDetails)))
       when(mockPropertyDetailsService.submitDraftPropertyDetails(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
-        .thenReturn(Future.successful(HttpResponse(OK, Some(Json.toJson(propertyDetails)))))
+        .thenReturn(Future.successful(HttpResponse(OK, Json.toJson(propertyDetails).toString())))
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
       val result = testPropertyDetailsDeclarationController.submit("1")
@@ -176,12 +176,12 @@ class PropertyDetailsDeclarationControllerSpec extends PlaySpec with GuiceOneSer
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
       when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
-        (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
+        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
       val propertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
       when(mockPropertyDetailsService.retrieveDraftPropertyDetails(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propertyDetails)))
       when(mockPropertyDetailsService.submitDraftPropertyDetails(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
-        .thenReturn(Future.successful(HttpResponse(BAD_REQUEST, Some(Json.parse("""{"Reason":"Agent not Valid"}""")))))
+        .thenReturn(Future.successful(HttpResponse(BAD_REQUEST, Json.parse("""{"Reason":"Agent not Valid"}""").toString)))
       val result = testPropertyDetailsDeclarationController.submit("1")
         .apply(SessionBuilder.updateRequestFormWithSession(FakeRequest().withFormUrlEncodedBody(), userId))
 

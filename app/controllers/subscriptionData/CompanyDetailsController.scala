@@ -21,7 +21,7 @@ import controllers.auth.AuthAction
 import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{DetailsService, ServiceInfoService, SubscriptionDataService}
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -61,7 +61,7 @@ class CompanyDetailsController @Inject()(mcc: MessagesControllerComponents,
   }
 
   def back: Action[AnyContent] = Action.async { implicit request =>
-    authAction.authorisedAction { implicit authContext =>
+    authAction.authorisedAction { _ =>
       Future.successful(Redirect(controllers.routes.AccountSummaryController.view()))
     }
   }

@@ -26,7 +26,7 @@ import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request}
 import services.{PropertyDetailsService, ServiceInfoService, SubscriptionDataService}
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.PeriodUtils
 
 import scala.concurrent.{ExecutionContext, Future}

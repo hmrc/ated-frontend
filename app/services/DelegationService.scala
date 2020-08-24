@@ -19,13 +19,13 @@ package services
 import connectors.DelegationConnector
 import javax.inject.Inject
 import models.DelegationModel
-import play.api.Logger
+import play.api.Logging
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class DelegationService @Inject()(delegationConnector: DelegationConnector) {
+class DelegationService @Inject()(delegationConnector: DelegationConnector) extends Logging {
 
 
   def delegationCall(id: String)(implicit hc: HeaderCarrier): Future[Option[DelegationModel]] = {
@@ -35,7 +35,7 @@ class DelegationService @Inject()(delegationConnector: DelegationConnector) {
       }
     }.recover {
       case e =>
-        Logger.warn("[DelegationService][delegationCall] no Delegation Returned")
+        logger.warn("[DelegationService][delegationCall] no Delegation Returned")
         None
     }
   }

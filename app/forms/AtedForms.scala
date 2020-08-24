@@ -213,18 +213,6 @@ object AtedForms {
 
   }
 
-
-  private def validataTA(ta: TaxAvoidance): Boolean = {
-    ta.employeeOccupationScheme.isDefined ||
-      ta.farmHousesScheme.isDefined ||
-      ta.lendingScheme.isDefined ||
-      ta.openToPublicScheme.isDefined ||
-      ta.propertyDeveloperScheme.isDefined ||
-      ta.propertyTradingScheme.isDefined ||
-      ta.rentalBusinessScheme.isDefined ||
-      ta.socialHousingScheme.isDefined
-  }
-
   val selectPeriodForm = Form(mapping(
     "period" -> optional(text).verifying("ated.summary-return.return-type.error", selectPeriod => selectPeriod.isDefined)
   )(SelectPeriod.apply)(SelectPeriod.unapply))

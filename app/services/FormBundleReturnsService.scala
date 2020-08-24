@@ -19,16 +19,17 @@ package services
 import connectors.AtedConnector
 import javax.inject.Inject
 import models._
-import play.api.Logger
+import play.api.Logging
 import play.api.http.Status._
 import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, InternalServerException}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class FormBundleReturnsService @Inject()(atedConnector: AtedConnector) {
+class FormBundleReturnsService @Inject()(atedConnector: AtedConnector) extends Logging {
 
-  def getFormBundleReturns(formBundleNumber: String)(implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[Option[FormBundleReturn]] = {
+  def getFormBundleReturns(formBundleNumber: String)(implicit authContext: StandardAuthRetrievals,
+                                                     headerCarrier: HeaderCarrier): Future[Option[FormBundleReturn]] = {
     atedConnector.retrieveFormBundleReturns(formBundleNumber).map {
       response =>
         response.status match {
@@ -36,11 +37,11 @@ class FormBundleReturnsService @Inject()(atedConnector: AtedConnector) {
             response.json.asOpt[FormBundleReturn]
           case NOT_FOUND => None
           case BAD_REQUEST =>
-            Logger.warn(s"[FormBundleReturnsService] [getFormBundleReturns] BadRequestException: [response.body] = ${response.body}")
+            logger.warn(s"[FormBundleReturnsService] [getFormBundleReturns] BadRequestException: [response.body] = ${response.body}")
             throw new BadRequestException(s"[FormBundleReturnsService] [getFormBundleReturns] " +
               s"Bad Request: Failed to retrieve form bundle return [response.body] = ${response.body}")
           case status =>
-            Logger.warn(s"[FormBundleReturnsService] [getFormBundleReturns] [status] = $status && [response.body] = ${response.body}")
+            logger.warn(s"[FormBundleReturnsService] [getFormBundleReturns] [status] = $status && [response.body] = ${response.body}")
             throw new InternalServerException(s"[FormBundleReturnsService] [getFormBundleReturns]" +
               s"Internal Server Exception : Failed to retrieve form bundle return [status] = $status && [response.body] = ${response.body}")
         }

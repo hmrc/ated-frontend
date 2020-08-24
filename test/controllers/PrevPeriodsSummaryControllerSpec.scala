@@ -39,7 +39,7 @@ import services._
 import testhelpers.MockAuthUtil
 import uk.gov.hmrc.auth.core.retrieve.~
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, UserId}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.play.partials.HtmlPartial
 import utils.TestModels
 import views.html.BtaNavigationLinks
@@ -96,14 +96,14 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
 
-      when(mockDataCacheConnector.clearCache()(ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(httpValue)))
+      when(mockDataCacheConnector.clearCache()(ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(httpValue, "")))
       when(mockSummaryReturnsService.getSummaryReturns(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(returnsSummaryWithDraft))
       when(mockSubscriptionDataService.getCorrespondenceAddress(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(correspondence))
       when(mockSubscriptionDataService.getOrganisationName(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(organisationName)))
       when(mockSubscriptionDataService.getSafeId(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("safeId")))
       when(mockMandateFrontendConnector.getClientBannerPartial(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(HtmlPartial.Success(Some("thepartial"), Html(""))))
-      when(mockDetailsService.cacheClientReference(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+      when(mockDetailsService.cacheClientReference(ArgumentMatchers.any())(ArgumentMatchers.any()))
         .thenReturn(Future.successful("XN1200000100001"))
       when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Html("")))
 
@@ -118,15 +118,16 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
       val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
       setForbiddenAuthMocks(authMock)
 
-      when(mockDataCacheConnector.clearCache()(ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(httpValue)))
+      when(mockDataCacheConnector.clearCache()(ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(httpValue, "")))
       when(mockSummaryReturnsService.getSummaryReturns(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(returnsSummaryWithDraft))
-      when(mockSummaryReturnsService.generateCurrentTaxYearReturns(ArgumentMatchers.any())).thenReturn(Future.successful(Seq(), 0, false))
+      when(mockSummaryReturnsService.generateCurrentTaxYearReturns(ArgumentMatchers.any())).thenReturn(Future.successful(Tuple3(Seq(), 0, false)))
       when(mockSubscriptionDataService.getCorrespondenceAddress(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(correspondence))
-      when(mockSubscriptionDataService.getOrganisationName(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(organisationName)))
+      when(mockSubscriptionDataService.getOrganisationName(ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(Some(organisationName)))
       when(mockSubscriptionDataService.getSafeId(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("safeId")))
       when(mockMandateFrontendConnector.getClientBannerPartial(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(HtmlPartial.Success(Some("thepartial"), Html(""))))
-      when(mockDetailsService.cacheClientReference(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+      when(mockDetailsService.cacheClientReference(ArgumentMatchers.any())(ArgumentMatchers.any()))
         .thenReturn(Future.successful("XN1200000100001"))
 
       val result = testPrevPreviousSummaryController.view().apply(SessionBuilder.buildRequestWithSession(userId))
@@ -137,17 +138,16 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
                                        correspondence: Option[Address] = None)(test: Future[Result] => Any) {
       val httpValue = 200
       val userId = s"user-${UUID.randomUUID}"
-      implicit val hc: HeaderCarrier = HeaderCarrier(userId = Some(UserId(userId)))
       val authMock = authResultDefault(AffinityGroup.Agent, agentEnrolmentSet)
       setAuthMocks(authMock)
-      when(mockDataCacheConnector.clearCache()(ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(httpValue)))
+      when(mockDataCacheConnector.clearCache()(ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(httpValue, "")))
       when(mockSummaryReturnsService.getSummaryReturns(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(returnsSummaryWithDraft))
       when(mockSubscriptionDataService.getCorrespondenceAddress(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(correspondence))
       when(mockSubscriptionDataService.getOrganisationName(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(organisationName)))
       when(mockSubscriptionDataService.getSafeId(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("safeId")))
       when(mockMandateFrontendConnector.getClientBannerPartial(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(HtmlPartial.Success(Some("thepartial"), Html(""))))
-      when(mockDetailsService.cacheClientReference(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+      when(mockDetailsService.cacheClientReference(ArgumentMatchers.any())(ArgumentMatchers.any()))
         .thenReturn(Future.successful("XN1200000100001"))
       val result = testPrevPreviousSummaryController.view().apply(SessionBuilder.buildRequestWithSessionDelegation(userId))
       test(result)
@@ -231,10 +231,10 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
         val userId = s"user-${UUID.randomUUID}"
         val authMock: Enrolments ~ Some[AffinityGroup] ~ Some[String] = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
         setAuthMocks(authMock)
-        when(mockDataCacheConnector.clearCache()(ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(httpValue)))
+        when(mockDataCacheConnector.clearCache()(ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(httpValue, "")))
         when(mockSummaryReturnsService.getSummaryReturns(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(data))
         when(mockSubscriptionDataService.getCorrespondenceAddress(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
-        when(mockDetailsService.cacheClientReference(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+        when(mockDetailsService.cacheClientReference(ArgumentMatchers.any())(ArgumentMatchers.any()))
           .thenReturn(Future.successful("XN1200000100001"))
         when(mockSubscriptionDataService.getOrganisationName(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(organisationName)))
         when(mockSubscriptionDataService.getSafeId(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))

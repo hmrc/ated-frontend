@@ -87,13 +87,12 @@ class Setup {
     val userId = s"user-${UUID.randomUUID}"
     val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
     setAuthMocks(authMock)
-    implicit val hc: HeaderCarrier = HeaderCarrier()
     when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(btaNavigationLinksView()(messages,mockAppConfig)))
     when(mockSubscriptionDataService.getEmailConsent(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(true))
     when(mockSubscriptionDataService.getCorrespondenceAddress(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(correspondence))
     when(mockSubscriptionDataService.getRegisteredDetails(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(registeredDetails))
     when(mockSubscriptionDataService.getSafeId(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("safeId")))
-    when(mockDetailsService.getClientMandateDetails(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+    when(mockDetailsService.getClientMandateDetails(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
       .thenReturn(Future.successful(None))
     when(mockSubscriptionDataService.getOverseasCompanyRegistration(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
 
@@ -106,7 +105,6 @@ class Setup {
     val userId = s"user-${UUID.randomUUID}"
     val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
     setAuthMocks(authMock)
-    implicit val hc: HeaderCarrier = HeaderCarrier()
 
     val result = testCompanyDetailsController.back().apply(SessionBuilder.buildRequestWithSession(userId))
 
@@ -218,7 +216,6 @@ class Setup {
         val userId = s"user-${UUID.randomUUID}"
         val authMock: Enrolments ~ Some[AffinityGroup] ~ Some[String] = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
         setAuthMocks(authMock)
-        implicit val hc: HeaderCarrier = HeaderCarrier()
         when(mockSubscriptionDataService.getEmailConsent(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(true))
         when(mockSubscriptionDataService.getCorrespondenceAddress(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
         when(mockSubscriptionDataService.getRegisteredDetails(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))

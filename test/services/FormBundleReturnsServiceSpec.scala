@@ -95,7 +95,7 @@ class FormBundleReturnsServiceSpec extends PlaySpec with GuiceOneServerPerSuite 
       val successResponse: JsValue = Json.parse(successJson)
 
       when(mockConnector.retrieveFormBundleReturns(ArgumentMatchers.eq("12345678901090"))(ArgumentMatchers.any(), ArgumentMatchers.any()))
-        .thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+        .thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))
       val result: Future[Option[FormBundleReturn]] = testFormBundleReturnsService.getFormBundleReturns("12345678901090")
       val bundleReturn: Option[FormBundleReturn] = await(result)
       bundleReturn.isDefined must be(true)
@@ -115,7 +115,7 @@ class FormBundleReturnsServiceSpec extends PlaySpec with GuiceOneServerPerSuite 
       val notFoundResponse: JsValue = Json.parse( """{}""")
 
       when(mockConnector.retrieveFormBundleReturns(ArgumentMatchers.eq("12345678901090"))(ArgumentMatchers.any(), ArgumentMatchers.any()))
-        .thenReturn(Future.successful(HttpResponse(NOT_FOUND, Some(notFoundResponse))))
+        .thenReturn(Future.successful(HttpResponse(NOT_FOUND, notFoundResponse.toString)))
       val result: Future[Option[FormBundleReturn]] = testFormBundleReturnsService.getFormBundleReturns("12345678901090")
       await(result).isDefined must be(false)
     }
@@ -123,7 +123,7 @@ class FormBundleReturnsServiceSpec extends PlaySpec with GuiceOneServerPerSuite 
     "throws an exception for a bad request" in new Setup {
       implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID()}")))
       when(mockConnector.retrieveFormBundleReturns(ArgumentMatchers.eq("12345678901090"))(ArgumentMatchers.any(), ArgumentMatchers.any()))
-        .thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
+        .thenReturn(Future.successful(HttpResponse(BAD_REQUEST, "")))
 
       val result: Future[Option[FormBundleReturn]] = testFormBundleReturnsService.getFormBundleReturns("12345678901090")
       val thrown: BadRequestException = the[BadRequestException] thrownBy await(result)
@@ -133,7 +133,7 @@ class FormBundleReturnsServiceSpec extends PlaySpec with GuiceOneServerPerSuite 
     "throws an exception for a unknown exception" in new Setup {
       implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID()}")))
       when(mockConnector.retrieveFormBundleReturns(ArgumentMatchers.eq("12345678901090"))(ArgumentMatchers.any(), ArgumentMatchers.any()))
-        .thenReturn(Future.successful(HttpResponse(UNAUTHORIZED, None)))
+        .thenReturn(Future.successful(HttpResponse(UNAUTHORIZED, "")))
 
       val result: Future[Option[FormBundleReturn]] = testFormBundleReturnsService.getFormBundleReturns("12345678901090")
       val thrown: InternalServerException = the[InternalServerException] thrownBy await(result)

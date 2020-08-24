@@ -77,10 +77,10 @@ class DataCacheConnectorSpec extends PlaySpec with GuiceOneAppPerSuite with Mock
     "clear the data" must {
       "clear data from Keystore" in new Setup {
         val successResponse: JsValue = Json.parse("""{"processingDate": "2001-12-17T09:30:47Z"}""")
-        val returnedCacheMap = CacheMap("test", Map("form-id" -> Json.toJson(returnType)))
 
-        when(mockHttp.DELETE[HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-          .thenReturn(Future.successful(HttpResponse(200, Some(successResponse))))
+        when(mockHttp.DELETE[HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any())(
+          ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+          .thenReturn(Future.successful(HttpResponse(200, successResponse.toString)))
 
         val result: Future[HttpResponse] = testDataCacheConnector.clearCache()
         val response: HttpResponse = await(result)

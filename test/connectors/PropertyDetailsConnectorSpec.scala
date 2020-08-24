@@ -61,7 +61,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with GuiceOneAppPerSuite wit
 
           when(mockHttp.POST[JsValue, HttpResponse]
             (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
-            (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+            (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))
 
 
           val result: Future[HttpResponse] = testPropertyDetailsConnector.createDraftPropertyDetails(periodKey, propertyDetails)
@@ -74,7 +74,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with GuiceOneAppPerSuite wit
 
           when(mockHttp.POST[JsValue, HttpResponse]
             (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
-            (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
+            (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, "")))
           val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailsAddressRef("1", propertyDetails)
           val response: HttpResponse = await(result)
           response.status must be(BAD_REQUEST)
@@ -89,7 +89,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with GuiceOneAppPerSuite wit
 
           when(mockHttp.POST[JsValue, HttpResponse]
             (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
-            (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+            (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))
 
 
           val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailsAddressRef("1", propertyDetails)
@@ -102,7 +102,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with GuiceOneAppPerSuite wit
 
           when(mockHttp.POST[JsValue, HttpResponse]
             (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
-            (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
+            (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, "")))
           val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailsAddressRef("1", propertyDetails)
           val response: HttpResponse = await(result)
           response.status must be(BAD_REQUEST)
@@ -117,7 +117,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with GuiceOneAppPerSuite wit
 
           when(mockHttp.POST[JsValue, HttpResponse]
             (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
-            (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+            (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))
 
           val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftHasValueChanged("1", propertyDetails = true)
           val response: HttpResponse = await(result)
@@ -127,7 +127,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with GuiceOneAppPerSuite wit
         "for an unsuccessful save, return an empty object" in new Setup {
           when(mockHttp.POST[JsValue, HttpResponse]
             (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
-            (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
+            (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, "")))
 
           val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftHasValueChanged("1", propertyDetails = true)
           val response: HttpResponse = await(result)
@@ -143,7 +143,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with GuiceOneAppPerSuite wit
 
           when(mockHttp.POST[JsValue, HttpResponse]
             (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
-            (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+            (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))
 
           val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailsTitle("1", propertyDetails)
           val response: HttpResponse = await(result)
@@ -155,7 +155,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with GuiceOneAppPerSuite wit
 
           when(mockHttp.POST[JsValue, HttpResponse]
             (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
-            (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
+            (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, "")))
 
           val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailsTitle("1", propertyDetails)
           val response: HttpResponse = await(result)
@@ -169,7 +169,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with GuiceOneAppPerSuite wit
 
           when(mockHttp.POST[JsValue, HttpResponse]
             (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
-            (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+            (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))
 
           val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailsAcquisition("1", overLimit = true)
           val response: HttpResponse = await(result)
@@ -179,7 +179,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with GuiceOneAppPerSuite wit
         "for an unsuccessful save, return an empty object" in new Setup {
           when(mockHttp.POST[JsValue, HttpResponse]
             (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
-            (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
+            (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, "")))
 
           val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailsAcquisition("1", overLimit = true)
           val response: HttpResponse = await(result)
@@ -195,7 +195,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with GuiceOneAppPerSuite wit
 
           when(mockHttp.POST[JsValue, HttpResponse]
             (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
-            (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+            (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))
 
           val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailsRevalued("1", propertyDetails)
           val response: HttpResponse = await(result)
@@ -205,7 +205,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with GuiceOneAppPerSuite wit
         "for an unsuccessful save, return an empty object" in new Setup {
           when(mockHttp.POST[JsValue, HttpResponse]
             (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
-            (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
+            (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, "")))
 
           val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailsRevalued("1", propertyDetails)
           val response: HttpResponse = await(result)
@@ -221,7 +221,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with GuiceOneAppPerSuite wit
 
           when(mockHttp.POST[JsValue, HttpResponse]
             (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
-            (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+            (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))
 
           val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailsOwnedBefore("1", propertyDetails)
           val response: HttpResponse = await(result)
@@ -233,7 +233,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with GuiceOneAppPerSuite wit
 
           when(mockHttp.POST[JsValue, HttpResponse]
             (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
-            (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
+            (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, "")))
 
           val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailsOwnedBefore("1", propertyDetails)
           val response: HttpResponse = await(result)
@@ -248,7 +248,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with GuiceOneAppPerSuite wit
           val successResponse: JsValue = Json.toJson(propertyDetails)
           when(mockHttp.POST[JsValue, HttpResponse]
             (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
-            (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+            (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))
 
           val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailsProfessionallyValued("1", propertyDetails)
           val response: HttpResponse = await(result)
@@ -258,7 +258,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with GuiceOneAppPerSuite wit
         "for an unsuccessful save, return an empty object" in new Setup {
           when(mockHttp.POST[JsValue, HttpResponse]
             (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
-            (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
+            (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, "")))
 
           val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailsProfessionallyValued("1", propertyDetails)
           val response: HttpResponse = await(result)
@@ -273,7 +273,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with GuiceOneAppPerSuite wit
           val successResponse: JsValue = Json.toJson(propertyDetailsIsNewBuild)
           when(mockHttp.POST[JsValue, HttpResponse]
             (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
-            (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+            (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))
 
           val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailsNewBuild("1", propertyDetailsIsNewBuild)
           val response: HttpResponse = await(result)
@@ -283,7 +283,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with GuiceOneAppPerSuite wit
         "return a BAD_REQUEST for an unsuccessful save" in new Setup {
           when(mockHttp.POST[JsValue, HttpResponse]
             (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
-            (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
+            (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, "")))
 
           val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailsNewBuild("1", propertyDetailsIsNewBuild)
           val response: HttpResponse = await(result)
@@ -297,7 +297,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with GuiceOneAppPerSuite wit
           val successResponse: JsValue = Json.toJson(testPropertyDetailsNewBuildDates)
           when(mockHttp.POST[JsValue, HttpResponse]
             (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
-            (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+            (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))
 
           val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailNewBuildDates("1", testPropertyDetailsNewBuildDates)
           val response: HttpResponse = await(result)
@@ -307,7 +307,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with GuiceOneAppPerSuite wit
         "return a BAD_REQUEST for an unsuccessful save" in new Setup {
           when(mockHttp.POST[JsValue, HttpResponse]
             (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
-            (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
+            (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, "")))
 
           val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailNewBuildDates("1", testPropertyDetailsNewBuildDates)
           val response: HttpResponse = await(result)
@@ -322,7 +322,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with GuiceOneAppPerSuite wit
           val successResponse: JsValue = Json.toJson(testPropertyDetailsWhenAcquiredDates)
           when(mockHttp.POST[JsValue, HttpResponse]
             (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
-            (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+            (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))
 
           val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailsWhenAcquiredDates("1", testPropertyDetailsWhenAcquiredDates)
           val response: HttpResponse = await(result)
@@ -332,7 +332,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with GuiceOneAppPerSuite wit
         "return a BAD_REQUEST for an unsuccessful save" in new Setup {
           when(mockHttp.POST[JsValue, HttpResponse]
             (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
-            (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
+            (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, "")))
 
           val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailsWhenAcquiredDates("1", testPropertyDetailsWhenAcquiredDates)
           val response: HttpResponse = await(result)
@@ -347,7 +347,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with GuiceOneAppPerSuite wit
           val successResponse: JsValue = Json.toJson(testPropertyDetailsNewBuildValue)
           when(mockHttp.POST[JsValue, HttpResponse]
             (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
-            (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+            (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))
 
           val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailsNewBuildValue("1", testPropertyDetailsNewBuildValue)
           val response: HttpResponse = await(result)
@@ -357,7 +357,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with GuiceOneAppPerSuite wit
         "return a BAD_REQUEST for an unsuccessful save" in new Setup {
           when(mockHttp.POST[JsValue, HttpResponse]
             (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
-            (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
+            (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, "")))
 
           val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailsNewBuildValue("1", testPropertyDetailsNewBuildValue)
           val response: HttpResponse = await(result)
@@ -372,7 +372,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with GuiceOneAppPerSuite wit
           val successResponse: JsValue = Json.toJson(testPropertyDetailsValueAcquired)
           when(mockHttp.POST[JsValue, HttpResponse]
             (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
-            (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+            (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))
 
           val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailsValueAcquired("1", testPropertyDetailsValueAcquired)
           val response: HttpResponse = await(result)
@@ -382,7 +382,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with GuiceOneAppPerSuite wit
         "return a BAD_REQUEST for an unsuccessful save" in new Setup {
           when(mockHttp.POST[JsValue, HttpResponse]
             (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
-            (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
+            (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, "")))
 
           val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailsValueAcquired("1", testPropertyDetailsValueAcquired)
           val response: HttpResponse = await(result)
@@ -397,7 +397,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with GuiceOneAppPerSuite wit
           val successResponse: JsValue = Json.toJson(propertyDetails)
           when(mockHttp.POST[JsValue, HttpResponse]
             (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
-            (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+            (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))
 
           val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftIsFullTaxPeriod("1", propertyDetails)
           val response: HttpResponse = await(result)
@@ -407,7 +407,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with GuiceOneAppPerSuite wit
         "for an unsuccessful save, return an empty object" in new Setup {
           when(mockHttp.POST[JsValue, HttpResponse]
             (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
-            (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
+            (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, "")))
 
           val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftIsFullTaxPeriod("1", propertyDetails)
           val response: HttpResponse = await(result)
@@ -422,7 +422,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with GuiceOneAppPerSuite wit
           val successResponse: JsValue = Json.toJson(propertyDetails)
           when(mockHttp.POST[JsValue, HttpResponse]
             (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
-            (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+            (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))
 
           val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailsInRelief("1", propertyDetails)
           val response: HttpResponse = await(result)
@@ -432,7 +432,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with GuiceOneAppPerSuite wit
         "for an unsuccessful save, return an empty object" in new Setup {
           when(mockHttp.POST[JsValue, HttpResponse]
             (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
-            (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
+            (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, "")))
 
           val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailsInRelief("1", propertyDetails)
           val response: HttpResponse = await(result)
@@ -447,7 +447,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with GuiceOneAppPerSuite wit
           val successResponse: JsValue = Json.toJson(propertyDetails)
           when(mockHttp.POST[JsValue, HttpResponse]
             (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
-            (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+            (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))
 
           val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailsTaxAvoidance("1", propertyDetails)
           val response: HttpResponse = await(result)
@@ -457,7 +457,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with GuiceOneAppPerSuite wit
         "for an unsuccessful save, return an empty object" in new Setup {
           when(mockHttp.POST[JsValue, HttpResponse]
             (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
-            (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
+            (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, "")))
 
           val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailsTaxAvoidance("1", propertyDetails)
           val response: HttpResponse = await(result)
@@ -472,7 +472,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with GuiceOneAppPerSuite wit
           val successResponse: JsValue = Json.toJson(propertyDetails)
           when(mockHttp.POST[JsValue, HttpResponse]
             (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
-            (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+            (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))
 
           val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailsDatesLiable("1", propertyDetails)
           val response: HttpResponse = await(result)
@@ -482,7 +482,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with GuiceOneAppPerSuite wit
         "for an unsuccessful save, return an empty object" in new Setup {
           when(mockHttp.POST[JsValue, HttpResponse]
             (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
-            (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
+            (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, "")))
 
           val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailsDatesLiable("1", propertyDetails)
           val response: HttpResponse = await(result)
@@ -499,7 +499,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with GuiceOneAppPerSuite wit
           val successResponse: JsValue = Json.toJson(propertyDetails)
           when(mockHttp.POST[JsValue, HttpResponse]
             (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
-            (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+            (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))
 
           val result: Future[HttpResponse] = testPropertyDetailsConnector.addDraftPropertyDetailsDatesLiable("1", propertyDetails)
           val response: HttpResponse = await(result)
@@ -509,7 +509,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with GuiceOneAppPerSuite wit
         "for an unsuccessful add, return an empty object" in new Setup {
           when(mockHttp.POST[JsValue, HttpResponse]
             (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
-            (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
+            (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, "")))
 
           val result: Future[HttpResponse] = testPropertyDetailsConnector.addDraftPropertyDetailsDatesLiable("1", propertyDetails)
           val response: HttpResponse = await(result)
@@ -526,7 +526,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with GuiceOneAppPerSuite wit
           val successResponse: JsValue = Json.toJson(propertyDetails)
           when(mockHttp.POST[JsValue, HttpResponse]
             (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
-            (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+            (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))
 
           val result: Future[HttpResponse] = testPropertyDetailsConnector.deleteDraftPropertyDetailsPeriod("1", propertyDetails.startDate)
           val response: HttpResponse = await(result)
@@ -536,7 +536,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with GuiceOneAppPerSuite wit
         "for an unsuccessful delete, return an empty object" in new Setup {
           when(mockHttp.POST[JsValue, HttpResponse]
             (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
-            (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
+            (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, "")))
 
           val result: Future[HttpResponse] = testPropertyDetailsConnector.deleteDraftPropertyDetailsPeriod("1", propertyDetails.startDate)
           val response: HttpResponse = await(result)
@@ -553,7 +553,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with GuiceOneAppPerSuite wit
           val successResponse: JsValue = Json.toJson(propertyDetails)
           when(mockHttp.POST[JsValue, HttpResponse]
             (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
-            (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+            (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))
 
           val result: Future[HttpResponse] = testPropertyDetailsConnector.addDraftPropertyDetailsDatesInRelief("1", propertyDetails)
           val response: HttpResponse = await(result)
@@ -563,7 +563,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with GuiceOneAppPerSuite wit
         "for an unsuccessful add, return an empty object" in new Setup {
           when(mockHttp.POST[JsValue, HttpResponse]
             (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
-            (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
+            (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, "")))
 
           val result: Future[HttpResponse] = testPropertyDetailsConnector.addDraftPropertyDetailsDatesInRelief("1", propertyDetails)
           val response: HttpResponse = await(result)
@@ -579,7 +579,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with GuiceOneAppPerSuite wit
           val successResponse: JsValue = Json.toJson(propertyDetails)
           when(mockHttp.POST[JsValue, HttpResponse]
             (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
-            (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+            (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))
 
           val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailsSupportingInfo("1", propertyDetails)
           val response: HttpResponse = await(result)
@@ -589,7 +589,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with GuiceOneAppPerSuite wit
         "for an unsuccessful save, return an empty object" in new Setup {
           when(mockHttp.POST[JsValue, HttpResponse]
             (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
-            (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
+            (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, "")))
 
           val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailsSupportingInfo("1", propertyDetails)
           val response: HttpResponse = await(result)
@@ -603,7 +603,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with GuiceOneAppPerSuite wit
           val successResponse: JsValue = Json.toJson(propertyDetails)
           when(mockHttp.GET[HttpResponse]
             (ArgumentMatchers.any())
-            (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+        (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))
 
 
           val result: Future[HttpResponse] = testPropertyDetailsConnector.calculateDraftPropertyDetails("1")
@@ -618,7 +618,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with GuiceOneAppPerSuite wit
           val successResponse: JsValue = Json.toJson(propertyDetails)
           when(mockHttp.GET[HttpResponse]
             (ArgumentMatchers.any())
-            (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+        (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))
 
 
           val result: Future[HttpResponse] = testPropertyDetailsConnector.calculateDraftChangeLiability("1")
@@ -633,7 +633,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with GuiceOneAppPerSuite wit
           val successResponse: JsValue = Json.toJson(propertyDetails)
           when(mockHttp.GET[HttpResponse]
             (ArgumentMatchers.any())
-            (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+        (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))
 
 
           val result: Future[HttpResponse] = testPropertyDetailsConnector.retrieveDraftPropertyDetails("1")
@@ -647,7 +647,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with GuiceOneAppPerSuite wit
           val successResponse: JsValue = Json.toJson(PropertyDetailsBuilder.getPropertyDetails("1", Some("testPostCode")))
           when(mockHttp.POST[JsValue, HttpResponse]
             (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
-            (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+            (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))
 
 
           val result: Future[HttpResponse] = testPropertyDetailsConnector.submitDraftPropertyDetails("1")
@@ -658,7 +658,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with GuiceOneAppPerSuite wit
         "for an unsuccessful submit, return an empty object" in new Setup {
           when(mockHttp.POST[JsValue, HttpResponse]
             (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
-            (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
+            (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, "")))
 
 
           val result: Future[HttpResponse] = testPropertyDetailsConnector.submitDraftPropertyDetails("1")
@@ -672,7 +672,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with GuiceOneAppPerSuite wit
           val successResponse: JsValue = Json.toJson(Seq(PropertyDetailsBuilder.getPropertyDetails("1", Some("testPostCode"))))
           when(mockHttp.DELETE[HttpResponse]
             (ArgumentMatchers.any(), ArgumentMatchers.any())
-            (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(successResponse))))
+        (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))
           val result: Future[HttpResponse] = testPropertyDetailsConnector.deleteDraftChargeable("ABC12345")
           val response: HttpResponse = await(result)
           response.status must be(OK)
@@ -681,7 +681,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with GuiceOneAppPerSuite wit
         "for an inavlid id, return an empty object" in new Setup {
           when(mockHttp.DELETE[HttpResponse]
             (ArgumentMatchers.any(), ArgumentMatchers.any())
-            (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
+        (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, "")))
           val result: Future[HttpResponse] = testPropertyDetailsConnector.deleteDraftChargeable("XYZ123456")
           val response: HttpResponse = await(result)
           response.status must be(BAD_REQUEST)

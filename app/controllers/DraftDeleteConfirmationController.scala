@@ -23,7 +23,7 @@ import forms.AtedForms.YesNoQuestionDraftDeleteForm
 import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{PropertyDetailsService, ReliefsService, ServiceInfoService}
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -73,6 +73,7 @@ class DraftDeleteConfirmationController @Inject()(mcc: MessagesControllerCompone
                   Future.successful(Redirect(controllers.propertyDetails.routes.PropertyDetailsSummaryController
                     .view(id.getOrElse(throw new RuntimeException("No id found for draft return")))))
                 case (false, "relief") => Future.successful(Redirect(controllers.reliefs.routes.ReliefsSummaryController.view(periodKey)))
+                case _ => throw new RuntimeException("Couldn't delete draft")
               }
             }
           )

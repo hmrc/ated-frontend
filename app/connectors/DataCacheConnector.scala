@@ -18,7 +18,6 @@ package connectors
 
 import config.ApplicationConfig
 import javax.inject.Inject
-import models.StandardAuthRetrievals
 import play.api.libs.json.Format
 import uk.gov.hmrc.http.cache.client.SessionCache
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
@@ -34,15 +33,15 @@ class DataCacheConnector @Inject()(val http: DefaultHttpClient,
   val defaultSource: String = appConfig.defaultSource
   val domain: String = appConfig.domain
 
-  def saveFormData[T](formId: String, data: T)(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier, formats: Format[T]): Future[T] = {
+  def saveFormData[T](formId: String, data: T)(implicit hc: HeaderCarrier, formats: Format[T]): Future[T] = {
     cache[T](formId, data) map { _ => data }
   }
 
-  def fetchAndGetFormData[T](formId: String)(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier, formats: Format[T]): Future[Option[T]] = {
+  def fetchAndGetFormData[T](formId: String)(implicit hc: HeaderCarrier, formats: Format[T]): Future[Option[T]] = {
     fetchAndGetEntry[T](key = formId)
   }
 
-  def fetchAtedRefData[T](formId: String)(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier, formats: Format[T]): Future[Option[T]] = {
+  def fetchAtedRefData[T](formId: String)(implicit hc: HeaderCarrier, formats: Format[T]): Future[Option[T]] = {
     fetchAndGetEntry[T](key = formId)
   }
 

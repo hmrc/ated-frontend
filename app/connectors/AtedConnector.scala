@@ -21,7 +21,8 @@ import javax.inject.Inject
 import models._
 import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.http._
-import uk.gov.hmrc.play.bootstrap.http.{DefaultHttpClient, HttpClient}
+import uk.gov.hmrc.play.bootstrap.http.{DefaultHttpClient}
+import uk.gov.hmrc.http.HttpClient
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future

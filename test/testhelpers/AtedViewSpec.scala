@@ -55,7 +55,7 @@ trait AtedViewSpec extends PlaySpec with JsoupArgumentMatchers with GuiceOneServ
     }
   }
 
-  def pageWithBackLink: Unit = {
+  def pageWithBackLink(): Unit = {
     "have a back link" in {
       doc must haveBackLink
     }

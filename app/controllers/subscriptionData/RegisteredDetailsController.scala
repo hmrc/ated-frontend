@@ -24,7 +24,7 @@ import play.api.Environment
 import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{ServiceInfoService, SubscriptionDataService}
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.CountryCodeUtils
 
 import scala.concurrent.{ExecutionContext, Future}

@@ -18,7 +18,8 @@ package filters
 
 import javax.inject.Inject
 import play.api.http.DefaultHttpFilters
-import uk.gov.hmrc.play.bootstrap.filters.{AuditFilter, FrontendFilters}
+import uk.gov.hmrc.play.bootstrap.filters.AuditFilter
+import uk.gov.hmrc.play.bootstrap.frontend.filters.FrontendFilters
 
 class AtedFilter @Inject()(defaultFilters: FrontendFilters, auditFilter: AuditFilter)
 extends DefaultHttpFilters(defaultFilters.filters :+ auditFilter: _*)

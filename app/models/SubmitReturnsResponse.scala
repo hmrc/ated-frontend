@@ -16,7 +16,7 @@
 
 package models
 
-import play.api.libs.json.{Json, Reads, Writes}
+import play.api.libs.json.{JodaReads, JodaWrites, Json}
 
 case class ReliefReturnResponse(reliefDescription: String, formBundleNumber: String)
 
@@ -45,8 +45,8 @@ case class SubmitReturnsResponse(
 
 object SubmitReturnsResponse {
   val dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ" //DateTime
-  implicit val jodaDateTimeReads = Reads.jodaDateReads(dateFormat)
-  implicit val jodaDateTimeWrites = Writes.jodaDateWrites(dateFormat)
+  implicit val jodaDateTimeReads = JodaReads.jodaDateReads(dateFormat)
+  implicit val jodaDateTimeWrites = JodaWrites.jodaDateWrites(dateFormat)
   implicit val formats = Json.format[SubmitReturnsResponse]
 }
 
