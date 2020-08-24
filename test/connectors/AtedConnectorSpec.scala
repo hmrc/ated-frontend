@@ -166,7 +166,7 @@ class AtedConnectorSpec extends PlaySpec with GuiceOneAppPerSuite with MockitoSu
         val successResponse: JsValue = Json.parse( """{}""")
         when(mockHttp.GET[HttpResponse]
           (ArgumentMatchers.any())
-          (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+        (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))
 
         val result: Future[HttpResponse] = testAtedConnector.retrieveSubscriptionData()
@@ -177,7 +177,7 @@ class AtedConnectorSpec extends PlaySpec with GuiceOneAppPerSuite with MockitoSu
         implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
         when(mockHttp.GET[HttpResponse]
           (ArgumentMatchers.any())
-          (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+        (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.failed(new UnauthorizedException("User does not have the correct authorisation")))
 
         val result: UnauthorizedException = intercept[UnauthorizedException]{await(testAtedConnector.retrieveSubscriptionData())}
@@ -228,7 +228,7 @@ class AtedConnectorSpec extends PlaySpec with GuiceOneAppPerSuite with MockitoSu
         val successResponse: JsValue = Json.parse( """{}""")
         when(mockHttp.GET[HttpResponse]
           (ArgumentMatchers.any())
-          (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+        (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))
 
         val result: Future[HttpResponse] = testAtedConnector.retrieveFormBundleReturns("formbundle123456")
@@ -297,7 +297,7 @@ class AtedConnectorSpec extends PlaySpec with GuiceOneAppPerSuite with MockitoSu
         val successResponse: JsValue = Json.parse( """{}""")
         when(mockHttp.GET[HttpResponse]
           (ArgumentMatchers.any())
-          (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+        (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))
 
         val result: Future[HttpResponse] = testAtedConnector.calculateDraftDisposal("1")

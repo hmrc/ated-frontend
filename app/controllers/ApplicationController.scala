@@ -47,7 +47,7 @@ class ApplicationController @Inject()(mcc: MessagesControllerComponents,
   }
 
   def keepAlive: Action[AnyContent] = Action.async { implicit request =>
-    authAction.authorisedForNoEnrolments { implicit authContext =>
+    authAction.authorisedForNoEnrolments { _ =>
       Future.successful(Ok("OK"))
     }
   }

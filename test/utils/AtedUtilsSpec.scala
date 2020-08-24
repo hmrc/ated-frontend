@@ -27,7 +27,7 @@ import play.api.test.FakeRequest
 import scala.collection.mutable.ArrayBuffer
 
 class AtedUtilsSpec extends PlaySpec with MockitoSugar with GuiceOneServerPerSuite {
-  implicit  val mockAppCongfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
+  implicit  val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
 
   "AtedUtils" must {
     "patternCheckARN should validate input ARN" in {

@@ -76,10 +76,10 @@ class SummaryReturnsServiceSpec extends PlaySpec with MockitoSugar with BeforeAn
       "when 1st time this method is called, it calls ated and saves submitted returns data into cache" must {
         "data returned from cache would be None, and we call full summary return URL in ated" must {
           "connector returns OK as response, then Return SummaryReturnsModel after filtering out errant period" in new Setup {
-            when(mockDataCacheConnector.fetchAndGetFormData[SummaryReturnsModel](eqTo(RetrieveReturnsResponseId))(any(), any(), any()))
+            when(mockDataCacheConnector.fetchAndGetFormData[SummaryReturnsModel](eqTo(RetrieveReturnsResponseId))(any(), any()))
               .thenReturn(Future.successful(None))
 
-            when(mockDataCacheConnector.saveFormData[SummaryReturnsModel](eqTo(RetrieveReturnsResponseId), any())(any(), any(), any()))
+            when(mockDataCacheConnector.saveFormData[SummaryReturnsModel](eqTo(RetrieveReturnsResponseId), any())(any(), any()))
               .thenReturn(Future.successful(allSummaryReturns))
 
             when(mockAtedConnector.getFullSummaryReturns(any(), any()))
@@ -100,7 +100,7 @@ class SummaryReturnsServiceSpec extends PlaySpec with MockitoSugar with BeforeAn
             val partialDataReturned: JsObject = allReturnsJson(withSubmittedReturns = false)
 
             when(mockDataCacheConnector.fetchAndGetFormData[SummaryReturnsModel](
-              eqTo(RetrieveReturnsResponseId))(any(), any(), any()))
+              eqTo(RetrieveReturnsResponseId))(any(), any()))
               .thenReturn(Future.successful(Some(dataCached)))
 
             when(mockAtedConnector.getPartialSummaryReturns(any(), any()))
@@ -111,14 +111,14 @@ class SummaryReturnsServiceSpec extends PlaySpec with MockitoSugar with BeforeAn
             await(result) must be(fullData)
 
             verify(mockDataCacheConnector, times(0))
-              .saveFormData[SummaryReturnsModel](eqTo(RetrieveReturnsResponseId), any())(any(), any(), any())
+              .saveFormData[SummaryReturnsModel](eqTo(RetrieveReturnsResponseId), any())(any(), any())
           }
 
           "connector returns NON-OK as response, then throw exception" in new Setup {
 
             val dataCached: SummaryReturnsModel = summaryReturnsModel(periodKey = currentTaxYear, withDraftReturns = false)
 
-            when(mockDataCacheConnector.fetchAndGetFormData[SummaryReturnsModel](eqTo(RetrieveReturnsResponseId))(any(), any(), any()))
+            when(mockDataCacheConnector.fetchAndGetFormData[SummaryReturnsModel](eqTo(RetrieveReturnsResponseId))(any(), any()))
               .thenReturn(Future.successful(Some(dataCached)))
 
             when(mockAtedConnector.getPartialSummaryReturns(any(), any()))
@@ -128,7 +128,7 @@ class SummaryReturnsServiceSpec extends PlaySpec with MockitoSugar with BeforeAn
             val thrown: RuntimeException = the[RuntimeException] thrownBy await(result)
             thrown.getMessage must include("[SummaryReturnsService][getDraftWithEtmpSummaryReturns] - Status other than 200 returned - Has Cache")
             verify(mockDataCacheConnector, times(0))
-              .saveFormData[SummaryReturnsModel](eqTo(RetrieveReturnsResponseId), any())(any(), any(), any())
+              .saveFormData[SummaryReturnsModel](eqTo(RetrieveReturnsResponseId), any())(any(), any())
           }
         }
       }
@@ -138,13 +138,13 @@ class SummaryReturnsServiceSpec extends PlaySpec with MockitoSugar with BeforeAn
 
       "return Some(PeriodSummaryReturns), if that period is found in SummaryReturnsModel" in new Setup {
 
-        when(mockDataCacheConnector.saveFormData[SummaryReturnsModel](eqTo(RetrieveReturnsResponseId), any())(any(), any(), any()))
+        when(mockDataCacheConnector.saveFormData[SummaryReturnsModel](eqTo(RetrieveReturnsResponseId), any())(any(), any()))
           .thenReturn(Future.successful(allSummaryReturns))
 
-        when(mockDataCacheConnector.fetchAndGetFormData[SummaryReturnsModel](eqTo(RetrieveReturnsResponseId))(any(), any(), any()))
+        when(mockDataCacheConnector.fetchAndGetFormData[SummaryReturnsModel](eqTo(RetrieveReturnsResponseId))(any(), any()))
           .thenReturn(Future.successful(None))
 
-        when(mockDataCacheConnector.saveFormData[SummaryReturnsModel](eqTo(RetrieveReturnsResponseId), any())(any(), any(), any()))
+        when(mockDataCacheConnector.saveFormData[SummaryReturnsModel](eqTo(RetrieveReturnsResponseId), any())(any(), any()))
           .thenReturn(Future.successful(allSummaryReturns))
 
         when(mockAtedConnector.getFullSummaryReturns(any(), any()))
@@ -156,10 +156,10 @@ class SummaryReturnsServiceSpec extends PlaySpec with MockitoSugar with BeforeAn
 
       "return None, if that period is not-found in SummaryReturnsModel" in new Setup {
 
-        when(mockDataCacheConnector.fetchAndGetFormData[SummaryReturnsModel](eqTo(RetrieveReturnsResponseId))(any(), any(), any()))
+        when(mockDataCacheConnector.fetchAndGetFormData[SummaryReturnsModel](eqTo(RetrieveReturnsResponseId))(any(), any()))
           .thenReturn(Future.successful(None))
 
-        when(mockDataCacheConnector.saveFormData[SummaryReturnsModel](eqTo(RetrieveReturnsResponseId), any())(any(), any(), any()))
+        when(mockDataCacheConnector.saveFormData[SummaryReturnsModel](eqTo(RetrieveReturnsResponseId), any())(any(), any()))
           .thenReturn(Future.successful(allSummaryReturns))
 
         when(mockAtedConnector.getFullSummaryReturns(any(), any()))
@@ -174,16 +174,16 @@ class SummaryReturnsServiceSpec extends PlaySpec with MockitoSugar with BeforeAn
 
       "save and return past submitted liabilities for a valid user" in new Setup {
 
-        when(mockDataCacheConnector.fetchAndGetFormData[PreviousReturns](eqTo(RetrieveReturnsResponseId))(any(), any(), any()))
+        when(mockDataCacheConnector.fetchAndGetFormData[PreviousReturns](eqTo(RetrieveReturnsResponseId))(any(), any()))
           .thenReturn(Future.successful(None))
 
         when(mockAtedConnector.getFullSummaryReturns(any(), any()))
           .thenReturn(Future.successful(HttpResponse(OK, allSummaryReturnsJson.toString)))
 
-        when(mockDataCacheConnector.saveFormData[SummaryReturnsModel](eqTo(RetrieveReturnsResponseId), any())(any(), any(), any()))
+        when(mockDataCacheConnector.saveFormData[SummaryReturnsModel](eqTo(RetrieveReturnsResponseId), any())(any(), any()))
           .thenReturn(Future.successful(allSummaryReturns))
 
-        when(mockDataCacheConnector.saveFormData[Seq[PreviousReturns]](eqTo(PreviousReturnsDetailsList), any())(any(), any(), any()))
+        when(mockDataCacheConnector.saveFormData[Seq[PreviousReturns]](eqTo(PreviousReturnsDetailsList), any())(any(), any()))
           .thenReturn(Future.successful(pastReturnDetails))
 
         val result: Future[Seq[PreviousReturns]] = testSummaryReturnsService.getPreviousSubmittedLiabilityDetails(currentTaxYear + 1)
@@ -196,7 +196,7 @@ class SummaryReturnsServiceSpec extends PlaySpec with MockitoSugar with BeforeAn
       val pastReturnDetails = Some(Seq(prevReturn))
 
       "retrieve cached previous returns address list" in new Setup {
-        when(mockDataCacheConnector.fetchAndGetFormData[Seq[PreviousReturns]](eqTo(PreviousReturnsDetailsList))(any(), any(), any()))
+        when(mockDataCacheConnector.fetchAndGetFormData[Seq[PreviousReturns]](eqTo(PreviousReturnsDetailsList))(any(), any()))
           .thenReturn(Future.successful(pastReturnDetails))
 
         val result: Future[Option[Seq[PreviousReturns]]] = testSummaryReturnsService.retrieveCachedPreviousReturnAddressList

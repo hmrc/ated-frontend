@@ -335,6 +335,7 @@ class PropertyDetailsService @Inject()(propertyDetailsConnector: PropertyDetails
             }
           case None => false
         }
+      case _ => false
     }
   }
 
@@ -419,7 +420,7 @@ class PropertyDetailsService @Inject()(propertyDetailsConnector: PropertyDetails
   }
 
   def storeChosenRelief(chosenRelief: PeriodChooseRelief)
-                       (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[PeriodChooseRelief] = {
+                       (implicit headerCarrier: HeaderCarrier): Future[PeriodChooseRelief] = {
     for {
       result <- dataCacheConnector.saveFormData[PeriodChooseRelief](CHOSEN_RELIEF_ID, chosenRelief)
     } yield {

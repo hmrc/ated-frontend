@@ -40,7 +40,7 @@ import scala.concurrent.Future
 class ReliefsServiceSpec extends PlaySpec with MockitoSugar with PrivateMethodTester {
 
   implicit lazy val authContext: StandardAuthRetrievals = mock[StandardAuthRetrievals]
-  implicit  val mockAppCongfig: ApplicationConfig = mock[ApplicationConfig]
+  implicit  val mockAppConfig: ApplicationConfig = mock[ApplicationConfig]
 
   val mockAtedConnector: AtedConnector = mock[AtedConnector]
   val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
@@ -370,14 +370,14 @@ class ReliefsServiceSpec extends PlaySpec with MockitoSugar with PrivateMethodTe
         val SubmitReturnsResponseFormId = "submit-returns-response-Id"
         when(mockDataCacheConnector.saveFormData[SubmitReturnsResponse](ArgumentMatchers.eq(SubmitReturnsResponseFormId),
           ArgumentMatchers.eq(successResponse.as[SubmitReturnsResponse]))
-          (any(), any(), ArgumentMatchers.eq(SubmitReturnsResponse.formats)))
+          (any(), any()))
           .thenReturn(Future.successful(successResponse.as[SubmitReturnsResponse]))
 
         val result: Future[HttpResponse] = testReliefsService.submitDraftReliefs("ATED-123", periodKey)
         val response: HttpResponse = await(result)
 
         verify(mockDataCacheConnector, times(1)).clearCache()(any())
-        verify(mockDataCacheConnector, times(1)).saveFormData(any(),any())(any(),any(),any())
+        verify(mockDataCacheConnector, times(1)).saveFormData(any(),any())(any(),any())
         response.status must be (OK)
         response.body must include ("processingDate")
         response.body must include ("reliefReturnResponse")
@@ -401,7 +401,7 @@ class ReliefsServiceSpec extends PlaySpec with MockitoSugar with PrivateMethodTe
         val AlreadySubmittedReturnsResponseFormId = "already-submitted-returns-response-Id"
         when(mockDataCacheConnector.saveFormData[AlreadySubmittedReturnsResponse](ArgumentMatchers.eq(AlreadySubmittedReturnsResponseFormId),
           ArgumentMatchers.eq(notFoundResponse.as[AlreadySubmittedReturnsResponse]))
-          (any(), any(), ArgumentMatchers.eq(AlreadySubmittedReturnsResponse.formats)))
+          (any(), any()))
           .thenReturn(Future.successful(notFoundResponse.as[AlreadySubmittedReturnsResponse]))
 
         val result: Future[HttpResponse] = testReliefsService.submitDraftReliefs("ATED-123", periodKey)
@@ -409,7 +409,7 @@ class ReliefsServiceSpec extends PlaySpec with MockitoSugar with PrivateMethodTe
 
         //1 invocation for succssful submission test and 2nd invocation for 404 test
         verify(mockDataCacheConnector, times(2)).clearCache()(any())
-        verify(mockDataCacheConnector, times(2)).saveFormData(any(),any())(any(),any(),any())
+        verify(mockDataCacheConnector, times(2)).saveFormData(any(),any())(any(),any())
         response.status must be (NOT_FOUND)
         response.body must include ("No Reliefs to submit")
       }
@@ -447,7 +447,7 @@ class ReliefsServiceSpec extends PlaySpec with MockitoSugar with PrivateMethodTe
       val data: SummaryReturnsModel = SummaryReturnsModel(Some(BigDecimal(999.99)), Seq(periodSummaryReturns))
 
       "if summary data is found in Cache, return Some EtmpReliefReturnsSummary" in new Setup {
-        when(mockDataCacheConnector.fetchAndGetFormData[SummaryReturnsModel](ArgumentMatchers.eq(RetrieveReturnsResponseId))(any(), any(), any()))
+        when(mockDataCacheConnector.fetchAndGetFormData[SummaryReturnsModel](ArgumentMatchers.eq(RetrieveReturnsResponseId))(any(), any()))
           .thenReturn(Future.successful(Some(data)))
 
         val result: Future[(Option[SubmittedReliefReturns], Boolean)] = testReliefsService.viewReliefReturn(periodKey, formBundleNo1)
@@ -463,7 +463,7 @@ class ReliefsServiceSpec extends PlaySpec with MockitoSugar with PrivateMethodTe
         val periodSummaryReturns: PeriodSummaryReturns = PeriodSummaryReturns(periodKey, Seq(), Some(submittedReturns))
         val data: SummaryReturnsModel = SummaryReturnsModel(Some(BigDecimal(999.99)), Seq(periodSummaryReturns))
 
-        when(mockDataCacheConnector.fetchAndGetFormData[SummaryReturnsModel](ArgumentMatchers.eq(RetrieveReturnsResponseId))(any(), any(), any()))
+        when(mockDataCacheConnector.fetchAndGetFormData[SummaryReturnsModel](ArgumentMatchers.eq(RetrieveReturnsResponseId))(any(), any()))
           .thenReturn(Future.successful(Some(data)))
 
         val result: Future[(Option[SubmittedReliefReturns], Boolean)] = testReliefsService.viewReliefReturn(periodKey, formBundleNo1)
@@ -474,7 +474,7 @@ class ReliefsServiceSpec extends PlaySpec with MockitoSugar with PrivateMethodTe
         val formBundleNo = "form-123"
         val data: SummaryReturnsModel = SummaryReturnsModel(None, Nil)
 
-        when(mockDataCacheConnector.fetchAndGetFormData[SummaryReturnsModel](ArgumentMatchers.eq(RetrieveReturnsResponseId))(any(), any(), any()))
+        when(mockDataCacheConnector.fetchAndGetFormData[SummaryReturnsModel](ArgumentMatchers.eq(RetrieveReturnsResponseId))(any(), any()))
           .thenReturn(Future.successful(Some(data)))
 
         val result: Future[(Option[SubmittedReliefReturns], Boolean)] = testReliefsService.viewReliefReturn(periodKey, formBundleNo)
@@ -484,7 +484,7 @@ class ReliefsServiceSpec extends PlaySpec with MockitoSugar with PrivateMethodTe
         implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
         val formBundleNo = "form-123"
 
-        when(mockDataCacheConnector.fetchAndGetFormData[SummaryReturnsModel](ArgumentMatchers.eq(RetrieveReturnsResponseId))(any(), any(), any()))
+        when(mockDataCacheConnector.fetchAndGetFormData[SummaryReturnsModel](ArgumentMatchers.eq(RetrieveReturnsResponseId))(any(), any()))
           .thenReturn(Future.successful(None))
 
         val result: Future[(Option[SubmittedReliefReturns], Boolean)] = testReliefsService.viewReliefReturn(periodKey, formBundleNo)

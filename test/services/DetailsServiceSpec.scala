@@ -297,17 +297,14 @@ class DetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite with Mocki
   "cacheClientReference" must {
 
     "save the new client ref num, if clear cache is successful" in new Setup {
-      implicit val authContext: StandardAuthRetrievals = mock[StandardAuthRetrievals]
 
       when(mockDataCacheConnector.saveFormData[String](ArgumentMatchers.any(), ArgumentMatchers.any())(
-        ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+        ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful("XN1200000100001"))
 
-      val result: Future[String] = testDetailsService.cacheClientReference("XN1200000100001")(authContext, hc)
+      val result: Future[String] = testDetailsService.cacheClientReference("XN1200000100001")(hc)
       await(result) must be("XN1200000100001")
     }
 
   }
-
-
 }

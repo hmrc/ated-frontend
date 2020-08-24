@@ -36,7 +36,7 @@ class PropertyDetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite wi
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
   implicit lazy val authContext: StandardAuthRetrievals = mock[StandardAuthRetrievals]
-  implicit  val mockAppCongfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
+  implicit  val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
 
   val mockPropertyDetailsConnector : PropertyDetailsConnector = mock[PropertyDetailsConnector]
   val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
@@ -453,13 +453,13 @@ class PropertyDetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite wi
         val SubmitReturnsResponseFormId = "submit-returns-response-Id"
         when(mockDataCacheConnector.saveFormData[SubmitReturnsResponse](ArgumentMatchers.eq(SubmitReturnsResponseFormId),
           ArgumentMatchers.eq(successResponse.as[SubmitReturnsResponse]))
-          (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.eq(SubmitReturnsResponse.formats)))
+          (ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(successResponse.as[SubmitReturnsResponse]))
 
         val result: Future[HttpResponse] = testPropertyDetailsService.submitDraftPropertyDetails("1")
         await(result)
         verify(mockDataCacheConnector, times(1)).clearCache()(ArgumentMatchers.any())
-        verify(mockDataCacheConnector, times(1)).saveFormData(ArgumentMatchers.any(),ArgumentMatchers.any())(ArgumentMatchers.any(),ArgumentMatchers.any(),ArgumentMatchers.any())
+        verify(mockDataCacheConnector, times(1)).saveFormData(ArgumentMatchers.any(),ArgumentMatchers.any())(ArgumentMatchers.any(),ArgumentMatchers.any())
       }
 
     }

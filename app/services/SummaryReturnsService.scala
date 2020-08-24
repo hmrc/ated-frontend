@@ -171,12 +171,11 @@ class SummaryReturnsService @Inject()(atedConnector: AtedConnector, dataCacheCon
     }
 
   private def savePastReturnDetails(pastReturnDetails: Seq[PreviousReturns])
-                                   (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[Seq[PreviousReturns]] = {
+                                   (implicit headerCarrier: HeaderCarrier): Future[Seq[PreviousReturns]] = {
     dataCacheConnector.saveFormData[Seq[PreviousReturns]](PreviousReturnsDetailsList, pastReturnDetails)
   }
 
-  def retrieveCachedPreviousReturnAddressList(implicit authContext: StandardAuthRetrievals,
-                                              hc: HeaderCarrier): Future[Option[Seq[PreviousReturns]]] = {
+  def retrieveCachedPreviousReturnAddressList(implicit hc: HeaderCarrier): Future[Option[Seq[PreviousReturns]]] = {
     dataCacheConnector.fetchAndGetFormData[Seq[PreviousReturns]](PreviousReturnsDetailsList)
   }
 

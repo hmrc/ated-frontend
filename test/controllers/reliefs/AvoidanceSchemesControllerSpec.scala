@@ -89,7 +89,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
 
-      when(mockDataCacheConnector.fetchAndGetFormData[String](eqTo(AtedConstants.DelegatedClientAtedRefNumber))(any(), any(), any()))
+      when(mockDataCacheConnector.fetchAndGetFormData[String](eqTo(AtedConstants.DelegatedClientAtedRefNumber))(any(), any()))
         .thenReturn(Future.successful(Some("XN1200000100001")))
 
       when(mockReliefsService.retrieveDraftReliefs(any(), any())(any(), any()))
@@ -111,7 +111,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
       setForbiddenAuthMocks(authMock)
-      when(mockDataCacheConnector.fetchAndGetFormData[String](eqTo(AtedConstants.DelegatedClientAtedRefNumber))(any(), any(), any()))
+      when(mockDataCacheConnector.fetchAndGetFormData[String](eqTo(AtedConstants.DelegatedClientAtedRefNumber))(any(), any()))
         .thenReturn(Future.successful(Some("XN1200000100001")))
 
       when(mockReliefsService.retrieveDraftReliefs(any(), any())(any(), any()))
@@ -152,7 +152,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
       val userId = s"user-${UUID.randomUUID}"
 
       when(mockDataCacheConnector.fetchAtedRefData[String](eqTo(AtedConstants.DelegatedClientAtedRefNumber))
-        (any(), any(), any())).thenReturn(Future.successful(Some("XN1200000100001")))
+        (any(), any())).thenReturn(Future.successful(Some("XN1200000100001")))
 
       when(mockReliefsService.retrieveDraftReliefs(any(), any())(any(), any()))
         .thenReturn(Future.successful(Some(avoidanceSchemes)))
@@ -175,7 +175,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
     def submitForbiddenUser(formData: Seq[(String, String)], avoidanceSchemes: ReliefsTaxAvoidance = testAvoidanceScheme)(test: Future[Result] => Any) {
       val userId = s"user-${UUID.randomUUID}"
 
-      when(mockDataCacheConnector.fetchAtedRefData[String](eqTo(AtedConstants.DelegatedClientAtedRefNumber))(any(), any(), any()))
+      when(mockDataCacheConnector.fetchAtedRefData[String](eqTo(AtedConstants.DelegatedClientAtedRefNumber))(any(), any()))
         .thenReturn(Future.successful(Some("XN1200000100001")))
 
       when(mockReliefsService.retrieveDraftReliefs(any(), any())(any(), any()))

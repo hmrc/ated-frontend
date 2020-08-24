@@ -17,7 +17,6 @@
 package controllers
 
 import connectors.BackLinkCacheConnector
-import models.StandardAuthRetrievals
 import play.api.mvc.Results.Redirect
 import play.api.mvc.{Call, Result}
 import uk.gov.hmrc.http.HeaderCarrier
@@ -30,19 +29,19 @@ trait BackLinkController {
   val controllerId: String
   val backLinkCacheConnector: BackLinkCacheConnector
 
-  def setBackLink(pageId: String, returnUrl: Option[String])(implicit authorisedRequest: StandardAuthRetrievals, hc: HeaderCarrier) : Future[Option[String]] = {
+  def setBackLink(pageId: String, returnUrl: Option[String])(implicit hc: HeaderCarrier) : Future[Option[String]] = {
     backLinkCacheConnector.saveBackLink(pageId, returnUrl)
   }
 
-  def getBackLink(pageId: String)(implicit authorisedRequest: StandardAuthRetrievals, hc: HeaderCarrier):Future[Option[String]] = {
+  def getBackLink(pageId: String)(implicit hc: HeaderCarrier):Future[Option[String]] = {
     backLinkCacheConnector.fetchAndGetBackLink(pageId)
   }
 
-  def currentBackLink(implicit authorisedRequest: StandardAuthRetrievals, hc: HeaderCarrier):Future[Option[String]] = {
+  def currentBackLink(implicit hc: HeaderCarrier):Future[Option[String]] = {
     getBackLink(controllerId)
   }
 
-  def clearBackLinks(pageIds: List[String]=Nil)(implicit authorisedRequest: StandardAuthRetrievals, hc: HeaderCarrier):Future[List[Option[String]]] = {
+  def clearBackLinks(pageIds: List[String]=Nil)(implicit hc: HeaderCarrier):Future[List[Option[String]]] = {
     pageIds match {
       case Nil => Future.successful(Nil)
       case _ => backLinkCacheConnector.clearBackLinks(pageIds)
@@ -50,7 +49,7 @@ trait BackLinkController {
   }
 
   def forwardBackLinkToNextPage(nextPageId: String, redirectCall: Call)
-                               (implicit authorisedRequest: StandardAuthRetrievals, hc: HeaderCarrier): Future[Result] = {
+                               (implicit hc: HeaderCarrier): Future[Result] = {
     for {
       currentBackLink <- currentBackLink
       _ <- setBackLink(nextPageId, currentBackLink)
@@ -60,7 +59,7 @@ trait BackLinkController {
   }
 
   def redirectWithBackLink(nextPageId: String, redirectCall: Call, backCall: Option[String], pageIds: List[String]=Nil)
-                          (implicit authorisedRequest: StandardAuthRetrievals, hc: HeaderCarrier): Future[Result] = {
+                          (implicit hc: HeaderCarrier): Future[Result] = {
     for {
       _ <- setBackLink(nextPageId, backCall)
       _ <- clearBackLinks(pageIds)
@@ -70,7 +69,7 @@ trait BackLinkController {
   }
 
   def redirectWithBackLinkDontOverwriteOldLink(nextPageId: String, redirectCall: Call, backCall: Option[String])
-                                              (implicit authorisedRequest: StandardAuthRetrievals, hc: HeaderCarrier): Future[Result] = {
+                                              (implicit hc: HeaderCarrier): Future[Result] = {
     for {
       oldBackLink <- getBackLink(nextPageId)
       _ <- oldBackLink match {

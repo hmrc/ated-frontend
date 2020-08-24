@@ -33,8 +33,6 @@ class AtedModelsSpec extends PlaySpec with GuiceOneServerPerSuite {
               Some("Account name"), Some("87686787"), Some(SortCode("12", "12", "12")))))
         ))
 
-      println(ukBankDetails)
-
         DisposeLiabilityReturn.isComplete(ukBankDetails) must be(true)
 
     }
@@ -49,7 +47,6 @@ class AtedModelsSpec extends PlaySpec with GuiceOneServerPerSuite {
         )
         )
 
-      println(nonUkBankDetails)
         DisposeLiabilityReturn.isComplete(nonUkBankDetails) must be(true)
 
     }

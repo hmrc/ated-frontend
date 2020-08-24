@@ -21,7 +21,8 @@ import java.net.URLEncoder
 import config.ApplicationConfig
 import javax.inject.Inject
 import models.{AddressLookup, AddressLookupRecord}
-import uk.gov.hmrc.http._
+import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
+import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -37,14 +38,14 @@ class AddressLookupConnector @Inject()(appConf: ApplicationConfig, http: Default
   def findByPostcode(addressLookup: AddressLookup)(implicit hc: HeaderCarrier):Future[List[AddressLookupRecord]] = {
     val filter = addressLookup.houseName.map(fi => "&filter=" + enc(fi)).getOrElse("")
     http.GET[List[AddressLookupRecord]](serviceURL + POSTCODE_LOOKUP + addressLookup.postcode + filter)(
-      HttpReads.Implicits.readFromJson, implicitly, implicitly).recover {
+      readFromJson, implicitly, implicitly).recover {
       case _ => Nil
     }
   }
 
   def findById(id: String)(implicit hc: HeaderCarrier):Future[Option[AddressLookupRecord]] = {
     http.GET[Option[AddressLookupRecord]](serviceURL + ID_LOOKUP + enc(id))(
-      HttpReads.Implicits.readOptionOfNotFound, implicitly, implicitly).recover {
+      readOptionOfNotFound, implicitly, implicitly).recover {
       case _: NotFoundException => None
     }
   }

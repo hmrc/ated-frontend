@@ -20,8 +20,8 @@ import config.ApplicationConfig
 import javax.inject.Inject
 import models.StandardAuthRetrievals
 import play.api.Logging
+import play.api.mvc.Result
 import play.api.mvc.Results.Redirect
-import play.api.mvc.{AnyContent, Request, Result}
 import services.DelegationService
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
@@ -45,8 +45,7 @@ class AuthAction @Inject()(appConfig: ApplicationConfig,
   def unauthorisedUrl(isSa: Boolean = false): Result = Redirect(controllers.routes.ApplicationController.unauthorised(isSa).url)
 
   def authorisedForNoEnrolments(body: StandardAuthRetrievals => Future[Result])
-                                (implicit request: Request[AnyContent],
-                  ex: ExecutionContext,
+                                (implicit ex: ExecutionContext,
                   hc: HeaderCarrier): Future[Result] = {
     authorised(
       AffinityGroup.Organisation or AffinityGroup.Agent
@@ -55,6 +54,7 @@ class AuthAction @Inject()(appConfig: ApplicationConfig,
     ){
       case enrolments ~ affinityGroup ~ Some(_) =>
           body(StandardAuthRetrievals(enrolments.enrolments, affinityGroup, None))
+      case _ => throw new RuntimeException("Authorisation exception")
     } recover {
       case e: AuthorisationException => handleException(e)
     }
@@ -71,8 +71,7 @@ class AuthAction @Inject()(appConfig: ApplicationConfig,
   }
 
   def authorisedAction(body: StandardAuthRetrievals => Future[Result])
-                      (implicit request: Request[AnyContent],
-                       ex: ExecutionContext,
+                      (implicit ex: ExecutionContext,
                        hc: HeaderCarrier): Future[Result] = {
     authorised(
       (Enrolment("HMRC-ATED-ORG") or Enrolment("HMRC-AGENT-AGENT") or Enrolment("IR-SA")) and
@@ -93,6 +92,7 @@ class AuthAction @Inject()(appConfig: ApplicationConfig,
             body(StandardAuthRetrievals(enrolments.enrolments, affinityGroup, delegationModel))
           }
         }
+      case _ => throw new RuntimeException("Authorisation exception")
     } recover {
       case e: AuthorisationException => handleException(e)
     }

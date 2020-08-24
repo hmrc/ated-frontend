@@ -61,7 +61,7 @@ class AddressLookupConnectorSpec extends PlaySpec with GuiceOneAppPerSuite with 
         implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
         when(mockHttp.GET[List[AddressLookupRecord]]
           (ArgumentMatchers.any())
-          (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(response))
+        (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(response))
 
         val result: Future[List[AddressLookupRecord]] = testAddressLookupConnector.findByPostcode(AddressLookup("postCode", None))
         await(result).headOption must be(Some(addressLookupRecord))
@@ -72,7 +72,7 @@ class AddressLookupConnectorSpec extends PlaySpec with GuiceOneAppPerSuite with 
         implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
         when(mockHttp.GET[List[AddressLookupRecord]]
           (ArgumentMatchers.any())
-          (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.failed(new Exception("")))
+        (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.failed(new Exception("")))
 
         val result: Future[List[AddressLookupRecord]] = testAddressLookupConnector.findByPostcode(AddressLookup("postCode", Some("houseName")))
         await(result).isEmpty must be(true)
@@ -87,7 +87,7 @@ class AddressLookupConnectorSpec extends PlaySpec with GuiceOneAppPerSuite with 
         implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
         when(mockHttp.GET[Option[AddressLookupRecord]]
           (ArgumentMatchers.any())
-          (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(response))
+        (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(response))
 
         val result: Future[Option[AddressLookupRecord]] = testAddressLookupConnector.findById("1")
         await(result) must be(Some(addressLookupRecord))
@@ -98,7 +98,7 @@ class AddressLookupConnectorSpec extends PlaySpec with GuiceOneAppPerSuite with 
         implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
         when(mockHttp.GET[Option[AddressLookupRecord]]
           (ArgumentMatchers.any())
-          (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.failed(new NotFoundException("")))
+        (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.failed(new NotFoundException("")))
 
         val result: Future[Option[AddressLookupRecord]] = testAddressLookupConnector.findById("1")
         await(result).isDefined must be(false)

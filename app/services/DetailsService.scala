@@ -138,7 +138,7 @@ class DetailsService @Inject()(atedConnector: AtedConnector,
     }
   }
 
-  def cacheClientReference(atedRef: String)(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[String] = {
+  def cacheClientReference(atedRef: String)(implicit hc: HeaderCarrier): Future[String] = {
       dataCacheConnector.saveFormData[String](delegatedClientAtedRefNumber, atedRef)
   }
 }

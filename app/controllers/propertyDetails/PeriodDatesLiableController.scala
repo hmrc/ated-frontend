@@ -122,7 +122,7 @@ class PeriodDatesLiableController @Inject()(mcc: MessagesControllerComponents,
     }
   }
 
-  private def getBackLink(id: String, mode: Option[String])(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier) = {
+  private def getBackLink(id: String, mode: Option[String])(implicit hc: HeaderCarrier) = {
     mode match {
       case Some("add") => Future.successful(Some(controllers.propertyDetails.routes.PeriodsInAndOutReliefController.view(id).url))
       case _ => currentBackLink

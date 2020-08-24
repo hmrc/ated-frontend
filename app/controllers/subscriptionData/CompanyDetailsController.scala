@@ -61,7 +61,7 @@ class CompanyDetailsController @Inject()(mcc: MessagesControllerComponents,
   }
 
   def back: Action[AnyContent] = Action.async { implicit request =>
-    authAction.authorisedAction { implicit authContext =>
+    authAction.authorisedAction { _ =>
       Future.successful(Redirect(controllers.routes.AccountSummaryController.view()))
     }
   }

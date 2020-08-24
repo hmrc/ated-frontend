@@ -82,6 +82,7 @@ class ChangeReliefReturnController @Inject()(mcc: MessagesControllerComponents,
                     controllers.propertyDetails.routes.AddressLookupController.view(None, periodKey),
                     returnUrl
                   )
+                case _ => throw new RuntimeException("Invalid operation")
               }
             }
           )

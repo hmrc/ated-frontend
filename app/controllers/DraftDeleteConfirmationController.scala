@@ -73,6 +73,7 @@ class DraftDeleteConfirmationController @Inject()(mcc: MessagesControllerCompone
                   Future.successful(Redirect(controllers.propertyDetails.routes.PropertyDetailsSummaryController
                     .view(id.getOrElse(throw new RuntimeException("No id found for draft return")))))
                 case (false, "relief") => Future.successful(Redirect(controllers.reliefs.routes.ReliefsSummaryController.view(periodKey)))
+                case _ => throw new RuntimeException("Couldn't delete draft")
               }
             }
           )
