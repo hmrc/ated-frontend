@@ -30,7 +30,6 @@ import play.api.inject.Injector
 import play.api.mvc.{AnyContentAsEmpty, AnyContentAsFormUrlEncoded, MessagesControllerComponents}
 import play.api.test.FakeRequest
 import testhelpers.TestUtil
-import uk.gov.hmrc.http.{SessionKeys => GovUKSessionKeys}
 
 import scala.concurrent.ExecutionContext
 
@@ -52,8 +51,8 @@ class ControllerBaseSpec extends PlaySpec with MockFactory with GuiceOneAppPerSu
 
 
   lazy val fakeRequestWithSession: FakeRequest[AnyContentAsEmpty.type] = fakeRequest.withSession(
-    GovUKSessionKeys.lastRequestTimestamp -> "1498236506662",
-    GovUKSessionKeys.authToken -> "Bearer Token",
+    "ts" -> "1498236506662",
+    "authToken" -> "Bearer Token",
     migrationToETMP -> "2018-01-01"
   )
 

@@ -20,49 +20,48 @@ import java.util.UUID
 
 import play.api.mvc.{AnyContentAsFormUrlEncoded, AnyContentAsJson}
 import play.api.test.FakeRequest
-import uk.gov.hmrc.http.SessionKeys
 
 object SessionBuilder {
 
-  val TOKEN = "token" // this is because SessionKeys.token gives warning
+  val TOKEN = "token"
 
   def updateRequestWithSession(fakeRequest: FakeRequest[AnyContentAsJson], userId: String): FakeRequest[AnyContentAsJson] = {
     val sessionId = s"session-${UUID.randomUUID}"
     fakeRequest.withSession(
-      SessionKeys.sessionId -> sessionId,
+      "sessionId" -> sessionId,
       TOKEN -> "RANDOMTOKEN",
-      SessionKeys.userId -> userId)
+      "userId" -> userId)
   }
 
 
   def updateRequestFormWithSession(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded], userId: String): FakeRequest[AnyContentAsFormUrlEncoded] = {
     val sessionId = s"session-${UUID.randomUUID}"
     fakeRequest.withSession(
-      SessionKeys.sessionId -> sessionId,
+      "sessionId" -> sessionId,
       TOKEN -> "RANDOMTOKEN",
-      SessionKeys.userId -> userId)
+      "userId" -> userId)
   }
 
   def buildRequestWithSession(userId: String) = {
     val sessionId = s"session-${UUID.randomUUID}"
     FakeRequest().withSession(
-      SessionKeys.sessionId -> sessionId,
+      "sessionId" -> sessionId,
       TOKEN -> "RANDOMTOKEN",
-      SessionKeys.userId -> userId)
+      "userId" -> userId)
   }
 
   def buildRequestWithSessionDelegation(userId: String) = {
     val sessionId = s"session-${UUID.randomUUID}"
     FakeRequest().withSession(
-      SessionKeys.sessionId -> sessionId,
+      "sessionId" -> sessionId,
       TOKEN -> "RANDOMTOKEN",
       "delegationState" -> "On",
-      SessionKeys.userId -> userId)
+      "userId" -> userId)
   }
 
   def buildRequestWithSessionNoUser = {
     val sessionId = s"session-${UUID.randomUUID}"
     FakeRequest().withSession(
-      SessionKeys.sessionId -> sessionId)
+      "sessionId" -> sessionId)
   }
 }
