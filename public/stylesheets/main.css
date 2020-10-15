@@ -315,7 +315,7 @@ fieldset legend{
   font-weight: bold;
 }
 
-.touchevents .date-of-birth {
+.touchevents .date {
     display: block;
 }
 
@@ -376,6 +376,10 @@ fieldset legend{
     margin-right: 20px;
     width: 50px;
     margin-bottom:0px;
+}
+
+.date .form-group-year {
+    width: 70px;
 }
 
 .reference-group {

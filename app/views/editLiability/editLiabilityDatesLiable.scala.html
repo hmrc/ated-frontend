@@ -50,7 +50,7 @@
         defaultDateOption = None,
         periodKey,
         '_hintText -> messages("ated.property-details-period.datesLiable.startDate.hint", periodStartDate(periodKey).toString(messages("ated.date-format.numeric"))),
-        '_groupClass -> "form-group date-of-birth",
+        '_groupClass -> "form-group date",
         '_idName -> "startDate"
       )
 
@@ -62,7 +62,7 @@
         defaultDateOption = Some(periodEndDate(periodKey)),
         periodKey,
         '_hintText -> messages("ated.property-details-period.datesLiable.endDate.hint", periodEndDate(periodKey).toString(messages("ated.date-format.numeric"))),
-        '_groupClass -> "form-group date-of-birth",
+        '_groupClass -> "form-group date",
         '_idName -> "endDate"
       )
     </div>
