@@ -39,7 +39,12 @@
     </tr>
     <tr>
       <td id="property-address-label" class="heading-small">@messages("ated.property-details-summary.table.property-details.address.label")</td>
-      <td id="property-address-value"><span id="address-line-1">@changeLiability.addressProperty.line_1</span>,<br/><span id="address-line-2">@changeLiability.addressProperty.line_2</span>@if(changeLiability.addressProperty.postcode.isDefined){,<br/><span id="address-postcode">@changeLiability.addressProperty.postcode</span>}</td>
+      <td id="property-address-value">
+        <span id="address-line-1">@changeLiability.addressProperty.line_1</span><br/>
+        <span id="address-line-2">@changeLiability.addressProperty.line_2</span><br/>
+        @if(changeLiability.addressProperty.line_3.isDefined){<span id="address-line-3">@changeLiability.addressProperty.line_3</span><br/>}
+        @if(changeLiability.addressProperty.line_4.isDefined){<span id="address-line-4">@changeLiability.addressProperty.line_4</span><br/>}
+        @if(changeLiability.addressProperty.postcode.isDefined){<span id="address-postcode">@changeLiability.addressProperty.postcode</span>}</td>
     </tr>
     <tr>
       <td id="property-title-number-label" class="heading-small">@messages("ated.property-details-summary.table.property-details.title-number.label")</td>
@@ -55,12 +60,16 @@
       <td id="property-value-value-@index">@formattedPounds(valueObj.propertyValue)</td>
     </tr>
     <tr>
-      <td id="property-date-of-valuation-label-@index" class="heading-small">@messages(getPeriodValueDateMessage(index, valuesToDisplay.size))</td>
-      <td id="property-date-of-valuation-@index">@valueObj.dateOfChange.toString(messages("ated.date-format"))</td>
+      <td id="property-date-of-valuation-label-@index" class="heading-small">@messages("ated.form-bundle.view.isValuedByAgent.message")</td>
+      @if(changeLiability.value.map(x => x.isValuedByAgent.getOrElse()).contains(true)) {
+          <td id="property-is-Valued-by-agent-yes-@index">@messages("ated.form-bundle.view.isValuedByAgent.yes")</td>
+      }else{
+          <td id="property-is-Valued-by-agent-no-@index">@messages("ated.form-bundle.view.isValuedByAgent.no")</td>
+      }
     </tr>
     }
 
-    @if(changeLiability.bankDetails.map(_.hasBankDetails) == Some(true)){
+    @if(changeLiability.bankDetails.exists(_.hasBankDetails)){
       <tr>
         <td class="heading-medium td-height" id="bank-details-header">@messages("ated.edit-liability.summary.bank-details.header")</td>
         <td></td>
@@ -69,7 +78,7 @@
         <td id="account-holder-name-label" class="heading-small">@messages("ated.edit-liability.summary.bank-details.account-holder-name")</td>
         <td id="account-holder-name-value">@changeLiability.bankDetails.flatMap(_.bankDetails.map(_.accountName))</td>
       </tr>
-      @if(changeLiability.bankDetails.flatMap(_.bankDetails.flatMap(_.hasUKBankAccount)) == Some(true)){
+      @if(changeLiability.bankDetails.flatMap(_.bankDetails.flatMap(_.hasUKBankAccount)).contains(true)){
         <tr>
           <td id="account-number-label" class="heading-small">@messages("ated.edit-liability.summary.bank-details.account-number")</td>
           <td id="account-number-value">@changeLiability.bankDetails.flatMap(_.bankDetails.map(_.accountNumber))</td>
@@ -101,16 +110,6 @@
     </tr>
     }
     <tr>
-      <td class="heading-medium td-height" id="supporting-info-header">@messages("ated.property-details-summary.table.supporting-info.header")</td>
-      <td></td>
-    </tr>
-    <tr>
-      <td id="additional-information-label" class="heading-small">@messages("ated.property-details-summary.table.property-ated-details.additional-information.label")</td>
-      <td id="additional-information-value">
-      @changeLiability.period.map(v => v.supportingInfo.fold("")(x=>x))
-      </td>
-    </tr>
-    <tr>
       <td class="heading-medium td-height" id="avoidance-scheme-header">@messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.header")</td>
       <td></td>
     </tr>
@@ -121,6 +120,16 @@
     <tr>
       <td id="promoter-reference-label" class="td-top heading-small">@messages("ated.property-details-summary.table.property-ated-details.promoter-reference.label")</td>
       <td id="promoter-reference-value" class="td-top">@changeLiability.period.map(v => v.taxAvoidancePromoterReference.fold("")(x=>x))</td>
+    </tr>
+    <tr>
+      <td class="heading-medium td-height" id="supporting-info-header">@messages("ated.property-details-summary.table.supporting-info.header")</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td id="additional-information-label" class="heading-small">@messages("ated.property-details-summary.table.property-ated-details.additional-information.label")</td>
+      <td id="additional-information-value">
+      @changeLiability.period.map(v => v.supportingInfo.fold("")(x=>x))
+      </td>
     </tr>
     <tr>
       <td class="heading-medium td-height" id="return-status-header">@messages("ated.edit-liability.summary.bank-details.return-status.header")</td>

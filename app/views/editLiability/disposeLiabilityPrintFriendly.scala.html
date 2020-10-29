@@ -46,7 +46,7 @@
       <td id="property-title-disposal-date">@disposeLiability.disposeLiability.flatMap(x => x.dateOfDisposal.map(y => y.toString(messages("ated.date-format"))))</td>
     </tr>
 
-    @if(disposeLiability.bankDetails.map(_.hasBankDetails) == Some(true)){
+    @if(disposeLiability.bankDetails.exists(_.hasBankDetails)){
     <tr>
       <td class="heading-medium td-height" id="bank-details-header">@messages("ated.edit-liability.summary.bank-details.header")</td>
       <td class="td-height">
@@ -56,7 +56,7 @@
       <td id="account-holder-name-label" class="heading-small">@messages("ated.edit-liability.summary.bank-details.account-holder-name")</td>
       <td id="account-holder-name-value">@disposeLiability.bankDetails.flatMap(_.bankDetails.map(_.accountName))</td>
     </tr>
-      @if(disposeLiability.bankDetails.flatMap(_.bankDetails.flatMap(_.hasUKBankAccount)) == Some(true)){
+      @if(disposeLiability.bankDetails.flatMap(_.bankDetails.flatMap(_.hasUKBankAccount)).contains(true)){
     <tr>
       <td id="account-number-label" class="heading-small">@messages("ated.edit-liability.summary.bank-details.account-number")</td>
       <td id="account-number-value">@disposeLiability.bankDetails.flatMap(_.bankDetails.map(_.accountNumber))</td>
