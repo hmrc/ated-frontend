@@ -23,7 +23,9 @@ import controllers.auth.{AuthAction, ClientHelper}
 import controllers.propertyDetails.{AddressLookupController, PropertyDetailsAddressController}
 import forms.AtedForms._
 import javax.inject.Inject
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import models.EditLiabilityReturnType
+import play.api.data.Form
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, MessagesRequest}
 import services.ServiceInfoService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
@@ -51,10 +53,18 @@ class EditLiabilityTypeController @Inject()(mcc: MessagesControllerComponents,
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
           Future.successful(
-            Ok(template(editLiabilityReturnTypeForm, oldFormBundleNo, periodKey, editAllowed, serviceInfoContent, returnToFormBundle(oldFormBundleNo, periodKey)))
+            Ok(template(editLiabilityPrePop(editLiabilityReturnTypeForm), oldFormBundleNo, periodKey, editAllowed, serviceInfoContent, returnToFormBundle(oldFormBundleNo, periodKey)))
           )
         }
       }
+    }
+  }
+
+  def editLiabilityPrePop(form: Form[EditLiabilityReturnType])(implicit request: MessagesRequest[AnyContent]): Form[EditLiabilityReturnType] = {
+    request.getQueryString("disposal") match {
+      case Some("true") => form.fill(EditLiabilityReturnType(editLiabilityType = Some("DP")))
+      case Some("false") => form.fill(EditLiabilityReturnType(editLiabilityType = Some("CR")))
+      case _ => form
     }
   }
 
@@ -73,14 +83,14 @@ class EditLiabilityTypeController @Inject()(mcc: MessagesControllerComponents,
                   redirectWithBackLink(
                     propertyDetailsAddressController.controllerId,
                     controllers.propertyDetails.routes.PropertyDetailsAddressController.editSubmittedReturn(oldFormBundleNo),
-                    backLink,
+                    backLink.map(_.concat("&disposal=false")),
                     List(addressLookupController.controllerId)
                   )
                 case Some("DP") =>
                   redirectWithBackLink(
                     disposePropertyController.controllerId,
                     controllers.editLiability.routes.DisposePropertyController.view(oldFormBundleNo),
-                    backLink
+                    backLink.map(_.concat("&disposal=true")),
                   )
                 case _ =>
                   Future.successful(Redirect(controllers.editLiability.routes.EditLiabilityTypeController.editLiability(oldFormBundleNo, periodKey, editAllowed)))
