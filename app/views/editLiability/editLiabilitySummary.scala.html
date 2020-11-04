@@ -109,7 +109,7 @@
     <span id="property-date-of-valuation-label-@index" class="heading-small">@messages("ated.form-bundle.view.isValuedByAgent.message")</span>
     </div>
 
-    @if(changeLiability.value.map(x=>x.isValuedByAgent.getOrElse()) == Some(true)) {
+    @if(changeLiability.value.map(x => x.isValuedByAgent.getOrElse()).contains(true)) {
     <div class="grid grid-1-2 cya-answer">
       <span id="property-is-Valued-by-agent-yes-@index">@messages("ated.form-bundle.view.isValuedByAgent.yes")</span>
     </div>
