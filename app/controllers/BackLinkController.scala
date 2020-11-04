@@ -29,19 +29,19 @@ trait BackLinkController {
   val controllerId: String
   val backLinkCacheConnector: BackLinkCacheConnector
 
-  def setBackLink(pageId: String, returnUrl: Option[String])(implicit hc: HeaderCarrier) : Future[Option[String]] = {
+  def setBackLink(pageId: String, returnUrl: Option[String])(implicit hc: HeaderCarrier): Future[Option[String]] = {
     backLinkCacheConnector.saveBackLink(pageId, returnUrl)
   }
 
-  def getBackLink(pageId: String)(implicit hc: HeaderCarrier):Future[Option[String]] = {
+  def getBackLink(pageId: String)(implicit hc: HeaderCarrier): Future[Option[String]] = {
     backLinkCacheConnector.fetchAndGetBackLink(pageId)
   }
 
-  def currentBackLink(implicit hc: HeaderCarrier):Future[Option[String]] = {
+  def currentBackLink(implicit hc: HeaderCarrier): Future[Option[String]] = {
     getBackLink(controllerId)
   }
 
-  def clearBackLinks(pageIds: List[String]=Nil)(implicit hc: HeaderCarrier):Future[List[Option[String]]] = {
+  def clearBackLinks(pageIds: List[String] = Nil)(implicit hc: HeaderCarrier): Future[List[Option[String]]] = {
     pageIds match {
       case Nil => Future.successful(Nil)
       case _ => backLinkCacheConnector.clearBackLinks(pageIds)

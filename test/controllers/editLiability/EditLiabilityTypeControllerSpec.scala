@@ -55,8 +55,10 @@ class EditLiabilityTypeControllerSpec extends PlaySpec with GuiceOneServerPerSui
   val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
   val mockBackLinkCacheConnector: BackLinkCacheConnector = mock[BackLinkCacheConnector]
   val mockDisposePropertyController: DisposePropertyController = mock[DisposePropertyController]
-    val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
+  val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  val fakeDisposePropertyRequest: FakeRequest[AnyContentAsJson] = FakeRequest().withJsonBody(Json.parse("""{"editLiabilityType":"DP"}"""))
+  val fakeChangeReturnRequest: FakeRequest[AnyContentAsJson] = FakeRequest().withJsonBody(Json.parse("""{"editLiabilityType":"CR"}"""))
+  lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
   val injectedViewInstance = app.injector.instanceOf[views.html.editLiability.editLiability]
@@ -81,7 +83,7 @@ class Setup {
     injectedViewInstance
   )
 
-    def editLiabilityWithAuthorisedUser(test: Future[Result] => Any) {
+    def editLiabilityWithAuthorisedUser(test: Future[Result] => Any, queryParams: Option[(String, Seq[String])]) {
       val periodKey: Int = 2015
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
@@ -91,7 +93,7 @@ class Setup {
         (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
       when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
       val result = testEditLiabilityTypeController.editLiability("12345678901", periodKey, editAllowed = true)
-        .apply(SessionBuilder.buildRequestWithSession(userId))
+        .apply(SessionBuilder.buildRequestWithSession(userId, queryParams))
       test(result)
     }
 
@@ -112,7 +114,7 @@ class Setup {
 
     reset(mockPropertyDetailsAddressController)
     reset(mockAddressLookupController)
-reset(mockDelegationService)
+    reset(mockDelegationService)
     reset(mockDataCacheConnector)
     reset(mockBackLinkCacheConnector)
     reset(mockDisposePropertyController)
@@ -121,15 +123,41 @@ reset(mockDelegationService)
   "EditLiabilityTypeController" must {
     "editLiability" must {
 
-      "take user to edit liability page" in new Setup {
-        editLiabilityWithAuthorisedUser {
+      "take user to edit liability page with no pre-population" in new Setup {
+        editLiabilityWithAuthorisedUser({
           result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
             document.title must be("Have you disposed of the property? - GOV.UK")
             document.getElementById("edit-liability-header").text() must be("Have you disposed of the property?")
+            assert(!document.getElementById("editLiabilityType-cr").hasAttr("checked"))
+            assert(!document.getElementById("editLiabilityType-dp").hasAttr("checked"))
             assert(document.getElementById("service-info-list").text() === "Home Manage account Messages Help and contact")
-        }
+        }, queryParams = None)
+      }
+
+      "take user to edit liability page with change return option pre-populated" in new Setup {
+        editLiabilityWithAuthorisedUser({
+          result =>
+            status(result) must be(OK)
+            val document = Jsoup.parse(contentAsString(result))
+            document.title must be("Have you disposed of the property? - GOV.UK")
+            document.getElementById("edit-liability-header").text() must be("Have you disposed of the property?")
+            assert(document.getElementById("editLiabilityType-cr").hasAttr("checked"))
+            assert(document.getElementById("service-info-list").text() === "Home Manage account Messages Help and contact")
+        }, queryParams = Some(Tuple2("disposal", Seq("false"))))
+      }
+
+      "take user to edit liability page with dispose option pre-populated" in new Setup {
+        editLiabilityWithAuthorisedUser({
+          result =>
+            status(result) must be(OK)
+            val document = Jsoup.parse(contentAsString(result))
+            document.title must be("Have you disposed of the property? - GOV.UK")
+            document.getElementById("edit-liability-header").text() must be("Have you disposed of the property?")
+            assert(document.getElementById("editLiabilityType-dp").hasAttr("checked"))
+            assert(document.getElementById("service-info-list").text() === "Home Manage account Messages Help and contact")
+        }, queryParams = Some(Tuple2("disposal", Seq("true"))))
       }
     }
 
@@ -144,19 +172,17 @@ reset(mockDelegationService)
         }
       }
       "if user select 'change return' any radio button, redirect to edit return page" in new Setup {
-        val fakeRequest: FakeRequest[AnyContentAsJson] = FakeRequest().withJsonBody(Json.parse("""{"editLiabilityType":"CR"}"""))
         when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
         when(mockBackLinkCacheConnector.clearBackLinks(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(Nil))
-        continueWithAuthorisedUser(fakeRequest) {
+        continueWithAuthorisedUser(fakeChangeReturnRequest) {
           result =>
             status(result) must be(SEE_OTHER)
             redirectLocation(result) must be(Some("/ated/liability/12345678901/change/address"))
         }
       }
       "if user select 'dispose property' any radio button, redirect to dispose property page" in new Setup {
-        val fakeRequest: FakeRequest[AnyContentAsJson] = FakeRequest().withJsonBody(Json.parse("""{"editLiabilityType":"DP"}"""))
         when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
-        continueWithAuthorisedUser(fakeRequest) {
+        continueWithAuthorisedUser(fakeDisposePropertyRequest) {
           result =>
             status(result) must be(SEE_OTHER)
             redirectLocation(result) must be(Some("/ated/liability/12345678901/dispose"))

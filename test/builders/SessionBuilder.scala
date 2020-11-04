@@ -18,6 +18,7 @@ package builders
 
 import java.util.UUID
 
+import play.api.mvc.request.RequestTarget
 import play.api.mvc.{AnyContentAsFormUrlEncoded, AnyContentAsJson}
 import play.api.test.FakeRequest
 
@@ -42,12 +43,13 @@ object SessionBuilder {
       "userId" -> userId)
   }
 
-  def buildRequestWithSession(userId: String) = {
+  def buildRequestWithSession(userId: String, queryParams: Option[(String, Seq[String])] = None) = {
     val sessionId = s"session-${UUID.randomUUID}"
-    FakeRequest().withSession(
+    val fr = FakeRequest().withSession(
       "sessionId" -> sessionId,
       TOKEN -> "RANDOMTOKEN",
-      "userId" -> userId)
+      "userId" -> userId).withTarget(RequestTarget("", "", Map(queryParams.getOrElse("dummy" -> Seq()))))
+    fr
   }
 
   def buildRequestWithSessionDelegation(userId: String) = {
