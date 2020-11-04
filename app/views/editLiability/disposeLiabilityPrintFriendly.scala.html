@@ -52,11 +52,16 @@
       <td class="td-height">
       </td>
     </tr>
+
+      @if(disposeLiability.bankDetails.flatMap(_.bankDetails.flatMap(_.hasUKBankAccount)).contains(true)){
+    <tr>
+      <td id="type-of-account-label" class="heading-small">@messages("ated.edit-liability.summary.bank-details.type-of-account")</td>
+      <td id="type-of-account-value">@messages("ated.label-bank-account-type.uk")</td>
+    </tr>
     <tr>
       <td id="account-holder-name-label" class="heading-small">@messages("ated.edit-liability.summary.bank-details.account-holder-name")</td>
       <td id="account-holder-name-value">@disposeLiability.bankDetails.flatMap(_.bankDetails.map(_.accountName))</td>
     </tr>
-      @if(disposeLiability.bankDetails.flatMap(_.bankDetails.flatMap(_.hasUKBankAccount)).contains(true)){
     <tr>
       <td id="account-number-label" class="heading-small">@messages("ated.edit-liability.summary.bank-details.account-number")</td>
       <td id="account-number-value">@disposeLiability.bankDetails.flatMap(_.bankDetails.map(_.accountNumber))</td>
@@ -67,11 +72,19 @@
     </tr>
       }else {
     <tr>
+      <td id="type-of-account-label" class="heading-small">@messages("ated.edit-liability.summary.bank-details.type-of-account")</td>
+      <td id="type-of-account-value">@messages("ated.label-bank-account-type.overseas")</td>
+    </tr>
+    <tr>
+      <td id="account-holder-name-label" class="heading-small">@messages("ated.edit-liability.summary.bank-details.account-holder-name")</td>
+      <td id="account-holder-name-value">@disposeLiability.bankDetails.flatMap(_.bankDetails.map(_.accountName))</td>
+    </tr>
+    <tr>
       <td id="account-number-label" class="heading-small">@messages("ated.edit-liability.summary.bank-details.iban")</td>
       <td id="account-number-value">@disposeLiability.bankDetails.flatMap(_.bankDetails.map(_.iban))</td>
     </tr>
     <tr>
-      <td id="sort-code-label"class="heading-small">@messages("ated.edit-liability.summary.bank-details.bic-swift-code")</td>
+      <td id="sort-code-label" class="heading-small">@messages("ated.edit-liability.summary.bank-details.bic-swift-code")</td>
       <td id="sort-code-value">@disposeLiability.bankDetails.flatMap(_.bankDetails.map(_.bicSwiftCode))</td>
     </tr>
       }
