@@ -1,0 +1,71 @@
+/*
+ * Copyright 2020 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package views.editLiability
+
+import config.ApplicationConfig
+import forms.BankDetailForms._
+import models.StandardAuthRetrievals
+import org.jsoup.Jsoup
+import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
+import org.scalatestplus.mockito.MockitoSugar
+import org.scalatestplus.play.guice.GuiceOneAppPerSuite
+import play.api.i18n.{Messages, MessagesApi}
+import play.api.test.FakeRequest
+import play.twirl.api.Html
+import testhelpers.MockAuthUtil
+import views.html.editLiability.editLiabilityDeclaration
+
+class editLiabilityDeclarationSpec extends FeatureSpec with GuiceOneAppPerSuite with MockitoSugar with BeforeAndAfterEach
+  with GivenWhenThen with MockAuthUtil {
+
+  implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
+  implicit val request = FakeRequest()
+  implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
+  implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
+
+  val injectedViewInstance: editLiabilityDeclaration = app.injector.instanceOf[views.html.editLiability.editLiabilityDeclaration]
+
+  feature("The user confirm the declaration for editing their liability") {
+
+    info("As a client I want to confirm the declaration for editing my liability")
+
+    scenario("Allowing displaying declaration of editing liability") {
+
+      Given("The client confirms from the summary after editing their liability")
+      When("The user views the page")
+
+      val html = injectedViewInstance("formbundleno", "A", Html(""), Some("http://backLink"))
+
+      val document = Jsoup.parse(html.toString())
+
+      Then("The header should match - Amended return declaration")
+      assert(document.title() === "Amended return declaration - GOV.UK")
+      assert(document.select("h1").text === "Amended return declaration")
+
+      Then("The subheader should be - Change return")
+      assert(document.getElementById("pre-heading").text() === "This section is: Change return")
+
+      Then("The submit button should have the correct name")
+      assert(document.getElementById("submit").text() === "Agree and submit amended return")
+
+      Then("The back link is correct")
+      assert(document.getElementById("backLinkHref").text === "Back")
+      assert(document.getElementById("backLinkHref").attr("href") === "http://backLink")
+    }
+  }
+
+}
