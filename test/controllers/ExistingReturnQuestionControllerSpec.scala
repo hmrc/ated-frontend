@@ -78,6 +78,7 @@ class ExistingReturnQuestionControllerSpec extends PlaySpec with GuiceOneServerP
   val mockPropertyDetailsService: PropertyDetailsService = mock[PropertyDetailsService]
   val mockReliefsService: ReliefsService = mock[ReliefsService]
   val mockBackLinkCacheConnector: BackLinkCacheConnector = mock[BackLinkCacheConnector]
+  val confirmAddressUrl: String = "http://localhost:9916/ated/liability/confirm-address/view/2017/123456789026?mode=editSubmitted"
 
 
   val periodKey: Int = 2015
@@ -114,7 +115,7 @@ class ExistingReturnQuestionControllerSpec extends PlaySpec with GuiceOneServerP
       test(result)
     }
 
-    def getWithAuthorisedUserWithSomeData(test: Future[Result] => Any) {
+    def getWithAuthorisedUserWithSomeData(test: Future[Result] => Any, fromConfirmAddress: Boolean = false) {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
@@ -123,7 +124,15 @@ class ExistingReturnQuestionControllerSpec extends PlaySpec with GuiceOneServerP
       when(mockDataCacheConnector.fetchAndGetFormData[ReturnType](ArgumentMatchers.any())
         (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(ReturnType(Some("RR")))))
       when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
-      val result = testExistingReturnQuestionController.view(periodKey, returnTypeRelief).apply(SessionBuilder.buildRequestWithSession(userId))
+
+      val fakeRequest = if(fromConfirmAddress) {
+        SessionBuilder.buildRequestWithSession(userId).withHeaders("referer" -> confirmAddressUrl)
+      }else{
+        SessionBuilder.buildRequestWithSession(userId)
+      }
+
+      val result = testExistingReturnQuestionController.view(periodKey, returnTypeRelief)
+        .apply(fakeRequest)
       test(result)
     }
 
@@ -193,6 +202,15 @@ class ExistingReturnQuestionControllerSpec extends PlaySpec with GuiceOneServerP
             document.title() must be(TitleBuilder.buildTitle("Did you file a return for this property in 2014 to 2015?"))
             document.getElementById("return-type-header")
               .text() must be("Did you file a return for this property in 2014 to 2015?")
+          }
+        }
+        "have a back link which goes to the address confirmation" when {
+          "the user came from the address confirmation when editing an existing return" in new Setup {
+            getWithAuthorisedUserWithSomeData(result => {
+              status(result) must be(OK)
+              val document = Jsoup.parse(contentAsString(result))
+              document.getElementById("backLinkHref").attr("href") must be("/ated/liability/confirm-address/view/2017/123456789026?mode=editSubmitted")
+            }, fromConfirmAddress = true)
           }
         }
       }

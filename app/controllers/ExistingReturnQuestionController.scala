@@ -26,6 +26,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.ServiceInfoService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants.RetrieveSelectPeriodFormId
+import utils.ReferrerUtils
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -44,8 +45,15 @@ class ExistingReturnQuestionController @Inject()(mcc: MessagesControllerComponen
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+
+          val backLink = if (request.headers.get("referer").getOrElse("").endsWith("editSubmitted")) {
+            ReferrerUtils.asRelativeUrl(request.headers.get("referer").get)
+          } else {
+            getBackLink(periodKey, returnType)
+          }
+
           Future.successful(Ok(template(new YesNoQuestionExistingReturnsForm().yesNoQuestionForm, periodKey,
-            returnType, serviceInfoContent, getBackLink(periodKey, returnType))))
+            returnType, serviceInfoContent, backLink)))
         }
       }
     }
