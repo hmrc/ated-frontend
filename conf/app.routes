@@ -215,12 +215,6 @@ GET      /liability/create/create-confirmation-print                   controlle
 GET     /view-relief-return/:periodKey/:formBundleNo                controllers.reliefs.ViewReliefReturnController.viewReliefReturn(periodKey: Int, formBundleNo: String)
 POST    /view-relief-return/submit:periodKey/:formBundleNumber      controllers.reliefs.ViewReliefReturnController.submit(periodKey: Int, formBundleNumber: String)
 
-# give feedback
-
-GET      /feedback                                                         controllers.LeaveFeedbackController.view(return: String)
-GET      /feedback/thanks                                                  controllers.LeaveFeedbackController.thanks(return: String)
-POST     /feedback/submit                                                  controllers.LeaveFeedbackController.submitFeedback(return: String)
-
 GET      /sign-out-individual                                                controllers.ApplicationController.redirectToGuidance()
 
 GET     /draft/delete/confirmation/view/:periodKey/:returnType           controllers.DraftDeleteConfirmationController.view(propertyKey: Option[String] ?=None, periodKey: Int, returnType: String)
