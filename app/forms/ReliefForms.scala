@@ -53,53 +53,49 @@ object ReliefForms {
   })
 
   val rentalBusinessDateConstraint: Constraint[Reliefs] = Constraint("rentalBusinessDate")({
-    model => validatePeriodStartDate(model.periodKey, model.rentalBusiness, model.rentalBusinessDate, "rental Business", "rentalBusinessDate")
+    model => validatePeriodStartDate(model.periodKey, model.rentalBusiness, model.rentalBusinessDate, "rentalBusinessDate")
   })
   val employeeOccupationDateConstraint: Constraint[Reliefs] = Constraint("employeeOccupationDate")({
-    model => validatePeriodStartDate(model.periodKey, model.employeeOccupation, model.employeeOccupationDate, "employee Occupation", "employeeOccupationDate")
+    model => validatePeriodStartDate(model.periodKey, model.employeeOccupation, model.employeeOccupationDate, "employeeOccupationDate")
   })
   val farmHousesDateConstraint: Constraint[Reliefs] = Constraint("farmHousesDate")({
-    model => validatePeriodStartDate(model.periodKey, model.farmHouses, model.farmHousesDate, "farmHouses", "farmHousesDate")
+    model => validatePeriodStartDate(model.periodKey, model.farmHouses, model.farmHousesDate, "farmHousesDate")
   })
   val lendingDateConstraint: Constraint[Reliefs] = Constraint("lendingDate")({
-    model => validatePeriodStartDate(model.periodKey, model.lending, model.lendingDate, "lending", "lendingDate")
+    model => validatePeriodStartDate(model.periodKey, model.lending, model.lendingDate, "lendingDate")
   })
   val openToPublicDateConstraint: Constraint[Reliefs] = Constraint("openToPublicDate")({
-    model => validatePeriodStartDate(model.periodKey, model.openToPublic, model.openToPublicDate, "open To the Public", "openToPublicDate")
+    model => validatePeriodStartDate(model.periodKey, model.openToPublic, model.openToPublicDate, "openToPublicDate")
   })
   val propertyDeveloperDateConstraint: Constraint[Reliefs] = Constraint("propertyDeveloperDate")({
-    model => validatePeriodStartDate(model.periodKey, model.propertyDeveloper, model.propertyDeveloperDate, "property Developers", "propertyDeveloperDate")
+    model => validatePeriodStartDate(model.periodKey, model.propertyDeveloper, model.propertyDeveloperDate, "propertyDeveloperDate")
   })
   val propertyTradingDateConstraint: Constraint[Reliefs] = Constraint("propertyTradingDate")({
-    model => validatePeriodStartDate(model.periodKey, model.propertyTrading, model.propertyTradingDate, "property Trading", "propertyTradingDate")
+    model => validatePeriodStartDate(model.periodKey, model.propertyTrading, model.propertyTradingDate, "propertyTradingDate")
   })
   val socialHousingDateConstraint: Constraint[Reliefs] = Constraint("socialHousingDate")({
-    model => validatePeriodStartDate(model.periodKey, model.socialHousing, model.socialHousingDate, "social Housing", "socialHousingDate")
+    model => validatePeriodStartDate(model.periodKey, model.socialHousing, model.socialHousingDate, "socialHousingDate")
   })
   val equityReleaseConstraint: Constraint[Reliefs] = Constraint("equityReleaseDate")({
-    model => validatePeriodStartDate(model.periodKey, model.equityRelease, model.equityReleaseDate, "equity Release scheme", "equityReleaseDate")
+    model => validatePeriodStartDate(model.periodKey, model.equityRelease, model.equityReleaseDate, "equityReleaseDate")
   })
 
   def validatePeriodStartDate(periodKey: Int,
                               reliefSelected: Boolean,
                               startDate: Option[LocalDate],
-                              reliefSelectedFieldName: String,
                               dateFieldName: String) : ValidationResult = {
     import PeriodUtils._
 
     reliefSelected match {
-      case true if startDate.isEmpty => {
+      case true if startDate.isEmpty =>
         Invalid("ated.choose-reliefs.error.date.mandatory",
-          s"${dateFieldName}")
-      }
-      case true if isPeriodTooEarly(periodKey, startDate) => {
+          s"$dateFieldName")
+      case true if isPeriodTooEarly(periodKey, startDate) =>
         Invalid("ated.choose-reliefs.error.date.chargePeriod",
-          s"${dateFieldName}")
-      }
-      case true if isPeriodTooLate(periodKey, startDate) => {
+          s"$dateFieldName")
+      case true if isPeriodTooLate(periodKey, startDate) =>
         Invalid("ated.choose-reliefs.error.date.chargePeriod",
-          s"${dateFieldName}")
-      }
+          s"$dateFieldName")
       case _ => Valid
     }
   }

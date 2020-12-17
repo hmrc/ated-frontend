@@ -58,7 +58,7 @@ class PrevPeriodsSummarySpec extends PlaySpec with MockAuthUtil with GuiceOneApp
     duringPeak = false,
     currentYear,
     currentTaxYear,
-    None
+    Some("http://backLink")
   )
 
 
@@ -73,6 +73,11 @@ class PrevPeriodsSummarySpec extends PlaySpec with MockAuthUtil with GuiceOneApp
 
       "have the correct h1" in {
         assert(document.select("h1").text() === "Your previous returns")
+      }
+
+      "have the correct backlink" in {
+        assert(document.getElementById("backLinkHref").text === "Back")
+        assert(document.getElementById("backLinkHref").attr("href") === "http://backLink")
       }
     }
 
