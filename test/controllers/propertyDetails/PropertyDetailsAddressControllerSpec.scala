@@ -268,6 +268,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
               document.getElementById("backLinkHref").attr("href") must include("/ated/liability/confirm-address/view")
           }
         }
+
         "show the chargeable property details view with back link to EditLiabilityType" in new Setup {
           viewDataWithAuthorisedUserChangeReturn("1",PropertyDetailsBuilder.getPropertyDetailsWithFormBundleReturn("1"), false) {
             result =>

@@ -191,6 +191,16 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
               document.getElementById("address-line-2").text() must be("addr2")
               document.getElementById("address-line-3").text() must be("addr3")
               document.getElementById("address-line-4").text() must be("addr4")
+              document.getElementById("address-postcode").text() must be("123456")
+              document.getElementById("edit-property-address-details").attr("href") must include("/ated/liability/create/address/edit-summary/1")
+              document.getElementById("edit-property-title-details").attr("href") must include("/ated/liability/create/title/edit/1")
+              document.getElementById("edit-property-professionally-value-1").attr("href") must include("/ated/liability/create/owned-before/edit-summary/1")
+              document.getElementById("edit-property-professionally-valued-details-incomplete").attr("href") must include("/ated/liability/create/valued/edit/1")
+              document.getElementById("edit-dates-of-liablity-incomplete").attr("href") must include("/ated/liability/create/full-tax-period/edit-summary/1")
+              document.getElementById("edit-avoidance-scheme-header-incomplete").attr("href") must include("/ated/liability/create/tax-avoidance/edit-summary/1")
+              document.getElementById("edit-supporting-details").attr("href") must include("/ated/liability/create/supporting-info/edit-summary/1")
+              document.getElementById("print-friendly-liability-link").attr("href") must include("/ated/liability/create/summary/1/print")
+              document.getElementById("delete-draft").attr("href") must include("/ated/liability/delete/draft/1/2019")
           }
         }
       }
