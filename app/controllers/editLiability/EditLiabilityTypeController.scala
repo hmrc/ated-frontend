@@ -90,7 +90,7 @@ class EditLiabilityTypeController @Inject()(mcc: MessagesControllerComponents,
                   redirectWithBackLink(
                     disposePropertyController.controllerId,
                     controllers.editLiability.routes.DisposePropertyController.view(oldFormBundleNo),
-                    backLink.map(_.concat("&disposal=true")),
+                    backLink.map(_.concat("&disposal=true"))
                   )
                 case _ =>
                   Future.successful(Redirect(controllers.editLiability.routes.EditLiabilityTypeController.editLiability(oldFormBundleNo, periodKey, editAllowed)))

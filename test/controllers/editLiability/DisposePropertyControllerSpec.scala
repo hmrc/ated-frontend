@@ -42,6 +42,7 @@ import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.AtedConstants
 import views.html.BtaNavigationLinks
+import views.html.editLiability.dataOfDisposal
 
 import scala.concurrent.Future
 
@@ -56,11 +57,11 @@ class DisposePropertyControllerSpec extends PlaySpec with GuiceOneServerPerSuite
   val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
   val mockBackLinkCacheConnector: BackLinkCacheConnector = mock[BackLinkCacheConnector]
   val mockDisposeLiabilityHasBankDetailsController: DisposeLiabilityHasBankDetailsController = mock[DisposeLiabilityHasBankDetailsController]
-    val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
+  val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
-  val injectedViewInstance = app.injector.instanceOf[views.html.editLiability.dataOfDisposal]
+  val injectedViewInstance: dataOfDisposal = app.injector.instanceOf[views.html.editLiability.dataOfDisposal]
 
   class Setup {
 
@@ -89,8 +90,10 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
         (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
       when(mockDisposeLiabilityReturnService.retrieveLiabilityReturn(ArgumentMatchers.eq(oldFormBundleNum))
       (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(disposeLiabilityReturn))
-      when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
-      when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(btaNavigationLinksView()(messages,mockAppConfig)))
+      when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any()))
+        .thenReturn(Future.successful(Some("http://backlink")))
+      when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(btaNavigationLinksView()(messages,mockAppConfig)))
       val result = testDisposePropertyController.view(oldFormBundleNum).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
@@ -114,7 +117,8 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
       when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
         (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
       val disposeLiabilityReturn = DisposeLiabilityReturnBuilder.generateDisposeLiabilityReturn("123456789012")
-      when(mockDisposeLiabilityReturnService.cacheDisposeLiabilityReturnDate(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+      when(mockDisposeLiabilityReturnService.cacheDisposeLiabilityReturnDate(
+        ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(Some(disposeLiabilityReturn)))
       val result = testDisposePropertyController.save(oldFormBundleNum)
         .apply(SessionBuilder.updateRequestWithSession(FakeRequest().withJsonBody(inputJson), userId))
@@ -149,17 +153,20 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
             document.getElementById("dispose-property-header").text() must be("When did you dispose of the property?")
             document.getElementById("dateOfDisposal_hint").text() must be("For example, 31 3 2017")
             document.getElementById("submit").text() must be("Save and continue")
+            document.getElementById("backLinkHref").text must be("Back")
+            document.getElementById("backLinkHref").attr("href") must include("http://backlink")
         }
       }
 
       "return a status of OK with pre-filled disposeLiabilityForm, when DisposeLiability model is found in the cache" in new Setup {
-        val fAddress = FormBundleAddress("line1", "line2", None, None, None, "GB")
-        val fProperty = FormBundlePropertyDetails(None, fAddress, None)
-        val fReturn = FormBundleReturn("2015", fProperty, dateOfAcquisition = None, valueAtAcquisition = None,
+        val fAddress: FormBundleAddress = FormBundleAddress("line1", "line2", None, None, None, "GB")
+        val fProperty: FormBundlePropertyDetails = FormBundlePropertyDetails(None, fAddress, None)
+        val fReturn: FormBundleReturn = FormBundleReturn("2015", fProperty, dateOfAcquisition = None, valueAtAcquisition = None,
           taxAvoidanceScheme = None, localAuthorityCode = None, professionalValuation = true, ninetyDayRuleApplies = false,
           dateOfSubmission = new LocalDate("2015-04-02"), liabilityAmount = BigDecimal(123.45), paymentReference = "payment-ref-123", lineItem = Seq())
 
-        val disposeLiabilityReturn = DisposeLiabilityReturn(id = "12345678901", fReturn, disposeLiability = Some(DisposeLiability(None, periodKey)))
+        val disposeLiabilityReturn: DisposeLiabilityReturn = DisposeLiabilityReturn(
+          id = "12345678901", fReturn, disposeLiability = Some(DisposeLiability(None, periodKey)))
         viewWithAuthorisedUser(Some(disposeLiabilityReturn)) {
           result =>
             status(result) must be(OK)
@@ -169,13 +176,13 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
       }
 
       "return a status of OK with empty form, if DisposeLiability is not found in cache" in new Setup {
-        val fAddress = FormBundleAddress("line1", "line2", None, None, None, "GB")
-        val fProperty = FormBundlePropertyDetails(None, fAddress, None)
-        val fReturn = FormBundleReturn("2015", fProperty, dateOfAcquisition = None, valueAtAcquisition = None,
+        val fAddress: FormBundleAddress = FormBundleAddress("line1", "line2", None, None, None, "GB")
+        val fProperty: FormBundlePropertyDetails = FormBundlePropertyDetails(None, fAddress, None)
+        val fReturn: FormBundleReturn = FormBundleReturn("2015", fProperty, dateOfAcquisition = None, valueAtAcquisition = None,
           taxAvoidanceScheme = None, localAuthorityCode = None, professionalValuation = true, ninetyDayRuleApplies = false,
           dateOfSubmission = new LocalDate("2015-04-02"), liabilityAmount = BigDecimal(123.45), paymentReference = "payment-ref-123", lineItem = Seq())
 
-        val disposeLiabilityReturn = DisposeLiabilityReturn(id = "12345678901", fReturn)
+        val disposeLiabilityReturn: DisposeLiabilityReturn = DisposeLiabilityReturn(id = "12345678901", fReturn)
         viewWithAuthorisedUser(Some(disposeLiabilityReturn)) {
           result =>
             status(result) must be(OK)
@@ -226,19 +233,73 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
         saveWithAuthorisedUser(oldFormBundleNum, inputJson) {
           result =>
             status(result) must be(BAD_REQUEST)
-            verify(mockDisposeLiabilityReturnService, times(0)).cacheDisposeLiabilityReturnDate(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())
+            verify(mockDisposeLiabilityReturnService, times(0))
+              .cacheDisposeLiabilityReturnDate(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())
+        }
+      }
+
+      "for empty date of disposal, return BAD_REQUEST" in new Setup {
+        val inputJson: JsValue = Json.parse(
+          """{"dateOfDisposal.day": "", "dateOfDisposal.month": "", "dateOfDisposal.year": "", "periodKey": 2017}""".stripMargin)
+        when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+        saveWithAuthorisedUser(oldFormBundleNum, inputJson) {
+          result =>
+            status(result) must be(BAD_REQUEST)
+            verify(mockDisposeLiabilityReturnService, times(0))
+              .cacheDisposeLiabilityReturnDate(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())
+
+            val document = Jsoup.parse(contentAsString(result))
+            document.title() must be(TitleBuilder.buildTitle("When did you dispose of the property?"))
+            document.getElementById("dateOfDisposal-error").text must include("There is a problem with date of disposal")
+            document.getElementById("dateOfDisposal-error-0").text must include("You must enter date of disposal")
+        }
+      }
+
+      "for invalid date of disposal, return BAD_REQUEST" in new Setup {
+        val inputJson: JsValue = Json.parse(
+          """{"dateOfDisposal.day": "31", "dateOfDisposal.month": "04", "dateOfDisposal.year": "2015", "periodKey": 2015}""".stripMargin)
+        when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+        saveWithAuthorisedUser(oldFormBundleNum, inputJson) {
+          result =>
+            status(result) must be(BAD_REQUEST)
+            verify(mockDisposeLiabilityReturnService, times(0))
+              .cacheDisposeLiabilityReturnDate(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())
+
+            val document = Jsoup.parse(contentAsString(result))
+            document.title() must be(TitleBuilder.buildTitle("When did you dispose of the property?"))
+            document.getElementById("dateOfDisposal-error").text must include("There is a problem with date of disposal")
+            document.getElementById("dateOfDisposal-error-0").text must include("You must enter a valid date")
+        }
+      }
+
+      "for valid date of disposal with incorrect period, return BAD_REQUEST" in new Setup {
+        val inputJson: JsValue = Json.parse(
+          """{"dateOfDisposal.day": "31", "dateOfDisposal.month": "5", "dateOfDisposal.year": "2015", "periodKey": 2017}""".stripMargin)
+        when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+        saveWithAuthorisedUser(oldFormBundleNum, inputJson) {
+          result =>
+            status(result) must be(BAD_REQUEST)
+            verify(mockDisposeLiabilityReturnService, times(0))
+              .cacheDisposeLiabilityReturnDate(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())
+
+            val document = Jsoup.parse(contentAsString(result))
+            document.title() must be(TitleBuilder.buildTitle("When did you dispose of the property?"))
+            document.getElementById("dateOfDisposal-error").text must include("There is a problem with date of disposal")
+            document.getElementById("dateOfDisposal-error-0").text must include("The date of disposal must be in this chargeable period")
         }
       }
 
       "for valid, redirect to bank details page" in new Setup {
         val inputJson: JsValue = Json.parse(
           """{"dateOfDisposal.day": "30", "dateOfDisposal.month": "6", "dateOfDisposal.year": "2015", "periodKey": 2015}""".stripMargin)
-        when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+        when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
+          .thenReturn(Future.successful(None))
         saveWithAuthorisedUser(oldFormBundleNum, inputJson) {
           result =>
             status(result) must be(SEE_OTHER)
             redirectLocation(result) must be(Some("/ated/liability/123456789012/dispose/has-bank-details"))
-            verify(mockDisposeLiabilityReturnService, times(1)).cacheDisposeLiabilityReturnDate(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())
+            verify(mockDisposeLiabilityReturnService, times(1))
+              .cacheDisposeLiabilityReturnDate(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())
         }
       }
     }
