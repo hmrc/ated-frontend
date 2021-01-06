@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -90,7 +90,7 @@ class EditLiabilityTypeController @Inject()(mcc: MessagesControllerComponents,
                   redirectWithBackLink(
                     disposePropertyController.controllerId,
                     controllers.editLiability.routes.DisposePropertyController.view(oldFormBundleNo),
-                    backLink.map(_.concat("&disposal=true")),
+                    backLink.map(_.concat("&disposal=true"))
                   )
                 case _ =>
                   Future.successful(Redirect(controllers.editLiability.routes.EditLiabilityTypeController.editLiability(oldFormBundleNo, periodKey, editAllowed)))

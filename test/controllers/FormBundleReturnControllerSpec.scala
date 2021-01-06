@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +38,7 @@ import services.{FormBundleReturnsService, ServiceInfoService, SubscriptionDataS
 import testhelpers.MockAuthUtil
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
-import views.html.BtaNavigationLinks
+import views.html.{BtaNavigationLinks, formBundleReturn}
 
 import scala.concurrent.Future
 
@@ -51,11 +51,11 @@ class FormBundleReturnControllerSpec extends PlaySpec with GuiceOneServerPerSuit
   val mockFormBundleReturnsService: FormBundleReturnsService = mock[FormBundleReturnsService]
   val mockSummaryReturnsService: SummaryReturnsService = mock[SummaryReturnsService]
   val mockSubscriptionDataService: SubscriptionDataService = mock[SubscriptionDataService]
-    val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
+  val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
-  val injectedViewInstance = app.injector.instanceOf[views.html.formBundleReturn]
+  val injectedViewInstance: formBundleReturn = app.injector.instanceOf[views.html.formBundleReturn]
 
   val periodKey: Int = 2015
   val formBundleNo1: String = "123456789012"
@@ -84,14 +84,17 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
 
-      when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(btaNavigationLinksView()(messages,mockAppConfig)))
+      when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(btaNavigationLinksView()(messages,mockAppConfig)))
 
       when(mockFormBundleReturnsService.getFormBundleReturns(ArgumentMatchers.eq(formBundleNo1))(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(formBundleReturn))
 
       when(mockSummaryReturnsService.getPeriodSummaryReturns(ArgumentMatchers.eq(periodKey))(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(periodSummaries))
-      when(mockSubscriptionDataService.getOrganisationName(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(organisationName)))
+
+      when(mockSubscriptionDataService.getOrganisationName(ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(Some(organisationName)))
 
       val result = testFormBundleReturnController.view(formBundleNo1, periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
@@ -147,7 +150,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
 
       "show the return view with data when change is allowed" in new Setup {
 
-        val changeablePeriod = SubmittedLiabilityReturns(formBundleNo = formBundleNo1,
+        val changeablePeriod: SubmittedLiabilityReturns = SubmittedLiabilityReturns(formBundleNo = formBundleNo1,
           description = "",
           liabilityAmount = BigDecimal(432.12),
           dateFrom = new LocalDate("2015-09-08"),
@@ -156,7 +159,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
           changeAllowed = true,
           paymentReference = "")
 
-        val periodSummaryChargeable = PeriodSummaryReturns(periodKey = periodKey,
+        val periodSummaryChargeable: PeriodSummaryReturns = PeriodSummaryReturns(periodKey = periodKey,
           draftReturns = Nil,
           submittedReturns = Some(new SubmittedReturns(periodKey, Nil, List(changeablePeriod))))
 
@@ -192,7 +195,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
       }
 
       "show a return with multiple values" in new Setup {
-        val changeablePeriod = SubmittedLiabilityReturns(formBundleNo = formBundleNo1,
+        val changeablePeriod: SubmittedLiabilityReturns = SubmittedLiabilityReturns(formBundleNo = formBundleNo1,
           description = "",
           liabilityAmount = BigDecimal(432.12),
           dateFrom = new LocalDate("2015-09-08"),
@@ -201,7 +204,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
           changeAllowed = true,
           paymentReference = "")
 
-        val periodSummaryChargeable = PeriodSummaryReturns(periodKey = periodKey,
+        val periodSummaryChargeable: PeriodSummaryReturns = PeriodSummaryReturns(periodKey = periodKey,
           draftReturns = Nil,
           submittedReturns = Some(new SubmittedReturns(periodKey, Nil, List(changeablePeriod))))
 
@@ -212,7 +215,8 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
             document.title() must include("View return")
 
             assert(document.getElementById("submit").text() === "Change return")
-
+            document.getElementById("backLinkHref").text must be("Back")
+            document.getElementById("backLinkHref").attr("href") must be("/ated/period-summary/" + periodKey)
         }
       }
     }

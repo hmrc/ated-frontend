@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,6 +41,7 @@ import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.AtedConstants
 import views.html.BtaNavigationLinks
+import views.html.editLiability.editLiability
 
 import scala.concurrent.Future
 
@@ -61,7 +62,7 @@ class EditLiabilityTypeControllerSpec extends PlaySpec with GuiceOneServerPerSui
   lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
-  val injectedViewInstance = app.injector.instanceOf[views.html.editLiability.editLiability]
+  val injectedViewInstance: editLiability = app.injector.instanceOf[views.html.editLiability.editLiability]
 
 class Setup {
 
@@ -87,11 +88,13 @@ class Setup {
       val periodKey: Int = 2015
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+      val backLink = "/ated/form-bundle/12345678901/" + periodKey
       setAuthMocks(authMock)
-      when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(btaNavigationLinksView()(messages,mockAppConfig)))
+      when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(btaNavigationLinksView()(messages,mockAppConfig)))
       when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
         (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-      when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+      when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(Some(backLink)))
       val result = testEditLiabilityTypeController.editLiability("12345678901", periodKey, editAllowed = true)
         .apply(SessionBuilder.buildRequestWithSession(userId, queryParams))
       test(result)
@@ -133,6 +136,8 @@ class Setup {
             assert(!document.getElementById("editLiabilityType-cr").hasAttr("checked"))
             assert(!document.getElementById("editLiabilityType-dp").hasAttr("checked"))
             assert(document.getElementById("service-info-list").text() === "Home Manage account Messages Help and contact")
+            document.getElementById("backLinkHref").text must be("Back")
+            document.getElementById("backLinkHref").attr("href") must be("/ated/form-bundle/12345678901/2015")
         }, queryParams = None)
       }
 
@@ -145,6 +150,8 @@ class Setup {
             document.getElementById("edit-liability-header").text() must be("Have you disposed of the property?")
             assert(document.getElementById("editLiabilityType-cr").hasAttr("checked"))
             assert(document.getElementById("service-info-list").text() === "Home Manage account Messages Help and contact")
+            document.getElementById("backLinkHref").text must be("Back")
+            document.getElementById("backLinkHref").attr("href") must be("/ated/form-bundle/12345678901/2015")
         }, queryParams = Some(Tuple2("disposal", Seq("false"))))
       }
 
@@ -157,6 +164,8 @@ class Setup {
             document.getElementById("edit-liability-header").text() must be("Have you disposed of the property?")
             assert(document.getElementById("editLiabilityType-dp").hasAttr("checked"))
             assert(document.getElementById("service-info-list").text() === "Home Manage account Messages Help and contact")
+            document.getElementById("backLinkHref").text must be("Back")
+            document.getElementById("backLinkHref").attr("href") must be("/ated/form-bundle/12345678901/2015")
         }, queryParams = Some(Tuple2("disposal", Seq("true"))))
       }
     }
@@ -172,7 +181,8 @@ class Setup {
         }
       }
       "if user select 'change return' any radio button, redirect to edit return page" in new Setup {
-        when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+        when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
+          .thenReturn(Future.successful(None))
         when(mockBackLinkCacheConnector.clearBackLinks(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(Nil))
         continueWithAuthorisedUser(fakeChangeReturnRequest) {
           result =>
@@ -181,7 +191,8 @@ class Setup {
         }
       }
       "if user select 'dispose property' any radio button, redirect to dispose property page" in new Setup {
-        when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+        when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
+          .thenReturn(Future.successful(None))
         continueWithAuthorisedUser(fakeDisposePropertyRequest) {
           result =>
             status(result) must be(SEE_OTHER)
@@ -190,7 +201,8 @@ class Setup {
       }
       "for anything else, redirect to edit liability page" in new Setup {
         val fakeRequest: FakeRequest[AnyContentAsJson] = FakeRequest().withJsonBody(Json.parse("""{"editLiabilityType":"X"}"""))
-        when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+        when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
+          .thenReturn(Future.successful(None))
         continueWithAuthorisedUser(fakeRequest) {
           result =>
             status(result) must be(SEE_OTHER)
