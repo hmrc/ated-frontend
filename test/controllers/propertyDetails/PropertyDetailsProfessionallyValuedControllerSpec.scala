@@ -97,9 +97,9 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
         (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
       when(mockDataCacheConnector.fetchAndGetFormData[Boolean](ArgumentMatchers.any())
         (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
-      when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
-      when(mockPropertyDetailsService.retrieveDraftPropertyDetails
-      (ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propertyDetails)))
+      when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any()))
+        .thenReturn(Future.successful(Some("http://backlink")))
+      when(mockPropertyDetailsService.retrieveDraftPropertyDetails(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propertyDetails)))
       val result = testPropertyDetailsProfessionallyValuedController.view(id).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
@@ -172,6 +172,9 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
               document.getElementById("property-details-header").text() must be("Was the property professionally valued?")
+
+              document.getElementById("backLinkHref").text must be("Back")
+              document.getElementById("backLinkHref").attr("href") must include("http://backlink")
 
               document.getElementById("isValuedByAgent").text() must be("Yes No")
               assert(document.getElementById("service-info-list").text() === "Home Manage account Messages Help and contact")
