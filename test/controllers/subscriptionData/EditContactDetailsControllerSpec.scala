@@ -142,6 +142,9 @@ class Setup {
 
             document.getElementById("phoneNumber").attr("value") must be("")
 
+            document.getElementById("backLinkHref").text() must be("Back")
+            document.getElementById("backLinkHref").attr("href") must be("/ated/company-details")
+
         }
       }
 
