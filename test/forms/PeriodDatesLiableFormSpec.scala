@@ -30,6 +30,29 @@ class PeriodDatesLiableFormSpec extends PlaySpec with MustMatchers with GuiceOne
 
   "periodDatesLiableForm" must {
     "fail validation" when {
+
+      "empty start date and end date fields are entered" in {
+
+        val inputDate = Map("startDate.day" -> "",
+          "startDate.month" -> "",
+          "startDate.year" -> "",
+          "endDate.day" -> "",
+          "endDate.month" -> "",
+          "endDate.year" -> "")
+
+        PropertyDetailsForms.periodDatesLiableForm.bind(inputDate).fold(
+          hasErrors => {
+            hasErrors.errors.length mustBe 2
+            messages(hasErrors.errors.head.message) mustBe messages("ated.property-details-period.datesLiable.startDate.error.empty")
+            messages(hasErrors.errors.last.message) mustBe messages("ated.property-details-period.datesLiable.endDate.error.empty")
+
+          },
+          _ => {
+            fail("There is a problem")
+          }
+        )
+      }
+
       "start date and end date fields not entered correctly" in {
 
         val inputDate = Map("startDate.day" -> "13",

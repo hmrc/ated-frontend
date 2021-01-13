@@ -211,8 +211,16 @@ reset(mockPropertyDetailsService)
           submitWithAuthorisedUser(Nil) {
             result =>
               status(result) must be(BAD_REQUEST)
+
+              val document = Jsoup.parse(contentAsString(result))
+
+              assert(document.getElementById("startDate-error").text() === "There is a problem with the liability start date")
+              assert(document.getElementById("endDate-error").text() === "There is a problem with the liability end date")
+              assert(document.getElementById("startDate-error-0").text() === "You must enter a liability start date")
+              assert(document.getElementById("endDate-error-0").text() === "You must enter a liability end date")
           }
         }
+
         "for valid data forward to the TaxAvoidance Page" in new Setup {
           val formBody = List(
             ("startDate.day", "1"),
