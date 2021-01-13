@@ -139,6 +139,10 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
             document.getElementById("emailConsent-true").attr("checked") must be("")
             document.getElementById("emailConsent-false").attr("checked") must be("")
             document.getElementById("emailAddress").attr("value") must be("")
+
+            document.getElementById("backLinkHref").text() must be("Back")
+            document.getElementById("backLinkHref").attr("href") must be("/ated/company-details")
+
             assert(document.getElementById("service-info-list").text() === "Home Manage account Messages Help and contact")
         }
       }

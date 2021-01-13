@@ -155,6 +155,9 @@ class Setup {
             document.getElementById("company-details-header").text() must be("Your ATED details")
             document.getElementById("registered-edit").text() must be("Edit Registered address")
             document.getElementById("registered-edit").attr("href") must be("/ated/registered-details")
+
+            document.getElementById("backLinkHref").text() must be("Back")
+            document.getElementById("backLinkHref").attr("href") must be("/ated/account-summary")
         }
       }
 
