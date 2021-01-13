@@ -213,7 +213,7 @@ class Setup {
           "validate form" must {
 
             "First name is not valid when entered spaces" in new Setup {
-              val phoneNum: String = "a" * 25
+              val phoneNum: String = "a" * 24
               val inputJson: JsValue = Json.parse( s"""{ "firstName": " ", "lastName": "TestLastName", "phoneNumber": "$phoneNum"}""")
               val contactAddress: EditContactDetails = inputJson.as[EditContactDetails]
 
@@ -221,6 +221,32 @@ class Setup {
                 result =>
                   status(result) must be(BAD_REQUEST)
                   contentAsString(result) must include("You must enter a first name")
+              }
+            }
+
+            "First name is not valid when exceeds 35 chars" in new Setup {
+              val phoneNum: String = "a" * 24
+              val firstNameMax = "n" * 36
+              val inputJson: JsValue = Json.parse( s"""{ "firstName": "$firstNameMax", "lastName": "TestLastName", "phoneNumber": "$phoneNum"}""")
+              val contactAddress: EditContactDetails = inputJson.as[EditContactDetails]
+
+              submitWithAuthorisedUserSuccess(Some(contactAddress))(FakeRequest().withJsonBody(inputJson)) {
+                result =>
+                  status(result) must be(BAD_REQUEST)
+                  contentAsString(result) must include("First name cannot be more than 35 characters")
+              }
+            }
+
+            "Last name is not valid when exceeds 35 chars" in new Setup {
+              val phoneNum: String = "a" * 24
+              val lastNameMax = "n" * 36
+              val inputJson: JsValue = Json.parse( s"""{ "firstName": "TestFirstName", "lastName": "$lastNameMax", "phoneNumber": "$phoneNum"}""")
+              val contactAddress: EditContactDetails = inputJson.as[EditContactDetails]
+
+              submitWithAuthorisedUserSuccess(Some(contactAddress))(FakeRequest().withJsonBody(inputJson)) {
+                result =>
+                  status(result) must be(BAD_REQUEST)
+                  contentAsString(result) must include("Last name cannot be more than 35 characters")
               }
             }
 
