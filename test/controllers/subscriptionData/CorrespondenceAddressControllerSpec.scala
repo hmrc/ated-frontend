@@ -434,6 +434,23 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
                 }
               }
 
+              "Postcode must entered if country code is UK" in new Setup {
+                val inputJson: JsValue = Json.parse(
+                  """{
+                    |"addressType": "Correspondence",
+                    |"addressLine1": "AddlineOne",
+                    |"addressLine2": "AddlineTwo",
+                    |"addressLine3": "",
+                    |"addressLine4": "",
+                    |"postalCode": "",
+                    |"countryCode": "GB"}""".stripMargin)
+                val addressDetails: AddressDetails = inputJson.as[AddressDetails]
+                submitWithAuthorisedUserSuccess(Some(addressDetails))(FakeRequest().withJsonBody(inputJson)) {
+                  result =>
+                    status(result) must be(BAD_REQUEST)
+                    contentAsString(result) must include("You must enter a UK postcode if UK is selected in the country field.")
+                }
+              }
 
               "Country Code must be selected" in new Setup {
                 val inputJson: JsValue = Json.parse(
