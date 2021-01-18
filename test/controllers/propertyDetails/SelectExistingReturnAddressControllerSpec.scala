@@ -93,7 +93,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
       setInvalidAuthMocks(authMock)
-      val prevReturns = Seq(PreviousReturns("1, addressLine1", "12345678", LocalDate.parse("2018-09-10")))
+      val prevReturns = Seq(PreviousReturns("1, addressLine1", "12345678", LocalDate.parse("2018-09-10"), true))
       when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
         (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
       when(mockSummaryReturnsService.getPreviousSubmittedLiabilityDetails
@@ -134,7 +134,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
       setInvalidAuthMocks(authMock)
-      val prevReturns = Some(Seq(PreviousReturns("1, addressLine1", "12345678", LocalDate.parse("2018-09-10"))))
+      val prevReturns = Some(Seq(PreviousReturns("1, addressLine1", "12345678", LocalDate.parse("2018-09-10"), true)))
       when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
         (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
       when(mockSummaryReturnsService.retrieveCachedPreviousReturnAddressList(ArgumentMatchers.any())).thenReturn(Future.successful(prevReturns))
@@ -177,7 +177,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
   }
 
   "SelectExistingReturnAddressController" must {
-    val prevReturns = Some(Seq(PreviousReturns("1, addressLine1", "12345678",  new LocalDate("2015-04-02"))))
+    val prevReturns = Some(Seq(PreviousReturns("1, addressLine1", "12345678",  new LocalDate("2015-04-02"), true)))
     "view" must {
       "unauthorised users" must {
 
@@ -192,7 +192,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
       "Authorised users" must {
 
         "show the address details view if address list is retrieved from cache" in new Setup {
-          val prevReturns: Seq[PreviousReturns] = Seq(PreviousReturns("1, addressLine1", "12345678", new LocalDate("2015-04-02")))
+          val prevReturns: Seq[PreviousReturns] = Seq(PreviousReturns("1, addressLine1", "12345678", new LocalDate("2015-04-02"), true))
           viewWithAuthorisedUser(Some(prevReturns)) {
             result =>
               status(result) must be(OK)
@@ -204,10 +204,10 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
 
         "show latest address sorted by date in address details view if address list is retrieved from cache" in new Setup {
           val prevReturns: Seq[PreviousReturns] = Seq(
-            PreviousReturns("1, addressLine1", "12345678", new LocalDate("2015-03-12")),
-            PreviousReturns("1, addressLine1", "12345679", new LocalDate("2015-04-12")),
-            PreviousReturns("2, addressLine2", "12345672", new LocalDate("2015-01-12")),
-            PreviousReturns("2, addressLine2", "12345676", new LocalDate("2015-02-12")))
+            PreviousReturns("1, addressLine1", "12345678", new LocalDate("2015-03-12"), true),
+            PreviousReturns("1, addressLine1", "12345679", new LocalDate("2015-04-12"), true),
+            PreviousReturns("2, addressLine2", "12345672", new LocalDate("2015-01-12"), true),
+            PreviousReturns("2, addressLine2", "12345676", new LocalDate("2015-02-12"), true))
           viewWithAuthorisedUser(Some(prevReturns)) {
             result =>
               status(result) must be(OK)
@@ -219,12 +219,50 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
           }
         }
 
+        "show latest address sorted by change allowed in address details view if address list is retrieved from cache" in new Setup {
+          val prevReturns: Seq[PreviousReturns] = Seq(
+            PreviousReturns("1, addressLine1", "12345671", new LocalDate("2015-03-12"), true),
+            PreviousReturns("1, addressLine1", "12345672", new LocalDate("2015-03-12"), false),
+            PreviousReturns("2, addressLine2", "12345673", new LocalDate("2015-02-12"), false),
+            PreviousReturns("2, addressLine2", "12345674", new LocalDate("2015-02-12"), true))
+          viewWithAuthorisedUser(Some(prevReturns)) {
+            result =>
+              status(result) must be(OK)
+              val document = Jsoup.parse(contentAsString(result))
+              document.title() must be (TitleBuilder.buildTitle("Select the property from your previous year returns"))
+              document.body().getElementsByTag("label").toString must include ("12345671")
+              document.body().getElementsByTag("label").toString must include ("12345674")
+              document.body().getElementsByTag("label").size() must be (2)
+          }
+        }
+
+        "show latest address sorted by change allowed with multiple addresses in address details view" in new Setup {
+          val prevReturns: Seq[PreviousReturns] = Seq(
+            PreviousReturns("1, addressLine1", "12345671", new LocalDate("2015-03-12"), false),
+            PreviousReturns("1, addressLine1", "12345672", new LocalDate("2015-03-12"), false),
+            PreviousReturns("1, addressLine1", "12345673", new LocalDate("2015-03-12"), true),
+            PreviousReturns("1, addressLine1", "12345674", new LocalDate("2015-03-12"), false),
+            PreviousReturns("1, addressLine1", "12345675", new LocalDate("2015-03-12"), false),
+            PreviousReturns("1, addressLine1", "12345676", new LocalDate("2015-03-12"), false),
+            PreviousReturns("2, addressLine2", "12345677", new LocalDate("2015-02-12"), false),
+            PreviousReturns("2, addressLine2", "12345678", new LocalDate("2015-02-12"), true))
+          viewWithAuthorisedUser(Some(prevReturns)) {
+            result =>
+              status(result) must be(OK)
+              val document = Jsoup.parse(contentAsString(result))
+              document.title() must be (TitleBuilder.buildTitle("Select the property from your previous year returns"))
+              document.body().getElementsByTag("label").toString must include ("12345673")
+              document.body().getElementsByTag("label").toString must include ("12345678")
+              document.body().getElementsByTag("label").size() must be (2)
+          }
+        }
+
         "show 3 unique addresses in the address details view if address list is retrieved from cache" in new Setup {
           val prevReturns: Seq[PreviousReturns] = Seq(
-            PreviousReturns("1, addressLine1", "12345678", new LocalDate("2015-04-02")),
-            PreviousReturns("1, addressLine1", "12345679", new LocalDate("2015-04-02")),
-            PreviousReturns("2, addressLine2", "12345676", new LocalDate("2015-04-02")),
-            PreviousReturns("3, addressLine3", "12345672", new LocalDate("2015-04-02")))
+            PreviousReturns("1, addressLine1", "12345678", new LocalDate("2015-04-02"), true),
+            PreviousReturns("1, addressLine1", "12345679", new LocalDate("2015-04-02"), true),
+            PreviousReturns("2, addressLine2", "12345676", new LocalDate("2015-04-02"), true),
+            PreviousReturns("3, addressLine3", "12345672", new LocalDate("2015-04-02"), true))
           viewWithAuthorisedUser(Some(prevReturns)) {
             result =>
               status(result) must be(OK)

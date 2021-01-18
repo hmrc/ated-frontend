@@ -192,7 +192,7 @@ class SummaryReturnsServiceSpec extends PlaySpec with MockitoSugar with BeforeAn
     }
 
     "retrieveCachedPreviousReturnAddressList" must {
-      val prevReturn = PreviousReturns("1 address street", "12345678", new LocalDate("2015-04-02"))
+      val prevReturn = PreviousReturns("1 address street", "12345678", new LocalDate("2015-04-02"), true)
       val pastReturnDetails = Some(Seq(prevReturn))
 
       "retrieve cached previous returns address list" in new Setup {

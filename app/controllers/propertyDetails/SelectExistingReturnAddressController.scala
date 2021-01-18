@@ -56,7 +56,15 @@ class SelectExistingReturnAddressController @Inject()(mcc: MessagesControllerCom
         } yield {
           previousReturns match {
             case Some(pr) =>
-              val uniqueAddresses = pr.groupBy(_.address).values.map(_.sortWith((a,b) => a.date.isAfter(b.date)).head).toSeq
+              val uniqueAddresses = pr.groupBy(_.address).values.map {
+                _.sortWith {
+                  (a, b) => if (a.changeAllowed) {
+                    true
+                  } else {
+                    a.date.isAfter(b.date)
+                  }
+                }.head
+              }.toSeq
 
               Ok(template
             (periodKey, returnType, addressSelectedForm, uniqueAddresses, serviceInfoContent, getBackLink(periodKey, returnType)))

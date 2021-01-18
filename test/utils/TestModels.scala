@@ -202,7 +202,7 @@ trait TestModels {
     )
   }
 
-  val prevReturn = PreviousReturns("1 address street", "12345678", new LocalDate("2015-04-02"))
+  val prevReturn = PreviousReturns("1 address street", "12345678", new LocalDate("2015-04-02"), true)
   val pastReturnDetails: Seq[PreviousReturns] = Seq(prevReturn)
 
   def currentYearReturnsForDisplay: Seq[AccountSummaryRowModel] = {
