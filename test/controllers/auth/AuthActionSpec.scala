@@ -109,11 +109,11 @@ class AuthActionSpec extends PlaySpec with MockitoSugar with BeforeAndAfterEach 
         val res: Future[Result] = testAuthAction.authorisedForNoEnrolments(func)
 
         status(res) mustBe 303
-        redirectLocation(res) mustBe Some("/ated/unauthorised")
+        redirectLocation(res).get must include("/unauthorised")
       }
 
       "affinity group fails authorisation for reason InvalidBearerToken (NoActiveSession)"  in new Setup {
-        when(mockAppConfig.loginURL).thenReturn("http://localhost:9025/gg/sign-in")
+        when(mockAppConfig.loginURL).thenReturn("http://localhost:9553/bas-gateway/sign-in")
         when(mockAppConfig.continueURL).thenReturn("http://localhost:9916/ated/home")
 
         when(mockDelegationService.delegationCall(any())(any()))
@@ -126,7 +126,7 @@ class AuthActionSpec extends PlaySpec with MockitoSugar with BeforeAndAfterEach 
         val res: Future[Result] = testAuthAction.authorisedForNoEnrolments(func)
 
         status(res) mustBe 303
-        redirectLocation(res) mustBe Some("http://localhost:9025/gg/sign-in?continue=http%3A%2F%2Flocalhost%3A9916%2Fated%2Fhome&origin=ated-frontend")
+        redirectLocation(res) mustBe Some("http://localhost:9553/bas-gateway/sign-in?continue_url=http%3A%2F%2Flocalhost%3A9916%2Fated%2Fhome&origin=ated-frontend")
       }
 
       "affinity group fails authorisation for reason InsufficientConfidenceLevel (AuthorisationException)"  in new Setup {
@@ -141,7 +141,7 @@ class AuthActionSpec extends PlaySpec with MockitoSugar with BeforeAndAfterEach 
         val res: Future[Result] = testAuthAction.authorisedForNoEnrolments(func)
 
         status(res) mustBe 303
-        redirectLocation(res) mustBe Some("/ated/unauthorised")
+        redirectLocation(res).get must include("/unauthorised")
       }
     }
   }
@@ -214,8 +214,8 @@ class AuthActionSpec extends PlaySpec with MockitoSugar with BeforeAndAfterEach 
       }
 
       "affinity group fails authorisation for reason BearerTokenExpired (NoActiveSession)" in new Setup {
-        when(mockAppConfig.loginURL).thenReturn("http://localhost:9025/sign-in")
-        when(mockAppConfig.continueURL).thenReturn("http://localhost:9025/continue")
+        when(mockAppConfig.loginURL).thenReturn("http://localhost:9553/sign-in")
+        when(mockAppConfig.continueURL).thenReturn("http://localhost:9553/continue")
 
         when(mockDelegationService.delegationCall(any())(any())).thenReturn(Future.successful(Some(delegationModel)))
 

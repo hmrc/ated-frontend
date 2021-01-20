@@ -28,12 +28,8 @@ class ExternalUrlsSpec extends PlaySpec with GuiceOneServerPerSuite with Mockito
   "ExternalUrls" must {
 
     "have companyAuthHost " in {
-      mockAppConfig.companyAuthHost must be("http://localhost:9025")
+      mockAppConfig.basGatewayHost must be("http://localhost:9553")
     }
-
-//    "bta" in {
-//      mockAppConfig.btaBaseUrl must be ("test")
-//    }
 
     "have loginCallback " in {
       mockAppConfig.loginCallback must be("http://localhost:9916/ated/home")
@@ -44,7 +40,7 @@ class ExternalUrlsSpec extends PlaySpec with GuiceOneServerPerSuite with Mockito
     }
 
     "have loginURL " in {
-      mockAppConfig.loginURL must be("http://localhost:9025/gg/sign-in")
+      mockAppConfig.loginURL must be("http://localhost:9553/bas-gateway/sign-in")
     }
 
     "have continueURL " in {
@@ -52,11 +48,11 @@ class ExternalUrlsSpec extends PlaySpec with GuiceOneServerPerSuite with Mockito
     }
 
     "have signIn " in {
-      mockAppConfig.signIn must be("http://localhost:9025/gg/sign-in?continue=http://localhost:9916/ated/home")
+      mockAppConfig.signIn must be("http://localhost:9553/bas-gateway/sign-in?continue_url=http://localhost:9916/ated/home")
     }
 
     "have signOut " in {
-      mockAppConfig.signOut must be("http://localhost:9025/gg/sign-out")
+      mockAppConfig.signOut must be("http://localhost:9553/bas-gateway/sign-out-without-state")
     }
 
     "have subscription redirect " in {
