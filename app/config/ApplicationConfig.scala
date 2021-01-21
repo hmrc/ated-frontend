@@ -67,13 +67,13 @@ class ApplicationConfig @Inject()(val conf: ServicesConfig,
     "cachable.session-cache.domain", throw new Exception(s"Could not find config 'cachable.session-cache.domain'")
   )
 
-  lazy val companyAuthHost: String = s"${conf.getString("microservice.services.auth.company-auth.host")}"
+  lazy val basGatewayHost: String = s"${conf.getString("microservice.services.auth.bas-gateway-frontend.host")}"
   lazy val loginCallback: String = conf.getString("microservice.services.auth.login-callback.url")
   lazy val loginPath: String = s"${conf.getString("microservice.services.auth.login-path")}"
-  lazy val loginURL: String = s"$companyAuthHost/gg/$loginPath"
+  lazy val loginURL: String = s"$basGatewayHost/bas-gateway/$loginPath"
   lazy val continueURL: String = s"$loginCallback"
-  lazy val signIn: String = s"$companyAuthHost/gg/$loginPath?continue=$loginCallback"
-  lazy val signOut: String = s"$companyAuthHost/gg/sign-out"
+  lazy val signIn: String = s"$basGatewayHost/bas-gateway/$loginPath?continue_url=$loginCallback"
+  lazy val signOut: String = s"$basGatewayHost/bas-gateway/sign-out-without-state"
   lazy val signOutRedirect: String = conf.getString("microservice.services.auth.sign-out-redirect")
   lazy val createNewGatewayLink: String = conf.getString("microservice.services.auth.create-account")
   lazy val subscriptionStartPage: String = conf.getString("microservice.services.ated-subscription.serviceRedirectUrl")

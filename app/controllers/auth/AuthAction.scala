@@ -37,7 +37,7 @@ class AuthAction @Inject()(appConfig: ApplicationConfig,
   val origin: String = "ated-frontend"
 
   def loginParams: Map[String, Seq[String]] = Map(
-    "continue" -> Seq(appConfig.continueURL),
+    "continue_url" -> Seq(appConfig.continueURL),
     "origin" -> Seq(origin)
   )
 
