@@ -21,7 +21,7 @@ import play.api.libs.json.{Json, OFormat}
 import play.api.libs.json.JodaWrites._
 import play.api.libs.json.JodaReads._
 
-case class PreviousReturns(address: String, formBundleNumber: String, date: LocalDate)
+case class PreviousReturns(address: String, formBundleNumber: String, date: LocalDate, changeAllowed: Boolean)
 
 object PreviousReturns {
   implicit val formats: OFormat[PreviousReturns] = Json.format[PreviousReturns]

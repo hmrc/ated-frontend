@@ -183,7 +183,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
 
     "submit" must {
       "for authorised user" must {
-        val prevReturns = Seq(PreviousReturns("1, addressLine1", "12345678",  new LocalDate("2015-04-02")))
+        val prevReturns = Seq(PreviousReturns("1, addressLine1", "12345678",  new LocalDate("2015-04-02"), true))
         "with valid form data" must {
           "with invalid form, return BadRequest" in new Setup {
             val inputJson: JsValue = Json.parse( """{"returnType": ""}""")
