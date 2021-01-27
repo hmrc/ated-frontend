@@ -50,8 +50,6 @@ class ApplicationConfig @Inject()(val conf: ServicesConfig,
   lazy val assetsPrefix: String = loadConfig("assets.url") + loadConfig("assets.version")
   lazy val betaFeedbackUrl = s"$contactHost/contact/beta-feedback"
   lazy val betaFeedbackUnauthenticatedUrl = s"$contactHost/contact/beta-feedback-unauthenticated"
-  lazy val analyticsToken: Option[String] = Try{conf.getString("google-analytics.token")}.toOption
-  lazy val analyticsHost: String = conf.getString("google-analytics.host")
   lazy val reportAProblemPartialUrl = s"$contactHost/contact/problem_reports_ajax?service=$contactFormServiceIdentifier"
   lazy val reportAProblemNonJSUrl = s"$contactHost/contact/problem_reports_nonjs?service=$contactFormServiceIdentifier"
   lazy val atedFrontendHost: String = conf.getString("microservice.services.ated-frontend.host")
