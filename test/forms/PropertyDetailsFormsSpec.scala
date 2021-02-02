@@ -34,6 +34,14 @@ class PropertyDetailsFormsSpec extends PlaySpec with GuiceOneServerPerSuite {
       "postcode" -> "AA1 1AA"
     )
 
+    val propertyDetailsAddressFormDataTooLong: Map[String, String] = Map(
+      "line_1" -> "a" * 36,
+      "line_2" -> "a" * 36,
+      "line_3" -> "a" * 36,
+      "line_4" -> "a" * 36,
+      "postcode" -> "a" * 11
+    )
+
     val invalidPropertyDetailsAddressFormData: Map[String, String] = Map(
       "line_1" -> "address&-Id",
       "line_2" -> "institute&",
@@ -58,6 +66,24 @@ class PropertyDetailsFormsSpec extends PlaySpec with GuiceOneServerPerSuite {
         formWithErrors => {
           formWithErrors.errors.head.message must be("ated.error.address.postalcode.format")
           formWithErrors.errors.length must be(1)
+        },
+        _ => {
+          fail("Form should give an error")
+        }
+      )
+    }
+
+    "throw error on entering address lines that have too long of a length" in {
+      PropertyDetailsForms.propertyDetailsAddressForm.bind(propertyDetailsAddressFormDataTooLong).fold(
+        formWithErrors => {
+          formWithErrors.errors.zipWithIndex.foreach { case (error, i) =>
+            val msg = if (i == 4) {
+              "ated.error.address.postalcode.format"
+            } else s"ated.error.address.line-${i + 1}"
+
+            error.message must be(msg)
+          }
+          formWithErrors.errors.length must be(5)
         },
         _ => {
           fail("Form should give an error")
