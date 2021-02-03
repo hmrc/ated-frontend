@@ -231,6 +231,16 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
           }
         }
 
+        "for invalid data that is too long, return BAD_REQUEST" in new Setup {
+
+          val inputJson: PropertyDetailsTitle = PropertyDetailsTitle("a" * 41)
+          when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+          submitWithAuthorisedUser("1", Json.toJson(inputJson)) {
+            result =>
+              status(result) must be(BAD_REQUEST)
+          }
+        }
+
         "for valid data with no id, return OK" in new Setup {
           val propertyDetails = PropertyDetailsTitle("new Title")
           when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
