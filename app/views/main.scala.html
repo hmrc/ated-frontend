@@ -25,16 +25,15 @@
 @import uk.gov.hmrc.play.views.html.layouts.MainContent
 @import uk.gov.hmrc.play.views.html.layouts.MainContentHeader
 @import views.html.layouts.GovUkTemplate
-@import uk.gov.hmrc.play.views.html.layouts.HeadWithTrackingConsent
+@import uk.gov.hmrc.play.views.html.layouts.Head
 @import uk.gov.hmrc.play.views.html.helpers.ReportAProblemLink
 @import uk.gov.hmrc.play.views.html.layouts.ServiceInfo
 @import uk.gov.hmrc.play.views.html.layouts.BetaBanner
 @import uk.gov.hmrc.play.views.html.layouts.Article
-@import uk.gov.hmrc.play.views.html.layouts.TrackingConsentSnippet
 @import uk.gov.hmrc.play.views.html.layouts.Footer
 
 @this(govuk_template: GovUkTemplate,
-        layoutHead: HeadWithTrackingConsent,
+        layoutHead: Head,
         betaBanner: BetaBanner,
         layoutServiceInfo: ServiceInfo,
         reportAProblemLink: ReportAProblemLink,
@@ -43,7 +42,6 @@
         main_content: MainContent,
         footer: Footer,
         footer_links: FooterLinks,
-        trackingConsentSnippet: TrackingConsentSnippet,
         header_nav: HeaderNav)
 
 @(appConfig: ApplicationConfig,
@@ -108,8 +106,8 @@
 
 @bodyEnd = {
   @footer(
-    analyticsToken = None,
-    analyticsHost = "",
+    analyticsToken = appConfig.analyticsToken,
+    analyticsHost = appConfig.analyticsHost,
     ssoUrl = None,
     scriptElem = scriptElement,
     gaCalls = None,
