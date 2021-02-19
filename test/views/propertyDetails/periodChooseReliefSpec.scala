@@ -17,6 +17,7 @@
 package views.propertyDetails
 
 import config.ApplicationConfig
+import config.featureswitch.FeatureSwitch
 import forms.PropertyDetailsForms._
 import models.{PeriodChooseRelief, StandardAuthRetrievals}
 import org.joda.time.LocalDate
@@ -83,6 +84,49 @@ feature("The user can add a period that the property is in relief") {
       Then("The back link is correct")
       assert(document.getElementById("backLinkHref").text === "Back")
     }
+
+  scenario("allow selecting a relief in 2020 with the social housing feature switch") {
+
+    Given("the client is adding a relief")
+    When("The user views the page")
+
+    mockAppConfig.enable(FeatureSwitch.CooperativeHousing)
+
+    val html = injectedViewInstance("1", 2020, periodChooseReliefForm, Html(""), Some("backLink"))
+
+    val document = Jsoup.parse(html.toString())
+
+    Then("The header should match - Select the type of relief")
+    assert(document.select("h1").text === "Select the type of relief")
+
+    Then("The subheader should be - Create return")
+    assert(document.getElementById("pre-heading").text() === "This section is: Create return")
+
+    assert(document.getElementById("reliefDescription-property_rental_businesses_field").text() === "Rental business")
+    assert(document.getElementById("reliefDescription-property_rental_businesses").attr("checked") === "")
+    assert(document.getElementById("reliefDescription-dwellings_opened_to_the_public_field").text() === "Open to the public")
+    assert(document.getElementById("reliefDescription-dwellings_opened_to_the_public").attr("checked") === "")
+    assert(document.getElementById("reliefDescription-property_developers_field").text() === "Property developer")
+    assert(document.getElementById("reliefDescription-property_developers").attr("checked") === "")
+    assert(document.getElementById("reliefDescription-property_traders_carrying_on_a_property_trading_business_field").text() === "Property trading")
+    assert(document.getElementById("reliefDescription-property_traders_carrying_on_a_property_trading_business").attr("checked") === "")
+    assert(document.getElementById("reliefDescription-financial_institutions_acquiring_dwellings_in_the_course_of_lending_field").text() === "Lending")
+    assert(document.getElementById("reliefDescription-financial_institutions_acquiring_dwellings_in_the_course_of_lending").attr("checked") === "")
+    assert(document.getElementById("reliefDescription-dwellings_used_for_trade_purposes_field").text() === "Employee occupation")
+    assert(document.getElementById("reliefDescription-dwellings_used_for_trade_purposes").attr("checked") === "")
+    assert(document.getElementById("reliefDescription-farmhouses_field").text() === "Farmhouse")
+    assert(document.getElementById("reliefDescription-farmhouses").attr("checked") === "")
+    assert(document.getElementById("reliefDescription-registered_providers_of_social_housing_field").text() === "Provider of social housing or housing co-operative")
+    assert(document.getElementById("reliefDescription-registered_providers_of_social_housing").attr("checked") === "")
+    assert(document.getElementById("reliefDescription-equity_release_scheme_field").text() === "Equity release scheme (home reversion plans)")
+    assert(document.getElementById("reliefDescription-equity_release_scheme").attr("checked") === "")
+
+    Then("The submit button should have the correct name")
+    assert(document.getElementById("submit").text() === "Save and continue")
+
+    Then("The back link is correct")
+    assert(document.getElementById("backLinkHref").text === "Back")
+  }
 
     scenario("display a selected a relief") {
 

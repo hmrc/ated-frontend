@@ -53,7 +53,7 @@ class PropertyDetailsSummaryController @Inject()(mcc: MessagesControllerComponen
             case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
               currentBackLink.flatMap(backLink =>
                 Future.successful(Ok(template(propertyDetails,
-                  PeriodUtils.getDisplayPeriods(propertyDetails.period),
+                  PeriodUtils.getDisplayPeriods(propertyDetails.period, propertyDetails.periodKey),
                   AtedUtils.canSubmit(propertyDetails.periodKey, LocalDate.now),
                   PeriodUtils.getCalculatedPeriodValues(propertyDetails.calculated),
                   serviceInfoContent,
@@ -83,7 +83,7 @@ class PropertyDetailsSummaryController @Inject()(mcc: MessagesControllerComponen
           propertyDetailsCacheResponse(propertyKey) {
             case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
               Future.successful(Ok(views.html.propertyDetails.propertyDetailsPrintFriendly(propertyDetails,
-                PeriodUtils.getDisplayPeriods(propertyDetails.period),
+                PeriodUtils.getDisplayPeriods(propertyDetails.period, propertyDetails.periodKey),
                 PeriodUtils.getCalculatedPeriodValues(propertyDetails.calculated),
                 organisationName
               )))

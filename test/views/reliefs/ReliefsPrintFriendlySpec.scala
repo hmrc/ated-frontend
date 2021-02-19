@@ -29,16 +29,16 @@ import play.api.test.FakeRequest
 import play.twirl.api.Html
 import testhelpers.MockAuthUtil
 
-class ReliefsSummarySpec extends FeatureSpec with GuiceOneAppPerSuite with MockitoSugar with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
+class ReliefsPrintFriendlySpec extends FeatureSpec with GuiceOneAppPerSuite with MockitoSugar with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
 
   implicit val request = FakeRequest()
   implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
 
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
-  val injectedViewInstance = app.injector.instanceOf[views.html.reliefs.reliefsSummary]
+  val injectedViewInstance = app.injector.instanceOf[views.html.reliefs.reliefsPrintFriendly]
   implicit lazy val authContext = organisationStandardRetrievals
 
-  feature("The user can view the relief summary page") {
+  feature("The user can view the relief print summary page") {
 
     info("As a client I want to be able to view my relief return summary")
 
@@ -51,14 +51,11 @@ class ReliefsSummarySpec extends FeatureSpec with GuiceOneAppPerSuite with Mocki
         2015, socialHousing = true, socialHousingDate = Some(LocalDate.parse("2015-04-01"))
       ), TaxAvoidance(), LocalDate.now(), LocalDate.now())
 
-      val html = injectedViewInstance(2015, Some(reliefsTaxAvoidance), canSubmit = false, isComplete = true, Html(""), None)
+      val html = injectedViewInstance(2015, Some(reliefsTaxAvoidance), isComplete = true, None)
 
       val document = Jsoup.parse(html.toString())
 
-      assert(document.getElementById("social-housing").text() contains "Social housing")
-
-      Then("The text for disabling the submit button should be visible")
-      assert(document.getElementById("submit-disabled-text").text() contains "You cannot submit returns until 1 April.")
+      assert(document.getElementById("socialHousing").text() contains "Social housing")
     }
 
     scenario("show the summary of the relief return during the draft period (month of March) in 2020 with the feature switch enabled") {
@@ -72,14 +69,11 @@ class ReliefsSummarySpec extends FeatureSpec with GuiceOneAppPerSuite with Mocki
         2020, socialHousing = true, socialHousingDate = Some(LocalDate.parse("2020-04-01"))
       ), TaxAvoidance(), LocalDate.now(), LocalDate.now())
 
-      val html = injectedViewInstance(2020, Some(reliefsTaxAvoidance), canSubmit = false, isComplete = true, Html(""), None)
+      val html = injectedViewInstance(2020, Some(reliefsTaxAvoidance), isComplete = true,  None)
 
       val document = Jsoup.parse(html.toString())
 
-      assert(document.getElementById("social-housing").text() contains "Provider of social housing or housing co-operative")
-
-      Then("The text for disabling the submit button should be visible")
-      assert(document.getElementById("submit-disabled-text").text() contains "You cannot submit returns until 1 April.")
+      assert(document.getElementById("socialHousing").text() contains "Provider of social housing or housing co-operative")
     }
   }
 }

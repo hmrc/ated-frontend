@@ -48,7 +48,7 @@ class FormBundleReturnController @Inject()(mcc: MessagesControllerComponents,
         serviceInfoContent <- serviceInfoService.getPartial
       } yield {
         val valuesToDisplay = formBundleReturn.map(x => PeriodUtils.getOrderedReturnPeriodValues(x.lineItem, x.dateOfAcquisition)).getOrElse(Nil)
-        val periodsToDisplay = formBundleReturn.map(x => PeriodUtils.getDisplayFormBundleProperties(x.lineItem)).getOrElse(Nil)
+        val periodsToDisplay = formBundleReturn.map(x => PeriodUtils.getDisplayFormBundleProperties(x.lineItem, periodKey)).getOrElse(Nil)
 
         val formBundlePeriodReturn = periodSummaries.flatMap {
           period =>

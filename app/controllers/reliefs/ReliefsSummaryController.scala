@@ -40,6 +40,7 @@ class ReliefsSummaryController @Inject()(mcc: MessagesControllerComponents,
                                          val dataCacheConnector: DataCacheConnector,
                                          val backLinkCacheConnector: BackLinkCacheConnector,
                                          template: views.html.reliefs.reliefsSummary,
+                                         templatePrintFriendly: views.html.reliefs.reliefsPrintFriendly,
                                          val templateInvalidPeriodKey: views.html.reliefs.invalidPeriodKey)
                                         (implicit val appConfig: ApplicationConfig)
   extends FrontendController(mcc) with BackLinkController with ReliefHelpers with ClientHelper {
@@ -112,7 +113,7 @@ class ReliefsSummaryController @Inject()(mcc: MessagesControllerComponents,
             retrievedData <- reliefsService.retrieveDraftReliefs(authContext.atedReferenceNumber, periodKey)
             organisationName <- subscriptionDataService.getOrganisationName
           } yield {
-            Ok(views.html.reliefs.reliefsPrintFriendly(periodKey, retrievedData, isComplete(retrievedData), organisationName))
+            Ok(templatePrintFriendly(periodKey, retrievedData, isComplete(retrievedData), organisationName))
           }
         }
       }

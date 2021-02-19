@@ -57,6 +57,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
   val injectedViewInstance = app.injector.instanceOf[views.html.reliefs.reliefsSummary]
+  val injectedViewInstancePrint = app.injector.instanceOf[views.html.reliefs.reliefsPrintFriendly]
   val injectedViewInstancePeriod = app.injector.instanceOf[views.html.reliefs.invalidPeriodKey]
 
   val organisationName = "ACME Limited"
@@ -84,6 +85,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
       mockDataCacheConnector,
       mockBackLinkCacheConnector,
       injectedViewInstance,
+      injectedViewInstancePrint,
       injectedViewInstancePeriod
     )
 

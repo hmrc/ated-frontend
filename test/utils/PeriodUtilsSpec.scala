@@ -108,7 +108,7 @@ class PeriodUtilsSpec extends PlaySpec with MockitoSugar with GuiceOneServerPerS
 
   "convert period" must {
     "return None if we have period" in {
-      PeriodUtils.getDisplayPeriods(None).isEmpty must be(true)
+      PeriodUtils.getDisplayPeriods(None, periodKey).isEmpty must be(true)
     }
 
     "return an ordered list if we have periods" in {
@@ -130,7 +130,7 @@ class PeriodUtilsSpec extends PlaySpec with MockitoSugar with GuiceOneServerPerS
         supportingInfo = Some("supportingInfo"),
         isInRelief =  Some(true)
       ))
-      val lineItems = PeriodUtils.getDisplayPeriods(propertyDetailsPeriods)
+      val lineItems = PeriodUtils.getDisplayPeriods(propertyDetailsPeriods, periodKey)
       val expected = List(liabilityPeriod1.copy(description = Some("ated.property-details-period.liability.return-type")),
         reliefPeriod1.copy(description = Some("ated.choose-single-relief.rentalBusiness")),
         liabilityPeriod2.copy(description = Some("ated.property-details-period.liability.return-type"))
@@ -143,7 +143,7 @@ class PeriodUtilsSpec extends PlaySpec with MockitoSugar with GuiceOneServerPerS
 
   "convert line items for display" must {
     "return None if we have period" in {
-      PeriodUtils.getDisplayFormBundleProperties(Nil).isEmpty must be(true)
+      PeriodUtils.getDisplayFormBundleProperties(Nil, periodKey).isEmpty must be(true)
     }
 
     "return an ordered list of line items wherever the value or type has changed : Each item has changed and we have disposed of the property" in {
@@ -158,7 +158,7 @@ class PeriodUtilsSpec extends PlaySpec with MockitoSugar with GuiceOneServerPerS
 
       val liabilityPeriods = List(liabilityPeriod2, liabilityPeriod1, disposePeriod)
       val reliefPeriods = List(reliefPeriod1)
-      val lineItems = PeriodUtils.getDisplayFormBundleProperties(liabilityPeriods ++ reliefPeriods)
+      val lineItems = PeriodUtils.getDisplayFormBundleProperties(liabilityPeriods ++ reliefPeriods, periodKey)
 
       val expected = List(
         LineItem(liabilityPeriod1.`type`, liabilityPeriod1.dateFrom, liabilityPeriod1.dateTo, Some("ated.property-details-period.liability.return-type")),
@@ -176,7 +176,7 @@ class PeriodUtilsSpec extends PlaySpec with MockitoSugar with GuiceOneServerPerS
       val liabilityPeriod1b = FormBundleProperty(BigDecimal(999.45), new LocalDate(s"$periodKey-7-1"),
         new LocalDate(s"$periodKey-8-31"),  AtedConstants.LiabilityReturnType, None)
       val liabilityPeriods = List(liabilityPeriod1a, liabilityPeriod1b)
-      val lineItems = PeriodUtils.getDisplayFormBundleProperties(liabilityPeriods)
+      val lineItems = PeriodUtils.getDisplayFormBundleProperties(liabilityPeriods, periodKey)
       val mergedLiability =  LineItem(
         liabilityPeriod1a.`type`,
         liabilityPeriod1a.dateFrom,
@@ -212,7 +212,7 @@ class PeriodUtilsSpec extends PlaySpec with MockitoSugar with GuiceOneServerPerS
       val liabilityPeriods = List(liabilityPeriod2, liabilityPeriod1a, liabilityPeriod1b)
       val reliefPeriods = List(reliefPeriod1a, reliefPeriod1b, reliefPeriod2)
 
-      val lineItems = PeriodUtils.getDisplayFormBundleProperties(liabilityPeriods ++ reliefPeriods)
+      val lineItems = PeriodUtils.getDisplayFormBundleProperties(liabilityPeriods ++ reliefPeriods, periodKey)
 
       val mergedLiability =  LineItem(
         liabilityPeriod1a.`type`,

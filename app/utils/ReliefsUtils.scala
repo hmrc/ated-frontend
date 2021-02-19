@@ -16,6 +16,8 @@
 
 package utils
 
+import config.ApplicationConfig
+import config.featureswitch.FeatureSwitch
 import models._
 
 object ReliefsUtils extends {
@@ -53,7 +55,7 @@ object ReliefsUtils extends {
     reliefsDescription.getOrElse(etmpReliefName, etmpReliefName)
   }
 
-  def convertETMPReliefNameForSingleRelief(etmpReliefName: String): String = {
+  def convertETMPReliefNameForSingleRelief(etmpReliefName: String, periodKey: Int)(implicit appConfig: ApplicationConfig): String = {
     val reliefsDescription = Map(
       RentalBusinessDesc -> "ated.choose-single-relief.rentalBusiness",
       OpenToPublicDesc -> "ated.choose-single-relief.openToPublic",
@@ -62,7 +64,11 @@ object ReliefsUtils extends {
       LendingDesc -> "ated.choose-single-relief.lending",
       EmpOccDesc -> "ated.choose-single-relief.employeeOccupation",
       FarmHouseDesc -> "ated.choose-single-relief.farmHouses",
-      SocialHouseDesc -> "ated.choose-single-relief.socialHousing",
+      SocialHouseDesc -> (if (periodKey >= 2020 && appConfig.isEnabled(FeatureSwitch.CooperativeHousing)) {
+        "ated.choose-single-relief.providerSocialOrHousing"
+      } else {
+        "ated.choose-single-relief.socialHousing"
+      }),
       EquityReleaseDesc -> "ated.choose-reliefs.equityRelease"
     )
     reliefsDescription.getOrElse(etmpReliefName, etmpReliefName)

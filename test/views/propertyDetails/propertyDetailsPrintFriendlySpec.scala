@@ -56,7 +56,7 @@ implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetr
 
 
       Then("The config should have - 2 periods")
-      val displayPeriods = PeriodUtils.getDisplayPeriods(propertyDetails.period)
+      val displayPeriods = PeriodUtils.getDisplayPeriods(propertyDetails.period, 2015)
       assert(displayPeriods.size === 2)
 
       val html = views.html.propertyDetails.propertyDetailsPrintFriendly(propertyDetails,

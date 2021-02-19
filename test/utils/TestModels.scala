@@ -44,11 +44,14 @@ trait TestModels {
 
   def draftReturns1(periodKey: Int) = DraftReturns(periodKey, "1", "desc", Some(BigDecimal(100.00)), TypeChangeLiabilityDraft)
   def draftReturns2(periodKey: Int) = DraftReturns(periodKey, "", "some relief", None, TypeReliefDraft)
+  def draftReturns2SocialHousing(periodKey: Int) = DraftReturns(periodKey, "", if (periodKey >= 2020) "Provider of social housing or housing co-operative" else "Social housing", None, TypeReliefDraft)
   def draftReturns3(periodKey: Int) = DraftReturns(periodKey, "1", "liability draft", Some(BigDecimal(100.00)), TypeLiabilityDraft)
   def draftReturns4(periodKey: Int) = DraftReturns(periodKey, "", "dispose liability draft", None, TypeDisposeLiabilityDraft)
 
   val submittedReliefReturns1 = SubmittedReliefReturns(
     formBundleNo1, "some relief", new LocalDate("2015-05-05"), new LocalDate("2015-05-05"), new LocalDate("2015-05-05"))
+  def submittedReliefReturnsSocialHousing(periodKey: Int): SubmittedReliefReturns = SubmittedReliefReturns(
+    formBundleNo1, if (periodKey >= 2020) "Provider of social housing or housing co-operative" else "Social housing", new LocalDate("2015-05-05"), new LocalDate("2015-05-05"), new LocalDate("2015-05-05"))
   val submittedLiabilityReturns1 = SubmittedLiabilityReturns(
     formBundleNo2, "addr1+2", BigDecimal(1234.00), new LocalDate("2015-05-05"), new LocalDate("2015-05-05"),
     new LocalDate("2015-05-05"), changeAllowed = true, "payment-ref-01")
@@ -58,13 +61,21 @@ trait TestModels {
     new LocalDate("2015-05-05"), new LocalDate("2015-05-05"), changeAllowed = false, "payment-ref"
   )
 
-  def submittedReturns(periodKey: Int, withPastReturns: Boolean = false) =
-
-    if(withPastReturns){
+  def submittedReturns(periodKey: Int, withPastReturns: Boolean = false): SubmittedReturns = {
+    if (withPastReturns){
       SubmittedReturns(periodKey, Seq(submittedReliefReturns1), Seq(submittedLiabilityReturns1), Seq(previousReturns))
     }else{
       SubmittedReturns(periodKey, Seq(submittedReliefReturns1), Seq(submittedLiabilityReturns1), Seq())
     }
+  }
+
+  def submittedReturnsSocialHousingModel(periodKey: Int, withPastReturns: Boolean = false): SubmittedReturns = {
+    if (withPastReturns){
+      SubmittedReturns(periodKey, Seq(submittedReliefReturnsSocialHousing(periodKey)), Seq(submittedLiabilityReturns1), Seq(previousReturns))
+    }else{
+      SubmittedReturns(periodKey, Seq(submittedReliefReturnsSocialHousing(periodKey)), Seq(submittedLiabilityReturns1), Seq())
+    }
+  }
 
   def draftReturnsJson(periodKey: Int) = Json.arr(
     Json.obj(
@@ -78,6 +89,22 @@ trait TestModels {
       "periodKey" -> periodKey,
       "id" -> "",
       "description" -> "some relief",
+      "returnType" -> "Relief"
+    )
+  )
+
+  def draftReturnsJsonSocialHousing(periodKey: Int) = Json.arr(
+    Json.obj(
+      "periodKey" -> periodKey,
+      "id" -> "1",
+      "description" -> "desc",
+      "charge" -> 100.0,
+      "returnType" -> "Change_Liability"
+    ),
+    Json.obj(
+      "periodKey" -> periodKey,
+      "id" -> "",
+      "description" -> "Social housing",
       "returnType" -> "Relief"
     )
   )
@@ -108,53 +135,104 @@ trait TestModels {
     )
   )
 
+  def submittedReturnsJsonSocialHousing(periodKey: Int) = Json.obj(
+    "periodKey" -> periodKey,
+    "reliefReturns" -> Json.arr(
+      Json.obj(
+        "formBundleNo" -> formBundleNo1,
+        "reliefType" -> "Social housing",
+        "dateFrom" -> "2015-05-05",
+        "dateTo" -> "2015-05-05",
+        "dateOfSubmission" -> "2015-05-05"
+      )
+    ),
+    "oldLiabilityReturns" -> Json.arr(),
+    "currentLiabilityReturns" -> Json.arr(
+      Json.obj(
+        "formBundleNo" -> formBundleNo2,
+        "description" -> "addr1+2",
+        "liabilityAmount" -> 1234.0,
+        "dateFrom" -> "2015-05-05",
+        "dateTo" -> "2015-05-05",
+        "dateOfSubmission" -> "2015-05-05",
+        "changeAllowed" -> true,
+        "paymentReference" -> "payment-ref-01"
+      )
+    )
+  )
+
   def periodSummaryReturnJson(periodKey: Int, withDraftReturns: Boolean = true,
-                              withSubmittedReturns: Boolean = true): JsObject = {
+                              withSubmittedReturns: Boolean = true, submittedReturnsSocialHousing: Boolean = false): JsObject = {
+
+    val submittedReturnsToUse = if (submittedReturnsSocialHousing) {
+      submittedReturnsJsonSocialHousing(periodKey)
+    } else {
+      submittedReturnsJson(periodKey)
+    }
+
+    val draftReturnToUse = if (submittedReturnsSocialHousing) {
+      draftReturnsJsonSocialHousing(periodKey)
+    } else {
+      draftReturnsJson(periodKey)
+    }
 
     if(!withDraftReturns) {
       Json.obj(
         "periodKey" -> periodKey,
         "draftReturns" -> Json.arr(),
-        "submittedReturns" -> submittedReturnsJson(periodKey)
+        "submittedReturns" -> submittedReturnsToUse
       )
     }else if(!withSubmittedReturns){
       Json.obj(
         "periodKey" -> periodKey,
-        "draftReturns" -> draftReturnsJson(periodKey)
+        "draftReturns" -> draftReturnToUse
       )
     }else{
       Json.obj(
         "periodKey" -> periodKey,
-        "draftReturns" -> draftReturnsJson(periodKey),
-        "submittedReturns" -> submittedReturnsJson(periodKey)
+        "draftReturns" -> draftReturnToUse,
+        "submittedReturns" -> submittedReturnsToUse
       )
     }
   }
 
-  def allReturnsJson(withDraftReturns: Boolean = true, withSubmittedReturns: Boolean = true): JsObject =
+  def allReturnsJson(withDraftReturns: Boolean = true, withSubmittedReturns: Boolean = true,
+                     submittedReturnsSocialHousing: Boolean = false): JsObject =
     Json.obj(
       "atedBalance" -> 999.99,
       "allReturns" -> Json.arr(
-        periodSummaryReturnJson(currentTaxYear, withDraftReturns, withSubmittedReturns),
-        periodSummaryReturnJson(currentTaxYear-1, withDraftReturns, withSubmittedReturns)
+        periodSummaryReturnJson(currentTaxYear, withDraftReturns, withSubmittedReturns, submittedReturnsSocialHousing),
+        periodSummaryReturnJson(currentTaxYear-1, withDraftReturns, withSubmittedReturns, submittedReturnsSocialHousing)
       )
     )
 
   def periodSummaryReturns(periodKey: Int, withDraftReturns: Boolean = true,
                            withSubmittedReturns: Boolean = true, withPastReturns: Boolean = false,
-                           allDraftTypes: Boolean = false): PeriodSummaryReturns = {
+                           allDraftTypes: Boolean = false, submittedReturnsSocialHousing: Boolean = false): PeriodSummaryReturns = {
+
+    val submittedReturnsToUse = if (submittedReturnsSocialHousing) {
+      (submittedReturnsSocialHousingModel(periodKey), submittedReturnsSocialHousingModel(periodKey, withPastReturns))
+    } else {
+      (submittedReturns(periodKey), submittedReturns(periodKey, withPastReturns))
+    }
+
+    val draftReturn2ToUse = if (submittedReturnsSocialHousing) {
+      draftReturns2SocialHousing(periodKey)
+    } else {
+      draftReturns2(periodKey)
+    }
 
     if(!withDraftReturns){
       PeriodSummaryReturns(
         periodKey,
         Nil,
-        Some(submittedReturns(periodKey))
+        Some(submittedReturnsToUse._1)
       )
     }else if(!withSubmittedReturns){
       PeriodSummaryReturns(
         periodKey,
         Seq(draftReturns1(periodKey),
-          draftReturns2(periodKey)
+          draftReturn2ToUse
         ),
         None
       )
@@ -163,13 +241,13 @@ trait TestModels {
       val drafts: Seq[DraftReturns] = if(!allDraftTypes){
         Seq(
           draftReturns1(periodKey),
-          draftReturns2(periodKey)
+          draftReturn2ToUse
         )
 
       }else{
         Seq(
           draftReturns1(periodKey),
-          draftReturns2(periodKey),
+          draftReturn2ToUse,
           draftReturns3(periodKey),
           draftReturns4(periodKey)
         )
@@ -178,18 +256,18 @@ trait TestModels {
       PeriodSummaryReturns(
         periodKey,
         drafts,
-        Some(submittedReturns(periodKey, withPastReturns))
+        Some(submittedReturnsToUse._2)
       )
     }
   }
 
   def summaryReturnsModel(atedBalance: BigDecimal = BigDecimal(999.99),
                           periodKey: Int, withDraftReturns: Boolean = true,
-                          withSubmittedReturns: Boolean = true, withPastReturns: Boolean = false): SummaryReturnsModel = {
+                          withSubmittedReturns: Boolean = true, withPastReturns: Boolean = false, submittedReturnsSocialHousing: Boolean = false): SummaryReturnsModel = {
     SummaryReturnsModel(
       Some(atedBalance),
-      Seq(periodSummaryReturns(periodKey, withDraftReturns, withSubmittedReturns, withPastReturns)),
-      Seq(periodSummaryReturns(periodKey - 1, withDraftReturns, withSubmittedReturns, withPastReturns))
+      Seq(periodSummaryReturns(periodKey, withDraftReturns, withSubmittedReturns, withPastReturns, false, submittedReturnsSocialHousing)),
+      Seq(periodSummaryReturns(periodKey - 1, withDraftReturns, withSubmittedReturns, withPastReturns, false, submittedReturnsSocialHousing))
     )
   }
 

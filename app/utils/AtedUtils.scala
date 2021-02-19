@@ -23,7 +23,6 @@ import utils.AtedConstants._
 
 
 object AtedUtils {
-
   //scalastyle:off magic.number
   def isValidARN(arn: String): Boolean = {
     patternCheckARN(arn) match {
@@ -165,5 +164,4 @@ object AtedUtils {
       case 12 => "December"
     }
   }
-
 }

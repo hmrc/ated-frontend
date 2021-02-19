@@ -239,5 +239,4 @@ class AtedUtilsSpec extends PlaySpec with MockitoSugar with GuiceOneServerPerSui
       AtedUtils.intToMonth(testIntegerMonth) must be("March")
     }
   }
-
 }

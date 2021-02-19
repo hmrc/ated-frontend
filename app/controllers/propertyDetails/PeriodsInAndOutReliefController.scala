@@ -55,7 +55,7 @@ class PeriodsInAndOutReliefController @Inject()(mcc: MessagesControllerComponent
                 dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
                   Future.successful(Ok(template(id, propertyDetails.periodKey,
                     periodsInAndOutReliefForm,
-                    PeriodUtils.getDisplayPeriods(propertyDetails.period),
+                    PeriodUtils.getDisplayPeriods(propertyDetails.period, propertyDetails.periodKey),
                     AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn),
                     serviceInfoContent,
                     backLink)))
@@ -77,7 +77,7 @@ class PeriodsInAndOutReliefController @Inject()(mcc: MessagesControllerComponent
           currentBackLink.flatMap(backLink =>
             Future.successful(Ok(template(id, propertyDetails.periodKey,
               periodsInAndOutReliefForm,
-              PeriodUtils.getDisplayPeriods(propertyDetails.period),
+              PeriodUtils.getDisplayPeriods(propertyDetails.period, propertyDetails.periodKey),
               AtedUtils.getEditSubmittedMode(propertyDetails),
               serviceInfoContent,
               backLink))

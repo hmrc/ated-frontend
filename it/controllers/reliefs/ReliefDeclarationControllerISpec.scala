@@ -15,9 +15,6 @@ class ReliefDeclarationControllerISpec extends IntegrationBase with AuthAudit wi
       stubAuthAudit()
       stubKeyStore()
       stubGet(s"/ated/$atedRef/ated/reliefs/submit/$period", 200, relief)
-      stubPost(s"/annual-tax-enveloped-dwellings/returns/$atedRef", 200, relief)
-      stubGet(s"/annual-tax-enveloped-dwellings/subscription/$atedRef", 200, subscription)
-      stubGet("/user-details/id/602e38a42d00005ca6358f36", 200, userDetails)
 
       val controllerUrl = controllers.reliefs.routes.ReliefDeclarationController.submit(period).url
 
