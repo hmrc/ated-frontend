@@ -27,7 +27,10 @@ object PeriodUtils {
   val lowestBound = 2012
 
   def calculatePeakStartYear(date: LocalDate = new LocalDate(), month: Int = 3)(implicit appConfig: ApplicationConfig): Int = {
-    if(date.getMonthOfYear <= month && date.getDayOfMonth < appConfig.atedPeakStartDay.toInt) {
+
+    val draftReturnsAllowedFrom = new LocalDate(date.year.get(), month, appConfig.atedPeakStartDay.toInt)
+
+    if(date.isBefore(draftReturnsAllowedFrom)) {
       date.minusYears(1).getYear
     } else {
       date.getYear

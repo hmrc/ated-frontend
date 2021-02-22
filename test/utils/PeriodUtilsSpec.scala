@@ -409,4 +409,34 @@ class PeriodUtilsSpec extends PlaySpec with MockitoSugar with GuiceOneServerPerS
       PeriodUtils.calculateLowerTaxYearBoundary(`2015`).getYear.toString must be ("2012")
     }
   }
+
+  "calculatePeakStartYear" must {
+    s"return 2019 for a date in 2020 which is before the ated peak start date of ${mockAppConfig.atedPeakStartDay}/03" when {
+      "the date provided is 1st Jan 2020" in {
+        PeriodUtils.calculatePeakStartYear(new LocalDate(2020, 1, 1)) mustBe 2019
+      }
+
+      "the date provided is 28th Feb 2020" in {
+        PeriodUtils.calculatePeakStartYear(new LocalDate(2020, 2, 28)) mustBe 2019
+      }
+
+      "the date provided is 15th March 2020" in {
+        PeriodUtils.calculatePeakStartYear(new LocalDate(2020, 3, 15)) mustBe 2019
+      }
+    }
+
+    s"return 2020 for a date in 2020 which is from the ated peak start date of ${mockAppConfig.atedPeakStartDay}/03" when {
+      "the date provided is 16th March 2020" in {
+        PeriodUtils.calculatePeakStartYear(new LocalDate(2020, 3, 16)) mustBe 2020
+      }
+
+      "the date provided is 31st March 2020" in {
+        PeriodUtils.calculatePeakStartYear(new LocalDate(2020, 3, 31)) mustBe 2020
+      }
+
+      "the date provided is 31st December 2020" in {
+        PeriodUtils.calculatePeakStartYear(new LocalDate(2020, 12, 31)) mustBe 2020
+      }
+    }
+  }
 }
