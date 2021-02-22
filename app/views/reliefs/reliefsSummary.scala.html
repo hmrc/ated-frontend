@@ -16,14 +16,26 @@
 
 @import models._
 @import config.ApplicationConfig
-@import play.twirl.api.HtmlFormat
-@this(atedMain: atedMain)
-@(periodKey: Int, reliefsTaxAvoidance : Option[ReliefsTaxAvoidance], canSubmit: Boolean, isComplete: Boolean, serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
+@import config.featureswitch.FeatureSwitch
 @import uk.gov.hmrc.play.views.html._
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
 @import views.html.helpers.error._
 @import _root_.utils.PeriodUtils.{periodStartDate, periodEndDate}
+@import play.twirl.api.HtmlFormat
+
+@this(atedMain: atedMain)
+
+@(periodKey: Int, reliefsTaxAvoidance : Option[ReliefsTaxAvoidance], canSubmit: Boolean, isComplete: Boolean, serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
+
+@socialHousingMessage = @{
+  if (periodKey >= 2020 && appConfig.isEnabled(FeatureSwitch.CooperativeHousing)) {
+    "ated.relief-summary-types.providerSocialOrHousing"
+  } else {
+    "ated.relief-summary-types.socialHousing"
+  }
+}
+
 
 @atedMain(title = messages("ated.relief-summary.title"), serviceInfoContent = serviceInfoContent) {
   @pageHeadersAndError(backLink, "pre-header", messages("ated.choose-reliefs.subheader"), "property-details-summary-header", messages("ated.relief-summary.header"))
@@ -584,7 +596,7 @@
 @if(reliefData.reliefs.socialHousing) {
     <div class="form-group">
       <div class="grid-wrapper">
-        <h2 id="social-housing" class="heading-medium">@messages("ated.relief-summary-types.socialHousing")</h2>
+        <h2 id="social-housing" class="heading-medium">@messages(socialHousingMessage)</h2>
       </div>
 
       <div class="grid-wrapper row-border">

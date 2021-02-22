@@ -58,37 +58,35 @@ object PeriodUtils {
     case _ => false
   }
 
-
   val liabilityReturnTypeDesc = "ated.property-details-period.liability.return-type"
   val disposeReturnTypeDesc = "ated.property-details-period.dispose.return-type"
 
-  def getDisplayPeriods(propertyDetails: Option[PropertyDetailsPeriod]): Seq[LineItem] = {
-
+  def getDisplayPeriods(propertyDetails: Option[PropertyDetailsPeriod], periodKey: Int)(implicit applicationConfig: ApplicationConfig): Seq[LineItem] = {
     val liabilityPeriods = propertyDetails.map(_.liabilityPeriods).getOrElse(Nil)
     val reliefPeriods = propertyDetails.map(_.reliefPeriods).getOrElse(Nil)
-    sortAndConvertLineItemsForDisplay(liabilityPeriods ++ reliefPeriods)
+
+    sortAndConvertLineItemsForDisplay(liabilityPeriods ++ reliefPeriods, periodKey)
   }
 
-  def getDisplayFormBundleProperties(lineItems: Seq[FormBundleProperty]): Seq[LineItem] = {
+  def getDisplayFormBundleProperties(lineItems: Seq[FormBundleProperty], periodKey: Int)(implicit applicationConfig: ApplicationConfig): Seq[LineItem] = {
     def mergeValueChanges(lineItems: Seq[FormBundleProperty]) = {
       val startingVal = List[FormBundleProperty]()
       lineItems.foldLeft(startingVal){
         (r,newPeriod) =>
           r.headOption match {
-            case Some(old) if (old.reliefDescription == newPeriod.reliefDescription && old.`type` == newPeriod.`type`) => {
+            case Some(old) if old.reliefDescription == newPeriod.reliefDescription && old.`type` == newPeriod.`type` =>
               val mergedPeriod = old.copy(dateTo = newPeriod.dateTo)
               mergedPeriod :: r.tail
-            }
             case _ => newPeriod :: r
           }
       }
     }
     implicit val lineItemOrdering: Ordering[FormBundleProperty] = Ordering.by(_.dateFrom)
     val filteredFormBundle = mergeValueChanges(lineItems.sorted)
-    sortAndConvertLineItemsForDisplay(filteredFormBundle.map(item => LineItem(item.`type`, item.dateFrom, item.dateTo, item.reliefDescription)))
+    sortAndConvertLineItemsForDisplay(filteredFormBundle.map(item => LineItem(item.`type`, item.dateFrom, item.dateTo, item.reliefDescription)), periodKey)
   }
 
-  private def sortAndConvertLineItemsForDisplay(lineItems: Seq[LineItem]) = {
+  private def sortAndConvertLineItemsForDisplay(lineItems: Seq[LineItem], periodKey: Int)(implicit applicationConfig: ApplicationConfig) = {
     implicit val lineItemOrdering: Ordering[LineItem] = Ordering.by(_.startDate)
 
     lineItems.map{
@@ -96,7 +94,9 @@ object PeriodUtils {
         lineItem.lineItemType.toLowerCase match {
           case LiabilityReturnType => lineItem.copy( description =  Some(liabilityReturnTypeDesc))
           case DisposeReturnType => lineItem.copy( description =  Some(disposeReturnTypeDesc))
-          case _ => lineItem.copy( description = lineItem.description.map(ReliefsUtils.convertETMPReliefNameForSingleRelief(_)))
+          case _ => lineItem.copy( description = lineItem.description.map { desc =>
+            ReliefsUtils.convertETMPReliefNameForSingleRelief(desc, periodKey)
+          })
         }
     }.sorted
   }

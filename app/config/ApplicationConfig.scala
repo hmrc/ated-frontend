@@ -16,12 +16,13 @@
 
 package config
 
+import config.featureswitch.FeatureSwitching
 import config.{ConfigKeys => Keys}
-import javax.inject.Inject
 import play.api.Environment
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import utils.CountryCodeUtils
 
+import javax.inject.Inject
 import scala.util.Try
 
 trait AppConfig {
@@ -34,7 +35,7 @@ trait AppConfig {
 
 class ApplicationConfig @Inject()(val conf: ServicesConfig,
                                   val environment: Environment,
-                                  val templateError: views.html.global_error) extends CountryCodeUtils with AppConfig {
+                                  val templateError: views.html.global_error) extends CountryCodeUtils with AppConfig with FeatureSwitching {
 
   private def loadConfig(key: String) = conf.getString(key)
 
@@ -50,7 +51,7 @@ class ApplicationConfig @Inject()(val conf: ServicesConfig,
   lazy val assetsPrefix: String = loadConfig("assets.url") + loadConfig("assets.version")
   lazy val betaFeedbackUrl = s"$contactHost/contact/beta-feedback"
   lazy val betaFeedbackUnauthenticatedUrl = s"$contactHost/contact/beta-feedback-unauthenticated"
-  lazy val analyticsToken: Option[String] = Try{conf.getString("google-analytics.token")}.toOption
+  lazy val analyticsToken: Option[String] = Try(conf.getString("google-analytics.token")).toOption
   lazy val analyticsHost: String = conf.getString("google-analytics.host")
   lazy val reportAProblemPartialUrl = s"$contactHost/contact/problem_reports_ajax?service=$contactFormServiceIdentifier"
   lazy val reportAProblemNonJSUrl = s"$contactHost/contact/problem_reports_nonjs?service=$contactFormServiceIdentifier"

@@ -81,8 +81,7 @@ class ReliefsService @Inject()(atedConnector: AtedConnector,
   }
 
   // FIXME: rename method to retrievePeriodDraftReliefs
-  def retrieveDraftReliefs(atedRefNo: String, periodKey: Int)(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier):
-  Future[Option[ReliefsTaxAvoidance]] = {
+  def retrieveDraftReliefs(atedRefNo: String, periodKey: Int)(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[Option[ReliefsTaxAvoidance]] = {
     for {
       response <- atedConnector.retrievePeriodDraftReliefs(atedRefNo, periodKey)
     }

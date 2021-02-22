@@ -57,7 +57,7 @@ class editLiabilitySummarySpec extends FeatureSpec with GuiceOneServerPerSuite w
 
       val propertyDetails = PropertyDetailsBuilder.getFullPropertyDetails(id = "1", postCode = Some("123456"), liabilityAmount = Some(BigDecimal(1000.20)))
       Then("The config should have - 2 periods")
-      val displayPeriods = PeriodUtils.getDisplayPeriods(propertyDetails.period)
+      val displayPeriods = PeriodUtils.getDisplayPeriods(propertyDetails.period, thisYear)
       assert(displayPeriods.size === 2)
       val html = injectedViewInstance(propertyDetails, "A", displayPeriods,
         PeriodUtils.getCalculatedPeriodValues(propertyDetails.calculated), Html(""), Some("backLink"))
@@ -109,7 +109,7 @@ class editLiabilitySummarySpec extends FeatureSpec with GuiceOneServerPerSuite w
 
       val propertyDetails = PropertyDetailsBuilder.getFullPropertyDetails(id = "1", postCode = Some("123456"), liabilityAmount = Some(BigDecimal(1000.20)))
       Then("The config should have - 2 periods")
-      val displayPeriods = PeriodUtils.getDisplayPeriods(propertyDetails.period)
+      val displayPeriods = PeriodUtils.getDisplayPeriods(propertyDetails.period, thisYear)
       assert(displayPeriods.size === 2)
       val html = injectedViewInstance(propertyDetails, "C", displayPeriods,
         PeriodUtils.getCalculatedPeriodValues(propertyDetails.calculated), Html(""), Some("http://backLink"))

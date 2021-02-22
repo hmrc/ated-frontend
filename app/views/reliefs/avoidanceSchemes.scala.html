@@ -17,14 +17,46 @@
 @import models._
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
-
-@this(atedMain: atedMain)
-@(periodKey: Int, taxAvoidanceForm: Form[TaxAvoidance], serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(reliefsTaxAvoidance : Option[ReliefsTaxAvoidance])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 @import uk.gov.hmrc.play.views.html._
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
 @import views.html.helpers.error._
 @import utils._
+@import config.featureswitch.FeatureSwitch
+
+@this(atedMain: atedMain)
+
+@(periodKey: Int, taxAvoidanceForm: Form[TaxAvoidance], serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(reliefsTaxAvoidance : Option[ReliefsTaxAvoidance])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
+
+@chooseReliefsocialHousingMessage = @{
+    if (periodKey >= 2020 && appConfig.isEnabled(FeatureSwitch.CooperativeHousing)) {
+        "ated.choose-reliefs.providerSocialOrHousing"
+    } else {
+        "ated.choose-reliefs.socialHousing"
+    }
+}
+
+@fieldSetId = @{
+    if (periodKey >= 2020 && appConfig.isEnabled(FeatureSwitch.CooperativeHousing)) {
+        "providerSocialOrHousingScheme"
+    } else {
+        "socialHousingScheme"
+    }
+}
+
+@amendedForm = @{
+    if (periodKey >= 2020 && appConfig.isEnabled(FeatureSwitch.CooperativeHousing)) {
+        taxAvoidanceForm.copy(errors = taxAvoidanceForm.errors.map { error =>
+          error.copy(key = error.key match {
+              case "socialHousingScheme"          => "providerSocialOrHousingScheme"
+              case "socialHousingSchemePromoter"  => "providerSocialOrHousingSchemePromoter"
+              case key                            => key
+          })
+        })
+    } else {
+        taxAvoidanceForm
+    }
+}
 
 @taxAvoidanceAndPromoter(id: String, isVisible: Boolean, reliefCode: String, schemeFormValue: Field, promoterValue : Field) = {
     @if(isVisible) {
@@ -33,22 +65,44 @@
                 <span class="font-small">@messages(reliefCode)</span>
             </div>
             <div class="grid grid-1-3" id="@{id}-p">
-                @atedInputNew(
-                    schemeFormValue,
-                    '_label -> Html(messages("ated.avoidance-schemes.avoidance-scheme.text", messages(reliefCode))),
-                    '_labelClass -> "visuallyhidden",
-                    '_inputClass -> "avoidanceSchemeInp",
-                    '_showConstraints -> false
-                )
+                @if(id == "providerSocialOrHousingScheme") {
+                    @atedInputNew(
+                        schemeFormValue,
+                        '_label -> Html(messages("ated.avoidance-schemes.avoidance-scheme.text", messages(reliefCode))),
+                        '_labelClass -> "visuallyhidden",
+                        '_inputClass -> "avoidanceSchemeInp",
+                        '_showConstraints -> false,
+                        '_id -> "providerSocialOrHousingScheme"
+                    )
+                } else {
+                    @atedInputNew(
+                        schemeFormValue,
+                        '_label -> Html(messages("ated.avoidance-schemes.avoidance-scheme.text", messages(reliefCode))),
+                        '_labelClass -> "visuallyhidden",
+                        '_inputClass -> "avoidanceSchemeInp",
+                        '_showConstraints -> false
+                    )
+                }
             </div>
             <div class="grid grid-1-3" id="@{id}Promoter-p">
-                @atedInputNew(
-                    promoterValue,
-                    '_label -> Html(messages("ated.avoidance-schemes.avoidance-scheme-promoter.text", messages(reliefCode))),
-                    '_labelClass -> "visuallyhidden",
-                    '_inputClass -> "avoidanceSchemeInp",
-                    '_showConstraints -> false
-                )
+                @if(id == "providerSocialOrHousingScheme") {
+                    @atedInputNew(
+                        promoterValue,
+                        '_label -> Html(messages("ated.avoidance-schemes.avoidance-scheme-promoter.text", messages(reliefCode))),
+                        '_labelClass -> "visuallyhidden",
+                        '_inputClass -> "avoidanceSchemeInp",
+                        '_showConstraints -> false,
+                        '_id -> "providerSocialOrHousingSchemePromoter"
+                    )
+                } else {
+                    @atedInputNew(
+                        promoterValue,
+                        '_label -> Html(messages("ated.avoidance-schemes.avoidance-scheme-promoter.text", messages(reliefCode))),
+                        '_labelClass -> "visuallyhidden",
+                        '_inputClass -> "avoidanceSchemeInp",
+                        '_showConstraints -> false
+                    )
+                }
             </div>
         </div>
     }
@@ -62,7 +116,7 @@
         "ated-avoidance-header",
         messages("ated.avoidance-schemes.header"),
         Some(atedErrorSummary(
-            taxAvoidanceForm,
+            amendedForm,
             "ated.avoidance-scheme-error.general",
             maxErrorsToShow = 1))
     )
@@ -125,9 +179,9 @@
                 taxAvoidanceForm("farmHousesSchemePromoter")
             )
             @taxAvoidanceAndPromoter(
-                "socialHousingScheme",
+                fieldSetId,
                 reliefData.reliefs.socialHousing,
-                "ated.choose-reliefs.socialHousing",
+                chooseReliefsocialHousingMessage,
                 taxAvoidanceForm("socialHousingScheme"),
                 taxAvoidanceForm("socialHousingSchemePromoter")
             )

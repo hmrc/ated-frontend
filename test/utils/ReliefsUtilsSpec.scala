@@ -16,11 +16,17 @@
 
 package utils
 
+import config.ApplicationConfig
+import config.featureswitch.FeatureSwitch
 import models.SubmittedReliefReturns
 import org.joda.time.LocalDate
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 
-class ReliefsUtilsSpec extends PlaySpec {
+class ReliefsUtilsSpec extends PlaySpec with MockitoSugar with GuiceOneServerPerSuite {
+
+  implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
 
   "ReliefsUtils" must {
     "return the ATED relief description for multiple properties when passed the ETMP description" in {
@@ -35,16 +41,34 @@ class ReliefsUtilsSpec extends PlaySpec {
       ReliefsUtils.convertETMPReliefNameForMultipleReliefs("not found description") must be("not found description")
     }
 
-    "return the ATED relief description when passed the ETMP description" in {
-      ReliefsUtils.convertETMPReliefNameForSingleRelief(ReliefsUtils.RentalBusinessDesc) must be("ated.choose-single-relief.rentalBusiness")
-      ReliefsUtils.convertETMPReliefNameForSingleRelief(ReliefsUtils.OpenToPublicDesc) must be("ated.choose-single-relief.openToPublic")
-      ReliefsUtils.convertETMPReliefNameForSingleRelief(ReliefsUtils.PropDevDesc) must be("ated.choose-single-relief.propertyDeveloper")
-      ReliefsUtils.convertETMPReliefNameForSingleRelief(ReliefsUtils.EmpOccDesc) must be("ated.choose-single-relief.employeeOccupation")
-      ReliefsUtils.convertETMPReliefNameForSingleRelief(ReliefsUtils.PropTradingDesc) must be("ated.choose-single-relief.propertyTrading")
-      ReliefsUtils.convertETMPReliefNameForSingleRelief(ReliefsUtils.LendingDesc) must be("ated.choose-single-relief.lending")
-      ReliefsUtils.convertETMPReliefNameForSingleRelief(ReliefsUtils.FarmHouseDesc) must be("ated.choose-single-relief.farmHouses")
-      ReliefsUtils.convertETMPReliefNameForSingleRelief(ReliefsUtils.SocialHouseDesc) must be("ated.choose-single-relief.socialHousing")
-      ReliefsUtils.convertETMPReliefNameForSingleRelief("not found description") must be("not found description")
+    "return the ATED relief description when passed the ETMP description, in 2015" in {
+      val periodKey = 2015
+
+      ReliefsUtils.convertETMPReliefNameForSingleRelief(ReliefsUtils.RentalBusinessDesc, periodKey) must be("ated.choose-single-relief.rentalBusiness")
+      ReliefsUtils.convertETMPReliefNameForSingleRelief(ReliefsUtils.OpenToPublicDesc, periodKey) must be("ated.choose-single-relief.openToPublic")
+      ReliefsUtils.convertETMPReliefNameForSingleRelief(ReliefsUtils.PropDevDesc, periodKey) must be("ated.choose-single-relief.propertyDeveloper")
+      ReliefsUtils.convertETMPReliefNameForSingleRelief(ReliefsUtils.EmpOccDesc, periodKey) must be("ated.choose-single-relief.employeeOccupation")
+      ReliefsUtils.convertETMPReliefNameForSingleRelief(ReliefsUtils.PropTradingDesc, periodKey) must be("ated.choose-single-relief.propertyTrading")
+      ReliefsUtils.convertETMPReliefNameForSingleRelief(ReliefsUtils.LendingDesc, periodKey) must be("ated.choose-single-relief.lending")
+      ReliefsUtils.convertETMPReliefNameForSingleRelief(ReliefsUtils.FarmHouseDesc, periodKey) must be("ated.choose-single-relief.farmHouses")
+      ReliefsUtils.convertETMPReliefNameForSingleRelief(ReliefsUtils.SocialHouseDesc, periodKey) must be("ated.choose-single-relief.socialHousing")
+      ReliefsUtils.convertETMPReliefNameForSingleRelief("not found description", periodKey) must be("not found description")
+    }
+
+    "return the ATED relief description when passed the ETMP description, in 2020, with the feature switch enabled" in {
+      mockAppConfig.enable(FeatureSwitch.CooperativeHousing)
+
+      val periodKey = 2020
+
+      ReliefsUtils.convertETMPReliefNameForSingleRelief(ReliefsUtils.RentalBusinessDesc, periodKey) must be("ated.choose-single-relief.rentalBusiness")
+      ReliefsUtils.convertETMPReliefNameForSingleRelief(ReliefsUtils.OpenToPublicDesc, periodKey) must be("ated.choose-single-relief.openToPublic")
+      ReliefsUtils.convertETMPReliefNameForSingleRelief(ReliefsUtils.PropDevDesc, periodKey) must be("ated.choose-single-relief.propertyDeveloper")
+      ReliefsUtils.convertETMPReliefNameForSingleRelief(ReliefsUtils.EmpOccDesc, periodKey) must be("ated.choose-single-relief.employeeOccupation")
+      ReliefsUtils.convertETMPReliefNameForSingleRelief(ReliefsUtils.PropTradingDesc, periodKey) must be("ated.choose-single-relief.propertyTrading")
+      ReliefsUtils.convertETMPReliefNameForSingleRelief(ReliefsUtils.LendingDesc, periodKey) must be("ated.choose-single-relief.lending")
+      ReliefsUtils.convertETMPReliefNameForSingleRelief(ReliefsUtils.FarmHouseDesc, periodKey) must be("ated.choose-single-relief.farmHouses")
+      ReliefsUtils.convertETMPReliefNameForSingleRelief(ReliefsUtils.SocialHouseDesc, periodKey) must be("ated.choose-single-relief.providerSocialOrHousing")
+      ReliefsUtils.convertETMPReliefNameForSingleRelief("not found description", periodKey) must be("not found description")
     }
   }
 

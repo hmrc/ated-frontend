@@ -17,14 +17,18 @@
 @import models._
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
-@this(atedMain: atedMain)
-@(periodKey: Int, reliefsForm: Form[Reliefs], periodStartDate: org.joda.time.LocalDate, serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
+@import config.featureswitch.FeatureSwitch
 @import uk.gov.hmrc.play.views.html.helpers._
 @import uk.gov.hmrc.play.views.html._
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
 @import views.html.helpers.error._
 @import utils._
+@import config.featureswitch.FeatureSwitching
+
+@this(atedMain: atedMain)
+
+@(periodKey: Int, reliefsForm: Form[Reliefs], periodStartDate: org.joda.time.LocalDate, serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
 @formattedPeriodStartDate = @{periodStartDate.toString(messages("ated.date-format.numeric"))}
 
@@ -32,11 +36,49 @@
 <script src='@controllers.routes.Assets.versioned("javascript/chooseReliefs.js")'></script>
 }
 
+@chooseReliefsocialHousingMessage = @{
+  if (periodKey >= 2020 && appConfig.isEnabled(FeatureSwitch.CooperativeHousing)) {
+    "ated.choose-reliefs.providerSocialOrHousing"
+  } else {
+    "ated.choose-reliefs.socialHousing"
+  }
+}
+
+@chooseSingleReliefsocialHousingMessage = @{
+  if (periodKey >= 2020 && appConfig.isEnabled(FeatureSwitch.CooperativeHousing)) {
+    "ated.choose-single-relief.providerSocialOrHousing"
+  } else {
+    "ated.choose-single-relief.socialHousing"
+  }
+}
+
+@fieldSetId = @{
+  if (periodKey >= 2020 && appConfig.isEnabled(FeatureSwitch.CooperativeHousing)) {
+    "providerSocialOrHousingDate"
+  } else {
+    "socialHousingDate"
+  }
+}
+
+@amendedForm = @{
+  if (periodKey >= 2020 && appConfig.isEnabled(FeatureSwitch.CooperativeHousing)) {
+    reliefsForm.copy(errors = reliefsForm.errors.map(
+      error => if(error.args.headOption.contains("socialHousingDate")) {
+        error.copy(args = Seq("providerSocialOrHousingDate"))
+      } else {
+        error
+      }
+    ))
+  } else {
+    reliefsForm
+  }
+}
+
 @implicitFormInstance = @{ Some(reliefsForm) }
 
 @atedMain(title = messages("ated.choose-reliefs.title"), serviceInfoContent = serviceInfoContent, pageScripts = Some(pageScripts)) {
     @pageHeadersAndError(backLink, "pre-heading", messages("ated.choose-reliefs.subheader"), "choose-reliefs-header", messages("ated.choose-reliefs.header"),
-      Some(atedErrorSummary(reliefsForm, "ated.choose-reliefs.error.general")))
+      Some(atedErrorSummary(amendedForm, "ated.choose-reliefs.error.general")))
 
         <p id="lede-text">@messages("ated.choose-reliefs.info")</p>
         <p id="choose-reliefs-label">@messages("ated.choose-reliefs.label")</p>
@@ -176,22 +218,21 @@
       </div>
 
       @atedSingleCheckBox(reliefsForm("socialHousing"),
-        '_label -> messages("ated.choose-reliefs.socialHousing"),
+        '_label -> messages(chooseReliefsocialHousingMessage),
         '_labelClass -> "block-label")
-
 
         <div id="hidden-socialHousing-date" class="panel-indent">
           @atedDateFieldsFree(
             formItem = reliefsForm,
             fieldName = "socialHousingDate",
-            label = Html(messages("ated.choose-reliefs.date", messages("ated.choose-single-relief.socialHousing"))),
+            label = Html(messages("ated.choose-reliefs.date", messages(chooseSingleReliefsocialHousingMessage))),
             isNested = false,
             defaultDateOption = Some(periodStartDate),
             periodKey,
             '_fieldsetAttributesHelpQuestion -> "socialHousingDate-help-question",
             '_hintText -> messages("ated.choose-reliefs.relief-hint", formattedPeriodStartDate),
             '_groupClass -> "form-group date",
-            '_idName -> "socialHousingDate")
+            '_idName -> fieldSetId)
         </div>
 
       @atedSingleCheckBox(reliefsForm("equityRelease"),

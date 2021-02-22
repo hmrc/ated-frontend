@@ -18,6 +18,7 @@ package views.reliefs
 
 import config.ApplicationConfig
 import config.featureswitch.FeatureSwitch
+import forms.ReliefForms.taxAvoidanceForm
 import models.{Reliefs, ReliefsTaxAvoidance, TaxAvoidance}
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
@@ -29,42 +30,35 @@ import play.api.test.FakeRequest
 import play.twirl.api.Html
 import testhelpers.MockAuthUtil
 
-class ReliefsSummarySpec extends FeatureSpec with GuiceOneAppPerSuite with MockitoSugar with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
+class AvoidanceSchemesSpec extends FeatureSpec with GuiceOneAppPerSuite with MockitoSugar with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
 
   implicit val request = FakeRequest()
   implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
 
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
-  val injectedViewInstance = app.injector.instanceOf[views.html.reliefs.reliefsSummary]
+  val injectedViewInstance = app.injector.instanceOf[views.html.reliefs.avoidanceSchemes]
   implicit lazy val authContext = organisationStandardRetrievals
 
-  feature("The user can view the relief summary page") {
+  feature("The user can view the relief avoidance scheme page") {
 
-    info("As a client I want to be able to view my relief return summary")
+    info("As a client I want to be able to edit my avoidance schemes for my reliefs")
 
-    scenario("show the summary of the relief return during the draft period (month of March)") {
-
-      Given("the client has created a new relief return and is viewing the summary of entered info")
-      When("The user views the page")
+    scenario("show the avoidance scheme page with social housing") {
 
       val reliefsTaxAvoidance: ReliefsTaxAvoidance = ReliefsTaxAvoidance("123456", 2015, Reliefs(
         2015, socialHousing = true, socialHousingDate = Some(LocalDate.parse("2015-04-01"))
       ), TaxAvoidance(), LocalDate.now(), LocalDate.now())
 
-      val html = injectedViewInstance(2015, Some(reliefsTaxAvoidance), canSubmit = false, isComplete = true, Html(""), None)
+      val html: Html = injectedViewInstance(2015, taxAvoidanceForm, backLink = None)(Some(reliefsTaxAvoidance))
+
 
       val document = Jsoup.parse(html.toString())
 
-      assert(document.getElementById("social-housing").text() contains "Social housing")
-
-      Then("The text for disabling the submit button should be visible")
-      assert(document.getElementById("submit-disabled-text").text() contains "You cannot submit returns until 1 April.")
+      assert(document.getElementById("socialHousingScheme_field").text() contains "Social housing Avoidance scheme reference number")
+      assert(document.getElementById("socialHousingSchemePromoter_field").text() contains "Social housing Promoter reference number")
     }
 
-    scenario("show the summary of the relief return during the draft period (month of March) in 2020 with the feature switch enabled") {
-
-      Given("the client has created a new relief return and is viewing the summary of entered info")
-      When("The user views the page")
+    scenario("show the avoidance scheme page with social housing in 2020 with the feature switch enabled") {
 
       mockAppConfig.enable(FeatureSwitch.CooperativeHousing)
 
@@ -72,14 +66,12 @@ class ReliefsSummarySpec extends FeatureSpec with GuiceOneAppPerSuite with Mocki
         2020, socialHousing = true, socialHousingDate = Some(LocalDate.parse("2020-04-01"))
       ), TaxAvoidance(), LocalDate.now(), LocalDate.now())
 
-      val html = injectedViewInstance(2020, Some(reliefsTaxAvoidance), canSubmit = false, isComplete = true, Html(""), None)
+      val html: Html = injectedViewInstance(2020, taxAvoidanceForm, backLink = None)(Some(reliefsTaxAvoidance))
 
       val document = Jsoup.parse(html.toString())
 
-      assert(document.getElementById("social-housing").text() contains "Provider of social housing or housing co-operative")
-
-      Then("The text for disabling the submit button should be visible")
-      assert(document.getElementById("submit-disabled-text").text() contains "You cannot submit returns until 1 April.")
+      assert(document.getElementById("providerSocialOrHousingScheme_field").text() contains "Provider of social housing or housing co-operative Avoidance scheme reference number")
+      assert(document.getElementById("providerSocialOrHousingSchemePromoter_field").text() contains "Provider of social housing or housing co-operative Promoter reference number")
     }
   }
 }

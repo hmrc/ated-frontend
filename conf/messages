@@ -157,6 +157,7 @@ ated.choose-reliefs.lending = Lending
 ated.choose-reliefs.employeeOccupation = Employee occupation
 ated.choose-reliefs.farmHouses = Farmhouses
 ated.choose-reliefs.socialHousing = Social housing
+ated.choose-reliefs.providerSocialOrHousing = Provider of social housing or housing co-operative
 ated.choose-reliefs.equityRelease = Equity release scheme
 ated.choose-reliefs.equityRelease-reversion = Equity release scheme (home reversion plans)
 
@@ -168,6 +169,7 @@ ated.choose-single-relief.lending = Lending
 ated.choose-single-relief.employeeOccupation = Employee occupation
 ated.choose-single-relief.farmHouses = Farmhouse
 ated.choose-single-relief.socialHousing = Social housing
+ated.choose-single-relief.providerSocialOrHousing = Provider of social housing or housing co-operative
 ated.choose-single-relief.equityRelease = Equity release scheme (home reversion plans)
 
 --ated.choose-reliefs.relief-hint = For example, 31 3 2016
@@ -197,6 +199,7 @@ ated.choose-reliefs.error.general.lendingDate = There is a problem with the lend
 ated.choose-reliefs.error.general.employeeOccupationDate = There is a problem with the employee occupation start date
 ated.choose-reliefs.error.general.farmHousesDate = There is a problem with the farmhouses start date
 ated.choose-reliefs.error.general.socialHousingDate = There is a problem with the social housing start date
+ated.choose-reliefs.error.general.providerSocialOrHousingDate = There is a problem with the provider of social housing or housing co-operative start date
 ated.choose-reliefs.error.general.equityReleaseDate = There is a problem with the equity release start date
 ated.choose-reliefs.error.date.mandatory = You must enter a valid date
 ated.choose-reliefs.error.date.chargePeriod = The date must be in this chargeable period
@@ -340,6 +343,8 @@ ated.avoidance-scheme-error.general.farmHousesScheme = There is a problem with f
 ated.avoidance-scheme-error.general.farmHousesSchemePromoter = There is a problem with farmhouses promoter reference number. Check the number and try again.
 ated.avoidance-scheme-error.general.socialHousingScheme = There is a problem with social housing avoidance scheme reference number. Check the number and try again.
 ated.avoidance-scheme-error.general.socialHousingSchemePromoter = There is a problem with social housing promoter reference number. Check the number and try again.
+ated.avoidance-scheme-error.general.providerSocialOrHousingScheme = There is a problem with provider of social housing or housing co-operative avoidance scheme reference number. Check the number and try again.
+ated.avoidance-scheme-error.general.providerSocialOrHousingSchemePromoter = There is a problem with provider of social housing or housing co-operative promoter reference number. Check the number and try again.
 ated.avoidance-scheme-error.general.equityReleaseScheme = There is a problem with equity release avoidance scheme reference number. Check the number and try again.
 ated.avoidance-scheme-error.general.equityReleaseSchemePromoter = There is a problem with equity release promoter reference number. Check the number and try again.
 
@@ -1191,6 +1196,7 @@ ated.relief-summary-types.lending = Lending
 ated.relief-summary-types.employeeOccupation = Employee occupation
 ated.relief-summary-types.farmHouses = Farmhouses
 ated.relief-summary-types.socialHousing = Social housing
+ated.relief-summary-types.providerSocialOrHousing = Provider of social housing or housing co-operative
 ated.relief-summary-types.equityRelease = Equity Release
 ated.relief-summary.datesOfRelief = Dates of relief
 ated.relief-summary.avoidanceSchmRefNum = Avoidance scheme reference number
@@ -1531,3 +1537,4 @@ btaNavLinks.home = Home
 btaNavLinks.manageAccount = Manage account
 btaNavLinks.messages = Messages
 btaNavLinks.helpAndContact = Help and contact
+

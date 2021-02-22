@@ -21,7 +21,6 @@ import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.BackLinkController
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.ReliefForms._
-import javax.inject.Inject
 import models.Reliefs
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{ReliefsService, ServiceInfoService}
@@ -30,6 +29,7 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedUtils._
 import utils.{PeriodUtils, ReliefsUtils}
 
+import javax.inject.Inject
 import scala.collection.mutable.ArrayBuffer
 import scala.concurrent.ExecutionContext
 

@@ -17,6 +17,7 @@
 package models
 
 import config.ApplicationConfig
+import config.featureswitch.FeatureSwitch
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
@@ -30,16 +31,27 @@ class SummaryReturnsModelSpec extends PlaySpec with GuiceOneServerPerSuite with 
   "SummaryReturnsModel" should {
 
     "read correctly from json" in {
-
       allReturnsJson(true, true)
         .as[SummaryReturnsModel] must be(summaryReturnsModel(periodKey = currentTaxYear))
+    }
 
+    "read correctly from json for social housing after 2020 if the feature switch is enabled" in {
+      mockAppConfig.enable(FeatureSwitch.CooperativeHousing)
+
+      allReturnsJson(true, true, true)
+        .as[SummaryReturnsModel] must be(summaryReturnsModel(periodKey = currentTaxYear, submittedReturnsSocialHousing = true))
     }
 
     "write correctly to json" in {
-
       Json.toJson(summaryReturnsModel(periodKey = currentTaxYear)) must be(allReturnsJson())
+    }
 
+    "write correctly to json for social housing after 2020 if the feature switch is enabled" in {
+      mockAppConfig.enable(FeatureSwitch.CooperativeHousing)
+
+      val jsonInput = summaryReturnsModel(periodKey = currentTaxYear, submittedReturnsSocialHousing = true)
+
+      Json.toJson(jsonInput) must be(allReturnsJson(submittedReturnsSocialHousing = true))
     }
   }
 }

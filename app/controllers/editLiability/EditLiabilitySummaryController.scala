@@ -91,7 +91,7 @@ class EditLiabilitySummaryController @Inject()(mcc: MessagesControllerComponents
         backLink =>
           Ok(template(propertyDetails,
             getReturnType(propertyDetails),
-            PeriodUtils.getDisplayPeriods(propertyDetails.period),
+            PeriodUtils.getDisplayPeriods(propertyDetails.period, propertyDetails.periodKey),
             PeriodUtils.getCalculatedPeriodValues(propertyDetails.calculated),
             serviceInfoContent,
             backLink))
@@ -123,7 +123,7 @@ class EditLiabilitySummaryController @Inject()(mcc: MessagesControllerComponents
           organisationName <- subscriptionDataService.getOrganisationName
         } yield {
           Ok(views.html.editLiability.editLiabilityPrintFriendly(calculateDraftLiability.get, getReturnType(calculateDraftLiability.get),
-            PeriodUtils.getDisplayPeriods(calculateDraftLiability.get.period),
+            PeriodUtils.getDisplayPeriods(calculateDraftLiability.get.period, calculateDraftLiability.get.periodKey),
             PeriodUtils.getCalculatedPeriodValues(calculateDraftLiability.get.calculated),
             organisationName
           ))

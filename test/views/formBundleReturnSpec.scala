@@ -85,7 +85,7 @@ class formBundleReturnSpec extends FeatureSpec with GuiceOneServerPerSuite with 
 
       val propertyDetails = PropertyDetailsBuilder.getFullPropertyDetails(id = "1", postCode = Some("123456"), liabilityAmount = Some(BigDecimal(1000.20)))
       Then("The config should have - 2 periods")
-      val displayPeriods = PeriodUtils.getDisplayPeriods(propertyDetails.period)
+      val displayPeriods = PeriodUtils.getDisplayPeriods(propertyDetails.period, 2015)
       assert(displayPeriods.size === 2)
       val html = injectedViewInstance(2015, None, "formBundleNo", Some("ACME Ltd"), changeAllowed = false, editAllowed = false, Nil, Nil, Html(""), Some("backLink"))
 
@@ -112,10 +112,10 @@ class formBundleReturnSpec extends FeatureSpec with GuiceOneServerPerSuite with 
 
       val propertyDetails = PropertyDetailsBuilder.getFullPropertyDetails(id = "1", postCode = Some("123456"), liabilityAmount = Some(BigDecimal(1000.20)))
       Then("The config should have - 2 periods")
-      val displayPeriods = PeriodUtils.getDisplayPeriods(propertyDetails.period)
+      val displayPeriods = PeriodUtils.getDisplayPeriods(propertyDetails.period, 2015)
       assert(displayPeriods.size === 2)
       val valuesToDisplay = PeriodUtils.getOrderedReturnPeriodValues(viewReturnWithSinglePeriod.lineItem, viewReturnWithSinglePeriod.dateOfAcquisition)
-      val periodsToDisplay = PeriodUtils.getDisplayFormBundleProperties(viewReturnWithSinglePeriod.lineItem)
+      val periodsToDisplay = PeriodUtils.getDisplayFormBundleProperties(viewReturnWithSinglePeriod.lineItem, 2015)
       val html = injectedViewInstance(2015, Some(viewReturnWithSinglePeriod), "formBundleNo", None, changeAllowed = false, editAllowed =  false, valuesToDisplay, periodsToDisplay, Html(""), Some("http://backLink"))
 
       val document = Jsoup.parse(html.toString())
@@ -183,10 +183,10 @@ class formBundleReturnSpec extends FeatureSpec with GuiceOneServerPerSuite with 
 
       val propertyDetails = PropertyDetailsBuilder.getFullPropertyDetails(id = "1", postCode = Some("123456"), liabilityAmount = Some(BigDecimal(1000.20)))
       Then("The config should have - 2 periods")
-      val displayPeriods = PeriodUtils.getDisplayPeriods(propertyDetails.period)
+      val displayPeriods = PeriodUtils.getDisplayPeriods(propertyDetails.period, 2015)
       assert(displayPeriods.size === 2)
       val valuesToDisplay = PeriodUtils.getOrderedReturnPeriodValues(viewReturnWithSinglePeriod.lineItem, viewReturnWithSinglePeriod.dateOfAcquisition)
-      val periodsToDisplay = PeriodUtils.getDisplayFormBundleProperties(viewReturnWithSinglePeriod.lineItem)
+      val periodsToDisplay = PeriodUtils.getDisplayFormBundleProperties(viewReturnWithSinglePeriod.lineItem, 2015)
       val html = injectedViewInstance(2015, Some(viewReturnWithSinglePeriod), "formBundleNo", Some("ACME Ltd"), changeAllowed = true, editAllowed = true, valuesToDisplay, periodsToDisplay,  Html(""), None)
 
       val document = Jsoup.parse(html.toString())
@@ -251,10 +251,10 @@ class formBundleReturnSpec extends FeatureSpec with GuiceOneServerPerSuite with 
 
       val propertyDetails = PropertyDetailsBuilder.getFullPropertyDetails(id = "1", postCode = Some("123456"), liabilityAmount = Some(BigDecimal(1000.20)))
       Then("The config should have - 2 periods")
-      val displayPeriods = PeriodUtils.getDisplayPeriods(propertyDetails.period)
+      val displayPeriods = PeriodUtils.getDisplayPeriods(propertyDetails.period, 2015)
       assert(displayPeriods.size === 2)
       val valuesToDisplay = PeriodUtils.getOrderedReturnPeriodValues(viewReturnWithMultiPeriod.lineItem, viewReturnWithMultiPeriod.dateOfAcquisition)
-      val periodsToDisplay = PeriodUtils.getDisplayFormBundleProperties(viewReturnWithMultiPeriod.lineItem)
+      val periodsToDisplay = PeriodUtils.getDisplayFormBundleProperties(viewReturnWithMultiPeriod.lineItem, 2015)
       val html = injectedViewInstance(2015, Some(viewReturnWithMultiPeriod), "formBundleNo", Some("ACME Ltd"), changeAllowed = true, editAllowed = true, valuesToDisplay, periodsToDisplay, Html(""), None)
 
       val document = Jsoup.parse(html.toString())
@@ -326,10 +326,10 @@ class formBundleReturnSpec extends FeatureSpec with GuiceOneServerPerSuite with 
 
       val propertyDetails = PropertyDetailsBuilder.getFullPropertyDetails(id = "1", postCode = Some("123456"), liabilityAmount = Some(BigDecimal(1000.20)))
       Then("The config should have - 2 periods")
-      val displayPeriods = PeriodUtils.getDisplayPeriods(propertyDetails.period)
+      val displayPeriods = PeriodUtils.getDisplayPeriods(propertyDetails.period, 2015)
       assert(displayPeriods.size === 2)
       val valuesToDisplay = PeriodUtils.getOrderedReturnPeriodValues(viewWithDisposePeriod.lineItem, viewReturnWithMultiPeriod.dateOfAcquisition)
-      val periodsToDisplay = PeriodUtils.getDisplayFormBundleProperties(viewWithDisposePeriod.lineItem)
+      val periodsToDisplay = PeriodUtils.getDisplayFormBundleProperties(viewWithDisposePeriod.lineItem, 2015)
       val html = injectedViewInstance(2015, Some(viewWithDisposePeriod), "formBundleNo", Some("ACME Ltd"), changeAllowed = false, editAllowed = false, valuesToDisplay, periodsToDisplay, Html(""), None)
 
       val document = Jsoup.parse(html.toString())

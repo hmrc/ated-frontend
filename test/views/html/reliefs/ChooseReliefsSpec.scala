@@ -17,9 +17,12 @@
 package views.html.reliefs
 
 import config.ApplicationConfig
+import config.featureswitch.FeatureSwitch
 import forms.ReliefForms
 import models.{Reliefs, StandardAuthRetrievals}
 import org.joda.time.LocalDate
+import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.data.Form
 import play.api.libs.json.Json
@@ -30,7 +33,8 @@ class ChooseReliefsSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
 
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
-val periodKey = 2017
+  val periodKey = 2017
+  val periodKey2020 = 2020
   val periodStartDate = new LocalDate()
 
   "choose relief view" must {
@@ -99,11 +103,23 @@ val periodKey = 2017
     }
 
     "display social housing" in {
-      doc must haveElementWithId("socialHousing")
+      doc.getElementById("socialHousing_field").text() mustBe "Social housing"
     }
 
     "display social housing start date" in {
       doc must haveElementWithId("socialHousingDate")
+    }
+
+    "display social housing for 2020 with feature switch enabled" in {
+      mockAppConfig.enable(FeatureSwitch.CooperativeHousing)
+
+      doc2020.getElementById("socialHousing_field").text() mustBe "Provider of social housing or housing co-operative"
+    }
+
+    "display social housing start date for 2020 with feature switch enabled" in {
+      mockAppConfig.enable(FeatureSwitch.CooperativeHousing)
+
+      doc2020 must haveElementWithId("providerSocialOrHousingDate")
     }
 
     "display equity release scheme" in {
@@ -218,5 +234,8 @@ val periodKey = 2017
   val reliefsForm: Form[Reliefs] = ReliefForms.reliefsForm
 
   override def view: Html = injectedViewInstance(periodKey, reliefsForm, periodStartDate, Html(""), Some("backLink"))
+  def view2020: Html = injectedViewInstance(periodKey2020, reliefsForm, periodStartDate, Html(""), Some("backLink"))
+
+  def doc2020: Document = Jsoup.parse(view2020.toString())
 
 }

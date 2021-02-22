@@ -17,11 +17,13 @@
 @import models._
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
-@this(atedMain: atedMain)
-@(id: String, periodKey: Int, propertyDetailsForm: Form[PeriodChooseRelief], serviceInfoContent: Html = HtmlFormat.empty, backLink:Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
 @import _root_.utils._
+@import config.featureswitch.FeatureSwitch
+@this(atedMain: atedMain)
+@(id: String, periodKey: Int, propertyDetailsForm: Form[PeriodChooseRelief], serviceInfoContent: Html = HtmlFormat.empty, backLink:Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
+
 
 @implicitFormInstance = @{ Some(propertyDetailsForm) }
 
@@ -29,6 +31,14 @@
   var id = "@id";
   var page = document.location.pathname.replace('/' + id, '');
   ga('set', 'page', page);
+}
+
+@chooseSingleReliefsocialHousingMessage = @{
+    if (periodKey >= 2020 && appConfig.isEnabled(FeatureSwitch.CooperativeHousing)) {
+        "ated.choose-single-relief.providerSocialOrHousing"
+    } else {
+        "ated.choose-single-relief.socialHousing"
+    }
 }
 
 @atedMain(title = messages("ated.property-details-period.chooseRelief.title"),
@@ -50,7 +60,7 @@
         ReliefsUtils.LendingDesc -> messages("ated.choose-single-relief.lending"),
         ReliefsUtils.EmpOccDesc -> messages("ated.choose-single-relief.employeeOccupation"),
         ReliefsUtils.FarmHouseDesc -> messages("ated.choose-single-relief.farmHouses"),
-        ReliefsUtils.SocialHouseDesc -> messages("ated.choose-single-relief.socialHousing"),
+        ReliefsUtils.SocialHouseDesc -> messages(chooseSingleReliefsocialHousingMessage),
         ReliefsUtils.EquityReleaseDesc -> messages("ated.choose-single-relief.equityRelease")
         ),
         '_legend ->messages("ated.property-details-period.chooseRelief.header"),
