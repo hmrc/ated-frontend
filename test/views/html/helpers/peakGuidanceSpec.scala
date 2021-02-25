@@ -77,8 +77,7 @@ class peakGuidanceSpec extends FeatureSpec with GivenWhenThen
 
       assert(document.select("strong").text() === "Returns for newly acquired ATED properties " +
         "must be sent to HMRC within 30 days (90 days for new builds).")
-      assert(document.select("p").first.text() === "Returns for 2021 to 2022 for all properties in the " +
-        "scope of ATED are due by 30 April 2021.")
+      assert(document.select("p").first.text() === "Returns for 2021 to 2022 are due by 30 April 2021.")
 
     }
   }
