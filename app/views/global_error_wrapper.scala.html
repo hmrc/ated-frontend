@@ -22,7 +22,7 @@
 @import uk.gov.hmrc.play.views.html.layouts.MainContent
 @import uk.gov.hmrc.play.views.html.layouts.MainContentHeader
 @import views.html.layouts.GovUkTemplate
-@import uk.gov.hmrc.play.views.html.layouts.Head
+@import uk.gov.hmrc.play.views.html.layouts.HeadWithTrackingConsent
 @import uk.gov.hmrc.play.views.html.helpers.ReportAProblemLink
 @import uk.gov.hmrc.play.views.html.layouts.ServiceInfo
 @import uk.gov.hmrc.play.views.html.layouts.BetaBanner
@@ -30,7 +30,7 @@
 @import uk.gov.hmrc.play.views.html.layouts.Footer
 
 @this(govuk_template: GovUkTemplate,
-        layoutHead: Head,
+        layoutHead: HeadWithTrackingConsent,
         uiBetaBanner: BetaBanner,
         layoutServiceInfo: ServiceInfo,
         reportAProblemLink: ReportAProblemLink,
@@ -40,6 +40,7 @@
         footer: Footer,
         footer_links: FooterLinks,
         header_nav: HeaderNav)
+
 @(appConfig: config.ApplicationConfig,
 title: String,
 mainClass: Option[String] = None,
@@ -98,8 +99,8 @@ navLinks = Some(headerNavLinks))
 
 @bodyEnd = {
 @footer(
-analyticsToken = appConfig.analyticsToken,
-analyticsHost = appConfig.analyticsHost,
+analyticsToken = None,
+analyticsHost = "",
 ssoUrl = None,
 scriptElem = Some(scriptElement),
 gaCalls = None)
