@@ -23,7 +23,6 @@ import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import utils.CountryCodeUtils
 
 import javax.inject.Inject
-import scala.util.Try
 
 trait AppConfig {
   val btaBaseUrl: String
