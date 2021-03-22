@@ -77,7 +77,7 @@ pageScripts = Some(pageScripts)) {
     <div class="grid grid-1-6 cya-change">
       @registrationDetails.map{ regDetails=>
         @if(regDetails.isEditable){
-          <a href='@controllers.subscriptionData.routes.RegisteredDetailsController.edit' id="registered-edit" data-journey-click="link - click:@messages("ated.company-details.title"):@messages("ated.company-details.registered-address.edit") - @messages("ated.company-details.registered-address")">@messages("ated.company-details.registered-address.edit") <span class="visuallyhidden">@messages("ated.company-details.registered-address")</span></a></td>
+          <a href='@controllers.subscriptionData.routes.RegisteredDetailsController.edit' id="registered-edit" data-journey-click="link - click:@messages("ated.company-details.title"):@messages("ated.company-details.registered-address.edit") - @messages("ated.company-details.registered-address")">@messages("ated.company-details.registered-address.edit") <span class="visuallyhidden">@messages("ated.company-details.registered-address")</span></a>
         }
       }
     </div>
@@ -101,7 +101,7 @@ pageScripts = Some(pageScripts)) {
       <div class="grid grid-1-6 cya-change">
         @registrationDetails.map{ regDetails=>
           @if(regDetails.isEditable){
-            <a href='@controllers.subscriptionData.routes.OverseasCompanyRegistrationController.edit' id="registered-edit-os">@messages("ated.company-details.registered-address.edit") <span class="visuallyhidden">@messages("ated.company-details.overseas_reg_number")</span></a></td>
+            <a href='@controllers.subscriptionData.routes.OverseasCompanyRegistrationController.edit' id="registered-edit-os">@messages("ated.company-details.registered-address.edit") <span class="visuallyhidden">@messages("ated.company-details.overseas_reg_number")</span></a>
           }
         }
       </div>
@@ -131,7 +131,7 @@ pageScripts = Some(pageScripts)) {
   </div>
 
     <div class="grid grid-1-6 cya-change">
-      <a href='@controllers.subscriptionData.routes.CorrespondenceAddressController.editAddress' id="correspondence-edit" data-journey-click="link - click:@messages("ated.company-details.title"):@messages("ated.company-details.registered-address.edit") - @messages("ated.company-details.correspondence-address")">@messages("ated.company-details.correspondence-address.edit") <span class="visuallyhidden">@messages("ated.company-details.correspondence-address")</span></a></td>
+      <a href='@controllers.subscriptionData.routes.CorrespondenceAddressController.editAddress' id="correspondence-edit" data-journey-click="link - click:@messages("ated.company-details.title"):@messages("ated.company-details.registered-address.edit") - @messages("ated.company-details.correspondence-address")">@messages("ated.company-details.correspondence-address.edit") <span class="visuallyhidden">@messages("ated.company-details.correspondence-address")</span></a>
     </div>
   </div>
 

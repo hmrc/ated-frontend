@@ -23,6 +23,7 @@ import play.twirl.api.Html
 import testhelpers.{AtedViewSpec, MockAuthUtil}
 import uk.gov.hmrc.auth.core.retrieve.~
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
+import views.html.subcriptionData.companyDetails
 
 class CompanyDetailsSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil {
 
@@ -31,7 +32,7 @@ class CompanyDetailsSpec extends AtedViewSpec with MockitoSugar with MockAuthUti
   val authMock: Enrolments ~ Some[AffinityGroup] ~ Some[String] = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
   setAuthMocks(authMock)
 
-  val injectedViewInstance = app.injector.instanceOf[views.html.subcriptionData.companyDetails]
+  val injectedViewInstance: companyDetails = app.injector.instanceOf[views.html.subcriptionData.companyDetails]
 
   "Company Details view" must {
     behave like pageWithTitle(messages("ated.company-details.title"))
@@ -95,8 +96,9 @@ class CompanyDetailsSpec extends AtedViewSpec with MockitoSugar with MockAuthUti
         doc must haveElementWithIdAndText("name2", "lastName")
       }
 
-      "display email address" in {
+      "display ATED email address" in {
         doc must haveElementWithIdAndText(messages("ated.company-details.contact-preference.label"), "contact-pref-label")
+        doc must haveElementWithIdAndText("ated@b.c", "contact-pref-val")
       }
 
       "display edit link for correspondence address" in {
@@ -117,13 +119,26 @@ class CompanyDetailsSpec extends AtedViewSpec with MockitoSugar with MockAuthUti
 
     }
 
+    "display Agent name and edit link" in {
+      doc must haveElementWithIdAndText(messages("ated.company-details.appointed_agent"), "appointed-agent-label")
+      doc must haveElementWithIdAndText("agent", "appointed-agent-val")
+      doc must haveLinkWithUrlWithID("appointed-agent-link", "/changeAgentLink")
+    }
+
+    "display Agent email address and edit link" in {
+      doc must haveElementWithIdAndText(messages("ated.company-details.agent-email-address"), "email-label")
+      doc must haveElementWithIdAndText("agent@b.c", "email-val")
+      doc must haveLinkWithUrlWithID("email-link", "/changeEmailLink")
+    }
   }
 
 
-  val addressDetails = AddressDetails(addressType = "", addressLine1 = "some street", addressLine2 = "some area", addressLine3 = Some("some county"), postalCode = Some("ne981zz"), countryCode = "GB")
-  val contactDetails = ContactDetails(emailAddress = Some("a@b.c"))
-  val correspondence = Address(Some("name1"), Some("name2"), addressDetails = addressDetails, contactDetails = Some(contactDetails))
-  val businessPartnerDetails = RegisteredDetails(isEditable = false, "testName",
+  val addressDetails: AddressDetails = AddressDetails(addressType = "", addressLine1 = "some street", addressLine2 = "some area",
+    addressLine3 = Some("some county"), postalCode = Some("ne981zz"), countryCode = "GB")
+
+  val contactDetails: ContactDetails = ContactDetails(emailAddress = Some("ated@b.c"))
+  val correspondence: Address = Address(Some("name1"), Some("name2"), addressDetails = addressDetails, contactDetails = Some(contactDetails))
+  val businessPartnerDetails: RegisteredDetails = RegisteredDetails(isEditable = false, "testName",
     RegisteredAddressDetails(addressLine1 = "bpline1",
       addressLine2 = "bpline2",
       addressLine3 = Some("bpline3"),
@@ -131,7 +146,7 @@ class CompanyDetailsSpec extends AtedViewSpec with MockitoSugar with MockAuthUti
       postalCode = Some("postCode"),
       countryCode = "GB"))
 
-  val businessPartnerDetailsEditable = RegisteredDetails(isEditable = true, "testName",
+  val businessPartnerDetailsEditable: RegisteredDetails = RegisteredDetails(isEditable = true, "testName",
     RegisteredAddressDetails(addressLine1 = "bpline1",
       addressLine2 = "bpline2",
       addressLine3 = Some("bpline3"),
@@ -139,8 +154,10 @@ class CompanyDetailsSpec extends AtedViewSpec with MockitoSugar with MockAuthUti
       postalCode = Some("postCode"),
       countryCode = "GB"))
 
-
+  val clientMandateDetails : Option[ClientMandateDetails] = Some(ClientMandateDetails(
+    agentName = "agent", changeAgentLink = "/changeAgentLink", email = "agent@b.c", changeEmailLink = "/changeEmailLink"
+  ))
 
   override def view: Html = injectedViewInstance(Some(correspondence),
-    Some(businessPartnerDetails), emailConsent = true, None, None, Html(""), Some("http://backLink"))
+    Some(businessPartnerDetails), emailConsent = true, clientMandateDetails, None, Html(""), Some("http://backLink"))
 }
