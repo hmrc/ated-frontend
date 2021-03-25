@@ -31,15 +31,9 @@
 
 @implicitFormInstance = @{ Some(propertyDetailsForm) }
 
-@analyticsJs = {
-  var id = "@id";
-  var page = document.location.pathname.replace('/' + id, '');
-  ga('set', 'page', page);
-}
 
 @atedMain(title = messages("ated.property-details-period.periodsInRelief.title"),
-          serviceInfoContent = serviceInfoContent,
-          analyticsAdditionalJs = Some(analyticsJs)) {
+          serviceInfoContent = serviceInfoContent) {
           @pageHeadersAndError(backLink,
             "pre-heading",
             messages(AtedUtils.getPropertyDetailsPreHeader(mode)),

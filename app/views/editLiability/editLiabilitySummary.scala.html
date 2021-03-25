@@ -25,14 +25,8 @@
 
 @incomplete = {@messages("ated.label.incomplete")}
 
-@analyticsJs = {
-  ga('set', 'page', document.location.pathname.replace(/[0-9]/g ,'').replace(/\/\//g, '/'));
-  ga('set', 'location', document.URL.split("?")[0]);
-}
-
 @atedMain(title = messages("ated.property-details-summary.title"),
-          serviceInfoContent = serviceInfoContent,
-          analyticsAdditionalJs = Some(analyticsJs)) {
+          serviceInfoContent = serviceInfoContent) {
 
   @pageHeadersAndError(backLink, "pre-heading", messages("ated.property-details.pre-header-change"), messages("edit-liability-summary-header"), messages("ated.property-details-summary.header"))
 
@@ -219,7 +213,7 @@
       </div>
 
       <div class="grid grid-1-6 cya-change">
-        <a href="@controllers.propertyDetails.routes.IsFullTaxPeriodController.editFromSummary(changeLiability.id)" id="edit-dates-of-liablity-@index" data-journey-click="ated-frontend:click:edit-dates-of-liablity">@messages("ated.edit") <span class="visuallyhidden">@period.description</span>
+        <a href="@controllers.propertyDetails.routes.IsFullTaxPeriodController.editFromSummary(changeLiability.id)" id="edit-dates-of-liablity-@index">@messages("ated.edit") <span class="visuallyhidden">@period.description</span>
         </a>
       </div>
     </div>
@@ -300,7 +294,7 @@
     </div>
 
     <div class="grid grid-1-6 cya-change">
-      <a href="@controllers.propertyDetails.routes.PropertyDetailsSupportingInfoController.editFromSummary(changeLiability.id)" id="edit-supporting-details" data-journey-click="ated-frontend:click:edit-supporting-details">@messages("ated.edit") <span class="visuallyhidden">@messages("ated.property-details-summary.table.property-ated-details.additional-information.label")</span></a>
+      <a href="@controllers.propertyDetails.routes.PropertyDetailsSupportingInfoController.editFromSummary(changeLiability.id)" id="edit-supporting-details">@messages("ated.edit") <span class="visuallyhidden">@messages("ated.property-details-summary.table.property-ated-details.additional-information.label")</span></a>
     </div>
   </div>
 </div>

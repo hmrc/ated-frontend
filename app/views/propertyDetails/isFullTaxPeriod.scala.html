@@ -30,15 +30,8 @@
 
 @implicitFormInstance = @{ Some(propertyDetailsForm) }
 
-@analyticsJs = {
-  var id = "@id";
-  var page = document.location.pathname.replace('/' + id, '');
-  ga('set', 'page', page);
-}
-
 @atedMain(title = messages("ated.property-details-period.isFullPeriod.title"),
-          serviceInfoContent = serviceInfoContent,
-          analyticsAdditionalJs = Some(analyticsJs)) {
+          serviceInfoContent = serviceInfoContent) {
   @pageHeadersAndError(backLink, "pre-heading", messages("ated.property-details.pre-header"), "property-details-header", messages("ated.property-details-period.isFullPeriod.header"),
     Some(atedErrorSummary(propertyDetailsForm, "ated.property-details-period-error.general")))
 
@@ -59,7 +52,6 @@
     </div>
 
     <button class="button" id="submit" type="submit">@messages("ated.save-and-continue")</button>
-
 
   }
 

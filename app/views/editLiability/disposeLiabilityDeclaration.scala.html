@@ -22,15 +22,7 @@
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
 
-@analyticsJs = {
-  var id = "@oldFormBundleNum";
-  var page = document.location.pathname.replace('/' + id, '');
-  ga('set', 'page', page);
-}
-
-@atedMain(title = messages("ated.edit-liability.declaration.header.amend"),
-          serviceInfoContent = serviceInfoContent,
-          analyticsAdditionalJs = Some(analyticsJs)) {
+@atedMain(title = messages("ated.edit-liability.declaration.header.amend"), serviceInfoContent = serviceInfoContent) {
 
   @pageHeadersAndError(backLink, "pre-heading", messages("ated.property-details.pre-header-dispose"), "dispose-liability-declaration-confirmation-header", messages("ated.edit-liability.declaration.header.amend"))
 

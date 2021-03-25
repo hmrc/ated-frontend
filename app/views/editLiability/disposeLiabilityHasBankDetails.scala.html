@@ -28,16 +28,9 @@
   <script src='@controllers.routes.Assets.versioned("javascript/bankDetails.js")'></script>
 }
 
-@analyticsJs = {
-  var id = "@oldFormBundleNo";
-  var page = document.location.pathname.replace('/' + id, '');
-  ga('set', 'page', page);
-}
-
 @atedMain(title = messages("ated.bank-details.has-bank-details.title"),
           serviceInfoContent = serviceInfoContent,
-          pageScripts = Some(pageScripts),
-          analyticsAdditionalJs = Some(analyticsJs)) {
+          pageScripts = Some(pageScripts)) {
 
   @pageHeadersAndError(backLink, "pre-heading", messages("ated.property-details.pre-header-dispose"), "bank-details-header", messages("ated.bank-details.has-bank-details.header"),
       Some(atedErrorSummary(bankDetailsForm, "ated.bank-details.error-key")))

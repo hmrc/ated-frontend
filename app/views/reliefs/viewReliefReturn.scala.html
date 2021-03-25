@@ -26,15 +26,8 @@
 @import views.html.helpers.error._
 @import _root_.utils._
 
-@analyticsJs = {
-  var id = "@formBundleNumber";
-  var page = document.location.pathname.replace('/' + id, '');
-  ga('set', 'page', page);
-}
-
 @atedMain(title = messages("ated.view-relief-return.title"),
-          serviceInfoContent = serviceInfoContent,
-          analyticsAdditionalJs = Some(analyticsJs)) {
+          serviceInfoContent = serviceInfoContent) {
 
   @pageHeadersAndError(backLink, "relief-return-subheader", organisationName.getOrElse(""), "relief-return-header", messages("ated.view-relief-return.header"))
 

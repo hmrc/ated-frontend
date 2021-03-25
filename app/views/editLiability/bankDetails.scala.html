@@ -19,7 +19,9 @@
 @import play.twirl.api.HtmlFormat
 
 @this(atedMain: atedMain)
-@(bankDetailsForm: Form[BankDetails], oldFormBundleNo: String, serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authorisedRequest: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
+@(bankDetailsForm: Form[BankDetails], oldFormBundleNo: String, serviceInfoContent: Html = HtmlFormat.empty,
+        backLink: Option[String])(implicit authorisedRequest: StandardAuthRetrievals, messages: Messages,
+        request: Request[AnyContent], appConfig: ApplicationConfig)
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
 
@@ -29,28 +31,21 @@
   <script src='@controllers.routes.Assets.versioned("javascript/bankDetails.js")'></script>
   <script src='@controllers.routes.Assets.versioned("javascript/show-hide-content.js")'></script>
   <script>
-    $(document).ready(function() {
-      // Where .multiple-choice uses the data-target attribute
-      // to toggle hidden content
-      var showHideContent = new GOVUK.ShowHideContent()
-      showHideContent.init()
-    });
+          $(document).ready(function () {
+            // Where .multiple-choice uses the data-target attribute
+            // to toggle hidden content
+            var showHideContent = new GOVUK.ShowHideContent()
+            showHideContent.init()
+          });
   </script>
-}
-
-@analyticsJs = {
-  var id = "@oldFormBundleNo";
-  var page = document.location.pathname.replace('/' + id, '');
-  ga('set', 'page', page);
 }
 
 @atedMain(title = messages("ated.bank-details.title"),
           pageScripts = Some(pageScripts),
-          serviceInfoContent = serviceInfoContent,
-          analyticsAdditionalJs = Some(analyticsJs)) {
+          serviceInfoContent = serviceInfoContent) {
 
-  @pageHeadersAndError(backLink, "pre-heading", messages("ated.property-details.pre-header-change"), "bank-details-header", messages("ated.bank-details.title"),
-      Some(atedErrorSummary(bankDetailsForm, "ated.bank-details.error-key")))
+  @pageHeadersAndError(backLink, "pre-heading", messages("ated.property-details.pre-header-change"), "bank-details-header",
+      messages("ated.bank-details.title"), Some(atedErrorSummary(bankDetailsForm, "ated.bank-details.error-key")))
 
   @form(action=controllers.editLiability.routes.BankDetailsController.save(oldFormBundleNo)) {
 

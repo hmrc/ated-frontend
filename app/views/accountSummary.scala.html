@@ -21,14 +21,10 @@
 
 @this(atedMain: atedMain)
 @(returnsCurrentTaxYear: Seq[AccountSummaryRowModel], totalCurrentYearReturns: Int, hasPastReturns: Boolean,
-        otherReturns: SummaryReturnsModel, correspondence: Option[Address], organisationName: Option[String], serviceInfoContent: Html = HtmlFormat.empty, clientBanner: Html,
-        duringPeak: Boolean, currentYear: Int, taxYearStartingYear: Int, fromAccountSummary: Boolean)(implicit authContext: StandardAuthRetrievals,
+        otherReturns: SummaryReturnsModel, correspondence: Option[Address], organisationName: Option[String],
+        serviceInfoContent: Html = HtmlFormat.empty, clientBanner: Html, duringPeak: Boolean, currentYear: Int,
+        taxYearStartingYear: Int, fromAccountSummary: Boolean)(implicit authContext: StandardAuthRetrievals,
         messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig, applicationConfig: config.AppConfig)
-
-@analyticsJs = {
-    ga('set', 'page', document.location.pathname);
-    ga('set', 'location', document.URL.split("?")[0]);
-}
 
 @pageScripts = {
     <script src='@controllers.routes.Assets.versioned("javascript/accountSummary.js")'></script>
@@ -41,7 +37,6 @@
     sidebarClass = Some("related"),
     serviceInfoContent = serviceInfoContent,
     banner = clientBanner,
-    analyticsAdditionalJs = Some(analyticsJs),
     showUrBanner = Some(true)
 ) {
 
@@ -63,11 +58,13 @@
         }
 
         <div>
-            <a class="button" id="create-return-0" data-journey-click="ated-frontend:click:create-return-current-year"
+            <a class="button" id="create-return-0"
             href="@controllers.routes.PeriodSummaryController.createReturn(taxYearStartingYear, fromAccountSummary)">
-                @messages("ated.account-summary.create-new-return",
+                @messages(
+                    "ated.account-summary.create-new-return",
                     taxYearStartingYear.toString,
-                    (taxYearStartingYear+1).toString)
+                    (taxYearStartingYear+1).toString
+                )
             </a>
         </div>
 
@@ -76,7 +73,9 @@
         @if(returnsCurrentTaxYear.nonEmpty) {
             <br />
             <h2 class="heading-medium">@messages("ated.account-summary.current-year-returns")</h2>
-            <div class="govuk-hint">@messages("ated.account-summary.showing", returnsCurrentTaxYear.size, totalCurrentYearReturns)</div>
+            <div class="govuk-hint">
+              @messages("ated.account-summary.showing", returnsCurrentTaxYear.size, totalCurrentYearReturns)
+            </div>
             <dl class="govuk-summary-list govuk-!-margin-bottom-9">
                 @returnsCurrentTaxYear.map { rtn =>
                     @accountSummaryRow(
@@ -89,16 +88,18 @@
             </dl>
 
             @if(totalCurrentYearReturns > 5 || hasPastReturns) {
-                <a id="view-all-returns" href="@controllers.routes.PeriodSummaryController.view(taxYearStartingYear)">@messages("ated.account-summary.view-all",
-                    taxYearStartingYear.toString,
-                    (taxYearStartingYear + 1).toString)
+                <a id="view-all-returns" href="@controllers.routes.PeriodSummaryController.view(taxYearStartingYear)">
+                  @messages(
+                      "ated.account-summary.view-all", taxYearStartingYear.toString, (taxYearStartingYear + 1).toString
+                  )
                 </a>
             }
 
         }
 
         <div>
-            <a class="button" id="create-return-1" href="@controllers.routes.PeriodSummaryController.createReturn(taxYearStartingYear, fromAccountSummary)">
+            <a class="button" id="create-return-1"
+            href="@controllers.routes.PeriodSummaryController.createReturn(taxYearStartingYear, fromAccountSummary)">
                 @messages("ated.account-summary.create-new-return",
                     taxYearStartingYear.toString,
                     (taxYearStartingYear+1).toString)

@@ -25,11 +25,6 @@
 
 @incomplete = {@Html("<span class=\"status\">" + messages("ated.label.incomplete") + "</span>")}
 
-@analyticsJs = {
-  ga('set', 'page', document.location.pathname.replace(/[0-9]/g ,'').replace(/\/\//g, '/'));
-  ga('set', 'location', document.URL.split("?")[0]);
-}
-
 @propertyDetailsAddress = {
   <span id="address-line-1">@messages(disposeLiability.formBundleReturn.propertyDetails.address.addressLine1)</span><br>
   <span id="address-line-2">@messages(disposeLiability.formBundleReturn.propertyDetails.address.addressLine2)</span><br>
@@ -47,13 +42,13 @@
 }
 
 @disposeLiabilityDateEdit = {
-  <a href="@controllers.editLiability.routes.DisposePropertyController.editFromSummary(disposeLiability.id.toString)"   id="edit-property-disposal-date" data-journey-click="ated-frontend:click:edit-property-disposal-date">
+  <a href="@controllers.editLiability.routes.DisposePropertyController.editFromSummary(disposeLiability.id.toString)" id="edit-property-disposal-date">
     @messages("ated.edit") <span class="visuallyhidden">@messages("ated.dispose-property.summary.disposal-date-label")</span>
   </a>
 }
 
 @bankDetailsTypeOfAccountEdit = {
-<a href="@controllers.editLiability.routes.DisposeLiabilityBankDetailsController.editFromSummary(disposeLiability.id.toString)" id="edit-bank-details-type" data-journey-click="ated-frontend:click:edit-bank-details"> @messages("ated.edit")
+<a href="@controllers.editLiability.routes.DisposeLiabilityBankDetailsController.editFromSummary(disposeLiability.id.toString)" id="edit-bank-details-type"> @messages("ated.edit")
   <span class="visuallyhidden">@messages("ated.edit-liability.summary.bank-details.type-of-account")</span>
 </a>
 }
@@ -63,7 +58,7 @@
 }
 
 @bankDetailsAccountNameEdit = {
-<a href="@controllers.editLiability.routes.DisposeLiabilityBankDetailsController.editFromSummary(disposeLiability.id.toString)" id="edit-bank-details-account-name" data-journey-click="ated-frontend:click:edit-bank-details"> @messages("ated.edit")
+<a href="@controllers.editLiability.routes.DisposeLiabilityBankDetailsController.editFromSummary(disposeLiability.id.toString)" id="edit-bank-details-account-name"> @messages("ated.edit")
   <span class="visuallyhidden">@messages("ated.edit-liability.summary.bank-details.account-holder-name")</span>
 </a>
 }
@@ -73,7 +68,7 @@
 }
 
 @bankDetailsAccountNumberEdit = {
-<a href="@controllers.editLiability.routes.DisposeLiabilityBankDetailsController.editFromSummary(disposeLiability.id.toString)" id="edit-bank-details-account" data-journey-click="ated-frontend:click:edit-bank-details"> @messages("ated.edit")
+<a href="@controllers.editLiability.routes.DisposeLiabilityBankDetailsController.editFromSummary(disposeLiability.id.toString)" id="edit-bank-details-account"> @messages("ated.edit")
   <span class="visuallyhidden">@messages("ated.edit-liability.summary.bank-details.account-number")</span>
 </a>
 }
@@ -83,7 +78,7 @@
 }
 
 @bankDetailsAccountSortCodeEdit = {
-<a href="@controllers.editLiability.routes.DisposeLiabilityBankDetailsController.editFromSummary(disposeLiability.id.toString)" id="edit-bank-details-sortcode" data-journey-click="ated-frontend:click:edit-bank-details"> @messages("ated.edit")
+<a href="@controllers.editLiability.routes.DisposeLiabilityBankDetailsController.editFromSummary(disposeLiability.id.toString)" id="edit-bank-details-sortcode"> @messages("ated.edit")
     <span class="visuallyhidden">@messages("ated.edit-liability.summary.bank-details.sort-code")</span>
 </a>
 }
@@ -93,7 +88,7 @@
 }
 
 @bankDetailsAccountNumberIBANEdit = {
-<a href="@controllers.editLiability.routes.DisposeLiabilityBankDetailsController.editFromSummary(disposeLiability.id.toString)" id="edit-bank-details-iban" data-journey-click="ated-frontend:click:edit-bank-details"> @messages("ated.edit")
+<a href="@controllers.editLiability.routes.DisposeLiabilityBankDetailsController.editFromSummary(disposeLiability.id.toString)" id="edit-bank-details-iban"> @messages("ated.edit")
   <span class="visuallyhidden">@messages("ated.edit-liability.summary.bank-details.iban")</span>
 </a>
 }
@@ -103,20 +98,18 @@
 }
 
 @bankDetailsAccountSwiftCodeEdit = {
-<a href="@controllers.editLiability.routes.DisposeLiabilityBankDetailsController.editFromSummary(disposeLiability.id.toString)" id="edit-bank-details-swift-code" data-journey-click="ated-frontend:click:edit-bank-details"> @messages("ated.edit")
+<a href="@controllers.editLiability.routes.DisposeLiabilityBankDetailsController.editFromSummary(disposeLiability.id.toString)" id="edit-bank-details-swift-code"> @messages("ated.edit")
   <span class="visuallyhidden">@messages("ated.edit-liability.summary.bank-details.bic-swift-code")</span>
 </a>
 }
 
 @bankDetailsIncompleteEdit = {
-<a href="@controllers.editLiability.routes.DisposeLiabilityHasBankDetailsController.editFromSummary(disposeLiability.id.toString)" id="edit-bank-name-details" data-journey-click="ated-frontend:click:edit-bank-details"> @messages("ated.edit")
+<a href="@controllers.editLiability.routes.DisposeLiabilityHasBankDetailsController.editFromSummary(disposeLiability.id.toString)" id="edit-bank-name-details"> @messages("ated.edit")
   <span class="visuallyhidden">@messages("ated.edit-liability.summary.bank-details.supply-bank-details")</span>
 </a>
 }
 
-@atedMain(title = messages("ated.property-details-summary.title"),
-          serviceInfoContent = serviceInfoContent,
-          analyticsAdditionalJs = Some(analyticsJs)) {
+@atedMain(title = messages("ated.property-details-summary.title"), serviceInfoContent = serviceInfoContent) {
 
   @pageHeadersAndError(backLink, "pre-heading", messages("ated.property-details.pre-header-dispose"), "edit-liability-summary-header", messages("ated.property-details-summary.header"))
 

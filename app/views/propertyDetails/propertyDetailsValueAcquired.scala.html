@@ -43,16 +43,10 @@ Some(propertyDetailsForm)
   </script>
 }
 
-@analyticsJs = {
-var id = "@id";
-var page = document.location.pathname.replace('/' + id, '');
-ga('set', 'page', page);
-}
 
 @atedMain(title = messages("ated.property-details-value.valueAcquired.title", date.dayOfMonth().get().toString, intToMonth(date.monthOfYear().get()), date.year().get().toString),
 serviceInfoContent = serviceInfoContent,
-pageScripts = Some(pageScripts),
-analyticsAdditionalJs = Some(analyticsJs)) {
+pageScripts = Some(pageScripts)) {
 
 @pageHeadersAndError(backLink, "pre-heading", messages(AtedUtils.getPropertyDetailsPreHeader(mode)), messages("property-details-header"), messages("ated.property-details-value.valueAcquired.header", date.dayOfMonth().get().toString, intToMonth(date.monthOfYear().get()), date.year().get().toString),
 Some(atedErrorWithBoundarySummary(propertyDetailsForm, "ated.property-details-value-error.general", None, periodKey)))

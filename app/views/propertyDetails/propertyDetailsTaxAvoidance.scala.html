@@ -30,23 +30,17 @@
 <script src='@controllers.routes.Assets.versioned("javascript/propertyDetailsTaxAvoidance.js")'></script>
 }
 
-@analyticsJs = {
-  var id = "@id";
-  var page = document.location.pathname.replace('/' + id, '');
-  ga('set', 'page', page);
-}
 
 @atedMain(title = messages("ated.property-details-period.isTaxAvoidance.title"),
           pageScripts = Some(pageScripts),
-          serviceInfoContent = serviceInfoContent,
-          analyticsAdditionalJs = Some(analyticsJs)) {
+          serviceInfoContent = serviceInfoContent) {
 
   @pageHeadersAndError(backLink, "pre-heading", messages(AtedUtils.getPropertyDetailsPreHeader(mode)), "property-details-header", messages("ated.property-details-period.isTaxAvoidance.header"),
       Some(atedErrorSummary(propertyDetailsForm, "ated.property-details-period-error.general")))
 
   <div id="whatIsTaxAvoidanceScheme">
     <details>
-      <summary aria-controls="whatIsTaxAvoidanceScheme-0" tabindex="0" class="summary font-small" id="whatIsTaxAvoidanceSchemeQuestion" data-journey-click="accordion - click:@messages("ated.property-details-period.isTaxAvoidance.title"):@messages("ated.choose-reliefs.avoidance-question")">
+      <summary aria-controls="whatIsTaxAvoidanceScheme-0" tabindex="0" class="summary font-small" id="whatIsTaxAvoidanceSchemeQuestion">
         @messages("ated.choose-reliefs.avoidance-question")
       </summary>
       <div id="whatIsTaxAvoidanceScheme-0" class="panel-indent font-xsmall">

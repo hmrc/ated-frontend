@@ -27,13 +27,8 @@
     backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages,
     request: Request[AnyContent], appConfig: ApplicationConfig)
 
-@analyticsJs = {
-    ga('set', 'page', document.location.pathname);
-    ga('set', 'location', document.URL.split("?")[0]);
-}
-
 @atedMain(title = messages("ated.period-summary.title", periodStartDate(periodKey).getYear.toString,
-    periodEndDate(periodKey).getYear.toString), serviceInfoContent = serviceInfoContent, analyticsAdditionalJs = Some(analyticsJs)){
+    periodEndDate(periodKey).getYear.toString), serviceInfoContent = serviceInfoContent){
 
     @pageHeadersAndError(backLink, "period-summary-subheader", organisationName.getOrElse(""), "period-summary-header",
         messages("ated.period-summary.header", periodStartDate(periodKey).toString(messages("ated.date-format.summary")),
@@ -42,7 +37,7 @@
     <div class="form-group">
         <ul class="ated-tabs" role="tablist">
             <li id="current-returns" class="heading-small" role="tab">
-                <a href="@controllers.routes.PeriodSummaryController.view(periodKey)" id="current-returns-link" data-journey-click="ated:click:current-returns">
+                <a href="@controllers.routes.PeriodSummaryController.view(periodKey)" id="current-returns-link">
                     @messages("ated.period-summary.tabs.current-returns")
                 </a>
             </li>
@@ -73,14 +68,12 @@
                             <div id="liability-submitted-@t._2">
                                 @if(t._1.changeAllowed) {
                                     <a href='@controllers.routes.FormBundleReturnController.view(t._1.formBundleNo, periodKey)'
-                                    data-journey-click="ated-frontend:click:liability-submitted"
                                     aria-label="@messages("ated.period-summary.view-edit.button") @messages(
                                         "ated.period-summary.sr.return") @t._1.description">
                                         @messages("ated.period-summary.view-edit.button")
                                     </a>
                                 } else {
                                     <a href='@controllers.routes.FormBundleReturnController.view(t._1.formBundleNo, periodKey)'
-                                    data-journey-click="ated-frontend:click:liability-submitted"
                                     aria-label="@messages("ated.period-summary.view.button") @messages(
                                     "ated.period-summary.sr.return") @t._1.description">
                                         @messages("ated.period-summary.view.button")
@@ -106,7 +99,6 @@
 
                         <div class="grid grid-1-4 psp-action">
                             <a id="relief-submitted-@t._2" href='@controllers.reliefs.routes.ViewReliefReturnController.viewReliefReturn(periodKey, t._1.formBundleNo)'
-                            data-journey-click="ated-frontend:click:liability-submitted"
                             aria-label="@messages("ated.period-summary.view-edit.button") @messages(
                                 "ated.period-summary.sr.return") @t._1.reliefType">
                             @messages("ated.period-summary.view.button")

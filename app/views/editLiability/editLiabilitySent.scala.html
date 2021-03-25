@@ -21,14 +21,7 @@
 
 @import views.html.helpers._
 
-@analyticsJs = {
-  var id = "@formBundleNum";
-  var page = document.location.pathname.replace('/' + id, '');
-  ga('set', 'page', page);
-}
-
-@atedMain(title = messages(returnTitleMessage),
-          analyticsAdditionalJs = Some(analyticsJs)) {
+@atedMain(title = messages(returnTitleMessage)) {
 
   <div id="banner" class="transaction-banner--complete">
       <h1 id="header">@messages(returnHeaderMessage)</h1>
@@ -37,7 +30,7 @@
   <p id="view-message">@messages("ated.edit-liabilty.sent.view-message")</p>
   <p id="email-message">@messages("ated.edit-liabilty.sent.receipt-message")</p>
 
-  <p><a href="@controllers.editLiability.routes.EditLiabilitySentController.viewPrintFriendlyEditLiabilitySent(formBundleNum)" class="print-link" id="print-friendly-edit-liability-link" data-journey-click="ated-fronted:click:print-friendly-edit-liability-link" target="_blank">
+  <p><a href="@controllers.editLiability.routes.EditLiabilitySentController.viewPrintFriendlyEditLiabilitySent(formBundleNum)" class="print-link" id="print-friendly-edit-liability-link" target="_blank">
       @messages("ated.reliefs-sent.print-link")
     </a>
   </p>
@@ -102,6 +95,6 @@
 
     <p id="view-balance">@messages("ated.edit-liabilty.sent.view-balance")</p>
 
-    <a href="@controllers.routes.AccountSummaryController.view()" id="submit" class="button margin-top-default" data-journey-click="button - click:@messages(returnTitleMessage):@messages("ated.edit.liability.sent.button")"> @messages("ated.edit.liability.sent.button") </a>
+    <a href="@controllers.routes.AccountSummaryController.view()" id="submit" class="button margin-top-default"> @messages("ated.edit.liability.sent.button") </a>
 
 }

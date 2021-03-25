@@ -43,21 +43,24 @@
             }
 
             @correspondence.map { _ =>
-                <p><a href="@controllers.subscriptionData.routes.CompanyDetailsController.view" id="change-details-link" data-journey-click="link - click:@messages("ated.your-ated-online-service"):@messages("ated.summary-return.company-details.link")">@messages("ated.summary-return.company-details.link")</a></p>
+                <p>
+                    <a href="@controllers.subscriptionData.routes.CompanyDetailsController.view" id="change-details-link">
+                        @messages("ated.summary-return.company-details.link")
+                    </a>
+                </p>
             }
 
             @if(authContext.delegationModel.isEmpty && clientBanner == HtmlFormat.empty) {
                 <p id="sidebar.appoint">
-                    <a id="appoint-agent" href="@appConfig.clientApproveAgentMandate" data-journey-click="link - click:@messages("ated.your-ated-online-service"):@messages("ated.account-summary.appoint-agent.text")">
-                    @messages("ated.account-summary.appoint-agent.text")
+                    <a id="appoint-agent" href="@appConfig.clientApproveAgentMandate">
+                        @messages("ated.account-summary.appoint-agent.text")
                     </a>
                 </p>
             }
 
             <p>
-                <a id="create-return-other" href="@controllers.routes.PrevPeriodsSummaryController.view"
-                data-journey-click="ated-fronted:click:create-return-other-years">
-                @messages("ated.account-summary.create-return-other.link")
+                <a id="create-return-other" href="@controllers.routes.PrevPeriodsSummaryController.view">
+                   @messages("ated.account-summary.create-return-other.link")
                 </a>
             </p>
 

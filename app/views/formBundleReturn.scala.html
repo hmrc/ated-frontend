@@ -38,16 +38,9 @@
 <script src='@controllers.routes.Assets.versioned("javascript/formBundleReturn.js")'></script>
 }
 
-@analyticsJs = {
-  var id = "@formBundleNumber";
-  var page = document.location.pathname.replace('/' + id, '');
-  ga('set', 'page', page);
-}
-
 @atedMain(title = messages("ated.form-bundle.title"),
           pageScripts = Some(pageScripts),
-          serviceInfoContent = serviceInfoContent,
-          analyticsAdditionalJs = Some(analyticsJs)) {
+          serviceInfoContent = serviceInfoContent) {
 
   @pageHeadersAndError(backLink, "form-bundle-subheader", organisationName.getOrElse(""), "form-bundle-header", messages("ated.form-bundle.header"), subHeaderPrefix = Some(messages("ated.screen-reader.section-name")))
 

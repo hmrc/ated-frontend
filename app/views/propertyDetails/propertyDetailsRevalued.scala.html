@@ -41,16 +41,10 @@
   </script>
 }
 
-@analyticsJs = {
-  var id = "@id";
-  var page = document.location.pathname.replace('/' + id, '');
-  ga('set', 'page', page);
-}
 
 @atedMain(title = messages("ated.property-details-value.isPropertyRevalued.title"),
           serviceInfoContent = serviceInfoContent,
-          pageScripts = Some(pageScripts),
-          analyticsAdditionalJs = Some(analyticsJs)) {
+          pageScripts = Some(pageScripts)) {
 
   @pageHeadersAndError(backLink, "pre-heading", messages(AtedUtils.getPropertyDetailsPreHeader(mode)), "property-details-header", messages("ated.property-details-value.isPropertyRevalued.header"),
       Some(atedErrorSummary(propertyDetailsForm, "ated.property-details-value-error.general")))
@@ -122,8 +116,8 @@
 
       </div>
 
-     <p id="back-to-ated"><a class="button " id="back-to-ated-link" href="@controllers.routes.AccountSummaryController.view()" data-journey-click="button - click:@messages("ated.property-details-value.isPropertyRevalued.title"):@messages("ated.company-details.back")">@messages("ated.company-details.back")</a></p>
-     <button class="button" id="submit" type="submit" data-journey-click="button - click:@messages("ated.property-details-value.isPropertyRevalued.title"):@messages("ated.save-and-continue")">@messages("ated.save-and-continue")</button>
+     <p id="back-to-ated"><a class="button " id="back-to-ated-link" href="@controllers.routes.AccountSummaryController.view()">@messages("ated.company-details.back")</a></p>
+     <button class="button" id="submit" type="submit">@messages("ated.save-and-continue")</button>
 
   }
 

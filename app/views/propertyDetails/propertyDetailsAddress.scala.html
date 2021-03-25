@@ -40,12 +40,6 @@ case _ => oldFormBundleNo.getOrElse("")
 }
 }
 
-@analyticsJs = {
-  var id = "@idAppearing";
-  var page = document.location.pathname.replace('/' + id, '');
-  ga('set', 'page', page);
-}
-
     @pageTitle = @{
         if(fromConfirmAddressPage) {
             messages("ated.property-details.editAddress")
@@ -55,8 +49,7 @@ case _ => oldFormBundleNo.getOrElse("")
     }
 
     @atedMain(title = pageTitle,
-        serviceInfoContent = serviceInfoContent,
-        analyticsAdditionalJs = Some(analyticsJs)) {
+        serviceInfoContent = serviceInfoContent) {
 
             @pageHeadersAndError(backLink, messages("pre-heading"), messages(AtedUtils.getPropertyDetailsPreHeader(mode)), "property-details-header", pageTitle,
                 Some(atedErrorSummary(propertyDetailsForm, "ated.property-details-address-error.general")))
@@ -102,7 +95,6 @@ case _ => oldFormBundleNo.getOrElse("")
                 <div class="form-group">
                     <a href="@controllers.propertyDetails.routes.PropertyDetailsAddressController.addressLookupRedirect(id, periodKey, mode)"
                     id="lookup-address-link"
-                    data-journey-click="ated-fronted:click:lookup-address"
                     aria-label='@messages("ated.property-details.property-address.lookup.title")'>@messages("ated.property-details.property-address.lookup.title")</a>
                 </div>
             }

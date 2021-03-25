@@ -23,14 +23,8 @@
 @this(atedMain: atedMain)
 @(periodKey: Int, returnType: String, addressResultsForm: Form[AddressSelected], prevReturns: Seq[PreviousReturns], serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
-@analyticsJs = {
-  ga('set', 'page', document.location.pathname);
-  ga('set', 'location', document.URL.split("?")[0]);
-}
-
 @atedMain(title = messages("ated.select-past-return.title"),
-          serviceInfoContent = serviceInfoContent,
-          analyticsAdditionalJs = Some(analyticsJs)) {
+          serviceInfoContent = serviceInfoContent) {
 
 @pageHeadersAndError(backLink, "pre-header", messages("ated.return-type.pre-header"), "header", messages("ated.select-past-return.header"),
     Some(atedErrorSummary(addressResultsForm, "ated.select-past-return.general")))
@@ -46,7 +40,7 @@
           '_trackGA -> true
         )
           <details>
-              <summary id="titleNumber-reveal" class="summary" data-journey-click="accordion - click:@messages("ated.select-past-return.header"):@messages("ated.select-past-return.reveal")">
+              <summary id="titleNumber-reveal" class="summary">
               @messages("ated.select-past-return.reveal")
               </summary>
               <div class="panel-indent">

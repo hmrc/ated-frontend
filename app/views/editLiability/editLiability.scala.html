@@ -27,15 +27,7 @@
     Some(editLiabilityReturnTypeForm)
 }
 
-@analyticsJs = {
-    var id = "@oldFormBundleNo";
-    var page = document.location.pathname.replace('/' + id, '');
-    ga('set', 'page', page);
-}
-
-@atedMain(title = messages("ated.edit-liability.title"),
-    serviceInfoContent = serviceInfoContent,
-    analyticsAdditionalJs = Some(analyticsJs)) {
+@atedMain(title = messages("ated.edit-liability.title"), serviceInfoContent = serviceInfoContent) {
 
     @if(editAllowed) {
         @pageHeadersAndError(backLink, "pre-heading", messages("ated.edit-liability.change-return.header"), messages("edit-liability-header"), messages("ated.edit-liability.header"),

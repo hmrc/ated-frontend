@@ -23,15 +23,9 @@
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
 
-@analyticsJs = {
-  var id = "@id";
-  var page = document.location.pathname.replace('/' + id, '');
-  ga('set', 'page', page);
-}
 
 @atedMain(title = messages("ated.chargeable-return-declaration.title"),
-          serviceInfoContent = serviceInfoContent,
-          analyticsAdditionalJs = Some(analyticsJs)) {
+          serviceInfoContent = serviceInfoContent) {
 
   @pageHeadersAndError(backLink, "pre-heading", messages("ated.property-details.pre-header"), "chargeable-return-confirmation-header", messages("ated.chargeable-return-declaration.header"))
 

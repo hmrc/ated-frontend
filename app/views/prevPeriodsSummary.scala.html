@@ -26,11 +26,6 @@
         taxYearStartingYear: Int, backlink: Option[String])(implicit authContext: StandardAuthRetrievals,
         messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
-@analyticsJs = {
-    ga('set', 'page', document.location.pathname);
-    ga('set', 'location', document.URL.split("?")[0]);
-}
-
 @pageScripts = {
     <script src='@controllers.routes.Assets.versioned("javascript/accountSummary.js")'></script>
 }
@@ -44,8 +39,7 @@
     pageScripts = Some(pageScripts),
     sidebarLinks = Some(_accountSummary_sideBar(summaryReturnsWithDrafts.atedBalance, correspondence, organisationName, clientBanner)),
     sidebarClass = Some("related"),
-    serviceInfoContent = serviceInfoContent,
-    analyticsAdditionalJs = Some(analyticsJs)) {
+    serviceInfoContent = serviceInfoContent) {
 
     @if(summaryReturnsWithDrafts.returnsOtherTaxYears.isEmpty) {
         @pageHeadersAndError(backlink,
@@ -88,8 +82,7 @@
             <tr class="govuk-table__row">
                 <td class="govuk-table__cell govuk-table__cell--text">
                     <a href="@controllers.routes.PeriodSummaryController.view(periodSummaryWithDraft.periodKey)"
-                    id="view-change-@i"
-                    data-journey-click="ated-frontend:click:view-change">
+                    id="view-change-@i">
                             Returns for @periodSummaryWithDraft.periodKey to @(periodSummaryWithDraft.periodKey.toInt + 1)
                         <span class="visuallyhidden">
                            @messages("ated.prev-period-summary-screen-reader")
@@ -120,8 +113,7 @@
             <a id="create-return"
             class="button margin-top-default"
             onkeyup='spaceBarHandler(event,"@controllers.routes.SelectPeriodController.view")'
-                href="@controllers.routes.SelectPeriodController.view"
-                data-journey-click="ated-frontend:click:create-return">
+                href="@controllers.routes.SelectPeriodController.view">
                     @messages("ated.prev-period-summary.create-return.link")
             </a>
         </p>
@@ -131,14 +123,13 @@
                 <a id="create-return"
                     class="button margin-top-default"
                     onkeyup='spaceBarHandler(event,"@controllers.routes.SelectPeriodController.view")'
-                    href="@controllers.routes.SelectPeriodController.view"
-                    data-journey-click="ated-frontend:click:create-return">
+                    href="@controllers.routes.SelectPeriodController.view">
                         @messages("ated.prev-period-summary.create-return.button")
                 </a>
             </p>
         } else {
             <div class="form-group">
-                <a class="button margin-top-default" id="create-return" href="@controllers.routes.SelectPeriodController.view" data-journey-click="ated-frontend:click:create-return">
+                <a class="button margin-top-default" id="create-return" href="@controllers.routes.SelectPeriodController.view">
                     @messages("ated.prev-period-summary.create-return.link")
                 </a>
             </div>
