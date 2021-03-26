@@ -31,15 +31,9 @@
   Some(propertyDetailsForm)
 }
 
-@analyticsJs = {
-  var id = "@id";
-  var page = document.location.pathname.replace('/' + id, '');
-  ga('set', 'page', page);
-}
 
 @atedMain(title = messages("ated.property-details-value.isValuedByAgent.title"),
-          serviceInfoContent = serviceInfoContent,
-          analyticsAdditionalJs = Some(analyticsJs)) {
+          serviceInfoContent = serviceInfoContent) {
 
   @pageHeadersAndError(backLink, "pre-heading", messages(AtedUtils.getPropertyDetailsPreHeader(mode)), "property-details-header", messages("ated.property-details-value.isValuedByAgent.header"),
       Some(atedErrorSummary(propertyDetailsForm, "ated.property-details-value-error.general")))
@@ -55,12 +49,11 @@
         '_legendClass -> "visuallyhidden",
         '_groupClass -> "inline",
         '_labelClass -> "block-label",
-        '_labelAfter -> true,
-        '_trackGA -> true
+        '_labelAfter -> true
         )
       </div>
 
-      <button class="button" id="submit" type="submit" data-journey-click="button - click:@messages("ated.property-details-value.isValuedByAgent.title"):@messages("ated.save-and-continue")">@messages("ated.save-and-continue")</button>
+      <button class="button" id="submit" type="submit">@messages("ated.save-and-continue")</button>
 
   }
 

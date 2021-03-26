@@ -22,19 +22,16 @@
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
 @this(atedMain: atedMain)
-@(deleteDraftForm: Form[YesNoQuestion], id: Option[String], periodKey: Int, returnType: String, serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
-
-@analyticsJs = {
-  ga('set', 'page', document.location.pathname);
-  ga('set', 'location', document.URL.split("?")[0]);
-}
+@(deleteDraftForm: Form[YesNoQuestion], id: Option[String], periodKey: Int, returnType: String,
+        serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals,
+        messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
 @atedMain(title = messages("ated.delete-draft.title"),
-          serviceInfoContent = serviceInfoContent,
-          analyticsAdditionalJs = Some(analyticsJs)) {
+          serviceInfoContent = serviceInfoContent) {
 
-@pageHeadersAndError(backLink, "pre-header", messages("ated.return-type.pre-header"), "header", messages("ated.delete-draft.header"),
-Some(atedErrorSummary(deleteDraftForm, "ated.delete-drafts.error.general")))
+    @pageHeadersAndError(backLink, "pre-header", messages("ated.return-type.pre-header"), "header",
+        messages("ated.delete-draft.header"),
+        Some(atedErrorSummary(deleteDraftForm, "ated.delete-drafts.error.general")))
 
     @form(action = controllers.routes.DraftDeleteConfirmationController.submit(id, periodKey, returnType)) {
 
@@ -47,8 +44,7 @@ Some(atedErrorSummary(deleteDraftForm, "ated.delete-drafts.error.general")))
             '_legendClass -> "screen-reader-text",
             '_legend -> messages("ated.delete-draft.header"),
             '_labelClass -> "block-label",
-            '_labelAfter -> true,
-            '_trackGA -> true
+            '_labelAfter -> true
         )
         </div>
 

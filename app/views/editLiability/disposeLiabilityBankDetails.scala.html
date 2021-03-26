@@ -37,16 +37,9 @@
   </script>
 }
 
-@analyticsJs = {
-  var id = "@oldFormBundleNo";
-  var page = document.location.pathname.replace('/' + id, '');
-  ga('set', 'page', page);
-}
-
 @atedMain(title = messages("ated.bank-details.title"),
           pageScripts = Some(pageScripts),
-          serviceInfoContent = serviceInfoContent,
-          analyticsAdditionalJs = Some(analyticsJs)) {
+          serviceInfoContent = serviceInfoContent) {
 
   @pageHeadersAndError(backLink, "pre-heading", messages("ated.property-details.pre-header-dispose"), "bank-details-header", messages("ated.bank-details.header"),
       Some(atedErrorSummary(bankDetailsForm, "ated.bank-details.error-key")))

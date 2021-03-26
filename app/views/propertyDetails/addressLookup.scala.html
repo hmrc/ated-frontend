@@ -23,7 +23,9 @@
         searchForm: Form[AddressLookup],
         mode: Option[String] = None,
         serviceInfoContent: Html = HtmlFormat.empty,
-        backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
+        backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages,
+        request: Request[AnyContent], appConfig: ApplicationConfig)
+
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
 @import _root_.utils._
@@ -34,17 +36,12 @@
 <script src='@controllers.routes.Assets.versioned("javascript/manualAddressEntryLink.js")'></script>
 }
 
-@analyticsJs = {
-  ga('set', 'page', document.location.pathname);
-  ga('set', 'location', document.URL.split("?")[0]);
-}
-
 @atedMain(title = messages("ated.address-lookup.title"),
           pageScripts=Some(pageScripts),
-          serviceInfoContent = serviceInfoContent,
-          analyticsAdditionalJs = Some(analyticsJs)) {
+          serviceInfoContent = serviceInfoContent) {
 
-  @pageHeadersAndError(backLink, "pre-heading", messages(AtedUtils.getPropertyDetailsPreHeader(mode)), "account-lookup-header", messages("ated.address-lookup.header"),
+  @pageHeadersAndError(backLink, "pre-heading", messages(AtedUtils.getPropertyDetailsPreHeader(mode)),
+      "account-lookup-header", messages("ated.address-lookup.header"),
       Some(atedErrorSummary(searchForm, "ated.property-details-address-error.general")))
 
   @form(action=controllers.propertyDetails.routes.AddressLookupController.find(id, periodKey, mode)) {
@@ -70,11 +67,10 @@
     <div class="form-field">
         <a href="@controllers.propertyDetails.routes.AddressLookupController.manualAddressRedirect(id, periodKey, mode)"
            id="enter-address-link"
-           data-journey-click="ated-fronted:click:manual-entry"
            onkeyup='spaceBarHandler(event,"@controllers.propertyDetails.routes.AddressLookupController.manualAddressRedirect(id, periodKey, mode)")'>
             @messages("ated.address-lookup.no-postcode-link.title")</a>
     </div>
 
-    <button class="button" id="submit" type="submit" data-journey-click="button - click:@messages("ated.address-lookup.title"):@messages("ated.address-lookup.find-button")">@messages("ated.address-lookup.find-button")</button>
+    <button class="button" id="submit" type="submit">@messages("ated.address-lookup.find-button")</button>
   }
 }

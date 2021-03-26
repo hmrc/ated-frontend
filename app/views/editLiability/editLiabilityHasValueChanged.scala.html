@@ -27,14 +27,7 @@
   Some(liabilityValueDetailsForm)
 }
 
-@analyticsJs = {
-  var id = "@oldFormBundleNo";
-  var page = document.location.pathname.replace('/' + id, '');
-  ga('set', 'page', page);
-}
-
-@atedMain(title = messages("ated.property-details-value.title"), serviceInfoContent = serviceInfoContent,
-          analyticsAdditionalJs = Some(analyticsJs)) {
+@atedMain(title = messages("ated.property-details-value.title"), serviceInfoContent = serviceInfoContent) {
 
   @pageHeadersAndError(backLink, "pre-heading", messages(getPropertyDetailsPreHeader(mode)), "property-details-header", messages("ated.property-details-value.header"),
       Some(atedErrorSummary(liabilityValueDetailsForm, "ated.change-property-value-error.general")))
@@ -56,8 +49,7 @@
           '_legendClass -> "visuallyhidden",
           '_groupClass -> "inline",
           '_labelClass -> "block-label",
-          '_labelAfter -> true,
-          '_trackGA -> true
+          '_labelAfter -> true
         )
     </div>
 

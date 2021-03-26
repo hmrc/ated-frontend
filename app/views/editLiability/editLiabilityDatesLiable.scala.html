@@ -27,14 +27,7 @@
 
 @implicitFormInstance = @{ Some(propertyDetailsForm) }
 
-@analyticsJs = {
-  var id = "@formBundleNo";
-  var page = document.location.pathname.replace('/' + id, '');
-  ga('set', 'page', page);
-}
-
-@atedMain(title = messages("ated.property-details-period.change-dates-liable.title"), serviceInfoContent = serviceInfoContent,
-          analyticsAdditionalJs = Some(analyticsJs)) {
+@atedMain(title = messages("ated.property-details-period.change-dates-liable.title"), serviceInfoContent = serviceInfoContent) {
 
   @pageHeadersAndError(backLink, "pre-heading", messages("ated.property-details.pre-header-change"), "property-details-header", messages("ated.property-details-period.change-dates-liable.header"),
     Some(atedErrorSummary(propertyDetailsForm, "ated.property-details-period.datesLiable.general.error")))
@@ -67,8 +60,8 @@
       )
     </div>
 
-    <button class="button" id="submit" type="submit" data-journey-click="button - click:@messages("ated.property-details-period.change-dates-liable.title"):@messages("ated.save-and-continue")">
-    @messages("ated.save-and-continue")
+    <button class="button" id="submit" type="submit">
+        @messages("ated.save-and-continue")
     </button>
 
   }

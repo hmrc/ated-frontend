@@ -20,15 +20,8 @@
 @(formBundleNum:String, serviceInfoContent: Html = HtmlFormat.empty, amountDueOrRefund: BigDecimal, liabilityAmount: BigDecimal, paymentReference: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 @import views.html.helpers._
 
-@analyticsJs = {
-  var id = "@formBundleNum";
-  var page = document.location.pathname.replace('/' + id, '');
-  ga('set', 'page', page);
-}
-
 @atedMain(title = messages("ated.edit-liability.sent.title.dispose"),
-          serviceInfoContent = serviceInfoContent,
-          analyticsAdditionalJs = Some(analyticsJs)) {
+          serviceInfoContent = serviceInfoContent) {
 
   <div id="banner" class="transaction-banner--complete">
     <h1 id="header">@messages("ated.edit-liability.sent.header.dispose")</h1>
@@ -38,7 +31,7 @@
   <p id="email-message">@messages("ated.edit-liabilty.sent.receipt-message")</p>
 
   <p>
-    <a href="@controllers.editLiability.routes.DisposeLiabilitySentController.viewPrintFriendlyDisposeLiabilitySent(formBundleNum)" id="print-friendly-edit-liability-link" data-journey-click="ated-fronted:click:print-friendly-edit-liability-link" target="_blank"> @messages("ated.reliefs-sent.print-link")
+    <a href="@controllers.editLiability.routes.DisposeLiabilitySentController.viewPrintFriendlyDisposeLiabilitySent(formBundleNum)" id="print-friendly-edit-liability-link" target="_blank"> @messages("ated.reliefs-sent.print-link")
     </a>
   </p>
 

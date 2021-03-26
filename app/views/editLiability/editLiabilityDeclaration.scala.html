@@ -23,14 +23,7 @@
 @import views.html.helpers._
 @import _root_.utils.AtedUtils._
 
-@analyticsJs = {
-  var id = "@oldFormBundleNum";
-  var page = document.location.pathname.replace('/' + id, '');
-  ga('set', 'page', page);
-}
-
-@atedMain(title = messages(printHeaderMsg(returnType)),
-          analyticsAdditionalJs = Some(analyticsJs)) {
+@atedMain(title = messages(printHeaderMsg(returnType))) {
   @pageHeadersAndError(backLink, "pre-heading", messages("ated.property-details.pre-header-change"), "relief-declaration-confirmation-header", messages(printHeaderMsg(returnType)))
 
   <p id="relief-declaration-before-declaration-text">
@@ -45,7 +38,7 @@
 
   @form(action=controllers.editLiability.routes.EditLiabilityDeclarationController.submit(oldFormBundleNum)) {
 
-      <button class="button" id="submit" type="submit" data-journey-click="button - click:@messages(printHeaderMsg(returnType)):@messages(printSubmitMsg(returnType))">@messages(printSubmitMsg(returnType))</button>
+      <button class="button" id="submit" type="submit">@messages(printSubmitMsg(returnType))</button>
 
   }
 }

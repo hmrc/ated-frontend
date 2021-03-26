@@ -55,7 +55,6 @@
   userLoggedIn: Boolean = false,
   scriptElement: Option[Html] = None,
   linkElement : Option[Html] = None,
-  analyticsJs: Option[Html] = None,
   isUserResearchBannerVisible: Boolean = false
   )(mainContent: Html = HtmlFormat.empty)(implicit messages: Messages, request: Request[AnyContent])
 
@@ -110,8 +109,7 @@
     analyticsHost = "",
     ssoUrl = None,
     scriptElem = scriptElement,
-    gaCalls = None,
-    analyticsAdditionalJs = analyticsJs)
+    gaCalls = None)
 }
 
 @footerTop = {}

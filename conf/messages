@@ -159,7 +159,7 @@ ated.choose-reliefs.info = You can select more than one relief code. A single re
 ated.choose-reliefs.label = Select all reliefs that apply
 
 ated.choose-reliefs.question = What are ATED relief codes?
-ated.choose-reliefs.answer = More detailed information on relief codes can be found on <a href="https://www.tax.service.gov.uk/information/help?helpcategory=shortform&helpid=ATEDReliefCode" data-journey-click="ated-fronted:click:relief-code-link">HMRC help.</a>
+ated.choose-reliefs.answer = More detailed information on relief codes can be found on <a href="https://www.tax.service.gov.uk/information/help?helpcategory=shortform&helpid=ATEDReliefCode">HMRC help.</a>
 
 ated.choose-reliefs.rentalBusiness = Rental businesses
 ated.choose-reliefs.openToPublic = Open to the public
@@ -195,7 +195,7 @@ ated.choose-reliefs.avoidance-reveal-line-1 = HMRC never approves tax avoidance 
 ated.choose-reliefs.avoidance-reveal-line-2 = You will have received your scheme reference number (SRN) and promoter reference number (PRN)
 ated.choose-reliefs.avoidance-info-line-1 = from your scheme provider on form AAG6 Disclosure of avoidance scheme – Notification of scheme reference number
 ated.choose-reliefs.avoidance-info-line-2 = direct from HMRC
-ated.choose-reliefs.avoidance-more-info = <a href="https://www.gov.uk/guidance/disclosure-of-tax-avoidance-schemes-overview" data-journey-click="ated-fronted:click:tax-avoidance-link">More information on tax avoidance schemes</a>
+ated.choose-reliefs.avoidance-more-info = <a href="https://www.gov.uk/guidance/disclosure-of-tax-avoidance-schemes-overview">More information on tax avoidance schemes</a>
 ated.choose-reliefs-further.information.text = We do not need any further information or property details, but you must keep information about them to support your claim to relief.
 
 ated.choose-reliefs.error = You must select at least one relief
@@ -242,7 +242,7 @@ ated.avoidance-schemes.title = Enter your avoidance scheme number
 ated.avoidance-schemes.pre-header = Create return
 ated.avoidance-schemes.header = Enter your avoidance scheme number
 ated.avoidance-schemes.question =  What is an avoidance scheme?
-ated.avoidance-schemes.answer = <p>HMRC never approves tax avoidance schemes. You must tell us if you are using a tax avoidance scheme that falls within the Disclosure of Tax Avoidance Schemes (DOTAS).</p><p>You will have received your scheme reference number (SRN) and promoter reference number (PRN):</p><ul class="bullets"><li>from your scheme provider on form AAG6 Disclosure of avoidance scheme – Notification of scheme reference number</li><li>direct from HMRC</li></ul><p>More information on tax avoidance schemes <a href="www.gov.uk/disclosure-of-tax-avoidance-schemes-overview data-journey-click="ated-fronted:click:tax-avoidance-link"> tax avoidance schemes</a>.</p>
+ated.avoidance-schemes.answer = <p>HMRC never approves tax avoidance schemes. You must tell us if you are using a tax avoidance scheme that falls within the Disclosure of Tax Avoidance Schemes (DOTAS).</p><p>You will have received your scheme reference number (SRN) and promoter reference number (PRN):</p><ul class="bullets"><li>from your scheme provider on form AAG6 Disclosure of avoidance scheme – Notification of scheme reference number</li><li>direct from HMRC</li></ul><p>More information on<a href="www.gov.uk/disclosure-of-tax-avoidance-schemes-overview"> tax avoidance schemes</a>.</p>
 ated.avoidance-schemes.reliefs.text = Reliefs claimed
 ated.avoidance-schemes.avoidance-scheme.header = Avoidance scheme reference number
 ated.avoidance-schemes.avoidance-scheme.text = {0} Avoidance scheme reference number
@@ -374,8 +374,8 @@ ated.prev-period-summary.chargeable = Chargeable return
 ated.prev-period-summary.relief-return = Relief return
 ated.prev-period-summary.sidebar.balance = Your balance
 ated.prev-period-summary.sidebar.correspondence-address = Correspondence Address
-ated.prev-period-summary.sidebar.pay.link = <a id="sidebar.link-text" href="https://www.gov.uk/guidance/pay-annual-tax-on-enveloped-dwellings" data-journey-click="ated-fronted:click:sidebar.link-text">Deadlines and ways to pay</a>
-ated.prev-period-summary.sidebar.owed.link = <a id="sidebar.link-text" href="https://www.gov.uk/guidance/pay-annual-tax-on-enveloped-dwellings" data-journey-click="ated-fronted:click:sidebar.link-text">Ways to be paid</a>
+ated.prev-period-summary.sidebar.pay.link = <a id="sidebar.link-text" href="https://www.gov.uk/guidance/pay-annual-tax-on-enveloped-dwellings">Deadlines and ways to pay</a>
+ated.prev-period-summary.sidebar.owed.link = <a id="sidebar.link-text" href="https://www.gov.uk/guidance/pay-annual-tax-on-enveloped-dwellings">Ways to be paid</a>
 ated.prev-period-summary.sidebar.question = What does this balance include
 ated.prev-period-summary.sidebar.answer = It can include penalties. It does not include any balance you may have from previous paper returns.
 ated.prev-period-summary.no-returns.text = No returns have been created yet
@@ -419,8 +419,8 @@ ated.summary-return.chargeable = Chargeable return
 ated.summary-return.relief-return = Relief return
 ated.summary-return.sidebar.balance = Your balance
 ated.summary-return.sidebar.correspondence-address = Correspondence Address
-ated.summary-return.sidebar.pay.link = <a id="sidebar.link-text" href="https://www.gov.uk/guidance/pay-annual-tax-on-enveloped-dwellings" data-journey-click="ated-fronted:click:sidebar.link-text">Deadlines and ways to pay</a>
-ated.summary-return.sidebar.owed.link = <a id="sidebar.link-text" href="https://www.gov.uk/guidance/pay-annual-tax-on-enveloped-dwellings" data-journey-click="ated-fronted:click:sidebar.link-text">Ways to be paid</a>
+ated.summary-return.sidebar.pay.link = <a id="sidebar.link-text" href="https://www.gov.uk/guidance/pay-annual-tax-on-enveloped-dwellings">Deadlines and ways to pay</a>
+ated.summary-return.sidebar.owed.link = <a id="sidebar.link-text" href="https://www.gov.uk/guidance/pay-annual-tax-on-enveloped-dwellings">Ways to be paid</a>
 ated.summary-return.sidebar.question = What does this balance include
 ated.summary-return.sidebar.answer = It can include penalties. It does not include any balance you may have from previous paper returns.
 ated.account-summary.no-returns.text = No returns have been created yet
@@ -486,7 +486,7 @@ ated.property-details.title.header =  What is the property’s title number? (op
 ated.property-details.address = Address
 ated.property-details.references = You can find the property’s title number on the title deeds for the property.
 ated.property-details-titleNumber.reveal =  I do not know my property’s title number
-ated.property-details-titleNumber-reveal.text = This is a number issued by the Land Registry when land is first registered. If you do not have a copy of the title deeds for the property you can find it by doing a <a href="https://www.gov.uk/search-property-information-land-registry" target="_blank" data-journey-click="external link-click:What is the property’s title number? (optional):Land Registry search">Land Registry search</a>.
+ated.property-details-titleNumber-reveal.text = This is a number issued by the Land Registry when land is first registered. If you do not have a copy of the title deeds for the property you can find it by doing a <a href="https://www.gov.uk/search-property-information-land-registry" target="_blank">Land Registry search</a>.
 ated.property-details-localAuthorityNumber-reveal = I do not know my local authority number
 ated.property-details-localAuthorityNumber.text = <p>Enter the number of the local authority in the area where the lead property is situated. If a property falls between more than one local authority boundary enter the code for either, preferably the authority into whose area most of the property falls.</p><a href="https://www.gov.uk/hmrc-internal-manuals/stamp-duty-land-tax-manual/sdltm62320">Find your local authority number</a>
 ated.property-title.yes = Yes
@@ -790,7 +790,7 @@ ated.property-details-period.isTaxAvoidance.title = Is a tax avoidance scheme be
 ated.property-details-period.isTaxAvoidance.header = Is a tax avoidance scheme being used?
 ated.property-details-period.isTaxAvoidance = Is an avoidance scheme being used?
 ated.property-details-period.isTaxAvoidance.what = What is an avoidance scheme?
-ated.property-details-period.isTaxAvoidance.what.text = <p>HMRC never approves tax avoidance schemes. You must tell us if you are using a tax avoidance scheme that falls within the Disclosure of Tax Avoidance Schemes (DOTAS).</p><p>You will have received your scheme reference number (SRN) and promoter reference number (PRN):</p><ul class="bullets"><li>from your scheme provider on form AAG6 Disclosure of avoidance scheme – Notification of scheme reference number</li><li>direct from HMRC</li></ul><p>More information on tax avoidance schemes <a href="www.gov.uk/disclosure-of-tax-avoidance-schemes-overview data-journey-click="ated-fronted:click:tax-avoidance-link"> tax avoidance schemes</a>.</p>
+ated.property-details-period.isTaxAvoidance.what.text = <p>HMRC never approves tax avoidance schemes. You must tell us if you are using a tax avoidance scheme that falls within the Disclosure of Tax Avoidance Schemes (DOTAS).</p><p>You will have received your scheme reference number (SRN) and promoter reference number (PRN):</p><ul class="bullets"><li>from your scheme provider on form AAG6 Disclosure of avoidance scheme – Notification of scheme reference number</li><li>direct from HMRC</li></ul><p>More information on<a href="www.gov.uk/disclosure-of-tax-avoidance-schemes-overview"> tax avoidance schemes</a>.</p>
 ated.property-details-period.isTaxAvoidance.error-field-name = You must answer the question
 ated.property-details-period.taxAvoidanceScheme = Avoidance scheme reference number
 ated.property-details-period.taxAvoidanceScheme.error.empty = You must enter a valid avoidance scheme reference number
@@ -808,7 +808,7 @@ ated.property-details-period-error.general.taxAvoidancePromoterReference = There
 ated.property-details-period.supportingInfo.title = Do you have any supporting information to add? (optional)
 ated.property-details-period.supportingInfo.header = Do you have any supporting information to add? (optional)
 ated.property-details-period.supportingInfo = Supporting information (optional)
-ated.property-details-period.supportingInfo.hint = See the <a href="https://www.gov.uk/government/publications/stld-annual-tax-on-enveloped-dwellings-ated/annual-tax-on-enveloped-dwellings-returns-guidance#sec5" target="_blank" data-journey-click="external link - click:Do you have any supporting information to add? (optional):guidance for more information">guidance for more information</a>.
+ated.property-details-period.supportingInfo.hint = See the <a href="https://www.gov.uk/government/publications/stld-annual-tax-on-enveloped-dwellings-ated/annual-tax-on-enveloped-dwellings-returns-guidance#sec5" target="_blank">guidance for more information</a>.
 ated.property-details-period-error.supportingInfo = You cannot enter more than 200 characters in supporting information
 ated.property-details-period-error.supportingInfo.invalid = You cannot enter special characters. For example £, or @.
 ated.property-details-period-error.general.supportingInfo = There is a problem with your supporting information
@@ -824,7 +824,7 @@ ated.chargeable-return-confirmation.amount.message = This amount does not reflec
 ated.chargeable-return-confirmation.owe.text = The charges for this return are £{0}.
 ated.chargeable-return-confirmation.reference.text = The reference to make this payment is {0}.
 
-ated.chargeable-return-late-payment.text = Late payment penalties can be issued when ATED is unpaid. Find out about <a href="https://www.gov.uk/guidance/pay-annual-tax-on-enveloped-dwellings" data-journey-click="ated-fronted:click:late-penalties-link">how to pay and payment deadlines</a>.
+ated.chargeable-return-late-payment.text = Late payment penalties can be issued when ATED is unpaid. Find out about <a href="https://www.gov.uk/guidance/pay-annual-tax-on-enveloped-dwellings">how to pay and payment deadlines</a>.
 ated.chargeable-return-late-payment-pf.text = Late payment penalties can be issued when ATED is unpaid. Find out about how to pay and payment deadlines at https://www.gov.uk/guidance/pay-annual-tax-on-enveloped-dwellings .
 
 ated.chargeable-return-confirmation.submitted.text = Your return has been successfully submitted
@@ -968,7 +968,7 @@ ated.contact-email.error = Email address is not valid
 # this is error thrown for save failure
 ated.contact-details.error.general.addressType = Something has gone wrong, try again later.
 ated.contact-details.email.risk.help.text = What are the risks of email and why we need your consent
-ated.contact-details.email.risk.help.answer = <p>HMRC may need to send information to you by email. Any emails from HMRC are not secure and any information you send to us by email is at your own risk. In order for us to send emails to you, you must confirm (for yourself or by your agent) that you are happy with this and that you understand the risks of sending information containing your personal details by email.</p><p>Please note: If a response contains any confidential information, we will only reply by letter or telephone. Letters may lead to delays in dealing with enquiries. If you think you have been sent a suspicious email, do not follow any links within the email or disclose any personal details. Forward any suspicious emails to <a href="mailto:phishing@hmrc.gsi.gov.uk" data-journey-click="ated-subscription:email-phishing">phishing@hmrc.gsi.gov.uk</a></p>
+ated.contact-details.email.risk.help.answer = <p>HMRC may need to send information to you by email. Any emails from HMRC are not secure and any information you send to us by email is at your own risk. In order for us to send emails to you, you must confirm (for yourself or by your agent) that you are happy with this and that you understand the risks of sending information containing your personal details by email.</p><p>Please note: If a response contains any confidential information, we will only reply by letter or telephone. Letters may lead to delays in dealing with enquiries. If you think you have been sent a suspicious email, do not follow any links within the email or disclose any personal details. Forward any suspicious emails to <a href="mailto:phishing@hmrc.gsi.gov.uk">phishing@hmrc.gsi.gov.uk</a></p>
 
 ##### EDIT CONTACT EMAIL
 
@@ -1299,7 +1299,7 @@ ated.edit-liabilty.sent.view-message = You can view your completed returns, over
 ated.edit-liabilty.sent.receipt-message = You will not receive an email confirmation.
 ated.edit-liabilty.sent.charges-heading = Charges for this return
 ated.edit-liabilty.sent.new-amount = Your new adjusted amount does not reflect any payments you have already made or penalties that have been issued.
-ated.edit-liabilty.sent.late-payment = Late payment penalties can be issued when ATED is unpaid. Find out about <a href="https://www.gov.uk/guidance/pay-annual-tax-on-enveloped-dwellings" data-journey-click="ated-fronted:click:late-penalties-link">how to pay and payment deadlines.</a>
+ated.edit-liabilty.sent.late-payment = Late payment penalties can be issued when ATED is unpaid. Find out about <a href="https://www.gov.uk/guidance/pay-annual-tax-on-enveloped-dwellings">how to pay and payment deadlines.</a>
 ated.edit-liabilty.sent.late-payment-pf = Late payment penalties can be issued when ATED is unpaid. Find out about at https://www.gov.uk/guidance/pay-annual-tax-on-enveloped-dwellings how to pay and payment deadlines.
 
 ated.edit-liabilty.sent.view-balance = You can view your balance in your ATED online service. There can be a 24-hour delay before you see any updates.
@@ -1318,7 +1318,7 @@ ated.edit-liability.sent.title.dispose = Your amended return has been successful
 ated.edit-liability.sent.header.date = on the
 ated.edit-liability.sent.header.amend = Your amended return has been successfully submitted
 ated.edit-liability.sent.title.amend = Your amended return has been successfully submitted - Annual Tax on enveloped dwellings
-ated.edit.liability.sent.liable-for = If you have sold the property you may be liable for <a href="https://www.gov.uk/guidance/capital-gains-tax-on-high-value-residential-property" data-journey-click="ated-fronted:click:capatial-gains-link">ATED-related Capital Gains Tax</a>.
+ated.edit.liability.sent.liable-for = If you have sold the property you may be liable for <a href="https://www.gov.uk/guidance/capital-gains-tax-on-high-value-residential-property">ATED-related Capital Gains Tax</a>.
 ated.edit.liability.sent.liable-for-pf = If you have sold the property you may be liable for ATED-related Capital Gains Tax
 
 ated.edit.liability.sent.owe-you = HMRC owe you {0} for this amended return.

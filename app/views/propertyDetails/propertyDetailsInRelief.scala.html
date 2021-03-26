@@ -26,15 +26,9 @@
 
 @implicitFormInstance = @{ Some(propertyDetailsForm) }
 
-@analyticsJs = {
-  var id = "@id";
-  var page = document.location.pathname.replace('/' + id, '');
-  ga('set', 'page', page);
-}
 
 @atedMain(title = messages("ated.property-details-period.isInRelief.title"),
-          serviceInfoContent = serviceInfoContent,
-          analyticsAdditionalJs = Some(analyticsJs)) {
+          serviceInfoContent = serviceInfoContent) {
 
   @pageHeadersAndError(backLink, "pre-heading", messages(AtedUtils.getPropertyDetailsPreHeader(mode)), "property-details-header", messages("ated.property-details-period.isInRelief.header"),
       Some(atedErrorSummary(propertyDetailsForm, "ated.property-details-period-error.general")))
@@ -50,8 +44,7 @@
         '_legendClass -> "visuallyhidden",
         '_groupClass -> "inline",
         '_labelClass -> "block-label",
-        '_labelAfter -> true,
-        '_trackGA -> true
+        '_labelAfter -> true
       )
     </div>
 

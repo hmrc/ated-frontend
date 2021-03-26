@@ -42,16 +42,10 @@
   </script>
 }
 
-@analyticsJs = {
-  var id = "@id";
-  var page = document.location.pathname.replace('/' + id, '');
-  ga('set', 'page', page);
-}
 
 @atedMain(title = Html(messages("ated.property-details-value.isOwnedBeforeValuationYear.title", PeriodUtils.calculateLowerTaxYearBoundary(periodKey).getYear.toString)).toString,
           pageScripts = Some(pageScripts),
-          serviceInfoContent = serviceInfoContent,
-          analyticsAdditionalJs = Some(analyticsJs)) {
+          serviceInfoContent = serviceInfoContent) {
   @pageHeadersAndError(backLink, "pre-heading", messages(AtedUtils.getPropertyDetailsPreHeader(mode)), messages("property-details-header"),
                         messages("ated.property-details-value.isOwnedBeforeValuationYear.title", PeriodUtils.calculateLowerTaxYearBoundary(periodKey).getYear.toString).toString,
       Some(atedErrorSummary(propertyDetailsForm, "ated.property-details-value-error.general")))
@@ -66,8 +60,7 @@
         "false" -> (messages("ated.property-details-value.no"), None)),
         '_groupClass -> "inline",
         '_labelClass -> "block-label",
-        '_labelAfter -> true,
-        '_trackGA -> true
+        '_labelAfter -> true
         )
       </div>
     </div>
@@ -85,7 +78,7 @@
       </div>
      </div>
 
-    <button class="button" id="submit" type="submit" data-journey-click="button - click:@messages("Did the company own this property on or before"):@messages("ated.save-and-continue")">@messages("ated.save-and-continue")</button>
+    <button class="button" id="submit" type="submit">@messages("ated.save-and-continue")</button>
 
   }
 

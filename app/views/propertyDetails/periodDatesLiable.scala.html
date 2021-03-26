@@ -25,15 +25,9 @@
 
 @implicitFormInstance = @{ Some(propertyDetailsForm) }
 
-@analyticsJs = {
-  var id = "@id";
-  var page = document.location.pathname.replace('/' + id, '');
-  ga('set', 'page', page);
-}
 
 @atedMain(title = messages(title),
-          serviceInfoContent = serviceInfoContent,
-          analyticsAdditionalJs = Some(analyticsJs)) {
+          serviceInfoContent = serviceInfoContent) {
   @pageHeadersAndError(backLink, "pre-heading", messages("ated.property-details.pre-header"), messages("property-details-header"), messages(title),
       Some(atedErrorSummary(propertyDetailsForm, "ated.property-details-period.datesLiable.general.error")))
 

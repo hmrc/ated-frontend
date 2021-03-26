@@ -31,22 +31,14 @@
   Some(propertyDetailsForm)
 }
 
-@analyticsJs = {
-  var id = "@id";
-  var page = document.location.pathname.replace('/' + id, '');
-  ga('set', 'page', page);
-  ga('set', 'location', document.URL.split("?")[0]);
-}
-
 @atedMain(title = messages("ated.property-details-value.anAcquisition.title"),
-          serviceInfoContent = serviceInfoContent,
-          analyticsAdditionalJs = Some(analyticsJs)) {
+          serviceInfoContent = serviceInfoContent) {
 
   @pageHeadersAndError(backLink, messages("pre-heading"), messages(AtedUtils.getPropertyDetailsPreHeader(mode)), messages("property-details-header"), messages("ated.property-details-value.anAcquisition.header"),
       Some(atedErrorSummary(propertyDetailsForm, messages("ated.property-details-value-error.general"))))
 
     <details>
-        <summary id="anAcquisition-reveal" class="summary" data-journey-click="@messages("ated.property-details-value.anAcquisition.what"):click-accordion:@messages("ated.property-details-value.anAcquisition.title")">
+        <summary id="anAcquisition-reveal" class="summary">
             @messages("ated.property-details-value.anAcquisition.what")
         </summary>
         <div class="panel-indent">
@@ -69,12 +61,11 @@
           '_legendClass -> "visuallyhidden",
         '_groupClass -> "inline",
         '_labelClass -> "block-label",
-        '_labelAfter -> true,
-        '_trackGA -> true
+        '_labelAfter -> true
       )
       </div>
 
-      <button class="button" id="submit" type="submit" data-journey-click="@messages("ated.continue"):click-button:@messages("ated.property-details-value.anAcquisition.title")">@messages("ated.save-and-continue")</button>
+      <button class="button" id="submit" type="submit" >@messages("ated.save-and-continue")</button>
 
 
   }

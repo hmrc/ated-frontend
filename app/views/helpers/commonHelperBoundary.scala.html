@@ -18,10 +18,7 @@
 @import _root_.utils.PeriodUtils._
 
 @errors.zipWithIndex.map { case (error, index) =>
-<span class="error-notification"
-role="tooltip"
-data-journey="search-page:error:@field.name"
-id="@(field.name)-error-@index">
-@messages(error.message, calculateLowerTaxYearBoundary(periodKey).getYear.toString)
-</span>
+ <span class="error-notification" role="tooltip" id="@(field.name)-error-@index">
+  @messages(error.message, calculateLowerTaxYearBoundary(periodKey).getYear.toString)
+ </span>
 }

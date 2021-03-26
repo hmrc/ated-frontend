@@ -26,15 +26,9 @@
 
 @implicitFormInstance = @{ Some(propertyDetailsForm) }
 
-@analyticsJs = {
-  var id = "@id";
-  var page = document.location.pathname.replace('/' + id, '');
-  ga('set', 'page', page);
-}
 
 @atedMain(title = messages("ated.property-details.title.title"),
-          serviceInfoContent = serviceInfoContent,
-          analyticsAdditionalJs = Some(analyticsJs)) {
+          serviceInfoContent = serviceInfoContent) {
 
   @pageHeadersAndError(backLink, "pre-heading", messages(AtedUtils.getPropertyDetailsPreHeader(mode)), "property-details-header", messages("ated.property-details.title.header"),
       Some(atedErrorSummary(propertyDetailsForm, "ated.property-details-address-error.general")))
@@ -44,7 +38,7 @@
     <p id="title-text">@messages("ated.property-details.references")</p>
 
     <details>
-        <summary id="titleNumber-reveal" class="summary" data-journey-click="accordion - click:@messages("ated.property-details.title.header"):@messages("ated.property-details-titleNumber.reveal")">
+        <summary id="titleNumber-reveal" class="summary">
             @messages("ated.property-details-titleNumber.reveal")
         </summary>
         <div class="panel-indent">
@@ -59,7 +53,7 @@
         '_id -> "references.titleNumber",
         '_showConstraints -> false)
 
-    <button class="button" id="submit" type="submit" data-journey-click="button - click:@messages("ated.property-details.title.title"):@messages("ated.save-and-continue")">@messages("ated.save-and-continue")</button>
+    <button class="button" id="submit" type="submit">@messages("ated.save-and-continue")</button>
   }
 
 }

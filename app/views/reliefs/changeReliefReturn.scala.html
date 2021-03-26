@@ -18,27 +18,25 @@
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
 @this(atedMain: atedMain)
-@(periodKey: Int, formBundleNumber: String, editReliefForm: Form[EditRelief], serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
+@(periodKey: Int, formBundleNumber: String, editReliefForm: Form[EditRelief], serviceInfoContent: Html = HtmlFormat.empty,
+        backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent],
+        appConfig: ApplicationConfig)
 @import uk.gov.hmrc.play.views.html._
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
 @import views.html.helpers.error._
 @import utils._
 
-@analyticsJs = {
-ga('set', 'page', document.location.pathname);
-ga('set', 'location', document.URL.split("?")[0]);
-}
-
-@atedMain(title = messages("ated.change-relief-return.title"), serviceInfoContent = serviceInfoContent, analyticsAdditionalJs = Some(analyticsJs)) {
-    @pageHeadersAndError(backLink, "pre-heading", messages("ated.change-return.pre-header"), "relief-return-header", messages("ated.change-relief-return.title"),
-    Some(atedErrorSummary(editReliefForm, "ated.change-relief-return.error.empty.general")))
+@atedMain(title = messages("ated.change-relief-return.title"), serviceInfoContent = serviceInfoContent) {
+    @pageHeadersAndError(backLink, "pre-heading", messages("ated.change-return.pre-header"), "relief-return-header",
+        messages("ated.change-relief-return.title"),
+        Some(atedErrorSummary(editReliefForm, "ated.change-relief-return.error.empty.general")))
 
     <p id="relief-return-change-text-2">@messages("ated.change-relief-return.text.2")</p>
-  <p id="relief-return-change-text">@messages("ated.change-relief-return.text")</p>
+    <p id="relief-return-change-text">@messages("ated.change-relief-return.text")</p>
 
     <details>
-        <summary id="titleNumber-reveal" class="summary" data-journey-click="accordion - click:@messages("ated.change-relief-return.header"):@messages("ated.change-relief-return.accordian")">
+        <summary id="titleNumber-reveal" class="summary">
         @messages("ated.change-relief-return.accordian")
         </summary>
         <div class="panel-indent">
@@ -54,26 +52,24 @@ ga('set', 'location', document.URL.split("?")[0]);
         </div>
     </details>
 
-  @form(action=controllers.reliefs.routes.ChangeReliefReturnController.submit(periodKey, formBundleNumber)) {
-    <div id="editReliefForm">
-      @atedInputRadioGroupNew(editReliefForm("changeRelief"),
-      Seq(
-      "changeDetails" -> messages("ated.change-relief-return.select-change-details"),
-      "createChargeable" -> messages("ated.change-relief-return.select-create-chargeable")
-      ),
-      '_legend -> messages("ated.change-relief-return.title"),
-      '_labelClass -> "block-label",
-      '_legendClass -> "visuallyhidden",
-      '_groupClass -> "form-group",
-      '_labelAfter -> true,
-      '_trackGA -> true
-      )
+    @form(action = controllers.reliefs.routes.ChangeReliefReturnController.submit(periodKey, formBundleNumber)) {
+        <div id="editReliefForm">
+        @atedInputRadioGroupNew(editReliefForm("changeRelief"),
+            Seq(
+                "changeDetails" -> messages("ated.change-relief-return.select-change-details"),
+                "createChargeable" -> messages("ated.change-relief-return.select-create-chargeable")
+            ),
+            '_legend -> messages("ated.change-relief-return.title"),
+            '_labelClass -> "block-label",
+            '_legendClass -> "visuallyhidden",
+            '_groupClass -> "form-group",
+            '_labelAfter -> true
+        )
 
-    </div>
+        </div>
 
+        <button class="button" id="submit" type="submit">@messages("ated.change-relief-return.continue")</button>
 
-    <button class="button" id="submit" type="submit">@messages("ated.change-relief-return.continue")</button>
-
-}
+    }
 
 }

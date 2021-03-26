@@ -24,8 +24,6 @@
 @errors = @{ FormHelpers.getErrors(field, parentField) }
 @fieldsetClass = {@elements.args.get('_groupClass)@if(errors.nonEmpty){ form-field--error}}
 @labelAfter = @{ elements.args.get('_labelAfter).getOrElse(false).asInstanceOf[Boolean] }
-@trackGA = @{ elements.args.get('_trackGA).getOrElse(false).asInstanceOf[Boolean] }
-
 
     @if(elements.args.get('_hintText).isDefined) {
         <span class="form-hint" id="@if( elements.args.get('_idName) ) {@elements.args.get('_idName)_hint} else {@(radioOptions)_hint}">
@@ -56,7 +54,6 @@
             value="@value"
             @elements.args.get('_inputClass).map{inputClass => class="@inputClass"}
     @if(elements.args.contains('_dataAttributes) ){ @elements.args.get('_dataAttributes)}
-@if(trackGA){data-journey-click="ated-frontend:click:@inputId"}
     @field.value.filter( _ == value).map{_ => checked="checked"}/>
     <span id="@(inputId)_field">
     @if(labelAfter) {

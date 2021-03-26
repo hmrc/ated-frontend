@@ -31,8 +31,8 @@
   scriptElement: Option[Html] = None,
   pageScripts: Option[Html] = None,
   sidebarLinks: Option[Html] = None,
-  sidebarClass: Option[String] = None,
-  analyticsAdditionalJs: Option[Html] = None)(mainContent: Html)(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
+  sidebarClass: Option[String] = None)(mainContent: Html)(implicit authContext: StandardAuthRetrievals,
+        messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
 @scriptElement = {
     <script src='@controllers.routes.Assets.versioned("jquery/jquery-ui.min.js")'></script>
@@ -40,16 +40,17 @@
     <script src='@controllers.routes.Assets.versioned("javascript/timeout-dialog.js")'></script>
     <script src='@controllers.routes.Assets.versioned("javascript/urBanner.js")'></script>
     <script src='@controllers.routes.Assets.versioned("javascript/tabs.js")'></script>
-@pageScripts
+    @pageScripts
 }
-    <script>
-        @if(userLoggedIn) {
-            document.addEventListener('DOMContentLoaded', function(event) {
-                $.timeoutDialog({timeout: @appConfig.defaultTimeoutSeconds, countdown: @appConfig.timeoutCountdown, keep_alive_url: '@controllers.routes.ApplicationController.keepAlive', logout_url: '@controllers.routes.ApplicationController.logout', logout_redirect_url: '@controllers.routes.ApplicationController.logout', restart_on_yes: true, background_no_scroll: true});
-                var dialogOpen;
-            });
-        }
-    </script>
+
+<script>
+    @if(userLoggedIn) {
+        document.addEventListener('DOMContentLoaded', function(event) {
+            $.timeoutDialog({timeout: @appConfig.defaultTimeoutSeconds, countdown: @appConfig.timeoutCountdown, keep_alive_url: '@controllers.routes.ApplicationController.keepAlive', logout_url: '@controllers.routes.ApplicationController.logout', logout_redirect_url: '@controllers.routes.ApplicationController.logout', restart_on_yes: true, background_no_scroll: true});
+            var dialogOpen;
+        });
+    }
+</script>
 
 @linkElement = {
     <link rel="stylesheet" href='@controllers.routes.Assets.versioned("stylesheets/palette.css")'/>
@@ -61,19 +62,18 @@
     <link rel="stylesheet" href='@controllers.routes.Assets.versioned("jquery/jquery-ui.min.css")'/>
     <link rel="stylesheet" href='@controllers.routes.Assets.versioned("jquery/jquery-ui.structure.min.css")'/>
     <link rel="stylesheet" href='@controllers.routes.Assets.versioned("stylesheets/tabs.css")'/>
-
 }
 
-    @mainBanner = {
-
+@mainBanner = {
     @if(authContext.delegationModel.isDefined) {
-        @Some(uiLayouts.attorney_banner(name = Some(authContext.delegationModel.get.principalName), returnLinkUrl = authContext.delegationModel.get.link.url, regime = AttorneyRegime.pertax, customReturnLinkText = Some(authContext.delegationModel.get.link.text), bannerContent = Some(Html(messages("ated.agent.banner", authContext.delegationModel.get.principalName)))))
+        @Some(uiLayouts.attorney_banner(name = Some(authContext.delegationModel.get.principalName),
+            returnLinkUrl = authContext.delegationModel.get.link.url, regime = AttorneyRegime.pertax,
+            customReturnLinkText = Some(authContext.delegationModel.get.link.text),
+            bannerContent = Some(Html(messages("ated.agent.banner", authContext.delegationModel.get.principalName)))))
     } else {
         @banner
     }
 }
-
-
 
 @main(
   appConfig = appConfig,
@@ -82,11 +82,10 @@
   sidebarLinks = sidebarLinks,
   sidebarClass = sidebarClass,
   scriptElement = Some(scriptElement),
-    serviceInfoContent = serviceInfoContent,
-            banner = Some(mainBanner),
+  serviceInfoContent = serviceInfoContent,
+  banner = Some(mainBanner),
   userLoggedIn = userLoggedIn,
   linkElement = Some(linkElement),
-  analyticsJs = analyticsAdditionalJs,
   isUserResearchBannerVisible = showUrBanner.getOrElse(false)) {
     @mainContent
   }

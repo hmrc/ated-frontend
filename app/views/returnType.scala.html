@@ -21,14 +21,8 @@
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
 
-@analyticsJs = {
-  ga('set', 'page', document.location.pathname);
-  ga('set', 'location', document.URL.split("?")[0]);
-}
-
 @atedMain(title = messages("ated.return-type.title"),
-    serviceInfoContent = serviceInfoContent,
-    analyticsAdditionalJs = Some(analyticsJs)) {
+    serviceInfoContent = serviceInfoContent) {
 
   @pageHeadersAndError(backLink, "pre-heading", messages("ated.return-type.pre-header"), "return-type-header", messages("ated.return-type.header"),
     Some(atedErrorSummary(returnTypeForm, "ated.return-type.error.general")))
@@ -47,8 +41,7 @@
         '_legendClass -> "screen-reader-text",
         '_labelClass -> "block-label",
         '_groupClass -> "form-group",
-        '_labelAfter -> true,
-        '_trackGA -> true
+        '_labelAfter -> true
       )
 
     </div>
