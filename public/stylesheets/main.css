@@ -12,6 +12,10 @@ button {
     color: #6f777b;
 }
 
+details .summary {
+    display: list-item;
+}
+
 .tick{
   position:inherit;
   padding-right:10px;
