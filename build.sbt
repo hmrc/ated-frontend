@@ -56,7 +56,6 @@ lazy val microservice = Project(appName, file("."))
     )
     .disablePlugins(JUnitXmlReportPlugin)
     .settings(
-      resolvers += Resolver.bintrayRepo("hmrc", "releases"),
       resolvers += Resolver.jcenterRepo,
       scalacOptions += "-P:silencer:pathFilters=views;routes",
       libraryDependencies ++= Seq(
