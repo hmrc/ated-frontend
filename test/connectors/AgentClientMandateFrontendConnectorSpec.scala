@@ -52,7 +52,7 @@ class AgentClientMandateFrontendConnectorSpec extends PlaySpec with GuiceOneAppP
     "return the partial successfully" in new Setup {
       implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
       val html = "<h1>helloworld</h1>"
-      when(mockHttp.GET[HttpResponse](any())(any(), any(), any()))
+      when(mockHttp.GET[HttpResponse](any(), any(), any())(any(), any(), any()))
         .thenReturn(Future.successful(HttpResponse(OK, html)))
       testAgentClientMandateFrontendConnector.getClientBannerPartial("clientId", "ated").map {
         response => response.successfulContentOrEmpty must equal(html)
@@ -62,7 +62,7 @@ class AgentClientMandateFrontendConnectorSpec extends PlaySpec with GuiceOneAppP
     "return no partial silently" in new Setup {
       implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 
-      when(mockHttp.GET[HttpResponse](any())(any(), any(), any()))
+      when(mockHttp.GET[HttpResponse](any(), any(), any())(any(), any(), any()))
         .thenReturn(Future.successful(HttpResponse(NOT_FOUND, "")))
       testAgentClientMandateFrontendConnector.getClientBannerPartial("clientId", "ated").map {
         response => response.successfulContentOrEmpty must equal(Html(""))
@@ -71,7 +71,7 @@ class AgentClientMandateFrontendConnectorSpec extends PlaySpec with GuiceOneAppP
 
     "return the client mandate details successfully" in new Setup {
       implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
-      when(mockHttp.GET[HttpResponse](any())(any(), any(), any()))
+      when(mockHttp.GET[HttpResponse](any(), any(), any())(any(), any(), any()))
         .thenReturn(Future.successful(HttpResponse(OK, "")))
       val result: Future[HttpResponse] = testAgentClientMandateFrontendConnector.getClientDetails("clientId", "ated")
       await(result).status must be(OK)

@@ -18,7 +18,7 @@ package connectors
 
 import config.ApplicationConfig
 import models.{ReturnType, StandardAuthRetrievals}
-import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
@@ -26,7 +26,7 @@ import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.libs.json.{JsString, JsValue, Json}
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.cache.client.{CacheMap, SessionCache}
-import uk.gov.hmrc.http.logging.SessionId
+import uk.gov.hmrc.http.SessionId
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 
@@ -55,7 +55,7 @@ class DataCacheConnectorSpec extends PlaySpec with GuiceOneAppPerSuite with Mock
       "save form data in keystore" in new Setup {
         val returnedCacheMap = CacheMap("form-id", Map("test" -> Json.toJson(returnType)))
         when(mockHttp.PUT[ReturnType, CacheMap]
-          (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+          (any(), any(), any())(any(), any(), any(), any()))
           .thenReturn(Future.successful(returnedCacheMap))
 
         await(testDataCacheConnector.saveFormData[ReturnType]("form-id", returnType)) must be(returnType)
@@ -67,7 +67,7 @@ class DataCacheConnectorSpec extends PlaySpec with GuiceOneAppPerSuite with Mock
 
     "fetchAndGetFormData" must {
       "fetch data from Keystore" in new Setup {
-        when(mockHttp.GET[CacheMap](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+        when(mockHttp.GET[CacheMap](any(), any(),any())(any(), any(), any()))
           .thenReturn(Future.successful(CacheMap("test", Map("form-id" -> Json.toJson(returnType)))))
 
         await(testDataCacheConnector.fetchAndGetFormData[ReturnType]("form-id")) must be(Some(returnType))
@@ -78,8 +78,8 @@ class DataCacheConnectorSpec extends PlaySpec with GuiceOneAppPerSuite with Mock
       "clear data from Keystore" in new Setup {
         val successResponse: JsValue = Json.parse("""{"processingDate": "2001-12-17T09:30:47Z"}""")
 
-        when(mockHttp.DELETE[HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any())(
-          ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+        when(mockHttp.DELETE[HttpResponse](any(), any())(
+          any(), any(), any()))
           .thenReturn(Future.successful(HttpResponse(200, successResponse.toString)))
 
         val result: Future[HttpResponse] = testDataCacheConnector.clearCache()
@@ -91,7 +91,7 @@ class DataCacheConnectorSpec extends PlaySpec with GuiceOneAppPerSuite with Mock
 
     "fetchAtedRefData" must {
       "fetch data from Keystore" in new Setup {
-        when(mockHttp.GET[CacheMap](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+        when(mockHttp.GET[CacheMap](any(),any(),any())(any(), any(), any()))
           .thenReturn(Future.successful(CacheMap("test", Map("form-id" -> JsString("XN1200000100001")))))
 
         val result: Future[Option[String]] = testDataCacheConnector.fetchAtedRefData[String]("form-id")

@@ -18,9 +18,14 @@ package services
 
 import connectors.ServiceInfoPartialConnector
 import controllers.ControllerBaseSpec
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.when
+import org.scalamock.scalatest.MockFactory
+import play.api.libs.json.JsValue
 import play.api.mvc.Request
 import play.twirl.api.{Html, HtmlFormat}
 import play.api.test.Helpers._
+import uk.gov.hmrc.http.HttpResponse
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -33,19 +38,15 @@ class ServiceInfoServiceSpec extends ControllerBaseSpec {
 
   "getServiceInfo Partial" should {
     "return bta Partial" in {
-      (mockConnector.getServiceInfoPartial()(_:Request[_], _:ExecutionContext))
-        .expects(*, *)
-        .returning(Future.successful(validHtml))
+      when(mockConnector.getServiceInfoPartial()(any(), any())).thenReturn(Future.successful(validHtml))
 
       val result: Html = await(service.getPartial(fakeRequest, organisationStandardRetrievals, ec))
       val expectedResult: Html = validHtml
 
       result mustBe expectedResult
     }
-    "return empty HTML for an agent" in {
-      (mockConnector.getServiceInfoPartial()(_:Request[_], _:ExecutionContext))
-        .expects(*, *)
-        .never()
+    "return error HTML for an agent" in {
+      when(mockConnector.getServiceInfoPartial()(any(),any())).thenReturn(Future.successful(htmlError))
 
       val result: Html = await(service.getPartial(fakeRequest, agentStandardRetrievals, ec))
       val expectedResult: Html = HtmlFormat.empty

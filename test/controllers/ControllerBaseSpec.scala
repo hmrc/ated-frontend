@@ -23,6 +23,7 @@ import mocks.MockAppConfig
 import models.StandardAuthRetrievals
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.BeforeAndAfterEach
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Lang, Messages, MessagesApi}
@@ -33,7 +34,7 @@ import testhelpers.TestUtil
 
 import scala.concurrent.ExecutionContext
 
-class ControllerBaseSpec extends PlaySpec with MockFactory with GuiceOneAppPerSuite with BeforeAndAfterEach with TestUtil {
+class ControllerBaseSpec extends PlaySpec with MockitoSugar with GuiceOneAppPerSuite with BeforeAndAfterEach with TestUtil {
 
   lazy val injector: Injector = app.injector
   lazy val messagesApi: MessagesApi = injector.instanceOf[MessagesApi]

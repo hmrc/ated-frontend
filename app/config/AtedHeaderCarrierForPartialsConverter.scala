@@ -24,5 +24,5 @@ import uk.gov.hmrc.play.partials.HeaderCarrierForPartialsConverter
 class AtedHeaderCarrierForPartialsConverter @Inject()(val sessionCookieCrypto: SessionCookieCrypto) extends HeaderCarrierForPartialsConverter {
 
   def encryptCookieString(cookie: String): String = cookie
-  override val crypto: String => String = encryptCookieString
+  val crypto: String => String = encryptCookieString
 }

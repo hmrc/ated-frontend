@@ -4,10 +4,8 @@ import play.sbt.routes.RoutesKeys.routesGenerator
 import sbt.Keys._
 import sbt._
 import uk.gov.hmrc.DefaultBuildSettings.{addTestReportOption, defaultSettings, scalaSettings}
-import uk.gov.hmrc.SbtAutoBuildPlugin
 import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin
 import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin.publishingSettings
-import uk.gov.hmrc.versioning.SbtGitVersioning
 import uk.gov.hmrc.versioning.SbtGitVersioning.autoImport.majorVersion
 
 val appName = "ated-frontend"
@@ -29,7 +27,7 @@ lazy val scoverageSettings = {
 val silencerVersion = "1.7.1"
 
 lazy val microservice = Project(appName, file("."))
-    .enablePlugins(Seq(play.sbt.PlayScala, SbtAutoBuildPlugin, SbtGitVersioning, SbtDistributablesPlugin) ++ plugins: _*)
+    .enablePlugins(Seq(play.sbt.PlayScala, SbtDistributablesPlugin) ++ plugins: _*)
     .settings(playSettings: _*)
     .settings(majorVersion := 3)
     .configs(IntegrationTest)
