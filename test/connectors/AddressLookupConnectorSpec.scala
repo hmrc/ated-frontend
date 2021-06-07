@@ -20,7 +20,7 @@ import java.util.UUID
 
 import config.ApplicationConfig
 import models._
-import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
@@ -28,8 +28,8 @@ import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.test.Helpers._
 import testhelpers.MockAuthUtil
+import uk.gov.hmrc.http.SessionId
 import uk.gov.hmrc.http._
-import uk.gov.hmrc.http.logging.SessionId
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 
 import scala.concurrent.Future
@@ -60,8 +60,8 @@ class AddressLookupConnectorSpec extends PlaySpec with GuiceOneAppPerSuite with 
         val response = List(addressLookupRecord)
         implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
         when(mockHttp.GET[List[AddressLookupRecord]]
-          (ArgumentMatchers.any())
-        (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(response))
+          (any(), any(), any())
+        (any(), any(), any())).thenReturn(Future.successful(response))
 
         val result: Future[List[AddressLookupRecord]] = testAddressLookupConnector.findByPostcode(AddressLookup("postCode", None))
         await(result).headOption must be(Some(addressLookupRecord))
@@ -71,8 +71,8 @@ class AddressLookupConnectorSpec extends PlaySpec with GuiceOneAppPerSuite with 
 
         implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
         when(mockHttp.GET[List[AddressLookupRecord]]
-          (ArgumentMatchers.any())
-        (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.failed(new Exception("")))
+          (any(), any(), any())
+        (any(), any(), any())).thenReturn(Future.failed(new Exception("")))
 
         val result: Future[List[AddressLookupRecord]] = testAddressLookupConnector.findByPostcode(AddressLookup("postCode", Some("houseName")))
         await(result).isEmpty must be(true)
@@ -86,8 +86,8 @@ class AddressLookupConnectorSpec extends PlaySpec with GuiceOneAppPerSuite with 
         val response = Some(addressLookupRecord)
         implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
         when(mockHttp.GET[Option[AddressLookupRecord]]
-          (ArgumentMatchers.any())
-        (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(response))
+          (any(), any(), any())
+        (any(), any(), any())).thenReturn(Future.successful(response))
 
         val result: Future[Option[AddressLookupRecord]] = testAddressLookupConnector.findById("1")
         await(result) must be(Some(addressLookupRecord))
@@ -97,8 +97,8 @@ class AddressLookupConnectorSpec extends PlaySpec with GuiceOneAppPerSuite with 
 
         implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
         when(mockHttp.GET[Option[AddressLookupRecord]]
-          (ArgumentMatchers.any())
-        (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.failed(new NotFoundException("")))
+          (any(), any(), any())
+        (any(), any(), any())).thenReturn(Future.failed(new NotFoundException("")))
 
         val result: Future[Option[AddressLookupRecord]] = testAddressLookupConnector.findById("1")
         await(result).isDefined must be(false)

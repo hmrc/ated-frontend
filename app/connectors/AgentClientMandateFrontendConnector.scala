@@ -39,7 +39,7 @@ class AgentClientMandateFrontendConnector @Inject()(appConfig: ApplicationConfig
   val clientBannerPartialUri = "internal/client/partial-banner"
   val clientDetailsUri = "mandate/client/details"
 
-  override def crypto: String => String = identity
+  def crypto: String => String = identity
 
   def getClientBannerPartial(clientId: String, service: String)
                             (implicit request: Request[_], ec: ExecutionContext): Future[HtmlPartial] = {
