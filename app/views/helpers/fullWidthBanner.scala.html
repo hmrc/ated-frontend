@@ -16,9 +16,9 @@
 
 @(fullWidthBannerContent: Option[Html])(implicit messages: Messages)
 
-<div id="ur-panel" class="banner-panel centered-content">
-    <div class="centered-content visible banner-panel__container" aria-hidden="false">
+<div id="ur-panel" class="govuk-panel govuk-centered-content">
+    <div class="centered-content visible govuk-panel__container" aria-hidden="false">
         @fullWidthBannerContent
-        <a class="banner-panel__close" href="#" role="button"><span aria-hidden="true">@messages("urbanner.message.reject")</span></a>
+        <a class="govuk-panel__close" href="#" role="button"><span aria-hidden="true">@messages("urbanner.message.reject")</span></a>
     </div>
 </div>

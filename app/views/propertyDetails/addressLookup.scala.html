@@ -17,7 +17,7 @@
 @import models._
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
-@this(atedMain: atedMain)
+@this(atedMain: atedMain, formHelper: FormWithCSRF, govukInput: GovukInput)
 @(id: Option[String],
         periodKey: Int,
         searchForm: Form[AddressLookup],
@@ -26,7 +26,9 @@
         backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages,
         request: Request[AnyContent], appConfig: ApplicationConfig)
 
-@import uk.gov.hmrc.play.views.html.helpers._
+@import uk.gov.hmrc.govukfrontend.views.Implicits.RichInput
+@import uk.gov.hmrc.govukfrontend.views.Implicits.RichSelect
+@import views.html.helper.form
 @import views.html.helpers._
 @import _root_.utils._
 
@@ -44,24 +46,26 @@
       "account-lookup-header", messages("ated.address-lookup.header"),
       Some(atedErrorSummary(searchForm, "ated.property-details-address-error.general")))
 
-  @form(action=controllers.propertyDetails.routes.AddressLookupController.find(id, periodKey, mode)) {
+  @formHelper(action=controllers.propertyDetails.routes.AddressLookupController.find(id, periodKey, mode)) {
 
-    <div class="form-field">
-        @atedInputNew(searchForm("houseName"),
-        '_label ->  Html(messages("ated.address-lookup.house-name")),
-        '_labelClass -> "form-label-bold",
-        '_id -> "house-name",
-        '_inputClass -> "",
-        '_showConstraints -> false)
-    </div>
+    <div id="addressLookup-search-form">
+        @govukInput(
+            Input(
+                label = Label(
+                    content = Text(Messages("ated.address-lookup.house-name")),
+                    classes = "govuk-label--s"
+                ),
+            ).withFormField(searchForm("house-name"))
+        )
 
-    <div class="form-field">
-        @atedInputNew(searchForm("postcode"),
-        '_label ->  Html(messages("ated.address-lookup.postcode")),
-        '_labelClass -> "form-label-bold",
-        '_id -> "postcode",
-        '_inputClass -> "input--normal uppercase",
-        '_showConstraints -> false)
+        @govukInput(
+            Input(
+                label = Label(
+                    content = Text(Messages("ated.address-lookup.postcode")),
+                    classes = "govuk-label--s"
+                ),
+            ).withFormField(searchForm("postcode"))
+        )
     </div>
 
     <div class="form-field">
@@ -71,6 +75,6 @@
             @messages("ated.address-lookup.no-postcode-link.title")</a>
     </div>
 
-    <button class="button" id="submit" type="submit">@messages("ated.address-lookup.find-button")</button>
+    <button class="govuk-button" id="submit" type="submit">@messages("ated.address-lookup.find-button")</button>
   }
 }

@@ -17,10 +17,11 @@
 @import models._
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
-@this(atedMain: atedMain)
-@(disposeLiabilityForm: Form[DisposeLiability], oldFormBundleNo: String, serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String], periodKey: Int)(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
-@import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
+@import views.html.helper.form
+
+@this(atedMain: atedMain, formHelper: FormWithCSRF)
+@(disposeLiabilityForm: Form[DisposeLiability], oldFormBundleNo: String, serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String], periodKey: Int)(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
 @implicitFormInstance = @{ Some(disposeLiabilityForm) }
 
@@ -30,9 +31,9 @@
   @pageHeadersAndError(backLink, "pre-heading", messages("ated.property-details.pre-header-dispose"), "dispose-property-header", messages("ated.dispose-property.disposal-date.header"),
       Some(atedErrorSummary(disposeLiabilityForm, "ated.dispose-property.error.general")))
 
-  @form(action=controllers.editLiability.routes.DisposePropertyController.save(oldFormBundleNo)) {
+  @formHelper(action=controllers.editLiability.routes.DisposePropertyController.save(oldFormBundleNo)) {
 
-    <div id="date-of-disposal" class="form-group">
+    <div id="date-of-disposal" class="govuk-form-group">
       @atedDateFieldsFree(
         formItem = disposeLiabilityForm,
         fieldName = "dateOfDisposal",
@@ -47,10 +48,10 @@
 
     </div>
 
-    <div class="form-group">
-      <button class="button" id="submit" type="submit">@messages("ated.save-and-continue")</button>
+    <div class="govuk-form-group">
+      <button class="govuk-button" id="submit" type="submit">@messages("ated.save-and-continue")</button>
 
-      <input type="hidden" class="form-control" name="periodKey" id="id" value=@disposeLiabilityForm("periodKey").value>
+      <input type="hidden" class="govuk-form-control" name="periodKey" id="id" value=@disposeLiabilityForm("periodKey").value>
     </div>
 
   }

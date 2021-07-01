@@ -15,26 +15,36 @@
  *@
 
 @import config.ApplicationConfig
-@(submittedReturnResponse: Option[EditLiabilityReturnsResponseModel], returnType: String, organisationName: Option[String], paymentReference: Option[String], amountDueOrRefund: BigDecimal, liabilityAmount : BigDecimal)(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 @import views.html.helpers._
+
+@(submittedReturnResponse: Option[EditLiabilityReturnsResponseModel], returnType: String, organisationName: Option[String], paymentReference: Option[String], amountDueOrRefund: BigDecimal, liabilityAmount : BigDecimal)(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
 @printFriendly(messages("ated.relief-sent.title")) {
 
 <script src='@controllers.routes.Assets.versioned("javascript/printFriendly.js")'></script>
 
-<h1 id="header">@messages("ated.edit-liability.sent.header.dispose")
+<h1 id="header">
+ @messages("ated.edit-liability.sent.header.dispose")
 </h1>
 
-<p id="view-message">@messages("ated.edit-liabilty.sent.view-message")</p>
-<p id="email-message">@messages("ated.edit-liabilty.sent.receipt-message")</p>
+<p id="view-message" class="govuk-body">
+ @messages("ated.edit-liabilty.sent.view-message")
+</p>
+<p id="email-message" class="govuk-body">
+ @messages("ated.edit-liabilty.sent.receipt-message")
+</p>
 
-<hr>
+<h2 id="charges-heading">
+ @messages("ated.edit-liabilty.sent.charges-heading")
+</h2>
 
-<h2 id="charges-heading">@messages("ated.edit-liabilty.sent.charges-heading")</h2>
+<p id="new-amount" class="">
+ @messages("ated.edit-liabilty.sent.new-amount")
+</p>
 
-<p id="new-amount">@messages("ated.edit-liabilty.sent.new-amount")</p>
-
-<h3 id="already-paid-title" class="text-bold">@messages("ated.edit.liability.sent.amount-already-paid.title")</h3>
+<h3 id="already-paid-title" class="text-bold">
+ @messages("ated.edit.liability.sent.amount-already-paid.title")
+</h3>
 
 <p id="owe-you">@Html(messages("ated.edit.liability.sent.owe-you", formattedPounds(amountDueOrRefund.abs)))</p>
 <p id="repayments">@messages("ated.edit.liability.sent.repayments")</p>

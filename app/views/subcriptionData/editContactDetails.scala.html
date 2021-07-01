@@ -16,10 +16,11 @@
 
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
-@this(atedMain: atedMain)
+@this(atedMain: atedMain, formHelper: FormWithCSR, govukInput: GovukInput)
 @(editContactDetailsForm: Form[models.EditContactDetails], serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
-@import uk.gov.hmrc.play.views.html.helpers._
+@import views.html.helper.form
 @import views.html.helpers._
+@import uk.gov.hmrc.govukfrontend.views.Implicits.RichInput
 
 @implicitFormInstance = @{ Some(editContactDetailsForm) }
 
@@ -28,38 +29,46 @@
   @pageHeadersAndError(backLink, "pre-heading", messages("ated.contact-details-edit.subheader"), "contact-details-header", messages("ated.contact-details.header"),
       Some(atedErrorSummary(editContactDetailsForm, "ated.contact-details.error.general")))
 
-  <div class="form-group">
+  <div class="govuk-form-group">
     <p id="contact-details-subheader"> @messages("ated.contact-details.subheader")</p>
   </div>
 
-  @form(action = controllers.subscriptionData.routes.EditContactDetailsController.submit) {
+  @formHelper(action = controllers.subscriptionData.routes.EditContactDetailsController.submit) {
 
-    <div class="form-group">
+    <div class="govuk-form-group">
 
       <div id="contact-address-form">
 
-        @atedInputNew(editContactDetailsForm("firstName"),
-        '_label -> Html(messages("ated.contact-details.firstName")),
-        '_labelClass -> "form-label-bold",
-        '_showConstraints -> false)
+          @govukInput(
+            Input(
+                label = Label(
+                    content = Text(Messages("ated.contact-details.firstName"))
+                )
+            ).withFormField(editContactDetailsForm("firstName"))
+          )
 
-        @atedInputNew(editContactDetailsForm("lastName"),
-        '_label -> Html(messages("ated.contact-details.lastName")),
-        '_labelClass -> "form-label-bold",
-        '_showConstraints -> false)
+          @govukInput(
+            Input(
+                label = Label(
+                    content = Text(Messages("ated.contact-details.lastName"))
+                )
+            ).withFormField(editContactDetailsForm("lastName"))
+          )
 
-        @atedInputNew(editContactDetailsForm("phoneNumber"),
-        '_label -> Html(messages("ated.contact-details.phoneNumber")),
-        '_labelClass -> "form-label-bold",
-        '_showConstraints -> false,
-        '_type -> "tel")
+          @govukInput(
+            Input(
+                label = Label(
+                    content = Text(Messages("ated.contact-details.phoneNumber"))
+                )
+            ).withFormField(editContactDetailsForm("phoneNumber"))
+          )
 
       </div>
 
     </div>
 
 
-    <button class="button" id="submit" type="submit">@messages("ated.save-changes")</button>
+    <button class="govuk-button" id="submit" type="submit">@messages("ated.save-changes")</button>
 
 
   }

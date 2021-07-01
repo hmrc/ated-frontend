@@ -31,12 +31,12 @@
 
     <div class="divider--top--thick"></div>
 
-    <p><span id="receipt-message-title" class="heading-medium">@messages("ated.chargeable-return-confirmation.charge.heading")</span></p>
+    <p><span id="receipt-message-title" class="govuk-heading-m">@messages("ated.chargeable-return-confirmation.charge.heading")</span></p>
 
     <p id="adjusted-amount">@messages("ated.chargeable-return-confirmation.amount.message")</p>
 
-    <div class="form-group">
-    <ul class="list-bullet">
+    <div class="govuk-form-group">
+    <ul class="govuk-list govuk-list--bullet">
         @submittedReturnResponse.map { returnResponse =>
 
         @returnResponse.liabilityReturnResponse.map { liabilityReturnResponse =>
@@ -48,7 +48,7 @@
     </ul>
     </div>
 
-    <div class="form-group">
+    <div class="govuk-form-group">
         <p id="not-receive-email">
             @messages("ated.chargeable-return-confirmation.not-receive-text")
         </p>

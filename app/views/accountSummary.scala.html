@@ -51,14 +51,14 @@
     @peakGuidance(duringPeak, currentYear, taxYearStartingYear)
 
     @if(otherReturns.returnsOtherTaxYears.isEmpty && returnsCurrentTaxYear.isEmpty) {
-        <h2 class="heading-small" id="return-summary-no-returns">@messages("ated.account-summary.agent.no-returns")</h2>
+        <h2 class="govuk-heading-s" id="return-summary-no-returns">@messages("ated.account-summary.agent.no-returns")</h2>
         @if(authContext.delegationModel.isEmpty) {
             <p id="return-summary-no-returns-appoint-agent">@messages("ated.account-summary.agent-appoint.text")</p>
             <p id="return-summary-no-returns-appoint-agent-info">@messages("ated.account-summary.appoint-agent-info.text")</p>
         }
 
         <div>
-            <a class="button" id="create-return-0"
+            <a class="govuk-button" id="create-return-0"
             href="@controllers.routes.PeriodSummaryController.createReturn(taxYearStartingYear, fromAccountSummary)">
                 @messages(
                     "ated.account-summary.create-new-return",
@@ -72,7 +72,7 @@
 
         @if(returnsCurrentTaxYear.nonEmpty) {
             <br />
-            <h2 class="heading-medium">@messages("ated.account-summary.current-year-returns")</h2>
+            <h2 class="govuk-heading-m">@messages("ated.account-summary.current-year-returns")</h2>
             <div class="govuk-hint">
               @messages("ated.account-summary.showing", returnsCurrentTaxYear.size, totalCurrentYearReturns)
             </div>
@@ -100,7 +100,7 @@
         }
 
         <div>
-            <a class="button" id="create-return-1"
+            <a class="govuk-button" id="create-return-1"
             href="@controllers.routes.PeriodSummaryController.createReturn(taxYearStartingYear, fromAccountSummary)">
                 @messages("ated.account-summary.create-new-return",
                     taxYearStartingYear.toString,

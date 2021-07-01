@@ -16,10 +16,13 @@
 
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
-@this(atedMain: atedMain)
+@this(atedMain: atedMain, formHelper: FormWithCSR, govukRadios: GovukRadios, govukInput: GovukInput)
 @(editContactDetailsEmailForm: Form[models.EditContactDetailsEmail], serviceInfoContent: Html = HtmlFormat.empty, backLink:Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
-@import uk.gov.hmrc.play.views.html.helpers._
+@import views.html.helper.form
 @import views.html.helpers._
+@import uk.gov.hmrc.govukfrontend.views.Implicits.RichRadios
+@import uk.gov.hmrc.govukfrontend.views.Implicits.RichInput
+
 
 @implicitFormInstance = @{ Some(editContactDetailsEmailForm) }
 
@@ -32,14 +35,14 @@
 
     <p id="lede">@messages("ated.contact-details-email-lede")</p>
 
-    <div class="form-group">
+    <div class="govuk-form-group">
         <div id = "email-consent-risk">
 
             <details>
-                <summary aria-controls="email-consent-content-0" tabindex="0" class="summary font-xsmall" id="email-risk-question">
+                <summary aria-controls="email-consent-content-0" tabindex="0" class="summary govuk-details__summary govuk-body-xs" id="email-risk-question">
                     @messages("ated.contact-details.email.risk.help.text")
                 </summary>
-                <div id="email-consent-content-0" class="panel-indent font-xsmall">
+                <div id="email-consent-content-0" class="panel-indent govuk-bopdy-xsl">
                     <p id="email-risk-ans">@Html(messages("ated.contact-details.email.risk.help.answer"))</p>
                 </div>
             </details>
@@ -48,37 +51,51 @@
     </div>
 
 
-    @form(action = controllers.subscriptionData.routes.EditContactEmailController.submit) {
+    @formHelper(action = controllers.subscriptionData.routes.EditContactEmailController.submit) {
 
-    <div class="form-group">
+    <div class="govuk-form-group">
 
-        <div class="form-group">
+        <div class="govuk-form-group">
 
-            @atedInputRadioGroupNew(editContactDetailsEmailForm("emailConsent"),
-            Seq("true" -> messages("ated.label.yes"),
-            "false" -> messages("ated.label.no")),
-            '_legend -> messages("ated.contact-details.email-consent.message"),
-            '_legendClass -> "screen-reader-text",
-            '_groupClass -> "inline",
-            '_labelClass -> "block-label",
-            '_labelAfter -> true)
+            @govukRadios(
+                Radios(
+                    fieldset = Some(Fieldset(
+                        legend = Some(Legend(
+                            classes = "govuk-visually-hidden",
+                            content = Text(Messages("ated.contact-details.email-consent.message"))
+                        ))
+                    )),
+                    items = Seq(
+                        RadioItem(
+                            content = Text(Messages("ated.label.yes")),
+                            value = Some("true"),
+                        ),
+                        RadioItem(
+                            content = Text(Messages("ated.label.no")),
+                            value = Some("false")
+                        )
+                    )
+                ).withFormField(editContactDetailsEmailForm("emailConsent"))
+            )
 
         </div>
 
-        <div class="form-group panel-indent" id="contact-address-form">
+        <div class="govuk-form-group panel-indent" id="contact-address-form">
 
-            @atedInputNew(editContactDetailsEmailForm("emailAddress"),
-            '_label -> Html(messages("ated.contact-details.emailAddress")),
-            '_labelClass -> "form-label-bold",
-            '_inputClass -> "form-control-indent",
-            '_showConstraints -> false,
-            '_type -> "email")
+            @govukInput(
+                Input(
+                    label = Label(
+                        content = Text(Messages("ated.contact-details.emailAddress")),
+                        classes = "govuk-label--s"
+                    )
+                ).withFormField(editContactDetailsEmailForm("emailAddress"))
+            )
 
         </div>
 
     </div>
 
-    <button class="button" id="submit" type="submit">@messages("ated.save-changes")</button>
+    <button class="govuk-button" id="submit" type="submit">@messages("ated.save-changes")</button>
 
 
     }

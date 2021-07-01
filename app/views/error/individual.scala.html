@@ -18,11 +18,11 @@
 
 @()(implicit messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
-<h1 class="heading-large">@messages("unauthorised.header")</h1>
+<h1 class="govuk-heading-l">@messages("unauthorised.header")</h1>
 
 <h2>@messages("unauthorised.UK.h2")</h2>
 
-<p class="body">@messages("unauthorised.UK.p")</p>
+<p class="govuk-body">@messages("unauthorised.UK.p")</p>
 
 <h2>@messages("unauthorised.nonUK.h2")</h2>
 
@@ -36,7 +36,7 @@
 
 <div class="notice">
  <i class="icon icon-important">
-  <span class="visuallyhidden">Warning</span>
+  <span class="govuk-visually-hidden">Warning</span>
  </i>
  <strong class="bold-small">@messages("unauthorised.nonUK.warning")</strong>
 </div>
@@ -46,6 +46,6 @@
 <p>@messages("unauthorised.nonUK.p4")</p>
 
 
-<a class="button" role="button" href="/ated/sign-out-individual">
+<a class="govuk-button" role="button" href="/ated/sign-out-individual">
  @messages("unauthorised.button.signout")
 </a>

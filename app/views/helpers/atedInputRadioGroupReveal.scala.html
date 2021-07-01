@@ -89,7 +89,7 @@ id="@elements.field.name.replaceAll("""[\.\[\]]""", "-")_legend" >
 
 @if(elements.args.get('_fieldsetQuestion).isDefined) {
 <details>
-    <summary aria-controls="details-content-0" tabindex="0" class="summary" id="@if(elements.args.get('_fieldsetAttributesHelpQuestion).isDefined) {@elements.args.get('_fieldsetAttributesHelpQuestion)}">
+    <summary aria-controls="details-content-0" tabindex="0" class="govuk-details__summary" id="@if(elements.args.get('_fieldsetAttributesHelpQuestion).isDefined) {@elements.args.get('_fieldsetAttributesHelpQuestion)}">
           @elements.args.get('_fieldsetQuestion)
     </summary>
     <div class="panel-indent" id="details-content-0">

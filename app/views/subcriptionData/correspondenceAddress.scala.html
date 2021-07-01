@@ -16,10 +16,13 @@
 
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
-@this(atedMain: atedMain)
+@this(atedMain: atedMain, formHelper: FormWithCSR, govukInput: GovukInput, govukSelect: GovukSelect)
 @(correspondenceAddressForm: Form[models.AddressDetails], listOfIsoCode: List[(String, String)], serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
-@import uk.gov.hmrc.play.views.html.helpers._
+@import views.html.helper.form
 @import views.html.helpers._
+@import uk.gov.hmrc.govukfrontend.views.Implicits.RichInput
+@import uk.gov.hmrc.govukfrontend.views.Implicits.RichSelect
+
 
 @pageScripts = {
 <script src='@controllers.routes.Assets.versioned("javascript/accessible-autocomplete.min.js")'></script>
@@ -40,62 +43,94 @@
   @pageHeadersAndError(backLink, "pre-heading", messages("ated.correspondence-address.subheader"), "correspondence-address-header", messages("ated.correspondence-address.header"),
       Some(atedErrorSummary(correspondenceAddressForm, "ated.correspondence-address.error.general")))
 
-  @form(action = controllers.subscriptionData.routes.CorrespondenceAddressController.submit) {
+  @formHelper(action = controllers.subscriptionData.routes.CorrespondenceAddressController.submit) {
 
-    <div class="form-group">
+    <div class="govuk-form-group">
 
       <div id="correspondence-address-form">
 
-        <div class="form-field">
-          @atedInputNew(correspondenceAddressForm("addressType"),
-          '_addressType -> "addressType",
-          '_type -> "hidden")
+        <div class="govuk-form-field">
 
-          @atedInputNew(correspondenceAddressForm("addressLine1"),
-          '_label ->  Html(messages("ated.address.address")),
-          '_labelClass -> "form-label-bold",
-          '_showConstraints -> false)
+            @govukInput(
+                Input(
+                    label = Label(
+                        content = Text(Messages("ated.address.address.type")),
+                        classes = "govuk-label--s"
+                    ),
+                ).withFormField(correspondenceAddressForm("addressType"))
+            )
 
-          @atedInputNew(correspondenceAddressForm("addressLine2"),
-          '_label ->  Html(messages("ated.address.line-2")),
-          '_labelClass ->  "visuallyhidden",
-          '_showConstraints -> false)
+            @govukInput(
+                Input(
+                    label = Label(
+                        content = Text(Messages("ated.address.address.Line-1")),
+                        classes = "govuk-label--s"
+                    ),
+                ).withFormField(correspondenceAddressForm("addressLine1"))
+            )
 
-          @atedInputNew(correspondenceAddressForm("addressLine3"),
-          '_label ->  Html(messages("ated.address.line-3")),
-          '_labelClass ->  "visuallyhidden",
-          '_showConstraints -> false)
+            @govukInput(
+                Input(
+                    label = Label(
+                        content = Text(Messages("ated.address.address.Line-2")),
+                        classes = "govuk-label--s"
+                    ),
+                ).withFormField(correspondenceAddressForm("addressLine2"))
+            )
 
-          @atedInputNew(correspondenceAddressForm("addressLine4"),
-          '_label ->  Html(messages("ated.address.line-4")),
-          '_labelClass ->  "visuallyhidden",
-          '_showConstraints -> false)
+            @govukInput(
+                Input(
+                    label = Label(
+                        content = Text(Messages("ated.address.address.Line-3")),
+                        classes = "govuk-label--s"
+                    ),
+                ).withFormField(correspondenceAddressForm("addressLine3"))
+            )
+
+            @govukInput(
+                Input(
+                    label = Label(
+                        content = Text(Messages("ated.address.address.Line-4")),
+                        classes = "govuk-label--s"
+                    ),
+                ).withFormField(correspondenceAddressForm("addressLine4"))
+            )
         </div>
 
-        <div class="form-field">
-          @atedDropdown(
-            correspondenceAddressForm("countryCode"),
-            elementOptions = listOfIsoCode,
-            displayEmptyValue = false,
-            '_id -> "countryCode",
-            '_labelClass -> "form-label-bold",
-            '_label -> Html(messages("ated.address.country")))
+        <div class="govuk-form-field">
+            @govukSelect(
+                Select(
+                    label = Label(
+                        classes = "govuk-label--s",
+                        content = Text(messages("ated.address.country"))
+                    ),
+                    items = Seq(SelectItem(Some(""), "")) ++ displayDetails.listOfIsoCode.map {
+                        case (code, country) => SelectItem(
+                            value = Some(code),
+                            text = country
+                        )
+                    }
+                ).withFormField(businessRegistrationForm("correspondenceAddressForm("countryCode"))
+            )
         </div>
 
-        <div class="form-field">
-          @atedInputNew(correspondenceAddressForm("postalCode"),
-          '_label ->  Html(messages("ated.address.postcode")),
-          '_labelClass -> "form-label-bold",
-          '_size ->  "10",
-          '_inputClass -> "field-1-4",
-          '_showConstraints -> false)
+        <div class="govuk-form-field">
+            @govukInput(
+                Input(
+                    label = Label(
+                        content = Text(Messages("ated.address.postcode")),
+                        classes = "govuk-label--s"
+                    ),
+                    classes = "govuk-input--width-10"
+                ).withFormField(correspondenceAddressForm("postalCode"))
+            )
         </div>
 
       </div>
 
     </div>
 
-    <button class="button" id="submit" type="submit">@messages("ated.save-changes")</button>
+    <button class="govuk-button" id="submit" type="submit">@messages("ated.save-changes")</button>
 
 
   }

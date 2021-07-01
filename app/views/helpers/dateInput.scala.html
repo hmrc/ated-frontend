@@ -29,17 +29,17 @@
 @labelAfter = @{ elements.args.getOrElse('_labelAfter, false).asInstanceOf[Boolean] }
 @labelHighlight = @{ elements.args.getOrElse('_labelHighlight, false).asInstanceOf[Boolean] }
 
-<span class="field-wrapper @if( elements.args.get('_divClass) ){ @elements.args.get('_divClass) }">
+<span class="govuk-field-wrapper @if( elements.args.get('_divClass) ){ @elements.args.get('_divClass) }">
   <label for="@elements.field.name.replaceAll("""[\.\[\]]""", "-")"
     class="@if( elements.args.get('_labelClass) ){ @elements.args.get('_labelClass) }
     @if(elements.hasErrors || (parentElements.isDefined && parentElements.get.hasErrors)) {form-field--error}"
     @if(elements.args.contains('_labelDataAttributes)){@elements.args.get('_labelDataAttributes)}
   >
 
-    @elements.errors.collect { case error: String => <span class="error-notification">@messages(error, calculateLowerTaxYearBoundary(periodKey).getYear.toString)</span>}
+    @elements.errors.collect { case error: String => <span class="govuk-error-message">@messages(error, calculateLowerTaxYearBoundary(periodKey).getYear.toString)</span>}
 
     @if(parentElements.isDefined) {
-      @parentElements.get.errors.collect { case error: String => <span class="error-notification">@messages(error, calculateLowerTaxYearBoundary(periodKey).getYear.toString)</span>}
+      @parentElements.get.errors.collect { case error: String => <span class="govuk-error-message">@messages(error, calculateLowerTaxYearBoundary(periodKey).getYear.toString)</span>}
     }
 
     @if(labelHighlight){<strong>}

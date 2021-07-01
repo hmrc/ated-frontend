@@ -17,13 +17,13 @@
 @import models._
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
-@this(atedMain: atedMain)
+@this(atedMain: atedMain, formHelper: FormWithCSR)
 @(periodKey: Int, serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 @import uk.gov.hmrc.play.views.html.helpers._
 @import uk.gov.hmrc.play.views.helpers.MoneyPounds
 @import uk.gov.hmrc.play.views.formatting.Money._
 @import uk.gov.hmrc.play.views.html._
-@import uk.gov.hmrc.play.views.html.helpers._
+@import views.html.helper.form
 @import views.html.helpers._
 @import org.joda.time.format.DateTimeFormat
 @import org.joda.time.LocalDate
@@ -45,7 +45,7 @@
       @if(authContext.delegationModel.isDefined) { @messages("ated.relief-summary.i-confirm-that.agent")} else { @messages("ated.relief-summary.i-declare-that.client")}
     </p>
     @if(authContext.delegationModel.isDefined) {
-    <ul class="list-bullet">
+    <ul class="govuk-list govuk-list--bullet">
       <li id="declaration-confirmation-text">
         @messages("ated.relief-summary.i-confirm-that.bullet-text.agent")
       </li>
@@ -59,7 +59,7 @@
 
     } else {
 
-    <ul class="list-bullet">
+    <ul class="govuk-list govuk-list--bullet">
       <li id="declaration-confirmation-text">
         @messages("ated.relief-summary.i-declare-that.bullet-text.client")
       </li>
@@ -70,10 +70,10 @@
 
 }
 
-  @form(action=controllers.reliefs.routes.ReliefDeclarationController.submit(periodKey)) {
+  @formHelper(action=controllers.reliefs.routes.ReliefDeclarationController.submit(periodKey)) {
 
 
-  <button class="button" id="submit" type="submit">@messages("ated.relief-summary.declaration.submit")</button>
+  <button class="govuk-button" id="submit" type="submit">@messages("ated.relief-summary.declaration.submit")</button>
 
   }
 }

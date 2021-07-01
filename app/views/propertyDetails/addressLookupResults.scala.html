@@ -17,7 +17,7 @@
 @import models._
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
-@this(atedMain: atedMain)
+@this(atedMain: atedMain, formHelper: FormWithCSRF)
 @(id: Option[String],
   periodKey: Int,
   addressResultsForm: Form[AddressSelected],
@@ -25,7 +25,7 @@
   mode: Option[String] = None,
   serviceInfoContent: Html = HtmlFormat.empty,
   backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
-@import uk.gov.hmrc.play.views.html.helpers._
+@import views.html.helper.form
 @import views.html.helpers._
 @import _root_.utils._
 
@@ -39,8 +39,8 @@
   @pageHeadersAndError(backLink, "pre-heading", messages(AtedUtils.getPropertyDetailsPreHeader(mode)), "account-lookup-header", messages("ated.address-lookup.results.header"),
       Some(atedErrorSummary(addressResultsForm, "ated.address-lookup.error.general")))
 
-  <div class="form-group">
-    <span class="heading-small" id="search-criteria-header">@messages("ated.address-lookup.search-criteria.header")</span>
+  <div class="govuk-form-group">
+    <span class="govuk-heading-s" id="search-criteria-header">@messages("ated.address-lookup.search-criteria.header")</span>
     <p id="postcode">@searchResults.searchCriteria.postcode</p>
     <p>
       <a href="@controllers.propertyDetails.routes.AddressLookupController.view(id, periodKey)"
@@ -52,40 +52,52 @@
   </div>
 
 
-  <span class="heading-small" id="search-results-header">@messages("ated.address-lookup.search-results.header")</span>
+  <span class="govuk-heading-s" id="search-results-header">@messages("ated.address-lookup.search-results.header")</span>
 
     @if(searchResults.results.isEmpty){
       <p id="no-address-found"><a>@messages("ated.address-lookup.no-address-found.text")</a></p>
 
-      <div class="form-group">
+      <div class="govuk-form-group">
         <a href="@controllers.propertyDetails.routes.AddressLookupController.manualAddressRedirect(id, periodKey, mode)"
            id="enter-address-link"
            role="button"
-           class="button"
+           class="govuk-button"
            onkeyup='spaceBarHandler(event,"@controllers.propertyDetails.routes.AddressLookupController.manualAddressRedirect(id, periodKey, mode)")'
             >@messages("ated.address-lookup.address-manual-entry-link.title")</a>
       </div>
 
     }else {
-      @form(action=controllers.propertyDetails.routes.AddressLookupController.save(id, periodKey)) {
-        <div class="form-group">
-          @atedInputRadioGroupNew(addressResultsForm("selected"),
-          searchResults.results map (result => result.id -> result.address.toString),
-              '_legend -> messages("ated.address-lookup.results.title"),
-              '_legendClass -> "visuallyhidden",
-              '_labelClass -> "block-label",
-          '_labelAfter -> true
-          )
+      @formHelper(action=controllers.propertyDetails.routes.AddressLookupController.save(id, periodKey)) {
+        <div class="govuk-form-group">
+
+            @govukRadios(
+                Radios(
+                    fieldset = Some(Fieldset(
+                        legend = Some(Legend(
+                            classes = "govuk-visually-hidden",
+                            content = Text(messages(ated.address-lookup.results.title))
+                        ))
+                    )),
+                    items = searchResults.results map (result => result.id -> result.address.toString).map{
+                        case (result => result.id -> result.address.toString) => RadioItem(
+                            value = Some(result),
+                            content = Text(messages(result.address.toString)),
+                            id = Some(result)
+                        )
+                    }
+
+                ).withFormField(addressResultsForm("selected"))
+            )
         </div>
 
-        <div class="form-group">
+        <div class="govuk-form-group">
           <a href="@controllers.propertyDetails.routes.AddressLookupController.manualAddressRedirect(id, periodKey, mode)"
              id="enter-address-link"
              onkeyup='spaceBarHandler(event,"@controllers.propertyDetails.routes.AddressLookupController.manualAddressRedirect(id, periodKey, mode)")'>
             @messages("ated.address-lookup.address-not-in-list-link.title")</a>
         </div>
 
-        <button class="button" id="submit" type="submit">@messages("ated.save-and-continue")</button>
+        <button class="govuk-button" id="submit" type="submit">@messages("ated.save-and-continue")</button>
 
       }
   }

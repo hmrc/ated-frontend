@@ -26,19 +26,19 @@
 
   <p id="change-liability-ated-ref" class="font-xsmall">@messages("ated.refNo", authContext.atedReferenceNumber)</p>
 
-  <h1 class="heading-xlarge" id="edit-liability-summary-header">
+  <h1 class="govuk-heading-xl" id="edit-liability-summary-header">
     @messages("ated.edit-liability.summary.print.header", organisationName.getOrElse(""))
   </h1>
 
-  <p class="paragraph" id="details-text">@messages("ated.property-details-summary.details-text", periodStartDate(changeLiability.periodKey).toString(messages("ated.date-format")), periodEndDate(changeLiability.periodKey).toString(messages("ated.date-format")))</p>
+  <p class="govuk-body" id="details-text">@messages("ated.property-details-summary.details-text", periodStartDate(changeLiability.periodKey).toString(messages("ated.date-format")), periodEndDate(changeLiability.periodKey).toString(messages("ated.date-format")))</p>
 
   <table id="property-summary" class="ated-table-wrap">
     <tr>
-      <td class="heading-medium ated-two-thirds" id="edit-liability-header">@messages("ated.property-details-summary.table.property-details.header")</td>
+      <td class="govuk-heading-m ated-two-thirds" id="edit-liability-header">@messages("ated.property-details-summary.table.property-details.header")</td>
       <td></td>
     </tr>
     <tr>
-      <td id="property-address-label" class="heading-small">@messages("ated.property-details-summary.table.property-details.address.label")</td>
+      <td id="property-address-label" class="govuk-heading-s">@messages("ated.property-details-summary.table.property-details.address.label")</td>
       <td id="property-address-value">
         <span id="address-line-1">@changeLiability.addressProperty.line_1</span><br/>
         <span id="address-line-2">@changeLiability.addressProperty.line_2</span><br/>
@@ -47,20 +47,20 @@
         @if(changeLiability.addressProperty.postcode.isDefined){<span id="address-postcode">@changeLiability.addressProperty.postcode</span>}</td>
     </tr>
     <tr>
-      <td id="property-title-number-label" class="heading-small">@messages("ated.property-details-summary.table.property-details.title-number.label")</td>
+      <td id="property-title-number-label" class="govuk-heading-s">@messages("ated.property-details-summary.table.property-details.title-number.label")</td>
       <td id="property-title-number">@changeLiability.title.map(_.titleNumber).getOrElse("")</td>
     </tr>
     <tr>
-      <td class="heading-medium td-height" id="property-value-header">@messages("ated.property-details-summary.table.property-value.header")</td>
+      <td class="govuk-heading-m td-height" id="property-value-header">@messages("ated.property-details-summary.table.property-value.header")</td>
       <td></td>
     </tr>
     @for((valueObj, index) <- valuesToDisplay.zipWithIndex) {
     <tr>
-      <td id="property-value-label-@index" class="heading-small">@messages(getPeriodValueMessage(index, valuesToDisplay.size))</td>
+      <td id="property-value-label-@index" class="govuk-heading-s">@messages(getPeriodValueMessage(index, valuesToDisplay.size))</td>
       <td id="property-value-value-@index">@formattedPounds(valueObj.propertyValue)</td>
     </tr>
     <tr>
-      <td id="property-date-of-valuation-label-@index" class="heading-small">@messages("ated.form-bundle.view.isValuedByAgent.message")</td>
+      <td id="property-date-of-valuation-label-@index" class="govuk-heading-s">@messages("ated.form-bundle.view.isValuedByAgent.message")</td>
       @if(changeLiability.value.map(x => x.isValuedByAgent.getOrElse()).contains(true)) {
           <td id="property-is-Valued-by-agent-yes-@index">@messages("ated.form-bundle.view.isValuedByAgent.yes")</td>
       }else{
@@ -71,72 +71,72 @@
 
     @if(changeLiability.bankDetails.exists(_.hasBankDetails)){
       <tr>
-        <td class="heading-medium td-height" id="bank-details-header">@messages("ated.edit-liability.summary.bank-details.header")</td>
+        <td class="govuk-heading-m td-height" id="bank-details-header">@messages("ated.edit-liability.summary.bank-details.header")</td>
         <td></td>
       </tr>
       <tr>
-        <td id="account-holder-name-label" class="heading-small">@messages("ated.edit-liability.summary.bank-details.account-holder-name")</td>
+        <td id="account-holder-name-label" class="govuk-heading-s">@messages("ated.edit-liability.summary.bank-details.account-holder-name")</td>
         <td id="account-holder-name-value">@changeLiability.bankDetails.flatMap(_.bankDetails.map(_.accountName))</td>
       </tr>
       @if(changeLiability.bankDetails.flatMap(_.bankDetails.flatMap(_.hasUKBankAccount)).contains(true)){
         <tr>
-          <td id="account-number-label" class="heading-small">@messages("ated.edit-liability.summary.bank-details.account-number")</td>
+          <td id="account-number-label" class="govuk-heading-s">@messages("ated.edit-liability.summary.bank-details.account-number")</td>
           <td id="account-number-value">@changeLiability.bankDetails.flatMap(_.bankDetails.map(_.accountNumber))</td>
         </tr>
         <tr>
-          <td id="sort-code-label" class="heading-small">@messages("ated.edit-liability.summary.bank-details.sort-code")</td>
+          <td id="sort-code-label" class="govuk-heading-s">@messages("ated.edit-liability.summary.bank-details.sort-code")</td>
           <td id="sort-code-value">@changeLiability.bankDetails.flatMap(_.bankDetails.map(_.sortCode))</td>
         </tr>
       }else {
         <tr>
-          <td id="iban-label" class="heading-small">@messages("ated.edit-liability.summary.bank-details.iban")</td>
+          <td id="iban-label" class="govuk-heading-s">@messages("ated.edit-liability.summary.bank-details.iban")</td>
           <td id="iban-value">@changeLiability.bankDetails.flatMap(_.bankDetails.map(_.iban))</td>
         </tr>
         <tr>
-          <td id="bic-swift-code-label" class="heading-small">@messages("ated.edit-liability.summary.bank-details.bic-swift-code")</td>
+          <td id="bic-swift-code-label" class="govuk-heading-s">@messages("ated.edit-liability.summary.bank-details.bic-swift-code")</td>
           <td id="bic-swift-code-value">@changeLiability.bankDetails.flatMap(_.bankDetails.map(_.bicSwiftCode))</td>
         </tr>
       }
     }
 
     <tr>
-      <td class="heading-medium td-height" id="dates-of-liability-header">@messages("ated.property-details-summary.table.dates-of-liability.header")</td>
+      <td class="govuk-heading-m td-height" id="dates-of-liability-header">@messages("ated.property-details-summary.table.dates-of-liability.header")</td>
       <td></td>
     </tr>
     @for((period, index) <- periods.zipWithIndex) {
     <tr>
-      <td id="return-type-@index" class="td-top heading-small">@messages(period.description.getOrElse(""))</td>
+      <td id="return-type-@index" class="td-top govuk-heading-s">@messages(period.description.getOrElse(""))</td>
       <td id="period-@index" class="td-top">@messages("ated.property-details-summary.table.period.text", period.startDate.toString(messages("ated.date-format")), period.endDate.toString(messages("ated.date-format")))</td>
     </tr>
     }
     <tr>
-      <td class="heading-medium td-height" id="avoidance-scheme-header">@messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.header")</td>
+      <td class="govuk-heading-m td-height" id="avoidance-scheme-header">@messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.header")</td>
       <td></td>
     </tr>
     <tr>
-      <td id="avoidance-scheme-label" class="heading-small">@messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.label")</td>
+      <td id="avoidance-scheme-label" class="govuk-heading-s">@messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.label")</td>
       <td id="avoidance-scheme-value">@changeLiability.period.map(v => v.taxAvoidanceScheme.fold("")(x=>x))</td>
     </tr>
     <tr>
-      <td id="promoter-reference-label" class="td-top heading-small">@messages("ated.property-details-summary.table.property-ated-details.promoter-reference.label")</td>
+      <td id="promoter-reference-label" class="td-top govuk-heading-s">@messages("ated.property-details-summary.table.property-ated-details.promoter-reference.label")</td>
       <td id="promoter-reference-value" class="td-top">@changeLiability.period.map(v => v.taxAvoidancePromoterReference.fold("")(x=>x))</td>
     </tr>
     <tr>
-      <td class="heading-medium td-height" id="supporting-info-header">@messages("ated.property-details-summary.table.supporting-info.header")</td>
+      <td class="govuk-heading-m td-height" id="supporting-info-header">@messages("ated.property-details-summary.table.supporting-info.header")</td>
       <td></td>
     </tr>
     <tr>
-      <td id="additional-information-label" class="heading-small">@messages("ated.property-details-summary.table.property-ated-details.additional-information.label")</td>
+      <td id="additional-information-label" class="govuk-heading-s">@messages("ated.property-details-summary.table.property-ated-details.additional-information.label")</td>
       <td id="additional-information-value">
       @changeLiability.period.map(v => v.supportingInfo.fold("")(x=>x))
       </td>
     </tr>
     <tr>
-      <td class="heading-medium td-height" id="return-status-header">@messages("ated.edit-liability.summary.bank-details.return-status.header")</td>
+      <td class="govuk-heading-m td-height" id="return-status-header">@messages("ated.edit-liability.summary.bank-details.return-status.header")</td>
       <td class="td-height"></td>
     </tr>
     <tr>
-      <td id="return-status-label" class="heading-small">@messages("ated.property-details-summary.table.property-ated-details.return-status.label")</td>
+      <td id="return-status-label" class="govuk-heading-s">@messages("ated.property-details-summary.table.property-ated-details.return-status.label")</td>
       <td id="return-status-value">@messages("ated.property-details-summary.status.text")</td>
     </tr>
   </table>
@@ -153,7 +153,7 @@
   <p id="ated-charge-text-changed">@messages("ated.property-details-summary.table.revised-ated-charge-changed.text")</p>
   }
 
-  <p id="ated-charge-value" class="heading-xlarge">
+  <p id="ated-charge-value" class="govuk-heading-xl">
     @changeLiability.calculated.flatMap(x=>x.liabilityAmount.map(y=>formattedPounds(y)))
   </p>
 
@@ -161,7 +161,7 @@
   <div class="sign-labels">@messages("ated.print.name")</div>
   <div class="sign-labels">@messages("ated.date")</div>
 
-  <div class="form-group">
+  <div class="govuk-form-group">
     <div class="sign-box"></div>
     <div class="sign-box"></div>
     <div class="sign-box"></div>

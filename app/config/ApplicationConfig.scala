@@ -33,8 +33,7 @@ trait AppConfig {
 }
 
 class ApplicationConfig @Inject()(val conf: ServicesConfig,
-                                  val environment: Environment,
-                                  val templateError: views.html.global_error) extends CountryCodeUtils with AppConfig with FeatureSwitching {
+                                  val environment: Environment) extends CountryCodeUtils with AppConfig with FeatureSwitching {
 
   private def loadConfig(key: String) = conf.getString(key)
 
@@ -79,4 +78,9 @@ class ApplicationConfig @Inject()(val conf: ServicesConfig,
   lazy val agentRedirectedToMandate: String = conf.getString("microservice.services.agent-client-mandate-frontend.atedAgentJourneyStartUri")
   lazy val atedPeakStartDay: String = conf.getString(key = "atedPeakStartDay")
 
+  lazy val cookies: String = conf.getString("urls.footer.cookies")
+  lazy val accessibilityStatement: String = conf.getString("urls.footer.accessibility_statement")
+  lazy val privacy: String = conf.getString("urls.footer.privacy_policy")
+  lazy val termsConditions: String = conf.getString("urls.footer.terms_and_conditions")
+  lazy val govukHelp: String = conf.getString("urls.footer.help_page")
 }

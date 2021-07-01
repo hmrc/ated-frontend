@@ -21,30 +21,31 @@
 
 
 @if(form.hasGlobalErrors || form.hasErrors) {
-  <div id="errors" tabindex="-1" role="group" aria-labelledby="form-error-heading" class="validation-summary">
-    <h1 class="heading-medium" id="form-error-heading">@messages("ated.error.summaryHeader")</h1>
-    <ul class="error-summary-list">
-      @form.errors.zipWithIndex.map { case (error, i) =>
-        @defining(
-          error.args.nonEmpty match {
-            case true =>
-              if (error.key.nonEmpty) {
-                error.key + error.args.fold("") ( _ + "." + _ )
-              } else {
-                error.args.head.toString
+  <div id="errors" tabindex="-1" role="group" aria-labelledby="form-error-heading" class="govuk-error-summary">
+    <h1 class="govuk-error-summary__title" id="form-error-heading">@messages("ated.error.summaryHeader")</h1>
+      <div class="govuk-error-summary__body">
+        <ul class="govuk-list govuk-error-summary__list">
+          @form.errors.zipWithIndex.map { case (error, i) =>
+            @defining(
+              error.args.nonEmpty match {
+                case true =>
+                  if (error.key.nonEmpty) {
+                    error.key + error.args.fold("") ( _ + "." + _ )
+                  } else {
+                    error.args.head.toString
+                  }
+                case _ => error.key
               }
-            case _ => error.key
+            ) { anchor :String =>
+                @if(i+1 <= maxErrorsToShow) {
+                  <li id='@anchor.replaceAll("""[\.\[\]]""", "-")-error'>
+                    <a href="#@anchor" class="error-list" data-focuses="@error.key">
+                    @messages(s"$errorMessageFieldPrefix.$anchor", calculateLowerTaxYearBoundary(periodKey).getYear.toString)
+                    </a>
+                  </li>
+                }
+              }
           }
-        ) { anchor :String =>
-            @if(i+1 <= maxErrorsToShow) {
-              <li class="validation-message" id='@anchor.replaceAll("""[\.\[\]]""", "-")-error'>
-                <a href="#@anchor" class="error-list" data-focuses="@error.key">
-                @messages(s"$errorMessageFieldPrefix.$anchor", calculateLowerTaxYearBoundary(periodKey).getYear.toString)
-                </a>
-              </li>
-            }
-          }
-      }
-    </ul>
-  </div>
+        </ul>
+      </div>
 }

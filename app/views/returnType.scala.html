@@ -16,10 +16,11 @@
 
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
-@this(atedMain: atedMain)
+@this(atedMain: atedMain, formHelper: FormWithCSR, govukRadios: GovukRadios)
 @(periodKey: Int, returnTypeForm: Form[ReturnType],serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
-@import uk.gov.hmrc.play.views.html.helpers._
+@import views.html.helper.form
 @import views.html.helpers._
+@import uk.gov.hmrc.govukfrontend.views.Implicits.RichRadios
 
 @atedMain(title = messages("ated.return-type.title"),
     serviceInfoContent = serviceInfoContent) {
@@ -27,27 +28,36 @@
   @pageHeadersAndError(backLink, "pre-heading", messages("ated.return-type.pre-header"), "return-type-header", messages("ated.return-type.header"),
     Some(atedErrorSummary(returnTypeForm, "ated.return-type.error.general")))
 
-  @form(action=controllers.routes.ReturnTypeController.submit(periodKey)) {
+  @formHelper(action=controllers.routes.ReturnTypeController.submit(periodKey)) {
     <div id="returnType">
       @*** CR = chargeable-return && RR = relief-return ***@
 
-      @atedInputRadioGroupNew(returnTypeForm("returnType"),
-        Seq(
-          "CR" -> messages("ated.return-type.chargeable"),
-          "RR" -> messages("ated.return-type.relief-return")
-         )
-        ,
-        '_legend -> messages("ated.return-type.header"),
-        '_legendClass -> "screen-reader-text",
-        '_labelClass -> "block-label",
-        '_groupClass -> "form-group",
-        '_labelAfter -> true
-      )
+        @govukRadios(
+            Radios(
+                fieldset = Some(Fieldset(
+                    classes = "govuk-radios--inline",
+                    legend = Some(Legend(
+                        classes = "govuk-visually-hidden",
+                        content = Text(Messages("ated.return-type.header"))
+                    ))
+                )),
+                items = Seq(
+                    RadioItem(
+                        content = Text(Messages("ated.return-type.chargeable")),
+                        value = Some("CR")
+                    ),
+                    RadioItem(
+                        content = Text(Messages("ated.return-type.relief-return")),
+                        value = Some("RR")
+                    )
+                )
+            ).withFormField(returnTypeForm("returnType"))
+        )
 
     </div>
 
 
-    <button class="button" id="submit" type="submit">@messages("ated.return-type.button")</button>
+    <button class="govuk-button" id="submit" type="submit">@messages("ated.return-type.button")</button>
 
     }
 

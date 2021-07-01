@@ -27,7 +27,7 @@
 @labelAfter = @{ elements.args.getOrElse('_labelAfter, false).asInstanceOf[Boolean] }
 @labelHighlight = @{ elements.args.getOrElse('_labelHighlight, false).asInstanceOf[Boolean] }
 
-<div class="form-field">
+<div class="govuk-form-field">
     @if(errors.nonEmpty) {
     <div class="@if(errors.nonEmpty|| (parentElements.isDefined && parentElements.get.hasErrors)) {form-field--error}">
         }
@@ -40,7 +40,7 @@
 
         @if(elements.args.get('_fieldsetQuestion).isDefined) {
         <details>
-            <summary aria-controls="details-content-0" tabindex="0" class="summary" id="@if(elements.args.get('_fieldsetAttributesHelpQuestion).isDefined) {@elements.args.get('_fieldsetAttributesHelpQuestion)}">
+            <summary aria-controls="details-content-0" tabindex="0" class="govuk-details__summary" id="@if(elements.args.get('_fieldsetAttributesHelpQuestion).isDefined) {@elements.args.get('_fieldsetAttributesHelpQuestion)}">
                 @elements.args.get('_fieldsetQuestion)
             </summary>
             <div id="details-content-0" class="panel-indent">

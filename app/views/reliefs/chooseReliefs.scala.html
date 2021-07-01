@@ -18,15 +18,14 @@
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
 @import config.featureswitch.FeatureSwitch
-@import uk.gov.hmrc.play.views.html.helpers._
+@import views.html.helper.form
 @import uk.gov.hmrc.play.views.html._
-@import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
 @import views.html.helpers.error._
 @import utils._
 @import config.featureswitch.FeatureSwitching
 
-@this(atedMain: atedMain)
+@this(atedMain: atedMain, formHelper: FormWithCSR)
 
 @(periodKey: Int, reliefsForm: Form[Reliefs], periodStartDate: org.joda.time.LocalDate, serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
@@ -83,15 +82,15 @@
         <p id="lede-text">@messages("ated.choose-reliefs.info")</p>
         <p id="choose-reliefs-label">@messages("ated.choose-reliefs.label")</p>
 
-        @form(action=controllers.reliefs.routes.ChooseReliefsController.send(periodKey)) {
+        @formHelper(action=controllers.reliefs.routes.ChooseReliefsController.send(periodKey)) {
 
-        <fieldset class="form-group">
-            <legend id="choose-reliefs-legend" class="visuallyhidden">@messages("ated.choose-reliefs.header")</legend>
+        <fieldset class="govuk-form-group">
+            <legend id="choose-reliefs-legend" class="govuk-visually-hidden">@messages("ated.choose-reliefs.header")</legend>
 
             <div id="reliefs">
                 @atedSingleCheckBox(reliefsForm("rentalBusiness"),
                     '_label -> messages("ated.choose-reliefs.rentalBusiness"),
-                    '_labelClass -> "block-label")
+                    '_labelClass -> "govuk-label")
 
                     <div id="hidden-rentalBusiness-date" class="panel-indent">
                         @atedDateFieldsFree(
@@ -110,7 +109,7 @@
 
       @atedSingleCheckBox(reliefsForm("openToPublic"),
         '_label -> messages("ated.choose-reliefs.openToPublic"),
-        '_labelClass -> "block-label")
+        '_labelClass -> "govuk-label")
 
       <div id="hidden-openToPublic-date" class="panel-indent">
         @atedDateFieldsFree(
@@ -129,7 +128,7 @@
 
       @atedSingleCheckBox(reliefsForm("propertyDeveloper"),
         '_label -> messages("ated.choose-reliefs.propertyDeveloper"),
-        '_labelClass -> "block-label")
+        '_labelClass -> "govuk-label")
 
       <div id="hidden-propertyDeveloper-date" class="panel-indent">
         @atedDateFieldsFree(
@@ -147,7 +146,7 @@
 
       @atedSingleCheckBox(reliefsForm("propertyTrading"),
         '_label -> messages("ated.choose-reliefs.propertyTrading"),
-        '_labelClass -> "block-label")
+        '_labelClass -> "govuk-label")
 
       <div id="hidden-propertyTrading-date" class="panel-indent">
         @atedDateFieldsFree(
@@ -165,7 +164,7 @@
 
       @atedSingleCheckBox(reliefsForm("lending"),
         '_label -> messages("ated.choose-reliefs.lending"),
-        '_labelClass -> "block-label")
+        '_labelClass -> "govuk-label")
 
       <div id="hidden-lending-date" class="panel-indent">
         @atedDateFieldsFree(
@@ -183,7 +182,7 @@
 
       @atedSingleCheckBox(reliefsForm("employeeOccupation"),
         '_label -> messages("ated.choose-reliefs.employeeOccupation"),
-        '_labelClass -> "block-label")
+        '_labelClass -> "govuk-label")
 
       <div id="hidden-employeeOccupation-date" class="panel-indent">
         @atedDateFieldsFree(
@@ -201,7 +200,7 @@
 
         @atedSingleCheckBox(reliefsForm("farmHouses"),
         '_label -> messages("ated.choose-reliefs.farmHouses"),
-        '_labelClass -> "block-label")
+        '_labelClass -> "govuk-label")
 
       <div id="hidden-farmHouses-date" class="panel-indent">
         @atedDateFieldsFree(
@@ -219,7 +218,7 @@
 
       @atedSingleCheckBox(reliefsForm("socialHousing"),
         '_label -> messages(chooseReliefsocialHousingMessage),
-        '_labelClass -> "block-label")
+        '_labelClass -> "govuk-label")
 
         <div id="hidden-socialHousing-date" class="panel-indent">
           @atedDateFieldsFree(
@@ -237,9 +236,9 @@
 
       @atedSingleCheckBox(reliefsForm("equityRelease"),
       '_label -> messages("ated.choose-reliefs.equityRelease-reversion"),
-      '_labelClass -> "block-label")
+      '_labelClass -> "govuk-label")
 
-      <div class="form-field">
+      <div class="govuk-form-field">
         <div id="hidden-equityRelease-date" class="panel-indent">
           @atedDateFieldsFree(
           formItem = reliefsForm,
@@ -259,15 +258,15 @@
 
 </fieldset>
 
-    <div class="form-group">
+    <div class="govuk-form-group">
         <p class="confirmation-notice">
             <span class="icon-important"></span>
             <span class="ated-icon-important-text"><strong>@messages("ated.choose-reliefs-further.information.text")</strong></span>
         </p>
     </div>
 
-    <div class="form-group">
-      <button class="button" id="submit" type="submit">@messages("ated.choose-reliefs.continue")</button>
+    <div class="govuk-form-group">
+      <button class="govuk-button" id="submit" type="submit">@messages("ated.choose-reliefs.continue")</button>
     </div>
 
   }

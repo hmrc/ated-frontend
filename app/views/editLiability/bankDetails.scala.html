@@ -17,13 +17,16 @@
 @import models._
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
-
-@this(atedMain: atedMain)
-@(bankDetailsForm: Form[BankDetails], oldFormBundleNo: String, serviceInfoContent: Html = HtmlFormat.empty,
-        backLink: Option[String])(implicit authorisedRequest: StandardAuthRetrievals, messages: Messages,
-        request: Request[AnyContent], appConfig: ApplicationConfig)
-@import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
+@import uk.gov.hmrc.govukfrontend.views.Implicits.RichInput
+@import uk.gov.hmrc.govukfrontend.views.Implicits.RichRadios
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import views.html.helper.form
+
+@this(atedMain: atedMain, formHelper: FormWithCSRF, govukInput: GovukInput, govukRadios : GovukRadios)
+@(bankDetailsForm: Form[BankDetails], oldFormBundleNo: String, serviceInfoContent: Html = HtmlFormat.empty,
+backLink: Option[String])(implicit authorisedRequest: StandardAuthRetrievals, messages: Messages,
+request: Request[AnyContent], appConfig: ApplicationConfig)
 
 @implicitFormInstance = @{ Some(bankDetailsForm) }
 
@@ -47,73 +50,100 @@
   @pageHeadersAndError(backLink, "pre-heading", messages("ated.property-details.pre-header-change"), "bank-details-header",
       messages("ated.bank-details.title"), Some(atedErrorSummary(bankDetailsForm, "ated.bank-details.error-key")))
 
-  @form(action=controllers.editLiability.routes.BankDetailsController.save(oldFormBundleNo)) {
+  @formHelper(action=controllers.editLiability.routes.BankDetailsController.save(oldFormBundleNo)) {
 
-    <div class="form-group" id="hasUKBankAccount-id">
-      @atedInputRadioGroupReveal(
-        bankDetailsForm("hasUKBankAccount"),
-        Seq(
-          "true" -> (messages("ated.label.yes"), Some("hidden-bank-details")),
-          "false" -> (messages("ated.label.no"), Some("hidden-bank-details"))
-        ),
-        '_legend -> messages("ated.bank-details.title"),
-        '_legendClass -> "visuallyhidden",
-        '_groupClass -> "inline",
-        '_labelClass -> "block-label",
-        '_labelAfter -> true
-      )
+    <div class="govuk-form-group" id="hasUKBankAccount-id">
+        @govukRadios(
+            Radios(
+                fieldset = Some(Fieldset(
+                    legend = Some(Legend(
+                        classes = "govuk-visually-hidden",
+                        content = Text(messages(ated.bank-details.title))
+                    ))
+                )),
+                items = Seq(
+                    RadioItem(
+                        content = Text(Messages("ated.label.yes")),
+                        value = Some("true"),
+                        conditionalHtml = Some(conditionalHtml)
+                    ),
+                    RadioItem(
+                        content = Text(Messages("ated.label.no")),
+                        value = Some("false")
+                        conditionalHtml = Some(conditionalHtml)
+                    )
+                )
+            ).withFormField(bankDetailsForm("hasUKBankAccount"))
+        )
 
     </div>
 
     <div id="hidden-bank-details" class="panel-indent js-hidden">
 
-      <fieldset>
-        <legend class="visuallyhidden">@messages("ated.bank-details.legend")</legend>
+      <fieldset class="govuk-fieldset">
+        <legend class="govuk-visually-hidden">@messages("ated.bank-details.legend")</legend>
 
-          <div id="name-of-person" class="form-field">
-            @atedInputNew(bankDetailsForm("accountName"),
-            '_label -> messages("ated.bank-details.uk-bank-account.name.label"),
-            '_id -> "accountName",
-            '_showConstraints -> false)
-          </div>
+          @govukInput(
+            Input(
+                label = Label(
+                  content = Text(Messages("ated.bank-details.uk-bank-account.name.label")),
+                  classes = "govuk-label--s"
+
+                )
+            ).withFormField(bankDetailsForm("accountName"))
+          )
 
           <div id="hidden-bank-details-uk">
-            <div id="account-number" class="form-field">
-              @atedInputNew(bankDetailsForm("accountNumber"),
-              '_label -> messages("ated.bank-details.uk-bank-account.number.label"),
-              '_id -> "accountNumber",
-              '_showConstraints -> false,
-              '_type -> "number")
-            </div>
-            <div id="sort-code">
-              @sortCode(
-                bankDetailsForm,
-                "sortCode",
-                messages("ated.bank-details.uk-bank-account.sort-code.label")
-              )
-            </div>
-          </div>
-          <div id="hidden-bank-details-non-uk">
-            <div id="iban-code" class="form-field">
-              @atedInputNew(bankDetailsForm("iban"),
-              '_label -> messages("ated.bank-details.non-uk-bank-account.iban.label"),
-              '_id -> "iban",
-              '_showConstraints -> false)
-            </div>
+              @govukInput(
+                Input(
+                    label = Label(
+                      content = Text(Messages("ated.bank-details.uk-bank-account.number.label")),
+                      classes = "govuk-label--s"
 
-            <div id="bic-swift-code">
-              @atedInputNew(bankDetailsForm("bicSwiftCode"),
-              '_label -> messages("ated.bank-details.non-uk-bank-account.bic-swift-code.label"),
-              '_id -> "bicSwiftCode",
-              '_showConstraints -> false)
-            </div>
+                    )
+                ).withFormField(bankDetailsForm("accountNumber"))
+              )
+
+              @govukInput(
+                Input(
+                    label = Label(
+                      content = Text(Messages("ated.bank-details.uk-bank-account.sort-code.label")),
+                      classes = "govuk-label--s"
+
+                    )
+                ).withFormField(bankDetailsForm("sortCode"))
+              )
+
+          </div>
+
+          <div id="hidden-bank-details-non-uk">
+              @govukInput(
+                Input(
+                    label = Label(
+                      content = Text(Messages("ated.bank-details.non-uk-bank-account.iban.label")),
+                      classes = "govuk-label--s"
+
+                    )
+                ).withFormField(bankDetailsForm("iban"))
+              )
+
+              @govukInput(
+                Input(
+                    label = Label(
+                      content = Text(Messages("ated.bank-details.uk-bank-account.bic-swift-code.label")),
+                      classes = "govuk-label--s"
+
+                    )
+                ).withFormField(bankDetailsForm("bicSwiftCode"))
+              )
+
           </div>
 
       </fieldset>
 
     </div>
 
-  <button class="button margin-top-default" id="submit" type="submit">@messages("ated.save-and-continue")</button>
+  <button class="govuk-button margin-top-default" id="submit" type="submit">@messages("ated.save-and-continue")</button>
   }
 
 }

@@ -47,13 +47,13 @@
 
         <h3 id="already-paid-title">@messages("ated.edit.liability.sent.amount-already-paid.title")</h3>
 
-        <ul class="list-bullet">
+        <ul class="govuk-list--bullet">
             <li id="already-paid-text">@Html(messages("ated.edit.liability.sent.amount-already-paid", formattedPounds(amountDueOrRefund)))</li>
         </ul>
 
         <h3 id="not-paid-title">@messages("ated.edit.liability.sent.amount-not-paid.title")</h3>
 
-        <ul class="list-bullet">
+        <ul class="govuk-list--bullet">
             <li id="not-paid-text">@Html(messages("ated.edit.liability.sent.amount-already-paid", formattedPounds(liabilityAmount)))</li>
         </ul>
 
@@ -66,14 +66,14 @@
 
         <h3 id="already-paid-title">@messages("ated.edit.liability.sent.amount-already-paid.title")</h3>
 
-        <ul class="list-bullet">
+        <ul class="govuk-list--bullet">
             <li id="owe-you">@Html(messages("ated.edit.liability.sent.owe-you", formattedPounds(amountDueOrRefund.abs)))</li>
             <li id="repayments">@messages("ated.edit.liability.sent.repayments")</li>
         </ul>
 
         <h3 id="not-paid-title">@messages("ated.edit.liability.sent.amount-not-paid.title")</h3>
 
-        <ul class="list-bullet">
+        <ul class="govuk-list--bullet">
             <li id="you-owe">@Html(messages("ated.edit.liability.sent.you-owe", formattedPounds(liabilityAmount)))</li>
             <li id="payment-reference">@Html(messages("ated.edit-liabilty.sent.payment-reference", paymentReference.getOrElse("")))</li>
             <li id="late-payment">@Html(messages("ated.edit-liabilty.sent.late-payment-pf"))</li>
@@ -85,13 +85,13 @@
 
         <h3 id="already-paid-title">@messages("ated.edit.liability.sent.amount-already-paid.title")</h3>
 
-        <ul class="list-bullet">
+        <ul class="govuk-list--bullet">
             <li id="owe-you">@Html(messages("ated.edit.liability.sent.you-owe-change-in-details",formattedPounds(amountDueOrRefund.abs)))</li>
         </ul>
 
         <h3 id="not-paid-title">@messages("ated.edit.liability.sent.amount-not-paid.title")</h3>
 
-        <ul class="list-bullet">
+        <ul class="govuk-list--bullet">
             <li id="you-owe">@Html(messages("ated.edit.liability.sent.you-owe-change-in-details", formattedPounds(liabilityAmount)))</li>
             <li id="payment-reference">@Html(messages("ated.edit-liabilty.sent.payment-reference", paymentReference.getOrElse("")))</li>
             <li id="late-payment">@Html(messages("ated.edit-liabilty.sent.late-payment-pf"))</li>

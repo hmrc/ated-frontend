@@ -16,12 +16,12 @@
 
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
-@this(atedMain: atedMain)
-@(disposeLiability: models.DisposeLiabilityReturn, serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
-
-@import uk.gov.hmrc.play.views.html.helpers._
 @import _root_.utils.PeriodUtils._
 @import views.html.helpers._
+@import views.html.helper.form
+
+@this(atedMain: atedMain, formHelper: FormWithCSRF)
+@(disposeLiability: models.DisposeLiabilityReturn, serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
 @incomplete = {@Html("<span class=\"status\">" + messages("ated.label.incomplete") + "</span>")}
 
@@ -43,13 +43,13 @@
 
 @disposeLiabilityDateEdit = {
   <a href="@controllers.editLiability.routes.DisposePropertyController.editFromSummary(disposeLiability.id.toString)" id="edit-property-disposal-date">
-    @messages("ated.edit") <span class="visuallyhidden">@messages("ated.dispose-property.summary.disposal-date-label")</span>
+    @messages("ated.edit") <span class="govuk-visually-hidden">@messages("ated.dispose-property.summary.disposal-date-label")</span>
   </a>
 }
 
 @bankDetailsTypeOfAccountEdit = {
 <a href="@controllers.editLiability.routes.DisposeLiabilityBankDetailsController.editFromSummary(disposeLiability.id.toString)" id="edit-bank-details-type"> @messages("ated.edit")
-  <span class="visuallyhidden">@messages("ated.edit-liability.summary.bank-details.type-of-account")</span>
+  <span class="govuk-visually-hidden">@messages("ated.edit-liability.summary.bank-details.type-of-account")</span>
 </a>
 }
 
@@ -69,7 +69,7 @@
 
 @bankDetailsAccountNumberEdit = {
 <a href="@controllers.editLiability.routes.DisposeLiabilityBankDetailsController.editFromSummary(disposeLiability.id.toString)" id="edit-bank-details-account"> @messages("ated.edit")
-  <span class="visuallyhidden">@messages("ated.edit-liability.summary.bank-details.account-number")</span>
+  <span class="govuk-visually-hidden">@messages("ated.edit-liability.summary.bank-details.account-number")</span>
 </a>
 }
 
@@ -79,7 +79,7 @@
 
 @bankDetailsAccountSortCodeEdit = {
 <a href="@controllers.editLiability.routes.DisposeLiabilityBankDetailsController.editFromSummary(disposeLiability.id.toString)" id="edit-bank-details-sortcode"> @messages("ated.edit")
-    <span class="visuallyhidden">@messages("ated.edit-liability.summary.bank-details.sort-code")</span>
+    <span class="govuk-visually-hidden">@messages("ated.edit-liability.summary.bank-details.sort-code")</span>
 </a>
 }
 
@@ -89,7 +89,7 @@
 
 @bankDetailsAccountNumberIBANEdit = {
 <a href="@controllers.editLiability.routes.DisposeLiabilityBankDetailsController.editFromSummary(disposeLiability.id.toString)" id="edit-bank-details-iban"> @messages("ated.edit")
-  <span class="visuallyhidden">@messages("ated.edit-liability.summary.bank-details.iban")</span>
+  <span class="govuk-visually-hidden">@messages("ated.edit-liability.summary.bank-details.iban")</span>
 </a>
 }
 
@@ -99,13 +99,13 @@
 
 @bankDetailsAccountSwiftCodeEdit = {
 <a href="@controllers.editLiability.routes.DisposeLiabilityBankDetailsController.editFromSummary(disposeLiability.id.toString)" id="edit-bank-details-swift-code"> @messages("ated.edit")
-  <span class="visuallyhidden">@messages("ated.edit-liability.summary.bank-details.bic-swift-code")</span>
+  <span class="govuk-visually-hiddenn">@messages("ated.edit-liability.summary.bank-details.bic-swift-code")</span>
 </a>
 }
 
 @bankDetailsIncompleteEdit = {
 <a href="@controllers.editLiability.routes.DisposeLiabilityHasBankDetailsController.editFromSummary(disposeLiability.id.toString)" id="edit-bank-name-details"> @messages("ated.edit")
-  <span class="visuallyhidden">@messages("ated.edit-liability.summary.bank-details.supply-bank-details")</span>
+  <span class="govuk-visually-hidden">@messages("ated.edit-liability.summary.bank-details.supply-bank-details")</span>
 </a>
 }
 
@@ -116,7 +116,7 @@
   <p id="details-text">@messages("ated.property-details-summary.details-text", periodStartDate(disposeLiability.formBundleReturn.periodKey.toInt).toString(messages("ated.date-format")), periodEndDate(disposeLiability.formBundleReturn.periodKey.toInt).toString(messages("ated.date-format")))</p>
 
   <section class="cya-wrapper" id="cya-property-details">
-    <h2 id="cya-property-details-header" class="heading-medium">@messages("ated.property-details-summary.table.property-details.header")</h2>
+    <h2 id="cya-property-details-header" class="govuk-heading-m">@messages("ated.property-details-summary.table.property-details.header")</h2>
     @cyaRows(
       Seq(
         CyaRow(
@@ -141,8 +141,8 @@
 
   @if(disposeLiability.bankDetails.map(_.hasBankDetails) == Some(true)){
 
-    <div class="grid-wrapper">
-      <h2 class="heading-medium" id="bank-details-header">@messages("ated.edit-liability.summary.bank-details.header")</h2>
+    <div class="govuk-grid-wrapper">
+      <h2 class="govuk-heading-m" id="bank-details-header">@messages("ated.edit-liability.summary.bank-details.header")</h2>
     </div>
 
     @if(!disposeLiability.bankDetails.flatMap(_.bankDetails).isDefined) {
@@ -255,7 +255,7 @@
   </section>
 
   <section class="cya-wrapper" id="cya-return-status">
-    <h2 id="return-status-header" class="heading-medium">@messages("ated.property-details-summary.table.property-ated-details.return-status.header")</h2>
+    <h2 id="return-status-header" class="govuk-heading-m">@messages("ated.property-details-summary.table.property-ated-details.return-status.header")</h2>
     @cyaRows(
       Seq(
         CyaRow(
@@ -273,7 +273,7 @@
     <div class="margin-bottom-default">
       <p id="ated-charge-text">
         @messages("ated.property-details-summary.table.ated-charge.text")
-        <span class="heading-xlarge" id="ated-charge-value">
+        <span class="govuk-heading-xl" id="ated-charge-value">
         @disposeLiability.calculated.map(x => formattedPounds(x.liabilityAmount))
         </span>
       </p>
@@ -284,7 +284,7 @@
     <span class="panel-indent">@messages("ated.property-details-summary.saved-draft.text")</span>
   </div>
 
-  <p class="margin-bottom-default">
+  <p class="govuk-body margin-bottom-default">
     <a href="@controllers.editLiability.routes.DisposeLiabilitySummaryController.viewPrintFriendlyDisposeLiabilityReturn(disposeLiability.id.toString)" id="print-friendly-edit-liability-link" target="_blank">
       @messages("ated.dispose-property.summary.print.view")
     </a>
@@ -295,8 +295,8 @@
   </p>
 
   @if(DisposeLiabilityReturn.isComplete(disposeLiability)) {
-    @form(action = controllers.editLiability.routes.DisposeLiabilitySummaryController.submit(disposeLiability.id.toString)) {
-      <button class="button" id="submit" type="submit">@messages("ated.confirm-and-continue")</button>
+    @formHelper(action = controllers.editLiability.routes.DisposeLiabilitySummaryController.submit(disposeLiability.id.toString)) {
+      <button class="govuk-button" id="submit" type="submit">@messages("ated.confirm-and-continue")</button>
     }
   }
 }

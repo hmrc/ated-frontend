@@ -16,10 +16,12 @@
 
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
-@import uk.gov.hmrc.play.views.html.helpers._
+@import views.html.helper.form
 @import views.html.helpers._
+@import uk.gov.hmrc.govukfrontend.views.Implicits.RichRadios
 
-@this(atedMain: atedMain)
+@this(atedMain: atedMain, formHelper: FormWithCSR, govukRadios: GovukRadios)
+
 @(selectPeriodForm: Form[SelectPeriod], periods: List[(String, String)],  serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
 @atedMain(title = messages("ated.select-period.title"),
@@ -30,23 +32,42 @@
 
   <p id="details-text">@messages("ated.select-period.text")</p>
 
-  @form(action=controllers.routes.SelectPeriodController.submit()) {
+  @formHelper(action=controllers.routes.SelectPeriodController.submit()) {
 
   <div id="period">
+
+      @govukRadios(
+        Radios(
+            fieldset = Some(Fieldset(
+                classes = "govuk-radios--inline",
+                legend = Some(Legend(
+                    classes = "govuk-visually-hidden",
+                    content = Text(Messages("ated.select-period.header"))
+                ))
+            )),
+            items = Seq(
+                RadioItem(
+                    content = Text(Messages("ated.select-period.more-years")),
+                    value = Some("showMoreYears")
+                )
+            )
+        ).withFormField(selectPeriodForm("period"))
+      )
+
     @atedInputRadioGroupNew(selectPeriodForm("period"),
     periods,
     '_fieldsetAttributesHelpQuestion -> "showMoreYears",
     '_legend -> messages("ated.select-period.header"),
     '_fieldsetQuestion -> messages("ated.select-period.more-years"),
     '_HelpQuestionAnswer -> Html(messages("ated.select-period.more-years.answer")),
-    '_labelClass -> "block-label",
-    '_legendClass -> "visuallyhidden",
-    '_groupClass -> "form-group",
+    '_labelClass -> "govuk-label govuk-radios__labell",
+    '_legendClass -> "govuk-visually-hidden",
+    '_groupClass -> "govuk-form-group",
     '_labelAfter -> true
     )
   </div>
 
-  <button class="button" id="submit" type="submit">@messages("ated.return-type.button")</button>
+  <button class="govuk-button" id="submit" type="submit">@messages("ated.return-type.button")</button>
 
   }
 

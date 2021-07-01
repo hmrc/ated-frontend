@@ -15,8 +15,9 @@
  *@
 
 @import config.ApplicationConfig
-@(formItem:Form[_], fieldName: String, label: Html, isNested: Boolean, defaultDateOption: Option[org.joda.time.LocalDate], periodKey: Int, args: (Symbol,Any)*)(implicit messages: Messages, formInstance: Option[Form[_]] = None, request: Request[AnyContent], appConfig: ApplicationConfig)
-@import uk.gov.hmrc.play.mappers.DateFields._
+@(formItem:Form[_], fieldName: String, govukDate: GovukDateInput, label: Html, isNested: Boolean, defaultDateOption: Option[org.joda.time.LocalDate], periodKey: Int, args: (Symbol,Any)*)(implicit messages: Messages, formInstance: Option[Form[_]] = None, request: Request[AnyContent], appConfig: ApplicationConfig)
+@import uk.gov.hmrc.govukfrontend.views.html.components.GovukDateInput
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 @import views.html.helper._
 @import views.helpers._
 
@@ -41,7 +42,7 @@
     <legend id="@elements.args.get('_idName)_legend" class="form-label-bold @if( elements.args.get('_legendClass) ) {@elements.args.get('_legendClass)}">@label</legend>
 
     @if(elements.args.get('_hintText).isDefined) {
-      <span class="form-hint" id="@if( elements.args.get('_idName) ) {@elements.args.get('_idName)_hint} else {@(fieldName)_hint}">
+      <span class="govuk-form-hint" id="@if( elements.args.get('_idName) ) {@elements.args.get('_idName)_hint} else {@(fieldName)_hint}">
         @elements.args.get('_hintText)
       </span>
     }
@@ -66,46 +67,53 @@
       @isOptional = {@if(elements.args.contains('_isRequired)) @{ if(elements.args.get('_isRequired).get == true) {true} else {false}} else {false}}
 
       @dayElem = @{fieldName + "." + day}
-
-      @dateInput(
-      formItem(dayElem),
-        periodKey,
-      '_label -> messages("date.fields.day"),
-      '_inputClass -> "text day validate ated-date-width form-control",
-      '_divClass -> "date-form-group day inline-fields",
-      '_emptyValueText -> defaultDateOption.map(_.getDayOfMonth.toString).getOrElse(""),
-      '_type -> "number",
-      '_validationName -> "day",
-      '_dataAttributes -> "min=1 max=31"
-      )
-
       @monthElem = @{fieldName + "." + month}
-
-      @dateInput(
-      formItem(monthElem),
-        periodKey,
-      '_label -> messages("date.fields.month"),
-      '_inputClass -> "text month validate ated-date-width form-control",
-      '_divClass -> "date-form-group month inline-fields",
-      '_emptyValueText -> defaultDateOption.map(_.getMonthOfYear.toString).getOrElse(""),
-      '_type -> "number",
-      '_validationName -> "month",
-      '_dataAttributes -> "min=1 max=12"
-      )
-
       @yearElem = @{fieldName + "." + year}
 
-      @dateInput(
-      formItem(yearElem),
-        periodKey,
-      '_label -> messages("date.fields.year"),
-      '_inputClass -> "text year validate ated-date-width form-control",
-      '_divClass -> "date-form-group year form-group-year inline-fields",
-      '_emptyValueText -> defaultDateOption.map(_.getYear.toString).getOrElse(""),
-      '_type -> "number",
-      '_validationName -> "year",
-      '_dataAttributes -> "min=1700"
+      @dateInputItems = @{
+        val day = InputItem(
+          id = dayElem,
+          name = dayElem,
+          classes = ("govuk-input--width-2 " + (if(form.error(dayElem).isDefined) "govuk-input--error" else "")),
+          value = form(dayElem).value,
+          label = messages("date.fields.day")
+        )
+        val month = InputItem(
+          id = monthElem,
+          name = monthElem,
+          classes = ("govuk-input--width-2 " + (if(form.error(monthElem).isDefined) "govuk-input--error" else "")),
+          value = form(monthElem).value,
+          label = messages("date.fields.month")
+        )
+        val year = InputItem(
+          id = yearElem,
+          name = yearElem,
+          classes = ("govuk-input--width-2 " + (if(form.error(yearElem).isDefined) "govuk-input--error" else "")),
+          value = form(yearElem).value,
+          label = messages("label.date.years")
+        )
+
+        Seq(day, month, year)
+      }
+
+      @govukDate(
+        DateInput(
+          id = field,
+          formGroupClasses = (if(form.errors.exists(e => e.key.contains(field))) "govuk-form-group--error" else ""),
+          items = dateInputItems,
+          hint = Hint(
+            content = HtmlContent(helpText.getOrElse(messages("help.date.days.months.years")))
+          ),
+          fieldset = Fieldset(
+            legend = Legend(
+              content = HtmlContent(messages(labelText)),
+              classes = "govuk-!-font-weight-bold"
+            )
+          ),
+          errorMessage = dateErrorMessage(field)
+        )
       )
+
       <div class="clearfix"></div>
     </div>
 

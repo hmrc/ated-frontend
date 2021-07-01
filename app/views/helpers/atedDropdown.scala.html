@@ -26,7 +26,7 @@
 
 @labelAfter = @{ elements.args.getOrElse('_labelAfter, false).asInstanceOf[Boolean] }
 @labelHighlight = @{ elements.args.getOrElse('_labelHighlight, false).asInstanceOf[Boolean] }
-<div class="form-group"
+<div class="govuk-form-group"
      id="@if( elements.args.get('_id) ) {@elements.args.get('_id)_div} else {@elements.field.name.replaceAll("""[\.\[\]]""", "-")_div}">
 @if(elements.hasErrors) {
 <div class="@if(elements.hasErrors || (parentElements.isDefined && parentElements.get.hasErrors)) {form-field--error}">

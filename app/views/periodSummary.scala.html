@@ -37,10 +37,10 @@
         periodEndDate(periodKey).toString(messages("ated.date-format.summary"))),
         subHeaderPrefix = Some(messages("ated.screen-reader.section-name")))
     <div class="tabbed">
-        <div class="form-group">
+        <div class="govuk-form-group">
             <ul id="tablist" class="ated-tabs">
 
-                <li class="tablinks heading-small selected">
+                <li class="tablinks govuk-heading-s selected">
                     <a id="current-returns" href="#current-returns-tab">
                         @messages("ated.period-summary.tabs.current-returns")
                     </a>
@@ -48,7 +48,7 @@
 
                 @if(previousSummaries.flatMap(_.submittedReturns.map(_.oldLiabilityReturns.nonEmpty))) {
 
-                <li class="tablinks heading-small noJsHide">
+                <li class="tablinks govuk-heading-s noJsHide">
                     <a id="past-returns" href="#past-returns-tab">
                         @messages("ated.period-summary.tabs.past-returns")
                     </a>
@@ -69,9 +69,9 @@
 
         <noscript>
             @if(previousSummaries.flatMap(_.submittedReturns.map(_.oldLiabilityReturns.nonEmpty))) {
-            <div class="form-group"><br/>
+            <div class="govuk-form-group"><br/>
                 <ul class="ated-tabs">
-                    <li class="tablinks heading-small selected">
+                    <li class="tablinks govuk-heading-s selected">
                         <a id="past-returns" href="#past-returns-tab">
                             @messages("ated.period-summary.tabs.past-returns")
                         </a>

@@ -27,7 +27,7 @@
 @field = @{formObject(fieldName)}
 
 @if(errors.nonEmpty) {
-    <div class="form-field--error">
+    <div class="govuk-form-field--error">
 }
 
     <fieldset id="fieldset-@{elements.field.id}" class="sort-code">
@@ -44,7 +44,7 @@
 
     @singleBox(elementName: String) = {
         <span class="field-wrapper inline-fields">
-            <label class="visuallyhidden" for="@formObject(elementName).id">@AtedUtils.createLabel(formObject(elementName).name)</label>
+            <label class="govuk-visually-hidden" for="@formObject(elementName).id">@AtedUtils.createLabel(formObject(elementName).name)</label>
             <input type="number"
                    class="text form-control input--xxsmall"
                    id="@formObject(elementName).id"

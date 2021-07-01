@@ -59,6 +59,12 @@ lazy val microservice = Project(appName, file("."))
       libraryDependencies ++= Seq(
         compilerPlugin("com.github.ghik" % "silencer-plugin" % silencerVersion cross CrossVersion.full),
         "com.github.ghik" % "silencer-lib" % silencerVersion % Provided cross CrossVersion.full
+      ),
+      TwirlKeys.templateImports ++= Seq(
+        "uk.gov.hmrc.govukfrontend.views.html.components._",
+        "uk.gov.hmrc.govukfrontend.views.html.helpers._",
+        "uk.gov.hmrc.hmrcfrontend.views.html.{components => hmrcComponents}",
+        "uk.gov.hmrc.hmrcfrontend.views.html.helpers._"
       )
     )
     .disablePlugins(JUnitXmlReportPlugin)

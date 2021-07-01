@@ -17,9 +17,9 @@
 @import models._
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
-@this(atedMain: atedMain)
+@this(atedMain: atedMain, formHelper: FormWithCSRF)
 @(oldFormBundleNum: String, returnType: String, serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
-@import uk.gov.hmrc.play.views.html.helpers._
+@import views.html.helper.form
 @import views.html.helpers._
 @import _root_.utils.AtedUtils._
 
@@ -30,15 +30,15 @@
     @if(authContext.delegationModel.isDefined) { @messages("ated.edit-liability.before-declaration.agent")} else { @messages("ated.edit-liability.before-declaration.client")}
   </p>
 
-  <p>
+  <p class="govuk-body">
     <span class="text-bold"  id="declaration-confirmation-text">
          @if(authContext.delegationModel.isDefined) { @messages("ated.edit-liability.i-confirm-that.bullet-text.agent")} else { @messages("ated.edit-liability.i-declare-that.bullet-text.client")}
     </span>
   </p>
 
-  @form(action=controllers.editLiability.routes.EditLiabilityDeclarationController.submit(oldFormBundleNum)) {
+  @formHelper(action=controllers.editLiability.routes.EditLiabilityDeclarationController.submit(oldFormBundleNum)) {
 
-      <button class="button" id="submit" type="submit">@messages(printSubmitMsg(returnType))</button>
+      <button class="govuk-button" id="submit" type="submit">@messages(printSubmitMsg(returnType))</button>
 
   }
 }

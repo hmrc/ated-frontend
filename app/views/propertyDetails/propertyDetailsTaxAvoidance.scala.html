@@ -18,10 +18,12 @@
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
 
-@this(atedMain: atedMain)
+@this(atedMain: atedMain, formHelper: FormWithCSR, govukInput: GovukInput, govukRadios: GovukRadios)
 @(id: String, periodKey: Int, propertyDetailsForm: Form[PropertyDetailsTaxAvoidance], mode: Option[String], serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
-@import uk.gov.hmrc.play.views.html.helpers._
+@import views.html.helper.form
 @import views.html.helpers._
+@import uk.gov.hmrc.govukfrontend.views.Implicits.RichInput
+@import uk.gov.hmrc.govukfrontend.views.Implicits.RichRadios
 @import _root_.utils._
 
 @implicitFormInstance = @{ Some(propertyDetailsForm) }
@@ -46,7 +48,7 @@
       <div id="whatIsTaxAvoidanceScheme-0" class="panel-indent font-xsmall">
         <p id="taxAvoidanceReveal-p1">@messages("ated.choose-reliefs.avoidance-reveal-line-1")</p>
         <p id="taxAvoidanceReveal-p2">@messages("ated.choose-reliefs.avoidance-reveal-line-2")</p>
-        <ul class="bullets">
+        <ul class="govuk-list govuk-list--bullet">
           <li>@messages("ated.choose-reliefs.avoidance-info-line-1")</li>
           <li>@messages("ated.choose-reliefs.avoidance-info-line-2")</li>
         </ul>
@@ -56,40 +58,61 @@
   </div>
 
 
-  @form(action=controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceController.save(id, periodKey, mode)) {
-    <div class="form-group" id="isTaxAvoidance">
-      @atedInputRadioGroupNew(propertyDetailsForm("isTaxAvoidance"),
-        Seq(
-          "true" -> messages("ated.property-details-period.yes"),
-          "false" -> messages("ated.property-details-period.no")),
-          '_groupClass -> "inline",
-          '_legend -> messages("ated.property-details-period.isTaxAvoidance.header"),
-          '_legendClass -> "visuallyhidden",
-         '_labelClass -> "block-label",
-         '_labelAfter -> true
+  @formHelpers(action=controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceController.save(id, periodKey, mode)) {
+    <div class="govuk-form-group" id="isTaxAvoidance">
+
+        @govukRadios(
+            Radios(
+                fieldset = Some(Fieldset(
+                    classes = "govuk-radios--inline",
+                    legend = Some(Legend(
+                        classes = "govuk-visually-hidden",
+                        content = Text(messages("ated.property-details-period.isTaxAvoidance.header"))
+                    ))
+                )),
+                items = Seq(
+                    RadioItem(
+                        content = Text(Messages("ated.property-details-period.yes")),
+                        value = Some("true")
+                    ),
+                    RadioItem(
+                        content = Text(Messages("ated.property-details-period.no")),
+                        value = Some("false")
+                    )
+                )
+            ).withFormField(propertyDetailsForm("isTaxAvoidance"))
         )
     </div>
-    <div class="form-group">
+    <div class="govuk-form-group">
       <div id="isTaxAvoidance-true-hidden" class="panel-indent">
-        @atedInputNew(propertyDetailsForm("taxAvoidanceScheme"),
-          '_label -> Html(messages("ated.property-details-period.taxAvoidanceScheme")),
-          '_labelClass -> "form-label-bold",
-          '_inputClass -> "form-control-indent",
-          '_id -> "taxAvoidanceScheme",
-          '_hintText -> "For example, 12345678",
-          '_showConstraints -> false)
 
-        @atedInputNew(propertyDetailsForm("taxAvoidancePromoterReference"),
-        '_label -> Html(messages("ated.property-details-period.taxAvoidancePromoterReference")),
-        '_labelClass -> "form-label-bold",
-        '_inputClass -> "form-control-indent",
-        '_id -> "taxAvoidancePromoterReference",
-        '_hintText -> "For example, 12345678",
-        '_showConstraints -> false)
+          @govukInput(
+            Input(
+                label = Label(
+                    content = Text(Messages("ated.property-details-period.taxAvoidanceScheme")),
+                    classes = "govuk-label--s"
+                ),
+                hint = Some(Hint(
+                    content = Text(Messages("For example, 12345678"))
+                )),
+            ).withFormField(propertyDetailsForm("taxAvoidanceScheme"))
+          )
+
+          @govukInput(
+            Input(
+                label = Label(
+                    content = Text(Messages("ated.property-details-period.taxAvoidancePromoterReference")),
+                    classes = "govuk-label--s"
+                ),
+                hint = Some(Hint(
+                    content = Text(Messages("For example, 12345678"))
+                )),
+            ).withFormField(propertyDetailsForm("taxAvoidancePromoterReference"))
+          )
       </div>
     </div>
 
-    <button class="button" id="submit" type="submit">@messages("ated.save-and-continue")</button>
+    <button class="govuk-button" id="submit" type="submit">@messages("ated.save-and-continue")</button>
 
   }
 

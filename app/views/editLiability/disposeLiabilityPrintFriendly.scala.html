@@ -24,13 +24,13 @@
 
 <script src='@controllers.routes.Assets.versioned("javascript/printFriendly.js")'></script>
 
-  <p id="dispose-liability-ated-ref" class="font-xsmall">@messages("ated.refNo", authContext.atedReferenceNumber)</p>
+  <p id="dispose-liability-ated-ref" class="govuk-font-xsmall">@messages("ated.refNo", authContext.atedReferenceNumber)</p>
 
-  <h1 class="heading-xlarge" id="edit-liability-summary-header">
+  <h1 class="govuk-heading-xl" id="edit-liability-summary-header">
     @messages("ated.dispose-property.summary.print.header", organisationName.getOrElse(""))
   </h1>
 
-  <p class="paragraph" id="details-text">@messages("ated.property-details-summary.details-text", periodStartDate(disposeLiability.formBundleReturn.periodKey.toInt).toString(messages("ated.date-format")), periodEndDate(disposeLiability.formBundleReturn.periodKey.toInt).toString(messages("ated.date-format")))</p>
+  <p class="govuk-body" id="details-text">@messages("ated.property-details-summary.details-text", periodStartDate(disposeLiability.formBundleReturn.periodKey.toInt).toString(messages("ated.date-format")), periodEndDate(disposeLiability.formBundleReturn.periodKey.toInt).toString(messages("ated.date-format")))</p>
 
   <table id="property-summary" class="ated-table-wrap">
     <tr>
@@ -104,7 +104,7 @@
     @messages("ated.property-details-summary.table.ated-charge.text")
     </p>
 
-    <p id="ated-charge-value" class="heading-xlarge">
+    <p id="ated-charge-value" class="govuk-heading-xl">
     @disposeLiability.calculated.map(x => formattedPounds(x.liabilityAmount))
     </p>
   }
@@ -113,7 +113,7 @@
   <div class="sign-labels">@messages("ated.print.name")</div>
   <div class="sign-labels">@messages("ated.date")</div>
 
-  <div class="form-group">
+  <div class="govuk-form-group">
     <div class="sign-box"></div>
     <div class="sign-box"></div>
     <div class="sign-box"></div>

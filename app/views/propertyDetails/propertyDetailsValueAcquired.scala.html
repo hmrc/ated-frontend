@@ -19,10 +19,11 @@
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
 
-@this(atedMain: atedMain)
+@this(atedMain: atedMain, formHelper: FormWithCSR, govukInput: GovukInput)
 @(id: String, periodKey: Int, propertyDetailsForm: Form[PropertyDetailsValueOnAcquisition], mode: Option[String], serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String], date: LocalDate)(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
-@import uk.gov.hmrc.play.views.html.helpers._
+@import views.html.helper.form
 @import views.html.helpers._
+@import uk.gov.hmrc.govukfrontend.views.Implicits.RichInput
 @import _root_.utils._
 @import utils.AtedUtils.intToMonth
 
@@ -52,20 +53,23 @@ pageScripts = Some(pageScripts)) {
 Some(atedErrorWithBoundarySummary(propertyDetailsForm, "ated.property-details-value-error.general", None, periodKey)))
 
 
-@form(action = controllers.propertyDetails.routes.PropertyDetailsValueAcquiredController.save(id, periodKey, mode, date)) {
+@formHelper(action = controllers.propertyDetails.routes.PropertyDetailsValueAcquiredController.save(id, periodKey, mode, date)) {
 
 <div>
-    @atedInputValue(propertyDetailsForm("acquiredValue"),
-    '_label -> messages("ated.property-details-value.valueAcquired.valueQuestion"),
-    '_labelClass -> "visuallyhidden",
-    '_inputClass -> "form-control-indent",
-    '_hintText -> messages("ated.property-details-value.valueAcquired.hintText"),
-    '_id -> "acquiredValue",
-    '_showConstraints -> false,
-    '_type -> "text")
+    @govukInput(
+        Input(
+            label = Label(
+                classes = "govuk-label--s",
+                content = Text(Messages("ated.property-details-value.valueAcquired.valueQuestion"))
+            ),
+            hint = Some(Hint(
+                content = Text(Messages("ated.property-details-value.valueAcquired.hintText"))
+            ))
+        ).withFormField(propertyDetailsForm("acquiredValue"))
+    )
 </div>
 
-<button class="button" id="submit" type="submit">@messages("ated.save-and-continue")</button>
+<button class="govuk-button" id="submit" type="submit">@messages("ated.save-and-continue")</button>
 
 
 }

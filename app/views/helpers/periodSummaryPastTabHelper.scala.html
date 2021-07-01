@@ -30,19 +30,19 @@
 
         @b.oldLiabilityReturns.zipWithIndex.map { t =>
 
-        <div class="grid-wrapper row-border">
-            <div class="grid grid-1-2 psp-return">
-                <span class="visuallyhidden">@messages("ated.period-summary.sr.address")</span>
+        <div class="grid-wrapper govuk-grid-row">
+            <div class="grid govuk-grid-column-one-half psp-return">
+                <span class="govuk-visually-hidden">@messages("ated.period-summary.sr.address")</span>
                 @t._1.description
             </div>
 
-            <div class="grid grid-1-4 psp-status">
-                <span class="visuallyhidden">@messages("ated.period-summary-th.status")</span>
+            <div class="grid govuk-grid-column-one-quarter psp-status">
+                <span class="govuk-visually-hidden">@messages("ated.period-summary-th.status")</span>
                 @messages("ated.submitted")
             </div>
 
 
-            <div class="grid grid-1-4 psp-action">
+            <div class="grid govuk-grid-column-one-quarter psp-action">
                 <div id="previous-liability-submitted-@t._2">
                     @if(t._1.changeAllowed) {
                     <a href='@controllers.routes.FormBundleReturnController.view(t._1.formBundleNo, periodKey)'
@@ -63,18 +63,18 @@
         } @*liability-returns end*@
 
         @b.reliefReturns.zipWithIndex.map { t =>
-        <div class="grid-wrapper row-border">
-            <div class="grid grid-1-2 psp-return">
-                <span class="visuallyhidden">@messages("ated.period-summary.sr.relieftype")</span>
+        <div class="grid-wrapper govuk-grid-row">
+            <div class="grid govuk-grid-column-one-half psp-return">
+                <span class="govuk-visually-hidden">@messages("ated.period-summary.sr.relieftype")</span>
                 @t._1.reliefType
             </div>
 
-            <div class="grid grid-1-4 psp-status">
-                <span class="visuallyhidden">@messages("ated.period-summary-th.status")</span>
+            <div class="grid govuk-grid-column-one-quarter psp-status">
+                <span class="govuk-visually-hidden">@messages("ated.period-summary-th.status")</span>
                 @messages("ated.submitted")
             </div>
 
-            <div class="grid grid-1-4 psp-action">
+            <div class="grid govuk-grid-column-one-quarter psp-action">
                 <a id="previous-relief-submitted-@t._2" href='@controllers.reliefs.routes.ViewReliefReturnController.viewReliefReturn(periodKey, t._1.formBundleNo)'
                    aria-label="@messages("ated.period-summary.view-edit.button") @messages(
                 "ated.period-summary.sr.return") @t._1.reliefType">
@@ -86,18 +86,18 @@
         } @*all submitted returns end*@
 
         @data.draftReturns.zipWithIndex.map { t =>
-        <div class="grid-wrapper row-border">
-            <div class="grid grid-1-2 psp-return">
-                <span class="visuallyhidden">@messages("ated.period-summary.sr.address")</span>
+        <div class="grid-wrapper govuk-grid-row">
+            <div class="grid govuk-grid-column-one-half psp-return">
+                <span class="govuk-visually-hidden">@messages("ated.period-summary.sr.address")</span>
                 @t._1.description
             </div>
 
-            <div class="grid grid-1-4 psp-status">
-                <span class="visuallyhidden">@messages("ated.period-summary-th.status")</span>
+            <div class="grid govuk-grid-column-one-quarter psp-status">
+                <span class="govuk-visually-hidden">@messages("ated.period-summary-th.status")</span>
                 @messages("ated.draft")
             </div>
 
-            <div class="grid grid-1-4 psp-action">
+            <div class="grid govuk-grid-column-one-quarter psp-action">
                 @t._1.returnType match {
                 case TypeReliefDraft => {
                 <a id="previous-draft-relief-@t._2" href='@controllers.routes.PeriodSummaryController.viewReturn(periodKey)'

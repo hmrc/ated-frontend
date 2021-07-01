@@ -29,13 +29,13 @@
 @atedMain(title = messages("ated.chargeable-return-confirmation.title"),
           serviceInfoContent = serviceInfoContent) {
 
-  <div id="banner" class="transaction-banner--complete form-group">
-    <h1 class="heading-large" id="value-text">
+  <div id="banner" class="transaction-banner--complete govuk-panel govuk-panel--confirmation govuk-form-group">
+    <h1 class="govuk-heading-l" id="value-text">
       @messages("ated.chargeable-return-confirmation.submitted.text")
     </h1>
   </div>
 
-  <div class="form-group">
+  <div class="govuk-form-group">
     <p id="completed-message">@messages("ated.chargeable-return-confirmation.completed.message")</p>
     <p id="email-message">@messages("ated.chargeable-return-confirmation.email.message")</p>
 
@@ -46,7 +46,7 @@
   </div>
 
   <div class="divider--top--thick"></div>
-  <h2 id="receipt-message-title" class="heading-medium">@messages("ated.chargeable-return-confirmation.charge.heading")</h2>
+  <h2 id="receipt-message-title" class="gov-heading-m">@messages("ated.chargeable-return-confirmation.charge.heading")</h2>
 
   <p id="adjusted-amount">@messages("ated.chargeable-return-confirmation.amount.message")</p>
 
@@ -58,7 +58,7 @@
     <p id="late-payment">@Html(messages("ated.chargeable-return-late-payment.text"))</p>
   }
 
-  <div class="form-group">
+  <div class="govuk-form-group">
     <p id="not-receive-email">
       @messages("ated.chargeable-return-confirmation.not-receive-text")
     </p>

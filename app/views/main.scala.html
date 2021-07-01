@@ -14,35 +14,15 @@
  * limitations under the License.
  *@
 
-@import play.twirl.api.HtmlFormat
 @import config.ApplicationConfig
 @import layouts.{govuk_template => hmrcGovUkTemplate}
 @import uk.gov.hmrc.play.views.html.{helpers => uiHelpers, layouts => uiLayouts}
 @import _root_.utils.SessionUtils
 @import uk.gov.hmrc.play.views.html.layouts.HeadWithTrackingConsent
 
-@import uk.gov.hmrc.play.views.html.layouts.HeaderNav
-@import uk.gov.hmrc.play.views.html.layouts.FooterLinks
-@import uk.gov.hmrc.play.views.html.layouts.MainContent
-@import uk.gov.hmrc.play.views.html.layouts.MainContentHeader
-@import views.html.layouts.GovUkTemplate
-@import uk.gov.hmrc.play.views.html.helpers.ReportAProblemLink
-@import uk.gov.hmrc.play.views.html.layouts.ServiceInfo
-@import uk.gov.hmrc.play.views.html.layouts.BetaBanner
-@import uk.gov.hmrc.play.views.html.layouts.Article
-@import uk.gov.hmrc.play.views.html.layouts.Footer
+@import uk.gov.hmrc.atedfrontend.views.html.layout
 
-@this(govuk_template: GovUkTemplate,
-        layoutHead: HeadWithTrackingConsent,
-        betaBanner: BetaBanner,
-        layoutServiceInfo: ServiceInfo,
-        reportAProblemLink: ReportAProblemLink,
-        layoutArticle: Article,
-        main_content_header: MainContentHeader,
-        main_content: MainContent,
-        footer: Footer,
-        footer_links: FooterLinks,
-        header_nav: HeaderNav)
+@this(layout: layout)
 
 @(appConfig: ApplicationConfig,
   supportLinkEnabled: Boolean = false,
@@ -71,6 +51,15 @@
   }
 }
 
+@linkElement = {
+<link rel="stylesheet" type="text/css" href='@controllers.routes.Assets.versioned("stylesheets/palette.css")'>
+<link rel="stylesheet" type="text/css" href='@controllers.routes.Assets.versioned("stylesheets/focus.css")'>
+<link rel="stylesheet" href='@controllers.routes.Assets.versioned("stylesheets/main.css")'/>
+<link rel="stylesheet" href='@controllers.routes.Assets.versioned("jquery/jquery-ui.min.css")'/>
+<link rel="stylesheet" href='@controllers.routes.Assets.versioned("jquery/jquery-ui.structure.min.css")'/>
+<link rel="stylesheet" href='@controllers.routes.Assets.versioned("stylesheets/urBanner.css")'/>
+@scriptElem
+}
 
 @article = {
   @layoutArticle(content = mainContent, includeGridWrapper = false, articleClasses = None)

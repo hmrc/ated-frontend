@@ -14,36 +14,16 @@
  * limitations under the License.
  *@
 
-@import config.ApplicationConfig
-@import play.twirl.api.HtmlFormat
 @this(layout: layout)
-@(pageTitle: String,
-  heading: String,
-  message: String,
-  message2: Option[String] = None,
-  href: Option[String],
-  hrefMessage: Option[String],
-  postHrefMessage: Option[String],
-  serviceInfoContent: Html = HtmlFormat.empty)(implicit request: Request[_], messages: Messages)
-
-@secondParagraph = @{message2.getOrElse("")}
-@hrefLink = @{href.getOrElse("")}
-@hrefMessages = @{hrefMessage.getOrElse("")}
-@postHref = @{postHrefMessage.getOrElse("")}
+@(pageTitle: String, heading: String, message: String)(implicit request: Request[_], messages: Messages, lang: Lang)
 
 @contentHeader = {
-<h1 id="header" class="govuk-heading-xl">@heading</h1>
+<h1 class="govuk-heading-xl">@heading</h1>
 }
 
 @mainContent = {
- <p class="govuk-body" id="message1">@message
- @if(href.isDefined){
-    <a href=@messages(hrefLink) target="_blank">@messages(hrefMessages)</a> @messages(postHref)
-     }
- </p>
- <p class="gov-uk" id="message2">@message</p>
+<p class="govuk-body">@message</p>
 }
-
 
 @content = {
 @contentHeader
@@ -65,4 +45,4 @@
 <link rel="stylesheet" href='@routes.Assets.versioned("jquery/jquery-ui.structure.min.css")'/>
 }
 
-@layout(Some(messages(pageTitle)), Some(scriptElement))(content)
+@layout(Some(pageTitle), Some(scriptElement))(content)

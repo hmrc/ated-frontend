@@ -70,7 +70,7 @@
             <thead class="govuk-table__head">
                 <tr class="govuk-table__row">
                     <th scope="col" class="govuk-table__header">
-                        <span class="visuallyhidden">@messages("ated.summary-return.table.screen-reader.headings-help")</span>
+                        <span class="govuk-visually-hidden">@messages("ated.summary-return.table.screen-reader.headings-help")</span>
                         @messages("ated.prev-period-summary-th.period")</th>
                     <th id="charge-title" scope="col" class="govuk-table__header govuk-table__header--numeric">@messages("ated.prev-period-summary-th.chargeable")</th>
                     <th id="relief-title" scope="col" class="govuk-table__header govuk-table__header--numeric">@messages("ated.prev-period-summary-th.reliefs")</th>
@@ -84,21 +84,21 @@
                     <a href="@controllers.routes.PeriodSummaryController.view(periodSummaryWithDraft.periodKey)"
                     id="view-change-@i">
                             Returns for @periodSummaryWithDraft.periodKey to @(periodSummaryWithDraft.periodKey.toInt + 1)
-                        <span class="visuallyhidden">
+                        <span class="govuk-visually-hidden">
                            @messages("ated.prev-period-summary-screen-reader")
                         </span>
                     </a>
                 </td>
                 <td id="charge-number-@i" class="govuk-table__cell govuk-table__cell--numeric">
-                    <span class="visuallyhidden">@messages("ated.summary-return.table.screen-reader.number-of") @messages("ated.prev-period-summary-th.chargeable")</span>
+                    <span class="govuk-visually-hidden">@messages("ated.summary-return.table.screen-reader.number-of") @messages("ated.prev-period-summary-th.chargeable")</span>
                     @periodSummaryWithDraft.submittedReturns.fold(0)(a => a.currentLiabilityReturns.size + a.oldLiabilityReturns.size)
                 </td>
                 <td id="reliefs-number-@i" class="govuk-table__cell govuk-table__cell--numeric">
-                    <span class="visuallyhidden">@messages("ated.summary-return.table.screen-reader.number-of") @messages("ated.prev-period-summary-th.reliefs")</span>
+                    <span class="govuk-visually-hidden">@messages("ated.summary-return.table.screen-reader.number-of") @messages("ated.prev-period-summary-th.reliefs")</span>
                     @periodSummaryWithDraft.submittedReturns.fold(0)(a => a.reliefReturns.size)
                 </td>
                 <td id="draft-number-@i" class="govuk-table__cell govuk-table__cell--numeric">
-                    <span class="visuallyhidden">@messages("ated.summary-return.table.screen-reader.number-of") @messages("ated.prev-period-summary-th.drafts")</span>
+                    <span class="govuk-visually-hidden">@messages("ated.summary-return.table.screen-reader.number-of") @messages("ated.prev-period-summary-th.drafts")</span>
                     @periodSummaryWithDraft.draftReturns.size
             </td>
             </tr>
@@ -111,7 +111,7 @@
     @if(summaryReturnsWithDrafts.returnsOtherTaxYears.nonEmpty) {
         <p>
             <a id="create-return"
-            class="button margin-top-default"
+            class="govuk-button margin-top-default"
             onkeyup='spaceBarHandler(event,"@controllers.routes.SelectPeriodController.view")'
                 href="@controllers.routes.SelectPeriodController.view">
                     @messages("ated.prev-period-summary.create-return.link")
@@ -121,15 +121,15 @@
         @if(authContext.delegationModel.isDefined) {
             <p>
                 <a id="create-return"
-                    class="button margin-top-default"
+                    class="govuk-button margin-top-default"
                     onkeyup='spaceBarHandler(event,"@controllers.routes.SelectPeriodController.view")'
                     href="@controllers.routes.SelectPeriodController.view">
                         @messages("ated.prev-period-summary.create-return.button")
                 </a>
             </p>
         } else {
-            <div class="form-group">
-                <a class="button margin-top-default" id="create-return" href="@controllers.routes.SelectPeriodController.view">
+            <div class="govuk-form-group">
+                <a class="govuk-button margin-top-default" id="create-return" href="@controllers.routes.SelectPeriodController.view">
                     @messages("ated.prev-period-summary.create-return.link")
                 </a>
             </div>

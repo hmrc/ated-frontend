@@ -17,7 +17,7 @@
 @import models._
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
-@this(atedMain: atedMain)
+@this(atedMain: atedMain, formHelper: FormWithCSR)
 @(id: String, periodKey: Int,
  propertyDetailsForm: Form[PropertyDetailsInRelief],
  periods : Seq[models.LineItem],
@@ -25,7 +25,7 @@
  serviceInfoContent: Html = HtmlFormat.empty,
  backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
-@import uk.gov.hmrc.play.views.html.helpers._
+@import views.html.helper.form
 @import views.html.helpers._
 @import _root_.utils._
 
@@ -61,7 +61,7 @@
         <td id="return-type-value-@index">@messages((period.description).getOrElse(""))</td>
         <td id="action-@index">
           <a href="@controllers.propertyDetails.routes.PeriodsInAndOutReliefController.deletePeriod(id, period.startDate)" id="delete-period-@index">
-            @messages("ated.property-details-period.periodsInRelief.delete") <span class="visuallyhidden">@period.description @period.startDate.toString(messages("ated.date-format"))</span>
+            @messages("ated.property-details-period.periodsInRelief.delete") <span class="govuk-visually-hidden">@period.description @period.startDate.toString(messages("ated.date-format"))</span>
           </a>
         </td>
       </tr>
@@ -71,19 +71,19 @@
 
   <div class="margin-bottom-default">
     <a href="@controllers.propertyDetails.routes.PeriodDatesLiableController.add(id, periodKey)"
-       id="add-period-charge" class="button--secondary btn-margin">
+       id="add-period-charge" class="govuk-button button--secondary btn-margin">
       @messages("ated.property-details-period.periodsInRelief.add-charge")
     </a>
 
     <a href="@controllers.propertyDetails.routes.PeriodChooseReliefController.add(id, periodKey)"
-       id="add-period-in-relief" class="button--secondary btn-margin">
+       id="add-period-in-relief" class="govuk-button button--secondary btn-margin">
       @messages("ated.property-details-period.periodsInRelief.add-relief")
     </a>
   </div>
 
-  @form(action=controllers.propertyDetails.routes.PeriodsInAndOutReliefController.continue(id, periodKey)) {
+  @formHelper(action=controllers.propertyDetails.routes.PeriodsInAndOutReliefController.continue(id, periodKey)) {
 
-   <button class="button" id="submit" type="submit">@messages("ated.save-and-continue")</button>
+   <button class="govuk-button" id="submit" type="submit">@messages("ated.save-and-continue")</button>
 
   }
 

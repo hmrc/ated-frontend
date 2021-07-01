@@ -16,13 +16,14 @@
 
 @import forms.AtedForms._
 @import models._
-@import uk.gov.hmrc.play.views.html.helpers._
-@import views.html.helpers._
 
+@import views.html.helpers._
+@import views.html.helper.form
+@import uk.gov.hmrc.govukfrontend.views.Implicits.RichRadios
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
 
-@this(atedMain: atedMain)
+@this(atedMain: atedMain, formHelper: FormWithCSR, govukRadios: GovukRadios)
 @(confirmExistingReturn: Form[YesNoQuestion],
         periodKey: Int,
         returnType: String,
@@ -42,21 +43,34 @@
         @messages("ated.confirm-past-return.p1", (periodKey-1).toString, periodKey.toString)
     </p>
 
-    @form(action = controllers.routes.ExistingReturnQuestionController.submit(periodKey, returnType)) {
-        <div class="form-group" id="pastReturn">
-        @atedInputRadioGroupNew(
-            confirmExistingReturn("yesNo"),
-            Seq("true" -> messages("ated.label.yes"),
-                "false" -> messages("ated.label.no")),
-            '_groupClass -> "inline",
-            '_legendClass -> "screen-reader-text",
-            '_legend -> messages("ated.confirm-past-return-question.header"),
-            '_labelClass -> "block-label",
-            '_labelAfter -> true
-        )
+    @formHelper(action = controllers.routes.ExistingReturnQuestionController.submit(periodKey, returnType)) {
+        <div class="govuk-form-group" id="pastReturn">
+
+            @govukRadios(
+                Radios(
+                    fieldset = Some(Fieldset(
+                        classes = "govuk-radios--inline",
+                        legend = Some(Legend(
+                            classes = "screen-reader-text",
+                            content = Text(Messages("ated.confirm-past-return-question.header"))
+                        ))
+                    )),
+                    items = Seq(
+                        RadioItem(
+                            content = Text(Messages("radio-yes")),
+                            value = Some("true")
+                        ),
+                        RadioItem(
+                            content = Text(Messages("radio-no")),
+                            value = Some("false")
+                        )
+                    )
+                ).withFormField(confirmExistingReturn("yesNo"))
+            )
+
         </div>
 
-        <button class="button" id="submit" type="submit">@messages("ated.save-and-continue")</button>
+        <button class="govuk-button" id="submit" type="submit">@messages("ated.save-and-continue")</button>
 
     }
 }

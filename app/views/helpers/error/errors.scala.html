@@ -17,16 +17,29 @@
 @(form: Form[_])(implicit messages: Messages)
 
 @if(form.hasGlobalErrors || form.hasErrors) {
-   <div id="errors" class="validation-summary">
-     <h2 class="heading-small">@messages("ated.error.summaryHeader")</h2>
-     <ul>
-       @for(validationError <- form.errors) {
-         <li class="validation-message" id='#@validationError.key'>
-           <a href='#@validationError.key'>
-               @validationError.message
-             </a>
-        </li>
-       }
-     </ul>
+   <div id="errors" class="govuk-error-summary">
+     <h1 class="govuk-error-summary__title" id="form-error-heading">@messages("ated.error.summaryHeader")</h1>
+       <div class="govuk-error-summary__body">
+           <ul class="govuk-list govuk-error-summary__list">
+               @form.errors.map { error =>
+               @defining(
+               error.args.nonEmpty match {
+               case true =>
+               if (error.key.nonEmpty) {
+               error.key + (error.args.fold("") { _ + "." + _ })
+               } else {
+               error.args.head.toString
+               }
+               case _ => error.key
+               }) { anchor:String =>
+               <li class="validation-message" data-journey="search-page:error:@error.key" id='@anchor.replaceAll("""[\.\[\]]""", "-")-error'>
+                   <a href="#@anchor" class="error-list" data-focuses="@error.key">
+                       @messages(s"$errorMessageFieldPrefix.$anchor")
+                   </a>
+               </li>
+               }
+               }
+           </ul>
+       </div>
    </div>
 }

@@ -29,35 +29,35 @@
 pageScripts = Some(pageScripts)) {
   @pageHeadersAndError(backLink, "pre-heading", messages("ated.company-details.preheader"), "company-details-header", messages("ated.company-details.header"))
 
-<div class="form-group">
+<dl class="govuk-summary-list">
 
-  <div class="grid-wrapper row-border">
-    <div class="grid grid-2-6 cya-question">
-      <span id="company-name-header" class="heading-small">@messages("ated.company-details.name")</span>
-    </div>
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">
+      <span id="company-name-header" class="govuk-heading-s">@messages("ated.company-details.name")</span>
+    </dt>
 
-    <div class="grid grid-1-2 cya-answer">
+    <dd class="govuk-summary-list__value">
       <span id="company-name-val">@registrationDetails.map(_.name)</span>
-    </div>
+    </dd>
   </div>
 
-  <div class="grid-wrapper row-border">
-    <div class="grid grid-2-6 cya-question">
-      <span id="ated-reference-number" class="heading-small">@messages("ated.company-details.ated-reference-number")</span>
-    </div>
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">
+      <span id="ated-reference-number" class="govuk-heading-s">@messages("ated.company-details.ated-reference-number")</span>
+    </dt>
 
-    <div class="grid grid-1-2 cya-answer">
+    <dd class="govuk-summary-list__value">
       <span id="ated-reference-number-val">@authContext.atedReferenceNumber</span>
-    </div>
+    </dd>
 
   </div>
 
-  <div class="grid-wrapper row-border">
-    <div class="grid grid-2-6 cya-question">
-      <span id="registered-address-label" class="heading-small">@messages("ated.company-details.registered-address")</span>
-    </div>
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">
+      <span id="registered-address-label" class="govuk-heading-s">@messages("ated.company-details.registered-address")</span>
+    </dt>
 
-    <div class="grid grid-1-2 cya-answer">
+    <dd class="govuk-summary-list__value">
       @registrationDetails.map { regDetails =>
         <div id="registered-address-line-1">@regDetails.addressDetails.addressLine1</div>
         <div id="registered-address-line-2">@regDetails.addressDetails.addressLine2</div>
@@ -72,48 +72,48 @@ pageScripts = Some(pageScripts)) {
           }
         <span id="registered-country">@appConfig.getSelectedCountry(regDetails.addressDetails.countryCode)</span>
       }
-    </div>
+    </dd>
 
-    <div class="grid grid-1-6 cya-change">
+    <dd class="govuk-summary-list__actions">
       @registrationDetails.map{ regDetails=>
         @if(regDetails.isEditable){
-          <a href='@controllers.subscriptionData.routes.RegisteredDetailsController.edit' id="registered-edit">@messages("ated.company-details.registered-address.edit") <span class="visuallyhidden">@messages("ated.company-details.registered-address")</span></a></td>
+          <a href='@controllers.subscriptionData.routes.RegisteredDetailsController.edit' id="registered-edit">@messages("ated.company-details.registered-address.edit") <span class="govuk-visually-hidden">@messages("ated.company-details.registered-address")</span></a></td>
         }
       }
-    </div>
+    </dd>
   </div>
 
   @if(overseasCompanyRegistration.isDefined){
 
-    <div class="grid-wrapper row-border">
-      <div class="grid grid-2-6 cya-question">
-        <span id="non-uk-company-registration-label" class="heading-small">@messages("ated.company-details.overseas_reg_number")</span>
-      </div>
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">
+        <span id="non-uk-company-registration-label" class="govuk-heading-s">@messages("ated.company-details.overseas_reg_number")</span>
+      </dt>
 
-      <div class="grid grid-1-2 cya-answer">
+      <dd class="govuk-summary-list__value">
         <div id="non-uk-company-registration">
           <div id="reg_number">@overseasCompanyRegistration.get.idNumber</div>
           <div id="reg_country">@appConfig.getSelectedCountry(overseasCompanyRegistration.get.issuingCountryCode)</div>
           <div id="reg_issuer">@overseasCompanyRegistration.get.issuingInstitution</div>
         </div>
-      </div>
+      </dd>
 
-      <div class="grid grid-1-6 cya-change">
+      <dd class="govuk-summary-list__actions">
         @registrationDetails.map{ regDetails=>
           @if(regDetails.isEditable){
-            <a href='@controllers.subscriptionData.routes.OverseasCompanyRegistrationController.edit' id="registered-edit-os">@messages("ated.company-details.registered-address.edit") <span class="visuallyhidden">@messages("ated.company-details.overseas_reg_number")</span></a></td>
+            <a href='@controllers.subscriptionData.routes.OverseasCompanyRegistrationController.edit' id="registered-edit-os">@messages("ated.company-details.registered-address.edit") <span class="govuk-visually-hidden">@messages("ated.company-details.overseas_reg_number")</span></a></td>
           }
         }
-      </div>
+      </dd>
     </div>
   }
 
-  <div class="grid-wrapper row-border">
-    <div class="grid grid-2-6 cya-question">
-      <span id="correspondence-address-label" class="heading-small">@messages("ated.company-details.correspondence-address")</span>
-    </div>
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">
+      <span id="correspondence-address-label" class="govuk-heading-s">@messages("ated.company-details.correspondence-address")</span>
+    </dt>
 
-  <div id="correspondence-address" class="grid grid-1-2 cya-answer">
+  <div id="correspondence-address" class="govuk-summary-list__value">
     @correspondence.map { correspondenceData =>
       <div id="line_1">@correspondenceData.addressDetails.addressLine1</div>
       <div id="line_2">@correspondenceData.addressDetails.addressLine2</div>
@@ -130,17 +130,17 @@ pageScripts = Some(pageScripts)) {
     }
   </div>
 
-    <div class="grid grid-1-6 cya-change">
-      <a href='@controllers.subscriptionData.routes.CorrespondenceAddressController.editAddress' id="correspondence-edit">@messages("ated.company-details.correspondence-address.edit") <span class="visuallyhidden">@messages("ated.company-details.correspondence-address")</span></a></td>
-    </div>
+    <dd class="govuk-summary-list__actions">
+      <a href='@controllers.subscriptionData.routes.CorrespondenceAddressController.editAddress' id="correspondence-edit">@messages("ated.company-details.correspondence-address.edit") <span class="govuk-visually-hidden">@messages("ated.company-details.correspondence-address")</span></a></td>
+    </dd>
   </div>
 
-   <div class="grid-wrapper row-border">
-     <div class="grid grid-2-6 cya-question">
-       <span id="contact-details-label" class="heading-small">@messages("ated.company-details.contact-address")</span>
-     </div>
+   <div class="govuk-summary-list__row">
+     <dt class="govuk-summary-list__key">
+       <span id="contact-details-label" class="govuk-heading-s">@messages("ated.company-details.contact-address")</span>
+     </dt>
 
-     <div class="grid grid-1-2 cya-answer">
+     <dd class="govuk-summary-list__value">
        <div id="contact-details">
          @correspondence.map { correspondenceData =>
            @correspondenceData.contactDetails.map { contactDetailsData =>
@@ -156,20 +156,20 @@ pageScripts = Some(pageScripts)) {
            }
          }
        </div>
-     </div>
+     </dd>
 
-     <div class="grid grid-1-6 cya-change">
-       <a href='@controllers.subscriptionData.routes.EditContactDetailsController.edit' id="contactdetails-edit">@messages("ated.contact-address.edit") <span class="visuallyhidden">@messages("ated.company-details.contact-address")</span></a>
-     </div>
+     <dd class="govuk-summary-list__actions">
+       <a href='@controllers.subscriptionData.routes.EditContactDetailsController.edit' id="contactdetails-edit">@messages("ated.contact-address.edit") <span class="govuk-visually-hidden">@messages("ated.company-details.contact-address")</span></a>
+     </dd>
    </div>
 
-  <div class="grid-wrapper row-border">
+  <div class="govuk-summary-list__row">
 
-    <div class="grid grid-2-6 cya-question">
-      <span id="contact-pref-label" class="heading-small">@messages("ated.company-details.contact-preference.label")</span>
-    </div>
+    <dt class="govuk-summary-list__key">
+      <span id="contact-pref-label" class="govuk-heading-s">@messages("ated.company-details.contact-preference.label")</span>
+    </dt>
 
-    <div class="grid grid-1-2 cya-answer">
+    <dd class="govuk-summary-list__value">
       <span id="contact-pref-val">
         @if(emailConsent) {
           @correspondence.map(_.contactDetails.map(_.emailAddress))
@@ -177,51 +177,51 @@ pageScripts = Some(pageScripts)) {
           @messages("ated.property-details-summary.field-blank")
         }
       </span>
-    </div>
+    </dd>
 
-    <div class="grid grid-1-6 cya-change">
-      <a href='@controllers.subscriptionData.routes.EditContactEmailController.edit' id="contactemail-edit">@messages("ated.contact-address.edit") <span class="visuallyhidden">@messages("ated.company-details.contact-preference.label")</span></a>
-    </div>
+    <dd class="govuk-summary-list__actions">
+      <a href='@controllers.subscriptionData.routes.EditContactEmailController.edit' id="contactemail-edit">@messages("ated.contact-address.edit") <span class="govuk-visually-hidden">@messages("ated.company-details.contact-preference.label")</span></a>
+    </dd>
 
   </div>
 
   @clientDetails.map { details =>
-    <div class="grid-wrapper row-border">
+    <div class="govuk-summary-list__row">
 
-      <div class="grid grid-2-6 cya-question">
-        <span id="appointed-agent-label" class="heading-small">@messages("ated.company-details.appointed_agent")</span>
-      </div>
+      <dt class="govuk-summary-list__key">
+        <span id="appointed-agent-label" class="govuk-heading-s">@messages("ated.company-details.appointed_agent")</span>
+      </dt>
 
-      <div class="grid grid-1-2 cya-answer">
+      <dd class="govuk-summary-list__value">
         <span id="appointed-agent-val">@printNotProvidedIfEmpty(details.agentName)</span>
-      </div>
+      </dd>
 
-      <div class="grid grid-1-6 cya-change">
-        <a href='@details.changeAgentLink' id="appointed-agent-link">@messages("ated.contact-address.edit") <span class="visuallyhidden">@messages("ated.company-details.appointed_agent")</span></a>
-      </div>
+      <dd class="govuk-summary-list__actions">
+        <a href='@details.changeAgentLink' id="appointed-agent-link">@messages("ated.contact-address.edit") <span class="govuk-visually-hidden">@messages("ated.company-details.appointed_agent")</span></a>
+      </dd>
     </div>
 
 
-    <div class="grid-wrapper row-border">
-      <div class="grid grid-2-6 cya-question">
-        <span id="email-label" class="heading-small">@messages("ated.company-details.mandate_email")</span>
-      </div>
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">
+        <span id="email-label" class="govuk-heading-s">@messages("ated.company-details.mandate_email")</span>
+      </dt>
 
-      <div class="grid grid-1-2 cya-answer">
+      <dd class="govuk-summary-list__value">
         <span id="email-val">@printNotProvidedIfEmpty(details.agentName)</span>
-      </div>
+      </dd>
 
-      <div class="grid grid-1-6 cya-change">
-        <a href='@details.changeEmailLink' id="email-link">@messages("ated.contact-address.edit") <span class="visuallyhidden">@messages("ated.company-details.mandate_email")</span></a>
-      </div>
+      <dd class="govuk-summary-list__actions">
+        <a href='@details.changeEmailLink' id="email-link">@messages("ated.contact-address.edit") <span class="govuk-visually-hidden">@messages("ated.company-details.mandate_email")</span></a>
+      </dd>
     </div>
 
   }
 
-</div>
+</dl>
 
-  <div class="form-group">
-    <a class="button" href="@controllers.routes.AccountSummaryController.view()" class="link-back" id="back" onkeyup='spaceBarHandler(event,"@controllers.routes.AccountSummaryController.view()")'>@messages("ated.company-details.back")</a>
+  <div class="govuk-form-group">
+    <a class="govuk-button" href="@controllers.routes.AccountSummaryController.view()" class="govuk-link-back" id="back" onkeyup='spaceBarHandler(event,"@controllers.routes.AccountSummaryController.view()")'>@messages("ated.company-details.back")</a>
   </div>
 
 
