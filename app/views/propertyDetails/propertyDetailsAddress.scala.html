@@ -18,7 +18,7 @@
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
 
-@this(atedMain: atedMain, formHelper: FormWithCSR, govukInput: GovukInput)
+@this(atedMain: atedMain, formHelper: FormWithCSRF, govukInput: GovukInput)
 @(id: Option[String],
   periodKey: Int,
   propertyDetailsForm: Form[PropertyDetailsAddress],

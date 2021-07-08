@@ -22,7 +22,7 @@
 @import uk.gov.hmrc.govukfrontend.views.Implicits._
 @import _root_.utils._
 
-@this(atedMain: atedMain, formHelper: FormWithCSR, govukTextarea : GovukTextarea)
+@this(atedMain: atedMain, formHelper: FormWithCSRF, govukTextarea : GovukTextarea)
 @(id: String, periodKey: Int, propertyDetailsForm: Form[PropertyDetailsSupportingInfo], mode: Option[String], serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
 

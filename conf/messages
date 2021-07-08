@@ -1550,3 +1550,10 @@ btaNavLinks.manageAccount = Manage account
 btaNavLinks.messages = Messages
 btaNavLinks.helpAndContact = Help and contact
 
+# Footer Messages
+
+footer.links.accessibility.text = Accessibility statement
+footer.links.cookies.text = Cookies
+footer.links.privacy_policy.text = Privacy policy
+footer.links.terms_and_conditions.text = Terms and conditions
+footer.links.help_page.text = Help using GOV.UK

@@ -30,7 +30,7 @@ class ErrorHandler @Inject()(val messagesApi: MessagesApi,
 
   override def standardErrorTemplate(pageTitle: String, heading: String, message: String)
                                     (implicit request: Request[_]): Html = {
-    templateError(pageTitle, heading, message, None, None, None, None, Html(""), applicationConfig)
+    templateError(pageTitle, heading, message, None, None, None, None, Html(""))
   }
 
   override def internalServerErrorTemplate(implicit request: Request[_]): Html = {
@@ -41,7 +41,6 @@ class ErrorHandler @Inject()(val messagesApi: MessagesApi,
       None,
       None,
       None,
-      Html(""),
-      applicationConfig)
+      Html(""))
   }
 }

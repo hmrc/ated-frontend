@@ -20,7 +20,7 @@
 @import views.html.helpers._
 @import uk.gov.hmrc.govukfrontend.views.Implicits.RichRadios
 
-@this(atedMain: atedMain, formHelper: FormWithCSR, govukRadios: GovukRadios)
+@this(atedMain: atedMain, formHelper: FormWithCSRF, govukRadios: GovukRadios)
 
 @(selectPeriodForm: Form[SelectPeriod], periods: List[(String, String)],  serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 

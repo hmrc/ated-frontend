@@ -23,7 +23,7 @@
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
 
-@this(atedMain: atedMain, formHelper: FormWithCSR, govukRadios: GovukRadios)
+@this(atedMain: atedMain, formHelper: FormWithCSRF, govukRadios: GovukRadios)
 @(confirmExistingReturn: Form[YesNoQuestion],
         periodKey: Int,
         returnType: String,

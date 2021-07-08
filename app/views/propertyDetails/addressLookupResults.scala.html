@@ -17,7 +17,11 @@
 @import models._
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
-@this(atedMain: atedMain, formHelper: FormWithCSRF)
+@import views.html.helper.form
+@import views.html.helpers._
+@import _root_.utils._
+@import uk.gov.hmrc.govukfrontend.views.Implicits.RichRadios
+@this(atedMain: atedMain, formHelper: FormWithCSRF, govukRadios: GovukRadios)
 @(id: Option[String],
   periodKey: Int,
   addressResultsForm: Form[AddressSelected],
@@ -25,9 +29,7 @@
   mode: Option[String] = None,
   serviceInfoContent: Html = HtmlFormat.empty,
   backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
-@import views.html.helper.form
-@import views.html.helpers._
-@import _root_.utils._
+
 
 @pageScripts = {
 <script src='@controllers.routes.Assets.versioned("javascript/manualAddressEntryLink.js")'></script>
@@ -75,17 +77,17 @@
                     fieldset = Some(Fieldset(
                         legend = Some(Legend(
                             classes = "govuk-visually-hidden",
-                            content = Text(messages(ated.address-lookup.results.title))
+                            content = Text(Messages("ated.address-lookup.results.title"))
                         ))
                     )),
-                    items = searchResults.results map (result => result.id -> result.address.toString).map{
-                        case (result => result.id -> result.address.toString) => RadioItem(
-                            value = Some(result),
+                    items = searchResults.results.map(result =>
+                        RadioItem(
+                            value = Some(result.id),
                             content = Text(messages(result.address.toString)),
-                            id = Some(result)
+                            id = Some(result.id)
                         )
-                    }
 
+                    )
                 ).withFormField(addressResultsForm("selected"))
             )
         </div>

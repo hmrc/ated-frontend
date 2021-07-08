@@ -38,7 +38,7 @@ class ReliefDeclarationController @Inject()(mcc: MessagesControllerComponents,
                                             val dataCacheConnector: DataCacheConnector,
                                             val backLinkCacheConnector: BackLinkCacheConnector,
                                             template: views.html.reliefs.reliefDeclaration,
-                                            templateError: views.html.global_error)
+                                            val templateError: views.html.global_error)
                                            (implicit val appConfig: ApplicationConfig)
 
   extends FrontendController(mcc) with BackLinkController with ClientHelper with Logging {
@@ -69,7 +69,7 @@ class ReliefDeclarationController @Inject()(mcc: MessagesControllerComponents,
                 serviceInfoService.getPartial.flatMap { serviceInfoContent =>
                   Future.successful(BadRequest(templateError("ated.client-problem.title",
                     "ated.client-problem.header", "ated.client-problem.message", None,
-                    Some(appConfig.agentRedirectedToMandate), Some("ated.client-problem.HrefMessage"), None, serviceInfoContent, appConfig)))
+                    Some(appConfig.agentRedirectedToMandate), Some("ated.client-problem.HrefMessage"), None, serviceInfoContent)))
                 }
               }
               case NOT_FOUND => Future.successful(Redirect(controllers.reliefs.routes.ReliefsSentController.view(periodKey)))

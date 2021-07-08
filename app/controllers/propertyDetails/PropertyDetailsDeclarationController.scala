@@ -33,7 +33,7 @@ class PropertyDetailsDeclarationController @Inject()(mcc: MessagesControllerComp
                                                      val dataCacheConnector: DataCacheConnector,
                                                      val backLinkCacheConnector: BackLinkCacheConnector,
                                                      template: views.html.propertyDetails.propertyDetailsDeclaration,
-                                                     templateError: views.html.global_error)
+                                                     val templateError: views.html.global_error)
                                                     (implicit val appConfig: ApplicationConfig)
 
   extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper {
@@ -72,7 +72,7 @@ class PropertyDetailsDeclarationController @Inject()(mcc: MessagesControllerComp
                       case OK => Future.successful(Redirect(controllers.propertyDetails.routes.ChargeableReturnConfirmationController.confirmation()))
                       case BAD_REQUEST if response.body.contains("Agent not Valid") =>
                         Future.successful(BadRequest(templateError("ated.client-problem.title",
-                          "ated.client-problem.header", "ated.client-problem.message", None, Some(appConfig.agentRedirectedToMandate), None, None, serviceInfoContent, appConfig)))
+                          "ated.client-problem.header", "ated.client-problem.message", None, Some(appConfig.agentRedirectedToMandate), None, None, serviceInfoContent)))
                     }
                   }
                 case _ => Future.successful(Redirect(routes.PropertyDetailsSummaryController.view(id)))

@@ -18,7 +18,7 @@
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
 
-@this(atedMain: atedMain, formHelper: FormWithCSR, govukRadios: GovukRadios)
+@this(atedMain: atedMain, formHelper: FormWithCSRF, govukRadios: GovukRadios)
 @(id: String, periodKey: Int, propertyDetailsForm: Form[PropertyDetailsProfessionallyValued],
   mode: Option[String],
   serviceInfoContent: Html = HtmlFormat.empty,

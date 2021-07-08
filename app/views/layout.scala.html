@@ -14,14 +14,13 @@
  * limitations under the License.
  *@
 
+@import config.ApplicationConfig
+@import uk.gov.hmrc.govukfrontend.views.html.components.GovukLayout
 @import uk.gov.hmrc.hmrcfrontend.config.AccessibilityStatementConfig
 @import uk.gov.hmrc.hmrcfrontend.views.Aliases.ReportTechnicalIssue
 @import uk.gov.hmrc.hmrcfrontend.views.html.components.HmrcReportTechnicalIssue
-@import uk.gov.hmrc.hmrcfrontend.views.viewmodels.language.{Cy, En, LanguageSelect}
-@import uk.gov.hmrc.hmrcfrontend.views.html.helpers.HmrcTrackingConsentSnippet
-@import uk.gov.hmrc.hmrcfrontend.views.html.helpers.HmrcStandardHeader
-@import uk.gov.hmrc.govukfrontend.views.html.components.GovukLayout
-@import config.ApplicationConfig
+@import uk.gov.hmrc.hmrcfrontend.views.html.helpers.{HmrcStandardHeader, HmrcTrackingConsentSnippet}
+@import uk.gov.hmrc.hmrcfrontend.views.viewmodels.language.En
 
 @this(
 appConfig: ApplicationConfig,
@@ -61,7 +60,7 @@ case "en" => En
 @siteHeader = {
 @govukHeader(
 signOutUrl = Some(routes.ApplicationController.logout.url),
-serviceUrl = Some(routes.SubscriptionController.subscribe().url)
+serviceUrl = Some(routes.HomeController.home().url)
 )
 }
 

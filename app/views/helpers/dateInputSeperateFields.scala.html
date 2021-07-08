@@ -1,0 +1,21 @@
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+
+@this(govukDateInput : GovukDateInput)
+
+@(id: String, namePrefix: Option[String], legendText: String, hintText: Option[String], isPageHeading: Boolean)
+
+@govukDateInput(DateInput(
+    id = id,
+    namePrefix = namePrefix,
+    hint = hintText match {
+        case Some(text) => Some(Hint(content = Text(text)))
+        case _ => None
+    },
+    fieldset = Some(Fieldset(
+        legend = Some(Legend(
+            content = Text(legendText),
+            classes = if(isPageHeading) "govuk-fieldset__legend--l" else "",
+            isPageHeading = isPageHeading
+        ))
+    ))
+))

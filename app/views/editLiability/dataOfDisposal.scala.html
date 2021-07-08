@@ -19,8 +19,9 @@
 @import play.twirl.api.HtmlFormat
 @import views.html.helpers._
 @import views.html.helper.form
+@import uk.gov.hmrc.hmrcfrontend.views.html.components.implicits.RichDateInput
 
-@this(atedMain: atedMain, formHelper: FormWithCSRF)
+@this(atedMain: atedMain, formHelper: FormWithCSRF, govukDateInput: GovukDateInput)
 @(disposeLiabilityForm: Form[DisposeLiability], oldFormBundleNo: String, serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String], periodKey: Int)(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
 @implicitFormInstance = @{ Some(disposeLiabilityForm) }
@@ -47,6 +48,21 @@
       )
 
     </div>
+
+      @govukDateInput(DateInput(
+          id = "passport-issued",
+          namePrefix = Some("passport-issued"),
+          hint = Some(Hint(
+              content = Text("For example, 12 11 2007")
+          )),
+          fieldset = Some(Fieldset(
+              legend = Some(Legend(
+                  content = Text("When was your passport issued?"),
+                  classes = "govuk-fieldset__legend--l",
+                  isPageHeading = true
+              ))
+          ))
+      ))
 
     <div class="govuk-form-group">
       <button class="govuk-button" id="submit" type="submit">@messages("ated.save-and-continue")</button>

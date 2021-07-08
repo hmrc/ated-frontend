@@ -38,7 +38,7 @@ class ConfirmAddressController @Inject()(mcc: MessagesControllerComponents,
                                          val propertyDetailsService: PropertyDetailsService,
                                          val dataCacheConnector: DataCacheConnector,
                                          template: views.html.propertyDetails.confirmAddress,
-                                         templateError: views.html.global_error)
+                                         val templateError: views.html.global_error)
                                         (implicit val appConfig: ApplicationConfig)
   extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with ControllerIds {
 
@@ -70,7 +70,7 @@ class ConfirmAddressController @Inject()(mcc: MessagesControllerComponents,
               Ok(template(id, periodKey, addressProperty, mode, serviceInfoContent, backLink))
             case _ =>
               Ok(templateError("ated.generic.error.title", "ated.generic.error.header",
-                "ated.generic.error.message", Some("ated.generic.error.message2"), None, None, None, serviceInfoContent, appConfig))
+                "ated.generic.error.message", Some("ated.generic.error.message2"), None, None, None, serviceInfoContent))
           }
         }
       }

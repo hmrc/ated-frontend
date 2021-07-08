@@ -15,11 +15,12 @@
  *@
 
 @import config.ApplicationConfig
-@(formItem:Form[_], fieldName: String, govukDate: GovukDateInput, label: Html, isNested: Boolean, defaultDateOption: Option[org.joda.time.LocalDate], periodKey: Int, args: (Symbol,Any)*)(implicit messages: Messages, formInstance: Option[Form[_]] = None, request: Request[AnyContent], appConfig: ApplicationConfig)
 @import uk.gov.hmrc.govukfrontend.views.html.components.GovukDateInput
 @import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 @import views.html.helper._
 @import views.helpers._
+@this()
+@(formItem:Form[_], fieldName: String, govukDate: GovukDateInput, label: Html, isNested: Boolean, defaultDateOption: Option[org.joda.time.LocalDate], periodKey: Int, args: (Symbol,Any)*)(implicit messages: Messages, formInstance: Option[Form[_]] = None, request: Request[AnyContent], appConfig: ApplicationConfig)
 
 @elements = @{FieldElements(formItem(fieldName).id, formItem(fieldName), Html(""), args.toMap, messages)}
 @field = @{formItem(fieldName)}

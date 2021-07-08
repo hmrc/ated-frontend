@@ -24,7 +24,7 @@
 @import utils._
 @import config.featureswitch.FeatureSwitch
 
-@this(atedMain: atedMain, formHelper: FormWithCSR)
+@this(atedMain: atedMain, formHelper: FormWithCSRF)
 
 @(periodKey: Int, taxAvoidanceForm: Form[TaxAvoidance], serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(reliefsTaxAvoidance : Option[ReliefsTaxAvoidance])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 

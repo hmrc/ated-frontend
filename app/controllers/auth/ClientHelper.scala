@@ -26,6 +26,7 @@ import play.api.mvc.{AnyContent, Request, Result}
 import play.twirl.api.Html
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.AtedConstants._
+import views.html.global_error
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -34,6 +35,7 @@ trait ClientHelper extends Logging {
 
   val dataCacheConnector: DataCacheConnector
   val appConfig: ApplicationConfig
+  val templateError: global_error
 
   def ensureClientContext(result: Future[Result])
                          (implicit authorisedRequest: StandardAuthRetrievals,
@@ -43,7 +45,7 @@ trait ClientHelper extends Logging {
     dataCacheConnector.fetchAtedRefData[String](DelegatedClientAtedRefNumber) flatMap {
       case refNo @ Some(_) if refNo.get == authorisedRequest.atedReferenceNumber => result
       case _ => logger.warn(s"[ClientHelper][compareClient] - Client different from context")
-        Future.successful(Ok(appConfig.templateError(
+        Future.successful(Ok(templateError(
           "ated.selected-client-error.wrong.client.header",
           "ated.selected-client-error.wrong.client.title",
           "ated.selected-client-error.wrong.client.message",
@@ -51,8 +53,7 @@ trait ClientHelper extends Logging {
           Some("ated.selected-client-error.wrong.client.HrefLink"),
           Some("ated.selected-client-error.wrong.client.HrefMessage"),
           Some("ated.selected-client-error.wrong.client.PostHrefMessage"),
-          Html(""),
-          appConfig
+          Html("")
         )))
     }
   }
