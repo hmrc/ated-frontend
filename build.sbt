@@ -24,6 +24,13 @@ lazy val scoverageSettings = {
     )
   }
 
+TwirlKeys.templateImports ++= Seq(
+  "uk.gov.hmrc.govukfrontend.views.html.components._",
+  "uk.gov.hmrc.govukfrontend.views.html.helpers._",
+  "uk.gov.hmrc.hmrcfrontend.views.html.components._",
+  "uk.gov.hmrc.hmrcfrontend.views.html.helpers._"
+)
+
 val silencerVersion = "1.7.1"
 
 lazy val microservice = Project(appName, file("."))
