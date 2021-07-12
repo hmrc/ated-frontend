@@ -32,6 +32,7 @@ import uk.gov.hmrc.play.bootstrap.audit.DefaultAuditConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants._
 import utils.AtedUtils
+import views.html.global_error
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -43,6 +44,7 @@ class PropertyDetailsAddressController @Inject()(mcc: MessagesControllerComponen
                                                  val propertyDetailsService: PropertyDetailsService,
                                                  val dataCacheConnector: DataCacheConnector,
                                                  val backLinkCacheConnector: BackLinkCacheConnector,
+                                                 val templateError: global_error,
                                                  template: views.html.propertyDetails.propertyDetailsAddress)
                                                 (implicit val appConfig: ApplicationConfig)
 

@@ -25,6 +25,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{ServiceInfoService, SubscriptionDataService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants._
+import views.html.global_error
 
 import scala.concurrent.ExecutionContext
 
@@ -34,6 +35,7 @@ class DisposeLiabilitySentController @Inject()(mcc: MessagesControllerComponents
                                                authAction: AuthAction,
                                                serviceInfoService: ServiceInfoService,
                                                val dataCacheConnector: DataCacheConnector,
+                                               val templateError: global_error,
                                                template: views.html.editLiability.disposeLiabilitySent)
                                               (implicit val appConfig: ApplicationConfig)
   extends FrontendController(mcc) with ClientHelper {

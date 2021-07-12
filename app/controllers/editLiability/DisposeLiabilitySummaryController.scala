@@ -24,6 +24,7 @@ import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{DisposeLiabilityReturnService, ServiceInfoService, SubscriptionDataService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
+import views.html.global_error
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -34,6 +35,7 @@ class DisposeLiabilitySummaryController @Inject()(mcc: MessagesControllerCompone
                                                   disposeLiabilityDeclarationController: DisposeLiabilityDeclarationController,
                                                   serviceInfoService: ServiceInfoService,
                                                   val dataCacheConnector: DataCacheConnector,
+                                                  val templateError: global_error,
                                                   val backLinkCacheConnector: BackLinkCacheConnector,
                                                   template: views.html.editLiability.disposeLiabilitySummary)
                                                  (implicit val appConfig: ApplicationConfig)

@@ -27,6 +27,7 @@ import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService, Se
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants._
 import utils.{AtedUtils, PeriodUtils}
+import views.html.global_error
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -38,6 +39,7 @@ class IsFullTaxPeriodController @Inject()(mcc: MessagesControllerComponents,
                                           val propertyDetailsService: PropertyDetailsService,
                                           val dataCacheConnector: DataCacheConnector,
                                           val backLinkCacheConnector: BackLinkCacheConnector,
+                                          val templateError: global_error,
                                           template: views.html.propertyDetails.isFullTaxPeriod)
                                          (implicit val appConfig: ApplicationConfig)
 

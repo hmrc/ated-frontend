@@ -27,6 +27,7 @@ import services._
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants.SelectedPreviousReturn
 import utils.AtedUtils
+import views.html.global_error
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -38,6 +39,7 @@ class PropertyDetailsAcquisitionController @Inject()(mcc: MessagesControllerComp
                                                      val propertyDetailsService: PropertyDetailsService,
                                                      val dataCacheConnector: DataCacheConnector,
                                                      val backLinkCacheConnector: BackLinkCacheConnector,
+                                                     val templateError: global_error,
                                                      template: views.html.propertyDetails.propertyDetailsAcquisition)
                                                     (implicit val appConfig: ApplicationConfig)
 

@@ -24,6 +24,7 @@ import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{ChangeLiabilityReturnService, ServiceInfoService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
+import views.html.global_error
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -33,6 +34,7 @@ class EditLiabilityDeclarationController @Inject()(mcc: MessagesControllerCompon
                                                    serviceInfoService: ServiceInfoService,
                                                    val dataCacheConnector: DataCacheConnector,
                                                    val backLinkCacheConnector: BackLinkCacheConnector,
+                                                   val templateError: global_error,
                                                    template: views.html.editLiability.editLiabilityDeclaration)
                                                   (implicit val appConfig: ApplicationConfig)
   extends FrontendController(mcc) with BackLinkController with ClientHelper with ControllerIds {

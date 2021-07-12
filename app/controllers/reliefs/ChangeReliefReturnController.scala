@@ -26,6 +26,7 @@ import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{ReliefsService, ServiceInfoService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
+import views.html.global_error
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -37,6 +38,7 @@ class ChangeReliefReturnController @Inject()(mcc: MessagesControllerComponents,
                                              val reliefsService: ReliefsService,
                                              val dataCacheConnector: DataCacheConnector,
                                              val backLinkCacheConnector: BackLinkCacheConnector,
+                                             val templateError: global_error,
                                              template: views.html.reliefs.changeReliefReturn)
                                             (implicit val appConfig: ApplicationConfig)
 

@@ -26,6 +26,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{DelegationService, ServiceInfoService, SubscriptionDataService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants._
+import views.html.global_error
 
 import scala.concurrent.ExecutionContext
 
@@ -35,6 +36,7 @@ class EditLiabilitySentController @Inject()(mcc: MessagesControllerComponents,
                                             serviceInfoService: ServiceInfoService,
                                             val delegationService: DelegationService,
                                             val dataCacheConnector: DataCacheConnector,
+                                            val templateError: global_error,
                                             template: views.html.editLiability.editLiabilitySent)
                                            (implicit val appConfig: ApplicationConfig)
 

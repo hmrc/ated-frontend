@@ -24,6 +24,7 @@ import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{PropertyDetailsService, ReliefsService, ServiceInfoService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
+import views.html.global_error
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -33,6 +34,7 @@ class DraftDeleteConfirmationController @Inject()(mcc: MessagesControllerCompone
                                                   reliefsService: ReliefsService,
                                                   serviceInfoService: ServiceInfoService,
                                                   val dataCacheConnector: DataCacheConnector,
+                                                  val templateError: global_error,
                                                   template: views.html.confirmDeleteDraft)
                                                  (implicit val appConfig: ApplicationConfig)
 

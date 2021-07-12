@@ -45,16 +45,14 @@
     <div class="govuk-form-group">
         @govukTextarea(
             Textarea(
-                id = supportingInfo,
-                name = field.id,
+                id = "supportingInfo",
+                name = "supportingInfo",
                 label = Label(
-                    isPageHeading = labelAsHeading,
-                    classes = labelClass.getOrElse("govuk-label--l"),
+                    isPageHeading = false,
+                    classes = "govuk-visually-hidden",
                     content = Text(messages("ated.property-details-period.supportingInfo.header"))
                 ),
-                hint = Html(messages("ated.property-details-period.supportingInfo.hint")),
-                rows = rows,
-                value = field.value,
+                hint = Some(Hint(Some(messages("ated.property-details-period.supportingInfo.hint")))),
                 classes = "govuk-input--width-200"
             ).withFormField(propertyDetailsForm("supportingInfo"))
         )

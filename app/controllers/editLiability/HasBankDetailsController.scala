@@ -27,6 +27,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{ChangeLiabilityReturnService, ServiceInfoService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedUtils
+import views.html.global_error
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -37,6 +38,7 @@ class HasBankDetailsController @Inject()(mcc: MessagesControllerComponents,
                                          serviceInfoService: ServiceInfoService,
                                          val dataCacheConnector: DataCacheConnector,
                                          val backLinkCacheConnector: BackLinkCacheConnector,
+                                         val templateError: global_error,
                                          template: views.html.editLiability.hasBankDetails)
                                         (implicit val appConfig: ApplicationConfig)
   extends FrontendController(mcc) with BackLinkController with ClientHelper with ControllerIds {

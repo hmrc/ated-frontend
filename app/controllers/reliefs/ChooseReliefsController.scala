@@ -28,8 +28,9 @@ import uk.gov.hmrc.http.ForbiddenException
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedUtils._
 import utils.{PeriodUtils, ReliefsUtils}
-
 import javax.inject.Inject
+import views.html.global_error
+
 import scala.collection.mutable.ArrayBuffer
 import scala.concurrent.ExecutionContext
 
@@ -40,6 +41,7 @@ class ChooseReliefsController @Inject()(mcc: MessagesControllerComponents,
                                         val reliefsService: ReliefsService,
                                         val dataCacheConnector: DataCacheConnector,
                                         val backLinkCacheConnector: BackLinkCacheConnector,
+                                        val templateError: global_error,
                                         val templateInvalidPeriodKey: views.html.reliefs.invalidPeriodKey,
                                         template: views.html.reliefs.chooseReliefs)
                                        (implicit val appConfig: ApplicationConfig)

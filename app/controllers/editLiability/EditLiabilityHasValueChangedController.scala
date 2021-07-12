@@ -28,6 +28,7 @@ import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService, Se
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants.SelectedPreviousReturn
 import utils.AtedUtils
+import views.html.global_error
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -38,6 +39,7 @@ class EditLiabilityHasValueChangedController @Inject()(mcc: MessagesControllerCo
                                                        serviceInfoService: ServiceInfoService,
                                                        val propertyDetailsService: PropertyDetailsService,
                                                        val dataCacheConnector: DataCacheConnector,
+                                                       val templateError: global_error,
                                                        val backLinkCacheConnector: BackLinkCacheConnector,
                                                        template: views.html.editLiability.editLiabilityHasValueChanged)
                                                       (implicit val appConfig: ApplicationConfig)

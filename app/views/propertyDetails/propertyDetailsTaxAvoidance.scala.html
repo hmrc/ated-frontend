@@ -17,14 +17,14 @@
 @import models._
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
-
-@this(atedMain: atedMain, formHelper: FormWithCSRF, govukInput: GovukInput, govukRadios: GovukRadios)
-@(id: String, periodKey: Int, propertyDetailsForm: Form[PropertyDetailsTaxAvoidance], mode: Option[String], serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 @import views.html.helper.form
 @import views.html.helpers._
 @import uk.gov.hmrc.govukfrontend.views.Implicits.RichInput
 @import uk.gov.hmrc.govukfrontend.views.Implicits.RichRadios
 @import _root_.utils._
+
+@this(atedMain: atedMain, formHelper: FormWithCSRF, govukInput: GovukInput, govukRadios: GovukRadios)
+@(id: String, periodKey: Int, propertyDetailsForm: Form[PropertyDetailsTaxAvoidance], mode: Option[String], serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
 @implicitFormInstance = @{ Some(propertyDetailsForm) }
 
@@ -58,7 +58,7 @@
   </div>
 
 
-  @formHelpers(action=controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceController.save(id, periodKey, mode)) {
+  @formHelper(action=controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceController.save(id, periodKey, mode)) {
     <div class="govuk-form-group" id="isTaxAvoidance">
 
         @govukRadios(

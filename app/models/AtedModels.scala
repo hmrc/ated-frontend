@@ -45,8 +45,11 @@ case class EditLiabilityReturnType(editLiabilityType: Option[String] = None)// E
 object EditLiabilityReturnType {
   implicit val formats: OFormat[EditLiabilityReturnType] = Json.format[EditLiabilityReturnType]
 }
-
+//case class DateData(day: String, month: String, year: String) {
+//  def toLocalDate(): LocalDate = new LocalDate(year.trim.toInt, month.trim.toInt, day.trim.toInt)
+//}
 case class DisposeLiability(dateOfDisposal: Option[LocalDate] = None, periodKey: Int)
+//case class DisposeLiability(dateOfDisposal: Option[DateData] = None, periodKey: Int)
 
 object DisposeLiability {
   implicit val formats: OFormat[DisposeLiability] = Json.format[DisposeLiability]

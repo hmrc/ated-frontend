@@ -19,23 +19,32 @@
 @import uk.gov.hmrc.hmrcfrontend.config.AccessibilityStatementConfig
 @import uk.gov.hmrc.hmrcfrontend.views.Aliases.ReportTechnicalIssue
 @import uk.gov.hmrc.hmrcfrontend.views.html.components.HmrcReportTechnicalIssue
-@import uk.gov.hmrc.hmrcfrontend.views.html.helpers.{HmrcStandardHeader, HmrcTrackingConsentSnippet}
+@import uk.gov.hmrc.hmrcfrontend.views.html.helpers.HmrcStandardHeader
 @import uk.gov.hmrc.hmrcfrontend.views.viewmodels.language.En
+@import play.api.mvc.request.RequestAttrKey.CSPNonce
 
 @this(
 appConfig: ApplicationConfig,
 govukLayout: GovukLayout,
 govukHeader: HmrcStandardHeader,
+govukFooter: HmrcStandardFooter,
 problemLink: HmrcReportTechnicalIssue,
-languageSelection: hmrcComponents.hmrcLanguageSelect,
+hmrcTimeoutDialogHelper: HmrcTimeoutDialogHelper,
+hmrcHead: HmrcHead,
 accessibilityStatementConfig: AccessibilityStatementConfig,
-hmrcTrackingConsentSnippet: HmrcTrackingConsentSnippet
 )
 
 @(pageTitle: Option[String] = None, scripts: Option[Html])(contentBlock: Html)(implicit request: Request[_], messages: Messages)
 
 @headBlock = {
-@hmrcTrackingConsentSnippet()
+ @Some(hmrcHead(
+  headBlock = Some(hmrcTimeoutDialogHelper(
+   signOutUrl = routes.ApplicationController.logout.url,
+   keepAliveUrl = Some(routes.ApplicationController.keepAlive.url),
+   timeout = Some(appConfig.defaultTimeoutSeconds),
+   countdown = Some(appConfig.timeoutCountdown)
+  ))
+ ))
 }
 
 @beforeContentBlock = {
@@ -45,13 +54,18 @@ hmrcTrackingConsentSnippet: HmrcTrackingConsentSnippet
 @contentBlock
 
 @problemLink(
-ReportTechnicalIssue(serviceCode = "awrs-lookup-frontend", language = messages.lang.code match {
+ReportTechnicalIssue(serviceCode = "ated-frontend", language = messages.lang.code match {
 case "en" => En
 }, classes = Some("print-hidden"))
 )
 }
 
 @allScripts = {
+<script src='@controllers.routes.Assets.versioned("jquery/jquery-ui.min.js")'></script>
+<script src='@controllers.routes.Assets.versioned("jquery/jquery-ui-1.12.1.min.js")'></script>
+<script src='@controllers.routes.Assets.versioned("javascript/timeout-dialog.js")'></script>
+<script src='@controllers.routes.Assets.versioned("javascript/urBanner.js")'></script>
+<script src='@controllers.routes.Assets.versioned("javascript/tabs.js")'></script>
 <script src='@controllers.routes.Assets.versioned("lib/govuk-frontend/govuk/all.js")'></script>
 <script>window.GOVUKFrontend.initAll();</script>
 @scripts

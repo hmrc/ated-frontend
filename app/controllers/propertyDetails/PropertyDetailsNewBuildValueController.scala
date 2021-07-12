@@ -30,6 +30,7 @@ import utils.AtedConstants.SelectedPreviousReturn
 import utils.AtedUtils
 import utils.AtedUtils.getEarliestDate
 import views.html
+import views.html.global_error
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -41,6 +42,7 @@ class PropertyDetailsNewBuildValueController @Inject()(mcc: MessagesControllerCo
                                                        val propertyDetailsService: PropertyDetailsService,
                                                        val dataCacheConnector: DataCacheConnector,
                                                        val backLinkCacheConnector: BackLinkCacheConnector,
+                                                       val templateError: global_error,
                                                        template: html.propertyDetails.propertyDetailsNewBuildValue)
                                                       (implicit val appConfig: ApplicationConfig)
 

@@ -28,6 +28,7 @@ import play.api.data.Form
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, MessagesRequest}
 import services.ServiceInfoService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
+import views.html.global_error
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -39,6 +40,7 @@ class EditLiabilityTypeController @Inject()(mcc: MessagesControllerComponents,
                                             serviceInfoService: ServiceInfoService,
                                             val dataCacheConnector: DataCacheConnector,
                                             val backLinkCacheConnector: BackLinkCacheConnector,
+                                            val templateError: global_error,
                                             template: views.html.editLiability.editLiability)
                                            (implicit val appConfig: ApplicationConfig)
 

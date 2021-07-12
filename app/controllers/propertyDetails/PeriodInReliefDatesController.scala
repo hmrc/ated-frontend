@@ -25,6 +25,7 @@ import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
+import views.html.global_error
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -34,6 +35,7 @@ class PeriodInReliefDatesController @Inject()(mcc: MessagesControllerComponents,
                                               val dataCacheConnector: DataCacheConnector,
                                               val propertyDetailsService: PropertyDetailsService,
                                               val backLinkCacheConnector: BackLinkCacheConnector,
+                                              val templateError: global_error,
                                               template: views.html.propertyDetails.periodInReliefDates)
                                              (implicit val appConfig: ApplicationConfig)
 

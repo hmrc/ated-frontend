@@ -34,7 +34,7 @@ class PeriodChooseReliefController @Inject()(mcc: MessagesControllerComponents,
                                              val propertyDetailsService: PropertyDetailsService,
                                              val dataCacheConnector: DataCacheConnector,
                                              val backLinkCacheConnector: BackLinkCacheConnector,
-                                             val errorTemplate: global_error,
+                                             val templateError: global_error,
                                              template: views.html.propertyDetails.periodChooseRelief)
                                             (implicit val appConfig: ApplicationConfig)
 

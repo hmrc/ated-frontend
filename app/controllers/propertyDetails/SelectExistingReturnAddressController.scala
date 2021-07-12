@@ -25,6 +25,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{FormBundleReturnsService, PropertyDetailsService, ServiceInfoService, SummaryReturnsService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants._
+import views.html.global_error
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -38,6 +39,7 @@ class SelectExistingReturnAddressController @Inject()(mcc: MessagesControllerCom
                                                       val propertyDetailsService: PropertyDetailsService,
                                                       val dataCacheConnector: DataCacheConnector,
                                                       val backLinkCacheConnector: BackLinkCacheConnector,
+                                                      val templateError: global_error,
                                                       template: views.html.propertyDetails.selectPreviousReturn)
                                                      (implicit val appConfig: ApplicationConfig)
 

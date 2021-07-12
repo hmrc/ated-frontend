@@ -43,15 +43,6 @@
     @pageScripts
 }
 
-<script>
-    @if(userLoggedIn) {
-        document.addEventListener('DOMContentLoaded', function(event) {
-            $.timeoutDialog({timeout: @appConfig.defaultTimeoutSeconds, countdown: @appConfig.timeoutCountdown, keep_alive_url: '@controllers.routes.ApplicationController.keepAlive', logout_url: '@controllers.routes.ApplicationController.logout', logout_redirect_url: '@controllers.routes.ApplicationController.logout', restart_on_yes: true, background_no_scroll: true});
-            var dialogOpen;
-        });
-    }
-</script>
-
 @linkElement = {
     <link rel="stylesheet" href='@controllers.routes.Assets.versioned("stylesheets/palette.css")'/>
     <link rel="stylesheet" href='@controllers.routes.Assets.versioned("stylesheets/focus.css")'/>
@@ -62,7 +53,14 @@
     <link rel="stylesheet" href='@controllers.routes.Assets.versioned("jquery/jquery-ui.min.css")'/>
     <link rel="stylesheet" href='@controllers.routes.Assets.versioned("jquery/jquery-ui.structure.min.css")'/>
     <link rel="stylesheet" href='@controllers.routes.Assets.versioned("stylesheets/tabs.css")'/>
+    @scriptElement
 }
+
+@content = {
+    @serviceInfoContent
+    @mainContent
+}
+
 
 @mainBanner = {
     @if(authContext.delegationModel.isDefined) {

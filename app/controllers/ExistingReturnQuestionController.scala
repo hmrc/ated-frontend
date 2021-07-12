@@ -27,6 +27,7 @@ import services.ServiceInfoService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants.RetrieveSelectPeriodFormId
 import utils.ReferrerUtils
+import views.html.global_error
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -34,6 +35,7 @@ class ExistingReturnQuestionController @Inject()(mcc: MessagesControllerComponen
                                                  authAction: AuthAction,
                                                  serviceInfoService: ServiceInfoService,
                                                  val dataCacheConnector: DataCacheConnector,
+                                                 val templateError: global_error,
                                                  template: views.html.confirmPastReturn)
                                                 (implicit val appConfig: ApplicationConfig)
 

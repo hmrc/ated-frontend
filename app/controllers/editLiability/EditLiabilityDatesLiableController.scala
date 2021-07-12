@@ -27,6 +27,7 @@ import models._
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
+import views.html.global_error
 
 import scala.concurrent.ExecutionContext
 
@@ -36,6 +37,7 @@ class EditLiabilityDatesLiableController @Inject()(mcc: MessagesControllerCompon
                                                    serviceInfoService: ServiceInfoService,
                                                    val propertyDetailsService: PropertyDetailsService,
                                                    val dataCacheConnector: DataCacheConnector,
+                                                   val templateError: global_error,
                                                    val backLinkCacheConnector: BackLinkCacheConnector,
                                                    template: views.html.editLiability.editLiabilityDatesLiable)
                                                   (implicit val appConfig: ApplicationConfig)

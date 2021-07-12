@@ -14,7 +14,7 @@
  * limitations under the License.
  *@
 
-@(form: Form[_])(implicit messages: Messages)
+@(form: Form[_], errorMessageFieldPrefix: String)(implicit messages: Messages)
 
 @if(form.hasGlobalErrors || form.hasErrors) {
    <div id="errors" class="govuk-error-summary">

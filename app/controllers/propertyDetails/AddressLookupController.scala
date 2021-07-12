@@ -33,6 +33,7 @@ import uk.gov.hmrc.play.audit.model.Audit
 import uk.gov.hmrc.play.bootstrap.audit.DefaultAuditConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedUtils
+import views.html.global_error
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -44,6 +45,7 @@ class AddressLookupController @Inject()(mcc: MessagesControllerComponents,
                                         val backLinkCacheConnector: BackLinkCacheConnector,
                                         val propertyDetailsService: PropertyDetailsService,
                                         val dataCacheConnector: DataCacheConnector,
+                                        val templateError: global_error,
                                         template: views.html.propertyDetails.addressLookup,
                                         templateResults: views.html.propertyDetails.addressLookupResults)
                                        (implicit val appConfig: ApplicationConfig)

@@ -26,6 +26,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService, SubscriptionDataService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{AtedUtils, PeriodUtils}
+import views.html.global_error
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -37,6 +38,7 @@ class PropertyDetailsSummaryController @Inject()(mcc: MessagesControllerComponen
                                                  val propertyDetailsService: PropertyDetailsService,
                                                  val dataCacheConnector: DataCacheConnector,
                                                  val backLinkCacheConnector: BackLinkCacheConnector,
+                                                 val templateError: global_error,
                                                  template: views.html.propertyDetails.propertyDetailsSummary)
                                                 (implicit val appConfig: ApplicationConfig)
 

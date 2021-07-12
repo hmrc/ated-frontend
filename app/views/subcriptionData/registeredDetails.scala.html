@@ -101,7 +101,7 @@
                     classes = "govuk-label--s",
                     content = Text(messages("ated.address.country"))
                 ),
-                items = Seq(SelectItem(Some(""), "")) ++ displayDetails.listOfIsoCode.map {
+                items = Seq(SelectItem(Some(""), "")) ++ listOfIsoCode.map {
                     case (code, country) => SelectItem(
                         value = Some(code),
                         text = country

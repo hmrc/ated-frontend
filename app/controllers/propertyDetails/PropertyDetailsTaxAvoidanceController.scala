@@ -28,6 +28,7 @@ import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService, Se
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants.SelectedPreviousReturn
 import utils.AtedUtils
+import views.html.global_error
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -38,6 +39,7 @@ class PropertyDetailsTaxAvoidanceController @Inject()(mcc: MessagesControllerCom
                                                       val propertyDetailsService: PropertyDetailsService,
                                                       val dataCacheConnector: DataCacheConnector,
                                                       val backLinkCacheConnector: BackLinkCacheConnector,
+                                                      val templateError: global_error,
                                                       template: views.html.propertyDetails.propertyDetailsTaxAvoidance)
                                                      (implicit val appConfig: ApplicationConfig)
   extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper {

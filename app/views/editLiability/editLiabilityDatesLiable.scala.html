@@ -17,12 +17,12 @@
 @import models._
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
-@this(atedMain: atedMain, formHelper: FormWithCSRF)
-@(formBundleNo: String, periodKey: Int, propertyDetailsForm: Form[PropertyDetailsDatesLiable], serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
-@import views.html.helper.form
 @import views.html.helpers._
 @import utils._
 @import _root_.utils.PeriodUtils._
+@import views.html.helper.form
+@this(atedMain: atedMain, formHelper: FormWithCSRF)
+@(formBundleNo: String, periodKey: Int, propertyDetailsForm: Form[PropertyDetailsDatesLiable], serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
 
 @implicitFormInstance = @{ Some(propertyDetailsForm) }

@@ -15,14 +15,22 @@
  *@
 
 @import config.ApplicationConfig
-@import layouts.{govuk_template => hmrcGovUkTemplate}
-@import uk.gov.hmrc.play.views.html.{helpers => uiHelpers, layouts => uiLayouts}
-@import _root_.utils.SessionUtils
-@import uk.gov.hmrc.play.views.html.layouts.HeadWithTrackingConsent
+@import uk.gov.hmrc.play.views.html.helpers.ReportAProblemLink
+@import play.twirl.api.HtmlFormat
+@import uk.gov.hmrc.play.views.html.layouts.{Article, BetaBanner, Footer, FooterLinks, HeadWithTrackingConsent, HeaderNav, MainContent, MainContentHeader, ServiceInfo}
+@import layouts.{GovUkTemplate, govuk_template => hmrcGovUkTemplate}
 
-@import uk.gov.hmrc.atedfrontend.views.html.layout
-
-@this(layout: layout)
+@this(govuk_template: GovUkTemplate,
+        layoutHead: HeadWithTrackingConsent,
+        betaBanner: BetaBanner,
+        layoutServiceInfo: ServiceInfo,
+        reportAProblemLink: ReportAProblemLink,
+        layoutArticle: Article,
+        main_content_header: MainContentHeader,
+        main_content: MainContent,
+        footer: Footer,
+        footer_links: FooterLinks,
+        header_nav: HeaderNav)
 
 @(appConfig: ApplicationConfig,
   supportLinkEnabled: Boolean = false,
@@ -40,7 +48,7 @@
 
 @head = {
   @layoutHead(
-    linkElem = linkElement,
+    linkElem = Some(linkElement),
     headScripts = None)
   <meta name="format-detection" data-name="format-detection" content="telephone=no"/>
 }
@@ -58,7 +66,7 @@
 <link rel="stylesheet" href='@controllers.routes.Assets.versioned("jquery/jquery-ui.min.css")'/>
 <link rel="stylesheet" href='@controllers.routes.Assets.versioned("jquery/jquery-ui.structure.min.css")'/>
 <link rel="stylesheet" href='@controllers.routes.Assets.versioned("stylesheets/urBanner.css")'/>
-@scriptElem
+@scriptElement
 }
 
 @article = {

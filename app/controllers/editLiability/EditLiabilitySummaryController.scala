@@ -28,6 +28,7 @@ import services.{PropertyDetailsService, ServiceInfoService, SubscriptionDataSer
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.PeriodUtils
+import views.html.global_error
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -38,6 +39,7 @@ class EditLiabilitySummaryController @Inject()(mcc: MessagesControllerComponents
                                                serviceInfoService: ServiceInfoService,
                                                val dataCacheConnector: DataCacheConnector,
                                                val backLinkCacheConnector: BackLinkCacheConnector,
+                                               val templateError: global_error,
                                                template: views.html.editLiability.editLiabilitySummary)
                                               (implicit val appConfig: ApplicationConfig)
   extends FrontendController(mcc) with BackLinkController with ClientHelper with I18nSupport with ControllerIds {
