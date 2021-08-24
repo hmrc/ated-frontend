@@ -15,6 +15,7 @@
  *@
 
 @import config.ApplicationConfig
+@import uk.gov.hmrc.play.views.formatting.Money.pounds
 @(submittedReturnResponse: Option[SubmitReturnsResponse], organisationName: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 @import views.html.helpers._
 
@@ -26,27 +27,17 @@
         @messages("ated.chargeable-return-confirmation.submitted.text")
     </h1>
 
-    <p id="completed-message">@messages("ated.chargeable-return-confirmation.completed.message")</p>
-    <p id="email-message">@messages("ated.chargeable-return-confirmation.email.message")</p>
-
-    <div class="divider--top--thick"></div>
-
     <p><span id="receipt-message-title" class="heading-medium">@messages("ated.chargeable-return-confirmation.charge.heading")</span></p>
 
     <p id="adjusted-amount">@messages("ated.chargeable-return-confirmation.amount.message")</p>
 
-    <div class="form-group">
-    <ul class="list-bullet">
-        @submittedReturnResponse.map { returnResponse =>
-
+    @submittedReturnResponse.map { returnResponse =>
         @returnResponse.liabilityReturnResponse.map { liabilityReturnResponse =>
-        <li id="owed-amount">@Html(messages("ated.chargeable-return-confirmation.owe.text", formattedPounds(liabilityReturnResponse.head.liabilityAmount)))</li>
-        <li id="reference-text">@Html(messages("ated.chargeable-return-confirmation.reference.text", liabilityReturnResponse.head.paymentReference.getOrElse("")))</li>
-        <li id="late-payment">@Html(messages("ated.chargeable-return-late-payment-pf.text"))</li>
+            <p id="owed-amount">@Html(messages("ated.chargeable-return-confirmation.owe.text", pounds(liabilityReturnResponse.head.liabilityAmount)))</p>
+            <p id="reference-text">@Html(messages("ated.chargeable-return-confirmation.reference.text", liabilityReturnResponse.head.paymentReference.getOrElse("")))</p>
+            <p id="late-payment">@Html(messages("ated.chargeable-return-late-payment-pf.text"))</p>
         }
-        }
-    </ul>
-    </div>
+    }
 
     <div class="form-group">
         <p id="not-receive-email">

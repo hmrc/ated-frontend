@@ -16,15 +16,12 @@
 
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
+@import uk.gov.hmrc.play.views.formatting.Money.pounds
 
 @this(atedMain: atedMain)
 @(returnResponse: SubmitReturnsResponse, serviceInfoContent: Html = HtmlFormat.empty)(
         implicit authContext: StandardAuthRetrievals, messages: Messages,
         request: Request[AnyContent], appConfig: ApplicationConfig)
-
-@import uk.gov.hmrc.play.views.helpers.MoneyPounds
-
-
 
 @atedMain(title = messages("ated.chargeable-return-confirmation.title"),
           serviceInfoContent = serviceInfoContent) {
@@ -36,6 +33,7 @@
   </div>
 
   <div class="form-group">
+
     <p id="completed-message">@messages("ated.chargeable-return-confirmation.completed.message")</p>
     <p id="email-message">@messages("ated.chargeable-return-confirmation.email.message")</p>
 
@@ -51,8 +49,8 @@
   <p id="adjusted-amount">@messages("ated.chargeable-return-confirmation.amount.message")</p>
 
   @returnResponse.liabilityReturnResponse.map { liabilityReturnResponse =>
-    <p id="owed-amount">@messages("ated.chargeable-return-confirmation.owe.text",
-        MoneyPounds(liabilityReturnResponse.head.liabilityAmount, 2).quantity)</p>
+    <p id="owed-amount">@Html(messages("ated.chargeable-return-confirmation.owe.text",
+        pounds(liabilityReturnResponse.head.liabilityAmount)))</p>
     <p id="reference-text">@Html(messages("ated.chargeable-return-confirmation.reference.text",
         liabilityReturnResponse.head.paymentReference.getOrElse("")))</p>
     <p id="late-payment">@Html(messages("ated.chargeable-return-late-payment.text"))</p>
