@@ -821,11 +821,11 @@ ated.chargeable-return-confirmation.email.message = You will not receive an emai
 ated.chargeable-return-confirmation.charge.heading = Charges for this return
 ated.chargeable-return-confirmation.amount.message = This amount does not reflect any payments you have already made or penalties that have been issued.
 
-ated.chargeable-return-confirmation.owe.text = The charges for this return are £{0}.
+ated.chargeable-return-confirmation.owe.text = The charges for this return are {0}.
 ated.chargeable-return-confirmation.reference.text = The reference to make this payment is {0}.
 
 ated.chargeable-return-late-payment.text = Late payment penalties can be issued when ATED is unpaid. Find out about <a href="https://www.gov.uk/guidance/pay-annual-tax-on-enveloped-dwellings">how to pay and payment deadlines</a>.
-ated.chargeable-return-late-payment-pf.text = Late payment penalties can be issued when ATED is unpaid. Find out about how to pay and payment deadlines at https://www.gov.uk/guidance/pay-annual-tax-on-enveloped-dwellings .
+ated.chargeable-return-late-payment-pf.text = Late payment penalties can be issued when ATED is unpaid. Find out more by searching GOV.UK for ‘pay annual tax on enveloped dwellings’.
 
 ated.chargeable-return-confirmation.submitted.text = Your return has been successfully submitted
 ated.chargeable-return-confirmation.ated-charge = The ATED charge is {0}
@@ -1319,7 +1319,7 @@ ated.edit-liability.sent.header.date = on the
 ated.edit-liability.sent.header.amend = Your amended return has been successfully submitted
 ated.edit-liability.sent.title.amend = Your amended return has been successfully submitted - Annual Tax on enveloped dwellings
 ated.edit.liability.sent.liable-for = If you have sold the property you may be liable for <a href="https://www.gov.uk/guidance/capital-gains-tax-on-high-value-residential-property">ATED-related Capital Gains Tax</a>.
-ated.edit.liability.sent.liable-for-pf = If you have sold the property you may be liable for ATED-related Capital Gains Tax
+ated.edit.liability.sent.liable-for-pf = If you have sold the property you may be liable for ATED-related Capital Gains Tax. Find out more by searching GOV.UK for ‘high value residential property’.
 
 ated.edit.liability.sent.owe-you = HMRC owe you {0} for this amended return.
 ated.edit.liability.sent.repayments = Any repayments will be paid into your nominated bank account. We will contact you if you have a non-UK bank account.
