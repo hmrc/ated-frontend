@@ -196,7 +196,7 @@ ated.choose-reliefs.avoidance-reveal-line-2 = You will have received your scheme
 ated.choose-reliefs.avoidance-info-line-1 = from your scheme provider on form AAG6 Disclosure of avoidance scheme – Notification of scheme reference number
 ated.choose-reliefs.avoidance-info-line-2 = direct from HMRC
 ated.choose-reliefs.avoidance-more-info = <a href="https://www.gov.uk/guidance/disclosure-of-tax-avoidance-schemes-overview">More information on tax avoidance schemes</a>
-ated.choose-reliefs-further.information.text = We do not need any further information or property details, but you must keep information about them to support your claim to relief.
+ated.choose-reliefs-further.information.text = We do not need any further information or property details, but you must keep records to support your claim for relief. If a property is no longer eligible for relief, a further return will be required.
 
 ated.choose-reliefs.error = You must select at least one relief
 ated.choose-reliefs.continue = Save and continue
