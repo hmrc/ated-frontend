@@ -20,6 +20,7 @@ import models._
 import org.joda.time.LocalDate
 import play.api.mvc.{AnyContent, Request}
 import utils.AtedConstants._
+import scala.language.postfixOps
 
 
 object AtedUtils {
