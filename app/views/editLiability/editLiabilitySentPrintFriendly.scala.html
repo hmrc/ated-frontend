@@ -40,8 +40,8 @@
         @if(returnType == "F"){
 
         <ul class="list-bullet">
-            <li id="already-paid-text">@Html(messages("ated.edit.liability.sent.amount-already-paid", formattedPounds(amountDueOrRefund)))</li>
-            <li id="not-paid-text">@Html(messages("ated.edit.liability.sent.amount-already-paid", formattedPounds(liabilityAmount)))</li>
+            <li id="already-paid-text" class="print-li">@Html(messages("ated.edit.liability.sent.amount-already-paid", formattedPounds(amountDueOrRefund)))</li>
+            <li id="not-paid-text" class="print-li">@Html(messages("ated.edit.liability.sent.amount-already-paid", formattedPounds(liabilityAmount)))</li>
         </ul>
 
         <p id="payment-reference">@Html(messages("ated.edit-liabilty.sent.payment-reference", paymentReference.getOrElse("")))</p>
