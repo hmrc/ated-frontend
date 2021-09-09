@@ -1300,7 +1300,7 @@ ated.edit-liabilty.sent.receipt-message = You will not receive an email confirma
 ated.edit-liabilty.sent.charges-heading = Charges for this return
 ated.edit-liabilty.sent.new-amount = Your new adjusted amount does not reflect any payments you have already made or penalties that have been issued.
 ated.edit-liabilty.sent.late-payment = Late payment penalties can be issued when ATED is unpaid. Find out about <a href="https://www.gov.uk/guidance/pay-annual-tax-on-enveloped-dwellings">how to pay and payment deadlines.</a>
-ated.edit-liabilty.sent.late-payment-pf = Late payment penalties can be issued when ATED is unpaid. Find out about at https://www.gov.uk/guidance/pay-annual-tax-on-enveloped-dwellings how to pay and payment deadlines.
+ated.edit-liabilty.sent.late-payment-pf = Late payment penalties can be issued when ATED is unpaid. Late payment penalties can be issued when ATED is unpaid. Find out more by searching GOV.UK for ‘pay annual tax on enveloped dwellings’.
 
 ated.edit-liabilty.sent.view-balance = You can view your balance in your ATED online service. There can be a 24-hour delay before you see any updates.
 ated.edit-liabilty.sent.payment-reference = The reference to make this payment is {0}.

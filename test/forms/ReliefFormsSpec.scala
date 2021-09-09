@@ -36,6 +36,7 @@ class ReliefFormsSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoS
   val noPromoterErrorMessage = "ated.avoidance-schemes.promoter.empty"
   val noSchemeErrorMessage = "ated.avoidance-schemes.scheme.empty"
   val periodKey: Int = 2019
+  val maxChars: Long = 102400
 
   "validateTaxAvoidance" must {
     "fail if we have no data" in {
@@ -236,7 +237,7 @@ class ReliefFormsSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoS
   "avoidanceSchemeConstraint" must {
     "throw validation" when {
       "avoidance scheme is not available" in {
-        val form: Form[IsTaxAvoidance] = ReliefForms.isTaxAvoidanceForm.bind(Json.obj())
+        val form: Form[IsTaxAvoidance] = ReliefForms.isTaxAvoidanceForm.bind(Json.obj(), maxChars)
         form.hasErrors mustBe true
         form.errors must contain (FormError("", Seq("ated.claim-relief.avoidance-scheme.selected"),Seq("isAvoidanceScheme")))
       }
@@ -244,7 +245,7 @@ class ReliefFormsSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoS
 
     "not throw validation" when {
       "avoidance scheme is available" in {
-        val form: Form[IsTaxAvoidance] = ReliefForms.isTaxAvoidanceForm.bind(Json.obj("isAvoidanceScheme" -> false))
+        val form: Form[IsTaxAvoidance] = ReliefForms.isTaxAvoidanceForm.bind(Json.obj("isAvoidanceScheme" -> false), maxChars)
         form.hasErrors mustBe false
       }
     }
@@ -297,7 +298,7 @@ class ReliefFormsSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoS
   "reliefSelectedConstraint" must {
     "throw validation error" when {
       "there is no relief option selected" in {
-        val form: Form[Reliefs] = ReliefForms.reliefsForm.bind(Json.obj("periodKey" -> periodKey))
+        val form: Form[Reliefs] = ReliefForms.reliefsForm.bind(Json.obj("periodKey" -> periodKey), maxChars)
         form.hasErrors mustBe true
         form.errors must contain (FormError("", List("ated.choose-reliefs.error"),List("reliefs")))
       }
@@ -306,7 +307,7 @@ class ReliefFormsSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoS
     "not throw validation error" when {
       "there is a relief option selected" in {
         val form: Form[Reliefs] = ReliefForms.reliefsForm.bind(Json.obj("periodKey" -> periodKey,
-          "rentalBusiness" -> true, "rentalBusinessDate" ->  Map("day" -> "1", "month" -> "7", "year" -> periodKey.toString)))
+          "rentalBusiness" -> true, "rentalBusinessDate" ->  Map("day" -> "1", "month" -> "7", "year" -> periodKey.toString)), maxChars)
         form.hasErrors mustBe false
       }
     }

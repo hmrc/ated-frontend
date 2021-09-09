@@ -33,32 +33,22 @@
 
     <h1 id="header">@messages(returnHeaderMessage)</h1>
 
-    <p id="view-message">@messages("ated.edit-liabilty.sent.view-message")</p>
-    <p id="email-message">@messages("ated.edit-liabilty.sent.receipt-message")</p>
-
-    <hr>
-
     <h2 id="charges-heading">@messages("ated.edit-liabilty.sent.charges-heading")</h2>
 
     <p id="new-amount">@messages("ated.edit-liabilty.sent.new-amount")</p>
 
-
         @if(returnType == "F"){
 
-        <h3 id="already-paid-title">@messages("ated.edit.liability.sent.amount-already-paid.title")</h3>
+        <p id="already-paid-title-further" class="text-bold">@messages("ated.edit.liability.sent.amount-already-paid.title-further")</p>
 
         <ul class="list-bullet">
-            <li id="already-paid-text">@Html(messages("ated.edit.liability.sent.amount-already-paid", formattedPounds(amountDueOrRefund)))</li>
-        </ul>
-
-        <h3 id="not-paid-title">@messages("ated.edit.liability.sent.amount-not-paid.title")</h3>
-
-        <ul class="list-bullet">
-            <li id="not-paid-text">@Html(messages("ated.edit.liability.sent.amount-already-paid", formattedPounds(liabilityAmount)))</li>
+            <li id="already-paid-text" class="print-li">@Html(messages("ated.edit.liability.sent.amount-already-paid", formattedPounds(amountDueOrRefund)))</li>
+            <li id="not-paid-text" class="print-li">@Html(messages("ated.edit.liability.sent.amount-not-paid.title-further", formattedPounds(liabilityAmount)))</li>
         </ul>
 
         <p id="payment-reference">@Html(messages("ated.edit-liabilty.sent.payment-reference", paymentReference.getOrElse("")))</p>
         <p id="late-payment">@Html(messages("ated.edit-liabilty.sent.late-payment-pf"))</p>
+        <p id="view-balance">@Html(messages("ated.edit-liabilty.sent.view-balance"))</p>
 
         }
 

@@ -20,14 +20,10 @@ import connectors.ServiceInfoPartialConnector
 import controllers.ControllerBaseSpec
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
-import org.scalamock.scalatest.MockFactory
-import play.api.libs.json.JsValue
-import play.api.mvc.Request
-import play.twirl.api.{Html, HtmlFormat}
 import play.api.test.Helpers._
-import uk.gov.hmrc.http.HttpResponse
+import play.twirl.api.{Html, HtmlFormat}
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 class ServiceInfoServiceSpec extends ControllerBaseSpec {
 

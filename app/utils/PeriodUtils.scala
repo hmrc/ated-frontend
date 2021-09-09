@@ -20,6 +20,7 @@ import config.ApplicationConfig
 import models._
 import org.joda.time.LocalDate
 import utils.AtedConstants._
+import scala.language.postfixOps
 
 object PeriodUtils {
   implicit val localDateOrdering: Ordering[LocalDate] = Ordering.by(_.toDate.getTime)

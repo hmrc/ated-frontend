@@ -21,7 +21,6 @@ import akka.stream.{ActorMaterializer, Materializer}
 import config.AppConfig
 import mocks.MockAppConfig
 import models.StandardAuthRetrievals
-import org.scalamock.scalatest.MockFactory
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
