@@ -213,8 +213,29 @@ ated.choose-reliefs.error.general.farmHousesDate = There is a problem with the f
 ated.choose-reliefs.error.general.socialHousingDate = There is a problem with the social housing start date
 ated.choose-reliefs.error.general.providerSocialOrHousingDate = There is a problem with the provider of social housing or housing co-operative start date
 ated.choose-reliefs.error.general.equityReleaseDate = There is a problem with the equity release start date
-ated.choose-reliefs.error.date.mandatory = You must enter a valid date
+
+ated.choose-reliefs.error.date.mandatory.rentalBusinessDate = Rental businesses start date must be valid
+ated.choose-reliefs.error.date.mandatory.openToPublicDate = Open to the public start date must be valid
+ated.choose-reliefs.error.date.mandatory.propertyDeveloperDate = Property developers start date must be valid
+ated.choose-reliefs.error.date.mandatory.propertyTradingDate = Property trading start date must be valid
+ated.choose-reliefs.error.date.mandatory.lendingDate = Lending start date must be valid
+ated.choose-reliefs.error.date.mandatory.employeeOccupationDate = Employee occupation start date must be valid
+ated.choose-reliefs.error.date.mandatory.farmHousesDate = Farmhouses start date must be valid
+ated.choose-reliefs.error.date.mandatory.socialHousingDate = Social housing start date must be valid
+ated.choose-reliefs.error.date.mandatory.providerSocialOrHousingDate = Provider of social housing or housing co-operative start date must be valid
+ated.choose-reliefs.error.date.mandatory.equityReleaseDate = Equity release start date must be valid
+
 ated.choose-reliefs.error.date.chargePeriod = The date must be in this chargeable period
+ated.choose-reliefs.error.date.chargePeriod.rentalBusinessDate = Rental businesses start date must be in this chargeable period
+ated.choose-reliefs.error.date.chargePeriod.openToPublicDate = Open to the public start date must be in this chargeable period
+ated.choose-reliefs.error.date.chargePeriod.propertyDeveloperDate = Property developers start date must be in this chargeable period
+ated.choose-reliefs.error.date.chargePeriod.propertyTradingDate = Property trading start date must be in this chargeable period
+ated.choose-reliefs.error.date.chargePeriod.lendingDate = Lending start date must be in this chargeable period
+ated.choose-reliefs.error.date.chargePeriod.employeeOccupationDate = Employee occupation start date must be in this chargeable period
+ated.choose-reliefs.error.date.chargePeriod.farmHousesDate = Farmhouses start date must be in this chargeable period
+ated.choose-reliefs.error.date.chargePeriod.socialHousingDate = Social housing start date must be in this chargeable period
+ated.choose-reliefs.error.date.chargePeriod.providerSocialOrHousingDate = Provider of social housing or housing co-operative start date must be in this chargeable period
+ated.choose-reliefs.error.date.chargePeriod.equityReleaseDate = Equity release start date must be in this chargeable period
 
 ated.reliefs.error.title = There is a problem with your ATED return
 ated.reliefs.error.wrong-period = There is a problem with your ATED return. No details have been saved so you must return to your account summary and start again.
