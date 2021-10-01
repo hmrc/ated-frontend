@@ -21,7 +21,6 @@ import org.joda.time.{DateTime, LocalDate}
 import play.api.data.Forms._
 import play.api.data.validation.{Constraint, Invalid, Valid, ValidationResult}
 import play.api.data.{Form, FormError, Mapping}
-import uk.gov.hmrc.play.mappers.DateTuple._
 import utils.PeriodUtils
 
 import scala.annotation.tailrec

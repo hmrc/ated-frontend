@@ -353,7 +353,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
           submitWithAuthorisedUser(FakeRequest().withFormUrlEncodedBody(), json) {
             result =>
               status(result) must be(BAD_REQUEST)
-              contentAsString(result) must include("There is a problem with the page")
+              contentAsString(result) must include("There is a problem")
           }
         }
 
@@ -369,7 +369,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
           submitWithAuthorisedUser(FakeRequest().withFormUrlEncodedBody(), inputJsonOne) {
             result =>
               status(result) must be(BAD_REQUEST)
-              contentAsString(result) must include("There is a problem with the page")
+              contentAsString(result) must include("There is a problem")
           }
         }
         "for all/any dates too late than period, return BAD_REQUEST" in new Setup {
@@ -384,7 +384,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
           submitWithAuthorisedUser(FakeRequest().withFormUrlEncodedBody(), inputJsonOne) {
             result =>
               status(result) must be(BAD_REQUEST)
-              contentAsString(result) must include("There is a problem with the page")
+              contentAsString(result) must include("There is a problem")
           }
         }
         "for all/any dates which are invalid, return BAD_REQUEST" in new Setup {
@@ -399,7 +399,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
           submitWithAuthorisedUser(FakeRequest().withFormUrlEncodedBody(), inputJsonOne) {
             result =>
               status(result) must be(BAD_REQUEST)
-              contentAsString(result) must include("There is a problem with the page")
+              contentAsString(result) must include("There is a problem")
           }
         }
         "for one date that is invalid but unselected, with valid data, return OK" in new Setup {
