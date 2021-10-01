@@ -215,8 +215,9 @@ class ChooseReliefsSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil
     def view: Html = injectedViewInstance(periodKey, formWithErrors, periodStartDate, Html(""), Some("backLink"))
 
     val errorDoc = doc(view)
-    errorDoc must haveErrorSummary(messages(s"ated.choose-reliefs.error.general.$fieldStartDate"))
-    errorDoc must haveErrorNotification("You must enter a valid date")
+
+    errorDoc must haveErrorSummary(messages(s"ated.choose-reliefs.error.date.mandatory.$fieldStartDate"))
+    errorDoc must haveErrorNotification(messages(s"ated.choose-reliefs.error.date.mandatory.$fieldStartDate"))
   }
 
   def haveChooseReliefStartDateFormError(field: String): Unit = {
@@ -227,8 +228,9 @@ class ChooseReliefsSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil
     def view: Html = injectedViewInstance(periodKey, formWithErrors, periodStartDate, Html(""), Some("backLink"))
 
     val errorDoc = doc(view)
-    errorDoc must haveErrorSummary(messages(s"ated.choose-reliefs.error.general.$fieldStartDate"))
-    errorDoc must haveErrorNotification("You must enter a valid date")
+
+    errorDoc must haveErrorSummary(messages(s"ated.choose-reliefs.error.date.mandatory.$fieldStartDate"))
+    errorDoc must haveErrorNotification(messages(s"ated.choose-reliefs.error.date.mandatory.$fieldStartDate"))
   }
 
   val reliefsForm: Form[Reliefs] = ReliefForms.reliefsForm

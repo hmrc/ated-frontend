@@ -257,7 +257,7 @@ class ReliefFormsSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoS
     "throw validation error" when {
       "reliefSelected is true and start date is empty" in {
         val validationResult = ReliefForms.validatePeriodStartDate(periodKey, reliefSelected = true, None, field)
-        val expectedError = "ated.choose-reliefs.error.date.mandatory"
+        val expectedError = s"ated.choose-reliefs.error.date.mandatory.$field"
 
         validationResult mustBe Invalid(List(ValidationError(List(expectedError),field)))
       }
@@ -265,7 +265,7 @@ class ReliefFormsSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoS
       "reliefSelected is true and period is too early" in {
         val startDate = Some(new LocalDate(s"${periodKey - 1}-04-01"))
         val validationResult = ReliefForms.validatePeriodStartDate(periodKey, reliefSelected = true, startDate, field)
-        val expectedError = "ated.choose-reliefs.error.date.chargePeriod"
+        val expectedError = s"ated.choose-reliefs.error.date.chargePeriod.$field"
 
         validationResult mustBe Invalid(List(ValidationError(List(expectedError),field)))
       }
@@ -273,7 +273,7 @@ class ReliefFormsSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoS
       "reliefSelected is true and period is too late" in {
         val startDate = Some(new LocalDate(s"${periodKey + 1}-04-01"))
         val validationResult = ReliefForms.validatePeriodStartDate(periodKey, reliefSelected = true, startDate, field)
-        val expectedError = "ated.choose-reliefs.error.date.chargePeriod"
+        val expectedError = s"ated.choose-reliefs.error.date.chargePeriod.$field"
 
         validationResult mustBe Invalid(List(ValidationError(List(expectedError),field)))
       }
@@ -288,7 +288,7 @@ class ReliefFormsSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoS
       "reliefSelected is true and start date is within the taxable period" in {
         val startDate = Some(new LocalDate(s"$periodKey-03-31"))
         val validationResult = ReliefForms.validatePeriodStartDate(periodKey, reliefSelected = true, startDate, field)
-        val expectedError = "ated.choose-reliefs.error.date.chargePeriod"
+        val expectedError = s"ated.choose-reliefs.error.date.chargePeriod.$field"
 
         validationResult mustBe Invalid(List(ValidationError(List(expectedError),field)))
       }
