@@ -36,32 +36,38 @@ class AddressLookupService @Inject()(addressLookupConnector: AddressLookupConnec
   }
 
   def findById(id: String)(implicit hc: HeaderCarrier): Future[Option[PropertyDetailsAddress]] = {
-    def convertLookupAddressToPropertyDetailsAddress(addressResult: Option[AddressLookupRecord]): Option[PropertyDetailsAddress] = {
-      addressResult.flatMap(found =>
-        found.address.lines match {
-          case line1 :: line2 :: _ if (found.address.town.isDefined && found.address.county.isDefined) =>
-            Some(PropertyDetailsAddress(line1, line2, found.address.town, found.address.county, Some(found.address.postcode)))
-          case line1 :: line2 :: line3 :: _ if (found.address.county.isDefined) =>
-            Some(PropertyDetailsAddress(line1, line2, Some(line3), found.address.county, Some(found.address.postcode)))
-          case line1 :: line2 :: line3 :: _ if (found.address.town.isDefined) =>
-            Some(PropertyDetailsAddress(line1, line2, Some(line3), found.address.town, Some(found.address.postcode)))
-          case line1 :: line2 :: line3 :: line4 :: _ =>
-            Some(PropertyDetailsAddress(line1, line2, Some(line3), Some(line4), Some(found.address.postcode)))
-          case line1 :: line2 :: line3 :: Nil =>
-            Some(PropertyDetailsAddress(line1, line2,  Some(line3), found.address.town, Some(found.address.postcode)))
-          case line1 :: line2 :: Nil =>
-            Some(PropertyDetailsAddress(line1, line2, found.address.town, found.address.county, Some(found.address.postcode)))
-          case line1 :: Nil if (found.address.town.isDefined) =>
-            found.address.town.map(town =>
-              PropertyDetailsAddress(line1, town, found.address.county, None, Some(found.address.postcode))
-            )
-          case line1 :: Nil if (found.address.county.isDefined) =>
-            found.address.county.map(county =>
-              PropertyDetailsAddress(line1, county, None, None, Some(found.address.postcode))
-            )
-          case _ => None
+    def convertLookupAddressToPropertyDetailsAddress(addressResult: List[AddressLookupRecord]): Option[PropertyDetailsAddress] = {
+
+      //The address-lookup endpoint used by findById can only ever return an array of address results with either one or zero elements
+
+      addressResult match {
+        case res :: Nil => {
+          res.address.lines match {
+            case line1 :: line2 :: _ if (res.address.town.isDefined && res.address.county.isDefined) =>
+              Some(PropertyDetailsAddress(line1, line2, res.address.town, res.address.county, Some(res.address.postcode)))
+            case line1 :: line2 :: line3 :: _ if (res.address.county.isDefined) =>
+              Some(PropertyDetailsAddress(line1, line2, Some(line3), res.address.county, Some(res.address.postcode)))
+            case line1 :: line2 :: line3 :: _ if (res.address.town.isDefined) =>
+              Some(PropertyDetailsAddress(line1, line2, Some(line3), res.address.town, Some(res.address.postcode)))
+            case line1 :: line2 :: line3 :: line4 :: _ =>
+              Some(PropertyDetailsAddress(line1, line2, Some(line3), Some(line4), Some(res.address.postcode)))
+            case line1 :: line2 :: line3 :: Nil =>
+              Some(PropertyDetailsAddress(line1, line2,  Some(line3), res.address.town, Some(res.address.postcode)))
+            case line1 :: line2 :: Nil =>
+              Some(PropertyDetailsAddress(line1, line2, res.address.town, res.address.county, Some(res.address.postcode)))
+            case line1 :: Nil if (res.address.town.isDefined) =>
+              res.address.town.map(town =>
+                PropertyDetailsAddress(line1, town, res.address.county, None, Some(res.address.postcode))
+              )
+            case line1 :: Nil if (res.address.county.isDefined) =>
+              res.address.county.map(county =>
+                PropertyDetailsAddress(line1, county, None, None, Some(res.address.postcode))
+              )
+            case _ => None
+          }
         }
-      )
+        case _ => None
+      }
     }
     addressLookupConnector.findById(id).map(res => convertLookupAddressToPropertyDetailsAddress(res))
   }

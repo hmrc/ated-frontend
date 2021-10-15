@@ -16,39 +16,48 @@
 
 package connectors
 
-import java.net.URLEncoder
-
 import config.ApplicationConfig
 import javax.inject.Inject
 import models.{AddressLookup, AddressLookupRecord}
-import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
+import play.api.Logging
+import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.http.HttpReads.Implicits._
+import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class AddressLookupConnector @Inject()(appConf: ApplicationConfig, http: DefaultHttpClient) extends RawResponseReads {
+class AddressLookupConnector @Inject()(appConf: ApplicationConfig, http: DefaultHttpClient) extends RawResponseReads with Logging {
   val serviceURL: String = appConf.conf.baseUrl("address-lookup")
-  private val BASE_URL = "/v2/uk/addresses"
-  private val POSTCODE_LOOKUP = s"$BASE_URL?postcode="
-  private val ID_LOOKUP = s"$BASE_URL/"
+  private val LOOKUP = "/lookup"
+  private val UPRN = "/by-uprn"
 
 
   def findByPostcode(addressLookup: AddressLookup)(implicit hc: HeaderCarrier):Future[List[AddressLookupRecord]] = {
-    val filter = addressLookup.houseName.map(fi => "&filter=" + enc(fi)).getOrElse("")
-    http.GET[List[AddressLookupRecord]](serviceURL + POSTCODE_LOOKUP + addressLookup.postcode + filter)(
-      readFromJson, implicitly, implicitly).recover {
-      case _ => Nil
+    http.POST[JsValue, List[AddressLookupRecord]](serviceURL + LOOKUP, Json.toJson(addressLookup)).recover {
+      case e : UpstreamErrorResponse => {
+        logger.warn(s"[AddressLookupConnector] [findbyPoscode] - Upstream error: ${e.reportAs} message: ${e.getMessage()}")
+        Nil
+      }
+      case e => {
+        logger.warn(s"[AddressLookupConnector] [findbyPoscode] - Error: ${e.getMessage}")
+        Nil
+      }
     }
   }
 
-  def findById(id: String)(implicit hc: HeaderCarrier):Future[Option[AddressLookupRecord]] = {
-    http.GET[Option[AddressLookupRecord]](serviceURL + ID_LOOKUP + enc(id))(
-      readOptionOfNotFound, implicitly, implicitly).recover {
-      case _: NotFoundException => None
+  def findById(uprn: String)(implicit hc: HeaderCarrier):Future[List[AddressLookupRecord]] = {
+    http.POST[JsValue, List[AddressLookupRecord]](serviceURL + LOOKUP + UPRN, Json.obj("uprn" -> uprn)).recover {
+      case e : UpstreamErrorResponse => {
+        logger.warn(s"[AddressLookupConnector] [findById] - Upstream error: ${e.reportAs} message: ${e.getMessage()}")
+        Nil
+      }
+      case e => {
+        logger.warn(s"[AddressLookupConnector] [findById] - Error: ${e.getMessage}")
+        Nil
+      }
     }
   }
 
-  private def enc(s: String) = URLEncoder.encode(s, "UTF-8")
 }

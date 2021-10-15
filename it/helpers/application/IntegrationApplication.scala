@@ -45,13 +45,15 @@ trait IntegrationApplication extends GuiceOneServerPerSuite with WireMockConfig 
       "microservice.services.auth.company-auth.host"        -> wireMockHost,
       "microservice.services.datastream.host"               -> wireMockHost,
       "microservice.services.datastream.port"               -> wireMockPort,
+      "microservice.services.address-lookup.host"               -> wireMockHost,
+      "microservice.services.address-lookup.port"               -> wireMockPort,
       "auditing.consumer.baseUri.host"                      -> wireMockHost,
       "auditing.consumer.baseUri.port"                      -> wireMockPort,
       "metrics.name"                                        -> "ated-frontend",
       "metrics.rateUnit"                                    -> "SECONDS",
       "metrics.durationUnit"                                -> "SECONDS",
       "metrics.showSamples"                                 -> true,
-      "metrics.jvm"                                         -> true,
+      "metrics.jvm"                                         -> false,
       "metrics.enabled"                                     -> true
     )).build()
 }

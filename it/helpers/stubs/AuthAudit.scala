@@ -6,9 +6,9 @@ import play.api.test.Helpers.OK
 trait AuthAudit extends IntegrationBase {
 
   def stubAuthAudit():Unit = {
-    stubPost("/write/audit", OK, """{"x":2}""")
-    stubPost("/write/audit/merged", OK, """{"x":2}""")
-    stubPost("/auth/authorise", 200, authResponseJson)
+    stubPost(url = "/write/audit", status = OK, responseBody = """{"x":2}""")
+    stubPost(url = "/write/audit/merged",  status = OK, responseBody = """{"x":2}""")
+    stubPost(url = "/auth/authorise", status = OK, responseBody = authResponseJson)
   }
 
 }
