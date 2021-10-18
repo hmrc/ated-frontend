@@ -1,6 +1,6 @@
 package helpers.stubs
 
-import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, equalToJson, get, post, stubFor, urlEqualTo, urlMatching}
+import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import helpers.IntegrationBase
 import play.api.test.Helpers._
