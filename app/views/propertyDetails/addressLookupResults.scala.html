@@ -70,7 +70,7 @@
       @form(action=controllers.propertyDetails.routes.AddressLookupController.save(id, periodKey)) {
         <div class="form-group">
           @atedInputRadioGroupNew(addressResultsForm("selected"),
-          searchResults.results map (result => result.id -> result.address.toString),
+          searchResults.results map (result => result.uprn.toString -> result.address.toString),
               '_legend -> messages("ated.address-lookup.results.title"),
               '_legendClass -> "visuallyhidden",
               '_labelClass -> "block-label",

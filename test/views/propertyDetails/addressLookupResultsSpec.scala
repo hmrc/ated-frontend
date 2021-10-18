@@ -88,9 +88,9 @@ feature("The user can search for an address via the post code") {
       When("The user views the page")
       implicit val request = FakeRequest()
 
-      val address1 = AddressLookupRecord("1", AddressSearchResult(List("1", "result street"), None, None, "XX1 1XX", AddressLookupCountry("UK", "UK")))
-      val address2 = AddressLookupRecord("2", AddressSearchResult(List("2", "result street"), None, None, "XX1 1XX", AddressLookupCountry("UK", "UK")))
-      val address3 = AddressLookupRecord("3", AddressSearchResult(List("3", "result street"), None, None, "XX1 1XX", AddressLookupCountry("UK", "UK")))
+      val address1 = AddressLookupRecord(1, AddressSearchResult(List("1", "result street"), None, None, "XX1 1XX", AddressLookupCountry("UK", "UK")))
+      val address2 = AddressLookupRecord(2, AddressSearchResult(List("2", "result street"), None, None, "XX1 1XX", AddressLookupCountry("UK", "UK")))
+      val address3 = AddressLookupRecord(3, AddressSearchResult(List("3", "result street"), None, None, "XX1 1XX", AddressLookupCountry("UK", "UK")))
       val results = AddressSearchResults(searchCriteria = AddressLookup("XX1 1XX", None),
         results = List(address1, address2, address3))
            val html = injectedViewInstance(Some("123456"),

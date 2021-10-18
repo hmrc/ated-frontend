@@ -26,6 +26,7 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
+import play.api.libs.json.JsValue
 import play.api.test.Helpers._
 import testhelpers.MockAuthUtil
 import uk.gov.hmrc.http.SessionId
@@ -51,7 +52,7 @@ class AddressLookupConnectorSpec extends PlaySpec with GuiceOneAppPerSuite with 
 
   "AddressLookupConnector" must {
     val address =  AddressSearchResult(List("line1", "line2"), Some("town"), Some("country"), "postCode", AddressLookupCountry("",""))
-    val addressLookupRecord = AddressLookupRecord("1", address)
+    val addressLookupRecord = AddressLookupRecord(1, address)
 
     "post code lookup" must {
 
@@ -59,20 +60,20 @@ class AddressLookupConnectorSpec extends PlaySpec with GuiceOneAppPerSuite with 
 
         val response = List(addressLookupRecord)
         implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
-        when(mockHttp.GET[List[AddressLookupRecord]]
+        when(mockHttp.POST[JsValue, List[AddressLookupRecord]]
           (any(), any(), any())
-        (any(), any(), any())).thenReturn(Future.successful(response))
+        (any(), any(), any(), any())).thenReturn(Future.successful(response))
 
         val result: Future[List[AddressLookupRecord]] = testAddressLookupConnector.findByPostcode(AddressLookup("postCode", None))
-        await(result).headOption must be(Some(addressLookupRecord))
+        await(result) must be(List(addressLookupRecord))
       }
 
       "return nil if something goes wrong" in new Setup {
 
         implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
-        when(mockHttp.GET[List[AddressLookupRecord]]
+        when(mockHttp.POST[JsValue, List[AddressLookupRecord]]
           (any(), any(), any())
-        (any(), any(), any())).thenReturn(Future.failed(new Exception("")))
+        (any(), any(), any(), any())).thenReturn(Future.failed(new Exception("")))
 
         val result: Future[List[AddressLookupRecord]] = testAddressLookupConnector.findByPostcode(AddressLookup("postCode", Some("houseName")))
         await(result).isEmpty must be(true)
@@ -83,25 +84,25 @@ class AddressLookupConnectorSpec extends PlaySpec with GuiceOneAppPerSuite with 
 
       "retrieve the from the id" in new Setup {
 
-        val response = Some(addressLookupRecord)
+        val response = List(addressLookupRecord)
         implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
-        when(mockHttp.GET[Option[AddressLookupRecord]]
+        when(mockHttp.POST[JsValue, List[AddressLookupRecord]]
           (any(), any(), any())
-        (any(), any(), any())).thenReturn(Future.successful(response))
+        (any(), any(), any(), any())).thenReturn(Future.successful(response))
 
-        val result: Future[Option[AddressLookupRecord]] = testAddressLookupConnector.findById("1")
-        await(result) must be(Some(addressLookupRecord))
+        val result: Future[List[AddressLookupRecord]] = testAddressLookupConnector.findById("1")
+        await(result) must be(List(addressLookupRecord))
       }
 
       "return None if something goes wrong" in new Setup {
 
         implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
-        when(mockHttp.GET[Option[AddressLookupRecord]]
+        when(mockHttp.POST[JsValue, List[AddressLookupRecord]]
           (any(), any(), any())
-        (any(), any(), any())).thenReturn(Future.failed(new NotFoundException("")))
+        (any(), any(), any(), any())).thenReturn(Future.failed(new NotFoundException("")))
 
-        val result: Future[Option[AddressLookupRecord]] = testAddressLookupConnector.findById("1")
-        await(result).isDefined must be(false)
+        val result: Future[List[AddressLookupRecord]] = testAddressLookupConnector.findById("1")
+        await(result).isEmpty must be(true)
       }
     }
   }

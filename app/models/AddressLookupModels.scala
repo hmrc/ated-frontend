@@ -27,7 +27,7 @@ object PreviousReturns {
   implicit val formats: OFormat[PreviousReturns] = Json.format[PreviousReturns]
 }
 
-case class AddressLookup(postcode: String, houseName: Option[String])
+case class AddressLookup(postcode: String, filter: Option[String])
 
 object AddressLookup {
   implicit val formats: OFormat[AddressLookup] = Json.format[AddressLookup]
@@ -61,12 +61,11 @@ object AddressSearchResult {
 }
 
 case class AddressLookupRecord(
-                          id: String,
+                          uprn: Long,
                           address: AddressSearchResult)
 object AddressLookupRecord {
   implicit val formats: OFormat[AddressLookupRecord] = Json.format[AddressLookupRecord]
 }
-
 
 case class AddressSearchResults(searchCriteria: AddressLookup, results: Seq[AddressLookupRecord])
 
