@@ -18,8 +18,9 @@
 @import config.ApplicationConfig
 @import uk.gov.hmrc.play.views.helpers.AttorneyRegime
 @import uk.gov.hmrc.play.views.html.{layouts => uiLayouts}
+@import uk.gov.hmrc.play.views.html.layouts.AttorneyBanner
 
-@this(main: main)
+@this(main: main, attorneyBanner: AttorneyBanner)
 
 @(title: String,
   userLoggedIn: Boolean = true,
@@ -66,7 +67,7 @@
 
 @mainBanner = {
     @if(authContext.delegationModel.isDefined) {
-        @Some(uiLayouts.attorney_banner(name = Some(authContext.delegationModel.get.principalName),
+        @Some(attorneyBanner(name = Some(authContext.delegationModel.get.principalName),
             returnLinkUrl = authContext.delegationModel.get.link.url, regime = AttorneyRegime.pertax,
             customReturnLinkText = Some(authContext.delegationModel.get.link.text),
             bannerContent = Some(Html(messages("ated.agent.banner", authContext.delegationModel.get.principalName)))))

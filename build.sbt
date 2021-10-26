@@ -39,6 +39,9 @@ lazy val microservice = Project(appName, file("."))
   .settings(inConfig(TemplateTest)(Defaults.testSettings): _*)
   .settings(inConfig(TemplateItTest)(Defaults.itSettings): _*)
     .settings(
+      TwirlKeys.templateImports ++= Seq(
+        "views.html.helper.form"
+      ),
       addTestReportOption(IntegrationTest, "int-test-reports"),
       inConfig(IntegrationTest)(Defaults.itSettings),
       libraryDependencies ++= appDependencies,
