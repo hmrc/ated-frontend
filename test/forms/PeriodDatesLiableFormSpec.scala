@@ -16,13 +16,12 @@
 
 package forms
 
-import org.scalatest.MustMatchers
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.test.FakeRequest
 
-class PeriodDatesLiableFormSpec extends PlaySpec with MustMatchers with GuiceOneServerPerSuite {
+class PeriodDatesLiableFormSpec extends PlaySpec with GuiceOneServerPerSuite {
 
   val periodKey: Int = 2016
   implicit lazy val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]

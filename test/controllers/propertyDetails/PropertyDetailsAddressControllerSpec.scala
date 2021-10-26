@@ -39,9 +39,10 @@ import services.{ChangeLiabilityReturnService, PropertyDetailsCacheSuccessRespon
 import testhelpers.MockAuthUtil
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.bootstrap.audit.DefaultAuditConnector
+import uk.gov.hmrc.play.audit.DefaultAuditConnector
 import utils.AtedConstants
 import views.html.BtaNavigationLinks
+import views.html.propertyDetails.propertyDetailsAddress
 
 import scala.concurrent.Future
 
@@ -57,11 +58,11 @@ class PropertyDetailsAddressControllerSpec extends PlaySpec with GuiceOneServerP
   val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
   val mockChangeLiabilityReturnService: ChangeLiabilityReturnService = mock[ChangeLiabilityReturnService]
   val mockBackLinkCacheConnector: BackLinkCacheConnector = mock[BackLinkCacheConnector]
-    val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
+  val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
-  val injectedViewInstance = app.injector.instanceOf[views.html.propertyDetails.propertyDetailsAddress]
+  val injectedViewInstance: propertyDetailsAddress = app.injector.instanceOf[views.html.propertyDetails.propertyDetailsAddress]
 
   val periodKey: Int = 2015
 
@@ -97,12 +98,14 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
-      when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(btaNavigationLinksView()(messages,mockAppConfig)))
+      when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(btaNavigationLinksView()(messages,mockAppConfig)))
       when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
         (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
       when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
       when(mockDataCacheConnector.saveFormData[Boolean]
-        (ArgumentMatchers.eq(AtedConstants.SelectedPreviousReturn), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(true))
+        (ArgumentMatchers.eq(AtedConstants.SelectedPreviousReturn), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(true))
       val result = testPropertyDetailsAddressController.createNewDraft(periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
@@ -112,12 +115,14 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
-      when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(btaNavigationLinksView()(messages,mockAppConfig)))
+      when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(btaNavigationLinksView()(messages,mockAppConfig)))
       when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
         (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
       when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
       when(mockPropertyDetailsService.retrieveDraftPropertyDetails
-      (ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propertyDetails)))
+      (ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propertyDetails)))
       val result = testPropertyDetailsAddressController.view(id, fromConfirmAddressPage, periodKey, None).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
@@ -126,13 +131,16 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
-      when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(btaNavigationLinksView()(messages,mockAppConfig)))
+      when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(btaNavigationLinksView()(messages,mockAppConfig)))
       when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
         (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
       when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
       when(mockPropertyDetailsService.retrieveDraftPropertyDetails
-      (ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propertyDetails)))
-      val result = testPropertyDetailsAddressController.view(id, fromConfirmAddressPage, periodKey, Some("editSubmitted")).apply(SessionBuilder.buildRequestWithSession(userId))
+      (ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propertyDetails)))
+      val result = testPropertyDetailsAddressController.view(
+        id, fromConfirmAddressPage, periodKey, Some("editSubmitted")).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
 
@@ -144,7 +152,8 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
       when(mockDataCacheConnector.fetchAndGetFormData[Boolean](ArgumentMatchers.any())
         (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
       when(mockChangeLiabilityReturnService.retrieveSubmittedLiabilityReturnAndCache
-      (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(propertyDetails))
+      (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(propertyDetails))
       val result = testPropertyDetailsAddressController.editSubmittedReturn(id).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
@@ -185,10 +194,12 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
         (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
       id match {
         case Some(x) =>
-          when(mockPropertyDetailsService.saveDraftPropertyDetailsAddress(ArgumentMatchers.eq(x), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).
+          when(mockPropertyDetailsService.saveDraftPropertyDetailsAddress(
+            ArgumentMatchers.eq(x), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).
             thenReturn(Future.successful(x))
         case None =>
-          when(mockPropertyDetailsService.createDraftPropertyDetailsAddress(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).
+          when(mockPropertyDetailsService.createDraftPropertyDetailsAddress(
+            ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).
             thenReturn(Future.successful("1"))
       }
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
@@ -236,7 +247,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
         }
 
         "show the chargeable property details view if we id and data with fromConfirmAddressPage false" in new Setup {
-          viewDataWithAuthorisedUser("1", PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode")), false) {
+          viewDataWithAuthorisedUser("1", PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode")), fromConfirmAddressPage = false) {
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
@@ -252,7 +263,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
         }
 
         "show the chargeable property details view if we id and data with fromConfirmAddressPage true" in new Setup {
-          viewDataWithAuthorisedUser("1", PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode")), true) {
+          viewDataWithAuthorisedUser("1", PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode")), fromConfirmAddressPage = true) {
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
@@ -270,7 +281,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
         }
 
         "show the chargeable property details view with back link to EditLiabilityType" in new Setup {
-          viewDataWithAuthorisedUserChangeReturn("1",PropertyDetailsBuilder.getPropertyDetailsWithFormBundleReturn("1"), false) {
+          viewDataWithAuthorisedUserChangeReturn("1",PropertyDetailsBuilder.getPropertyDetailsWithFormBundleReturn("1"), fromConfirmAddressPage = false) {
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
@@ -350,14 +361,14 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
       "unauthorised users" must {
 
         "be redirected to the login page with fromConfirmPage false" in new Setup {
-          saveWithUnAuthorisedUser(None, false) { result =>
+          saveWithUnAuthorisedUser(None, fromConfirmAddressPage = false) { result =>
             status(result) must be(SEE_OTHER)
             redirectLocation(result).get must include("/ated/unauthorised")
           }
         }
 
         "be redirected to the login page with fromConfirmPage true" in new Setup {
-          saveWithUnAuthorisedUser(None, true) { result =>
+          saveWithUnAuthorisedUser(None, fromConfirmAddressPage = true) { result =>
             status(result) must be(SEE_OTHER)
             redirectLocation(result).get must include("/ated/unauthorised")
           }
@@ -370,7 +381,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
 
           val inputJson: JsValue = Json.parse( """{"rentalBusiness": true, "isAvoidanceScheme": "true"}""")
           when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
-          submitWithAuthorisedUser(None, inputJson, false) {
+          submitWithAuthorisedUser(None, inputJson, fromConfirmAddressPage = false) {
             result =>
               status(result) must be(BAD_REQUEST)
           }
@@ -380,7 +391,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
 
           val inputJson: JsValue = Json.parse( """{"rentalBusiness": true, "isAvoidanceScheme": "true"}""")
           when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
-          submitWithAuthorisedUser(None, inputJson, true) {
+          submitWithAuthorisedUser(None, inputJson, fromConfirmAddressPage = true) {
             result =>
               status(result) must be(BAD_REQUEST)
           }
@@ -388,8 +399,9 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
 
         "for valid data with no id, return OK with fromConfirmAddress false" in new Setup {
           val propertyDetails: PropertyDetailsAddress = PropertyDetailsBuilder.getPropertyDetailsAddress(postCode = Some("XX1 1XX"))
-          when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
-          submitWithAuthorisedUser(None, Json.toJson(propertyDetails), false) {
+          when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
+            .thenReturn(Future.successful(None))
+          submitWithAuthorisedUser(None, Json.toJson(propertyDetails), fromConfirmAddressPage = false) {
             result =>
               status(result) must be(SEE_OTHER)
           }
@@ -397,8 +409,9 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
 
         "for valid data with no id, return OK with fromConfirmAddress true" in new Setup {
           val propertyDetails: PropertyDetailsAddress = PropertyDetailsBuilder.getPropertyDetailsAddress(postCode = Some("XX1 1XX"))
-          when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
-          submitWithAuthorisedUser(None, Json.toJson(propertyDetails), true) {
+          when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
+            .thenReturn(Future.successful(None))
+          submitWithAuthorisedUser(None, Json.toJson(propertyDetails), fromConfirmAddressPage = true) {
             result =>
               status(result) must be(SEE_OTHER)
           }
@@ -406,8 +419,9 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
 
         "for valid data, return OK with fromConfirmAddress false" in new Setup {
           val propertyDetails: PropertyDetailsAddress = PropertyDetailsBuilder.getPropertyDetailsAddress(postCode = Some("XX1 1XX"))
-          when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
-          submitWithAuthorisedUser(Some("1"),Json.toJson(propertyDetails), false) {
+          when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
+            .thenReturn(Future.successful(None))
+          submitWithAuthorisedUser(Some("1"),Json.toJson(propertyDetails), fromConfirmAddressPage = false) {
             result =>
               status(result) must be(SEE_OTHER)
           }
@@ -415,8 +429,9 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
 
         "for valid data, return OK with fromConfirmAddress true" in new Setup {
           val propertyDetails: PropertyDetailsAddress = PropertyDetailsBuilder.getPropertyDetailsAddress(postCode = Some("XX1 1XX"))
-          when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
-          submitWithAuthorisedUser(Some("1"),Json.toJson(propertyDetails), true) {
+          when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
+            .thenReturn(Future.successful(None))
+          submitWithAuthorisedUser(Some("1"),Json.toJson(propertyDetails), fromConfirmAddressPage = true) {
             result =>
               status(result) must be(SEE_OTHER)
           }

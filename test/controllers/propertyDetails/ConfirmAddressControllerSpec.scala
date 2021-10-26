@@ -37,9 +37,10 @@ import services._
 import testhelpers.MockAuthUtil
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.bootstrap.audit.DefaultAuditConnector
+import uk.gov.hmrc.play.audit.DefaultAuditConnector
 import utils.AtedConstants
-import views.html.BtaNavigationLinks
+import views.html.propertyDetails.confirmAddress
+import views.html.{BtaNavigationLinks, global_error}
 
 import scala.concurrent.Future
 
@@ -54,12 +55,12 @@ class ConfirmAddressControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
   val mockChangeLiabilityReturnService: ChangeLiabilityReturnService = mock[ChangeLiabilityReturnService]
   val mockPropertyDetailsService: PropertyDetailsService = mock[PropertyDetailsService]
   val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
-    val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
+  val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
-  val injectedViewInstance = app.injector.instanceOf[views.html.propertyDetails.confirmAddress]
-  val injectedViewInstanceError = app.injector.instanceOf[views.html.global_error]
+  val injectedViewInstance: confirmAddress = app.injector.instanceOf[views.html.propertyDetails.confirmAddress]
+  val injectedViewInstanceError: global_error = app.injector.instanceOf[views.html.global_error]
 
   class Setup {
 
@@ -81,30 +82,33 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
       injectedViewInstanceError
     )
 
-    def getWithUnAuthorisedUser(test: Future[Result] => Any): Unit = {
+    val periodKey: Int = 2015
+
+    def getWithUnAuthorisedUser(test: Future[Result] => Any): Any = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
       setInvalidAuthMocks(authMock)
-      val result = testConfirmAddressController.view("1", 2015).apply(SessionBuilder.buildRequestWithSession(userId))
+      val result = testConfirmAddressController.view("1", periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
 
-    def getWithAuthorisedUser(test: Future[Result] => Any): Unit = {
+    def getWithAuthorisedUser(test: Future[Result] => Any): Any = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       noDelegationModelAuthMocks(authMock)
-      when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(btaNavigationLinksView()(messages,mockAppConfig)))
+      when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(btaNavigationLinksView()(messages,mockAppConfig)))
       when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
         (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
       when(mockPropertyDetailsService.retrieveDraftPropertyDetails(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())) thenReturn {
         Future.successful(PropertyDetailsCacheSuccessResponse(PropertyDetailsBuilder.getPropertyDetails("1")))
       }
       when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
-      val result = testConfirmAddressController.view("1", 2015).apply(SessionBuilder.buildRequestWithSession(userId))
+      val result = testConfirmAddressController.view("1", periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
 
-    def getWithAuthorisedUserChangeReturn(test: Future[Result] => Any): Unit = {
+    def getWithAuthorisedUserChangeReturn(test: Future[Result] => Any): Any = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       noDelegationModelAuthMocks(authMock)
@@ -114,11 +118,11 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
         Future.successful(PropertyDetailsCacheSuccessResponse(PropertyDetailsBuilder.getPropertyDetailsWithFormBundleReturn("1")))
       }
       when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
-      val result = testConfirmAddressController.view("1", 2015, Some("editSubmitted")).apply(SessionBuilder.buildRequestWithSession(userId))
+      val result = testConfirmAddressController.view("1", periodKey, Some("editSubmitted")).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
 
-    def getWithAuthorisedUserEditSubmitted(test: Future[Result] => Any): Unit = {
+    def getWithAuthorisedUserEditSubmitted(test: Future[Result] => Any): Any = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       noDelegationModelAuthMocks(authMock)
@@ -128,7 +132,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
         Future.successful(PropertyDetailsCacheSuccessResponse(PropertyDetailsBuilder.getFullPropertyDetails("1")))
       }
       when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
-      val result = testConfirmAddressController.view("1", 2015, Some("editPrevReturn")).apply(SessionBuilder.buildRequestWithSession(userId))
+      val result = testConfirmAddressController.view("1", periodKey, Some("editPrevReturn")).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
 
@@ -140,12 +144,13 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
       when(mockDataCacheConnector.fetchAndGetFormData[Boolean](ArgumentMatchers.any())
         (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
       when(mockChangeLiabilityReturnService.retrieveSubmittedLiabilityReturnAndCache
-      (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(propertyDetails))
+      (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(propertyDetails))
       val result = testConfirmAddressController.editSubmittedReturn(id).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
 
-    def getWithAuthorisedUserNotFoundResponse(test: Future[Result] => Any): Unit = {
+    def getWithAuthorisedUserNotFoundResponse(test: Future[Result] => Any): Any = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       noDelegationModelAuthMocks(authMock)
@@ -155,11 +160,11 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
         Future.successful(PropertyDetailsCacheNotFoundResponse)
       }
       when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
-      val result = testConfirmAddressController.view("1", 2015).apply(SessionBuilder.buildRequestWithSession(userId))
+      val result = testConfirmAddressController.view("1", periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
 
-    def getWithAuthorisedUserErrorResponse(test: Future[Result] => Any): Unit = {
+    def getWithAuthorisedUserErrorResponse(test: Future[Result] => Any): Any = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       noDelegationModelAuthMocks(authMock)
@@ -169,7 +174,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
         Future.successful(PropertyDetailsCacheNotFoundResponse)
       }
       when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
-      val result = testConfirmAddressController.view("1", 2015).apply(SessionBuilder.buildRequestWithSession(userId))
+      val result = testConfirmAddressController.view("1", periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
 
@@ -179,7 +184,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
       setAuthMocks(authMock)
       when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
         (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-      val result = testConfirmAddressController.submit("1", 2015).apply(SessionBuilder.buildRequestWithSession(userId))
+      val result = testConfirmAddressController.submit("1", periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
 
@@ -189,7 +194,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
       setInvalidAuthMocks(authMock)
       when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
         (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-      val result = testConfirmAddressController.submit("1", 2015).apply(SessionBuilder.buildRequestWithSession(userId))
+      val result = testConfirmAddressController.submit("1", periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
   }
@@ -335,7 +340,8 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
       "authorised users" must {
 
         "redirect to declaration page" in new Setup {
-          when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+          when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
+            .thenReturn(Future.successful(None))
           submitWithAuthorisedUser {
             result =>
               status(result) must be(SEE_OTHER)

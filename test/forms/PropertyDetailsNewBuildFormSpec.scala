@@ -17,11 +17,10 @@
 package forms
 
 import forms.PropertyDetailsForms.propertyDetailsNewBuildForm
-import org.scalatest.MustMatchers
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 
-class PropertyDetailsNewBuildFormSpec extends PlaySpec with MustMatchers with GuiceOneServerPerSuite {
+class PropertyDetailsNewBuildFormSpec extends PlaySpec with GuiceOneServerPerSuite {
 
   "propertyDetailsNewBuildForm" must {
     "throw error" when {
