@@ -40,7 +40,8 @@ lazy val microservice = Project(appName, file("."))
   .settings(inConfig(TemplateItTest)(Defaults.itSettings): _*)
     .settings(
       TwirlKeys.templateImports ++= Seq(
-        "views.html.helper.form"
+        "views.html.helper.form",
+        "uk.gov.hmrc.play.views.html.helpers.FormWithCSRF"
       ),
       addTestReportOption(IntegrationTest, "int-test-reports"),
       inConfig(IntegrationTest)(Defaults.itSettings),

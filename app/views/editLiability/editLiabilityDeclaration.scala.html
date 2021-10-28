@@ -17,7 +17,7 @@
 @import models._
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
-@this(atedMain: atedMain)
+@this(atedMain: atedMain, formHelper: FormWithCSRF)
 @(oldFormBundleNum: String, returnType: String, serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
@@ -36,7 +36,7 @@
     </span>
   </p>
 
-  @form(action=controllers.editLiability.routes.EditLiabilityDeclarationController.submit(oldFormBundleNum)) {
+  @formHelper(action=controllers.editLiability.routes.EditLiabilityDeclarationController.submit(oldFormBundleNum)) {
 
       <button class="button" id="submit" type="submit">@messages(printSubmitMsg(returnType))</button>
 

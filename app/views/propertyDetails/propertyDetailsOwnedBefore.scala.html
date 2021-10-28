@@ -18,7 +18,7 @@
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
 
-@this(atedMain: atedMain)
+@this(atedMain: atedMain, formHelper: FormWithCSRF)
 @(id: String, periodKey: Int, propertyDetailsForm: Form[PropertyDetailsOwnedBefore],
   mode: Option[String], serviceInfoContent: Html = HtmlFormat.empty,
   backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
@@ -50,7 +50,7 @@
                         messages("ated.property-details-value.isOwnedBeforeValuationYear.title", PeriodUtils.calculateLowerTaxYearBoundary(periodKey).getYear.toString).toString,
       Some(atedErrorSummary(propertyDetailsForm, "ated.property-details-value-error.general")))
 
-  @form(action = controllers.propertyDetails.routes.PropertyDetailsOwnedBeforeController.save(id, periodKey, mode)) {
+  @formHelper(action = controllers.propertyDetails.routes.PropertyDetailsOwnedBeforeController.save(id, periodKey, mode)) {
 
     <div class="form-group">
       <div id="isOwnedBeforePolicyYear">

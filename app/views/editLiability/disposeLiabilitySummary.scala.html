@@ -16,7 +16,7 @@
 
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
-@this(atedMain: atedMain)
+@this(atedMain: atedMain, formHelper: FormWithCSRF)
 @(disposeLiability: models.DisposeLiabilityReturn, serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
 @import uk.gov.hmrc.play.views.html.helpers._
@@ -295,7 +295,7 @@
   </p>
 
   @if(DisposeLiabilityReturn.isComplete(disposeLiability)) {
-    @form(action = controllers.editLiability.routes.DisposeLiabilitySummaryController.submit(disposeLiability.id.toString)) {
+    @formHelper(action = controllers.editLiability.routes.DisposeLiabilitySummaryController.submit(disposeLiability.id.toString)) {
       <button class="button" id="submit" type="submit">@messages("ated.confirm-and-continue")</button>
     }
   }

@@ -17,7 +17,7 @@
 @import models._
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
-@this(atedMain: atedMain)
+@this(atedMain: atedMain, formHelper: FormWithCSRF)
 @(bankDetailsForm: Form[HasBankDetails], oldFormBundleNo: String, serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
@@ -36,7 +36,7 @@
       Some(atedErrorSummary(bankDetailsForm, "ated.bank-details.error-key")))
 
 
-  @form(action=controllers.editLiability.routes.DisposeLiabilityHasBankDetailsController.save(oldFormBundleNo)) {
+  @formHelper(action=controllers.editLiability.routes.DisposeLiabilityHasBankDetailsController.save(oldFormBundleNo)) {
 
     <div class="form-group" id="hasBankDetails-id">
       @atedInputRadioGroupNew(

@@ -16,7 +16,7 @@
 
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
-@this(atedMain: atedMain)
+@this(atedMain: atedMain, formHelper: FormWithCSRF)
 @(editContactDetailsForm: Form[models.EditContactDetails], serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
@@ -32,7 +32,7 @@
     <p id="contact-details-subheader"> @messages("ated.contact-details.subheader")</p>
   </div>
 
-  @form(action = controllers.subscriptionData.routes.EditContactDetailsController.submit) {
+  @formHelper(action = controllers.subscriptionData.routes.EditContactDetailsController.submit) {
 
     <div class="form-group">
 

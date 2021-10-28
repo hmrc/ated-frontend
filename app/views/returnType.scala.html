@@ -16,7 +16,7 @@
 
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
-@this(atedMain: atedMain)
+@this(atedMain: atedMain, formHelper: FormWithCSRF)
 @(periodKey: Int, returnTypeForm: Form[ReturnType],serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
@@ -27,7 +27,7 @@
   @pageHeadersAndError(backLink, "pre-heading", messages("ated.return-type.pre-header"), "return-type-header", messages("ated.return-type.header"),
     Some(atedErrorSummary(returnTypeForm, "ated.return-type.error.general")))
 
-  @form(action=controllers.routes.ReturnTypeController.submit(periodKey)) {
+  @formHelper(action=controllers.routes.ReturnTypeController.submit(periodKey)) {
     <div id="returnType">
       @*** CR = chargeable-return && RR = relief-return ***@
 

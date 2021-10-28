@@ -17,7 +17,7 @@
 @import models._
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
-@this(atedMain: atedMain)
+@this(atedMain: atedMain, formHelper: FormWithCSRF)
 
 @(submittedReliefReturn: SubmittedReliefReturns, periodKey: Int, formBundleNumber: String, organisationName: Option[String], isEditable: Boolean, serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 @import uk.gov.hmrc.play.views.html._
@@ -32,7 +32,7 @@
   @pageHeadersAndError(backLink, "relief-return-subheader", organisationName.getOrElse(""), "relief-return-header", messages("ated.view-relief-return.header"))
 
   <div class="form-group">
-    @form(action=controllers.reliefs.routes.ViewReliefReturnController.submit(periodKey: Int, formBundleNumber: String)) {
+    @formHelper(action=controllers.reliefs.routes.ViewReliefReturnController.submit(periodKey: Int, formBundleNumber: String)) {
     <div class="paragraph" id="relief-return-text">@messages("ated.view-relief-return.subheader",
       PeriodUtils.periodStartDate(periodKey).toString(messages("ated.date-format")),
       PeriodUtils.periodEndDate(periodKey).toString(messages("ated.date-format")))

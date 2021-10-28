@@ -26,7 +26,7 @@
 @import utils._
 @import config.featureswitch.FeatureSwitching
 
-@this(atedMain: atedMain)
+@this(atedMain: atedMain, formHelper: FormWithCSRF)
 
 @(periodKey: Int, reliefsForm: Form[Reliefs], periodStartDate: org.joda.time.LocalDate, serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
@@ -83,7 +83,7 @@
         <p id="lede-text">@messages("ated.choose-reliefs.info")</p>
         <p id="choose-reliefs-label">@messages("ated.choose-reliefs.label")</p>
 
-        @form(action=controllers.reliefs.routes.ChooseReliefsController.send(periodKey)) {
+        @formHelper(action=controllers.reliefs.routes.ChooseReliefsController.send(periodKey)) {
 
         <fieldset class="form-group">
             <legend id="choose-reliefs-legend" class="visuallyhidden">@messages("ated.choose-reliefs.header")</legend>
