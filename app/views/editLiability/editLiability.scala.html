@@ -17,11 +17,13 @@
 @import models._
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
-
-@this(atedMain: atedMain)
-@(editLiabilityReturnTypeForm: Form[EditLiabilityReturnType], oldFormBundleNo: String, periodKey: Int, editAllowed: Boolean, serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
+
+@this(atedMain: atedMain, formHelper: FormWithCSRF)
+
+@(editLiabilityReturnTypeForm: Form[EditLiabilityReturnType], oldFormBundleNo: String, periodKey: Int, editAllowed: Boolean, serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
+
 
 @implicitFormInstance = @{
     Some(editLiabilityReturnTypeForm)
@@ -37,7 +39,7 @@
             Some(atedErrorSummary(editLiabilityReturnTypeForm, "ated.edit-liability.error.general")))
     }
 
-    @form(action = controllers.editLiability.routes.EditLiabilityTypeController.continue(oldFormBundleNo, periodKey, editAllowed)) {
+    @formHelper(action = controllers.editLiability.routes.EditLiabilityTypeController.continue(oldFormBundleNo, periodKey, editAllowed)) {
 
 
             @*** CR = change-return, DP = dispose-property && MP = move-property ***@

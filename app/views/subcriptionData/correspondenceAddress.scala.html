@@ -16,7 +16,7 @@
 
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
-@this(atedMain: atedMain)
+@this(atedMain: atedMain, formHelper: FormWithCSRF)
 @(correspondenceAddressForm: Form[models.AddressDetails], listOfIsoCode: List[(String, String)], serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
@@ -40,7 +40,7 @@
   @pageHeadersAndError(backLink, "pre-heading", messages("ated.correspondence-address.subheader"), "correspondence-address-header", messages("ated.correspondence-address.header"),
       Some(atedErrorSummary(correspondenceAddressForm, "ated.correspondence-address.error.general")))
 
-  @form(action = controllers.subscriptionData.routes.CorrespondenceAddressController.submit) {
+  @formHelper(action = controllers.subscriptionData.routes.CorrespondenceAddressController.submit) {
 
     <div class="form-group">
 

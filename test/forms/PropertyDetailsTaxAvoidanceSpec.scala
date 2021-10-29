@@ -17,13 +17,12 @@
 package forms
 
 import forms.PropertyDetailsForms.{propertyDetailsTaxAvoidanceForm, validatePropertyDetailsTaxAvoidance}
-import org.scalatest.MustMatchers
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.test.FakeRequest
 
-class PropertyDetailsTaxAvoidanceSpec  extends PlaySpec with MustMatchers with GuiceOneServerPerSuite {
+class PropertyDetailsTaxAvoidanceSpec  extends PlaySpec with GuiceOneServerPerSuite {
 
   implicit lazy val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
   implicit lazy val messages: Messages = messagesApi.preferred(FakeRequest())

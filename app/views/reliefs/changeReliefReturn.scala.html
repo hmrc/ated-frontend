@@ -17,7 +17,7 @@
 @import models._
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
-@this(atedMain: atedMain)
+@this(atedMain: atedMain, formHelper: FormWithCSRF)
 @(periodKey: Int, formBundleNumber: String, editReliefForm: Form[EditRelief], serviceInfoContent: Html = HtmlFormat.empty,
         backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent],
         appConfig: ApplicationConfig)
@@ -52,7 +52,7 @@
         </div>
     </details>
 
-    @form(action = controllers.reliefs.routes.ChangeReliefReturnController.submit(periodKey, formBundleNumber)) {
+    @formHelper(action = controllers.reliefs.routes.ChangeReliefReturnController.submit(periodKey, formBundleNumber)) {
         <div id="editReliefForm">
         @atedInputRadioGroupNew(editReliefForm("changeRelief"),
             Seq(

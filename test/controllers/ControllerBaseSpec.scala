@@ -17,7 +17,6 @@
 package controllers
 
 import akka.actor.ActorSystem
-import akka.stream.{ActorMaterializer, Materializer}
 import config.AppConfig
 import mocks.MockAppConfig
 import models.StandardAuthRetrievals
@@ -46,7 +45,6 @@ class ControllerBaseSpec extends PlaySpec with MockitoSugar with GuiceOneAppPerS
   implicit val ec: ExecutionContext = injector.instanceOf[ExecutionContext]
   implicit val mockAppConfig: AppConfig = new MockAppConfig(app.configuration)
   implicit val system: ActorSystem = ActorSystem()
-  implicit val materializer: Materializer = ActorMaterializer()
   implicit lazy val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 
 

@@ -17,7 +17,7 @@
 @import models._
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
-@this(atedMain: atedMain)
+@this(atedMain: atedMain, formHelper: FormWithCSRF)
 @(id: String, periodKey: Int,
  propertyDetailsForm: Form[PropertyDetailsInRelief],
  periods : Seq[models.LineItem],
@@ -81,7 +81,7 @@
     </a>
   </div>
 
-  @form(action=controllers.propertyDetails.routes.PeriodsInAndOutReliefController.continue(id, periodKey)) {
+  @formHelper(action=controllers.propertyDetails.routes.PeriodsInAndOutReliefController.continue(id, periodKey)) {
 
    <button class="button" id="submit" type="submit">@messages("ated.save-and-continue")</button>
 

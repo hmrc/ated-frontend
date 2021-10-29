@@ -19,7 +19,7 @@
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
 
-@this(atedMain: atedMain)
+@this(atedMain: atedMain, formHelper: FormWithCSRF)
 @(id: String, periodKey: Int, propertyDetailsForm: Form[PropertyDetailsValueOnAcquisition], mode: Option[String], serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String], date: LocalDate)(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
@@ -52,7 +52,7 @@ pageScripts = Some(pageScripts)) {
 Some(atedErrorWithBoundarySummary(propertyDetailsForm, "ated.property-details-value-error.general", None, periodKey)))
 
 
-@form(action = controllers.propertyDetails.routes.PropertyDetailsValueAcquiredController.save(id, periodKey, mode, date)) {
+@formHelper(action = controllers.propertyDetails.routes.PropertyDetailsValueAcquiredController.save(id, periodKey, mode, date)) {
 
 <div>
     @atedInputValue(propertyDetailsForm("acquiredValue"),

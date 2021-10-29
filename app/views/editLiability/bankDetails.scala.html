@@ -18,7 +18,7 @@
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
 
-@this(atedMain: atedMain)
+@this(atedMain: atedMain, formHelper: FormWithCSRF)
 @(bankDetailsForm: Form[BankDetails], oldFormBundleNo: String, serviceInfoContent: Html = HtmlFormat.empty,
         backLink: Option[String])(implicit authorisedRequest: StandardAuthRetrievals, messages: Messages,
         request: Request[AnyContent], appConfig: ApplicationConfig)
@@ -47,7 +47,7 @@
   @pageHeadersAndError(backLink, "pre-heading", messages("ated.property-details.pre-header-change"), "bank-details-header",
       messages("ated.bank-details.title"), Some(atedErrorSummary(bankDetailsForm, "ated.bank-details.error-key")))
 
-  @form(action=controllers.editLiability.routes.BankDetailsController.save(oldFormBundleNo)) {
+  @formHelper(action=controllers.editLiability.routes.BankDetailsController.save(oldFormBundleNo)) {
 
     <div class="form-group" id="hasUKBankAccount-id">
       @atedInputRadioGroupReveal(

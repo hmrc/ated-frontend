@@ -17,7 +17,7 @@
 @import models._
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
-@this(atedMain: atedMain)
+@this(atedMain: atedMain, formHelper: FormWithCSRF)
 @(id: String,
         periodKey: Int,
         propertyDetails: PropertyDetailsAddress,
@@ -59,7 +59,7 @@
                 </a>
             </p>
 
-        @form(action = controllers.propertyDetails.routes.ConfirmAddressController.submit(id, periodKey, mode)) {
+        @formHelper(action = controllers.propertyDetails.routes.ConfirmAddressController.submit(id, periodKey, mode)) {
             <p>
                 <button class="button reference-group" id="submit" type="submit">@messages("ated.confirm-and-continue")</button>
             </p>

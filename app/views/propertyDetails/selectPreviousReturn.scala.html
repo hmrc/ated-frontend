@@ -20,7 +20,7 @@
 @import views.html.helpers._
 @import play.twirl.api.HtmlFormat
 
-@this(atedMain: atedMain)
+@this(atedMain: atedMain, formHelper: FormWithCSRF)
 @(periodKey: Int, returnType: String, addressResultsForm: Form[AddressSelected], prevReturns: Seq[PreviousReturns], serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
 @atedMain(title = messages("ated.select-past-return.title"),
@@ -30,7 +30,7 @@
     Some(atedErrorSummary(addressResultsForm, "ated.select-past-return.general")))
 
     @if(!prevReturns.isEmpty) {
-      @form(action=controllers.propertyDetails.routes.SelectExistingReturnAddressController.continue(periodKey, returnType)) {
+      @formHelper(action=controllers.propertyDetails.routes.SelectExistingReturnAddressController.continue(periodKey, returnType)) {
         @atedInputRadioGroupNew(addressResultsForm("selected"),
           prevReturns map (result => result.formBundleNumber -> result.address),
           '_legend -> messages("ated.select-past-return.header"),

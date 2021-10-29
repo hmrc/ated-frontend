@@ -18,7 +18,7 @@
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
 
-@this(atedMain: atedMain)
+@this(atedMain: atedMain, formHelper: FormWithCSRF)
 @(id: String, periodKey: Int,
   propertyDetailsForm: Form[PropertyDetailsFullTaxPeriod],
   periodStartDate: org.joda.time.LocalDate,
@@ -35,7 +35,7 @@
   @pageHeadersAndError(backLink, "pre-heading", messages("ated.property-details.pre-header"), "property-details-header", messages("ated.property-details-period.isFullPeriod.header"),
     Some(atedErrorSummary(propertyDetailsForm, "ated.property-details-period-error.general")))
 
-  @form(action=controllers.propertyDetails.routes.IsFullTaxPeriodController.save(id, periodKey)) {
+  @formHelper(action=controllers.propertyDetails.routes.IsFullTaxPeriodController.save(id, periodKey)) {
 
     <div class="form-group" id="isFullPeriod">
       @atedInputRadioGroupNew(propertyDetailsForm("isFullPeriod"),

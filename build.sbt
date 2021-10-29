@@ -18,7 +18,7 @@ lazy val scoverageSettings = {
     import scoverage.ScoverageKeys
     Seq(
       ScoverageKeys.coverageExcludedPackages := "<empty>;Reverse.*;app.Routes.*;prod.*;testOnlyDoNotUseInAppConf.*;uk.gov.hmrc.BuildInfo*;.*MicroserviceAuditConnector*;.*MicroserviceAuthConnector*;.*WSHttp*;uk.gov.hmrc.agentclientmandate.config.*;",
-      ScoverageKeys.coverageMinimum := 80,
+      ScoverageKeys.coverageMinimumStmtTotal := 80,
       ScoverageKeys.coverageFailOnMinimum := true,
       ScoverageKeys.coverageHighlighting := true
     )
@@ -39,11 +39,14 @@ lazy val microservice = Project(appName, file("."))
   .settings(inConfig(TemplateTest)(Defaults.testSettings): _*)
   .settings(inConfig(TemplateItTest)(Defaults.itSettings): _*)
     .settings(
+      TwirlKeys.templateImports ++= Seq(
+        "views.html.helper.form",
+        "uk.gov.hmrc.play.views.html.helpers.FormWithCSRF"
+      ),
       addTestReportOption(IntegrationTest, "int-test-reports"),
       inConfig(IntegrationTest)(Defaults.itSettings),
       libraryDependencies ++= appDependencies,
       retrieveManaged := true,
-      evictionWarningOptions in update := EvictionWarningOptions.default.withWarnScalaVersionEviction(false),
       routesGenerator := InjectedRoutesGenerator,
       parallelExecution          in Test := true,
       fork                       in Test := true,

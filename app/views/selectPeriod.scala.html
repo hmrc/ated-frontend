@@ -19,7 +19,7 @@
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
 
-@this(atedMain: atedMain)
+@this(atedMain: atedMain, formHelper: FormWithCSRF)
 @(selectPeriodForm: Form[SelectPeriod], periods: List[(String, String)],  serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
 @atedMain(title = messages("ated.select-period.title"),
@@ -30,7 +30,7 @@
 
   <p id="details-text">@messages("ated.select-period.text")</p>
 
-  @form(action=controllers.routes.SelectPeriodController.submit()) {
+  @formHelper(action=controllers.routes.SelectPeriodController.submit()) {
 
   <div id="period">
     @atedInputRadioGroupNew(selectPeriodForm("period"),

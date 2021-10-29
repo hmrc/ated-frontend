@@ -39,9 +39,10 @@ import services.{AddressLookupService, PropertyDetailsService, ServiceInfoServic
 import testhelpers.MockAuthUtil
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.bootstrap.audit.DefaultAuditConnector
+import uk.gov.hmrc.play.audit.DefaultAuditConnector
 import utils.AtedConstants
 import views.html.BtaNavigationLinks
+import views.html.propertyDetails.{addressLookup, addressLookupResults}
 
 import scala.concurrent.Future
 
@@ -57,18 +58,21 @@ class AddressLookupControllerSpec extends PlaySpec with GuiceOneServerPerSuite w
   val mockPropertyDetailsService: PropertyDetailsService = mock[PropertyDetailsService]
   val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
   val mockConfirmAddressController: ConfirmAddressController = mock[ConfirmAddressController]
-    val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
+  val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
-  val injectedViewInstance = app.injector.instanceOf[views.html.propertyDetails.addressLookup]
-  val injectedViewInstanceResults = app.injector.instanceOf[views.html.propertyDetails.addressLookupResults]
+  val injectedViewInstance: addressLookup = app.injector.instanceOf[views.html.propertyDetails.addressLookup]
+  val injectedViewInstanceResults: addressLookupResults = app.injector.instanceOf[views.html.propertyDetails.addressLookupResults]
 
   val periodKey: Int = 2015
 
-  val address1 = AddressLookupRecord(1, AddressSearchResult(List("1", "result street"), None, None, "XX1 1XX", AddressLookupCountry("UK", "UK")))
-  val address2 = AddressLookupRecord(2, AddressSearchResult(List("2", "result street"), None, None, "XX1 1XX", AddressLookupCountry("UK", "UK")))
-  val address3 = AddressLookupRecord(3, AddressSearchResult(List("3", "result street"), None, None, "XX1 1XX", AddressLookupCountry("UK", "UK")))
+  val address1: AddressLookupRecord = AddressLookupRecord(
+    1, AddressSearchResult(List("1", "result street"), None, None, "XX1 1XX", AddressLookupCountry("UK", "UK")))
+  val address2: AddressLookupRecord = AddressLookupRecord(
+    2, AddressSearchResult(List("2", "result street"), None, None, "XX1 1XX", AddressLookupCountry("UK", "UK")))
+  val address3: AddressLookupRecord = AddressLookupRecord(
+    3, AddressSearchResult(List("3", "result street"), None, None, "XX1 1XX", AddressLookupCountry("UK", "UK")))
 
 class Setup {
 
@@ -106,7 +110,8 @@ class Setup {
     val userId = s"user-${UUID.randomUUID}"
     val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
     setAuthMocks(authMock)
-    when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(btaNavigationLinksView()(messages,mockAppConfig)))
+    when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+      .thenReturn(Future.successful(btaNavigationLinksView()(messages,mockAppConfig)))
     when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
       (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
     when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
@@ -222,7 +227,7 @@ class Setup {
       }
 
       "submitting an invalid request should fail and return to the search page" in new Setup {
-        val searchCriteria = AddressLookup("", None)
+        val searchCriteria: AddressLookup = AddressLookup("", None)
         when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
         findWithAuthorisedUser(None, Json.toJson(searchCriteria), AddressSearchResults(searchCriteria, Nil)) {
           result =>
@@ -234,7 +239,7 @@ class Setup {
       }
 
       "submitting a valid request should that returns no search results should show this on the screen" in new Setup {
-        val searchCriteria = AddressLookup("XX1 1XX", None)
+        val searchCriteria: AddressLookup = AddressLookup("XX1 1XX", None)
         findWithAuthorisedUser(None, Json.toJson(searchCriteria), AddressSearchResults(searchCriteria, Nil)) {
           result =>
             status(result) must be(OK)
@@ -246,7 +251,7 @@ class Setup {
       }
 
       "submitting a valid request should lookup search results and return them to the screen" in new Setup {
-        val searchCriteria = AddressLookup("XX1 1XX", None)
+        val searchCriteria: AddressLookup = AddressLookup("XX1 1XX", None)
         val results = List(address1, address2, address3)
         when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
         findWithAuthorisedUser(None, Json.toJson(searchCriteria), AddressSearchResults(searchCriteria, results)) {
@@ -292,8 +297,8 @@ class Setup {
       }
 
       "submitting an invalid request should fail and return to the search results page" in new Setup {
-        val searchCriteria = AddressLookup("XX1 1XX", None)
-        val searchResults =  AddressSearchResults(searchCriteria, Nil)
+        val searchCriteria: AddressLookup = AddressLookup("XX1 1XX", None)
+        val searchResults: AddressSearchResults =  AddressSearchResults(searchCriteria, Nil)
         saveWithAuthorisedUser(None, periodKey, Json.toJson(AddressSelected(None)), Some(searchResults), None) {
           result =>
             status(result) must be(BAD_REQUEST)
@@ -314,8 +319,8 @@ class Setup {
       }
 
       "submitting a valid request should fail if we don't find the property" in new Setup {
-        val searchCriteria = AddressLookup("XX1 1XX", None)
-        val results = AddressSearchResults(searchCriteria,List(address1, address2, address3))
+        val searchCriteria: AddressLookup = AddressLookup("XX1 1XX", None)
+        val results: AddressSearchResults = AddressSearchResults(searchCriteria,List(address1, address2, address3))
 
         saveWithAuthorisedUser(None, periodKey, Json.toJson(AddressSelected(Some("1"))), Some(results), None) {
           result =>
@@ -338,10 +343,11 @@ class Setup {
 
       "submitting a valid request should create a new return if we have no Id" in new Setup {
         val value = 2015
-        val foundProperty = PropertyDetailsAddress("", "", None, None, None)
+        val foundProperty: PropertyDetailsAddress = PropertyDetailsAddress("", "", None, None, None)
         when(mockPropertyDetailsService.createDraftPropertyDetailsAddress
         (ArgumentMatchers.eq(value), ArgumentMatchers.eq(foundProperty))(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful("newId"))
-        when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+        when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
+          .thenReturn(Future.successful(None))
         saveWithAuthorisedUser(None, periodKey, Json.toJson(AddressSelected(Some("1"))), None, Some(foundProperty)) {
           result =>
             status(result) must be(SEE_OTHER)
@@ -349,10 +355,11 @@ class Setup {
         }
       }
       "submitting a valid request should update a return if we have an Id" in new Setup {
-        val foundProperty = PropertyDetailsAddress("", "", None, None, None)
+        val foundProperty: PropertyDetailsAddress = PropertyDetailsAddress("", "", None, None, None)
         when(mockPropertyDetailsService.saveDraftPropertyDetailsAddress
         (ArgumentMatchers.any(), ArgumentMatchers.eq(foundProperty))(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful("1"))
-        when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+        when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
+          .thenReturn(Future.successful(None))
         saveWithAuthorisedUser(Some("1"), periodKey, Json.toJson(AddressSelected(Some("1"))), None, Some(foundProperty)) {
           result =>
             status(result) must be(SEE_OTHER)

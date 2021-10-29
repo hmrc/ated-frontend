@@ -18,7 +18,7 @@
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
 
-@this(atedMain: atedMain)
+@this(atedMain: atedMain, formHelper: FormWithCSRF)
 @(id: Option[String],
   periodKey: Int,
   propertyDetailsForm: Form[PropertyDetailsAddress],
@@ -58,7 +58,7 @@ case _ => oldFormBundleNo.getOrElse("")
             <p>@messages("ated.property-details.p")</p>
         }
 
-        @form(action = controllers.propertyDetails.routes.PropertyDetailsAddressController.save(id, periodKey, mode, fromConfirmAddressPage)) {
+        @formHelper(action = controllers.propertyDetails.routes.PropertyDetailsAddressController.save(id, periodKey, mode, fromConfirmAddressPage)) {
 
             @atedInputNew(propertyDetailsForm("line_1"),
                 '_label -> Html(messages("ated.addressProperty.line_1")),

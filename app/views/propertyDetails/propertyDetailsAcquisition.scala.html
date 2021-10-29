@@ -18,7 +18,7 @@
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
 
-@this(atedMain: atedMain)
+@this(atedMain: atedMain, formHelper: FormWithCSRF)
 @(id: String, periodKey: Int, propertyDetailsForm: Form[PropertyDetailsAcquisition],
   mode: Option[String],
   serviceInfoContent: Html = HtmlFormat.empty,
@@ -49,7 +49,7 @@
     </details>
 
 
-    @form(action = controllers.propertyDetails.routes.PropertyDetailsAcquisitionController.save(id, periodKey, mode)) {
+    @formHelper(action = controllers.propertyDetails.routes.PropertyDetailsAcquisitionController.save(id, periodKey, mode)) {
 
       <div class="form-group" id="anAcquisition">
       @atedInputRadioGroupNew(

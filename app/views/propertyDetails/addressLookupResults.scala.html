@@ -17,7 +17,7 @@
 @import models._
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
-@this(atedMain: atedMain)
+@this(atedMain: atedMain, formHelper: FormWithCSRF)
 @(id: Option[String],
   periodKey: Int,
   addressResultsForm: Form[AddressSelected],
@@ -67,7 +67,7 @@
       </div>
 
     }else {
-      @form(action=controllers.propertyDetails.routes.AddressLookupController.save(id, periodKey)) {
+      @formHelper(action=controllers.propertyDetails.routes.AddressLookupController.save(id, periodKey)) {
         <div class="form-group">
           @atedInputRadioGroupNew(addressResultsForm("selected"),
           searchResults.results map (result => result.uprn.toString -> result.address.toString),

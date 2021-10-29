@@ -17,13 +17,12 @@
 package forms
 
 import models.{BicSwiftCode, Iban, SortCode}
-import org.scalatest.MustMatchers
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.test.FakeRequest
 
-class BankDetailFormsSpec extends PlaySpec with MustMatchers with GuiceOneServerPerSuite {
+class BankDetailFormsSpec extends PlaySpec with GuiceOneServerPerSuite {
 
   implicit lazy val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
   implicit lazy val messages: Messages = messagesApi.preferred(FakeRequest())
@@ -40,7 +39,6 @@ class BankDetailFormsSpec extends PlaySpec with MustMatchers with GuiceOneServer
     "bicSwiftCode" -> "123654789654",
     "iban" -> "GADGSDGADSGF"
   )
-
 
   val maxLengthUkData: Map[String, String] = Map("hasUKBankAccount" -> "true",
     "accountName" -> "Account Name"*20,

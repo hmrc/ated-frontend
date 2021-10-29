@@ -22,7 +22,7 @@
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
 
-@this(atedMain: atedMain)
+@this(atedMain: atedMain, formHelper: FormWithCSRF)
 @(confirmExistingReturn: Form[YesNoQuestion],
         periodKey: Int,
         returnType: String,
@@ -42,7 +42,7 @@
         @messages("ated.confirm-past-return.p1", (periodKey-1).toString, periodKey.toString)
     </p>
 
-    @form(action = controllers.routes.ExistingReturnQuestionController.submit(periodKey, returnType)) {
+    @formHelper(action = controllers.routes.ExistingReturnQuestionController.submit(periodKey, returnType)) {
         <div class="form-group" id="pastReturn">
         @atedInputRadioGroupNew(
             confirmExistingReturn("yesNo"),

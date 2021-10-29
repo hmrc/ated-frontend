@@ -20,14 +20,13 @@ package forms
 import forms.PropertyDetailsForms._
 import models.{LineItem, PropertyDetailsDatesLiable}
 import org.joda.time.LocalDate
-import org.scalatest.MustMatchers
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.data.FormError
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.test.FakeRequest
 
-class PropertyFormValidationSpec extends PlaySpec with MustMatchers with GuiceOneServerPerSuite {
+class PropertyFormValidationSpec extends PlaySpec with GuiceOneServerPerSuite {
 
   val periodKey: Int = 2016
   implicit lazy val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]

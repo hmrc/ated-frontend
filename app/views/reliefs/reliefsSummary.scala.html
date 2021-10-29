@@ -24,7 +24,7 @@
 @import _root_.utils.PeriodUtils.{periodStartDate, periodEndDate}
 @import play.twirl.api.HtmlFormat
 
-@this(atedMain: atedMain)
+@this(atedMain: atedMain, formHelper: FormWithCSRF)
 
 @(periodKey: Int, reliefsTaxAvoidance : Option[ReliefsTaxAvoidance], canSubmit: Boolean, isComplete: Boolean, serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
@@ -790,7 +790,7 @@
   </a>
 </div>
 
-  @form(action=controllers.reliefs.routes.ReliefsSummaryController.continue(periodKey)) {
+  @formHelper(action=controllers.reliefs.routes.ReliefsSummaryController.continue(periodKey)) {
       @if(!isComplete){
       } else {
         @if(canSubmit) {

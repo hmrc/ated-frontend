@@ -18,7 +18,7 @@
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
 
-@this(atedMain: atedMain)
+@this(atedMain: atedMain, formHelper: FormWithCSRF)
 @(id: String, periodKey: Int, propertyDetailsForm: Form[PropertyDetailsNewBuildDates], mode: Option[String], serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
@@ -57,7 +57,7 @@ Some(atedErrorWithBoundarySummary(propertyDetailsForm, "ated.property-details-va
     @messages("ated.property-details-value.newBuildDates.paragraphTwo")
 </p>
 
-@form(action = controllers.propertyDetails.routes.PropertyDetailsNewBuildDatesController.save(id, periodKey, mode)) {
+@formHelper(action = controllers.propertyDetails.routes.PropertyDetailsNewBuildDatesController.save(id, periodKey, mode)) {
 <div id="dateOfFirstOccupation">
     @atedDateFieldsFree(
     formItem = propertyDetailsForm,

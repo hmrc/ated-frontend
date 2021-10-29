@@ -17,7 +17,7 @@
 @import models._
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
-@this(atedMain: atedMain)
+@this(atedMain: atedMain, formHelper: FormWithCSRF)
 @(id: Option[String],
         periodKey: Int,
         searchForm: Form[AddressLookup],
@@ -44,7 +44,7 @@
       "account-lookup-header", messages("ated.address-lookup.header"),
       Some(atedErrorSummary(searchForm, "ated.property-details-address-error.general")))
 
-  @form(action=controllers.propertyDetails.routes.AddressLookupController.find(id, periodKey, mode)) {
+  @formHelper(action=controllers.propertyDetails.routes.AddressLookupController.find(id, periodKey, mode)) {
 
     <div class="form-field">
         @atedInputNew(searchForm("houseName"),
