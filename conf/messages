@@ -37,6 +37,7 @@ ated.date = Date
 ated.debit = debit
 ated.credit = credit
 ated.warning = Warning
+ated.to = to
 
 ##### ERROR MESSAGES
 
