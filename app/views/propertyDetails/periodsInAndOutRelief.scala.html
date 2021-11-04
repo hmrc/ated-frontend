@@ -61,7 +61,12 @@
         <td id="return-type-value-@index">@messages((period.description).getOrElse(""))</td>
         <td id="action-@index">
           <a href="@controllers.propertyDetails.routes.PeriodsInAndOutReliefController.deletePeriod(id, period.startDate)" id="delete-period-@index">
-            @messages("ated.property-details-period.periodsInRelief.delete") <span class="visuallyhidden">@period.description @period.startDate.toString(messages("ated.date-format"))</span>
+            @messages("ated.property-details-period.periodsInRelief.delete")
+            <span class="visuallyhidden">
+              @messages((period.description).getOrElse(""))
+              @period.startDate.toString(messages("ated.date-format")) @messages("ated.to") 
+              @period.endDate.toString(messages("ated.date-format"))
+            </span>
           </a>
         </td>
       </tr>

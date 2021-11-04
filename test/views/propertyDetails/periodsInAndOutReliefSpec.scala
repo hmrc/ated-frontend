@@ -107,12 +107,12 @@ class periodsInAndOutReliefSpec extends FeatureSpec with GuiceOneAppPerSuite wit
       assert(document.getElementById("date-from-value-0").text() === "1 April 2015")
       assert(document.getElementById("date-to-value-0").text() === "1 May 2015")
       assert(document.getElementById("return-type-value-0").text() === "Liable for charge")
-      assert(document.getElementById("action-0").text() === "Delete Liable for charge 1 April 2015")
+      assert(document.getElementById("action-0").text() === "Delete Liable for charge 1 April 2015 to 1 May 2015")
 
       assert(document.getElementById("date-from-value-1").text() === "1 April 2016")
       assert(document.getElementById("date-to-value-1").text() === "1 May 2016")
       assert(document.getElementById("return-type-value-1").text() === "Rental property")
-      assert(document.getElementById("action-1").text() === "Delete Rental property 1 April 2016")
+      assert(document.getElementById("action-1").text() === "Delete Rental property 1 April 2016 to 1 May 2016")
 
       Then("The buttons should have the correct text")
       assert(document.getElementById("add-period-charge").text() === "Add a period of charge")
