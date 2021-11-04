@@ -819,7 +819,7 @@ ated.property-details-period-error.general.taxAvoidancePromoterReference = There
 ated.property-details-period.supportingInfo.title = Do you have any supporting information to add? (optional)
 ated.property-details-period.supportingInfo.header = Do you have any supporting information to add? (optional)
 ated.property-details-period.supportingInfo = Supporting information (optional)
-ated.property-details-period.supportingInfo.hint = See the <a href="https://www.gov.uk/government/publications/stld-annual-tax-on-enveloped-dwellings-ated/annual-tax-on-enveloped-dwellings-returns-guidance#sec5" target="_blank">guidance for more information</a>.
+ated.property-details-period.supportingInfo.hint = <a href="https://www.gov.uk/government/publications/stld-annual-tax-on-enveloped-dwellings-ated/annual-tax-on-enveloped-dwellings-returns-guidance#sec5" target="_blank">How to send additional information about your return (opens in new tab)</a>
 ated.property-details-period-error.supportingInfo = You cannot enter more than 200 characters in supporting information
 ated.property-details-period-error.supportingInfo.invalid = You cannot enter special characters. For example £, or @.
 ated.property-details-period-error.general.supportingInfo = There is a problem with your supporting information
