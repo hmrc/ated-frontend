@@ -1,6 +1,7 @@
 GET            /assets/*file                                                controllers.Assets.versioned(path="/public", file: Asset)
 
 ->             /template                                                    template.Routes
+->             /hmrc-frontend                                               hmrcfrontend.Routes
 
 GET            /home                                                        controllers.HomeController.home(callerId: Option[String] ?=None)
 
