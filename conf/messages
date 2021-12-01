@@ -1,5 +1,6 @@
 ##### GLOBAL  MESSAGES
 
+service.name = Submit and view your ATED returns
 ated.continue = Continue
 ated.cancel = Cancel
 ated.back = Back
