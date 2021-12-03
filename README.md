@@ -1,6 +1,6 @@
 ated-frontend
 =============
-TEST
+
 [![Build Status](https://travis-ci.org/hmrc/ated-frontend.svg)](https://travis-ci.org/hmrc/ated-frontend)
 
 This service provides the frontend application for the Annual Tax on Enveloped Dwellings (ATED) service.
