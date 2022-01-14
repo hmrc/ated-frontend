@@ -163,8 +163,8 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
             document.title() must be(TitleBuilder.buildTitle("Select a type of return"))
-            document.getElementById("return-type-header").text() must be("Select a type of return")
-            document.getElementById("returnType-rr_field").text() must be("For a property or properties in relief where no ATED charge is due")
+            document.getElementsByTag("h1").text() must include("Select a type of return")
+            document.getElementsByAttributeValue("for", "returnType-2").text() must be("For a property or properties in relief where no ATED charge is due")
           }
         }
         "show the return type view with saved data" in new Setup {
@@ -172,9 +172,9 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
             document.title() must be(TitleBuilder.buildTitle("Select a type of return"))
-            document.getElementById("return-type-header").text() must be("Select a type of return")
-            document.getElementById("returnType-rr_field").text() must be("For a property or properties in relief where no ATED charge is due")
-            document.getElementById("returnType-rr").attr("checked") must be("checked")
+            document.getElementsByTag("h1").text() must include("Select a type of return")
+            document.getElementsByAttributeValue("for", "returnType-2").text() must be("For a property or properties in relief where no ATED charge is due")
+            document.getElementById("returnType-2").attr("checked") must not be null
           }
         }
 
@@ -192,7 +192,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
               result =>
                 status(result) must be(BAD_REQUEST)
                 val doc = Jsoup.parse(contentAsString(result))
-                doc.getElementsByClass("error-notification").html() must include("Select an option for type of return")
+                doc.getElementsByClass("govuk-error-summary__list").html() must include("Select an option for type of return")
                 contentAsString(result) must include("Select an option for type of return")
             }
           }

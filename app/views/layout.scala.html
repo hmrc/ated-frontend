@@ -1,5 +1,5 @@
 @*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,34 +15,26 @@
  *@
 
 @import config.ApplicationConfig
-@import views.html.helper.CSPNonce
-@import uk.gov.hmrc.hmrcfrontend.views.viewmodels.language.En
-@import uk.gov.hmrc.hmrcfrontend.views.Aliases.ReportTechnicalIssue
-@import uk.gov.hmrc.hmrcfrontend.views.html.helpers.HmrcReportTechnicalIssueHelper
-@import uk.gov.hmrc.hmrcfrontend.config.AccessibilityStatementConfig
-@import uk.gov.hmrc.play.views.helpers.AttorneyRegime
-@import uk.gov.hmrc.play.views.html.layouts.AttorneyBanner
 @import play.twirl.api.HtmlFormat
-@import uk.gov.hmrc.hmrcfrontend.views.html.helpers.{HmrcStandardHeader, HmrcTrackingConsentSnippet, HmrcHead, HmrcTimeoutDialogHelper,HmrcScripts, HmrcLayout}
+@import uk.gov.hmrc.hmrcfrontend.config.AccessibilityStatementConfig
+@import uk.gov.hmrc.hmrcfrontend.views.html.helpers.{HmrcLayout, HmrcReportTechnicalIssueHelper, HmrcTimeoutDialogHelper, HmrcTrackingConsentSnippet}
+@import views.AttorneyRegime
+@import views.html.helper.CSPNonce
 
 @this(
     hmrcLayout: HmrcLayout,
-    hmrcHead: HmrcHead,
-    hmrcHeader: HmrcStandardHeader,
-    hmrcScripts: HmrcScripts,
     hmrcTimeoutDialogHelper: HmrcTimeoutDialogHelper,
     hmrcReportTechnicalIssueHelper: HmrcReportTechnicalIssueHelper,
-    accessibilityStatementConfig: AccessibilityStatementConfig,
     hmrcTrackingConsentSnippet: HmrcTrackingConsentSnippet,
-    attorneyBanner: AttorneyBanner,
-    banner: Html = HtmlFormat.empty
+    attorneyBanner: atttorneyBanner
 )
 
-@(beforeContent: Option[Html] = None, pageTitle: Option[String] = None, scripts: Option[Html], isUserResearchBannerVisible: Boolean = false)(contentBlock: Html)(
+@(beforeContent: Option[Html] = None, pageTitle: Option[String] = None, serviceInfoContent: Html, scripts: Option[Html], isUserResearchBannerVisible: Boolean = false, banner: Html = HtmlFormat.empty)(contentBlock: Html)(
     implicit request: Request[_], messages: Messages, appConfig: ApplicationConfig, authContext: StandardAuthRetrievals)
 
 
 @beforeContentBlock = {
+    @serviceInfoContent
     @beforeContent
 }
 
@@ -52,6 +44,8 @@
 }
 
 @scriptsBlock = {
+@Some(hmrcTimeoutDialogHelper(signOutUrl = signOutUrl))
+@scripts
     <script src='@routes.Assets.versioned("lib/hmrc-frontend/hmrc/all.js")'></script>
     <script>window.HMRCFrontend.initAll();</script>
     <script src='@controllers.routes.Assets.versioned("jquery/jquery-ui.min.js")'></script>
@@ -59,7 +53,6 @@
     <script src='@controllers.routes.Assets.versioned("javascript/timeout-dialog.js")'></script>
     <script src='@controllers.routes.Assets.versioned("javascript/urBanner.js")'></script>
     <script src='@controllers.routes.Assets.versioned("javascript/tabs.js")'></script>
-    @scripts
 }
 
 @signOutUrl = @{(controllers.routes.ApplicationController.logout.url)}
@@ -76,11 +69,10 @@
 }
 @hmrcLayout(
     pageTitle = pageTitle,
-    additionalHeadBlock = Some(hmrcTimeoutDialogHelper(signOutUrl = signOutUrl)),
+    additionalHeadBlock = Some(scriptsBlock),
     serviceUrl = Some(routes.HomeController.home(None).url),
     signOutUrl = Some(signOutUrl),
     beforeContentBlock = Some(beforeContentBlock),
-    additionalScriptsBlock = Some(scriptsBlock),
     nonce = CSPNonce.get,
     additionalBannersBlock = Some(mainBanner)
 )(content)

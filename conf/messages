@@ -44,6 +44,7 @@ ated.to = to
 
 error.invalid = Invalid value
 error.required = You must answer this question
+error.title.prefix = Error:
 
 ated.error.no-account-ref = No Account Reference Defined for this user
 ated.error.summaryHeader = There is a problem
