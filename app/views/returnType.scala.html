@@ -16,39 +16,55 @@
 
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
-@this(atedMain: atedMain, formHelper: FormWithCSRF)
-@(periodKey: Int, returnTypeForm: Form[ReturnType],serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
-@import uk.gov.hmrc.play.views.html.helpers._
-@import views.html.helpers._
+@import uk.gov.hmrc.govukfrontend.views.Implicits._
+@import views.ViewUtils.titleBuilder
 
-@atedMain(title = messages("ated.return-type.title"),
+@this(newMain: newMain, formHelper: FormWithCSRF, govukRadios: GovukRadios, govukBackLink: GovukBackLink, govukButton: GovukButton, govukErrorSummary: GovukErrorSummary)
+@(periodKey: Int, returnTypeForm: Form[ReturnType],serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
+
+@backLinkHtml = {
+    @if(backLink.isDefined) {
+        @govukBackLink(BackLink(
+            href = backLink.get,
+            content = Text("Back")
+        ))
+    }
+}
+
+@newMain(title = titleBuilder(returnTypeForm, messages("ated.return-type.title")),
     serviceInfoContent = serviceInfoContent) {
 
-  @pageHeadersAndError(backLink, "pre-heading", messages("ated.return-type.pre-header"), "return-type-header", messages("ated.return-type.header"),
-    Some(atedErrorSummary(returnTypeForm, "ated.return-type.error.general")))
+  @backLinkHtml
+
+  @if(returnTypeForm.errors.nonEmpty) {
+      @govukErrorSummary(ErrorSummary().withFormErrorsAsText(returnTypeForm))
+  }
 
   @formHelper(action=controllers.routes.ReturnTypeController.submit(periodKey)) {
-    <div id="returnType">
-      @*** CR = chargeable-return && RR = relief-return ***@
 
-      @atedInputRadioGroupNew(returnTypeForm("returnType"),
-        Seq(
-          "CR" -> messages("ated.return-type.chargeable"),
-          "RR" -> messages("ated.return-type.relief-return")
-         )
-        ,
-        '_legend -> messages("ated.return-type.header"),
-        '_legendClass -> "screen-reader-text",
-        '_labelClass -> "block-label",
-        '_groupClass -> "form-group",
-        '_labelAfter -> true
+      @govukRadios(
+          Radios(
+                items = Seq(
+                    RadioItem(
+                        content = Text(messages("ated.return-type.chargeable")),
+                        value = Some("CR")
+            ),RadioItem(
+                        content = Text(messages("ated.return-type.relief-return")),
+                        value = Some("RR")
+                    )
+                )
+          ).withFormField(returnTypeForm("returnType"))
+                  .withHeadingAndSectionCaption(
+              heading = Text(messages("ated.return-type.header")),
+              sectionCaption = Text(messages("ated.return-type.pre-header"))
+          )
       )
 
-    </div>
-
-
-    <button class="button" id="submit" type="submit">@messages("ated.return-type.button")</button>
-
+      @govukButton(Button(
+        content = Text(messages("ated.return-type.button")),
+          inputType = Some("submit"),
+          attributes = Map("id" -> "submit")
+      ))
     }
-
 }
+
