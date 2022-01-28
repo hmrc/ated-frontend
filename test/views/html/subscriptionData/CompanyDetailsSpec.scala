@@ -34,57 +34,33 @@ class CompanyDetailsSpec extends AtedViewSpec with MockitoSugar with MockAuthUti
   val injectedViewInstance = app.injector.instanceOf[views.html.subcriptionData.companyDetails]
 
   "Company Details view" must {
-    behave like pageWithTitle(messages("ated.company-details.title"))
-    behave like pageWithHeader(messages("ated.company-details.header"))
-    behave like pageWithPreHeading(messages("ated.company-details.preheader"))
-    behave like pageWithBackLink
+    "have correct page title" in {
+      doc.title mustBe messages("ated.company-details.title") + " - GOV.UK"
+    }
+
+    "have correct heading and caption" in {
+      doc.select("h1").text must include("This section is: Manage your ATED service Your ATED details")
+    }
+
+    "have a backLink" in {
+      val backLink = new CssSelector("a.govuk-back-link")
+      doc must backLink
+    }
   }
 
   "Company Details page" must {
     "display company details of the user" when {
-      "display name label correctly" in {
-        doc must haveElementWithIdAndText(messages("ated.company-details.name"), "company-name-header")
+      "have rows for all details" in {
+        val rows = doc.select("dl.govuk-summary-list dt")
+
+        rows.get(0).text mustBe messages("ated.company-details.name")
+        rows.get(1).text mustBe messages("ated.company-details.ated-reference-number")
+        rows.get(2).text mustBe messages("ated.company-details.registered-address")
+        rows.get(3).text mustBe messages("ated.company-details.correspondence-address")
+        rows.get(4).text mustBe messages("ated.company-details.contact-address")
+        rows.get(5).text mustBe messages("ated.company-details.contact-preference.label")
       }
 
-      "display ated reference number" in {
-        doc must haveElementWithIdAndText(messages("ated.company-details.ated-reference-number"), "ated-reference-number")
-      }
-
-      "display ated reference value" in {
-        doc must haveElementWithIdAndText("XN1200000100001", "ated-reference-number-val")
-      }
-
-      "display registered address" in {
-        doc must haveElementWithIdAndText(messages("ated.company-details.registered-address"), "registered-address-label")
-      }
-
-      "display correspondence address" in {
-        doc must haveElementWithIdAndText(messages("ated.company-details.correspondence-address"), "correspondence-address-label")
-      }
-
-      "display address line one" in {
-        doc must haveElementWithIdAndText("some street", "line_1")
-      }
-
-      "display address line two" in {
-        doc must haveElementWithIdAndText("some area", "line_2")
-      }
-
-      "display address line three" in {
-        doc must haveElementWithIdAndText("some county", "line_3")
-      }
-
-      "display postCode" in {
-        doc must haveElementWithIdAndText("ne981zz", "postcode")
-      }
-
-      "display Country Code" in {
-        doc must haveElementWithIdAndText("United Kingdom", "countryCode")
-      }
-
-      "display ATED contact details" in {
-        doc must haveElementWithIdAndText(messages("ated.company-details.contact-address"), "contact-details-label")
-      }
 
 
       "display First Name" in {
@@ -93,10 +69,6 @@ class CompanyDetailsSpec extends AtedViewSpec with MockitoSugar with MockAuthUti
 
       "display Last Name" in {
         doc must haveElementWithIdAndText("name2", "lastName")
-      }
-
-      "display email address" in {
-        doc must haveElementWithIdAndText(messages("ated.company-details.contact-preference.label"), "contact-pref-label")
       }
 
       "display edit link for correspondence address" in {
@@ -112,7 +84,7 @@ class CompanyDetailsSpec extends AtedViewSpec with MockitoSugar with MockAuthUti
       }
 
       "display Back to your ATED summary link" in {
-        doc must haveLinkWithUrlWithID("back", "/ated/account-summary")
+        doc.select("a.govuk-button").attr("href") mustBe "/ated/account-summary"
       }
 
     }

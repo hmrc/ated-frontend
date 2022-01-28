@@ -21,6 +21,9 @@ import play.api.i18n.Messages
 
 object ViewUtils {
 
-  def titleBuilder(form: Form[_], title: String)(implicit messages: Messages): String =
-    if (form.hasErrors || form.hasGlobalErrors) s"${messages("error.title.prefix")} $title - GOV.UK" else title + " - GOV.UK"
+  def titleBuilder(title: String, form: Option[Form[_]] = None)(implicit messages: Messages): String =
+    form match {
+      case Some(f) if f.hasErrors || f.hasGlobalErrors =>s"${messages("error.title.prefix")} $title - GOV.UK"
+      case _ => title + " - GOV.UK"
+    }
 }
