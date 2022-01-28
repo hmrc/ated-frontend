@@ -166,16 +166,16 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
               val document = Jsoup.parse(contentAsString(result))
 
               document.title() must be (TitleBuilder.buildTitle("Edit your correspondence address"))
-              document.getElementById("correspondence-address-header").text() must include("Edit your correspondence address")
+              document.select("h1").text() must include("Edit your correspondence address")
               assert(document.getElementById("service-info-list").text() === "Home Manage account Messages Help and contact")
               document.getElementById("addressLine1").attr("value") must be("")
               document.getElementById("addressLine2").attr("value") must be("")
               document.getElementById("addressLine3").attr("value") must be("")
               document.getElementById("addressLine4").attr("value") must be("")
               document.getElementById("postalCode").attr("value") must be("")
-              document.getElementById("countryCode_field").text() must include("Country")
+              document.getElementsByAttributeValue("for", "countryCode").text() must include("Country")
               document.getElementById("addressType").attr("value") must be("")
-              document.getElementById("submit").text() must be("Save changes")
+              document.getElementsByTag("button").text() must be("Save changes")
           }
         }
 
@@ -189,15 +189,15 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
               val document = Jsoup.parse(contentAsString(result))
 
               document.title() must be (TitleBuilder.buildTitle("Edit your correspondence address"))
-              document.getElementById("correspondence-address-header").text() must include("Edit your correspondence address")
+              document.select("h1").text() must include("Edit your correspondence address")
               document.getElementById("addressType").attr("value") must be("Correspondence")
               document.getElementById("addressLine1").attr("value") must be("  ")
               document.getElementById("addressLine2").attr("value") must be("  ")
               document.getElementById("addressLine3").attr("value") must be("line_3")
               document.getElementById("addressLine4").attr("value") must be("line_4")
               document.getElementById("postalCode").attr("value") must be("postCode")
-              document.getElementById("submit").text() must be("Save changes")
-              document.getElementById("countryCode_field").text() must include("Country")
+              document.getElementsByTag("button").text() must be("Save changes")
+              document.getElementsByAttributeValue("for", "countryCode").text() must include("Country")
           }
         }
 
@@ -210,15 +210,15 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
               val document = Jsoup.parse(contentAsString(result))
 
               document.title() must be (TitleBuilder.buildTitle("Edit your correspondence address"))
-              document.getElementById("correspondence-address-header").text() must include("Edit your correspondence address")
+              document.select("h1").text() must include("Edit your correspondence address")
               document.getElementById("addressType").attr("value") must be("Correspondence")
               document.getElementById("addressLine1").attr("value") must be("line_1")
               document.getElementById("addressLine2").attr("value") must be("line_2")
               document.getElementById("addressLine3").attr("value") must be("line_3")
               document.getElementById("addressLine4").attr("value") must be("line_4")
               document.getElementById("postalCode").attr("value") must be("postCode")
-              document.getElementById("submit").text() must be("Save changes")
-              document.getElementById("countryCode_field").text() must include("Country")
+              document.getElementsByTag("button").text() must be("Save changes")
+              document.getElementsByAttributeValue("for", "countryCode").text() must include("Country")
           }
         }
 

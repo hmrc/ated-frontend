@@ -149,14 +149,14 @@ class Setup {
 
               document.title() must be (TitleBuilder.buildTitle("Edit business name and address"))
               assert(document.getElementById("service-info-list").text() === "Home Manage account Messages Help and contact")
-              document.getElementById("registered-details-header").text() must be("Edit business name and address")
-              document.getElementById("registered-address-line-1").attr("value") must be("")
-              document.getElementById("registered-address-line-2").attr("value") must be("")
-              document.getElementById("registered-address-line-3").attr("value") must be("")
-              document.getElementById("registered-address-line-4").attr("value") must be("")
-              document.getElementById("addressDetails-postalCode").attr("value") must be("")
-              document.getElementById("registered-country_field").text() must include("Country")
-              document.getElementById("submit").text() must be("Save")
+              document.select("h1").text() must include("Edit business name and address")
+              document.getElementById("addressDetails.addressLine1").attr("value") must be("")
+              document.getElementById("addressDetails.addressLine2").attr("value") must be("")
+              document.getElementById("addressDetails.addressLine3").attr("value") must be("")
+              document.getElementById("addressDetails.addressLine4").attr("value") must be("")
+              document.getElementById("addressDetails.postalCode").attr("value") must be("")
+              document.getElementsByAttributeValue("for", "addressDetails.countryCode").text() must include("Country")
+              document.getElementsByTag("button").text() must be("Save")
           }
         }
 
@@ -174,14 +174,14 @@ class Setup {
               val document = Jsoup.parse(contentAsString(result))
 
               document.title() must be (TitleBuilder.buildTitle("Edit business name and address"))
-              document.getElementById("registered-details-header").text() must be("Edit business name and address")
-              document.getElementById("registered-address-line-1").attr("value") must be("bpline1")
-              document.getElementById("registered-address-line-2").attr("value") must be("bpline2")
-              document.getElementById("registered-address-line-3").attr("value") must be("bpline3")
-              document.getElementById("registered-address-line-4").attr("value") must be("bpline4")
-              document.getElementById("addressDetails-postalCode").attr("value") must be("postCode")
-              document.getElementById("registered-country_field").text() must include("Country")
-              document.getElementById("submit").text() must be("Save")
+              document.select("h1").text() must include("Edit business name and address")
+              document.getElementById("addressDetails.addressLine1").attr("value") must be("bpline1")
+              document.getElementById("addressDetails.addressLine2").attr("value") must be("bpline2")
+              document.getElementById("addressDetails.addressLine3").attr("value") must be("bpline3")
+              document.getElementById("addressDetails.addressLine4").attr("value") must be("bpline4")
+              document.getElementById("addressDetails.postalCode").attr("value") must be("postCode")
+              document.getElementsByAttributeValue("for", "addressDetails.countryCode").text() must include("Country")
+              document.getElementsByTag("button").text() must be("Save")
           }
         }
       }

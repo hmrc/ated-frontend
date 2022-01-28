@@ -950,6 +950,7 @@ ated.registered-address.error.general.addressDetails.addressLine3 = There is a p
 ated.registered-address.error.general.addressDetails.addressLine4 = There is a problem with address line 4
 ated.registered-address.error.general.addressDetails.countryCode = There is a problem with country field
 ated.registered-address.error.general.addressType = Something has gone wrong, try again later.
+ated.registered-details.save.error = Something has gone wrong, try again later.
 
 ated.contact-address.edit = Edit
 ated.contact-address.subheader = ATED account registration
