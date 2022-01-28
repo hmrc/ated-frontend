@@ -136,12 +136,12 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
             document.title() must be (TitleBuilder.buildTitle("Edit your ATED email address"))
-            document.getElementById("emailConsent-true").attr("checked") must be("")
-            document.getElementById("emailConsent-false").attr("checked") must be("")
+            document.getElementById("emailConsent").attributes.hasKey("checked") mustBe false
+            document.getElementById("emailConsent-2").attributes.hasKey("checked") mustBe false
             document.getElementById("emailAddress").attr("value") must be("")
 
-            document.getElementById("backLinkHref").text() must be("Back")
-            document.getElementById("backLinkHref").attr("href") must be("/ated/company-details")
+            document.getElementsByClass("govuk-back-link").text() must be("Back")
+            document.getElementsByClass("govuk-back-link").attr("href") must be("/ated/company-details")
 
             assert(document.getElementById("service-info-list").text() === "Home Manage account Messages Help and contact")
         }
@@ -155,8 +155,8 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
           result =>
             val document = Jsoup.parse(contentAsString(result))
             document.getElementById("emailAddress").attr("value") must be("hrmc@hmrc.com")
-            document.getElementById("emailConsent-true").attr("checked") must be("checked")
-            document.getElementById("emailConsent-false").attr("checked") must be("")
+            document.getElementById("emailConsent").attributes.hasKey("checked") mustBe true
+            document.getElementById("emailConsent-2").attributes.hasKey("checked") mustBe false
         }
       }
     }

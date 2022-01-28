@@ -43,16 +43,9 @@
     @hmrcReportTechnicalIssueHelper()
 }
 
-@scriptsBlock = {
-@Some(hmrcTimeoutDialogHelper(signOutUrl = signOutUrl))
-@scripts
-    <script src='@routes.Assets.versioned("lib/hmrc-frontend/hmrc/all.js")'></script>
-    <script>window.HMRCFrontend.initAll();</script>
-    <script src='@controllers.routes.Assets.versioned("jquery/jquery-ui.min.js")'></script>
-    <script src='@controllers.routes.Assets.versioned("jquery/jquery-ui-1.12.1.min.js")'></script>
-    <script src='@controllers.routes.Assets.versioned("javascript/timeout-dialog.js")'></script>
-    <script src='@controllers.routes.Assets.versioned("javascript/urBanner.js")'></script>
-    <script src='@controllers.routes.Assets.versioned("javascript/tabs.js")'></script>
+@headBlock = {
+    <link href='@controllers.routes.Assets.versioned("stylesheets/application.css")' rel="stylesheet" type="text/css" media="screen">
+    @Some(hmrcTimeoutDialogHelper(signOutUrl = signOutUrl))
 }
 
 @signOutUrl = @{(controllers.routes.ApplicationController.logout.url)}
@@ -67,12 +60,21 @@
         @banner
     }
 }
+@urBannerUrl = @{
+    if(isUserResearchBannerVisible) Some(appConfig.urBannerLink) else None
+}
+
+@additionalScripts = {
+    @scripts
+}
 @hmrcLayout(
     pageTitle = pageTitle,
-    additionalHeadBlock = Some(scriptsBlock),
+    additionalHeadBlock = Some(headBlock),
     serviceUrl = Some(routes.HomeController.home(None).url),
     signOutUrl = Some(signOutUrl),
     beforeContentBlock = Some(beforeContentBlock),
     nonce = CSPNonce.get,
-    additionalBannersBlock = Some(mainBanner)
+    additionalBannersBlock = Some(mainBanner),
+    additionalScriptsBlock = Some(additionalScripts),
+    userResearchBannerUrl = urBannerUrl
 )(content)

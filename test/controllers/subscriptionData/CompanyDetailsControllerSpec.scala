@@ -152,12 +152,12 @@ class Setup {
             val document = Jsoup.parse(contentAsString(result))
 
             document.title() must be (TitleBuilder.buildTitle("Your ATED details"))
-            document.getElementById("company-details-header").text() must be("Your ATED details")
+            document.getElementsByTag("h1").text() must include("Your ATED details")
             document.getElementById("registered-edit").text() must be("Edit Registered address")
             document.getElementById("registered-edit").attr("href") must be("/ated/registered-details")
 
-            document.getElementById("backLinkHref").text() must be("Back")
-            document.getElementById("backLinkHref").attr("href") must be("/ated/account-summary")
+            document.getElementsByClass("govuk-back-link").text() must be("Back")
+            document.getElementsByClass("govuk-back-link").attr("href") must be("/ated/account-summary")
         }
       }
 
@@ -178,9 +178,9 @@ class Setup {
             val document = Jsoup.parse(contentAsString(result))
 
             document.title() must be(TitleBuilder.buildTitle("Your ATED details"))
-            document.getElementById("ur-panel") must not be null
-            document.getElementById("ur-panel").text() must be("Help improve digital services by joining the HMRC user panel (opens in new window) No thanks")
-            document.getElementsByClass("banner-panel__close").text() must be("No thanks")
+            document.select("div.hmrc-user-research-banner") must not be null
+            document.select("div.hmrc-user-research-banner").text() must include("Help improve HMRC services")
+            document.getElementsByClass("hmrc-user-research-banner__close").text() must be("No thanks")
         }
       }
 
@@ -202,10 +202,10 @@ class Setup {
             val document = Jsoup.parse(contentAsString(result))
 
             document.title() must be (TitleBuilder.buildTitle("Your ATED details"))
-            document.getElementById("company-details-header").text() must be("Your ATED details")
+            document.getElementsByTag("h1").text() must include("Your ATED details")
 
-            document.getElementById("registered-address-label").text() must be("Registered address")
-            Option(document.getElementById("registered-edit")) must be(None)
+            document.select("dt.govuk-summary-list__key").get(2).text() must be("Registered address")
+            document.select("registered-edit").size() mustBe 0
         }
       }
 

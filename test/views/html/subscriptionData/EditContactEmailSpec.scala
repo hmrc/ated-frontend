@@ -29,10 +29,19 @@ class EditContactEmailSpec extends AtedViewSpec with MockitoSugar with MockAuthU
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
   val injectedViewInstance = app.injector.instanceOf[views.html.subcriptionData.editContactEmail]
 "Edit contact email view" must {
-      behave like pageWithTitle(messages("ated.contact-details-edit-email.title"))
-      behave like pageWithHeader(messages("ated.contact-details-edit-email.header"))
-      behave like pageWithPreHeading(messages("ated.contact-details-edit-email.subheader"))
-      behave like pageWithBackLink
+
+  "have correct page title" in {
+    doc.title mustBe messages("ated.contact-details-edit-email.title") + " - GOV.UK"
+  }
+
+  "have correct heading and caption" in {
+    doc.select("h1").text must include("This section is: Manage your ATED service Edit your ATED email address")
+  }
+
+  "have a backLink" in {
+    val backLink = new CssSelector("a.govuk-back-link")
+    doc must backLink
+  }
     }
 
   "Edit contact email page" must {
@@ -42,15 +51,15 @@ class EditContactEmailSpec extends AtedViewSpec with MockitoSugar with MockAuthU
     }
 
     "display email risk help text correctly" in {
-      doc must haveElementWithIdAndText(messages("ated.contact-details.email.risk.help.text"), "email-risk-question")
+      doc.getElementsByClass("govuk-details__summary-text").text mustBe messages("ated.contact-details.email.risk.help.text")
     }
 
     "display email consent Yes correctly" in {
-      doc must haveElementWithIdAndText(messages("Yes"), "emailConsent-true_field")
+      doc.getElementsByAttributeValue("for", "emailConsent").text mustBe "Yes"
     }
 
     "display email consent No correctly" in {
-      doc must haveElementWithIdAndText(messages("No"), "emailConsent-false_field")
+      doc.getElementsByAttributeValue("for", "emailConsent-2").text mustBe "No"
     }
 
     "display correct value in the email field" in {
@@ -58,7 +67,7 @@ class EditContactEmailSpec extends AtedViewSpec with MockitoSugar with MockAuthU
     }
 
     "display submit button" in {
-      doc must haveSubmitButton(messages("ated.save-changes"))
+      doc.getElementsByClass("govuk-button").text mustBe messages("ated.save-changes")
     }
 
     "display correct submit form url" in {
