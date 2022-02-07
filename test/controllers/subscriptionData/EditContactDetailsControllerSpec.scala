@@ -142,8 +142,8 @@ class Setup {
 
             document.getElementById("phoneNumber").attr("value") must be("")
 
-            document.getElementById("backLinkHref").text() must be("Back")
-            document.getElementById("backLinkHref").attr("href") must be("/ated/company-details")
+            document.getElementsByClass("govuk-back-link").text() must be("Back")
+            document.getElementsByClass("govuk-back-link").attr("href") must be("/ated/company-details")
 
         }
       }

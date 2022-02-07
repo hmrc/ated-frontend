@@ -19,36 +19,15 @@
 @this(layout: layout)
 
 @(title: String,
-    userLoggedIn: Boolean = true,
-    hasBanner: Boolean = false,
     showUrBanner: Option[Boolean] = Some(false),
-    supportLinkEnabled: Boolean = true,
     serviceInfoContent: Html = HtmlFormat.empty,
-    banner: Html = HtmlFormat.empty,
-    scriptElement: Option[Html] = None,
     pageScripts: Option[Html] = None,
-    sidebarLinks: Option[Html] = None,
-    sidebarClass: Option[String] = None
 )(mainContent: Html)(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
-
-
-@linkElement = {
-    <link rel="stylesheet" href='@controllers.routes.Assets.versioned("stylesheets/palette.css")'/>
-    <link rel="stylesheet" href='@controllers.routes.Assets.versioned("stylesheets/focus.css")'/>
-    <link rel="stylesheet" href='@controllers.routes.Assets.versioned("stylesheets/main.css")'/>
-    <link rel="stylesheet" href='@controllers.routes.Assets.versioned("stylesheets/bta.css")'/>
-    <link rel="stylesheet" href='@controllers.routes.Assets.versioned("stylesheets/urBanner.css")'/>
-    <link rel="stylesheet" href='@controllers.routes.Assets.versioned("stylesheets/_checkAnswers.css")'/>
-    <link rel="stylesheet" href='@controllers.routes.Assets.versioned("jquery/jquery-ui.min.css")'/>
-    <link rel="stylesheet" href='@controllers.routes.Assets.versioned("jquery/jquery-ui.structure.min.css")'/>
-    <link rel="stylesheet" href='@controllers.routes.Assets.versioned("stylesheets/tabs.css")'/>
-    @pageScripts
-    @scriptElement
-}
 
 @layout(
     pageTitle = Some(title),
     serviceInfoContent = serviceInfoContent,
-    scripts = Some(linkElement),
+    scripts = pageScripts,
+    isUserResearchBannerVisible = showUrBanner.getOrElse(false)
     )(mainContent)

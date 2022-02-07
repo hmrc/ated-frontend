@@ -62,7 +62,7 @@ object AtedForms {
       "addressDetails" -> mapping(
         "addressLine1" -> text
           .verifying("ated.address.line-1", x => checkBlankFieldLength(x))
-          .verifying("ated.error.address.line-1",  x => x.nonEmpty && x.length <= addressLineLength),
+          .verifying("ated.error.address.line-1",  x => x.isEmpty || (x.nonEmpty && x.length <= addressLineLength)),
         "addressLine2" -> text
           .verifying("ated.address.line-2", x => checkBlankFieldLength(x))
           .verifying("ated.error.address.line-2", x => x.isEmpty || (x.nonEmpty && x.length <= addressLineLength)),

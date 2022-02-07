@@ -31,7 +31,7 @@
     }
 }
 
-@newMain(title = titleBuilder(returnTypeForm, messages("ated.return-type.title")),
+@newMain(title = titleBuilder(messages("ated.return-type.title"), Some(returnTypeForm)),
     serviceInfoContent = serviceInfoContent) {
 
   @backLinkHtml
@@ -48,7 +48,7 @@
                     RadioItem(
                         content = Text(messages("ated.return-type.chargeable")),
                         value = Some("CR")
-            ),RadioItem(
+                    ),RadioItem(
                         content = Text(messages("ated.return-type.relief-return")),
                         value = Some("RR")
                     )
