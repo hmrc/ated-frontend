@@ -22,10 +22,23 @@
 @import views.html.helpers.error._
 @import utils._
 @import config.featureswitch.FeatureSwitch
+@import uk.gov.hmrc.govukfrontend.views.Implicits._
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.hmrcfrontend.views.Implicits.RichErrorSummary
+@import views.ViewUtils.titleBuilder
 
-@this(atedMain: atedMain, formHelper: FormWithCSRF)
+@this(
+    newMain: newMain,
+    formHelper: FormWithCSRF,
+    govukBackLink : GovukBackLink,
+    govukErrorSummary: GovukErrorSummary,
+    govukButton : GovukButton,
+    govukInput: GovukInput)
 
-@(periodKey: Int, taxAvoidanceForm: Form[TaxAvoidance], serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(reliefsTaxAvoidance : Option[ReliefsTaxAvoidance])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
+@(periodKey: Int,
+    taxAvoidanceForm: Form[TaxAvoidance],
+    serviceInfoContent: Html = HtmlFormat.empty,
+    backLink: Option[String])(reliefsTaxAvoidance : Option[ReliefsTaxAvoidance])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
 @chooseReliefsocialHousingMessage = @{
     if (periodKey >= 2020 && appConfig.isEnabled(FeatureSwitch.CooperativeHousing)) {
@@ -43,88 +56,75 @@
     }
 }
 
-@amendedForm = @{
-    if (periodKey >= 2020 && appConfig.isEnabled(FeatureSwitch.CooperativeHousing)) {
-        taxAvoidanceForm.copy(errors = taxAvoidanceForm.errors.map { error =>
-          error.copy(key = error.key match {
-              case "socialHousingScheme"          => "providerSocialOrHousingScheme"
-              case "socialHousingSchemePromoter"  => "providerSocialOrHousingSchemePromoter"
-              case key                            => key
-          })
-        })
-    } else {
-        taxAvoidanceForm
-    }
-}
-
 @taxAvoidanceAndPromoter(id: String, isVisible: Boolean, reliefCode: String, schemeFormValue: Field, promoterValue : Field) = {
     @if(isVisible) {
-        <div class="grid row-border">
-            <div class="grid grid-1-3">
-                <span class="font-small">@messages(reliefCode)</span>
+        <div class="govuk-body govuk-grid-row govuk-section-break govuk-section-break--m govuk-section-break--visible">
+            <div class="govuk-grid-column-one-third">
+                <span class="govuk-!-font-size-19">@messages(reliefCode)</span>
             </div>
-            <div class="grid grid-1-3" id="@{id}-p">
-                @if(id == "providerSocialOrHousingScheme") {
-                    @atedInputNew(
-                        schemeFormValue,
-                        '_label -> Html(messages("ated.avoidance-schemes.avoidance-scheme.text", messages(reliefCode))),
-                        '_labelClass -> "visuallyhidden",
-                        '_inputClass -> "avoidanceSchemeInp",
-                        '_showConstraints -> false,
-                        '_id -> "providerSocialOrHousingScheme"
-                    )
-                } else {
-                    @atedInputNew(
-                        schemeFormValue,
-                        '_label -> Html(messages("ated.avoidance-schemes.avoidance-scheme.text", messages(reliefCode))),
-                        '_labelClass -> "visuallyhidden",
-                        '_inputClass -> "avoidanceSchemeInp",
-                        '_showConstraints -> false
-                    )
-                }
+            <div class="govuk-grid-column-one-third" id="@{id}-p">
+
+                @govukInput(
+                    Input(
+                        label = Label(
+                            content = HtmlContent(Messages("ated.avoidance-schemes.avoidance-scheme.text", messages(reliefCode))),
+                            classes = "govuk-visually-hidden"
+                        ),
+                        classes = "govuk-input--width-10",
+                        attributes = Map("maxLength" -> "8"),
+                    ).withFormField(schemeFormValue)
+                )
             </div>
-            <div class="grid grid-1-3" id="@{id}Promoter-p">
-                @if(id == "providerSocialOrHousingScheme") {
-                    @atedInputNew(
-                        promoterValue,
-                        '_label -> Html(messages("ated.avoidance-schemes.avoidance-scheme-promoter.text", messages(reliefCode))),
-                        '_labelClass -> "visuallyhidden",
-                        '_inputClass -> "avoidanceSchemeInp",
-                        '_showConstraints -> false,
-                        '_id -> "providerSocialOrHousingSchemePromoter"
-                    )
-                } else {
-                    @atedInputNew(
-                        promoterValue,
-                        '_label -> Html(messages("ated.avoidance-schemes.avoidance-scheme-promoter.text", messages(reliefCode))),
-                        '_labelClass -> "visuallyhidden",
-                        '_inputClass -> "avoidanceSchemeInp",
-                        '_showConstraints -> false
-                    )
-                }
+
+            <div class="govuk-grid-column-one-third" id="@{id}Promoter-p">
+
+                @govukInput(
+                    Input(
+                        label = Label(
+                            content = HtmlContent(Messages("ated.avoidance-schemes.avoidance-scheme-promoter.text", messages(reliefCode))),
+                            classes = "govuk-visually-hidden"
+                        ),
+                        classes = "govuk-input--width-10",
+                        attributes = Map("maxLength" -> "8"),
+                    ).withFormField(promoterValue)
+                )
             </div>
         </div>
     }
 }
 
-@atedMain(title = messages("ated.avoidance-schemes.title"), serviceInfoContent = serviceInfoContent) {
-    @pageHeadersAndError(
-        backLink,
-        "pre-header",
-        messages("ated.avoidance-schemes.pre-header"),
-        "ated-avoidance-header",
-        messages("ated.avoidance-schemes.header"),
-        Some(atedErrorSummary(
-            amendedForm,
-            "ated.avoidance-scheme-error.general",
-            maxErrorsToShow = 1))
-    )
+@backLinkHtml = {
+    @if(backLink.isDefined) {
+        @govukBackLink(BackLink(
+            href = backLink.get,
+            content = Text("Back")
+        ))
+    }
+}
+
+@newMain(title = titleBuilder(messages("ated.avoidance-schemes.title"), Some(taxAvoidanceForm)),
+          serviceInfoContent = serviceInfoContent) {
+
+    @backLinkHtml
+
+
+    @if(taxAvoidanceForm.errors.nonEmpty) {
+        @govukErrorSummary(ErrorSummary().withFormErrorsAsText(taxAvoidanceForm))
+    }
+
+    <header>
+        <h1 class="govuk-heading-xl">
+            <span class="govuk-caption-xl"><span class="govuk-visually-hidden">@messages("ated.screen-reader.section") </span>@messages("ated.avoidance-schemes.pre-header")</span>
+            @messages("ated.avoidance-schemes.header")
+        </h1>
+    </header>
+
 
     @formHelper(action=controllers.reliefs.routes.AvoidanceSchemesController.submit(periodKey)) {
-        <div class="grid row-border">
-            <div class="grid grid-1-3 form-label-bold" id="relief-summary-text">@messages("ated.avoidance-schemes.reliefs.text")</div>
-            <div class="grid grid-1-3 form-label-bold" id="relief-summary-scheme-text">@messages("ated.avoidance-schemes.avoidance-scheme.header")</div>
-            <div class="grid grid-1-3 form-label-bold" id="relief-summary-scheme-promoter-text">@messages("ated.avoidance-schemes.avoidance-scheme-promoter.header")</div>
+        <div class="govuk-body govuk-grid-row govuk-section-break govuk-section-break--m govuk-section-break--visible">
+            <div class="govuk-grid-column-one-third govuk-label--s" id="relief-summary-text">@messages("ated.avoidance-schemes.reliefs.text")</div>
+            <div class="govuk-grid-column-one-third govuk-label--s" id="relief-summary-scheme-text">@messages("ated.avoidance-schemes.avoidance-scheme.header")</div>
+            <div class="govuk-grid-column-one-third govuk-label--s" id="relief-summary-scheme-promoter-text">@messages("ated.avoidance-schemes.avoidance-scheme-promoter.header")</div>
         </div>
 
         @reliefsTaxAvoidance.map { reliefData =>
@@ -193,6 +193,12 @@
             )
         }
 
-        <button id="submit" type="submit" class="subsection">@messages("ated.avoidance-schemes.continue")</button>
+        <div class="govuk-form-group">
+            @govukButton(Button(
+            content = Text(messages("ated.avoidance-schemes.continue")),
+            inputType = Some("submit"),
+            attributes = Map("id" -> "submit")
+            ))
+        </div>
     }
 }

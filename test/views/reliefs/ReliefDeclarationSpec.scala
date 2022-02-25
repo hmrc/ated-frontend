@@ -19,29 +19,32 @@ package views.reliefs
 import config.ApplicationConfig
 import models.StandardAuthRetrievals
 import org.jsoup.Jsoup
-import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
+import org.scalatest.featurespec.AnyFeatureSpec
+import org.scalatest.{BeforeAndAfterEach, GivenWhenThen}
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Messages, MessagesApi}
+import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import play.twirl.api.Html
 import testhelpers.MockAuthUtil
+import views.html.reliefs.reliefDeclaration
 
-class ReliefDeclarationSpec extends FeatureSpec with GuiceOneAppPerSuite with MockitoSugar
+class ReliefDeclarationSpec extends AnyFeatureSpec with GuiceOneAppPerSuite with MockitoSugar
   with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
 
-  implicit val request = FakeRequest()
+  implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
 
-  val injectedViewInstance = app.injector.instanceOf[views.html.reliefs.reliefDeclaration]
-feature("The user can view the relief declaration page") {
+  val injectedViewInstance: reliefDeclaration = app.injector.instanceOf[views.html.reliefs.reliefDeclaration]
+  Feature("The user can view the relief declaration page") {
 
     implicit val authContext: StandardAuthRetrievals = organisationStandardRetrievals.copy(delegationModel = None)
 
     info("as a user I want to view the correct page content")
 
-    scenario("user has created a relief return") {
+    Scenario("user has created a relief return") {
       Given("A user visits the page")
       When("The user views the page")
 
@@ -53,27 +56,27 @@ feature("The user can view the relief declaration page") {
       Then("Returns declaration")
       assert(document.title() === "Returns declaration - GOV.UK")
       And("The pre-header text is - Create relief return")
-      assert(document.getElementById("relief-declaration-confirmation-header").text() === "Returns declaration")
+      assert(document.getElementsByClass("govuk-heading-xl").text() contains "Returns declaration")
       assert(document.getElementById("relief-declaration-before-declaration-text")
         .text() === "Before you can submit your return to HMRC you must read and agree to the following statement. If you give false information you may have to pay financial penalties and face prosecution.")
       assert(document.getElementById("relief-declaration-mid-declaration-text").text() === "Each type of relief claimed is an individual ATED return.")
       assert(document.getElementById("declare-or-confirm").text() === "I declare that:")
       assert(document.getElementById("declaration-confirmation-text")
         .text() === "the information I have given on this return (or each of these returns) is correct")
-      assert(document.getElementById("submit").text() === "Agree and submit returns")
+      assert(document.getElementsByClass("govuk-button").text() === "Agree and submit returns")
 
       Then("The back link is correct")
-      assert(document.getElementById("backLinkHref").text === "Back")
+      assert(document.getElementsByClass("govuk-back-link").text === "Back")
     }
   }
 
-  feature("The agent can view the relief declaration page as a client") {
+  Feature("The agent can view the relief declaration page as a client") {
 
     implicit lazy val authContext: StandardAuthRetrievals = agentStandardRetrievals
 
     info("as an agent I want to view the correct page content")
 
-    scenario("agent has created a relief return") {
+    Scenario("agent has created a relief return") {
       Given("An agent visits the page")
       When("The agent views the page")
 
@@ -84,7 +87,7 @@ feature("The user can view the relief declaration page") {
       assert(document.title() === "Returns declaration - GOV.UK")
 
       And("The pre-header text is - Create relief return")
-      assert(document.getElementById("relief-declaration-confirmation-header").text() === "Returns declaration")
+      assert(document.getElementsByClass("govuk-heading-xl").text() contains "Returns declaration")
       assert(document.getElementById("relief-declaration-before-declaration-text")
         .text() === "Before your client’s return or returns can be submitted to HMRC, you must read and agree to the following statement. Your client’s approval may be in electronic or non-electronic form. If your client gives false information, they may have to pay financial penalties and face prosecution.")
       assert(document.getElementById("relief-declaration-mid-declaration-text")
@@ -92,11 +95,11 @@ feature("The user can view the relief declaration page") {
       assert(document.getElementById("declare-or-confirm").text() === "I confirm that my client has:")
       assert(document.getElementById("declaration-confirmation-text")
         .text() === "approved the information contained in this return (or each of these returns) as being correct")
-      assert(document.getElementById("submit").text() === "Agree and submit returns")
+      assert(document.getElementsByClass("govuk-button").text() === "Agree and submit returns")
 
       Then("The back link is correct")
-      assert(document.getElementById("backLinkHref").text === "Back")
-      assert(document.getElementById("backLinkHref").attr("href") === "http://backLink")
+      assert(document.getElementsByClass("govuk-back-link").text === "Back")
+      assert(document.getElementsByClass("govuk-back-link").attr("href") === "http://backLink")
     }
   }
 }

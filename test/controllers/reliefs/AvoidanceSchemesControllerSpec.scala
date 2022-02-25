@@ -17,7 +17,6 @@
 package controllers.reliefs
 
 import java.util.UUID
-
 import builders.{ReliefBuilder, SessionBuilder, TitleBuilder}
 import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
@@ -40,6 +39,7 @@ import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.{AtedConstants, PeriodUtils}
 import views.html.BtaNavigationLinks
+import views.html.reliefs.{avoidanceSchemes, invalidPeriodKey}
 
 import scala.concurrent.Future
 
@@ -53,12 +53,12 @@ class AvoidanceSchemesControllerSpec extends PlaySpec with GuiceOneServerPerSuit
   val mockReliefsService: ReliefsService = mock[ReliefsService]
   val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
   val mockBackLinkCacheConnector: BackLinkCacheConnector = mock[BackLinkCacheConnector]
-    val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
+  val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
-  val injectedViewInstance = app.injector.instanceOf[views.html.reliefs.avoidanceSchemes]
-  val injectedViewInstanceKey = app.injector.instanceOf[views.html.reliefs.invalidPeriodKey]
+  val injectedViewInstance: avoidanceSchemes = app.injector.instanceOf[views.html.reliefs.avoidanceSchemes]
+  val injectedViewInstanceKey: invalidPeriodKey = app.injector.instanceOf[views.html.reliefs.invalidPeriodKey]
 
   val periodKey = 2015
   val testAvoidanceScheme: ReliefsTaxAvoidance = ReliefBuilder.reliefTaxAvoidance(periodKey,
@@ -246,11 +246,12 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
               document.title() must be(TitleBuilder.buildTitle("Enter your avoidance scheme number"))
-              document.getElementById("ated-avoidance-header").text() must be("Enter your avoidance scheme number")
+              document.getElementsByClass("govuk-caption-xl").text must be ("This section is: Create return")
+              document.getElementsByTag("h1").text() must include ("Enter your avoidance scheme number")
               document.getElementById("relief-summary-text").text() must be("Reliefs claimed")
               document.getElementById("relief-summary-scheme-text").text() must be("Avoidance scheme reference number")
               document.getElementById("relief-summary-scheme-promoter-text").text() must be("Promoter reference number")
-              document.getElementById("submit").text() must be("Continue")
+              document.getElementsByClass("govuk-button").text() must be("Continue")
           }
         }
       }
@@ -311,7 +312,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
 
             submitWithAuthorisedUser(formInput) { result =>
               status(result) must be(BAD_REQUEST)
-              contentAsString(result) must include("There is a problem with rental business avoidance scheme reference number. Check the number and try again.")
+              contentAsString(result) must include("The scheme number for rental business can only contain numbers")
             }
           }
 
@@ -337,9 +338,9 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
 
               val document = Jsoup.parse(contentAsString(result))
 
-              document.getElementById("rentalBusinessScheme-error-0").text() must be("The avoidance scheme number must be 8 digits.")
-              document.getElementById("propertyDeveloperScheme-error-0").text() must be("The avoidance scheme number must be 8 digits.")
-              document.getElementById("lendingScheme-error-0").text() must be("The avoidance scheme number must be 8 digits.")
+              document.getElementById("rentalBusinessScheme-error").text() must be("Error: The scheme number for rental business must be 8 digits")
+              document.getElementById("propertyDeveloperScheme-error").text() must be("Error: The scheme number for property developer avoidance scheme must be 8 digits")
+              document.getElementById("lendingScheme-error").text() must be("Error: The scheme number for lending avoidance scheme must be 8 digits")
             }
           }
         }

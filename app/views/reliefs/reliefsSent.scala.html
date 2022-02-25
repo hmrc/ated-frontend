@@ -17,50 +17,52 @@
 @import config.ApplicationConfig
 @import models._
 @import play.twirl.api.HtmlFormat
-@this(atedMain: atedMain)
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import views.ViewUtils.titleBuilder
+@import views.ViewUtils.titleBuilder
+@this(newMain: newMain,
+      govukPanel : GovukPanel)
 
-@(periodKey: Int, serviceInfoContent: Html = HtmlFormat.empty, returnResponse: SubmitReturnsResponse)(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
+@(periodKey: Int,
+    serviceInfoContent: Html = HtmlFormat.empty,
+    returnResponse: SubmitReturnsResponse)(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
-@atedMain(title = messages("ated.relief-sent.title"), serviceInfoContent = serviceInfoContent) {
+@newMain(title = titleBuilder(messages("ated.relief-sent.title")), serviceInfoContent = serviceInfoContent) {
 
-  <div id="banner" class="transaction-banner--complete">
-    <h1 id="banner-text">
-        @messages("ated.relief-sent.banner-text")
-    </h1>
-  </div>
+    @govukPanel(Panel(
+        title = Text(Messages("ated.relief-sent.banner-text"))
+      ))
 
-  <p id="completed-returns">@messages("ated.reliefs-sent.completed-message")</p>
-  <p id="email-confirmation">@messages("ated.reliefs-sent.email-message")<p>
+  <p class="govuk-body" id="completed-returns">@messages("ated.reliefs-sent.completed-message")</p>
+  <p class="govuk-body" id="email-confirmation">@messages("ated.reliefs-sent.email-message")<p>
 
-  <a href="@controllers.reliefs.routes.ReliefsSentController.viewPrintFriendlyReliefSent(periodKey)"
+  <a style="font-size: 19px" class="govuk-link" href="@controllers.reliefs.routes.ReliefsSentController.viewPrintFriendlyReliefSent(periodKey)"
   id="print-friendly-relief-link" target="_blank">
     @messages("ated.reliefs-sent.print-link")
   </a>
 
-  <div class="divider--top--thick"></div>
+  <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
 
-  <h2 id="receipt-message" class="heading-medium">@messages("ated.reliefs-sent.charge-heading")</h2>
+  <h2 id="receipt-message" class="govuk-heading-m">@messages("ated.reliefs-sent.charge-heading")</h2>
 
-  <p id="amount-message">@messages("ated.reliefs-sent.amount-message")</p>
+  <p class="govuk-body" id="amount-message">@messages("ated.reliefs-sent.amount-message")</p>
 
   @returnResponse.reliefReturnResponse.map { reliefReturnResponse =>
-    <p id="reference-number">
+    <p class="govuk-body" id="reference-number">
       @Html(messages("ated.reliefs-sent.reference-message", reliefReturnResponse.head.formBundleNumber))
     </p>
   }
 
-  <p id="balance-message">@messages("ated.reliefs-sent.balance-message")</p>
-  <br />
-  <h2 class="heading-medium">@messages("ated.reliefs-sent.change-circumstances.p0")</h2>
-  <p>@messages("ated.reliefs-sent.change-circumstances.p1")</p>
-  <p>@messages("ated.reliefs-sent.change-circumstances.p2")</p>
-  <p>@messages("ated.reliefs-sent.change-circumstances.p3")</p>
+  <p class="govuk-body" id="balance-message">@messages("ated.reliefs-sent.balance-message")</p>
 
-  <br />
-  <div class="form-field">
-    <a href="@controllers.routes.AccountSummaryController.view" id="account-link" role="button" class="button">
+  <h2 id="receipt-message-2" class="govuk-heading-m govuk-!-padding-top-5">@messages("ated.reliefs-sent.change-circumstances.p0")</h2>
+  <p class="govuk-body">@messages("ated.reliefs-sent.change-circumstances.p1")</p>
+  <p class="govuk-body">@messages("ated.reliefs-sent.change-circumstances.p2")</p>
+  <p class="govuk-body">@messages("ated.reliefs-sent.change-circumstances.p3")</p>
+
+  <div class="govuk-form-group govuk-!-padding-top-5">
+    <a href="@controllers.routes.AccountSummaryController.view()" id="account-link" role="button" class="govuk-button">
       @messages("ated.reliefs-sent.client-link")
     </a>
   </div>
-
 }
