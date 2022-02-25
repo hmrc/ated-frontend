@@ -75,7 +75,7 @@ class AvoidanceSchemesController @Inject()(mcc: MessagesControllerComponents,
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         validatePeriodKey(periodKey) {
-          validateTaxAvoidance(taxAvoidanceForm.bindFromRequest).fold(
+          validateTaxAvoidance(taxAvoidanceForm.bindFromRequest, periodKey).fold(
             formWithError => {
               for {
                 backLink <- currentBackLink

@@ -17,114 +17,134 @@
 @import models._
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
-@this(atedMain: atedMain, formHelper: FormWithCSRF)
-
-@(submittedReliefReturn: SubmittedReliefReturns, periodKey: Int, formBundleNumber: String, organisationName: Option[String], isEditable: Boolean, serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
+@import uk.gov.hmrc.govukfrontend.views.Implicits._
+@import uk.gov.hmrc.govukfrontend.views.html.components._
 @import uk.gov.hmrc.play.views.html._
-@import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
 @import views.html.helpers.error._
 @import _root_.utils._
+@import views.ViewUtils.titleBuilder
+@this(newMain: newMain,
+    formHelper: FormWithCSRF,
+    govukButton : GovukButton,
+    govukBackLink : GovukBackLink)
 
-@atedMain(title = messages("ated.view-relief-return.title"),
+@(submittedReliefReturn: SubmittedReliefReturns, periodKey: Int, formBundleNumber: String, organisationName: Option[String], isEditable: Boolean, serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
+
+@backLinkHtml = {
+    @if(backLink.isDefined) {
+        @govukBackLink(BackLink(
+            href = backLink.get,
+            content = Text("Back")
+        ))
+    }
+}
+
+@newMain(title = titleBuilder(messages("ated.view-relief-return.title")),
           serviceInfoContent = serviceInfoContent) {
+    @backLinkHtml
 
-  @pageHeadersAndError(backLink, "relief-return-subheader", organisationName.getOrElse(""), "relief-return-header", messages("ated.view-relief-return.header"))
+    <header>
+        <h1 class="govuk-heading-xl" id="relief-return-header">
+            <span class="govuk-caption-xl"><span class="govuk-visually-hidden">@messages("ated.screen-reader.section") </span></span>
+            @messages("ated.view-relief-return.header")
+        </h1>
+    </header>
 
-  <div class="form-group">
+  <div class="govuk-form-group">
     @formHelper(action=controllers.reliefs.routes.ViewReliefReturnController.submit(periodKey: Int, formBundleNumber: String)) {
-    <div class="paragraph" id="relief-return-text">@messages("ated.view-relief-return.subheader",
+    <div id="relief-return-text" class="govuk-body">@messages("ated.view-relief-return.subheader",
       PeriodUtils.periodStartDate(periodKey).toString(messages("ated.date-format")),
       PeriodUtils.periodEndDate(periodKey).toString(messages("ated.date-format")))
     </div>
   </div>
-<div class="form-group">
-  <div class="grid-wrapper">
-    <h2 id="th-view-relief-return-table-header" class="heading-medium">@submittedReliefReturn.reliefType</h2>
-  </div>
 
-  <div class="grid-wrapper row-border">
-    <div class="grid grid-3-4 cya-question">
-      <span class="heading-small" id="th-view-relief-return-from-date-label">@messages("ated.view-relief-return.date.from")</span>
+    <div class="govuk-form-group">
+        <h2 id="th-view-relief-return-table-header" class="govuk-heading-m">@submittedReliefReturn.reliefType</h2>
     </div>
 
-    <div class="grid grid-1-4 cya-answer" id="td-view-relief-from-date-0">
-      <span class="visuallyhidden">@messages("ated.view-relief-return.date.from")</span>
-      @submittedReliefReturn.dateFrom.toString(messages("ated.date-format"))
-    </div>
-  </div>
+    <dl class="govuk-summary-list">
 
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          <span id="th-view-relief-return-from-date-label">@messages("ated.view-relief-return.date.from")</span>
+        </dt>
 
-  <div class="grid-wrapper row-border">
-    <div class="grid grid-3-4 cya-question">
-      <span class="heading-small" id="th-view-relief-date-to-label">@messages("ated.view-relief-return.date.to")</span>
-    </div>
+        <dd class="govuk-summary-list__actions" id="td-view-relief-from-date-0">
+          <span class="govuk-visually-hidden">@messages("ated.view-relief-return.date.from")</span>
+          @submittedReliefReturn.dateFrom.toString(messages("ated.date-format"))
+        </dd>
+      </div>
 
-    <div class="grid grid-1-4 cya-answer" id="td-view-relief-from-date-1">
-        <span id="td-view-relief-date-to"> <span class="visuallyhidden">@messages("ated.view-relief-return.date.to")</span> @submittedReliefReturn.dateTo.toString(messages("ated.date-format"))</span>
-    </div>
-  </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          <span id="th-view-relief-date-to-label">@messages("ated.view-relief-return.date.to")</span>
+        </dt>
 
+        <dd class="govuk-summary-list__actions" id="td-view-relief-from-date-1">
+            <span id="td-view-relief-date-to"> <span class="govuk-visually-hidden">@messages("ated.view-relief-return.date.to")</span> @submittedReliefReturn.dateTo.toString(messages("ated.date-format"))</span>
+        </dd>
+      </div>
 
-  <div class="grid-wrapper row-border">
-    <div class="grid grid-3-4 cya-question">
-      <span id="th-view-relief-avoidance-label" class="heading-small">@messages("ated.view-relief-return.avoidance.no")</span>
-    </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          <span id="th-view-relief-avoidance-label">@messages("ated.view-relief-return.avoidance.no")</span>
+        </dt>
 
-    <div class="grid grid-1-4 cya-answer" id="td-view-relief-from-date-2">
-      <span id="td-view-relief-avoidance">  <span class="visuallyhidden">@messages("ated.view-relief-return.avoidance.no")</span> @submittedReliefReturn.avoidanceSchemeNumber</span>
-    </div>
-  </div>
+        <dd class="govuk-summary-list__actions" id="td-view-relief-from-date-2">
+          <span id="td-view-relief-avoidance">  <span class="govuk-visually-hidden">@messages("ated.view-relief-return.avoidance.no")</span> @submittedReliefReturn.avoidanceSchemeNumber</span>
+        </dd>
+      </div>
 
-  <div class="grid-wrapper row-border">
-    <div class="grid grid-3-4 cya-question">
-      <span id="th-view-relief-avoidance-promoter-label" class="heading-small">@messages("ated.view-relief-return.promoter.no")</span>
-    </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          <span id="th-view-relief-avoidance-promoter-label">@messages("ated.view-relief-return.promoter.no")</span>
+        </dt>
 
-    <div class="grid grid-1-4 cya-answer" id="td-view-relief-from-date-3">
+        <dd class="govuk-summary-list__actions" id="td-view-relief-from-date-3">
+          <span id="td-view-relief-avoidance-promoter"> <span class="govuk-visually-hidden">@messages("ated.view-relief-return.promoter.no")</span> @submittedReliefReturn.promoterReferenceNumber</span>
+        </dd>
+      </div>
 
-      <span id="td-view-relief-avoidance-promoter"> <span class="visuallyhidden">@messages("ated.view-relief-return.promoter.no")</span> @submittedReliefReturn.promoterReferenceNumber</span>
-    </div>
-  </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          <span id="th-view-relief-status-label">@messages("ated.view-relief-return.status")</span>
+        </dt>
 
+        <dd class="govuk-summary-list__actions" id="td-view-relief-from-date-4">
+          <span id="td-view-relief-status"> <span class="govuk-visually-hidden">@messages("ated.view-relief-return.status")</span> @messages("ated.view-relief-return.status.submitted")</span>
+        </dd>
+      </div>
 
-  <div class="grid-wrapper row-border">
-    <div class="grid grid-3-4 cya-question">
-      <span class="heading-small" id="th-view-relief-status-label">@messages("ated.view-relief-return.status")</span>
-    </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          <span id="th-view-relief-submission-date-label">@messages("ated.view-relief-return.submission-date")</span>
+        </dt>
 
-    <div class="grid grid-1-4 cya-answer" id="td-view-relief-from-date-4">
+        <dd class="govuk-summary-list__actions" id="td-view-relief-from-date-5">
+          <span id="td-view-relief-submission-date"> <span class="govuk-visually-hidden">@messages("ated.view-relief-return.submission-date")</span> @submittedReliefReturn.dateOfSubmission.toString(messages("ated.date-format"))</span>
+        </dd>
+      </div>
+    </dl>
 
-      <span id="td-view-relief-status"> <span class="visuallyhidden">@messages("ated.view-relief-return.status")</span> @messages("ated.view-relief-return.status.submitted")</span>
-    </div>
-  </div>
-
-
-  <div class="grid-wrapper row-border">
-    <div class="grid grid-3-4 cya-question">
-      <span id="th-view-relief-submission-date-label" class="heading-small">@messages("ated.view-relief-return.submission-date")</span>
-    </div>
-
-    <div class="grid grid-1-4 cya-answer" id="td-view-relief-from-date-5">
-      <span id="td-view-relief-submission-date"> <span class="visuallyhidden">@messages("ated.view-relief-return.submission-date")</span> @submittedReliefReturn.dateOfSubmission.toString(messages("ated.date-format"))</span>
-    </div>
-  </div>
-
-</div>
-
-    <div class="form-group">
+    <div class="govuk-form-group govuk-body">
       <div id="return-charge-text">@messages("ated.form-bundle.view.return.ated.charge")</div>
     </div>
 
-    <div class="form-group">
-      <span class="heading-xlarge" id="return-charge">
+    <div class="govuk-form-group">
+      <span class="govuk-heading-xl" id="return-charge">
         @formattedPounds(0)
       </span>
     </div>
 
     @if(isEditable) {
-        <button class="button" id="submit" type="submit">@messages("ated.change-return.button")</button>
+        <div class="govuk-form-group">
+            @govukButton(Button(
+            content = Text(messages("ated.change-return.button")),
+            inputType = Some("submit"),
+            attributes = Map("id" -> "submit")
+            ))
+        </div>
         }
-
     }
 }

@@ -20,31 +20,34 @@ import config.ApplicationConfig
 import models.{ReliefReturnResponse, StandardAuthRetrievals, SubmitReturnsResponse}
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
+import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.{FeatureSpec, GivenWhenThen}
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Messages, MessagesApi}
+import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import play.twirl.api.Html
 import testhelpers.MockAuthUtil
+import views.html.reliefs.reliefsSent
 
-class ReliefsSentSpec extends FeatureSpec with GuiceOneAppPerSuite with MockitoSugar
+class ReliefsSentSpec extends AnyFeatureSpec with GuiceOneAppPerSuite with MockitoSugar
   with GivenWhenThen with MockAuthUtil {
 
-  implicit val request = FakeRequest()
+  implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
-implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
+  implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
 
-  val injectedViewInstance = app.injector.instanceOf[views.html.reliefs.reliefsSent]
+  val injectedViewInstance: reliefsSent = app.injector.instanceOf[views.html.reliefs.reliefsSent]
 
   val periodKey = 2015
 
-  feature("The user can view the relief sent page") {
+  Feature("The user can view the relief sent page") {
 
     info("as a client I want to be able to see that my relief return has been submitted successfully")
 
-    scenario("show the relief sent page") {
+    Scenario("show the relief sent page") {
 
       Given("the client submits a relief return")
       When("the return is successfully received")
@@ -91,27 +94,26 @@ implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetr
         "service. There can be a 24-hour delay before you see any updates.")
 
       Then("The second h2 should be correct")
-      assert(document.select("#content > article > h2:nth-child(11)")
-        .text === "Change or ending of relief type")
+      assert(document.select("#receipt-message-2").text === "Change or ending of relief type")
 
       Then("The paragraph about change in circumstances should be correct")
-      assert(document.select("#content > article > p:nth-child(12)").text === "If any change in your " +
+      assert(document.select("#main-content > div > div > p:nth-child(11)").text === "If any change in your " +
         "circumstances means you will no longer claim for one or more relief types next year, you need to contact " +
         "HMRC on atedadditionalinfo.ctiaa@hmrc.gov.uk to tell us which relief types you will not claim.")
 
       Then("The sentence about keeping records up to date should be correct")
-      assert(document.select("#content > article > p:nth-child(13)").text === "This will help to keep " +
+      assert(document.select("#main-content > div > div > p:nth-child(12)").text === "This will help to keep " +
         "our records up to date so we know not to expect a return for that type of relief next year.")
 
       Then("The sentence about emailing should be correct")
-      assert(document.select("#content > article > p:nth-child(14)").text === "When emailing please " +
+      assert(document.select("#main-content > div > div > p:nth-child(13)").text === "When emailing please " +
         "include your ATED reference number or if you do not have the number please give your company name. Do not " +
         "include any further personal or financial details. Sending information over the internet is generally not " +
         "completely secure, and we cannot guarantee the security of your data while it’s in transit. Any data you " +
         "send is at your own risk.")
 
       Then("There will be a button which takes the user to their ATED summary")
-      val button = document.select(".button")
+      val button = document.getElementsByClass("govuk-button")
       assert(button.text === "Your ATED summary")
       assert(button.attr("href").contains("/ated/account-summary"))
     }

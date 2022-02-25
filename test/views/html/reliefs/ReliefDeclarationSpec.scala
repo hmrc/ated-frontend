@@ -18,21 +18,33 @@ package views.html.reliefs
 
 import config.ApplicationConfig
 import models.StandardAuthRetrievals
-import org.scalatestplus.mockito.MockitoSugar
+import play.api.test.Injecting
 import play.twirl.api.Html
 import testhelpers.{AtedViewSpec, MockAuthUtil}
 
-class ReliefDeclarationSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil {
+class ReliefDeclarationSpec extends AtedViewSpec with Injecting with MockAuthUtil {
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
 
-  implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
-  val injectedViewInstance = app.injector.instanceOf[views.html.reliefs.reliefDeclaration]
-"Relief Declaration" must {
-    behave like pageWithTitle(messages("ated.relief-summary.declaration.title"))
-    behave like pageWithHeader(messages("ated.relief-summary.declaration.header"))
-  }
-
+  implicit val mockAppConfig: ApplicationConfig = inject[ApplicationConfig]
+  val injectedView: reliefDeclaration = inject[views.html.reliefs.reliefDeclaration]
   private val periodKey = 2017
-  override def view: Html = injectedViewInstance(periodKey, Html(""), None)
+  "Relief Declaration" must {
 
+    "have the correct page title" in {
+      doc.title() mustBe "Returns declaration - GOV.UK"
+    }
+
+    "have correct heading" in {
+      doc.getElementsByTag("h1").text must include("Returns declaration")
+    }
+
+    "have correct caption" in {
+      doc.getElementsByClass("govuk-caption-xl").text mustBe "This section is: Create return"
+    }
+
+    "have correct submit button" in {
+      doc.getElementsByClass("govuk-button").text mustBe "Agree and submit returns"
+    }
+  }
+  override def view: Html = injectedView(periodKey, Html(""), None)
 }

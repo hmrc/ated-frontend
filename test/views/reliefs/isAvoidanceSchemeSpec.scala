@@ -21,31 +21,34 @@ import forms.ReliefForms._
 import models.{IsTaxAvoidance, StandardAuthRetrievals}
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
-import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
+import org.scalatest.featurespec.AnyFeatureSpec
+import org.scalatest.{BeforeAndAfterEach, GivenWhenThen}
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Messages, MessagesApi}
+import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import play.twirl.api.Html
 import testhelpers.MockAuthUtil
+import views.html.reliefs.avoidanceSchemeBeingUsed
 
-class isAvoidanceSchemeSpec extends FeatureSpec with GuiceOneAppPerSuite
+class isAvoidanceSchemeSpec extends AnyFeatureSpec with GuiceOneAppPerSuite
   with MockitoSugar with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
 
-  implicit val request = FakeRequest()
+  implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
 
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
-implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
+  implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
   val periodKey = 2015
 
-  val injectedViewInstance = app.injector.instanceOf[views.html.reliefs.avoidanceSchemeBeingUsed]
+  val injectedViewInstance: avoidanceSchemeBeingUsed = app.injector.instanceOf[views.html.reliefs.avoidanceSchemeBeingUsed]
 
-  feature("The user can view the is avoidance scheme page") {
+  Feature("The user can view the is avoidance scheme page") {
 
     info("as a client i want to be able to select whether or not I am using an avoidance scheme")
 
-    scenario("show the is an avoidance scheme being used radio buttons") {
+    Scenario("show the is an avoidance scheme being used radio buttons") {
 
       Given("the client is creating a new relief and want tell us if an avoidance scheme is being used")
       When("The user views the page")
@@ -55,22 +58,22 @@ implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetr
       val document = Jsoup.parse(html.toString())
 
       Then("The header should match - Is an avoidance scheme being used for any of these reliefs?")
-      assert(document.select("h1").text === "Is an avoidance scheme being used for any of these reliefs?")
+      assert(document.select("h1").text contains "Is an avoidance scheme being used for any of these reliefs?")
 
       Then("The subheader should be - Create return")
-      assert(document.getElementById("pre-heading").text() === "This section is: Create return")
+      assert(document.getElementsByClass("govuk-caption-xl").text() === "This section is: Create return")
 
       Then("The the text on the screen should be correct")
-      assert(document.getElementById("isAvoidanceScheme-true").attr("checked") === "")
-      assert(document.getElementById("isAvoidanceScheme-false").attr("checked") === "")
+      assert(document.getElementsByAttributeValue("for", "isAvoidanceScheme").attr("checked") === "")
+      assert(document.getElementsByAttributeValue("for", "isAvoidanceScheme-2").attr("checked") === "")
 
-      assert(document.getElementById("submit").text() === "Save and continue")
+      assert(document.getElementsByClass("govuk-button").text() === "Save and continue")
 
       Then("The back link is correct")
-      assert(document.getElementById("backLinkHref").text === "Back")
+      assert(document.getElementsByClass("govuk-back-link").text === "Back")
     }
 
-    scenario("show the reliefs we have previously chosen") {
+    Scenario("show the reliefs we have previously chosen") {
 
       Given("the client is creating a new relief and want to see the options")
       When("The user views the page")
@@ -82,20 +85,19 @@ implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetr
       val document = Jsoup.parse(html.toString())
 
       Then("The header should match - Is an avoidance scheme being used for any of these reliefs?")
-      assert(document.select("h1").text === "Is an avoidance scheme being used for any of these reliefs?")
+      assert(document.select("h1").text contains "Is an avoidance scheme being used for any of these reliefs?")
 
       Then("The subheader should be - Create return")
-      assert(document.getElementById("pre-heading").text() === "This section is: Create return")
+      assert(document.getElementsByClass("govuk-caption-xl").text() === "This section is: Create return")
 
-      Then("The the text on the screen should be correct")
-      assert(document.getElementById("isAvoidanceScheme-true").attr("checked") === "checked")
-      assert(document.getElementById("isAvoidanceScheme-false").attr("checked") === "")
+      Then("The the 'Yes' button is selected")
+      assert(document.getElementById("isAvoidanceScheme").outerHtml() contains "checked")
 
-      assert(document.getElementById("submit").text() === "Save and continue")
+      assert(document.getElementsByClass("govuk-button").text() === "Save and continue")
 
       Then("The back link is correct")
-      assert(document.getElementById("backLinkHref").text === "Back")
-      assert(document.getElementById("backLinkHref").attr("href") === "http://backLink")
+      assert(document.getElementsByClass("govuk-back-link").text === "Back")
+      assert(document.getElementsByClass("govuk-back-link").attr("href") === "http://backLink")
     }
   }
 

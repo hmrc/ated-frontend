@@ -19,6 +19,7 @@ package views.html.reliefs
 import config.ApplicationConfig
 import config.featureswitch.FeatureSwitch
 import forms.ReliefForms
+import forms.ReliefForms._
 import models.{Reliefs, StandardAuthRetrievals}
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
@@ -38,10 +39,20 @@ class ChooseReliefsSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil
   val periodStartDate = new LocalDate()
 
   "choose relief view" must {
-    behave like pageWithTitle(messages("ated.choose-reliefs.title"))
-    behave like pageWithHeader(messages("ated.choose-reliefs.header"))
-    behave like pageWithPreHeading(messages("ated.choose-reliefs.subheader"))
-    behave like pageWithBackLink
+
+    "have correct page title" in {
+      doc.title mustBe messages("ated.choose-reliefs.title") + " - GOV.UK"
+    }
+    "have correct heading" in {
+      doc.getElementsByTag("h1").text must include(messages("ated.choose-reliefs.header"))
+    }
+    "have correct caption" in {
+      doc.getElementsByClass( "govuk-caption-xl").text must include(messages("ated.choose-reliefs.subheader"))
+    }
+    "have a backLink" in {
+      val backLink = new CssSelector("a.govuk-back-link")
+      doc must backLink
+    }
     behave like pageWithContinueButtonForm(s"/ated/reliefs/$periodKey/send")
   }
 
@@ -103,7 +114,7 @@ class ChooseReliefsSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil
     }
 
     "display social housing" in {
-      doc.getElementById("socialHousing_field").text() mustBe "Social housing"
+      doc.getElementsByAttributeValue("for", "socialHousing").text() mustBe "Social housing"
     }
 
     "display social housing start date" in {
@@ -113,13 +124,13 @@ class ChooseReliefsSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil
     "display social housing for 2020 with feature switch enabled" in {
       mockAppConfig.enable(FeatureSwitch.CooperativeHousing)
 
-      doc2020.getElementById("socialHousing_field").text() mustBe "Provider of social housing or housing co-operative"
+      doc2020.getElementsByAttributeValue("for", "socialHousing").text() mustBe "Provider of social housing or housing co-operative"
     }
 
     "display social housing start date for 2020 with feature switch enabled" in {
       mockAppConfig.enable(FeatureSwitch.CooperativeHousing)
 
-      doc2020 must haveElementWithId("providerSocialOrHousingDate")
+      doc2020 must haveElementWithId("conditional-socialHousing")
     }
 
     "display equity release scheme" in {
@@ -206,31 +217,35 @@ class ChooseReliefsSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil
     }
   }
 
-  val injectedViewInstance = app.injector.instanceOf[views.html.reliefs.chooseReliefs]
+  val injectedViewInstance: chooseReliefs = app.injector.instanceOf[views.html.reliefs.chooseReliefs]
+
+  override def haveErrorSummary(expectedText: String) = new CssSelectorWithTextMatcher(expectedText, "#main-content > div > div > div > div > ul > li > a")
+  override def haveErrorNotification(expectedText: String) = new CssSelectorWithTextMatcher(expectedText, ".govuk-error-message")
+
 
   def haveChooseReliefFormError(field: String): Unit = {
     val fieldStartDate = field + "Date"
-    val formWithErrors: Form[Reliefs] = ReliefForms.reliefsForm.bind(Json.obj("periodKey" -> periodKey, field -> true))
+    val formWithErrors: Form[Reliefs] = validateForm(reliefsForm.bind(Json.obj("periodKey" -> periodKey, field -> true), Int.MaxValue))
 
     def view: Html = injectedViewInstance(periodKey, formWithErrors, periodStartDate, Html(""), Some("backLink"))
 
     val errorDoc = doc(view)
 
     errorDoc must haveErrorSummary(messages(s"ated.choose-reliefs.error.date.mandatory.$fieldStartDate"))
-    errorDoc must haveErrorNotification(messages(s"ated.choose-reliefs.error.date.mandatory.$fieldStartDate"))
+    errorDoc must haveErrorNotification("Error: " + messages(s"ated.choose-reliefs.error.date.mandatory.$fieldStartDate"))
   }
 
   def haveChooseReliefStartDateFormError(field: String): Unit = {
     val fieldStartDate = field + "Date"
-    val formWithErrors: Form[Reliefs] = ReliefForms.reliefsForm.bind(Json.obj("periodKey" -> periodKey, field -> true,
-      fieldStartDate -> Map("day" -> "1")))
+    val formWithErrors: Form[Reliefs] = validateForm(reliefsForm.bind(Json.obj("periodKey" -> periodKey, field -> true,
+      fieldStartDate -> Map("day" -> "1")), Int.MaxValue))
 
     def view: Html = injectedViewInstance(periodKey, formWithErrors, periodStartDate, Html(""), Some("backLink"))
 
     val errorDoc = doc(view)
 
     errorDoc must haveErrorSummary(messages(s"ated.choose-reliefs.error.date.mandatory.$fieldStartDate"))
-    errorDoc must haveErrorNotification(messages(s"ated.choose-reliefs.error.date.mandatory.$fieldStartDate"))
+    errorDoc must haveErrorNotification("Error: " + messages(s"ated.choose-reliefs.error.date.mandatory.$fieldStartDate"))
   }
 
   val reliefsForm: Form[Reliefs] = ReliefForms.reliefsForm

@@ -17,51 +17,79 @@
 package views.html.reliefs
 
 import config.ApplicationConfig
-import forms.ReliefForms
-import models.{IsTaxAvoidance, StandardAuthRetrievals}
+import forms.ReliefForms.isTaxAvoidanceForm
+import models.StandardAuthRetrievals
 import org.joda.time.LocalDate
-import org.scalatestplus.mockito.MockitoSugar
-import play.api.data.Form
-import play.api.libs.json.Json
+import play.api.test.Injecting
 import play.twirl.api.Html
 import testhelpers.{AtedViewSpec, MockAuthUtil}
 
-class IsAvoidanceSchemeSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil {
+class IsAvoidanceSchemeSpec extends AtedViewSpec with MockAuthUtil with Injecting {
 
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
 
-  implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
-val periodKey = 2017
+  implicit val mockAppConfig: ApplicationConfig = inject[ApplicationConfig]
+  val periodKey = 2017
   val periodStartDate = new LocalDate()
-  val injectedViewInstance = app.injector.instanceOf[views.html.reliefs.avoidanceSchemeBeingUsed]
+  val injectedView: avoidanceSchemeBeingUsed = inject[views.html.reliefs.avoidanceSchemeBeingUsed]
 
-  "is avoidance scheme view" must {
-    behave like pageWithTitle(messages("ated.choose-reliefs.avoidance-title"))
-    behave like pageWithHeader(messages("ated.choose-reliefs.avoidance-title"))
-    behave like pageWithPreHeading(messages("ated.choose-reliefs.subheader"))
-    behave like pageWithBackLink
-    behave like pageWithYesNoRadioButton(
-      "isAvoidanceScheme-true",
-      "isAvoidanceScheme-false",
-      messages("ated.claim-relief.avoidance-scheme.yes"),
-      messages("ated.claim-relief.avoidance-scheme.no"))
-    behave like pageWithContinueButtonForm(s"/ated/reliefs/$periodKey/avoidance-schemes-used/send")
-  }
+  def view: Html = injectedView(periodKey, isTaxAvoidanceForm, periodStartDate, Html(""), Some("http://backLink"))
 
-  "display error" when {
-    "continuing without selecting an option" in {
-      val formWithErrors = ReliefForms.isTaxAvoidanceForm.bind(Json.obj("isAvoidanceScheme" -> ""))
-      def view: Html = injectedViewInstance(periodKey,formWithErrors,periodStartDate,Html(""),Some("backlink"))
+  "The avoidanceSchemeBeingUsed view" when {
+    "No data has been entered" must {
 
-      val errorDoc = doc(view)
+      "have the correct page title" in {
+        doc.title() mustBe "Is an avoidance scheme being used for any of these reliefs? - GOV.UK"
+      }
 
-      errorDoc must haveElementAtPathWithText(".error-list", messages("ated.choose-reliefs.error.general.isAvoidanceScheme"))
-      errorDoc must haveElementAtPathWithText(".error-notification", messages("ated.claim-relief.avoidance-scheme.selected"))
+      "have correct heading" in {
+        doc.getElementsByTag("h1").text must include("Is an avoidance scheme being used for any of these reliefs?")
+      }
+
+      "have correct caption" in {
+        doc.getElementsByClass("govuk-caption-xl").text mustBe "This section is: Create return"
+      }
+
+      "have a backLink" in {
+        val backLink = new CssSelector("a.govuk-back-link")
+        doc must backLink
+      }
+
+      behave like pageWithYesNoRadioButton(
+        "isAvoidanceScheme",
+        "isAvoidanceScheme-2",
+        messages("ated.claim-relief.avoidance-scheme.yes"),
+        messages("ated.claim-relief.avoidance-scheme.no"))
+      behave like pageWithContinueButtonForm(s"/ated/reliefs/$periodKey/avoidance-schemes-used/send")
+    }
+
+
+    "Form is submitted with no data" must {
+      def view: Html = injectedView(periodKey, isTaxAvoidanceForm.bind(Map("isAvoidanceScheme" -> "")), periodStartDate, Html(""), Some("http://backLink"))
+
+      "append 'Error: ' to the page title" in {
+        doc(view).title mustBe "Error: Is an avoidance scheme being used for any of these reliefs? - GOV.UK"
+      }
+
+      "display an error summary" in {
+        val errorSummary = new CssSelector("div.govuk-error-summary")
+        doc(view) must errorSummary
+      }
+
+      "have 'There is a problem' h2" in {
+        doc(view).getElementsByTag("h2").first.text mustBe ("There is a problem")
+      }
+
+      "have error message in the summary, linking to the field" in {
+        val errorLink = doc(view).select("ul.govuk-error-summary__list > li > a")
+
+        errorLink.text mustBe "You must answer the avoidance scheme question"
+        errorLink.attr("href") mustBe "#isAvoidanceScheme"
+      }
+
+      "have an error message displayed at the field" in {
+        doc(view).getElementById("isAvoidanceScheme-error").text must include("You must answer the avoidance scheme question")
+      }
     }
   }
-
-
-  val isTaxAvoidanceForm: Form[IsTaxAvoidance] = ReliefForms.isTaxAvoidanceForm
-
-  override def view: Html = injectedViewInstance(periodKey, isTaxAvoidanceForm, periodStartDate, Html(""), Some("backLink"))
 }

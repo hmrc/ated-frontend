@@ -16,189 +16,207 @@
 
 package forms
 
-import forms.ReliefForms.taxAvoidanceForm
+import config.ApplicationConfig
+import forms.ReliefForms._
 import models._
-import org.joda.time.LocalDate
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
-import play.api.data.validation.{Invalid, Valid, ValidationError}
 import play.api.data.{Form, FormError}
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
 
+
 class ReliefFormsSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar {
 
   implicit lazy val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
   implicit lazy val messages: Messages = messagesApi.preferred(FakeRequest())
+  implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
 
   val noPromoterErrorMessage = "ated.avoidance-schemes.promoter.empty"
   val noSchemeErrorMessage = "ated.avoidance-schemes.scheme.empty"
   val periodKey: Int = 2019
+  val periodKey2021: Int = 2021
   val maxChars: Long = 102400
 
   "validateTaxAvoidance" must {
     "fail if we have no data" in {
 
       val emptyTaxAvoidance = TaxAvoidance()
-      val result = ReliefForms.validateTaxAvoidance(taxAvoidanceForm.fill(emptyTaxAvoidance))
+      val result = ReliefForms.validateTaxAvoidance(taxAvoidanceForm.fill(emptyTaxAvoidance),periodKey)(mockAppConfig)
       result.hasErrors must be(true)
       result.errors.size must be (1)
-      result.errors.head.key must be ("empty")
-      result.errors.head.message must be ("")
+      result.errors.head.key must be ("")
+      result.errors.head.message must be ("ated.avoidance-schemes.scheme.empty")
     }
 
     "fail with only 1 error if we have a rental scheme and empty public Scheme" in {
       val emptyTaxAvoidance = TaxAvoidance(rentalBusinessScheme = Some("12345678"), openToPublicScheme = Some(""))
-      val result = ReliefForms.validateTaxAvoidance(taxAvoidanceForm.fill(emptyTaxAvoidance))
+      val result = ReliefForms.validateTaxAvoidance(taxAvoidanceForm.fill(emptyTaxAvoidance), periodKey)(mockAppConfig)
       result.hasErrors must be(true)
       result.errors.size must be (1)
-      result.error("rentalBusinessSchemePromoter").map(_.message) must be (Some(noPromoterErrorMessage))
+      result.error("rentalBusinessSchemePromoter").map(_.message) must be (Some("ated.avoidance-scheme-error.general.empty.rentalBusinessSchemePromoter"))
     }
 
     "fail if we have only have the rental scheme" in {
       val emptyTaxAvoidance = TaxAvoidance(rentalBusinessScheme = Some("12345678"))
-      val result = ReliefForms.validateTaxAvoidance(taxAvoidanceForm.fill(emptyTaxAvoidance))
+      val result = ReliefForms.validateTaxAvoidance(taxAvoidanceForm.fill(emptyTaxAvoidance), periodKey)(mockAppConfig)
       result.hasErrors must be(true)
       result.errors.size must be (1)
-      result.error("rentalBusinessSchemePromoter").map(_.message) must be (Some(noPromoterErrorMessage))
+      result.error("rentalBusinessSchemePromoter").map(_.message) must be (Some("ated.avoidance-scheme-error.general.empty.rentalBusinessSchemePromoter"))
     }
 
     "fail if we have only have the openToPublicScheme" in {
       val emptyTaxAvoidance = TaxAvoidance(openToPublicScheme = Some("12345678"))
-      val result = ReliefForms.validateTaxAvoidance(taxAvoidanceForm.fill(emptyTaxAvoidance))
+      val result = ReliefForms.validateTaxAvoidance(taxAvoidanceForm.fill(emptyTaxAvoidance), periodKey)(mockAppConfig)
       result.hasErrors must be(true)
       result.errors.size must be (1)
-      result.error("openToPublicSchemePromoter").map(_.message) must be (Some(noPromoterErrorMessage))
+      result.error("openToPublicSchemePromoter").map(_.message) must be (Some("ated.avoidance-scheme-error.general.empty.openToPublicSchemePromoter"))
     }
 
     "fail if we have only have the propertyDeveloperScheme" in {
       val emptyTaxAvoidance = TaxAvoidance(propertyDeveloperScheme = Some("12345678"))
-      val result = ReliefForms.validateTaxAvoidance(taxAvoidanceForm.fill(emptyTaxAvoidance))
+      val result = ReliefForms.validateTaxAvoidance(taxAvoidanceForm.fill(emptyTaxAvoidance), periodKey)(mockAppConfig)
       result.hasErrors must be(true)
       result.errors.size must be (1)
-      result.error("propertyDeveloperSchemePromoter").map(_.message) must be (Some(noPromoterErrorMessage))
+      result.error("propertyDeveloperSchemePromoter").map(_.message) must be (Some("ated.avoidance-scheme-error.general.empty.propertyDeveloperSchemePromoter"))
     }
 
     "fail if we have only have the propertyTradingScheme" in {
       val emptyTaxAvoidance = TaxAvoidance(propertyTradingScheme = Some("12345678"))
-      val result = ReliefForms.validateTaxAvoidance(taxAvoidanceForm.fill(emptyTaxAvoidance))
+      val result = ReliefForms.validateTaxAvoidance(taxAvoidanceForm.fill(emptyTaxAvoidance), periodKey)(mockAppConfig)
       result.hasErrors must be(true)
       result.errors.size must be (1)
-      result.error("propertyTradingSchemePromoter").map(_.message) must be (Some(noPromoterErrorMessage))
+      result.error("propertyTradingSchemePromoter").map(_.message) must be (Some("ated.avoidance-scheme-error.general.empty.propertyTradingSchemePromoter"))
     }
 
     "fail if we have only have the lendingScheme" in {
       val emptyTaxAvoidance = TaxAvoidance(lendingScheme = Some("12345678"))
-      val result = ReliefForms.validateTaxAvoidance(taxAvoidanceForm.fill(emptyTaxAvoidance))
+      val result = ReliefForms.validateTaxAvoidance(taxAvoidanceForm.fill(emptyTaxAvoidance), periodKey)(mockAppConfig)
       result.hasErrors must be(true)
       result.errors.size must be (1)
-      result.error("lendingSchemePromoter").map(_.message) must be (Some(noPromoterErrorMessage))
+      result.error("lendingSchemePromoter").map(_.message) must be (Some("ated.avoidance-scheme-error.general.empty.lendingSchemePromoter"))
     }
 
     "fail if we have only have the employeeOccupationScheme" in {
       val emptyTaxAvoidance = TaxAvoidance(employeeOccupationScheme = Some("12345678"))
-      val result = ReliefForms.validateTaxAvoidance(taxAvoidanceForm.fill(emptyTaxAvoidance))
+      val result = ReliefForms.validateTaxAvoidance(taxAvoidanceForm.fill(emptyTaxAvoidance), periodKey)(mockAppConfig)
       result.hasErrors must be(true)
       result.errors.size must be (1)
-      result.error("employeeOccupationSchemePromoter").map(_.message) must be (Some(noPromoterErrorMessage))
+      result.error("employeeOccupationSchemePromoter").map(_.message) must be (Some("ated.avoidance-scheme-error.general.empty.employeeOccupationSchemePromoter"))
     }
 
     "fail if we have only have the farmHousesScheme" in {
       val emptyTaxAvoidance = TaxAvoidance(farmHousesScheme = Some("12345678"))
-      val result = ReliefForms.validateTaxAvoidance(taxAvoidanceForm.fill(emptyTaxAvoidance))
+      val result = ReliefForms.validateTaxAvoidance(taxAvoidanceForm.fill(emptyTaxAvoidance), periodKey)(mockAppConfig)
       result.hasErrors must be(true)
       result.errors.size must be (1)
-      result.error("farmHousesSchemePromoter").map(_.message) must be (Some(noPromoterErrorMessage))
+      result.error("farmHousesSchemePromoter").map(_.message) must be (Some("ated.avoidance-scheme-error.general.empty.farmHousesSchemePromoter"))
     }
 
     "fail if we have only have the socialHousingScheme" in {
       val emptyTaxAvoidance = TaxAvoidance(socialHousingScheme = Some("12345678"))
-      val result = ReliefForms.validateTaxAvoidance(taxAvoidanceForm.fill(emptyTaxAvoidance))
+      val result = ReliefForms.validateTaxAvoidance(taxAvoidanceForm.fill(emptyTaxAvoidance), periodKey)(mockAppConfig)
       result.hasErrors must be(true)
       result.errors.size must be (1)
-      result.error("socialHousingSchemePromoter").map(_.message) must be (Some(noPromoterErrorMessage))
+      result.error("socialHousingSchemePromoter").map(_.message) must be (Some("ated.avoidance-scheme-error.general.empty.socialHousingSchemePromoter"))
+    }
+
+    "fail if we have only have the socialHousingScheme and year is 2021" in {
+      val emptyTaxAvoidance = TaxAvoidance(socialHousingScheme = Some("12345678"))
+      val result = ReliefForms.validateTaxAvoidance(taxAvoidanceForm.fill(emptyTaxAvoidance), periodKey2021)(mockAppConfig)
+      result.hasErrors must be(true)
+      result.errors.size must be (1)
+      result.error("socialHousingSchemePromoter").map(_.message) must be (Some("ated.avoidance-scheme-error.general.empty.providerSocialOrHousingSchemePromoter"))
     }
 
     "fail if we have only have the equityReleaseScheme" in {
       val emptyTaxAvoidance = TaxAvoidance(equityReleaseScheme = Some("12345678"))
-      val result = ReliefForms.validateTaxAvoidance(taxAvoidanceForm.fill(emptyTaxAvoidance))
+      val result = ReliefForms.validateTaxAvoidance(taxAvoidanceForm.fill(emptyTaxAvoidance), periodKey)(mockAppConfig)
       result.hasErrors must be(true)
       result.errors.size must be (1)
-      result.error("equityReleaseSchemePromoter").map(_.message) must be (Some(noPromoterErrorMessage))
+      result.error("equityReleaseSchemePromoter").map(_.message) must be (Some("ated.avoidance-scheme-error.general.empty.equityReleaseSchemePromoter"))
     }
 
     "fail if we have only have the promoter" in {
       val emptyTaxAvoidance = TaxAvoidance(rentalBusinessSchemePromoter = Some("12345678"))
-      val result = ReliefForms.validateTaxAvoidance(taxAvoidanceForm.fill(emptyTaxAvoidance))
+      val result = ReliefForms.validateTaxAvoidance(taxAvoidanceForm.fill(emptyTaxAvoidance), periodKey)(mockAppConfig)
       result.hasErrors must be(true)
       result.errors.size must be (1)
-      result.error("rentalBusinessScheme").map(_.message) must be (Some(noSchemeErrorMessage))
+      result.error("rentalBusinessScheme").map(_.message) must be (Some("ated.avoidance-scheme-error.general.empty.rentalBusinessScheme"))
     }
 
     "fail if we have only have the openToPublicSchemePromoter" in {
       val emptyTaxAvoidance = TaxAvoidance(openToPublicSchemePromoter = Some("12345678"))
-      val result = ReliefForms.validateTaxAvoidance(taxAvoidanceForm.fill(emptyTaxAvoidance))
+      val result = ReliefForms.validateTaxAvoidance(taxAvoidanceForm.fill(emptyTaxAvoidance), periodKey)(mockAppConfig)
       result.hasErrors must be(true)
       result.errors.size must be (1)
-      result.error("openToPublicScheme").map(_.message) must be (Some(noSchemeErrorMessage))
+      result.error("openToPublicScheme").map(_.message) must be (Some("ated.avoidance-scheme-error.general.empty.openToPublicScheme"))
     }
 
     "fail if we have only have the propertyDeveloperSchemePromoter" in {
       val emptyTaxAvoidance = TaxAvoidance(propertyDeveloperSchemePromoter = Some("12345678"))
-      val result = ReliefForms.validateTaxAvoidance(taxAvoidanceForm.fill(emptyTaxAvoidance))
+      val result = ReliefForms.validateTaxAvoidance(taxAvoidanceForm.fill(emptyTaxAvoidance), periodKey)(mockAppConfig)
       result.hasErrors must be(true)
       result.errors.size must be (1)
-      result.error("propertyDeveloperScheme").map(_.message) must be (Some(noSchemeErrorMessage))
+      result.error("propertyDeveloperScheme").map(_.message) must be (Some("ated.avoidance-scheme-error.general.empty.propertyDeveloperScheme"))
     }
 
     "fail if we have only have the propertyTradingSchemePromoter" in {
       val emptyTaxAvoidance = TaxAvoidance(propertyTradingSchemePromoter = Some("12345678"))
-      val result = ReliefForms.validateTaxAvoidance(taxAvoidanceForm.fill(emptyTaxAvoidance))
+      val result = ReliefForms.validateTaxAvoidance(taxAvoidanceForm.fill(emptyTaxAvoidance), periodKey)(mockAppConfig)
       result.hasErrors must be(true)
       result.errors.size must be (1)
-      result.error("propertyTradingScheme").map(_.message) must be (Some(noSchemeErrorMessage))
+      result.error("propertyTradingScheme").map(_.message) must be (Some("ated.avoidance-scheme-error.general.empty.propertyTradingScheme"))
     }
 
     "fail if we have only have the lendingSchemePromoter" in {
       val emptyTaxAvoidance = TaxAvoidance(lendingSchemePromoter = Some("12345678"))
-      val result = ReliefForms.validateTaxAvoidance(taxAvoidanceForm.fill(emptyTaxAvoidance))
+      val result = ReliefForms.validateTaxAvoidance(taxAvoidanceForm.fill(emptyTaxAvoidance), periodKey)(mockAppConfig)
       result.hasErrors must be(true)
       result.errors.size must be (1)
-      result.error("lendingScheme").map(_.message) must be (Some(noSchemeErrorMessage))
+      result.error("lendingScheme").map(_.message) must be (Some("ated.avoidance-scheme-error.general.empty.lendingScheme"))
     }
 
     "fail if we have only have the employeeOccupationSchemePromoter" in {
       val emptyTaxAvoidance = TaxAvoidance(employeeOccupationSchemePromoter = Some("12345678"))
-      val result = ReliefForms.validateTaxAvoidance(taxAvoidanceForm.fill(emptyTaxAvoidance))
+      val result = ReliefForms.validateTaxAvoidance(taxAvoidanceForm.fill(emptyTaxAvoidance), periodKey)(mockAppConfig)
       result.hasErrors must be(true)
       result.errors.size must be (1)
-      result.error("employeeOccupationScheme").map(_.message) must be (Some(noSchemeErrorMessage))
+      result.error("employeeOccupationScheme").map(_.message) must be (Some("ated.avoidance-scheme-error.general.empty.employeeOccupationScheme"))
     }
 
     "fail if we have only have the farmHousesSchemePromoter" in {
       val emptyTaxAvoidance = TaxAvoidance(farmHousesSchemePromoter = Some("12345678"))
-      val result = ReliefForms.validateTaxAvoidance(taxAvoidanceForm.fill(emptyTaxAvoidance))
+      val result = ReliefForms.validateTaxAvoidance(taxAvoidanceForm.fill(emptyTaxAvoidance), periodKey)(mockAppConfig)
       result.hasErrors must be(true)
       result.errors.size must be (1)
-      result.error("farmHousesScheme").map(_.message) must be (Some(noSchemeErrorMessage))
+      result.error("farmHousesScheme").map(_.message) must be (Some("ated.avoidance-scheme-error.general.empty.farmHousesScheme"))
     }
 
     "fail if we have only have the socialHousingSchemePromoter" in {
       val emptyTaxAvoidance = TaxAvoidance(socialHousingSchemePromoter = Some("12345678"))
-      val result = ReliefForms.validateTaxAvoidance(taxAvoidanceForm.fill(emptyTaxAvoidance))
+      val result = ReliefForms.validateTaxAvoidance(taxAvoidanceForm.fill(emptyTaxAvoidance), periodKey)(mockAppConfig)
       result.hasErrors must be(true)
       result.errors.size must be (1)
-      result.error("socialHousingScheme").map(_.message) must be (Some(noSchemeErrorMessage))
+      result.error("socialHousingScheme").map(_.message) must be (Some("ated.avoidance-scheme-error.general.empty.socialHousingScheme"))
+    }
+
+    "fail if we have only have the socialHousingSchemePromoter and year is 2021" in {
+      val emptyTaxAvoidance = TaxAvoidance(socialHousingSchemePromoter = Some("12345678"))
+      val result = ReliefForms.validateTaxAvoidance(taxAvoidanceForm.fill(emptyTaxAvoidance), periodKey2021)(mockAppConfig)
+      result.hasErrors must be(true)
+      result.errors.size must be (1)
+      result.error("socialHousingScheme").map(_.message) must be (Some("ated.avoidance-scheme-error.general.empty.providerSocialOrHousingScheme"))
     }
 
     "fail if we have only have the equityReleaseSchemePromoter" in {
       val emptyTaxAvoidance = TaxAvoidance(equityReleaseSchemePromoter = Some("12345678"))
-      val result = ReliefForms.validateTaxAvoidance(taxAvoidanceForm.fill(emptyTaxAvoidance))
+      val result = ReliefForms.validateTaxAvoidance(taxAvoidanceForm.fill(emptyTaxAvoidance), periodKey)(mockAppConfig)
       result.hasErrors must be(true)
       result.errors.size must be (1)
-      result.error("equityReleaseScheme").map(_.message) must be (Some(noSchemeErrorMessage))
+      result.error("equityReleaseScheme").map(_.message) must be (Some("ated.avoidance-scheme-error.general.empty.equityReleaseScheme"))
     }
 
     "fail if the avoidance scheme is not 8 digits" in {
@@ -208,13 +226,13 @@ class ReliefFormsSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoS
         openToPublicScheme = Some("123"),
         openToPublicSchemePromoter = Some("123")
       )
-      val result = ReliefForms.validateTaxAvoidance(taxAvoidanceForm.fill(taxAvoidance))
+      val result = ReliefForms.validateTaxAvoidance(taxAvoidanceForm.fill(taxAvoidance), periodKey)(mockAppConfig)
       result.hasErrors must be(true)
       result.errors.size must be (errSize)
-      result.error("rentalBusinessScheme").map(_.message) must be (Some("ated.avoidance-schemes.scheme.wrong-length"))
-      result.error("openToPublicScheme").map(_.message) must be (Some("ated.avoidance-schemes.scheme.wrong-length"))
-      result.error("rentalBusinessSchemePromoter").map(_.message) must be (Some("ated.avoidance-schemes.promoter.wrong-length"))
-      result.error("openToPublicSchemePromoter").map(_.message) must be (Some("ated.avoidance-schemes.promoter.wrong-length"))
+      result.error("rentalBusinessScheme").map(_.message) must be (Some("ated.avoidance-scheme-error.general.wrong-length.rentalBusinessScheme"))
+      result.error("openToPublicScheme").map(_.message) must be (Some("ated.avoidance-scheme-error.general.wrong-length.openToPublicScheme"))
+      result.error("rentalBusinessSchemePromoter").map(_.message) must be (Some("ated.avoidance-scheme-error.general.wrong-length.rentalBusinessSchemePromoter"))
+      result.error("openToPublicSchemePromoter").map(_.message) must be (Some("ated.avoidance-scheme-error.general.wrong-length.openToPublicSchemePromoter"))
     }
 
     "fail if the avoidance scheme is 8 characters" in {
@@ -224,13 +242,13 @@ class ReliefFormsSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoS
         openToPublicScheme = Some("1234567a"),
         openToPublicSchemePromoter = Some("1234567a")
       )
-      val result = ReliefForms.validateTaxAvoidance(taxAvoidanceForm.fill(taxAvoidance))
+      val result = ReliefForms.validateTaxAvoidance(taxAvoidanceForm.fill(taxAvoidance), periodKey)(mockAppConfig)
       result.hasErrors must be(true)
       result.errors.size must be (errSize)
-      result.error("rentalBusinessScheme").map(_.message) must be (Some("ated.avoidance-schemes.scheme.numeric-error"))
-      result.error("openToPublicScheme").map(_.message) must be (Some("ated.avoidance-schemes.scheme.numeric-error"))
-      result.error("rentalBusinessSchemePromoter").map(_.message) must be (Some("ated.avoidance-schemes.promoter.numeric-error"))
-      result.error("openToPublicSchemePromoter").map(_.message) must be (Some("ated.avoidance-schemes.promoter.numeric-error"))
+      result.error("rentalBusinessScheme").map(_.message) must be (Some("ated.avoidance-scheme-error.general.numeric-error.rentalBusinessScheme"))
+      result.error("openToPublicScheme").map(_.message) must be (Some("ated.avoidance-scheme-error.general.numeric-error.openToPublicScheme"))
+      result.error("rentalBusinessSchemePromoter").map(_.message) must be (Some("ated.avoidance-scheme-error.general.numeric-error.rentalBusinessSchemePromoter"))
+      result.error("openToPublicSchemePromoter").map(_.message) must be (Some("ated.avoidance-scheme-error.general.numeric-error.openToPublicSchemePromoter"))
     }
   }
 
@@ -251,48 +269,62 @@ class ReliefFormsSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoS
     }
   }
 
-  "validatePeriodStartDate" must {
+  "validateForm" must {
     val field = "rentalBusiness"
+    val fieldStartDate = field + "Date"
 
     "throw validation error" when {
       "reliefSelected is true and start date is empty" in {
-        val validationResult = ReliefForms.validatePeriodStartDate(periodKey, reliefSelected = true, None, field)
-        val expectedError = s"ated.choose-reliefs.error.date.mandatory.$field"
 
-        validationResult mustBe Invalid(List(ValidationError(List(expectedError),field)))
+        val formWithErrors: Form[Reliefs] = validateForm(reliefsForm.bind(Json.obj("periodKey" -> periodKey, field -> true), maxChars))
+        val expectedError = s"ated.choose-reliefs.error.date.mandatory.$fieldStartDate"
+        formWithErrors.errors mustBe Seq(FormError(fieldStartDate, expectedError))
       }
 
       "reliefSelected is true and period is too early" in {
-        val startDate = Some(new LocalDate(s"${periodKey - 1}-04-01"))
-        val validationResult = ReliefForms.validatePeriodStartDate(periodKey, reliefSelected = true, startDate, field)
-        val expectedError = s"ated.choose-reliefs.error.date.chargePeriod.$field"
 
-        validationResult mustBe Invalid(List(ValidationError(List(expectedError),field)))
+        val formWithErrors: Form[Reliefs] = validateForm(reliefsForm.bind(Json.obj("periodKey" -> periodKey, field -> true, fieldStartDate -> Map("day" -> "1", "month" -> "4", "year" -> (periodKey - 1).toString)), maxChars))
+        val expectedError = s"ated.choose-reliefs.error.date.chargePeriod.$fieldStartDate"
+        formWithErrors.errors mustBe Seq(FormError(fieldStartDate, expectedError))
       }
 
       "reliefSelected is true and period is too late" in {
-        val startDate = Some(new LocalDate(s"${periodKey + 1}-04-01"))
-        val validationResult = ReliefForms.validatePeriodStartDate(periodKey, reliefSelected = true, startDate, field)
-        val expectedError = s"ated.choose-reliefs.error.date.chargePeriod.$field"
+        val formWithErrors: Form[Reliefs] = validateForm(reliefsForm.bind(Json.obj("periodKey" -> periodKey, field -> true, fieldStartDate -> Map("day" -> "1", "month" -> "4", "year" -> (periodKey + 1).toString)), maxChars))
+        val expectedError = s"ated.choose-reliefs.error.date.chargePeriod.$fieldStartDate"
+        formWithErrors.errors mustBe Seq(FormError(fieldStartDate, expectedError))
+      }
 
-        validationResult mustBe Invalid(List(ValidationError(List(expectedError),field)))
+      "nothing is selected" in {
+        val formWithErrors: Form[Reliefs] = validateForm(reliefsForm.bind(Json.obj("periodKey" -> periodKey), maxChars))
+        val expectedError = "ated.choose-reliefs.error"
+        formWithErrors.errors mustBe Seq(FormError("", expectedError, Seq(field)))
       }
     }
 
-    "not throw any validation error" when {
-      "reliefSelected is false" in {
-        val validationResult = ReliefForms.validatePeriodStartDate(periodKey, reliefSelected = false, None, field)
-        validationResult mustBe Valid
-      }
-
-      "reliefSelected is true and start date is within the taxable period" in {
-        val startDate = Some(new LocalDate(s"$periodKey-03-31"))
-        val validationResult = ReliefForms.validatePeriodStartDate(periodKey, reliefSelected = true, startDate, field)
-        val expectedError = s"ated.choose-reliefs.error.date.chargePeriod.$field"
-
-        validationResult mustBe Invalid(List(ValidationError(List(expectedError),field)))
-      }
+    "reliefSelected is true and start date is within the taxable period" in {
+      val formWithErrors: Form[Reliefs] = validateForm(reliefsForm.bind(Json.obj("periodKey" -> periodKey, field -> true, fieldStartDate -> Map("day" -> "31", "month" -> "3", "year" -> (periodKey).toString)), maxChars))
+      val expectedError = s"ated.choose-reliefs.error.date.chargePeriod.$fieldStartDate"
+      formWithErrors.errors mustBe Seq(FormError(fieldStartDate, expectedError))
     }
+
+    " reliefSelected is true but letters are passed into the day field" in {
+      val formWithErrors: Form[Reliefs] = validateForm(reliefsForm.bind(Json.obj("periodKey" -> periodKey, field -> true, fieldStartDate -> Map("day" -> "aa", "month" -> "4", "year" -> (periodKey + 1).toString)), maxChars))
+      val expectedError = s"ated.choose-reliefs.error.date.mandatory.$fieldStartDate"
+      formWithErrors.errors mustBe Seq(FormError(fieldStartDate, expectedError))
+    }
+
+    " reliefSelected is true but letters are passed into the month field" in {
+      val formWithErrors: Form[Reliefs] = validateForm(reliefsForm.bind(Json.obj("periodKey" -> periodKey, field -> true, fieldStartDate -> Map("day" -> "31", "month" -> "aa", "year" -> (periodKey + 1).toString)), maxChars))
+      val expectedError = s"ated.choose-reliefs.error.date.mandatory.$fieldStartDate"
+      formWithErrors.errors mustBe Seq(FormError(fieldStartDate, expectedError))
+    }
+
+    " reliefSelected is true but letters are passed into the year field" in {
+      val formWithErrors: Form[Reliefs] = validateForm(reliefsForm.bind(Json.obj("periodKey" -> periodKey, field -> true, fieldStartDate -> Map("day" -> "31", "month" -> "4", "year" -> "aaaa")), maxChars))
+      val expectedError = s"ated.choose-reliefs.error.date.mandatory.$fieldStartDate"
+      formWithErrors.errors mustBe Seq(FormError(fieldStartDate, expectedError))
+    }
+
   }
 
   "reliefSelectedConstraint" must {
@@ -300,7 +332,8 @@ class ReliefFormsSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoS
       "there is no relief option selected" in {
         val form: Form[Reliefs] = ReliefForms.reliefsForm.bind(Json.obj("periodKey" -> periodKey), maxChars)
         form.hasErrors mustBe true
-        form.errors must contain (FormError("", List("ated.choose-reliefs.error"),List("reliefs")))
+        form.errors must contain
+                     List(FormError("", List("ated.choose-reliefs.error"),List("rentalBusiness")))
       }
     }
 
