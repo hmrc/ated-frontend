@@ -19,31 +19,34 @@ package views.reliefs
 import config.ApplicationConfig
 import config.featureswitch.FeatureSwitch
 import forms.ReliefForms.taxAvoidanceForm
-import models.{Reliefs, ReliefsTaxAvoidance, TaxAvoidance}
+import models.{Reliefs, ReliefsTaxAvoidance, StandardAuthRetrievals, TaxAvoidance}
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
-import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
+import org.scalatest.featurespec.AnyFeatureSpec
+import org.scalatest.{BeforeAndAfterEach, GivenWhenThen}
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Messages, MessagesApi}
+import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import play.twirl.api.Html
 import testhelpers.MockAuthUtil
+import views.html.reliefs
 
-class AvoidanceSchemesSpec extends FeatureSpec with GuiceOneAppPerSuite with MockitoSugar with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
+class AvoidanceSchemesSpec extends AnyFeatureSpec with GuiceOneAppPerSuite with MockitoSugar with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
 
-  implicit val request = FakeRequest()
+  implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
 
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
-  val injectedViewInstance = app.injector.instanceOf[views.html.reliefs.avoidanceSchemes]
-  implicit lazy val authContext = organisationStandardRetrievals
+  val injectedViewInstance: reliefs.avoidanceSchemes = app.injector.instanceOf[views.html.reliefs.avoidanceSchemes]
+  implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
 
-  feature("The user can view the relief avoidance scheme page") {
+  Feature("The user can view the relief avoidance scheme page") {
 
     info("As a client I want to be able to edit my avoidance schemes for my reliefs")
 
-    scenario("show the avoidance scheme page with social housing") {
+    Scenario("show the avoidance scheme page with social housing") {
 
       val reliefsTaxAvoidance: ReliefsTaxAvoidance = ReliefsTaxAvoidance("123456", 2015, Reliefs(
         2015, socialHousing = true, socialHousingDate = Some(LocalDate.parse("2015-04-01"))
@@ -54,11 +57,11 @@ class AvoidanceSchemesSpec extends FeatureSpec with GuiceOneAppPerSuite with Moc
 
       val document = Jsoup.parse(html.toString())
 
-      assert(document.getElementById("socialHousingScheme_field").text() contains "Social housing Avoidance scheme reference number")
-      assert(document.getElementById("socialHousingSchemePromoter_field").text() contains "Social housing Promoter reference number")
+      assert(document.getElementsByAttributeValue("for", "socialHousingScheme").text() contains "Social housing Avoidance scheme reference number")
+      assert(document.getElementsByAttributeValue("for", "socialHousingSchemePromoter").text() contains "Social housing Promoter reference number")
     }
 
-    scenario("show the avoidance scheme page with social housing in 2020 with the feature switch enabled") {
+    Scenario("show the avoidance scheme page with social housing in 2020 with the feature switch enabled") {
 
       mockAppConfig.enable(FeatureSwitch.CooperativeHousing)
 
@@ -70,8 +73,9 @@ class AvoidanceSchemesSpec extends FeatureSpec with GuiceOneAppPerSuite with Moc
 
       val document = Jsoup.parse(html.toString())
 
-      assert(document.getElementById("providerSocialOrHousingScheme_field").text() contains "Provider of social housing or housing co-operative Avoidance scheme reference number")
-      assert(document.getElementById("providerSocialOrHousingSchemePromoter_field").text() contains "Provider of social housing or housing co-operative Promoter reference number")
+      assert(document.getElementsByAttributeValue("for", "socialHousingScheme").text() contains "Provider of social housing or housing co-operative Avoidance scheme reference number")
+      assert(document.getElementsByAttributeValue("for", "socialHousingSchemePromoter").text() contains "Provider of social housing or housing co-operative Promoter reference number")
+
     }
   }
 }

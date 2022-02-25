@@ -20,28 +20,30 @@ import config.ApplicationConfig
 import models.{ReliefReturnResponse, StandardAuthRetrievals, SubmitReturnsResponse}
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
-import org.scalatest.{FeatureSpec, GivenWhenThen}
+import org.scalatest.GivenWhenThen
+import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Messages, MessagesApi}
+import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import testhelpers.MockAuthUtil
 
-class ReliefsSentPrintFriendlySpec extends FeatureSpec with GuiceOneAppPerSuite with MockitoSugar
+class ReliefsSentPrintFriendlySpec extends AnyFeatureSpec with GuiceOneAppPerSuite with MockitoSugar
   with GivenWhenThen with MockAuthUtil {
 
-  implicit val request = FakeRequest()
+  implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
-implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
+  implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
 
   val periodKey = 2015
 
-  feature("The user can view the relief sent page") {
+  Feature("The user can view the relief sent page") {
 
     info("as a client I want to be able to see that my relief return has been submitted successfully")
 
-    scenario("show the relief sent page") {
+    Scenario("show the relief sent page") {
 
       Given("the client submits a relief return")
       When("the return is successfully received")
@@ -82,7 +84,7 @@ implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetr
         "service. There can be a 24-hour delay before you see any updates.")
 
       Then("The second h2 should be correct")
-      assert(document.select("body > div.box > h2")
+      assert(document.select("body > div > h2:nth-child(12)")
         .text === "Change or ending of relief type")
 
       Then("The paragraph about change in circumstances should be correct")

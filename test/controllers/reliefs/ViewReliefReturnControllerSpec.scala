@@ -17,7 +17,6 @@
 package controllers.reliefs
 
 import java.util.UUID
-
 import builders.SessionBuilder
 import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
@@ -40,6 +39,7 @@ import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.AtedConstants
 import views.html.BtaNavigationLinks
+import views.html.reliefs.viewReliefReturn
 
 import scala.concurrent.Future
 
@@ -53,11 +53,11 @@ class ViewReliefReturnControllerSpec extends PlaySpec with GuiceOneServerPerSuit
   val mockSubscriptionDataService: SubscriptionDataService = mock[SubscriptionDataService]
   val mockReliefDeclarationController: ReliefDeclarationController = mock[ReliefDeclarationController]
   val mockChangeReliefReturnController: ChangeReliefReturnController = mock[ChangeReliefReturnController]
-    val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
+  val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
-  val injectedViewInstance = app.injector.instanceOf[views.html.reliefs.viewReliefReturn]
+  val injectedViewInstance: viewReliefReturn = app.injector.instanceOf[views.html.reliefs.viewReliefReturn]
 
   val periodKey = 2015
   val formBundleNo = "1234567890"
@@ -164,15 +164,15 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
             result =>
               status(result) must be(OK)
               val doc = Jsoup.parse(contentAsString(result))
-              doc.getElementById("relief-return-subheader").text() must be("This section is: " + organisationName)
+              doc.getElementsByClass("govuk-caption-xl").text() contains ("This section is: " + organisationName)
               doc.getElementById("relief-return-text").text() must be("For the ATED period from 1 April 2015 to 31 March 2016.")
-              doc.getElementById("relief-return-header").text() must be("View return")
+              doc.getElementsByTag("h1").text() contains "View return"
               doc.getElementById("submit").text() must be("Change return")
               doc.title() must be("View return - GOV.UK")
               assert(doc.getElementById("service-info-list").text() === "Home Manage account Messages Help and contact")
 
-              doc.getElementById("backLinkHref").text must be("Back")
-              doc.getElementById("backLinkHref").attr("href") must include("/ated/period-summary/2015")
+              doc.getElementsByClass("govuk-back-link").text must be("Back")
+              doc.getElementsByClass("govuk-back-link").attr("href") must include("/ated/period-summary/2015")
           }
         }
 
@@ -181,9 +181,9 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
             result => {
               status(result) must be(OK)
               val doc = Jsoup.parse(contentAsString(result))
-              doc.getElementById("relief-return-subheader").text() must be("This section is: " + organisationName)
+              doc.getElementsByClass("govuk-caption-xl").text() contains ("This section is: " + organisationName)
               doc.getElementById("relief-return-text").text() must be("For the ATED period from 1 April 2015 to 31 March 2016.")
-              doc.getElementById("relief-return-header").text() must be("View return")
+              doc.getElementsByTag("h1").text() contains "View return"
               assert(doc.getElementById("submit") === null)
               doc.title() must be("View return - GOV.UK")
             }, isEditable = false

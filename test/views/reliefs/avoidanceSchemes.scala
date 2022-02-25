@@ -21,31 +21,34 @@ import config.ApplicationConfig
 import forms.ReliefForms._
 import models.StandardAuthRetrievals
 import org.jsoup.Jsoup
-import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
+import org.scalatest.featurespec.AnyFeatureSpec
+import org.scalatest.{BeforeAndAfterEach, GivenWhenThen}
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Messages, MessagesApi}
+import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import play.twirl.api.Html
 import testhelpers.MockAuthUtil
+import views.html.reliefs
 
-class avoidanceSchemes extends FeatureSpec with GuiceOneAppPerSuite
+class avoidanceSchemes extends AnyFeatureSpec with GuiceOneAppPerSuite
   with MockitoSugar with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
 
-  implicit val request = FakeRequest()
+  implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
 
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
   val periodKey = 2015
 
-  val injectedViewInstance = app.injector.instanceOf[views.html.reliefs.avoidanceSchemes]
+  val injectedViewInstance: reliefs.avoidanceSchemes = app.injector.instanceOf[views.html.reliefs.avoidanceSchemes]
 
-  feature("The user can view the Enter your avoidance scheme number page") {
+  Feature("The user can view the Enter your avoidance scheme number page") {
 
     info("as a client i want to be able to enter the details of my avoidance scheme")
 
-    scenario("show the input boxes so the user can enter their avoidance scheme details ") {
+    Scenario("show the input boxes so the user can enter their avoidance scheme details ") {
 
       Given("the client has answered 'yes' to an avoidance scheme being used")
       When("The user views the page")
@@ -55,7 +58,10 @@ class avoidanceSchemes extends FeatureSpec with GuiceOneAppPerSuite
       val document = Jsoup.parse(html.toString())
 
       Then("The header should match - Enter your avoidance scheme number")
-      assert(document.select("h1").text === "Enter your avoidance scheme number")
+      assert(document.select("h1").text contains "Enter your avoidance scheme number")
+
+      Then("The subheader should be - Create return")
+      assert(document.getElementsByClass("govuk-caption-xl").text() === "This section is: Create return")
 
       Then("There should be a label describing the relief claimed")
       assert(document.getElementById("relief-summary-text").text() === "Reliefs claimed")
@@ -67,7 +73,7 @@ class avoidanceSchemes extends FeatureSpec with GuiceOneAppPerSuite
       assert(document.getElementById("relief-summary-scheme-promoter-text").text() === "Promoter reference number")
 
       Then("The back link is correct")
-      assert(document.getElementById("backLinkHref").text === "Back")
+      assert(document.getElementsByClass("govuk-back-link").text === "Back")
     }
   }
 }

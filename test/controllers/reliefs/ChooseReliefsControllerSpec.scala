@@ -16,8 +16,6 @@
 
 package controllers.reliefs
 
-import java.util.UUID
-
 import builders.{ReliefBuilder, SessionBuilder}
 import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
@@ -42,7 +40,9 @@ import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.AtedConstants
 import views.html.BtaNavigationLinks
+import views.html.reliefs.{chooseReliefs, invalidPeriodKey}
 
+import java.util.UUID
 import scala.concurrent.Future
 
 class ChooseReliefsControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with MockAuthUtil {
@@ -56,12 +56,12 @@ class ChooseReliefsControllerSpec extends PlaySpec with GuiceOneServerPerSuite w
   val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
   val mockBackLinkCacheConnector: BackLinkCacheConnector = mock[BackLinkCacheConnector]
   val mockAvoidanceSchemeBeingUsedController: AvoidanceSchemeBeingUsedController = mock[AvoidanceSchemeBeingUsedController]
-    val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
+  val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
-  val injectedViewInstance = app.injector.instanceOf[views.html.reliefs.invalidPeriodKey]
-  val injectedViewInstanceChooseChoose = app.injector.instanceOf[views.html.reliefs.chooseReliefs]
+  val injectedViewInstance: invalidPeriodKey = app.injector.instanceOf[views.html.reliefs.invalidPeriodKey]
+  val injectedViewInstanceChooseChoose: chooseReliefs = app.injector.instanceOf[views.html.reliefs.chooseReliefs]
 
   val periodKey = 2015
 
@@ -242,14 +242,15 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
 
-              document.getElementById("rentalBusiness").attr("checked") must be("checked")
-              document.getElementById("openToPublic").attr("checked") must be("")
-              document.getElementById("propertyDeveloper").attr("checked") must be("")
-              document.getElementById("propertyTrading").attr("checked") must be("")
-              document.getElementById("lending").attr("checked") must be("")
-              document.getElementById("employeeOccupation").attr("checked") must be("")
-              document.getElementById("farmHouses").attr("checked") must be("")
-              document.getElementById("socialHousing").attr("checked") must be("")
+              assert(document.getElementById("rentalBusiness").outerHtml() contains "checked")
+              assertResult(false)(document.getElementById("openToPublic").outerHtml().contains("checked"))
+              assertResult(false)(document.getElementById("propertyDeveloper").outerHtml().contains("checked"))
+              assertResult(false)(document.getElementById("propertyTrading").outerHtml().contains("checked"))
+              assertResult(false)(document.getElementById("lending").outerHtml().contains("checked"))
+              assertResult(false)(document.getElementById("employeeOccupation").outerHtml().contains("checked"))
+              assertResult(false)(document.getElementById("farmHouses").outerHtml().contains("checked"))
+              assertResult(false)(document.getElementById("socialHousing").outerHtml().contains("checked"))
+              assertResult(false)(document.getElementById("equityRelease").outerHtml().contains("checked"))
           }
         }
 
@@ -261,14 +262,15 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
               val document = Jsoup.parse(contentAsString(result))
 
 
-              document.getElementById("rentalBusiness").attr("checked") must be("")
-              document.getElementById("openToPublic").attr("checked") must be("")
-              document.getElementById("propertyDeveloper").attr("checked") must be("")
-              document.getElementById("propertyTrading").attr("checked") must be("")
-              document.getElementById("lending").attr("checked") must be("")
-              document.getElementById("employeeOccupation").attr("checked") must be("")
-              document.getElementById("farmHouses").attr("checked") must be("")
-              document.getElementById("socialHousing").attr("checked") must be("")
+              assertResult(false)(document.getElementById("rentalBusiness").outerHtml().contains("checked"))
+              assertResult(false)(document.getElementById("openToPublic").outerHtml().contains("checked"))
+              assertResult(false)(document.getElementById("propertyDeveloper").outerHtml().contains("checked"))
+              assertResult(false)(document.getElementById("propertyTrading").outerHtml().contains("checked"))
+              assertResult(false)(document.getElementById("lending").outerHtml().contains("checked"))
+              assertResult(false)(document.getElementById("employeeOccupation").outerHtml().contains("checked"))
+              assertResult(false)(document.getElementById("farmHouses").outerHtml().contains("checked"))
+              assertResult(false)(document.getElementById("socialHousing").outerHtml().contains("checked"))
+              assertResult(false)(document.getElementById("equityRelease").outerHtml().contains("checked"))
 
           }
         }
@@ -286,8 +288,8 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
             document.getElementById("lede-text")
               .text() must be("You can select more than one relief code. A single relief code can cover one or more properties.")
 
-            document.getElementById("backLinkHref").text must be("Back")
-            document.getElementById("backLinkHref").attr("href") must include("/ated/reliefs/2015/relief-summary")
+            document.getElementsByClass("govuk-back-link").text must be("Back")
+            document.getElementsByClass("govuk-back-link").attr("href") must include("/ated/reliefs/2015/relief-summary")
         }
       }
 
@@ -299,8 +301,8 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
             document.getElementById("lede-text")
               .text() must be("You can select more than one relief code. A single relief code can cover one or more properties.")
 
-            document.getElementById("backLinkHref").text must be("Back")
-            document.getElementById("backLinkHref").attr("href") must include("/ated/reliefs/2015/relief-summary")
+            document.getElementsByClass("govuk-back-link").text must be("Back")
+            document.getElementsByClass("govuk-back-link").attr("href") must include("/ated/reliefs/2015/relief-summary")
         }
       }
 
