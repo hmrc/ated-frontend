@@ -17,7 +17,6 @@
 package controllers.reliefs
 
 import java.util.UUID
-
 import builders.{ReliefBuilder, SessionBuilder}
 import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
@@ -41,6 +40,7 @@ import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.AtedConstants
 import views.html.BtaNavigationLinks
+import views.html.reliefs.{avoidanceSchemeBeingUsed, invalidPeriodKey}
 
 import scala.concurrent.Future
 
@@ -57,12 +57,12 @@ class AvoidanceSchemeBeingUsedControllerSpec extends PlaySpec with GuiceOneServe
   val mockReliefsService: ReliefsService = mock[ReliefsService]
   val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
   val mockBackLinkCacheConnector: BackLinkCacheConnector = mock[BackLinkCacheConnector]
-    val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
+  val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
-  val injectedViewInstance = app.injector.instanceOf[views.html.reliefs.avoidanceSchemeBeingUsed]
-  val injectedViewInstanceKey = app.injector.instanceOf[views.html.reliefs.invalidPeriodKey]
+  val injectedViewInstance: avoidanceSchemeBeingUsed = app.injector.instanceOf[views.html.reliefs.avoidanceSchemeBeingUsed]
+  val injectedViewInstanceKey: invalidPeriodKey = app.injector.instanceOf[views.html.reliefs.invalidPeriodKey]
 
   val periodKey = 2015
   val testReliefs: ReliefsTaxAvoidance =
@@ -238,8 +238,12 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
-              document.select(".block-label").text() must include("Yes")
-              document.select(".block-label").text() must include("No")          }
+              document.getElementsByClass("govuk-caption-xl").text must be ("This section is: Create return")
+              document.getElementsByTag("h1").text() must include("Is an avoidance scheme being used for any of these reliefs?")
+              document.getElementsByAttributeValue("for", "isAvoidanceScheme").text() must be("Yes")
+              document.getElementsByAttributeValue("for", "isAvoidanceScheme-2").text() must be("No")
+              document.getElementsByClass("govuk-button").text() must be("Save and continue")
+          }
         }
 
       }
@@ -247,10 +251,10 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
         getAuthorisedUserNone {
           result =>
             val document = Jsoup.parse(contentAsString(result))
-            document.select(".block-label").text() must include("Yes")
-            document.select(".block-label").text() must include("No")
-            document.getElementById("isAvoidanceScheme-true").attr("checked") must be("")
-            document.getElementById("isAvoidanceScheme-false").attr("checked") must be("")
+            document.getElementsByAttributeValue("for", "isAvoidanceScheme").text() must be("Yes")
+            document.getElementsByAttributeValue("for", "isAvoidanceScheme-2").text() must be("No")
+            document.getElementById("isAvoidanceScheme").attr("checked") must be("")
+            document.getElementById("isAvoidanceScheme-2").attr("checked") must be("")
         }
       }
 
@@ -262,7 +266,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
         submitWithAuthorisedUser(FakeRequest().withFormUrlEncodedBody(formBody: _*)) {
           result =>
             status(result) must be(BAD_REQUEST)
-            contentAsString(result) must include("There is a problem with the avoidance scheme question")
+            contentAsString(result) must include("You must answer the avoidance scheme question")
         }
       }
     }

@@ -26,30 +26,29 @@
 
     <script src='@controllers.routes.Assets.versioned("javascript/printFriendly.js")'></script>
 
-    <h1 id="header">@messages("ated.relief-sent.header")</h1>
+    <h1 class="govuk-heading-m" id="header">@messages("ated.relief-sent.header")</h1>
 
-    <p id="completed-returns">@messages("ated.reliefs-sent.completed-message")</p>
-    <p id="email-confirmation">@messages("ated.reliefs-sent.email-message")<p>
+    <p class="govuk-body" id="completed-returns">@messages("ated.reliefs-sent.completed-message")</p>
+    <p class="govuk-body" id="email-confirmation">@messages("ated.reliefs-sent.email-message")<p>
 
-    <div class="divider--top--thick"></div>
+    <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
 
-    <p id="receipt-message" class="heading-medium">@messages("ated.reliefs-sent.charge-heading")</p>
+    <h2 class="govuk-heading-m" id="receipt-message">@messages("ated.reliefs-sent.charge-heading")</h2>
 
-    <p id="amount-message">@messages("ated.reliefs-sent.amount-message")</p>
+    <p class="govuk-body" id="amount-message">@messages("ated.reliefs-sent.amount-message")</p>
 
     @submittedReturnResponse.map { returnResponse =>
         @returnResponse.reliefReturnResponse.map { reliefReturnResponse =>
-            <p id="reference-number">
+            <p class="govuk-body" id="reference-number">
                 @Html(messages("ated.reliefs-sent.reference-message", reliefReturnResponse.head.formBundleNumber))
             </p>
         }
     }
 
-    <p id="balance-message">@messages("ated.reliefs-sent.balance-message")</p>
+    <p class="govuk-body" id="balance-message">@messages("ated.reliefs-sent.balance-message")</p>
 
-    <h2 class="heading-medium">@messages("ated.reliefs-sent.change-circumstances.p0")</h2>
-    <p>@messages("ated.reliefs-sent.change-circumstances.p1")</p>
-    <p>@messages("ated.reliefs-sent.change-circumstances.p2")</p>
-    <p>@messages("ated.reliefs-sent.change-circumstances.p3")</p>
-
+    <h2 class="govuk-heading-m">@messages("ated.reliefs-sent.change-circumstances.p0")</h2>
+    <p class="govuk-body">@messages("ated.reliefs-sent.change-circumstances.p1")</p>
+    <p class="govuk-body">@messages("ated.reliefs-sent.change-circumstances.p2")</p>
+    <p class="govuk-body">@messages("ated.reliefs-sent.change-circumstances.p3")</p>
 }
