@@ -72,7 +72,7 @@ class PropertyDetailsAddressController @Inject()(mcc: MessagesControllerComponen
                 propertyDetailsAddressForm.fill(x.addressProperty),
                 AtedUtils.getEditSubmittedMode(x, answer), serviceInfoContent,
                 backLink, oldFormBundleNo = Some(oldFormBundleNo), fromConfirmAddressPage = false))
-            case None => Redirect(controllers.routes.AccountSummaryController.view())
+            case None => Redirect(controllers.routes.AccountSummaryController.view)
           }
         }
       }

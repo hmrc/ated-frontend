@@ -96,7 +96,7 @@ class ConfirmAddressController @Inject()(mcc: MessagesControllerComponents,
                 AtedUtils.getEditSubmittedMode(x, answer),
                 serviceInfoContent,
                 backLink))
-            case None => Redirect(controllers.routes.AccountSummaryController.view())
+            case None => Redirect(controllers.routes.AccountSummaryController.view)
           }
         }
       }

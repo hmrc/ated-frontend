@@ -68,7 +68,7 @@ implicit val ec: ExecutionContext = mcc.executionContext
               editedContact <- subscriptionDataService.editContactDetails(editedClientData)
             } yield {
               editedContact match {
-                case Some(_) => Redirect(controllers.subscriptionData.routes.CompanyDetailsController.view())
+                case Some(_) => Redirect(controllers.subscriptionData.routes.CompanyDetailsController.view)
                 case None =>
                   val errorMsg = Messages("ated.contact-details.error.general.addressType")
                   val errorForm = editContactDetailsForm.withError(key = "addressType", message = errorMsg).fill(editedClientData)
@@ -82,6 +82,6 @@ implicit val ec: ExecutionContext = mcc.executionContext
   }
 
   private def getBackLink = {
-    Some(controllers.subscriptionData.routes.CompanyDetailsController.view().url)
+    Some(controllers.subscriptionData.routes.CompanyDetailsController.view.url)
   }
 }

@@ -56,8 +56,8 @@ class HomeController @Inject()(mcc: MessagesControllerComponents,
     else {
       logger.debug("[redirectSubscribedUser] user redirected to account summary:" + authContext)
       callerId match {
-        case Some(x) => Redirect(controllers.routes.AccountSummaryController.view()).addingToSession(SessionUtils.sessionCallerId -> x)
-        case None => Redirect(controllers.routes.AccountSummaryController.view())
+        case Some(x) => Redirect(controllers.routes.AccountSummaryController.view).addingToSession(SessionUtils.sessionCallerId -> x)
+        case None => Redirect(controllers.routes.AccountSummaryController.view)
       }
     }
   }

@@ -60,7 +60,7 @@ class DisposeLiabilityDeclarationController @Inject()(mcc: MessagesControllerCom
           response =>
             response.liabilityReturnResponse.find(_.oldFormBundleNumber == oldFormBundleNo) match {
               case Some(_) => Redirect(controllers.editLiability.routes.DisposeLiabilitySentController.view(oldFormBundleNo))
-              case None => Redirect(controllers.routes.AccountSummaryController.view())
+              case None => Redirect(controllers.routes.AccountSummaryController.view)
             }
         }
       }
