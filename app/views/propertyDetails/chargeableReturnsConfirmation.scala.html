@@ -37,7 +37,7 @@
     <p id="completed-message">@messages("ated.chargeable-return-confirmation.completed.message")</p>
     <p id="email-message">@messages("ated.chargeable-return-confirmation.email.message")</p>
 
-    <a href="@controllers.propertyDetails.routes.ChargeableReturnConfirmationController.viewPrintFriendlyChargeableConfirmation()"
+    <a href="@controllers.propertyDetails.routes.ChargeableReturnConfirmationController.viewPrintFriendlyChargeableConfirmation"
     id="print-friendly-relief-link" target="_blank">
       @messages("ated.reliefs-sent.print-link")
     </a>
@@ -62,7 +62,7 @@
     </p>
   </div>
 
-  <a href="@controllers.routes.AccountSummaryController.view()" id="submit" role="button" class="button">
+  <a href="@controllers.routes.AccountSummaryController.view" id="submit" role="button" class="button">
     @messages("ated.chargeable-return-confirmation.back-to-ated-link.text")
   </a>
 

@@ -75,7 +75,7 @@ class SelectPeriodController @Inject()(mcc: MessagesControllerComponents,
               redirectWithBackLink(
                 returnTypeControllerId,
                 controllers.routes.ReturnTypeController.view(periodData.period.get.toInt),
-                Some(routes.SelectPeriodController.view().url)
+                Some(routes.SelectPeriodController.view.url)
               )
             }
           )
@@ -85,6 +85,6 @@ class SelectPeriodController @Inject()(mcc: MessagesControllerComponents,
   }
 
   private def getBackLink(): Option[String] = {
-    Some(routes.PrevPeriodsSummaryController.view().url)
+    Some(routes.PrevPeriodsSummaryController.view.url)
   }
 }

@@ -55,7 +55,7 @@ class EditLiabilitySentController @Inject()(mcc: MessagesControllerComponents,
                   resp.amountDueOrRefund, resp.liabilityAmount,
                   createHeadermessages(returnType, "ated.edit-liability.sent.title"),
                   createHeadermessages(returnType, "ated.edit-liability.sent.header")))
-              case None => Redirect(controllers.routes.AccountSummaryController.view())
+              case None => Redirect(controllers.routes.AccountSummaryController.view)
             }
           case None =>
             logger.warn("[EditLiabilitySentController][view] - Return Response not found in cache")

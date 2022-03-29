@@ -40,7 +40,7 @@ import services.{ServiceInfoService, SubscriptionDataService, SummaryReturnsServ
 import testhelpers.MockAuthUtil
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
-import views.html.BtaNavigationLinks
+import views.html.{BtaNavigationLinks, periodSummary, periodSummaryPastReturns}
 
 import scala.concurrent.Future
 
@@ -57,12 +57,12 @@ class PeriodSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite w
   val mockPropertyDetailsSummaryController: PropertyDetailsSummaryController = mock[PropertyDetailsSummaryController]
   val mockAddressLookupController: AddressLookupController = mock[AddressLookupController]
   val mockDisposePropertyController: DisposePropertyController = mock[DisposePropertyController]
-    val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
+  val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
-  val injectedViewInstance = app.injector.instanceOf[views.html.periodSummary]
-  val injectedViewInstancePast = app.injector.instanceOf[views.html.periodSummaryPastReturns]
+  val injectedViewInstance: periodSummary = app.injector.instanceOf[views.html.periodSummary]
+  val injectedViewInstancePast: periodSummaryPastReturns = app.injector.instanceOf[views.html.periodSummaryPastReturns]
 
   val periodKey: Int = 2015
   val organisationName: String = "OrganisationName"
@@ -102,7 +102,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
-      when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.eq(Some(routes.AccountSummaryController.view().url)))(ArgumentMatchers.any()))
+      when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.eq(Some(routes.AccountSummaryController.view.url)))(ArgumentMatchers.any()))
         .thenReturn(Future.successful(None))
 
       when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))

@@ -57,7 +57,7 @@ class DisposePropertyController @Inject()(mcc: MessagesControllerComponents,
                 val filledForm = disposeLiabilityForm.fill(x.disposeLiability.fold(DisposeLiability(periodKey = x.formBundleReturn.periodKey.toInt))(a => a))
                 Ok(template(filledForm, oldFormBundleNo, serviceInfoContent, backLink, x.formBundleReturn.periodKey.toInt))
               }
-            case None => Future.successful(Redirect(controllers.routes.AccountSummaryController.view()))
+            case None => Future.successful(Redirect(controllers.routes.AccountSummaryController.view))
           }
         } yield result
       }
@@ -77,7 +77,7 @@ class DisposePropertyController @Inject()(mcc: MessagesControllerComponents,
                 val backLink = Some(controllers.editLiability.routes.DisposeLiabilitySummaryController.view(oldFormBundleNo).url)
                 Ok(template(disposeLiabilityForm.fill(x), oldFormBundleNo, serviceInfoContent, backLink, x.periodKey))
               }
-            case None => Future.successful(Redirect(controllers.routes.AccountSummaryController.view()))
+            case None => Future.successful(Redirect(controllers.routes.AccountSummaryController.view))
           }
         } yield result
       }

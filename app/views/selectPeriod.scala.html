@@ -30,7 +30,7 @@
 
   <p id="details-text">@messages("ated.select-period.text")</p>
 
-  @formHelper(action=controllers.routes.SelectPeriodController.submit()) {
+  @formHelper(action=controllers.routes.SelectPeriodController.submit) {
 
   <div id="period">
     @atedInputRadioGroupNew(selectPeriodForm("period"),

@@ -63,7 +63,7 @@ class EditContactEmailController @Inject()(mcc: MessagesControllerComponents,
             for {
               _ <- subscriptionDataService.editEmailWithConsent(editedClientData)
             } yield {
-              Redirect(controllers.subscriptionData.routes.CompanyDetailsController.view())
+              Redirect(controllers.subscriptionData.routes.CompanyDetailsController.view)
             }
           }
         )
@@ -72,6 +72,6 @@ class EditContactEmailController @Inject()(mcc: MessagesControllerComponents,
   }
 
   private def getBackLink = {
-    Some(controllers.subscriptionData.routes.CompanyDetailsController.view().url)
+    Some(controllers.subscriptionData.routes.CompanyDetailsController.view.url)
   }
 }

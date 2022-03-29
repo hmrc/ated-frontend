@@ -54,7 +54,7 @@ class BankDetailsController @Inject()(mcc: MessagesControllerComponents,
                 val bankDetails = x.bankDetails.flatMap(_.bankDetails).fold(BankDetails())(a => a)
                 Ok(template(bankDetailsForm.fill(bankDetails), oldFormBundleNo, serviceInfoContent, backLink))
               }
-            case None => Future.successful(Redirect(controllers.routes.AccountSummaryController.view()))
+            case None => Future.successful(Redirect(controllers.routes.AccountSummaryController.view))
           }
         }
       }
