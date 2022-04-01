@@ -20,32 +20,20 @@
 @import uk.gov.hmrc.hmrcfrontend.views.html.helpers.{HmrcLayout, HmrcReportTechnicalIssueHelper, HmrcTimeoutDialogHelper, HmrcTrackingConsentSnippet}
 @import views.AttorneyRegime
 @import views.html.helper.CSPNonce
-@import uk.gov.hmrc.govukfrontend.views.html.components.TwoThirdsOneThirdMainContent
 
 @this(
     hmrcLayout: HmrcLayout,
     hmrcTimeoutDialogHelper: HmrcTimeoutDialogHelper,
     hmrcReportTechnicalIssueHelper: HmrcReportTechnicalIssueHelper,
-    hmrcTrackingConsentSnippet: HmrcTrackingConsentSnippet,
-    attorneyBanner: attorneyBanner,
-    twoThirdsOneThirdMainContent: TwoThirdsOneThirdMainContent,
-    twoThirdsMainContent: TwoThirdsMainContent
+    hmrcTrackingConsentSnippet: HmrcTrackingConsentSnippet
 )
 
-@(beforeContent: Option[Html] = None,
-    pageTitle: Option[String] = None,
-    serviceInfoContent: Html,
-    scripts: Option[Html],
-    isUserResearchBannerVisible: Boolean = false,
-    sideBar: Option[Html] = None,
-    banner: Html)(contentBlock: Html)(
-    implicit request: Request[_], messages: Messages, appConfig: ApplicationConfig, authContext: StandardAuthRetrievals)
-
+@(beforeContent: Option[Html] = None, pageTitle: Option[String] = None, serviceInfoContent: Html, scripts: Option[Html], isUserResearchBannerVisible: Boolean = false, banner: Html = HtmlFormat.empty)(contentBlock: Html)(
+    implicit request: Request[_], messages: Messages, appConfig: ApplicationConfig)
 
 @beforeContentBlock = {
     @serviceInfoContent
     @beforeContent
-    @mainBanner
 }
 
 @content = {
@@ -60,34 +48,11 @@
 
 @signOutUrl = @{(controllers.routes.ApplicationController.logout.url)}
 
-@mainBanner = {
-    @if(authContext.delegationModel.isDefined) {
-        @Some(attorneyBanner(name = Some(authContext.delegationModel.get.principalName),
-            returnLinkUrl = authContext.delegationModel.get.link.url, regime = AttorneyRegime.pertax,
-            customReturnLinkText = Some(authContext.delegationModel.get.link.text),
-            bannerContent = Some(Html(messages("ated.agent.banner", authContext.delegationModel.get.principalName)))))
-    } else {
-        @banner
-    }
-}
-@urBannerUrl = @{
-    if(isUserResearchBannerVisible) Some(appConfig.urBannerLink) else None
-}
-
-@additionalScripts = {
-    @scripts
-}
 @hmrcLayout(
     pageTitle = pageTitle,
     additionalHeadBlock = Some(headBlock),
     serviceUrl = Some(routes.HomeController.home(None).url),
     signOutUrl = Some(signOutUrl),
     beforeContentBlock = Some(beforeContentBlock),
-    nonce = CSPNonce.get,
-    additionalScriptsBlock = Some(additionalScripts),
-    mainContentLayout = Some(sideBar match {
-                                case Some(sideBar) => twoThirdsOneThirdMainContent(sideBar)
-                                case None => twoThirdsMainContent(_)
-                            }),
-    userResearchBannerUrl = urBannerUrl
+    nonce = CSPNonce.get
 )(content)

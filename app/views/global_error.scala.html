@@ -16,7 +16,9 @@
 
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
-@this(global_error_wrapper: global_error_wrapper)
+
+@this(layoutNoAuth: layoutNoAuth)
+
 @(pageTitle: String,
   heading: String,
   message: String,
@@ -24,8 +26,7 @@
   href: Option[String],
   hrefMessage: Option[String],
   postHrefMessage: Option[String],
-  serviceInfoContent: Html = HtmlFormat.empty,
-  appConfig: ApplicationConfig)(implicit request: Request[_], messages: Messages)
+  serviceInfoContent: Html = HtmlFormat.empty)(implicit request: Request[_], messages: Messages, appConfig: ApplicationConfig)
 
 @secondParagraph = @{message2.getOrElse("")}
 @hrefLink = @{href.getOrElse("")}
@@ -33,16 +34,25 @@
 @postHref = @{postHrefMessage.getOrElse("")}
 
 @contentHeader = {
-<h1 id="header" class="column-two-thirds">@messages(heading)</h1>
+<h1 id="header" class="govuk-heading-xl">@messages(heading)</h1>
 }
 
 @mainContent = {
- <p class="column-two-thirds" id="message1">@messages(message)
+ <p class="govuk-body" id="message1">@messages(message)
  @if(href.isDefined){
-    <a href=@messages(hrefLink) target="_blank">@messages(hrefMessages)</a> @messages(postHref)
+    <a class="govuk-link" href=@messages(hrefLink) target="_blank">@messages(hrefMessages)</a> @messages(postHref)
      }
  </p>
- <p class="column-two-thirds" id="message2">@messages(secondParagraph)</p>
+ <p class="govuk-body" id="message2">@messages(secondParagraph)</p>
 }
 
-@global_error_wrapper(appConfig = appConfig, title = messages(pageTitle), contentHeader = Some(contentHeader), serviceInfoContent = serviceInfoContent, mainContent = mainContent)
+@content = {
+    @contentHeader
+    @mainContent
+}
+
+@layoutNoAuth(
+    pageTitle = Some(messages(pageTitle)),
+    serviceInfoContent = serviceInfoContent,
+    scripts = None
+)(content)
