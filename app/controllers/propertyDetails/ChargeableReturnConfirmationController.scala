@@ -49,7 +49,7 @@ class ChargeableReturnConfirmationController @Inject()(mcc: MessagesControllerCo
             Ok(template(submitResponse, serviceInfoContent))
           case None =>
             logger.warn("[ChargeableReturnConfirmationController][confirmation] - Return Response not found in cache")
-            Redirect(controllers.routes.AccountSummaryController.view())
+            Redirect(controllers.routes.AccountSummaryController.view)
         }
       }
     }

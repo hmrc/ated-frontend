@@ -45,7 +45,7 @@ class AgentClientMandateFrontendConnector @Inject()(appConfig: ApplicationConfig
                             (implicit request: Request[_], ec: ExecutionContext): Future[HtmlPartial] = {
     val getUrl = s"$serviceUrl/$clientBannerPartialUri/$clientId/$service?returnUrl=" +
       returnUrlHost +
-      controllers.routes.AccountSummaryController.view()
+      controllers.routes.AccountSummaryController.view
 
     http.GET[HttpResponse](getUrl) map { response =>
       response.status match {
@@ -67,7 +67,7 @@ class AgentClientMandateFrontendConnector @Inject()(appConfig: ApplicationConfig
     val getUrl =
       s"$serviceUrl/$clientDetailsUri/$clientId/$service?returnUrl=" +
         returnUrlHost +
-        controllers.subscriptionData.routes.CompanyDetailsController.view()
+        controllers.subscriptionData.routes.CompanyDetailsController.view
 
     http.GET[HttpResponse](getUrl)
   }

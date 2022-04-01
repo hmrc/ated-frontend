@@ -67,7 +67,7 @@ class OverseasCompanyRegistrationController @Inject()(mcc: MessagesControllerCom
               _ <- subscriptionDataService.updateOverseasCompanyRegistration(Identification(data.businessUniqueId
                 .getOrElse(""), data.issuingInstitution.getOrElse(""), data.countryCode.getOrElse("")))
             } yield {
-              Redirect(controllers.subscriptionData.routes.CompanyDetailsController.view())
+              Redirect(controllers.subscriptionData.routes.CompanyDetailsController.view)
             }
           }
         )
@@ -76,6 +76,6 @@ class OverseasCompanyRegistrationController @Inject()(mcc: MessagesControllerCom
   }
 
   private def getBackLink(): Some[String] = {
-    Some(routes.CompanyDetailsController.view().url)
+    Some(routes.CompanyDetailsController.view.url)
   }
 }

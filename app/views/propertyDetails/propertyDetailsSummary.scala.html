@@ -364,7 +364,7 @@ backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages
   </a>
 </div>
 
-<div class="form-group"><a href="@controllers.routes.AccountSummaryController.view()" id="saved-returns-link">@messages("ated.property-details-summary.saved-returns.link.text")</a></div>
+<div class="form-group"><a href="@controllers.routes.AccountSummaryController.view" id="saved-returns-link">@messages("ated.property-details-summary.saved-returns.link.text")</a></div>
 
 <div class="form-group">
   <a href="@controllers.propertyDetails.routes.PropertyDetailsSummaryController.deleteDraft(propertyDetails.id, propertyDetails.periodKey)" id="delete-draft">

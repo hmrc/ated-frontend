@@ -56,7 +56,7 @@ class DisposeLiabilityBankDetailsController @Inject()(mcc: MessagesControllerCom
                 Ok(template
                 (bankDetailsForm.fill(bankDetails), oldFormBundleNo, serviceInfoContent, backLink)(authContext, implicitly, request, implicitly))
               }
-            case None => Future.successful(Redirect(controllers.routes.AccountSummaryController.view()))
+            case None => Future.successful(Redirect(controllers.routes.AccountSummaryController.view))
           }
         }
       }
@@ -74,7 +74,7 @@ class DisposeLiabilityBankDetailsController @Inject()(mcc: MessagesControllerCom
                 val bankDetails = x.bankDetails.flatMap(_.bankDetails).fold(BankDetails())(a => a)
                 Ok(template(bankDetailsForm.fill(bankDetails), oldFormBundleNo, serviceInfoContent, backLink))
               }
-            case None => Future.successful(Redirect(controllers.routes.AccountSummaryController.view()))
+            case None => Future.successful(Redirect(controllers.routes.AccountSummaryController.view))
           }
         }
       }

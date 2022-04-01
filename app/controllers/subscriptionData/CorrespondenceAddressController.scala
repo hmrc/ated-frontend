@@ -72,7 +72,7 @@ class CorrespondenceAddressController @Inject()(mcc: MessagesControllerComponent
             }
               yield {
                 correspondenceAddress match {
-                  case Some(_) => Redirect(controllers.subscriptionData.routes.CompanyDetailsController.view())
+                  case Some(_) => Redirect(controllers.subscriptionData.routes.CompanyDetailsController.view)
                   case None =>
                     logger.warn(s"[CorrespondenceAddressController][submit] - Unable to update address")
                     Ok(templateError("ated.generic.error.title", "ated.generic.error.header",
@@ -86,6 +86,6 @@ class CorrespondenceAddressController @Inject()(mcc: MessagesControllerComponent
   }
 
   private def getBackLink = {
-    Some(controllers.subscriptionData.routes.CompanyDetailsController.view().url)
+    Some(controllers.subscriptionData.routes.CompanyDetailsController.view.url)
   }
 }

@@ -61,7 +61,7 @@ class EditLiabilitySummaryController @Inject()(mcc: MessagesControllerComponents
                     hasBankDetailsId, controllers.editLiability.routes.HasBankDetailsController.view(oldFormBundleNo)
                   )
                 case Some(_) => viewSummaryDetails(propertyDetails)
-                case None => Future.successful(Redirect(controllers.routes.AccountSummaryController.view()))
+                case None => Future.successful(Redirect(controllers.routes.AccountSummaryController.view))
               }
           }
         }

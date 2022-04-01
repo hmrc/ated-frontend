@@ -106,7 +106,7 @@
       </dt>
 
       <dd id="tas-rb" class="govuk-summary-list__value">
-        @if(canSubmit){@reliefData.taxAvoidance.rentalBusinessScheme} else {@messages("ated.label.incomplete")}
+          <span>@reliefData.taxAvoidance.rentalBusinessScheme</span>
       </dd>
 
       <dd class="govuk-summary-list__actions">
@@ -122,7 +122,7 @@
       </dt>
 
       <dd id="tasp-rb" class="govuk-summary-list__value">
-        @if(canSubmit){@reliefData.taxAvoidance.rentalBusinessSchemePromoter} else {@messages("ated.label.incomplete")}
+          <span>@reliefData.taxAvoidance.rentalBusinessSchemePromoter</span>
       </dd>
 
       <dd class="govuk-summary-list__actions" id="tasp-edit-rb">
@@ -189,7 +189,7 @@
       </dt>
 
       <dd class="govuk-summary-list__value" id="tas-otp">
-        @if(canSubmit){ @reliefData.taxAvoidance.openToPublicScheme} else {@messages("ated.label.incomplete")}
+          <span>@reliefData.taxAvoidance.openToPublicScheme</span>
       </dd>
 
       <dd class="govuk-summary-list__actions">
@@ -205,7 +205,7 @@
       </dt>
 
       <dd id="tasp-otp" class="govuk-summary-list__value">
-        @if(canSubmit){@reliefData.taxAvoidance.openToPublicSchemePromoter} else {@messages("ated.label.incomplete")}
+          <span>@reliefData.taxAvoidance.openToPublicSchemePromoter</span>
       </dd>
 
       <dd class="govuk-summary-list__actions" id="tasp-edit-otp">
@@ -270,7 +270,7 @@
       </dt>
 
       <dd class="govuk-summary-list__value" id="tas-pd">
-        @if(canSubmit){@reliefData.taxAvoidance.propertyDeveloperScheme} else { <span class="status">@messages("ated.label.incomplete")</span> }
+          <span>@reliefData.taxAvoidance.propertyDeveloperScheme</span>
       </dd>
 
       <dd class="govuk-summary-list__actions">
@@ -286,7 +286,7 @@
       </dt>
 
       <dd id="tasp-pd" class="govuk-summary-list__value">
-        @if(canSubmit){@reliefData.taxAvoidance.propertyDeveloperSchemePromoter} else {@messages("ated.label.incomplete")}
+          <span>@reliefData.taxAvoidance.propertyDeveloperSchemePromoter</span>
       </dd>
 
       <dd class="govuk-summary-list__actions">
@@ -349,7 +349,7 @@
         </dt>
 
         <dd class="govuk-summary-list__value" id="tas-pt">
-          @if(canSubmit){@reliefData.taxAvoidance.propertyTradingScheme} else {@messages("ated.label.incomplete")}
+            <span>@reliefData.taxAvoidance.propertyTradingScheme</span>
         </dd>
 
         <dd class="govuk-summary-list__actions">
@@ -365,7 +365,7 @@
         </dt>
 
         <dd id="tasp-pt" class="govuk-summary-list__value">
-          @if(canSubmit){@reliefData.taxAvoidance.propertyTradingSchemePromoter} else {class="status">@messages("ated.label.incomplete")}
+            <span>@reliefData.taxAvoidance.propertyTradingSchemePromoter</span>
         </dd>
 
         <dd class="govuk-summary-list__actions">
@@ -428,7 +428,7 @@
         </dt>
 
         <dd class="govuk-summary-list__value" id="tas-ln">
-          @if(canSubmit){@reliefData.taxAvoidance.lendingScheme} else {@messages("ated.label.incomplete")}
+            <span>@reliefData.taxAvoidance.lendingScheme</span>
         </dd>
 
         <dd class="govuk-summary-list__actions">
@@ -444,7 +444,7 @@
         </dt>
 
         <dt id="tasp-ln" class="govuk-summary-list__value">
-          @if(canSubmit){@reliefData.taxAvoidance.lendingSchemePromoter} else {@messages("ated.label.incomplete")}
+            <span>@reliefData.taxAvoidance.lendingSchemePromoter</span>
         </dt>
 
         <dd class="govuk-summary-list__actions">
@@ -507,7 +507,7 @@
         </dt>
 
         <dd class="govuk-summary-list__value" id="tas-eo">
-          @if(canSubmit){@reliefData.taxAvoidance.employeeOccupationScheme} else {@messages("ated.label.incomplete")}
+            <span>@reliefData.taxAvoidance.employeeOccupationScheme</span>
         </dd>
 
         <dd class="govuk-summary-list__actions">
@@ -523,7 +523,7 @@
         </dt>
 
         <dd id="tasp-eo" class="govuk-summary-list__value">
-          @if(canSubmit){ <span>@reliefData.taxAvoidance.employeeOccupationSchemePromoter</span> } else { <span class="status">@messages("ated.label.incomplete")</span> }
+            <span>@reliefData.taxAvoidance.employeeOccupationSchemePromoter</span>
         </dd>
 
         <dd class="govuk-summary-list__actions">
@@ -586,7 +586,7 @@
         </dt>
 
         <dd class="govuk-summary-list__value" id="tas-fh">
-          @if(canSubmit){@reliefData.taxAvoidance.farmHousesScheme} else {@messages("ated.label.incomplete")}
+            <span>@reliefData.taxAvoidance.farmHousesScheme</span>
         </dd>
 
         <dd class="govuk-summary-list__actions">
@@ -602,7 +602,7 @@
         </dt>
 
         <dd id="tasp-fh" class="govuk-summary-list__value">
-          @if(canSubmit){@reliefData.taxAvoidance.farmHousesSchemePromoter} else {@messages("ated.label.incomplete")}
+            <span>@reliefData.taxAvoidance.farmHousesSchemePromoter</span>
         </dd>
 
         <dd class="govuk-summary-list__actions">
@@ -665,7 +665,7 @@
         </dt>
 
         <dd class="govuk-summary-list__value" id="tas-sh">
-          @if(canSubmit){@reliefData.taxAvoidance.socialHousingScheme} else {@messages("ated.label.incomplete")}
+            <span>@reliefData.taxAvoidance.socialHousingScheme</span>
         </dd>
 
         <dd id="tas-edit-sh" class="govuk-summary-list__actions">
@@ -681,7 +681,7 @@
         </dt>
 
         <dd id="tasp-sh" class="govuk-summary-list__value">
-          @if(canSubmit){@reliefData.taxAvoidance.socialHousingSchemePromoter} else {@messages("ated.label.incomplete")}
+            <span>@reliefData.taxAvoidance.socialHousingSchemePromoter</span>
         </dd>
 
         <dd class="govuk-summary-list__actions" id="tasp-edit-sh">
@@ -744,7 +744,7 @@
         </dt>
 
         <dd class="govuk-summary-list__value" id="tas-er">
-          @if(canSubmit){@reliefData.taxAvoidance.equityReleaseScheme} else {@messages("ated.label.incomplete")}
+            <span>@reliefData.taxAvoidance.equityReleaseScheme</span>
         </dd>
 
         <dd id="tas-edit-er" class="govuk-summary-list__actions">
@@ -760,7 +760,7 @@
         </dt>
 
         <dd id="tasp-er" class="govuk-summary-list__value">
-          @if(canSubmit){@reliefData.taxAvoidance.equityReleaseSchemePromoter} else {@messages("ated.label.incomplete")}
+            <span>@reliefData.taxAvoidance.equityReleaseSchemePromoter</span>
         </dd>
 
         <dd class="govuk-summary-list__actions" id="tasp-edit-er">
@@ -792,7 +792,7 @@
         <dd class="govuk-summary-list__actions"></dd>
       </div>
     </dl>
-}
+    }
 }
 
 <div class="govuk-form-group">
@@ -825,7 +825,7 @@
 </div>
 
 <div class="govuk-form-group">
-  <a class="govuk-link govuk-!-font-size-19" href="@controllers.routes.AccountSummaryController.view()" id="saved-returns-link">@messages("ated.property-details-summary.saved-returns.link.text")</a>
+  <a class="govuk-link govuk-!-font-size-19" href="@controllers.routes.AccountSummaryController.view" id="saved-returns-link">@messages("ated.property-details-summary.saved-returns.link.text")</a>
 </div>
 
 <div class="govuk-form-group">

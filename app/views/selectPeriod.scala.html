@@ -55,7 +55,7 @@
     @govukErrorSummary(ErrorSummary().withFormErrorsAsText(selectPeriodForm))
   }
 
-  @formHelper(action=controllers.routes.SelectPeriodController.submit()) {
+  @formHelper(action=controllers.routes.SelectPeriodController.submit) {
 
    @govukRadios(
        Radios(

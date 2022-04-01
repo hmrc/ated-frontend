@@ -55,7 +55,7 @@ class HasBankDetailsController @Inject()(mcc: MessagesControllerComponents,
                 val bankDetails = x.bankDetails.map(_.hasBankDetails)
                 Ok(template(hasBankDetailsForm.fill(HasBankDetails(bankDetails)), oldFormBundleNo, serviceInfoContent, backLink))
               }
-            case None => Future.successful(Redirect(controllers.routes.AccountSummaryController.view()))
+            case None => Future.successful(Redirect(controllers.routes.AccountSummaryController.view))
           }
         }
       }
@@ -74,7 +74,7 @@ class HasBankDetailsController @Inject()(mcc: MessagesControllerComponents,
                 Ok(template(hasBankDetailsForm.fill(HasBankDetails(bankDetails)), oldFormBundleNo, serviceInfoContent,
                   AtedUtils.getSummaryBackLink(oldFormBundleNo, mode)))
               }
-            case None => Future.successful(Redirect(controllers.routes.AccountSummaryController.view()))
+            case None => Future.successful(Redirect(controllers.routes.AccountSummaryController.view))
           }
         }
       }

@@ -57,7 +57,7 @@ class DisposeLiabilityHasBankDetailsController @Inject()(mcc: MessagesController
                 val bankDetails = x.bankDetails.map(_.hasBankDetails)
                 Ok(template(hasBankDetailsForm.fill(HasBankDetails(bankDetails)), oldFormBundleNo, serviceInfoContent, backLink))
               }
-            case None => Future.successful(Redirect(controllers.routes.AccountSummaryController.view()))
+            case None => Future.successful(Redirect(controllers.routes.AccountSummaryController.view))
           }
         }
       }
@@ -75,7 +75,7 @@ class DisposeLiabilityHasBankDetailsController @Inject()(mcc: MessagesController
                 val backLink = Some(controllers.editLiability.routes.DisposeLiabilitySummaryController.view(oldFormBundleNo).url)
                 Ok(template(hasBankDetailsForm.fill(HasBankDetails(bankDetails)), oldFormBundleNo, serviceInfoContent, backLink))
               }
-            case None => Future.successful(Redirect(controllers.routes.AccountSummaryController.view()))
+            case None => Future.successful(Redirect(controllers.routes.AccountSummaryController.view))
           }
         }
       }
@@ -103,7 +103,7 @@ class DisposeLiabilityHasBankDetailsController @Inject()(mcc: MessagesController
                         controllers.editLiability.routes.DisposeLiabilityBankDetailsController.view(oldFormBundleNo),
                         backLink
                       )
-                    case None => Future.successful(Redirect(controllers.routes.AccountSummaryController.view()))
+                    case None => Future.successful(Redirect(controllers.routes.AccountSummaryController.view))
                   }
                 } else {
                   redirectWithBackLink(
