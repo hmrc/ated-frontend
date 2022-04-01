@@ -15,7 +15,7 @@ object AppDependencies {
     "uk.gov.hmrc" %% "http-caching-client" % "9.5.0-play-28",
     "com.typesafe.play" %% "play-json-joda" % "2.7.4",
     "uk.gov.hmrc" %% "govuk-template" % "5.72.0-play-28",
-    "uk.gov.hmrc" %% "play-frontend-hmrc" % "1.26.0-play-28"
+    "uk.gov.hmrc" %% "play-frontend-hmrc" % "3.8.0-play-28"
   )
 
   trait TestDependencies {

@@ -141,7 +141,7 @@ ated.account-summary.no-returns = You can appoint an agent to act on your behalf
 ated.account-summary.coop.housing.dropdown = Relief for housing co-operatives
 ated.account-summary.coop.housing.paragraph.one = From 3 March 2021, qualifying housing co-operatives that submit ATED returns can claim relief for periods beginning 1 April 2020.
 ated.account-summary.coop.housing.paragraph.two = Housing co-operatives that qualify for relief and have already paid ATED for the period beginning 1 April 2020 can claim a repayment by amending their original return.
-ated.account-summary.coop.housing.link.text = <a href="https://www.gov.uk/government/publications/annual-tax-on-enveloped-dwellings-technical-guidance" data-journey-click="ated-frontend:click:coop-housing-guidance">Read the ATED technical guidance for more information (opens in new tab).</a>
+ated.account-summary.coop.housing.link.text = <a class="govuk-link" href="https://www.gov.uk/government/publications/annual-tax-on-enveloped-dwellings-technical-guidance" data-journey-click="ated-frontend:click:coop-housing-guidance">Read the ATED technical guidance for more information (opens in new tab).</a>
 
 
 ##### SELECT PERIOD
@@ -151,7 +151,7 @@ ated.select-period.header = Select an ATED chargeable period
 ated.select-period.text = The chargeable period for a year runs from the 1 April to 31 March.
 ated.select-period.error.general.period = There is a problem with the period option
 ated.select-period.more-years = I want to submit a return before 2015
-ated.select-period.more-years.answer = Any ATED returns before these periods need to be submitted on a paper form. To request a paper form <a href="https://www.gov.uk/government/organisations/hm-revenue-customs/contact/annual-tax-on-enveloped-dwellings-ated"> contact the call centre</a>.
+ated.select-period.more-years.answer = Any ATED returns before these periods need to be submitted on a paper form. To request a paper form <a class="govuk-link" href="https://www.gov.uk/government/organisations/hm-revenue-customs/contact/annual-tax-on-enveloped-dwellings-ated"> contact the call centre</a>.
 
 ##### CHOOSE RELIEFS
 
@@ -198,7 +198,7 @@ ated.choose-reliefs.avoidance-reveal-line-1 = HMRC never approves tax avoidance 
 ated.choose-reliefs.avoidance-reveal-line-2 = You will have received your scheme reference number (SRN) and promoter reference number (PRN)
 ated.choose-reliefs.avoidance-info-line-1 = from your scheme provider on form AAG6 Disclosure of avoidance scheme – Notification of scheme reference number
 ated.choose-reliefs.avoidance-info-line-2 = direct from HMRC
-ated.choose-reliefs.avoidance-more-info = <a href="https://www.gov.uk/guidance/disclosure-of-tax-avoidance-schemes-overview">More information on tax avoidance schemes</a>
+ated.choose-reliefs.avoidance-more-info = <a class="govuk-link" href="https://www.gov.uk/guidance/disclosure-of-tax-avoidance-schemes-overview">More information on tax avoidance schemes</a>
 ated.choose-reliefs-further.information.text = We do not need any further information or property details, but you must keep records to support your claim for relief. If a property is no longer eligible for relief, a further return will be required.
 
 ated.choose-reliefs.error = You must select at least one relief
@@ -473,8 +473,8 @@ ated.summary-return.chargeable = Chargeable return
 ated.summary-return.relief-return = Relief return
 ated.summary-return.sidebar.balance = Your balance
 ated.summary-return.sidebar.correspondence-address = Correspondence Address
-ated.summary-return.sidebar.pay.link = <a id="sidebar.link-text" href="https://www.gov.uk/guidance/pay-annual-tax-on-enveloped-dwellings">Deadlines and ways to pay</a>
-ated.summary-return.sidebar.owed.link = <a id="sidebar.link-text" href="https://www.gov.uk/guidance/pay-annual-tax-on-enveloped-dwellings">Ways to be paid</a>
+ated.summary-return.sidebar.pay.link = Deadlines and ways to pay
+ated.summary-return.sidebar.owed.link = Ways to be paid
 ated.summary-return.sidebar.question = What does this balance include
 ated.summary-return.sidebar.answer = It can include penalties. It does not include any balance you may have from previous paper returns.
 ated.account-summary.no-returns.text = No returns have been created yet
@@ -1023,7 +1023,7 @@ ated.contact-email.error = Email address is not valid
 # this is error thrown for save failure
 ated.contact-details.error.general.addressType = Something has gone wrong, try again later.
 ated.contact-details.email.risk.help.text = What are the risks of email and why we need your consent
-ated.contact-details.email.risk.help.answer = <p>HMRC may need to send information to you by email. Any emails from HMRC are not secure and any information you send to us by email is at your own risk. In order for us to send emails to you, you must confirm (for yourself or by your agent) that you are happy with this and that you understand the risks of sending information containing your personal details by email.</p><p>Please note: If a response contains any confidential information, we will only reply by letter or telephone. Letters may lead to delays in dealing with enquiries. If you think you have been sent a suspicious email, do not follow any links within the email or disclose any personal details. Forward any suspicious emails to <a href="mailto:phishing@hmrc.gsi.gov.uk">phishing@hmrc.gsi.gov.uk</a></p>
+ated.contact-details.email.risk.help.answer = <p>HMRC may need to send information to you by email. Any emails from HMRC are not secure and any information you send to us by email is at your own risk. In order for us to send emails to you, you must confirm (for yourself or by your agent) that you are happy with this and that you understand the risks of sending information containing your personal details by email.</p><p>Please note: If a response contains any confidential information, we will only reply by letter or telephone. Letters may lead to delays in dealing with enquiries. If you think you have been sent a suspicious email, do not follow any links within the email or disclose any personal details. Forward any suspicious emails to <a class="govuk-link" href="mailto:phishing@hmrc.gsi.gov.uk">phishing@hmrc.gsi.gov.uk</a></p>
 
 ##### EDIT CONTACT EMAIL
 

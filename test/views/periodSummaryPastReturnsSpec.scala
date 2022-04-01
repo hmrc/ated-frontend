@@ -20,54 +20,58 @@ import config.ApplicationConfig
 import models._
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
-import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
+import org.scalatest.featurespec.AnyFeatureSpec
+import org.scalatest.{BeforeAndAfterEach, GivenWhenThen}
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.i18n.{Messages, MessagesApi}
+import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import play.twirl.api.Html
 import testhelpers.MockAuthUtil
 import utils.AtedConstants._
+import views.html.periodSummaryPastReturns
 
-class periodSummaryPastReturnsSpec extends FeatureSpec with GuiceOneServerPerSuite with MockitoSugar
+class periodSummaryPastReturnsSpec extends AnyFeatureSpec with GuiceOneServerPerSuite with MockitoSugar
   with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
 
-  implicit val request = FakeRequest()
+  implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
-implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
+  implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
 
-  val injectedViewInstance = app.injector.instanceOf[views.html.periodSummaryPastReturns]
+  val injectedViewInstance: periodSummaryPastReturns = app.injector.instanceOf[views.html.periodSummaryPastReturns]
 
   val organisationName: String = "OrganisationName"
   val formBundleNo1: String = "123456789012"
   val formBundleNo2: String = "123456789013"
   val formBundleNo3: String = "123456789014"
-  val draftReturns1: DraftReturns = DraftReturns(2015, "1", "desc", Some(BigDecimal(100.00)), TypeChangeLiabilityDraft)
-  val draftReturns2: DraftReturns = DraftReturns(2015, "", "some relief", None, TypeReliefDraft)
+  val year: Int = 2015
+  val draftReturns1: DraftReturns = DraftReturns(year, "1", "desc", Some(BigDecimal(100.00)), TypeChangeLiabilityDraft)
+  val draftReturns2: DraftReturns = DraftReturns(year, "", "some relief", None, TypeReliefDraft)
   val submittedReliefReturns1: SubmittedReliefReturns = SubmittedReliefReturns(formBundleNo1, "some relief",
     new LocalDate("2015-05-05"), new LocalDate("2015-05-05"), new LocalDate("2015-05-05"))
-  val submittedReliefReturns1Older = SubmittedReliefReturns(formBundleNo1, "some relief",
+  val submittedReliefReturns1Older: SubmittedReliefReturns = SubmittedReliefReturns(formBundleNo1, "some relief",
     new LocalDate("2015-05-05"), new LocalDate("2015-05-05"), new LocalDate("2015-04-05"))
-  val submittedLiabilityReturns1 = SubmittedLiabilityReturns(formBundleNo2, "addr1+2", BigDecimal(1234.00),
+  val submittedLiabilityReturns1: SubmittedLiabilityReturns = SubmittedLiabilityReturns(formBundleNo2, "addr1+2", BigDecimal(1234.00),
     new LocalDate("2015-05-05"), new LocalDate("2015-05-05"), new LocalDate("2015-05-05"), changeAllowed = true, "payment-ref-01")
-  val submittedLiabilityReturns2 = SubmittedLiabilityReturns(formBundleNo3, "addr1+2", BigDecimal(1234.00),
+  val submittedLiabilityReturns2: SubmittedLiabilityReturns = SubmittedLiabilityReturns(formBundleNo3, "addr1+2", BigDecimal(1234.00),
     new LocalDate("2015-05-05"), new LocalDate("2015-05-05"), new LocalDate("2015-06-06"), changeAllowed = true, "payment-ref-01")
 
-  val submittedReturns = SubmittedReturns(2015, Seq(submittedReliefReturns1, submittedReliefReturns1Older), Seq(submittedLiabilityReturns1))
-  val submittedReturnsWithOld = SubmittedReturns(2015, Seq(submittedReliefReturns1), Seq(submittedLiabilityReturns1), Seq(submittedLiabilityReturns2))
-  val periodSummaryReturns = PeriodSummaryReturns(2015, Seq(draftReturns1, draftReturns2), Some(submittedReturns))
-  val periodSummaryReturnsWithOld = PeriodSummaryReturns(2015, Seq(draftReturns1, draftReturns2), Some(submittedReturnsWithOld))
-  feature("The user can view their returns") {
+  val submittedReturns: SubmittedReturns = SubmittedReturns(year, Seq(submittedReliefReturns1, submittedReliefReturns1Older), Seq(submittedLiabilityReturns1))
+  val submittedReturnsWithOld: SubmittedReturns = SubmittedReturns(year, Seq(submittedReliefReturns1), Seq(submittedLiabilityReturns1), Seq(submittedLiabilityReturns2))
+  val periodSummaryReturns: PeriodSummaryReturns = PeriodSummaryReturns(year, Seq(draftReturns1, draftReturns2), Some(submittedReturns))
+  val periodSummaryReturnsWithOld: PeriodSummaryReturns = PeriodSummaryReturns(year, Seq(draftReturns1, draftReturns2), Some(submittedReturnsWithOld))
+  Feature("The user can view their returns") {
 
     info("as a client i want to be able to view my returns")
 
-    scenario("Show None if we have no returns") {
+    Scenario("Show None if we have no returns") {
 
       Given("the client has no returns")
       When("The user views the page")
 
-      val html = injectedViewInstance(2015, None, None,  Html(""), Some("backLink"))
+      val html = injectedViewInstance(year, None, None,  Html(""), Some("backLink"))
 
       val document = Jsoup.parse(html.toString())
 
@@ -78,25 +82,25 @@ implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetr
       assert(document.getElementById("current-returns").text() === "Current returns")
       assert(document.getElementById("past-returns").text() === "Past returns")
 
-      Then("The table should have no data")
+      Then("The summary list should have no data")
       assert(document.getElementById("view-edit-0") === null)
       assert(document.getElementById("liability-submitted-0") === null)
       assert(document.getElementById("relief-submitted-0") === null)
       assert(document.getElementById("draft-liability-0") === null)
       assert(document.getElementById("draft-relief-1") === null)
 
-      assert(document.getElementById("backLinkHref").text === "Back")
+      assert(document.getElementsByClass("govuk-back-link").text === "Back")
 
       Then("add the link to create a return")
       assert(document.getElementById("create-return").text() === "Create a new return")
     }
 
-    scenario("Show No data if we only have new data") {
+    Scenario("Show No data if we only have new data") {
 
       Given("the client has no returns")
       When("The user views the page")
 
-      val html = injectedViewInstance(2015, Some(periodSummaryReturns), Some(organisationName), Html(""), Some("http://backlink"))
+      val html = injectedViewInstance(year, Some(periodSummaryReturns), Some(organisationName), Html(""), Some("http://backlink"))
 
       val document = Jsoup.parse(html.toString())
 
@@ -107,25 +111,25 @@ implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetr
       assert(document.getElementById("current-returns").text() === "Current returns")
       assert(document.getElementById("past-returns").text() === "Past returns")
 
-      Then("The table should have data")
+      Then("The summary list should have data")
       assert(document.getElementById("view-edit-0") === null)
       assert(document.getElementById("liability-submitted-0") === null)
 
       assert(document.getElementById("relief-submitted-0").text() === "View")
 
-      assert(document.getElementById("backLinkHref").text() === "Back")
-      assert(document.getElementById("backLinkHref").attr("href") === "http://backlink")
+      assert(document.getElementsByClass("govuk-back-link").text() === "Back")
+      assert(document.getElementsByClass("govuk-back-link").attr("href") === "http://backlink")
 
       Then("add the link to create a return")
       assert(document.getElementById("create-return").text() === "Create a new return")
     }
 
-    scenario("Show old data if we have some") {
+    Scenario("Show old data if we have some") {
 
       Given("the client has no returns")
       When("The user views the page")
 
-      val html = injectedViewInstance(2015, Some(periodSummaryReturnsWithOld), Some(organisationName), Html(""), Some("http://backlink"))
+      val html = injectedViewInstance(year, Some(periodSummaryReturnsWithOld), Some(organisationName), Html(""), Some("http://backlink"))
 
       val document = Jsoup.parse(html.toString())
 
@@ -136,12 +140,12 @@ implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetr
       assert(document.getElementById("current-returns").text() === "Current returns")
       assert(document.getElementById("past-returns").text() === "Past returns")
 
-      Then("The table should have data")
-      assert(document.select("#liability-submitted-0 a").text() === "View or change")
-      assert(document.select("#liability-submitted-0 a").attr("href") === "/ated/form-bundle/123456789014/2015")
+      Then("The summary list should have data")
+      assert(document.select("#liability-submitted-0").text() === "View or change")
+      assert(document.select("#liability-submitted-0").attr("href") === "/ated/form-bundle/123456789014/2015")
 
-      assert(document.getElementById("backLinkHref").text() === "Back")
-      assert(document.getElementById("backLinkHref").attr("href") === "http://backlink")
+      assert(document.getElementsByClass("govuk-back-link").text() === "Back")
+      assert(document.getElementsByClass("govuk-back-link").attr("href") === "http://backlink")
 
       Then("add the link to create a return")
       assert(document.getElementById("create-return").text() === "Create a new return")

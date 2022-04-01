@@ -16,8 +16,6 @@
 
 package controllers
 
-import java.util.UUID
-
 import builders.{SessionBuilder, TitleBuilder}
 import config.ApplicationConfig
 import connectors.{AgentClientMandateFrontendConnector, DataCacheConnector}
@@ -42,8 +40,9 @@ import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.play.partials.HtmlPartial
 import utils.TestModels
-import views.html.BtaNavigationLinks
+import views.html.{BtaNavigationLinks, accountSummary}
 
+import java.util.UUID
 import scala.concurrent.Future
 
 class AccountSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar
@@ -59,14 +58,16 @@ class AccountSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
   val mockMandateFrontendConnector: AgentClientMandateFrontendConnector = mock[AgentClientMandateFrontendConnector]
   val mockDetailsService: DetailsService = mock[DetailsService]
   val mockDateService: DateService = mock[DateService]
-    val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
+  val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
-  val injectedViewInstance = app.injector.instanceOf[views.html.accountSummary]
+  val injectedViewInstance: accountSummary = app.injector.instanceOf[views.html.accountSummary]
 
   when(mockDateService.now()).thenReturn(LocalDate.now())
   when(mockAppConfig.atedPeakStartDay).thenReturn("27")
+  when(mockAppConfig.urBannerLink).thenReturn("https://test")
+
 
   val periodKey2015: Int = 2015
 
@@ -184,7 +185,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
 
     "the user has invalid enrolments" must {
       "redirect to unauthorised URL" in new Setup {
-        val data = SummaryReturnsModel(None, Seq(), Seq())
+        val data: SummaryReturnsModel = SummaryReturnsModel(None, Seq(), Seq())
         getWithForbiddenUser(data, None) { result =>
           redirectLocation(result).get must include("/ated/unauthorised")
         }
@@ -201,7 +202,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
             val document = Jsoup.parse(contentAsString(result))
 
             document.title() must be(TitleBuilder.buildTitle("Your ATED summary"))
-            document.getElementById("account-summary-header").text() must be("Your ATED summary")
+            document.getElementsByTag("h1").text() contains ("Your ATED summary")
         }
       }
 
@@ -215,14 +216,17 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
 
-            document.getElementById("ur-panel")
-              .text() must be("Help improve digital services by joining the HMRC user panel (opens in new window) No thanks")
-            document.getElementsByClass("banner-panel__close").text() must be("No thanks")
+            document.getElementsByClass("hmrc-user-research-banner__title")
+              .text() must be("Help improve HMRC services")
+            document.getElementsByClass("hmrc-user-research-banner__link")
+              .text() must be("Sign up to take part in user research (opens in new tab)")
+            document.getElementsByClass("hmrc-user-research-banner__close")
+              .text() must be("No thanks")
         }
       }
 
       "show the create a return and appoint an agent link if there are no returns and no delegation" in new Setup {
-        val data = SummaryReturnsModel(None, Seq())
+        val data: SummaryReturnsModel = SummaryReturnsModel(None, Seq())
         getWithAuthorisedUser(data, None) {
           result =>
             status(result) must be(OK)
@@ -234,7 +238,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
       }
 
       "show the create a return button and no appoint an agent link if there are no returns and there is delegation" in new Setup {
-        val data = SummaryReturnsModel(None, Seq())
+        val data: SummaryReturnsModel = SummaryReturnsModel(None, Seq())
         getWithAuthorisedDelegatedUser(data, None) {
           result =>
             status(result) must be(OK)
@@ -247,7 +251,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
 
       "throw exception for no safe id" in new Setup {
         val httpValue = 200
-        val data = SummaryReturnsModel(None, Seq())
+        val data: SummaryReturnsModel = SummaryReturnsModel(None, Seq())
         val userId = s"user-${UUID.randomUUID}"
         val authMock: Enrolments ~ Some[AffinityGroup] ~ Some[String] = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
         setAuthMocks(authMock)

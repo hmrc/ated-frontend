@@ -18,7 +18,12 @@
 @import _root_.utils.AtedUtils._
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
-@this(atedMain: atedMain)
+@import views.ViewUtils.titleBuilder
+
+@this(newMain: newMain,
+    govukBackLink : GovukBackLink,
+    govukButton : GovukButton)
+
 @(periodKey: Int,
   formBundleReturn: Option[FormBundleReturn],
   formBundleNumber: String,
@@ -37,31 +42,45 @@
 <script src='@controllers.routes.Assets.versioned("javascript/formBundleReturn.js")'></script>
 }
 
-@atedMain(title = messages("ated.form-bundle.title"),
+@backLinkHtml = {
+    @if(backLink.isDefined) {
+        @govukBackLink(BackLink(
+            href = backLink.get,
+            content = Text("Back")
+        ))
+    }
+}
+
+@newMain(title = titleBuilder(messages("ated.form-bundle.title")),
           pageScripts = Some(pageScripts),
           serviceInfoContent = serviceInfoContent) {
 
-  @pageHeadersAndError(backLink, "form-bundle-subheader", organisationName.getOrElse(""), "form-bundle-header", messages("ated.form-bundle.header"), subHeaderPrefix = Some(messages("ated.screen-reader.section-name")))
+    @backLinkHtml
 
-  <div class="form-group" id="form-bundle-text">@messages("ated.form-bundle.subheader",
+    <header>
+        <h1 class="govuk-heading-xl">
+            <span class="govuk-caption-xl"><span class="govuk-visually-hidden">@messages("ated.screen-reader.section-name")</span>@organisationName.getOrElse("")</span>
+            @messages("ated.form-bundle.header")
+        </h1>
+    </header>
+
+  <div class="govuk-body govuk-form-group" id="form-bundle-text">@messages("ated.form-bundle.subheader",
     periodStartDate(periodKey).toString(messages("ated.date-format")),
     periodEndDate(periodKey).toString(messages("ated.date-format")))
   </div>
 
   @formBundleReturn.map { formBundleReturnObj =>
 
+<!--Property-------------------------------------->
+<h2 id="th-view-return-property" class="govuk-heading-m">@messages("ated.form-bundle.view.return.property")</h2>
 
-<div class="form-group">
-  <div class="grid-wrapper">
-    <h2 id="th-view-return-property" class="heading-medium">@messages("ated.form-bundle.view.return.property")</h2>
-  </div>
+<dl class="govuk-summary-list">
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key govuk-!-width-one-half">
+      <span id="th-view-return-property-address" class="govuk-heading-s">@messages("ated.form-bundle.view.return.address")</span>
+    </dt>
 
-  <div class="grid-wrapper row-border">
-    <div class="grid grid-3-6 cya-question">
-      <span id="th-view-return-property-address" class="heading-small">@messages("ated.form-bundle.view.return.address")</span>
-    </div>
-
-    <div id="td-view-return-property-address" class="grid grid-3-6 cya-answer">
+    <dd id="td-view-return-property-address" class="govuk-summary-list__value govuk-!-width-one-half">
       <span id="form-bundle-address-line-1">@formBundleReturnObj.propertyDetails.address.addressLine1</span><br>
       <span id="form-bundle-address-line-2">@formBundleReturnObj.propertyDetails.address.addressLine2</span><br>
       @if(formBundleReturnObj.propertyDetails.address.addressLine3.isDefined){
@@ -69,70 +88,67 @@
       @if(formBundleReturnObj.propertyDetails.address.addressLine4.isDefined){
         <span id="address-line-4">@formBundleReturnObj.propertyDetails.address.addressLine4</span><br/>}
       <span id="form-bundle-address-post-code">@formBundleReturnObj.propertyDetails.address.postalCode</span>
-    </div>
+    </dd>
 
   </div>
 
-  <div class="grid-wrapper row-border">
-    <div class="grid grid-3-6 cya-question">
-      <span class="heading-small" id="th-view-return-property-title-no">@messages("ated.form-bundle.view.return.property.title.no")</span>
-    </div>
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key govuk-!-width-one-half">
+      <span class="govuk-heading-s" id="th-view-return-property-title-no">@messages("ated.form-bundle.view.return.property.title.no")</span>
+    </dt>
 
-    <div class="grid grid-3-6 cya-answer">
+    <dd class="govuk-summary-list__value govuk-!-width-one-half">
       <span id="td-view-return-property-title-no">@formBundleReturnObj.propertyDetails.titleNumber</span>
-    </div>
+    </dd>
 
   </div>
 
-</div>
+</dl>
 
+<!--Value of the property-------------------------------------->
+<h2 id="th-view-return-property-value" class="govuk-heading-m">@messages("ated.form-bundle.view.return.value-title")</h2>
 
-<div class="form-group">
-  <div class="grid-wrapper">
-    <h2 id="th-view-return-property-value" class="heading-medium">@messages("ated.form-bundle.view.return.value-title")</h2>
-  </div>
-
-
+<dl class="govuk-summary-list">
   @for((valueObj, index) <- valuesToDisplay.zipWithIndex) {
 
-    <div class="grid-wrapper row-border">
-      <div class="grid grid-3-6 cya-question">
-        <span id="th-view-return-value-@index" class="heading-small">@messages(getPeriodValueMessage(index, valuesToDisplay.size))</span>
-      </div>
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key govuk-!-width-one-half">
+        <span id="th-view-return-value-@index" class="govuk-heading-s">@messages(getPeriodValueMessage(index, valuesToDisplay.size))</span>
+      </dt>
 
-      <div class="grid grid-3-6 cya-answer">
+      <dd class="govuk-summary-list__value govuk-!-width-one-half">
         <span id="td-view-return-value-@index">@formattedPounds(valueObj.propertyValue)</span>
-      </div>
+      </dd>
     </div>
 
-    <div class="grid-wrapper row-border">
-      <div class="grid grid-3-6 cya-question">
-        <span id="th-view-return-property-valuation-date-@index" class="heading-small">@messages("ated.form-bundle.view.isValuedByAgent.message")</span>
-      </div>
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key govuk-!-width-one-half">
+        <span id="th-view-return-property-valuation-date-@index" class="govuk-heading-s">@messages("ated.form-bundle.view.isValuedByAgent.message")</span>
+      </dt>
 
-      <div class="grid grid-3-6 cya-answer">
+      <dd class="govuk-summary-list__value govuk-!-width-one-half">
         @if(formBundleReturnObj.professionalValuation){
           <span id="td-view-return-property-valuation-date-@index">@messages("ated.form-bundle.view.isValuedByAgent.yes")</span>
         } else {
           <span id="td-view-return-property-valuation-date-@index">@messages("ated.form-bundle.view.isValuedByAgent.no")</span>
         }
-      </div>
+      </dd>
     </div>
   }
+</dl>
 
-</div>
-<div class="form-group">
-  <div class="grid-wrapper">
-    <h2 id="dates-of-liability-header" class="heading-medium">@messages("ated.form-bundle.view.return.dates-of-liability.title")</h2>
-  </div>
+<!--Dates of liability-------------------------------------->
+<h2 id="dates-of-liability-header" class="govuk-heading-m">@messages("ated.form-bundle.view.return.dates-of-liability.title")</h2>
+
+<dl class="govuk-summary-list">
 
   @for((period, index) <- periodsToDisplay.zipWithIndex) {
-  <div class="grid-wrapper row-border">
-    <div class="grid grid-3-6 cya-question">
-      <span id="return-type-@index" class="heading-small">@messages((period.description).getOrElse(""))</span>
-    </div>
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key govuk-!-width-one-half">
+      <span id="return-type-@index" class="govuk-heading-s">@messages((period.description).getOrElse(""))</span>
+    </dt>
 
-    <div class="grid grid-3-6 cya-answer">
+    <dd class="govuk-summary-list__value govuk-!-width-one-half">
       <span id="period-@index">
       @if(period.lineItemType.toLowerCase == AtedConstants.DisposeReturnType){
       @period.startDate.toString(messages("ated.date-format"))
@@ -140,181 +156,176 @@
       @messages("ated.property-details-summary.table.period.text", period.startDate.toString(messages("ated.date-format")), period.endDate.toString(messages("ated.date-format")))
       }
       </span>
-    </div>
+    </dd>
   </div>
     }
-</div>
+</dl>
 
 @formBundleReturnObj.taxAvoidanceScheme.map { taxAvoidanceScheme =>
-  <div class="form-group">
-    <div class="grid-wrapper">
-      <h2 id="avoidance-scheme-header" class="heading-medium">@messages("ated.form-bundle.view.return.avoidance-scheme.title")</h2>
-    </div>
 
+<!--Avoidance scheme-------------------------------------->
+<h2 id="avoidance-scheme-header" class="govuk-heading-m">@messages("ated.form-bundle.view.return.avoidance-scheme.title")</h2>
 
-    <div class="grid-wrapper row-border">
-      <div class="grid grid-3-6 cya-question">
-        <span id="th-view-return-tax-avoidance" class="heading-small">@messages("ated.form-bundle.view.return.tax-avoidance-scheme")</span>
-      </div>
+<dl class="govuk-summary-list">
 
-      <div class="grid grid-3-6 cya-answer">
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key govuk-!-width-one-half">
+        <span id="th-view-return-tax-avoidance" class="govuk-heading-s">@messages("ated.form-bundle.view.return.tax-avoidance-scheme")</span>
+      </dt>
+
+      <dd class="govuk-summary-list__value govuk-!-width-one-half">
         <span id="td-view-return-tax-avoidance">@taxAvoidanceScheme</span>
-      </div>
-
+      </dd>
     </div>
 
     @formBundleReturnObj.taxAvoidancePromoterReference.map { taxAvoidancePromoterReference =>
-      <div class="grid-wrapper row-border">
-        <div class="grid grid-3-6 cya-question">
-          <span id="th-view-return-promoter" class="heading-small">@messages("ated.form-bundle.view.return.promoter")</span>
-        </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key govuk-!-width-one-half">
+          <span id="th-view-return-promoter" class="govuk-heading-s">@messages("ated.form-bundle.view.return.promoter")</span>
+        </dt>
 
-        <div class="grid grid-3-6 cya-answer">
+        <dd class="govuk-summary-list__value govuk-!-width-one-half">
           <span id="td-view-return-promoter">@taxAvoidancePromoterReference</span>
-        </div>
+        </dd>
       </div>
     }
-  </div>
 }
+</dl>
 
+<!--Bank details-------------------------------------->
   @formBundleReturnObj.bankDetails.map { bankDetail =>
+<h2 id="bank-details-header" class="govuk-heading-m">@messages("ated.edit-liability.summary.bank-details.header")</h2>
 
-<div class="form-group">
-  <div class="grid-wrapper">
-    <h2 id="bank-details-header" class="heading-medium">@messages("ated.edit-liability.summary.bank-details.header")</h2>
-  </div>
+<dl class="govuk-summary-list">
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key govuk-!-width-one-half">
+      <span id="account-holder-name-label" class="govuk-heading-s">@messages("ated.edit-liability.summary.bank-details.account-holder-name")</span>
+    </dt>
 
-  <div class="grid-wrapper row-border">
-    <div class="grid grid-3-6 cya-question">
-      <span id="account-holder-name-label" class="heading-small">@messages("ated.edit-liability.summary.bank-details.account-holder-name")</span>
-    </div>
-
-    <div class="grid grid-3-6 cya-answer">
-      <span id="account-holder-name-value" class="heading-small">@bankDetail.accountName.getOrElse("")</span>
-    </div>
+    <dd class="govuk-summary-list__value govuk-!-width-one-half">
+      <span id="account-holder-name-value">@bankDetail.accountName.getOrElse("")</span>
+    </dd>
   </div>
 
   @bankDetail.ukAccount.map { ukAcc =>
 
-  <div class="grid-wrapper row-border">
-    <div class="grid grid-3-6 cya-question">
-      <span id="account-number-label" class="heading-small">@messages("ated.edit-liability.summary.bank-details.account-number")</span>
-    </div>
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key govuk-!-width-one-half">
+      <span id="account-number-label" class="govuk-heading-s">@messages("ated.edit-liability.summary.bank-details.account-number")</span>
+    </dt>
 
-    <div class="grid grid-3-6 cya-answer">
-      <span id="account-number-value" class="heading-small">@maskBankDetails(ukAcc.accountNumber, 4)</span>
-    </div>
+    <dd class="govuk-summary-list__value govuk-!-width-one-half">
+      <span id="account-number-value" class="govuk-heading-s">@maskBankDetails(ukAcc.accountNumber, 4)</span>
+    </dd>
   </div>
 
-  <div class="grid-wrapper row-border">
-    <div class="grid grid-3-6 cya-question">
-      <span id="sort-code-label" class="heading-small">@messages("ated.edit-liability.summary.bank-details.sort-code")</span>
-    </div>
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key govuk-!-width-one-half">
+      <span id="sort-code-label" class="govuk-heading-s">@messages("ated.edit-liability.summary.bank-details.sort-code")</span>
+    </dt>
 
-    <div class="grid grid-3-6 cya-answer">
+    <dd class="govuk-summary-list__value govuk-!-width-one-half">
       <span id="sort-code-value">@maskSortCode(ukAcc.sortCode)</span>
-    </div>
+    </dd>
   </div>
 
   } @bankDetail.internationalAccount.map { intAcc =>
 
-  <div class="grid-wrapper row-border">
-    <div class="grid grid-3-6 cya-question">
-      <span id="iban-label" class="heading-small">@messages("ated.edit-liability.summary.bank-details.iban")</span>
-    </div>
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key govuk-!-width-one-half">
+      <span id="iban-label" class="govuk-heading-s">@messages("ated.edit-liability.summary.bank-details.iban")</span>
+    </dt>
 
-    <div class="grid grid-3-6 cya-answer">
+    <dd class="govuk-summary-list__value govuk-!-width-one-half">
       <span id="iban-value">@maskBankDetails(intAcc.iban, 4)</span>
-    </div>
+    </dd>
   </div>
 
-  <div class="grid-wrapper row-border">
-    <div class="grid grid-3-6 cya-question">
-      <span id="bic-swift-code-label" class="heading-small">@messages("ated.edit-liability.summary.bank-details.bic-swift-code")</span>
-    </div>
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key govuk-!-width-one-half">
+      <span id="bic-swift-code-label" class="govuk-heading-s">@messages("ated.edit-liability.summary.bank-details.bic-swift-code")</span>
+    </dt>
 
-    <div class="grid grid-3-6 cya-answer">
+    <dd class="govuk-summary-list__value govuk-!-width-one-half">
       <span id="bic-swift-code-value">@maskBankDetails(intAcc.bicSwiftCode, 2)</span>
-    </div>
+    </dd>
   </div>
-</div>
   }
-  }
+}
+</dl>
 
+<!--Supporting information-------------------------------------->
   @formBundleReturnObj.propertyDetails.additionalDetails.map { additionalDetails =>
-<div class="form-group">
-  <div class="grid-wrapper">
-    <h2 id="supporting-info-header" class="heading-medium">@messages("ated.form-bundle.view.return.supporting-info.title")</h2>
-  </div>
 
+<h2 id="supporting-info-header" class="govuk-heading-m">@messages("ated.form-bundle.view.return.supporting-info.title")</h2>
 
-  <div class="grid-wrapper row-border">
-    <div class="grid grid-3-6 cya-question">
-      <span id="th-view-return-additional-info" class="heading-small">@messages("ated.form-bundle.view.return.addition-info")</span>
-    </div>
+<dl class="govuk-summary-list">
 
-    <div class="grid grid-3-6 cya-answer">
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key govuk-!-width-one-half">
+      <span id="th-view-return-additional-info" class="govuk-heading-s">@messages("ated.form-bundle.view.return.addition-info")</span>
+    </dt>
+
+    <dd class="govuk-summary-list__value govuk-!-width-one-half">
       <span id="td-view-return-additional-info">@additionalDetails</span>
-    </div>
+    </dd>
   </div>
-</div>
   }
+</dl>
 
-  <div class="form-group">
-    <div class="grid-wrapper">
-      <h2 id="return-status-header" class="heading-medium">@messages("ated.form-bundle.view.return.return-status.title")</h2>
-    </div>
+<!--Return status-------------------------------------->
+<h2 id="return-status-header" class="govuk-heading-m">@messages("ated.form-bundle.view.return.return-status.title")</h2>
 
-    <div class="grid-wrapper row-border">
-      <div class="grid grid-3-6 cya-question">
-        <span id="th-view-return-payment" class="heading-small">@messages("ated.form-bundle.view.return.payment-reference")</span>
-      </div>
+<dl class="govuk-summary-list">
 
-      <div class="grid grid-3-6 cya-answer">
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key govuk-!-width-one-half">
+        <span id="th-view-return-payment" class="govuk-heading-s">@messages("ated.form-bundle.view.return.payment-reference")</span>
+      </dt>
+
+      <dd class="govuk-summary-list__value govuk-!-width-one-half">
         <span id="td-view-return-payment">@formBundleReturnObj.paymentReference</span>
-      </div>
+      </dd>
     </div>
 
-    <div class="grid-wrapper row-border">
-      <div class="grid grid-3-6 cya-question">
-        <span id="th-view-return-date" class="heading-small">@messages("ated.form-bundle.view.return.date")</span>
-      </div>
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key govuk-!-width-one-half">
+        <span id="th-view-return-date" class="govuk-heading-s">@messages("ated.form-bundle.view.return.date")</span>
+      </dt>
 
-      <div class="grid grid-3-6 cya-answer">
+      <dd class="govuk-summary-list__value govuk-!-width-one-half">
         <span id="td-view-return-date">@formBundleReturnObj.dateOfSubmission.toString(messages("ated.date-format"))</span>
-      </div>
+      </dd>
     </div>
 
-    <div class="grid-wrapper row-border">
-      <div class="grid grid-3-6 cya-question">
-        <span id="th-view-return-status" class="heading-small">@messages("ated.form-bundle.view.return.status")</span>
-      </div>
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key govuk-!-width-one-half">
+        <span id="th-view-return-status" class="govuk-heading-s">@messages("ated.form-bundle.view.return.status")</span>
+      </dt>
 
-      <div class="grid grid-3-6 cya-answer">
+      <dd class="govuk-summary-list__value govuk-!-width-one-half">
         <span id="td-view-return-status">@messages("ated.submitted")</span>
-      </div>
+      </dd>
     </div>
+</dl>
 
-  </div>
-
-    <div class="form-group">
-      <div id="return-charge-text">
+    <div class="govuk-form-group">
+      <div id="return-charge-text" class="govuk-body">
         @messages("ated.form-bundle.view.return.ated.charge")
-        <span class="heading-xlarge form group" id="return-charge">
+        <span class="govuk-heading-xl govuk-form-group" id="return-charge">
           @formattedPounds(formBundleReturnObj.liabilityAmount)
         </span>
       </div>
     </div>
 
-    <div class="form-group">
+    <div class="govuk-form-group">
         @if(changeAllowed) {
-          <a href="@controllers.editLiability.routes.EditLiabilityTypeController.editLiability(formBundleNumber, periodKey, editAllowed)"
-             class="button" id="submit"  onkeyup='spaceBarHandler(event,"@controllers.editLiability.routes.EditLiabilityTypeController.editLiability(formBundleNumber, periodKey, editAllowed)")'>
-            @messages("ated.form-bundle.edit-return.button")
-          </a>
+            @govukButton(Button(
+                href = Some(controllers.editLiability.routes.EditLiabilityTypeController.editLiability(formBundleNumber, periodKey, editAllowed).url),
+                content = Text(messages("ated.form-bundle.edit-return.button")),
+                attributes  = Map("id" -> "submit")
+            ))
         }
     </div>
-
   }
-
 }
