@@ -17,7 +17,6 @@
 package controllers
 
 import java.util.UUID
-
 import builders.SessionBuilder
 import config.ApplicationConfig
 import connectors.BackLinkCacheConnector
@@ -40,7 +39,7 @@ import services.{ServiceInfoService, SubscriptionDataService, SummaryReturnsServ
 import testhelpers.MockAuthUtil
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
-import views.html.BtaNavigationLinks
+import views.html.{BtaNavigationLinks, periodSummary, periodSummaryPastReturns}
 
 import scala.concurrent.Future
 
@@ -61,8 +60,8 @@ class PeriodSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite w
 lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
-  val injectedViewInstance = app.injector.instanceOf[views.html.periodSummary]
-  val injectedViewInstancePast = app.injector.instanceOf[views.html.periodSummaryPastReturns]
+  val injectedViewInstance: periodSummary = app.injector.instanceOf[views.html.periodSummary]
+  val injectedViewInstancePast: periodSummaryPastReturns = app.injector.instanceOf[views.html.periodSummaryPastReturns]
 
   val periodKey: Int = 2015
   val organisationName: String = "OrganisationName"
@@ -212,7 +211,8 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
             document.title() must include("Your ATED returns for")
-            document.getElementById("period-summary-header").text() must include("Your ATED returns for")
+            document.getElementsByClass("govuk-caption-xl").text === s"You have logged in as:$organisationName"
+            document.getElementsByTag("h1").text() must include("Your ATED returns for")
           }
         }
 
@@ -221,7 +221,8 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
             document.title() must include("Your ATED returns for")
-            document.getElementById("period-summary-header").text() must include("Your ATED returns for")
+            document.getElementsByClass("govuk-caption-xl").text === s"You have logged in as:$organisationName"
+            document.getElementsByTag("h1").text() must include("Your ATED returns for")
           }
         }
 

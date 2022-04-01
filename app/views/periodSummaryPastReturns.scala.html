@@ -19,106 +19,123 @@
 @import _root_.utils.PeriodUtils._
 @import views.html.helpers._
 @import play.twirl.api.HtmlFormat
+@import views.ViewUtils.titleBuilder
 
-@this(atedMain: atedMain)
+@this(newMain: newMain,
+    govukBackLink : GovukBackLink)
 
 @(periodKey: Int, periodSummaries: Option[PeriodSummaryReturns], organisationName: Option[String],
         serviceInfoContent: Html = HtmlFormat.empty,
     backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages,
     request: Request[AnyContent], appConfig: ApplicationConfig)
 
-@atedMain(title = messages("ated.period-summary.title", periodStartDate(periodKey).getYear.toString,
-    periodEndDate(periodKey).getYear.toString), serviceInfoContent = serviceInfoContent){
+@backLinkHtml = {
+    @if(backLink.isDefined) {
+        @govukBackLink(BackLink(
+            href = backLink.get,
+            content = Text("Back")
+        ))
+    }
+}
 
-    @pageHeadersAndError(backLink, "period-summary-subheader", organisationName.getOrElse(""), "period-summary-header",
-        messages("ated.period-summary.header", periodStartDate(periodKey).toString(messages("ated.date-format.summary")),
-        periodEndDate(periodKey).toString(messages("ated.date-format.summary"))),
-        subHeaderPrefix = Some(messages("ated.screen-reader.section-name")))
-    <div class="form-group">
-        <ul class="ated-tabs" role="tablist">
-            <li id="current-returns" class="heading-small" role="tab">
-                <a href="@controllers.routes.PeriodSummaryController.view(periodKey)" id="current-returns-link">
+@newMain(title = titleBuilder(messages("ated.period-summary.title", periodStartDate(periodKey).getYear.toString,
+    periodEndDate(periodKey).getYear.toString)), serviceInfoContent = serviceInfoContent){
+
+@backLinkHtml
+
+<header>
+    <h1 class="govuk-heading-xl">
+        <span class="govuk-caption-xl"><span class="govuk-visually-hidden">@messages("ated.screen-reader.section-name") </span>@organisationName.getOrElse("")</span>
+        @messages("ated.period-summary.header", periodStartDate(periodKey).toString(messages("ated.date-format.summary")),
+            periodEndDate(periodKey).toString(messages("ated.date-format.summary")))
+    </h1>
+</header>
+
+<div class="govuk-tabs" data-module="govuk-tabs">
+        <ul class="govuk-tabs__list">
+            <li id="current-returns" class="govuk-tabs__list-item">
+                <a class="govuk-tabs__tab" href="@controllers.routes.PeriodSummaryController.view(periodKey)" id="current-returns-link">
                     @messages("ated.period-summary.tabs.current-returns")
                 </a>
             </li>
-            <li id="past-returns" class="selected heading-small" role="tab">
-                @messages("ated.period-summary.tabs.past-returns")
+            <li id="past-returns" class="govuk-tabs__list-item govuk-tabs__list-item--selected">
+                <a class="govuk-tabs__tab">
+                    @messages("ated.period-summary.tabs.past-returns")
+                </a>
             </li>
         </ul>
-    </div>
 
-    <div id="tab-past-returns" tabindex="-1">
+            <div id="tab-past-returns">
+                <dl class="govuk-summary-list">
 
-        @periodSummaries.map { data =>
-            @data.submittedReturns.map { b =>
-                @b.oldLiabilityReturns.zipWithIndex.map { t =>
+                @periodSummaries.map { data =>
+                    @data.submittedReturns.map { b =>
+                        @b.oldLiabilityReturns.zipWithIndex.map { t =>
 
-                    <div class="grid-wrapper row-border">
-                        <div class="grid grid-1-2 psp-return">
-                            <span class="visuallyhidden">@messages("ated.period-summary.sr.address")</span>
-                            @t._1.description
-                        </div>
+                            <div class="govuk-summary-list__row">
+                                <dt class="govuk-summary-list__key govuk-!-width-one-half">
+                                    <span class="govuk-visually-hidden">@messages("ated.period-summary.sr.address")</span>
+                                    @t._1.description
+                                </dt>
 
-                        <div class="grid grid-1-4 psp-status">
-                            <span class="visuallyhidden">@messages("ated.period-summary-th.status")</span>
-                            @messages("ated.submitted")
-                        </div>
+                                <dd class="govuk-summary-list__value">
+                                    <span class="govuk-visually-hidden">@messages("ated.period-summary-th.status")</span>
+                                    @messages("ated.submitted")
+                                </dd>
 
-                        <div class="grid grid-1-4 psp-action">
-                            <div id="liability-submitted-@t._2">
-                                @if(t._1.changeAllowed) {
-                                    <a href='@controllers.routes.FormBundleReturnController.view(t._1.formBundleNo, periodKey)'
-                                    aria-label="@messages("ated.period-summary.view-edit.button") @messages(
-                                        "ated.period-summary.sr.return") @t._1.description">
-                                        @messages("ated.period-summary.view-edit.button")
-                                    </a>
-                                } else {
-                                    <a href='@controllers.routes.FormBundleReturnController.view(t._1.formBundleNo, periodKey)'
-                                    aria-label="@messages("ated.period-summary.view.button") @messages(
-                                    "ated.period-summary.sr.return") @t._1.description">
-                                        @messages("ated.period-summary.view.button")
-                                    </a>
-                                }
+                                <dd class="govuk-summary-list__actions">
+                                        @if(t._1.changeAllowed) {
+                                            <a id="liability-submitted-@t._2" class="govuk-link" href='@controllers.routes.FormBundleReturnController.view(t._1.formBundleNo, periodKey)'
+                                            aria-label="@messages("ated.period-summary.view-edit.button") @messages(
+                                                "ated.period-summary.sr.return") @t._1.description">
+                                                @messages("ated.period-summary.view-edit.button")
+                                            </a>
+                                        } else {
+                                            <a id="liability-submitted-@t._2" class="govuk-link" href='@controllers.routes.FormBundleReturnController.view(t._1.formBundleNo, periodKey)'
+                                            aria-label="@messages("ated.period-summary.view.button") @messages(
+                                            "ated.period-summary.sr.return") @t._1.description">
+                                                @messages("ated.period-summary.view.button")
+                                            </a>
+                                        }
+                                </dd>
                             </div>
-                        </div>
-                    </div>
 
-                } @*liability-returns end*@
-    
-                @b.reliefReturns.zipWithIndex.map { t =>
-                    <div class="grid-wrapper row-border">
-                        <div class="grid grid-1-2 psp-return">
-                            <span class="visuallyhidden">@messages("ated.period-summary.sr.relieftype")</span>
-                            @t._1.reliefType
-                        </div>
+                        } @*liability-returns end*@
 
-                        <div class="grid grid-1-4 psp-status">
-                            <span class="visuallyhidden">@messages("ated.period-summary-th.status")</span>
-                            @messages("ated.submitted")
-                        </div>
+                        @b.reliefReturns.zipWithIndex.map { t =>
+                            <div class="govuk-summary-list__row">
+                                <dt class="govuk-summary-list__key govuk-!-width-one-half">
+                                    <span class="govuk-visually-hidden">@messages("ated.period-summary.sr.relieftype")</span>
+                                    @t._1.reliefType
+                                </dt>
 
-                        <div class="grid grid-1-4 psp-action">
-                            <a id="relief-submitted-@t._2" href='@controllers.reliefs.routes.ViewReliefReturnController.viewReliefReturn(periodKey, t._1.formBundleNo)'
-                            aria-label="@messages("ated.period-summary.view-edit.button") @messages(
-                                "ated.period-summary.sr.return") @t._1.reliefType">
-                            @messages("ated.period-summary.view.button")
-                            </a>
-                        </div>
-                    </div>
+                                <dd class="govuk-summary-list__value">
+                                    <span class="govuk-visually-hidden">@messages("ated.period-summary-th.status")</span>
+                                    @messages("ated.submitted")
+                                </dd>
+
+                                <dd class="govuk-summary-list__actions">
+                                    <a class="govuk-link" id="relief-submitted-@t._2" href='@controllers.reliefs.routes.ViewReliefReturnController.viewReliefReturn(periodKey, t._1.formBundleNo)'
+                                    aria-label="@messages("ated.period-summary.view-edit.button") @messages(
+                                        "ated.period-summary.sr.return") @t._1.reliefType">
+                                    @messages("ated.period-summary.view.button")
+                                    </a>
+                                </dd>
+                            </div>
+                        }
+                    } @*all submitted returns end*@
                 }
-            } @*all submitted returns end*@
-        }
+                </dl>
+            </div>
 
-        <br />
 
-        <div class="form-group">
-            <a href="@controllers.routes.PeriodSummaryController.createReturn(periodKey, fromAccountSummary = false)" id="create-return">
+
+        <div class="govuk-form-group">
+            <a href="@controllers.routes.PeriodSummaryController.createReturn(periodKey, fromAccountSummary = false)" id="create-return" class="govuk-link govuk-!-font-size-19">
                 @messages("ated.account-summary.create-return.link")
             </a>
         </div>
-
-    </div>
+</div>
 
     <script src='@controllers.routes.Assets.versioned("javascript/periodSummaryPastReturns.js")'></script>
-
 }

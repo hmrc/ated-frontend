@@ -17,7 +17,6 @@
 package controllers
 
 import java.util.UUID
-
 import builders.{SessionBuilder, TitleBuilder}
 import config.ApplicationConfig
 import connectors.DataCacheConnector
@@ -40,7 +39,7 @@ import testhelpers.MockAuthUtil
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import utils.AtedConstants
-import views.html.BtaNavigationLinks
+import views.html.{BtaNavigationLinks, confirmDeleteDraft}
 
 import scala.concurrent.Future
 
@@ -58,7 +57,7 @@ class DraftDeleteConfirmationControllerSpec extends PlaySpec with GuiceOneServer
 lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
-  val injectedViewInstance = app.injector.instanceOf[views.html.confirmDeleteDraft]
+  val injectedViewInstance: confirmDeleteDraft = app.injector.instanceOf[views.html.confirmDeleteDraft]
 
   val periodKey: Int = 2017
   val organisationName: String = "OrganisationName"
@@ -171,7 +170,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
           result =>
             status(result) must be(BAD_REQUEST)
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be(TitleBuilder.buildTitle("Are you sure you want to delete this draft return?"))
+            document.title() must be(TitleBuilder.buildTitle("Error: Are you sure you want to delete this draft return?"))
         }
       }
 

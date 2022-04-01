@@ -33,7 +33,6 @@
 package controllers
 
 import java.util.UUID
-
 import builders.{SessionBuilder, TitleBuilder}
 import config.ApplicationConfig
 import connectors.{AgentClientMandateFrontendConnector, BackLinkCacheConnector, DataCacheConnector}
@@ -56,7 +55,7 @@ import testhelpers.MockAuthUtil
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.AtedConstants
-import views.html.BtaNavigationLinks
+import views.html.{BtaNavigationLinks, confirmPastReturn}
 
 import scala.concurrent.Future
 
@@ -69,7 +68,7 @@ class ExistingReturnQuestionControllerSpec extends PlaySpec with GuiceOneServerP
   implicit lazy val hc: HeaderCarrier = HeaderCarrier()
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
   val mockMcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
-  val template = app.injector.instanceOf[views.html.confirmPastReturn]
+  val template: confirmPastReturn = app.injector.instanceOf[views.html.confirmPastReturn]
   val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
   val mockSummaryReturnsService: SummaryReturnsService = mock[SummaryReturnsService]
   val mockSubscriptionDataService: SubscriptionDataService = mock[SubscriptionDataService]
@@ -191,8 +190,8 @@ class ExistingReturnQuestionControllerSpec extends PlaySpec with GuiceOneServerP
             val document = Jsoup.parse(contentAsString(result))
             document.title() must be(TitleBuilder.buildTitle("Did you file a return for this property in 2014 to 2015?"))
             assert(document.getElementById("service-info-list").text() === "Home Manage account Messages Help and contact")
-            document.getElementById("return-type-header")
-              .text() must be("Did you file a return for this property in 2014 to 2015?")
+            document.getElementsByTag("h1")
+              .text() must include ("Did you file a return for this property in 2014 to 2015?")
           }
         }
         "show the return type view with saved data" in new Setup {
@@ -200,8 +199,8 @@ class ExistingReturnQuestionControllerSpec extends PlaySpec with GuiceOneServerP
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
             document.title() must be(TitleBuilder.buildTitle("Did you file a return for this property in 2014 to 2015?"))
-            document.getElementById("return-type-header")
-              .text() must be("Did you file a return for this property in 2014 to 2015?")
+            document.getElementsByTag("h1")
+              .text() must include ("Did you file a return for this property in 2014 to 2015?")
           }
         }
         "have a back link which goes to the address confirmation" when {
@@ -209,7 +208,7 @@ class ExistingReturnQuestionControllerSpec extends PlaySpec with GuiceOneServerP
             getWithAuthorisedUserWithSomeData(result => {
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
-              document.getElementById("backLinkHref").attr("href") must be("/ated/liability/confirm-address/view/2017/123456789026?mode=editSubmitted")
+              document.getElementsByClass("govuk-back-link").attr("href") must be("/ated/liability/confirm-address/view/2017/123456789026?mode=editSubmitted")
             }, fromConfirmAddress = true)
           }
         }
@@ -226,7 +225,7 @@ class ExistingReturnQuestionControllerSpec extends PlaySpec with GuiceOneServerP
               result =>
                 status(result) must be(BAD_REQUEST)
                 val doc = Jsoup.parse(contentAsString(result))
-                doc.getElementsByClass("error-notification").html() must include("Select yes if you filed a return for this property last year")
+                doc.getElementsByClass("govuk-error-summary__list").html() must include("Select yes if you filed a return for this property last year")
             }
           }
 

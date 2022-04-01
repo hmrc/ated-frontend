@@ -819,17 +819,17 @@
   ))
 
 <div class="govuk-form-group">
-  <a style="font-size: 19px" class="govuk-link govuk-link--no-visited-state" href="@controllers.reliefs.routes.ReliefsSummaryController.viewPrintFriendlyReliefReturn(periodKey)" id="print-friendly-relief-link" target="_blank">
+  <a class="govuk-link govuk-!-font-size-19" href="@controllers.reliefs.routes.ReliefsSummaryController.viewPrintFriendlyReliefReturn(periodKey)" id="print-friendly-relief-link" target="_blank">
     @messages("ated.relief-summary.print.view")
   </a>
 </div>
 
 <div class="govuk-form-group">
-  <a style="font-size: 19px" class="govuk-link govuk-link--no-visited-state" href="@controllers.routes.AccountSummaryController.view()" id="saved-returns-link">@messages("ated.property-details-summary.saved-returns.link.text")</a>
+  <a class="govuk-link govuk-!-font-size-19" href="@controllers.routes.AccountSummaryController.view()" id="saved-returns-link">@messages("ated.property-details-summary.saved-returns.link.text")</a>
 </div>
 
 <div class="govuk-form-group">
-  <a style="font-size: 19px" class="govuk-link govuk-link--no-visited-state" href="@controllers.reliefs.routes.ReliefsSummaryController.deleteDraft(periodKey)" id="delete-draft">
+  <a class="govuk-link govuk-!-font-size-19" href="@controllers.reliefs.routes.ReliefsSummaryController.deleteDraft(periodKey)" id="delete-draft">
       @messages("ated.property-details-summary.delete-draft.link.text")
   </a>
 </div>
@@ -852,6 +852,7 @@
             @govukButton(Button(
               content = Text(messages("ated.relief-summary.submit")),
               inputType = Some("submit"),
+              disabled = true,
               attributes = Map("id" -> "submit")
             ))
           </div>
