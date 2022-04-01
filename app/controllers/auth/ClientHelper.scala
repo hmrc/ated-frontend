@@ -39,20 +39,19 @@ trait ClientHelper extends Logging {
                          (implicit authorisedRequest: StandardAuthRetrievals,
                           req: Request[AnyContent],
                           hc: HeaderCarrier,
-                          messages: Messages): Future[Result] = {
+                          messages: Messages, appConfig: ApplicationConfig): Future[Result] = {
     dataCacheConnector.fetchAtedRefData[String](DelegatedClientAtedRefNumber) flatMap {
       case refNo @ Some(_) if refNo.get == authorisedRequest.atedReferenceNumber => result
       case _ => logger.warn(s"[ClientHelper][compareClient] - Client different from context")
         Future.successful(Ok(appConfig.templateError(
-          "ated.selected-client-error.wrong.client.header",
           "ated.selected-client-error.wrong.client.title",
+          "ated.selected-client-error.wrong.client.header",
           "ated.selected-client-error.wrong.client.message",
           None,
           Some("ated.selected-client-error.wrong.client.HrefLink"),
           Some("ated.selected-client-error.wrong.client.HrefMessage"),
           Some("ated.selected-client-error.wrong.client.PostHrefMessage"),
-          Html(""),
-          appConfig
+          Html("")
         )))
     }
   }

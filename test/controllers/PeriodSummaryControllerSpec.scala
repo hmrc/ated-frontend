@@ -215,7 +215,8 @@ class PeriodSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite w
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
             document.title() must include("Your ATED returns for")
-            document.getElementById("period-summary-header").text() must include("Your ATED returns for")
+            document.getElementsByClass("govuk-caption-xl").text === s"You have logged in as:$organisationName"
+            document.getElementsByTag("h1").text() must include("Your ATED returns for")
           }
         }
 
@@ -224,7 +225,8 @@ class PeriodSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite w
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
             document.title() must include("Your ATED returns for")
-            document.getElementById("period-summary-header").text() must include("Your ATED returns for")
+            document.getElementsByClass("govuk-caption-xl").text === s"You have logged in as:$organisationName"
+            document.getElementsByTag("h1").text() must include("Your ATED returns for")
           }
         }
 

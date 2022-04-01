@@ -21,11 +21,11 @@ trait AttorneyRegime {
 }
 
 object AttorneyRegime {
-  val pertax = new AttorneyRegime {
+  val pertax: AttorneyRegime = new AttorneyRegime {
     val messagePrefix = "pertax."
   }
 
-  val standAlone = new AttorneyRegime {
+  val standAlone: AttorneyRegime = new AttorneyRegime {
     val messagePrefix = ""
   }
 }

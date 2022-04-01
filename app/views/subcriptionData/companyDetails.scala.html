@@ -211,9 +211,11 @@ pageScripts = Some(pageScripts)) {
     govukSummaryList(SummaryList(rows))
   }
 
+<div class="govuk-form-group govuk-!-padding-top-5">
   @button(Button(
-    href = Some(controllers.routes.AccountSummaryController.view().url),
-    content = Text(messages("ated.company-details.back"))
+      href = Some(controllers.routes.AccountSummaryController.view.url),
+      content = Text(messages("ated.company-details.back")),
+      attributes  = Map("id" -> "back")
   ))
-
+</div>
 }

@@ -17,7 +17,6 @@
 package controllers
 
 import java.util.UUID
-
 import builders.{SessionBuilder, TitleBuilder}
 import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
@@ -40,7 +39,7 @@ import testhelpers.MockAuthUtil
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.{AtedConstants, PeriodUtils}
-import views.html.BtaNavigationLinks
+import views.html.{BtaNavigationLinks, selectPeriod}
 
 import scala.concurrent.Future
 
@@ -53,11 +52,11 @@ class SelectPeriodControllerSpec extends PlaySpec with GuiceOneAppPerSuite with 
   val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
   val mockReturnTypeController: ReturnTypeController = mock[ReturnTypeController]
   val mockBackLinkCacheConnector: BackLinkCacheConnector = mock[BackLinkCacheConnector]
-    val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
+  val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
-  val injectedViewInstance = app.injector.instanceOf[views.html.selectPeriod]
+  val injectedViewInstance: selectPeriod = app.injector.instanceOf[views.html.selectPeriod]
 
   val baseYear = 2018
 
@@ -160,11 +159,15 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
             document.title() must be(TitleBuilder.buildTitle("Select an ATED chargeable period"))
-            document.getElementById("header").text() must include("Select an ATED chargeable period")
-            document.getElementById("details-text").text() must be("The chargeable period for a year runs from the 1 April to 31 March.")
-            document.getElementById("period-2015_field").text() must be("2015 to 2016")
-            document.getElementById("period-2016_field").text() must be("2016 to 2017")
-            document.getElementById("period-2017_field").text() must be("2017 to 2018")
+            document.getElementsByTag("h1").text() must include("Select an ATED chargeable period")
+            document.getElementById("period-hint").text() must be("The chargeable period for a year runs from the 1 April to 31 March.")
+            document.getElementsByAttributeValue("for", "period-7").text() must be("2015 to 2016")
+            document.getElementsByAttributeValue("for", "period-6").text() must be("2016 to 2017")
+            document.getElementsByAttributeValue("for", "period-5").text() must be("2017 to 2018")
+            document.getElementsByAttributeValue("for", "period-4").text() must be("2018 to 2019")
+            document.getElementsByAttributeValue("for", "period-3").text() must be("2019 to 2020")
+            document.getElementsByAttributeValue("for", "period-2").text() must be("2020 to 2021")
+            document.getElementsByAttributeValue("for", "period").text() must be("2021 to 2022")
             document.getElementById("submit").text() must be("Continue")
           }
         }
@@ -174,10 +177,10 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
             document.title() must be(TitleBuilder.buildTitle("Select an ATED chargeable period"))
-            document.getElementById("header").text() must include("Select an ATED chargeable period")
-            document.getElementById("details-text").text() must be("The chargeable period for a year runs from the 1 April to 31 March.")
-            document.getElementById("period-2015_field").text() must be("2015 to 2016")
-            document.getElementById("period-2016_field").text() must be("2016 to 2017")
+            document.getElementsByTag("h1").text() must include("Select an ATED chargeable period")
+            document.getElementById("period-hint").text() must be("The chargeable period for a year runs from the 1 April to 31 March.")
+            document.getElementsByAttributeValue("for", "period-7").text() must be("2015 to 2016")
+            document.getElementsByAttributeValue("for", "period-6").text() must be("2016 to 2017")
             document.getElementById("submit").text() must be("Continue")
           }
         }
@@ -187,11 +190,11 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
             document.title() must be(TitleBuilder.buildTitle("Select an ATED chargeable period"))
-            document.getElementById("header").text() must include("Select an ATED chargeable period")
-            document.getElementById("details-text").text() must be("The chargeable period for a year runs from the 1 April to 31 March.")
-            document.getElementById("period-2015_field").text() must be("2015 to 2016")
-            document.getElementById("period-2016_field").text() must be("2016 to 2017")
-            document.getElementById("period-2019_field").text() must be("2019 to 2020")
+            document.getElementsByTag("h1").text() must include("Select an ATED chargeable period")
+            document.getElementById("period-hint").text() must be("The chargeable period for a year runs from the 1 April to 31 March.")
+            document.getElementsByAttributeValue("for", "period-7").text() must be("2015 to 2016")
+            document.getElementsByAttributeValue("for", "period-6").text() must be("2016 to 2017")
+            document.getElementsByAttributeValue("for", "period-3").text() must be("2019 to 2020")
             document.getElementById("submit").text() must be("Continue")
           }
         }
@@ -201,12 +204,12 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
             document.title() must be(TitleBuilder.buildTitle("Select an ATED chargeable period"))
-            document.getElementById("header").text() must include("Select an ATED chargeable period")
-            document.getElementById("details-text").text() must be("The chargeable period for a year runs from the 1 April to 31 March.")
-            document.getElementById("period-2015_field").text() must be("2015 to 2016")
-            document.getElementById("period-2015").attr("checked") must be("checked")
-            document.getElementById("period-2016_field").text() must be("2016 to 2017")
-            document.getElementById("period-2017_field").text() must be("2017 to 2018")
+            document.getElementsByTag("h1").text() must include("Select an ATED chargeable period")
+            document.getElementById("period-hint").text() must be("The chargeable period for a year runs from the 1 April to 31 March.")
+            document.getElementsByAttributeValue("for", "period-7").text() must be("2015 to 2016")
+            assert(document.getElementById("period-7").outerHtml() contains "checked")
+            document.getElementsByAttributeValue("for", "period-6").text() must be("2016 to 2017")
+            document.getElementsByAttributeValue("for", "period-5").text() must be("2017 to 2018")
             document.getElementById("submit").text() must be("Continue")
           }
         }
@@ -223,11 +226,11 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
                 status(result) must be(BAD_REQUEST)
                 val doc = Jsoup.parse(contentAsString(result))
 
-                doc.getElementsByClass("error-notification").html() must include("Select an option for type of return")
-                contentAsString(result) must include("Select an option for type of return")
-                doc.getElementById("period-2015_field").text() must be("2015 to 2016")
-                doc.getElementById("period-2016_field").text() must be("2016 to 2017")
-                doc.getElementById("period-2017_field").text() must be("2017 to 2018")
+                doc.getElementsByClass("govuk-error-summary__list").html() must include("Select an option for type of return")
+                doc.getElementsByClass("govuk-error-message").html() must include("Select an option for type of return")
+                doc.getElementsByAttributeValue("for", "period-7").text() must be("2015 to 2016")
+                doc.getElementsByAttributeValue("for", "period-6").text() must be("2016 to 2017")
+                doc.getElementsByAttributeValue("for", "period-5").text() must be("2017 to 2018")
                 assert(doc.getElementById(s"period-${peakStartYear}_field") === null)
             }
           }
@@ -265,7 +268,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
               result =>
                 val document = Jsoup.parse(contentAsString(result))
                 status(result) must be(OK)
-                document.getElementById("content").text() must include
+                document.getElementById("message1").text() must include
                 "There are one or more people from your organisation signed in with the same Government Gateway details"
             }
           }

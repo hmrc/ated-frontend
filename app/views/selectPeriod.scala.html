@@ -17,36 +17,68 @@
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
 @import views.html.helpers._
+@import uk.gov.hmrc.govukfrontend.views.Implicits._
+@import views.ViewUtils.titleBuilder
 
-@this(atedMain: atedMain, formHelper: FormWithCSRF)
+@this(newMain: newMain,
+    formHelper: FormWithCSRF,
+    govukRadios: GovukRadios,
+    govukDetails : GovukDetails,
+    govukButton : GovukButton,
+    govukBackLink : GovukBackLink,
+    govukErrorSummary: GovukErrorSummary)
 @(selectPeriodForm: Form[SelectPeriod], periods: List[(String, String)],  serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
-@atedMain(title = messages("ated.select-period.title"),
-    serviceInfoContent = serviceInfoContent) {
+@items = @{
+   periods.map { case (value, label) =>
+        RadioItem(
+            content = Text(label),
+            value = Some(value)
+        )
+    }
+}
 
-  @pageHeadersAndError(backLink, "pre-heading", messages("ated.return-type.pre-header"), "header", messages("ated.select-period.header"),
-    Some(atedErrorSummary(selectPeriodForm, "ated.select-period.error.general")))
+@backLinkHtml = {
+    @if(backLink.isDefined) {
+        @govukBackLink(BackLink(
+            href = backLink.get,
+            content = Text("Back")
+        ))
+    }
+}
 
-  <p id="details-text">@messages("ated.select-period.text")</p>
+@newMain(title = titleBuilder(messages("ated.select-period.title"), Some(selectPeriodForm)), serviceInfoContent = serviceInfoContent) {
+
+  @backLinkHtml
+
+  @if(selectPeriodForm.errors.nonEmpty) {
+    @govukErrorSummary(ErrorSummary().withFormErrorsAsText(selectPeriodForm))
+  }
 
   @formHelper(action=controllers.routes.SelectPeriodController.submit) {
 
-  <div id="period">
-    @atedInputRadioGroupNew(selectPeriodForm("period"),
-    periods,
-    '_fieldsetAttributesHelpQuestion -> "showMoreYears",
-    '_legend -> messages("ated.select-period.header"),
-    '_fieldsetQuestion -> messages("ated.select-period.more-years"),
-    '_HelpQuestionAnswer -> Html(messages("ated.select-period.more-years.answer")),
-    '_labelClass -> "block-label",
-    '_legendClass -> "visuallyhidden",
-    '_groupClass -> "form-group",
-    '_labelAfter -> true
-    )
-  </div>
+   @govukRadios(
+       Radios(
+            hint = Some(Hint(
+                  content = Text(messages("ated.select-period.text"))
+                )),
+           items = items
+       ).withFormField(selectPeriodForm("period"))
+        .withHeadingAndSectionCaption(
+            heading = Text(messages("ated.select-period.header")),
+            sectionCaption = Text(messages("ated.return-type.pre-header"))
+        )
+   )
 
-  <button class="button" id="submit" type="submit">@messages("ated.return-type.button")</button>
+    @govukDetails(Details(
+        summary = Text(messages("ated.select-period.more-years")),
+        content = HtmlContent(messages("ated.select-period.more-years.answer"))
+    ))
 
+    @govukButton(Button(
+        content = Text(messages("ated.return-type.button")),
+        inputType = Some("submit"),
+        attributes = Map("id" -> "submit")
+    ))
   }
-
 }

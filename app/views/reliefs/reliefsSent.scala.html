@@ -21,7 +21,8 @@
 @import views.ViewUtils.titleBuilder
 @import views.ViewUtils.titleBuilder
 @this(newMain: newMain,
-      govukPanel : GovukPanel)
+      govukPanel : GovukPanel,
+      govukButton : GovukButton)
 
 @(periodKey: Int,
     serviceInfoContent: Html = HtmlFormat.empty,
@@ -36,7 +37,7 @@
   <p class="govuk-body" id="completed-returns">@messages("ated.reliefs-sent.completed-message")</p>
   <p class="govuk-body" id="email-confirmation">@messages("ated.reliefs-sent.email-message")<p>
 
-  <a style="font-size: 19px" class="govuk-link" href="@controllers.reliefs.routes.ReliefsSentController.viewPrintFriendlyReliefSent(periodKey)"
+  <a class="govuk-link govuk-!-font-size-19" href="@controllers.reliefs.routes.ReliefsSentController.viewPrintFriendlyReliefSent(periodKey)"
   id="print-friendly-relief-link" target="_blank">
     @messages("ated.reliefs-sent.print-link")
   </a>
@@ -61,8 +62,10 @@
   <p class="govuk-body">@messages("ated.reliefs-sent.change-circumstances.p3")</p>
 
   <div class="govuk-form-group govuk-!-padding-top-5">
-    <a href="@controllers.routes.AccountSummaryController.view()" id="account-link" role="button" class="govuk-button">
-      @messages("ated.reliefs-sent.client-link")
-    </a>
+      @govukButton(Button(
+          href = Some(controllers.routes.AccountSummaryController.view.url),
+          content = Text(messages("ated.reliefs-sent.client-link")),
+          attributes  = Map("id" -> "account-link")
+      ))
   </div>
 }

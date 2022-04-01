@@ -21,71 +21,70 @@
 @import views.html.helpers._
 @import play.twirl.api.HtmlFormat
 @import views.html.atedMain
+@import views.ViewUtils.titleBuilder
 
-@this(atedMain: atedMain)
+@this(newMain: newMain,
+    govukBackLink : GovukBackLink)
+
 
 @(periodKey: Int, currentSummaries: Option[PeriodSummaryReturns],
     previousSummaries: Option[PeriodSummaryReturns],
     organisationName: Option[String], serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
-@atedMain(title = messages("ated.period-summary.title", periodStartDate(periodKey).getYear.toString,
-    periodEndDate(periodKey).getYear.toString), serviceInfoContent = serviceInfoContent){
+@backLinkHtml = {
+    @if(backLink.isDefined) {
+        @govukBackLink(BackLink(
+            href = backLink.get,
+            content = Text("Back")
+        ))
+    }
+}
 
-    @pageHeadersAndError(
-        backLink, "period-summary-subheader", organisationName.getOrElse(""), "period-summary-header",
-        messages("ated.period-summary.header", periodStartDate(periodKey).toString(messages("ated.date-format.summary")),
-        periodEndDate(periodKey).toString(messages("ated.date-format.summary"))),
-        subHeaderPrefix = Some(messages("ated.screen-reader.section-name")))
-    <div class="tabbed">
-        <div class="form-group">
-            <ul id="tablist" class="ated-tabs">
+@newMain(title = titleBuilder(messages("ated.period-summary.title", periodStartDate(periodKey).getYear.toString,
+    periodEndDate(periodKey).getYear.toString)), serviceInfoContent = serviceInfoContent){
 
-                <li class="tablinks heading-small selected">
-                    <a id="current-returns" href="#current-returns-tab">
-                        @messages("ated.period-summary.tabs.current-returns")
-                    </a>
-                </li>
+@backLinkHtml
 
-                @if(previousSummaries.flatMap(_.submittedReturns.map(_.oldLiabilityReturns.nonEmpty))) {
+<header>
+    <h1 class="govuk-heading-xl">
+        <span class="govuk-caption-xl"><span class="govuk-visually-hidden">@messages("ated.screen-reader.section-name") </span>@organisationName.getOrElse("")</span>
+        @messages("ated.period-summary.header", periodStartDate(periodKey).toString(messages("ated.date-format.summary")),
+            periodEndDate(periodKey).toString(messages("ated.date-format.summary")))
+    </h1>
+</header>
 
-                <li class="tablinks heading-small noJsHide">
-                    <a id="past-returns" href="#past-returns-tab">
+    <div class="govuk-tabs" data-module="govuk-tabs">
+        <ul id="tablist" class="govuk-tabs__list">
+            <li class="govuk-tabs__list-item govuk-tabs__list-item--selected">
+                <a class="govuk-tabs__tab" id="current-returns" href="#current-returns-tab">
+                    @messages("ated.period-summary.tabs.current-returns")
+                </a>
+            </li>
+
+            @if(previousSummaries.flatMap(_.submittedReturns.map(_.oldLiabilityReturns.nonEmpty))) {
+
+                <li class="govuk-tabs__list-item">
+                    <a class="govuk-tabs__tab" id="past-returns" href="#past-returns-tab">
                         @messages("ated.period-summary.tabs.past-returns")
                     </a>
                 </li>
-                }
-            </ul>
+            }
+        </ul>
+
+        <div class="govuk-tabs__panel" id="current-returns-tab">
+
+            @periodSummaryTabHelper(currentSummaries, messages, periodKey)
+
+            <a href="@controllers.routes.PeriodSummaryController.createReturn(periodKey, fromAccountSummary = false)" id="create-return" class="govuk-link govuk-!-font-size-19">
+                @messages("ated.account-summary.create-return.link")
+            </a>
         </div>
 
-        <section id="current-returns-tab" class="tabcontent">
-            <div id="current-returns-tab-content">
-                @periodSummaryTabHelper(currentSummaries, messages, periodKey)
-                <br />
-                <a href="@controllers.routes.PeriodSummaryController.createReturn(periodKey, fromAccountSummary = false)" id="create-return">
-                    @messages("ated.account-summary.create-return.link")
-                </a>
-            </div>
-        </section>
+        <div class="govuk-tabs__panel" id="past-returns-tab">
 
-        <noscript>
-            @if(previousSummaries.flatMap(_.submittedReturns.map(_.oldLiabilityReturns.nonEmpty))) {
-            <div class="form-group"><br/>
-                <ul class="ated-tabs">
-                    <li class="tablinks heading-small selected">
-                        <a id="past-returns" href="#past-returns-tab">
-                            @messages("ated.period-summary.tabs.past-returns")
-                        </a>
-                    </li>
-                </ul>
-            </div>
-            }
-        </noscript>
+            @periodSummaryPastTabHelper(previousSummaries, messages, periodKey)
 
-        <section id="past-returns-tab" class="tabcontent">
-            <div id="previous-returns-tab-content">
-                @periodSummaryPastTabHelper(previousSummaries, messages, periodKey)
-            </div>
-        </section>
+        </div>
 
     </div>
 }

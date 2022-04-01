@@ -215,8 +215,8 @@ class FormBundleReturnControllerSpec extends PlaySpec with GuiceOneServerPerSuit
             document.title() must include("View return")
 
             assert(document.getElementById("submit").text() === "Change return")
-            document.getElementById("backLinkHref").text must be("Back")
-            document.getElementById("backLinkHref").attr("href") must be("/ated/period-summary/" + periodKey)
+            document.getElementsByClass("govuk-back-link").text must be("Back")
+            document.getElementsByClass("govuk-back-link").attr("href") must be("/ated/period-summary/" + periodKey)
         }
       }
     }

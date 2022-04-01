@@ -20,23 +20,26 @@ import config.ApplicationConfig
 import models._
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
-import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
+import org.scalatest.featurespec.AnyFeatureSpec
+import org.scalatest.{BeforeAndAfterEach, GivenWhenThen}
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Messages, MessagesApi}
+import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import play.twirl.api.Html
 import testhelpers.MockAuthUtil
 import utils.AtedConstants._
+import views.html.periodSummary
 
-class periodSummarySpec extends FeatureSpec with GuiceOneAppPerSuite with MockitoSugar
+class periodSummarySpec extends AnyFeatureSpec with GuiceOneAppPerSuite with MockitoSugar
   with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
 
-  implicit val request = FakeRequest()
+  implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
 
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
-  val injectedViewInstance = app.injector.instanceOf[views.html.periodSummary]
+  val injectedViewInstance: periodSummary = app.injector.instanceOf[views.html.periodSummary]
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
 
   val organisationName = "OrganisationName"
@@ -44,40 +47,40 @@ class periodSummarySpec extends FeatureSpec with GuiceOneAppPerSuite with Mockit
   val formBundleNo2 = "123456789013"
   val formBundleNo3 = "123456789014"
 
-  val draftReturns1 = DraftReturns(2015, "1", "desc", Some(BigDecimal(100.00)), TypeLiabilityDraft)
-  val draftReturns2 = DraftReturns(2015, "", "some relief", None, TypeReliefDraft)
+  val draftReturns1: DraftReturns = DraftReturns(2015, "1", "desc", Some(BigDecimal(100.00)), TypeLiabilityDraft)
+  val draftReturns2: DraftReturns = DraftReturns(2015, "", "some relief", None, TypeReliefDraft)
 
-  val submittedReliefReturns1 = SubmittedReliefReturns(formBundleNo1, "some relief",
+  val submittedReliefReturns1: SubmittedReliefReturns = SubmittedReliefReturns(formBundleNo1, "some relief",
     new LocalDate("2015-05-05"), new LocalDate("2015-05-05"), new LocalDate("2015-05-05"))
-  val submittedReliefReturns1Older = SubmittedReliefReturns(formBundleNo1, "some relief",
+  val submittedReliefReturns1Older: SubmittedReliefReturns = SubmittedReliefReturns(formBundleNo1, "some relief",
     new LocalDate("2015-05-05"), new LocalDate("2015-05-05"), new LocalDate("2015-04-05"))
-  val submittedLiabilityReturns1 = SubmittedLiabilityReturns(formBundleNo2, "addr1+2", BigDecimal(1234.00),
+  val submittedLiabilityReturns1: SubmittedLiabilityReturns = SubmittedLiabilityReturns(formBundleNo2, "addr1+2", BigDecimal(1234.00),
     new LocalDate("2015-05-05"), new LocalDate("2015-05-05"), new LocalDate("2015-05-05"), changeAllowed = true, "payment-ref-01")
-  val submittedLiabilityReturns2 = SubmittedLiabilityReturns(formBundleNo3, "addr1+2", BigDecimal(1234.00),
+  val submittedLiabilityReturns2: SubmittedLiabilityReturns = SubmittedLiabilityReturns(formBundleNo3, "addr1+2", BigDecimal(1234.00),
     new LocalDate("2015-05-05"), new LocalDate("2015-05-05"), new LocalDate("2015-06-06"), changeAllowed = true, "payment-ref-01")
 
-  val submittedReturns = SubmittedReturns(2015, Seq(submittedReliefReturns1, submittedReliefReturns1Older), Seq(submittedLiabilityReturns1))
-  val submittedReturnsWithOld = SubmittedReturns(2015, Seq(submittedReliefReturns1), Seq(submittedLiabilityReturns1), Seq(submittedLiabilityReturns2))
+  val submittedReturns: SubmittedReturns = SubmittedReturns(2015, Seq(submittedReliefReturns1, submittedReliefReturns1Older), Seq(submittedLiabilityReturns1))
+  val submittedReturnsWithOld: SubmittedReturns = SubmittedReturns(2015, Seq(submittedReliefReturns1), Seq(submittedLiabilityReturns1), Seq(submittedLiabilityReturns2))
 
-  val periodSummaryReturns = PeriodSummaryReturns(2015, Seq(draftReturns1, draftReturns2), Some(submittedReturns))
-  val periodSummaryReturnsWithOld = PeriodSummaryReturns(2015, Seq(draftReturns1, draftReturns2), Some(submittedReturnsWithOld))
-  val previousPeriodSummaryReturns = PeriodSummaryReturns(2015, Nil, Some(submittedReturnsWithOld))
+  val periodSummaryReturns: PeriodSummaryReturns = PeriodSummaryReturns(2015, Seq(draftReturns1, draftReturns2), Some(submittedReturns))
+  val periodSummaryReturnsWithOld: PeriodSummaryReturns = PeriodSummaryReturns(2015, Seq(draftReturns1, draftReturns2), Some(submittedReturnsWithOld))
+  val previousPeriodSummaryReturns: PeriodSummaryReturns = PeriodSummaryReturns(2015, Nil, Some(submittedReturnsWithOld))
 
-  val currentReturnsTabText = "address, addr1+2 Status Submitted View or change relief type, " +
+  val currentReturnsTabText: String = "address, addr1+2 Status Submitted View or change relief type, " +
     "some relief Status Submitted View or change relief type, " +
     "some relief Status Submitted View or change address, " +
     "desc Status Draft View or change address, " +
-    "some relief Status Draft View or change Create a new return"
+    "some relief Status Draft View or change"
 
-  val currentReturnsTabTextWithOld = "address, addr1+2 Status Submitted View or change relief type," +
+  val currentReturnsTabTextWithOld: String = "address, addr1+2 Status Submitted View or change relief type," +
     " some relief Status Submitted View or change address," +
     " desc Status Draft View or change address, " +
-    "some relief Status Draft View or change Create a new return"
+    "some relief Status Draft View or change"
 
-  val previousReturnsTabText = "address, addr1+2 Status Submitted View or change relief type," +
+  val previousReturnsTabText: String = "address, addr1+2 Status Submitted View or change relief type," +
     " some relief Status Submitted View or change"
 
-  feature("The user can view their returns") {
+  Feature("The user can view their returns") {
     info("as a client i want to be able to view my returns")
 
     scenario("Show no return data if we have no returns") {
@@ -97,20 +100,20 @@ class periodSummarySpec extends FeatureSpec with GuiceOneAppPerSuite with Mockit
       assert(document.getElementById("current-returns").text() === "Current returns")
       assert(document.getElementById("past-returns") === null)
 
-      Then("The table should have no data")
+      Then("The summary list should have no data")
       assert(document.getElementById("view-edit-0") === null)
       assert(document.getElementById("liability-submitted-0") === null)
       assert(document.getElementById("relief-submitted-0") === null)
       assert(document.getElementById("draft-liability-0") === null)
       assert(document.getElementById("draft-relief-1") === null)
 
-      assert(document.getElementById("backLinkHref").text === "Back")
+      assert(document.getElementsByClass("govuk-back-link").text === "Back")
 
       Then("add the link to create a return")
       assert(document.getElementById("create-return").text() === "Create a new return")
     }
 
-    scenario("Show the current returns tab without the previous returns tab when there are no previous returns") {
+    Scenario("Show the current returns tab without the previous returns tab when there are no previous returns") {
 
       Given("The client has no previous returns")
       When("The user views the page")
@@ -126,17 +129,17 @@ class periodSummarySpec extends FeatureSpec with GuiceOneAppPerSuite with Mockit
       assert(document.getElementById("current-returns").text() === "Current returns")
       assert(document.getElementById("past-returns") === null)
 
-      Then("The table should have data")
+      Then("The summary list should have data")
       assert(document.getElementById("current-returns-tab-content").text() === currentReturnsTabText)
-      assert(document.select("#previous-liability-submitted-0").text() === "View or change")
-      assert(document.select("#previous-liability-submitted-0 a").attr("href") === s"/ated/form-bundle/123456789013/2015")
-      assert(document.getElementById("previous-liability-submitted-0").text() === "View or change")
+      assert(document.getElementById("create-return").text() === "Create a new return")
+      assert(document.select("#current-liability-submitted-0").text() === "View or change")
+      assert(document.select("#current-liability-submitted-0").attr("href") === s"/ated/form-bundle/123456789013/2015")
 
-      assert(document.getElementById("backLinkHref").text() === "Back")
-      assert(document.getElementById("backLinkHref").attr("href") === "http://backlink")
+      assert(document.getElementsByClass("govuk-back-link").text === "Back")
+      assert(document.getElementsByClass("govuk-back-link").attr("href") === "http://backlink")
     }
 
-    scenario("Show both the current returns tab and the previous returns tab when there are previous returns.") {
+    Scenario("Show both the current returns tab and the previous returns tab when there are previous returns.") {
 
       Given("the client has no returns")
       When("The user views the page")
@@ -152,21 +155,22 @@ class periodSummarySpec extends FeatureSpec with GuiceOneAppPerSuite with Mockit
       assert(document.getElementById("current-returns").text() === "Current returns")
       assert(document.getElementById("past-returns").text() === "Past returns")
 
-      Then("The table should have data")
+      Then("The summary list should have data")
       assert(document.getElementById("current-returns-tab-content").text() === currentReturnsTabTextWithOld)
+      assert(document.getElementById("create-return").text() === "Create a new return")
       assert(document.getElementById("previous-returns-tab-content").text() === previousReturnsTabText)
       assert(document.getElementById("previous-relief-submitted-0").text() === "View or change")
-      assert(document.getElementById("previous-draft-liability-0").text() === "View or change")
+      assert(document.getElementById("current-draft-liability-0").text() === "View or change")
 
-      assert(document.getElementById("previous-draft-relief-1").text() === "View or change")
+      assert(document.getElementById("current-draft-relief-1").text() === "View or change")
 
       assert(document.getElementById("previous-liability-submitted-0").text() === "View or change")
 
-      assert(document.select("#previous-liability-submitted-0 a").attr("href") === s"/ated/form-bundle/123456789013/2015")
+      assert(document.select("#current-liability-submitted-0").attr("href") === s"/ated/form-bundle/123456789013/2015")
 
       Then("Show the back link")
-      assert(document.getElementById("backLinkHref").text() === "Back")
-      assert(document.getElementById("backLinkHref").attr("href") === "http://backlink")
+      assert(document.getElementsByClass("govuk-back-link").text === "Back")
+      assert(document.getElementsByClass("govuk-back-link").attr("href") === "http://backlink")
 
       Then("add the link to create a return")
       assert(document.getElementById("create-return").text() === "Create a new return")
