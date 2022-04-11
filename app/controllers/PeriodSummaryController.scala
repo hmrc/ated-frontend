@@ -33,8 +33,7 @@ class PeriodSummaryController @Inject()(mcc: MessagesControllerComponents,
                                         subscriptionDataService: SubscriptionDataService,
                                         serviceInfoService: ServiceInfoService,
                                         val backLinkCacheConnector: BackLinkCacheConnector,
-                                        template: views.html.periodSummary,
-                                        templatePastReturns: views.html.periodSummaryPastReturns)
+                                        template: views.html.periodSummary)
                                        (implicit val appConfig: ApplicationConfig)
 
   extends FrontendController(mcc) with BackLinkController with ControllerIds {
@@ -52,19 +51,6 @@ class PeriodSummaryController @Inject()(mcc: MessagesControllerComponents,
         val currentSummaries = periodSummaries.map(summaryReturnsService.filterPeriodSummaryReturnReliefs(_, past = false))
         val previousSummaries = periodSummaries.map(summaryReturnsService.filterPeriodSummaryReturnReliefs(_, past = true))
         Ok(template(periodKey, currentSummaries,previousSummaries, organisationName, serviceInfoContent, getBackLink(periodKey)))
-      }
-    }
-  }
-
-  def viewPastReturns(periodKey: Int): Action[AnyContent] = Action.async { implicit request =>
-    authAction.authorisedAction { implicit authContext =>
-      for {
-        periodSummaries <- summaryReturnsService.getPeriodSummaryReturns(periodKey)
-        organisationName <- subscriptionDataService.getOrganisationName
-        serviceInfoContent <- serviceInfoService.getPartial
-      } yield {
-        val filteredSummaries = periodSummaries.map(summaryReturnsService.filterPeriodSummaryReturnReliefs(_, past = true))
-        Ok(templatePastReturns(periodKey, filteredSummaries, organisationName, serviceInfoContent, getBackLink(periodKey)))
       }
     }
   }
