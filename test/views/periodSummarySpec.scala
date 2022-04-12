@@ -80,7 +80,7 @@ class periodSummarySpec extends FeatureSpec with GuiceOneAppPerSuite with Mockit
   feature("The user can view their returns") {
     info("as a client i want to be able to view my returns")
 
-    scenario("Show None if we have no returns") {
+    scenario("Show no return data if we have no returns") {
 
       Given("the client has no returns")
       When("The user views the page")
@@ -93,7 +93,7 @@ class periodSummarySpec extends FeatureSpec with GuiceOneAppPerSuite with Mockit
       Then("The header should match - Your ATED returns for 2015 to 2016")
       assert(document.title() === "Your ATED returns for 2015 to 2016 - GOV.UK")
 
-      Then("We should only have the current tab")
+      Then("We should only have the current tab visible")
       assert(document.getElementById("current-returns").text() === "Current returns")
       assert(document.getElementById("past-returns") === null)
 

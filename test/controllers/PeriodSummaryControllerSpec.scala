@@ -16,8 +16,6 @@
 
 package controllers
 
-import java.util.UUID
-
 import builders.SessionBuilder
 import config.ApplicationConfig
 import connectors.BackLinkCacheConnector
@@ -40,8 +38,9 @@ import services.{ServiceInfoService, SubscriptionDataService, SummaryReturnsServ
 import testhelpers.MockAuthUtil
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
-import views.html.{BtaNavigationLinks, periodSummary, periodSummaryPastReturns}
+import views.html.{BtaNavigationLinks, periodSummary}
 
+import java.util.UUID
 import scala.concurrent.Future
 
 class PeriodSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with MockAuthUtil {
@@ -62,7 +61,6 @@ class PeriodSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite w
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
   val injectedViewInstance: periodSummary = app.injector.instanceOf[views.html.periodSummary]
-  val injectedViewInstancePast: periodSummaryPastReturns = app.injector.instanceOf[views.html.periodSummaryPastReturns]
 
   val periodKey: Int = 2015
   val organisationName: String = "OrganisationName"
@@ -84,8 +82,7 @@ class PeriodSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite w
       mockSubscriptionDataService,
       mockServiceInfoService,
       mockBackLinkCacheConnector,
-      injectedViewInstance,
-      injectedViewInstancePast
+      injectedViewInstance
     )
     def createReturnWithAuthorisedUser()(test: Future[Result] => Any) {
       val userId = s"user-${UUID.randomUUID}"
@@ -129,16 +126,22 @@ class PeriodSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite w
       test(result)
     }
 
-    def getWithAuthorisedUserPastReturns(periodSummaries: Option[PeriodSummaryReturns] = None)(test: Future[Result] => Any) {
+    def getWithAuthorisedUserPastTab(periodSummaries: Option[PeriodSummaryReturns] = None)(test: Future[Result] => Any) {
       val period: Int = 2015
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
+      when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(btaNavigationLinksView()(messages,mockAppConfig)))
       when(mockSummaryReturnsService.getPeriodSummaryReturns(ArgumentMatchers.eq(period))(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(periodSummaries))
+
+      periodSummaries.foreach{periodSum =>
+        when(mockSummaryReturnsService.filterPeriodSummaryReturnReliefs(periodSum, past = true))
+      }
+
       when(mockSubscriptionDataService.getOrganisationName(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(organisationName)))
 
-      val result = testPeriodSummaryController.viewPastReturns(periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
+      val result = testPeriodSummaryController.view(periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
 
@@ -217,7 +220,7 @@ class PeriodSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite w
         }
 
         "show the period summary view post return" in new Setup {
-          getWithAuthorisedUserPastReturns(None) { result =>
+          getWithAuthorisedUserPastTab(None) { result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
             document.title() must include("Your ATED returns for")
