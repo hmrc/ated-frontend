@@ -47,7 +47,7 @@ class bankDetailsSpec extends AnyFeatureSpec with GuiceOneAppPerSuite with Mocki
 
     Scenario("allow indicating bank details status") {
 
-      Given("the client is prompted to add thier bank details")
+      Given("the client is prompted to add their bank details")
       When("The user views the page")
 
       val html = injectedViewInstance(bankDetailsForm, "1", Html(""), Some("http://backLink"))

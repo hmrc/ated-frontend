@@ -171,12 +171,12 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
-              document.getElementById("property-details-header").text() must be("Was the property professionally valued?")
+              document.getElementsByTag("h1").text.contains("Was the property professionally valued?") must be(true)
 
-              document.getElementById("backLinkHref").text must be("Back")
-              document.getElementById("backLinkHref").attr("href") must include("http://backlink")
+              document.getElementsByClass("govuk-back-link").text must be("Back")
+              document.getElementsByClass("govuk-back-link").attr("href") must include("http://backlink")
 
-              document.getElementById("isValuedByAgent").text() must be("Yes No")
+              document.getElementsByClass("govuk-label govuk-radios__label").text() must be("Yes No")
               assert(document.getElementById("service-info-list").text() === "Home Manage account Messages Help and contact")
           }
         }
@@ -187,9 +187,10 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
-              document.getElementById("property-details-header").text() must be("Was the property professionally valued?")
+              document.getElementsByTag("h1").text.contains("Was the property professionally valued?") must be(true)
 
-              document.getElementById("isValuedByAgent").text() must be("Yes No")
+              document.getElementsByAttributeValue("for", "isValuedByAgent").text must be("Yes")
+              document.getElementsByAttributeValue("for", "isValuedByAgent-2").text must be("No")
           }
         }
       }

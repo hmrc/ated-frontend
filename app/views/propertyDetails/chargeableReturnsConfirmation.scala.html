@@ -17,53 +17,61 @@
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
 @import uk.gov.hmrc.play.views.formatting.Money.pounds
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
+@import views.ViewUtils.titleBuilder
 
-@this(atedMain: atedMain)
+@this(newMain: newMain,
+        govukButton : GovukButton,
+        govukPanel : GovukPanel)
+
 @(returnResponse: SubmitReturnsResponse, serviceInfoContent: Html = HtmlFormat.empty)(
         implicit authContext: StandardAuthRetrievals, messages: Messages,
         request: Request[AnyContent], appConfig: ApplicationConfig)
 
-@atedMain(title = messages("ated.chargeable-return-confirmation.title"),
+@newMain(title = titleBuilder(messages("ated.chargeable-return-confirmation.title")),
           serviceInfoContent = serviceInfoContent) {
 
-  <div id="banner" class="transaction-banner--complete form-group">
-    <h1 class="heading-large" id="value-text">
-      @messages("ated.chargeable-return-confirmation.submitted.text")
-    </h1>
-  </div>
+@govukPanel(Panel(
+    content = HtmlContent(messages("ated.chargeable-return-confirmation.submitted.text"))
+))
 
-  <div class="form-group">
+    <p class="govuk-body">@messages("ated.chargeable-return-confirmation.completed.message")</p>
 
-    <p id="completed-message">@messages("ated.chargeable-return-confirmation.completed.message")</p>
-    <p id="email-message">@messages("ated.chargeable-return-confirmation.email.message")</p>
-
-    <a href="@controllers.propertyDetails.routes.ChargeableReturnConfirmationController.viewPrintFriendlyChargeableConfirmation"
+    <p class="govuk-body">@messages("ated.chargeable-return-confirmation.email.message")</p>
+  
+    <br>
+    <a class="govuk-link" href="@controllers.propertyDetails.routes.ChargeableReturnConfirmationController.viewPrintFriendlyChargeableConfirmation"
     id="print-friendly-relief-link" target="_blank">
       @messages("ated.reliefs-sent.print-link")
     </a>
-  </div>
+    </br>
 
-  <div class="divider--top--thick"></div>
-  <h2 id="receipt-message-title" class="heading-medium">@messages("ated.chargeable-return-confirmation.charge.heading")</h2>
+  <br>
+  <h2 class="govuk-heading-m" id="receipt-message-title" class="heading-medium">@messages("ated.chargeable-return-confirmation.charge.heading")</h2>
 
-  <p id="adjusted-amount">@messages("ated.chargeable-return-confirmation.amount.message")</p>
+  <p class="govuk-body" id="adjusted-amount">@messages("ated.chargeable-return-confirmation.amount.message")</p>
 
   @returnResponse.liabilityReturnResponse.map { liabilityReturnResponse =>
-    <p id="owed-amount">@Html(messages("ated.chargeable-return-confirmation.owe.text",
+    <p class="govuk-body" id="owed-amount">@Html(messages("ated.chargeable-return-confirmation.owe.text",
         pounds(liabilityReturnResponse.head.liabilityAmount)))</p>
-    <p id="reference-text">@Html(messages("ated.chargeable-return-confirmation.reference.text",
+    <p class="govuk-body" id="reference-text">@Html(messages("ated.chargeable-return-confirmation.reference.text",
         liabilityReturnResponse.head.paymentReference.getOrElse("")))</p>
-    <p id="late-payment">@Html(messages("ated.chargeable-return-late-payment.text"))</p>
+    <p class="govuk-body" id="late-payment">@Html(messages("ated.chargeable-return-late-payment.text"))</p>
   }
 
-  <div class="form-group">
-    <p id="not-receive-email">
-      @messages("ated.chargeable-return-confirmation.not-receive-text")
-    </p>
-  </div>
 
-  <a href="@controllers.routes.AccountSummaryController.view" id="submit" role="button" class="button">
+  <p class="govuk-body" class="govuk-body" id="not-receive-email">
+    @messages("ated.chargeable-return-confirmation.not-receive-text")
+  </p>
+  </br>
+
+  <div>
+    <br>
+    <a class="govuk-link" href="@controllers.routes.AccountSummaryController.view" id="submit" role="button" class="button">
     @messages("ated.chargeable-return-confirmation.back-to-ated-link.text")
   </a>
+    </br>
+  </div>
 
 }

@@ -22,6 +22,7 @@ import models.StandardAuthRetrievals
 import org.joda.time.format.DateTimeFormat
 import org.joda.time.{DateTimeZone, LocalDate}
 import org.jsoup.Jsoup
+import org.scalatest.featurespec.AnyFeatureSpecLike
 import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
@@ -31,7 +32,7 @@ import testhelpers.MockAuthUtil
 import utils.PeriodUtils
 import utils.PeriodUtils._
 
-class propertyDetailsPrintFriendlySpec extends FeatureSpec with GuiceOneServerPerSuite with MockitoSugar
+class propertyDetailsPrintFriendlySpec extends AnyFeatureSpecLike with GuiceOneServerPerSuite with MockitoSugar
   with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
 
   implicit val request = FakeRequest()
@@ -43,11 +44,11 @@ implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetr
   val nextYear = thisYear + 1
 
   def formatDate(date: LocalDate): String = DateTimeFormat.forPattern("d MMMM yyyy").withZone(DateTimeZone.forID("Europe/London")).print(date)
-  feature("The user can view their property details summary before they submit it") {
+  Feature("The user can view their property details summary before they submit it") {
 
     info("as a client i want to be my property details summary")
 
-    scenario("return the basic summary with periods") {
+    Scenario("return the basic summary with periods") {
 
       Given("the client is creating a new liability and want to add multiple periods")
       When("The user views the page")
@@ -93,7 +94,7 @@ implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetr
       assert(document.getElementById("ated-charge-value").text() === "£1,000")
     }
 
-    scenario("return the basic summary with no periods") {
+    Scenario("return the basic summary with no periods") {
 
       Given("the client is creating a new liability and want to add multiple periods")
       When("The user views the page")

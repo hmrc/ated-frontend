@@ -16,6 +16,7 @@
 
 package views.html.propertyDetails
 
+import builders.TitleBuilder
 import config.ApplicationConfig
 import forms.PropertyDetailsForms
 import models.StandardAuthRetrievals
@@ -28,6 +29,8 @@ class PropertyDetailsValueAcquiredSpec extends AtedViewSpec with MockAuthUtil {
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
   implicit val appConfig: ApplicationConfig = mock[ApplicationConfig]
   val injectedViewInstance = app.injector.instanceOf[views.html.propertyDetails.propertyDetailsValueAcquired]
+  private val form = PropertyDetailsForms.propertyDetailsValueAcquiredForm
+  override def view: Html = injectedViewInstance("0", 0,form, None, Html(""), Some("backLink"), testDate)
 
   val testDate = new LocalDate("2020-03-11")
   val testDay = "11"
@@ -37,34 +40,43 @@ class PropertyDetailsValueAcquiredSpec extends AtedViewSpec with MockAuthUtil {
   val testURLid = "0"
   val testURLPeriod = "0"
 
+  "The Property Details Professionally Valued View page" must {
+    "have a the correct page title" in {
+      doc.title mustBe TitleBuilder.buildTitle(messages("ated.property-details-value.valueAcquired.title", testDay , testMonth, testYear))
+    }
+    "have the correct page header" in {
+      doc.title mustBe TitleBuilder.buildTitle(messages("ated.property-details-value.valueAcquired.header",testDay, testMonth, testYear))
+    }
+    "have the correct pre heading" in {
+      doc.title(messages("ated.property-details.pre-header"))
+    }
+    "have a backlink" in {
+      doc.getElementsByClass("govuk-back-link").text mustBe "Back"
+    }
+    "have a continue button" in {
+      doc.getElementsByClass("govuk-button").text mustBe "Save and continue"
+    }
+    "have the correct hint" in {
+      doc.getElementById("acquiredValue-hint").text mustBe "Enter the value in GBP, for example £1,500,000"
+    }
+    "have the correct date input classes" in {
+      doc.getElementById("acquiredValue").className mustBe "govuk-input govuk-input--width-10"
+    }
+    "have the correct erroors when no value has been provided" in {
+      val form = PropertyDetailsForms.propertyDetailsValueAcquiredForm.withError("acquiredValue",
+        "ated.property-details-value-error.valueAcquired.emptyValue")
 
-  "Property Details Value Acquired Value view" must {
-    behave like pageWithTitle(messages("ated.property-details-value.valueAcquired.title", testDay , testMonth, testYear))
-    behave like pageWithHeader(messages("ated.property-details-value.valueAcquired.header",testDay, testMonth, testYear))
-    behave like pageWithElement("acquiredValue")
-    behave like pageWithBackLink
-    behave like pageWithContinueButtonForm(s"/ated/liability/create/value-acquired/save/$testURLid/period/$testURLPeriod/date/$testDateString")
+      val newDoc = doc(injectedViewInstance("0", 0, form, None, Html(""), Some("backLink"), testDate))
+
+      newDoc.getElementsMatchingOwnText(messages("ated.property-details-value-error.valueAcquired.emptyValue")).hasText mustBe true
+
+    }
+    "have the correct error when the value is in an invalid format" in {
+      val form = PropertyDetailsForms.propertyDetailsValueAcquiredForm.withError("acquiredValue",
+        "ated.property-details-value-error.valueAcquired.invalidValue")
+
+      val newDoc = doc(injectedViewInstance("0", 0,form,None, Html(""), Some("backLink"), testDate))
+      newDoc.getElementsMatchingOwnText(messages("ated.property-details-value-error.valueAcquired.invalidValue")).hasText mustBe true
+    }
   }
-
-  "return an error when no value has been provided" in {
-    val form = PropertyDetailsForms.propertyDetailsValueAcquiredForm.withError("acquiredValue",
-      "ated.property-details-value-error.valueAcquired.emptyValue")
-
-    val newDoc = doc(injectedViewInstance("0", 0, form, None, Html(""), Some("backLink"), testDate))
-
-    newDoc.getElementsMatchingOwnText(messages("ated.property-details-value-error.valueAcquired.emptyValue")).hasText mustBe true
-
-  }
-
-  "return an error when the value is in an invalid format" in {
-    val form = PropertyDetailsForms.propertyDetailsValueAcquiredForm.withError("acquiredValue",
-      "ated.property-details-value-error.valueAcquired.invalidValue")
-
-    val newDoc = doc(injectedViewInstance("0", 0,form,None, Html(""), Some("backLink"), testDate))
-    newDoc.getElementsMatchingOwnText(messages("ated.property-details-value-error.valueAcquired.invalidValue")).hasText mustBe true
-  }
-
-  private val form = PropertyDetailsForms.propertyDetailsValueAcquiredForm
-  override def view: Html = injectedViewInstance("0", 0,form, None, Html(""), Some("backLink"), testDate)
-
 }

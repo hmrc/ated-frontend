@@ -17,43 +17,73 @@
 @import models._
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
-
-@this(atedMain: atedMain, formHelper: FormWithCSRF)
-@(id: String, periodKey: Int, propertyDetailsForm: Form[PropertyDetailsTitle], mode: Option[String], serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
-@import uk.gov.hmrc.play.views.html.helpers._
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
+@import views.ViewUtils.titleBuilder
 @import views.html.helpers._
 @import _root_.utils._
 
+@this(newMain: newMain,
+    formHelper: FormWithCSRF,
+    govukInput : GovukInput,
+    govukButton : GovukButton,
+    govukDetails : GovukDetails,
+    govukBackLink : GovukBackLink,
+    govukErrorSummary : GovukErrorSummary)
+
+
+
+@(id: String, periodKey: Int, propertyDetailsForm: Form[PropertyDetailsTitle], mode: Option[String], serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
+
 @implicitFormInstance = @{ Some(propertyDetailsForm) }
 
+@backLinkHtml = {
+    @if(backLink.isDefined) {
+        @govukBackLink(BackLink(
+        href = backLink.get,
+        content = Text("Back")
+        ))
+    }
+}
 
-@atedMain(title = messages("ated.property-details.title.title"),
+@newMain(title = titleBuilder(messages("ated.property-details.title.title")),
           serviceInfoContent = serviceInfoContent) {
 
-  @pageHeadersAndError(backLink, "pre-heading", messages(AtedUtils.getPropertyDetailsPreHeader(mode)), "property-details-header", messages("ated.property-details.title.header"),
-      Some(atedErrorSummary(propertyDetailsForm, "ated.property-details-address-error.general")))
+@backLinkHtml
+
+    @if(propertyDetailsForm.errors.nonEmpty) {
+        @govukErrorSummary(ErrorSummary().withFormErrorsAsText(propertyDetailsForm))
+    }
+
+    <header>
+        <h1 class="govuk-heading-l">
+            <span class="govuk-caption-l"><span class="govuk-visually-hidden">@messages("ated.screen-reader.section") </span>@messages(AtedUtils.getPropertyDetailsPreHeader(mode))</span>
+            @messages("ated.property-details.title.header")
+        </h1>
+    </header>
 
   @formHelper(action=controllers.propertyDetails.routes.PropertyDetailsTitleController.save(id, periodKey, mode)) {
 
-    <p id="title-text">@messages("ated.property-details.references")</p>
+    <p class="govuk-body">@messages("ated.property-details.references")</p>
 
-    <details>
-        <summary id="titleNumber-reveal" class="summary">
-            @messages("ated.property-details-titleNumber.reveal")
-        </summary>
-        <div class="panel-indent">
-            <p id="titleNumber-text">@Html(messages("ated.property-details-titleNumber-reveal.text"))</p>
-        </div>
-    </details>
+    @govukDetails(Details(
+        summary = Text(messages("ated.property-details-titleNumber.reveal")),
+        content = HtmlContent(messages("ated.property-details-titleNumber-reveal.text"))
+    ))
 
-    @atedInputNew(propertyDetailsForm("titleNumber"),
-        '_label -> messages("ated.propertyReference.titleNumber"),
-        '_labelClass -> "visuallyhidden",
-        '_hintText -> messages("ated.propertyReference.titleNumber.hint"),
-        '_id -> "references.titleNumber",
-        '_showConstraints -> false)
+    @govukInput(Input(
+        label = Label(
+            content = Text(messages("ated.propertyReference.titleNumber"))
+        ),
+            hint = Some(Hint(content = Text(messages("ated.propertyReference.titleNumber.hint"))))
+        ).withFormField(propertyDetailsForm("titleNumber")
+    ))
 
-    <button class="button" id="submit" type="submit">@messages("ated.save-and-continue")</button>
+@govukButton(Button(
+content = Text(messages("ated.save-and-continue")),
+attributes = Map("id" -> "submit")
+))
+
   }
 
 }

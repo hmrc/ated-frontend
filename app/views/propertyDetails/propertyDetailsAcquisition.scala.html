@@ -17,55 +17,71 @@
 @import models._
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
+@import views.ViewUtils.titleBuilder
+@import views.html.helpers._
+@import _root_.utils._
 
-@this(atedMain: atedMain, formHelper: FormWithCSRF)
+@this(newMain: newMain,
+     govukButton : GovukButton,
+     govukRadios : GovukRadios,
+     govukBackLink : GovukBackLink,
+     govukErrorSummary : GovukErrorSummary,
+     govukDetails : GovukDetails,
+     govukInput : GovukInput,
+    formHelper: FormWithCSRF)
+
 @(id: String, periodKey: Int, propertyDetailsForm: Form[PropertyDetailsAcquisition],
   mode: Option[String],
   serviceInfoContent: Html = HtmlFormat.empty,
   backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
-@import uk.gov.hmrc.play.views.html.helpers._
-@import views.html.helpers._
-@import _root_.utils._
 
 @implicitFormInstance = @{
   Some(propertyDetailsForm)
 }
 
-@atedMain(title = messages("ated.property-details-value.anAcquisition.title"),
+@backLinkHtml = {
+    @if(backLink.isDefined) {
+        @govukBackLink(BackLink(
+        href = backLink.get,
+        content = Text("Back")
+        ))
+    }
+}
+
+@newMain(title = titleBuilder(messages("ated.property-details-value.anAcquisition.title"), Some(propertyDetailsForm)),
           serviceInfoContent = serviceInfoContent) {
 
-  @pageHeadersAndError(backLink, messages("pre-heading"), messages(AtedUtils.getPropertyDetailsPreHeader(mode)), messages("property-details-header"), messages("ated.property-details-value.anAcquisition.header"),
-      Some(atedErrorSummary(propertyDetailsForm, messages("ated.property-details-value-error.general"))))
+@backLinkHtml
 
-    <details>
-        <summary id="anAcquisition-reveal" class="summary">
-            @messages("ated.property-details-value.anAcquisition.what")
-        </summary>
-        <div class="panel-indent">
-            <p id="anAcquisition-text-1">@messages("ated.property-details-value.anAcquisition.what.text1")</p>
-            <p id="anAcquisition-text-2">@messages("ated.property-details-value.anAcquisition.what.text2")</p>
-            <p id="anAcquisition-text-3">@Html(messages("ated.property-details-value.anAcquisition.what.text3"))</p>
-        </div>
-    </details>
+  @if(propertyDetailsForm.errors.nonEmpty) {
+    @govukErrorSummary(ErrorSummary().withFormErrorsAsText(propertyDetailsForm))
+  }
 
+   <header>
+      <h1 class="govuk-heading-l">
+          <span class="govuk-caption-l"><span class="govuk-visually-hidden">@messages("ated.screen-reader.section") </span>@messages(AtedUtils.getPropertyDetailsPreHeader(mode))</span>
+          @messages("ated.property-details-value.anAcquisition.title", PeriodUtils.calculateLowerTaxYearBoundary(periodKey).getYear.toString)
+      </h1>
+   </header>
+
+   @govukDetails(Details(
+    summary = Text(messages("ated.property-details-value.anAcquisition.what")),
+    content = HtmlContent(messages("ated.property-details-value.anAcquisition.what.text1") + messages("ated.property-details-value.anAcquisition.what.text2") + messages("ated.property-details-value.anAcquisition.what.text3"))
+  ))
 
     @formHelper(action = controllers.propertyDetails.routes.PropertyDetailsAcquisitionController.save(id, periodKey, mode)) {
 
-      <div class="form-group" id="anAcquisition">
-      @atedInputRadioGroupNew(
-        propertyDetailsForm("anAcquisition"),
-        Seq("true" -> messages("ated.property-details-value.yes"),
-          "false" -> messages("ated.property-details-value.no")),
-        '_fieldsetAttributesHelpQuestion -> "anAcquisition-help-question",
-        '_legend -> messages("ated.property-details-value.anAcquisition.header"),
-          '_legendClass -> "visuallyhidden",
-        '_groupClass -> "inline",
-        '_labelClass -> "block-label",
-        '_labelAfter -> true
-      )
-      </div>
+            @govukRadios(Radios(items = Seq(RadioItem(content = Text(messages("ated.property-details-value.yes")), value = Some("true")), 
+                                  RadioItem(content = Text(messages("ated.property-details-value.no")),  value = Some("false")))
+                                  ).withFormField(propertyDetailsForm("anAcquisition"))
+                                )
 
-      <button class="button" id="submit" type="submit" >@messages("ated.save-and-continue")</button>
+@govukButton(Button(
+content = Text(messages("ated.save-and-continue")),
+attributes = Map("id" -> "submit")
+))
 
 
   }

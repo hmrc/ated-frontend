@@ -20,7 +20,8 @@ import builders.PropertyDetailsBuilder
 import config.ApplicationConfig
 import models.{PropertyDetailsAddress, StandardAuthRetrievals}
 import org.jsoup.Jsoup
-import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
+import org.scalatest.featurespec.AnyFeatureSpec
+import org.scalatest.{BeforeAndAfterEach, GivenWhenThen}
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Messages, MessagesApi}
@@ -28,44 +29,43 @@ import play.api.test.FakeRequest
 import play.twirl.api.Html
 import testhelpers.MockAuthUtil
 
-class confirmAddressSpec extends FeatureSpec with GuiceOneAppPerSuite with MockitoSugar
+class confirmAddressSpec extends AnyFeatureSpec with GuiceOneAppPerSuite with MockitoSugar
   with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
 
   implicit val request = FakeRequest()
   implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
-implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
+  implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
   val injectedViewInstance = app.injector.instanceOf[views.html.propertyDetails.confirmAddress]
 
-  feature("The user can view their property address details before they confirm and continue") {
+  Feature("The user can view their property address details before they confirm and continue") {
 
     info("as a client I want to view my property address details")
 
-    scenario("return the property address") {
+    Scenario("return the property address") {
 
       Given("the client has entered an address")
       When("The user views the confirm address page")
       val propertyDetails: PropertyDetailsAddress = PropertyDetailsBuilder.getPropertyDetailsAddress(postCode = Some("XX1 1XX"))
       val html = injectedViewInstance("1", 2015, propertyDetails, mode = None, Html(""), Some("http://backLink"))
       val document = Jsoup.parse(html.toString())
-
       Then("The header should match - Confirm address")
-      assert(document.getElementById("confirm-address-header").text() === "Confirm address")
+      assert(document.getElementsByTag("h1").text() contains  "Confirm address")
 
       Then("The subheader should be - Create return")
-      assert(document.getElementById("pre-heading").text() === "This section is: Create return")
+      assert(document.getElementsByTag("h1").text() contains  "This section is: Create return")
 
-      assert(document.getElementById("address-line1").text() === "addr1")
-      assert(document.getElementById("address-line2").text() === "addr2")
-      assert(document.getElementById("address-line3").text() === "addr3")
-      assert(document.getElementById("address-line4").text() === "addr4")
-      assert(document.getElementById("postcode").text() === "XX1 1XX")
+      assert(document.getElementById("address").text() contains  "addr1")
+      assert(document.getElementById("address").text() contains "addr2")
+      assert(document.getElementById("address").text() contains "addr3")
+      assert(document.getElementById("address").text() contains "addr4")
+      assert(document.getElementById("address").text() contains "XX1 1XX")
       assert(document.getElementById("edit-address-link").text() === "Edit address")
-      assert(document.getElementById("submit").text() === "Confirm and continue")
+      assert(document.getElementsByClass("govuk-button").text() === "Confirm and continue")
 
       Then("The back link is correct")
-      assert(document.getElementById("backLinkHref").text === "Back")
-      assert(document.getElementById("backLinkHref").attr("href") === "http://backLink")
+      assert(document.getElementsByClass("govuk-back-link").text === "Back")
+      assert(document.getElementsByClass("govuk-back-link").attr("href") === "http://backLink")
     }
   }
 }

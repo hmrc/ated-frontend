@@ -166,7 +166,6 @@ class Setup {
       }
 
       "return to edit liability summary page, if the return is found in cache but calculated is equal to zero" in new Setup {
-        pending
         val changeLiabilityReturn: PropertyDetails = PropertyDetailsBuilder.getFullPropertyDetails("12345678901").
           copy(calculated = Some(PropertyDetailsCalculated(amountDueOrRefund = Some(BigDecimal(0.00)))))
         viewWithAuthorisedUser(Some(changeLiabilityReturn)) {

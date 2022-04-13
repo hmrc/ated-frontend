@@ -16,6 +16,7 @@
 
 package views.html.propertyDetails
 
+import builders.TitleBuilder
 import config.ApplicationConfig
 import forms.PropertyDetailsForms
 import models.StandardAuthRetrievals
@@ -29,19 +30,41 @@ class PropertyDetailsNewBuildDatesSpec extends AtedViewSpec with MockAuthUtil {
   implicit val appConfig: ApplicationConfig = mock[ApplicationConfig]
 
   val injectedViewInstance = app.injector.instanceOf[views.html.propertyDetails.propertyDetailsNewBuildDates]
+  val form = PropertyDetailsForms.propertyDetailsNewBuildDatesForm
+
+  override def view: Html = injectedViewInstance("0", 2019, form, None, Html(""), Some("backLink"))
 
   val periodKey = 2019
 
-  "Property Details New Build Dates view" must {
-    behave like pageWithTitle(messages("ated.property-details-value.newBuildDates.title"))
-    behave like pageWithHeader(messages("ated.property-details-value.newBuildDates.header"))
-    behave like pageWithElementAndText("paragraphFirst", messages("ated.property-details-value.newBuildDates.paragraphOne"))
-    behave like pageWithElementAndText("paragraphTwo", messages("ated.property-details-value.newBuildDates.paragraphTwo"))
-    behave like pageWithElement("dateOfFirstOccupation")
-    behave like pageWithElement("dateOfLocalCouncilReg")
-    behave like pageWithBackLink
-    behave like pageWithContinueButtonForm(s"/ated/liability/create/new-build-start/save/0/period/2019")
+  "The Property Details New Build Dates page" must {
+    "have a the correct page title" in {
+      doc.title mustBe TitleBuilder.buildTitle(messages("ated.property-details-value.newBuildDates.title"))
+    }
+    "have the correct page header" in {
+      doc.title mustBe TitleBuilder.buildTitle(messages("ated.property-details-value.newBuildDates.header"))
+    }
+    "have the correct pre heading" in {
+      doc.title(messages("ated.property-details.pre-header"))
+    }
+    "have a backlink" in {
+      doc.getElementsByClass("govuk-back-link").text mustBe "Back"
+    }
+    "have a continue button" in {
+      doc.getElementsByClass("govuk-button").text mustBe "Save and continue"
+    }
+    "have the correct paragraphs" in {
+      doc.getElementsByTag("p").text() mustBe
+        messages("ated.property-details-value.newBuildDates.paragraphOne") +
+          " " +
+        messages("ated.property-details-value.newBuildDates.paragraphTwo")
+    }
+    "have the correct date input classes" in {
+      doc.getElementById("newBuildOccupyDate").className mustBe "govuk-date-input"
+      doc.getElementById("newBuildRegisterDate").className mustBe "govuk-date-input"
+    }
+  }
 
+  "Property Details New Build Dates view" must {
     "provide an error message for when the dates are empty" in {
 
     val form = PropertyDetailsForms.propertyDetailsNewBuildDatesForm.withError("newBuildOccupyDate",
@@ -97,9 +120,5 @@ class PropertyDetailsNewBuildDatesSpec extends AtedViewSpec with MockAuthUtil {
       newDoc.getElementsMatchingOwnText(messages("ated.property-details-value-error.newBuildDates.invalidRegDateError")).hasText mustBe true
     }
   }
-
-  val form = PropertyDetailsForms.propertyDetailsNewBuildDatesForm
-
-  override def view: Html = injectedViewInstance("0", 2019, form, None, Html(""), Some("backLink"))
 
 }

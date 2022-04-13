@@ -241,8 +241,8 @@ class PropertyDetailsAddressControllerSpec extends PlaySpec with GuiceOneServerP
               val document = Jsoup.parse(contentAsString(result))
               document.title() must be(TitleBuilder.buildTitle("Enter the address of the property manually"))
 
-              document.getElementById("line_1_field").attr("value") must be("")
-              document.getElementById("submit").text() must be("Save and continue")
+              document.getElementById("line_1").attr("value") must be("")
+              document.getElementsByClass("govuk-button").text() must be("Save and continue")
           }
         }
 
@@ -268,15 +268,15 @@ class PropertyDetailsAddressControllerSpec extends PlaySpec with GuiceOneServerP
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
               document.title() must be(TitleBuilder.buildTitle("Edit address"))
-              document.getElementById("property-details-header").text() must be("Edit address")
-              document.getElementById("submit").text() must be("Save and continue")
+              assert(document.getElementsByClass("govuk-heading-l").text.contains("Edit address") === true)
+              document.getElementsByClass("govuk-button").text must be("Save and continue")
               document.getElementById("line_1").attr("value") must be("addr1")
               document.getElementById("line_2").attr("value") must be("addr2")
               document.getElementById("line_3").attr("value") must be("addr3")
               document.getElementById("line_4").attr("value") must be("addr4")
               document.getElementById("postcode").attr("value") must be("postCode")
-              document.getElementById("backLinkHref").text must be("Back")
-              document.getElementById("backLinkHref").attr("href") must include("/ated/liability/confirm-address/view")
+              document.getElementsByClass("govuk-back-link").text must be("Back")
+              document.getElementsByClass("govuk-back-link").attr("href") must include("/ated/liability/confirm-address/view")
           }
         }
 
@@ -286,14 +286,14 @@ class PropertyDetailsAddressControllerSpec extends PlaySpec with GuiceOneServerP
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
               document.title() must be(TitleBuilder.buildTitle("Enter the address of the property manually"))
-              document.getElementById("property-details-header").text() must be("Enter the address of the property manually")
-              document.getElementById("submit").text() must be("Save and continue")
+              document.getElementsByTag("h1").text().contains("Enter the address of the property manually") must be(true)
+              document.getElementsByClass("govuk-button").text() must be("Save and continue")
               document.getElementById("line_1").attr("value") must be("addr1")
               document.getElementById("line_2").attr("value") must be("addr2")
               document.getElementById("line_3").attr("value") must be("addr3")
               document.getElementById("line_4").attr("value") must be("addr4")
-              document.getElementById("backLinkHref").text must be("Back")
-              document.getElementById("backLinkHref").attr("href") must include("/ated/liability/1/edit/2015?editAllowed=true")
+              document.getElementsByClass("govuk-back-link").text must be("Back")
+              document.getElementsByClass("govuk-back-link").attr("href") must include("/ated/liability/1/edit/2015?editAllowed=true")
           }
         }
       }
@@ -334,8 +334,8 @@ class PropertyDetailsAddressControllerSpec extends PlaySpec with GuiceOneServerP
             val document = Jsoup.parse(contentAsString(result))
             document.title() must be(TitleBuilder.buildTitle("Enter the address of the property manually"))
 
-            document.getElementById("backLinkHref").text must be("Back")
-            document.getElementById("backLinkHref").attr("href") must include("/ated/liability/create/summary")
+            document.getElementsByClass("govuk-back-link").text must be("Back")
+            document.getElementsByClass("govuk-back-link").attr("href") must include("/ated/liability/create/summary")
         }
       }
     }
