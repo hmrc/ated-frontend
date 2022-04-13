@@ -212,7 +212,7 @@ GET      /liability/create/create-confirmation-print                   controlle
 
 ##  view Relief Returns ##
 GET     /view-relief-return/:periodKey/:formBundleNo                controllers.reliefs.ViewReliefReturnController.viewReliefReturn(periodKey: Int, formBundleNo: String)
-POST    /view-relief-return/submit:periodKey/:formBundleNumber      controllers.reliefs.ViewReliefReturnController.submit(periodKey: Int, formBundleNumber: String)
+POST    /view-relief-return/submit/:periodKey/:formBundleNumber      controllers.reliefs.ViewReliefReturnController.submit(periodKey: Int, formBundleNumber: String)
 
 GET      /sign-out-individual                                                controllers.ApplicationController.redirectToGuidance()
 
