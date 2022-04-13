@@ -22,7 +22,8 @@ import models.StandardAuthRetrievals
 import org.joda.time.format.DateTimeFormat
 import org.joda.time.{DateTimeZone, LocalDate}
 import org.jsoup.Jsoup
-import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
+import org.scalatest.featurespec.AnyFeatureSpec
+import org.scalatest.{BeforeAndAfterEach, GivenWhenThen}
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.i18n.{Messages, MessagesApi}
@@ -32,7 +33,7 @@ import testhelpers.MockAuthUtil
 import utils.PeriodUtils
 import utils.PeriodUtils._
 
-class editLiabilitySummarySpec extends FeatureSpec with GuiceOneServerPerSuite with MockitoSugar
+class editLiabilitySummarySpec extends AnyFeatureSpec with GuiceOneServerPerSuite with MockitoSugar
   with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
 
   implicit val request = FakeRequest()
@@ -46,11 +47,11 @@ class editLiabilitySummarySpec extends FeatureSpec with GuiceOneServerPerSuite w
   val nextYear: Int = thisYear + 1
 
   def formatDate(date: LocalDate): String = DateTimeFormat.forPattern("d MMMM yyyy").withZone(DateTimeZone.forID("Europe/London")).print(date)
-  feature("The user can view their property details summary before they submit it") {
+  Feature("The user can view their property details summary before they submit it") {
 
     info("as a client i want to be my property details summary")
 
-    scenario("Amended charge with periods") {
+    Scenario("Amended charge with periods") {
 
       Given("the client is creating a new liability and want to add multiple periods")
       When("The user views the page")
@@ -102,7 +103,7 @@ class editLiabilitySummarySpec extends FeatureSpec with GuiceOneServerPerSuite w
       assert(document.getElementById("backLinkHref").text === "Back")
     }
 
-    scenario("Changed charge with periods") {
+    Scenario("Changed charge with periods") {
 
       Given("the client is creating a new liability and want to add multiple periods")
       When("The user views the page")
@@ -155,7 +156,7 @@ class editLiabilitySummarySpec extends FeatureSpec with GuiceOneServerPerSuite w
       assert(document.getElementById("backLinkHref").attr("href") === "http://backLink")
     }
 
-    scenario("Further Charge the basic summary with no periods") {
+    Scenario("Further Charge the basic summary with no periods") {
 
       Given("the client is creating a new liability and want to add multiple periods")
       When("The user views the page")

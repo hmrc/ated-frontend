@@ -180,9 +180,8 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
-
-              document.getElementById("isInRelief-true").attr("checked") must be("")
-              document.getElementById("isInRelief-false").attr("checked") must be("checked")
+              document.getElementById("isInRelief").hasAttr("checked") must be(false)
+              document.getElementById("isInRelief-2").hasAttr("checked") must be(true)
               assert(document.getElementById("service-info-list").text() === "Home Manage account Messages Help and contact")
           }
         }

@@ -20,7 +20,8 @@ import config.ApplicationConfig
 import forms.BankDetailForms._
 import models.StandardAuthRetrievals
 import org.jsoup.Jsoup
-import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
+import org.scalatest.featurespec.AnyFeatureSpec
+import org.scalatest.{BeforeAndAfterEach, GivenWhenThen}
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Messages, MessagesApi}
@@ -28,7 +29,7 @@ import play.api.test.FakeRequest
 import play.twirl.api.Html
 import testhelpers.MockAuthUtil
 
-class disposeLiabilityHasBankDetailsSpec extends FeatureSpec with GuiceOneAppPerSuite
+class disposeLiabilityHasBankDetailsSpec extends AnyFeatureSpec with GuiceOneAppPerSuite
   with MockitoSugar with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
 
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
@@ -38,11 +39,11 @@ class disposeLiabilityHasBankDetailsSpec extends FeatureSpec with GuiceOneAppPer
 
   val injectedViewInstance = app.injector.instanceOf[views.html.editLiability.disposeLiabilityHasBankDetails]
 
-  feature("The user can whether they have bank details") {
+  Feature("The user can whether they have bank details") {
 
     info("as a client i want change whether I send my bank details")
 
-    scenario("allow indicating bank details status") {
+    Scenario("allow indicating bank details status") {
 
       Given("the client is prompted to add thier bank details")
       When("The user views the page")

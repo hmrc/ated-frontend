@@ -245,8 +245,7 @@ class Setup {
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
             document.title() must be(TitleBuilder.buildTitle("Select the address of the property"))
-
-            document.getElementById("no-address-found").text() must be("No addresses were found for this postcode")
+            document.getElementById("no-address-found").text() must include("No addresses were found for this postcode")
         }
       }
 

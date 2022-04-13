@@ -17,10 +17,10 @@
 package views.editLiability
 
 import config.ApplicationConfig
-import forms.BankDetailForms._
 import models.StandardAuthRetrievals
 import org.jsoup.Jsoup
-import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
+import org.scalatest.featurespec.AnyFeatureSpec
+import org.scalatest.{BeforeAndAfterEach, GivenWhenThen}
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Messages, MessagesApi}
@@ -29,7 +29,7 @@ import play.twirl.api.Html
 import testhelpers.MockAuthUtil
 import views.html.editLiability.editLiabilityDeclaration
 
-class editLiabilityDeclarationSpec extends FeatureSpec with GuiceOneAppPerSuite with MockitoSugar with BeforeAndAfterEach
+class editLiabilityDeclarationSpec extends AnyFeatureSpec with GuiceOneAppPerSuite with MockitoSugar with BeforeAndAfterEach
   with GivenWhenThen with MockAuthUtil {
 
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]

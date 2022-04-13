@@ -20,7 +20,8 @@ import config.ApplicationConfig
 import forms.PropertyDetailsForms._
 import models.StandardAuthRetrievals
 import org.jsoup.Jsoup
-import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
+import org.scalatest.featurespec.AnyFeatureSpecLike
+import org.scalatest.{BeforeAndAfterEach, GivenWhenThen}
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Messages, MessagesApi}
@@ -28,7 +29,7 @@ import play.api.test.FakeRequest
 import play.twirl.api.Html
 import testhelpers.MockAuthUtil
 
-class periodInReliefDatesSpec extends FeatureSpec with GuiceOneAppPerSuite with MockitoSugar
+class periodInReliefDatesSpec extends AnyFeatureSpecLike with GuiceOneAppPerSuite with MockitoSugar
   with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
 
   implicit val request = FakeRequest()
@@ -38,11 +39,11 @@ class periodInReliefDatesSpec extends FeatureSpec with GuiceOneAppPerSuite with 
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
   val injectedViewInstance = app.injector.instanceOf[views.html.propertyDetails.periodInReliefDates]
 
-feature("The user can add a period that the property is in relief") {
+Feature("The user can add a period that the property is in relief") {
 
     info("as a client i want to indicate when my property is in relief")
 
-    scenario("allow adding a new relief dates") {
+    Scenario("allow adding a new relief dates") {
 
       Given("the client is adding a dates liable")
       When("The user views the page")
@@ -52,30 +53,33 @@ feature("The user can add a period that the property is in relief") {
       val document = Jsoup.parse(html.toString())
 
       Then("The header should match - Add the dates when the property was in relief and was not liable for an ATED charge")
-      assert(document.select("h1").text === "Add the dates when the property was in relief and was not liable for an ATED charge")
-
-      Then("The subheader should be - Create return")
-      assert(document.getElementById("pre-heading").text() === "This section is: Create return")
-      Then("The date fields should have the correct titles")
-      assert(document.getElementById("startDate")
-        .text === "What was the start date in this current period, when the relief started? For example, 1 4 2015 Day Month Year")
-      assert(document.getElementById("endDate")
-        .text === "What was the end date in this current period, when the relief ended? For example, 31 3 2016 Day Month Year")
+      assert(document.select("h1").text === "This section is: Add the dates when the property was in relief and was not liable for an ATED charge")
+//      Then("The subheader should be - Create return")
+//      assert(document.getElementsByClass("govuk-heading-l").text() contains  "This section is: Create return")
+      Then("The date fields should have the correct titles and hints")
+      assert(document.getElementById("startDate-hint")
+        .text ===  "For example, 1 4 2015")
+      assert(document.getElementsByClass("govuk-fieldset__legend").text
+        contains "What was the start date in this current period, when the relief started?")
+      assert(document.getElementsByClass("govuk-fieldset__legend").text
+        contains "What was the end date in this current period, when the relief ended?")
+      assert(document.getElementById("endDate-hint")
+        .text === "For example, 31 3 2016")
 
       Then("The date fields should have the correct default values")
-      assert(document.getElementById("startDate-day").attr("value") === "")
-      assert(document.getElementById("startDate-month").attr("value") === "")
-      assert(document.getElementById("startDate-year").attr("value") === "")
-      assert(document.getElementById("endDate-day").attr("value") === "")
-      assert(document.getElementById("endDate-month").attr("value") === "")
-      assert( document.getElementById("endDate-year").attr("value") === "")
+      assert(document.getElementById("startDate.day").attr("value") === "")
+      assert(document.getElementById("startDate.month").attr("value") === "")
+      assert(document.getElementById("startDate.year").attr("value") === "")
+      assert(document.getElementById("endDate.day").attr("value") === "")
+      assert(document.getElementById("endDate.month").attr("value") === "")
+      assert( document.getElementById("endDate.year").attr("value") === "")
 
       Then("The submit button should have the correct name")
-      assert(document.getElementById("submit").text() === "Save and continue")
+      assert(document.getElementsByClass("govuk-button").text() === "Save and continue")
 
       Then("The back link is correct")
-      assert(document.getElementById("backLinkHref").text === "Back")
-      assert(document.getElementById("backLinkHref").attr("href") === "http://backLink")
+      assert(document.getElementsByClass("govuk-back-link").text === "Back")
+      assert(document.getElementsByClass("govuk-back-link").attr("href") === "http://backLink")
     }
 
   }

@@ -20,7 +20,8 @@ import config.ApplicationConfig
 import forms.AddressLookupForms._
 import models.StandardAuthRetrievals
 import org.jsoup.Jsoup
-import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
+import org.scalatest.featurespec.AnyFeatureSpecLike
+import org.scalatest.{BeforeAndAfterEach, GivenWhenThen}
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Messages, MessagesApi}
@@ -29,7 +30,7 @@ import play.twirl.api.Html
 import testhelpers.MockAuthUtil
 import utils.AtedUtils
 
-class addressLookupSpec extends FeatureSpec with GuiceOneAppPerSuite with MockitoSugar
+class addressLookupSpec extends AnyFeatureSpecLike with GuiceOneAppPerSuite with MockitoSugar
   with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
 
   implicit val request = FakeRequest()
@@ -38,11 +39,11 @@ class addressLookupSpec extends FeatureSpec with GuiceOneAppPerSuite with Mockit
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
   val injectedViewInstance = app.injector.instanceOf[views.html.propertyDetails.addressLookup]
 
-feature("The user can search for an address via the post code") {
+Feature("The user can search for an address via the post code") {
 
     info("as a user I want to be able to search for an address via the post code")
 
-    scenario("user is creating a chargeable return for a new property") {
+    Scenario("user is creating a chargeable return for a new property") {
 
       Given("A user visits the page")
       When("The user views the page")
@@ -53,15 +54,13 @@ feature("The user can search for an address via the post code") {
       val document = Jsoup.parse(html.toString())
       Then("The title and header should match - Find the property's address")
       assert(document.title() === "Find the property’s address - GOV.UK")
-      assert(document.getElementById("account-lookup-header").text === "Find the property’s address")
-
-      Then("The subheader should be - Create return")
-      assert(document.getElementById("pre-heading").text() === "This section is: Create return")
+      assert(document.getElementsByTag("h1").text contains  "Find the property’s address")
+      assert(document.getElementsByTag("h1").text contains  "This section is: Create return")
 
       Then("The fields should have the correct names")
-      assert(document.getElementById("house-name_field").text() === "House name or number (optional)")
-      assert(document.getElementById("house-name").attr("value") === "")
-      assert(document.getElementById("postcode_field").text() === "Postcode")
+      assert(document.getElementsByAttributeValue("for","houseName").text === "House name or number (optional)")
+      assert(document.getElementById("houseName").attr("value") === "")
+      document.getElementsByAttributeValue("for","postcode").text === "Postcode"
       assert(document.getElementById("postcode").attr("value") === "")
 
       Then("The no post code link should be - I don't have a postcode")
@@ -69,13 +68,13 @@ feature("The user can search for an address via the post code") {
       assert(document.getElementById("enter-address-link").attr("href") === "/ated/liability/address-lookup/manual/2015")
 
       Then("The submit button should be - Find address")
-      assert(document.getElementById("submit").text() === "Find address")
+      assert(document.getElementsByClass("govuk-button").text() === "Find address")
 
       Then("The back link is correct")
-      assert(document.getElementById("backLinkHref").text === "Back")
+      assert(document.getElementsByClass("govuk-back-link").text === "Back")
     }
 
-    scenario("user is editing a chargeable return for an existing property") {
+    Scenario("user is editing a chargeable return for an existing property") {
 
       Given("A user visits the page")
       When("The user views the page")
@@ -86,15 +85,13 @@ feature("The user can search for an address via the post code") {
       val document = Jsoup.parse(html.toString())
       Then("The title and header should match - Find the property's address")
       assert(document.title() === "Find the property’s address - GOV.UK")
-      assert(document.getElementById("account-lookup-header").text === "Find the property’s address")
-
-      Then("The subheader should be - Change return")
-      assert(document.getElementById("pre-heading").text() === "This section is: Change return")
+      assert(document.getElementsByTag("h1").text contains  "Find the property’s address")
+      assert(document.getElementsByTag("h1").text contains "This section is: Change return")
 
       Then("The fields should have the correct names")
-      assert(document.getElementById("house-name_field").text() === "House name or number (optional)")
-      assert(document.getElementById("house-name").attr("value") === "")
-      assert(document.getElementById("postcode_field").text() === "Postcode")
+      assert(document.getElementsByAttributeValue("for","houseName").text === "House name or number (optional)")
+      assert(document.getElementById("houseName").attr("value") === "")
+      document.getElementsByAttributeValue("for","postcode").text === "Postcode"
       assert(document.getElementById("postcode").attr("value") === "")
 
       Then("The no post code link should be - I don't have a postcode")
@@ -102,11 +99,11 @@ feature("The user can search for an address via the post code") {
       assert(document.getElementById("enter-address-link").attr("href") === "/ated/liability/address-lookup/manual/2015?propertyKey=123456&mode=editSubmitted")
 
       Then("The submit button should be - Find address")
-      assert(document.getElementById("submit").text() === "Find address")
+      assert(document.getElementsByClass("govuk-button").text() === "Find address")
 
       Then("The back link is correct")
-      assert(document.getElementById("backLinkHref").text === "Back")
-      assert(document.getElementById("backLinkHref").attr("href") === "http://backLink")
+      assert(document.getElementsByClass("govuk-back-link").text === "Back")
+      assert(document.getElementsByClass("govuk-back-link").attr("href") === "http://backLink")
     }
   }
 }

@@ -20,6 +20,7 @@ import config.ApplicationConfig
 import forms.AtedForms._
 import models.StandardAuthRetrievals
 import org.jsoup.Jsoup
+import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
@@ -28,18 +29,18 @@ import play.api.test.FakeRequest
 import play.twirl.api.Html
 import testhelpers.MockAuthUtil
 
-class editLiabilitySpec extends FeatureSpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
+class editLiabilitySpec extends AnyFeatureSpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
   implicit val request = FakeRequest()
   implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
   val injectedViewInstance = app.injector.instanceOf[views.html.editLiability.editLiability]
 
-feature("The user can view an edit liability type page") {
+Feature("The user can view an edit liability type page") {
 
     info("as a user I want to view the correct page content")
 
-    scenario("user has visited the page for the first time") {
+    Scenario("user has visited the page for the first time") {
 
       Given("A user visits the page and clicks yes")
       When("The user views the page and clicks yes")
@@ -66,11 +67,11 @@ feature("The user can view an edit liability type page") {
 
   }
 
-  feature("The user can edit a the setting to indicate that no value has change") {
+  Feature("The user can edit a the setting to indicate that no value has change") {
 
     info("The yes option has been clicked may a user")
 
-    scenario("The user isnt allowed to edit this form bundle") {
+    Scenario("The user isnt allowed to edit this form bundle") {
 
       Given("A user visits the page to and they are allowed to edit the data")
       When("The user views the page without an edit option")

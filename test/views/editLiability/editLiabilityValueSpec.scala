@@ -20,7 +20,8 @@ import config.ApplicationConfig
 import forms.PropertyDetailsForms._
 import models.{HasValueChanged, StandardAuthRetrievals}
 import org.jsoup.Jsoup
-import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
+import org.scalatest.featurespec.AnyFeatureSpec
+import org.scalatest.{BeforeAndAfterEach, GivenWhenThen}
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.i18n.{Messages, MessagesApi}
@@ -28,7 +29,7 @@ import play.api.test.FakeRequest
 import play.twirl.api.Html
 import testhelpers.MockAuthUtil
 
-class editLiabilityValueSpec extends FeatureSpec with GuiceOneServerPerSuite with MockitoSugar
+class editLiabilityValueSpec extends AnyFeatureSpec with GuiceOneServerPerSuite with MockitoSugar
   with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
 
   implicit val request = FakeRequest()
@@ -36,10 +37,10 @@ class editLiabilityValueSpec extends FeatureSpec with GuiceOneServerPerSuite wit
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
   val injectedViewInstance = app.injector.instanceOf[views.html.editLiability.editLiabilityHasValueChanged]
-feature("The user can view an edit liability value page") {
+Feature("The user can view an edit liability value page") {
     info("as a user I want to view the correct page content")
 
-    scenario("user has visited the page for the first time") {
+    Scenario("user has visited the page for the first time") {
 
       Given("A user visits the page and clicks yes")
       When("The user views the page and clicks yes")
@@ -72,11 +73,11 @@ feature("The user can view an edit liability value page") {
 
   }
 
-  feature("The user can edit a the setting to indicate that no value has change") {
+  Feature("The user can edit a the setting to indicate that no value has change") {
 
     info("The yes option has been clicked may a user")
 
-    scenario("The user views the page to edit the data") {
+    Scenario("The user views the page to edit the data") {
 
       Given("A user visits the page to edit data")
       When("The user views the page to edit data")

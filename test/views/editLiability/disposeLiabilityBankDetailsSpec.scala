@@ -20,7 +20,8 @@ import config.ApplicationConfig
 import forms.BankDetailForms._
 import models.StandardAuthRetrievals
 import org.jsoup.Jsoup
-import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
+import org.scalatest.featurespec.AnyFeatureSpec
+import org.scalatest.{BeforeAndAfterEach, GivenWhenThen}
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Messages, MessagesApi}
@@ -30,7 +31,7 @@ import testhelpers.MockAuthUtil
 import uk.gov.hmrc.auth.core.retrieve.~
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
 
-class disposeLiabilityBankDetailsSpec extends FeatureSpec with GuiceOneAppPerSuite with MockitoSugar
+class disposeLiabilityBankDetailsSpec extends AnyFeatureSpec with GuiceOneAppPerSuite with MockitoSugar
   with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
 
   implicit val request = FakeRequest()
@@ -43,11 +44,11 @@ class disposeLiabilityBankDetailsSpec extends FeatureSpec with GuiceOneAppPerSui
   val authMock: Enrolments ~ Some[AffinityGroup] ~ Some[String] = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
   setAuthMocks(authMock)
 
-    feature("The user can whether they have bank details") {
+    Feature("The user can whether they have bank details") {
 
     info("as a client i want change whether I send my bank details")
 
-    scenario("allow indicating bank details status") {
+    Scenario("allow indicating bank details status") {
 
       Given("the client is prompted to add thier bank details")
       When("The user views the page")

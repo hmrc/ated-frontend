@@ -20,7 +20,8 @@ import config.ApplicationConfig
 import forms.PropertyDetailsForms._
 import models.StandardAuthRetrievals
 import org.jsoup.Jsoup
-import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
+import org.scalatest.featurespec.AnyFeatureSpec
+import org.scalatest.{BeforeAndAfterEach, GivenWhenThen}
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Messages, MessagesApi}
@@ -28,13 +29,13 @@ import play.api.test.FakeRequest
 import play.twirl.api.Html
 import testhelpers.MockAuthUtil
 
-class editLiabilityDatesLiableSpec extends FeatureSpec with GuiceOneAppPerSuite with MockitoSugar
-  with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil{
+class editLiabilityDatesLiableSpec extends AnyFeatureSpec with GuiceOneAppPerSuite with MockitoSugar
+  with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
 
   implicit val request = FakeRequest()
   implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
-implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
+  implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
 
   val injectedViewInstance = app.injector.instanceOf[views.html.editLiability.editLiabilityDatesLiable]
 
@@ -47,7 +48,7 @@ implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetr
       Given("the client is adding a dates liable")
       When("The user views the page")
 
-      val html = injectedViewInstance("1", 2015, periodDatesLiableForm,  Html(""), Some("http://backLink"))
+      val html = injectedViewInstance("1", 2015, periodDatesLiableForm, Html(""), Some("http://backLink"))
 
       val document = Jsoup.parse(html.toString())
 
@@ -70,7 +71,7 @@ implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetr
       assert(document.getElementById("startDate-year").attr("value") === "")
       assert(document.getElementById("endDate-day").attr("value") === "31")
       assert(document.getElementById("endDate-month").attr("value") === "3")
-      assert( document.getElementById("endDate-year").attr("value") === "2016")
+      assert(document.getElementById("endDate-year").attr("value") === "2016")
 
       Then("The submit button should have the correct name")
       assert(document.getElementById("submit").text() === "Save and continue")

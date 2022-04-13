@@ -172,12 +172,14 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
               assert(document.getElementById("service-info-list").text() === "Home Manage account Messages Help and contact")
-              document.getElementById("property-details-header")
-                .text() must be("In this chargeable period, have you bought or sold land, or extended an existing lease on the property, for £40,000 or more?")
-              document.getElementById("anAcquisition-reveal").text() must be("Why is the £40,000 level important?")
-              document.getElementById("anAcquisition").text() contains "Yes No"
-              document.getElementById("anAcquisition-true").attr("checked") must be("")
-              document.getElementById("anAcquisition-false").attr("checked") must be("")
+              document.getElementsByTag("h1")
+                .text() must include("In this chargeable period, have you bought or sold land, or extended an existing lease on the property, for £40,000 or more?")
+              document.getElementsByClass("govuk-details__summary").text() must be("Why is the £40,000 level important?")
+              document.getElementById("anAcquisition").text() contains "Yes"
+              document.getElementById("anAcquisition-2").text() contains "Yes"
+              document.getElementById("anAcquisition").hasAttr("checked") must be(false)
+              document.getElementById("anAcquisition-2").hasAttr("checked") must be(false)
+
 
           }
         }
@@ -188,12 +190,13 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
-              document.getElementById("property-details-header")
-                .text() must be("In this chargeable period, have you bought or sold land, or extended an existing lease on the property, for £40,000 or more?")
-              document.getElementById("anAcquisition-reveal").text() must be("Why is the £40,000 level important?")
-              document.getElementById("anAcquisition").text() contains "Yes No"
-              document.getElementById("anAcquisition-true").attr("checked") must be("checked")
-              document.getElementById("anAcquisition-false").attr("checked") must be("")
+              document.getElementsByTag("h1")
+                .text() must include("In this chargeable period, have you bought or sold land, or extended an existing lease on the property, for £40,000 or more?")
+              document.getElementsByClass("govuk-details__summary").text() must be("Why is the £40,000 level important?")
+              document.getElementById("anAcquisition").text() contains "Yes"
+              document.getElementById("anAcquisition-2").text() contains "Yes"
+              document.getElementById("anAcquisition").hasAttr("checked") must be(true)
+              document.getElementById("anAcquisition-2").hasAttr("checked") must be(false)
 
           }
         }
@@ -212,8 +215,8 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
               val document = Jsoup.parse(contentAsString(result))
               document.title() must be(
                 "In this chargeable period, have you bought or sold land, or extended an existing lease on the property, for £40,000 or more? - GOV.UK")
-              document.getElementById("backLinkHref").text must be("Back")
-              document.getElementById("backLinkHref").attr("href") must include("/ated/liability/create/summary")
+              document.getElementsByClass("govuk-back-link").text must be("Back")
+              document.getElementsByClass("govuk-back-link").attr("href") must include("/ated/liability/create/summary")
 
           }
         }

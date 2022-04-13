@@ -15,10 +15,13 @@
  *@
 
 @import config.ApplicationConfig
-@(propertyDetails : PropertyDetails, periods : Seq[models.LineItem], valuesToDisplay: Seq[models.LineItemValue], organisationName: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
-
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 @import views.html.helpers._
 @import _root_.utils.PeriodUtils
+
+@(propertyDetails : PropertyDetails, periods : Seq[models.LineItem], valuesToDisplay: Seq[models.LineItemValue], organisationName: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
+
 
 @printFriendly(messages("ated.property-details-summary.title")) {
 

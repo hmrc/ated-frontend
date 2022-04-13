@@ -17,7 +17,18 @@
 @import models._
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
-@this(atedMain: atedMain, formHelper: FormWithCSRF)
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
+@import views.ViewUtils.titleBuilder
+@import views.html.helpers._
+@import _root_.utils._
+
+@this(newMain: newMain,
+      govukBackLink : GovukBackLink,
+      formHelper: FormWithCSRF,
+      govukSummaryList : GovukSummaryList,
+      govukButton : GovukButton)
+
 @(id: String,
         periodKey: Int,
         propertyDetails: PropertyDetailsAddress,
@@ -25,27 +36,38 @@
         serviceInfoContent: Html = HtmlFormat.empty,
         backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
-@import uk.gov.hmrc.play.views.html.helpers._
-@import views.html.helpers._
-@import _root_.utils._
+@backLinkHtml = {
+    @if(backLink.isDefined) {
+        @govukBackLink(BackLink(
+        href = backLink.get,
+        content = Text("Back")
+        ))
+    }
+}
 
-@atedMain(title = messages("ated.confirm-address.title"), serviceInfoContent = serviceInfoContent) {
-    @pageHeadersAndError(backLink, "pre-heading", messages(AtedUtils.getPropertyDetailsPreHeader(mode)), "confirm-address-header", messages("ated.confirm-address.header"))
+@newMain(title = titleBuilder(messages("ated.confirm-address.title")), serviceInfoContent = serviceInfoContent) {
+    
+@backLinkHtml
+  
+<header>
+  <h1 class="govuk-heading-l">
+    <span class="govuk-caption-l"><span class="govuk-visually-hidden">@messages("ated.screen-reader.section") </span>@messages(AtedUtils.getPropertyDetailsPreHeader(mode))</span>
+    @messages("ated.confirm-address.header")
+  </h1>
+</header>
 
-    <div id="address">
-        <ul style="list-style-type: none">
-            <li id="address-line1">@propertyDetails.line_1</li>
-            <li id="address-line2">@propertyDetails.line_2</li>
-            <li id="address-line3">@propertyDetails.line_3</li>
-            <li id="address-line4">@propertyDetails.line_4</li>
-            <li id="postcode">@propertyDetails.postcode</li>
-        </ul>
-    </div>
-
-    <div class="margin-top-default">
+<div id="address">
+    <ul class="govuk-list">
+        <li>@propertyDetails.line_1</li>
+        <li>@propertyDetails.line_2</li>
+        <li>@propertyDetails.line_3.getOrElse("")</li>
+        <li>@propertyDetails.line_4.getOrElse("")</li>
+        <li>@propertyDetails.postcode.getOrElse("")</li>
+    </ul>
+</div>
 
             <p id="editAddress">
-                <a href="@controllers.propertyDetails.routes.PropertyDetailsAddressController.view(id, fromConfirmAddressPage = true, periodKey, mode)"
+                <a class="govuk-link" href="@controllers.propertyDetails.routes.PropertyDetailsAddressController.view(id, fromConfirmAddressPage = true, periodKey, mode)"
                 id="edit-address-link"
                 onkeyup='spaceBarHandler(
                     event, "@controllers.propertyDetails.routes.PropertyDetailsAddressController.view(id, fromConfirmAddressPage = true, periodKey, mode)")'>
@@ -53,17 +75,20 @@
                 </a>
             </p>
 
-            <p id="selectADifferentProperty">
+            <p class="govuk-link">
                 <a href="@controllers.routes.ExistingReturnQuestionController.view(periodKey, "charge")">
                     @messages("ated.confirm-address.selectDifferentProperty")
                 </a>
             </p>
 
         @formHelper(action = controllers.propertyDetails.routes.ConfirmAddressController.submit(id, periodKey, mode)) {
-            <p>
-                <button class="button reference-group" id="submit" type="submit">@messages("ated.confirm-and-continue")</button>
-            </p>
+
+@govukButton(Button(
+content = Text(messages("ated.confirm-and-continue")),
+attributes = Map("id" -> "submit")
+))
+
         }
-    </div>
+
 
 }

@@ -29,24 +29,40 @@ class IsFullTaxPeriodSpec extends AtedViewSpec with MockitoSugar with MockAuthUt
   val injectedViewInstance = app.injector.instanceOf[views.html.propertyDetails.isFullTaxPeriod]
 
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
-"isFullTaxPeriod view" must {
-    behave like pageWithTitle(messages("ated.property-details-period.isFullPeriod.title"))
-    behave like pageWithHeader(messages("ated.property-details-period.isFullPeriod.header"))
-    behave like pageWithPreHeading(messages("ated.property-details.pre-header"))
-    behave like pageWithBackLink
-    behave like pageWithContinueButtonForm("/ated/liability/create/full-tax-period/save//period/0")
-    behave like pageWithYesNoRadioButton("isFullPeriod-true", "isFullPeriod-false",
-      messages("ated.property-details-period.yes"),
-      messages("ated.property-details-period.no"))
-
-    "check page errors" in {
-      doc.getElementsMatchingOwnText(messages("ated.property-details-period.isFullPeriod.error-field-name")).hasText mustBe true
-      doc.getElementsMatchingOwnText(messages("ated.property-details-period-error.general.isFullPeriod")).hasText mustBe true
-    }
-  }
-
   private val form = PropertyDetailsForms.isFullTaxPeriodForm.withError("isFullPeriod",
     messages("ated.property-details-period.isFullPeriod.error-field-name"))
-  override def view: Html = injectedViewInstance("",0,  form, new LocalDate, new LocalDate, Html(""), Some("backLink"))
+  override def view: Html = injectedViewInstance("",0,  form, new LocalDate, new LocalDate, None, Html(""), Some("backLink"))
+
+  "The property details full tax period view for a valid form" must {
+    "have the correct page title" in {
+      doc.title mustBe (messages("ated.property-details-period.isFullPeriod.title") + " - GOV.UK")
+    }
+
+    "have the correct header" in {
+      doc.title mustBe (messages("ated.property-details-period.isFullPeriod.header") + " - GOV.UK")
+    }
+
+    "have the correct pre heading" in {
+      doc.title(messages("ated.property-details.pre-header"))
+    }
+
+    "have a backlink" in {
+      doc.getElementsByClass("govuk-back-link").text mustBe "Back"
+    }
+
+    "have a continue button" in {
+      doc.getElementsByClass("govuk-button").text mustBe "Save and continue"
+    }
+
+    "have a yes/no radio button" in {
+      doc.getElementsByAttributeValue("for","isFullPeriod").text() mustBe messages("ated.property-details-value.yes")
+      doc.getElementsByAttributeValue("for","isFullPeriod-2").text() mustBe messages("ated.property-details-value.no")
+    }
+
+    "have the correct errors" in {
+      doc.getElementsByClass("govuk-error-message").text() mustBe ("Error: " + messages("ated.property-details-period.isFullPeriod.error-field-name"))
+      doc.getElementsByClass("govuk-error-summary__list").text() mustBe messages("ated.property-details-period.isFullPeriod.error-field-name")
+    }
+  }
 
 }

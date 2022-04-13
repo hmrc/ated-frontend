@@ -19,7 +19,8 @@ package views.propertyDetails
 import config.ApplicationConfig
 import forms.PropertyDetailsForms._
 import org.jsoup.Jsoup
-import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
+import org.scalatest.featurespec.AnyFeatureSpec
+import org.scalatest.{BeforeAndAfterEach, GivenWhenThen}
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Messages, MessagesApi}
@@ -28,7 +29,7 @@ import play.twirl.api.Html
 import testhelpers.MockAuthUtil
 import utils.AtedUtils
 
-class propertyDetailsTitleSpec extends FeatureSpec with GuiceOneAppPerSuite with MockitoSugar
+class propertyDetailsTitleSpec extends AnyFeatureSpec with GuiceOneAppPerSuite with MockitoSugar
   with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
 
   implicit val request = FakeRequest()
@@ -37,11 +38,11 @@ class propertyDetailsTitleSpec extends FeatureSpec with GuiceOneAppPerSuite with
   implicit lazy val authContext = organisationStandardRetrievals
   val injectedViewInstance = app.injector.instanceOf[views.html.propertyDetails.propertyDetailsTitle]
 
-  feature("The user can adit the title") {
+  Feature("The user can adit the title") {
 
     info("as a client i want to be able to edit my property title")
 
-    scenario("allow editing a title when creating a new draft") {
+    Scenario("allow editing a title when creating a new draft") {
 
       Given("the client is adding a dates liable")
       When("The user views the page")
@@ -51,29 +52,24 @@ class propertyDetailsTitleSpec extends FeatureSpec with GuiceOneAppPerSuite with
       val document = Jsoup.parse(html.toString())
 
       Then("The header and title should match - What is the property title number?")
-      assert(document.title() === "What is the property’s title number? (optional) - GOV.UK")
-      assert(document.select("h1").text === "What is the property’s title number? (optional)")
-
+      assert(document.title.contains("What is the property’s title number? (optional) - GOV.UK") === true)
+      assert(document.select("h1").text.contains("What is the property’s title number? (optional)") === true)
       Then("The subheader should be - Create return")
-      assert(document.getElementById("pre-heading").text() === "This section is: Create return")
-
+      assert(document.select("h1").text.contains("This section is: Create return") === true)
 
       Then("The text fields should match")
-      assert(document.getElementById("title-text").text() === "You can find the property’s title number on the title deeds for the property.")
-      assert(document.getElementById("references.titleNumber").attr("value") === "")
-      assert(document.getElementById("references.titleNumber_hint").text() === "For example, CS72532")
-      assert(document.getElementById("titleNumber-reveal").text() === "I do not know my property’s title number")
-
+      assert(document.getElementsByTag("p").text() === "You can find the property’s title number on the title deeds for the property.")
+      assert(document.getElementById("titleNumber").attr("value") === "")
+      assert(document.getElementById("titleNumber-hint").text() === "For example, CS72532")
 
       Then("The submit button should have the correct name")
-      assert(document.getElementById("submit").text() === "Save and continue")
-
+      assert(document.getElementsByClass("govuk-button").text() === "Save and continue")
 
       Then("The back link is correct")
-      assert(document.getElementById("backLinkHref").text === "Back")
+      assert(document.getElementsByClass("govuk-back-link").text === "Back")
     }
 
-    scenario("allow editing a title when editing a submitted return") {
+    Scenario("allow editing a title when editing a submitted return") {
 
       Given("the client is adding a dates liable")
       When("The user views the page")
@@ -85,25 +81,25 @@ class propertyDetailsTitleSpec extends FeatureSpec with GuiceOneAppPerSuite with
 
       Then("The header and title should match - What is the property title number?")
       assert(document.title() === "What is the property’s title number? (optional) - GOV.UK")
-      assert(document.select("h1").text === "What is the property’s title number? (optional)")
+      assert(document.select("h1").text.contains("What is the property’s title number? (optional)") === true)
 
       Then("The subheader should be - Change return")
-      assert(document.getElementById("pre-heading").text() === "This section is: Change return")
+      assert(document.select("h1").text.contains("This section is: Change return") === true)
 
       Then("The text fields should match")
-      assert(document.getElementById("title-text").text() === "You can find the property’s title number on the title deeds for the property.")
-      assert(document.getElementById("references.titleNumber").attr("value") === "")
-      assert(document.getElementById("references.titleNumber_hint").text() === "For example, CS72532")
-      assert(document.getElementById("titleNumber-reveal").text() === "I do not know my property’s title number")
+      assert(document.getElementsByTag("p").text() === "You can find the property’s title number on the title deeds for the property.")
+      assert(document.getElementById("titleNumber").attr("value") === "")
+      assert(document.getElementById("titleNumber-hint").text() === "For example, CS72532")
+      assert(document.getElementsByClass("govuk-details__summary-text").text() === "I do not know my property’s title number")
 
 
       Then("The submit button should have the correct name")
-      assert(document.getElementById("submit").text() === "Save and continue")
+      assert(document.getElementsByClass("govuk-button").text() === "Save and continue")
 
 
       Then("The back link is correct")
-      assert(document.getElementById("backLinkHref").text === "Back")
-      assert(document.getElementById("backLinkHref").attr("href") === "http://backLink")
+      assert(document.getElementsByClass("govuk-back-link").text === "Back")
+      assert(document.getElementsByClass("govuk-back-link").attr("href") === "http://backLink")
     }
   }
 

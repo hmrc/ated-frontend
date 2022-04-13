@@ -21,7 +21,8 @@ import forms.PropertyDetailsForms._
 import models.{LineItem, StandardAuthRetrievals}
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
-import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
+import org.scalatest.featurespec.AnyFeatureSpecLike
+import org.scalatest.{BeforeAndAfterEach, GivenWhenThen}
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Messages, MessagesApi}
@@ -30,7 +31,7 @@ import play.twirl.api.Html
 import testhelpers.MockAuthUtil
 import utils.AtedUtils
 
-class periodsInAndOutReliefSpec extends FeatureSpec with GuiceOneAppPerSuite with MockitoSugar
+class periodsInAndOutReliefSpec extends AnyFeatureSpecLike with GuiceOneAppPerSuite with MockitoSugar
   with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
 
   implicit val request = FakeRequest()
@@ -39,11 +40,11 @@ class periodsInAndOutReliefSpec extends FeatureSpec with GuiceOneAppPerSuite wit
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
   val injectedViewInstance = app.injector.instanceOf[views.html.propertyDetails.periodsInAndOutRelief]
 
-  feature("The user can view the periods and add the property in and out of relief") {
+  Feature("The user can view the periods and add the property in and out of relief") {
 
     info("as a client i want to be able to view the periods in and out of relief, and add and delete them")
 
-    scenario("return an empty table if we have no periods") {
+    Scenario("return an empty table if we have no periods") {
 
       Given("the client is creating a new liability and want to add multiple periods")
       When("The user views the page")
@@ -53,10 +54,10 @@ class periodsInAndOutReliefSpec extends FeatureSpec with GuiceOneAppPerSuite wit
       val document = Jsoup.parse(html.toString())
 
       Then("The header should match - Add periods when the property was in relief and when it was liable for an ATED charge")
-      assert(document.select("h1").text === "Add periods when the property was in relief and when it was liable for an ATED charge")
+      assert(document.getElementsByTag("h1").text contains "Add periods when the property was in relief and when it was liable for an ATED charge")
 
       Then("The subheader should be - Create return")
-      assert(document.getElementById("pre-heading").text() === "This section is: Create return")
+      assert(document.getElementsByTag("h1").text() contains "This section is: Create return")
 
       Then("Text should read No periods of relief or charge have been added yet")
       assert(document.getElementById("no-periods").text() === "No periods of relief or charge have been added yet")
@@ -73,10 +74,10 @@ class periodsInAndOutReliefSpec extends FeatureSpec with GuiceOneAppPerSuite wit
       assert(document.getElementById("submit").text() === "Save and continue")
 
       Then("The back link is correct")
-      assert(document.getElementById("backLinkHref").text === "Back")
+      assert(document.getElementsByClass("govuk-back-link").text === "Back")
     }
 
-    scenario("return a populated table if we have periods") {
+    Scenario("return a populated table if we have periods") {
 
       Given("the client has a non uk company and the arrive at the overseas company registration")
       When("The user views the page")
@@ -89,30 +90,31 @@ class periodsInAndOutReliefSpec extends FeatureSpec with GuiceOneAppPerSuite wit
         periodsInAndOutReliefForm, periods, Some(AtedUtils.EDIT_SUBMITTED), Html(""), Some("http://backLink"))
 
       val document = Jsoup.parse(html.toString())
-
       Then("The header should match - Add periods when the property was in relief and when it was liable for an ATED charge")
-      assert(document.select("h1").text === "Add periods when the property was in relief and when it was liable for an ATED charge")
+      assert(document.getElementsByTag("h1").text contains "Add periods when the property was in relief and when it was liable for an ATED charge")
 
       Then("The subheader should be - Change return")
-      assert(document.getElementById("pre-heading").text() === "This section is: Change return")
+      assert(document.getElementsByTag("h1").text() contains  "This section is: Change return")
 
       Then("Text should read No periods of relief or charge have been added yet")
       assert(document.getElementById("no-periods") === null)
 
       Then("The table should exist")
-      assert(document.getElementById("date-from-header").text() === "Date from")
-      assert(document.getElementById("date-to-header").text() === "Date to")
-      assert(document.getElementById("return-type-header").text() === "Return type")
+      assert(document.getElementsByClass("govuk-table__header app-custom-class").text() contains "Date from")
+      assert(document.getElementsByClass("govuk-table__header app-custom-class").text() contains  "Date to")
+      assert(document.getElementsByClass("govuk-table__header app-custom-class").text() contains  "Return type")
 
-      assert(document.getElementById("date-from-value-0").text() === "1 April 2015")
-      assert(document.getElementById("date-to-value-0").text() === "1 May 2015")
-      assert(document.getElementById("return-type-value-0").text() === "Liable for charge")
-      assert(document.getElementById("action-0").text() === "Delete Liable for charge 1 April 2015 to 1 May 2015")
+      assert(document.getElementsByClass("govuk-table__cell").text() contains  "1 April 2015")
+      assert(document.getElementsByClass("govuk-table__cell").text() contains  "1 May 2015")
+      assert(document.getElementsByClass("govuk-table__cell").text() contains  "Liable for charge")
+      val link = document.select("a[href=/ated/liability/create/periods-in-relief/delete/1/period/20150401]")
+      assert(link.text === "Delete")
 
-      assert(document.getElementById("date-from-value-1").text() === "1 April 2016")
-      assert(document.getElementById("date-to-value-1").text() === "1 May 2016")
-      assert(document.getElementById("return-type-value-1").text() === "Rental property")
-      assert(document.getElementById("action-1").text() === "Delete Rental property 1 April 2016 to 1 May 2016")
+      assert(document.getElementsByClass("govuk-table__cell").text() contains  "1 April 2016")
+      assert(document.getElementsByClass("govuk-table__cell").text() contains  "1 May 2016")
+      assert(document.getElementsByClass("govuk-table__cell").text() contains  "Rental property")
+      val link2 = document.select("a[href=/ated/liability/create/periods-in-relief/delete/1/period/20160401]")
+      assert(link2.text === "Delete")
 
       Then("The buttons should have the correct text")
       assert(document.getElementById("add-period-charge").text() === "Add a period of charge")
@@ -120,8 +122,8 @@ class periodsInAndOutReliefSpec extends FeatureSpec with GuiceOneAppPerSuite wit
       assert(document.getElementById("submit").text() === "Save and continue")
 
       Then("The back link is correct")
-      assert(document.getElementById("backLinkHref").text === "Back")
-      assert(document.getElementById("backLinkHref").attr("href") === "http://backLink")
+      assert(document.getElementsByClass("govuk-back-link").text === "Back")
+      assert(document.getElementsByClass("govuk-back-link").attr("href") === "http://backLink")
     }
   }
 

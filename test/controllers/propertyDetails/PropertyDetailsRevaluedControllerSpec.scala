@@ -169,18 +169,17 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
-              document.getElementById("property-details-header").text() must be("Has the property been revalued since the £40,000 or more change?")
+              assert(document.getElementsByTag("h1").text.contains("Has the property been revalued since the £40,000 or more change?"))
               assert(document.getElementById("service-info-list").text() === "Home Manage account Messages Help and contact")
-
               document.getElementById("isPropertyRevalued").text() contains "Yes No"
-              document.getElementById("revaluedValue_field").text() must be("What is the new valuation of the property in GBP?")
-              document.getElementById("revaluedValue").attr("type") must be("text")
-              document.getElementById("revaluedDate_legend").text() must be("What date did you get the property revalued?")
-              document.getElementById("isPropertyRevalued-true").attr("checked") must be("")
-              document.getElementById("isPropertyRevalued-false").attr("checked") must be("")
-              document.getElementById("revaluedDate-day").attr("value") must be("")
-              document.getElementById("revaluedDate-month").attr("value") must be("")
-              document.getElementById("revaluedDate-year").attr("value") must be("")
+              document.getElementsByAttributeValue("for","revaluedValue").text() must be("What is the new valuation of the property in GBP?")
+              document.getElementsByClass("govuk-input govuk-!-width-one-third").attr("type") must be("text")
+              document.getElementsByClass("govuk-fieldset__legend").text.contains("What date did you get the property revalued?")
+              document.getElementById("isPropertyRevalued").attr("checked") must be("")
+              document.getElementById("isPropertyRevalued-2").attr("checked") must be("")
+              document.getElementById("revaluedDate.day").attr("value") must be("")
+              document.getElementById("revaluedDate.month").attr("value") must be("")
+              document.getElementById("revaluedDate.year").attr("value") must be("")
 
           }
         }
@@ -191,17 +190,19 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
-              document.getElementById("property-details-header").text() must be("Has the property been revalued since the £40,000 or more change?")
+              assert(document.getElementsByTag("h1").text.contains("Has the property been revalued since the £40,000 or more change?"))
 
               document.getElementById("isPropertyRevalued").text() contains "Yes No"
-              document.getElementById("revaluedValue_field").text() must be("What is the new valuation of the property in GBP?")
+              document.getElementsByAttributeValue("for","revaluedValue").text() must be("What is the new valuation of the property in GBP?")
               document.getElementById("revaluedValue").attr("type") must be("text")
-              document.getElementById("revaluedDate_legend").text() must be("What date did you get the property revalued?")
-              document.getElementById("isPropertyRevalued-true").attr("checked") must be("checked")
-              document.getElementById("isPropertyRevalued-false").attr("checked") must be("")
-              document.getElementById("revaluedDate-day").attr("value") must be("1")
-              document.getElementById("revaluedDate-month").attr("value") must be("4")
-              document.getElementById("revaluedDate-year").attr("value") must be("2019")
+              document.getElementsByClass("govuk-fieldset__legend").text.contains("What date did you get the property revalued?")
+//              document.getElementById("isPropertyRevalued").getElementsByAttribute("value") must be("true")
+//              document.getElementById("isPropertyRevalued-2").getElementsByAttribute("value") must be("true")
+//              document.getElementById("isPropertyRevalued").attr("checked") must be("checked")
+//              document.getElementById("isPropertyRevalued-2").attr("checked") must be("")
+              document.getElementById("revaluedDate.day").attr("value") must be("1")
+              document.getElementById("revaluedDate.month").attr("value") must be("4")
+              document.getElementById("revaluedDate.year").attr("value") must be("2019")
 
           }
         }
