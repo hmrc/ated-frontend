@@ -16,17 +16,16 @@
 
 @import config.ApplicationConfig
 @import error.individual
+@import views.ViewUtils.titleBuilder
 
-@this(atedNoAuthMain: atedNoAuthMain)
+@this(atedNoAuthMain: atedNoAuthMain, individual: individual )
 @()(implicit isSa: Boolean, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
-
-@atedNoAuthMain(title = messages("unauthorised.title"), supportLinkEnabled = true) {
+@atedNoAuthMain(title = titleBuilder(messages("unauthorised.title"))) {
 
   @if(isSa) {
-    <h1>@messages("unauthorised.sa.header")</h1>
+    <h1 class="govuk-heading-l">@messages("unauthorised.sa.header")</h1>
   } else {
     @individual()
   }
-
 }

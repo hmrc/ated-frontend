@@ -33,8 +33,7 @@ class PeriodSummaryController @Inject()(mcc: MessagesControllerComponents,
                                         subscriptionDataService: SubscriptionDataService,
                                         serviceInfoService: ServiceInfoService,
                                         val backLinkCacheConnector: BackLinkCacheConnector,
-                                        template: views.html.periodSummary,
-                                        templatePastReturns: views.html.periodSummaryPastReturns)
+                                        template: views.html.periodSummary)
                                        (implicit val appConfig: ApplicationConfig)
 
   extends FrontendController(mcc) with BackLinkController with ControllerIds {
@@ -56,25 +55,12 @@ class PeriodSummaryController @Inject()(mcc: MessagesControllerComponents,
     }
   }
 
-  def viewPastReturns(periodKey: Int): Action[AnyContent] = Action.async { implicit request =>
-    authAction.authorisedAction { implicit authContext =>
-      for {
-        periodSummaries <- summaryReturnsService.getPeriodSummaryReturns(periodKey)
-        organisationName <- subscriptionDataService.getOrganisationName
-        serviceInfoContent <- serviceInfoService.getPartial
-      } yield {
-        val filteredSummaries = periodSummaries.map(summaryReturnsService.filterPeriodSummaryReturnReliefs(_, past = true))
-        Ok(templatePastReturns(periodKey, filteredSummaries, organisationName, serviceInfoContent, getBackLink(periodKey)))
-      }
-    }
-  }
-
   def createReturn(periodKey: Int, fromAccountSummary: Boolean = false): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { _ =>
       val backLink = if (!fromAccountSummary) {
         routes.PeriodSummaryController.view(periodKey).url
       } else {
-        routes.AccountSummaryController.view().url
+        routes.AccountSummaryController.view.url
       }
 
       redirectWithBackLink(returnTypeControllerId,
@@ -124,9 +110,9 @@ class PeriodSummaryController @Inject()(mcc: MessagesControllerComponents,
 
   private def getBackLink(periodKey: Int): Some[String] = {
     if (periodKey.equals(PeriodUtils.calculatePeakStartYear())) {
-      Some(routes.AccountSummaryController.view().url)
+      Some(routes.AccountSummaryController.view.url)
     } else {
-      Some(routes.PrevPeriodsSummaryController.view().url)
+      Some(routes.PrevPeriodsSummaryController.view.url)
     }
   }
 }

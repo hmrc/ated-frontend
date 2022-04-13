@@ -15,30 +15,17 @@
  *@
 
 @import config.ApplicationConfig
+@import play.twirl.api.HtmlFormat
 
-@this(main: main)
+@this(layoutNoAuth: layoutNoAuth)
 @(title: String,
     userLoggedIn: Boolean = true,
-    supportLinkEnabled: Boolean = true,
+    serviceInfoContent: Html = HtmlFormat.empty,
     sidebarLinks: Option[Html] = None,
     sidebarClass: Option[String] = None)(mainContent: Html)(implicit request: Request[AnyContent], messages: Messages, appConfig: ApplicationConfig)
 
-
-
-@linkElement = {
-    <link rel="stylesheet" href='@controllers.routes.Assets.versioned("stylesheets/palette.css")'/>
-    <link rel="stylesheet" href='@controllers.routes.Assets.versioned("stylesheets/focus.css")'/>
-    <link rel="stylesheet" href='@controllers.routes.Assets.versioned("stylesheets/main.css?v0.2")'/>
-    <link rel="stylesheet" href='@controllers.routes.Assets.versioned("stylesheets/bta.css")'/>
-}
-
-@main(
-    appConfig = appConfig,
-    supportLinkEnabled = supportLinkEnabled,
-    title = title,
-    sidebarLinks = sidebarLinks,
-    sidebarClass = sidebarClass,
-    userLoggedIn = userLoggedIn,
-    linkElement = Some(linkElement)) {
-        @mainContent
-}
+@layoutNoAuth(
+    pageTitle = Some(title),
+    serviceInfoContent = serviceInfoContent,
+    scripts = None
+)(mainContent)

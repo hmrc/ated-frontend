@@ -70,7 +70,7 @@ class ConfirmAddressController @Inject()(mcc: MessagesControllerComponents,
               Ok(template(id, periodKey, addressProperty, mode, serviceInfoContent, backLink))
             case _ =>
               Ok(templateError("ated.generic.error.title", "ated.generic.error.header",
-                "ated.generic.error.message", Some("ated.generic.error.message2"), None, None, None, serviceInfoContent, appConfig))
+                "ated.generic.error.message", Some("ated.generic.error.message2"), None, None, None, serviceInfoContent))
           }
         }
       }
@@ -96,7 +96,7 @@ class ConfirmAddressController @Inject()(mcc: MessagesControllerComponents,
                 AtedUtils.getEditSubmittedMode(x, answer),
                 serviceInfoContent,
                 backLink))
-            case None => Redirect(controllers.routes.AccountSummaryController.view())
+            case None => Redirect(controllers.routes.AccountSummaryController.view)
           }
         }
       }

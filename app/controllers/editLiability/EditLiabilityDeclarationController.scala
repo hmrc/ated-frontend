@@ -38,7 +38,7 @@ class EditLiabilityDeclarationController @Inject()(mcc: MessagesControllerCompon
   extends FrontendController(mcc) with BackLinkController with ClientHelper with ControllerIds {
 
   implicit val ec: ExecutionContext = mcc.executionContext
-  val controllerId = editLiabilityDeclarationId
+  val controllerId: String = editLiabilityDeclarationId
 
   def view(oldFormBundleNo: String): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
@@ -50,7 +50,7 @@ class EditLiabilityDeclarationController @Inject()(mcc: MessagesControllerCompon
               currentBackLink.map(backLink =>
                 Ok(template(oldFormBundleNo, returnType, serviceInfoContent, backLink))
               )
-            case None => Future.successful(Redirect(controllers.routes.AccountSummaryController.view()))
+            case None => Future.successful(Redirect(controllers.routes.AccountSummaryController.view))
           }
         }
       }
@@ -66,7 +66,7 @@ class EditLiabilityDeclarationController @Inject()(mcc: MessagesControllerCompon
               case Some(_) =>
                 Redirect(controllers.editLiability.routes.EditLiabilitySentController.view(oldFormBundleNo))
               case None =>
-                Redirect(controllers.routes.AccountSummaryController.view())
+                Redirect(controllers.routes.AccountSummaryController.view)
             }
         }
       }

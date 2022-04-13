@@ -52,7 +52,7 @@ class DisposeLiabilitySummaryController @Inject()(mcc: MessagesControllerCompone
               currentBackLink.map { backLink =>
                 Ok(template(x, serviceInfoContent, backLink))
               }
-            case None => Future.successful(Redirect(controllers.routes.AccountSummaryController.view()))
+            case None => Future.successful(Redirect(controllers.routes.AccountSummaryController.view))
           }
         }
       }
@@ -81,7 +81,7 @@ class DisposeLiabilitySummaryController @Inject()(mcc: MessagesControllerCompone
           yield {
             retrieveLiabilityReturn match {
               case Some(x) => Ok(views.html.editLiability.disposeLiabilityPrintFriendly(x, organisationName))
-              case None => Redirect(controllers.routes.AccountSummaryController.view())
+              case None => Redirect(controllers.routes.AccountSummaryController.view)
             }
           }
       }

@@ -18,10 +18,12 @@
 @import config.ApplicationConfig
 @this(layout: layout)
 
-@(title: String,
+@(  title: String,
     showUrBanner: Option[Boolean] = Some(false),
     serviceInfoContent: Html = HtmlFormat.empty,
     pageScripts: Option[Html] = None,
+    sideBar: Option[Html] = None,
+    banner: Html = HtmlFormat.empty
 )(mainContent: Html)(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
 
@@ -29,5 +31,7 @@
     pageTitle = Some(title),
     serviceInfoContent = serviceInfoContent,
     scripts = pageScripts,
-    isUserResearchBannerVisible = showUrBanner.getOrElse(false)
+    isUserResearchBannerVisible = showUrBanner.getOrElse(false),
+    sideBar = sideBar,
+    banner = banner
     )(mainContent)

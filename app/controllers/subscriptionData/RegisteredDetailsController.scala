@@ -66,7 +66,7 @@ class RegisteredDetailsController @Inject()(mcc: MessagesControllerComponents,
               registeredDetails <- subscriptionDataService.updateRegisteredDetails(updateDetails)
             } yield {
               registeredDetails match {
-                case Some(_) => Redirect(controllers.subscriptionData.routes.CompanyDetailsController.view())
+                case Some(_) => Redirect(controllers.subscriptionData.routes.CompanyDetailsController.view)
                 case None =>
                   val errorMsg = Messages("ated.registered-details.save.error")
                   val errorForm = registeredDetailsForm.withError(key = "addressType", message = errorMsg).fill(updateDetails)
@@ -80,6 +80,6 @@ class RegisteredDetailsController @Inject()(mcc: MessagesControllerComponents,
   }
 
   private def getBackLink = {
-    Some(controllers.subscriptionData.routes.CompanyDetailsController.view().url)
+    Some(controllers.subscriptionData.routes.CompanyDetailsController.view.url)
   }
 }

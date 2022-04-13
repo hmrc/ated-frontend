@@ -16,8 +16,6 @@
 
 package controllers
 
-import java.util.UUID
-
 import builders.SessionBuilder
 import config.ApplicationConfig
 import connectors.BackLinkCacheConnector
@@ -40,8 +38,9 @@ import services.{ServiceInfoService, SubscriptionDataService, SummaryReturnsServ
 import testhelpers.MockAuthUtil
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
-import views.html.BtaNavigationLinks
+import views.html.{BtaNavigationLinks, periodSummary}
 
+import java.util.UUID
 import scala.concurrent.Future
 
 class PeriodSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with MockAuthUtil {
@@ -57,12 +56,11 @@ class PeriodSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite w
   val mockPropertyDetailsSummaryController: PropertyDetailsSummaryController = mock[PropertyDetailsSummaryController]
   val mockAddressLookupController: AddressLookupController = mock[AddressLookupController]
   val mockDisposePropertyController: DisposePropertyController = mock[DisposePropertyController]
-    val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
+  val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
-  val injectedViewInstance = app.injector.instanceOf[views.html.periodSummary]
-  val injectedViewInstancePast = app.injector.instanceOf[views.html.periodSummaryPastReturns]
+  val injectedViewInstance: periodSummary = app.injector.instanceOf[views.html.periodSummary]
 
   val periodKey: Int = 2015
   val organisationName: String = "OrganisationName"
@@ -84,8 +82,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
       mockSubscriptionDataService,
       mockServiceInfoService,
       mockBackLinkCacheConnector,
-      injectedViewInstance,
-      injectedViewInstancePast
+      injectedViewInstance
     )
     def createReturnWithAuthorisedUser()(test: Future[Result] => Any) {
       val userId = s"user-${UUID.randomUUID}"
@@ -102,7 +99,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
-      when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.eq(Some(routes.AccountSummaryController.view().url)))(ArgumentMatchers.any()))
+      when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.eq(Some(routes.AccountSummaryController.view.url)))(ArgumentMatchers.any()))
         .thenReturn(Future.successful(None))
 
       when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
@@ -129,16 +126,22 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
       test(result)
     }
 
-    def getWithAuthorisedUserPastReturns(periodSummaries: Option[PeriodSummaryReturns] = None)(test: Future[Result] => Any) {
+    def getWithAuthorisedUserPastTab(periodSummaries: Option[PeriodSummaryReturns] = None)(test: Future[Result] => Any) {
       val period: Int = 2015
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
+      when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(btaNavigationLinksView()(messages,mockAppConfig)))
       when(mockSummaryReturnsService.getPeriodSummaryReturns(ArgumentMatchers.eq(period))(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(periodSummaries))
+
+      periodSummaries.foreach{periodSum =>
+        when(mockSummaryReturnsService.filterPeriodSummaryReturnReliefs(periodSum, past = true))
+      }
+
       when(mockSubscriptionDataService.getOrganisationName(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(organisationName)))
 
-      val result = testPeriodSummaryController.viewPastReturns(periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
+      val result = testPeriodSummaryController.view(periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
 
@@ -212,16 +215,18 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
             document.title() must include("Your ATED returns for")
-            document.getElementById("period-summary-header").text() must include("Your ATED returns for")
+            document.getElementsByClass("govuk-caption-xl").text === s"You have logged in as:$organisationName"
+            document.getElementsByTag("h1").text() must include("Your ATED returns for")
           }
         }
 
         "show the period summary view post return" in new Setup {
-          getWithAuthorisedUserPastReturns(None) { result =>
+          getWithAuthorisedUserPastTab(None) { result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
             document.title() must include("Your ATED returns for")
-            document.getElementById("period-summary-header").text() must include("Your ATED returns for")
+            document.getElementsByClass("govuk-caption-xl").text === s"You have logged in as:$organisationName"
+            document.getElementsByTag("h1").text() must include("Your ATED returns for")
           }
         }
 

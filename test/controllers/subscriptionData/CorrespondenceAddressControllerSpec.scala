@@ -109,17 +109,17 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
       test(result)
     }
 
-    def submitWithAuthorisedUserError(testAddress: Option[AddressDetails] = None)
-                                       (fakeRequest: FakeRequest[AnyContentAsJson])(test: Future[Result] => Any) {
-      val userId = s"user-${UUID.randomUUID}"
-      val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
-      setAuthMocks(authMock)
-      when(mockSubscriptionDataService.updateCorrespondenceAddressDetails(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
-        .thenReturn(Future.successful(testAddress))
-      val result = testCorrespondenceAddressController.submit().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
-
-      test(result)
-    }
+//    def submitWithAuthorisedUserError(testAddress: Option[AddressDetails] = None)
+//                                       (fakeRequest: FakeRequest[AnyContentAsJson])(test: Future[Result] => Any) {
+//      val userId = s"user-${UUID.randomUUID}"
+//      val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+//      setAuthMocks(authMock)
+//      when(mockSubscriptionDataService.updateCorrespondenceAddressDetails(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+//        .thenReturn(Future.successful(testAddress))
+//      val result = testCorrespondenceAddressController.submit().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
+//
+//      test(result)
+//    }
 
     def submitWithUnAuthorisedUser(test: Future[Result] => Any) {
       val userId = s"user-${UUID.randomUUID}"
@@ -276,7 +276,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
                     status(result) must be(OK)
                     document.title() must be ("Sorry, there is a problem with the service")
                 }
-                submitWithAuthorisedUserError(None)(FakeRequest().withJsonBody(inputJson)) {
+                submitWithAuthorisedUserSuccess(None)(FakeRequest().withJsonBody(inputJson)) {
                   result =>
                     val document = Jsoup.parse(contentAsString(result))
                     status(result) must be(OK)
