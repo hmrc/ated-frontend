@@ -149,6 +149,24 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
       test(result)
     }
 
+    def submitWithUnknownResponse(inputJson: JsValue, propertyDetails: Option[PropertyDetails], mode: Option[String] = None)(test: Future[Result] => Any) {
+      val periodKey: Int = 2015
+      val userId = s"user-${UUID.randomUUID}"
+      when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
+      when(mockPropertyDetailsService.validateCalculateDraftPropertyDetails(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).
+        thenReturn(Future.successful(true))
+      when(mockPropertyDetailsService.saveDraftPropertyDetailsSupportingInfo(ArgumentMatchers.eq("1"), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).
+        thenReturn(Future.successful(OK))
+      when(mockPropertyDetailsService.calculateDraftPropertyDetails(ArgumentMatchers.eq("1"))(ArgumentMatchers.any(), ArgumentMatchers.any())).
+        thenReturn(Future.successful(HttpResponse(FORBIDDEN, """""")))
+      val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+      setAuthMocks(authMock)
+      val result = testPropertyDetailsSupportingInfoController.save("1", periodKey, mode)
+        .apply(SessionBuilder.updateRequestWithSession(FakeRequest().withJsonBody(inputJson), userId))
+      test(result)
+    }
+
     def submitWithAuthorisedUser(inputJson: JsValue, propertyDetails: Option[PropertyDetails], mode: Option[String] = None)(test: Future[Result] => Any) {
       val periodKey: Int = 2015
       val userId = s"user-${UUID.randomUUID}"
@@ -332,6 +350,16 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
           submitWithInvalidAgent(inputJson, Some(propertyDetails)) {
             result =>
               status(result) must be(BAD_REQUEST)
+          }
+        }
+
+        "for unknown status, throw INTERNAL_SERVER_ERROR"  in new Setup {
+          val propertyDetails: PropertyDetails = ChangeLiabilityReturnBuilder.generateChangeLiabilityReturn("1")
+          val inputJson: JsValue = Json.toJson(PropertyDetailsSupportingInfo(""))
+          when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+          submitWithUnknownResponse(inputJson, Some(propertyDetails)) {
+            result =>
+              status(result) must be(INTERNAL_SERVER_ERROR)
           }
         }
       }

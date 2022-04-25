@@ -123,6 +123,10 @@ class PropertyDetailsSupportingInfoController @Inject()(mcc: MessagesControllerC
                         case BAD_REQUEST if response.body.contains("Agent not Valid") =>
                           Future.successful(BadRequest(templateError("ated.client-problem.title",
                             "ated.client-problem.header", "ated.client-problem.message", None, Some(appConfig.agentRedirectedToMandate), None, None, serviceInfoContent, appConfig)))
+                        case status =>
+                          logger.error(s"[PropertyDetailsSupportingInfoController][save] UNKNOWN_SAVE_STATUS - $status - ${Option(response.body).getOrElse("No response body")}")
+                          Future.successful(InternalServerError(templateError("ated.client-problem.title",
+                            "ated.client-problem.header", "ated.client-problem.message", None, Some(appConfig.agentRedirectedToMandate), None, None, serviceInfoContent, appConfig)))
                       }
                     }
                   }
