@@ -62,235 +62,236 @@ class EditLiabilityDeclarationControllerSpec extends PlaySpec with GuiceOneServe
   val formBundleNo2: String = "123456789011"
   val formBundleNo1: String = "123456789012"
 
-class Setup {
+  class Setup {
 
-  val mockAuthAction: AuthAction = new AuthAction(
-    mockAppConfig,
-    mockDelegationService,
-    mockAuthConnector
-  )
+    val mockAuthAction: AuthAction = new AuthAction(
+      mockAppConfig,
+      mockDelegationService,
+      mockAuthConnector
+    )
 
-  val testEditLiabilityDeclarationController: EditLiabilityDeclarationController = new EditLiabilityDeclarationController(
-    mockMcc,
-    mockChangeLiabilityReturnService,
-    mockAuthAction,
-    mockServiceInfoService,
-    mockDataCacheConnector,
-    mockBackLinkCacheConnector,
-    injectedViewInstance
-  )
+    val testEditLiabilityDeclarationController: EditLiabilityDeclarationController = new EditLiabilityDeclarationController(
+      mockMcc,
+      mockChangeLiabilityReturnService,
+      mockAuthAction,
+      mockServiceInfoService,
+      mockDataCacheConnector,
+      mockBackLinkCacheConnector,
+      injectedViewInstance
+    )
 
-  def viewWithUnAuthorisedUser(test: Future[Result] => Any) {
-    val userId = s"user-${UUID.randomUUID}"
-    val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
-    setInvalidAuthMocks(authMock)
-    val result = testEditLiabilityDeclarationController.view(formBundleNo1).apply(SessionBuilder.buildRequestWithSession(userId))
-    test(result)
+    def viewWithUnAuthorisedUser(test: Future[Result] => Any) {
+      val userId = s"user-${UUID.randomUUID}"
+      val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
+      setInvalidAuthMocks(authMock)
+      val result = testEditLiabilityDeclarationController.view(formBundleNo1).apply(SessionBuilder.buildRequestWithSession(userId))
+      test(result)
+    }
+
+    def viewWithAuthorisedUser(x: Option[PropertyDetails] = None)(test: Future[Result] => Any) {
+      val userId = s"user-${UUID.randomUUID}"
+      val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+      noDelegationModelAuthMocks(authMock)
+      when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(btaNavigationLinksView()(messages, mockAppConfig)))
+      when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
+      when(mockChangeLiabilityReturnService.retrieveSubmittedLiabilityReturnAndCache
+      (ArgumentMatchers.eq(formBundleNo1), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(x))
+      when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+      val result = testEditLiabilityDeclarationController.view(formBundleNo1).apply(SessionBuilder.buildRequestWithSession(userId))
+      test(result)
+    }
+
+    def viewWithAuthorisedDelegatedUser(x: Option[PropertyDetails] = None)(test: Future[Result] => Any) {
+      val userId = s"user-${UUID.randomUUID}"
+      val authMock = authResultDefault(AffinityGroup.Agent, defaultEnrolmentSet)
+      setAuthMocks(authMock)
+      when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
+      when(mockChangeLiabilityReturnService.retrieveSubmittedLiabilityReturnAndCache
+      (ArgumentMatchers.eq(formBundleNo1), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(x))
+      when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+      val result = testEditLiabilityDeclarationController.view(formBundleNo1).apply(SessionBuilder.buildRequestWithSessionDelegation(userId))
+      test(result)
+    }
+
+    def submitWithAuthorisedUser(a: Option[PropertyDetails], oldForBundle: String = formBundleNo1)(test: Future[Result] => Any) {
+      val userId = s"user-${UUID.randomUUID}"
+      val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+      setAuthMocks(authMock)
+      when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
+        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
+      when(mockChangeLiabilityReturnService.retrieveSubmittedLiabilityReturnAndCache
+      (ArgumentMatchers.eq(formBundleNo1), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(a))
+      val r1 = EditLiabilityReturnsResponse(mode = "Post", oldFormBundleNumber = oldForBundle, formBundleNumber =
+        Some(formBundleNo2), liabilityAmount = BigDecimal(3500.00), amountDueOrRefund = BigDecimal(0.00), paymentReference = Some("payment-ref-1"))
+      val response = EditLiabilityReturnsResponseModel(processingDate = DateTime.now(), liabilityReturnResponse = Seq(r1), BigDecimal(0.00))
+      when(mockChangeLiabilityReturnService.submitDraftChangeLiability
+      (ArgumentMatchers.eq(formBundleNo1))(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(response))
+      val result = testEditLiabilityDeclarationController.submit(formBundleNo1)
+        .apply(SessionBuilder.updateRequestFormWithSession(FakeRequest().withFormUrlEncodedBody(), userId))
+      test(result)
+    }
+
+    def submitWithUnAuthorisedUser(test: Future[Result] => Any) {
+      val userId = s"user-${UUID.randomUUID}"
+      val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
+      setInvalidAuthMocks(authMock)
+      val result = testEditLiabilityDeclarationController.submit(formBundleNo1).apply(SessionBuilder.buildRequestWithSession(userId))
+      test(result)
+    }
   }
 
-  def viewWithAuthorisedUser(x: Option[PropertyDetails] = None)(test: Future[Result] => Any) {
-    val userId = s"user-${UUID.randomUUID}"
-    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
-    noDelegationModelAuthMocks(authMock)
-    when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-      .thenReturn(Future.successful(btaNavigationLinksView()(messages,mockAppConfig)))
-    when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
-      (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-    when(mockChangeLiabilityReturnService.retrieveSubmittedLiabilityReturnAndCache
-    (ArgumentMatchers.eq(formBundleNo1), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(x))
-    when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
-    val result = testEditLiabilityDeclarationController.view(formBundleNo1).apply(SessionBuilder.buildRequestWithSession(userId))
-    test(result)
-  }
-
-  def viewWithAuthorisedDelegatedUser(x: Option[PropertyDetails] = None)(test: Future[Result] => Any) {
-    val userId = s"user-${UUID.randomUUID}"
-    val authMock = authResultDefault(AffinityGroup.Agent, defaultEnrolmentSet)
-    setAuthMocks(authMock)
-    when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
-      (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-    when(mockChangeLiabilityReturnService.retrieveSubmittedLiabilityReturnAndCache
-    (ArgumentMatchers.eq(formBundleNo1), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(x))
-    when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
-    val result = testEditLiabilityDeclarationController.view(formBundleNo1).apply(SessionBuilder.buildRequestWithSessionDelegation(userId))
-    test(result)
-  }
-
-  def submitWithAuthorisedUser(a: Option[PropertyDetails], oldForBundle: String = formBundleNo1)(test: Future[Result] => Any) {
-    val userId = s"user-${UUID.randomUUID}"
-    val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
-    setAuthMocks(authMock)
-    when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
-      (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-    when(mockChangeLiabilityReturnService.retrieveSubmittedLiabilityReturnAndCache
-    (ArgumentMatchers.eq(formBundleNo1), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(a))
-    val r1 = EditLiabilityReturnsResponse(mode = "Post", oldFormBundleNumber = oldForBundle, formBundleNumber =
-      Some(formBundleNo2), liabilityAmount = BigDecimal(3500.00), amountDueOrRefund = BigDecimal(0.00), paymentReference = Some("payment-ref-1"))
-    val response = EditLiabilityReturnsResponseModel(processingDate = DateTime.now(), liabilityReturnResponse = Seq(r1), BigDecimal(0.00))
-    when(mockChangeLiabilityReturnService.submitDraftChangeLiability
-    (ArgumentMatchers.eq(formBundleNo1))(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(response))
-    val result = testEditLiabilityDeclarationController.submit(formBundleNo1)
-      .apply(SessionBuilder.updateRequestFormWithSession(FakeRequest().withFormUrlEncodedBody(), userId))
-    test(result)
-  }
-
-  def submitWithUnAuthorisedUser(test: Future[Result] => Any) {
-    val userId = s"user-${UUID.randomUUID}"
-    val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
-    setInvalidAuthMocks(authMock)
-    val result = testEditLiabilityDeclarationController.submit(formBundleNo1).apply(SessionBuilder.buildRequestWithSession(userId))
-    test(result)
-  }
-}
   override def beforeEach: Unit = {
 
     reset(mockChangeLiabilityReturnService)
-reset(mockDelegationService)
+    reset(mockDelegationService)
     reset(mockDataCacheConnector)
     reset(mockBackLinkCacheConnector)
   }
 
-    "view" must {
-      "unauthorised users" must {
+  "view" must {
+    "unauthorised users" must {
 
-        "respond with a redirect" in new Setup {
-          viewWithUnAuthorisedUser { result =>
-            status(result) must be(SEE_OTHER)
-          }
-        }
-        "be redirected to the login page" in new Setup {
-          viewWithUnAuthorisedUser { result =>
-            redirectLocation(result).get must include("/ated/unauthorised")
-          }
+      "respond with a redirect" in new Setup {
+        viewWithUnAuthorisedUser { result =>
+          status(result) must be(SEE_OTHER)
         }
       }
-
-      "authorised users" must {
-
-        "view amended return declaration, if amountDueOrRefund is negative" in new Setup {
-          val cL1: PropertyDetails = PropertyDetailsBuilder.getFullPropertyDetails(formBundleNo1)
-          val calc1: PropertyDetailsCalculated = ChangeLiabilityReturnBuilder.generateCalculated
-          val cL2: PropertyDetails = cL1.copy(calculated = Some(calc1))
-          viewWithAuthorisedUser(Some(cL2)) { result =>
-            status(result) must be(OK)
-            val document = Jsoup.parse(contentAsString(result))
-            document.title() must be(TitleBuilder.buildTitle("Amended return declaration"))
-            document.getElementById("relief-declaration-confirmation-header").text() must be("Amended return declaration")
-            document.getElementById("relief-declaration-before-declaration-text")
-              .text() must be("Before you can submit your return to HMRC you must read and agree to the following statement. If you give false information you may have to pay financial penalties and face prosecution.")
-            document.getElementById("declaration-confirmation-text")
-              .text() must be("I declare that the information I have given on this return is correct and complete.")
-            document.getElementById("submit").text() must be("Agree and submit amended return")
-          }
-        }
-
-        "view further return declaration, if amountDueOrRefund is positive" in new Setup {
-          val cL1: PropertyDetails = PropertyDetailsBuilder.getFullPropertyDetails(formBundleNo1)
-          val calc1: PropertyDetailsCalculated = ChangeLiabilityReturnBuilder.generateCalculated.copy(amountDueOrRefund = Some(BigDecimal(500.00)))
-          val cL2: PropertyDetails = cL1.copy(calculated = Some(calc1))
-          viewWithAuthorisedUser(Some(cL2)) { result =>
-            status(result) must be(OK)
-            val document = Jsoup.parse(contentAsString(result))
-            document.title() must be(TitleBuilder.buildTitle("Further return declaration"))
-            document.getElementById("relief-declaration-confirmation-header").text() must be("Further return declaration")
-            document.getElementById("relief-declaration-before-declaration-text")
-              .text() must be("Before you can submit your return to HMRC you must read and agree to the following statement. If you give false information you may have to pay financial penalties and face prosecution.")
-            document.getElementById("declaration-confirmation-text")
-              .text() must be("I declare that the information I have given on this return is correct and complete.")
-            document.getElementById("submit").text() must be("Agree and submit further return")
-          }
-        }
-
-        "view change in details return declaration, if amountDueOrRefund is zero" in new Setup {
-          val cL1: PropertyDetails = PropertyDetailsBuilder.getFullPropertyDetails(formBundleNo1)
-          val calc1: PropertyDetailsCalculated = ChangeLiabilityReturnBuilder.generateCalculated.copy(amountDueOrRefund = Some(BigDecimal(0.00)))
-          val cL2: PropertyDetails = cL1.copy(calculated = Some(calc1))
-          viewWithAuthorisedUser(Some(cL2)) { result =>
-            status(result) must be(OK)
-            val document = Jsoup.parse(contentAsString(result))
-            document.title() must be(TitleBuilder.buildTitle("Change in details declaration"))
-            document.getElementById("relief-declaration-confirmation-header").text() must be("Change in details declaration")
-            document.getElementById("relief-declaration-before-declaration-text")
-              .text() must be("Before you can submit your return to HMRC you must read and agree to the following statement. If you give false information you may have to pay financial penalties and face prosecution.")
-            document.getElementById("declaration-confirmation-text")
-              .text() must be("I declare that the information I have given on this return is correct and complete.")
-            document.getElementById("submit").text() must be("Agree and submit")
-          }
-        }
-
-        "view change in details return declaration, if amountDueOrRefund is not-defined" in new Setup {
-          val cL1: PropertyDetails = PropertyDetailsBuilder.getFullPropertyDetails(formBundleNo1)
-          val calc1: PropertyDetailsCalculated = ChangeLiabilityReturnBuilder.generateCalculated.copy(amountDueOrRefund = None)
-          val cL2: PropertyDetails = cL1.copy(calculated = Some(calc1))
-          viewWithAuthorisedUser(Some(cL2)) { result =>
-            status(result) must be(OK)
-            val document = Jsoup.parse(contentAsString(result))
-            document.title() must be(TitleBuilder.buildTitle("Change in details declaration"))
-          }
-        }
-
-        "view return declaration, with delegated user providing a delegation model" in new Setup {
-          val cL1: PropertyDetails = PropertyDetailsBuilder.getFullPropertyDetails(formBundleNo1)
-          val calc1: PropertyDetailsCalculated = ChangeLiabilityReturnBuilder.generateCalculated.copy(amountDueOrRefund = Some(BigDecimal(0.00)))
-          val cL2: PropertyDetails = cL1.copy(calculated = Some(calc1))
-          viewWithAuthorisedDelegatedUser(Some(cL2)) { result =>
-            status(result) must be(OK)
-            val document = Jsoup.parse(contentAsString(result))
-            document.getElementById("relief-declaration-before-declaration-text")
-              .text() must be("Before your client’s return can be submitted to HMRC, you must read and agree to the following statement. Your client’s approval may be in electronic or non-electronic form. If your client gives false information, they may have to pay financial penalties and face prosecution.")
-            document.getElementById("declaration-confirmation-text")
-              .text() must be("I confirm that my client has approved the information contained in this return as being correct and complete to the best of their knowledge and belief.")
-            document.getElementById("submit").text() must be("Agree and submit")
-          }
-        }
-
-        "redirected to account summary page, if service doesn't return liability model" in new Setup {
-          viewWithAuthorisedUser(None) { result =>
-            status(result) must be(SEE_OTHER)
-            redirectLocation(result) must be(Some("/ated/account-summary"))
-          }
+      "be redirected to the login page" in new Setup {
+        viewWithUnAuthorisedUser { result =>
+          redirectLocation(result).get must include("/ated/unauthorised")
         }
       }
     }
 
-    "submit" must {
-      "unauthorised users" must {
-        "respond with a redirect" in new Setup {
-          submitWithUnAuthorisedUser { result =>
-            status(result) must be(SEE_OTHER)
-          }
-        }
-        "be redirected to the login page" in new Setup {
-          submitWithUnAuthorisedUser { result =>
-            redirectLocation(result).get must include("/ated/unauthorised")
-          }
+    "authorised users" must {
+
+      "view amended return declaration, if amountDueOrRefund is negative" in new Setup {
+        val cL1: PropertyDetails = PropertyDetailsBuilder.getFullPropertyDetails(formBundleNo1)
+        val calc1: PropertyDetailsCalculated = ChangeLiabilityReturnBuilder.generateCalculated
+        val cL2: PropertyDetails = cL1.copy(calculated = Some(calc1))
+        viewWithAuthorisedUser(Some(cL2)) { result =>
+          status(result) must be(OK)
+          val document = Jsoup.parse(contentAsString(result))
+          document.title() must be(TitleBuilder.buildTitle("Amended return declaration"))
+          document.getElementsByClass("govuk-heading-xl").text() must include("Amended return declaration")
+          document.getElementById("relief-declaration-before-declaration-text")
+            .text() must be("Before you can submit your return to HMRC you must read and agree to the following statement. If you give false information you may have to pay financial penalties and face prosecution.")
+          document.getElementsByClass("govuk-warning-text__text")
+            .text() must be("Warning I declare that the information I have given on this return is correct and complete.")
+          document.getElementById("submit").text() must be("Agree and submit amended return")
         }
       }
 
-      "Authorised users" must {
-        "for valid data, redirect to respective return sent page, if form-bundle found in response" in new Setup {
-          val cL1: PropertyDetails = PropertyDetailsBuilder.getFullPropertyDetails(formBundleNo1)
-          val calc1: PropertyDetailsCalculated = ChangeLiabilityReturnBuilder.generateCalculated
-          val cL2: PropertyDetails = cL1.copy(calculated = Some(calc1))
-          when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
-          submitWithAuthorisedUser(Some(cL2)) {
-            result =>
-              status(result) must be(SEE_OTHER)
-              redirectLocation(result).get must include(s"/ated/liability/$formBundleNo1/change/sent")
-          }
+      "view further return declaration, if amountDueOrRefund is positive" in new Setup {
+        val cL1: PropertyDetails = PropertyDetailsBuilder.getFullPropertyDetails(formBundleNo1)
+        val calc1: PropertyDetailsCalculated = ChangeLiabilityReturnBuilder.generateCalculated.copy(amountDueOrRefund = Some(BigDecimal(500.00)))
+        val cL2: PropertyDetails = cL1.copy(calculated = Some(calc1))
+        viewWithAuthorisedUser(Some(cL2)) { result =>
+          status(result) must be(OK)
+          val document = Jsoup.parse(contentAsString(result))
+          document.title() must be(TitleBuilder.buildTitle("Further return declaration"))
+          document.getElementsByClass("govuk-heading-xl").text() must include("Further return declaration")
+          document.getElementById("relief-declaration-before-declaration-text")
+            .text() must be("Before you can submit your return to HMRC you must read and agree to the following statement. If you give false information you may have to pay financial penalties and face prosecution.")
+          document.getElementsByClass("govuk-warning-text__text")
+            .text() must be("Warning I declare that the information I have given on this return is correct and complete.")
+          document.getElementById("submit").text() must be("Agree and submit further return")
         }
+      }
 
-        "for valid data, redirect to account summary page, if form-bundle not-found in response" in new Setup {
-          val cL1: PropertyDetails = PropertyDetailsBuilder.getFullPropertyDetails(formBundleNo1)
-          val calc1: PropertyDetailsCalculated = ChangeLiabilityReturnBuilder.generateCalculated
-          val cL2: PropertyDetails = cL1.copy(calculated = Some(calc1))
-          when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
-          submitWithAuthorisedUser(Some(cL2), formBundleNo2) {
-            result =>
-              status(result) must be(SEE_OTHER)
-              redirectLocation(result).get must include(s"/ated/account-summary")
-          }
+      "view change in details return declaration, if amountDueOrRefund is zero" in new Setup {
+        val cL1: PropertyDetails = PropertyDetailsBuilder.getFullPropertyDetails(formBundleNo1)
+        val calc1: PropertyDetailsCalculated = ChangeLiabilityReturnBuilder.generateCalculated.copy(amountDueOrRefund = Some(BigDecimal(0.00)))
+        val cL2: PropertyDetails = cL1.copy(calculated = Some(calc1))
+        viewWithAuthorisedUser(Some(cL2)) { result =>
+          status(result) must be(OK)
+          val document = Jsoup.parse(contentAsString(result))
+          document.title() must be(TitleBuilder.buildTitle("Change in details declaration"))
+          document.getElementsByClass("govuk-heading-xl").text() must include("Change in details declaration")
+          document.getElementById("relief-declaration-before-declaration-text")
+            .text() must be("Before you can submit your return to HMRC you must read and agree to the following statement. If you give false information you may have to pay financial penalties and face prosecution.")
+          document.getElementsByClass("govuk-warning-text__text")
+            .text() must be("Warning I declare that the information I have given on this return is correct and complete.")
+          document.getElementById("submit").text() must be("Agree and submit")
+        }
+      }
+
+      "view change in details return declaration, if amountDueOrRefund is not-defined" in new Setup {
+        val cL1: PropertyDetails = PropertyDetailsBuilder.getFullPropertyDetails(formBundleNo1)
+        val calc1: PropertyDetailsCalculated = ChangeLiabilityReturnBuilder.generateCalculated.copy(amountDueOrRefund = None)
+        val cL2: PropertyDetails = cL1.copy(calculated = Some(calc1))
+        viewWithAuthorisedUser(Some(cL2)) { result =>
+          status(result) must be(OK)
+          val document = Jsoup.parse(contentAsString(result))
+          document.title() must be(TitleBuilder.buildTitle("Change in details declaration"))
+        }
+      }
+
+      "view return declaration, with delegated user providing a delegation model" in new Setup {
+        val cL1: PropertyDetails = PropertyDetailsBuilder.getFullPropertyDetails(formBundleNo1)
+        val calc1: PropertyDetailsCalculated = ChangeLiabilityReturnBuilder.generateCalculated.copy(amountDueOrRefund = Some(BigDecimal(0.00)))
+        val cL2: PropertyDetails = cL1.copy(calculated = Some(calc1))
+        viewWithAuthorisedDelegatedUser(Some(cL2)) { result =>
+          status(result) must be(OK)
+          val document = Jsoup.parse(contentAsString(result))
+          document.getElementById("relief-declaration-before-declaration-text")
+            .text() must be("Before your client’s return can be submitted to HMRC, you must read and agree to the following statement. Your client’s approval may be in electronic or non-electronic form. If your client gives false information, they may have to pay financial penalties and face prosecution.")
+          document.getElementsByClass("govuk-warning-text__text")
+            .text() must be("Warning I confirm that my client has approved the information contained in this return as being correct and complete to the best of their knowledge and belief.")
+          document.getElementById("submit").text() must be("Agree and submit")
+        }
+      }
+
+      "redirected to account summary page, if service doesn't return liability model" in new Setup {
+        viewWithAuthorisedUser(None) { result =>
+          status(result) must be(SEE_OTHER)
+          redirectLocation(result) must be(Some("/ated/account-summary"))
         }
       }
     }
   }
+
+  "submit" must {
+    "unauthorised users" must {
+      "respond with a redirect" in new Setup {
+        submitWithUnAuthorisedUser { result =>
+          status(result) must be(SEE_OTHER)
+        }
+      }
+      "be redirected to the login page" in new Setup {
+        submitWithUnAuthorisedUser { result =>
+          redirectLocation(result).get must include("/ated/unauthorised")
+        }
+      }
+    }
+
+    "Authorised users" must {
+      "for valid data, redirect to respective return sent page, if form-bundle found in response" in new Setup {
+        val cL1: PropertyDetails = PropertyDetailsBuilder.getFullPropertyDetails(formBundleNo1)
+        val calc1: PropertyDetailsCalculated = ChangeLiabilityReturnBuilder.generateCalculated
+        val cL2: PropertyDetails = cL1.copy(calculated = Some(calc1))
+        when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+        submitWithAuthorisedUser(Some(cL2)) {
+          result =>
+            status(result) must be(SEE_OTHER)
+            redirectLocation(result).get must include(s"/ated/liability/$formBundleNo1/change/sent")
+        }
+      }
+
+      "for valid data, redirect to account summary page, if form-bundle not-found in response" in new Setup {
+        val cL1: PropertyDetails = PropertyDetailsBuilder.getFullPropertyDetails(formBundleNo1)
+        val calc1: PropertyDetailsCalculated = ChangeLiabilityReturnBuilder.generateCalculated
+        val cL2: PropertyDetails = cL1.copy(calculated = Some(calc1))
+        when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+        submitWithAuthorisedUser(Some(cL2), formBundleNo2) {
+          result =>
+            status(result) must be(SEE_OTHER)
+            redirectLocation(result).get must include(s"/ated/account-summary")
+        }
+      }
+    }
+  }
+}

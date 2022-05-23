@@ -236,19 +236,42 @@ object ReliefForms {
   case class DateTupleCustomErrorImpl(invalidDateErrorKey: String) extends DateTupleCustomError
   trait DateTupleCustomError {
 
-    import uk.gov.hmrc.play.mappers.DateFields._
 
     val invalidDateErrorKey: String
     val dateTuple: Mapping[Option[LocalDate]] = dateTuple(validate = true)
 
     def dateTuple(validate: Boolean = true): Mapping[Option[LocalDate]] =
       tuple(
-        year  -> optional(text),
-        month -> optional(text),
-        day   -> optional(text)
-      )
-
-    .transform(
+        "year"  -> optional(text),
+        "month" -> optional(text),
+        "day"   -> optional(text)
+      ).verifying(
+        invalidDateErrorKey,
+        data =>
+          (data._1, data._2, data._3) match {
+            case (None, None, None)                   => true
+            case (yearOption, monthOption, dayOption) =>
+              try {
+                val y = yearOption.getOrElse(throw new Exception("Year missing")).trim
+                if (y.length != 4) {
+                  throw new Exception("Year must be 4 digits")
+                }
+                new LocalDate(
+                  y.toInt,
+                  monthOption.getOrElse(throw new Exception("Month missing")).trim.toInt,
+                  dayOption.getOrElse(throw new Exception("Day missing")).trim.toInt
+                )
+                true
+              } catch {
+                case _: Throwable =>
+                  if (validate) {
+                    false
+                  } else {
+                    true
+                  }
+              }
+          }
+      ).transform(
         {
           case (Some(y), Some(m), Some(d)) =>
             try Some(new LocalDate(y.trim.toInt, m.trim.toInt, d.trim.toInt))

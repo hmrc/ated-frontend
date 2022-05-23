@@ -150,11 +150,11 @@ class DisposePropertyControllerSpec extends PlaySpec with GuiceOneServerPerSuite
             val document = Jsoup.parse(contentAsString(result))
             document.title() must be(TitleBuilder.buildTitle("When did you dispose of the property?"))
             assert(document.getElementById("service-info-list").text() === "Home Manage account Messages Help and contact")
-            document.getElementById("dispose-property-header").text() must be("When did you dispose of the property?")
-            document.getElementById("dateOfDisposal_hint").text() must be("For example, 31 3 2017")
+            document.getElementsByClass("govuk-heading-xl").text() must include("When did you dispose of the property?")
+            document.getElementById("dateOfDisposal-hint").text() must be("For example, 31 3 2017")
             document.getElementById("submit").text() must be("Save and continue")
-            document.getElementById("backLinkHref").text must be("Back")
-            document.getElementById("backLinkHref").attr("href") must include("http://backlink")
+            document.getElementsByClass("govuk-back-link").text must be("Back")
+            document.getElementsByClass("govuk-back-link").attr("href") must include("http://backlink")
         }
       }
 
@@ -210,8 +210,8 @@ class DisposePropertyControllerSpec extends PlaySpec with GuiceOneServerPerSuite
             val document = Jsoup.parse(contentAsString(result))
             document.title() must be(TitleBuilder.buildTitle("When did you dispose of the property?"))
 
-            document.getElementById("backLinkHref").text must be("Back")
-            document.getElementById("backLinkHref").attr("href") must include("/ated/liability/123456789012/dispose/summary")
+            document.getElementsByClass("govuk-back-link").text must be("Back")
+            document.getElementsByClass("govuk-back-link").attr("href") must include("/ated/liability/123456789012/dispose/summary")
         }
       }
 
@@ -250,8 +250,8 @@ class DisposePropertyControllerSpec extends PlaySpec with GuiceOneServerPerSuite
 
             val document = Jsoup.parse(contentAsString(result))
             document.title() must be(TitleBuilder.buildTitle("When did you dispose of the property?"))
-            document.getElementById("dateOfDisposal-error").text must include("There is a problem with date of disposal")
-            document.getElementById("dateOfDisposal-error-0").text must include("You must enter date of disposal")
+            document.getElementById("error-summary-title").text must include("There is a problem")
+            document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("You must enter date of disposal")
         }
       }
 
@@ -267,8 +267,8 @@ class DisposePropertyControllerSpec extends PlaySpec with GuiceOneServerPerSuite
 
             val document = Jsoup.parse(contentAsString(result))
             document.title() must be(TitleBuilder.buildTitle("When did you dispose of the property?"))
-            document.getElementById("dateOfDisposal-error").text must include("There is a problem with date of disposal")
-            document.getElementById("dateOfDisposal-error-0").text must include("You must enter a valid date")
+            document.getElementById("error-summary-title").text must include("There is a problem")
+            document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("You must enter a valid date")
         }
       }
 
@@ -284,8 +284,8 @@ class DisposePropertyControllerSpec extends PlaySpec with GuiceOneServerPerSuite
 
             val document = Jsoup.parse(contentAsString(result))
             document.title() must be(TitleBuilder.buildTitle("When did you dispose of the property?"))
-            document.getElementById("dateOfDisposal-error").text must include("There is a problem with date of disposal")
-            document.getElementById("dateOfDisposal-error-0").text must include("The date of disposal must be in this chargeable period")
+            document.getElementById("error-summary-title").text must include("There is a problem")
+            document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("The date of disposal must be in this chargeable period")
         }
       }
 

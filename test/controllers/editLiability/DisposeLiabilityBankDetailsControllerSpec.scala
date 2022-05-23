@@ -140,7 +140,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
             status(result) must be(OK)
             val doc = Jsoup.parse(contentAsString(result))
             doc.title() must be("Is the bank account in the UK? - GOV.UK")
-            doc.getElementById("pre-heading").text() must be("This section is: Change return")
+            doc.getElementsByClass("govuk-caption-xl").text() must be("This section is Change return")
             assert(doc.getElementById("service-info-list").text() === "Home Manage account Messages Help and contact")
         }
       }
@@ -166,8 +166,8 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
             val document = Jsoup.parse(contentAsString(result))
             document.title() must be(TitleBuilder.buildTitle("Is the bank account in the UK?"))
 
-            document.getElementById("backLinkHref").text must be("Back")
-            document.getElementById("backLinkHref").attr("href") must include("/ated/liability/123456789012/dispose/summary")
+            document.getElementsByClass("govuk-back-link").text must be("Back")
+            document.getElementsByClass("govuk-back-link").attr("href") must include("/ated/liability/123456789012/dispose/summary")
         }
       }
 
@@ -195,10 +195,15 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
       }
 
       "for valid, redirect to liability summary page" in new Setup {
-        val bankDetails = BankDetails(Some(true), Some("ACCOUNTNAME"), Some("123456567890"), Some(SortCode("11", "22", "33")))
-        val inputJson: JsValue = Json.toJson(bankDetails)
+        val bankDetailsJson: JsValue = Json.parse(
+          """{
+            |"hasUKBankAccount": true,
+            |"accountName": "ACCOUNTNAME",
+            |"accountNumber": "123456567890",
+            |"sortCode": "112233"
+            |}""".stripMargin)
         when(mockBackLinkCache.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
-        saveWithAuthorisedUser(oldFormBundleNum, inputJson) {
+        saveWithAuthorisedUser(oldFormBundleNum, bankDetailsJson) {
           result =>
             status(result) must be(SEE_OTHER)
             redirectLocation(result) must be(Some("/ated/liability/123456789012/dispose/summary"))

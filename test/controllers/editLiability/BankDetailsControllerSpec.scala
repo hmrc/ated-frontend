@@ -22,7 +22,7 @@ import builders._
 import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.AuthAction
-import models.{BankDetails, BankDetailsModel, PropertyDetails, SortCode}
+import models.{BankDetailsModel, PropertyDetails}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
@@ -128,10 +128,10 @@ class BankDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite wit
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
             document.title() must be(TitleBuilder.buildTitle("Is the bank account in the UK?"))
-            document.getElementById("pre-heading").text() must be("This section is: Change return")
+            document.getElementsByTag("h1").text() must include("This section is Change return")
             assert(document.getElementById("service-info-list").text() === "Home Manage account Messages Help and contact")
-            document.getElementById("backLinkHref").text must be("Back")
-            document.getElementById("backLinkHref").attr("href") must include("http://backlink")
+            document.getElementsByClass("govuk-back-link").text must be("Back")
+            document.getElementsByClass("govuk-back-link").attr("href") must include("http://backlink")
         }
       }
 
@@ -158,10 +158,15 @@ class BankDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite wit
       }
 
       "for valid, redirect to change in value page" in new Setup {
-        val bankDetails: BankDetails = BankDetails(Some(true), Some("ACCOUNTNAME"), Some("123456567890"), Some(SortCode("11", "22", "33")))
-        val inputJson: JsValue = Json.toJson(bankDetails)
+        val bankDetailsJson: JsValue = Json.parse(
+          """{
+            |"hasUKBankAccount": true,
+            |"accountName": "ACCOUNTNAME",
+            |"accountNumber": "123456567890",
+            |"sortCode": "112233"
+            |}""".stripMargin)
         when(mockBackLinkCache.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
-        saveWithAuthorisedUser(inputJson) {
+        saveWithAuthorisedUser(bankDetailsJson) {
           result =>
             status(result) must be(SEE_OTHER)
             redirectLocation(result) must be(Some("/ated/liability/12345678901/change/view-summary"))

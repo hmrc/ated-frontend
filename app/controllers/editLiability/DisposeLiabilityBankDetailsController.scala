@@ -89,6 +89,7 @@ class DisposeLiabilityBankDetailsController @Inject()(mcc: MessagesControllerCom
             formWithErrors =>
               currentBackLink.map(backLink => BadRequest(template(formWithErrors, oldFormBundleNo, serviceInfoContent, backLink))),
             bankData => {
+              println(s"\n\n\n\n *** $bankData *** \n\n\n\n")
               disposeLiabilityReturnService.cacheDisposeLiabilityReturnBank(oldFormBundleNo, bankData) flatMap {
                 _ => {
                   redirectWithBackLink(
