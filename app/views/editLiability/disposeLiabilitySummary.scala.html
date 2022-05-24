@@ -14,31 +14,57 @@
  * limitations under the License.
  *@
 
+@import _root_.utils.PeriodUtils._
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
-@this(atedMain: atedMain, formHelper: FormWithCSRF)
-@(disposeLiability: models.DisposeLiabilityReturn, serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import views.ViewUtils.titleBuilder
+@import views.html.helpers.formattedPounds
 
-@import uk.gov.hmrc.play.views.html.helpers._
-@import _root_.utils.PeriodUtils._
-@import views.html.helpers._
+@this(newMain: newMain,
+        formHelper: FormWithCSRF,
+        govukSummaryList: GovukSummaryList,
+        govukBackLink: GovukBackLink,
+        govukButton: GovukButton,
+        govukInsetText: GovukInsetText)
 
-@incomplete = {@Html("<span class=\"status\">" + messages("ated.label.incomplete") + "</span>")}
+@(disposeLiability: models.DisposeLiabilityReturn,
+        serviceInfoContent: Html = HtmlFormat.empty,
+        backLink: Option[String]
+)(implicit authContext: StandardAuthRetrievals,
+        messages: Messages,
+        request: Request[AnyContent],
+        appConfig: ApplicationConfig)
+
+@incomplete = {
+@Html("<span class=\"status\">" + messages("ated.label.incomplete") + "</span>")
+}
+
+@backLinkHtml = {
+@if(backLink.isDefined) {
+  @govukBackLink(BackLink(
+    href = backLink.get,
+    content = Text("Back")
+  ))
+}
+}
 
 @propertyDetailsAddress = {
-  <span id="address-line-1">@messages(disposeLiability.formBundleReturn.propertyDetails.address.addressLine1)</span><br>
-  <span id="address-line-2">@messages(disposeLiability.formBundleReturn.propertyDetails.address.addressLine2)</span><br>
-  @if(disposeLiability.formBundleReturn.propertyDetails.address.postalCode.isDefined){
-    <span id="address-postcode">@disposeLiability.formBundleReturn.propertyDetails.address.postalCode</span>
-  }
+  <span id="address-line-1">@messages(disposeLiability.formBundleReturn.propertyDetails.address.addressLine1)</span>
+  <br>
+  <span id="address-line-2">@messages(disposeLiability.formBundleReturn.propertyDetails.address.addressLine2)</span>
+  <br>
+@if(disposeLiability.formBundleReturn.propertyDetails.address.postalCode.isDefined) {
+  <span id="address-postcode">@disposeLiability.formBundleReturn.propertyDetails.address.postalCode</span>
+}
 }
 
 @disposeLiabilityDate = {
-  @disposeLiability.disposeLiability.map(x => x.dateOfDisposal.fold(
-    incomplete
-  )
-  (date => Html(date.toString(messages("ated.date-format"))))
-  )
+@disposeLiability.disposeLiability.map(x => x.dateOfDisposal.fold(
+  incomplete
+)
+        (date => Html(date.toString(messages("ated.date-format"))))
+)
 }
 
 @disposeLiabilityDateEdit = {
@@ -48,49 +74,49 @@
 }
 
 @bankDetailsTypeOfAccountEdit = {
-<a href="@controllers.editLiability.routes.DisposeLiabilityBankDetailsController.editFromSummary(disposeLiability.id.toString)" id="edit-bank-details-type"> @messages("ated.edit")
-  <span class="visuallyhidden">@messages("ated.edit-liability.summary.bank-details.type-of-account")</span>
-</a>
+  <a href="@controllers.editLiability.routes.DisposeLiabilityBankDetailsController.editFromSummary(disposeLiability.id.toString)" id="edit-bank-details-type"> @messages("ated.edit")
+    <span class="visuallyhidden">@messages("ated.edit-liability.summary.bank-details.type-of-account")</span>
+  </a>
 }
 
 @bankDetailsAccountName = {
-  @disposeLiability.bankDetails.flatMap(_.bankDetails.map(_.accountName))
+@disposeLiability.bankDetails.flatMap(_.bankDetails.map(_.accountName))
 }
 
 @bankDetailsAccountNameEdit = {
-<a href="@controllers.editLiability.routes.DisposeLiabilityBankDetailsController.editFromSummary(disposeLiability.id.toString)" id="edit-bank-details-account-name"> @messages("ated.edit")
-  <span class="visuallyhidden">@messages("ated.edit-liability.summary.bank-details.account-holder-name")</span>
-</a>
+  <a href="@controllers.editLiability.routes.DisposeLiabilityBankDetailsController.editFromSummary(disposeLiability.id.toString)" id="edit-bank-details-account-name"> @messages("ated.edit")
+    <span class="visuallyhidden">@messages("ated.edit-liability.summary.bank-details.account-holder-name")</span>
+  </a>
 }
 
 @bankDetailsAccountNumber = {
-  @disposeLiability.bankDetails.flatMap(_.bankDetails.map(_.accountNumber))
+@disposeLiability.bankDetails.flatMap(_.bankDetails.map(_.accountNumber))
 }
 
 @bankDetailsAccountNumberEdit = {
-<a href="@controllers.editLiability.routes.DisposeLiabilityBankDetailsController.editFromSummary(disposeLiability.id.toString)" id="edit-bank-details-account"> @messages("ated.edit")
-  <span class="visuallyhidden">@messages("ated.edit-liability.summary.bank-details.account-number")</span>
-</a>
+  <a href="@controllers.editLiability.routes.DisposeLiabilityBankDetailsController.editFromSummary(disposeLiability.id.toString)" id="edit-bank-details-account"> @messages("ated.edit")
+    <span class="visuallyhidden">@messages("ated.edit-liability.summary.bank-details.account-number")</span>
+  </a>
 }
 
 @bankDetailsAccountSortCode = {
-  @disposeLiability.bankDetails.flatMap(_.bankDetails.map(_.sortCode))
+@disposeLiability.bankDetails.flatMap(_.bankDetails.map(_.sortCode))
 }
 
 @bankDetailsAccountSortCodeEdit = {
-<a href="@controllers.editLiability.routes.DisposeLiabilityBankDetailsController.editFromSummary(disposeLiability.id.toString)" id="edit-bank-details-sortcode"> @messages("ated.edit")
+  <a href="@controllers.editLiability.routes.DisposeLiabilityBankDetailsController.editFromSummary(disposeLiability.id.toString)" id="edit-bank-details-sortcode"> @messages("ated.edit")
     <span class="visuallyhidden">@messages("ated.edit-liability.summary.bank-details.sort-code")</span>
-</a>
+  </a>
 }
 
 @bankDetailsAccountNumberIBAN = {
-  @disposeLiability.bankDetails.flatMap(_.bankDetails.map(_.iban))
+@disposeLiability.bankDetails.flatMap(_.bankDetails.map(_.iban))
 }
 
 @bankDetailsAccountNumberIBANEdit = {
-<a href="@controllers.editLiability.routes.DisposeLiabilityBankDetailsController.editFromSummary(disposeLiability.id.toString)" id="edit-bank-details-iban"> @messages("ated.edit")
-  <span class="visuallyhidden">@messages("ated.edit-liability.summary.bank-details.iban")</span>
-</a>
+  <a href="@controllers.editLiability.routes.DisposeLiabilityBankDetailsController.editFromSummary(disposeLiability.id.toString)" id="edit-bank-details-iban"> @messages("ated.edit")
+    <span class="visuallyhidden">@messages("ated.edit-liability.summary.bank-details.iban")</span>
+  </a>
 }
 
 @bankDetailsAccountSwiftCode = {
@@ -98,182 +124,304 @@
 }
 
 @bankDetailsAccountSwiftCodeEdit = {
-<a href="@controllers.editLiability.routes.DisposeLiabilityBankDetailsController.editFromSummary(disposeLiability.id.toString)" id="edit-bank-details-swift-code"> @messages("ated.edit")
-  <span class="visuallyhidden">@messages("ated.edit-liability.summary.bank-details.bic-swift-code")</span>
-</a>
+  <a href="@controllers.editLiability.routes.DisposeLiabilityBankDetailsController.editFromSummary(disposeLiability.id.toString)" id="edit-bank-details-swift-code"> @messages("ated.edit")
+    <span class="visuallyhidden">@messages("ated.edit-liability.summary.bank-details.bic-swift-code")</span>
+  </a>
 }
 
 @bankDetailsIncompleteEdit = {
-<a href="@controllers.editLiability.routes.DisposeLiabilityHasBankDetailsController.editFromSummary(disposeLiability.id.toString)" id="edit-bank-name-details"> @messages("ated.edit")
-  <span class="visuallyhidden">@messages("ated.edit-liability.summary.bank-details.supply-bank-details")</span>
-</a>
+  <a href="@controllers.editLiability.routes.DisposeLiabilityHasBankDetailsController.editFromSummary(disposeLiability.id.toString)" id="edit-bank-name-details"> @messages("ated.edit")
+    <span class="visuallyhidden">@messages("ated.edit-liability.summary.bank-details.supply-bank-details")</span>
+  </a>
 }
 
-@atedMain(title = messages("ated.property-details-summary.title"), serviceInfoContent = serviceInfoContent) {
+@newMain(title = titleBuilder(messages("ated.property-details-summary.title")),
+  serviceInfoContent = serviceInfoContent) {
 
-  @pageHeadersAndError(backLink, "pre-heading", messages("ated.property-details.pre-header-dispose"), "edit-liability-summary-header", messages("ated.property-details-summary.header"))
+  @backLinkHtml
 
-  <p id="details-text">@messages("ated.property-details-summary.details-text", periodStartDate(disposeLiability.formBundleReturn.periodKey.toInt).toString(messages("ated.date-format")), periodEndDate(disposeLiability.formBundleReturn.periodKey.toInt).toString(messages("ated.date-format")))</p>
+  <header>
+    <h1 class="govuk-heading-xl">
+      <span class="govuk-caption-xl">
+        <span class="govuk-visually-hidden">
+        @messages("ated.screen-reader.section")
+        </span>
+        @messages("ated.property-details.pre-header-dispose")
+      </span>
+      @messages("ated.property-details-summary.header")
+    </h1>
+  </header>
 
+  <p id="details-text" class="govuk-body">@messages("ated.property-details-summary.details-text", periodStartDate(disposeLiability.formBundleReturn.periodKey.toInt).toString(messages("ated.date-format")), periodEndDate(disposeLiability.formBundleReturn.periodKey.toInt).toString(messages("ated.date-format")))</p>
   <section class="cya-wrapper" id="cya-property-details">
-    <h2 id="cya-property-details-header" class="heading-medium">@messages("ated.property-details-summary.table.property-details.header")</h2>
-    @cyaRows(
-      Seq(
-        CyaRow(
-          cyaQuestion = "ated.property-details-summary.table.property-details.address.label",
-          cyaQuestionId = "property-address-label",
-          cyaAnswer = propertyDetailsAddress,
-          cyaAnswerId = "property-address-value",
-          cyaChange = None
+    <h2 id="cya-property-details-header" class="govuk-heading-m">@messages("ated.property-details-summary.table.property-details.header")</h2>
+
+    @govukSummaryList(SummaryList(
+      rows = Seq(
+        SummaryListRow(
+          key = Key(
+            content = Text(messages("ated.property-details-summary.table.property-details.address.label"))
+          ),
+          value = Value(
+            content = HtmlContent(propertyDetailsAddress)
+          )
         ),
-        CyaRow(
-          cyaQuestion = "ated.dispose-property.summary.disposal-date-label",
-          cyaQuestionId = "property-title-disposal-date-label",
-          cyaAnswer = disposeLiabilityDate,
-          cyaAnswerId = "property-title-disposal-date",
-          cyaChange = Some(disposeLiabilityDateEdit)
+        SummaryListRow(
+          key = Key(
+            content = Text(messages("ated.dispose-property.summary.disposal-date-label"))
+          ),
+          value = Value(
+            content = HtmlContent(disposeLiabilityDate)
+          ),
+          actions = Some(Actions(
+            items = Seq(
+              ActionItem(
+                href = controllers.editLiability.routes.DisposePropertyController.editFromSummary(disposeLiability.id.toString).url,
+                content = HtmlContent(messages("ated.edit")),
+                visuallyHiddenText = Some(messages("ated.dispose-property.summary.disposal-date-label"))
+              )
+            )
+          ))
         )
       )
+    )
     )
   </section>
 
   <section class="cya-wrapper" id="cya-bank-details">
 
-  @if(disposeLiability.bankDetails.map(_.hasBankDetails) == Some(true)){
+  @if(disposeLiability.bankDetails.map(_.hasBankDetails) == Some(true)) {
 
     <div class="grid-wrapper">
-      <h2 class="heading-medium" id="bank-details-header">@messages("ated.edit-liability.summary.bank-details.header")</h2>
+      <h2 class="govuk-heading-m" id="bank-details-header">@messages("ated.edit-liability.summary.bank-details.header")</h2>
     </div>
 
     @if(!disposeLiability.bankDetails.flatMap(_.bankDetails).isDefined) {
 
-      @cyaRows(
-        Seq(
-          CyaRow(
-            cyaQuestion = "ated.edit-liability.summary.bank-details.type-of-account",
-            cyaQuestionId = "type-of-account-label",
-            cyaAnswer = incomplete,
-            cyaAnswerId = "type-of-account-value",
-            cyaChange = Some(bankDetailsTypeOfAccountEdit)
+      @govukSummaryList(SummaryList(
+        rows = Seq(
+          SummaryListRow(
+            key = Key(
+              content = Text(messages("ated.edit-liability.summary.bank-details.type-of-account"))
+            ),
+            value = Value(
+              content = HtmlContent(incomplete)
+            ),
+            actions = Some(Actions(
+              items = Seq(
+                ActionItem(
+                  href = controllers.editLiability.routes.DisposeLiabilityBankDetailsController.editFromSummary(disposeLiability.id.toString).url,
+                  content = HtmlContent(messages("ated.edit")),
+                  visuallyHiddenText = Some(messages("ated.edit-liability.summary.bank-details.type-of-account"))
+                )
+              )
+            ))
           )
         )
-      )
+      ))
 
     } else {
 
-      @if(disposeLiability.bankDetails.flatMap(_.bankDetails.flatMap(_.hasUKBankAccount)) == Some(true)){
+      @if(disposeLiability.bankDetails.flatMap(_.bankDetails.flatMap(_.hasUKBankAccount)) == Some(true)) {
 
-        @cyaRows(
-          Seq(
-            CyaRow(
-              cyaQuestion = "ated.edit-liability.summary.bank-details.type-of-account",
-              cyaQuestionId = "type-of-account-label",
-              cyaAnswer = Html(messages("ated.label-bank-account-type.uk")),
-              cyaAnswerId = "type-of-account-value",
-              cyaChange = Some(bankDetailsTypeOfAccountEdit)
-            ),
-            CyaRow(
-              cyaQuestion = "ated.edit-liability.summary.bank-details.account-holder-name",
-              cyaQuestionId = "account-holder-name-label",
-              cyaAnswer = bankDetailsAccountName,
-              cyaAnswerId = "account-holder-name-value",
-              cyaChange = Some(bankDetailsAccountNameEdit)
-            ),
-            CyaRow(
-              cyaQuestion = "ated.edit-liability.summary.bank-details.account-number",
-              cyaQuestionId = "account-number-label",
-              cyaAnswer = bankDetailsAccountNumber,
-              cyaAnswerId = "account-number-value",
-              cyaChange = Some(bankDetailsAccountNumberEdit)
-            ),
-            CyaRow(
-              cyaQuestion = "ated.edit-liability.summary.bank-details.sort-code",
-              cyaQuestionId = "sort-code-label",
-              cyaAnswer = bankDetailsAccountSortCode,
-              cyaAnswerId = "sort-code-value",
-              cyaChange = Some(bankDetailsAccountSortCodeEdit)
-            )
-          )
-        )
-
-        } else {
-
-          @cyaRows(
-            Seq(
-              CyaRow(
-                cyaQuestion = "ated.edit-liability.summary.bank-details.type-of-account",
-                cyaQuestionId = "type-of-account-label",
-                cyaAnswer = Html(messages("ated.label-bank-account-type.overseas")),
-                cyaAnswerId = "type-of-account-label-value",
-                cyaChange = Some(bankDetailsTypeOfAccountEdit)
+        @govukSummaryList(SummaryList(
+          rows = Seq(
+            SummaryListRow(
+              key = Key(
+                content = Text(messages("ated.edit-liability.summary.bank-details.type-of-account"))
               ),
-              CyaRow(
-                cyaQuestion = "ated.edit-liability.summary.bank-details.account-holder-name",
-                cyaQuestionId = "account-holder-name-label",
-                cyaAnswer = bankDetailsAccountName,
-                cyaAnswerId = "account-holder-name-value",
-                cyaChange = Some(bankDetailsAccountNameEdit)
+              value = Value(
+                content = Text(messages("ated.label-bank-account-type.uk"))
               ),
-              CyaRow(
-                cyaQuestion = "ated.edit-liability.summary.bank-details.iban",
-                cyaQuestionId = "iban-number-label",
-                cyaAnswer = bankDetailsAccountNumberIBAN,
-                cyaAnswerId = "iban-number-value",
-                cyaChange = Some(bankDetailsAccountNumberIBANEdit)
+              actions = Some(Actions(
+                items = Seq(
+                  ActionItem(
+                    href = controllers.editLiability.routes.DisposeLiabilityBankDetailsController.editFromSummary(disposeLiability.id.toString).url,
+                    content = HtmlContent(messages("ated.edit")),
+                    visuallyHiddenText = Some(messages("ated.edit-liability.summary.bank-details.type-of-account"))
+                  )
+                )
+              ))
+            ),
+            SummaryListRow(
+              key = Key(
+                content = Text(messages("ated.edit-liability.summary.bank-details.account-holder-name"))
               ),
-              CyaRow(
-                cyaQuestion = "ated.edit-liability.summary.bank-details.bic-swift-code",
-                cyaQuestionId = "bicSwiftCode-code-label",
-                cyaAnswer =         bankDetailsAccountSwiftCode,
-                cyaAnswerId = "bicSwiftCode-code-value",
-                cyaChange = Some(bankDetailsAccountSwiftCodeEdit)
-              )
-            )
-          )
+              value = Value(
+                content = HtmlContent(bankDetailsAccountName),
+              ),
+              actions = Some(Actions(
+                items = Seq(
+                  ActionItem(
+                    href = controllers.editLiability.routes.DisposeLiabilityBankDetailsController.editFromSummary(disposeLiability.id.toString).url,
+                    content = HtmlContent(messages("ated.edit")),
+                    visuallyHiddenText = Some(messages("ated.edit-liability.summary.bank-details.account-holder-name"))
+                  )
+                )
+              ))
 
+            ),
+            SummaryListRow(
+              key = Key(
+                content = Text(messages("ated.edit-liability.summary.bank-details.account-number"))
+              ),
+              value = Value(
+                content = HtmlContent(bankDetailsAccountNumber)
+              ),
+              actions = Some(Actions(
+                items = Seq(
+                  ActionItem(
+                    href = controllers.editLiability.routes.DisposeLiabilityBankDetailsController.editFromSummary(disposeLiability.id.toString).url,
+                    content = HtmlContent(messages("ated.edit")),
+                    visuallyHiddenText = Some(messages("ated.edit-liability.summary.bank-details.account-number"))
+                  )
+                )
+              ))
+            ),
+            SummaryListRow(
+              key = Key(
+                content = Text(messages("ated.edit-liability.summary.bank-details.sort-code"))
+              ),
+              value = Value(
+                content = HtmlContent(bankDetailsAccountSortCode)
+              ),
+              actions = Some(Actions(
+                items = Seq(
+                  ActionItem(
+                    href = controllers.editLiability.routes.DisposeLiabilityBankDetailsController.editFromSummary(disposeLiability.id.toString).url,
+                    content = HtmlContent(messages("ated.edit")),
+                    visuallyHiddenText = Some(messages("ated.edit-liability.summary.bank-details.sort-code"))
+                  )
+                )
+              ))
+            ))))
+
+      } else {
+
+        @govukSummaryList(SummaryList(
+          rows = Seq(
+            SummaryListRow(
+              key = Key(
+                content = Text(messages("ated.edit-liability.summary.bank-details.type-of-account"))
+              ),
+              value = Value(
+                content = HtmlContent(messages("ated.label-bank-account-type.overseas"))
+              ),
+              actions = Some(Actions(
+                items = Seq(
+                  ActionItem(
+                    href = controllers.editLiability.routes.DisposeLiabilityBankDetailsController.editFromSummary(disposeLiability.id.toString).url,
+                    content = HtmlContent(messages("ated.edit")),
+                    visuallyHiddenText = Some(messages("ated.edit-liability.summary.bank-details.type-of-account"))
+                  )
+                )
+              ))
+            ),
+            SummaryListRow(
+              key = Key(
+                content = Text(messages("ated.edit-liability.summary.bank-details.account-holder-name"))
+              ),
+              value = Value(
+                content = HtmlContent(bankDetailsAccountName),
+              ),
+              actions = Some(Actions(
+                items = Seq(
+                  ActionItem(
+                    href = controllers.editLiability.routes.DisposeLiabilityBankDetailsController.editFromSummary(disposeLiability.id.toString).url,
+                    content = HtmlContent(messages("ated.edit")),
+                    visuallyHiddenText = Some(messages("ated.edit-liability.summary.bank-details.account-holder-name"))
+                  )
+                )
+              ))
+
+            ),
+            SummaryListRow(
+              key = Key(
+                content = Text(messages("ated.edit-liability.summary.bank-details.iban"))
+              ),
+              value = Value(
+                content = HtmlContent(bankDetailsAccountNumberIBAN)
+              ),
+              actions = Some(Actions(
+                items = Seq(
+                  ActionItem(
+                    href = controllers.editLiability.routes.DisposeLiabilityBankDetailsController.editFromSummary(disposeLiability.id.toString).url,
+                    content = HtmlContent(messages("ated.edit")),
+                    visuallyHiddenText = Some(messages("ated.edit-liability.summary.bank-details.iban"))
+                  )
+                )
+              ))
+            ),
+            SummaryListRow(
+              key = Key(
+                content = Text(messages("ated.edit-liability.summary.bank-details.bic-swift-code"))
+              ),
+              value = Value(
+                content = HtmlContent(bankDetailsAccountSwiftCode)
+              ),
+              actions = Some(Actions(
+                items = Seq(
+                  ActionItem(
+                    href = controllers.editLiability.routes.DisposeLiabilityBankDetailsController.editFromSummary(disposeLiability.id.toString).url,
+                    content = HtmlContent(messages("ated.edit")),
+                    visuallyHiddenText = Some(messages("ated.edit-liability.summary.bank-details.bic-swift-code"))
+                  )
+                )
+              ))
+            ))))
       }
     }
 
   } else {
 
     @if(!disposeLiability.bankDetails.isDefined) {
-
-      @cyaRows(
-        Seq(
-          CyaRow(
-            cyaQuestion = "ated.edit-liability.summary.bank-details.supply-bank-details",
-            cyaQuestionId = "supply-bank-label",
-            cyaAnswer = incomplete,
-            cyaAnswerId = "supply-bank-value",
-            cyaChange = Some(bankDetailsIncompleteEdit)
+      @govukSummaryList(SummaryList(
+        rows = Seq(
+          SummaryListRow(
+            key = Key(
+              content = Text(messages("ated.edit-liability.summary.bank-details.supply-bank-details"))
+            ),
+            value = Value(
+              content = HtmlContent(incomplete)
+            ),
+            actions = Some(Actions(
+              items = Seq(
+                ActionItem(
+                  href = controllers.editLiability.routes.DisposeLiabilityHasBankDetailsController.editFromSummary(disposeLiability.id.toString).url,
+                  content = HtmlContent(messages("ated.edit")),
+                  visuallyHiddenText = Some(messages("ated.edit-liability.summary.bank-details.supply-bank-details"))
+                )
+              )
+            ))
           )
         )
-      )
-
+      ))
     }
   }
   </section>
 
   <section class="cya-wrapper" id="cya-return-status">
-    <h2 id="return-status-header" class="heading-medium">@messages("ated.property-details-summary.table.property-ated-details.return-status.header")</h2>
-    @cyaRows(
-      Seq(
-        CyaRow(
-          cyaQuestion = "ated.edit-liability.summary.bank-details.return-status.label",
-          cyaQuestionId = "return-status-label",
-          cyaAnswer = Html(messages("ated.property-details-summary.status.text")),
-          cyaAnswerId = "return-status-value",
-          cyaChange = None
+    <h2 id="return-status-header" class="govuk-heading-m">@messages("ated.property-details-summary.table.property-ated-details.return-status.header")</h2>
+
+    @govukSummaryList(SummaryList(
+      rows = Seq(
+        SummaryListRow(
+          key = Key(
+            content = Text(messages("ated.edit-liability.summary.bank-details.return-status.label"))
+          ),
+          value = Value(
+            content = HtmlContent(messages("ated.property-details-summary.status.text"))
+          )
         )
       )
-    )
+    ))
   </section>
 
   @if(disposeLiability.calculated.isDefined) {
     <div class="margin-bottom-default">
-      <p id="ated-charge-text">
+      <p id="ated-charge-text" class="govuk-body">
         @messages("ated.property-details-summary.table.ated-charge.text")
-        <span class="heading-xlarge" id="ated-charge-value">
+        <span class="govuk-heading-xl" id="ated-charge-value">
         @disposeLiability.calculated.map(x => formattedPounds(x.liabilityAmount))
         </span>
       </p>
@@ -281,22 +429,27 @@
   }
 
   <div class="margin-bottom-default">
-    <span class="panel-indent">@messages("ated.property-details-summary.saved-draft.text")</span>
+  @govukInsetText(InsetText(
+    content = Text(messages("ated.property-details-summary.saved-draft.text"))
+  ))
   </div>
 
-  <p class="margin-bottom-default">
+  <p class="margin-bottom-default govuk-body">
     <a href="@controllers.editLiability.routes.DisposeLiabilitySummaryController.viewPrintFriendlyDisposeLiabilityReturn(disposeLiability.id.toString)" id="print-friendly-edit-liability-link" target="_blank">
-      @messages("ated.dispose-property.summary.print.view")
+    @messages("ated.dispose-property.summary.print.view")
     </a>
   </p>
 
-  <p class="margin-bottom-default">
+  <p class="margin-bottom-default govuk-body">
     <a href="@controllers.routes.AccountSummaryController.view" id="saved-returns-link">@messages("ated.dispose-property.summary.save-as-draft-link")</a>
   </p>
 
   @if(DisposeLiabilityReturn.isComplete(disposeLiability)) {
     @formHelper(action = controllers.editLiability.routes.DisposeLiabilitySummaryController.submit(disposeLiability.id.toString)) {
-      <button class="button" id="submit" type="submit">@messages("ated.confirm-and-continue")</button>
+      @govukButton(Button(
+        content = Text(messages("ated.confirm-and-continue")),
+        attributes = Map("type" -> "submit", "id" -> "submit")
+      ))
     }
   }
 }

@@ -1156,8 +1156,8 @@ ated.edit-liability.p1 = This includes sale, de-enveloping or demolishing.
 ated.edit-liability.return-type.legend = Select the type of changes you want to make to your return
 ated.edit-liability.return-type.no-edit-legend = Your original return is too complex to edit online. To make any changes contact the 
 ated.edit-liability.return-type.no-edit-legend2 = ATED helpline
-ated.edit-liability.return-type.no-edit-legend3 = You can still
-ated.edit-liability.return-type.no-edit-legend4 = report the disposal of the property
+ated.edit-liability.return-type.no-edit-legend3 = You can still:
+ated.edit-liability.return-type.no-edit-legend4 = Report the disposal of the property
 ated.edit-liability.dispose-property.yes = Yes
 ated.edit-liability.dispose-property.no = No
 ated.edit-liability.move-property.label = Move a property into relief
@@ -1354,7 +1354,8 @@ ated.edit-liabilty.sent.view-message = You can view your completed returns, over
 ated.edit-liabilty.sent.receipt-message = You will not receive an email confirmation.
 ated.edit-liabilty.sent.charges-heading = Charges for this return
 ated.edit-liabilty.sent.new-amount = Your new adjusted amount does not reflect any payments you have already made or penalties that have been issued.
-ated.edit-liabilty.sent.late-payment = Late payment penalties can be issued when ATED is unpaid. Find out about <a href="https://www.gov.uk/guidance/pay-annual-tax-on-enveloped-dwellings">how to pay and payment deadlines.</a>
+ated.edit-liabilty.sent.late-payment = Late payment penalties can be issued when ATED is unpaid. Find out about
+ated.edit-liability.sent.late-payment.link = how to pay and payment deadlines
 ated.edit-liabilty.sent.late-payment-pf = Late payment penalties can be issued when ATED is unpaid. Late payment penalties can be issued when ATED is unpaid. Find out more by searching GOV.UK for ‘pay annual tax on enveloped dwellings’.
 
 ated.edit-liabilty.sent.view-balance = You can view your balance in your ATED online service. There can be a 24-hour delay before you see any updates.
@@ -1373,8 +1374,9 @@ ated.edit-liability.sent.title.dispose = Your amended return has been successful
 ated.edit-liability.sent.header.date = on the
 ated.edit-liability.sent.header.amend = Your amended return has been successfully submitted
 ated.edit-liability.sent.title.amend = Your amended return has been successfully submitted - Annual Tax on enveloped dwellings
-ated.edit.liability.sent.liable-for = If you have sold the property you may be liable for <a href="https://www.gov.uk/guidance/capital-gains-tax-on-high-value-residential-property">ATED-related Capital Gains Tax</a>.
+ated.edit.liability.sent.liable-for = If you have sold the property you may be liable for
 ated.edit.liability.sent.liable-for-pf = If you have sold the property you may be liable for ATED-related Capital Gains Tax. Find out more by searching GOV.UK for ‘high value residential property’.
+ated.edit.liability.sent.liable-for-link = ATED-related Capital Gains Tax
 
 ated.edit.liability.sent.owe-you = HMRC owe you {0} for this amended return.
 ated.edit.liability.sent.repayments = Any repayments will be paid into your nominated bank account. We will contact you if you have a non-UK bank account.

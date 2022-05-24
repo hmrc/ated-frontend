@@ -142,10 +142,10 @@ class Setup {
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
             document.title() must be("Do you have a bank account where we could pay a refund? - GOV.UK")
-            document.getElementById("pre-heading").text() must be("This section is: Change return")
+            document.getElementsByClass("govuk-heading-xl").text() must include("This section is: Change return")
             assert(document.getElementById("service-info-list").text() === "Home Manage account Messages Help and contact")
-            document.getElementById("backLinkHref").text must be("Back")
-            document.getElementById("backLinkHref").attr("href") must include("http://backlink")
+            document.getElementsByClass("govuk-back-link").text must be("Back")
+            document.getElementsByClass("govuk-back-link").attr("href") must include("http://backlink")
         }
       }
 
@@ -172,8 +172,8 @@ class Setup {
             val document = Jsoup.parse(contentAsString(result))
             document.title() must be("Do you have a bank account where we could pay a refund? - GOV.UK")
 
-            document.getElementById("backLinkHref").text must be("Back")
-            document.getElementById("backLinkHref").attr("href") must include("/ated/liability/12345678901/change/summary")
+            document.getElementsByClass("govuk-back-link").text must be("Back")
+            document.getElementsByClass("govuk-back-link").attr("href") must include("/ated/liability/12345678901/change/summary")
         }
       }
 

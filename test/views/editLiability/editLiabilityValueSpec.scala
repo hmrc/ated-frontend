@@ -20,6 +20,7 @@ import config.ApplicationConfig
 import forms.PropertyDetailsForms._
 import models.{HasValueChanged, StandardAuthRetrievals}
 import org.jsoup.Jsoup
+import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
@@ -28,7 +29,7 @@ import play.api.test.FakeRequest
 import play.twirl.api.Html
 import testhelpers.MockAuthUtil
 
-class editLiabilityValueSpec extends FeatureSpec with GuiceOneServerPerSuite with MockitoSugar
+class editLiabilityValueSpec extends AnyFeatureSpec with GuiceOneServerPerSuite with MockitoSugar
   with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
 
   implicit val request = FakeRequest()
@@ -36,10 +37,10 @@ class editLiabilityValueSpec extends FeatureSpec with GuiceOneServerPerSuite wit
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
   val injectedViewInstance = app.injector.instanceOf[views.html.editLiability.editLiabilityHasValueChanged]
-feature("The user can view an edit liability value page") {
+Feature("The user can view an edit liability value page") {
     info("as a user I want to view the correct page content")
 
-    scenario("user has visited the page for the first time") {
+    Scenario("user has visited the page for the first time") {
 
       Given("A user visits the page and clicks yes")
       When("The user views the page and clicks yes")
@@ -52,31 +53,32 @@ feature("The user can view an edit liability value page") {
       Then("the page title : Has the value of your property changed for the purposes of ATED?")
       assert(document.title() === "Has the value of your property changed for the purposes of ATED? - GOV.UK")
 
-      assert(document.getElementById("pre-heading").text() === "This section is: Create return")
+      assert(document.getElementsByTag("h1").text.contains("This section is: Create return"))
 
       assert(document.getElementById("value-text")
         .text() === "Based on the information you have previously given us the value of your property for the purposes of ATED is £123")
 
       And("No data is populated")
-      assert(document.getElementById("hasValueChanged").text() === "Yes No")
-      assert(document.getElementById("hasValueChanged-true").text() === "")
-      assert(document.getElementById("hasValueChanged-false").text() === "")
+      assert(document.getElementsByAttributeValue("for", "hasValueChanged").text() contains "Yes")
+      assert(document.getElementsByAttributeValue("for", "hasValueChanged-2").text() contains "No")
+      assert(document.getElementById("hasValueChanged").text() === "")
+      assert(document.getElementById("hasValueChanged-2").text() === "")
 
       And("the save button is correct")
       assert(document.getElementById("submit").text() === "Save and continue")
 
       Then("The back link is correct")
-      assert(document.getElementById("backLinkHref").text === "Back")
-      assert(document.getElementById("backLinkHref").attr("href") === "http://backLink")
+      assert(document.getElementsByClass("govuk-back-link").text === "Back")
+      assert(document.getElementsByClass("govuk-back-link").attr("href") === "http://backLink")
     }
 
   }
 
-  feature("The user can edit a the setting to indicate that no value has change") {
+  Feature("The user can edit a the setting to indicate that no value has change") {
 
     info("The yes option has been clicked may a user")
 
-    scenario("The user views the page to edit the data") {
+    Scenario("The user views the page to edit the data") {
 
       Given("A user visits the page to edit data")
       When("The user views the page to edit data")
@@ -90,21 +92,22 @@ feature("The user can view an edit liability value page") {
       Then("the page title : Has the value of your property changed for the purposes of ATED?")
       assert(document.title() === "Has the value of your property changed for the purposes of ATED? - GOV.UK")
 
-      assert(document.getElementById("pre-heading").text() === "This section is: Create return")
+      document.getElementsByClass("govuk-caption-xl").text === "This section is: Create return"
 
       assert(document.getElementById("value-text")
         .text() === "Based on the information you have previously given us the value of your property for the purposes of ATED is £45,678")
 
       And("The data is populated for a property value set to true")
-      assert(document.getElementById("hasValueChanged").text() === "Yes No")
-      assert(document.getElementById("hasValueChanged-true").attr("checked") === "checked")
-      assert(document.getElementById("hasValueChanged-false").attr("checked") === "")
+      assert(document.getElementsByAttributeValue("for", "hasValueChanged").text() contains "Yes")
+      assert(document.getElementsByAttributeValue("for", "hasValueChanged-2").text() contains "No")
+      assert(document.getElementById("hasValueChanged").outerHtml() contains "checked")
+      assert(document.getElementById("hasValueChanged-2").outerHtml() contains "")
 
       assert(document.getElementById("submit").text() === "Save and continue")
 
       Then("The back link is correct")
-      assert(document.getElementById("backLinkHref").text === "Back")
-      assert(document.getElementById("backLinkHref").attr("href") === "http://backLink")
+      assert(document.getElementsByClass("govuk-back-link").text === "Back")
+      assert(document.getElementsByClass("govuk-back-link").attr("href") === "http://backLink")
     }
 
   }

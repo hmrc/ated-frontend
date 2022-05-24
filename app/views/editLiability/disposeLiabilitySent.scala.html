@@ -16,42 +16,67 @@
 
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
-@this(atedMain: atedMain)
-@(formBundleNum:String, serviceInfoContent: Html = HtmlFormat.empty, amountDueOrRefund: BigDecimal, liabilityAmount: BigDecimal, paymentReference: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import views.ViewUtils.titleBuilder
 @import views.html.helpers._
 
-@atedMain(title = messages("ated.edit-liability.sent.title.dispose"),
-          serviceInfoContent = serviceInfoContent) {
+@this(newMain: newMain,
+        govukPanel: GovukPanel,
+        govukButton: GovukButton)
 
-  <div id="banner" class="transaction-banner--complete">
-    <h1 id="header">@messages("ated.edit-liability.sent.header.dispose")</h1>
-  </div>
+@(formBundleNum:String,
+        serviceInfoContent: Html = HtmlFormat.empty,
+        amountDueOrRefund: BigDecimal,
+        liabilityAmount: BigDecimal,
+        paymentReference: Option[String]
+)(implicit authContext: StandardAuthRetrievals,
+        messages: Messages,
+        request: Request[AnyContent],
+        appConfig: ApplicationConfig)
 
-  <p id="view-message">@messages("ated.edit-liabilty.sent.view-message")</p>
-  <p id="email-message">@messages("ated.edit-liabilty.sent.receipt-message")</p>
+@newMain(title = titleBuilder(messages("ated.edit-liability.sent.title.dispose")),
+    serviceInfoContent = serviceInfoContent) {
 
-  <p>
-    <a href="@controllers.editLiability.routes.DisposeLiabilitySentController.viewPrintFriendlyDisposeLiabilitySent(formBundleNum)" id="print-friendly-edit-liability-link" target="_blank"> @messages("ated.reliefs-sent.print-link")
-    </a>
-  </p>
 
-  <h2 class="heading-large divider--top--thick" id="charges-heading">@messages("ated.edit-liabilty.sent.charges-heading")</h2>
+    <div id="banner" class="transaction-banner--complete">
+    @govukPanel(Panel(
+        title = Text(messages("ated.edit-liability.sent.header.dispose"))
+    ))
+    </div>
 
-  <p id="new-amount">@messages("ated.edit-liabilty.sent.new-amount")</p>
+    <p id="view-message" class="govuk-body">@messages("ated.edit-liabilty.sent.view-message")</p>
+    <p id="email-message" class="govuk-body">@messages("ated.edit-liabilty.sent.receipt-message")</p>
 
-  <h3 id="already-paid-title" class="heading-medium">@messages("ated.edit.liability.sent.amount-already-paid.title")</h3>
-  <p id="owe-you">@Html(messages("ated.edit.liability.sent.owe-you", formattedPounds(amountDueOrRefund.abs)))</p>
-  <p id="repayments">@messages("ated.edit.liability.sent.repayments")</p>
+    <p class="govuk-body">
+        <a href="@controllers.editLiability.routes.DisposeLiabilitySentController.viewPrintFriendlyDisposeLiabilitySent(formBundleNum)" id="print-friendly-edit-liability-link" class="govuk-link" target="_blank"> @messages("ated.reliefs-sent.print-link")
+        </a>
+    </p>
+    <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
 
-  <h3 id="not-paid-title" class="heading-medium">@messages("ated.edit.liability.sent.amount-not-paid.title")</h3>
-  <p id="you-owe">@Html(messages("ated.edit.liability.sent.you-owe", formattedPounds(liabilityAmount)))</p>
-  <p id="payment-reference">@Html(messages("ated.edit-liabilty.sent.payment-reference", paymentReference.getOrElse("")))</p>
+    <h2 class="govuk-heading-l" id="charges-heading">@messages("ated.edit-liabilty.sent.charges-heading")</h2>
 
-  <p id="liable-for">@Html(messages("ated.edit.liability.sent.liable-for"))</p>
+    <p id="new-amount" class="govuk-body">@messages("ated.edit-liabilty.sent.new-amount")</p>
 
-  <p id="view-balance">@Html(messages("ated.edit-liabilty.sent.view-balance"))</p>
+    <h3 id="already-paid-title" class="govuk-heading-m">@messages("ated.edit.liability.sent.amount-already-paid.title")</h3>
+    <p id="owe-you" class="govuk-body">@Html(messages("ated.edit.liability.sent.owe-you", formattedPounds(amountDueOrRefund.abs)))</p>
+    <p id="repayments" class="govuk-body">@messages("ated.edit.liability.sent.repayments")</p>
 
-  <a href="@controllers.routes.AccountSummaryController.view" id="submit" class="button margin-top-default"> @messages("ated.edit.liability.sent.button") </a>
+    <h3 id="not-paid-title" class="govuk-heading-m">@messages("ated.edit.liability.sent.amount-not-paid.title")</h3>
+    <p id="you-owe" class="govuk-body">@Html(messages("ated.edit.liability.sent.you-owe", formattedPounds(liabilityAmount)))</p>
+    <p id="payment-reference" class="govuk-body">@Html(messages("ated.edit-liabilty.sent.payment-reference", paymentReference.getOrElse("")))</p>
 
+    <p id="liable-for" class="govuk-body">@messages("ated.edit.liability.sent.liable-for")
+        <a class="govuk-link" href="https://www.gov.uk/guidance/capital-gains-tax-on-high-value-residential-property">@messages("ated.edit.liability.sent.liable-for-link")</a>.
+    </p>
+
+    <p id="view-balance" class="govuk-body">@Html(messages("ated.edit-liabilty.sent.view-balance"))</p>
+
+    <div class="govuk-form-group">
+        @govukButton(Button(
+            href = Some(controllers.routes.AccountSummaryController.view.url),
+            content = Text(messages("ated.edit.liability.sent.button")),
+            attributes = Map("type" -> "submit", "id" -> "submit")
+        ))
+    </div>
 
 }

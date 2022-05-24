@@ -20,7 +20,7 @@ import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.BackLinkController
 import controllers.auth.{AuthAction, ClientHelper}
-import forms.AtedForms.disposeLiabilityForm
+import forms.AtedForms.{disposeLiabilityForm, validateForm}
 import javax.inject.Inject
 import models.DisposeLiability
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -88,7 +88,7 @@ class DisposePropertyController @Inject()(mcc: MessagesControllerComponents,
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
-          disposeLiabilityForm.bindFromRequest.fold(
+          validateForm(disposeLiabilityForm.bindFromRequest).fold(
             formWithErrors => {
               currentBackLink.map { backLink =>
                 BadRequest(

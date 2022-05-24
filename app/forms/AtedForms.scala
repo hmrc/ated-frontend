@@ -16,13 +16,13 @@
 
 package forms
 
+import forms.ReliefForms.DateTupleCustomErrorImpl
 import models._
 import org.joda.time.LocalDate
 import play.api.data.Forms._
 import play.api.data.validation.{Constraint, Invalid, Valid, ValidationResult}
 import play.api.data.{Form, FormError}
 import play.api.libs.json.{Json, OFormat}
-import uk.gov.hmrc.play.mappers.DateTuple._
 import utils.AtedUtils
 import utils.PeriodUtils._
 
@@ -232,11 +232,38 @@ object AtedForms {
   val disposeLiabilityForm: Form[DisposeLiability] = {
     Form(
       mapping(
-        "dateOfDisposal" -> dateTuple,
+        "dateOfDisposal" -> DateTupleCustomErrorImpl("error.invalid.date.format").dateTuple,
         "periodKey" -> number
       )(DisposeLiability.apply)(DisposeLiability.unapply)
-        .verifying(disposalDateConstraint)
     )
+  }
+
+  def validateForm(f: Form[DisposeLiability]): Form[DisposeLiability] = {
+    if (!f.hasErrors) {
+      val formErrors = {
+          val periodKey = f.data.get("periodKey").get.toInt
+          val dateOfDisposal: Option[LocalDate] = {
+            (f.data.get("dateOfDisposal.day"), f.data.get("dateOfDisposal.month"), f.data.get("dateOfDisposal.year")) match {
+              case (Some(d), Some(m), Some(y)) => try {
+                Some(new LocalDate(y.trim.toInt, m.trim.toInt, d.trim.toInt))
+              } catch {
+                case _ : Throwable => None
+              }
+              case _ => None
+            }
+          }
+              if (dateOfDisposal.isEmpty) {
+                Seq(FormError("dateOfDisposal", "ated.dispose-property.dateOfDisposal.error.empty"))
+              } else if (isPeriodTooEarly(periodKey, dateOfDisposal)) {
+                Seq(FormError("dateOfDisposal", "ated.dispose-property.period.dateOfDisposal.date-before-period"))
+              } else if (isPeriodTooLate(periodKey, dateOfDisposal)) {
+                Seq(FormError("dateOfDisposal", "ated.dispose-property.period.dateOfDisposal.date-after-period"))
+          } else if (isAfterPresentDay(dateOfDisposal)) {
+                Seq(FormError("dateOfDisposal", "ated.dispose-property.period.dateOfDisposal.date-after-today"))
+              } else Nil
+      }
+      addErrorsToForm(f, formErrors)
+    } else f
   }
 
   def validateDisposedProperty(periodKey: Int, disposalDate: Option[LocalDate]): ValidationResult = {

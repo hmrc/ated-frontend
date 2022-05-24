@@ -20,6 +20,7 @@ import config.ApplicationConfig
 import forms.BankDetailForms._
 import models.StandardAuthRetrievals
 import org.jsoup.Jsoup
+import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
@@ -29,7 +30,7 @@ import play.twirl.api.Html
 import testhelpers.MockAuthUtil
 import views.html.editLiability.editLiabilityDeclaration
 
-class editLiabilityDeclarationSpec extends FeatureSpec with GuiceOneAppPerSuite with MockitoSugar with BeforeAndAfterEach
+class editLiabilityDeclarationSpec extends AnyFeatureSpec with GuiceOneAppPerSuite with MockitoSugar with BeforeAndAfterEach
   with GivenWhenThen with MockAuthUtil {
 
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
@@ -39,11 +40,11 @@ class editLiabilityDeclarationSpec extends FeatureSpec with GuiceOneAppPerSuite 
 
   val injectedViewInstance: editLiabilityDeclaration = app.injector.instanceOf[views.html.editLiability.editLiabilityDeclaration]
 
-  feature("The user confirm the declaration for editing their liability") {
+  Feature("The user confirm the declaration for editing their liability") {
 
     info("As a client I want to confirm the declaration for editing my liability")
 
-    scenario("Allowing displaying declaration of editing liability") {
+    Scenario("Allowing displaying declaration of editing liability") {
 
       Given("The client confirms from the summary after editing their liability")
       When("The user views the page")
@@ -54,17 +55,17 @@ class editLiabilityDeclarationSpec extends FeatureSpec with GuiceOneAppPerSuite 
 
       Then("The header should match - Amended return declaration")
       assert(document.title() === "Amended return declaration - GOV.UK")
-      assert(document.select("h1").text === "Amended return declaration")
+      assert(document.select("h1").text.contains("Amended return declaration"))
 
       Then("The subheader should be - Change return")
-      assert(document.getElementById("pre-heading").text() === "This section is: Change return")
+      assert(document.getElementsByTag("h1").text.contains("This section is: Change return") === true)
 
       Then("The submit button should have the correct name")
       assert(document.getElementById("submit").text() === "Agree and submit amended return")
 
       Then("The back link is correct")
-      assert(document.getElementById("backLinkHref").text === "Back")
-      assert(document.getElementById("backLinkHref").attr("href") === "http://backLink")
+      assert(document.getElementsByClass("govuk-back-link").text === "Back")
+      assert(document.getElementsByClass("govuk-back-link").attr("href") === "http://backLink")
     }
   }
 

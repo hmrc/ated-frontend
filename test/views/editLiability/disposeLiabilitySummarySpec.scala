@@ -62,15 +62,15 @@ class disposeLiabilitySummarySpec extends PlaySpec with GuiceOneAppPerSuite
         val html = injectedViewInstance(disposeLiabilityReturn(None), Html(""), Some("http://backLink"))
         val document = Jsoup.parse(html.toString())
         assert(document.getElementsByClass("button").size() === 0)
-        assert(document.getElementById("supply-bank-value").text() === "INCOMPLETE")
+        assert(document.getElementsByClass("status").text() === "INCOMPLETE")
       }
 
       "the user has answered yes to the bank details question but not provided bank details" in {
         val html = injectedViewInstance(disposeLiabilityReturn(bankDetailsYesButNoDetails),
-          Html(""), Some("http://backLink"))
+            Html(""), Some("http://backLink"))
         val document = Jsoup.parse(html.toString())
         assert(document.getElementsByClass("button").size() === 0)
-        assert(document.getElementById("type-of-account-value").text() === "INCOMPLETE")
+        assert(document.getElementsByClass("status").text() === "INCOMPLETE")
       }
     }
 
@@ -79,7 +79,7 @@ class disposeLiabilitySummarySpec extends PlaySpec with GuiceOneAppPerSuite
         val html = injectedViewInstance(disposeLiabilityReturn(completedBankDetails),
           Html(""), Some("http://backLink"))
         val document = Jsoup.parse(html.toString())
-        assert(document.getElementsByClass("button").size() === 1)
+        assert(document.getElementsByClass("govuk-button").size() === 1)
       }
     }
 
@@ -88,7 +88,7 @@ class disposeLiabilitySummarySpec extends PlaySpec with GuiceOneAppPerSuite
         val html = injectedViewInstance(disposeLiabilityReturn(completedBankDetails, None),
           Html(""), Some("http://backLink"))
         val document = Jsoup.parse(html.toString())
-        assert(document.getElementById("property-title-disposal-date").text() === "INCOMPLETE")
+        assert(document.getElementsByClass("status").text() === "INCOMPLETE")
       }
     }
   }
