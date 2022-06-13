@@ -37,12 +37,12 @@
         appConfig: ApplicationConfig)
 
 @backLinkHtml = {
-@if(backLink.isDefined) {
-    @govukBackLink(BackLink(
-        href = backLink.get,
-        content = Text("Back")
-    ))
-}
+    @if(backLink.isDefined) {
+        @govukBackLink(BackLink(
+            href = backLink.get,
+            content = Text("Back")
+        ))
+    }
 }
 
 @newMain(title = titleBuilder(messages(printHeaderMsg(returnType)))) {

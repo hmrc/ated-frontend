@@ -23,25 +23,27 @@ import org.joda.time.format.DateTimeFormat
 import org.joda.time.{DateTimeZone, LocalDate}
 import org.jsoup.Jsoup
 import org.scalatest.featurespec.AnyFeatureSpec
-import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
+import org.scalatest.{BeforeAndAfterEach, GivenWhenThen}
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.i18n.{Messages, MessagesApi}
+import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import play.twirl.api.Html
 import testhelpers.MockAuthUtil
 import utils.PeriodUtils
 import utils.PeriodUtils._
+import views.html.editLiability.editLiabilitySummary
 
 class editLiabilitySummarySpec extends AnyFeatureSpec with GuiceOneServerPerSuite with MockitoSugar
   with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
 
-  implicit val request = FakeRequest()
+  implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
 
-  val injectedViewInstance = app.injector.instanceOf[views.html.editLiability.editLiabilitySummary]
+  val injectedViewInstance: editLiabilitySummary = app.injector.instanceOf[views.html.editLiability.editLiabilitySummary]
 
   val thisYear: Int = calculatePeakStartYear()
   val nextYear: Int = thisYear + 1
@@ -74,11 +76,11 @@ class editLiabilitySummarySpec extends AnyFeatureSpec with GuiceOneServerPerSuit
       assert(document.getElementById("details-text").text() === s"For the ATED period from " +
         s"${formatDate(periodStartDate(calculatePeakStartYear()))} to ${formatDate(periodEndDate(calculatePeakStartYear()))}.")
       assert(document.getElementById("edit-liability-header").text() === "Property details")
-      assert(document.select("#property-address-label > div > dt").text() === "Address")
-      assert(document.select("#property-title-number-label > div > dt").text() === "Property’s title number")
+      assert(document.select("#property-address > div > dt").text() === "Address")
+      assert(document.select("#property-title-number > div > dt").text() === "Property’s title number")
       assert(document.getElementById("property-value-header").text() === "Value of the property")
-      assert(document.select("#property-value-label-0 > div > dt").text() === "Value for the purposes of ATED")
-      assert(document.select("#property-date-of-valuation-label-0 > div > dt").text() === "Professionally valued")
+      assert(document.select("#property-value > div > dt").text() === "Value for the purposes of ATED")
+      assert(document.select("#property-date-of-valuation > div > dt").text() === "Professionally valued")
       assert(document.getElementById("dates-of-liability-header").text() === "Dates of liability")
       assert(document.select("#return-type-0 > div > dt").first().text === "Liable for charge")
       assert(document.select("#return-type-0 > div > dd.govuk-summary-list__value").first().text === "1 April " + thisYear + " to 31 August "  + thisYear)
@@ -87,11 +89,11 @@ class editLiabilitySummarySpec extends AnyFeatureSpec with GuiceOneServerPerSuit
       assert(document.getElementById("return-type-2") === null)
       assert(document.getElementById("period-2") === null)
       assert(document.getElementById("supporting-info-header").text() === "Supporting information")
-      assert(document.select("#additional-information-label > div > dt").text() === "Additional information")
+      assert(document.select("#additional-information > div > dt").text() === "Additional information")
       assert(document.getElementById("avoidance-scheme-header").text() === "Avoidance scheme")
-      assert(document.select("#avoidance-scheme-label > div > dt").text() === "Avoidance scheme reference number")
+      assert(document.select("#avoidance-scheme > div > dt").text() === "Avoidance scheme reference number")
       assert(document.getElementById("return-status-header").text() === "Return status")
-      assert(document.select("#return-status-label > div > dt").text() === "Status")
+      assert(document.select("#return-status > div > dt").text() === "Status")
       assert(document.getElementById("ated-charge-text-further") === null)
       assert(document.getElementById("ated-charge-text-amended")
         .text() === "Based on the information you have given us your revised ATED charge for this amended return is")
@@ -126,11 +128,11 @@ class editLiabilitySummarySpec extends AnyFeatureSpec with GuiceOneServerPerSuit
         s"${formatDate(periodStartDate(calculatePeakStartYear()))} to ${formatDate(periodEndDate(calculatePeakStartYear()))}.")
       assert(document.getElementById("edit-liability-header").text() === "Property details")
 
-      assert(document.select("#property-address-label > div > dt").text() === "Address")
-      assert(document.select("#property-title-number-label > div > dt").text() === "Property’s title number")
+      assert(document.select("#property-address > div > dt").text() === "Address")
+      assert(document.select("#property-title-number > div > dt").text() === "Property’s title number")
       assert(document.getElementById("property-value-header").text() === "Value of the property")
-      assert(document.select("#property-value-label-0 > div > dt").text() === "Value for the purposes of ATED")
-      assert(document.select("#property-date-of-valuation-label-0 > div > dt").text() === "Professionally valued")
+      assert(document.select("#property-value > div > dt").text() === "Value for the purposes of ATED")
+      assert(document.select("#property-date-of-valuation > div > dt").text() === "Professionally valued")
       assert(document.getElementById("dates-of-liability-header").text() === "Dates of liability")
       assert(document.select("#return-type-0 > div > dt").first().text === "Liable for charge")
       assert(document.select("#return-type-0 > div > dd.govuk-summary-list__value").first().text === "1 April " + thisYear + " to 31 August "  + thisYear)
@@ -139,11 +141,11 @@ class editLiabilitySummarySpec extends AnyFeatureSpec with GuiceOneServerPerSuit
       assert(document.getElementById("return-type-2") === null)
       assert(document.getElementById("period-2") === null)
       assert(document.getElementById("supporting-info-header").text() === "Supporting information")
-      assert(document.select("#additional-information-label > div > dt").text() === "Additional information")
+      assert(document.select("#additional-information > div > dt").text() === "Additional information")
       assert(document.getElementById("avoidance-scheme-header").text() === "Avoidance scheme")
-      assert(document.select("#avoidance-scheme-label > div > dt").text() === "Avoidance scheme reference number")
+      assert(document.select("#avoidance-scheme > div > dt").text() === "Avoidance scheme reference number")
       assert(document.getElementById("return-status-header").text() === "Return status")
-      assert(document.select("#return-status-label > div > dt").text() === "Status")
+      assert(document.select("#return-status > div > dt").text() === "Status")
       assert(document.getElementById("ated-charge-text-further") === null)
       assert(document.getElementById("ated-charge-text-amended") === null)
       assert(document.getElementById("ated-charge-text-changed")
@@ -177,20 +179,20 @@ class editLiabilitySummarySpec extends AnyFeatureSpec with GuiceOneServerPerSuit
         s"${formatDate(periodStartDate(calculatePeakStartYear()))} to ${formatDate(periodEndDate(calculatePeakStartYear()))}.")
       assert(document.getElementById("edit-liability-header").text() === "Property details")
 
-      assert(document.select("#property-address-label > div > dt").text() === "Address")
-      assert(document.select("#property-title-number-label > div > dt").text() === "Property’s title number")
+      assert(document.select("#property-address > div > dt").text() === "Address")
+      assert(document.select("#property-title-number > div > dt").text() === "Property’s title number")
       assert(document.getElementById("property-value-header").text() === "Value of the property")
-      assert(document.select("#property-value-label-0 > div > dt").text() === "Value for the purposes of ATED")
-      assert(document.select("#property-date-of-valuation-label-0 > div > dt").text() === "Professionally valued")
+      assert(document.select("#property-value > div > dt").text() === "Value for the purposes of ATED")
+      assert(document.select("#property-date-of-valuation > div > dt").text() === "Professionally valued")
       assert(document.getElementById("dates-of-liability-header").text() === "Dates of liability")
       assert(document.getElementById("return-type-0") === null)
       assert(document.getElementById("period-0") === null)
       assert(document.getElementById("supporting-info-header").text() === "Supporting information")
-      assert(document.select("#additional-information-label > div > dt").text() === "Additional information")
+      assert(document.select("#additional-information > div > dt").text() === "Additional information")
       assert(document.getElementById("avoidance-scheme-header").text() === "Avoidance scheme")
-      assert(document.select("#avoidance-scheme-label > div > dt").text() === "Avoidance scheme reference number")
+      assert(document.select("#avoidance-scheme > div > dt").text() === "Avoidance scheme reference number")
       assert(document.getElementById("return-status-header").text() === "Return status")
-      assert(document.select("#return-status-label > div > dt").text() === "Status")
+      assert(document.select("#return-status > div > dt").text() === "Status")
       assert(document.getElementById("ated-charge-text-further")
         .text() === "Based on the information you have given us your revised ATED charge for this further return is")
       assert(document.getElementById("ated-charge-text-amended") === null)

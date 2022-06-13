@@ -21,23 +21,25 @@ import forms.PropertyDetailsForms._
 import models.{HasValueChanged, StandardAuthRetrievals}
 import org.jsoup.Jsoup
 import org.scalatest.featurespec.AnyFeatureSpec
-import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
+import org.scalatest.{BeforeAndAfterEach, GivenWhenThen}
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.i18n.{Messages, MessagesApi}
+import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import play.twirl.api.Html
 import testhelpers.MockAuthUtil
+import views.html.editLiability.editLiabilityHasValueChanged
 
 class editLiabilityValueSpec extends AnyFeatureSpec with GuiceOneServerPerSuite with MockitoSugar
   with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
 
-  implicit val request = FakeRequest()
+  implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
-  val injectedViewInstance = app.injector.instanceOf[views.html.editLiability.editLiabilityHasValueChanged]
-Feature("The user can view an edit liability value page") {
+  val injectedViewInstance: editLiabilityHasValueChanged = app.injector.instanceOf[views.html.editLiability.editLiabilityHasValueChanged]
+  Feature("The user can view an edit liability value page") {
     info("as a user I want to view the correct page content")
 
     Scenario("user has visited the page for the first time") {
@@ -45,7 +47,7 @@ Feature("The user can view an edit liability value page") {
       Given("A user visits the page and clicks yes")
       When("The user views the page and clicks yes")
 
-      implicit val request = FakeRequest()
+      implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 
       val html = injectedViewInstance(Some(BigDecimal(123.45)), "1", hasValueChangedForm, None, Html(""), Some("http://backLink"))
 
@@ -71,7 +73,6 @@ Feature("The user can view an edit liability value page") {
       assert(document.getElementsByClass("govuk-back-link").text === "Back")
       assert(document.getElementsByClass("govuk-back-link").attr("href") === "http://backLink")
     }
-
   }
 
   Feature("The user can edit a the setting to indicate that no value has change") {
@@ -83,7 +84,7 @@ Feature("The user can view an edit liability value page") {
       Given("A user visits the page to edit data")
       When("The user views the page to edit data")
 
-      implicit val request = FakeRequest()
+      implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 
       val html = injectedViewInstance(Some(BigDecimal(45678.12)), "1",
         hasValueChangedForm.fill(HasValueChanged(Some(true))), None,  Html(""), Some("http://backLink"))

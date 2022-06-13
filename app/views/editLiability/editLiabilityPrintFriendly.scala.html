@@ -40,157 +40,140 @@
 
   <p class="govuk-body" id="details-text">@messages("ated.property-details-summary.details-text", periodStartDate(changeLiability.periodKey).toString(messages("ated.date-format")), periodEndDate(changeLiability.periodKey).toString(messages("ated.date-format")))</p>
 
-  <div class="govuk-section-break govuk-section-break--visible">
-      <h1 class="govuk-heading-m" id="edit-liability-header">@messages("ated.property-details-summary.table.property-details.header")</h1>
-  </div>
-
   <table id="property-summary" class="govuk-table">
+
     <tbody class="govuk-table__body">
+        <tr class="govuk-table__row">
+            <th colspan="2" scope="row" class="govuk-table__header govuk-!-font-size-24 govuk-!-padding-top-9" id="edit-liability-header">@messages("ated.property-details-summary.table.property-details.header")</th>
+        </tr>
 
-    <tr class="govuk-table__row">
-      <th id="property-address-label" scope="row" class="govuk-table__header">@messages("ated.property-details-summary.table.property-details.address.label")</th>
-      <td class="govuk-table__cell" id="property-address-value">
-        <span id="address-line-1">@changeLiability.addressProperty.line_1</span><br/>
-        <span id="address-line-2">@changeLiability.addressProperty.line_2</span><br/>
-        @if(changeLiability.addressProperty.line_3.isDefined){<span id="address-line-3">@changeLiability.addressProperty.line_3</span><br/>}
-        @if(changeLiability.addressProperty.line_4.isDefined){<span id="address-line-4">@changeLiability.addressProperty.line_4</span><br/>}
-        @if(changeLiability.addressProperty.postcode.isDefined){<span id="address-postcode">@changeLiability.addressProperty.postcode</span>}</td>
-    </tr>
-    <tr class="govuk-table__row">
-      <th id="property-title-number-label" scope="row" class="govuk-table__header">@messages("ated.property-details-summary.table.property-details.title-number.label")</th>
-      <td id="property-title-number">@changeLiability.title.map(_.titleNumber).getOrElse("")</td>
-    </tr>
+        <tr class="govuk-table__row">
+          <th id="property-address-label" scope="row" class="govuk-table__header">@messages("ated.property-details-summary.table.property-details.address.label")</th>
+          <td class="govuk-table__cell" id="property-address-value">
+            <span id="address-line-1">@changeLiability.addressProperty.line_1</span><br/>
+            <span id="address-line-2">@changeLiability.addressProperty.line_2</span><br/>
+            @if(changeLiability.addressProperty.line_3.isDefined){<span id="address-line-3">@changeLiability.addressProperty.line_3</span><br/>}
+            @if(changeLiability.addressProperty.line_4.isDefined){<span id="address-line-4">@changeLiability.addressProperty.line_4</span><br/>}
+            @if(changeLiability.addressProperty.postcode.isDefined){<span id="address-postcode">@changeLiability.addressProperty.postcode</span>}</td>
+        </tr>
+
+        <tr class="govuk-table__row">
+          <th id="property-title-number-label" scope="row" class="govuk-table__header">@messages("ated.property-details-summary.table.property-details.title-number.label")</th>
+          <td id="property-title-number" class="govuk-table__cell">@changeLiability.title.map(_.titleNumber).getOrElse("")</td>
+        </tr>
     </tbody>
-  </table>
 
 
-      <div class="govuk-section-break govuk-section-break--visible">
-      <h1 class="govuk-heading-m" id="property-value-header">@messages("ated.property-details-summary.table.property-value.header")</h1>
-      </div>
-
-  <table>
     <tbody>
-      @for((valueObj, index) <- valuesToDisplay.zipWithIndex) {
-    <tr class="govuk-table__row">
-      <th id="property-value-label-@index" scope="row" class="govuk-table__header">@messages(getPeriodValueMessage(index, valuesToDisplay.size))</th>
-      <td class="govuk-table__cell" id="property-value-value-@index">@formattedPounds(valueObj.propertyValue)</td>
-    </tr>
-    <tr class="govuk-table__row">
-      <th id="property-date-of-valuation-label-@index" scope="row" class="govuk-table__header">@messages("ated.form-bundle.view.isValuedByAgent.message")</th>
-      @if(changeLiability.value.map(x => x.isValuedByAgent.getOrElse()).contains(true)) {
-          <td class="govuk-table__cell" id="property-is-Valued-by-agent-yes-@index">@messages("ated.form-bundle.view.isValuedByAgent.yes")</td>
-      }else{
-          <td class="govuk-table__cell" id="property-is-Valued-by-agent-no-@index">@messages("ated.form-bundle.view.isValuedByAgent.no")</td>
-      }
-    </tr>
-    }
+        <tr class="govuk-table__row">
+            <th colspan="2" scope="row" class="govuk-table__header govuk-!-font-size-24 govuk-!-padding-top-9" id="property-value-header">@messages("ated.property-details-summary.table.property-value.header")</th>
+        </tr>
+
+        @for((valueObj, index) <- valuesToDisplay.zipWithIndex) {
+            <tr class="govuk-table__row">
+              <th id="property-value-label-@index" scope="row" class="govuk-table__header">@messages(getPeriodValueMessage(index, valuesToDisplay.size))</th>
+              <td class="govuk-table__cell" id="property-value-value-@index">@formattedPounds(valueObj.propertyValue)</td>
+            </tr>
+
+            <tr class="govuk-table__row">
+              <th id="property-date-of-valuation-label-@index" scope="row" class="govuk-table__header">@messages("ated.form-bundle.view.isValuedByAgent.message")</th>
+              @if(changeLiability.value.map(x => x.isValuedByAgent.getOrElse()).contains(true)) {
+                <td class="govuk-table__cell" id="property-is-Valued-by-agent-yes-@index">@messages("ated.form-bundle.view.isValuedByAgent.yes")</td>
+              }else{
+                <td class="govuk-table__cell" id="property-is-Valued-by-agent-no-@index">@messages("ated.form-bundle.view.isValuedByAgent.no")</td>
+              }
+            </tr>
+        }
     </tbody>
-  </table>
 
     @if(changeLiability.bankDetails.exists(_.hasBankDetails)){
-      <div class="govuk-section-break govuk-section-break--visible">
-        <h1 class="govuk-heading-m" id="bank-details-header">@messages("ated.edit-liability.summary.bank-details.header")</h1>
-      </div>
 
-      <table>
-        <tbody>
-      <tr class="govuk-table__row">
-        <th id="account-holder-name-label" scope="row" class="govuk-table__header">@messages("ated.edit-liability.summary.bank-details.account-holder-name")</th>
-        <td class="govuk-table__cell" id="account-holder-name-value">@changeLiability.bankDetails.flatMap(_.bankDetails.map(_.accountName))</td>
-      </tr>
-
-      @if(changeLiability.bankDetails.flatMap(_.bankDetails.flatMap(_.hasUKBankAccount)).contains(true)){
+      <tbody>
         <tr class="govuk-table__row">
-          <th id="account-number-label" scope="row" class="govuk-table__header">@messages("ated.edit-liability.summary.bank-details.account-number")</th>
-          <td class="govuk-table__cell" id="account-number-value">@changeLiability.bankDetails.flatMap(_.bankDetails.map(_.accountNumber))</td>
+            <th colspan="2" scope="row" class="govuk-table__header govuk-!-font-size-24 govuk-!-padding-top-9" id="bank-details-header">@messages("ated.edit-liability.summary.bank-details.header")</th>
         </tr>
 
         <tr class="govuk-table__row">
-          <th id="sort-code-label" scope="row" class="govuk-table__header">@messages("ated.edit-liability.summary.bank-details.sort-code")</th>
-          <td class="govuk-table__cell" id="sort-code-value">@changeLiability.bankDetails.flatMap(_.bankDetails.map(_.sortCode))</td>
-        </tr>
-      }else {
-
-        <tr class="govuk-table__row">
-          <th id="iban-label" scope="row" class="govuk-table__header">@messages("ated.edit-liability.summary.bank-details.iban")</th>
-          <td class="govuk-table__cell" id="iban-value">@changeLiability.bankDetails.flatMap(_.bankDetails.map(_.iban))</td>
+          <th id="account-holder-name-label" scope="row" class="govuk-table__header">@messages("ated.edit-liability.summary.bank-details.account-holder-name")</th>
+          <td class="govuk-table__cell" id="account-holder-name-value">@changeLiability.bankDetails.flatMap(_.bankDetails.map(_.accountName))</td>
         </tr>
 
-        <tr class="govuk-table__row">
-          <th id="bic-swift-code-label" class="heading-small">@messages("ated.edit-liability.summary.bank-details.bic-swift-code")</th>
-          <td class="govuk-table__cell" id="bic-swift-code-value">@changeLiability.bankDetails.flatMap(_.bankDetails.map(_.bicSwiftCode))</td>
-        </tr>
-      }
+        @if(changeLiability.bankDetails.flatMap(_.bankDetails.flatMap(_.hasUKBankAccount)).contains(true)){
+          <tr class="govuk-table__row">
+            <th id="account-number-label" scope="row" class="govuk-table__header">@messages("ated.edit-liability.summary.bank-details.account-number")</th>
+            <td class="govuk-table__cell" id="account-number-value">@changeLiability.bankDetails.flatMap(_.bankDetails.map(_.accountNumber))</td>
+          </tr>
+
+          <tr class="govuk-table__row">
+            <th id="sort-code-label" scope="row" class="govuk-table__header">@messages("ated.edit-liability.summary.bank-details.sort-code")</th>
+            <td class="govuk-table__cell" id="sort-code-value">@changeLiability.bankDetails.flatMap(_.bankDetails.map(_.sortCode))</td>
+          </tr>
+        }else {
+
+          <tr class="govuk-table__row">
+            <th id="iban-label" scope="row" class="govuk-table__header">@messages("ated.edit-liability.summary.bank-details.iban")</th>
+            <td class="govuk-table__cell" id="iban-value">@changeLiability.bankDetails.flatMap(_.bankDetails.map(_.iban))</td>
+          </tr>
+
+          <tr class="govuk-table__row">
+            <th id="bic-swift-code-label" class="heading-small">@messages("ated.edit-liability.summary.bank-details.bic-swift-code")</th>
+            <td class="govuk-table__cell" id="bic-swift-code-value">@changeLiability.bankDetails.flatMap(_.bankDetails.map(_.bicSwiftCode))</td>
+          </tr>
+            }
+      </tbody>
     }
 
-</tbody>
-</table>
-
-      <div class="govuk-section-break govuk-section-break--visible">
-      <h1 class="govuk-heading-m" id="dates-of-liability-header">@messages("ated.property-details-summary.table.dates-of-liability.header")</h1>
-      </div>
-
-  <table>
-  <tbody>
-
-    @for((period, index) <- periods.zipWithIndex) {
-      <tr class="govuk-table__row">
-      <th id="return-type-@index" scope="row" class="govuk-table__header">@messages(period.description.getOrElse(""))</th>
-      <td id="period-@index" class="govuk-table__cell">@messages("ated.property-details-summary.table.period.text", period.startDate.toString(messages("ated.date-format")), period.endDate.toString(messages("ated.date-format")))</td>
-    </tr>
-    }
-
-  </tbody>
-  </table>
-
-      <div class="govuk-section-break govuk-section-break--visible">
-      <h1 class="govuk-heading-m" id="avoidance-scheme-header">@messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.header")</h1>
-      </div>
-
-  <table>
     <tbody>
+        <tr class="govuk-table__row">
+            <th colspan="2" scope="row" class="govuk-table__header govuk-!-font-size-24 govuk-!-padding-top-9" id="dates-of-liability-header">@messages("ated.property-details-summary.table.dates-of-liability.header")</th>
+        </tr>
 
-      <tr class="govuk-table__row">
-      <th id="avoidance-scheme-label" scope="row" class="govuk-table__header">@messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.label")</th>
-      <td class="govuk-table__cell" id="avoidance-scheme-value">@changeLiability.period.map(v => v.taxAvoidanceScheme.fold("")(x=>x))</td>
-    </tr>
-
-      <tr class="govuk-table__row">
-      <th id="promoter-reference-label" scope="row" class="govuk-table__header">@messages("ated.property-details-summary.table.property-ated-details.promoter-reference.label")</th>
-      <td id="promoter-reference-value" class="govuk-table__cell">@changeLiability.period.map(v => v.taxAvoidancePromoterReference.fold("")(x=>x))</td>
-    </tr>
-
+        @for((period, index) <- periods.zipWithIndex) {
+          <tr class="govuk-table__row">
+            <th id="return-type-@index" scope="row" class="govuk-table__header">@messages(period.description.getOrElse(""))</th>
+            <td id="period-@index" class="govuk-table__cell">@messages("ated.property-details-summary.table.period.text", period.startDate.toString(messages("ated.date-format")), period.endDate.toString(messages("ated.date-format")))</td>
+          </tr>
+        }
     </tbody>
-  </table>
 
-      <div class="govuk-section-break govuk-section-break--visible">
-      <h1 class="govuk-heading-m" id="supporting-info-header">@messages("ated.property-details-summary.table.supporting-info.header")</h1>
-      </div>
-
-  <table>
     <tbody>
+        <tr class="govuk-table__row">
+            <th colspan="2" scope="row" class="govuk-table__header govuk-!-font-size-24 govuk-!-padding-top-9" id="avoidance-scheme-header">@messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.header")</th>
+        </tr>
 
-      <tr class="govuk-table__row">
-      <th id="additional-information-label" scope="row" class="govuk-table__header">@messages("ated.property-details-summary.table.property-ated-details.additional-information.label")</th>
-      <td class="govuk-table__cell" id="additional-information-value">
-      @changeLiability.period.map(v => v.supportingInfo.fold("")(x=>x))
-      </td>
-    </tr>
+        <tr class="govuk-table__row">
+            <th id="avoidance-scheme-label" scope="row" class="govuk-table__header">@messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.label")</th>
+            <td class="govuk-table__cell" id="avoidance-scheme-value">@changeLiability.period.map(v => v.taxAvoidanceScheme.fold("")(x=>x))</td>
+        </tr>
 
+        <tr class="govuk-table__row">
+            <th id="promoter-reference-label" scope="row" class="govuk-table__header">@messages("ated.property-details-summary.table.property-ated-details.promoter-reference.label")</th>
+            <td id="promoter-reference-value" class="govuk-table__cell">@changeLiability.period.map(v => v.taxAvoidancePromoterReference.fold("")(x=>x))</td>
+        </tr>
     </tbody>
-  </table>
 
-      <div class="govuk-section-break govuk-section-break--visible">
-      <h1 class="govuk-heading-m" id="return-status-header">@messages("ated.edit-liability.summary.bank-details.return-status.header")</h1>
-      <td class="td-height"></td>
-      </div>
-
-  <table>
     <tbody>
-      <tr class="govuk-table__row">
-      <th id="return-status-label" scope="row" class="govuk-table__header">@messages("ated.property-details-summary.table.property-ated-details.return-status.label")</th>
-      <td class="govuk-table__cell" id="return-status-value">@messages("ated.property-details-summary.status.text")</td>
-    </tr>
+        <tr class="govuk-table__row">
+            <th colspan="2" scope="row" class="govuk-table__header govuk-!-font-size-24 govuk-!-padding-top-9" id="supporting-info-header">@messages("ated.property-details-summary.table.supporting-info.header")</th>
+        </tr>
+
+        <tr class="govuk-table__row">
+            <th id="additional-information-label" scope="row" class="govuk-table__header">@messages("ated.property-details-summary.table.property-ated-details.additional-information.label")</th>
+            <td class="govuk-table__cell" id="additional-information-value">
+                @changeLiability.period.map(v => v.supportingInfo.fold("")(x=>x))
+            </td>
+        </tr>
+    </tbody>
+
+    <tbody>
+        <tr class="govuk-table__row">
+            <th colspan="2" scope="row" class="govuk-table__header govuk-!-font-size-24 govuk-!-padding-top-9" id="return-status-header">@messages("ated.edit-liability.summary.bank-details.return-status.header")</th>
+        </tr>
+
+        <tr class="govuk-table__row">
+            <th id="return-status-label" scope="row" class="govuk-table__header">@messages("ated.property-details-summary.table.property-ated-details.return-status.label")</th>
+            <td class="govuk-table__cell" id="return-status-value">@messages("ated.property-details-summary.status.text")</td>
+        </tr>
     </tbody>
   </table>
 

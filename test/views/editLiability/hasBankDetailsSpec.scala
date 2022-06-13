@@ -25,18 +25,20 @@ import org.scalatest.{BeforeAndAfterEach, GivenWhenThen}
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Messages, MessagesApi}
+import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import play.twirl.api.Html
 import testhelpers.MockAuthUtil
+import views.html.editLiability.hasBankDetails
 
 class hasBankDetailsSpec extends AnyFeatureSpec with GuiceOneAppPerSuite with MockitoSugar
   with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
 
-  implicit val request = FakeRequest()
+  implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
-implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
-  val injectedViewInstance = app.injector.instanceOf[views.html.editLiability.hasBankDetails]
+  implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
+  val injectedViewInstance: hasBankDetails = app.injector.instanceOf[views.html.editLiability.hasBankDetails]
 
   Feature("The user can whether they have bank details") {
 
@@ -60,7 +62,9 @@ implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetr
 
       Then("The date fields should have the correct titles")
       And("No data is populated")
-      assert(document.getElementById("hasBankDetails-id").text() === "Yes No")
+      assert(document.getElementById("hasBankDetails-id").text() === "Do you have a bank account where we could pay a refund? Yes No")
+      assert(document.getElementsByAttributeValue("for", "hasBankDetails").text() === "Yes")
+      assert(document.getElementsByAttributeValue("for", "hasBankDetails-2").text() === "No")
       assert(document.getElementById("hasBankDetails").text() === "")
       assert(document.getElementById("hasBankDetails-2").text() === "")
 

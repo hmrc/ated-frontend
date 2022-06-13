@@ -38,10 +38,10 @@
 
 @newMain(title = titleBuilder(messages(returnTitleMessage))) {
 
-    <div id="banner" class="transaction-banner--complete">
-    @govukPanel(Panel(
-        title = Text(messages(returnHeaderMessage))
-    ))
+    <div id="banner">
+        @govukPanel(Panel(
+            title = Text(messages(returnHeaderMessage))
+        ))
     </div>
 
     <p id="view-message" class="govuk-body">@messages("ated.edit-liabilty.sent.view-message")</p>
@@ -52,6 +52,7 @@
         @messages("ated.reliefs-sent.print-link")
         </a>
     </p>
+
     <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
 
     <h2 class="govuk-heading-l" id="charges-heading">@messages("ated.edit-liabilty.sent.charges-heading")</h2>
@@ -73,11 +74,9 @@
         <p id="late-payment" class="govuk-body">@messages("ated.edit-liabilty.sent.late-payment")
             <a class="govuk-link" href="https://www.gov.uk/guidance/pay-annual-tax-on-enveloped-dwellings">@messages("ated.edit-liability.sent.late-payment.link")</a>.
         </p>
-
     }
 
     @if(returnType == "A") {
-
         <h3 id="already-paid-title" class="govuk-heading-m">@messages("ated.edit.liability.sent.amount-already-paid.title")</h3>
 
         <ul class="govuk-list govuk-list--bullet">
@@ -94,11 +93,9 @@
                 <a class="govuk-link" href="https://www.gov.uk/guidance/pay-annual-tax-on-enveloped-dwellings">@messages("ated.edit-liability.sent.late-payment.link")</a>.
             </li>
         </ul>
-
     }
 
     @if(returnType == "C") {
-
         <h3 id="already-paid-title" class="govuk-heading-s">@messages("ated.edit.liability.sent.amount-already-paid.title")</h3>
 
         <ul class="govuk-list govuk-list--bullet">
@@ -114,18 +111,18 @@
                 <a class="govuk-link" href="https://www.gov.uk/guidance/pay-annual-tax-on-enveloped-dwellings">@messages("ated.edit-liability.sent.late-payment.link")</a>.
             </li>
         </ul>
-
     }
+
     <div class="govuk-!-margin-bottom-7">
         <p id="view-balance" class="govuk-body">@messages("ated.edit-liabilty.sent.view-balance")</p>
     </div>
 
-<div class="govuk-form-group">
-    @govukButton(Button(
-        href = Some(controllers.routes.AccountSummaryController.view.url),
-        content = Text(messages("ated.edit.liability.sent.button")),
-        attributes = Map("type" -> "submit", "id" -> "submit")
-    ))
-</div>
+    <div class="govuk-form-group">
+        @govukButton(Button(
+            href = Some(controllers.routes.AccountSummaryController.view.url),
+            content = Text(messages("ated.edit.liability.sent.button")),
+            attributes = Map("type" -> "submit", "id" -> "submit")
+        ))
+    </div>
 
 }

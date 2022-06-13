@@ -18,29 +18,28 @@ package views.editLiability
 
 import config.ApplicationConfig
 import forms.PropertyDetailsForms.periodDatesLiableForm
-import models.{PropertyDetailsDatesLiable, StandardAuthRetrievals}
-import org.joda.time.LocalDate
+import models.StandardAuthRetrievals
 import org.jsoup.Jsoup
-import play.api.data.{Form, FormError, Mapping}
-import play.api.data.Forms._
 import org.scalatest.featurespec.AnyFeatureSpec
-import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
+import org.scalatest.{BeforeAndAfterEach, GivenWhenThen}
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Messages, MessagesApi}
+import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import play.twirl.api.Html
 import testhelpers.MockAuthUtil
+import views.html.editLiability.editLiabilityDatesLiable
 
 class editLiabilityDatesLiableSpec extends AnyFeatureSpec with GuiceOneAppPerSuite with MockitoSugar
   with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil{
 
-  implicit val request = FakeRequest()
+  implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
-implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
+  implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
 
-  val injectedViewInstance = app.injector.instanceOf[views.html.editLiability.editLiabilityDatesLiable]
+  val injectedViewInstance: editLiabilityDatesLiable = app.injector.instanceOf[views.html.editLiability.editLiabilityDatesLiable]
 
   Feature("The user can edit the period that the property is liable") {
 

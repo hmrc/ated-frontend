@@ -25,19 +25,21 @@ import org.scalatest.{BeforeAndAfterEach, GivenWhenThen}
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Messages, MessagesApi}
+import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import play.twirl.api.Html
 import testhelpers.MockAuthUtil
+import views.html.editLiability.bankDetails
 
 class bankDetailsSpec extends AnyFeatureSpec with GuiceOneAppPerSuite with MockitoSugar with BeforeAndAfterEach
   with GivenWhenThen with MockAuthUtil {
 
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
-  implicit val request = FakeRequest()
+  implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
 
-  val injectedViewInstance = app.injector.instanceOf[views.html.editLiability.bankDetails]
+  val injectedViewInstance: bankDetails = app.injector.instanceOf[views.html.editLiability.bankDetails]
 
   Feature("The user can whether they have bank details") {
 

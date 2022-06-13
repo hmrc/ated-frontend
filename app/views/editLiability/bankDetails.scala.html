@@ -39,18 +39,18 @@
         appConfig: ApplicationConfig)
 
 @backLinkHtml = {
-@if(backLink.isDefined) {
-    @govukBackLink(BackLink(
-        href = backLink.get,
-        content = Text("Back")
-    ))
-}}
+    @if(backLink.isDefined) {
+        @govukBackLink(BackLink(
+            href = backLink.get,
+            content = Text("Back")
+        ))
+    }
+}
 
 @yesHtml = {
-        <div id="hidden-bank-details-uk" class="panel-indent">
+        <div id="hidden-bank-details-uk">
             <div id="account-number" class="govuk-form-group">
             @govukInput(Input(
-                id = "accountNumber",
                 inputType = "number",
                 label = Label(
                     content = Text(messages("ated.bank-details.uk-bank-account.number.label"))
@@ -60,7 +60,6 @@
             </div>
             <div id="sort-code" class="govuk-form-group">
             @govukInput(Input(
-                id = "sortCode",
                 inputType = "number",
                 label = Label(
                     content = Text(messages("ated.bank-details.uk-bank-account.sort-code.label"))
@@ -72,10 +71,9 @@
 }
 
 @noHtml = {
-        <div id="hidden-bank-details-non-uk" class="panel-indent">
+        <div id="hidden-bank-details-non-uk">
             <div id="iban-code" class="govuk-form-group">
             @govukInput(Input(
-                id = "iban",
                 inputType = "text",
                 label = Label(
                     content = Text(messages("ated.bank-details.non-uk-bank-account.iban.label"))
@@ -85,7 +83,6 @@
             </div>
             <div id="bic-swift-code" class="govuk-form-group">
             @govukInput(Input(
-                id = "bicSwiftCode",
                 inputType = "text",
                 label = Label(
                     content = Text(messages("ated.bank-details.non-uk-bank-account.bic-swift-code.label"))
@@ -127,14 +124,13 @@
             sectionCaption = HtmlContent(messages("ated.property-details.pre-header-change"))
         ))
         </div>
+
         <div id="name-of-person" class="govuk-form-group">
         @govukInput(Input(
             inputType = "text",
             label = Label(
                 content = Text(messages("ated.bank-details.uk-bank-account.name.label"))
             ),
-            id = "accountNameUK",
-            name = "accountName",
             autocomplete = Some("name")
         ).withFormField(bankDetailsForm("accountName")))
         </div>

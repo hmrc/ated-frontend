@@ -16,8 +16,6 @@
 
 package controllers.editLiability
 
-import java.util.UUID
-
 import builders.{SessionBuilder, TitleBuilder}
 import config.ApplicationConfig
 import connectors.DataCacheConnector
@@ -42,7 +40,9 @@ import uk.gov.hmrc.http.HeaderCarrier
 import utils.AtedConstants
 import utils.AtedConstants._
 import views.html.BtaNavigationLinks
+import views.html.editLiability.editLiabilitySent
 
+import java.util.UUID
 import scala.concurrent.Future
 
 class EditLiabilitySentControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with MockAuthUtil {
@@ -53,11 +53,11 @@ class EditLiabilitySentControllerSpec extends PlaySpec with GuiceOneServerPerSui
   val mockMcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
   val mockSubscriptionDataService: SubscriptionDataService = mock[SubscriptionDataService]
   val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
-    val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
+  val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
-  val injectedViewInstance = app.injector.instanceOf[views.html.editLiability.editLiabilitySent]
+  val injectedViewInstance: editLiabilitySent = app.injector.instanceOf[views.html.editLiability.editLiabilitySent]
 
   val organisationName: String = "ACME Limited"
   val formBundleNo1: String = "123456789012"
@@ -122,9 +122,9 @@ class Setup {
     "view" must {
 
       "return amended return sent page, if response found in cache and amountDueOrRefund is Negative" in new Setup {
-        val r1 = EditLiabilityReturnsResponse(mode = "Post", oldFormBundleNumber = formBundleNo1, formBundleNumber =
+        val r1: EditLiabilityReturnsResponse = EditLiabilityReturnsResponse(mode = "Post", oldFormBundleNumber = formBundleNo1, formBundleNumber =
           Some(formBundleNo2), liabilityAmount = BigDecimal(1234.56), amountDueOrRefund = BigDecimal(-500.00), paymentReference = Some("payment-ref-01"))
-        val resp = EditLiabilityReturnsResponseModel(DateTime.now(), liabilityReturnResponse = Seq(r1), BigDecimal(0.00))
+        val resp: EditLiabilityReturnsResponseModel = EditLiabilityReturnsResponseModel(DateTime.now(), liabilityReturnResponse = Seq(r1), BigDecimal(0.00))
         viewWithAuthorisedUser(Some(resp)) {
           result =>
             status(result) must be(OK)
@@ -152,9 +152,9 @@ class Setup {
       }
 
       "return further return sent page, if response found in cache and amountDueOrRefund is Negative" in new Setup {
-        val r1 = EditLiabilityReturnsResponse(mode = "Post", oldFormBundleNumber = formBundleNo1, formBundleNumber =
+        val r1: EditLiabilityReturnsResponse = EditLiabilityReturnsResponse(mode = "Post", oldFormBundleNumber = formBundleNo1, formBundleNumber =
           Some(formBundleNo2), liabilityAmount = BigDecimal(1234.56), amountDueOrRefund = BigDecimal(500.00), paymentReference = Some("payment-ref-01"))
-        val resp = EditLiabilityReturnsResponseModel(DateTime.now(), liabilityReturnResponse = Seq(r1), BigDecimal(0.00))
+        val resp: EditLiabilityReturnsResponseModel = EditLiabilityReturnsResponseModel(DateTime.now(), liabilityReturnResponse = Seq(r1), BigDecimal(0.00))
         viewWithAuthorisedUser(Some(resp)) {
           result =>
             status(result) must be(OK)
@@ -179,9 +179,9 @@ class Setup {
       }
 
       "return edit details return sent page, if response found in cache and amountDueOrRefund is Negative" in new Setup {
-        val r1 = EditLiabilityReturnsResponse(mode = "Post", oldFormBundleNumber = formBundleNo1, formBundleNumber =
+        val r1: EditLiabilityReturnsResponse = EditLiabilityReturnsResponse(mode = "Post", oldFormBundleNumber = formBundleNo1, formBundleNumber =
           Some(formBundleNo2), liabilityAmount = BigDecimal(1234.56), amountDueOrRefund = BigDecimal(0.0), paymentReference = Some("payment-ref-01"))
-        val resp = EditLiabilityReturnsResponseModel(DateTime.now(), liabilityReturnResponse = Seq(r1), BigDecimal(0.00))
+        val resp: EditLiabilityReturnsResponseModel = EditLiabilityReturnsResponseModel(DateTime.now(), liabilityReturnResponse = Seq(r1), BigDecimal(0.00))
         viewWithAuthorisedUser(Some(resp)) {
           result =>
             status(result) must be(OK)
@@ -207,9 +207,9 @@ class Setup {
       }
 
       "take user to print friendly edit liability confirmation" in new Setup {
-        val r1 = EditLiabilityReturnsResponse(mode = "Post", oldFormBundleNumber = formBundleNo1, formBundleNumber =
+        val r1: EditLiabilityReturnsResponse = EditLiabilityReturnsResponse(mode = "Post", oldFormBundleNumber = formBundleNo1, formBundleNumber =
           Some(formBundleNo2), liabilityAmount = BigDecimal(1234.56), amountDueOrRefund = BigDecimal(-500.00), paymentReference = Some("payment-ref-01"))
-        val resp = EditLiabilityReturnsResponseModel(DateTime.now(), liabilityReturnResponse = Seq(r1), BigDecimal(0.00))
+        val resp: EditLiabilityReturnsResponseModel = EditLiabilityReturnsResponseModel(DateTime.now(), liabilityReturnResponse = Seq(r1), BigDecimal(0.00))
         getPrintFriendlyWithAuthorisedUser(Some(resp)) {
           result =>
             status(result) must be(OK)
@@ -227,9 +227,9 @@ class Setup {
       }
 
       "take user to print friendly edit liability confirmation bigger than zero" in new Setup {
-        val r1 = EditLiabilityReturnsResponse(mode = "Post", oldFormBundleNumber = formBundleNo1, formBundleNumber =
+        val r1: EditLiabilityReturnsResponse = EditLiabilityReturnsResponse(mode = "Post", oldFormBundleNumber = formBundleNo1, formBundleNumber =
           Some(formBundleNo2), liabilityAmount = BigDecimal(1234.56), amountDueOrRefund = BigDecimal(500.00), paymentReference = Some("payment-ref-01"))
-        val resp = EditLiabilityReturnsResponseModel(DateTime.now(), liabilityReturnResponse = Seq(r1), BigDecimal(0.00))
+        val resp: EditLiabilityReturnsResponseModel = EditLiabilityReturnsResponseModel(DateTime.now(), liabilityReturnResponse = Seq(r1), BigDecimal(0.00))
         getPrintFriendlyWithAuthorisedUser(Some(resp)) {
           result =>
             status(result) must be(OK)
@@ -240,9 +240,9 @@ class Setup {
       }
 
       "take user to print friendly edit liability confirmation exactly zero" in new Setup {
-        val r1 = EditLiabilityReturnsResponse(mode = "Post", oldFormBundleNumber = formBundleNo1, formBundleNumber =
+        val r1: EditLiabilityReturnsResponse = EditLiabilityReturnsResponse(mode = "Post", oldFormBundleNumber = formBundleNo1, formBundleNumber =
           Some(formBundleNo2), liabilityAmount = BigDecimal(1234.56), amountDueOrRefund = BigDecimal(0.00), paymentReference = Some("payment-ref-01"))
-        val resp = EditLiabilityReturnsResponseModel(DateTime.now(), liabilityReturnResponse = Seq(r1), BigDecimal(0.00))
+        val resp: EditLiabilityReturnsResponseModel = EditLiabilityReturnsResponseModel(DateTime.now(), liabilityReturnResponse = Seq(r1), BigDecimal(0.00))
         getPrintFriendlyWithAuthorisedUser(Some(resp)) {
           result =>
             status(result) must be(OK)
@@ -252,9 +252,9 @@ class Setup {
       }
 
       "redirect to account summary, if response found in cache but formbundle doesn't match" in new Setup {
-        val r1 = EditLiabilityReturnsResponse(mode = "Post", oldFormBundleNumber = formBundleNo2, formBundleNumber =
+        val r1: EditLiabilityReturnsResponse = EditLiabilityReturnsResponse(mode = "Post", oldFormBundleNumber = formBundleNo2, formBundleNumber =
           Some(formBundleNo2), liabilityAmount = BigDecimal(1234.56), amountDueOrRefund = BigDecimal(0.0), paymentReference = Some("payment-ref-01"))
-        val resp = EditLiabilityReturnsResponseModel(DateTime.now(), liabilityReturnResponse = Seq(r1), BigDecimal(0.00))
+        val resp: EditLiabilityReturnsResponseModel = EditLiabilityReturnsResponseModel(DateTime.now(), liabilityReturnResponse = Seq(r1), BigDecimal(0.00))
         viewWithAuthorisedUser(Some(resp)) {
           result =>
             status(result) must be(SEE_OTHER)

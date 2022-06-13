@@ -25,21 +25,23 @@ import org.scalatest.{BeforeAndAfterEach, GivenWhenThen}
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Messages, MessagesApi}
+import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import play.twirl.api.Html
 import testhelpers.{GovukTestHelpers, MockAuthUtil}
 import uk.gov.hmrc.auth.core.retrieve.~
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
+import views.html.editLiability.disposeLiabilityBankDetails
 
 class disposeLiabilityBankDetailsSpec extends AnyFeatureSpec with GuiceOneAppPerSuite with MockitoSugar
   with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil with GovukTestHelpers {
 
-  implicit val request = FakeRequest()
+  implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
   implicit val authContext: StandardAuthRetrievals = organisationStandardRetrievals
 
-  val injectedViewInstance = app.injector.instanceOf[views.html.editLiability.disposeLiabilityBankDetails]
+  val injectedViewInstance: disposeLiabilityBankDetails = app.injector.instanceOf[views.html.editLiability.disposeLiabilityBankDetails]
 
   val authMock: Enrolments ~ Some[AffinityGroup] ~ Some[String] = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
   setAuthMocks(authMock)

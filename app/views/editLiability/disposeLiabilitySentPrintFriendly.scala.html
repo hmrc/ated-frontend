@@ -39,12 +39,12 @@
 
  <p id="new-amount" class="govuk-body">@messages("ated.edit-liabilty.sent.new-amount")</p>
 
- <h3 id="already-paid-title" class="text-bold govuk-heading-s">@messages("ated.edit.liability.sent.amount-already-paid.title")</h3>
+ <h3 id="already-paid-title" class="govuk-heading-s">@messages("ated.edit.liability.sent.amount-already-paid.title")</h3>
 
  <p id="owe-you" class="govuk-body">@Html(messages("ated.edit.liability.sent.owe-you", formattedPounds(amountDueOrRefund.abs)))</p>
  <p id="repayments" class="govuk-body">@messages("ated.edit.liability.sent.repayments")</p>
 
- <h3 id="not-paid-title" class="text-bold govuk-heading-s">@messages("ated.edit.liability.sent.amount-not-paid.title")</h3>
+ <h3 id="not-paid-title" class="govuk-heading-s">@messages("ated.edit.liability.sent.amount-not-paid.title")</h3>
 
  <p id="you-owe" class="govuk-body">@Html(messages("ated.edit.liability.sent.you-owe", formattedPounds(liabilityAmount)))</p>
  <p id="payment-reference" class="govuk-body">@Html(messages("ated.edit-liabilty.sent.payment-reference", paymentReference.getOrElse("")))</p>

@@ -38,15 +38,15 @@
         appConfig: ApplicationConfig)
 
 @backLinkHtml = {
-@if(backLink.isDefined) {
-    @govukBackLink(BackLink(
-        href = backLink.get,
-        content = Text("Back")
-    ))
-}
+    @if(backLink.isDefined) {
+        @govukBackLink(BackLink(
+            href = backLink.get,
+            content = Text("Back")
+        ))
+    }
 }
 
-@newMain(title = titleBuilder(messages("ated.bank-details.has-bank-details.title")),
+@newMain(title = titleBuilder(messages("ated.bank-details.has-bank-details.title"), Some(bankDetailsForm)),
     serviceInfoContent = serviceInfoContent) {
 
     @backLinkHtml
@@ -55,21 +55,8 @@
         @govukErrorSummary(ErrorSummary().withFormErrorsAsText(bankDetailsForm))
     }
 
-    <header>
-        <h1 class="govuk-heading-xl">
-            <span class="govuk-caption-xl">
-                <span class="govuk-visually-hidden">
-                @messages("ated.screen-reader.section")
-                </span>
-                @messages("ated.property-details.pre-header-dispose")
-            </span>
-            @messages("ated.bank-details.has-bank-details.header")
-        </h1>
-    </header>
-
     @formHelper(action = controllers.editLiability.routes.DisposeLiabilityHasBankDetailsController.save(oldFormBundleNo)) {
 
-        <div class="govuk-form-group" id="hasBankDetails-id">
         @govukRadios(Radios(
             items = Seq(
                 RadioItem(
@@ -83,8 +70,10 @@
             ),
             classes = "govuk-radios--inline"
         ).withFormField(bankDetailsForm("hasBankDetails"))
-        )
-        </div>
+        .withHeadingAndSectionCaption(
+            heading = Text(messages("ated.bank-details.has-bank-details.header")),
+            sectionCaption = Text(messages("ated.property-details.pre-header-dispose"))
+        ))
 
         @govukButton(Button(
             content = Text(messages("ated.save-and-continue")),

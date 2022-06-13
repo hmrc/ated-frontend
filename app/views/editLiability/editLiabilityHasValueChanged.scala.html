@@ -42,15 +42,15 @@
         appConfig: ApplicationConfig)
 
 @backLinkHtml = {
-@if(backLink.isDefined) {
-    @govukBackLink(BackLink(
-        href = backLink.get,
-        content = Text("Back")
-    ))
-}
+    @if(backLink.isDefined) {
+        @govukBackLink(BackLink(
+            href = backLink.get,
+            content = Text("Back")
+        ))
+    }
 }
 
-@newMain(title = titleBuilder(messages("ated.property-details-value.title")), serviceInfoContent = serviceInfoContent) {
+@newMain(title = titleBuilder(messages("ated.property-details-value.title"), Some(liabilityValueDetailsForm)), serviceInfoContent = serviceInfoContent) {
 
     @backLinkHtml
 
@@ -70,9 +70,9 @@
         </h1>
     </header>
 
-    <p class="display-block ated-line-height govuk-body" id="value-text">
+    <p class="govuk-body" id="value-text">
         @messages("ated.change-liability.value.previous-value-text")
-        <span class="govuk-heading-l inline-heading-style" id="return-charge">
+        <span class="govuk-heading-l" id="return-charge">
         @oldLiabilityAmount.map(formattedPounds(_))
         </span>
     </p>
@@ -80,6 +80,12 @@
     @formHelper(action = controllers.editLiability.routes.EditLiabilityHasValueChangedController.save(oldFormBundleNo)) {
 
         @govukRadios(Radios(
+            fieldset = Some(Fieldset(
+                legend = Some(Legend(
+                    content = Text(messages("ated.property-details-value.header")),
+                    classes = "govuk-visually-hidden"
+                )),
+            )),
             items = Seq(
                 RadioItem(
                     content = Text(messages("ated.property-details-value.yes")),

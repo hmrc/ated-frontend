@@ -63,7 +63,7 @@ class BankDetailsSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil {
       errorDoc.select("ul.govuk-error-summary__list > li > a").get(2).text() mustBe "You must enter a sort code"
       errorDoc.getElementById("accountNumber-error").text() mustBe "Error: You must enter an account number"
       errorDoc.getElementById("sortCode-error").text() mustBe "Error: You must enter a sort code"
-      errorDoc.getElementById("accountNameUK-error").text() mustBe "Error: You must enter the name of the bank account holder"
+      errorDoc.getElementById("accountName-error").text() mustBe "Error: You must enter the name of the bank account holder"
     }
 
     "check page errors for non uk account" in {
@@ -80,7 +80,7 @@ class BankDetailsSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil {
       errorDoc.select("ul.govuk-error-summary__list > li > a").get(2).text() mustBe "You must enter the SWIFT code"
       errorDoc.getElementById("bicSwiftCode-error").text() mustBe "Error: You must enter the SWIFT code"
       errorDoc.getElementById("iban-error").text() mustBe "Error: You must enter the IBAN"
-      errorDoc.getElementById("accountNameUK-error").text() mustBe "Error: You must enter the name of the bank account holder"
+      errorDoc.getElementById("accountName-error").text() mustBe "Error: You must enter the name of the bank account holder"
     }
   }
 

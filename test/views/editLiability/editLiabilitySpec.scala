@@ -21,20 +21,22 @@ import forms.AtedForms._
 import models.StandardAuthRetrievals
 import org.jsoup.Jsoup
 import org.scalatest.featurespec.AnyFeatureSpec
-import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
+import org.scalatest.{BeforeAndAfterEach, GivenWhenThen}
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.i18n.{Messages, MessagesApi}
+import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import play.twirl.api.Html
 import testhelpers.MockAuthUtil
+import views.html.editLiability.editLiability
 
 class editLiabilitySpec extends AnyFeatureSpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
-  implicit val request = FakeRequest()
+  implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
-  val injectedViewInstance = app.injector.instanceOf[views.html.editLiability.editLiability]
+  val injectedViewInstance: editLiability = app.injector.instanceOf[views.html.editLiability.editLiability]
 
 Feature("The user can view an edit liability type page") {
 
@@ -45,19 +47,19 @@ Feature("The user can view an edit liability type page") {
       Given("A user visits the page and clicks yes")
       When("The user views the page and clicks yes")
 
-      implicit val request = FakeRequest()
+      implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
       val html = injectedViewInstance(editLiabilityReturnTypeForm, "formBundleNo", 2015, editAllowed = true, Html(""), Some("backLink"))
 
       val document = Jsoup.parse(html.toString())
       Then("the page title : Have you disposed of the property?")
       assert(document.title() === "Have you disposed of the property? - GOV.UK")
 
-
-      assert(document.getElementsByTag("h1").text.contains("This section is: Change return"))
+      assert(document.getElementsByClass("govuk-caption-xl").text() === "This section is Change return")
+      assert(document.getElementsByTag("h1").text.contains("Have you disposed of the property?"))
 
       assert(document.getElementById("editLiabilityType-hint").text() === "This includes sale, de-enveloping or demolishing.")
-      assert(document.select("#main-content > div > div > form > div > div.govuk-radios.govuk-radios--inline > div:nth-child(1) > label").text() === "Yes")
-      assert(document.select("#main-content > div > div > form > div > div.govuk-radios.govuk-radios--inline > div:nth-child(2) > label").text() === "No")
+      assert(document.getElementsByAttributeValue("for", "editLiabilityType").text() === "Yes")
+      assert(document.getElementsByAttributeValue("for", "editLiabilityType-2").text() === "No")
       assert(document.getElementById("editLiabilityType").text() === "")
       assert(document.getElementById("editLiabilityType-2").text() === "")
 
@@ -67,7 +69,6 @@ Feature("The user can view an edit liability type page") {
       Then("The back link is correct")
       assert(document.select("#main-content > div > div > a.govuk-back-link").text === "Back")
     }
-
   }
 
   Feature("The user can edit a the setting to indicate that no value has change") {
@@ -79,7 +80,7 @@ Feature("The user can view an edit liability type page") {
       Given("A user visits the page to and they are allowed to edit the data")
       When("The user views the page without an edit option")
 
-      implicit val request = FakeRequest()
+      implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 
       val html = injectedViewInstance(editLiabilityReturnTypeForm, "formBundleNo", 2015, editAllowed = false,  Html(""), Some("http://backLink"))
 
@@ -87,7 +88,8 @@ Feature("The user can view an edit liability type page") {
       Then("the page title : Have you disposed of the property?")
       assert(document.title() === "Have you disposed of the property? - GOV.UK")
 
-      assert(document.getElementsByTag("h1").text.contains("This section is: Change return"))
+      assert(document.getElementsByClass("govuk-caption-xl").text() === "This section is: Change return")
+      assert(document.getElementsByTag("h1").text.contains("Your return cannot be changed online"))
 
       assert(document.getElementById("editliability-text")
         .text() === "Your original return is too complex to edit online. To make any changes contact the ATED helpline.")

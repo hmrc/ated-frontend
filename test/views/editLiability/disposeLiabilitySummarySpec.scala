@@ -25,18 +25,20 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Messages, MessagesApi}
+import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import play.twirl.api.Html
 import testhelpers.MockAuthUtil
+import views.html.editLiability.disposeLiabilitySummary
 
 class disposeLiabilitySummarySpec extends PlaySpec with GuiceOneAppPerSuite
   with BeforeAndAfterEach with MockAuthUtil {
 
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
-  implicit val request = FakeRequest()
+  implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
-  val injectedViewInstance = app.injector.instanceOf[views.html.editLiability.disposeLiabilitySummary]
+  val injectedViewInstance: disposeLiabilitySummary = app.injector.instanceOf[views.html.editLiability.disposeLiabilitySummary]
 
   val bankDetailsYesButNoDetails: Option[BankDetailsModel] = Some(BankDetailsModel(hasBankDetails = true, bankDetails = None))
   val completedBankDetails: Option[BankDetailsModel] = Some(BankDetailsModel(hasBankDetails = true,
@@ -62,7 +64,7 @@ class disposeLiabilitySummarySpec extends PlaySpec with GuiceOneAppPerSuite
         val html = injectedViewInstance(disposeLiabilityReturn(None), Html(""), Some("http://backLink"))
         val document = Jsoup.parse(html.toString())
         assert(document.getElementsByClass("button").size() === 0)
-        assert(document.getElementsByClass("status").text() === "INCOMPLETE")
+        assert(document.getElementsByClass("govuk-tag--red").text() === "INCOMPLETE")
       }
 
       "the user has answered yes to the bank details question but not provided bank details" in {
@@ -70,7 +72,7 @@ class disposeLiabilitySummarySpec extends PlaySpec with GuiceOneAppPerSuite
             Html(""), Some("http://backLink"))
         val document = Jsoup.parse(html.toString())
         assert(document.getElementsByClass("button").size() === 0)
-        assert(document.getElementsByClass("status").text() === "INCOMPLETE")
+        assert(document.getElementsByClass("govuk-tag--red").text() === "INCOMPLETE")
       }
     }
 
@@ -88,7 +90,7 @@ class disposeLiabilitySummarySpec extends PlaySpec with GuiceOneAppPerSuite
         val html = injectedViewInstance(disposeLiabilityReturn(completedBankDetails, None),
           Html(""), Some("http://backLink"))
         val document = Jsoup.parse(html.toString())
-        assert(document.getElementsByClass("status").text() === "INCOMPLETE")
+        assert(document.getElementsByClass("govuk-tag--red").text() === "INCOMPLETE")
       }
     }
   }

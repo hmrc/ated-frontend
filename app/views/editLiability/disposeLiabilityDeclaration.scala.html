@@ -23,7 +23,8 @@
 @this(newMain: newMain,
         formHelper: FormWithCSRF,
         govukButton: GovukButton,
-        govukWarningText: GovukWarningText)
+        govukWarningText: GovukWarningText,
+        govukBackLink: GovukBackLink)
 
 @(oldFormBundleNum: String,
         serviceInfoContent: Html = HtmlFormat.empty,
@@ -33,7 +34,18 @@
         request: Request[AnyContent],
         appConfig: ApplicationConfig)
 
+@backLinkHtml = {
+    @if(backLink.isDefined) {
+        @govukBackLink(BackLink(
+            href = backLink.get,
+            content = Text("Back")
+        ))
+    }
+}
+
 @newMain(title = titleBuilder(messages("ated.edit-liability.declaration.header.amend")), serviceInfoContent = serviceInfoContent) {
+
+    @backLinkHtml
 
     <header>
         <h1 class="govuk-heading-xl">

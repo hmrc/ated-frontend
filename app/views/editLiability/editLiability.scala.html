@@ -26,15 +26,15 @@
 @(editLiabilityReturnTypeForm: Form[EditLiabilityReturnType], oldFormBundleNo: String, periodKey: Int, editAllowed: Boolean, serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
 @backLinkHtml = {
-@if(backLink.isDefined) {
-    @govukBackLink(BackLink(
-        href = backLink.get,
-        content = Text("Back")
-    ))
-}
+    @if(backLink.isDefined) {
+        @govukBackLink(BackLink(
+            href = backLink.get,
+            content = Text("Back")
+        ))
+    }
 }
 
-@newMain(title = titleBuilder(messages("ated.edit-liability.title")), serviceInfoContent = serviceInfoContent) {
+@newMain(title = titleBuilder(messages("ated.edit-liability.title"), Some(editLiabilityReturnTypeForm)), serviceInfoContent = serviceInfoContent) {
 
     @backLinkHtml
 
@@ -42,19 +42,7 @@
         @govukErrorSummary(ErrorSummary().withFormErrorsAsText(editLiabilityReturnTypeForm))
     }
     
-    @if(editAllowed) {
-        <header>
-            <h1 class="govuk-heading-xl">
-                <span class="govuk-caption-xl">
-                    <span class="govuk-visually-hidden">
-                    @messages("ated.screen-reader.section")
-                    </span>
-                    @messages("ated.edit-liability.change-return.header")
-                </span>
-                @messages("ated.edit-liability.header")
-            </h1>
-        </header>
-    } else {
+    @if(!editAllowed) {
         <header>
             <h1 class="govuk-heading-xl">
                 <span class="govuk-caption-xl">
@@ -89,7 +77,11 @@
                         )
                     ),
                     classes = "govuk-radios--inline"
-                ).withFormField(editLiabilityReturnTypeForm("editLiabilityType")))
+                ).withFormField(editLiabilityReturnTypeForm("editLiabilityType"))
+                 .withHeadingAndSectionCaption(
+                     heading = HtmlContent(messages("ated.edit-liability.header")),
+                     sectionCaption = HtmlContent(messages("ated.edit-liability.change-return.header"))
+                ))
 
                 @govukButton(Button(
                     content = Text(messages("ated.save-and-continue")),
@@ -103,19 +95,15 @@
                 </p>
 
                 <p class="govuk-body">
-                <input type="hidden" name="editLiabilityType" value="DP">
-                @messages("ated.edit-liability.return-type.no-edit-legend3")
-@*                <button class="button--link-style" id = "reportDisposeLink" type="submit">*@
-@*                @messages("ated.edit-liability.return-type.no-edit-legend4")</button>.*@
+                    <input type="hidden" name="editLiabilityType" value="DP">
+                    @messages("ated.edit-liability.return-type.no-edit-legend3")
                 </p>
-                <div class="govuk-form-group">
+
                 @govukButton(Button(
                     content = Text(messages("ated.edit-liability.return-type.no-edit-legend4")),
                     attributes = Map("type" -> "submit", "id" -> "reportDisposeLink")
                 ))
-                </div>
 
             }
-
     }
 }

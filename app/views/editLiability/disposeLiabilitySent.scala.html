@@ -37,12 +37,9 @@
 @newMain(title = titleBuilder(messages("ated.edit-liability.sent.title.dispose")),
     serviceInfoContent = serviceInfoContent) {
 
-
-    <div id="banner" class="transaction-banner--complete">
     @govukPanel(Panel(
         title = Text(messages("ated.edit-liability.sent.header.dispose"))
     ))
-    </div>
 
     <p id="view-message" class="govuk-body">@messages("ated.edit-liabilty.sent.view-message")</p>
     <p id="email-message" class="govuk-body">@messages("ated.edit-liabilty.sent.receipt-message")</p>

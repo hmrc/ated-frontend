@@ -57,12 +57,12 @@
     periodEndDate(periodKey)
 }
 
-@newMain(title = titleBuilder(messages("ated.property-details-period.change-dates-liable.title")), serviceInfoContent = serviceInfoContent) {
+@newMain(title = titleBuilder(messages("ated.property-details-period.change-dates-liable.title"),Some(propertyDetailsForm)), serviceInfoContent = serviceInfoContent) {
 
     @backLinkHtml
 
     @if(propertyDetailsForm.errors.nonEmpty) {
-        @govukErrorSummary(ErrorSummary().withFormErrorsAsText(propertyDetailsForm))
+        @govukErrorSummary(ErrorSummary().withFormErrorsAsText(propertyDetailsForm, mapping = Map("startDate" -> "startDate.day", "endDate" -> "endDate.day")))
     }
 
     <header>
@@ -80,7 +80,6 @@
     @formHelper(action = controllers.editLiability.routes.EditLiabilityDatesLiableController.save(formBundleNo, periodKey)) {
 
         @govukDateInput(DateInput(
-            id = "startDate",
             hint = Some(Hint(
                 content = Text(messages("ated.property-details-period.datesLiable.startDate.hint", periodStartDate(periodKey).toString(messages("ated.date-format.numeric"))))
             )),
@@ -89,12 +88,10 @@
                     content = Text(messages("ated.property-details-period.change-dates-liable.startDate"))
                 ))
             )),
-            classes = "date",
             items = dateItems
         ).withFormField(propertyDetailsForm("startDate")))
 
         @govukDateInput(DateInput(
-            id = "endDate",
             hint = Some(Hint(
                 content = Text(messages("ated.property-details-period.datesLiable.endDate.hint", periodEndDate(periodKey).toString(messages("ated.date-format.numeric"))))
             )),
@@ -103,7 +100,6 @@
                     content = Text(messages("ated.property-details-period.change-dates-liable.endDate"))
                 ))
             )),
-            classes = "date",
             items = dateItems
         ).withFormField(propertyDetailsForm("endDate")))
 

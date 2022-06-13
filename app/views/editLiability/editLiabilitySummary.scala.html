@@ -39,16 +39,16 @@
         appConfig: ApplicationConfig)
 
 @incomplete = {
-@messages("ated.label.incomplete")
+  <strong class="govuk-tag govuk-tag--red">@messages("ated.label.incomplete")</strong>
 }
 
 @backLinkHtml = {
-@if(backLink.isDefined) {
-  @govukBackLink(BackLink(
-    href = backLink.get,
-    content = Text("Back")
-  ))
-}
+  @if(backLink.isDefined) {
+    @govukBackLink(BackLink(
+      href = backLink.get,
+      content = Text("Back")
+    ))
+  }
 }
 
 @summaryContent = {
@@ -86,14 +86,12 @@
     </h1>
   </header>
 
-  <div class="govuk-form-group">
-    <p id="details-text" class="govuk-body">@messages("ated.property-details-summary.details-text", periodStartDate(changeLiability.periodKey).toString(messages("ated.date-format")), periodEndDate(changeLiability.periodKey).toString(messages("ated.date-format")))</p>
-  </div>
 
-  <div class="govuk-form-group" id="property-summary">
-    <div class="grid-wrapper">
-      <h2 id="edit-liability-header" class="govuk-heading-m">@messages("ated.property-details-summary.table.property-details.header")</h2>
-    </div>
+  <p id="details-text" class="govuk-body">@messages("ated.property-details-summary.details-text", periodStartDate(changeLiability.periodKey).toString(messages("ated.date-format")), periodEndDate(changeLiability.periodKey).toString(messages("ated.date-format")))</p>
+
+  <div class="govuk-form-group" id="property-summary-section">
+
+    <h2 id="edit-liability-header" class="govuk-heading-m">@messages("ated.property-details-summary.table.property-details.header")</h2>
 
     @govukSummaryList(SummaryList(
       rows = Seq(
@@ -115,7 +113,7 @@
           ))
         )
       ),
-      attributes = Map("id" -> "property-address-label")
+      attributes = Map("id" -> "property-address")
     ))
 
     @govukSummaryList(SummaryList(
@@ -138,14 +136,13 @@
           ))
         )
       ),
-      attributes = Map("id" -> "property-title-number-label")
+      attributes = Map("id" -> "property-title-number")
     ))
   </div>
 
-  <div class="govuk-form-group">
-    <div class="grid-wrapper">
-      <h2 id="property-value-header" class="govuk-heading-m">@messages("ated.property-details-summary.table.property-value.header")</h2>
-    </div>
+  <div class="govuk-form-group" id="property-value-section">
+
+    <h2 id="property-value-header" class="govuk-heading-m">@messages("ated.property-details-summary.table.property-value.header")</h2>
 
     @for((valueObj, index) <- valuesToDisplay.zipWithIndex) {
 
@@ -169,7 +166,7 @@
             ))
           )
         ),
-        attributes = Map("id" -> "property-value-label-0")
+        attributes = Map("id" -> "property-value")
       ))
 
       @govukSummaryList(SummaryList(
@@ -196,24 +193,21 @@
             ))
           )
         ),
-        attributes = Map("id" -> "property-date-of-valuation-label-0")
+        attributes = Map("id" -> "property-date-of-valuation")
       ))
     }
   </div>
 
-  <div class="govuk-form-group">
-
-    <div class="grid-wrapper">
-      <h2 id="bank-details-header" class="govuk-heading-m">@messages("ated.edit-liability.summary.bank-details.header")</h2>
-    </div>
-
+  <div class="govuk-form-group" id="bank-details-section">
   @if(changeLiability.bankDetails.map(_.hasBankDetails) == Some(true)) {
 
     @govukSummaryList(SummaryList(
       rows = Seq(
         SummaryListRow(
           key = Key(
-            content = Text(messages("ated.edit-liability.summary.bank-details.header"))
+            content = Text(messages("ated.edit-liability.summary.bank-details.header")),
+            classes = "govuk-heading-m"
+
           ),
           actions = Some(Actions(
             items = Seq(
@@ -234,7 +228,7 @@
           }
         )
       ),
-      attributes = Map("id" -> "account-holder-name-label")
+      attributes = Map("id" -> "account-holder-name")
     )
     )
 
@@ -287,7 +281,7 @@
   }
   </div>
 
-  <div class="govuk-!-margin-top-9">
+  <div class="govuk-form-group" id="liability-dates-section">
 
     <h2 id="dates-of-liability-header" class="govuk-heading-m">@messages("ated.property-details-summary.table.dates-of-liability.header")</h2>
 
@@ -321,11 +315,11 @@
     }
   </div>
 
-  <div class="govuk-form-group govuk-!-margin-top-9">
+  <div class="govuk-form-group" id="avoidance-scheme-section">
   @changeLiability.period match {
     case Some(p) if (p.taxAvoidanceScheme.isEmpty && p.taxAvoidancePromoterReference.isEmpty) => {
-      <div class="grid-wrapper row-border">
-        <h2 id="avoidance-scheme-header-not-provided" class="govuk-heading-m">@messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.header")</h2>
+    <div class="govuk-form-group">
+      <h2 id="avoidance-scheme-header-not-provided" class="govuk-heading-m">@messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.header")</h2>
 
         @govukSummaryList(SummaryList(
           rows = Seq(
@@ -344,13 +338,13 @@
               ))
             )
           ),
-          attributes = Map("id" -> "avoidance-scheme-label")
+          attributes = Map("id" -> "avoidance-scheme-not-provided")
         ))
       </div>
     }
     case Some(p) if (p.taxAvoidanceScheme.isDefined && p.taxAvoidancePromoterReference.isDefined) => {
 
-      <div class="grid-wrapper govuk-!-margin-top-9">
+      <div class="govuk-form-group">
         <h2 id="avoidance-scheme-header" class="govuk-heading-m">@messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.header")</h2>
       </div>
 
@@ -374,7 +368,7 @@
             ))
           )
         ),
-        attributes = Map("id" -> "avoidance-scheme-label")
+        attributes = Map("id" -> "avoidance-scheme")
       ))
       @govukSummaryList(SummaryList(
         rows = Seq(
@@ -399,7 +393,9 @@
       ))
     }
     case _ => {
-      <h2 id="avoidance-scheme-header-incomplete" class="govuk-heading-m govuk-!-margin-top-9">@messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.header")</h2>
+      <div class="govuk-from-group">
+        <h2 id="avoidance-scheme-header-incomplete" class="govuk-heading-m">@messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.header")</h2>
+      </div>
       @govukSummaryList(SummaryList(
         rows = Seq(
           SummaryListRow(
@@ -422,10 +418,9 @@
   }
   </div>
 
-  <div class="govuk-form-group govuk-!-margin-top-9">
-    <div class="grid-wrapper">
-      <h2 id="supporting-info-header" class="govuk-heading-m">@messages("ated.property-details-summary.table.supporting-info.header")</h2>
-    </div>
+  <div class="govuk-form-group" id="supporting-info-section">
+    <h2 id="supporting-info-header" class="govuk-heading-m">@messages("ated.property-details-summary.table.supporting-info.header")</h2>
+
     @govukSummaryList(SummaryList(
       rows = Seq(
         SummaryListRow(
@@ -446,12 +441,12 @@
           ))
         )
       ),
-      attributes = Map("id" -> "additional-information-label")
+      attributes = Map("id" -> "additional-information")
     ))
   </div>
 
 
-  <div class="govuk-form-group govuk-!-margin-top-9">
+  <div class="govuk-form-group" id="return-status-section">
     <h2 id="return-status-header" class="govuk-heading-m">@messages("ated.edit-liability.summary.bank-details.return-status.header")</h2>
 
     @govukSummaryList(SummaryList(
@@ -465,7 +460,7 @@
           )
         )
       ),
-      attributes = Map("id" -> "return-status-label")
+      attributes = Map("id" -> "return-status")
     ))
 
   </div>

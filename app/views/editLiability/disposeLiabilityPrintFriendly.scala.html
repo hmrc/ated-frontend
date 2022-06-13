@@ -41,93 +41,93 @@
     periodEndDate(disposeLiability.formBundleReturn.periodKey.toInt).toString(messages("ated.date-format")))
   </p>
 
-  <div class="govuk-section-break govuk-section-break--visible">
-      <h1 class="govuk-heading-m ated-two-thirds td-height" id="edit-liability-header">@messages("ated.property-details-summary.table.property-details.header")</h1>
-  </div>
-
   <table id="property-summary" class="govuk-table">
     <tbody class="govuk-table__body">
 
-  <tr class="govuk-table__row">
-      <th scope="row" id="property-address-label"  class="govuk-table__header">@messages("ated.property-details-summary.table.property-details.address.label")</th>
-      <td id="property-address-value"  class="govuk-table__cell">
-        <span id="address-line-1">@disposeLiability.formBundleReturn.propertyDetails.address.addressLine1</span>,<br/>
-        <span id="address-line-2">@disposeLiability.formBundleReturn.propertyDetails.address.addressLine2</span>
-        @if(disposeLiability.formBundleReturn.propertyDetails.address.postalCode.isDefined){,<br/>
-          <span id="address-postcode">@disposeLiability.formBundleReturn.propertyDetails.address.postalCode</span>}
-      </td>
-    </tr>
+        <tr class="govuk-table__row">
+            <th colspan="2" scope="row" class="govuk-table__header govuk-!-font-size-24 govuk-!-padding-top-9" id="edit-liability-header">@messages("ated.property-details-summary.table.property-details.header")</th>
+        </tr>
 
-    <tr class="govuk-table__row">
-      <th scope="row" id="property-title-disposal-date-label" class="govuk-table__header">@messages("ated.dispose-property.summary.disposal-date-label")</th>
-      <td class="govuk-table__cell" id="property-title-disposal-date">@disposeLiability.disposeLiability.flatMap(x => x.dateOfDisposal.map(y => y.toString(messages("ated.date-format"))))</td>
-    </tr>
+        <tr class="govuk-table__row">
+            <th scope="row" id="property-address-label"  class="govuk-table__header">@messages("ated.property-details-summary.table.property-details.address.label")</th>
+            <td id="property-address-value"  class="govuk-table__cell">
+                <span id="address-line-1">@disposeLiability.formBundleReturn.propertyDetails.address.addressLine1</span>,<br/>
+                <span id="address-line-2">@disposeLiability.formBundleReturn.propertyDetails.address.addressLine2</span>
+                @if(disposeLiability.formBundleReturn.propertyDetails.address.postalCode.isDefined){,<br/>
+                <span id="address-postcode">@disposeLiability.formBundleReturn.propertyDetails.address.postalCode</span>}
+            </td>
+        </tr>
+
+        <tr class="govuk-table__row">
+            <th scope="row" id="property-title-disposal-date-label" class="govuk-table__header">@messages("ated.dispose-property.summary.disposal-date-label")</th>
+            <td class="govuk-table__cell" id="property-title-disposal-date">@disposeLiability.disposeLiability.flatMap(x => x.dateOfDisposal.map(y => y.toString(messages("ated.date-format"))))</td>
+        </tr>
+    </tbody>
+
 
     @if(disposeLiability.bankDetails.exists(_.hasBankDetails)){
-    <tr class="govuk-table__row">
-      <th scope="row" class="govuk-table__header" id="bank-details-header">@messages("ated.edit-liability.summary.bank-details.header")</th>
-      <td class="govuk-table__cell">
-      </td>
-    </tr>
+    <tbody class="govuk-table__body">
+        <tr class="govuk-table__row">
+            <th colspan="2" scope="row" class="govuk-table__header govuk-!-font-size-24 govuk-!-padding-top-9" id="bank-details-header">@messages("ated.edit-liability.summary.bank-details.header")</th>
+        </tr>
 
-      @if(disposeLiability.bankDetails.flatMap(_.bankDetails.flatMap(_.hasUKBankAccount)).contains(true)){
-    <tr class="govuk-table__row">
-      <th id="type-of-account-label" scope="row" class="govuk-table__header">@messages("ated.edit-liability.summary.bank-details.type-of-account")</th>
-      <td class="govuk-table__cell" id="type-of-account-value">@messages("ated.label-bank-account-type.uk")</td>
-    </tr>
+        @if(disposeLiability.bankDetails.flatMap(_.bankDetails.flatMap(_.hasUKBankAccount)).contains(true)){
+            <tr class="govuk-table__row">
+              <th id="type-of-account-label" scope="row" class="govuk-table__header">@messages("ated.edit-liability.summary.bank-details.type-of-account")</th>
+              <td class="govuk-table__cell" id="type-of-account-value">@messages("ated.label-bank-account-type.uk")</td>
+            </tr>
 
-    <tr class="govuk-table__row">
-      <th id="account-holder-name-label" scope="row" class="govuk-table__header">@messages("ated.edit-liability.summary.bank-details.account-holder-name")</th>
-      <td class="govuk-table__cell" id="account-holder-name-value">@disposeLiability.bankDetails.flatMap(_.bankDetails.map(_.accountName))</td>
-    </tr>
+            <tr class="govuk-table__row">
+              <th id="account-holder-name-label" scope="row" class="govuk-table__header">@messages("ated.edit-liability.summary.bank-details.account-holder-name")</th>
+              <td class="govuk-table__cell" id="account-holder-name-value">@disposeLiability.bankDetails.flatMap(_.bankDetails.map(_.accountName))</td>
+            </tr>
 
-    <tr class="govuk-table__row">
-      <th id="account-number-label" scope="row" class="govuk-table__header">@messages("ated.edit-liability.summary.bank-details.account-number")</th>
-      <td class="govuk-table__cell" id="account-number-value">@disposeLiability.bankDetails.flatMap(_.bankDetails.map(_.accountNumber))</td>
-    </tr>
+            <tr class="govuk-table__row">
+              <th id="account-number-label" scope="row" class="govuk-table__header">@messages("ated.edit-liability.summary.bank-details.account-number")</th>
+              <td class="govuk-table__cell" id="account-number-value">@disposeLiability.bankDetails.flatMap(_.bankDetails.map(_.accountNumber))</td>
+            </tr>
 
-    <tr class="govuk-table__row">
-      <th id="sort-code-label" scope="row" class="govuk-table__header">@messages("ated.edit-liability.summary.bank-details.sort-code")</th>
-      <td class="govuk-table__cell" id="sort-code-value">@disposeLiability.bankDetails.flatMap(_.bankDetails.map(_.sortCode))</td>
-    </tr>
+            <tr class="govuk-table__row">
+              <th id="sort-code-label" scope="row" class="govuk-table__header">@messages("ated.edit-liability.summary.bank-details.sort-code")</th>
+              <td class="govuk-table__cell" id="sort-code-value">@disposeLiability.bankDetails.flatMap(_.bankDetails.map(_.sortCode))</td>
+            </tr>
 
-      }else {
-    <tr class="govuk-table__row">
-      <th id="type-of-account-label" scope="row" class="govuk-table__header">@messages("ated.edit-liability.summary.bank-details.type-of-account")</th>
-      <td class="govuk-table__cell" id="type-of-account-value">@messages("ated.label-bank-account-type.overseas")</td>
-    </tr>
+        }else {
+            <tr class="govuk-table__row">
+              <th id="type-of-account-label" scope="row" class="govuk-table__header">@messages("ated.edit-liability.summary.bank-details.type-of-account")</th>
+              <td class="govuk-table__cell" id="type-of-account-value">@messages("ated.label-bank-account-type.overseas")</td>
+            </tr>
 
-    <tr class="govuk-table__row">
-      <th id="account-holder-name-label" scope="row" class="govuk-table__header">@messages("ated.edit-liability.summary.bank-details.account-holder-name")</th>
-      <td class="govuk-table__cell" id="account-holder-name-value">@disposeLiability.bankDetails.flatMap(_.bankDetails.map(_.accountName))</td>
-    </tr>
+            <tr class="govuk-table__row">
+              <th id="account-holder-name-label" scope="row" class="govuk-table__header">@messages("ated.edit-liability.summary.bank-details.account-holder-name")</th>
+              <td class="govuk-table__cell" id="account-holder-name-value">@disposeLiability.bankDetails.flatMap(_.bankDetails.map(_.accountName))</td>
+            </tr>
 
-    <tr class="govuk-table__row">
-      <th id="account-number-label" scope="row" class="govuk-table__header">@messages("ated.edit-liability.summary.bank-details.iban")</th>
-      <td class="govuk-table__cell" id="account-number-value">@disposeLiability.bankDetails.flatMap(_.bankDetails.map(_.iban))</td>
-    </tr>
+            <tr class="govuk-table__row">
+              <th id="account-number-label" scope="row" class="govuk-table__header">@messages("ated.edit-liability.summary.bank-details.iban")</th>
+              <td class="govuk-table__cell" id="account-number-value">@disposeLiability.bankDetails.flatMap(_.bankDetails.map(_.iban))</td>
+            </tr>
 
-    <tr class="govuk-table__row">
-      <th id="sort-code-label" scope="row" class="govuk-table__header">@messages("ated.edit-liability.summary.bank-details.bic-swift-code")</th>
-      <td class="govuk-table__cell" id="sort-code-value">@disposeLiability.bankDetails.flatMap(_.bankDetails.map(_.bicSwiftCode))</td>
-    </tr>
-      }
-    }
+            <tr class="govuk-table__row">
+              <th id="sort-code-label" scope="row" class="govuk-table__header">@messages("ated.edit-liability.summary.bank-details.bic-swift-code")</th>
+              <td class="govuk-table__cell" id="sort-code-value">@disposeLiability.bankDetails.flatMap(_.bankDetails.map(_.bicSwiftCode))</td>
+            </tr>
+              }
+        }
+    </tbody>
+
+    <tbody class="govuk-table__body">
+        <tr class="govuk-table__row">
+          <th colspan="2" scope="row" class="govuk-table__header govuk-!-font-size-24 govuk-!-padding-top-9" id="return-status-header">@messages("ated.edit-liability.summary.bank-details.return-status.header")</th>
+        </tr>
+
+        <tr class="govuk-table__row">
+          <th scope="row" class="govuk-table__header" id="return-status-label">@messages("ated.edit-liability.summary.bank-details.return-status.label")</th>
+          <td class="govuk-table__cell" id="return-status-value">@messages("ated.property-details-summary.status.text")</td>
+        </tr>
     </tbody>
   </table>
-
-  <table>
-  <tbody>
-      <div class="govuk-section-break govuk-section-break--visible">
-        <h1 class="govuk-heading-m ated-two-thirds td-height" id="return-status-header">@messages("ated.edit-liability.summary.bank-details.return-status.header")</h1>
-      </div>
-
-    <tr>
-      <th scope="row" class="govuk-table__header" id="return-status-label">@messages("ated.edit-liability.summary.bank-details.return-status.label")</th>
-      <td class="govuk-table__cell" id="return-status-value">@messages("ated.property-details-summary.status.text")</td>
-    </tr>
-    </tbody>
-  </table>
+  <div class="govuk-!-padding-bottom-9"></div>
 
   @if(disposeLiability.calculated.isDefined) {
     <p class="govuk-body" id="ated-charge-text">
