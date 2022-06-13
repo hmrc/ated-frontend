@@ -20,29 +20,32 @@ import config.ApplicationConfig
 import forms.BankDetailForms._
 import models.StandardAuthRetrievals
 import org.jsoup.Jsoup
-import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
+import org.scalatest.featurespec.AnyFeatureSpec
+import org.scalatest.{BeforeAndAfterEach, GivenWhenThen}
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Messages, MessagesApi}
+import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import play.twirl.api.Html
 import testhelpers.MockAuthUtil
+import views.html.editLiability.bankDetails
 
-class bankDetailsSpec extends FeatureSpec with GuiceOneAppPerSuite with MockitoSugar with BeforeAndAfterEach
+class bankDetailsSpec extends AnyFeatureSpec with GuiceOneAppPerSuite with MockitoSugar with BeforeAndAfterEach
   with GivenWhenThen with MockAuthUtil {
 
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
-  implicit val request = FakeRequest()
+  implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
 
-  val injectedViewInstance = app.injector.instanceOf[views.html.editLiability.bankDetails]
+  val injectedViewInstance: bankDetails = app.injector.instanceOf[views.html.editLiability.bankDetails]
 
-  feature("The user can whether they have bank details") {
+  Feature("The user can whether they have bank details") {
 
     info("as a client i want change whether I send my bank details")
 
-    scenario("allow indicating bank details status") {
+    Scenario("allow indicating bank details status") {
 
       Given("the client is prompted to add thier bank details")
       When("The user views the page")
@@ -53,20 +56,23 @@ class bankDetailsSpec extends FeatureSpec with GuiceOneAppPerSuite with MockitoS
 
       Then("The header should match - Is the bank account in the UK?")
       assert(document.title() === "Is the bank account in the UK? - GOV.UK")
-      assert(document.select("h1").text === "Is the bank account in the UK?")
+      assert(document.select("h1").text.contains("Is the bank account in the UK?"))
 
       Then("The subheader should be - Change return")
-      assert(document.getElementById("pre-heading").text() === "This section is: Change return")
+      assert(document.getElementsByTag("h1").text.contains("This section is Change return"))
 
       Then("The fields should have the correct titles")
       And("No data is populated")
 
-      assert(document.getElementById("hasUKBankAccount-id").text() === "Is the bank account in the UK? Yes No")
+      assert(document.getElementById("hasUKBankAccount").text() === "")
+      assert(document.getElementById("hasUKBankAccount-2").text() === "")
+      assert(document.getElementsByAttributeValue("for", "hasUKBankAccount").text() contains "Yes")
+      assert(document.getElementsByAttributeValue("for", "hasUKBankAccount-2").text() contains "No")
       assert(document.getElementById("name-of-person").text() === "Name of bank account holder")
 
-      assert(document.getElementById("hidden-bank-details-uk").text() === "Account number Sort code First two numbers Second two numbers Third two numbers")
+      assert(document.getElementById("hidden-bank-details-uk").text() === "Account number Sort code")
       assert(document.getElementById("account-number").text() === "Account number")
-      assert(document.getElementById("sort-code").text() === "Sort code First two numbers Second two numbers Third two numbers")
+      assert(document.getElementById("sort-code").text() === "Sort code")
       assert(document.getElementById("accountNumber").attr("type") === "number")
 
       assert(document.getElementById("hidden-bank-details-non-uk").text() === "IBAN SWIFT code")
@@ -77,8 +83,8 @@ class bankDetailsSpec extends FeatureSpec with GuiceOneAppPerSuite with MockitoS
       assert(document.getElementById("submit").text() === "Save and continue")
 
       Then("The back link is correct")
-      assert(document.getElementById("backLinkHref").text === "Back")
-      assert(document.getElementById("backLinkHref").attr("href") === "http://backLink")
+      assert(document.getElementsByClass("govuk-back-link").text === "Back")
+      assert(document.getElementsByClass("govuk-back-link").attr("href") === "http://backLink")
     }
   }
 

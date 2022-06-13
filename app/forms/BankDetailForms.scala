@@ -26,28 +26,30 @@ import scala.util.Try
 
 object BankDetailForms {
 
-  val TWO = 2
+  val SIX = 6
 
   val sortCodeTuple: Mapping[Option[SortCode]] = sortCodeTupleOpt
 
-  //scalastyle:off cyclomatic.complexity
-  def sortCodeTupleOpt: Mapping[Option[SortCode]] = {
-    import SortCodeFields._
+  val sortCodeRegEx = """^[0-9]{2}\s?\-?\–?[0-9]{2}\s?\-?\–?[0-9]{2}$"""
 
-    tuple("firstElement" -> optional(text), "secondElement" -> optional(text), "thirdElement" -> optional(text))
-    .transform[Option[SortCode]](
-      {
-        case (Some(e1), Some(e2), Some(e3)) if isValid(e1) && isValid(e2) & isValid(e3) => Some(SortCode(e1, e2, e3))
-        case (a, b, c) => None
-      }, {
-        case Some(a) => (Some(a.firstElement), Some(a.secondElement), Some(a.thirdElement))
-        case _ => (None, None, None)
-      }
-    )
+  def sanitiseSortCode(sortCode: String): String = sortCode.replaceAll("""[\s\-–]""", "")
+
+  def sortCodeTupleOpt: Mapping[Option[SortCode]] = {
+
+    optional(text)
+      .transform[Option[SortCode]](
+        {
+          case Some(text) if text.matches(sortCodeRegEx) => Some(SortCode.fromString(sanitiseSortCode(text)))
+          case _ => None
+        }, {
+          case Some(a) => Some(sanitiseSortCode(a.toString))
+          case _ => None
+        }
+      )
   }
 
   object SortCodeFields {
-    def isValid(value: String): Boolean = value.length == TWO && Try(value.toInt).isSuccess
+    def isValid(value: String): Boolean = value.length == SIX && Try(value.toInt).isSuccess
   }
 
   implicit val bicSwiftFormat: Formatter[BicSwiftCode] = new Formatter[BicSwiftCode] {
@@ -68,12 +70,11 @@ object BankDetailForms {
     def unbind(key: String, value: Iban): Map[String, String] = Map(key -> value.toString)
   }
 
-
-  val hasBankDetailsForm = Form(mapping(
+  val hasBankDetailsForm: Form[HasBankDetails] = Form(mapping(
     "hasBankDetails" -> optional(boolean).verifying("ated.bank-details.error-key.hasBankDetails.empty", a => a.isDefined)
   )(HasBankDetails.apply)(HasBankDetails.unapply))
 
-  val bankDetailsForm = Form(mapping(
+  val bankDetailsForm: Form[BankDetails] = Form(mapping(
     "hasUKBankAccount" -> optional(boolean).verifying("ated.bank-details.error-key.hasUKBankAccount.empty", a => a.isDefined),
     "accountName" -> optional(text),
     "accountNumber" -> optional(text).verifying("ated.bank-details.error-key.accountNumber.max-len", a => a.size < 19),
@@ -118,14 +119,13 @@ object BankDetailForms {
     }
 
     def validateSortCode: Seq[Option[FormError]] = {
-      val sortCodeElement1 = bankDetails.data.get("sortCode.firstElement").map(_.trim)
-      val sortCodeElement2 = bankDetails.data.get("sortCode.secondElement").map(_.trim)
-      val sortCodeElement3 = bankDetails.data.get("sortCode.thirdElement").map(_.trim)
-      (sortCodeElement1, sortCodeElement2, sortCodeElement3) match {
-        case (Some(a), Some(b), Some(c)) if a.length > 0 && b.length > 0 && c.length > 0 =>
-          if (SortCodeFields.isValid(a) && SortCodeFields.isValid(b) & SortCodeFields.isValid(c)) Seq()
+      val sortCode = bankDetails.data.get("sortCode").map(x => sanitiseSortCode(x))
+
+      sortCode match {
+        case Some(a) if a.length > 0 =>
+          if (SortCodeFields.isValid(a)) Seq()
           else Seq(Some(FormError("sortCode", "ated.bank-details.error-key.sortCode.invalid")))
-        case (_, _, _) => Seq(Some(FormError("sortCode", "ated.bank-details.error-key.sortCode.empty")))
+        case _ => Seq(Some(FormError("sortCode", "ated.bank-details.error-key.sortCode.empty")))
       }
     }
 
@@ -145,12 +145,21 @@ object BankDetailForms {
     }
 
 
-    if (!bankDetails.hasErrors) {
+    val form = if (!bankDetails.hasErrors) {
       val formErrors = validate.flatten
       addErrorsToForm(bankDetails, formErrors)
     } else {
       bankDetails
     }
+    hasUKBankAccount.map(
+      if(_) {
+        val data = form.data.filterKeys(x => !(x == "iban" || x == "bicSwiftCode"))
+        form.bind(data)
+      } else {
+        val data = form.data.filterKeys(x => !(x == "accountNumber" || x == "sortCode"))
+        form.bind(data)
+      }
+    ).getOrElse(form)
   }
 
   private def addErrorsToForm[A](form: Form[A], formErrors: Seq[FormError]): Form[A] = {

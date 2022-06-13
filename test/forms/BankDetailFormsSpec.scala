@@ -30,9 +30,7 @@ class BankDetailFormsSpec extends PlaySpec with GuiceOneServerPerSuite {
   val validUkData: Map[String, String] = Map("hasUKBankAccount" -> "true",
       "accountName" -> "Account Name",
       "accountNumber" -> "12345678",
-      "sortCode.firstElement" -> "11",
-      "sortCode.secondElement" -> "22",
-      "sortCode.thirdElement" -> "33"
+      "sortCode" -> "112233"
     )
 
   val validNonUkData: Map[String, String] = Map("hasUKBankAccount" -> "false",
@@ -43,9 +41,7 @@ class BankDetailFormsSpec extends PlaySpec with GuiceOneServerPerSuite {
   val maxLengthUkData: Map[String, String] = Map("hasUKBankAccount" -> "true",
     "accountName" -> "Account Name"*20,
     "accountNumber" -> "12345678"*10,
-    "sortCode.firstElement" -> "11"*10,
-    "sortCode.secondElement" -> "22"*10,
-    "sortCode.thirdElement" -> "33"*10
+    "sortCode" -> "112233"*100
   )
 
   val maxLengthNonUkData: Map[String, String] = Map("hasUKBankAccount" -> "false",
@@ -57,9 +53,7 @@ class BankDetailFormsSpec extends PlaySpec with GuiceOneServerPerSuite {
   val emptyUkData: Map[String, String] = Map("hasUKBankAccount" -> "true",
     "accountName" -> "",
     "accountNumber" -> "",
-    "sortCode.firstElement" -> "",
-    "sortCode.secondElement" -> "",
-    "sortCode.thirdElement" -> ""
+    "sortCode" -> ""
   )
 
   val emptyNonUkData: Map[String, String] = Map("hasUKBankAccount" -> "false",

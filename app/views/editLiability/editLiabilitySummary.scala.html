@@ -14,348 +14,497 @@
  * limitations under the License.
  *@
 
+@import _root_.utils.PeriodUtils._
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
-@this(atedMain: atedMain, formHelper: FormWithCSRF)
-@(changeLiability: models.PropertyDetails, returnType: String, periods : Seq[models.LineItem], valuesToDisplay: Seq[models.LineItemValue], serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
+@import views.ViewUtils.titleBuilder
+@import views.html.helpers.formattedPounds
 
-@import uk.gov.hmrc.play.views.html.helpers._
-@import _root_.utils.PeriodUtils._
-@import views.html.helpers._
+@this(newMain: newMain,
+        formHelper: FormWithCSRF,
+        govukSummaryList: GovukSummaryList,
+        govukButton : GovukButton,
+        govukBackLink : GovukBackLink,
+        govukInsetText: GovukInsetText)
 
-@incomplete = {@messages("ated.label.incomplete")}
+@(changeLiability: models.PropertyDetails,
+        returnType: String,
+        periods : Seq[models.LineItem],
+        valuesToDisplay: Seq[models.LineItemValue],
+        serviceInfoContent: Html = HtmlFormat.empty,
+        backLink: Option[String]
+)(implicit authContext: StandardAuthRetrievals,
+        messages: Messages,
+        request: Request[AnyContent],
+        appConfig: ApplicationConfig)
 
-@atedMain(title = messages("ated.property-details-summary.title"),
-          serviceInfoContent = serviceInfoContent) {
-
-  @pageHeadersAndError(backLink, "pre-heading", messages("ated.property-details.pre-header-change"), messages("edit-liability-summary-header"), messages("ated.property-details-summary.header"))
-
-    <div class="form-group">
-      <p id="details-text">@messages("ated.property-details-summary.details-text", periodStartDate(changeLiability.periodKey).toString(messages("ated.date-format")), periodEndDate(changeLiability.periodKey).toString(messages("ated.date-format")))</p>
-    </div>
-
-  <div class="form-group" id="property-summary">
-    <div class="grid-wrapper">
-      <h2 id="edit-liability-header" class="heading-medium">@messages("ated.property-details-summary.table.property-details.header")</h2>
-    </div>
-
-    <div class="grid-wrapper row-border">
-      <div class="grid grid-2-6 cya-question">
-        <span class="heading-small" id="property-address-label">@messages("ated.property-details-summary.table.property-details.address.label")</span>
-      </div>
-
-      <div class="grid grid-1-2 cya-answer">
-        <span id="address-line-1">@changeLiability.addressProperty.line_1</span><br>
-        <span id="address-line-2">@changeLiability.addressProperty.line_2</span><br>
-        @if(changeLiability.addressProperty.line_3.isDefined){<span id="address-line-3">@changeLiability.addressProperty.line_3</span><br/>}
-        @if(changeLiability.addressProperty.line_4.isDefined){<span id="address-line-4">@changeLiability.addressProperty.line_4</span><br/>}
-        @if(changeLiability.addressProperty.postcode.isDefined){<span id="address-postcode">@changeLiability.addressProperty.postcode</span>}
-      </div>
-
-      <div class="grid grid-1-6 cya-change">
-        <a href="@controllers.propertyDetails.routes.PropertyDetailsAddressController.editFromSummary(changeLiability.id)" id="edit-property-address-details">
-          @messages("ated.edit") <span class="visuallyhidden">@messages("ated.property-details-summary.table.property-details.address.label")</span>
-        </a>
-      </div>
-    </div>
-
-    <div class="grid-wrapper row-border">
-      <div class="grid grid-2-6 cya-question">
-        <span id="property-title-number-label" class="heading-small">@messages("ated.property-details-summary.table.property-details.title-number.label")</span>
-      </div>
-
-      <div class="grid grid-1-2 cya-question">
-        <span id="property-title-number">@changeLiability.title.map(_.titleNumber).fold(messages("ated.property-details-summary.field-blank"))(x => if(x == "") messages("ated.property-details-summary.field-blank") else x)</span>
-      </div>
-
-      <div class="grid grid-1-6 cya-change">
-        <a href="@controllers.propertyDetails.routes.PropertyDetailsTitleController.editFromSummary(changeLiability.id)" id="edit-property-title-details">
-          @messages("ated.edit") <span class="visuallyhidden">@messages("ated.property-details-summary.table.property-details.title-number.label")</span>
-        </a>
-      </div>
-    </div>
-  </div>
-
-<div class="form-group">
-  <div class="grid-wrapper">
-    <h2 id="property-value-header" class="heading-medium">@messages("ated.property-details-summary.table.property-value.header")</h2>
-  </div>
-
-  @for((valueObj, index) <- valuesToDisplay.zipWithIndex) {
-  <div class="grid-wrapper row-border">
-    <div class="grid grid-2-6 cya-question">
-      <span id="property-value-label-@index" class="heading-small">@messages(getPeriodValueMessage(index, valuesToDisplay.size))</span>
-    </div>
-
-    <div class="grid grid-1-2 cya-answer">
-      <span id="property-value-value-@index">@formattedPounds(valueObj.propertyValue)</span>
-    </div>
-
-    <div class="grid grid-1-6 cya-change">
-      <a href="@controllers.editLiability.routes.EditLiabilityHasValueChangedController.editFromSummary(changeLiability.id.toString)" id="edit-property-value">
-        @messages("ated.edit") <span class="visuallyhidden">@messages(getPeriodValueMessage(index, valuesToDisplay.size))</span>
-      </a>
-    </div>
-  </div>
-
-  <div class="grid-wrapper row-border">
-    <div class="grid grid-2-6 cya-question">
-    <span id="property-date-of-valuation-label-@index" class="heading-small">@messages("ated.form-bundle.view.isValuedByAgent.message")</span>
-    </div>
-
-    @if(changeLiability.value.map(x => x.isValuedByAgent.getOrElse()).contains(true)) {
-    <div class="grid grid-1-2 cya-answer">
-      <span id="property-is-Valued-by-agent-yes-@index">@messages("ated.form-bundle.view.isValuedByAgent.yes")</span>
-    </div>
-    }else{
-    <div class="grid grid-1-2 cya-answer">
-      <span id="property-is-Valued-by-agent-no-@index">@messages("ated.form-bundle.view.isValuedByAgent.no")</span>
-    </div>
-    }
-
-    <div class="grid grid-1-6 cya-change">
-      <a href="@controllers.propertyDetails.routes.PropertyDetailsProfessionallyValuedController.view(changeLiability.id)" id="edit-property-professionally-valued-details">
-        @messages("ated.edit") <span class="visuallyhidden">@messages("ated.form-bundle.view.isValuedByAgent.message")</span>
-      </a>
-    </div>
-  </div>
-    }
-</div>
-
-  <div class="form-group">
-
-@if(changeLiability.bankDetails.map(_.hasBankDetails) == Some(true)){
-
-
-  <div class="grid-wrapper">
-    <div class="grid grid-2-6 cya-question">
-      <h2 id="bank-details-header" class="heading-medium">@messages("ated.edit-liability.summary.bank-details.header")</h2>
-    </div>
-
-    <div class="grid grid-1-2 cya-answer">
-    </div>
-
-    <div class="grid grid-1-6 cya-change">
-      <a href="@controllers.editLiability.routes.HasBankDetailsController.editFromSummary(changeLiability.id.toString)" id="edit-bank-details"> @messages("ated.edit") <span class="visuallyhidden">@messages("ated.edit-liability.summary.bank-details.header")</span>
-      </a>
-    </div>
-  </div>
-
-  <div class="grid-wrapper row-border">
-    <div class="grid grid-2-6 cya-question">
-      <span id="account-holder-name-label" class="heading-small">@messages("ated.edit-liability.summary.bank-details.account-holder-name")</span>
-    </div>
-
-    <div class="grid grid-1-2 cya-answer">
-      <span id="account-holder-name-value">@changeLiability.bankDetails.flatMap(_.bankDetails.map(_.accountName))</span>
-    </div>
-  </div>
-
-  @if(changeLiability.bankDetails.flatMap(_.bankDetails.flatMap(_.hasUKBankAccount)) == Some(true)){
-
-    <div class="grid-wrapper row-border">
-      <div class="grid grid-2-6 cya-question">
-        <span id="account-number-label" class="heading-small">@messages("ated.edit-liability.summary.bank-details.account-number")</span>
-      </div>
-
-      <div class="grid grid-1-2 cya-answer">
-        <span id="account-number-value">@changeLiability.bankDetails.flatMap(_.bankDetails.map(_.accountNumber))</span>
-      </div>
-    </div>
-
-    <div class="grid-wrapper row-border">
-      <div class="grid grid-2-6 cya-question">
-        <span id="sort-code-label" class="heading-small">@messages("ated.edit-liability.summary.bank-details.sort-code")</span>
-      </div>
-
-      <div class="grid grid-1-2 cya-answer">
-        <span id="sort-code-value">@changeLiability.bankDetails.flatMap(_.bankDetails.map(_.sortCode))</span>
-      </div>
-    </div>
-  } else {
-    <div class="grid-wrapper row-border">
-      <div class="grid grid-2-6 cya-question">
-        <span id="iban-label" class="heading-small">@messages("ated.edit-liability.summary.bank-details.iban")</span>
-      </div>
-
-      <div class="grid grid-1-2 cya-answer">
-        <span id="iban-value">@changeLiability.bankDetails.flatMap(_.bankDetails.map(_.iban))</span>
-      </div>
-    </div>
-
-  <div class="grid-wrapper row-border">
-    <div class="grid grid-2-6 cya-question">
-      <span id="bic-swift-code-label" class="heading-small">@messages("ated.edit-liability.summary.bank-details.bic-swift-code")</span>
-    </div>
-
-    <div class="grid grid-1-2 cya-answer">
-      <span id="bic-swift-code-value">@changeLiability.bankDetails.flatMap(_.bankDetails.map(_.bicSwiftCode))</span>
-    </div>
-  </div>
-  }
-  }
-</div>
-<div class="form-group">
-
-  <div class="grid-wrapper">
-    <div class="grid grid-1-3 cya-question">
-      <h2 id="dates-of-liability-header" class="heading-medium">@messages("ated.property-details-summary.table.dates-of-liability.header")</h2>
-    </div>
-  </div>
-    @for((period, index) <- periods.zipWithIndex) {
-    <div class="grid-wrapper row-border">
-      <div class="grid grid-2-6 cya-question">
-        <span id="return-type-@index" class="heading-small">@messages((period.description).getOrElse(""))</span>
-      </div>
-
-      <div class="grid grid-1-2 cya-answer">
-        <span id="period-@index">@messages("ated.property-details-summary.table.period.text", period.startDate.toString(messages("ated.date-format")), period.endDate.toString(messages("ated.date-format")))</span>
-      </div>
-
-      <div class="grid grid-1-6 cya-change">
-        <a href="@controllers.propertyDetails.routes.IsFullTaxPeriodController.editFromSummary(changeLiability.id)" id="edit-dates-of-liablity-@index">@messages("ated.edit") <span class="visuallyhidden">@period.description</span>
-        </a>
-      </div>
-    </div>
-    }
-</div>
-
-<div class="form-group">
-  @changeLiability.period match {
-  case Some(p) if(p.taxAvoidanceScheme.isEmpty && p.taxAvoidancePromoterReference.isEmpty) => {
-  <div class="grid-wrapper row-border">
-    <div class="grid grid-1-3">
-      <h2 id="avoidance-scheme-header-not-provided" class="heading-medium grid grid-1-3">@messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.header")</h2>
-    </div>
-
-    <div class="grid grid-1-2 cya-header-ans" id="avoidance-scheme-header-value-not-provided">
-      @messages("ated.property-details-summary.field-blank")
-
-    </div>
-    <div class="grid grid-1-6 cya-header-change">
-      <a href="@controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceController.editFromSummary(changeLiability.id)" id="edit-avoidance-scheme-header-not-provided">@messages("ated.edit") <span class="visuallyhidden">@messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.label")</span>
-      </a>
-    </div>
-  </div>
-  }
-  case Some(p) if(p.taxAvoidanceScheme.isDefined && p.taxAvoidancePromoterReference.isDefined) => {
-  <div class="grid-wrapper">
-    <h2 id="avoidance-scheme-header" class="heading-medium grid grid-1-3">@messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.header")</h2>
-  </div>
-  <div class="grid-wrapper row-border">
-    <div class="grid grid-2-6 cya-question">
-      <span id="avoidance-scheme-label" class="heading-small">@messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.label")</span>
-    </div>
-    <div class="grid grid-1-2 cya-answer" id="avoidance-scheme-value">@p.taxAvoidanceScheme.getOrElse("")</div>
-    <div class="grid grid-1-6 cya-change">
-      <a href="@controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceController.editFromSummary(changeLiability.id)" id="edit-avoidance-scheme">@messages("ated.edit") <span class="visuallyhidden">@messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.label")</span>
-      </a>
-    </div>
-  </div>
-
-  <div class="grid-wrapper row-border">
-    <div class="grid grid-2-6 cya-question">
-      <span id="promoter-reference-label" class="heading-small">@messages("ated.property-details-summary.table.property-ated-details.promoter-reference.label")</span>
-    </div>
-    <div class="grid grid-1-2 cya-answer" id="prom-scheme-value">@p.taxAvoidancePromoterReference.getOrElse("")</div>
-    <div class="grid grid-1-6 cya-change">
-      <a href="@controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceController.editFromSummary(changeLiability.id)" id="edit-promoter-scheme">@messages("ated.edit") <span class="visuallyhidden">@messages("ated.property-details-summary.table.property-ated-details.promoter-reference.label")</span>
-      </a>
-    </div>
-  </div>
-  }
-  case _ => {
-  <div class="grid-wrapper">
-    <h2 id="avoidance-scheme-header-incomplete" class="heading-medium grid grid-1-3">@messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.header")</h2>
-    <div class="status grid grid-1-2 cya-header-ans" id="avoidance-scheme-header-value-incomplete">@incomplete</div>
-    <div class="grid grid-1-6 cya-header-change">
-      <a href="@controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceController.editFromSummary(changeLiability.id)" id="edit-avoidance-scheme-header-incomplete">@messages("ated.edit") <span class="visuallyhidden">@messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.label")</span>
-      </a>
-    </div>
-  </div>
-  }
-  }
-</div>
-
-<div class="form-group">
-  <div class="grid-wrapper">
-      <h2 id="supporting-info-header" class="heading-medium">@messages("ated.property-details-summary.table.supporting-info.header")</h2>
-  </div>
-
-  <div class="grid-wrapper row-border">
-    <div class="grid grid-2-6 cya-question">
-      <span id="additional-information-label" class="heading-small">@messages("ated.property-details-summary.table.property-ated-details.additional-information.label")</span>
-    </div>
-
-    <div class="grid grid-1-2 cya-answer">
-      <span id="additional-information-value">
-        @changeLiability.period.map(v => v.supportingInfo.fold(messages("ated.property-details-summary.field-blank"))(x => if(x == "") messages("ated.property-details-summary.field-blank") else x))
-      </span>
-    </div>
-
-    <div class="grid grid-1-6 cya-change">
-      <a href="@controllers.propertyDetails.routes.PropertyDetailsSupportingInfoController.editFromSummary(changeLiability.id)" id="edit-supporting-details">@messages("ated.edit") <span class="visuallyhidden">@messages("ated.property-details-summary.table.property-ated-details.additional-information.label")</span></a>
-    </div>
-  </div>
-</div>
-
-<div class="form-group">
-  <div class="grid-wrapper">
-    <div class="grid grid-2-6 cya-question">
-      <h2 id="return-status-header" class="heading-medium">@messages("ated.edit-liability.summary.bank-details.return-status.header")</h2>
-    </div>
-  </div>
-
-  <div class="grid-wrapper row-border">
-    <div class="grid grid-2-6 cya-question">
-      <span id="return-status-label" class="heading-small">@messages("ated.property-details-summary.table.property-ated-details.return-status.label")</span>
-    </div>
-
-    <div id="return-status-value" class="grid grid-1-2 cya-answer">
-      <span class="visuallyhidden">@messages("ated.edit-liability.summary.bank-details.return-status.header") </span>@messages("ated.property-details-summary.status.text")
-    </div>
-
-    <div class="grid grid-1-6 cya-change">
-    </div>
-  </div>
-</div>
-
-
-<div class="form-group">
-  @if(returnType == "F"){
-  <p id="ated-charge-text-further">@messages("ated.property-details-summary.table.revised-ated-charge-further.text")</p>
-  }
-
-  @if(returnType == "A"){
-  <p id="ated-charge-text-amended">@messages("ated.property-details-summary.table.revised-ated-charge-amended.text")</p>
-  }
-
-  @if(returnType == "C"){
-  <p id="ated-charge-text-changed">@messages("ated.property-details-summary.table.revised-ated-charge-changed.text")</p>
-  }
-
-  <span id="ated-charge-value" class="heading-xlarge">
-    @changeLiability.calculated.flatMap(x=>x.liabilityAmount.map(y=>formattedPounds(y)))
-  </span>
-
-</div>
-
-<div class="form-group"><span class="panel-indent">@messages("ated.property-details-summary.saved-draft.text")</span></div>
-
-<div class="form-group">
-  <a href="@controllers.editLiability.routes.EditLiabilitySummaryController.viewPrintFriendlyEditLiabilityReturn(changeLiability.id.toString)" id="print-friendly-edit-liability-link" target="_blank">
-    @messages("ated.edit-liability.summary.print.view")
-  </a>
-</div>
-
-<div class="form-group">
-  <a href="@controllers.routes.AccountSummaryController.view" id="saved-returns-link">@messages("ated.property-details-summary.saved-returns.link.text")</a>
-</div>
-
-@formHelper(action=controllers.editLiability.routes.EditLiabilitySummaryController.submit(changeLiability.id.toString)) {
-
-<button class="button" id="submit" type="submit">@messages("ated.continue")</button>
-
+@incomplete = {
+  <strong class="govuk-tag govuk-tag--red">@messages("ated.label.incomplete")</strong>
 }
 
+@backLinkHtml = {
+  @if(backLink.isDefined) {
+    @govukBackLink(BackLink(
+      href = backLink.get,
+      content = Text("Back")
+    ))
+  }
+}
+
+@summaryContent = {
+  <div>
+    <span id="address-line-1">@changeLiability.addressProperty.line_1</span><br>
+    <span id="address-line-2">@changeLiability.addressProperty.line_2</span><br>
+    @if(changeLiability.addressProperty.line_3.isDefined) {
+      <span id="address-line-3">@changeLiability.addressProperty.line_3</span>
+      <br/>
+    }
+    @if(changeLiability.addressProperty.line_4.isDefined) {
+      <span id="address-line-4">@changeLiability.addressProperty.line_4</span>
+      <br/>
+    }
+    @if(changeLiability.addressProperty.postcode.isDefined) {
+      <span id="address-postcode">@changeLiability.addressProperty.postcode</span>
+    }
+  </div>
+}
+
+@newMain(title = titleBuilder(messages("ated.property-details-summary.title")),
+  serviceInfoContent = serviceInfoContent) {
+
+  @backLinkHtml
+
+  <header>
+    <h1 id="edit-liability-summary-header" class="govuk-heading-xl">
+      <span class="govuk-caption-xl">
+        <span class="govuk-visually-hidden">
+        @messages("ated.screen-reader.section")
+        </span>
+        @messages("ated.property-details.pre-header-change")
+      </span>
+      @messages("ated.property-details-summary.header")
+    </h1>
+  </header>
+
+
+  <p id="details-text" class="govuk-body">@messages("ated.property-details-summary.details-text", periodStartDate(changeLiability.periodKey).toString(messages("ated.date-format")), periodEndDate(changeLiability.periodKey).toString(messages("ated.date-format")))</p>
+
+  <div class="govuk-form-group" id="property-summary-section">
+
+    <h2 id="edit-liability-header" class="govuk-heading-m">@messages("ated.property-details-summary.table.property-details.header")</h2>
+
+    @govukSummaryList(SummaryList(
+      rows = Seq(
+        SummaryListRow(
+          key = Key(
+            content = Text(messages("ated.property-details-summary.table.property-details.address.label"))
+          ),
+          value = Value(
+            content = HtmlContent(summaryContent)
+          ),
+          actions = Some(Actions(
+            items = Seq(
+              ActionItem(
+                href = controllers.propertyDetails.routes.PropertyDetailsAddressController.editFromSummary(changeLiability.id).url,
+                content = Text(messages("ated.edit")),
+                visuallyHiddenText = Some(messages("ated.property-details-summary.table.property-details.address.label"))
+              )
+            )
+          ))
+        )
+      ),
+      attributes = Map("id" -> "property-address")
+    ))
+
+    @govukSummaryList(SummaryList(
+      rows = Seq(
+        SummaryListRow(
+          key = Key(
+            content = Text(messages("ated.property-details-summary.table.property-details.title-number.label"))
+          ),
+          value = Value(
+            content = Text(changeLiability.title.map(_.titleNumber).fold(messages("ated.property-details-summary.field-blank"))(x => if(x == "") messages("ated.property-details-summary.field-blank") else x))
+          ),
+          actions = Some(Actions(
+            items = Seq(
+              ActionItem(
+                href = controllers.propertyDetails.routes.PropertyDetailsTitleController.editFromSummary(changeLiability.id).url,
+                content = Text(messages("ated.edit")),
+                visuallyHiddenText = Some(messages("ated.property-details-summary.table.property-details.title-number.label"))
+              )
+            )
+          ))
+        )
+      ),
+      attributes = Map("id" -> "property-title-number")
+    ))
+  </div>
+
+  <div class="govuk-form-group" id="property-value-section">
+
+    <h2 id="property-value-header" class="govuk-heading-m">@messages("ated.property-details-summary.table.property-value.header")</h2>
+
+    @for((valueObj, index) <- valuesToDisplay.zipWithIndex) {
+
+      @govukSummaryList(SummaryList(
+        rows = Seq(
+          SummaryListRow(
+            key = Key(
+              content = Text(messages(getPeriodValueMessage(index, valuesToDisplay.size)))
+            ),
+            value = Value(
+              content = HtmlContent(formattedPounds(valueObj.propertyValue))
+            ),
+            actions = Some(Actions(
+              items = Seq(
+                ActionItem(
+                  href = controllers.editLiability.routes.EditLiabilityHasValueChangedController.editFromSummary(changeLiability.id.toString).url,
+                  content = Text(messages("ated.edit")),
+                  visuallyHiddenText = Some(messages(getPeriodValueMessage(index, valuesToDisplay.size)))
+                )
+              )
+            ))
+          )
+        ),
+        attributes = Map("id" -> "property-value")
+      ))
+
+      @govukSummaryList(SummaryList(
+        rows = Seq(
+          SummaryListRow(
+            key = Key(
+              content = Text(messages("ated.form-bundle.view.isValuedByAgent.message"))
+            ),
+            value = Value {
+              if(changeLiability.value.map(x => x.isValuedByAgent.getOrElse()).contains(true)) {
+                Text(messages("ated.form-bundle.view.isValuedByAgent.yes"))
+              } else {
+                Text(messages("ated.form-bundle.view.isValuedByAgent.no"))
+              }
+            },
+            actions = Some(Actions(
+              items = Seq(
+                ActionItem(
+                  href = controllers.propertyDetails.routes.PropertyDetailsProfessionallyValuedController.view(changeLiability.id).url,
+                  content = Text(messages("ated.edit")),
+                  visuallyHiddenText = Some(messages("ated.form-bundle.view.isValuedByAgent.message"))
+                )
+              )
+            ))
+          )
+        ),
+        attributes = Map("id" -> "property-date-of-valuation")
+      ))
+    }
+  </div>
+
+  <div class="govuk-form-group" id="bank-details-section">
+  @if(changeLiability.bankDetails.map(_.hasBankDetails) == Some(true)) {
+
+    @govukSummaryList(SummaryList(
+      rows = Seq(
+        SummaryListRow(
+          key = Key(
+            content = Text(messages("ated.edit-liability.summary.bank-details.header")),
+            classes = "govuk-heading-m"
+
+          ),
+          actions = Some(Actions(
+            items = Seq(
+              ActionItem(
+                href = controllers.editLiability.routes.HasBankDetailsController.editFromSummary(changeLiability.id.toString).url,
+                content = Text(messages("ated.edit")),
+                visuallyHiddenText = Some(messages("ated.edit-liability.summary.bank-details.header"))
+              )
+            )
+          ))
+        ),
+        SummaryListRow(
+          key = Key(
+            content = Text(messages("ated.edit-liability.summary.bank-details.account-holder-name"))
+          ),
+          value = Value {
+            Text(changeLiability.bankDetails.flatMap(_.bankDetails.map(_.accountName)).flatten.getOrElse(""))
+          }
+        )
+      ),
+      attributes = Map("id" -> "account-holder-name")
+    )
+    )
+
+    @if(changeLiability.bankDetails.flatMap(_.bankDetails.flatMap(_.hasUKBankAccount)) == Some(true)) {
+
+      @govukSummaryList(SummaryList(
+        rows = Seq(
+          SummaryListRow(
+            key = Key(
+              content = Text(messages("ated.edit-liability.summary.bank-details.account-number"))
+            ),
+            value = Value(
+              Text(changeLiability.bankDetails.flatMap(_.bankDetails.map(_.accountNumber)).flatten.getOrElse(""))
+            )
+          ),
+          SummaryListRow(
+            key = Key(
+              content = Text(messages("ated.edit-liability.summary.bank-details.sort-code"))
+            ),
+            value = Value(
+              Text(changeLiability.bankDetails.flatMap(_.bankDetails.map(_.sortCode)).flatten.getOrElse("").toString)
+            )
+          )
+        )
+      )
+      )
+    } else {
+      @govukSummaryList(SummaryList(
+        rows = Seq(
+          SummaryListRow(
+            key = Key(
+              content = Text(messages("ated.edit-liability.summary.bank-details.iban"))
+            ),
+            value = Value(
+              Text(changeLiability.bankDetails.flatMap(_.bankDetails.map(_.iban)).flatten.getOrElse("").toString)
+            )
+          ),
+          SummaryListRow(
+            key = Key(
+              content = Text(messages("ated.edit-liability.summary.bank-details.bic-swift-code"))
+            ),
+            value = Value(
+              Text(changeLiability.bankDetails.flatMap(_.bankDetails.map(_.bicSwiftCode)).flatten.getOrElse("").toString)
+            )
+          )
+        )
+      )
+      )
+    }
+  }
+  </div>
+
+  <div class="govuk-form-group" id="liability-dates-section">
+
+    <h2 id="dates-of-liability-header" class="govuk-heading-m">@messages("ated.property-details-summary.table.dates-of-liability.header")</h2>
+
+    @for((period, index) <- periods.zipWithIndex) {
+
+      @govukSummaryList(SummaryList(
+        rows = Seq(
+          SummaryListRow(
+            key = Key(
+              content = Text(messages(period.description.getOrElse("")))
+            ),
+            value = Value(
+              content = Text(messages("ated.property-details-summary.table.period.text",
+                period.startDate.toString(messages("ated.date-format")),
+                period.endDate.toString(messages("ated.date-format"))
+              ))
+            ),
+            actions = Some(Actions(
+              items = Seq(
+                ActionItem(
+                  href = controllers.propertyDetails.routes.IsFullTaxPeriodController.editFromSummary(changeLiability.id).url,
+                  content = Text(messages("ated.edit")),
+                  visuallyHiddenText = period.description
+                )
+              )
+            ))
+          )
+        ),
+        attributes = Map("id" -> "return-type-0")
+      ))
+    }
+  </div>
+
+  <div class="govuk-form-group" id="avoidance-scheme-section">
+  @changeLiability.period match {
+    case Some(p) if (p.taxAvoidanceScheme.isEmpty && p.taxAvoidancePromoterReference.isEmpty) => {
+    <div class="govuk-form-group">
+      <h2 id="avoidance-scheme-header-not-provided" class="govuk-heading-m">@messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.header")</h2>
+
+        @govukSummaryList(SummaryList(
+          rows = Seq(
+            SummaryListRow(
+              value = Value(
+                content = Text(messages("ated.property-details-summary.field-blank"))
+              ),
+              actions = Some(Actions(
+                items = Seq(
+                  ActionItem(
+                    href = controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceController.editFromSummary(changeLiability.id).url,
+                    content = Text(messages("ated.edit")),
+                    visuallyHiddenText = Some(messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.label"))
+                  )
+                )
+              ))
+            )
+          ),
+          attributes = Map("id" -> "avoidance-scheme-not-provided")
+        ))
+      </div>
+    }
+    case Some(p) if (p.taxAvoidanceScheme.isDefined && p.taxAvoidancePromoterReference.isDefined) => {
+
+      <div class="govuk-form-group">
+        <h2 id="avoidance-scheme-header" class="govuk-heading-m">@messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.header")</h2>
+      </div>
+
+      @govukSummaryList(SummaryList(
+        rows = Seq(
+          SummaryListRow(
+            key = Key(
+              content = Text(messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.label"))
+            ),
+            value = Value(
+              content = Text(p.taxAvoidanceScheme.getOrElse(""))
+            ),
+            actions = Some(Actions(
+              items = Seq(
+                ActionItem(
+                  href = controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceController.editFromSummary(changeLiability.id).url,
+                  content = Text(messages("ated.edit")),
+                  visuallyHiddenText = Some(messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.label"))
+                )
+              )
+            ))
+          )
+        ),
+        attributes = Map("id" -> "avoidance-scheme")
+      ))
+      @govukSummaryList(SummaryList(
+        rows = Seq(
+          SummaryListRow(
+            key = Key(
+              content = Text(messages("ated.property-details-summary.table.property-ated-details.promoter-reference.label"))
+            ),
+            value = Value(
+              content = Text(p.taxAvoidancePromoterReference.getOrElse(""))
+            ),
+            actions = Some(Actions(
+              items = Seq(
+                ActionItem(
+                  href = controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceController.editFromSummary(changeLiability.id).url,
+                  content = Text(messages("ated.edit")),
+                  visuallyHiddenText = Some(messages("ated.property-details-summary.table.property-ated-details.promoter-reference.label"))
+                )
+              )
+            ))
+          )
+        )
+      ))
+    }
+    case _ => {
+      <div class="govuk-from-group">
+        <h2 id="avoidance-scheme-header-incomplete" class="govuk-heading-m">@messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.header")</h2>
+      </div>
+      @govukSummaryList(SummaryList(
+        rows = Seq(
+          SummaryListRow(
+            value = Value(
+              content = HtmlContent(incomplete)
+            ),
+            actions = Some(Actions(
+              items = Seq(
+                ActionItem(
+                  href = controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceController.editFromSummary(changeLiability.id).url,
+                  content = Text(messages("ated.edit")),
+                  visuallyHiddenText = Some(messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.label"))
+                )
+              )
+            ))
+          )
+        )
+      ))
+    }
+  }
+  </div>
+
+  <div class="govuk-form-group" id="supporting-info-section">
+    <h2 id="supporting-info-header" class="govuk-heading-m">@messages("ated.property-details-summary.table.supporting-info.header")</h2>
+
+    @govukSummaryList(SummaryList(
+      rows = Seq(
+        SummaryListRow(
+          key = Key(
+            content = Text(messages("ated.property-details-summary.table.property-ated-details.additional-information.label"))
+          ),
+          value = Value(
+            content = Text(changeLiability.period.map(v => v.supportingInfo.fold(messages("ated.property-details-summary.field-blank"))(x => if(x == "") messages("ated.property-details-summary.field-blank") else x)).getOrElse(""))
+          ),
+          actions = Some(Actions(
+            items = Seq(
+              ActionItem(
+                href = controllers.propertyDetails.routes.PropertyDetailsSupportingInfoController.editFromSummary(changeLiability.id).url,
+                content = Text(messages("ated.edit")),
+                visuallyHiddenText = Some(messages("ated.property-details-summary.table.property-ated-details.additional-information.label"))
+              )
+            )
+          ))
+        )
+      ),
+      attributes = Map("id" -> "additional-information")
+    ))
+  </div>
+
+
+  <div class="govuk-form-group" id="return-status-section">
+    <h2 id="return-status-header" class="govuk-heading-m">@messages("ated.edit-liability.summary.bank-details.return-status.header")</h2>
+
+    @govukSummaryList(SummaryList(
+      rows = Seq(
+        SummaryListRow(
+          key = Key(
+            content = Text(messages("ated.edit-liability.summary.bank-details.return-status.label"))
+          ),
+          value = Value(
+            content = Text(messages("ated.property-details-summary.status.text"))
+          )
+        )
+      ),
+      attributes = Map("id" -> "return-status")
+    ))
+
+  </div>
+
+
+  <div class="govuk-form-group">
+    @if(returnType == "F") {
+      <p id="ated-charge-text-further" class="govuk-body">@messages("ated.property-details-summary.table.revised-ated-charge-further.text")</p>
+    }
+
+    @if(returnType == "A") {
+      <p id="ated-charge-text-amended" class="govuk-body">@messages("ated.property-details-summary.table.revised-ated-charge-amended.text")</p>
+    }
+
+    @if(returnType == "C") {
+      <p id="ated-charge-text-changed" class="govuk-body">@messages("ated.property-details-summary.table.revised-ated-charge-changed.text")</p>
+    }
+
+    <span id="ated-charge-value" class="govuk-heading-xl">
+    @changeLiability.calculated.flatMap(x => x.liabilityAmount.map(y => formattedPounds(y)))
+    </span>
+
+  </div>
+
+  @govukInsetText(InsetText(
+    content = Text(messages("ated.property-details-summary.saved-draft.text"))
+  ))
+
+  <div class="govuk-form-group">
+    <a class="govuk-body govuk-link" href="@controllers.editLiability.routes.EditLiabilitySummaryController.viewPrintFriendlyEditLiabilityReturn(changeLiability.id.toString)" id="print-friendly-edit-liability-link" target="_blank">
+    @messages("ated.edit-liability.summary.print.view")
+    </a>
+  </div>
+
+  <div class="govuk-form-group">
+    <a class="govuk-body govuk-link" href="@controllers.routes.AccountSummaryController.view" id="saved-returns-link">@messages("ated.property-details-summary.saved-returns.link.text")</a>
+  </div>
+
+  @formHelper(action = controllers.editLiability.routes.EditLiabilitySummaryController.submit(changeLiability.id.toString)) {
+
+    @govukButton(Button(
+      content = Text(messages("ated.continue")),
+      attributes = Map("type" -> "submit", "id" -> "submit")
+    ))
+
+  }
 }

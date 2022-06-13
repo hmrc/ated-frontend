@@ -15,32 +15,42 @@
  *@
 
 @import config.ApplicationConfig
-@(submittedReturnResponse: Option[EditLiabilityReturnsResponseModel], returnType: String, organisationName: Option[String], paymentReference: Option[String], amountDueOrRefund: BigDecimal, liabilityAmount : BigDecimal)(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 @import views.html.helpers._
+
+@(submittedReturnResponse: Option[EditLiabilityReturnsResponseModel],
+        returnType: String,
+        organisationName: Option[String],
+        paymentReference: Option[String],
+        amountDueOrRefund: BigDecimal,
+        liabilityAmount : BigDecimal
+)(implicit authContext: StandardAuthRetrievals,
+        messages: Messages,
+        request: Request[AnyContent],
+        appConfig: ApplicationConfig)
 
 @printFriendly(messages("ated.relief-sent.title")) {
 
-<script src='@controllers.routes.Assets.versioned("javascript/printFriendly.js")'></script>
+ <script src='@controllers.routes.Assets.versioned("javascript/printFriendly.js")'></script>
 
-<h1 id="header">@messages("ated.edit-liability.sent.header.dispose")
-</h1>
+ <h1 id="header" class="govuk-heading-xl">@messages("ated.edit-liability.sent.header.dispose")
+ </h1>
 
-<h2 id="charges-heading">@messages("ated.edit-liabilty.sent.charges-heading")</h2>
+ <h2 id="charges-heading" class="govuk-heading-l">@messages("ated.edit-liabilty.sent.charges-heading")</h2>
 
-<p id="new-amount">@messages("ated.edit-liabilty.sent.new-amount")</p>
+ <p id="new-amount" class="govuk-body">@messages("ated.edit-liabilty.sent.new-amount")</p>
 
-<h3 id="already-paid-title" class="text-bold">@messages("ated.edit.liability.sent.amount-already-paid.title")</h3>
+ <h3 id="already-paid-title" class="govuk-heading-s">@messages("ated.edit.liability.sent.amount-already-paid.title")</h3>
 
-<p id="owe-you">@Html(messages("ated.edit.liability.sent.owe-you", formattedPounds(amountDueOrRefund.abs)))</p>
-<p id="repayments">@messages("ated.edit.liability.sent.repayments")</p>
+ <p id="owe-you" class="govuk-body">@Html(messages("ated.edit.liability.sent.owe-you", formattedPounds(amountDueOrRefund.abs)))</p>
+ <p id="repayments" class="govuk-body">@messages("ated.edit.liability.sent.repayments")</p>
 
-<h3 id="not-paid-title" class="text-bold">@messages("ated.edit.liability.sent.amount-not-paid.title")</h3>
+ <h3 id="not-paid-title" class="govuk-heading-s">@messages("ated.edit.liability.sent.amount-not-paid.title")</h3>
 
-<p id="you-owe">@Html(messages("ated.edit.liability.sent.you-owe", formattedPounds(liabilityAmount)))</p>
-<p id="payment-reference">@Html(messages("ated.edit-liabilty.sent.payment-reference", paymentReference.getOrElse("")))</p>
+ <p id="you-owe" class="govuk-body">@Html(messages("ated.edit.liability.sent.you-owe", formattedPounds(liabilityAmount)))</p>
+ <p id="payment-reference" class="govuk-body">@Html(messages("ated.edit-liabilty.sent.payment-reference", paymentReference.getOrElse("")))</p>
 
-<p id="liable-for">@Html(messages("ated.edit.liability.sent.liable-for-pf"))</p>
+ <p id="liable-for" class="govuk-body">@Html(messages("ated.edit.liability.sent.liable-for-pf"))</p>
 
-<p id="view-balance">@Html(messages("ated.edit-liabilty.sent.view-balance"))</p>
+ <p id="view-balance" class="govuk-body">@Html(messages("ated.edit-liabilty.sent.view-balance"))</p>
 
 }

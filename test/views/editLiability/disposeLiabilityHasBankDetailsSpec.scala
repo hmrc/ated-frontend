@@ -20,31 +20,34 @@ import config.ApplicationConfig
 import forms.BankDetailForms._
 import models.StandardAuthRetrievals
 import org.jsoup.Jsoup
-import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
+import org.scalatest.featurespec.AnyFeatureSpec
+import org.scalatest.{BeforeAndAfterEach, GivenWhenThen}
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Messages, MessagesApi}
+import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import play.twirl.api.Html
 import testhelpers.MockAuthUtil
+import views.html.editLiability.disposeLiabilityHasBankDetails
 
-class disposeLiabilityHasBankDetailsSpec extends FeatureSpec with GuiceOneAppPerSuite
+class disposeLiabilityHasBankDetailsSpec extends AnyFeatureSpec with GuiceOneAppPerSuite
   with MockitoSugar with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
 
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
-  implicit val request = FakeRequest()
+  implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
 
-  val injectedViewInstance = app.injector.instanceOf[views.html.editLiability.disposeLiabilityHasBankDetails]
+  val injectedViewInstance: disposeLiabilityHasBankDetails = app.injector.instanceOf[views.html.editLiability.disposeLiabilityHasBankDetails]
 
-  feature("The user can whether they have bank details") {
+  Feature("The user can whether they have bank details") {
 
     info("as a client i want change whether I send my bank details")
 
-    scenario("allow indicating bank details status") {
+    Scenario("allow indicating bank details status") {
 
-      Given("the client is prompted to add thier bank details")
+      Given("the client is prompted to add their bank details")
       When("The user views the page")
 
       val html = injectedViewInstance(hasBankDetailsForm, "1", Html(""), Some("http://backLink"))
@@ -53,23 +56,24 @@ class disposeLiabilityHasBankDetailsSpec extends FeatureSpec with GuiceOneAppPer
 
       Then("The header should match - Do you have the bank details for a repayment?")
       assert(document.title() === "Do you have a bank account where we could pay a refund? - GOV.UK")
-      assert(document.select("h1").text === "Do you have a bank account where we could pay a refund?")
+      assert(document.select("h1").text.contains("Do you have a bank account where we could pay a refund?"))
 
       Then("The subheader should be - Change return")
-      assert(document.getElementById("pre-heading").text() === "This section is: Change return")
+      assert(document.getElementsByClass("govuk-caption-xl").text() === "This section is Change return")
 
       Then("The date fields should have the correct titles")
       And("No data is populated")
-      assert(document.getElementById("hasBankDetails-id").text() === "Yes No")
-      assert(document.getElementById("hasBankDetails-true").text() === "")
-      assert(document.getElementById("hasBankDetails-false").text() === "")
+      assert(document.getElementsByAttributeValue("for", "hasBankDetails").text() === "Yes")
+      assert(document.getElementsByAttributeValue("for", "hasBankDetails-2").text() === "No")
+      assert(document.getElementById("hasBankDetails").text() === "")
+      assert(document.getElementById("hasBankDetails-2").text() === "")
 
       Then("The submit button should have the correct name")
       assert(document.getElementById("submit").text() === "Save and continue")
 
       Then("The back link is correct")
-      assert(document.getElementById("backLinkHref").text === "Back")
-      assert(document.getElementById("backLinkHref").attr("href") === "http://backLink")
+      assert(document.getElementsByClass("govuk-back-link").text === "Back")
+      assert(document.getElementsByClass("govuk-back-link").attr("href") === "http://backLink")
     }
   }
 
