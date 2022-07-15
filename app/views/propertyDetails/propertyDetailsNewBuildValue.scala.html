@@ -44,8 +44,8 @@
 @backLinkHtml = {
     @if(backLink.isDefined) {
         @govukBackLink(BackLink(
-        href = backLink.get,
-        content = Text("Back")
+            href = backLink.get,
+            content = Text("Back")
         ))
     }
 }
@@ -63,42 +63,33 @@
   </script>
 }
 
-
-@newMain(title = titleBuilder(messages("ated.property-details-value.newBuildValue.title",date.dayOfMonth().get().toString, intToMonth(date.monthOfYear().get()), date.year().get().toString)),
+@newMain(title = titleBuilder(messages("ated.property-details-value.newBuildValue.title",date.dayOfMonth().get().toString, intToMonth(date.monthOfYear().get()), date.year().get().toString), Some(propertyDetailsForm)),
 serviceInfoContent = serviceInfoContent,
 pageScripts = Some(pageScripts)) {
 
-@backLinkHtml
+    @backLinkHtml
 
-@if(propertyDetailsForm.errors.nonEmpty) {
-    @govukErrorSummary(ErrorSummary().withFormErrorsAsText(propertyDetailsForm))
-}
+    @if(propertyDetailsForm.errors.nonEmpty) {
+        @govukErrorSummary(ErrorSummary().withFormErrorsAsText(propertyDetailsForm))
+    }
 
-<header>
-    <h1 class="govuk-heading-l">
-        <span class="govuk-caption-l"><span class="govuk-visually-hidden">@messages("ated.screen-reader.section") </span>@messages(AtedUtils.getPropertyDetailsPreHeader(mode))</span>
-        @messages("ated.property-details-value.newBuildValue.header", date.dayOfMonth().get().toString, intToMonth(date.monthOfYear().get()), date.year().get().toString)
-    </h1>
-</header>
+    @formHelper(action = controllers.propertyDetails.routes.PropertyDetailsNewBuildValueController.save(id, periodKey, mode, date)) {
 
-@formHelper(action = controllers.propertyDetails.routes.PropertyDetailsNewBuildValueController.save(id, periodKey, mode, date)) {
+        @govukInput(Input(
+            classes = "govuk-input--width-10",
+            hint = Some(Hint(
+                content = Text(messages("ated.property-details-value.newBuildValue.hintText")))),
+            prefix = Some(PrefixOrSuffix(content = Text("£")))
+            ).withFormField(propertyDetailsForm("newBuildValue"))
+            .withHeadingAndSectionCaption(
+                heading = Text(messages("ated.property-details-value.newBuildValue.header", date.dayOfMonth().get().toString, intToMonth(date.monthOfYear().get()), date.year().get().toString)),
+                sectionCaption = Text(messages(AtedUtils.getPropertyDetailsPreHeader(mode)))
+        ))
 
-@govukInput(Input(
-    label = Label(
-    content = Text(messages("ated.property-details-value.newBuildValue.newBuildValueQuestion"))
-    ),
-    classes = "govuk-input--width-10",
-    hint = Some(Hint(content = Text(messages("ated.property-details-value.newBuildValue.hintText")))),
-    prefix = Some(PrefixOrSuffix(content = Text("£")))
-    ).withFormField(propertyDetailsForm("newBuildValue")
-))
-
-@govukButton(Button(
-content = Text(messages("ated.save-and-continue")),
-attributes = Map("id" -> "submit")
-))
-
-
-}
+        @govukButton(Button(
+            content = Text(messages("ated.save-and-continue")),
+            attributes = Map("id" -> "submit")
+        ))
+    }
 
 }

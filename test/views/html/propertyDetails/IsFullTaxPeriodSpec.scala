@@ -16,6 +16,7 @@
 
 package views.html.propertyDetails
 
+import builders.TitleBuilder
 import config.ApplicationConfig
 import forms.PropertyDetailsForms
 import models.StandardAuthRetrievals
@@ -26,7 +27,7 @@ import testhelpers.{AtedViewSpec, MockAuthUtil}
 
 class IsFullTaxPeriodSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil {
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
-  val injectedViewInstance = app.injector.instanceOf[views.html.propertyDetails.isFullTaxPeriod]
+  val injectedViewInstance: isFullTaxPeriod = app.injector.instanceOf[views.html.propertyDetails.isFullTaxPeriod]
 
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
   private val form = PropertyDetailsForms.isFullTaxPeriodForm.withError("isFullPeriod",
@@ -35,15 +36,15 @@ class IsFullTaxPeriodSpec extends AtedViewSpec with MockitoSugar with MockAuthUt
 
   "The property details full tax period view for a valid form" must {
     "have the correct page title" in {
-      doc.title mustBe (messages("ated.property-details-period.isFullPeriod.title") + " - GOV.UK")
+      doc.title mustBe TitleBuilder.buildErrorTitle (messages("ated.property-details-period.isFullPeriod.title"))
     }
 
     "have the correct header" in {
-      doc.title mustBe (messages("ated.property-details-period.isFullPeriod.header") + " - GOV.UK")
+      doc.getElementsByTag("h1").text must include (messages("ated.property-details-period.isFullPeriod.header"))
     }
 
     "have the correct pre heading" in {
-      doc.title(messages("ated.property-details.pre-header"))
+      doc.getElementsByClass("govuk-caption-xl").text mustBe "This section is Create return"
     }
 
     "have a backlink" in {
@@ -60,7 +61,7 @@ class IsFullTaxPeriodSpec extends AtedViewSpec with MockitoSugar with MockAuthUt
     }
 
     "have the correct errors" in {
-      doc.getElementsByClass("govuk-error-message").text() mustBe ("Error: " + messages("ated.property-details-period.isFullPeriod.error-field-name"))
+      doc.getElementById("isFullPeriod-error").text() mustBe ("Error: " + messages("ated.property-details-period.isFullPeriod.error-field-name"))
       doc.getElementsByClass("govuk-error-summary__list").text() mustBe messages("ated.property-details-period.isFullPeriod.error-field-name")
     }
   }

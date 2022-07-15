@@ -17,7 +17,6 @@
 package controllers.propertyDetails
 
 import java.util.UUID
-
 import builders.{PropertyDetailsBuilder, SessionBuilder}
 import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
@@ -41,6 +40,7 @@ import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.AtedConstants
 import views.html.BtaNavigationLinks
+import views.html.propertyDetails.propertyDetailsRevalued
 
 import scala.concurrent.Future
 
@@ -54,11 +54,11 @@ class PropertyDetailsRevaluedControllerSpec extends PlaySpec with GuiceOneServer
   val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
   val mockBackLinkCacheConnector: BackLinkCacheConnector = mock[BackLinkCacheConnector]
   val mockIsFullTaxPeriodController: IsFullTaxPeriodController = mock[IsFullTaxPeriodController]
-    val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
+  val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
-  val injectedViewInstance = app.injector.instanceOf[views.html.propertyDetails.propertyDetailsRevalued]
+  val injectedViewInstance: propertyDetailsRevalued = app.injector.instanceOf[views.html.propertyDetails.propertyDetailsRevalued]
 
   class Setup {
 
@@ -163,47 +163,59 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
 
       "Authorised users" must {
 
-        "show the chargeable property details view if we id and data" in new Setup {
+        "show the chargeable property details view if we have id and data" in new Setup {
           val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode")).copy(value = None)
           getDataWithAuthorisedUser("1", propertyDetails) {
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
-              assert(document.getElementsByTag("h1").text.contains("Has the property been revalued since the £40,000 or more change?"))
+              assert(document.getElementsByTag("h1").text contains "Has the property been revalued since the £40,000 or more change?")
+              assert(document.getElementsByClass("govuk-caption-xl").text === "This section is Create return")
               assert(document.getElementById("service-info-list").text() === "Home Manage account Messages Help and contact")
-              document.getElementById("isPropertyRevalued").text() contains "Yes No"
+              document.getElementsByAttributeValue("for", "isPropertyRevalued").text() must be ("Yes")
+              document.getElementsByAttributeValue("for", "isPropertyRevalued-2").text() must be ("No")
+              document.getElementById("revaluedValue").attr("type") must be("text")
+              document.getElementById("revaluedValue").attr("value") must be("")
+              document.select("#conditional-isPropertyRevalued > div:nth-child(1) > fieldset > legend").text() must be ("What date did you make the £40,000 change?")
               document.getElementsByAttributeValue("for","revaluedValue").text() must be("What is the new valuation of the property in GBP?")
-              document.getElementsByClass("govuk-input govuk-!-width-one-third").attr("type") must be("text")
-              document.getElementsByClass("govuk-fieldset__legend").text.contains("What date did you get the property revalued?")
-              document.getElementById("isPropertyRevalued").attr("checked") must be("")
-              document.getElementById("isPropertyRevalued-2").attr("checked") must be("")
+              document.select("#conditional-isPropertyRevalued > div:nth-child(3) > fieldset > legend").text() must be ("What date did you get the property revalued?")
+              document.getElementById("isPropertyRevalued").attr("value") must be("true")
+              document.getElementById("isPropertyRevalued-2").attr("value") must be("false")
+              document.getElementById("isPropertyRevalued").hasAttr("checked") must be(false)
+              document.getElementById("isPropertyRevalued-2").hasAttr("checked") must be(false)
+              document.getElementById("partAcqDispDate.day").attr("value") must be("")
+              document.getElementById("partAcqDispDate.month").attr("value") must be("")
+              document.getElementById("partAcqDispDate.year").attr("value") must be("")
               document.getElementById("revaluedDate.day").attr("value") must be("")
               document.getElementById("revaluedDate.month").attr("value") must be("")
               document.getElementById("revaluedDate.year").attr("value") must be("")
-
+              document.getElementById("submit").text() must be ("Save and continue")
           }
         }
 
-        "show the chargeable property details view if we id and data even with a propertyDetails value" in new Setup {
+        "show the chargeable property details view if we have id and data even with a propertyDetails value" in new Setup {
           val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
           getDataWithAuthorisedUser("1", propertyDetails) {
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
-              assert(document.getElementsByTag("h1").text.contains("Has the property been revalued since the £40,000 or more change?"))
-
-              document.getElementById("isPropertyRevalued").text() contains "Yes No"
+              assert(document.getElementsByTag("h1").text contains "Has the property been revalued since the £40,000 or more change?")
+              assert(document.getElementsByClass("govuk-caption-xl").text === "This section is Create return")
+              document.getElementsByAttributeValue("for", "isPropertyRevalued").text() must be ("Yes")
+              document.getElementsByAttributeValue("for", "isPropertyRevalued-2").text() must be ("No")
+              document.select("#conditional-isPropertyRevalued > div:nth-child(1) > fieldset > legend").text() must be ("What date did you make the £40,000 change?")
               document.getElementsByAttributeValue("for","revaluedValue").text() must be("What is the new valuation of the property in GBP?")
+              document.select("#conditional-isPropertyRevalued > div:nth-child(3) > fieldset > legend").text() must be ("What date did you get the property revalued?")
               document.getElementById("revaluedValue").attr("type") must be("text")
               document.getElementsByClass("govuk-fieldset__legend").text.contains("What date did you get the property revalued?")
-//              document.getElementById("isPropertyRevalued").getElementsByAttribute("value") must be("true")
-//              document.getElementById("isPropertyRevalued-2").getElementsByAttribute("value") must be("true")
-//              document.getElementById("isPropertyRevalued").attr("checked") must be("checked")
-//              document.getElementById("isPropertyRevalued-2").attr("checked") must be("")
+              document.getElementById("isPropertyRevalued").attr("value") must be("true")
+              document.getElementById("isPropertyRevalued-2").attr("value") must be("false")
+              document.getElementById("isPropertyRevalued").hasAttr("checked") must be(true)
+              document.getElementById("isPropertyRevalued-2").hasAttr("checked") must be(false)
               document.getElementById("revaluedDate.day").attr("value") must be("1")
               document.getElementById("revaluedDate.month").attr("value") must be("4")
               document.getElementById("revaluedDate.year").attr("value") must be("2019")
-
+              document.getElementById("submit").text() must be ("Save and continue")
           }
         }
       }

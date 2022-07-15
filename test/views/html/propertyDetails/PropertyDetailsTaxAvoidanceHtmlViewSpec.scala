@@ -25,11 +25,11 @@ import play.api.data.{Form, FormError}
 import play.twirl.api.Html
 import testhelpers.{AtedViewSpec, MockAuthUtil}
 
-class PropertyDetailsTaxAvoidanceHtmlViewSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil{
+class PropertyDetailsTaxAvoidanceHtmlViewSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil {
 
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
 
-  val injectedViewInstance = app.injector.instanceOf[views.html.propertyDetails.propertyDetailsTaxAvoidance]
+  val injectedViewInstance: propertyDetailsTaxAvoidance = app.injector.instanceOf[views.html.propertyDetails.propertyDetailsTaxAvoidance]
 
   private val form = PropertyDetailsForms.propertyDetailsTaxAvoidanceForm
     .withError("isTaxAvoidance", "ated.property-details-period.isTaxAvoidance.error-field-name")
@@ -40,13 +40,13 @@ class PropertyDetailsTaxAvoidanceHtmlViewSpec extends AtedViewSpec with MockitoS
   "The Property Details Professionally Valued View page" must {
 
     "have a the correct page title" in {
-      doc.title mustBe TitleBuilder.buildTitle(messages("ated.property-details-period.isTaxAvoidance.title"))
+      doc.title mustBe TitleBuilder.buildErrorTitle(messages("ated.property-details-period.isTaxAvoidance.title"))
     }
     "have the correct page header" in {
-      doc.title mustBe TitleBuilder.buildTitle(messages("ated.property-details-period.isTaxAvoidance.header"))
+      doc.getElementsByTag("h1").text() must include(messages("ated.property-details-period.isTaxAvoidance.header"))
     }
     "have the correct pre heading" in {
-      doc.title(messages("ated.property-details.pre-header"))
+      doc.getElementsByClass("govuk-caption-xl").text() === "This section is Change return"
     }
     "have a backlink" in {
       doc.getElementsByClass("govuk-back-link").text mustBe "Back"
@@ -63,9 +63,10 @@ class PropertyDetailsTaxAvoidanceHtmlViewSpec extends AtedViewSpec with MockitoS
       doc.getElementsByClass("govuk-button").text mustBe "Save and continue"
     }
     "have a yes/no radio button" in {
-      doc.getElementsByAttributeValue("for","isTaxAvoidance").text() mustBe messages("ated.property-details-value.yes")
-      doc.getElementsByAttributeValue("for","isTaxAvoidance-2").text() mustBe messages("ated.property-details-value.no")
+      doc.getElementsByAttributeValue("for", "isTaxAvoidance").text() mustBe messages("ated.property-details-value.yes")
+      doc.getElementsByAttributeValue("for", "isTaxAvoidance-2").text() mustBe messages("ated.property-details-value.no")
     }
+
     "check page errors when no radio buttons has been selected" in {
       val eform = Form(form.mapping, form.data,
         Seq(FormError("isTaxAvoidance", messages("ated.property-details-period.isTaxAvoidance.error-field-name")))
@@ -75,24 +76,25 @@ class PropertyDetailsTaxAvoidanceHtmlViewSpec extends AtedViewSpec with MockitoS
 
       val errorDoc = doc(view)
 
-      errorDoc.getElementById("error-summary-title").text() mustBe "There is a problem"
-      errorDoc.getElementsByAttributeValue("href","#isTaxAvoidance").text() mustBe messages("ated.property-details-value.isValuedByAgent.error.non-selected")
-      errorDoc.getElementsByClass("govuk-error-message").text() contains  messages("ated.property-details-value.isValuedByAgent.error.non-selected")
+      errorDoc.getElementById("isTaxAvoidance-error").text() mustBe ("Error: " + messages("ated.property-details-period.isTaxAvoidance.error-field-name"))
+      errorDoc.getElementsByClass("govuk-error-summary__list").text() mustBe (messages("ated.property-details-period.isTaxAvoidance.error-field-name"))
     }
-    "have the correct page errors when no avoidance scheme or promoter reference has been provided" in {
+
+    "check page errors for tax avoidance yes" in {
       val eform = Form(form.mapping, Map("isTaxAvoidance" -> "true"),
         Seq(FormError("taxAvoidanceScheme", messages("ated.property-details-period.taxAvoidanceScheme.error.empty")),
           FormError("taxAvoidancePromoterReference", messages("ated.property-details-period.taxAvoidancePromoterReference.error.empty")))
         , form.value)
+
       def view: Html = injectedViewInstance("", 0, eform, None, Html(""), Some("backLink"))
 
       val errorDoc = doc(view)
 
-      errorDoc.getElementById("error-summary-title").text() mustBe "There is a problem"
-      errorDoc.getElementsByAttributeValue("href","#taxAvoidanceScheme").text() mustBe messages("ated.property-details-period.taxAvoidanceScheme.error.empty")
-      errorDoc.getElementsByAttributeValue("href","#taxAvoidancePromoterReference").text() mustBe messages("ated.property-details-period.taxAvoidancePromoterReference.error.empty")
-      errorDoc.getElementsByClass("govuk-error-message").text() contains  messages("ated.property-details-period.taxAvoidanceScheme.error.empty")
-      errorDoc.getElementsByClass("govuk-error-message").text() contains  messages("ated.property-details-period-error.general.taxAvoidancePromoterReference")
+      errorDoc.getElementById("taxAvoidanceScheme-error").text() mustBe ("Error: " + messages("ated.property-details-period.taxAvoidanceScheme.error.empty"))
+      errorDoc.select("#main-content > div > div > div > div > ul > li:nth-child(1) > a").text() mustBe messages("ated.property-details-period.taxAvoidanceScheme.error.empty")
+      errorDoc.getElementById("taxAvoidancePromoterReference-error").text() mustBe ("Error: " + messages("ated.property-details-period.taxAvoidancePromoterReference.error.empty"))
+      errorDoc.select("#main-content > div > div > div > div > ul > li:nth-child(2) > a").text() mustBe messages("ated.property-details-period.taxAvoidancePromoterReference.error.empty")
     }
+
   }
 }

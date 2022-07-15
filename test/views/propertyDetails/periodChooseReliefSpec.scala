@@ -26,19 +26,21 @@ import org.scalatest.{BeforeAndAfterEach, GivenWhenThen}
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Messages, MessagesApi}
+import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import play.twirl.api.Html
 import testhelpers.MockAuthUtil
 import utils.ReliefsUtils
+import views.html.propertyDetails.periodChooseRelief
 
 class periodChooseReliefSpec extends AnyFeatureSpecLike with GuiceOneAppPerSuite with MockitoSugar
   with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
 
-  implicit val request = FakeRequest()
+  implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
-  val injectedViewInstance = app.injector.instanceOf[views.html.propertyDetails.periodChooseRelief]
+  val injectedViewInstance: periodChooseRelief = app.injector.instanceOf[views.html.propertyDetails.periodChooseRelief]
 
 Feature("The user can add a period that the property is in relief") {
 
@@ -53,11 +55,14 @@ Feature("The user can add a period that the property is in relief") {
 
       val document = Jsoup.parse(html.toString())
 
+      Then("The title should match - Select the type of relief - GOV.UK ")
+      assert(document.title() === "Select the type of relief - GOV.UK")
+
       Then("The header should match - Select the type of relief")
       assert(document.select("h1").text contains "Select the type of relief")
 
       Then("The subheader should be - Create return")
-//      assert(document.getElementsByTag("h1").text() contains  "This section is: Create return")
+      assert(document.getElementsByClass("govuk-caption-xl").text() contains "This section is Create return")
 
       assert(document.getElementById("reliefDescription").attributes().get("value") === "Property rental businesses")
       assert(document.getElementById("reliefDescription-2").attributes().get("value") === "Dwellings opened to the public")
@@ -90,19 +95,19 @@ Feature("The user can add a period that the property is in relief") {
     assert(document.select("h1").text contains "Select the type of relief")
 
     Then("The subheader should be - Create return")
-//    assert(document.getElementsByTag("h1").text() contains  "This section is: Create return")
+    assert(document.getElementsByClass("govuk-caption-xl").text() contains "This section is Create return")
 
     Then("The correct radio buttons for relief types should be present")
 
-    assert(document.getElementById("reliefDescription").attributes().get("value") === "Property rental businesses")
-    assert(document.getElementById("reliefDescription-2").attributes().get("value") === "Dwellings opened to the public")
-    assert(document.getElementById("reliefDescription-3").attributes().get("value") === "Property developers")
-    assert(document.getElementById("reliefDescription-4").attributes().get("value") === "Property traders carrying on a property trading business")
-    assert(document.getElementById("reliefDescription-5").attributes().get("value") === "Financial institutions acquiring dwellings in the course of lending")
-    assert(document.getElementById("reliefDescription-6").attributes().get("value") === "Dwellings used for trade purposes")
-    assert(document.getElementById("reliefDescription-7").attributes().get("value") === "Farmhouses")
-    assert(document.getElementById("reliefDescription-8").attributes().get("value") === "Registered providers of Social Housing")
-    assert(document.getElementById("reliefDescription-9").attributes().get("value") === "Equity Release Scheme")
+    assert(document.getElementsByAttributeValue("for","reliefDescription").text() === "Rental business")
+    assert(document.getElementsByAttributeValue("for","reliefDescription-2").text() === "Open to the public")
+    assert(document.getElementsByAttributeValue("for","reliefDescription-3").text() === "Property developer")
+    assert(document.getElementsByAttributeValue("for","reliefDescription-4").text() === "Property trading")
+    assert(document.getElementsByAttributeValue("for","reliefDescription-5").text() === "Lending")
+    assert(document.getElementsByAttributeValue("for","reliefDescription-6").text() === "Employee occupation")
+    assert(document.getElementsByAttributeValue("for","reliefDescription-7").text() === "Farmhouse")
+    assert(document.getElementsByAttributeValue("for","reliefDescription-8").text() === "Provider of social housing or housing co-operative")
+    assert(document.getElementsByAttributeValue("for","reliefDescription-9").text() === "Equity release scheme (home reversion plans)")
 
     Then("The submit button should have the correct name")
     assert(document.getElementsByClass("govuk-button").text() === "Save and continue")
@@ -120,21 +125,26 @@ Feature("The user can add a period that the property is in relief") {
 
       val document = Jsoup.parse(html.toString())
 
+      Then("The title should match - Select the type of relief - GOV.UK")
+      assert(document.title() === "Select the type of relief - GOV.UK")
+
       Then("The header should match - Select the type of relief")
       assert(document.select("h1").text contains "Select the type of relief")
 
       Then("The subheader should be - Create return")
-//      assert(document.getElementsByTag("h1").text() contains  "This section is: Create return")
+      assert(document.getElementsByClass("govuk-caption-xl").text() contains "This section is Create return")
 
-      assert(document.getElementById("reliefDescription").attributes().get("value") === "Property rental businesses")
-      assert(document.getElementById("reliefDescription-2").attributes().get("value") === "Dwellings opened to the public")
-      assert(document.getElementById("reliefDescription-3").attributes().get("value") === "Property developers")
-      assert(document.getElementById("reliefDescription-4").attributes().get("value") === "Property traders carrying on a property trading business")
-      assert(document.getElementById("reliefDescription-5").attributes().get("value") === "Financial institutions acquiring dwellings in the course of lending")
-      assert(document.getElementById("reliefDescription-6").attributes().get("value") === "Dwellings used for trade purposes")
-      assert(document.getElementById("reliefDescription-7").attributes().get("value") === "Farmhouses")
-      assert(document.getElementById("reliefDescription-8").attributes().get("value") === "Registered providers of Social Housing")
-      assert(document.getElementById("reliefDescription-9").attributes().get("value") === "Equity Release Scheme")
+      Then("The correct radio buttons for relief types should be present")
+
+      assert(document.getElementsByAttributeValue("for","reliefDescription").text() === "Rental business")
+      assert(document.getElementsByAttributeValue("for","reliefDescription-2").text() === "Open to the public")
+      assert(document.getElementsByAttributeValue("for","reliefDescription-3").text() === "Property developer")
+      assert(document.getElementsByAttributeValue("for","reliefDescription-4").text() === "Property trading")
+      assert(document.getElementsByAttributeValue("for","reliefDescription-5").text() === "Lending")
+      assert(document.getElementsByAttributeValue("for","reliefDescription-6").text() === "Employee occupation")
+      assert(document.getElementsByAttributeValue("for","reliefDescription-7").text() === "Farmhouse")
+      assert(document.getElementsByAttributeValue("for","reliefDescription-8").text() === "Social housing")
+      assert(document.getElementsByAttributeValue("for","reliefDescription-9").text() === "Equity release scheme (home reversion plans)")
 
       Then("The submit button should have the correct name")
       assert(document.getElementsByClass("govuk-button").text() === "Save and continue")

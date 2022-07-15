@@ -50,13 +50,13 @@
 @backLinkHtml = {
     @if(backLink.isDefined) {
         @govukBackLink(BackLink(
-        href = backLink.get,
-        content = Text("Back")
+            href = backLink.get,
+            content = Text("Back")
         ))
     }
 }
 
-@newMain(title = titleBuilder(messages("ated.property-details-period.chooseRelief.title")),
+@newMain(title = titleBuilder(messages("ated.property-details-period.chooseRelief.title"), Some(propertyDetailsForm)),
           serviceInfoContent = serviceInfoContent) {
 
 @backLinkHtml
@@ -65,61 +65,57 @@
     @govukErrorSummary(ErrorSummary().withFormErrorsAsText(propertyDetailsForm))
 }
 
-<header>
-    <h1 class="govuk-heading-l">
-        <span class="govuk-caption-l"><span class="govuk-visually-hidden">@messages("ated.screen-reader.section") </span></span>
-            @messages("ated.property-details-period.chooseRelief.header")
-    </h1>
-</header>
+  @formHelper(action=controllers.propertyDetails.routes.PeriodChooseReliefController.save(id, periodKey)) {
 
-@formHelper(action=controllers.propertyDetails.routes.PeriodChooseReliefController.save(id, periodKey)) {
+    @govukRadios(Radios(
+        items = Seq(
+          RadioItem(
+            content = Text(messages("ated.choose-single-relief.rentalBusiness")),
+            value = Some(ReliefsUtils.RentalBusinessDesc)
+          ),
+          RadioItem(
+            content = Text(messages("ated.choose-single-relief.openToPublic")),
+            value = Some(ReliefsUtils.OpenToPublicDesc)
+          ),
+          RadioItem(
+            content = Text(messages("ated.choose-single-relief.propertyDeveloper")),
+            value = Some(ReliefsUtils.PropDevDesc)
+          ),
+          RadioItem(
+            content = Text(messages("ated.choose-single-relief.propertyTrading")),
+            value = Some(ReliefsUtils.PropTradingDesc)
+          ),
+          RadioItem(
+            content = Text(messages("ated.choose-single-relief.lending")),
+            value = Some(ReliefsUtils.LendingDesc)
+          ),
+          RadioItem(
+            content = Text(messages("ated.choose-single-relief.employeeOccupation")),
+            value = Some(ReliefsUtils.EmpOccDesc)
+          ),
+          RadioItem(
+            content = Text(messages("ated.choose-single-relief.farmHouses")),
+            value = Some(ReliefsUtils.FarmHouseDesc)
+          ),
+          RadioItem(
+            content = Text(messages(chooseSingleReliefsocialHousingMessage)),
+            value = Some(ReliefsUtils.SocialHouseDesc)
+          ),
+          RadioItem(
+            content = Text(messages("ated.choose-single-relief.equityRelease")),
+            value = Some(ReliefsUtils.EquityReleaseDesc)
+          )
+        )
+      ).withFormField(propertyDetailsForm("reliefDescription"))
+        .withHeadingAndSectionCaption(
+            heading = Text(messages("ated.property-details-period.chooseRelief.header")),
+            sectionCaption = Text(messages("ated.property-details.pre-header"))
+        ))
 
-@govukRadios(Radios(
-    items = Seq(
-      RadioItem(
-        content = Text(messages("ated.choose-single-relief.rentalBusiness")),
-        value = Some(ReliefsUtils.RentalBusinessDesc)
-      ), 
-      RadioItem(
-        content = Text(messages("ated.choose-single-relief.openToPublic")),
-        value = Some(ReliefsUtils.OpenToPublicDesc)
-      ), 
-      RadioItem(
-        content = Text(messages("ated.choose-single-relief.propertyDeveloper")),
-        value = Some(ReliefsUtils.PropDevDesc)
-      ), 
-      RadioItem(
-        content = Text(messages("ated.choose-single-relief.propertyTrading")),
-        value = Some(ReliefsUtils.PropTradingDesc)
-      ),
-      RadioItem(
-        content = Text(messages("ated.choose-single-relief.lending")),
-        value = Some(ReliefsUtils.LendingDesc)
-      ), 
-      RadioItem(
-        content = Text(messages("ated.choose-single-relief.employeeOccupation")),
-        value = Some(ReliefsUtils.EmpOccDesc)
-      ), 
-      RadioItem(
-        content = Text(messages("ated.choose-single-relief.farmHouses")),
-        value = Some(ReliefsUtils.FarmHouseDesc)
-      ), 
-      RadioItem(
-        content = Text(messages(chooseSingleReliefsocialHousingMessage)),
-        value = Some(ReliefsUtils.SocialHouseDesc)
-      ), 
-      RadioItem(
-        content = Text(messages("ated.choose-single-relief.equityRelease")),
-        value = Some(ReliefsUtils.EquityReleaseDesc)
-      )
-    )
-  ).withFormField(propertyDetailsForm("reliefDescription")))
-
-@govukButton(Button(
-content = Text(messages("ated.save-and-continue")),
-attributes = Map("id" -> "submit")
-))
-
+    @govukButton(Button(
+        content = Text(messages("ated.save-and-continue")),
+        attributes = Map("id" -> "submit")
+    ))
   }
 
 }

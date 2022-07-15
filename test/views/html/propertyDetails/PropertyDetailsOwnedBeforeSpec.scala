@@ -28,7 +28,7 @@ import utils.PeriodUtils
 
 class PropertyDetailsOwnedBeforeSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil {
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
-  val injectedViewInstance = app.injector.instanceOf[views.html.propertyDetails.propertyDetailsOwnedBefore]
+  val injectedViewInstance: propertyDetailsOwnedBefore = app.injector.instanceOf[views.html.propertyDetails.propertyDetailsOwnedBefore]
 
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
 
@@ -40,16 +40,16 @@ class PropertyDetailsOwnedBeforeSpec extends AtedViewSpec with MockitoSugar with
       doc.title mustBe TitleBuilder.buildTitle(messages("ated.property-details-value.isOwnedBeforeValuationYear.title", PeriodUtils.calculateLowerTaxYearBoundary(2014).getYear.toString))
     }
     "have the correct page header" in {
-      doc.title mustBe TitleBuilder.buildTitle(messages("ated.property-details-value.isOwnedBeforeValuationYear.title", PeriodUtils.calculateLowerTaxYearBoundary(2014).getYear.toString))
+      doc.getElementsByTag("h1").text() must include (messages("ated.property-details-value.isOwnedBeforeValuationYear.title", PeriodUtils.calculateLowerTaxYearBoundary(2014).getYear.toString))
     }
     "have the correct pre heading" in {
-      doc.title(messages("ated.property-details.pre-header"))
+      doc.getElementsByClass("govuk-caption-xl").text() mustBe ("This section is " + messages("ated.property-details.pre-header"))
     }
     "have a backlink" in {
-      doc.getElementsByClass("govuk-back-link").text mustBe "Back"
+      doc.getElementsByClass("govuk-back-link").text() mustBe "Back"
     }
     "have a continue button" in {
-      doc.getElementsByClass("govuk-button").text mustBe "Save and continue"
+      doc.getElementsByClass("govuk-button").text() mustBe "Save and continue"
     }
     "have a yes/no radio button" in {
       doc.getElementsByAttributeValue("for","isOwnedBeforePolicyYear").text() mustBe messages("ated.property-details-value.yes")
@@ -62,8 +62,8 @@ class PropertyDetailsOwnedBeforeSpec extends AtedViewSpec with MockitoSugar with
       def view: Html = injectedViewInstance("",2014,  eform, None, Html(""), Some("backLink"))
       val errorDoc = doc(view)
 
-      errorDoc.getElementsMatchingOwnText(messages("ated.property-details-value.ownedBeforePolicyYearValue.error.empty")).hasText mustBe true
-      errorDoc.getElementsMatchingOwnText(messages("ated.property-details-value.ownedBeforevaluationYear.Value")).hasText mustBe true
+      errorDoc.getElementById("ownedBeforePolicyYearValue-error").text() mustBe ("Error: " + messages("ated.property-details-value.ownedBeforePolicyYearValue.error.empty"))
+      errorDoc.getElementsByClass("govuk-error-summary__list").text() mustBe messages("ated.property-details-value.ownedBeforePolicyYearValue.error.empty")
     }
   }
 

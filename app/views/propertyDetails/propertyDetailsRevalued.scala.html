@@ -43,62 +43,59 @@
 @backLinkHtml = {
     @if(backLink.isDefined) {
         @govukBackLink(BackLink(
-        href = backLink.get,
-        content = Text("Back")
+            href = backLink.get,
+            content = Text("Back")
         ))
     }
 }
 
-@textHtml = {
-  @govukDateInput(DateInput(
-    hint = Some(Hint(
-      content = Text(messages("ated.property-details-value.partAcqDispDate.hint", PeriodUtils.periodEndDate(periodKey).toString(messages("ated.date-format.numeric"))))
-    )),
-    fieldset = Some(Fieldset(
-      legend = Some(Legend(
-        content = Text(messages("ated.property-details-value.partAcqDispDate"))
-      ))
-    ))
-  ).withFormField(propertyDetailsForm("partAcqDispDate")))
+@dateItems = @{
+    Seq(InputItem(attributes = Map("maxLength" -> "2")),
+        InputItem(attributes = Map("maxLength" -> "2")),
+        InputItem(attributes = Map("maxLength" -> "4"))
+    )
+}
 
-  @govukInput(Input(
-    label = Label(
-      content = Text(messages("ated.property-details-value.revaluedValue"))
-    ),
-    hint = Some(Hint(
-      content = Text(messages("ated.property-details-value.revaluedValue.hint"))
-    )),
-    classes = "govuk-!-width-one-third",
-  ).withFormField(propertyDetailsForm("revaluedValue")))
+@conditionalYes = {
+    @govukDateInput(DateInput(
+        hint = Some(Hint(
+            content = Text(messages("ated.property-details-value.partAcqDispDate.hint", PeriodUtils.periodEndDate(periodKey).toString(messages("ated.date-format.numeric"))))
+        )),
+        items = dateItems,
+        fieldset = Some(Fieldset(
+            legend = Some(Legend(
+            content = Text(messages("ated.property-details-value.partAcqDispDate"))
+            ))
+        ))
+    ).withFormField(propertyDetailsForm("partAcqDispDate")))
 
-  @govukDateInput(DateInput(
-    hint = Some(Hint(
-      content = Text(messages("ated.property-details-value.revaluedDate.hint", PeriodUtils.periodEndDate(periodKey).toString(messages("ated.date-format.numeric"))))
-    )),
-    fieldset = Some(Fieldset(
-      legend = Some(Legend(
-        content = Text(messages("ated.property-details-value.revaluedDate"))
-      ))
-    ))
-  ).withFormField(propertyDetailsForm("revaluedDate")))
-    <br>
-    @govukButton(Button(
-        content = Text(messages("ated.save-and-continue")),
-        attributes = Map("id" -> "submit")
-    ))
+    @govukInput(Input(
+        label = Label(
+            content = Text(messages("ated.property-details-value.revaluedValue"))
+        ),
+        hint = Some(Hint(
+            content = Text(messages("ated.property-details-value.revaluedValue.hint"))
+        ))
+    ).withFormField(propertyDetailsForm("revaluedValue")))
+
+    @govukDateInput(DateInput(
+        hint = Some(Hint(
+            content = Text(messages("ated.property-details-value.revaluedDate.hint", PeriodUtils.periodEndDate(periodKey).toString(messages("ated.date-format.numeric"))))
+        )),
+        items = dateItems,
+        fieldset = Some(Fieldset(
+            legend = Some(Legend(
+            content = Text(messages("ated.property-details-value.revaluedDate"))
+            ))
+        ))
+    ).withFormField(propertyDetailsForm("revaluedDate")))
 
 }
 
-@textHtml2 = {
-  @govukWarningText(WarningText(
-    iconFallbackText = "Warning",
-    content = Text(messages("ated.property-details-value.isPropertyRevalued.no-text"))
-  ))
-
-    @govukButton(Button(
-        classes = "govuk-button--secondary",
-        content = Text(messages("ated.company-details.back")),
-        attributes = Map("id" -> "notRevalued")
+@conditionalNo = {
+    @govukWarningText(WarningText(
+        iconFallbackText = "Warning",
+        content = Text(messages("ated.property-details-value.isPropertyRevalued.no-text"))
     ))
 }
 
@@ -119,37 +116,45 @@
           serviceInfoContent = serviceInfoContent,
           pageScripts = Some(pageScripts)) {
 
-@formHelper(action = controllers.propertyDetails.routes.PropertyDetailsRevaluedController.save(id, periodKey, mode)) {
+    @formHelper(action = controllers.propertyDetails.routes.PropertyDetailsRevaluedController.save(id, periodKey, mode)) {
 
-@backLinkHtml
+        @backLinkHtml
 
-  @if(propertyDetailsForm.errors.nonEmpty) {
-    @govukErrorSummary(ErrorSummary().withFormErrorsAsText(propertyDetailsForm))
-  }
+        @if(propertyDetailsForm.errors.nonEmpty) {
+            @govukErrorSummary(ErrorSummary().withFormErrorsAsText(
+                propertyDetailsForm, mapping = Map("partAcqDispDate" -> "partAcqDispDate.day", "revaluedDate" -> "revaluedDate.day")
+            ))
+        }
 
-   <header>
-      <h1 class="govuk-heading-l">
-          <span class="govuk-caption-l"><span class="govuk-visually-hidden">@messages("ated.screen-reader.section") </span>@messages(AtedUtils.getPropertyDetailsPreHeader(mode))</span>
-          @messages("ated.property-details-value.isPropertyRevalued.header", PeriodUtils.calculateLowerTaxYearBoundary(periodKey).getYear.toString)
-      </h1>
-   </header>
+        @govukRadios(Radios(
+            items = Seq(
+              RadioItem(
+                content = Text(messages("ated.property-details-value.yes")),
+                value = Some("true"),
+                conditionalHtml = Some(conditionalYes)
+              ),
+              RadioItem(
+                content = Text(messages("ated.property-details-value.no")),
+                value = Some("false"),
+                conditionalHtml = Some(conditionalNo)
+              )
+            )
+            ).withFormField(propertyDetailsForm("isPropertyRevalued"))
+            .withHeadingAndSectionCaption(
+                heading = Text(messages("ated.property-details-value.isPropertyRevalued.header", PeriodUtils.calculateLowerTaxYearBoundary(periodKey).getYear.toString)),
+                sectionCaption = Text(messages(AtedUtils.getPropertyDetailsPreHeader(mode)))
+        ))
 
-@govukRadios(Radios(
-    items = Seq(
-      RadioItem(
-        content = Text(messages("ated.property-details-value.yes")),
-        value = Some("true"),
-        conditionalHtml = Some(textHtml)
-      ), 
-      RadioItem(
-        content = Text(messages("ated.property-details-value.no")),
-        value = Some("false"),
-        conditionalHtml = Some(textHtml2)
-      )
-    )
-    ).withFormField(propertyDetailsForm("isPropertyRevalued"))
-  )
+        @govukButton(Button(
+            content = Text(messages("ated.save-and-continue")),
+            attributes = Map("id" -> "submit")
+        ))
 
-  }
+        @govukButton(Button(
+            content = Text(messages("ated.company-details.back")),
+            href=Some(controllers.routes.AccountSummaryController.view.url),
+            attributes = Map("id" -> "back-to-ated")
+        ))
+    }
 
 }

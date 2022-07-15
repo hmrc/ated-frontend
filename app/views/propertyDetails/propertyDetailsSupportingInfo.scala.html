@@ -47,42 +47,47 @@
   <script src='@controllers.routes.Assets.versioned("javascript/supportingInfo.js")'></script>
 }
 
-@newMain(title = titleBuilder(messages("ated.property-details-period.supportingInfo.title")),
+@newMain(title = titleBuilder(messages("ated.property-details-period.supportingInfo.title"), Some(propertyDetailsForm)),
           pageScripts = Some(pageScripts),
           serviceInfoContent = serviceInfoContent) {
 
-@backLinkHtml
+    @backLinkHtml
 
-@if(propertyDetailsForm.errors.nonEmpty) {
-  @govukErrorSummary(ErrorSummary().withFormErrorsAsText(propertyDetailsForm))
-}
+    @if(propertyDetailsForm.errors.nonEmpty) {
+      @govukErrorSummary(ErrorSummary().withFormErrorsAsText(propertyDetailsForm))
+    }
 
 <header>
-  <h1 class="govuk-heading-l">
-      <span class="govuk-caption-l"><span class="govuk-visually-hidden">@messages("ated.screen-reader.section") </span>@messages(AtedUtils.getPropertyDetailsPreHeader(mode))</span>
+  <h1 class="govuk-heading-xl">
+      <span class="govuk-caption-xl">
+          <span class="govuk-visually-hidden">
+              @messages("ated.screen-reader.section")
+          </span>
+          @messages(AtedUtils.getPropertyDetailsPreHeader(mode))
+      </span>
       @messages("ated.property-details-period.supportingInfo.header")
   </h1>
 </header>
 
-<div>
 <p class="govuk-body">
-  @messages("ated.property-details-period.supportingInfo.header")<br>
-    <a class="govuk-link" href="https://www.gov.uk/government/publications/stld-annual-tax-on-enveloped-dwellings-ated/annual-tax-on-enveloped-dwellings-returns-guidance#sec5" rel="noreferrer noopener" target="_blank">@messages("ated.property-details-period.supportingInfo.hint")</a>
+    <a class="govuk-link govuk-body" href="https://www.gov.uk/government/publications/stld-annual-tax-on-enveloped-dwellings-ated/annual-tax-on-enveloped-dwellings-returns-guidance#sec5" rel="noreferrer noopener" target="_blank">@messages("ated.property-details-period.supportingInfo.hint")</a>
 </p>
-</div>
 
-@formHelper(action=controllers.propertyDetails.routes.PropertyDetailsSupportingInfoController.save(id, periodKey, mode)) {
+    @formHelper(action=controllers.propertyDetails.routes.PropertyDetailsSupportingInfoController.save(id, periodKey, mode)) {
 
-@govukCharacterCount(CharacterCount(
-maxLength = Some(200)
-).withFormField(propertyDetailsForm("supportingInfo"))
-)
+        @govukCharacterCount(CharacterCount(
+            maxLength = Some(200),
+            label = Label(
+                classes = "govuk-visually-hidden",
+                content = Text(messages("ated.property-details-period.supportingInfo.header"))
+            )
+        ).withFormField(propertyDetailsForm("supportingInfo")))
 
-@govukButton(Button(
-content = Text(messages("ated.save-and-continue")),
-attributes = Map("id" -> "submit")
-))
+        @govukButton(Button(
+            content = Text(messages("ated.save-and-continue")),
+            attributes = Map("id" -> "submit")
+        ))
 
-  }
+    }
 
 }

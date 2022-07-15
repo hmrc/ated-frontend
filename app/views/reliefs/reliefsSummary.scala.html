@@ -818,21 +818,17 @@
     content = Text(Messages("ated.choose-reliefs-further.information.text"))
   ))
 
-<div class="govuk-form-group">
-  <a class="govuk-link govuk-!-font-size-19" href="@controllers.reliefs.routes.ReliefsSummaryController.viewPrintFriendlyReliefReturn(periodKey)" id="print-friendly-relief-link" target="_blank">
-    @messages("ated.relief-summary.print.view")
-  </a>
-</div>
-
-<div class="govuk-form-group">
-  <a class="govuk-link govuk-!-font-size-19" href="@controllers.routes.AccountSummaryController.view" id="saved-returns-link">@messages("ated.property-details-summary.saved-returns.link.text")</a>
-</div>
-
-<div class="govuk-form-group">
-  <a class="govuk-link govuk-!-font-size-19" href="@controllers.reliefs.routes.ReliefsSummaryController.deleteDraft(periodKey)" id="delete-draft">
-      @messages("ated.property-details-summary.delete-draft.link.text")
-  </a>
-</div>
+  <ul class="govuk-list">
+      <li>
+        <a class="govuk-link" href="@controllers.reliefs.routes.ReliefsSummaryController.viewPrintFriendlyReliefReturn(periodKey)" id="print-friendly-relief-link" target="_blank">@messages("ated.relief-summary.print.view")</a>
+      </li>
+      <li>
+        <a class="govuk-link" href="@controllers.routes.AccountSummaryController.view" id="saved-returns-link">@messages("ated.property-details-summary.saved-returns.link.text")</a>
+      </li>
+      <li>
+        <a class="govuk-link" href="@controllers.reliefs.routes.ReliefsSummaryController.deleteDraft(periodKey)" id="delete-draft">@messages("ated.property-details-summary.delete-draft.link.text")</a>
+      </li>
+  </ul>
 
   @formHelper(action=controllers.reliefs.routes.ReliefsSummaryController.continue(periodKey)) {
       @if(!isComplete){

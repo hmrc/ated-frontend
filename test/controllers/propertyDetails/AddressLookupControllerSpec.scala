@@ -215,6 +215,7 @@ class Setup {
         }
       }
     }
+
     "find" must {
       "unauthorised users" must {
 
@@ -233,8 +234,7 @@ class Setup {
           result =>
             status(result) must be(BAD_REQUEST)
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be(TitleBuilder.buildTitle("Find the property’s address"))
-
+            document.title() must be(TitleBuilder.buildErrorTitle("Find the property’s address"))
         }
       }
 
@@ -258,7 +258,6 @@ class Setup {
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
             document.title() must be(TitleBuilder.buildTitle("Select the address of the property"))
-
             document.getElementById("no-address-found") must be(null)
         }
       }
@@ -271,7 +270,6 @@ class Setup {
           result =>
             status(result) must be(SEE_OTHER)
             redirectLocation(result).get must include("/ated/liability/create/address/view/1")
-
         }
       }
 
@@ -280,10 +278,10 @@ class Setup {
           result =>
             status(result) must be(SEE_OTHER)
             redirectLocation(result).get must include("/ated/liability/create/address/2015")
-
         }
       }
     }
+
     "save" must {
       "unauthorised users" must {
 
@@ -302,8 +300,7 @@ class Setup {
           result =>
             status(result) must be(BAD_REQUEST)
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be(TitleBuilder.buildTitle("Select the address of the property"))
-
+            document.title() must be(TitleBuilder.buildErrorTitle("Select the address of the property"))
         }
       }
 
@@ -312,8 +309,7 @@ class Setup {
           result =>
             status(result) must be(BAD_REQUEST)
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be(TitleBuilder.buildTitle("Select the address of the property"))
-
+            document.title() must be(TitleBuilder.buildErrorTitle("Select the address of the property"))
         }
       }
 
@@ -325,7 +321,7 @@ class Setup {
           result =>
             status(result) must be(BAD_REQUEST)
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be(TitleBuilder.buildTitle("Select the address of the property"))
+            document.title() must be(TitleBuilder.buildErrorTitle("Select the address of the property"))
         }
       }
 
@@ -335,7 +331,7 @@ class Setup {
           result =>
             status(result) must be(BAD_REQUEST)
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be(TitleBuilder.buildTitle("Select the address of the property"))
+            document.title() must be(TitleBuilder.buildErrorTitle("Select the address of the property"))
         }
       }
 
@@ -353,6 +349,7 @@ class Setup {
             redirectLocation(result).get must include("/ated/liability/confirm-address/view/")
         }
       }
+
       "submitting a valid request should update a return if we have an Id" in new Setup {
         val foundProperty: PropertyDetailsAddress = PropertyDetailsAddress("", "", None, None, None)
         when(mockPropertyDetailsService.saveDraftPropertyDetailsAddress
@@ -363,7 +360,6 @@ class Setup {
           result =>
             status(result) must be(SEE_OTHER)
             redirectLocation(result).get must include("/ated/liability/confirm-address/view/")
-
         }
       }
     }

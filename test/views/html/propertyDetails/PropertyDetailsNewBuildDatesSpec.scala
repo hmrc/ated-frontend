@@ -19,7 +19,8 @@ package views.html.propertyDetails
 import builders.TitleBuilder
 import config.ApplicationConfig
 import forms.PropertyDetailsForms
-import models.StandardAuthRetrievals
+import models.{PropertyDetailsNewBuildDates, StandardAuthRetrievals}
+import play.api.data.Form
 import play.twirl.api.Html
 import testhelpers.{AtedViewSpec, MockAuthUtil}
 
@@ -29,8 +30,8 @@ class PropertyDetailsNewBuildDatesSpec extends AtedViewSpec with MockAuthUtil {
 
   implicit val appConfig: ApplicationConfig = mock[ApplicationConfig]
 
-  val injectedViewInstance = app.injector.instanceOf[views.html.propertyDetails.propertyDetailsNewBuildDates]
-  val form = PropertyDetailsForms.propertyDetailsNewBuildDatesForm
+  val injectedViewInstance: propertyDetailsNewBuildDates = app.injector.instanceOf[views.html.propertyDetails.propertyDetailsNewBuildDates]
+  val form: Form[PropertyDetailsNewBuildDates] = PropertyDetailsForms.propertyDetailsNewBuildDatesForm
 
   override def view: Html = injectedViewInstance("0", 2019, form, None, Html(""), Some("backLink"))
 
@@ -41,10 +42,10 @@ class PropertyDetailsNewBuildDatesSpec extends AtedViewSpec with MockAuthUtil {
       doc.title mustBe TitleBuilder.buildTitle(messages("ated.property-details-value.newBuildDates.title"))
     }
     "have the correct page header" in {
-      doc.title mustBe TitleBuilder.buildTitle(messages("ated.property-details-value.newBuildDates.header"))
+      doc.getElementsByTag("h1").text() must include (messages("ated.property-details-value.newBuildDates.header"))
     }
     "have the correct pre heading" in {
-      doc.title(messages("ated.property-details.pre-header"))
+      doc.getElementsByClass("govuk-caption-xl").text() mustBe ("This section is: " + messages("ated.property-details.pre-header"))
     }
     "have a backlink" in {
       doc.getElementsByClass("govuk-back-link").text mustBe "Back"

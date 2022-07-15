@@ -50,242 +50,251 @@ backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages
     }
 }
 
-@propertyAddressOld = @{
-        val address = Seq(propertyDetails.addressProperty.line_1, propertyDetails.addressProperty.line_2)
-        val addressOptional = Seq(propertyDetails.addressProperty.line_3, propertyDetails.addressProperty.line_4, propertyDetails.addressProperty.postcode).flatten
-
-        val finalAddress = address ++ addressOptional
-
-        finalAddress.map { line =>
-          <div><span>{s"""$line"""}</span></div>
-        }
-
+@additionalInfoContent = {
+    @propertyDetails.period.map(
+        v => v.supportingInfo.fold(messages("ated.property-details-summary.field-blank"))
+            (x =>
+                if(x == "") messages("ated.property-details-summary.field-blank")
+            else x)).getOrElse(messages("ated.property-details-summary.field-blank"))
 }
 
-@incompleteTag = {<br>@govukTag(Tag(
-  content = Text(messages("ated.label.incomplete")),
-  classes = "govuk-tag--red"
-))</br>}
+@incompleteTag = {
+    @govukTag(Tag(
+        content = Text(messages("ated.label.incomplete")),
+        classes = "govuk-tag--red"
+    ))
+}
 
 @propertyAddress = {
-  <div><span>@propertyDetails.addressProperty.line_1</span></div>
-  <div><span>@propertyDetails.addressProperty.line_2</span></div>
-  @propertyDetails.addressProperty.line_3.map { line =>
-     <div><span>@line</span></div> 
-  }
-  @propertyDetails.addressProperty.line_4.map { line =>
-     <div><span>@line</span></div> 
-  }
-  @propertyDetails.addressProperty.postcode.map { line =>
-     <div><span>@line</span></div> 
-  }
+    <div>
+        <span id="address-line-1">@propertyDetails.addressProperty.line_1</span><br>
+        <span id="address-line-2">@propertyDetails.addressProperty.line_2</span><br>
+        @propertyDetails.addressProperty.line_3.map { line =>
+            <span id="address-line-3">@line</span><br>
+        }
+        @propertyDetails.addressProperty.line_4.map { line =>
+            <span id="address-line-4">@line</span><br>
+        }
+        @propertyDetails.addressProperty.postcode.map { line =>
+            <span id="address-postcode">@line</span>
+        }
+    </div>
 }
 
-@taxAvoidanceReference= {
-  <br>
-
-
-}
-
-@promoterReference= {
-  <br>
-
-}
 
 @propertyTitle = {
-  @propertyDetails.title.map(_.titleNumber).fold(messages("ated.property-details-summary.field-blank"))(x => if(x == "") messages("ated.property-details-summary.field-blank") else x)
+<span id="property-title-number">@propertyDetails.title.map(_.titleNumber).fold(messages("ated.property-details-summary.field-blank"))(x => if(x == "") messages("ated.property-details-summary.field-blank") else x)</span>
 }
 
 @newMain(title = titleBuilder(messages("ated.property-details-summary.title")),
           serviceInfoContent = serviceInfoContent) {
 
-@backLinkHtml
+    @backLinkHtml
 
- <header>
-    <h1 class="govuk-heading-l">
-        <span class="govuk-caption-l"><span class="govuk-visually-hidden">@messages("ated.screen-reader.section") </span>@messages("ated.property-details.pre-header")</span>
-        @messages("ated.property-details-summary.header")
-    </h1>
- </header>
+    <header>
+       <h1 class="govuk-heading-xl">
+           <span class="govuk-caption-xl">
+               <span class="govuk-visually-hidden">
+                   @messages("ated.screen-reader.section")
+               </span>
+               @messages("ated.property-details.pre-header")
+           </span>
+           @messages("ated.property-details-summary.header")
+       </h1>
+    </header>
 
-<p id="details-text" class="govuk-body">@messages("ated.property-details-summary.details-text", PeriodUtils.periodStartDate(propertyDetails.periodKey).toString(messages("ated.date-format")), PeriodUtils.periodEndDate(propertyDetails.periodKey).toString(messages("ated.date-format")))</p>
-
+    <p id="details-text" class="govuk-body">@messages("ated.property-details-summary.details-text", PeriodUtils.periodStartDate(propertyDetails.periodKey).toString(messages("ated.date-format")), PeriodUtils.periodEndDate(propertyDetails.periodKey).toString(messages("ated.date-format")))</p>
 
     <h2 id="property-details-header" class="govuk-heading-m">@messages("ated.property-details-summary.table.property-details.header")</h2>
-    <header>
-      <h1 class="govuk-heading-l">
-          <span class="govuk-caption-l"><span class="govuk-visually-hidden">@messages("ated.screen-reader.section")
-          @messages("ated.property-details-value.isValuedByAgent.header")
-      </h1>
-   </header>
 
     @govukSummaryList(SummaryList(
-    rows = Seq(
-      SummaryListRow(
-        key = Key(
-          content = Text(messages("ated.property-details-summary.table.property-details.address.label"))
-        ),
-        value = Value(
-          content = HtmlContent(propertyAddress)
-        ),
-        actions = Some(Actions(
-          items = Seq(
-            ActionItem(
-              href = controllers.propertyDetails.routes.PropertyDetailsAddressController.editFromSummary(propertyDetails.id).url,
-              content = Text(messages("ated.edit"))
-            )
+        rows = Seq(
+          SummaryListRow(
+            key = Key(
+              content = Text(messages("ated.property-details-summary.table.property-details.address.label"))
+            ),
+            value = Value(
+              content = HtmlContent(propertyAddress)
+            ),
+            actions = Some(Actions(
+              items = Seq(
+                ActionItem(
+                  href = controllers.propertyDetails.routes.PropertyDetailsAddressController.editFromSummary(propertyDetails.id).url,
+                  content = Text(messages("ated.edit"))
+                )
+              )
+            ))
+          ),
+          SummaryListRow(
+            key = Key(
+              content = Text(messages("ated.property-details-summary.table.property-details.title-number.label"))
+            ),
+            value = Value(
+              content = HtmlContent(propertyTitle)
+            ),
+            actions = Some(Actions(
+              items = Seq(
+                ActionItem(
+                  href = controllers.propertyDetails.routes.PropertyDetailsTitleController.editFromSummary(propertyDetails.id).url,
+                  content = Text(messages("ated.edit"))
+                )
+              )
+            ))
           )
-        ))
-      ), 
-      SummaryListRow(
-        key = Key(
-          content = Text(messages("ated.property-details-summary.table.property-details.title-number.label"))
         ),
-        value = Value(
-          content = HtmlContent(propertyTitle)
-        ),
-        actions = Some(Actions(
-          items = Seq(
-            ActionItem(
-              href = controllers.propertyDetails.routes.PropertyDetailsTitleController.editFromSummary(propertyDetails.id).url,
-              content = Text(messages("ated.edit"))
-            )
-          )
-        ))
-      )
-    )
-        ,attributes = Map("id" -> "address-summary")))
+        attributes = Map("id" -> "property-details")
+    ))
 
   <h2 id="property-value-header" class="govuk-heading-m">@messages("ated.property-details-summary.table.property-value.header")</h2>
 
-  @if(false & AtedUtils.isEditSubmitted(propertyDetails)) {
-      <span id="property-title-number-label" class="govuk-heading-m">@messages("ated.form-bundle.view.return.value.only")</span>
-    @govukSummaryList(SummaryList(
-      rows = Seq(
-        SummaryListRow(
-          key = Key(
-            content = Text(messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.header"))
-          ),
-          value = Value(
-            content = HtmlContent(incompleteTag)
-          ),
-          actions = Some(Actions(
-            items = Seq(
-              ActionItem(
-                href = controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceController.editFromSummary(propertyDetails.id).url,
-                content = Text(messages("ated.edit"))
-            ))
-        ))
-      ))
-    ))
-    elseif(true & !AtedUtils.isEditSubmitted(propertyDetails))
-          @govukSummaryList(SummaryList(
-      rows = Seq(
-        SummaryListRow(
-          key = Key(
-            content = Text(messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.header"))
-          ),
-          value = Value(
-            content = HtmlContent(incompleteTag)
-          ),
-          actions = Some(Actions(
-            items = Seq(
-              ActionItem(
-                href = controllers.propertyDetails.routes.PropertyDetailsOwnedBeforeController.editFromSummary(propertyDetails.id).url,
-                content = Text(messages("ated.edit"))
-            ))
-        ))
-      ))
-    ))
-  } else {
-  @for((valueObj, index) <- valuesToDisplay.zipWithIndex) {
-    @govukSummaryList(SummaryList(
-      rows = Seq(
-        SummaryListRow(
-          key = Key(
-            content = Text(messages(PeriodUtils.getPeriodValueMessage(index, valuesToDisplay.size)))
-          ),
-          value = Value(
-            content = HtmlContent(formattedPounds(valueObj.propertyValue))
-          ),
-          actions = Some(Actions(
-            items = Seq(
-              ActionItem(
-                href = if(AtedUtils.isEditSubmitted(propertyDetails)) {
-controllers.editLiability.routes.EditLiabilityHasValueChangedController.editFromSummary(propertyDetails.id, Some(true)).url
+    @if(PeriodUtils.isListEmpty(valuesToDisplay)) {
 
-} else {
-controllers.propertyDetails.routes.PropertyDetailsOwnedBeforeController.editFromSummary(propertyDetails.id).url
-},
-                content = Text(messages("ated.edit"))
-            ))
-        ))
-      ))
-    ))
-    }
-  }
-    @propertyDetails.value.map { propDetailsValue =>
-        @propDetailsValue.isValuedByAgent match {
-            case Some(true) => {
-      @govukSummaryList(SummaryList(rows = Seq(
-      SummaryListRow(
-          key = Key(
-            content = Text(messages("ated.form-bundle.view.isValuedByAgent.message"))
-          ),
-          value = Value(
-            content = HtmlContent(messages("ated.property-details-period.yes"))
-          ),
-          actions = Some(Actions(
-            items = Seq(
-              ActionItem(
-                href = controllers.propertyDetails.routes.PropertyDetailsProfessionallyValuedController.editFromSummary(propertyDetails.id).url,
-                content = Text(messages("ated.edit"))
-            ))
+      @govukSummaryList(SummaryList(
+        rows = Seq(
+          SummaryListRow(
+            key = Key(
+              content = Text(messages("ated.form-bundle.view.return.value.only"))
+            ),
+            value = Value(
+              content = HtmlContent(incompleteTag)
+            ),
+            actions = Some(Actions(
+              items = Seq(
+                ActionItem(
+                  href = if(AtedUtils.isEditSubmitted(propertyDetails)) {
+                            controllers.editLiability.routes.EditLiabilityHasValueChangedController.editFromSummary(propertyDetails.id, Some(true)).url
+                         } else {
+                            controllers.propertyDetails.routes.PropertyDetailsOwnedBeforeController.editFromSummary(propertyDetails.id).url
+                        },
+                  content = Text(messages("ated.edit"))
+              ))
           ))
-        ))))
-            }
-            case Some(false) => {
-              @govukSummaryList(SummaryList(
-                rows = Seq(
-                SummaryListRow(
-                    key = Key(
-                    content = Text(messages("ated.form-bundle.view.isValuedByAgent.message"))
-                  ),
-                    value = Value(
-                    content = Text(messages("ated.property-details-period.no"))
-                  ),
-                    actions = Some(Actions(
-                    items = Seq(
+        )),
+        attributes = Map("id" -> "value-purpose-ated-incomplete")
+      ))
+    } else {
+    @for((valueObj, index) <- valuesToDisplay.zipWithIndex) {
+      @govukSummaryList(SummaryList(
+        rows = Seq(
+          SummaryListRow(
+            key = Key(
+              content = Text(messages(PeriodUtils.getPeriodValueMessage(index, valuesToDisplay.size)))
+            ),
+            value = Value(
+              content = HtmlContent(formattedPounds(valueObj.propertyValue))
+            ),
+            actions = Some(Actions(
+              items = Seq(
+                ActionItem(
+                  href = if(AtedUtils.isEditSubmitted(propertyDetails)) {
+                            controllers.editLiability.routes.EditLiabilityHasValueChangedController.editFromSummary(propertyDetails.id, Some(true)).url
+                         } else {
+                            controllers.propertyDetails.routes.PropertyDetailsOwnedBeforeController.editFromSummary(propertyDetails.id).url
+                         },
+                  content = Text(messages("ated.edit"))
+              ))
+          ))
+        )),
+        attributes = Map("id" -> s"value-purpose-ated-$index")
+      ))
+      }
+    }
+
+  @propertyDetails.value.map { propDetailsValue =>
+      @propDetailsValue.isValuedByAgent match {
+        case Some(true) => {
+          @govukSummaryList(SummaryList(
+            rows = Seq(
+              SummaryListRow(
+                key = Key(
+                  content = Text(messages("ated.form-bundle.view.isValuedByAgent.message"))
+                ),
+                value = Value(
+                  content = HtmlContent(messages("ated.property-details-period.yes"))
+                ),
+                actions = Some(Actions(
+                  items = Seq(
                     ActionItem(
                       href = controllers.propertyDetails.routes.PropertyDetailsProfessionallyValuedController.editFromSummary(propertyDetails.id).url,
                       content = Text(messages("ated.edit"))
-                    ))
-                  ))
+                    )
+                  )
                 ))
-              ))
-            }
-            case None => { 
-                    @govukSummaryList(SummaryList(
-                      rows = Seq(
-                      SummaryListRow(
-                        key = Key(
-                        content = Text(messages("ated.form-bundle.view.isValuedByAgent.message"))
-                      ),
-                        value = Value(
-                        content = HtmlContent(incompleteTag)
-                      ),
-                        actions = Some(Actions(
-                        items = Seq(
-                        ActionItem(
+              )
+            ),
+            attributes = Map("id" -> "professionally-valued-yes")
+          ))
+        }
+        case Some(false) => {
+          @govukSummaryList(SummaryList(
+            rows = Seq(
+              SummaryListRow(
+                key = Key(
+                  content = Text(messages("ated.form-bundle.view.isValuedByAgent.message"))
+                ),
+                value = Value(
+                  content = Text(messages("ated.property-details-period.no"))
+                ),
+                actions = Some(Actions(
+                  items = Seq(
+                    ActionItem(
+                      href = controllers.propertyDetails.routes.PropertyDetailsProfessionallyValuedController.editFromSummary(propertyDetails.id).url,
+                      content = Text(messages("ated.edit"))
+                    )
+                  )
+                ))
+              )
+            ),
+            attributes = Map("id" -> "professionally-valued-no")
+          ))
+        }
+        case None => {
+          @govukSummaryList(SummaryList(
+            rows = Seq(
+              SummaryListRow(
+                key = Key(
+                  content = Text(messages("ated.form-bundle.view.isValuedByAgent.message"))
+                ),
+                value = Value(
+                  content = HtmlContent(incompleteTag)
+                ),
+                actions = Some(Actions(
+                  items = Seq(
+                      ActionItem(
                           href = controllers.propertyDetails.routes.PropertyDetailsProfessionallyValuedController.editFromSummary(propertyDetails.id).url,
                           content = Text(messages("ated.edit"))
-                      ))
-                    ))
-                  ))
+                      )
+                  )
                 ))
-                }
+              )
+            ),
+            attributes = Map("id" -> "professionally-valued-incomplete")
+          ))
         }
-    }
+      }
+  }.getOrElse(
+      govukSummaryList(SummaryList(
+          rows = Seq(
+              SummaryListRow(
+                  key = Key(
+                      content = Text(messages("ated.form-bundle.view.isValuedByAgent.message"))
+                  ),
+                  value = Value(
+                      content = HtmlContent(incompleteTag)
+                  ),
+                  actions = Some(Actions(
+                      items = Seq(
+                          ActionItem(
+                              href = controllers.propertyDetails.routes.PropertyDetailsProfessionallyValuedController.editFromSummary(propertyDetails.id).url,
+                              content = Text(messages("ated.edit"))
+                          )
+                      )
+                  ))
+              )
+          ),
+          attributes = Map("id" -> "property-value-incomplete")
+      ))
+  )
 
   <h2 id="dates-of-liability-header" class="govuk-heading-m">@messages("ated.property-details-summary.table.dates-of-liability.header")</h2>
   @if(PeriodUtils.isListEmpty(periods)) {
@@ -303,191 +312,207 @@ controllers.propertyDetails.routes.PropertyDetailsOwnedBeforeController.editFrom
               ActionItem(
                 href = controllers.propertyDetails.routes.IsFullTaxPeriodController.editFromSummary(propertyDetails.id).url,
                 content = Text(messages("ated.edit"))
-            ))
-        ))
-      ))
+              )
+            )
+          ))
+        )
+      ),
+      attributes = Map("id" -> "dates-of-liability-incomplete")
     ))
   } else {
-  @for((period, index) <- periods.zipWithIndex) {
-    @govukSummaryList(SummaryList(
-      rows = Seq(
-        SummaryListRow(
-          key = Key(
-            content = Text(messages((period.description).getOrElse("")))
-          ),
-          value = Value(
-            content = Text(messages("ated.property-details-summary.table.period.text", period.startDate.toString(messages("ated.date-format")), period.endDate.toString(messages("ated.date-format"))))
-          ),
-          actions = Some(Actions(
-            items = Seq(
-              ActionItem(
-                href = controllers.propertyDetails.routes.IsFullTaxPeriodController.editFromSummary(propertyDetails.id).url,
-                content = Text(messages("ated.edit"))
+    @for((period, index) <- periods.zipWithIndex) {
+      @govukSummaryList(SummaryList(
+        rows = Seq(
+          SummaryListRow(
+            key = Key(
+              content = Text(messages((period.description).getOrElse("")))
+            ),
+            value = Value(
+              content = Text(messages("ated.property-details-summary.table.period.text", period.startDate.toString(messages("ated.date-format")), period.endDate.toString(messages("ated.date-format"))))
+            ),
+            actions = Some(Actions(
+              items = Seq(
+                ActionItem(
+                  href = controllers.propertyDetails.routes.IsFullTaxPeriodController.editFromSummary(propertyDetails.id).url,
+                  content = Text(messages("ated.edit"))
+                )
+              )
             ))
-        ))
+          )
+        ),
+        attributes = Map("id" -> s"dates-of-liability-$index")
       ))
-    ))
-  }
+    }
   }
 
-<h2 id="avoidance-scheme-header-incomplete" class="govuk-heading-m">@messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.header")</h2>
+<h2 id="avoidance-scheme-header" class="govuk-heading-m">@messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.header")</h2>
   @propertyDetails.period match {
     case Some(p) if(p.taxAvoidanceScheme.isDefined && p.taxAvoidancePromoterReference.isDefined) => {
       @govukSummaryList(SummaryList(
-      rows = Seq(
-        SummaryListRow(
-          key = Key(
-            content = Text(messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.label"))
-          ),
-          value = Value(
-            content = Text(p.taxAvoidanceScheme.getOrElse(""))
-          ),
-          actions = Some(Actions(
-            items = Seq(
-              ActionItem(
-                href = controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceController.editFromSummary(propertyDetails.id).url,
-                content = Text(messages("ated.edit"))
+        rows = Seq(
+          SummaryListRow(
+            key = Key(
+              content = Text(messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.label"))
+            ),
+            value = Value(
+              content = Text(p.taxAvoidanceScheme.getOrElse(""))
+            ),
+            actions = Some(Actions(
+              items = Seq(
+                ActionItem(
+                  href = controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceController.editFromSummary(propertyDetails.id).url,
+                  content = Text(messages("ated.edit"))
+                )
+              )
             ))
-        ))
-      ),
-      SummaryListRow(
-          key = Key(
-            content = Text(messages("ated.property-details-summary.table.property-ated-details.promoter-reference.label"))
           ),
-          value = Value(
-            content = Text(p.taxAvoidancePromoterReference.getOrElse(""))
-          ),
-          actions = Some(Actions(
-            items = Seq(
-              ActionItem(
-                href = controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceController.editFromSummary(propertyDetails.id).url,
-                content = Text(messages("ated.edit"))
+          SummaryListRow(
+            key = Key(
+              content = Text(messages("ated.property-details-summary.table.property-ated-details.promoter-reference.label"))
+            ),
+            value = Value(
+              content = Text(p.taxAvoidancePromoterReference.getOrElse(""))
+            ),
+            actions = Some(Actions(
+              items = Seq(
+                ActionItem(
+                  href = controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceController.editFromSummary(propertyDetails.id).url,
+                  content = Text(messages("ated.edit"))
+                )
+              )
             ))
-        ))
-      )
-      )
-    ))
-    }
+          )
+        ),
+        attributes = Map("id" -> "avoidance-scheme")
+      ))
+  }
     case Some(p) if(p.isTaxAvoidance.isDefined) => {
       @govukSummaryList(SummaryList(
-      rows = Seq(
-        SummaryListRow(
-          key = Key(
-            content = Text(messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.header"))
-          ),
-          value = Value(
-            content = Text(messages("ated.property-details-period.no"))
-          ),
-          actions = Some(Actions(
-            items = Seq(
-              ActionItem(
-                href = controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceController.editFromSummary(propertyDetails.id).url,
-                content = Text(messages("ated.edit"))
+        rows = Seq(
+          SummaryListRow(
+            key = Key(
+              content = Text(messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.header"))
+            ),
+            value = Value(
+              content = Text(messages("ated.property-details-period.no"))
+            ),
+            actions = Some(Actions(
+              items = Seq(
+                ActionItem(
+                  href = controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceController.editFromSummary(propertyDetails.id).url,
+                  content = Text(messages("ated.edit"))
+                )
+              )
             ))
-        ))
+          )
+        ),
+        attributes = Map("id" -> "avoidance-scheme-not-provided")
       ))
-    ))
     }
     case _ => {
       @govukSummaryList(SummaryList(
-      rows = Seq(
-        SummaryListRow(
-          key = Key(
-            content = Text(messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.header"))
-          ),
-          value = Value(
-            content = HtmlContent(incompleteTag)
-          ),
-          actions = Some(Actions(
-            items = Seq(
-              ActionItem(
-                href = controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceController.editFromSummary(propertyDetails.id).url,
-                content = Text(messages("ated.edit"))
+        rows = Seq(
+          SummaryListRow(
+            key = Key(
+              content = Text(messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.header"))
+            ),
+            value = Value(
+              content = HtmlContent(incompleteTag)
+            ),
+            actions = Some(Actions(
+              items = Seq(
+                ActionItem(
+                  href = controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceController.editFromSummary(propertyDetails.id).url,
+                  content = Text(messages("ated.edit"))
+                )
+              )
             ))
-        ))
+          )
+        ),
+        attributes = Map("id" -> "avoidance-scheme-incomplete")
       ))
-    ))
     }
   }
 
   <h2 class="govuk-heading-m" id="supporting-info-header">@messages("ated.property-details-summary.table.supporting-info.header")</h2>
 
-@propertyDetails.period.map(v =>
-  govukSummaryList(SummaryList(
-    rows = Seq(
-      SummaryListRow(
-        key = Key(
-          content = Text(messages("ated.property-details-summary.table.property-ated-details.additional-information.label"))
-        ),
-        value = Value(
-          content = Text(v.supportingInfo.fold(messages("ated.property-details-summary.field-blank"))(x => if(x == "") messages("ated.property-details-summary.field-blank") else x))
-        ),
-        actions = Some(Actions(
-          items = Seq(
-            ActionItem(
-              href = controllers.propertyDetails.routes.PropertyDetailsSupportingInfoController.editFromSummary(propertyDetails.id).url,
-              content = Text(messages("ated.edit"))
+
+      @govukSummaryList(SummaryList(
+        rows = Seq(
+          SummaryListRow(
+            key = Key(
+              content = Text(messages("ated.property-details-summary.table.property-ated-details.additional-information.label"))
+            ),
+            value = Value(
+              content = HtmlContent(additionalInfoContent)
+            ),
+            actions = Some(Actions(
+              items = Seq(
+                ActionItem(
+                  href = controllers.propertyDetails.routes.PropertyDetailsSupportingInfoController.editFromSummary(propertyDetails.id).url,
+                  content = Text(messages("ated.edit"))
+              ))
           ))
+        )),
+        attributes = Map("id" -> "supporting-information")
       ))
-    ))
-  ))
-)
 
 
   <h2 class="govuk-heading-m" id="return-status-header">@messages("ated.property-details-summary.table.property-ated-details.return-status.header")</h2>
 
-  @govukSummaryList(SummaryList(
-    rows = Seq(
-      SummaryListRow(
-        key = Key(
-          content = Text(messages("ated.property-details-summary.table.property-ated-details.return-status.label"))
-        ),
-        value = Value(
-          content = Text(messages("ated.property-details-summary.status.text"))
-        ))
-  )))
+    @govukSummaryList(SummaryList(
+      rows = Seq(
+        SummaryListRow(
+          key = Key(
+            content = Text(messages("ated.property-details-summary.table.property-ated-details.return-status.label"))
+          ),
+          value = Value(
+            content = Text(messages("ated.property-details-summary.status.text"))
+          ))
+      ),
+      attributes = Map("id" -> "return-status")
+    ))
 
-  <p class="govuk-body-m">@messages("ated.property-details-summary.table.ated-charge.text")</p>
+    <p class="govuk-body" id="ated-charge-text">@messages("ated.property-details-summary.table.ated-charge.text")</p>
 
-  <p class="govuk-heading-xl" id="ated-charge-text">
-    <span id="ated-charge-value" class="heading-xlarge form-group">
+
+    <p id="ated-charge-value" class="govuk-heading-xl govuk-form-group">
       @if(propertyDetails.calculated.isEmpty) {
-      @messages("ated.unknown-amount.text")
+        @messages("ated.unknown-amount.text")
       } else {
-      @propertyDetails.calculated.flatMap(x=>x.liabilityAmount.map(y=>formattedPounds(y)))
+        @propertyDetails.calculated.flatMap(x=>x.liabilityAmount.map(y=>formattedPounds(y)))
       }
-    </span>
-  </p>
+    </p>
 
-  @govukInsetText(InsetText(
-    content = Text(messages("ated.property-details-summary.saved-draft.text"))
-  ))
 
-<ul class="govuk-list">
-  <li>
-      <a href="@controllers.propertyDetails.routes.PropertyDetailsSummaryController.viewPrintFriendlyLiabilityReturn(propertyDetails.id)" id="print-friendly-liability-link" class="govuk-link">@messages("ated.property-details-summary.print.view")</a>
-  </li>
-  <li>
-      <a href="@controllers.routes.AccountSummaryController.view" class="govuk-link">@messages("ated.property-details-summary.saved-returns.link.text")</a>
-  </li>
-  <li>
-      <a href="@controllers.propertyDetails.routes.PropertyDetailsSummaryController.deleteDraft(propertyDetails.id, propertyDetails.periodKey)" class="govuk-link">@messages("ated.property-details-summary.delete-draft.link.text")</a>
-  </li>
-</ul>
+    @govukInsetText(InsetText(
+      content = Text(messages("ated.property-details-summary.saved-draft.text"))
+    ))
 
-@formHelper(action=controllers.propertyDetails.routes.PropertyDetailsSummaryController.submit(propertyDetails.id)) {
-  @if(propertyDetails.calculated.isEmpty){
-  } else {
-  @if(canSubmit && propertyDetails.period.isDefined && !PeriodUtils.isListEmpty(valuesToDisplay) && !PeriodUtils.isListEmpty(periods)) {
-@govukButton(Button(
-content = Text(messages("ated.confirm-and-continue")),
-attributes = Map("id" -> "submit-enabled")
-))
-  } else {
-  <p id="submit-disabled-text">@messages("ated.property-details-summary.submit-disabled-text")</p>
+    <ul class="govuk-list">
+      <li>
+          <a id="print-friendly-liability-link" class="govuk-link" href="@controllers.propertyDetails.routes.PropertyDetailsSummaryController.viewPrintFriendlyLiabilityReturn(propertyDetails.id)">@messages("ated.property-details-summary.print.view")</a>
+      </li>
+      <li>
+          <a id="save-as-draft" class="govuk-link" href="@controllers.routes.AccountSummaryController.view">@messages("ated.property-details-summary.saved-returns.link.text")</a>
+      </li>
+      <li>
+          <a id="delete-draft" class="govuk-link" href="@controllers.propertyDetails.routes.PropertyDetailsSummaryController.deleteDraft(propertyDetails.id, propertyDetails.periodKey)">@messages("ated.property-details-summary.delete-draft.link.text")</a>
+      </li>
+    </ul>
+
+    @formHelper(action=controllers.propertyDetails.routes.PropertyDetailsSummaryController.submit(propertyDetails.id)) {
+        @if(propertyDetails.calculated.isEmpty){
+            } else {
+                @if(canSubmit && propertyDetails.period.isDefined && !PeriodUtils.isListEmpty(valuesToDisplay) && !PeriodUtils.isListEmpty(periods)) {
+                    @govukButton(Button(
+                        content = Text(messages("ated.confirm-and-continue")),
+                        attributes = Map("id" -> "submit-enabled")
+                    ))
+            } else {
+            <p id="submit-disabled-text">@messages("ated.property-details-summary.submit-disabled-text")</p>
+            }
+        }
     }
-  }
-
-}
 
 }

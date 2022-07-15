@@ -26,7 +26,7 @@ import testhelpers.{AtedViewSpec, MockAuthUtil}
 
 class PropertyDetailsInReliefSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil {
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
-  val injectedViewInstance = app.injector.instanceOf[views.html.propertyDetails.propertyDetailsInRelief]
+  val injectedViewInstance: propertyDetailsInRelief = app.injector.instanceOf[views.html.propertyDetails.propertyDetailsInRelief]
   private val form = PropertyDetailsForms.periodsInAndOutReliefForm.withError("isInRelief",
     messages("ated.property-details-period.isInRelief.error-field-name"))
 
@@ -36,13 +36,13 @@ class PropertyDetailsInReliefSpec extends AtedViewSpec with MockitoSugar with Mo
 
   "The Property Details Professionally Valued View page" must {
     "have a the correct page title" in {
-      doc.title mustBe TitleBuilder.buildTitle(messages("ated.property-details-period.isInRelief.title"))
+      doc.title mustBe TitleBuilder.buildErrorTitle(messages("ated.property-details-period.isInRelief.title"))
     }
     "have the correct page header" in {
-      doc.title mustBe TitleBuilder.buildTitle(messages("ated.property-details-period.isInRelief.header"))
+      doc.getElementsByTag("h1").text() must include (messages("ated.property-details-period.isInRelief.header"))
     }
     "have the correct pre heading" in {
-      doc.title(messages("ated.property-details.pre-header"))
+      doc.getElementsByClass("govuk-caption-xl").text() mustBe ("This section is " + messages("ated.property-details.pre-header"))
     }
     "have a backlink" in {
       doc.getElementsByClass("govuk-back-link").text mustBe "Back"
@@ -55,8 +55,8 @@ class PropertyDetailsInReliefSpec extends AtedViewSpec with MockitoSugar with Mo
       doc.getElementsByAttributeValue("for","isInRelief-2").text() mustBe messages("ated.property-details-value.no")
     }
     "check page errors" in {
-      doc.getElementsMatchingOwnText(messages("ated.property-details-period.isInRelief.error-field-name")).hasText mustBe true
-//      doc.getElementsMatchingOwnText(messages("ated.property-details-period-error.general.isInRelief")).hasText mustBe true
+      doc.getElementById("isInRelief-error").text() mustBe ("Error: " + messages("ated.property-details-period.isInRelief.error-field-name"))
+      doc.getElementsByClass("govuk-error-summary__list").text() mustBe messages("ated.property-details-period.isInRelief.error-field-name")
     }
   }
 }

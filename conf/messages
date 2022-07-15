@@ -198,7 +198,8 @@ ated.choose-reliefs.avoidance-reveal-line-1 = HMRC never approves tax avoidance 
 ated.choose-reliefs.avoidance-reveal-line-2 = You will have received your scheme reference number (SRN) and promoter reference number (PRN)
 ated.choose-reliefs.avoidance-info-line-1 = from your scheme provider on form AAG6 Disclosure of avoidance scheme – Notification of scheme reference number
 ated.choose-reliefs.avoidance-info-line-2 = direct from HMRC
-ated.choose-reliefs.avoidance-more-info = <a class="govuk-link" href="https://www.gov.uk/guidance/disclosure-of-tax-avoidance-schemes-overview">More information on tax avoidance schemes</a>
+ated.choose-reliefs.avoidance-more-info = More information on tax avoidance schemes
+ated.choose-reliefs.avoidance-hint = For example, 12345678
 ated.choose-reliefs-further.information.text = We do not need any further information or property details, but you must keep records to support your claim for relief. If a property is no longer eligible for relief, a further return will be required.
 
 ated.choose-reliefs.error = You must select at least one relief
@@ -540,7 +541,8 @@ ated.property-details.title.header =  What is the property’s title number? (op
 ated.property-details.address = Address
 ated.property-details.references = You can find the property’s title number on the title deeds for the property.
 ated.property-details-titleNumber.reveal =  I do not know my property’s title number
-ated.property-details-titleNumber-reveal.text = This is a number issued by the Land Registry when land is first registered. If you do not have a copy of the title deeds for the property you can find it by doing a <a href="https://www.gov.uk/search-property-information-land-registry" rel="noreferrer noopener" target="_blank">Land Registry search</a>.
+ated.property-details-titleNumber-reveal.text = This is a number issued by the Land Registry when land is first registered. If you do not have a copy of the title deeds for the property you can find it by doing a
+ated.property-details-titleNumber-reveal.text.link = Land Registry search (opens in new tab)
 ated.property-details-localAuthorityNumber-reveal = I do not know my local authority number
 ated.property-details-localAuthorityNumber.text = <p>Enter the number of the local authority in the area where the lead property is situated. If a property falls between more than one local authority boundary enter the code for either, preferably the authority into whose area most of the property falls.</p><a href="https://www.gov.uk/hmrc-internal-manuals/stamp-duty-land-tax-manual/sdltm62320">Find your local authority number</a>
 ated.property-title.yes = Yes
@@ -650,9 +652,10 @@ ated.property-details-value.anAcquisition.error-field-name = You must answer thi
 ated.property-details-value.anAcquisition.legend = In this chargeable period, have you bought or sold land, or extended an existing lease on the property, for £40,000 or more?
 ated.property-details-value.anAcquisition.what = Why is the £40,000 level important?
 
-ated.property-details-value.anAcquisition.what.text1 = <p>Buying land or extending an existing lease for £40,000 or more (acquisition) would trigger a revaluation. If the property moves into a higher property band this means you have to pay more tax.<\p>
-ated.property-details-value.anAcquisition.what.text2 = <p>Selling any land connected to the property for £40,000 or more (disposal) would trigger a revaluation. If the property moves into a lower property band this means you have to pay less tax.</p>
-ated.property-details-value.anAcquisition.what.text3 = <p>Further information on this can be found in the <a href="https://www.gov.uk/government/publications/annual-tax-on-enveloped-dwellings-technical-guidance">ATED technical guidance</a>.</p>
+ated.property-details-value.anAcquisition.what.text1 = Buying land or extending an existing lease for £40,000 or more (acquisition) would trigger a revaluation. If the property moves into a higher property band this means you have to pay more tax.
+ated.property-details-value.anAcquisition.what.text2 = Selling any land connected to the property for £40,000 or more (disposal) would trigger a revaluation. If the property moves into a lower property band this means you have to pay less tax.
+ated.property-details-value.anAcquisition.what.text3 = Further information on this can be found in the
+ated.property-details-value.anAcquisition.what.text3.link = ATED technical guidance
 
 ated.property-details-value.propertyDetailsValue.newBuildDate.error.empty = You must enter a property build date
 ated.property-details-value.propertyDetailsValue.notNewBuildDate.error.empty = You must enter a property acquired date
@@ -685,7 +688,7 @@ ated.property-details-value.partAcqDispDate.error.too-early = The date when you 
 ated.property-details-value.partAcqDispDate.error.too-late = The date when you made the £40,000 or more change must be in this chargeable period
 ated.property-details-value.partAcqDispDate.error.in-future = The date when you made the £40,000 or more change cannot be in the future
 ated.property-details-value.isOwnedBeforeValuationYear.title = Did the company own this property on or before 1 April {0}?
-ated.property-details-value.isOwnedBeforeValuationYear.error.non-selected = You must answer this question.
+ated.property-details-value.isOwnedBeforeValuationYear.error.non-selected = You must answer this question
 ated.property-details-value.ownedBeforevaluationYear.Value = What was the value of the property on the 1 April {0}?
 ated.property-details-value.ownedBeforevaluationYear.hint = For example, £1,500,000
 
@@ -878,7 +881,8 @@ ated.chargeable-return-confirmation.amount.message = This amount does not reflec
 ated.chargeable-return-confirmation.owe.text = The charges for this return are {0}.
 ated.chargeable-return-confirmation.reference.text = The reference to make this payment is {0}.
 
-ated.chargeable-return-late-payment.text = Late payment penalties can be issued when ATED is unpaid. Find out about <a href="https://www.gov.uk/guidance/pay-annual-tax-on-enveloped-dwellings">how to pay and payment deadlines</a>.
+ated.chargeable-return-late-payment.text = Late payment penalties can be issued when ATED is unpaid. Find out about
+ated.chargeable-return-late-payment.text.link = how to pay and payment deadlines
 ated.chargeable-return-late-payment-pf.text = Late payment penalties can be issued when ATED is unpaid. Find out more by searching GOV.UK for ‘pay annual tax on enveloped dwellings’.
 
 ated.chargeable-return-confirmation.submitted.text = Your return has been successfully submitted
@@ -1166,7 +1170,7 @@ ated.edit-liability.return-type.no-edit-legend4 = Report the disposal of the pro
 ated.edit-liability.dispose-property.yes = Yes
 ated.edit-liability.dispose-property.no = No
 ated.edit-liability.move-property.label = Move a property into relief
-ated.edit-liability.edit-return-type.error = Answer yes if you have disposed of the property
+ated.edit-liability.edit-return-type.error = Select yes if you have disposed of the property
 
 ##### AGENT CLIENT RELATIONSHIP DETAILS
 
@@ -1335,7 +1339,7 @@ ated.change-liability.period.endDate.empty-error = You must enter a liability en
 ated.edit-liability-details-period-error.general.taxAvoidanceScheme = There is a problem with the avoidance scheme reference number
 ated.edit-liability-details-period-error.general.taxAvoidancePromoterReference = There is a problem with the promoter reference number
 ated.edit-liability-details-period-error.general.isTaxAvoidance = There is a problem with the avoidance scheme question
-ated.edit-liability.error.general.editLiabilityType = Answer yes if you have disposed of the property
+#####ated.edit-liability.error.general.editLiabilityType = Answer yes if you have disposed of the property
 
 ##### EDIT LIABILITY DECLARATION PAGE
 

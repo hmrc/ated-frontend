@@ -27,16 +27,18 @@ import org.scalatest.{BeforeAndAfterEach, GivenWhenThen}
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Messages, MessagesApi}
+import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import play.twirl.api.Html
 import testhelpers.MockAuthUtil
 import utils.PeriodUtils
 import utils.PeriodUtils._
+import views.html.propertyDetails.propertyDetailsSummary
 
 class propertyDetailsSummarySpec extends AnyFeatureSpecLike with GuiceOneAppPerSuite with MockitoSugar
   with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
 
-  implicit val request = FakeRequest()
+  implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
@@ -44,14 +46,14 @@ class propertyDetailsSummarySpec extends AnyFeatureSpecLike with GuiceOneAppPerS
   val thisYear: Int = calculatePeakStartYear()
   val nextYear: Int = thisYear + 1
 
-  val injectedViewInstance = app.injector.instanceOf[views.html.propertyDetails.propertyDetailsSummary]
+  val injectedViewInstance: propertyDetailsSummary = app.injector.instanceOf[views.html.propertyDetails.propertyDetailsSummary]
 
   def formatDate(date: LocalDate): String = DateTimeFormat.forPattern("d MMMM yyyy").withZone(DateTimeZone.forID("Europe/London")).print(date)
   Feature("The user can view their property details summary before they submit it") {
 
     info("as a client i want to be my property details summary")
 
-    Scenario("return the basic summary with periods") {
+    Scenario("return the basic summary with dates of liability") {
 
       Given("the client is creating a new liability and want to add multiple periods")
       When("The user views the page")
@@ -66,39 +68,36 @@ class propertyDetailsSummarySpec extends AnyFeatureSpecLike with GuiceOneAppPerS
 
       val document = Jsoup.parse(html.toString())
       Then("The header should match - Check your details are correct")
-      assert(document.getElementsByClass("govuk-heading-l").text contains "Check your details are correct")
+      assert(document.getElementsByTag("h1").text contains "Check your details are correct")
 
       Then("The subheader should be - Create return")
-      assert(document.getElementsByClass("govuk-heading-l").text contains  "This section is: Create return")
+      assert(document.getElementsByClass("govuk-caption-xl").text === "This section is: Create return")
 
       assert(document.getElementById("details-text").text() === s"For the ATED period from " +
         s"${formatDate(periodStartDate(calculatePeakStartYear()))} to ${formatDate(periodEndDate(calculatePeakStartYear()))}.")
-      assert(document.getElementById("property-details-header").text() === "Property details")
 
-      assert(document.getElementsByClass("govuk-summary-list__key").text() contains  "Address")
-      assert(document.getElementsByClass("govuk-summary-list__key").text() contains  "Property’s title number")
+      assert(document.getElementById("property-details-header").text() === "Property details")
+      assert(document.select("#property-details > div:nth-child(1) > dt").text() === "Address")
+      assert(document.select("#property-details > div:nth-child(2) > dt").text() === "Property’s title number")
       assert(document.getElementById("property-value-header").text() === "Value of the property")
-      assert(document.getElementsByClass("govuk-summary-list__key").text() contains "Value for the purposes of ATED")
-      assert(document.getElementById("property-is-Valued-by-agent-label-0") === null)
-      assert(document.getElementsByClass("govuk-summary-list__key").text() contains  "Professionally valued")
+      assert(document.select("#value-purpose-ated-0 > div > dt").text() === "Value for the purposes of ATED")
+      assert(document.select("#professionally-valued-yes > div > dt").text() ===  "Professionally valued")
       assert(document.getElementById("dates-of-liability-header").text() === "Dates of liability")
-      assert(document.getElementsByClass("govuk-summary-list__key").text() contains "Liable for charge")
-      assert(document.getElementsByClass("govuk-summary-list__value").text contains "1 April " + thisYear + " to 31 August "  + thisYear)
-      assert(document.getElementsByClass("govuk-summary-list__key").text() contains "Rental business")
-      assert(document.getElementsByClass("govuk-summary-list__value").text contains "1 September " + thisYear + " to 31 March " + nextYear)
-      assert(document.getElementById("return-type-2") === null)
-      assert(document.getElementById("period-2") === null)
+      assert(document.select("dl.govuk-summary-list:nth-child(10) > div:nth-child(1) > dt:nth-child(1)").text() === "Liable for charge")
+      assert(document.select("dl.govuk-summary-list:nth-child(10) > div:nth-child(1) > dd:nth-child(2)").text === "1 April " + thisYear + " to 31 August "  + thisYear)
+      assert(document.select("dl.govuk-summary-list:nth-child(11) > div:nth-child(1) > dt:nth-child(1)").text() === "Rental business")
+      assert(document.select("dl.govuk-summary-list:nth-child(11) > div:nth-child(1) > dd:nth-child(2)").text === "1 September " + thisYear + " to 31 March " + nextYear)
       assert(document.getElementById("supporting-info-header").text() === "Supporting information")
-      assert(document.getElementsByClass("govuk-summary-list__key").text() contains "Additional information")
-      assert(document.getElementById("avoidance-scheme-header-incomplete").text() === "Avoidance scheme")
-      assert(document.getElementsByClass("govuk-summary-list__key").text() contains "Avoidance scheme reference number")
+      assert(document.select("#supporting-information > div > dt").text() === "Additional information")
+      assert(document.getElementById("avoidance-scheme-header").text() === "Avoidance scheme")
+      assert(document.select("#avoidance-scheme > div:nth-child(1) > dt").text() === "Avoidance scheme reference number")
       assert(document.getElementById("return-status-header").text() === "Return status")
-      assert(document.getElementsByClass("govuk-summary-list__key").text() contains "Status")
-      assert(document.getElementsByClass("govuk-body-m").text() === "Based on the information you have given us your ATED charge is")
+      assert(document.select("#return-status > div > dt").text() contains "Status")
+      assert(document.getElementById("ated-charge-text").text() === "Based on the information you have given us your ATED charge is")
       assert(document.getElementById("ated-charge-value").text() === "£1,000")
     }
 
-    Scenario("return the basic summary with no periods") {
+    Scenario("return the basic summary with no dates of liability") {
       Given("the client is creating a new liability and want to add multiple periods")
       When("The user views the page")
 
@@ -109,39 +108,38 @@ class propertyDetailsSummarySpec extends AnyFeatureSpecLike with GuiceOneAppPerS
 
       val document = Jsoup.parse(html.toString())
 
+      Then("The title should match - Check your details are correct - GOV.UK")
+      assert(document.title() === "Check your details are correct - GOV.UK")
+
       Then("The header should match - Check your details are correct")
-      assert(document.getElementsByClass("govuk-heading-l").text contains "Check your details are correct")
+      assert(document.getElementsByTag("h1").text() contains "Check your details are correct")
 
       Then("The subheader should be - Create return")
-      assert(document.getElementsByClass("govuk-heading-l").text contains "This section is: Create return")
+      assert(document.getElementsByClass("govuk-caption-xl").text() === "This section is: Create return")
 
       assert(document.getElementById("details-text")
         .text() === s"For the ATED period from ${formatDate(periodStartDate(calculatePeakStartYear()))} to ${formatDate(periodEndDate(calculatePeakStartYear()))}.")
       assert(document.getElementById("property-details-header").text() === "Property details")
-
-      assert(document.getElementsByClass("govuk-summary-list__key").text() contains  "Address")
-      assert(document.getElementsByClass("govuk-summary-list__key").text() contains  "Property’s title number")
+      assert(document.select("#property-details > div:nth-child(1) > dt").text() === "Address")
+      assert(document.select("#property-details > div:nth-child(2) > dt").text() === "Property’s title number")
       assert(document.getElementById("property-value-header").text() === "Value of the property")
-      assert(document.getElementsByClass("govuk-summary-list__key").text() contains "Value for the purposes of ATED")
-      assert(document.getElementById("property-is-Valued-by-agent-label-0") === null)
-      assert(document.getElementsByClass("govuk-summary-list__key").text() contains  "Professionally valued")
+      assert(document.select("#value-purpose-ated-0 > div > dt").text() === "Value for the purposes of ATED")
+      assert(document.select("#professionally-valued-yes > div > dt").text() ===  "Professionally valued")
       assert(document.getElementById("dates-of-liability-header").text() === "Dates of liability")
-      assert(document.getElementById("return-type-0") === null)
-      assert(document.getElementById("period-0") === null)
       assert(document.getElementById("supporting-info-header").text() === "Supporting information")
-      assert(document.getElementsByClass("govuk-summary-list__key").text() contains "Additional information")
-      assert(document.getElementById("avoidance-scheme-header-incomplete").text() === "Avoidance scheme")
-      assert(document.getElementsByClass("govuk-summary-list__key").text() contains "Avoidance scheme reference number")
+      assert(document.select("#supporting-information > div > dt").text() === "Additional information")
+      assert(document.getElementById("avoidance-scheme-header").text() === "Avoidance scheme")
+      assert(document.select("#avoidance-scheme > div:nth-child(1) > dt").text() === "Avoidance scheme reference number")
       assert(document.getElementById("return-status-header").text() === "Return status")
-      assert(document.getElementsByClass("govuk-summary-list__key").text() contains "Status")
-      assert(document.getElementsByClass("govuk-body-m").text() === "Based on the information you have given us your ATED charge is")
+      assert(document.select("#return-status > div > dt").text() contains "Status")
+      assert(document.getElementById("ated-charge-text").text() === "Based on the information you have given us your ATED charge is")
       assert(document.getElementById("ated-charge-value").text() === "£1,000")
       assert(document.getElementById("submit-disabled-text").text() == "You cannot submit returns until 1 April.")
     }
 
-    Scenario("user comes in during march to create a draft return so submit should be disabled") {
+    Scenario("user comes in during March to create a draft return so submit should be disabled") {
 
-      Given("the client is creating a new liability during march")
+      Given("the client is creating a new liability during March")
       When("The user views the page")
 
       val propertyDetails = PropertyDetailsBuilder.getFullPropertyDetails(id = "1", postCode = Some("123456"), liabilityAmount = Some(BigDecimal(1000.20)))

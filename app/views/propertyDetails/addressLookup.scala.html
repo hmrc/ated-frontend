@@ -41,8 +41,8 @@
 @backLinkHtml = {
     @if(backLink.isDefined) {
         @govukBackLink(BackLink(
-        href = backLink.get,
-        content = Text("Back")
+            href = backLink.get,
+            content = Text("Back")
         ))
     }
 }
@@ -51,38 +51,47 @@
 <script src='@controllers.routes.Assets.versioned("javascript/manualAddressEntryLink.js")'></script>
 }
 
-@newMain(title = titleBuilder(messages("ated.address-lookup.title")),
+@newMain(title = titleBuilder(messages("ated.address-lookup.title"), Some(searchForm)),
           pageScripts=Some(pageScripts),
           serviceInfoContent = serviceInfoContent) {
 
   @backLinkHtml
 
- <header>
-    <h1 class="govuk-heading-l">
-        <span class="govuk-caption-l"><span class="govuk-visually-hidden">@messages("ated.screen-reader.section") </span>@messages(AtedUtils.getPropertyDetailsPreHeader(mode))</span>
-        @messages("ated.address-lookup.header")
-    </h1>
- </header>
+  @if(searchForm.hasErrors) {
+        @govukErrorSummary(ErrorSummary().withFormErrorsAsText(searchForm))
+  }
+
+  <header>
+     <h1 class="govuk-heading-xl">
+         <span class="govuk-caption-xl">
+             <span class="govuk-visually-hidden">
+                 @messages("ated.screen-reader.section")
+             </span>
+             @messages(AtedUtils.getPropertyDetailsPreHeader(mode))
+         </span>
+         @messages("ated.address-lookup.header")
+     </h1>
+  </header>
 
   @formHelper(action=controllers.propertyDetails.routes.AddressLookupController.find(id, periodKey, mode)) {
 
         @govukInput(Input(
             label = Label(
-            content = Text(messages("ated.address-lookup.house-name"))
+                content = Text(messages("ated.address-lookup.house-name"))
             )
             ).withFormField(searchForm("houseName")
         ))
 
         @govukInput(Input(
             label = Label(
-            content = Text(messages("ated.address-lookup.postcode"))
+                content = Text(messages("ated.address-lookup.postcode"))
             ),
             classes = "govuk-input--width-10"
         ).withFormField(searchForm("postcode")
         ))
 
         <div class="govuk-form-group">
-        <a class="govuk-link" href="@controllers.propertyDetails.routes.AddressLookupController.manualAddressRedirect(id, periodKey, mode)"
+        <a class="govuk-link govuk-body" href="@controllers.propertyDetails.routes.AddressLookupController.manualAddressRedirect(id, periodKey, mode)"
            id="enter-address-link"
            onkeyup='spaceBarHandler(event,"@controllers.propertyDetails.routes.AddressLookupController.manualAddressRedirect(id, periodKey, mode)")'>
             @messages("ated.address-lookup.no-postcode-link.title")</a>

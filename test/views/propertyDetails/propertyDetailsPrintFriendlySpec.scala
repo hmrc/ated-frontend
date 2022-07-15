@@ -23,10 +23,11 @@ import org.joda.time.format.DateTimeFormat
 import org.joda.time.{DateTimeZone, LocalDate}
 import org.jsoup.Jsoup
 import org.scalatest.featurespec.AnyFeatureSpecLike
-import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
+import org.scalatest.{BeforeAndAfterEach, GivenWhenThen}
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.i18n.{Messages, MessagesApi}
+import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import testhelpers.MockAuthUtil
 import utils.PeriodUtils
@@ -35,13 +36,13 @@ import utils.PeriodUtils._
 class propertyDetailsPrintFriendlySpec extends AnyFeatureSpecLike with GuiceOneServerPerSuite with MockitoSugar
   with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
 
-  implicit val request = FakeRequest()
+  implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
-implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
+  implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
 
   val thisYear: Int = calculatePeakStartYear()
-  val nextYear = thisYear + 1
+  val nextYear: Int = thisYear + 1
 
   def formatDate(date: LocalDate): String = DateTimeFormat.forPattern("d MMMM yyyy").withZone(DateTimeZone.forID("Europe/London")).print(date)
   Feature("The user can view their property details summary before they submit it") {
@@ -55,7 +56,6 @@ implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetr
 
       val propertyDetails = PropertyDetailsBuilder.getFullPropertyDetails(id = "1", postCode = Some("123456"), liabilityAmount = Some(BigDecimal(1000.20)))
 
-
       Then("The config should have - 2 periods")
       val displayPeriods = PeriodUtils.getDisplayPeriods(propertyDetails.period, 2015)
       assert(displayPeriods.size === 2)
@@ -67,7 +67,6 @@ implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetr
 
       Then("The header should match - Chargeable return for")
       assert(document.getElementById("property-details-summary-header").text.contains("Chargeable return for") === true)
-
 
       assert(document.getElementById("details-text").text() === s"For the ATED period from" +
         s" ${formatDate(periodStartDate(calculatePeakStartYear()))} to ${formatDate(periodEndDate(calculatePeakStartYear()))}.")
@@ -108,7 +107,6 @@ implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetr
 
       Then("The header should match - Chargeable return for")
       assert(document.getElementById("property-details-summary-header").text.contains("Chargeable return for") === true)
-
 
       assert(document.getElementById("details-text").text() === s"For the ATED period from " +
         s"${formatDate(periodStartDate(calculatePeakStartYear()))} to ${formatDate(periodEndDate(calculatePeakStartYear()))}.")

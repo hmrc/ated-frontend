@@ -44,10 +44,18 @@
 @backLinkHtml = {
     @if(backLink.isDefined) {
         @govukBackLink(BackLink(
-        href = backLink.get,
-        content = Text("Back")
+            href = backLink.get,
+            content = Text("Back")
         ))
     }
+}
+
+@detailsContent = {
+    <p id="anAcquisition-text-1">@messages("ated.property-details-value.anAcquisition.what.text1")</p>
+    <p id="anAcquisition-text-2">@messages("ated.property-details-value.anAcquisition.what.text2")</p>
+    <p id="anAcquisition-text-3">@messages("ated.property-details-value.anAcquisition.what.text3")
+        <a class="govuk-link" href="https://www.gov.uk/government/publications/annual-tax-on-enveloped-dwellings-technical-guidance">@messages("ated.property-details-value.anAcquisition.what.text3.link")</a>.
+    </p>
 }
 
 @newMain(title = titleBuilder(messages("ated.property-details-value.anAcquisition.title"), Some(propertyDetailsForm)),
@@ -60,30 +68,49 @@
   }
 
    <header>
-      <h1 class="govuk-heading-l">
-          <span class="govuk-caption-l"><span class="govuk-visually-hidden">@messages("ated.screen-reader.section") </span>@messages(AtedUtils.getPropertyDetailsPreHeader(mode))</span>
+      <h1 class="govuk-heading-xl">
+          <span class="govuk-caption-xl">
+              <span class="govuk-visually-hidden">
+                  @messages("ated.screen-reader.section")
+              </span>
+              @messages(AtedUtils.getPropertyDetailsPreHeader(mode))
+          </span>
           @messages("ated.property-details-value.anAcquisition.title", PeriodUtils.calculateLowerTaxYearBoundary(periodKey).getYear.toString)
       </h1>
    </header>
 
    @govukDetails(Details(
     summary = Text(messages("ated.property-details-value.anAcquisition.what")),
-    content = HtmlContent(messages("ated.property-details-value.anAcquisition.what.text1") + messages("ated.property-details-value.anAcquisition.what.text2") + messages("ated.property-details-value.anAcquisition.what.text3"))
+    content = HtmlContent(detailsContent)
+
   ))
 
     @formHelper(action = controllers.propertyDetails.routes.PropertyDetailsAcquisitionController.save(id, periodKey, mode)) {
 
-            @govukRadios(Radios(items = Seq(RadioItem(content = Text(messages("ated.property-details-value.yes")), value = Some("true")), 
-                                  RadioItem(content = Text(messages("ated.property-details-value.no")),  value = Some("false")))
-                                  ).withFormField(propertyDetailsForm("anAcquisition"))
-                                )
+        @govukRadios(Radios(
+            fieldset = Some(Fieldset(
+                legend = Some(Legend(
+                    classes = "govuk-visually-hidden",
+                    content = Text(messages("ated.property-details-value.anAcquisition.header"))
+                ))
+            )),
+            items = Seq(
+                RadioItem(
+                    content = Text(messages("ated.property-details-value.yes")),
+                    value = Some("true")
+                ),
+                RadioItem(
+                    content = Text(messages("ated.property-details-value.no")),
+                    value = Some("false"))
+                ),
+                classes = "govuk-radios--inline"
+            ).withFormField(propertyDetailsForm("anAcquisition"))
+        )
 
-@govukButton(Button(
-content = Text(messages("ated.save-and-continue")),
-attributes = Map("id" -> "submit")
-))
-
-
+        @govukButton(Button(
+            content = Text(messages("ated.save-and-continue")),
+            attributes = Map("id" -> "submit")
+        ))
   }
 
 }

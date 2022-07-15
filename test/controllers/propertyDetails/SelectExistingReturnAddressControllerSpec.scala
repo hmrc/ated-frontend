@@ -17,7 +17,6 @@
 package controllers.propertyDetails
 
 import java.util.UUID
-
 import builders.{SessionBuilder, TitleBuilder}
 import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
@@ -42,6 +41,7 @@ import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.AtedConstants
 import views.html.BtaNavigationLinks
+import views.html.propertyDetails.selectPreviousReturn
 
 import scala.concurrent.Future
 
@@ -62,7 +62,7 @@ class SelectExistingReturnAddressControllerSpec extends PlaySpec with GuiceOneSe
   lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
-  val injectedViewInstance = app.injector.instanceOf[views.html.propertyDetails.selectPreviousReturn]
+  val injectedViewInstance: selectPreviousReturn = app.injector.instanceOf[views.html.propertyDetails.selectPreviousReturn]
   val returnTypeCharge: String = "CR"
   val returnTypeRelief: String = "RR"
 
@@ -171,9 +171,6 @@ class SelectExistingReturnAddressControllerSpec extends PlaySpec with GuiceOneSe
         .apply(SessionBuilder.updateRequestWithSession(FakeRequest().withJsonBody(inputJson), userId))
       test(result)
     }
-  }
-
-  override def beforeEach(): Unit = {
   }
 
   "SelectExistingReturnAddressController" must {
@@ -288,7 +285,6 @@ class SelectExistingReturnAddressControllerSpec extends PlaySpec with GuiceOneSe
         result =>
           status(result) must be(SEE_OTHER)
           redirectLocation(result).get must include("/ated/liability/create/address/2015")
-
       }
     }
 
@@ -303,13 +299,12 @@ class SelectExistingReturnAddressControllerSpec extends PlaySpec with GuiceOneSe
         }
       }
 
-
       "submitting an invalid request should fail and return to the search results page" in new Setup {
         saveWithAuthorisedUser(None, prevReturns, None, None, None, Json.toJson(AddressSelected(None))) {
           result =>
             status(result) must be(BAD_REQUEST)
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be(TitleBuilder.buildTitle("Select the property from your previous year returns"))
+            document.title() must be(TitleBuilder.buildErrorTitle("Select the property from your previous year returns"))
         }
       }
 
@@ -318,8 +313,7 @@ class SelectExistingReturnAddressControllerSpec extends PlaySpec with GuiceOneSe
           result =>
             status(result) must be(BAD_REQUEST)
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be(TitleBuilder.buildTitle("Select the property from your previous year returns"))
-
+            document.title() must be(TitleBuilder.buildErrorTitle("Select the property from your previous year returns"))
         }
       }
 
@@ -328,26 +322,25 @@ class SelectExistingReturnAddressControllerSpec extends PlaySpec with GuiceOneSe
           result =>
             status(result) must be(BAD_REQUEST)
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be(TitleBuilder.buildTitle("Select the property from your previous year returns"))
+            document.title() must be(TitleBuilder.buildErrorTitle("Select the property from your previous year returns"))
 
         }
       }
 
       "submitting an valid request should get the form bundle return and save in keystore" in new Setup {
-        val formBundleProp = FormBundleProperty(BigDecimal(100), new LocalDate("2015-09-08"),
+        val formBundleProp: FormBundleProperty = FormBundleProperty(BigDecimal(100), new LocalDate("2015-09-08"),
           new LocalDate("2015-10-12"), "Relief", Some("Property developers"))
-        val formBundleAddress = FormBundleAddress("1 addressLine1", "addressLine2", Some("addressLine3"), Some("AddressLine4"), Some("XX11XX"), "GB")
-        val formBundlePropertyDetails = FormBundlePropertyDetails(Some("title here"), formBundleAddress, Some("additional details"))
-        val viewReturn = FormBundleReturn("2014", formBundlePropertyDetails,
+        val formBundleAddress: FormBundleAddress = FormBundleAddress("1 addressLine1", "addressLine2", Some("addressLine3"), Some("AddressLine4"), Some("XX11XX"), "GB")
+        val formBundlePropertyDetails: FormBundlePropertyDetails = FormBundlePropertyDetails(Some("title here"), formBundleAddress, Some("additional details"))
+        val viewReturn: FormBundleReturn = FormBundleReturn("2014", formBundlePropertyDetails,
           Some(new LocalDate("2013-10-10")),
           Some(BigDecimal(100)),
           Some("ABCdefgh"),
           Some("PromABCdefgh"),
           Some("1234"), true, true, new LocalDate("2015-05-10"), BigDecimal(9324), "1234567891", List(formBundleProp))
-        val answer = Some(true)
-        val pkey = Some(SelectPeriod(Some("2018")))
-        val propertyDetails = Some(PropertyDetails("12", 2018, PropertyDetailsAddress("1 oak", "Divine court", Some("Leerty"), Some("Berkshire"), Some("ZZ11ZZ"))))
-
+        val answer: Option[Boolean] = Some(true)
+        val pkey: Option[SelectPeriod] = Some(SelectPeriod(Some("2018")))
+        val propertyDetails: Option[PropertyDetails] = Some(PropertyDetails("12", 2018, PropertyDetailsAddress("1 oak", "Divine court", Some("Leerty"), Some("Berkshire"), Some("ZZ11ZZ"))))
 
         saveWithAuthorisedUser(Some(viewReturn), prevReturns, answer, pkey, propertyDetails, Json.toJson(AddressSelected(Some("12345678")))) {
           result =>

@@ -27,7 +27,7 @@ import testhelpers.{AtedViewSpec, MockAuthUtil}
 class PropertyDetailsNewBuildValueSpec extends AtedViewSpec with MockAuthUtil {
 
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
-  val injectedViewInstance = app.injector.instanceOf[views.html.propertyDetails.propertyDetailsNewBuildValue]
+  val injectedViewInstance: propertyDetailsNewBuildValue = app.injector.instanceOf[views.html.propertyDetails.propertyDetailsNewBuildValue]
 
   implicit val appConfig: ApplicationConfig = mock[ApplicationConfig]
 
@@ -36,7 +36,7 @@ class PropertyDetailsNewBuildValueSpec extends AtedViewSpec with MockAuthUtil {
 
   val periodKey = 2000
   val testDate = new LocalDate("2020-02-02")
-  val testDateString = testDate.toString.replace("-","")
+  val testDateString: String = testDate.toString.replace("-","")
   val testDay = "2"
   val testMonth = "February"
   val testYear = "2020"
@@ -47,21 +47,22 @@ class PropertyDetailsNewBuildValueSpec extends AtedViewSpec with MockAuthUtil {
       doc.title mustBe TitleBuilder.buildTitle(messages("ated.property-details-value.newBuildValue.title",testDay,testMonth,testYear))
     }
     "have the correct page header" in {
-      doc.title mustBe TitleBuilder.buildTitle(messages("ated.property-details-value.newBuildValue.header",testDay,testMonth,testYear))
+      doc.getElementsByTag("h1").text() must include (messages("ated.property-details-value.newBuildValue.header",testDay,testMonth,testYear))
     }
     "have the correct pre heading" in {
-      doc.title(messages("ated.property-details.pre-header"))
+      doc.getElementsByClass("govuk-caption-xl").text mustBe "This section is Create return"
+    }
+    "have the correct hint text" in {
+      doc.getElementById("newBuildValue-hint").text() mustBe "Enter the value in GBP, for example £1,500,000"
     }
     "have a backlink" in {
       doc.getElementsByClass("govuk-back-link").text mustBe "Back"
     }
     "have a continue button" in {
       doc.getElementsByClass("govuk-button").text mustBe "Save and continue"
-//      behave like pageWithContinueButtonForm(s"/ated/liability/create/new-build-value/save/$id/period/$periodKey/date/$testDateString")
     }
     "have an input field for the new build value" in {
-      doc.getElementsByTag("input") === true
-      doc.getElementsByTag("label").text mustBe "What was the value of the property in GBP at this date?"
+      doc.getElementById("newBuildValue") === true
     }
   }
 

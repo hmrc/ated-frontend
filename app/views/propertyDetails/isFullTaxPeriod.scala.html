@@ -47,13 +47,13 @@
 @backLinkHtml = {
     @if(backLink.isDefined) {
         @govukBackLink(BackLink(
-        href = backLink.get,
-        content = Text("Back")
+            href = backLink.get,
+            content = Text("Back")
         ))
     }
 }
 
-@newMain(title = titleBuilder(messages("ated.property-details-period.isFullPeriod.title")),
+@newMain(title = titleBuilder(messages("ated.property-details-period.isFullPeriod.title"), Some(propertyDetailsForm)),
           serviceInfoContent = serviceInfoContent) {
 
 @backLinkHtml
@@ -62,30 +62,29 @@
     @govukErrorSummary(ErrorSummary().withFormErrorsAsText(propertyDetailsForm))
 }
 
-    <header>
-        <h1 class="govuk-heading-l">
-            <span class="govuk-caption-l"><span class="govuk-visually-hidden">@messages("ated.screen-reader.section") </span>@messages(AtedUtils.getPropertyDetailsPreHeader(mode))</span>
-            @messages("ated.property-details-period.isFullPeriod.header")
-        </h1>
-    </header>
-
   @formHelper(action=controllers.propertyDetails.routes.IsFullTaxPeriodController.save(id, periodKey)) {
 
-  @govukRadios(Radios
-    (items = 
-      Seq(
-        RadioItem(content = Text(messages("ated.property-details-value.yes")), value = Some("true")), 
-        RadioItem(content = Text(messages("ated.property-details-value.no")),  value = Some("false"))
-      ),
-        classes = "govuk-radios--inline"
-    ).withFormField(propertyDetailsForm("isFullPeriod"))
-  )
+    @govukRadios(Radios
+      (items = Seq(
+          RadioItem(
+            content = Text(messages("ated.property-details-value.yes")),
+            value = Some("true")
+          ),
+          RadioItem(
+            content = Text(messages("ated.property-details-value.no")),
+            value = Some("false"))
+          ),
+          classes = "govuk-radios--inline"
+      ).withFormField(propertyDetailsForm("isFullPeriod"))
+          .withHeadingAndSectionCaption(
+          heading = Text(messages("ated.property-details-period.isFullPeriod.header")),
+          sectionCaption = Text(messages(AtedUtils.getPropertyDetailsPreHeader(mode)))
+    ))
 
-@govukButton(Button(
-content = Text(messages("ated.save-and-continue")),
-attributes = Map("id" -> "submit")
-))
-
+    @govukButton(Button(
+          content = Text(messages("ated.save-and-continue")),
+          attributes = Map("id" -> "submit")
+    ))
   }
 
 }

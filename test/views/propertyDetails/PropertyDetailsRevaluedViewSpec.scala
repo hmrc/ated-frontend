@@ -26,19 +26,21 @@ import org.scalatest.{BeforeAndAfterEach, GivenWhenThen}
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Messages, MessagesApi}
+import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import play.twirl.api.Html
 import testhelpers.MockAuthUtil
 import utils.AtedUtils
+import views.html.propertyDetails.propertyDetailsRevalued
 
 class PropertyDetailsRevaluedViewSpec extends AnyFeatureSpec with GuiceOneAppPerSuite with MockitoSugar
   with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
 
-  implicit val request = FakeRequest()
+  implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
-  val injectedViewInstance = app.injector.instanceOf[views.html.propertyDetails.propertyDetailsRevalued]
+  val injectedViewInstance: propertyDetailsRevalued = app.injector.instanceOf[views.html.propertyDetails.propertyDetailsRevalued]
 
 Feature("The user can view an empty property revalue page") {
 
@@ -49,7 +51,7 @@ Feature("The user can view an empty property revalue page") {
       Given("A user visits the page and clicks yes")
       When("The user views the page and clicks yes")
 
-      implicit val request = FakeRequest()
+      implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 
       val html = injectedViewInstance("1", 2015, propertyDetailsRevaluedForm, None, Html(""), Some("backLink"))
 
@@ -58,7 +60,10 @@ Feature("The user can view an empty property revalue page") {
       assert(document.title() === "Has the property been revalued since the £40,000 or more change? - GOV.UK")
 
       Then("The subheader should be - Create return")
-      assert(document.getElementsByTag("h1").text() contains "This section is: Create return")
+      assert(document.getElementsByClass("govuk-caption-xl").text() contains "This section is Create return")
+
+      And ("The header should be - Have you had the property revalued since you made the £40,000 change?")
+      assert(document.getElementsByClass("hmrc-page-heading").text() contains "Has the property been revalued since the £40,000 or more change?")
 
       And("No data is populated")
       assert(document.getElementsByAttributeValue("for","isPropertyRevalued").text() === "Yes")
@@ -97,7 +102,7 @@ Feature("The user can view an empty property revalue page") {
       Given("A user visits the page to edit data")
       When("The user views the page to edit data")
 
-      implicit val request = FakeRequest()
+      implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 
       val propertyDetailsRevalued = PropertyDetailsRevalued(isPropertyRevalued = Some(true),
         revaluedValue = Some(BigDecimal(123456.34)),
@@ -112,7 +117,10 @@ Feature("The user can view an empty property revalue page") {
       assert(document.title() === "Has the property been revalued since the £40,000 or more change? - GOV.UK")
 
       Then("The subheader should be - Change return")
-      assert(document.getElementsByTag("h1").text() contains "This section is: Change return")
+      assert(document.getElementsByClass("govuk-caption-xl").text() contains "This section is Change return")
+
+      And ("The header should be - Have you had the property revalued since you made the £40,000 change?")
+      assert(document.getElementsByClass("hmrc-page-heading").text() contains "Has the property been revalued since the £40,000 or more change?")
 
       And("The data is populated for a property value set to true")
       assert(document.getElementsByAttributeValue("for","isPropertyRevalued").text() === "Yes")
@@ -145,7 +153,7 @@ Feature("The user can view an empty property revalue page") {
         Given("A user has clicked no")
         When("A user has clicked no")
 
-        implicit val request = FakeRequest()
+        implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 
         val propertyDetailsRevalued = PropertyDetailsRevalued(isPropertyRevalued = Some(false),
           revaluedValue = None,
@@ -176,7 +184,7 @@ Feature("The user can view an empty property revalue page") {
         assert(document.getElementsByClass("govuk-warning-text__text").text() === "Warning The property must be revalued before you can submit this chargeable return")
 
         Then("The back link is correct")
-        assert(document.getElementsByClass("govuk-back-link").text === "Back")
+        assert(document.getElementsByClass("govuk-back-link").text() === "Back")
       }
 
     }

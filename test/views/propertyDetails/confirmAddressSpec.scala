@@ -25,18 +25,20 @@ import org.scalatest.{BeforeAndAfterEach, GivenWhenThen}
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Messages, MessagesApi}
+import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import play.twirl.api.Html
 import testhelpers.MockAuthUtil
+import views.html.propertyDetails.confirmAddress
 
 class confirmAddressSpec extends AnyFeatureSpec with GuiceOneAppPerSuite with MockitoSugar
   with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
 
-  implicit val request = FakeRequest()
+  implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
-  val injectedViewInstance = app.injector.instanceOf[views.html.propertyDetails.confirmAddress]
+  val injectedViewInstance: confirmAddress = app.injector.instanceOf[views.html.propertyDetails.confirmAddress]
 
   Feature("The user can view their property address details before they confirm and continue") {
 
@@ -49,11 +51,14 @@ class confirmAddressSpec extends AnyFeatureSpec with GuiceOneAppPerSuite with Mo
       val propertyDetails: PropertyDetailsAddress = PropertyDetailsBuilder.getPropertyDetailsAddress(postCode = Some("XX1 1XX"))
       val html = injectedViewInstance("1", 2015, propertyDetails, mode = None, Html(""), Some("http://backLink"))
       val document = Jsoup.parse(html.toString())
+      Then("The title should match - Confirm address - GOV.UK")
+      assert(document.title() === "Confirm address - GOV.UK")
+
       Then("The header should match - Confirm address")
-      assert(document.getElementsByTag("h1").text() contains  "Confirm address")
+      assert(document.getElementsByTag("h1").text() contains "Confirm address")
 
       Then("The subheader should be - Create return")
-      assert(document.getElementsByTag("h1").text() contains  "This section is: Create return")
+      assert(document.getElementsByClass("govuk-caption-xl").text() === "This section is: Create return")
 
       assert(document.getElementById("address").text() contains  "addr1")
       assert(document.getElementById("address").text() contains "addr2")

@@ -26,7 +26,6 @@
 @this(newMain: newMain,
       govukBackLink : GovukBackLink,
       formHelper: FormWithCSRF,
-      govukSummaryList : GovukSummaryList,
       govukButton : GovukButton)
 
 @(id: String,
@@ -39,56 +38,60 @@
 @backLinkHtml = {
     @if(backLink.isDefined) {
         @govukBackLink(BackLink(
-        href = backLink.get,
-        content = Text("Back")
+            href = backLink.get,
+            content = Text("Back")
         ))
     }
 }
 
 @newMain(title = titleBuilder(messages("ated.confirm-address.title")), serviceInfoContent = serviceInfoContent) {
     
-@backLinkHtml
-  
-<header>
-  <h1 class="govuk-heading-l">
-    <span class="govuk-caption-l"><span class="govuk-visually-hidden">@messages("ated.screen-reader.section") </span>@messages(AtedUtils.getPropertyDetailsPreHeader(mode))</span>
-    @messages("ated.confirm-address.header")
-  </h1>
-</header>
+    @backLinkHtml
 
-<div id="address">
-    <ul class="govuk-list">
-        <li>@propertyDetails.line_1</li>
-        <li>@propertyDetails.line_2</li>
-        <li>@propertyDetails.line_3.getOrElse("")</li>
-        <li>@propertyDetails.line_4.getOrElse("")</li>
-        <li>@propertyDetails.postcode.getOrElse("")</li>
-    </ul>
-</div>
+    <header>
+        <h1 class="govuk-heading-xl">
+            <span class="govuk-caption-xl">
+                <span class="govuk-visually-hidden">
+                    @messages("ated.screen-reader.section")
+                </span>
+                @messages(AtedUtils.getPropertyDetailsPreHeader(mode))
+            </span>
+            @messages("ated.confirm-address.header")
+        </h1>
+    </header>
 
-            <p id="editAddress">
-                <a class="govuk-link" href="@controllers.propertyDetails.routes.PropertyDetailsAddressController.view(id, fromConfirmAddressPage = true, periodKey, mode)"
-                id="edit-address-link"
-                onkeyup='spaceBarHandler(
-                    event, "@controllers.propertyDetails.routes.PropertyDetailsAddressController.view(id, fromConfirmAddressPage = true, periodKey, mode)")'>
-                    @messages("ated.confirm-address.editAddress")
-                </a>
-            </p>
+    <div id="address">
+        <ul class="govuk-list">
+            <li id="address-line1">@propertyDetails.line_1</li>
+            <li id="address-line2">@propertyDetails.line_2</li>
+            <li id="address-line3">@propertyDetails.line_3.getOrElse("")</li>
+            <li id="address-line4">@propertyDetails.line_4.getOrElse("")</li>
+            <li id="postcode">@propertyDetails.postcode.getOrElse("")</li>
+        </ul>
+    </div>
 
-            <p class="govuk-link">
-                <a href="@controllers.routes.ExistingReturnQuestionController.view(periodKey, "charge")">
-                    @messages("ated.confirm-address.selectDifferentProperty")
-                </a>
-            </p>
+    <p id="editAddress" class="govuk-body">
+        <a class="govuk-link" href="@controllers.propertyDetails.routes.PropertyDetailsAddressController.view(id, fromConfirmAddressPage = true, periodKey, mode)"
+        id="edit-address-link"
+        onkeyup='spaceBarHandler(
+            event, "@controllers.propertyDetails.routes.PropertyDetailsAddressController.view(id, fromConfirmAddressPage = true, periodKey, mode)")'>
+            @messages("ated.confirm-address.editAddress")
+        </a>
+    </p>
 
-        @formHelper(action = controllers.propertyDetails.routes.ConfirmAddressController.submit(id, periodKey, mode)) {
+    <p id="selectADifferentProperty" class="govuk-body">
+        <a class="govuk-link" href="@controllers.routes.ExistingReturnQuestionController.view(periodKey, "charge")">
+            @messages("ated.confirm-address.selectDifferentProperty")
+        </a>
+    </p>
 
-@govukButton(Button(
-content = Text(messages("ated.confirm-and-continue")),
-attributes = Map("id" -> "submit")
-))
-
-        }
-
+    @formHelper(action = controllers.propertyDetails.routes.ConfirmAddressController.submit(id, periodKey, mode)) {
+        <div class="govuk-form-group govuk-!-padding-top-3">
+            @govukButton(Button(
+                content = Text(messages("ated.confirm-and-continue")),
+                attributes = Map("id" -> "submit")
+            ))
+        </div>
+    }
 
 }

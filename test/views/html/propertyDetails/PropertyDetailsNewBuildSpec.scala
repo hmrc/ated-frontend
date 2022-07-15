@@ -27,7 +27,7 @@ import testhelpers.{AtedViewSpec, MockAuthUtil}
 class PropertyDetailsNewBuildSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil {
 
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
-  val injectedViewInstance = app.injector.instanceOf[views.html.propertyDetails.propertyDetailsNewBuild]
+  val injectedViewInstance: propertyDetailsNewBuild = app.injector.instanceOf[views.html.propertyDetails.propertyDetailsNewBuild]
 
   private val form = PropertyDetailsForms.propertyDetailsNewBuildForm
   override def view: Html = injectedViewInstance("",0,  form, None, Html(""), Some("backLink"))
@@ -39,16 +39,16 @@ class PropertyDetailsNewBuildSpec extends AtedViewSpec with MockitoSugar with Mo
       doc.title mustBe TitleBuilder.buildTitle(messages("ated.property-details-value.isNewBuild.title"))
     }
     "have the correct page header" in {
-      doc.title mustBe TitleBuilder.buildTitle(messages("ated.property-details-value.isNewBuild.header"))
+      doc.getElementsByTag("h1").text() must include (messages("ated.property-details-value.isNewBuild.header"))
     }
     "have the correct pre heading" in {
-      doc.title(messages("ated.property-details.pre-header"))
+      doc.getElementsByClass("govuk-caption-xl").text() mustBe ("This section is: " + messages("ated.property-details.pre-header"))
     }
     "have a backlink" in {
-      doc.getElementsByClass("govuk-back-link").text mustBe "Back"
+      doc.getElementsByClass("govuk-back-link").text() mustBe "Back"
     }
     "have a continue button" in {
-      doc.getElementsByClass("govuk-button").text mustBe "Save and continue"
+      doc.getElementsByClass("govuk-button").text() mustBe "Save and continue"
     }
     "have a yes/no radio button" in {
       doc.getElementsByAttributeValue("for","isNewBuild").text() mustBe messages("ated.property-details-value.yes")

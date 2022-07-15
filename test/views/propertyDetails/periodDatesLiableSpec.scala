@@ -26,18 +26,20 @@ import org.scalatest.{BeforeAndAfterEach, GivenWhenThen}
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Messages, MessagesApi}
+import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import play.twirl.api.Html
 import testhelpers.MockAuthUtil
+import views.html.propertyDetails.periodDatesLiable
 
 class periodDatesLiableSpec extends AnyFeatureSpecLike with GuiceOneAppPerSuite with MockitoSugar
   with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
 
-  implicit val request = FakeRequest()
+  implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
-  val injectedViewInstance = app.injector.instanceOf[views.html.propertyDetails.periodDatesLiable]
+  val injectedViewInstance: periodDatesLiable = app.injector.instanceOf[views.html.propertyDetails.periodDatesLiable]
 
 Feature("The user can add a period that the property is liable") {
 
@@ -49,14 +51,18 @@ Feature("The user can add a period that the property is liable") {
       When("The user views the page")
 
       val html = injectedViewInstance("1", 2015, periodDatesLiableForm,
-        "Enter the dates when the property was liable for an ATED charge", None, Html(""), Some("backLink"))
+        "Enter the dates the property was liable for an ATED charge", None, Html(""), Some("backLink"))
 
       val document = Jsoup.parse(html.toString())
-      Then("The title should bee correct - Enter the dates when the property was liable for an ATED charge")
-      assert(document.getElementsByTag("title").text ===  TitleBuilder.buildTitle("Enter the dates when the property was liable for an ATED charge"))
+
+      Then("The title should be correct - Enter the dates the property was liable for an ATED charge")
+      assert(document.title() === TitleBuilder.buildTitle("Enter the dates the property was liable for an ATED charge"))
+
+      Then("The header should be - Enter the dates the property was liable for an ATED charge")
+      assert(document.getElementsByTag("h1").text() contains "Enter the dates the property was liable for an ATED charge")
 
       Then("The subheader should be - Create return")
-      assert(document.getElementsByTag("h1").text() contains "This section is: Create return")
+      assert(document.getElementsByClass("govuk-caption-xl").text() === "This section is: Create return")
 
       Then("The date fields should have the correct titles")
       assert(document.getElementsByTag("legend")
@@ -76,7 +82,7 @@ Feature("The user can add a period that the property is liable") {
       assert(document.getElementsByClass("govuk-button").text() === "Save and continue")
 
       Then("The back link is correct")
-      assert(document.getElementsByClass("govuk-back-link").text === "Back")
+      assert(document.getElementsByClass("govuk-back-link").text() === "Back")
     }
 
     Scenario("allow adding a new liability dates") {
@@ -85,15 +91,18 @@ Feature("The user can add a period that the property is liable") {
       When("The user views the page")
 
       val html = injectedViewInstance("1", 2015, periodDatesLiableForm,
-        "Add the dates when the property was liable for an ATED charge", Some("add"), Html(""), Some("http://backLink"))
+        "Add the dates the property was liable for an ATED charge", Some("add"), Html(""), Some("http://backLink"))
 
       val document = Jsoup.parse(html.toString())
 
-      Then("The title should be correct - Add the dates when the property was liable for an ATED charge")
-      assert(document.getElementsByTag("title").text === TitleBuilder.buildTitle("Add the dates when the property was liable for an ATED charge"))
+      Then("The title should be correct - Add the dates the property was liable for an ATED charge")
+      assert(document.title() === TitleBuilder.buildTitle("Add the dates the property was liable for an ATED charge"))
+
+      Then("The header should be - Add the dates the property was liable for an ATED charge")
+      assert(document.getElementsByTag("h1").text() contains "Add the dates the property was liable for an ATED charge")
 
       Then("The subheader should be - Create return")
-      assert(document.getElementsByTag("h1").text() contains "This section is: Create return")
+      assert(document.getElementsByClass("govuk-caption-xl").text() === "This section is: Create return")
 
       Then("The date fields should have the correct titles")
       assert(document.getElementsByTag("legend")

@@ -32,46 +32,43 @@
 @newMain(title = titleBuilder(messages("ated.chargeable-return-confirmation.title")),
           serviceInfoContent = serviceInfoContent) {
 
-@govukPanel(Panel(
-    content = HtmlContent(messages("ated.chargeable-return-confirmation.submitted.text"))
-))
+    @govukPanel(Panel(
+        title = HtmlContent(messages("ated.chargeable-return-confirmation.submitted.text"))
+    ))
 
-    <p class="govuk-body">@messages("ated.chargeable-return-confirmation.completed.message")</p>
+    <p class="govuk-body" id="completed-message">@messages("ated.chargeable-return-confirmation.completed.message")</p>
 
-    <p class="govuk-body">@messages("ated.chargeable-return-confirmation.email.message")</p>
-  
-    <br>
-    <a class="govuk-link" href="@controllers.propertyDetails.routes.ChargeableReturnConfirmationController.viewPrintFriendlyChargeableConfirmation"
+    <p class="govuk-body" id="email-message">@messages("ated.chargeable-return-confirmation.email.message")</p>
+
+    <a class="govuk-link govuk-body" href="@controllers.propertyDetails.routes.ChargeableReturnConfirmationController.viewPrintFriendlyChargeableConfirmation"
     id="print-friendly-relief-link" target="_blank">
       @messages("ated.reliefs-sent.print-link")
     </a>
-    </br>
 
-  <br>
-  <h2 class="govuk-heading-m" id="receipt-message-title" class="heading-medium">@messages("ated.chargeable-return-confirmation.charge.heading")</h2>
+    <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
 
-  <p class="govuk-body" id="adjusted-amount">@messages("ated.chargeable-return-confirmation.amount.message")</p>
+    <h2 class="govuk-heading-m" id="receipt-message-title">@messages("ated.chargeable-return-confirmation.charge.heading")</h2>
 
-  @returnResponse.liabilityReturnResponse.map { liabilityReturnResponse =>
-    <p class="govuk-body" id="owed-amount">@Html(messages("ated.chargeable-return-confirmation.owe.text",
-        pounds(liabilityReturnResponse.head.liabilityAmount)))</p>
-    <p class="govuk-body" id="reference-text">@Html(messages("ated.chargeable-return-confirmation.reference.text",
-        liabilityReturnResponse.head.paymentReference.getOrElse("")))</p>
-    <p class="govuk-body" id="late-payment">@Html(messages("ated.chargeable-return-late-payment.text"))</p>
-  }
+    <p class="govuk-body" id="adjusted-amount">@messages("ated.chargeable-return-confirmation.amount.message")</p>
 
+    @returnResponse.liabilityReturnResponse.map { liabilityReturnResponse =>
+      <p class="govuk-body" id="owed-amount">@Html(messages("ated.chargeable-return-confirmation.owe.text",
+          pounds(liabilityReturnResponse.head.liabilityAmount)))</p>
+      <p class="govuk-body" id="reference-text">@Html(messages("ated.chargeable-return-confirmation.reference.text",
+          liabilityReturnResponse.head.paymentReference.getOrElse("")))</p>
+      <p class="govuk-body" id="late-payment">@Html(messages("ated.chargeable-return-late-payment.text"))
+        <a class="govuk-link" id="late-payment-link" href="https://www.gov.uk/guidance/pay-annual-tax-on-enveloped-dwellings">@messages("ated.chargeable-return-late-payment.text.link")</a>.
+      </p>
+    }
 
-  <p class="govuk-body" class="govuk-body" id="not-receive-email">
-    @messages("ated.chargeable-return-confirmation.not-receive-text")
-  </p>
-  </br>
+    <p class="govuk-body" id="not-receive-email">@messages("ated.chargeable-return-confirmation.not-receive-text")</p>
 
-  <div>
-    <br>
-    <a class="govuk-link" href="@controllers.routes.AccountSummaryController.view" id="submit" role="button" class="button">
-    @messages("ated.chargeable-return-confirmation.back-to-ated-link.text")
-  </a>
-    </br>
-  </div>
+    <div class="govuk-form-group">
+        @govukButton(Button(
+            href = Some(controllers.routes.AccountSummaryController.view.url),
+            content = Text(messages("ated.chargeable-return-confirmation.back-to-ated-link.text")),
+            attributes = Map("id" -> "submit")
+        ))
+    </div>
 
 }

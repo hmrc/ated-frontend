@@ -27,7 +27,8 @@
 @this(newMain: newMain,
       govukButton : GovukButton,
       govukBackLink : GovukBackLink,
-      formHelper: FormWithCSRF)
+      formHelper: FormWithCSRF,
+      govukWarningText: GovukWarningText)
 
 @(id: String, serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
@@ -46,23 +47,39 @@
   @backLinkHtml
 
    <header>
-    <h1 class="govuk-heading-l">
-        <span class="govuk-caption-l"><span class="govuk-visually-hidden">@messages("ated.screen-reader.section") </span></span>
+    <h1 class="govuk-heading-xl">
+        <span class="govuk-caption-xl">
+            <span class="govuk-visually-hidden">
+                @messages("ated.screen-reader.section")
+            </span>
+            @messages("ated.property-details.pre-header")
+        </span>
         @messages("ated.chargeable-return-declaration.header")
     </h1>
  </header>
 
   <p class="govuk-body"> @if(authContext.delegationModel.isDefined) { @messages("ated.chargeable-return-declaration.before-declaration.agent")} else { @messages("ated.chargeable-return-declaration.before-declaration.client")}</p>
 
-  <p class="govuk-body govuk-!-font-weight-bold">@if(authContext.delegationModel.isDefined) { @messages("ated.chargeable-return-declaration.i-confirm-that.bullet-text.agent")} else { @messages("ated.chargeable-return-declaration.i-declare-that.bullet-text.client")}</p>
+  @if(authContext.delegationModel.isDefined) {
+
+    @govukWarningText(WarningText(
+        iconFallbackText = "Warning",
+        content = Text(messages("ated.chargeable-return-declaration.i-confirm-that.bullet-text.agent"))
+    ))
+
+    } else {
+
+    @govukWarningText(WarningText(
+        iconFallbackText = "Warning",
+        content = Text(messages("ated.chargeable-return-declaration.i-declare-that.bullet-text.client"))
+    ))
+  }
 
   @formHelper(action=controllers.propertyDetails.routes.PropertyDetailsDeclarationController.submit(id)) {
 
-@govukButton(Button(
-content = Text(messages("ated.chargeable-return-declaration.submit")),
-attributes = Map("id" -> "submit")
-))
-
+    @govukButton(Button(
+        content = Text(messages("ated.chargeable-return-declaration.submit")),
+        attributes = Map("id" -> "submit")
+    ))
   }
 }
-

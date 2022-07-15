@@ -110,7 +110,6 @@ class PropertyDetailsAddressControllerSpec extends PlaySpec with GuiceOneServerP
       test(result)
     }
 
-
     def viewDataWithAuthorisedUser(id: String, propertyDetails: PropertyDetails, fromConfirmAddressPage: Boolean)(test: Future[Result] => Any) {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
@@ -211,10 +210,6 @@ class PropertyDetailsAddressControllerSpec extends PlaySpec with GuiceOneServerP
     }
   }
 
-  override def beforeEach(): Unit = {
-
-  }
-
   "PropertyDetailsAddressController" must {
     "propertyDetails" must {
 
@@ -246,7 +241,7 @@ class PropertyDetailsAddressControllerSpec extends PlaySpec with GuiceOneServerP
           }
         }
 
-        "show the chargeable property details view if we id and data with fromConfirmAddressPage false" in new Setup {
+        "show the chargeable property details view if we have id and data with fromConfirmAddressPage is false" in new Setup {
           viewDataWithAuthorisedUser("1", PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode")), fromConfirmAddressPage = false) {
             result =>
               status(result) must be(OK)
@@ -262,13 +257,13 @@ class PropertyDetailsAddressControllerSpec extends PlaySpec with GuiceOneServerP
           }
         }
 
-        "show the chargeable property details view if we id and data with fromConfirmAddressPage true" in new Setup {
+        "show the chargeable property details view if we have id and data with fromConfirmAddressPage is true" in new Setup {
           viewDataWithAuthorisedUser("1", PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode")), fromConfirmAddressPage = true) {
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
               document.title() must be(TitleBuilder.buildTitle("Edit address"))
-              assert(document.getElementsByClass("govuk-heading-l").text.contains("Edit address") === true)
+              assert(document.getElementsByClass("govuk-heading-xl").text.contains("Edit address") === true)
               document.getElementsByClass("govuk-button").text must be("Save and continue")
               document.getElementById("line_1").attr("value") must be("addr1")
               document.getElementById("line_2").attr("value") must be("addr2")
@@ -286,7 +281,7 @@ class PropertyDetailsAddressControllerSpec extends PlaySpec with GuiceOneServerP
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
               document.title() must be(TitleBuilder.buildTitle("Enter the address of the property manually"))
-              document.getElementsByTag("h1").text().contains("Enter the address of the property manually") must be(true)
+              document.getElementsByTag("h1").text() must include ("Enter the address of the property manually")
               document.getElementsByClass("govuk-button").text() must be("Save and continue")
               document.getElementById("line_1").attr("value") must be("addr1")
               document.getElementById("line_2").attr("value") must be("addr2")

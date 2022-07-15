@@ -17,7 +17,6 @@
 package controllers.propertyDetails
 
 import java.util.UUID
-
 import builders.SessionBuilder
 import config.ApplicationConfig
 import connectors.DataCacheConnector
@@ -40,6 +39,7 @@ import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.AtedConstants._
 import views.html.BtaNavigationLinks
+import views.html.propertyDetails.chargeableReturnsConfirmation
 
 import scala.concurrent.Future
 
@@ -51,12 +51,12 @@ class ChargeableReturnConfirmationControllerSpec extends PlaySpec with GuiceOneS
   val mockMcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
   val mockSubscriptionDataService: SubscriptionDataService = mock[SubscriptionDataService]
   val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
-    val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
+  val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
   val organisationName: String = "ACME Limited"
-  val injectedViewInstance = app.injector.instanceOf[views.html.propertyDetails.chargeableReturnsConfirmation]
+  val injectedViewInstance: chargeableReturnsConfirmation = app.injector.instanceOf[views.html.propertyDetails.chargeableReturnsConfirmation]
 
 class Setup {
 
@@ -135,7 +135,7 @@ class Setup {
   override def beforeEach: Unit = {
 
     reset(mockSubscriptionDataService)
-reset(mockDelegationService)
+    reset(mockDelegationService)
     reset(mockDataCacheConnector)
   }
 
@@ -165,20 +165,24 @@ reset(mockDelegationService)
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
-              document.getElementsByClass("govuk-panel__body").text() must include("Your return has been successfully submitted")
+              document.getElementsByClass("govuk-panel__title").text() must include("Your return has been successfully submitted")
               assert(document.getElementById("service-info-list").text() === "Home Manage account Messages Help and contact")
-              document.getElementsByTag("p")
+              document.getElementById("completed-message")
                 .text() must include("You can view your completed returns, payment references and ways to pay in the ATED online service.")
-              document.getElementsByTag("p").text() must include("You will not receive an email confirmation.")
+              document.getElementById("email-message").text() must include("You will not receive an email confirmation.")
+              document.getElementById("print-friendly-relief-link").text() must include("Print confirmation")
+              document.getElementById("print-friendly-relief-link").attr("href") must include("/ated/liability/create/create-confirmation-print")
               document.getElementById("receipt-message-title").text() must include("Charges for this return")
               document.getElementById("adjusted-amount")
                 .text() must include("This amount does not reflect any payments you have already made or penalties that have been issued.")
               document.getElementById("owed-amount").text() must include("The charges for this return are")
               document.getElementById("reference-text").text() must include("The reference to make this payment is")
-              document.getElementsByTag("p")
+              document.getElementById("late-payment").text() must include("Late payment penalties can be issued when ATED is unpaid. Find out about how to pay and payment deadlines.")
+              document.getElementById("late-payment-link").attr("href") must include("https://www.gov.uk/guidance/pay-annual-tax-on-enveloped-dwellings")
+              document.getElementById("not-receive-email")
                 .text() must include("You can view your balance in your ATED online service. There can be a 24-hour delay before you see any updates.")
-              document.getElementsByClass("govuk-link").text() must include("Your ATED summary")
-//              document.getElementsByClass("govuk-link").attr("href") must include("/ated/account-summary")
+              document.getElementById("submit").text() must include("Your ATED summary")
+              document.getElementById("submit").attr("href") must include("/ated/account-summary")
           }
         }
 
@@ -193,9 +197,9 @@ reset(mockDelegationService)
                 .text() must include("This amount does not reflect any payments you have already made or penalties that have been issued.")
               document.getElementById("owed-amount").text() must include("The charges for this return are")
               document.getElementById("reference-text").text() must include("The reference to make this payment is")
+              document.getElementById("late-payment").text() must include("Late payment penalties can be issued when ATED is unpaid. Find out more by searching GOV.UK for ‘pay annual tax on enveloped dwellings’.")
               document.getElementById("not-receive-email")
                 .text() must be("You can view your balance in your ATED online service. There can be a 24-hour delay before you see any updates.")
-
           }
         }
 

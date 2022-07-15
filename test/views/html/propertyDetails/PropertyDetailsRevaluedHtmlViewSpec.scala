@@ -27,7 +27,7 @@ import testhelpers.{AtedViewSpec, MockAuthUtil}
 class PropertyDetailsRevaluedHtmlViewSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil {
 
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
-  val injectedViewInstance = app.injector.instanceOf[views.html.propertyDetails.propertyDetailsRevalued]
+  val injectedViewInstance: propertyDetailsRevalued = app.injector.instanceOf[views.html.propertyDetails.propertyDetailsRevalued]
 
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
 
@@ -42,26 +42,27 @@ class PropertyDetailsRevaluedHtmlViewSpec extends AtedViewSpec with MockitoSugar
       doc.title mustBe TitleBuilder.buildErrorTitle(messages("ated.property-details-value.isPropertyRevalued.title"))
     }
     "have the correct page header" in {
-      doc.title mustBe TitleBuilder.buildErrorTitle(messages("ated.property-details-value.isPropertyRevalued.header"))
+      doc.getElementsByTag("h1").text() must include (messages("ated.property-details-value.isPropertyRevalued.header"))
     }
     "have the correct pre heading" in {
-      doc.title(messages("ated.property-details.pre-header"))
+      doc.getElementsByClass("govuk-caption-xl").text() mustBe ("This section is " + messages("ated.property-details.pre-header"))
     }
     "have a backlink" in {
-      doc.getElementsByClass("govuk-back-link").text mustBe "Back"
+      doc.getElementsByClass("govuk-back-link").text() mustBe "Back"
     }
     "have a continue button" in {
-      doc.getElementsByClass("govuk-button").first.text mustBe "Save and continue"
+      doc.getElementsByClass("govuk-button").first.text() mustBe "Save and continue"
     }
     "have a back to your ATED summary button" in {
-      doc.getElementsByClass("govuk-button").last.text mustBe "Back to your ATED summary"
+      doc.getElementsByClass("govuk-button").last.text() mustBe "Back to your ATED summary"
     }
     "have a yes/no radio button" in {
       doc.getElementsByAttributeValue("for","isPropertyRevalued").text() mustBe messages("ated.property-details-value.yes")
       doc.getElementsByAttributeValue("for","isPropertyRevalued-2").text() mustBe messages("ated.property-details-value.no")
     }
     "check page errors" in {
-      doc.getElementsMatchingOwnText(messages("ated.property-details-value.isPropertyRevalued.error.non-selected")).hasText mustBe true
+      doc.getElementById("isPropertyRevalued-error").text() mustBe ("Error: " + messages("ated.property-details-value.isPropertyRevalued.error.non-selected"))
+      doc.getElementsByClass("govuk-error-summary__list").text() mustBe messages("ated.property-details-value.isPropertyRevalued.error.non-selected")
     }
   }
 

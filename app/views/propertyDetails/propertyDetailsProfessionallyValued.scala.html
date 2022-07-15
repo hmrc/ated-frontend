@@ -44,40 +44,43 @@
 @backLinkHtml = {
     @if(backLink.isDefined) {
         @govukBackLink(BackLink(
-        href = backLink.get,
-        content = Text("Back")
+            href = backLink.get,
+            content = Text("Back")
         ))
     }
 }
 
+@newMain(title = titleBuilder(messages("ated.property-details-value.isValuedByAgent.title"), Some(propertyDetailsForm)), serviceInfoContent = serviceInfoContent) {
 
-@newMain(title = titleBuilder(messages("ated.property-details-value.isValuedByAgent.title")), serviceInfoContent = serviceInfoContent) {
-
-@backLinkHtml
+  @backLinkHtml
 
   @if(propertyDetailsForm.errors.nonEmpty) {
     @govukErrorSummary(ErrorSummary().withFormErrorsAsText(propertyDetailsForm))
   }
 
-   <header>
-      <h1 class="govuk-heading-l">
-          <span class="govuk-caption-l"><span class="govuk-visually-hidden">@messages("ated.screen-reader.section") </span>@messages(AtedUtils.getPropertyDetailsPreHeader(mode))</span>
-          @messages("ated.property-details-value.isValuedByAgent.header")
-      </h1>
-   </header>
-
   @formHelper(action = controllers.propertyDetails.routes.PropertyDetailsProfessionallyValuedController.save(id, periodKey, mode)) {
 
-      @govukRadios(Radios(items = Seq(RadioItem(content = Text(messages("ated.property-details-value.yes")), value = Some("true")), 
-                                  RadioItem(content = Text(messages("ated.property-details-value.no")),  value = Some("false")))
-                                  ).withFormField(propertyDetailsForm("isValuedByAgent"))
-                                )
+      @govukRadios(Radios(
+         items = Seq(
+             RadioItem(
+                 content = Text(messages("ated.property-details-value.yes")),
+                 value = Some("true")
+             ),
+             RadioItem(
+                 content = Text(messages("ated.property-details-value.no")),
+                 value = Some("false"))
+             ),
+            classes = "govuk-radios--inline"
+            ).withFormField(propertyDetailsForm("isValuedByAgent"))
+             .withHeadingAndSectionCaption(
+                 heading = Text(messages("ated.property-details-value.isValuedByAgent.header")),
+                 sectionCaption = Text(messages(AtedUtils.getPropertyDetailsPreHeader(mode)))
+     ))
 
-@govukButton(Button(
-content = Text(messages("ated.save-and-continue")),
-attributes = Map("id" -> "submit")
-))
-
+    @govukButton(Button(
+        content = Text(messages("ated.save-and-continue")),
+        attributes = Map("id" -> "submit")
+    ))
   }
 
 }
