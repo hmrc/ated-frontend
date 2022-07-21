@@ -70,13 +70,17 @@
         @banner
     }
 }
+
 @urBannerUrl = @{
     if(isUserResearchBannerVisible) Some(appConfig.urBannerLink) else None
 }
 
 @additionalScripts = {
+    <script src='@routes.Assets.versioned("jquery/jquery-3.6.0.min.js")'></script>
+    <script src='@controllers.routes.Assets.versioned("jquery/jquery-ui.min.js")'></script>
     @scripts
 }
+
 @hmrcLayout(
     pageTitle = pageTitle,
     additionalHeadBlock = Some(headBlock),

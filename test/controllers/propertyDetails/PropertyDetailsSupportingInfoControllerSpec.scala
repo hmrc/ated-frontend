@@ -17,7 +17,6 @@
 package controllers.propertyDetails
 
 import java.util.UUID
-
 import builders._
 import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
@@ -42,7 +41,8 @@ import testhelpers.MockAuthUtil
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import utils.{AtedConstants, AtedUtils, PeriodUtils}
-import views.html.BtaNavigationLinks
+import views.html.{BtaNavigationLinks, global_error}
+import views.html.propertyDetails.propertyDetailsSupportingInfo
 
 import scala.concurrent.Future
 
@@ -57,12 +57,12 @@ class PropertyDetailsSupportingInfoControllerSpec extends PlaySpec with GuiceOne
   val mockBackLinkCacheConnector: BackLinkCacheConnector = mock[BackLinkCacheConnector]
   val mockEditLiabilitySummaryController: EditLiabilitySummaryController = mock[EditLiabilitySummaryController]
   val mockPropertyDetailsSummaryController: PropertyDetailsSummaryController = mock[PropertyDetailsSummaryController]
-    val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
+  val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
-  val injectedViewInstance = app.injector.instanceOf[views.html.propertyDetails.propertyDetailsSupportingInfo]
-  val injectedViewInstanceError = app.injector.instanceOf[views.html.global_error]
+  val injectedViewInstance: propertyDetailsSupportingInfo = app.injector.instanceOf[views.html.propertyDetails.propertyDetailsSupportingInfo]
+  val injectedViewInstanceError: global_error = app.injector.instanceOf[views.html.global_error]
 
   val periodKey: Int = PeriodUtils.calculatePeakStartYear()
 
@@ -208,10 +208,6 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
     }
   }
 
-  override def beforeEach(): Unit = {
-
-  }
-
   "PropertyDetailsSupportingInfoController" must {
     "propertyDetails" must {
       "unauthorised users" must {
@@ -239,12 +235,11 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
               document.title() must be(TitleBuilder.buildTitle("Do you have any supporting information to add? (optional)"))
-
               document.getElementById("supportingInfo").attr("value") must be("")
-              assert(document.getElementById("supportingInfo_chars").text() === "200")
+              assert(document.getElementById("supportingInfo-info").text() contains "200 characters")
               assert(document.getElementById("service-info-list").text() === "Home Manage account Messages Help and contact")
 
-              document.getElementById("submit").text() must be("Save and continue")
+              document.getElementsByClass("govuk-button").text() must be("Save and continue")
           }
         }
 
@@ -259,7 +254,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
               val document = Jsoup.parse(contentAsString(result))
 
               document.getElementById("supportingInfo").toString must include("supportingInfoTextAreaData")
-              document.getElementById("submit").text() must be("Save and continue")
+              document.getElementsByClass("govuk-button").text() must be("Save and continue")
           }
         }
       }
@@ -277,9 +272,8 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
               val document = Jsoup.parse(contentAsString(result))
               document.title() must be(TitleBuilder.buildTitle("Do you have any supporting information to add? (optional)"))
 
-
-              document.getElementById("backLinkHref").text must be("Back")
-              document.getElementById("backLinkHref").attr("href") must include("/ated/liability/create/summary")
+              document.getElementsByClass("govuk-back-link").text must be("Back")
+              document.getElementsByClass("govuk-back-link").attr("href") must include("/ated/liability/create/summary")
           }
         }
 
@@ -292,9 +286,8 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
               val document = Jsoup.parse(contentAsString(result))
               document.title() must be(TitleBuilder.buildTitle("Do you have any supporting information to add? (optional)"))
 
-
-              document.getElementById("backLinkHref").text must be("Back")
-              document.getElementById("backLinkHref").attr("href") must include("/ated/liability/create/summary")
+              document.getElementsByClass("govuk-back-link").text must be("Back")
+              document.getElementsByClass("govuk-back-link").attr("href") must include("/ated/liability/create/summary")
           }
         }
       }

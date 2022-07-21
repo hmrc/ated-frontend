@@ -20,4 +20,6 @@ object TitleBuilder {
 
   def buildTitle(str: String): String = str.concat(" - GOV.UK")
 
+  def buildErrorTitle(str: String): String = s"""Error: ${buildTitle(str)}"""
+
 }

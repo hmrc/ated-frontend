@@ -17,7 +17,19 @@
 @import models._
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
-@this(atedMain: atedMain, formHelper: FormWithCSRF)
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
+@import views.ViewUtils.titleBuilder
+@import views.html.helpers._
+@import _root_.utils._
+
+@this(newMain: newMain,
+        formHelper: FormWithCSRF,
+        govukInput : GovukInput,
+        govukButton : GovukButton,
+        govukErrorSummary : GovukErrorSummary,
+        govukBackLink : GovukBackLink)
+
 @(id: Option[String],
         periodKey: Int,
         searchForm: Form[AddressLookup],
@@ -26,51 +38,69 @@
         backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages,
         request: Request[AnyContent], appConfig: ApplicationConfig)
 
-@import uk.gov.hmrc.play.views.html.helpers._
-@import views.html.helpers._
-@import _root_.utils._
-
-@implicitFormInstance = @{ Some(searchForm) }
+@backLinkHtml = {
+    @if(backLink.isDefined) {
+        @govukBackLink(BackLink(
+            href = backLink.get,
+            content = Text("Back")
+        ))
+    }
+}
 
 @pageScripts = {
 <script src='@controllers.routes.Assets.versioned("javascript/manualAddressEntryLink.js")'></script>
 }
 
-@atedMain(title = messages("ated.address-lookup.title"),
+@newMain(title = titleBuilder(messages("ated.address-lookup.title"), Some(searchForm)),
           pageScripts=Some(pageScripts),
           serviceInfoContent = serviceInfoContent) {
 
-  @pageHeadersAndError(backLink, "pre-heading", messages(AtedUtils.getPropertyDetailsPreHeader(mode)),
-      "account-lookup-header", messages("ated.address-lookup.header"),
-      Some(atedErrorSummary(searchForm, "ated.property-details-address-error.general")))
+  @backLinkHtml
+
+  @if(searchForm.hasErrors) {
+        @govukErrorSummary(ErrorSummary().withFormErrorsAsText(searchForm))
+  }
+
+  <header>
+     <h1 class="govuk-heading-xl">
+         <span class="govuk-caption-xl">
+             <span class="govuk-visually-hidden">
+                 @messages("ated.screen-reader.section")
+             </span>
+             @messages(AtedUtils.getPropertyDetailsPreHeader(mode))
+         </span>
+         @messages("ated.address-lookup.header")
+     </h1>
+  </header>
 
   @formHelper(action=controllers.propertyDetails.routes.AddressLookupController.find(id, periodKey, mode)) {
 
-    <div class="form-field">
-        @atedInputNew(searchForm("houseName"),
-        '_label ->  Html(messages("ated.address-lookup.house-name")),
-        '_labelClass -> "form-label-bold",
-        '_id -> "house-name",
-        '_inputClass -> "",
-        '_showConstraints -> false)
-    </div>
+        @govukInput(Input(
+            label = Label(
+                content = Text(messages("ated.address-lookup.house-name"))
+            )
+            ).withFormField(searchForm("houseName")
+        ))
 
-    <div class="form-field">
-        @atedInputNew(searchForm("postcode"),
-        '_label ->  Html(messages("ated.address-lookup.postcode")),
-        '_labelClass -> "form-label-bold",
-        '_id -> "postcode",
-        '_inputClass -> "input--normal uppercase",
-        '_showConstraints -> false)
-    </div>
+        @govukInput(Input(
+            label = Label(
+                content = Text(messages("ated.address-lookup.postcode"))
+            ),
+            classes = "govuk-input--width-10"
+        ).withFormField(searchForm("postcode")
+        ))
 
-    <div class="form-field">
-        <a href="@controllers.propertyDetails.routes.AddressLookupController.manualAddressRedirect(id, periodKey, mode)"
+        <div class="govuk-form-group">
+        <a class="govuk-link govuk-body" href="@controllers.propertyDetails.routes.AddressLookupController.manualAddressRedirect(id, periodKey, mode)"
            id="enter-address-link"
            onkeyup='spaceBarHandler(event,"@controllers.propertyDetails.routes.AddressLookupController.manualAddressRedirect(id, periodKey, mode)")'>
             @messages("ated.address-lookup.no-postcode-link.title")</a>
-    </div>
+        </div>
 
-    <button class="button" id="submit" type="submit">@messages("ated.address-lookup.find-button")</button>
+        @govukButton(Button(
+            content = Text(messages("ated.address-lookup.find-button")),
+            attributes = Map("id" -> "submit")
+        ))
+
   }
 }

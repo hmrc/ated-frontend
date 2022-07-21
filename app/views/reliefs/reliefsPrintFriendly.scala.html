@@ -45,257 +45,279 @@
   </p>
 
   @reliefsTaxAvoidance.map { reliefData =>
-    @if(reliefData.reliefs.rentalBusiness) {
-      <div class="govuk-section-break govuk-section-break--visible">
-        <h1 class="govuk-heading-m" id="rentalBusiness">@messages("ated.relief-summary-types.rentalBusiness")</h1>
-      </div>
-      <table class="govuk-table">
+
+    <table class="govuk-table">
+
+      @if(reliefData.reliefs.rentalBusiness) {
         <tbody class="govuk-table__body">
+          <tr class="govuk-table__row">
+            <th colspan="2" scope="row" class="govuk-table__header govuk-!-font-size-24 govuk-!-padding-top-9" id="rentalBusiness">@messages("ated.relief-summary-types.rentalBusiness")</th>
+          </tr>
+
           <tr class="govuk-table__row">
             <th scope="row" class="govuk-table__header" id="taxAvd-dateofrel-rb">@messages("ated.relief-summary.datesOfRelief")</th>
             <td class="govuk-table__cell" id="dateFromTo-rb">
               @reliefData.reliefs.rentalBusinessDate.getOrElse(reliefData.periodStartDate).toString(messages("ated.date-format.short"))  @messages("ated.relief-summary.relief-end-date")
             </td>
           </tr>
+
           <tr class="govuk-table__row">
             <th scope="row" class="govuk-table__header" id="tas-rp">@messages("ated.relief-summary.avoidanceSchmRefNum")</th>
             <td class="govuk-table__cell" id="tas-rb-val">@reliefData.reliefs.isAvoidanceScheme.fold("None")(x=>reliefData.taxAvoidance.rentalBusinessScheme.fold("None")(a=>a))</td>
           </tr>
+
           <tr class="govuk-table__row">
             <th scope="row" class="govuk-table__header" id="tas-promoter-rp">@messages("ated.relief-summary.avoidanceSchmRefNum-promoter")</th>
             <td class="govuk-table__cell" id="tas-promoter-rb-val">@reliefData.taxAvoidance.rentalBusinessSchemePromoter.fold("None")(x=>reliefData.taxAvoidance.rentalBusinessSchemePromoter.fold("None")(a=>a))</td>
           </tr>
+
           <tr class="govuk-table__row">
             <th scope="row" class="govuk-table__header" id="taxAvd-st">@messages("ated.relief-summary.status")</th>
             <td class="govuk-table__cell" id="taxAvd-st-draft">@messages("ated.relief-summary.draft")</td>
           </tr>
         </tbody>
-      </table>
-    }
+      }
 
-    @if(reliefData.reliefs.openToPublic) {
-      <div class="govuk-section-break govuk-section-break--visible">
-        <h1 class="govuk-heading-m" id="openToPublic">@messages("ated.relief-summary-types.openToPublic")</h1>
-      </div>
-      <table class="govuk-table">
-        <tbody class="govuk-table__body">
-          <tr class="govuk-table__row">
-            <th scope="row" class="govuk-table__header" id="taxAvd-dateofrel-otp">@messages("ated.relief-summary.datesOfRelief")</th>
-            <td class="govuk-table__cell" id="dateFromTo-otp">
-              @reliefData.reliefs.openToPublicDate.getOrElse(reliefData.periodStartDate).toString(messages("ated.date-format.short"))  @messages("ated.relief-summary.relief-end-date")
-            </td>
-          </tr>
-          <tr class="govuk-table__row">
-            <th scope="row" class="govuk-table__header" id="tas-otp">@messages("ated.relief-summary.avoidanceSchmRefNum")</th>
-            <td class="govuk-table__cell" id="tas-otp-val">@reliefData.reliefs.isAvoidanceScheme.fold("None")(x=>reliefData.taxAvoidance.openToPublicScheme.fold("None")(a=>a))</td>
-          </tr>
-          <tr class="govuk-table__row">
-            <th scope="row" class="govuk-table__header" id="tas-promoter-otp">@messages("ated.relief-summary.avoidanceSchmRefNum-promoter")</th>
-            <td class="govuk-table__cell" id="tas-promoter-otp-val">@reliefData.taxAvoidance.openToPublicSchemePromoter.fold("None")(x=>reliefData.taxAvoidance.openToPublicSchemePromoter.fold("None")(a=>a))</td>
-          </tr>
-          <tr class="govuk-table__row">
-            <th scope="row" class="govuk-table__header" id="status-otp">@messages("ated.relief-summary.status")</th>
-            <td class="govuk-table__cell" id="status-otp-draft">@messages("ated.relief-summary.draft")</td>
-          </tr>
-        </tbody>
-      </table>
-    }
+      @if(reliefData.reliefs.openToPublic) {
+          <tbody class="govuk-table__body">
+            <tr class="govuk-table__row">
+              <th colspan="2" scope="row" class="govuk-table__header govuk-!-font-size-24 govuk-!-padding-top-9" id="openToPublic">@messages("ated.relief-summary-types.openToPublic")</th>
+            </tr>
 
-    @if(reliefData.reliefs.propertyDeveloper) {
-      <div class="govuk-section-break govuk-section-break--visible">
-        <h1 class="govuk-heading-m" id="propDev">@messages("ated.relief-summary-types.propertyDeveloper")</h1>
-      </div>
-      <table class="govuk-table">
-        <tbody class="govuk-table__body">
-          <tr class="govuk-table__row">
-            <th scope="row" class="govuk-table__header" id="taxAvd-dateofrel-pd">@messages("ated.relief-summary.datesOfRelief")</th>
-            <td class="govuk-table__cell" id="dateFromTo-pd">
-              @reliefData.reliefs.propertyDeveloperDate.getOrElse(reliefData.periodStartDate).toString(messages("ated.date-format.short"))  @messages("ated.relief-summary.relief-end-date")
-            </td>
-          </tr>
-          <tr class="govuk-table__row">
-            <th scope="row" class="govuk-table__header" id="tas-pd">@messages("ated.relief-summary.avoidanceSchmRefNum")</th>
-            <td class="govuk-table__cell" id="tas-pd-val">@reliefData.reliefs.isAvoidanceScheme.fold("None")(x=>reliefData.taxAvoidance.propertyDeveloperScheme.fold("None")(a=>a))</td>
-          </tr>
-          <tr class="govuk-table__row">
-            <th scope="row" class="govuk-table__header" id="tas-promoter-pd">@messages("ated.relief-summary.avoidanceSchmRefNum-promoter")</th>
-            <td class="govuk-table__cell" id="tas-promoter-pd-val">@reliefData.taxAvoidance.propertyDeveloperSchemePromoter.fold("None")(x=>reliefData.taxAvoidance.propertyDeveloperSchemePromoter.fold("None")(a=>a))</td>
-          </tr>
-          <tr class="govuk-table__row">
-            <th scope="row" class="govuk-table__header" id="status-pd">@messages("ated.relief-summary.status")</th>
-            <td class="govuk-table__cell" id="status-pd-draft">@messages("ated.relief-summary.draft")</td>
-          </tr>
-        </tbody>
-      </table>
-    }
+            <tr class="govuk-table__row">
+              <th scope="row" class="govuk-table__header" id="taxAvd-dateofrel-otp">@messages("ated.relief-summary.datesOfRelief")</th>
+              <td class="govuk-table__cell" id="dateFromTo-otp">
+                @reliefData.reliefs.openToPublicDate.getOrElse(reliefData.periodStartDate).toString(messages("ated.date-format.short"))  @messages("ated.relief-summary.relief-end-date")
+              </td>
+            </tr>
 
-    @if(reliefData.reliefs.propertyTrading) {
-      <div class="govuk-section-break govuk-section-break--visible">
-        <h1 class="govuk-heading-m" id="propTrading">@messages("ated.relief-summary-types.propertyTrading")</h1>
-      </div>
-      <table class="govuk-table">
-        <tbody class="govuk-table__body">
-          <tr class="govuk-table__row">
-            <th scope="row" class="govuk-table__header" id="taxAvd-dateofrel-pt">@messages("ated.relief-summary.datesOfRelief")</th>
-            <td class="govuk-table__cell" id="dateFromTo-pt">
-              @reliefData.reliefs.propertyTradingDate.getOrElse(reliefData.periodStartDate).toString(messages("ated.date-format.short"))  @messages("ated.relief-summary.relief-end-date")
-            </td>
-          </tr>
-          <tr class="govuk-table__row">
-            <th scope="row" class="govuk-table__header" id="tas-pt">@messages("ated.relief-summary.avoidanceSchmRefNum")</th>
-            <td class="govuk-table__cell" id="tas-pt-val">@reliefData.reliefs.isAvoidanceScheme.fold("None")(x=>reliefData.taxAvoidance.propertyTradingScheme.fold("None")(a=>a))</td>
-          </tr>
-          <tr class="govuk-table__row">
-            <th scope="row" class="govuk-table__header" id="tas-promoter-pt">@messages("ated.relief-summary.avoidanceSchmRefNum-promoter")</th>
-            <td class="govuk-table__cell" id="tas-promoter-pt-val">@reliefData.taxAvoidance.propertyTradingSchemePromoter.fold("None")(x=>reliefData.taxAvoidance.propertyTradingSchemePromoter.fold("None")(a=>a))</td>
-          </tr>
-          <tr class="govuk-table__row">
-            <th scope="row" class="govuk-table__header" id="status-pt">@messages("ated.relief-summary.status")</th>
-            <td class="govuk-table__cell" id="status-pt-draft">@messages("ated.relief-summary.draft")</td>
-          </tr>
-        </tbody>
-      </table>
-    }
+            <tr class="govuk-table__row">
+              <th scope="row" class="govuk-table__header" id="tas-otp">@messages("ated.relief-summary.avoidanceSchmRefNum")</th>
+              <td class="govuk-table__cell" id="tas-otp-val">@reliefData.reliefs.isAvoidanceScheme.fold("None")(x=>reliefData.taxAvoidance.openToPublicScheme.fold("None")(a=>a))</td>
+            </tr>
 
-    @if(reliefData.reliefs.lending) {
-      <div class="govuk-section-break govuk-section-break--visible">
-        <h1 class="govuk-heading-m" id="lending">@messages("ated.relief-summary-types.lending")</h1>
-      </div>
-      <table class="govuk-table">
-        <tbody class="govuk-table__body">
-          <tr class="govuk-table__row">
-            <th scope="row" class="govuk-table__header" id="taxAvd-dateofrel-ln">@messages("ated.relief-summary.datesOfRelief")</th>
-            <td class="govuk-table__cell" id="dateFromTo-ln">
-              @reliefData.reliefs.lendingDate.getOrElse(reliefData.periodStartDate).toString(messages("ated.date-format.short"))  @messages("ated.relief-summary.relief-end-date")
-            </td>
-          </tr>
-          <tr class="govuk-table__row">
-            <th scope="row" class="govuk-table__header" id="tas-ln">@messages("ated.relief-summary.avoidanceSchmRefNum")</th>
-            <td class="govuk-table__cell" id="tas-ln-val">@reliefData.reliefs.isAvoidanceScheme.fold("None")(x=>reliefData.taxAvoidance.lendingScheme.fold("None")(a=>a))</td>
-          </tr>
-          <tr class="govuk-table__row">
-            <th scope="row" class="govuk-table__header" id="tas-promoter-ln">@messages("ated.relief-summary.avoidanceSchmRefNum-promoter")</th>
-            <td class="govuk-table__cell" id="tas-promoter-ln-val">@reliefData.taxAvoidance.lendingSchemePromoter.fold("None")(x=>reliefData.taxAvoidance.lendingSchemePromoter.fold("None")(a=>a))</td>
-          </tr>
-          <tr class="govuk-table__row">
-            <th scope="row" class="govuk-table__header" id="status-ln">@messages("ated.relief-summary.status")</th>
-            <td class="govuk-table__cell" id="status-ln-draft">@messages("ated.relief-summary.draft")</td>
-          </tr>
-        </tbody>
-      </table>
-    }
+            <tr class="govuk-table__row">
+              <th scope="row" class="govuk-table__header" id="tas-promoter-otp">@messages("ated.relief-summary.avoidanceSchmRefNum-promoter")</th>
+              <td class="govuk-table__cell" id="tas-promoter-otp-val">@reliefData.taxAvoidance.openToPublicSchemePromoter.fold("None")(x=>reliefData.taxAvoidance.openToPublicSchemePromoter.fold("None")(a=>a))</td>
+            </tr>
 
-    @if(reliefData.reliefs.employeeOccupation) {
-      <div class="govuk-section-break govuk-section-break--visible">
-        <h1 class="govuk-heading-m" id="empOcc">@messages("ated.relief-summary-types.employeeOccupation")</h1>
-      </div>
-      <table class="govuk-table">
-        <tbody class="govuk-table__body">
-          <tr class="govuk-table__row">
-            <th scope="row" class="govuk-table__header" id="taxAvd-dateofrel-eo">@messages("ated.relief-summary.datesOfRelief")</th>
-            <td class="govuk-table__cell" id="dateFromTo-eo">
-              @reliefData.reliefs.employeeOccupationDate.getOrElse(reliefData.periodStartDate).toString(messages("ated.date-format.short"))  @messages("ated.relief-summary.relief-end-date")
-            </td>
-          </tr>
-          <tr class="govuk-table__row">
-            <th scope="row" class="govuk-table__header" id="tas-eo">@messages("ated.relief-summary.avoidanceSchmRefNum")</th>
-            <td class="govuk-table__cell" id="tas-eo-val">@reliefData.reliefs.isAvoidanceScheme.fold("None")(x=>reliefData.taxAvoidance.employeeOccupationScheme.fold("None")(a=>a))</td>
-          </tr>
-          <tr class="govuk-table__row">
-            <th scope="row" class="govuk-table__header" id="tas-promoter-eo">@messages("ated.relief-summary.avoidanceSchmRefNum-promoter")</th>
-            <td class="govuk-table__cell" id="tas-promoter-eo-val">@reliefData.taxAvoidance.employeeOccupationSchemePromoter.fold("None")(x=>reliefData.taxAvoidance.employeeOccupationSchemePromoter.fold("None")(a=>a))</td>
-          </tr>
-          <tr class="govuk-table__row">
-            <th scope="row" class="govuk-table__header" id="status-eo">@messages("ated.relief-summary.status")</th>
-            <td class="govuk-table__cell" id="status-eo-draft">@messages("ated.relief-summary.draft")</td>
-          </tr>
-        </tbody>
-      </table>
-    }
+            <tr class="govuk-table__row">
+              <th scope="row" class="govuk-table__header" id="status-otp">@messages("ated.relief-summary.status")</th>
+              <td class="govuk-table__cell" id="status-otp-draft">@messages("ated.relief-summary.draft")</td>
+            </tr>
+          </tbody>
+      }
 
-    @if(reliefData.reliefs.farmHouses) {
-      <div class="govuk-section-break govuk-section-break--visible">
-        <h1 class="govuk-heading-m" id="farmHouses">@messages("ated.relief-summary-types.farmHouses")</h1>
-      </div>
-      <table class="govuk-table">
-        <tbody class="govuk-table__body">
-          <tr class="govuk-table__row">
-            <th scope="row" class="govuk-table__header" id="taxAvd-dateofrel-fh">@messages("ated.relief-summary.datesOfRelief")</th>
-            <td class="govuk-table__cell" id="dateFromTo-fh">
-              @reliefData.reliefs.farmHousesDate.getOrElse(reliefData.periodStartDate).toString(messages("ated.date-format.short"))  @messages("ated.relief-summary.relief-end-date")
-            </td>
-          </tr>
-          <tr class="govuk-table__row">
-            <th scope="row" class="govuk-table__header" id="tas-fh">@messages("ated.relief-summary.avoidanceSchmRefNum")</th>
-            <td class="govuk-table__cell" id="tas-fh-val">@reliefData.reliefs.isAvoidanceScheme.fold("None")(x=>reliefData.taxAvoidance.farmHousesScheme.fold("None")(a=>a))</td>
-          </tr>
-          <tr class="govuk-table__row">
-            <th scope="row" class="govuk-table__header" id="tas-promoter-fh">@messages("ated.relief-summary.avoidanceSchmRefNum-promoter")</th>
-            <td class="govuk-table__cell" id="tas-promoter-fh-val">@reliefData.taxAvoidance.farmHousesSchemePromoter.fold("None")(x=>reliefData.taxAvoidance.farmHousesSchemePromoter.fold("None")(a=>a))</td>
-          </tr>
-          <tr class="govuk-table__row">
-            <th scope="row" class="govuk-table__header" id="status-fh">@messages("ated.relief-summary.status")</th>
-            <td class="govuk-table__cell" id="status-fh-draft">@messages("ated.relief-summary.draft")</td>
-          </tr>
-        </tbody>
-      </table>
-    }
+      @if(reliefData.reliefs.propertyDeveloper) {
+          <tbody class="govuk-table__body">
+            <tr class="govuk-table__row">
+              <th colspan="2" scope="row" class="govuk-table__header govuk-!-font-size-24 govuk-!-padding-top-9" id="propDev">@messages("ated.relief-summary-types.propertyDeveloper")</th>
+            </tr>
 
-    @if(reliefData.reliefs.socialHousing) {
-      <div class="govuk-section-break govuk-section-break--visible">
-        <h1 class="govuk-heading-m" id="socialHousing">@messages(socialHousingMessage)</h1>
-      </div>
-      <table class="govuk-table">
-        <tbody class="govuk-table__body">
-          <tr class="govuk-table__row">
-            <th scope="row" class="govuk-table__header" id="taxAvd-dateofrel-sh">@messages("ated.relief-summary.datesOfRelief")</th>
-            <td class="govuk-table__cell" id="dateFromTo-sh">
-              @reliefData.reliefs.socialHousingDate.getOrElse(reliefData.periodStartDate).toString(messages("ated.date-format.short"))  @messages("ated.relief-summary.relief-end-date")
-            </td>
-          </tr>
-          <tr class="govuk-table__row">
-            <th scope="row" class="govuk-table__header" id="tas-sh">@messages("ated.relief-summary.avoidanceSchmRefNum")</th>
-            <td class="govuk-table__cell" id="tas-sh-val">@reliefData.reliefs.isAvoidanceScheme.fold("None")(x=>reliefData.taxAvoidance.socialHousingScheme.fold("None")(a=>a))</td>
-          </tr>
-          <tr class="govuk-table__row">
-            <th scope="row" class="govuk-table__header" id="tas-promoter-sh">@messages("ated.relief-summary.avoidanceSchmRefNum-promoter")</th>
-            <td class="govuk-table__cell" id="tas-promoter-sh-val">@reliefData.taxAvoidance.socialHousingSchemePromoter.fold("None")(x=>reliefData.taxAvoidance.socialHousingSchemePromoter.fold("None")(a=>a))</td>
-          </tr>
-          <tr class="govuk-table__row">
-            <th scope="row" class="govuk-table__header" id="status-sh">@messages("ated.relief-summary.status")</th>
-            <td class="govuk-table__cell" id="status-sh-draft">@messages("ated.relief-summary.draft")</td>
-          </tr>
-        </tbody>
-      </table>
-    }
+            <tr class="govuk-table__row">
+              <th scope="row" class="govuk-table__header" id="taxAvd-dateofrel-pd">@messages("ated.relief-summary.datesOfRelief")</th>
+              <td class="govuk-table__cell" id="dateFromTo-pd">
+                @reliefData.reliefs.propertyDeveloperDate.getOrElse(reliefData.periodStartDate).toString(messages("ated.date-format.short"))  @messages("ated.relief-summary.relief-end-date")
+              </td>
+            </tr>
 
-    @if(reliefData.reliefs.equityRelease) {
-      <div class="govuk-section-break govuk-section-break--visible">
-        <h1 class="govuk-heading-m" id="equityRelease">@messages("ated.relief-summary-types.equityRelease")</h1>
-      </div>
-      <table class="govuk-table">
-        <tbody class="govuk-table__body">
+            <tr class="govuk-table__row">
+              <th scope="row" class="govuk-table__header" id="tas-pd">@messages("ated.relief-summary.avoidanceSchmRefNum")</th>
+              <td class="govuk-table__cell" id="tas-pd-val">@reliefData.reliefs.isAvoidanceScheme.fold("None")(x=>reliefData.taxAvoidance.propertyDeveloperScheme.fold("None")(a=>a))</td>
+            </tr>
+
+            <tr class="govuk-table__row">
+              <th scope="row" class="govuk-table__header" id="tas-promoter-pd">@messages("ated.relief-summary.avoidanceSchmRefNum-promoter")</th>
+              <td class="govuk-table__cell" id="tas-promoter-pd-val">@reliefData.taxAvoidance.propertyDeveloperSchemePromoter.fold("None")(x=>reliefData.taxAvoidance.propertyDeveloperSchemePromoter.fold("None")(a=>a))</td>
+            </tr>
+
+            <tr class="govuk-table__row">
+              <th scope="row" class="govuk-table__header" id="status-pd">@messages("ated.relief-summary.status")</th>
+              <td class="govuk-table__cell" id="status-pd-draft">@messages("ated.relief-summary.draft")</td>
+            </tr>
+          </tbody>
+      }
+
+      @if(reliefData.reliefs.propertyTrading) {
+          <tbody class="govuk-table__body">
+            <tr class="govuk-table__row">
+              <th colspan="2" scope="row" class="govuk-table__header govuk-!-font-size-24 govuk-!-padding-top-9" id="propTrading">@messages("ated.relief-summary-types.propertyTrading")</th>
+            </tr>
+
+            <tr class="govuk-table__row">
+              <th scope="row" class="govuk-table__header" id="taxAvd-dateofrel-pt">@messages("ated.relief-summary.datesOfRelief")</th>
+              <td class="govuk-table__cell" id="dateFromTo-pt">
+                @reliefData.reliefs.propertyTradingDate.getOrElse(reliefData.periodStartDate).toString(messages("ated.date-format.short"))  @messages("ated.relief-summary.relief-end-date")
+              </td>
+            </tr>
+
+            <tr class="govuk-table__row">
+              <th scope="row" class="govuk-table__header" id="tas-pt">@messages("ated.relief-summary.avoidanceSchmRefNum")</th>
+              <td class="govuk-table__cell" id="tas-pt-val">@reliefData.reliefs.isAvoidanceScheme.fold("None")(x=>reliefData.taxAvoidance.propertyTradingScheme.fold("None")(a=>a))</td>
+            </tr>
+
+            <tr class="govuk-table__row">
+              <th scope="row" class="govuk-table__header" id="tas-promoter-pt">@messages("ated.relief-summary.avoidanceSchmRefNum-promoter")</th>
+              <td class="govuk-table__cell" id="tas-promoter-pt-val">@reliefData.taxAvoidance.propertyTradingSchemePromoter.fold("None")(x=>reliefData.taxAvoidance.propertyTradingSchemePromoter.fold("None")(a=>a))</td>
+            </tr>
+
+            <tr class="govuk-table__row">
+              <th scope="row" class="govuk-table__header" id="status-pt">@messages("ated.relief-summary.status")</th>
+              <td class="govuk-table__cell" id="status-pt-draft">@messages("ated.relief-summary.draft")</td>
+            </tr>
+          </tbody>
+      }
+
+      @if(reliefData.reliefs.lending) {
+          <tbody class="govuk-table__body">
+            <tr class="govuk-table__row">
+              <th colspan="2" scope="row" class="govuk-table__header govuk-!-font-size-24 govuk-!-padding-top-9" id="lending">@messages("ated.relief-summary-types.lending")</th>
+            </tr>
+
+            <tr class="govuk-table__row">
+              <th scope="row" class="govuk-table__header" id="taxAvd-dateofrel-ln">@messages("ated.relief-summary.datesOfRelief")</th>
+              <td class="govuk-table__cell" id="dateFromTo-ln">
+                @reliefData.reliefs.lendingDate.getOrElse(reliefData.periodStartDate).toString(messages("ated.date-format.short"))  @messages("ated.relief-summary.relief-end-date")
+              </td>
+            </tr>
+
+            <tr class="govuk-table__row">
+              <th scope="row" class="govuk-table__header" id="tas-ln">@messages("ated.relief-summary.avoidanceSchmRefNum")</th>
+              <td class="govuk-table__cell" id="tas-ln-val">@reliefData.reliefs.isAvoidanceScheme.fold("None")(x=>reliefData.taxAvoidance.lendingScheme.fold("None")(a=>a))</td>
+            </tr>
+
+            <tr class="govuk-table__row">
+              <th scope="row" class="govuk-table__header" id="tas-promoter-ln">@messages("ated.relief-summary.avoidanceSchmRefNum-promoter")</th>
+              <td class="govuk-table__cell" id="tas-promoter-ln-val">@reliefData.taxAvoidance.lendingSchemePromoter.fold("None")(x=>reliefData.taxAvoidance.lendingSchemePromoter.fold("None")(a=>a))</td>
+            </tr>
+
+            <tr class="govuk-table__row">
+              <th scope="row" class="govuk-table__header" id="status-ln">@messages("ated.relief-summary.status")</th>
+              <td class="govuk-table__cell" id="status-ln-draft">@messages("ated.relief-summary.draft")</td>
+            </tr>
+          </tbody>
+      }
+
+      @if(reliefData.reliefs.employeeOccupation) {
+          <tbody class="govuk-table__body">
           <tr class="govuk-table__row">
-            <th scope="row" class="govuk-table__header" id="taxAvd-dateofrel-er">@messages("ated.relief-summary.datesOfRelief")</th>
-            <td class="govuk-table__cell" id="dateFromTo-er">
-              @reliefData.reliefs.equityReleaseDate.getOrElse(reliefData.periodStartDate).toString(messages("ated.date-format.short"))  @messages("ated.relief-summary.relief-end-date")
-            </td>
+            <th colspan="2" scope="row" class="govuk-table__header govuk-!-font-size-24 govuk-!-padding-top-9" id="empOcc">@messages("ated.relief-summary-types.employeeOccupation")</th>
           </tr>
+
+            <tr class="govuk-table__row">
+              <th scope="row" class="govuk-table__header" id="taxAvd-dateofrel-eo">@messages("ated.relief-summary.datesOfRelief")</th>
+              <td class="govuk-table__cell" id="dateFromTo-eo">
+                @reliefData.reliefs.employeeOccupationDate.getOrElse(reliefData.periodStartDate).toString(messages("ated.date-format.short"))  @messages("ated.relief-summary.relief-end-date")
+              </td>
+            </tr>
+
+            <tr class="govuk-table__row">
+              <th scope="row" class="govuk-table__header" id="tas-eo">@messages("ated.relief-summary.avoidanceSchmRefNum")</th>
+              <td class="govuk-table__cell" id="tas-eo-val">@reliefData.reliefs.isAvoidanceScheme.fold("None")(x=>reliefData.taxAvoidance.employeeOccupationScheme.fold("None")(a=>a))</td>
+            </tr>
+
+            <tr class="govuk-table__row">
+              <th scope="row" class="govuk-table__header" id="tas-promoter-eo">@messages("ated.relief-summary.avoidanceSchmRefNum-promoter")</th>
+              <td class="govuk-table__cell" id="tas-promoter-eo-val">@reliefData.taxAvoidance.employeeOccupationSchemePromoter.fold("None")(x=>reliefData.taxAvoidance.employeeOccupationSchemePromoter.fold("None")(a=>a))</td>
+            </tr>
+
+            <tr class="govuk-table__row">
+              <th scope="row" class="govuk-table__header" id="status-eo">@messages("ated.relief-summary.status")</th>
+              <td class="govuk-table__cell" id="status-eo-draft">@messages("ated.relief-summary.draft")</td>
+            </tr>
+          </tbody>
+      }
+
+      @if(reliefData.reliefs.farmHouses) {
+          <tbody class="govuk-table__body">
           <tr class="govuk-table__row">
-            <th scope="row" class="govuk-table__header" id="tas-er">@messages("ated.relief-summary.avoidanceSchmRefNum")</th>
-            <td class="govuk-table__cell" id="tas-er-val">@reliefData.reliefs.isAvoidanceScheme.fold("None")(x=>reliefData.taxAvoidance.equityReleaseScheme.fold("None")(a=>a))</td>
+            <th colspan="2" scope="row" class="govuk-table__header govuk-!-font-size-24 govuk-!-padding-top-9" id="farmHouses">@messages("ated.relief-summary-types.farmHouses")</th>
           </tr>
-          <tr class="govuk-table__row">
-            <th scope="row" class="govuk-table__header" id="tas-promoter-er">@messages("ated.relief-summary.avoidanceSchmRefNum-promoter")</th>
-            <td class="govuk-table__cell" id="tas-promoter-er-val">@reliefData.taxAvoidance.equityReleaseSchemePromoter.fold("None")(x=>reliefData.taxAvoidance.equityReleaseSchemePromoter.fold("None")(a=>a))</td>
-          </tr>
-          <tr class="govuk-table__row">
-            <th scope="row" class="govuk-table__header" id="status-er">@messages("ated.relief-summary.status")</th>
-            <td class="govuk-table__cell" id="status-er-draft">@messages("ated.relief-summary.draft")</td>
-          </tr>
-        </tbody>
-      </table>
-    }
+
+            <tr class="govuk-table__row">
+              <th scope="row" class="govuk-table__header" id="taxAvd-dateofrel-fh">@messages("ated.relief-summary.datesOfRelief")</th>
+              <td class="govuk-table__cell" id="dateFromTo-fh">
+                @reliefData.reliefs.farmHousesDate.getOrElse(reliefData.periodStartDate).toString(messages("ated.date-format.short"))  @messages("ated.relief-summary.relief-end-date")
+              </td>
+            </tr>
+
+            <tr class="govuk-table__row">
+              <th scope="row" class="govuk-table__header" id="tas-fh">@messages("ated.relief-summary.avoidanceSchmRefNum")</th>
+              <td class="govuk-table__cell" id="tas-fh-val">@reliefData.reliefs.isAvoidanceScheme.fold("None")(x=>reliefData.taxAvoidance.farmHousesScheme.fold("None")(a=>a))</td>
+            </tr>
+
+            <tr class="govuk-table__row">
+              <th scope="row" class="govuk-table__header" id="tas-promoter-fh">@messages("ated.relief-summary.avoidanceSchmRefNum-promoter")</th>
+              <td class="govuk-table__cell" id="tas-promoter-fh-val">@reliefData.taxAvoidance.farmHousesSchemePromoter.fold("None")(x=>reliefData.taxAvoidance.farmHousesSchemePromoter.fold("None")(a=>a))</td>
+            </tr>
+
+            <tr class="govuk-table__row">
+              <th scope="row" class="govuk-table__header" id="status-fh">@messages("ated.relief-summary.status")</th>
+              <td class="govuk-table__cell" id="status-fh-draft">@messages("ated.relief-summary.draft")</td>
+            </tr>
+          </tbody>
+      }
+
+      @if(reliefData.reliefs.socialHousing) {
+          <tbody class="govuk-table__body">
+            <tr class="govuk-table__row">
+              <th colspan="2" scope="row" class="govuk-table__header govuk-!-font-size-24 govuk-!-padding-top-9" id="socialHousing">@messages(socialHousingMessage)</th>
+            </tr>
+
+            <tr class="govuk-table__row">
+              <th scope="row" class="govuk-table__header" id="taxAvd-dateofrel-sh">@messages("ated.relief-summary.datesOfRelief")</th>
+              <td class="govuk-table__cell" id="dateFromTo-sh">
+                @reliefData.reliefs.socialHousingDate.getOrElse(reliefData.periodStartDate).toString(messages("ated.date-format.short"))  @messages("ated.relief-summary.relief-end-date")
+              </td>
+            </tr>
+
+            <tr class="govuk-table__row">
+              <th scope="row" class="govuk-table__header" id="tas-sh">@messages("ated.relief-summary.avoidanceSchmRefNum")</th>
+              <td class="govuk-table__cell" id="tas-sh-val">@reliefData.reliefs.isAvoidanceScheme.fold("None")(x=>reliefData.taxAvoidance.socialHousingScheme.fold("None")(a=>a))</td>
+            </tr>
+
+            <tr class="govuk-table__row">
+              <th scope="row" class="govuk-table__header" id="tas-promoter-sh">@messages("ated.relief-summary.avoidanceSchmRefNum-promoter")</th>
+              <td class="govuk-table__cell" id="tas-promoter-sh-val">@reliefData.taxAvoidance.socialHousingSchemePromoter.fold("None")(x=>reliefData.taxAvoidance.socialHousingSchemePromoter.fold("None")(a=>a))</td>
+            </tr>
+
+            <tr class="govuk-table__row">
+              <th scope="row" class="govuk-table__header" id="status-sh">@messages("ated.relief-summary.status")</th>
+              <td class="govuk-table__cell" id="status-sh-draft">@messages("ated.relief-summary.draft")</td>
+            </tr>
+          </tbody>
+      }
+
+      @if(reliefData.reliefs.equityRelease) {
+          <tbody class="govuk-table__body">
+            <tr class="govuk-table__row">
+              <th colspan="2" scope="row" class="govuk-table__header govuk-!-font-size-24 govuk-!-padding-top-9" id="equityRelease">@messages("ated.relief-summary-types.equityRelease")</th>
+            </tr>
+
+            <tr class="govuk-table__row">
+              <th scope="row" class="govuk-table__header" id="taxAvd-dateofrel-er">@messages("ated.relief-summary.datesOfRelief")</th>
+              <td class="govuk-table__cell" id="dateFromTo-er">
+                @reliefData.reliefs.equityReleaseDate.getOrElse(reliefData.periodStartDate).toString(messages("ated.date-format.short"))  @messages("ated.relief-summary.relief-end-date")
+              </td>
+            </tr>
+
+            <tr class="govuk-table__row">
+              <th scope="row" class="govuk-table__header" id="tas-er">@messages("ated.relief-summary.avoidanceSchmRefNum")</th>
+              <td class="govuk-table__cell" id="tas-er-val">@reliefData.reliefs.isAvoidanceScheme.fold("None")(x=>reliefData.taxAvoidance.equityReleaseScheme.fold("None")(a=>a))</td>
+            </tr>
+
+            <tr class="govuk-table__row">
+              <th scope="row" class="govuk-table__header" id="tas-promoter-er">@messages("ated.relief-summary.avoidanceSchmRefNum-promoter")</th>
+              <td class="govuk-table__cell" id="tas-promoter-er-val">@reliefData.taxAvoidance.equityReleaseSchemePromoter.fold("None")(x=>reliefData.taxAvoidance.equityReleaseSchemePromoter.fold("None")(a=>a))</td>
+            </tr>
+
+            <tr class="govuk-table__row">
+              <th scope="row" class="govuk-table__header" id="status-er">@messages("ated.relief-summary.status")</th>
+              <td class="govuk-table__cell" id="status-er-draft">@messages("ated.relief-summary.draft")</td>
+            </tr>
+          </tbody>
+      }
+    </table>
   }
 
   <p class="govuk-body" id="reliefs-print-charge-text">@messages("ated.relief-summary.table.ated-charge.text")</p>

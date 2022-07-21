@@ -18,16 +18,34 @@
 @import models._
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
-
-@this(atedMain: atedMain, formHelper: FormWithCSRF)
-@(id: String, periodKey: Int, propertyDetailsForm: Form[PropertyDetailsValueOnAcquisition], mode: Option[String], serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String], date: LocalDate)(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
-@import uk.gov.hmrc.play.views.html.helpers._
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
+@import views.ViewUtils.titleBuilder
 @import views.html.helpers._
 @import _root_.utils._
 @import utils.AtedUtils.intToMonth
 
+@this(newMain: newMain,
+        govukButton : GovukButton,
+        govukRadios : GovukRadios,
+        govukBackLink : GovukBackLink,
+        govukErrorSummary : GovukErrorSummary,
+        govukInput : GovukInput,        
+        formHelper: FormWithCSRF)
+
+@(id: String, periodKey: Int, propertyDetailsForm: Form[PropertyDetailsValueOnAcquisition], mode: Option[String], serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String], date: LocalDate)(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
+
 @implicitFormInstance = @{
-Some(propertyDetailsForm)
+    Some(propertyDetailsForm)
+}
+
+@backLinkHtml = {
+    @if(backLink.isDefined) {
+        @govukBackLink(BackLink(
+            href = backLink.get,
+            content = Text("Back")
+        ))
+    }
 }
 
 @pageScripts = {
@@ -44,30 +62,34 @@ Some(propertyDetailsForm)
 }
 
 
-@atedMain(title = messages("ated.property-details-value.valueAcquired.title", date.dayOfMonth().get().toString, intToMonth(date.monthOfYear().get()), date.year().get().toString),
+
+@newMain(title = titleBuilder(messages("ated.property-details-value.valueAcquired.title", date.dayOfMonth().get().toString, intToMonth(date.monthOfYear().get()), date.year().get().toString), Some(propertyDetailsForm)),
 serviceInfoContent = serviceInfoContent,
 pageScripts = Some(pageScripts)) {
 
-@pageHeadersAndError(backLink, "pre-heading", messages(AtedUtils.getPropertyDetailsPreHeader(mode)), messages("property-details-header"), messages("ated.property-details-value.valueAcquired.header", date.dayOfMonth().get().toString, intToMonth(date.monthOfYear().get()), date.year().get().toString),
-Some(atedErrorWithBoundarySummary(propertyDetailsForm, "ated.property-details-value-error.general", None, periodKey)))
+    @backLinkHtml
 
+    @if(propertyDetailsForm.errors.nonEmpty) {
+        @govukErrorSummary(ErrorSummary().withFormErrorsAsText(propertyDetailsForm))
+    }
 
-@formHelper(action = controllers.propertyDetails.routes.PropertyDetailsValueAcquiredController.save(id, periodKey, mode, date)) {
+    @formHelper(action = controllers.propertyDetails.routes.PropertyDetailsValueAcquiredController.save(id, periodKey, mode, date)) {
 
-<div>
-    @atedInputValue(propertyDetailsForm("acquiredValue"),
-    '_label -> messages("ated.property-details-value.valueAcquired.valueQuestion"),
-    '_labelClass -> "visuallyhidden",
-    '_inputClass -> "form-control-indent",
-    '_hintText -> messages("ated.property-details-value.valueAcquired.hintText"),
-    '_id -> "acquiredValue",
-    '_showConstraints -> false,
-    '_type -> "text")
-</div>
+        @govukInput(Input(
+            classes = "govuk-input--width-10",
+            hint = Some(Hint(
+                content = Text(messages("ated.property-details-value.valueAcquired.hintText")))),
+            prefix = Some(PrefixOrSuffix(content = Text("£")))
+        ).withFormField(propertyDetailsForm("acquiredValue"))
+        .withHeadingAndSectionCaption(
+            heading = Text(messages("ated.property-details-value.valueAcquired.header", date.dayOfMonth().get().toString, intToMonth(date.monthOfYear().get()), date.year().get().toString)),
+            sectionCaption = Text(messages(AtedUtils.getPropertyDetailsPreHeader(mode)))
+        ))
 
-<button class="button" id="submit" type="submit">@messages("ated.save-and-continue")</button>
-
-
-}
+        @govukButton(Button(
+            content = Text(messages("ated.save-and-continue")),
+            attributes = Map("id" -> "submit")
+        ))
+    }
 
 }

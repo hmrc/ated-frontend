@@ -21,29 +21,32 @@ import forms.PropertyDetailsForms._
 import models.{LineItem, StandardAuthRetrievals}
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
-import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
+import org.scalatest.featurespec.AnyFeatureSpecLike
+import org.scalatest.{BeforeAndAfterEach, GivenWhenThen}
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Messages, MessagesApi}
+import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import play.twirl.api.Html
 import testhelpers.MockAuthUtil
 import utils.AtedUtils
+import views.html.propertyDetails.periodsInAndOutRelief
 
-class periodsInAndOutReliefSpec extends FeatureSpec with GuiceOneAppPerSuite with MockitoSugar
+class periodsInAndOutReliefSpec extends AnyFeatureSpecLike with GuiceOneAppPerSuite with MockitoSugar
   with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
 
-  implicit val request = FakeRequest()
+  implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
-  val injectedViewInstance = app.injector.instanceOf[views.html.propertyDetails.periodsInAndOutRelief]
+  val injectedViewInstance: periodsInAndOutRelief = app.injector.instanceOf[views.html.propertyDetails.periodsInAndOutRelief]
 
-  feature("The user can view the periods and add the property in and out of relief") {
+  Feature("The user can view the periods and add the property in and out of relief") {
 
     info("as a client i want to be able to view the periods in and out of relief, and add and delete them")
 
-    scenario("return an empty table if we have no periods") {
+    Scenario("return an empty table if we have no periods") {
 
       Given("the client is creating a new liability and want to add multiple periods")
       When("The user views the page")
@@ -52,11 +55,14 @@ class periodsInAndOutReliefSpec extends FeatureSpec with GuiceOneAppPerSuite wit
 
       val document = Jsoup.parse(html.toString())
 
+      Then("The title should match - Add periods when the property was in relief and when it was liable for an ATED charge - GOV.UK")
+      assert(document.title() === "Add periods when the property was in relief and when it was liable for an ATED charge - GOV.UK")
+
       Then("The header should match - Add periods when the property was in relief and when it was liable for an ATED charge")
-      assert(document.select("h1").text === "Add periods when the property was in relief and when it was liable for an ATED charge")
+      assert(document.getElementsByTag("h1").text contains "Add periods when the property was in relief and when it was liable for an ATED charge")
 
       Then("The subheader should be - Create return")
-      assert(document.getElementById("pre-heading").text() === "This section is: Create return")
+      assert(document.getElementsByClass("govuk-caption-xl").text() === "This section is: Create return")
 
       Then("Text should read No periods of relief or charge have been added yet")
       assert(document.getElementById("no-periods").text() === "No periods of relief or charge have been added yet")
@@ -73,10 +79,10 @@ class periodsInAndOutReliefSpec extends FeatureSpec with GuiceOneAppPerSuite wit
       assert(document.getElementById("submit").text() === "Save and continue")
 
       Then("The back link is correct")
-      assert(document.getElementById("backLinkHref").text === "Back")
+      assert(document.getElementsByClass("govuk-back-link").text === "Back")
     }
 
-    scenario("return a populated table if we have periods") {
+    Scenario("return a populated table if we have periods") {
 
       Given("the client has a non uk company and the arrive at the overseas company registration")
       When("The user views the page")
@@ -89,14 +95,13 @@ class periodsInAndOutReliefSpec extends FeatureSpec with GuiceOneAppPerSuite wit
         periodsInAndOutReliefForm, periods, Some(AtedUtils.EDIT_SUBMITTED), Html(""), Some("http://backLink"))
 
       val document = Jsoup.parse(html.toString())
-
       Then("The header should match - Add periods when the property was in relief and when it was liable for an ATED charge")
-      assert(document.select("h1").text === "Add periods when the property was in relief and when it was liable for an ATED charge")
+      assert(document.getElementsByTag("h1").text contains "Add periods when the property was in relief and when it was liable for an ATED charge")
 
       Then("The subheader should be - Change return")
-      assert(document.getElementById("pre-heading").text() === "This section is: Change return")
+      assert(document.getElementsByClass("govuk-caption-xl").text() === "This section is: Change return")
 
-      Then("Text should read No periods of relief or charge have been added yet")
+      Then("The text for No periods of relief or charge have been added yet should not be displayed")
       assert(document.getElementById("no-periods") === null)
 
       Then("The table should exist")
@@ -120,8 +125,8 @@ class periodsInAndOutReliefSpec extends FeatureSpec with GuiceOneAppPerSuite wit
       assert(document.getElementById("submit").text() === "Save and continue")
 
       Then("The back link is correct")
-      assert(document.getElementById("backLinkHref").text === "Back")
-      assert(document.getElementById("backLinkHref").attr("href") === "http://backLink")
+      assert(document.getElementsByClass("govuk-back-link").text === "Back")
+      assert(document.getElementsByClass("govuk-back-link").attr("href") === "http://backLink")
     }
   }
 

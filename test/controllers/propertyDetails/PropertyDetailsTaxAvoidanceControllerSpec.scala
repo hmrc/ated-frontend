@@ -49,6 +49,7 @@ import scala.concurrent.Future
 class PropertyDetailsTaxAvoidanceControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with MockAuthUtil {
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
   implicit lazy val hc: HeaderCarrier = HeaderCarrier()
+  lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
 
   val mockMcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
   val mockPropertyDetailsService: PropertyDetailsService = mock[PropertyDetailsService]
@@ -56,8 +57,7 @@ class PropertyDetailsTaxAvoidanceControllerSpec extends PlaySpec with GuiceOneSe
   val mockBackLinkCacheConnector: BackLinkCacheConnector = mock[BackLinkCacheConnector]
   val mockSubscriptionDataService: SubscriptionDataService = mock[SubscriptionDataService]
   val mockPropertyDetailsSupportingInfoController: PropertyDetailsSupportingInfoController = mock[PropertyDetailsSupportingInfoController]
-    val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
+  val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
   val injectedViewInstance = app.injector.instanceOf[views.html.propertyDetails.propertyDetailsTaxAvoidance]
@@ -82,7 +82,6 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
       mockBackLinkCacheConnector,
       injectedViewInstance
     )
-
 
     def getWithUnAuthorisedUser(test: Future[Result] => Any) {
       val userId = s"user-${UUID.randomUUID}"
@@ -175,21 +174,18 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
               document.title() must be(TitleBuilder.buildTitle("Is a tax avoidance scheme being used?"))
-
-
-              document.getElementById("isTaxAvoidance").text() must be("Yes No")
-              document.getElementById("isTaxAvoidance-true").attr("checked") must be("")
-              document.getElementById("isTaxAvoidance-false").attr("checked") must be("")
+              document.getElementsByAttributeValue("for","isTaxAvoidance").text() mustBe messages("ated.property-details-value.yes")
+              document.getElementsByAttributeValue("for","isTaxAvoidance-2").text() mustBe messages("ated.property-details-value.no")
               assert(document.getElementById("service-info-list").text() === "Home Manage account Messages Help and contact")
 
               document.getElementById("taxAvoidanceScheme").attr("value") must be("")
 
-              document.getElementById("taxAvoidanceReveal-p1")
-                .text() must be("HMRC never approves tax avoidance schemes. You must tell us if you are using a tax avoidance scheme that falls within the Disclosure of Tax Avoidance Schemes (DOTAS).")
-              document.getElementById("taxAvoidanceReveal-p2")
-                .text() must be("You will have received your scheme reference number (SRN) and promoter reference number (PRN)")
+              document.getElementsByClass("govuk-details__text")
+                .text() must include("HMRC never approves tax avoidance schemes. You must tell us if you are using a tax avoidance scheme that falls within the Disclosure of Tax Avoidance Schemes (DOTAS).")
+              document.getElementsByClass("govuk-details__text")
+                .text() must include("You will have received your scheme reference number (SRN) and promoter reference number (PRN)")
 
-              document.getElementById("submit").text() must be("Save and continue")
+              document.getElementsByClass("govuk-button").text() must be("Save and continue")
           }
         }
 
@@ -203,12 +199,11 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
-
-              document.getElementById("isTaxAvoidance-true").attr("checked") must be("checked")
-              document.getElementById("isTaxAvoidance-false").attr("checked") must be("")
+              document.getElementById("isTaxAvoidance").attr("value") must be("true")
+              document.getElementById("isTaxAvoidance-2").attr("value") must be("false")
               document.getElementById("taxAvoidanceScheme").attr("value") must be("taxAvoid")
 
-              document.getElementById("submit").text() must be("Save and continue")
+              document.getElementsByClass("govuk-button").text() must be("Save and continue")
           }
         }
       }
@@ -227,8 +222,8 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
               val document = Jsoup.parse(contentAsString(result))
               document.title() must be(TitleBuilder.buildTitle("Is a tax avoidance scheme being used?"))
 
-              document.getElementById("backLinkHref").text must be("Back")
-              document.getElementById("backLinkHref").attr("href") must include("/ated/liability/create/summary")
+              document.getElementsByClass("govuk-back-link").text must be("Back")
+              document.getElementsByClass("govuk-back-link").attr("href") must include("/ated/liability/create/summary")
           }
         }
 
@@ -241,8 +236,8 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
               val document = Jsoup.parse(contentAsString(result))
               document.title() must be(TitleBuilder.buildTitle("Is a tax avoidance scheme being used?"))
 
-              document.getElementById("backLinkHref").text must be("Back")
-              document.getElementById("backLinkHref").attr("href") must include("/ated/liability/create/summary")
+              document.getElementsByClass("govuk-back-link").text must be("Back")
+              document.getElementsByClass("govuk-back-link").attr("href") must include("/ated/liability/create/summary")
           }
         }
       }

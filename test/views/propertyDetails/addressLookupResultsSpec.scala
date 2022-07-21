@@ -20,73 +20,76 @@ import config.ApplicationConfig
 import forms.AddressLookupForms._
 import models._
 import org.jsoup.Jsoup
-import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
+import org.scalatest.featurespec.AnyFeatureSpecLike
+import org.scalatest.{BeforeAndAfterEach, GivenWhenThen}
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Messages, MessagesApi}
+import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import play.twirl.api.Html
 import testhelpers.MockAuthUtil
 import utils.AtedUtils
+import views.html.propertyDetails.addressLookupResults
 
-class addressLookupResultsSpec extends FeatureSpec with GuiceOneAppPerSuite with MockitoSugar with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
+class addressLookupResultsSpec extends AnyFeatureSpecLike with GuiceOneAppPerSuite with MockitoSugar with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
 
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
-  implicit val request = FakeRequest()
+  implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
-  val injectedViewInstance = app.injector.instanceOf[views.html.propertyDetails.addressLookupResults]
+  val injectedViewInstance: addressLookupResults = app.injector.instanceOf[views.html.propertyDetails.addressLookupResults]
 
-feature("The user can search for an address via the post code") {
+Feature("The user can search for an address via the post code") {
 
     info("as a user I want to be able to search for an address via the post code")
 
-    scenario("user is has searched for their property but has no search results") {
+    Scenario("user is has searched for their property but has no search results") {
 
       Given("A user has searched for a property while creating a new liability")
       When("The user views the page")
-      implicit val request = FakeRequest()
+      implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 
       val results = AddressSearchResults(searchCriteria = AddressLookup("XX1 1XX", None), Nil)
       val html = injectedViewInstance(None, 2015, addressSelectedForm, results, None, Html(""), Some("backLink"))
 
       val document = Jsoup.parse(html.toString())
+
       Then("Select the address of the property")
       assert(document.title() === "Select the address of the property - GOV.UK")
 
       Then("The header should match - Select the address of the property")
-      assert(document.getElementById("account-lookup-header").text === "Select the address of the property")
+      assert(document.getElementsByTag("h1").text contains "Select the address of the property")
 
       Then("The subheader should be - Create return")
-      assert(document.getElementById("pre-heading").text() === "This section is: Create return")
+      assert(document.getElementsByClass("govuk-caption-xl").text === "This section is: Create return")
 
       Then("The search criteria header should be - Postcode")
       assert(document.getElementById("search-criteria-header").text() === "Postcode")
       assert(document.getElementById("postcode").text() === "XX1 1XX")
-      assert(document.getElementById("change-address-search-link").text() === "Change postcode")
-      assert(document.getElementById("change-address-search-link").attr("href") === "/ated/liability/address-lookup/view/2015")
+      assert(document.getElementById("change-address-search-link").text ===  "Change postcode")
 
       Then("The search criteria results header should be - Property address")
       assert(document.getElementById("search-results-header").text() === "Property address")
 
-      Then("The address link should be - I cannot find my address in the list")
+      Then("The proprerty address returns - No addresses were found for this postcode")
       assert(document.getElementById("no-address-found").text() === "No addresses were found for this postcode")
 
-      assert(document.getElementById("enter-address-link").text() === "Manually enter the address")
-      assert(document.getElementById("enter-address-link").attr("href") === "/ated/liability/address-lookup/manual/2015")
+      assert(document.getElementById("enter-address-link").text() contains "Manually enter the address")
+      assert(document.getElementById("enter-address-link").attr("href") contains "/ated/liability/address-lookup/manual/2015")
 
-      Then("The submit button should be - Save and continue")
-      assert(document.getElementById("submit") === null)
+      Then("The submit button should not be displayed")
+      assert(document.getElementById("govuk-button") === null)
 
       Then("The back link is correct")
-      assert(document.getElementById("backLinkHref").text === "Back")
+      assert(document.getElementsByClass("govuk-back-link").text === "Back")
     }
 
-    scenario("user is editing a chargeable return for an existing property") {
+    Scenario("user is editing a chargeable return for an existing property") {
 
       Given("A user has searched for a property while editing a chargeable return")
       When("The user views the page")
-      implicit val request = FakeRequest()
+      implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 
       val address1 = AddressLookupRecord(1, AddressSearchResult(List("1", "result street"), None, None, "XX1 1XX", AddressLookupCountry("UK", "UK")))
       val address2 = AddressLookupRecord(2, AddressSearchResult(List("2", "result street"), None, None, "XX1 1XX", AddressLookupCountry("UK", "UK")))
@@ -101,22 +104,22 @@ feature("The user can search for an address via the post code") {
       assert(document.title() === "Select the address of the property - GOV.UK")
 
       Then("The header should match - Select the address of the property")
-      assert(document.getElementById("account-lookup-header").text === "Select the address of the property")
+      assert(document.getElementsByTag("h1").text() contains "Select the address of the property")
 
       Then("The subheader should be - Change return")
-      assert(document.getElementById("pre-heading").text() === "This section is: Change return")
+      assert(document.getElementsByClass("govuk-caption-xl").text() === "This section is: Change return")
 
       Then("The search criteria header should be - Postcode")
-      assert(document.getElementById("search-criteria-header").text() === "Postcode")
+      assert(document.getElementById("search-criteria-header").text() contains  "Postcode")
       assert(document.getElementById("postcode").text() === "XX1 1XX")
       assert(document.getElementById("change-address-search-link").text() === "Change postcode")
       assert(document.getElementById("change-address-search-link").attr("href") === "/ated/liability/address-lookup/view/2015?propertyKey=123456")
 
       Then("The search criteria results header should be - Property address")
       assert(document.getElementById("search-results-header").text() === "Property address")
-      assert(document.getElementById("selected-1_field").text() === "1, result street, UK")
-      assert(document.getElementById("selected-2_field").text() === "2, result street, UK")
-      assert(document.getElementById("selected-3_field").text() === "3, result street, UK")
+      assert(document.getElementsByAttributeValue("for", "selected").text.contains("1, result street, UK") === true)
+      assert(document.getElementsByAttributeValue("for", "selected-2").text.contains("2, result street, UK") === true)
+      assert(document.getElementsByAttributeValue("for", "selected-3").text.contains("3, result street, UK") === true)
 
       Then("The address link should be - I cannot find my address in the list")
       assert(document.getElementById("no-address-found") === null)
@@ -125,11 +128,11 @@ feature("The user can search for an address via the post code") {
       assert(document.getElementById("enter-address-link").attr("href") === "/ated/liability/address-lookup/manual/2015?propertyKey=123456&mode=editSubmitted")
 
       Then("The submit button should be - Save and continue")
-      assert(document.getElementById("submit").text() === "Save and continue")
+      assert(document.getElementsByClass("govuk-button").text() === "Save and continue")
 
       Then("The back link is correct")
-      assert(document.getElementById("backLinkHref").text === "Back")
-      assert(document.getElementById("backLinkHref").attr("href") === "http://backLink")
+      assert(document.getElementsByClass("govuk-back-link").text === "Back")
+      assert(document.getElementsByClass("govuk-back-link").attr("href") === "http://backLink")
     }
   }
 }

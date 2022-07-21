@@ -202,12 +202,12 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
 
-              document.getElementById("startDate-day").attr("value") must be("1")
-              document.getElementById("startDate-month").attr("value") must be("5")
-              document.getElementById("startDate-year").attr("value") must be("2015")
-              document.getElementById("endDate-day").attr("value") must be("23")
-              document.getElementById("endDate-month").attr("value") must be("2")
-              document.getElementById("endDate-year").attr("value") must be("2016")
+              document.getElementById("startDate.day").attr("value") must be("1")
+              document.getElementById("startDate.month").attr("value") must be("5")
+              document.getElementById("startDate.year").attr("value") must be("2015")
+              document.getElementById("endDate.day").attr("value") must be("23")
+              document.getElementById("endDate.month").attr("value") must be("2")
+              document.getElementById("endDate.year").attr("value") must be("2016")
 
           }
         }
@@ -223,7 +223,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
           result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be(TitleBuilder.buildTitle("Add the dates the property was liable for an ATED charge"))
+            document.title() must be("Add the dates the property was liable for an ATED charge - GOV.UK")
         }
       }
     }

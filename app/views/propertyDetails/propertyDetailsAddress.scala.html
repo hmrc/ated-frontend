@@ -17,8 +17,20 @@
 @import models._
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
+@import views.ViewUtils.titleBuilder
+@import views.html.helpers._
+@import _root_.utils._
 
-@this(atedMain: atedMain, formHelper: FormWithCSRF)
+@this(newMain: newMain,
+    govukButton : GovukButton,
+    govukInput : GovukInput,
+    govukFieldset : GovukFieldset,
+    govukBackLink : GovukBackLink,
+    formHelper: FormWithCSRF,
+    govukErrorSummary : GovukErrorSummary)
+
 @(id: Option[String],
   periodKey: Int,
   propertyDetailsForm: Form[PropertyDetailsAddress],
@@ -27,80 +39,108 @@
   backLink: Option[String],
   oldFormBundleNo: Option[String] = None,
   fromConfirmAddressPage: Boolean)(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
-@import uk.gov.hmrc.play.views.html.helpers._
-@import views.html.helpers._
-@import _root_.utils._
 
-@implicitFormInstance = @{ Some(propertyDetailsForm) }
+@backLinkHtml = {
+    @if(backLink.isDefined) {
+        @govukBackLink(BackLink(
+            href = backLink.get,
+            content = Text("Back")
+        ))
+    }
+}
+
+@implicitFormInstance = @{
+    Some(propertyDetailsForm)
+}
 
 @idAppearing = @{
-id match {
-case Some(x) => x
-case _ => oldFormBundleNo.getOrElse("")
-}
+    id match {
+        case Some(x) => x
+        case _ => oldFormBundleNo.getOrElse("")
+    }
 }
 
-    @pageTitle = @{
-        if(fromConfirmAddressPage) {
-            messages("ated.property-details.editAddress")
-        } else {
-            messages("ated.property-details.title")
-        }
+@pageTitle = @{
+    if(fromConfirmAddressPage) {
+        messages("ated.property-details.editAddress")
+    } else {
+        messages("ated.property-details.title")
+    }
+}
+
+@newMain(title = titleBuilder(pageTitle, Some(propertyDetailsForm)), serviceInfoContent = serviceInfoContent) {
+
+    @backLinkHtml
+
+    @if(propertyDetailsForm.errors.nonEmpty) {
+        @govukErrorSummary(ErrorSummary().withFormErrorsAsText(propertyDetailsForm))
     }
 
-    @atedMain(title = pageTitle,
-        serviceInfoContent = serviceInfoContent) {
+    <header>
+        <h1 class="govuk-heading-xl">
+            <span class="govuk-caption-xl">
+                <span class="govuk-visually-hidden">
+                    @messages("ated.screen-reader.section")
+                </span>
+                @messages(AtedUtils.getPropertyDetailsPreHeader(mode))
+            </span>
 
-            @pageHeadersAndError(backLink, messages("pre-heading"), messages(AtedUtils.getPropertyDetailsPreHeader(mode)), "property-details-header", pageTitle,
-                Some(atedErrorSummary(propertyDetailsForm, "ated.property-details-address-error.general")))
-
-        @if(fromConfirmAddressPage){
-            <p>@messages("ated.property-details.p")</p>
-        }
-
-        @formHelper(action = controllers.propertyDetails.routes.PropertyDetailsAddressController.save(id, periodKey, mode, fromConfirmAddressPage)) {
-
-            @atedInputNew(propertyDetailsForm("line_1"),
-                '_label -> Html(messages("ated.addressProperty.line_1")),
-                '_labelClass -> "form-label-bold",
-                '_id -> "line_1",
-                '_showConstraints -> false)
-
-            @atedInputNew(propertyDetailsForm("line_2"),
-                '_label -> Html(messages("ated.addressProperty.line_2")),
-                '_labelClass -> "form-label-bold",
-                '_id -> "line_2",
-                '_showConstraints -> false)
-
-            @atedInputNew(propertyDetailsForm("line_3"),
-                '_label -> Html(messages("ated.addressProperty.line_3")),
-                '_labelClass -> "form-label-bold",
-                '_id -> "line_3",
-                '_showConstraints -> false)
-
-            @atedInputNew(propertyDetailsForm("line_4"),
-                '_label -> Html(messages("ated.addressProperty.line_4")),
-                '_labelClass -> "form-label-bold",
-                '_id -> "line_4",
-                '_showConstraints -> false)
-
-            @atedInputNew(propertyDetailsForm("postcode"),
-                '_label -> Html(messages("ated.addressProperty.postcode")),
-                '_labelClass -> "form-label-bold",
-                '_id -> "postcode",
-                '_inputClass -> "input--normal",
-                '_showConstraints -> false)
-
-            @if(!fromConfirmAddressPage) {
-                <div class="form-group">
-                    <a href="@controllers.propertyDetails.routes.PropertyDetailsAddressController.addressLookupRedirect(id, periodKey, mode)"
-                    id="lookup-address-link"
-                    aria-label='@messages("ated.property-details.property-address.lookup.title")'>@messages("ated.property-details.property-address.lookup.title")</a>
-                </div>
+            @if(fromConfirmAddressPage){
+                @messages("ated.property-details.editAddress")
+            } else {
+                @messages("ated.property-details.header")
             }
+        </h1>
+    </header>
 
-            <button class="button page-header-margin" id="submit" type="submit">@messages("ated.save-and-continue")</button>
-
-        }
+    @if(fromConfirmAddressPage){
+        <p class="govuk-body">@messages("ated.property-details.p")</p>
     }
 
+    @formHelper(action = controllers.propertyDetails.routes.PropertyDetailsAddressController.save(id, periodKey, mode, fromConfirmAddressPage)) {
+
+        @govukInput(Input(
+            label = Label(
+              content = Text(messages("ated.addressProperty.line_1"))
+            )
+        ).withFormField(propertyDetailsForm("line_1")))
+
+        @govukInput(Input(
+            label = Label(
+              content = Text(messages("ated.addressProperty.line_2"))
+            )
+        ).withFormField(propertyDetailsForm("line_2")))
+
+        @govukInput(Input(
+            label = Label(
+              content = Text(messages("ated.addressProperty.line_3"))
+            )
+        ).withFormField(propertyDetailsForm("line_3")))
+
+        @govukInput(Input(
+            label = Label(
+              content = Text(messages("ated.addressProperty.line_4"))
+            )
+        ).withFormField(propertyDetailsForm("line_4")))
+
+        @govukInput(Input(
+            label = Label(
+              content = Text(messages("ated.addressProperty.postcode"))
+            ),
+            classes = "govuk-input--width-10"
+        ).withFormField(propertyDetailsForm("postcode")))
+
+        @if(!fromConfirmAddressPage) {
+            <div class="govuk-form-group">
+                <a class="govuk-link govuk-body" href="@controllers.propertyDetails.routes.PropertyDetailsAddressController.addressLookupRedirect(id, periodKey, mode)"
+                id="lookup-address-link">
+                @messages("ated.property-details.property-address.lookup.title")</a>
+            </div>
+        }
+
+        @govukButton(Button(
+            content = Text(messages("ated.save-and-continue")),
+            attributes = Map("id" -> "submit")
+        ))
+    }
+}
