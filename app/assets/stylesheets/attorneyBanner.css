@@ -70,3 +70,7 @@ a.banner-links {
 .service-banner {
     border-bottom: 10px solid #005ea5;
 }
+
+#bank-details-header {
+    margin: 0;
+}

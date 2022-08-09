@@ -17,7 +17,6 @@
 package controllers.subscriptionData
 
 import java.util.UUID
-
 import builders.{SessionBuilder, TitleBuilder}
 import config.ApplicationConfig
 import connectors.DataCacheConnector
@@ -41,6 +40,7 @@ import testhelpers.MockAuthUtil
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import views.html.BtaNavigationLinks
+import views.html.subcriptionData.registeredDetails
 
 import scala.concurrent.Future
 
@@ -54,11 +54,11 @@ class RegisteredDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSui
   val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
   val mockDetailsService: DetailsService = mock[DetailsService]
   val mockSubscriptionDataService: SubscriptionDataService = mock[SubscriptionDataService]
-    val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
+  val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
-  val injectedViewInstance = app.injector.instanceOf[views.html.subcriptionData.registeredDetails]
+  val injectedViewInstance: registeredDetails = app.injector.instanceOf[views.html.subcriptionData.registeredDetails]
 
 class Setup {
 
@@ -161,7 +161,7 @@ class Setup {
         }
 
         "show the Registered details view with populated data" in new Setup {
-          val businessPartnerDetails = RegisteredDetails(isEditable = false, "testName",
+          val businessPartnerDetails: RegisteredDetails = RegisteredDetails(isEditable = false, "testName",
             RegisteredAddressDetails(addressLine1 = "bpline1",
               addressLine2 = "bpline2",
               addressLine3 = Some("bpline3"),
@@ -255,10 +255,10 @@ class Setup {
               result =>
                 status(
                   result) must be(BAD_REQUEST)
-                contentAsString(result) must include("You must enter Business name")
-                contentAsString(result) must include("You must enter Address line 1")
-                contentAsString(result) must include("You must enter Address line 2")
-                contentAsString(result) must include("You must enter Country")
+                contentAsString(result) must include("You must enter a business name")
+                contentAsString(result) must include("You must enter address line 1")
+                contentAsString(result) must include("You must enter address line 2")
+                contentAsString(result) must include("You must enter a country")
             }
           }
 
@@ -278,10 +278,10 @@ class Setup {
               result =>
                 status(
                   result) must be(BAD_REQUEST)
-                contentAsString(result) must include("You must enter Business name")
-                contentAsString(result) must include("You must enter Address line 1")
-                contentAsString(result) must include("You must enter Address line 2")
-                contentAsString(result) must include("You must enter Country")
+                contentAsString(result) must include("You must enter a business name")
+                contentAsString(result) must include("You must enter address line 1")
+                contentAsString(result) must include("You must enter address line 2")
+                contentAsString(result) must include("You must enter a country")
             }
           }
 
@@ -306,7 +306,7 @@ class Setup {
                 contentAsString(result) must include("Address line 3 cannot be more than 35 characters")
                 contentAsString(result) must include("Address line 4 cannot be more than 35 characters")
                 contentAsString(result) must include("You must enter a valid postcode")
-                contentAsString(result) must include("You must enter Country")
+                contentAsString(result) must include("You must enter a country")
             }
           }
         }

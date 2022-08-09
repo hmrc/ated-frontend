@@ -17,7 +17,6 @@
 package controllers.editLiability
 
 import java.util.UUID
-
 import builders._
 import config.ApplicationConfig
 import connectors.DataCacheConnector
@@ -41,6 +40,7 @@ import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.AtedConstants._
 import views.html.BtaNavigationLinks
+import views.html.editLiability.disposeLiabilitySent
 
 import scala.concurrent.Future
 
@@ -53,11 +53,11 @@ class DisposeLiabilitySentControllerSpec extends PlaySpec with GuiceOneServerPer
   val mockSubscriptionDataService: SubscriptionDataService = mock[SubscriptionDataService]
   val mockDisposeLiabilityReturnService: DisposeLiabilityReturnService = mock[DisposeLiabilityReturnService]
   val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
-    val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
+  val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
-  val injectedViewInstance = app.injector.instanceOf[views.html.editLiability.disposeLiabilitySent]
+  val injectedViewInstance: disposeLiabilitySent = app.injector.instanceOf[views.html.editLiability.disposeLiabilitySent]
 
   val formBundleNo1: String = "123456789012"
   val formBundleNo2: String = "123456789011"
@@ -108,7 +108,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
   override def beforeEach: Unit = {
 
     reset(mockSubscriptionDataService)
-reset(mockDelegationService)
+    reset(mockDelegationService)
     reset(mockDataCacheConnector)
   }
 
@@ -117,9 +117,9 @@ reset(mockDelegationService)
   "DisposeLiabilitySentController.view" should {
     "return amended return sent page, if response found in cache and amountDueOrRefund is Negative" in new Setup {
 
-      val r1 = EditLiabilityReturnsResponse(mode = "Post", oldFormBundleNumber = formBundleNo1, formBundleNumber =
+      val r1: EditLiabilityReturnsResponse = EditLiabilityReturnsResponse(mode = "Post", oldFormBundleNumber = formBundleNo1, formBundleNumber =
         Some(formBundleNo2), liabilityAmount = BigDecimal(1234.56), amountDueOrRefund = BigDecimal(-500.00), paymentReference = Some("payment-ref-01"))
-      val resp = EditLiabilityReturnsResponseModel(DateTime.now(), liabilityReturnResponse = Seq(r1), BigDecimal(0.00))
+      val resp: EditLiabilityReturnsResponseModel = EditLiabilityReturnsResponseModel(DateTime.now(), liabilityReturnResponse = Seq(r1), BigDecimal(0.00))
       viewWithAuthorisedUser(Some(resp)) {
         result =>
           status(result) must be(OK)
@@ -145,7 +145,7 @@ reset(mockDelegationService)
           document.getElementById("payment-reference")
             .text() must be("The reference to make this payment is payment-ref-01.")
           document.getElementById("liable-for")
-            .text() must be("If you have sold the property you may be liable for ATED-related Capital Gains Tax.")
+            .text() must be("If you have sold the property you may be liable for ATED-related Capital Gains Tax (opens in new tab).")
           document.getElementById("view-balance")
             .text() must be("You can view your balance in your ATED online service. There can be a 24-hour delay before you see any updates.")
           document.getElementById("submit")
@@ -154,9 +154,9 @@ reset(mockDelegationService)
     }
 
     "take user to print friendly dispose liability confirmation" in new Setup {
-      val r1 = EditLiabilityReturnsResponse(mode = "Post", oldFormBundleNumber = formBundleNo1, formBundleNumber =
+      val r1: EditLiabilityReturnsResponse = EditLiabilityReturnsResponse(mode = "Post", oldFormBundleNumber = formBundleNo1, formBundleNumber =
         Some(formBundleNo2), liabilityAmount = BigDecimal(1234.56), amountDueOrRefund = BigDecimal(-500.00), paymentReference = Some("payment-ref-01"))
-      val resp = EditLiabilityReturnsResponseModel(DateTime.now(), liabilityReturnResponse = Seq(r1), BigDecimal(0.00))
+      val resp: EditLiabilityReturnsResponseModel = EditLiabilityReturnsResponseModel(DateTime.now(), liabilityReturnResponse = Seq(r1), BigDecimal(0.00))
       getPrintFriendlyWithAuthorisedUser(Some(resp)) {
         result =>
           status(result) must be(OK)
@@ -181,9 +181,9 @@ reset(mockDelegationService)
     }
 
     "take user to print friendly dispose liability confirmation bigger than zero" in new Setup {
-      val r1 = EditLiabilityReturnsResponse(mode = "Post", oldFormBundleNumber = formBundleNo1, formBundleNumber =
+      val r1: EditLiabilityReturnsResponse = EditLiabilityReturnsResponse(mode = "Post", oldFormBundleNumber = formBundleNo1, formBundleNumber =
         Some(formBundleNo2), liabilityAmount = BigDecimal(1234.56), amountDueOrRefund = BigDecimal(500.00), paymentReference = Some("payment-ref-01"))
-      val resp = EditLiabilityReturnsResponseModel(DateTime.now(), liabilityReturnResponse = Seq(r1), BigDecimal(0.00))
+      val resp: EditLiabilityReturnsResponseModel = EditLiabilityReturnsResponseModel(DateTime.now(), liabilityReturnResponse = Seq(r1), BigDecimal(0.00))
       getPrintFriendlyWithAuthorisedUser(Some(resp)) {
         result =>
           status(result) must be(OK)
@@ -192,9 +192,9 @@ reset(mockDelegationService)
       }
     }
     "take user to print friendly dispose liability confirmation exactly zero" in new Setup {
-      val r1 = EditLiabilityReturnsResponse(mode = "Post", oldFormBundleNumber = formBundleNo1, formBundleNumber =
+      val r1: EditLiabilityReturnsResponse = EditLiabilityReturnsResponse(mode = "Post", oldFormBundleNumber = formBundleNo1, formBundleNumber =
         Some(formBundleNo2), liabilityAmount = BigDecimal(1234.56), amountDueOrRefund = BigDecimal(0.00), paymentReference = Some("payment-ref-01"))
-      val resp = EditLiabilityReturnsResponseModel(DateTime.now(), liabilityReturnResponse = Seq(r1), BigDecimal(0.00))
+      val resp: EditLiabilityReturnsResponseModel = EditLiabilityReturnsResponseModel(DateTime.now(), liabilityReturnResponse = Seq(r1), BigDecimal(0.00))
       getPrintFriendlyWithAuthorisedUser(Some(resp)) {
         result =>
           status(result) must be(OK)
@@ -204,9 +204,9 @@ reset(mockDelegationService)
     }
 
     "return further return sent page, if response found in cache and amountDueOrRefund is Negative" in new Setup {
-      val r1 = EditLiabilityReturnsResponse(mode = "Post", oldFormBundleNumber = formBundleNo1, formBundleNumber =
+      val r1: EditLiabilityReturnsResponse = EditLiabilityReturnsResponse(mode = "Post", oldFormBundleNumber = formBundleNo1, formBundleNumber =
         Some(formBundleNo2), liabilityAmount = BigDecimal(1234.56), amountDueOrRefund = BigDecimal(500.00), paymentReference = Some("payment-ref-01"))
-      val resp = EditLiabilityReturnsResponseModel(DateTime.now(), liabilityReturnResponse = Seq(r1), BigDecimal(0.00))
+      val resp: EditLiabilityReturnsResponseModel = EditLiabilityReturnsResponseModel(DateTime.now(), liabilityReturnResponse = Seq(r1), BigDecimal(0.00))
       viewWithAuthorisedUser(Some(resp)) {
         result =>
           status(result) must be(OK)
@@ -216,9 +216,9 @@ reset(mockDelegationService)
     }
 
     "return edit details return sent page, if response found in cache and amountDueOrRefund is Negative" in new Setup {
-      val r1 = EditLiabilityReturnsResponse(mode = "Post", oldFormBundleNumber = formBundleNo1, formBundleNumber =
+      val r1: EditLiabilityReturnsResponse = EditLiabilityReturnsResponse(mode = "Post", oldFormBundleNumber = formBundleNo1, formBundleNumber =
         Some(formBundleNo2), liabilityAmount = BigDecimal(1234.56), amountDueOrRefund = BigDecimal(0.0), paymentReference = Some("payment-ref-01"))
-      val resp = EditLiabilityReturnsResponseModel(DateTime.now(), liabilityReturnResponse = Seq(r1), BigDecimal(0.00))
+      val resp: EditLiabilityReturnsResponseModel = EditLiabilityReturnsResponseModel(DateTime.now(), liabilityReturnResponse = Seq(r1), BigDecimal(0.00))
       viewWithAuthorisedUser(Some(resp)) {
         result =>
           status(result) must be(OK)
@@ -228,9 +228,9 @@ reset(mockDelegationService)
     }
 
     "redirect to account summary, if response found in cache but formbundle doesn't match" in new Setup {
-      val r1 = EditLiabilityReturnsResponse(mode = "Post", oldFormBundleNumber = formBundleNo2, formBundleNumber =
+      val r1: EditLiabilityReturnsResponse = EditLiabilityReturnsResponse(mode = "Post", oldFormBundleNumber = formBundleNo2, formBundleNumber =
         Some(formBundleNo2), liabilityAmount = BigDecimal(1234.56), amountDueOrRefund = BigDecimal(0.0), paymentReference = Some("payment-ref-01"))
-      val resp = EditLiabilityReturnsResponseModel(DateTime.now(), liabilityReturnResponse = Seq(r1), BigDecimal(0.00))
+      val resp: EditLiabilityReturnsResponseModel = EditLiabilityReturnsResponseModel(DateTime.now(), liabilityReturnResponse = Seq(r1), BigDecimal(0.00))
       viewWithAuthorisedUser(Some(resp)) {
         result =>
           status(result) must be(SEE_OTHER)

@@ -43,12 +43,7 @@
     }
 }
 
-@pageScripts = {
-  <script src='@controllers.routes.Assets.versioned("javascript/supportingInfo.js")'></script>
-}
-
 @newMain(title = titleBuilder(messages("ated.property-details-period.supportingInfo.title"), Some(propertyDetailsForm)),
-          pageScripts = Some(pageScripts),
           serviceInfoContent = serviceInfoContent) {
 
     @backLinkHtml
@@ -58,7 +53,7 @@
     }
 
 <header>
-  <h1 class="govuk-heading-xl">
+  <h1 class="govuk-heading-xl govuk-!-margin-bottom-5">
       <span class="govuk-caption-xl">
           <span class="govuk-visually-hidden">
               @messages("ated.screen-reader.section")
@@ -70,7 +65,7 @@
 </header>
 
 <p class="govuk-body">
-    <a class="govuk-link govuk-body" href="https://www.gov.uk/government/publications/stld-annual-tax-on-enveloped-dwellings-ated/annual-tax-on-enveloped-dwellings-returns-guidance#sec5" rel="noreferrer noopener" target="_blank">@messages("ated.property-details-period.supportingInfo.hint")</a>
+    <a class="govuk-link" href="https://www.gov.uk/government/publications/stld-annual-tax-on-enveloped-dwellings-ated/annual-tax-on-enveloped-dwellings-returns-guidance#sec5" rel="noreferrer noopener" target="_blank">@messages("ated.property-details-period.supportingInfo.hint")</a>
 </p>
 
     @formHelper(action=controllers.propertyDetails.routes.PropertyDetailsSupportingInfoController.save(id, periodKey, mode)) {

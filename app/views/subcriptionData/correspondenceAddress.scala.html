@@ -19,19 +19,23 @@
 @import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 @import views.ViewUtils.titleBuilder
 
-@this(newMain: newMain, formHelper: FormWithCSRF, fieldset: GovukFieldset, input: GovukInput, button: GovukButton, select: GovukSelect, govukBackLink: GovukBackLink)
+@this(newMain: newMain,
+    formHelper: FormWithCSRF,
+    fieldset: GovukFieldset,
+    input: GovukInput,
+    button: GovukButton,
+    select: GovukSelect,
+    govukBackLink: GovukBackLink,
+    govukErrorSummary: GovukErrorSummary)
 @(correspondenceAddressForm: Form[models.AddressDetails], listOfIsoCode: List[(String, String)], serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
 @script = {
     <script src='@controllers.routes.Assets.versioned("javascript/autocomplete.min.js")'></script>
     <script>
-
-
-                accessibleAutocomplete.enhanceSelectElement({
-                    defaultValue: '',
-                    selectElement: document.querySelector('#countryCode')
-                });
-
+        accessibleAutocomplete.enhanceSelectElement({
+            defaultValue: '',
+            selectElement: document.querySelector('#countryCode')
+        });
     </script>
 }
 
@@ -48,7 +52,11 @@
 
     @backLinkHtml
 
-    <h1 class="govuk-heading-xl">
+    @if(correspondenceAddressForm.hasErrors) {
+        @govukErrorSummary(ErrorSummary().withFormErrorsAsText(correspondenceAddressForm))
+    }
+
+    <h1 class="govuk-heading-xl govuk-!-margin-bottom-5">
         <span class="govuk-visually-hidden">@messages("ated.screen-reader.section")</span>
         <span class="govuk-caption-xl hmrc-caption-xl">@messages("ated.correspondence-address.subheader")</span>
         @messages("ated.correspondence-address.header")
@@ -56,19 +64,19 @@
   @formHelper(action = controllers.subscriptionData.routes.CorrespondenceAddressController.submit) {
 
       @input(Input(inputType = "hidden").withFormField(correspondenceAddressForm("addressType")))
-      @input(Input(label = Label(content = Text(messages("ated.address.line-1")))).withFormField(correspondenceAddressForm("addressLine1")))
-      @input(Input(label = Label(content = Text(messages("ated.address.line-2")))).withFormField(correspondenceAddressForm("addressLine2")))
-      @input(Input(label = Label(content = Text(messages("ated.address.line-3"))), classes = "govuk-!-width-two-thirds").withFormField(correspondenceAddressForm("addressLine3")))
-      @input(Input(label = Label(content = Text(messages("ated.address.line-4"))), classes = "govuk-!-width-two-thirds").withFormField(correspondenceAddressForm("addressLine4")))
+      @input(Input(label = Label(content = Text(messages("ated.addressLine1")))).withFormField(correspondenceAddressForm("addressLine1")))
+      @input(Input(label = Label(content = Text(messages("ated.addressLine2")))).withFormField(correspondenceAddressForm("addressLine2")))
+      @input(Input(label = Label(content = Text(messages("ated.addressLine3"))), classes = "govuk-!-width-two-thirds").withFormField(correspondenceAddressForm("addressLine3")))
+      @input(Input(label = Label(content = Text(messages("ated.addressLine4"))), classes = "govuk-!-width-two-thirds").withFormField(correspondenceAddressForm("addressLine4")))
       @select(Select(
-          label = Label(content = Text(messages("ated.address.country"))),
-          items = Seq(SelectItem(Some(""), "")) ++ listOfIsoCode.map {
+          label = Label(content = Text(messages("ated.country"))),
+          items = Seq(SelectItem(Some(""), "Select a country")) ++ listOfIsoCode.map {
               case (code, country) => SelectItem(
                   value = Some(country),
                   text = country)
           }
       ).withFormField(correspondenceAddressForm("countryCode")))
-      @input(Input(label = Label(content = Text(messages("ated.address.postcode"))), classes = "govuk-input--width-10").withFormField(correspondenceAddressForm("postalCode")))
+      @input(Input(label = Label(content = Text(messages("ated.postcode"))), classes = "govuk-input--width-10").withFormField(correspondenceAddressForm("postalCode")))
 
     @button(Button(content = Text(messages("ated.save-changes"))))
 

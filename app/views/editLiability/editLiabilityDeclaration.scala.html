@@ -50,7 +50,7 @@
     @backLinkHtml
 
     <header>
-        <h1 class="govuk-heading-xl">
+        <h1 class="govuk-heading-xl govuk-!-margin-bottom-5">
             <span class="govuk-caption-xl">
                 <span class="govuk-visually-hidden">
                 @messages("ated.screen-reader.section")
@@ -62,11 +62,11 @@
     </header>
 
     <p class="govuk-body" id="relief-declaration-before-declaration-text">
-    @if(authContext.delegationModel.isDefined) {
-        @messages("ated.edit-liability.before-declaration.agent")
-    } else {
-        @messages("ated.edit-liability.before-declaration.client")
-    }
+        @if(authContext.delegationModel.isDefined) {
+            @messages("ated.edit-liability.before-declaration.agent")
+        } else {
+            @messages("ated.edit-liability.before-declaration.client")
+        }
     </p>
 
     @if(authContext.delegationModel.isDefined) {

@@ -23,14 +23,13 @@
 @(registeredDetailsForm: Form[models.RegisteredDetails], listOfIsoCode: List[(String, String)], serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
 @pageScripts = {
-<script src='@controllers.routes.Assets.versioned("javascript/autocomplete.min.js")'></script>
-<script>
-
-      accessibleAutocomplete.enhanceSelectElement({
-        selectElement: document.querySelector('#addressDetails.countryCode')
-      });
-
-  </script>
+    <script src='@controllers.routes.Assets.versioned("javascript/autocomplete.min.js")'></script>
+    <script>
+        accessibleAutocomplete.enhanceSelectElement({
+            defaultValue: '',
+            selectElement: document.querySelector('#addressDetails\\.countryCode')
+        });
+    </script>
 }
 
 @backLinkHtml = {
@@ -50,7 +49,7 @@
         @errorSummary(ErrorSummary().withFormErrorsAsText(registeredDetailsForm))
     }
 
-    <h1 class="govuk-heading-xl">
+    <h1 class="govuk-heading-xl govuk-!-margin-bottom-5">
         <span class="govuk-visually-hidden">@messages("ated.screen-reader.section")</span>
         <span class="govuk-caption-xl hmrc-caption-xl">@messages("ated.company-details.preheader")</span>
         @messages("ated.registered-details.header")
@@ -61,14 +60,14 @@
 
       <div id="registered-address-form">
 
-      @input(Input(label = Label(content = Text(messages("ated.registered-details.business-name")))).withFormField(registeredDetailsForm("name")))
-      @input(Input(label = Label(content = Text(messages("ated.address.address")))).withFormField(registeredDetailsForm("addressDetails.addressLine1")))
-      @input(Input(label = Label(content = Text(messages("ated.address.line-2")))).withFormField(registeredDetailsForm("addressDetails.addressLine2")))
-      @input(Input(label = Label(content = Text(messages("ated.address.line-3"))), classes = "govuk-!-width-two-thirds").withFormField(registeredDetailsForm("addressDetails.addressLine3")))
-      @input(Input(label = Label(content = Text(messages("ated.address.line-4"))), classes = "govuk-!-width-two-thirds").withFormField(registeredDetailsForm("addressDetails.addressLine4")))
+      @input(Input(label = Label(content = Text(messages("ated.businessName")))).withFormField(registeredDetailsForm("name")))
+      @input(Input(label = Label(content = Text(messages("ated.addressLine1")))).withFormField(registeredDetailsForm("addressDetails.addressLine1")))
+      @input(Input(label = Label(content = Text(messages("ated.addressLine2")))).withFormField(registeredDetailsForm("addressDetails.addressLine2")))
+      @input(Input(label = Label(content = Text(messages("ated.addressLine3"))), classes = "govuk-!-width-two-thirds").withFormField(registeredDetailsForm("addressDetails.addressLine3")))
+      @input(Input(label = Label(content = Text(messages("ated.addressLine4"))), classes = "govuk-!-width-two-thirds").withFormField(registeredDetailsForm("addressDetails.addressLine4")))
       @select(Select(
-          label = Label(content = Text(messages("ated.address.country"))),
-          items = Seq(SelectItem(Some(""), "")) ++ listOfIsoCode.map {
+          label = Label(content = Text(messages("ated.country"))),
+          items = Seq(SelectItem(Some(""), "Select a country")) ++ listOfIsoCode.map {
               case (code, country) => SelectItem(
                   value = Some(country),
                   text = country)

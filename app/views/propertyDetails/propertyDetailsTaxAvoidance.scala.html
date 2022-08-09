@@ -36,10 +36,6 @@
 
 @implicitFormInstance = @{ Some(propertyDetailsForm) }
 
-@pageScripts = {
-<script src='@controllers.routes.Assets.versioned("javascript/propertyDetailsTaxAvoidance.js")'></script>
-}
-
 @backLinkHtml = {
     @if(backLink.isDefined) {
         @govukBackLink(BackLink(
@@ -56,7 +52,7 @@
         <li>@messages("ated.choose-reliefs.avoidance-info-line-1")</li>
         <li>@messages("ated.choose-reliefs.avoidance-info-line-2")</li>
     </ul>
-    <a class="govuk-link govuk-body" href="https://www.gov.uk/guidance/disclosure-of-tax-avoidance-schemes-overview">@Html(messages("ated.choose-reliefs.avoidance-more-info"))</a>
+    <a class="govuk-link govuk-body" href="https://www.gov.uk/guidance/disclosure-of-tax-avoidance-schemes-overview" rel="noreferrer noopener" target="_blank">@Html(messages("ated.choose-reliefs.avoidance-more-info"))</a>
 }
 
 @avoidanceSchemeHTML = {
@@ -80,7 +76,6 @@
 }
 
 @newMain(title = titleBuilder(messages("ated.property-details-period.isTaxAvoidance.title"), Some(propertyDetailsForm)),
-          pageScripts = Some(pageScripts),
           serviceInfoContent = serviceInfoContent) {
 
     @backLinkHtml
@@ -90,7 +85,7 @@
     }
 
    <header>
-      <h1 class="govuk-heading-xl">
+      <h1 class="govuk-heading-xl govuk-!-margin-bottom-5">
           <span class="govuk-caption-xl">
               <span class="govuk-visually-hidden">
                   @messages("ated.screen-reader.section")

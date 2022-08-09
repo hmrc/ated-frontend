@@ -50,22 +50,8 @@
     }
 }
 
-@pageScripts = {
-<script src='@controllers.routes.Assets.versioned("javascript/show-hide-content.js")'></script>
-<script src='@controllers.routes.Assets.versioned("javascript/propertyDetailsNewBuild.js")'></script>
-<script>
-    $(document).ready(function() {
-     // Where .multiple-choice uses the data-target attribute
-      // to toggle hidden content
-      var showHideContent = new GOVUK.ShowHideContent()
-      showHideContent.init()
-    });
-  </script>
-}
-
 @newMain(title = titleBuilder(messages("ated.property-details-value.newBuildValue.title",date.dayOfMonth().get().toString, intToMonth(date.monthOfYear().get()), date.year().get().toString), Some(propertyDetailsForm)),
-serviceInfoContent = serviceInfoContent,
-pageScripts = Some(pageScripts)) {
+serviceInfoContent = serviceInfoContent) {
 
     @backLinkHtml
 

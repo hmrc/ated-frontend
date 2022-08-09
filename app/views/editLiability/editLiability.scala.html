@@ -21,7 +21,12 @@
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 @import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 
-@this(newMain: newMain, formHelper: FormWithCSRF, govukRadios : GovukRadios, govukButton : GovukButton, govukErrorSummary: GovukErrorSummary, govukBackLink: GovukBackLink)
+@this(newMain: newMain,
+    formHelper: FormWithCSRF,
+    govukRadios : GovukRadios,
+    govukButton : GovukButton,
+    govukErrorSummary: GovukErrorSummary,
+    govukBackLink: GovukBackLink)
 
 @(editLiabilityReturnTypeForm: Form[EditLiabilityReturnType], oldFormBundleNo: String, periodKey: Int, editAllowed: Boolean, serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
@@ -42,68 +47,64 @@
         @govukErrorSummary(ErrorSummary().withFormErrorsAsText(editLiabilityReturnTypeForm))
     }
 
-    @if(!editAllowed) {
-        <header>
-            <h1 class="govuk-heading-xl">
-                <span class="govuk-caption-xl">
-                    <span class="govuk-visually-hidden">
-                    @messages("ated.screen-reader.section")
-                    </span>
-                    @messages("ated.edit-liability.change-return.header")
-                </span>
-                @messages("ated.edit-liability.header2")
-            </h1>
-        </header>
-    }
-
     @formHelper(action = controllers.editLiability.routes.EditLiabilityTypeController.continue(oldFormBundleNo, periodKey, editAllowed)) {
 
+        @*** CR = change-return, DP = dispose-property && MP = move-property ***@
 
-            @*** CR = change-return, DP = dispose-property && MP = move-property ***@
-
-            @if(editAllowed) {
-                @govukRadios(Radios(
-                    hint = Some(Hint(
-                        content = Text(messages("ated.edit-liability.p1"))
-                    )),
-                    items = Seq(
-                        RadioItem(
-                            content = Text(messages("ated.edit-liability.dispose-property.yes")),
-                            value = Some("DP")
-                        ),
-                        RadioItem(
-                            content = Text(messages("ated.edit-liability.dispose-property.no")),
-                            value = Some("CR")
-                        )
+        @if(editAllowed) {
+            @govukRadios(Radios(
+                hint = Some(Hint(
+                    content = Text(messages("ated.edit-liability.p1"))
+                )),
+                items = Seq(
+                    RadioItem(
+                        content = Text(messages("ated.edit-liability.dispose-property.yes")),
+                        value = Some("DP")
                     ),
-                    classes = "govuk-radios--inline"
-                ).withFormField(editLiabilityReturnTypeForm("editLiabilityType"))
-                 .withHeadingAndSectionCaption(
-                     heading = HtmlContent(messages("ated.edit-liability.header")),
-                     sectionCaption = HtmlContent(messages("ated.edit-liability.change-return.header"))
-                ))
+                    RadioItem(
+                        content = Text(messages("ated.edit-liability.dispose-property.no")),
+                        value = Some("CR")
+                    )
+                ),
+                classes = "govuk-radios--inline"
+            ).withFormField(editLiabilityReturnTypeForm("editLiabilityType"))
+             .withHeadingAndSectionCaption(
+                 heading = HtmlContent(messages("ated.edit-liability.header")),
+                 sectionCaption = HtmlContent(messages("ated.edit-liability.change-return.header"))
+            ))
 
-                @govukButton(Button(
-                    content = Text(messages("ated.save-and-continue")),
-                    attributes = Map("type" -> "submit", "id" -> "submit")
-                ))
-            } else {
+            @govukButton(Button(
+                content = Text(messages("ated.save-and-continue")),
+                attributes = Map("type" -> "submit", "id" -> "submit")
+            ))
+        } else {
 
-                <p class="govuk-body" id="editliability-text">
-                    @messages("ated.edit-liability.return-type.no-edit-legend")
-                    <a class="govuk-link" href = "https://www.gov.uk/government/organisations/hm-revenue-customs/contact/annual-tax-on-enveloped-dwellings-ated">@messages("ated.edit-liability.return-type.no-edit-legend2")</a>.
-                </p>
+            <header>
+                <h1 class="govuk-heading-xl govuk-!-margin-bottom-5">
+                    <span class="govuk-caption-xl">
+                        <span class="govuk-visually-hidden">
+                        @messages("ated.screen-reader.section")
+                        </span>
+                        @messages("ated.edit-liability.change-return.header")
+                    </span>
+                    @messages("ated.edit-liability.header2")
+                </h1>
+            </header>
 
-                <p class="govuk-body">
-                    <input type="hidden" name="editLiabilityType" value="DP">
-                    @messages("ated.edit-liability.return-type.no-edit-legend3")
-                </p>
+            <p class="govuk-body" id="editLiability-text">
+                @messages("ated.edit-liability.return-type.no-edit-legend")
+                <a class="govuk-link" href="https://www.gov.uk/government/organisations/hm-revenue-customs/contact/annual-tax-on-enveloped-dwellings-ated" rel="noreferrer noopener" target="_blank">@messages("ated.edit-liability.return-type.no-edit-legend2")</a>.
+            </p>
 
-                @govukButton(Button(
-                    content = Text(messages("ated.edit-liability.return-type.no-edit-legend4")),
-                    attributes = Map("type" -> "submit", "id" -> "reportDisposeLink")
-                ))
+            <p class="govuk-body">
+                <input type="hidden" name="editLiabilityType" value="DP">
+                @messages("ated.edit-liability.return-type.no-edit-legend3")
+            </p>
 
-            }
+            @govukButton(Button(
+                content = Text(messages("ated.edit-liability.return-type.no-edit-legend4")),
+                attributes = Map("type" -> "submit", "id" -> "reportDisposeLink")
+            ))
+        }
     }
 }

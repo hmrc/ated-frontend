@@ -38,19 +38,16 @@
 
 @newMain(title = titleBuilder(messages(returnTitleMessage))) {
 
-    <div id="banner">
-        @govukPanel(Panel(
-            title = Text(messages(returnHeaderMessage))
-        ))
-    </div>
+    @govukPanel(Panel(
+        title = Text(messages(returnHeaderMessage))
+    ))
 
     <p id="view-message" class="govuk-body">@messages("ated.edit-liabilty.sent.view-message")</p>
     <p id="email-message" class="govuk-body">@messages("ated.edit-liabilty.sent.receipt-message")</p>
 
     <p class="govuk-body">
         <a href="@controllers.editLiability.routes.EditLiabilitySentController.viewPrintFriendlyEditLiabilitySent(formBundleNum)" class="print-link govuk-link" id="print-friendly-edit-liability-link" target="_blank">
-        @messages("ated.reliefs-sent.print-link")
-        </a>
+            @messages("ated.reliefs-sent.print-link")</a>
     </p>
 
     <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
@@ -60,19 +57,16 @@
     <p id="new-amount" class="govuk-body">@messages("ated.edit-liabilty.sent.new-amount")</p>
 
     @if(returnType == "F") {
-        <div class="govuk-!-margin-bottom-3">
+        <h3 id="already-paid-title-further" class="govuk-heading-m">@messages("ated.edit.liability.sent.amount-already-paid.title-further")</h3>
 
-            <span id="already-paid-title-further" class="govuk-body govuk-!-font-weight-bold">@messages("ated.edit.liability.sent.amount-already-paid.title-further")</span>
-        </div>
         <ul class="govuk-list govuk-list--bullet">
             <li id="already-paid-text">@Html(messages("ated.edit.liability.sent.amount-already-paid", formattedPounds(amountDueOrRefund)))</li>
             <li id="not-paid-title-further">@Html(messages("ated.edit.liability.sent.amount-not-paid.title-further", formattedPounds(liabilityAmount)))</li>
         </ul>
 
-
         <p id="payment-reference" class="govuk-body">@Html(messages("ated.edit-liabilty.sent.payment-reference", paymentReference.getOrElse("")))</p>
         <p id="late-payment" class="govuk-body">@messages("ated.edit-liabilty.sent.late-payment")
-            <a class="govuk-link" href="https://www.gov.uk/guidance/pay-annual-tax-on-enveloped-dwellings">@messages("ated.edit-liability.sent.late-payment.link")</a>.
+            <a class="govuk-link" href="https://www.gov.uk/guidance/pay-annual-tax-on-enveloped-dwellings" rel="noreferrer noopener" target="_blank">@messages("ated.edit-liability.sent.late-payment.link")</a>.
         </p>
     }
 
@@ -90,25 +84,25 @@
             <li id="you-owe">@Html(messages("ated.edit.liability.sent.you-owe", formattedPounds(liabilityAmount)))</li>
             <li id="payment-reference">@Html(messages("ated.edit-liabilty.sent.payment-reference", paymentReference.getOrElse("")))</li>
             <li id="late-payment">@messages("ated.edit-liabilty.sent.late-payment")
-                <a class="govuk-link" href="https://www.gov.uk/guidance/pay-annual-tax-on-enveloped-dwellings">@messages("ated.edit-liability.sent.late-payment.link")</a>.
+                <a class="govuk-link" href="https://www.gov.uk/guidance/pay-annual-tax-on-enveloped-dwellings" rel="noreferrer noopener" target="_blank">@messages("ated.edit-liability.sent.late-payment.link")</a>.
             </li>
         </ul>
     }
 
     @if(returnType == "C") {
-        <h3 id="already-paid-title" class="govuk-heading-s">@messages("ated.edit.liability.sent.amount-already-paid.title")</h3>
+        <h3 id="already-paid-title" class="govuk-heading-m">@messages("ated.edit.liability.sent.amount-already-paid.title")</h3>
 
         <ul class="govuk-list govuk-list--bullet">
             <li id="owe-you">@Html(messages("ated.edit.liability.sent.you-owe-change-in-details", formattedPounds(amountDueOrRefund.abs)))</li>
         </ul>
 
-        <h3 id="not-paid-title" class="govuk-heading-s">@messages("ated.edit.liability.sent.amount-not-paid.title")</h3>
+        <h3 id="not-paid-title" class="govuk-heading-m">@messages("ated.edit.liability.sent.amount-not-paid.title")</h3>
 
         <ul class="govuk-list govuk-list--bullet">
             <li id="you-owe">@Html(messages("ated.edit.liability.sent.you-owe-change-in-details", formattedPounds(liabilityAmount)))</li>
             <li id="payment-reference">@Html(messages("ated.edit-liabilty.sent.payment-reference", paymentReference.getOrElse("")))</li>
             <li id="late-payment">@messages("ated.edit-liabilty.sent.late-payment")
-                <a class="govuk-link" href="https://www.gov.uk/guidance/pay-annual-tax-on-enveloped-dwellings">@messages("ated.edit-liability.sent.late-payment.link")</a>.
+                <a class="govuk-link" href="https://www.gov.uk/guidance/pay-annual-tax-on-enveloped-dwellings" rel="noreferrer noopener" target="_blank">@messages("ated.edit-liability.sent.late-payment.link")</a>.
             </li>
         </ul>
     }

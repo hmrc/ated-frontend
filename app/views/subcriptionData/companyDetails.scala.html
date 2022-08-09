@@ -22,10 +22,6 @@
 @this(newMain: newMain, govukSummaryList : GovukSummaryList, button: GovukButton, govukBackLink: GovukBackLink)
 @(correspondence: Option[Address], registrationDetails: Option[RegisteredDetails], emailConsent: Boolean, clientDetails: Option[ClientMandateDetails], overseasCompanyRegistration: Option[Identification], serviceInfoContent: Html = HtmlFormat.empty, backLink:Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
-@pageScripts = {
-<script src='@controllers.routes.Assets.versioned("javascript/companyDetails.js")'></script>
-}
-
 @registeredAddress = {
   @registrationDetails.map { regDetails =>
     <div id="registered-address-line-1">@regDetails.addressDetails.addressLine1</div>
@@ -79,20 +75,19 @@
 }
 
 @backLinkHtml = {
-@if(backLink.isDefined) {
-  @govukBackLink(BackLink(
-    href = backLink.get,
-    content = Text("Back")
-  ))
-}
+  @if(backLink.isDefined) {
+    @govukBackLink(BackLink(
+      href = backLink.get,
+      content = Text("Back")
+    ))
+  }
 }
 
-@newMain(title = titleBuilder(messages("ated.company-details.title")), serviceInfoContent = serviceInfoContent, showUrBanner= Some(true),
-pageScripts = Some(pageScripts)) {
+@newMain(title = titleBuilder(messages("ated.company-details.title")), serviceInfoContent = serviceInfoContent, showUrBanner= Some(true)) {
 
   @backLinkHtml
 
-  <h1 class="govuk-heading-xl">
+  <h1 class="govuk-heading-xl govuk-!-margin-bottom-5">
     <span class="govuk-visually-hidden">@messages("ated.screen-reader.section")</span>
     <span class="govuk-caption-xl hmrc-caption-xl">@messages("ated.company-details.preheader")</span>
     @messages("ated.company-details.header")
@@ -115,7 +110,7 @@ pageScripts = Some(pageScripts)) {
         case Some(rd) if rd.isEditable => Some(Actions(
           items = Seq(ActionItem(
             href = controllers.subscriptionData.routes.RegisteredDetailsController.edit.url,
-            content = Text(messages("ated.company-details.registered-address.edit")),
+            content = Text(messages("ated.change")),
             visuallyHiddenText = Some(messages("ated.company-details.registered-address")),
             attributes = Map("id" -> "registered-edit")))))
         case _ => None
@@ -140,7 +135,7 @@ pageScripts = Some(pageScripts)) {
       actions = Some(Actions(
         items = Seq(ActionItem(
           href = controllers.subscriptionData.routes.CorrespondenceAddressController.editAddress.url,
-          content = Text(messages("ated.company-details.correspondence-address.edit")),
+          content = Text(messages("ated.change")),
           visuallyHiddenText = Some(messages("ated.company-details.correspondence-address")),
           attributes = Map("id" -> "correspondence-edit")
         ))
@@ -152,7 +147,7 @@ pageScripts = Some(pageScripts)) {
       actions = Some(Actions(
         items = Seq(ActionItem(
           href = controllers.subscriptionData.routes.EditContactDetailsController.edit.url,
-          content = Text(messages("ated.contact-address.edit")),
+          content = Text(messages("ated.change")),
           visuallyHiddenText = Some(messages("ated.company-details.contact-address")),
           attributes = Map("id" -> "contactdetails-edit")
         ))
@@ -172,7 +167,7 @@ pageScripts = Some(pageScripts)) {
         actions = Some(Actions(
           items = Seq(ActionItem(
             href = controllers.subscriptionData.routes.EditContactEmailController.edit.url,
-            content = Text(messages("ated.contact-address.edit")),
+            content = Text(messages("ated.change")),
             visuallyHiddenText = Some(messages("ated.company-details.contact-preference.label")),
             attributes = Map("id" -> "contactemail-edit")))))))
     }
@@ -185,7 +180,7 @@ pageScripts = Some(pageScripts)) {
           actions = Some(Actions(
             items = Seq(ActionItem(
               href = details.changeAgentLink,
-              content = Text(messages("ated.contact-address.edit")),
+              content = Text(messages("ated.change")),
               visuallyHiddenText = Some(messages("ated.company-details.appointed_agent")),
               attributes = Map("id" -> "appointed-agent-link")
             ))
@@ -199,8 +194,8 @@ pageScripts = Some(pageScripts)) {
           value = Value(content = Text(printNotProvidedIfEmpty(details.email))),
           actions = Some(Actions(
             items = Seq(ActionItem(
-              href = controllers.subscriptionData.routes.EditContactDetailsController.edit.url,
-              content = Text(messages("ated.contact-address.edit")),
+              href = details.changeEmailLink,
+              content = Text(messages("ated.change")),
               visuallyHiddenText = Some(messages("ated.company-details.mandate_email")),
               attributes = Map("id" -> "email-link")
             ))

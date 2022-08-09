@@ -21,7 +21,6 @@
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 @import uk.gov.hmrc.play.views.html._
 @import views.html.helpers._
-@import views.html.helpers.error._
 @import _root_.utils._
 @import views.ViewUtils.titleBuilder
 @this(newMain: newMain,
@@ -45,7 +44,7 @@
     @backLinkHtml
 
     <header>
-        <h1 class="govuk-heading-xl" id="relief-return-header">
+        <h1 class="govuk-heading-xl govuk-!-margin-bottom-5" id="relief-return-header">
             <span class="govuk-caption-xl"><span class="govuk-visually-hidden">@messages("ated.screen-reader.section") </span></span>
             @messages("ated.view-relief-return.header")
         </h1>

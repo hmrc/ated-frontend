@@ -70,11 +70,15 @@
     ).withFormField(propertyDetailsForm("partAcqDispDate")))
 
     @govukInput(Input(
+        classes = "govuk-input--width-10",
         label = Label(
             content = Text(messages("ated.property-details-value.revaluedValue"))
         ),
         hint = Some(Hint(
             content = Text(messages("ated.property-details-value.revaluedValue.hint"))
+        )),
+        prefix = Some(PrefixOrSuffix(
+            content = Text("£")
         ))
     ).withFormField(propertyDetailsForm("revaluedValue")))
 
@@ -100,16 +104,7 @@
 }
 
 @pageScripts = {
-  <script src='@controllers.routes.Assets.versioned("javascript/show-hide-content.js")'></script>
   <script src='@controllers.routes.Assets.versioned("javascript/propertyDetailsRevalued.js")'></script>
-  <script>
-    $(document).ready(function() {
-     // Where .multiple-choice uses the data-target attribute
-      // to toggle hidden content
-      var showHideContent = new GOVUK.ShowHideContent()
-      showHideContent.init()
-    });
-  </script>
 }
 
 @newMain(title = titleBuilder(messages("ated.property-details-value.isPropertyRevalued.title"), Some(propertyDetailsForm)),

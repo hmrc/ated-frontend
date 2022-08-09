@@ -31,7 +31,7 @@
 
   <p id="dispose-liability-ated-ref" class="govuk-body">@messages("ated.refNo", authContext.atedReferenceNumber)</p>
 
-  <h1 class="govuk-heading-xl" id="edit-liability-summary-header">
+  <h1 class="govuk-heading-xl govuk-!-margin-bottom-5" id="edit-liability-summary-header">
     @messages("ated.dispose-property.summary.print.header", organisationName.getOrElse(""))
   </h1>
 
@@ -63,7 +63,6 @@
             <td class="govuk-table__cell" id="property-title-disposal-date">@disposeLiability.disposeLiability.flatMap(x => x.dateOfDisposal.map(y => y.toString(messages("ated.date-format"))))</td>
         </tr>
     </tbody>
-
 
     @if(disposeLiability.bankDetails.exists(_.hasBankDetails)){
     <tbody class="govuk-table__body">

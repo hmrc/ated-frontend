@@ -91,8 +91,8 @@ Feature("The user can view an edit liability type page") {
       assert(document.getElementsByClass("govuk-caption-xl").text() === "This section is: Change return")
       assert(document.getElementsByTag("h1").text.contains("Your return cannot be changed online"))
 
-      assert(document.getElementById("editliability-text")
-        .text() === "Your original return is too complex to edit online. To make any changes contact the ATED helpline.")
+      assert(document.getElementById("editLiability-text")
+        .text() === "Your original return is too complex to edit online. To make any changes contact the ATED helpline (opens in new tab).")
 
       assert(document.getElementById("editLiabilityType-dp") === null)
 

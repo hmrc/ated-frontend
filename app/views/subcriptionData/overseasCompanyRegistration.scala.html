@@ -23,12 +23,13 @@
 @(overseasCompanyRegistrationForm: Form[models.OverseasCompanyRegistration], listOfIsoCode: List[(String, String)], serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
 @pageScripts = {
-  <script src='@controllers.routes.Assets.versioned("javascript/autocomplete.min.js")'></script>
-  <script>
-      accessibleAutocomplete.enhanceSelectElement({
-        selectElement: document.querySelector('#countryCode')
-      });
-  </script>
+    <script src='@controllers.routes.Assets.versioned("javascript/autocomplete.min.js")'></script>
+        <script>
+            accessibleAutocomplete.enhanceSelectElement({
+                defaultValue: '',
+                selectElement: document.querySelector('#countryCode')
+            });
+        </script>
 }
 
 @backLinkHtml = {
@@ -48,7 +49,7 @@
         @errorSummary(ErrorSummary().withFormErrorsAsText(overseasCompanyRegistrationForm))
     }
 
-    <h1 class="govuk-heading-xl">
+    <h1 class="govuk-heading-xl govuk-!-margin-bottom-5">
         <span class="govuk-visually-hidden">@messages("ated.screen-reader.section")</span>
         <span class="govuk-caption-xl hmrc-caption-xl">@messages("ated.non-uk-reg.subheader")</span>
         @messages("ated.non-uk-reg.header")
@@ -61,7 +62,7 @@
             @input(Input(label = Label(content = Text(messages("ated.non-uk-reg.businessUniqueId")))).withFormField(overseasCompanyRegistrationForm("businessUniqueId")))
             @select(Select(
                 label = Label(content = Text(messages("ated.non-uk-reg.issuingCountry"))),
-                items = Seq(SelectItem(Some(""), "")) ++ listOfIsoCode.map {
+                items = Seq(SelectItem(Some(""), "Select a country")) ++ listOfIsoCode.map {
                     case (code, country) => SelectItem(
                         value = Some(country),
                         text = country)

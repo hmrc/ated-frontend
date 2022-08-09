@@ -51,10 +51,6 @@
     }
 }
 
-@pageScripts = {
-<script src='@controllers.routes.Assets.versioned("javascript/chooseReliefs.js")'></script>
-}
-
 @detailsTxt = {
     <div id="whatIsTaxAvoidanceScheme-0" >
             <p class="govuk-body" id="taxAvoidanceReveal-p1">@messages("ated.choose-reliefs.avoidance-reveal-line-1")</p>
@@ -63,13 +59,14 @@
                 <li>@messages("ated.choose-reliefs.avoidance-info-line-1")</li>
                 <li>@messages("ated.choose-reliefs.avoidance-info-line-2")</li>
             </ul>
-            <p class="govuk-body" id="moreINfoOnTaxAvoidance">@Html(messages("ated.choose-reliefs.avoidance-more-info"))</p>
+            <p class="govuk-body" id="moreINfoOnTaxAvoidance">
+                <a class="govuk-link govuk-body" href="https://www.gov.uk/guidance/disclosure-of-tax-avoidance-schemes-overview" rel="noreferrer noopener" target="_blank">@Html(messages("ated.choose-reliefs.avoidance-more-info"))</a>
+            </p>
     </div>
 }
 
 @newMain(title = titleBuilder(messages("ated.choose-reliefs.avoidance-title"), Some(isTaxAvoidanceForm)),
-         serviceInfoContent = serviceInfoContent,
-         pageScripts = Some(pageScripts)) {
+         serviceInfoContent = serviceInfoContent) {
 
     @backLinkHtml
 
@@ -85,7 +82,7 @@
     }
 
     <header>
-        <h1 class="govuk-heading-xl">
+        <h1 class="govuk-heading-xl govuk-!-margin-bottom-5">
             <span class="govuk-caption-xl"><span class="govuk-visually-hidden">@messages("ated.screen-reader.section") </span>@messages("ated.choose-reliefs.subheader")</span>
             @messages("ated.choose-reliefs.avoidance-title")
         </h1>

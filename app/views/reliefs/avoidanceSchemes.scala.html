@@ -19,7 +19,6 @@
 @import play.twirl.api.HtmlFormat
 @import uk.gov.hmrc.play.views.html._
 @import views.html.helpers._
-@import views.html.helpers.error._
 @import utils._
 @import config.featureswitch.FeatureSwitch
 @import uk.gov.hmrc.govukfrontend.views.Implicits._
@@ -113,7 +112,7 @@
     }
 
     <header>
-        <h1 class="govuk-heading-xl">
+        <h1 class="govuk-heading-xl govuk-!-margin-bottom-5">
             <span class="govuk-caption-xl"><span class="govuk-visually-hidden">@messages("ated.screen-reader.section") </span>@messages("ated.avoidance-schemes.pre-header")</span>
             @messages("ated.avoidance-schemes.header")
         </h1>

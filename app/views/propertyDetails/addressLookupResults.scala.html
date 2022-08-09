@@ -48,12 +48,7 @@
     }
 }
 
-@pageScripts = {
-    <script src='@controllers.routes.Assets.versioned("javascript/manualAddressEntryLink.js")'></script>
-}
-
 @newMain(title = titleBuilder(messages("ated.address-lookup.results.title"), Some(addressResultsForm)),
-          pageScripts=Some(pageScripts),
           serviceInfoContent = serviceInfoContent) {
 
     @backLinkHtml
@@ -63,7 +58,7 @@
     }
 
     <header>
-        <h1 class="govuk-heading-xl">
+        <h1 class="govuk-heading-xl govuk-!-margin-bottom-5">
             <span class="govuk-caption-xl">
                 <span class="govuk-visually-hidden">
                     @messages("ated.screen-reader.section")

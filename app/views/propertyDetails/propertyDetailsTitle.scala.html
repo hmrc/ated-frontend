@@ -48,8 +48,7 @@
     <p class="govuk-body">
         @messages("ated.property-details-titleNumber-reveal.text")
         <a class="govuk-link" href="https://www.gov.uk/search-property-information-land-registry" rel="noreferrer noopener" target="_blank">
-            @messages("ated.property-details-titleNumber-reveal.text.link")
-        </a>.
+            @messages("ated.property-details-titleNumber-reveal.text.link")</a>.
     </p>
 }
 
@@ -63,7 +62,7 @@
     }
 
     <header>
-        <h1 class="govuk-heading-xl">
+        <h1 class="govuk-heading-xl govuk-!-margin-bottom-5">
             <span class="govuk-caption-xl">
                 <span class="govuk-visually-hidden">
                     @messages("ated.screen-reader.section")
@@ -84,6 +83,7 @@
     ))
 
     @govukInput(Input(
+        classes = "govuk-input--width-10",
         label = Label(
             content = Text(messages("ated.propertyReference.titleNumber")),
             classes = "govuk-visually-hidden"

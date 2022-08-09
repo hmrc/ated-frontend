@@ -45,9 +45,9 @@
     <p id="email-message" class="govuk-body">@messages("ated.edit-liabilty.sent.receipt-message")</p>
 
     <p class="govuk-body">
-        <a href="@controllers.editLiability.routes.DisposeLiabilitySentController.viewPrintFriendlyDisposeLiabilitySent(formBundleNum)" id="print-friendly-edit-liability-link" class="govuk-link" target="_blank"> @messages("ated.reliefs-sent.print-link")
-        </a>
+        <a href="@controllers.editLiability.routes.DisposeLiabilitySentController.viewPrintFriendlyDisposeLiabilitySent(formBundleNum)" id="print-friendly-edit-liability-link" class="govuk-link" target="_blank"> @messages("ated.reliefs-sent.print-link")</a>
     </p>
+
     <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
 
     <h2 class="govuk-heading-l" id="charges-heading">@messages("ated.edit-liabilty.sent.charges-heading")</h2>
@@ -63,7 +63,7 @@
     <p id="payment-reference" class="govuk-body">@Html(messages("ated.edit-liabilty.sent.payment-reference", paymentReference.getOrElse("")))</p>
 
     <p id="liable-for" class="govuk-body">@messages("ated.edit.liability.sent.liable-for")
-        <a class="govuk-link" href="https://www.gov.uk/guidance/capital-gains-tax-on-high-value-residential-property">@messages("ated.edit.liability.sent.liable-for-link")</a>.
+        <a class="govuk-link" href="https://www.gov.uk/guidance/capital-gains-tax-on-high-value-residential-property" rel="noreferrer noopener" target="_blank">@messages("ated.edit.liability.sent.liable-for-link")</a>.
     </p>
 
     <p id="view-balance" class="govuk-body">@Html(messages("ated.edit-liabilty.sent.view-balance"))</p>

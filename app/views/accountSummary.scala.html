@@ -30,20 +30,16 @@
         taxYearStartingYear: Int, fromAccountSummary: Boolean)(implicit authContext: StandardAuthRetrievals,
         messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig, applicationConfig: config.AppConfig)
 
-@pageScripts = {
-    <script src='@controllers.routes.Assets.versioned("javascript/accountSummary.js")'></script>
-}
 
 @newMain(
     title = titleBuilder(messages("ated.summary-return.title")),
-    pageScripts = Some(pageScripts),
     serviceInfoContent = serviceInfoContent,
     sideBar = Some(_accountSummary_sideBar(otherReturns.atedBalance, correspondence, organisationName, clientBanner)),
     showUrBanner = Some(true),
     banner = clientBanner
 ) {
         <header>
-            <h1 class="govuk-heading-xl">
+            <h1 class="govuk-heading-xl govuk-!-margin-bottom-5">
                 <span class="govuk-caption-xl"><span class="govuk-visually-hidden">@messages("ated.screen-reader.section-name")</span>@organisationName.getOrElse("")</span>
                 @messages("ated.summary-return.header")
             </h1>

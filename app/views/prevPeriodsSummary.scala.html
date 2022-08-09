@@ -18,7 +18,6 @@
 @import config.ApplicationConfig
 @import views.html.helpers._
 @import play.twirl.api.HtmlFormat
-@import views.html.atedMain
 @import uk.gov.hmrc.govukfrontend.views.Implicits._
 @import views.ViewUtils.titleBuilder
 
@@ -30,10 +29,6 @@
         clientBanner: Html, duringPeak: Boolean, currentYear: Int,
         taxYearStartingYear: Int, backLink: Option[String])(implicit authContext: StandardAuthRetrievals,
         messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
-
-@pageScripts = {
-    <script src='@controllers.routes.Assets.versioned("javascript/accountSummary.js")'></script>
-}
 
 @noReturnHeader = {
     @messages("ated.prev-period-summary.headerNoReturns") @(taxYearStartingYear - 1) to @(taxYearStartingYear) or earlier
@@ -50,7 +45,6 @@
 
 @newMain(
     title = titleBuilder(messages("ated.prev-period-summary.title")),
-    pageScripts = Some(pageScripts),
     serviceInfoContent = serviceInfoContent,
     sideBar = Some(_accountSummary_sideBar(summaryReturnsWithDrafts.atedBalance, correspondence, organisationName, clientBanner))
     ) {
@@ -60,7 +54,7 @@
     @if(summaryReturnsWithDrafts.returnsOtherTaxYears.isEmpty) {
 
     <header>
-        <h1 class="govuk-heading-xl">
+        <h1 class="govuk-heading-xl govuk-!-margin-bottom-5">
             <span class="govuk-caption-xl"><span class="govuk-visually-hidden">@messages("ated.screen-reader.section-name")</span>@organisationName.getOrElse("")</span>
             @noReturnHeader.toString()
         </h1>
@@ -69,7 +63,7 @@
     } else {
 
     <header>
-        <h1 class="govuk-heading-xl">
+        <h1 class="govuk-heading-xl govuk-!-margin-bottom-5">
             <span class="govuk-caption-xl"><span class="govuk-visually-hidden">@messages("ated.screen-reader.section-name")</span>@organisationName.getOrElse("")</span>
             @messages("ated.prev-period-summary.header")
         </h1>

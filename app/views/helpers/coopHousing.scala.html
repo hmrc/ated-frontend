@@ -22,7 +22,9 @@
 @detailsContent  = {
     <p id="aboutReliefForHousingCoop-p1">@messages("ated.account-summary.coop.housing.paragraph.one")</p>
     <p id="aboutReliefForHousingCoop-p2">@messages("ated.account-summary.coop.housing.paragraph.two")</p>
-    <p id="moreInfoOnReliefForHousingCoop">@Html(messages("ated.account-summary.coop.housing.link.text"))</p>
+    <p id="moreInfoOnReliefForHousingCoop">
+        <a class="govuk-link" href="https://www.gov.uk/government/publications/annual-tax-on-enveloped-dwellings-technical-guidance" data-journey-click="ated-frontend:click:coop-housing-guidance" rel="noreferrer noopener" target="_blank">@messages("ated.account-summary.coop.housing.text")</a>
+    </p>
 }
 
     @govukDetails(Details(

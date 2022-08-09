@@ -20,7 +20,6 @@
 @import _root_.utils.PeriodUtils._
 @import views.html.helpers._
 @import play.twirl.api.HtmlFormat
-@import views.html.atedMain
 @import views.ViewUtils.titleBuilder
 
 @this(newMain: newMain,
@@ -46,7 +45,7 @@
 @backLinkHtml
 
 <header>
-    <h1 class="govuk-heading-xl">
+    <h1 class="govuk-heading-xl govuk-!-margin-bottom-5">
         <span class="govuk-caption-xl"><span class="govuk-visually-hidden">@messages("ated.screen-reader.section-name") </span>@organisationName.getOrElse("")</span>
         @messages("ated.period-summary.header", periodStartDate(periodKey).toString(messages("ated.date-format.summary")),
             periodEndDate(periodKey).toString(messages("ated.date-format.summary")))

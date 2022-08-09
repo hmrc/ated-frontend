@@ -23,6 +23,7 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.data.{Form, FormError}
+import play.api.mvc.ControllerHelpers.TODO
 import play.twirl.api.Html
 import testhelpers.{AtedViewSpec, MockAuthUtil}
 
@@ -51,7 +52,7 @@ class EditLiabilityDatesLiableSpec extends AtedViewSpec with MockitoSugar with M
         , form.value)
        def view: Html = injectedViewInstance("",0,  eform, Html(""), Some("backLink"))
       val errorDoc = doc(view)
-
+      TODO
       errorDoc.getElementsByClass("govuk-error-message").text.contains(messages("ated.property-details-value.startDate.error.empty"))
       errorDoc.getElementsByClass("govuk-error-summary__list").text.contains(messages("ated.property-details-value.startDate.error.empty"))
       errorDoc.getElementsByClass("govuk-error-message").text.contains(messages("ated.property-details-value.endDate.error.empty"))

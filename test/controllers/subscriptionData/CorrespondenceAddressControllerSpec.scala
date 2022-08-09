@@ -17,7 +17,6 @@
 package controllers.subscriptionData
 
 import java.util.UUID
-
 import builders.{SessionBuilder, TitleBuilder}
 import config.ApplicationConfig
 import connectors.DataCacheConnector
@@ -40,7 +39,8 @@ import services.{DetailsService, ServiceInfoService, SubscriptionDataService}
 import testhelpers.MockAuthUtil
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
-import views.html.BtaNavigationLinks
+import views.html.{BtaNavigationLinks, global_error}
+import views.html.subcriptionData.correspondenceAddress
 
 import scala.concurrent.Future
 
@@ -53,12 +53,12 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
   val mockSubscriptionDataService: SubscriptionDataService = mock[SubscriptionDataService]
   val mockDetailsService: DetailsService = mock[DetailsService]
   val mockEnvironment: Environment = app.injector.instanceOf[Environment]
-    val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
+  val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
-  val injectedViewInstance = app.injector.instanceOf[views.html.subcriptionData.correspondenceAddress]
-  val injectedViewInstanceError = app.injector.instanceOf[views.html.global_error]
+  val injectedViewInstance: correspondenceAddress = app.injector.instanceOf[views.html.subcriptionData.correspondenceAddress]
+  val injectedViewInstanceError: global_error = app.injector.instanceOf[views.html.global_error]
 
 
   class Setup {
@@ -108,18 +108,6 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
 
       test(result)
     }
-
-//    def submitWithAuthorisedUserError(testAddress: Option[AddressDetails] = None)
-//                                       (fakeRequest: FakeRequest[AnyContentAsJson])(test: Future[Result] => Any) {
-//      val userId = s"user-${UUID.randomUUID}"
-//      val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
-//      setAuthMocks(authMock)
-//      when(mockSubscriptionDataService.updateCorrespondenceAddressDetails(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
-//        .thenReturn(Future.successful(testAddress))
-//      val result = testCorrespondenceAddressController.submit().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
-//
-//      test(result)
-//    }
 
     def submitWithUnAuthorisedUser(test: Future[Result] => Any) {
       val userId = s"user-${UUID.randomUUID}"
@@ -181,8 +169,8 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
 
 
         "show the correspondence address view with populated space in data" in new Setup {
-          val testAddressDetails = AddressDetails("Correspondence", "  ", "  ", Some("line_3"), Some("line_4"), Some("postCode"), "GB")
-          val testAddress = Address(Some("name1"), Some("name2"), addressDetails = testAddressDetails, contactDetails = None)
+          val testAddressDetails: AddressDetails = AddressDetails("Correspondence", "  ", "  ", Some("line_3"), Some("line_4"), Some("postCode"), "GB")
+          val testAddress: Address = Address(Some("name1"), Some("name2"), addressDetails = testAddressDetails, contactDetails = None)
 
           getWithAuthorisedUser(Some(testAddress)) {
             result =>
@@ -202,8 +190,8 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
         }
 
         "show the correspondence address view with populated data" in new Setup {
-          val testAddressDetails = AddressDetails("Correspondence", "line_1", "line_2", Some("line_3"), Some("line_4"), Some("postCode"), "GB")
-          val testAddress = Address(Some("name1"), Some("name2"), addressDetails = testAddressDetails, contactDetails = None)
+          val testAddressDetails: AddressDetails = AddressDetails("Correspondence", "line_1", "line_2", Some("line_3"), Some("line_4"), Some("postCode"), "GB")
+          val testAddress: Address = Address(Some("name1"), Some("name2"), addressDetails = testAddressDetails, contactDetails = None)
 
           getWithAuthorisedUser(Some(testAddress)) {
             result =>
@@ -320,9 +308,9 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
                 submitWithAuthorisedUserSuccess(None)(FakeRequest().withJsonBody(inputJson)) {
                   result =>
                     status(result) must be(BAD_REQUEST)
-                      contentAsString(result) must include("You must enter Address line 1")
-                      contentAsString(result) must include("You must enter Address line 2")
-                      contentAsString(result) must include("You must enter Country")
+                      contentAsString(result) must include("You must enter address line 1")
+                      contentAsString(result) must include("You must enter address line 2")
+                      contentAsString(result) must include("You must enter a country")
                 }
               }
 
@@ -466,7 +454,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
                 submitWithAuthorisedUserSuccess(Some(addressDetails))(FakeRequest().withJsonBody(inputJson)) {
                   result =>
                   status(result) must be(BAD_REQUEST)
-                  contentAsString(result) must include("You must enter Country")
+                  contentAsString(result) must include("You must enter a country")
                 }
                }
              }

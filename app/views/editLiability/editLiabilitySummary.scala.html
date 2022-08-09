@@ -51,7 +51,7 @@
   }
 }
 
-@summaryContent = {
+@addressContent = {
   <div>
     <span id="address-line-1">@changeLiability.addressProperty.line_1</span><br>
     <span id="address-line-2">@changeLiability.addressProperty.line_2</span><br>
@@ -86,385 +86,295 @@
     </h1>
   </header>
 
-
   <p id="details-text" class="govuk-body">@messages("ated.property-details-summary.details-text", periodStartDate(changeLiability.periodKey).toString(messages("ated.date-format")), periodEndDate(changeLiability.periodKey).toString(messages("ated.date-format")))</p>
 
   <div class="govuk-form-group" id="property-summary-section">
 
-    <h2 id="edit-liability-header" class="govuk-heading-m">@messages("ated.property-details-summary.table.property-details.header")</h2>
+    <h2 id="edit-liability-header" class="govuk-heading-m govuk-!-padding-bottom-4">@messages("ated.property-details-summary.table.property-details.header")</h2>
 
-    @govukSummaryList(SummaryList(
-      rows = Seq(
-        SummaryListRow(
-          key = Key(
-            content = Text(messages("ated.property-details-summary.table.property-details.address.label"))
-          ),
-          value = Value(
-            content = HtmlContent(summaryContent)
-          ),
-          actions = Some(Actions(
-            items = Seq(
-              ActionItem(
-                href = controllers.propertyDetails.routes.PropertyDetailsAddressController.editFromSummary(changeLiability.id).url,
-                content = Text(messages("ated.edit")),
-                visuallyHiddenText = Some(messages("ated.property-details-summary.table.property-details.address.label"))
-              )
-            )
-          ))
-        )
-      ),
-      attributes = Map("id" -> "property-address")
-    ))
+    <dl class="govuk-summary-list">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key" id="property-address-label">
+          @messages("ated.property-details-summary.table.property-details.address.label")
+        </dt>
+        <dd class="govuk-summary-list__value">
+          @addressContent
+        </dd>
+        <dd class="govuk-summary-list__actions">
+          <a class="govuk-link" id="edit-property-address-details" href="@controllers.propertyDetails.routes.PropertyDetailsAddressController.editFromSummary(changeLiability.id)">
+            @messages("ated.change")<span class="govuk-visually-hidden">@messages("ated.property-details-summary.table.property-details.address.label")</span>
+          </a>
+        </dd>
+      </div>
 
-    @govukSummaryList(SummaryList(
-      rows = Seq(
-        SummaryListRow(
-          key = Key(
-            content = Text(messages("ated.property-details-summary.table.property-details.title-number.label"))
-          ),
-          value = Value(
-            content = Text(changeLiability.title.map(_.titleNumber).fold(messages("ated.property-details-summary.field-blank"))(x => if(x == "") messages("ated.property-details-summary.field-blank") else x))
-          ),
-          actions = Some(Actions(
-            items = Seq(
-              ActionItem(
-                href = controllers.propertyDetails.routes.PropertyDetailsTitleController.editFromSummary(changeLiability.id).url,
-                content = Text(messages("ated.edit")),
-                visuallyHiddenText = Some(messages("ated.property-details-summary.table.property-details.title-number.label"))
-              )
-            )
-          ))
-        )
-      ),
-      attributes = Map("id" -> "property-title-number")
-    ))
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key" id="property-title-number-label">
+          @messages("ated.property-details-summary.table.property-details.title-number.label")
+        </dt>
+        <dd class="govuk-summary-list__value" id="property-title-number">
+          @changeLiability.title.map(_.titleNumber).fold(messages("ated.property-details-summary.field-blank"))(x => if(x == "") messages("ated.property-details-summary.field-blank") else x)
+        </dd>
+        <dd class="govuk-summary-list__actions">
+          <a class="govuk-link" id="edit-property-title-details" href="@controllers.propertyDetails.routes.PropertyDetailsTitleController.editFromSummary(changeLiability.id)">
+            @messages("ated.change")<span class="govuk-visually-hidden">@messages("ated.property-details-summary.table.property-details.title-number.label")</span>
+          </a>
+        </dd>
+      </div>
+    </dl>
   </div>
 
   <div class="govuk-form-group" id="property-value-section">
 
-    <h2 id="property-value-header" class="govuk-heading-m">@messages("ated.property-details-summary.table.property-value.header")</h2>
+    <h2 id="property-value-header" class="govuk-heading-m govuk-!-padding-bottom-4">@messages("ated.property-details-summary.table.property-value.header")</h2>
 
     @for((valueObj, index) <- valuesToDisplay.zipWithIndex) {
 
-      @govukSummaryList(SummaryList(
-        rows = Seq(
-          SummaryListRow(
-            key = Key(
-              content = Text(messages(getPeriodValueMessage(index, valuesToDisplay.size)))
-            ),
-            value = Value(
-              content = HtmlContent(formattedPounds(valueObj.propertyValue))
-            ),
-            actions = Some(Actions(
-              items = Seq(
-                ActionItem(
-                  href = controllers.editLiability.routes.EditLiabilityHasValueChangedController.editFromSummary(changeLiability.id.toString).url,
-                  content = Text(messages("ated.edit")),
-                  visuallyHiddenText = Some(messages(getPeriodValueMessage(index, valuesToDisplay.size)))
-                )
-              )
-            ))
-          )
-        ),
-        attributes = Map("id" -> "property-value")
-      ))
+    <dl class="govuk-summary-list">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key" id="property-value-label-@index">
+          @messages(getPeriodValueMessage(index, valuesToDisplay.size))
+        </dt>
+        <dd class="govuk-summary-list__value" id="property-value-value-@index">
+          @formattedPounds(valueObj.propertyValue)
+        </dd>
+        <dd class="govuk-summary-list__actions">
+          <a class="govuk-link" id="edit-property-value" href="@controllers.editLiability.routes.EditLiabilityHasValueChangedController.editFromSummary(changeLiability.id.toString)">
+            @messages("ated.change")<span class="govuk-visually-hidden">@messages(getPeriodValueMessage(index, valuesToDisplay.size))</span>
+          </a>
+        </dd>
+      </div>
 
-      @govukSummaryList(SummaryList(
-        rows = Seq(
-          SummaryListRow(
-            key = Key(
-              content = Text(messages("ated.form-bundle.view.isValuedByAgent.message"))
-            ),
-            value = Value {
-              if(changeLiability.value.map(x => x.isValuedByAgent.getOrElse()).contains(true)) {
-                Text(messages("ated.form-bundle.view.isValuedByAgent.yes"))
-              } else {
-                Text(messages("ated.form-bundle.view.isValuedByAgent.no"))
-              }
-            },
-            actions = Some(Actions(
-              items = Seq(
-                ActionItem(
-                  href = controllers.propertyDetails.routes.PropertyDetailsProfessionallyValuedController.view(changeLiability.id).url,
-                  content = Text(messages("ated.edit")),
-                  visuallyHiddenText = Some(messages("ated.form-bundle.view.isValuedByAgent.message"))
-                )
-              )
-            ))
-          )
-        ),
-        attributes = Map("id" -> "property-date-of-valuation")
-      ))
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key" id="property-date-of-valuation-label-@index">
+          @messages("ated.form-bundle.view.isValuedByAgent.message")
+        </dt>
+        <dd class="govuk-summary-list__value">
+          @if(changeLiability.value.map(x => x.isValuedByAgent.getOrElse()).contains(true)) {
+            <span id="property-is-Valued-by-agent-yes-@index">@messages("ated.form-bundle.view.isValuedByAgent.yes")</span>
+          } else {
+            <span id="property-is-Valued-by-agent-no-@index">@messages("ated.form-bundle.view.isValuedByAgent.no")</span>
+          }
+        </dd>
+        <dd class="govuk-summary-list__actions">
+          <a class="govuk-link" id="edit-property-professionally-valued-details" href="@controllers.propertyDetails.routes.PropertyDetailsProfessionallyValuedController.view(changeLiability.id)">
+            @messages("ated.change")<span class="govuk-visually-hidden">@messages("ated.form-bundle.view.isValuedByAgent.message")</span>
+          </a>
+        </dd>
+      </div>
+    </dl>
     }
   </div>
 
   <div class="govuk-form-group" id="bank-details-section">
   @if(changeLiability.bankDetails.map(_.hasBankDetails) == Some(true)) {
 
-    @govukSummaryList(SummaryList(
-      rows = Seq(
-        SummaryListRow(
-          key = Key(
-            content = Text(messages("ated.edit-liability.summary.bank-details.header")),
-            classes = "govuk-heading-m"
-
-          ),
-          actions = Some(Actions(
-            items = Seq(
-              ActionItem(
-                href = controllers.editLiability.routes.HasBankDetailsController.editFromSummary(changeLiability.id.toString).url,
-                content = Text(messages("ated.edit")),
-                visuallyHiddenText = Some(messages("ated.edit-liability.summary.bank-details.header"))
-              )
-            )
-          ))
-        ),
-        SummaryListRow(
-          key = Key(
-            content = Text(messages("ated.edit-liability.summary.bank-details.account-holder-name"))
-          ),
-          value = Value {
-            Text(changeLiability.bankDetails.flatMap(_.bankDetails.map(_.accountName)).flatten.getOrElse(""))
-          }
-        )
-      ),
-      attributes = Map("id" -> "account-holder-name")
-    )
-    )
+    <dl class="govuk-summary-list">
+      <div class="govuk-summary-list__row govuk-summary-list__row--no-border">
+        <dt class="govuk-summary-list__key">
+          <h2 id="bank-details-header" class="govuk-heading-m">@messages("ated.edit-liability.summary.bank-details.header")</h2>
+        </dt>
+        <dd class="govuk-summary-list__actions">
+          <a class="govuk-link" id="edit-bank-details" href="@controllers.editLiability.routes.HasBankDetailsController.editFromSummary(changeLiability.id.toString)">
+            @messages("ated.change")<span class="govuk-visually-hidden">@messages("ated.edit-liability.summary.bank-details.header")</span>
+          </a>
+        </dd>
+      </div>
+    </dl>
 
     @if(changeLiability.bankDetails.flatMap(_.bankDetails.flatMap(_.hasUKBankAccount)) == Some(true)) {
 
-      @govukSummaryList(SummaryList(
-        rows = Seq(
-          SummaryListRow(
-            key = Key(
-              content = Text(messages("ated.edit-liability.summary.bank-details.account-number"))
-            ),
-            value = Value(
-              Text(changeLiability.bankDetails.flatMap(_.bankDetails.map(_.accountNumber)).flatten.getOrElse(""))
-            )
-          ),
-          SummaryListRow(
-            key = Key(
-              content = Text(messages("ated.edit-liability.summary.bank-details.sort-code"))
-            ),
-            value = Value(
-              Text(changeLiability.bankDetails.flatMap(_.bankDetails.map(_.sortCode)).flatten.getOrElse("").toString)
-            )
-          )
-        )
-      )
-      )
+      <dl class="govuk-summary-list">
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key" id="uk-account-holder-name-label">
+            @messages("ated.edit-liability.summary.bank-details.account-holder-name")
+          </dt>
+          <dd class="govuk-summary-list__value" id="uk-account-holder-name-value">
+            @changeLiability.bankDetails.flatMap(_.bankDetails.map(_.accountName))
+          </dd>
+        </div>
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key" id="account-number-label">
+            @messages("ated.edit-liability.summary.bank-details.account-number")
+          </dt>
+          <dd class="govuk-summary-list__value" id="account-number-value">
+            @changeLiability.bankDetails.flatMap(_.bankDetails.map(_.accountNumber))
+          </dd>
+        </div>
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key" id="sort-code-label">
+            @messages("ated.edit-liability.summary.bank-details.sort-code")
+          </dt>
+          <dd class="govuk-summary-list__value" id="sort-code-value">
+            @changeLiability.bankDetails.flatMap(_.bankDetails.map(_.sortCode))
+          </dd>
+        </div>
+      </dl>
+
     } else {
-      @govukSummaryList(SummaryList(
-        rows = Seq(
-          SummaryListRow(
-            key = Key(
-              content = Text(messages("ated.edit-liability.summary.bank-details.iban"))
-            ),
-            value = Value(
-              Text(changeLiability.bankDetails.flatMap(_.bankDetails.map(_.iban)).flatten.getOrElse("").toString)
-            )
-          ),
-          SummaryListRow(
-            key = Key(
-              content = Text(messages("ated.edit-liability.summary.bank-details.bic-swift-code"))
-            ),
-            value = Value(
-              Text(changeLiability.bankDetails.flatMap(_.bankDetails.map(_.bicSwiftCode)).flatten.getOrElse("").toString)
-            )
-          )
-        )
-      )
-      )
+
+      <dl class="govuk-summary-list">
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key" id="overseas-account-holder-name-label">
+            @messages("ated.edit-liability.summary.bank-details.account-holder-name")
+          </dt>
+          <dd class="govuk-summary-list__value" id="overseas-account-holder-name-value">
+            @changeLiability.bankDetails.flatMap(_.bankDetails.map(_.accountName))
+          </dd>
+        </div>
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key" id="iban-label">
+            @messages("ated.edit-liability.summary.bank-details.iban")
+          </dt>
+          <dd class="govuk-summary-list__value" id="iban-value">
+            @changeLiability.bankDetails.flatMap(_.bankDetails.map(_.iban))
+          </dd>
+        </div>
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key" id="bic-swift-code-label">
+            @messages("ated.edit-liability.summary.bank-details.bic-swift-code")
+          </dt>
+          <dd class="govuk-summary-list__value" id="bic-swift-code-value">
+            @changeLiability.bankDetails.flatMap(_.bankDetails.map(_.bicSwiftCode))
+          </dd>
+        </div>
+      </dl>
     }
   }
   </div>
 
   <div class="govuk-form-group" id="liability-dates-section">
 
-    <h2 id="dates-of-liability-header" class="govuk-heading-m">@messages("ated.property-details-summary.table.dates-of-liability.header")</h2>
+    <h2 id="dates-of-liability-header" class="govuk-heading-m govuk-!-padding-bottom-4">@messages("ated.property-details-summary.table.dates-of-liability.header")</h2>
 
-    @for((period, index) <- periods.zipWithIndex) {
-
-      @govukSummaryList(SummaryList(
-        rows = Seq(
-          SummaryListRow(
-            key = Key(
-              content = Text(messages(period.description.getOrElse("")))
-            ),
-            value = Value(
-              content = Text(messages("ated.property-details-summary.table.period.text",
-                period.startDate.toString(messages("ated.date-format")),
-                period.endDate.toString(messages("ated.date-format"))
-              ))
-            ),
-            actions = Some(Actions(
-              items = Seq(
-                ActionItem(
-                  href = controllers.propertyDetails.routes.IsFullTaxPeriodController.editFromSummary(changeLiability.id).url,
-                  content = Text(messages("ated.edit")),
-                  visuallyHiddenText = period.description
-                )
-              )
-            ))
-          )
-        ),
-        attributes = Map("id" -> "return-type-0")
-      ))
-    }
+    <dl class="govuk-summary-list">
+      @for((period, index) <- periods.zipWithIndex) {
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key" id="return-type-@index">
+            @messages((period.description).getOrElse(""))
+          </dt>
+          <dd class="govuk-summary-list__value" id="period-@index">
+            @messages("ated.property-details-summary.table.period.text", period.startDate.toString(messages("ated.date-format")), period.endDate.toString(messages("ated.date-format")))
+          </dd>
+          <dd class="govuk-summary-list__actions">
+            <a class="govuk-link" id="edit-dates-of-liablity-@index" href="@controllers.propertyDetails.routes.IsFullTaxPeriodController.editFromSummary(changeLiability.id)">
+              @messages("ated.change")<span class="govuk-visually-hidden">@messages((period.description).getOrElse(""))</span>
+            </a>
+          </dd>
+        </div>
+      }
+    </dl>
   </div>
 
   <div class="govuk-form-group" id="avoidance-scheme-section">
-  @changeLiability.period match {
-    case Some(p) if (p.taxAvoidanceScheme.isEmpty && p.taxAvoidancePromoterReference.isEmpty) => {
-    <div class="govuk-form-group">
-      <h2 id="avoidance-scheme-header-not-provided" class="govuk-heading-m">@messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.header")</h2>
 
-        @govukSummaryList(SummaryList(
-          rows = Seq(
-            SummaryListRow(
-              value = Value(
-                content = Text(messages("ated.property-details-summary.field-blank"))
-              ),
-              actions = Some(Actions(
-                items = Seq(
-                  ActionItem(
-                    href = controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceController.editFromSummary(changeLiability.id).url,
-                    content = Text(messages("ated.edit")),
-                    visuallyHiddenText = Some(messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.label"))
-                  )
-                )
-              ))
-            )
-          ),
-          attributes = Map("id" -> "avoidance-scheme-not-provided")
-        ))
-      </div>
-    }
-    case Some(p) if (p.taxAvoidanceScheme.isDefined && p.taxAvoidancePromoterReference.isDefined) => {
+    <h2 id="avoidance-scheme-header" class="govuk-heading-m govuk-!-padding-bottom-4">@messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.header")</h2>
 
-      <div class="govuk-form-group">
-        <h2 id="avoidance-scheme-header" class="govuk-heading-m">@messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.header")</h2>
-      </div>
+    @changeLiability.period match {
+      case Some(p) if (p.taxAvoidanceScheme.isEmpty && p.taxAvoidancePromoterReference.isEmpty) => {
 
-      @govukSummaryList(SummaryList(
-        rows = Seq(
-          SummaryListRow(
-            key = Key(
-              content = Text(messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.label"))
-            ),
-            value = Value(
-              content = Text(p.taxAvoidanceScheme.getOrElse(""))
-            ),
-            actions = Some(Actions(
-              items = Seq(
-                ActionItem(
-                  href = controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceController.editFromSummary(changeLiability.id).url,
-                  content = Text(messages("ated.edit")),
-                  visuallyHiddenText = Some(messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.label"))
-                )
-              )
-            ))
-          )
-        ),
-        attributes = Map("id" -> "avoidance-scheme")
-      ))
-      @govukSummaryList(SummaryList(
-        rows = Seq(
-          SummaryListRow(
-            key = Key(
-              content = Text(messages("ated.property-details-summary.table.property-ated-details.promoter-reference.label"))
-            ),
-            value = Value(
-              content = Text(p.taxAvoidancePromoterReference.getOrElse(""))
-            ),
-            actions = Some(Actions(
-              items = Seq(
-                ActionItem(
-                  href = controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceController.editFromSummary(changeLiability.id).url,
-                  content = Text(messages("ated.edit")),
-                  visuallyHiddenText = Some(messages("ated.property-details-summary.table.property-ated-details.promoter-reference.label"))
-                )
-              )
-            ))
-          )
-        )
-      ))
+        <dl class="govuk-summary-list">
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key" id="avoidance-details-not-provided-label">
+              @messages("ated.property-details-summary.table.property-ated-details.avoidance-details")
+            </dt>
+            <dd class="govuk-summary-list__value" id="avoidance-details-not-provided-value">
+              @messages("ated.property-details-summary.field-blank")
+            </dd>
+            <dd class="govuk-summary-list__actions">
+              <a class="govuk-link" id="edit-avoidance-details-not-provided-action" href="@controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceController.editFromSummary(changeLiability.id)">
+                @messages("ated.change")<span class="govuk-visually-hidden">@messages("ated.property-details-summary.table.property-ated-details.avoidance-details")</span>
+              </a>
+            </dd>
+          </div>
+        </dl>
+      }
+      case Some(p) if (p.taxAvoidanceScheme.isDefined && p.taxAvoidancePromoterReference.isDefined) => {
+
+        <dl class="govuk-summary-list">
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key" id="avoidance-scheme-label">
+              @messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.label")
+            </dt>
+            <dd class="govuk-summary-list__value" id="avoidance-scheme-value">
+              @p.taxAvoidanceScheme.getOrElse("")
+            </dd>
+            <dd class="govuk-summary-list__actions">
+              <a class="govuk-link" id="edit-avoidance-scheme" href="@controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceController.editFromSummary(changeLiability.id)">
+                @messages("ated.change")<span class="govuk-visually-hidden">@messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.label")</span>
+              </a>
+            </dd>
+          </div>
+
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key" id="promoter-reference-label">
+              @messages("ated.property-details-summary.table.property-ated-details.promoter-reference.label")
+            </dt>
+            <dd class="govuk-summary-list__value" id="promoter-scheme-value">
+              @p.taxAvoidancePromoterReference.getOrElse("")
+            </dd>
+            <dd class="govuk-summary-list__actions">
+              <a class="govuk-link" id="edit-promoter-scheme" href="@controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceController.editFromSummary(changeLiability.id)">
+                @messages("ated.change")<span class="govuk-visually-hidden">@messages("ated.property-details-summary.table.property-ated-details.promoter-reference.label")</span>
+              </a>
+            </dd>
+          </div>
+        </dl>
+      }
+      case _ => {
+
+        <dl class="govuk-summary-list">
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key" id="avoidance-details-incomplete-label">
+              @messages("ated.property-details-summary.table.property-ated-details.avoidance-details")
+            </dt>
+            <dd class="govuk-summary-list__value" id="avoidance-details-incomplete-value">
+              @incomplete
+            </dd>
+            <dd class="govuk-summary-list__actions">
+              <a class="govuk-link" id="avoidance-details-incomplete-action" href="@controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceController.editFromSummary(changeLiability.id)">
+                @messages("ated.change")<span class="govuk-visually-hidden">@messages("ated.property-details-summary.table.property-ated-details.avoidance-details")</span>
+              </a>
+            </dd>
+          </div>
+        </dl>
+      }
     }
-    case _ => {
-      <div class="govuk-from-group">
-        <h2 id="avoidance-scheme-header-incomplete" class="govuk-heading-m">@messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.header")</h2>
-      </div>
-      @govukSummaryList(SummaryList(
-        rows = Seq(
-          SummaryListRow(
-            value = Value(
-              content = HtmlContent(incomplete)
-            ),
-            actions = Some(Actions(
-              items = Seq(
-                ActionItem(
-                  href = controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceController.editFromSummary(changeLiability.id).url,
-                  content = Text(messages("ated.edit")),
-                  visuallyHiddenText = Some(messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.label"))
-                )
-              )
-            ))
-          )
-        )
-      ))
-    }
-  }
   </div>
 
   <div class="govuk-form-group" id="supporting-info-section">
-    <h2 id="supporting-info-header" class="govuk-heading-m">@messages("ated.property-details-summary.table.supporting-info.header")</h2>
+    <h2 id="supporting-info-header" class="govuk-heading-m govuk-!-padding-bottom-4">@messages("ated.property-details-summary.table.supporting-info.header")</h2>
 
-    @govukSummaryList(SummaryList(
-      rows = Seq(
-        SummaryListRow(
-          key = Key(
-            content = Text(messages("ated.property-details-summary.table.property-ated-details.additional-information.label"))
-          ),
-          value = Value(
-            content = Text(changeLiability.period.map(v => v.supportingInfo.fold(messages("ated.property-details-summary.field-blank"))(x => if(x == "") messages("ated.property-details-summary.field-blank") else x)).getOrElse(""))
-          ),
-          actions = Some(Actions(
-            items = Seq(
-              ActionItem(
-                href = controllers.propertyDetails.routes.PropertyDetailsSupportingInfoController.editFromSummary(changeLiability.id).url,
-                content = Text(messages("ated.edit")),
-                visuallyHiddenText = Some(messages("ated.property-details-summary.table.property-ated-details.additional-information.label"))
-              )
-            )
-          ))
-        )
-      ),
-      attributes = Map("id" -> "additional-information")
-    ))
+    <dl class="govuk-summary-list">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key" id="additional-information-label">
+          @messages("ated.property-details-summary.table.property-ated-details.additional-information.label")
+        </dt>
+        <dd class="govuk-summary-list__value" id="additional-information-value">
+          @changeLiability.period.map(v => v.supportingInfo.fold(messages("ated.property-details-summary.field-blank"))(x => if(x == "") messages("ated.property-details-summary.field-blank") else x))
+        </dd>
+        <dd class="govuk-summary-list__actions">
+          <a class="govuk-link" id="edit-supporting-details" href="@controllers.propertyDetails.routes.PropertyDetailsSupportingInfoController.editFromSummary(changeLiability.id)">
+            @messages("ated.change")<span class="govuk-visually-hidden">@messages("ated.property-details-summary.table.property-ated-details.additional-information.label")</span>
+          </a>
+        </dd>
+      </div>
+    </dl>
   </div>
-
 
   <div class="govuk-form-group" id="return-status-section">
-    <h2 id="return-status-header" class="govuk-heading-m">@messages("ated.edit-liability.summary.bank-details.return-status.header")</h2>
+    <h2 id="return-status-header" class="govuk-heading-m govuk-!-padding-bottom-4">@messages("ated.edit-liability.summary.bank-details.return-status.header")</h2>
 
-    @govukSummaryList(SummaryList(
-      rows = Seq(
-        SummaryListRow(
-          key = Key(
-            content = Text(messages("ated.edit-liability.summary.bank-details.return-status.label"))
-          ),
-          value = Value(
-            content = Text(messages("ated.property-details-summary.status.text"))
-          )
-        )
-      ),
-      attributes = Map("id" -> "return-status")
-    ))
-
+    <dl class="govuk-summary-list">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key" id="return-status-label">
+          @messages("ated.property-details-summary.table.property-ated-details.return-status.label")
+        </dt>
+        <dd class="govuk-summary-list__value" id="return-status-value">
+          @messages("ated.property-details-summary.status.text")
+        </dd>
+      </div>
+    </dl>
   </div>
-
 
   <div class="govuk-form-group">
     @if(returnType == "F") {
@@ -480,7 +390,7 @@
     }
 
     <span id="ated-charge-value" class="govuk-heading-xl">
-    @changeLiability.calculated.flatMap(x => x.liabilityAmount.map(y => formattedPounds(y)))
+      @changeLiability.calculated.flatMap(x => x.liabilityAmount.map(y => formattedPounds(y)))
     </span>
 
   </div>
@@ -490,13 +400,13 @@
   ))
 
   <div class="govuk-form-group">
-    <a class="govuk-body govuk-link" href="@controllers.editLiability.routes.EditLiabilitySummaryController.viewPrintFriendlyEditLiabilityReturn(changeLiability.id.toString)" id="print-friendly-edit-liability-link" target="_blank">
+    <a class="govuk-link govuk-body" href="@controllers.editLiability.routes.EditLiabilitySummaryController.viewPrintFriendlyEditLiabilityReturn(changeLiability.id.toString)" id="print-friendly-edit-liability-link" target="_blank">
     @messages("ated.edit-liability.summary.print.view")
     </a>
   </div>
 
   <div class="govuk-form-group">
-    <a class="govuk-body govuk-link" href="@controllers.routes.AccountSummaryController.view" id="saved-returns-link">@messages("ated.property-details-summary.saved-returns.link.text")</a>
+    <a class="govuk-link govuk-body" href="@controllers.routes.AccountSummaryController.view" id="saved-returns-link">@messages("ated.property-details-summary.saved-returns.link.text")</a>
   </div>
 
   @formHelper(action = controllers.editLiability.routes.EditLiabilitySummaryController.submit(changeLiability.id.toString)) {

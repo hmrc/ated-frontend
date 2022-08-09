@@ -37,7 +37,7 @@
 
   <p id="reliefs-print-ated-ref" class="govuk-body">@messages("ated.refNo", authContext.atedReferenceNumber)</p>
 
-  <h1 class="govuk-heading-xl" id="property-details-summary-header">@messages("ated.relief-summary.print.header", organisationName.getOrElse(""))</h1>
+  <h1 class="govuk-heading-xl govuk-!-margin-bottom-5" id="property-details-summary-header">@messages("ated.relief-summary.print.header", organisationName.getOrElse(""))</h1>
 
   <p class="govuk-body" id="details-text">@messages("ated.relief-summary.details-text",
     periodStartDate(periodKey).toString(messages("ated.date-format")),

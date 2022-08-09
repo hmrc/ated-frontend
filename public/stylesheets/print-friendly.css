@@ -63,6 +63,8 @@
 	height:24px;
 	box-sizing:border-box;
 	font-weight:bold;
+	font-family: "GDS Transport",arial,sans-serif;
+	font-size: 19px;
 }
 
 .print-group {

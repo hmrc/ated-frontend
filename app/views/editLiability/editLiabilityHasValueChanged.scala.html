@@ -59,7 +59,7 @@
     }
 
     <header>
-        <h1 class="govuk-heading-xl">
+        <h1 class="govuk-heading-xl govuk-!-margin-bottom-5">
             <span class="govuk-caption-xl">
                 <span class="govuk-visually-hidden">
                 @messages("ated.screen-reader.section")
@@ -73,7 +73,7 @@
     <p class="govuk-body" id="value-text">
         @messages("ated.change-liability.value.previous-value-text")
         <span class="govuk-heading-l" id="return-charge">
-        @oldLiabilityAmount.map(formattedPounds(_))
+            @oldLiabilityAmount.map(formattedPounds(_))
         </span>
     </p>
 

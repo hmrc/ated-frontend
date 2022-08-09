@@ -93,7 +93,7 @@
   @backLinkHtml
 
   <header>
-    <h1 class="govuk-heading-xl">
+    <h1 class="govuk-heading-xl govuk-!-margin-bottom-5">
       <span class="govuk-caption-xl">
         <span class="govuk-visually-hidden">
         @messages("ated.screen-reader.section")
@@ -106,9 +106,9 @@
 
   <p id="details-text" class="govuk-body">@messages("ated.property-details-summary.details-text", periodStartDate(disposeLiability.formBundleReturn.periodKey.toInt).toString(messages("ated.date-format")), periodEndDate(disposeLiability.formBundleReturn.periodKey.toInt).toString(messages("ated.date-format")))</p>
 
-  <div class="govuk-form-group" id="cya-property-details">
+  <div class="govuk-form-group govuk-!-padding-top-4" id="cya-property-details">
 
-    <h2 id="cya-property-details-header" class="govuk-heading-m">@messages("ated.property-details-summary.table.property-details.header")</h2>
+    <h2 id="cya-property-details-header" class="govuk-heading-m govuk-!-padding-bottom-4">@messages("ated.property-details-summary.table.property-details.header")</h2>
 
     @govukSummaryList(SummaryList(
       rows = Seq(
@@ -131,7 +131,7 @@
             items = Seq(
               ActionItem(
                 href = controllers.editLiability.routes.DisposePropertyController.editFromSummary(disposeLiability.id.toString).url,
-                content = HtmlContent(messages("ated.edit")),
+                content = HtmlContent(messages("ated.change")),
                 visuallyHiddenText = Some(messages("ated.dispose-property.summary.disposal-date-label"))
               )
             )
@@ -139,15 +139,14 @@
         )
       ),
     attributes = Map("id" -> "property-details")
-    )
-    )
+    ))
   </div>
 
-  <div class="govuk-form-group" id="cya-bank-details">
+  <div class="govuk-form-group govuk-!-padding-top-4" id="cya-bank-details">
 
   @if(disposeLiability.bankDetails.map(_.hasBankDetails) == Some(true)) {
 
-    <h2 class="govuk-heading-m" id="bank-details-header">@messages("ated.edit-liability.summary.bank-details.header")</h2>
+    <h2 id="bank-details-header" class="govuk-heading-m govuk-!-padding-bottom-4">@messages("ated.edit-liability.summary.bank-details.header")</h2>
 
     @if(!disposeLiability.bankDetails.flatMap(_.bankDetails).isDefined) {
 
@@ -164,14 +163,15 @@
               items = Seq(
                 ActionItem(
                   href = controllers.editLiability.routes.DisposeLiabilityBankDetailsController.editFromSummary(disposeLiability.id.toString).url,
-                  content = HtmlContent(messages("ated.edit")),
+                  content = HtmlContent(messages("ated.change")),
                   visuallyHiddenText = Some(messages("ated.edit-liability.summary.bank-details.type-of-account"))
                 )
               )
             ))
           )
-        )
-      ))
+        ),
+      attributes = Map("id" -> "account-type-incomplete")
+    ))
 
     } else {
 
@@ -190,7 +190,7 @@
                 items = Seq(
                   ActionItem(
                     href = controllers.editLiability.routes.DisposeLiabilityBankDetailsController.editFromSummary(disposeLiability.id.toString).url,
-                    content = HtmlContent(messages("ated.edit")),
+                    content = HtmlContent(messages("ated.change")),
                     visuallyHiddenText = Some(messages("ated.edit-liability.summary.bank-details.type-of-account"))
                   )
                 )
@@ -207,7 +207,7 @@
                 items = Seq(
                   ActionItem(
                     href = controllers.editLiability.routes.DisposeLiabilityBankDetailsController.editFromSummary(disposeLiability.id.toString).url,
-                    content = HtmlContent(messages("ated.edit")),
+                    content = HtmlContent(messages("ated.change")),
                     visuallyHiddenText = Some(messages("ated.edit-liability.summary.bank-details.account-holder-name"))
                   )
                 )
@@ -225,7 +225,7 @@
                 items = Seq(
                   ActionItem(
                     href = controllers.editLiability.routes.DisposeLiabilityBankDetailsController.editFromSummary(disposeLiability.id.toString).url,
-                    content = HtmlContent(messages("ated.edit")),
+                    content = HtmlContent(messages("ated.change")),
                     visuallyHiddenText = Some(messages("ated.edit-liability.summary.bank-details.account-number"))
                   )
                 )
@@ -242,13 +242,14 @@
                 items = Seq(
                   ActionItem(
                     href = controllers.editLiability.routes.DisposeLiabilityBankDetailsController.editFromSummary(disposeLiability.id.toString).url,
-                    content = HtmlContent(messages("ated.edit")),
+                    content = HtmlContent(messages("ated.change")),
                     visuallyHiddenText = Some(messages("ated.edit-liability.summary.bank-details.sort-code"))
                   )
                 )
               ))
             )),
-            attributes = Map("id" -> "bank-details-uk")))
+            attributes = Map("id" -> "bank-details-uk"))
+          )
 
       } else {
 
@@ -265,7 +266,7 @@
                 items = Seq(
                   ActionItem(
                     href = controllers.editLiability.routes.DisposeLiabilityBankDetailsController.editFromSummary(disposeLiability.id.toString).url,
-                    content = HtmlContent(messages("ated.edit")),
+                    content = HtmlContent(messages("ated.change")),
                     visuallyHiddenText = Some(messages("ated.edit-liability.summary.bank-details.type-of-account"))
                   )
                 )
@@ -282,7 +283,7 @@
                 items = Seq(
                   ActionItem(
                     href = controllers.editLiability.routes.DisposeLiabilityBankDetailsController.editFromSummary(disposeLiability.id.toString).url,
-                    content = HtmlContent(messages("ated.edit")),
+                    content = HtmlContent(messages("ated.change")),
                     visuallyHiddenText = Some(messages("ated.edit-liability.summary.bank-details.account-holder-name"))
                   )
                 )
@@ -300,7 +301,7 @@
                 items = Seq(
                   ActionItem(
                     href = controllers.editLiability.routes.DisposeLiabilityBankDetailsController.editFromSummary(disposeLiability.id.toString).url,
-                    content = HtmlContent(messages("ated.edit")),
+                    content = HtmlContent(messages("ated.change")),
                     visuallyHiddenText = Some(messages("ated.edit-liability.summary.bank-details.iban"))
                   )
                 )
@@ -317,20 +318,24 @@
                 items = Seq(
                   ActionItem(
                     href = controllers.editLiability.routes.DisposeLiabilityBankDetailsController.editFromSummary(disposeLiability.id.toString).url,
-                    content = HtmlContent(messages("ated.edit")),
+                    content = HtmlContent(messages("ated.change")),
                     visuallyHiddenText = Some(messages("ated.edit-liability.summary.bank-details.bic-swift-code"))
                   )
                 )
               ))
             )),
-            attributes = Map("id" -> "bank-details-overseas")))
+            attributes = Map("id" -> "bank-details-overseas"))
+          )
       }
     }
 
   } else {
 
     @if(!disposeLiability.bankDetails.isDefined) {
-      @govukSummaryList(SummaryList(
+
+    <h2 id="bank-details-header-incomplete" class="govuk-heading-m govuk-!-padding-bottom-4">@messages("ated.edit-liability.summary.bank-details.header")</h2>
+
+    @govukSummaryList(SummaryList(
         rows = Seq(
           SummaryListRow(
             key = Key(
@@ -343,7 +348,7 @@
               items = Seq(
                 ActionItem(
                   href = controllers.editLiability.routes.DisposeLiabilityHasBankDetailsController.editFromSummary(disposeLiability.id.toString).url,
-                  content = HtmlContent(messages("ated.edit")),
+                  content = HtmlContent(messages("ated.change")),
                   visuallyHiddenText = Some(messages("ated.edit-liability.summary.bank-details.supply-bank-details"))
                 )
               )
@@ -355,8 +360,8 @@
   }
   </div>
 
-  <div class="govuk-form-group" id="cya-return-status">
-    <h2 id="return-status-header" class="govuk-heading-m">@messages("ated.property-details-summary.table.property-ated-details.return-status.header")</h2>
+  <div class="govuk-form-group govuk-!-padding-top-4" id="cya-return-status">
+    <h2 id="return-status-header" class="govuk-heading-m govuk-!-padding-bottom-4">@messages("ated.property-details-summary.table.property-ated-details.return-status.header")</h2>
 
     @govukSummaryList(SummaryList(
       rows = Seq(
@@ -375,10 +380,10 @@
 
   @if(disposeLiability.calculated.isDefined) {
       <p id="ated-charge-text" class="govuk-body">
-        @messages("ated.property-details-summary.table.ated-charge.text")
-        <span class="govuk-heading-xl" id="ated-charge-value">
-        @disposeLiability.calculated.map(x => formattedPounds(x.liabilityAmount))
-        </span>
+          @messages("ated.property-details-summary.table.ated-charge.text")
+          <span class="govuk-heading-xl" id="ated-charge-value">
+            @disposeLiability.calculated.map(x => formattedPounds(x.liabilityAmount))
+          </span>
       </p>
   }
   @govukInsetText(InsetText(

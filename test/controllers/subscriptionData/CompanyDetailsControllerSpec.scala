@@ -17,7 +17,6 @@
 package controllers.subscriptionData
 
 import java.util.UUID
-
 import builders.{SessionBuilder, TitleBuilder}
 import config.ApplicationConfig
 import connectors.DataCacheConnector
@@ -39,6 +38,7 @@ import uk.gov.hmrc.auth.core.retrieve.~
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
 import uk.gov.hmrc.http.HeaderCarrier
 import views.html.BtaNavigationLinks
+import views.html.subcriptionData.companyDetails
 
 import scala.concurrent.Future
 
@@ -51,11 +51,11 @@ class CompanyDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
   val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
   val mockSubscriptionDataService: SubscriptionDataService = mock[SubscriptionDataService]
   val mockDetailsService: DetailsService = mock[DetailsService]
-    val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
+  val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
-  val injectedViewInstance = app.injector.instanceOf[views.html.subcriptionData.companyDetails]
+  val injectedViewInstance: companyDetails = app.injector.instanceOf[views.html.subcriptionData.companyDetails]
 
 class Setup {
 
@@ -115,7 +115,7 @@ class Setup {
   override def beforeEach(): Unit = {
   }
 
-  val clientMandateDetails = ClientMandateDetails("agentName", "changeLink", "email", "changeEmailLink")
+  val clientMandateDetails: ClientMandateDetails = ClientMandateDetails("agentName", "changeLink", "email", "changeEmailLink")
 
   "CompanyDetailsController" must {
     "unauthorised users" must {
@@ -136,9 +136,9 @@ class Setup {
     "Authorised Users" must {
 
       "return contact details view with editable address" in new Setup {
-        val addressDetails = AddressDetails(addressType = "", addressLine1 = "", addressLine2 = "", countryCode = "GB")
-        val correspondence = Address(Some("name1"), Some("name2"), addressDetails = addressDetails)
-        val businessPartnerDetails = RegisteredDetails(isEditable = true, "testName",
+        val addressDetails: AddressDetails = AddressDetails(addressType = "", addressLine1 = "", addressLine2 = "", countryCode = "GB")
+        val correspondence: Address = Address(Some("name1"), Some("name2"), addressDetails = addressDetails)
+        val businessPartnerDetails: RegisteredDetails = RegisteredDetails(isEditable = true, "testName",
           RegisteredAddressDetails(addressLine1 = "bpline1",
             addressLine2 = "bpline2",
             addressLine3 = Some("bpline3"),
@@ -153,7 +153,7 @@ class Setup {
 
             document.title() must be (TitleBuilder.buildTitle("Your ATED details"))
             document.getElementsByTag("h1").text() must include("Your ATED details")
-            document.getElementById("registered-edit").text() must be("Edit Registered address")
+            document.getElementById("registered-edit").text() must be("Change Registered address")
             document.getElementById("registered-edit").attr("href") must be("/ated/registered-details")
 
             document.getElementsByClass("govuk-back-link").text() must be("Back")
@@ -162,9 +162,9 @@ class Setup {
       }
 
       "return contact details view with UR banner" in new Setup {
-        val addressDetails = AddressDetails(addressType = "", addressLine1 = "", addressLine2 = "", countryCode = "GB")
-        val correspondence = Address(Some("name1"), Some("name2"), addressDetails = addressDetails)
-        val businessPartnerDetails = RegisteredDetails(isEditable = true, "testName",
+        val addressDetails: AddressDetails = AddressDetails(addressType = "", addressLine1 = "", addressLine2 = "", countryCode = "GB")
+        val correspondence: Address = Address(Some("name1"), Some("name2"), addressDetails = addressDetails)
+        val businessPartnerDetails: RegisteredDetails = RegisteredDetails(isEditable = true, "testName",
           RegisteredAddressDetails(addressLine1 = "bpline1",
             addressLine2 = "bpline2",
             addressLine3 = Some("bpline3"),
@@ -185,10 +185,10 @@ class Setup {
       }
 
       "return contact details view with NO editable address" in new Setup {
-        val addressDetails = AddressDetails(addressType = "", addressLine1 = "", addressLine2 = "", countryCode = "GB")
-        val contactDetails = ContactDetails(emailAddress = Some("a@b.c"))
-        val correspondence = Address(Some("name1"), Some("name2"), addressDetails = addressDetails, contactDetails = Some(contactDetails))
-        val businessPartnerDetails = RegisteredDetails(isEditable = false, "testName",
+        val addressDetails: AddressDetails = AddressDetails(addressType = "", addressLine1 = "", addressLine2 = "", countryCode = "GB")
+        val contactDetails: ContactDetails = ContactDetails(emailAddress = Some("a@b.c"))
+        val correspondence: Address = Address(Some("name1"), Some("name2"), addressDetails = addressDetails, contactDetails = Some(contactDetails))
+        val businessPartnerDetails: RegisteredDetails = RegisteredDetails(isEditable = false, "testName",
           RegisteredAddressDetails(addressLine1 = "bpline1",
             addressLine2 = "bpline2",
             addressLine3 = Some("bpline3"),

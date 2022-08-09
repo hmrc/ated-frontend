@@ -20,7 +20,6 @@
 @import config.featureswitch.FeatureSwitch
 @import uk.gov.hmrc.play.views.html._
 @import views.html.helpers._
-@import views.html.helpers.error._
 @import utils._
 @import config.featureswitch.FeatureSwitching
 @import uk.gov.hmrc.govukfrontend.views.Implicits._
@@ -45,10 +44,6 @@
   serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
 @formattedPeriodStartDate = @{periodStartDate.toString(messages("ated.date-format.numeric"))}
-
-@pageScripts = {
-<script src='@controllers.routes.Assets.versioned("javascript/chooseReliefs.js")'></script>
-}
 
 @chooseReliefsocialHousingMessage = @{
   if (periodKey >= 2020 && appConfig.isEnabled(FeatureSwitch.CooperativeHousing)) {
@@ -238,24 +233,24 @@
 
     @backLinkHtml
 
-@if(amendedForm.errors.nonEmpty) {
-  @govukErrorSummary(ErrorSummary().withFormErrorsAsText(amendedForm,
-    mapping = Map(
-                    "rentalBusinessDate" -> "rentalBusinessDate.day",
-                    "openToPublicDate" -> "openToPublicDate.day",
-                    "propertyDeveloperDate" -> "propertyDeveloperDate.day",
-                    "propertyTradingDate" -> "propertyTradingDate.day",
-                    "lendingDate" -> "lendingDate.day",
-                    "employeeOccupationDate" -> "employeeOccupationDate.day",
-                    "farmHousesDate" -> "farmHousesDate.day",
-                    "socialHousingDate" -> "socialHousingDate.day",
-                    "equityReleaseDate" -> "equityReleaseDate.day",
-                    ""                  -> "rentalBusiness"
-    )))
-}
+    @if(amendedForm.errors.nonEmpty) {
+      @govukErrorSummary(ErrorSummary().withFormErrorsAsText(amendedForm,
+        mapping = Map(
+                        "rentalBusinessDate" -> "rentalBusinessDate.day",
+                        "openToPublicDate" -> "openToPublicDate.day",
+                        "propertyDeveloperDate" -> "propertyDeveloperDate.day",
+                        "propertyTradingDate" -> "propertyTradingDate.day",
+                        "lendingDate" -> "lendingDate.day",
+                        "employeeOccupationDate" -> "employeeOccupationDate.day",
+                        "farmHousesDate" -> "farmHousesDate.day",
+                        "socialHousingDate" -> "socialHousingDate.day",
+                        "equityReleaseDate" -> "equityReleaseDate.day",
+                        ""                  -> "rentalBusiness"
+        )))
+    }
 
     <header>
-      <h1 class="govuk-heading-xl">
+      <h1 class="govuk-heading-xl govuk-!-margin-bottom-5">
         <span class="govuk-caption-xl"><span class="govuk-visually-hidden">@messages("ated.screen-reader.section") </span>@messages("ated.choose-reliefs.subheader")</span>
         @messages("ated.choose-reliefs.header")
       </h1>

@@ -177,7 +177,7 @@ class Setup {
                 .text() must include("This amount does not reflect any payments you have already made or penalties that have been issued.")
               document.getElementById("owed-amount").text() must include("The charges for this return are")
               document.getElementById("reference-text").text() must include("The reference to make this payment is")
-              document.getElementById("late-payment").text() must include("Late payment penalties can be issued when ATED is unpaid. Find out about how to pay and payment deadlines.")
+              document.getElementById("late-payment").text() must include("Late payment penalties can be issued when ATED is unpaid. Find out about how to pay and payment deadlines (opens in new tab).")
               document.getElementById("late-payment-link").attr("href") must include("https://www.gov.uk/guidance/pay-annual-tax-on-enveloped-dwellings")
               document.getElementById("not-receive-email")
                 .text() must include("You can view your balance in your ATED online service. There can be a 24-hour delay before you see any updates.")

@@ -38,10 +38,6 @@
   @import _root_.utils.AtedConstants
   @import views.html.helpers._
 
-@pageScripts = {
-<script src='@controllers.routes.Assets.versioned("javascript/formBundleReturn.js")'></script>
-}
-
 @backLinkHtml = {
     @if(backLink.isDefined) {
         @govukBackLink(BackLink(
@@ -52,13 +48,12 @@
 }
 
 @newMain(title = titleBuilder(messages("ated.form-bundle.title")),
-          pageScripts = Some(pageScripts),
           serviceInfoContent = serviceInfoContent) {
 
     @backLinkHtml
 
     <header>
-        <h1 class="govuk-heading-xl">
+        <h1 class="govuk-heading-xl govuk-!-margin-bottom-5">
             <span class="govuk-caption-xl"><span class="govuk-visually-hidden">@messages("ated.screen-reader.section-name")</span>@organisationName.getOrElse("")</span>
             @messages("ated.form-bundle.header")
         </h1>

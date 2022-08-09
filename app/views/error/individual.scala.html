@@ -36,7 +36,7 @@
 @this(govukWarningText : GovukWarningText, govukButton : GovukButton)
 @()(implicit messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
-<h1 class="govuk-heading-l">@messages("unauthorised.header")</h1>
+<h1 class="govuk-heading-xl govuk-!-margin-bottom-5">@messages("unauthorised.header")</h1>
 
 <h2 class="govuk-heading-m">@messages("unauthorised.UK.h2")</h2>
 
@@ -47,24 +47,23 @@
 <p class="govuk-body">@messages("unauthorised.nonUK.p1")</p>
 
 <p class="govuk-body">
- @messages("unauthorised.nonUK.p2.a")
- <a class="govuk-link" href=@appConfig.createNewGatewayLink>@messages("unauthorised.nonUK.link")</a>
- @messages("unauthorised.nonUK.p2.b")
+  @messages("unauthorised.nonUK.p2.a")
+  <a class="govuk-link" href=@appConfig.createNewGatewayLink>@messages("unauthorised.nonUK.link")</a>
+  @messages("unauthorised.nonUK.p2.b")
 </p>
 
 @govukWarningText(WarningText(
-    iconFallbackText = "Warning",
-    content = Text(Messages("unauthorised.nonUK.warning"))
-  ))
+  iconFallbackText = "Warning",
+  content = Text(Messages("unauthorised.nonUK.warning"))
+))
 
 <p class="govuk-body">@messages("unauthorised.nonUK.p3")</p>
 
 <p class="govuk-body">@messages("unauthorised.nonUK.p4")</p>
 
-
 <div class="govuk-form-group">
-     @govukButton(Button(
-        content = Text(messages("unauthorised.button.signout")),
-        href = Some("/ated/sign-out-individual")
-     ))
+   @govukButton(Button(
+      content = Text(messages("unauthorised.button.signout")),
+      href = Some("/ated/sign-out-individual")
+   ))
 </div>
