@@ -56,6 +56,20 @@
 
     @backLinkHtml
 
+    @if(prevReturns.isEmpty) {
+        <header>
+             <h1 class="govuk-heading-xl govuk-!-margin-bottom-5">
+                 <span class="govuk-caption-xl">
+                     <span class="govuk-visually-hidden">
+                         @messages("ated.screen-reader.section")
+                     </span>
+                     @messages(messages("ated.return-type.pre-header"))
+                 </span>
+                 @messages("ated.select-past-return.header")
+             </h1>
+        </header>
+    }
+
     @if(addressResultsForm.errors.nonEmpty) {
       @govukErrorSummary(ErrorSummary().withFormErrorsAsText(addressResultsForm))
     }

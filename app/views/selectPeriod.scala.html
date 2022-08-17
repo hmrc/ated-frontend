@@ -47,6 +47,12 @@
     }
 }
 
+@detailsContent = {
+    <p>@messages("ated.select-period.more-years.answer")
+        <a class="govuk-link" href="https://www.gov.uk/government/organisations/hm-revenue-customs/contact/annual-tax-on-enveloped-dwellings-ated" rel="noreferrer noopener" target="_blank">@messages("ated.select-period.more-years.answer.link")</a>.
+    </p>
+}
+
 @newMain(title = titleBuilder(messages("ated.select-period.title"), Some(selectPeriodForm)), serviceInfoContent = serviceInfoContent) {
 
   @backLinkHtml
@@ -72,7 +78,7 @@
 
     @govukDetails(Details(
         summary = Text(messages("ated.select-period.more-years")),
-        content = HtmlContent(messages("ated.select-period.more-years.answer"))
+        content = HtmlContent(detailsContent)
     ))
 
     @govukButton(Button(

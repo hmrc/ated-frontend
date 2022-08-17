@@ -37,6 +37,14 @@ radios: GovukRadios, input: GovukInput, details: GovukDetails, button: GovukButt
         label = Label(content = Text(messages("ated.contact-details.emailAddress")))
     ).withFormField(editContactDetailsEmailForm("emailAddress")))
 }
+
+@emailDetails = {
+    <p>@messages("ated.contact-details.email.risk.help.answer_p1")</p>
+    <p>@messages("ated.contact-details.email.risk.help.answer_p2")
+        <a class="govuk-link" href="mailto:phishing@@hmrc.gsi.gov.uk"> @messages("ated.contact-details.email.risk.help.answer.link")</a>
+    </p>
+}
+
 @newMain(title = titleBuilder(messages("ated.contact-details-edit-email.header"), Some(editContactDetailsEmailForm)), serviceInfoContent = serviceInfoContent) {
     @backLinkHtml
 
@@ -56,7 +64,7 @@ radios: GovukRadios, input: GovukInput, details: GovukDetails, button: GovukButt
 
         @details(Details(
             summary = Text(messages("ated.contact-details.email.risk.help.text")),
-            content = HtmlContent(messages("ated.contact-details.email.risk.help.answer"))))
+            content = HtmlContent(emailDetails)))
 
         </div>
 

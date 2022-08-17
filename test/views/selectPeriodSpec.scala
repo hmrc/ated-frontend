@@ -68,7 +68,7 @@ class selectPeriodSpec extends AnyFeatureSpec with GuiceOneServerPerSuite with M
       assert(document.getElementById("period-hint").text() === "The chargeable period for a year runs from the 1 April to 31 March.")
       assert(document.getElementsByClass("govuk-details__summary-text").text() === "I want to submit a return before 2015")
       assert(document.getElementsByClass("govuk-details__text").text() === "Any ATED returns before these periods" +
-        " need to be submitted on a paper form. To request a paper form contact the call centre.")
+        " need to be submitted on a paper form. To request a paper form contact the call centre (opens in new tab).")
 
       assert(document.getElementsByAttributeValue("for", "period").text() == "2015 to 2016")
       assert(document.getElementsByAttributeValue("for", "period-2").text() == "2016 to 2017")
