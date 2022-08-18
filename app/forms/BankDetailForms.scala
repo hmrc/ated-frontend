@@ -76,7 +76,7 @@ object BankDetailForms {
 
   val bankDetailsForm: Form[BankDetails] = Form(mapping(
     "hasUKBankAccount" -> optional(boolean).verifying("ated.bank-details.error-key.hasUKBankAccount.empty", a => a.isDefined),
-    "accountName" -> optional(text),
+    "accountName" -> optional(text).verifying("ated.bank-details.error-key.accountName.empty", a => a.isDefined),
     "accountNumber" -> optional(text).verifying("ated.bank-details.error-key.accountNumber.max-len", a => a.size < 19),
     "sortCode" -> sortCodeTuple,
     "bicSwiftCode" -> optional(of[BicSwiftCode]),

@@ -1323,8 +1323,14 @@ ated.bank-details.has-bank-details.title = Do you have a bank account where we c
 ated.bank-details.has-bank-details.header = Do you have a bank account where we could pay a refund?
 ated.bank-details.has-bank-details.paragraph.text = We need bank details for the payment of any refunds that may be due.
 
-ated.bank-details.title = Is the bank account in the UK?
-ated.bank-details.header = Is the bank account in the UK?
+ated.bank-details.title = Enter your bank account details
+ated.bank-details.header = Enter your bank account details
+ated.bank-details.location.label = Is the bank account in the UK?
+ated.bank-details.account.number.hint = Must be between 6 and 8 digits long
+ated.bank-details.sort.code.hint = Must be 6 digits long
+ated.bank-details.iban.hint = You can ask your bank or check your bank statement
+ated.bank-details.swift.hint = Must be between 8 and 11 characters long. You can ask your bank or check your bank statement
+
 #####ated.bank-details.legend = Bank details
 
 #####ated.bank-details.have-uk-bank-account.legend = Do you have a UK bank account?
@@ -1334,20 +1340,20 @@ ated.bank-details.uk-bank-account.sort-code.label = Sort code
 ated.bank-details.non-uk-bank-account.iban.label = IBAN
 ated.bank-details.non-uk-bank-account.bic-swift-code.label = SWIFT code
 #####ated.bank-details.uk-bank-account.no-selected.important-text = If you require a repayment into a non-UK bank account HMRC will be in touch regarding payment.
-ated.bank-details.error-key.accountName.empty = You must enter the name of the bank account holder
+ated.bank-details.error-key.accountName.empty = Enter the name of the bank account holder
 ated.bank-details.error-key.accountName.max-len = The account holder name cannot be more than 60 characters
-ated.bank-details.error-key.accountNumber.empty = You must enter an account number
+ated.bank-details.error-key.accountNumber.empty = Enter an account number
 ated.bank-details.error-key.accountNumber.max-len = The account number cannot be more than 18 characters
 ated.bank-details.error-key.accountNumber.invalid = You must enter a valid account number
-ated.bank-details.error-key.sortCode.empty = You must enter a sort code
+ated.bank-details.error-key.sortCode.empty = Enter a sort code
 ated.bank-details.error-key.sortCode.invalid = You must enter a valid sort code
-ated.bank-details.error-key.hasUKBankAccount.empty = You must answer the UK bank account question
+ated.bank-details.error-key.hasUKBankAccount.empty = Select yes if your bank account is in the UK
 ated.bank-details.error-key.hasBankDetails.empty = You must answer the bank details question
 
-ated.bank-details.error-key.iban.empty = You must enter the IBAN
+ated.bank-details.error-key.iban.empty = Enter an IBAN
 ated.bank-details.error-key.iban.max-len = The IBAN cannot be more than 34 characters
 ated.bank-details.error-key.iban.invalid = The IBAN cannot be more than 34 characters
-ated.bank-details.error-key.bicSwiftCode.empty = You must enter the SWIFT code
+ated.bank-details.error-key.bicSwiftCode.empty = Enter a SWIFT code
 ated.bank-details.error-key.bicSwiftCode.invalid = The SWIFT code must be 8 or 11 characters
 
 ##### EDIT LIABILITY SUMMARY PAGE

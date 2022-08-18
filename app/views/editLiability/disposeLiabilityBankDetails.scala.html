@@ -55,7 +55,10 @@
                 label = Label(
                     content = Text(messages("ated.bank-details.uk-bank-account.number.label"))
                 ),
-                classes = "govuk-!-width-one-third"
+                classes = "govuk-!-width-one-third",
+                hint = Some(Hint(
+                    content = Text(messages("ated.bank-details.account.number.hint"))
+                ))
             ).withFormField(bankDetailsForm("accountNumber")))
         </div>
 
@@ -65,7 +68,10 @@
                 label = Label(
                     content = Text(messages("ated.bank-details.uk-bank-account.sort-code.label"))
                 ),
-                classes = "govuk-!-width-one-third"
+                classes = "govuk-!-width-one-third",
+                hint = Some(Hint(
+                    content = Text(messages("ated.bank-details.sort.code.hint"))
+                ))
             ).withFormField(bankDetailsForm("sortCode")))
         </div>
     </div>
@@ -79,7 +85,9 @@
                 label = Label(
                     content = Text(messages("ated.bank-details.non-uk-bank-account.iban.label"))
                 ),
-                classes = "govuk-!-width-one-third"
+                hint = Some(Hint(
+                    content = Text(messages("ated.bank-details.iban.hint"))
+                ))
             ).withFormField(bankDetailsForm("iban")))
         </div>
 
@@ -89,7 +97,10 @@
                 label = Label(
                     content = Text(messages("ated.bank-details.non-uk-bank-account.bic-swift-code.label"))
                 ),
-                classes = "govuk-!-width-one-third"
+                classes = "govuk-!-width-one-third",
+                hint = Some(Hint(
+                    content = Text(messages("ated.bank-details.swift.hint"))
+                ))
             ).withFormField(bankDetailsForm("bicSwiftCode")))
         </div>
     </div>
@@ -104,37 +115,53 @@
         @govukErrorSummary(ErrorSummary().withFormErrorsAsText(bankDetailsForm))
     }
 
+     <header>
+        <h1 class="govuk-heading-xl govuk-!-margin-bottom-3">
+            <span class="govuk-caption-xl">
+                <span class="govuk-visually-hidden">
+                @messages("ated.screen-reader.section")
+                </span>
+                @messages("ated.property-details.pre-header-dispose")
+            </span>
+            @messages("ated.bank-details.header")
+        </h1>
+    </header>
+
     @formHelper(action = controllers.editLiability.routes.DisposeLiabilityBankDetailsController.save(oldFormBundleNo)) {
 
-        <div class="govuk-form-group" id="hasUKBankAccount-id">
-        @govukRadios(Radios(
-            items = Seq(
-                RadioItem(
-                    content = Text(messages("ated.label.yes")),
-                    value = Some("true"),
-                    conditionalHtml = Some(yesHtml)
-                ),
-                RadioItem(
-                    content = Text(messages("ated.label.no")),
-                    value = Some("false"),
-                    conditionalHtml = Some(noHtml)
-                )
-            )
-        ).withFormField(bankDetailsForm("hasUKBankAccount"))
-                .withHeadingAndSectionCaption(
-            heading = HtmlContent(messages("ated.bank-details.title")),
-            sectionCaption = HtmlContent(messages("ated.property-details.pre-header-change"))
-        ))
-        </div>
 
         <div id="name-of-person" class="govuk-form-group">
-        @govukInput(Input(
-            inputType = "text",
-            label = Label(
-                content = Text(messages("ated.bank-details.uk-bank-account.name.label"))
-            ),
-            autocomplete = Some("name")
-        ).withFormField(bankDetailsForm("accountName")))
+            @govukInput(Input(
+                inputType = "text",
+                label = Label(
+                    content = Text(messages("ated.bank-details.uk-bank-account.name.label")),
+                    classes = "govuk-label--m"
+                ),
+                autocomplete = Some("name")
+            ).withFormField(bankDetailsForm("accountName")))
+        </div>
+
+        <div class="govuk-form-group" id="hasUKBankAccount-id">
+            @govukRadios(Radios(
+                fieldset = Some(Fieldset(
+                    legend = Some(Legend(
+                        content = Text(messages("ated.bank-details.location.label")),
+                        classes = "govuk-fieldset__legend--m",
+                    ))
+                )),
+                items = Seq(
+                    RadioItem(
+                        content = Text(messages("ated.label.yes")),
+                        value = Some("true"),
+                        conditionalHtml = Some(yesHtml)
+                    ),
+                    RadioItem(
+                        content = Text(messages("ated.label.no")),
+                        value = Some("false"),
+                        conditionalHtml = Some(noHtml)
+                    )
+                )
+            ).withFormField(bankDetailsForm("hasUKBankAccount")))
         </div>
 
         @govukButton(Button(
