@@ -8,7 +8,7 @@ object AppDependencies {
 
   val compile: Seq[ModuleID] = Seq(
     ws,
-    "uk.gov.hmrc"       %% "bootstrap-frontend-play-28" % "5.20.0",
+    "uk.gov.hmrc"       %% "bootstrap-frontend-play-28" % "5.25.0",
     "uk.gov.hmrc"       %% "play-ui"                    % "9.10.0-play-28",
     "uk.gov.hmrc"       %% "play-partials"              % "8.3.0-play-28",
     "uk.gov.hmrc"       %% "domain"                     % "8.1.0-play-28",
@@ -25,7 +25,7 @@ object AppDependencies {
   object Test {
     def apply(): Seq[ModuleID] = new TestDependencies {
       override lazy val test: Seq[ModuleID] = Seq(
-        "uk.gov.hmrc"                  %% "bootstrap-test-play-28"      % "5.20.0"            % scope,
+        "uk.gov.hmrc"                  %% "bootstrap-test-play-28"      % "5.25.0"            % scope,
         "org.scalatestplus.play"       %% "scalatestplus-play"          % "5.1.0"             % scope,
         "org.pegdown"                  %  "pegdown"                     % "1.6.0"             % scope,
         "org.jsoup"                    %  "jsoup"                       % "1.15.1"            % scope,
