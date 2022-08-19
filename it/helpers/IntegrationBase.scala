@@ -24,13 +24,9 @@ trait IntegrationBase extends PlaySpec
   with DefaultAwaitTimeout
   with IntegrationConstants {
 
-  val sessionId: String
-  val authToken: String
-  val SessionId: String = sessionId
-  val BearerToken: String = authToken
   val headers = List(
-    HeaderNames.xSessionId -> SessionId,
-    HeaderNames.authorisation -> BearerToken,
+    HeaderNames.xSessionId -> sessionId,
+    HeaderNames.authorisation -> authToken,
     "Csrf-Token" -> "nocheck"
   )
   lazy val client: WSClient = app.injector.instanceOf[WSClient]

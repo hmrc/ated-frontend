@@ -15,12 +15,7 @@ class ReliefDeclarationControllerISpec extends IntegrationBase with AuthAudit wi
       stubKeyStore()
       stubPost(s"/ated/$atedRef/ated/reliefs/submit/$period", 200, relief)
       val controllerUrl = controllers.reliefs.routes.ReliefDeclarationController.submit(period).url
-      //val sessionCookie = getMockCookie
-      val resp: WSResponse = await(client(controllerUrl).withMethod("POST")
-        //.addHttpHeaders(HN.SET_COOKIE -> getSessionCookie())
-        //.addHttpHeaders(HeaderNames.xSessionId -> sessionId)
-        .post("")
-      )
+      val resp: WSResponse = await(client(controllerUrl).withMethod("POST").post(""))
 
       resp.status mustBe 303
       resp.header("Location") mustBe Some("/ated/reliefs/2019/sent-reliefs")
