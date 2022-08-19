@@ -27,7 +27,7 @@ import models._
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-
+import uk.gov.hmrc.play.bootstrap.controller.WithDefaultFormBinding
 import scala.concurrent.ExecutionContext
 
 class EditLiabilityDatesLiableController @Inject()(mcc: MessagesControllerComponents,
@@ -40,7 +40,7 @@ class EditLiabilityDatesLiableController @Inject()(mcc: MessagesControllerCompon
                                                    template: views.html.editLiability.editLiabilityDatesLiable)
                                                   (implicit val appConfig: ApplicationConfig)
 
-  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper {
+  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with WithDefaultFormBinding {
 
   implicit val ec: ExecutionContext = mcc.executionContext
 

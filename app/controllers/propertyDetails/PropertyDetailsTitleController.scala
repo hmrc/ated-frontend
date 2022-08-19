@@ -29,7 +29,7 @@ import services._
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants.SelectedPreviousReturn
 import utils.AtedUtils
-
+import uk.gov.hmrc.play.bootstrap.controller.WithDefaultFormBinding
 import scala.concurrent.{ExecutionContext, Future}
 
 class PropertyDetailsTitleController @Inject()(mcc: MessagesControllerComponents,
@@ -42,7 +42,7 @@ class PropertyDetailsTitleController @Inject()(mcc: MessagesControllerComponents
                                                val backLinkCacheConnector: BackLinkCacheConnector,
                                                template: views.html.propertyDetails.propertyDetailsTitle)
                                               (implicit val appConfig: ApplicationConfig)
-  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with ControllerIds {
+  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with ControllerIds with WithDefaultFormBinding {
 
   implicit val ec: ExecutionContext = mcc.executionContext
   val controllerId: String = propertyDetailsTitleId

@@ -28,7 +28,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-
+import uk.gov.hmrc.play.bootstrap.controller.WithDefaultFormBinding
 import scala.concurrent.{ExecutionContext, Future}
 
 class PeriodDatesLiableController @Inject()(mcc: MessagesControllerComponents,
@@ -40,7 +40,7 @@ class PeriodDatesLiableController @Inject()(mcc: MessagesControllerComponents,
                                             val backLinkCacheConnector: BackLinkCacheConnector,
                                             template: views.html.propertyDetails.periodDatesLiable)
                                            (implicit val appConfig: ApplicationConfig)
-  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with I18nSupport {
+  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with I18nSupport with WithDefaultFormBinding {
 
   implicit val ec: ExecutionContext = mcc.executionContext
   val controllerId: String = "PeriodDatesLiableController"

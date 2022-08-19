@@ -17,10 +17,11 @@ class ReliefDeclarationControllerISpec extends IntegrationBase with AuthAudit wi
       stubGet(s"/ated/$atedRef/ated/reliefs/submit/$period", 200, relief)
 
       val controllerUrl = controllers.reliefs.routes.ReliefDeclarationController.submit(period).url
-
+      val sessionCookie = getCookie()
       val resp: WSResponse = await(client(controllerUrl)
-        .withHttpHeaders(HN.SET_COOKIE -> getSessionCookie())
-        .addHttpHeaders(HeaderNames.xSessionId -> sessionId)
+        .withCookies(encryptedCookie(sessionCookie))
+        .addHttpHeaders(HN.SET_COOKIE -> getSessionCookie())
+        //.addHttpHeaders(HeaderNames.xSessionId -> sessionId)
         .post("")
       )
 

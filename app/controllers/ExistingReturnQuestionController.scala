@@ -27,7 +27,7 @@ import services.ServiceInfoService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants.RetrieveSelectPeriodFormId
 import utils.ReferrerUtils
-import uk.gov.hmrc.play.bootstrap.controller.WithUrlEncodedAndMultipartFormBinding
+import uk.gov.hmrc.play.bootstrap.controller.WithDefaultFormBinding
 import scala.concurrent.{ExecutionContext, Future}
 
 class ExistingReturnQuestionController @Inject()(mcc: MessagesControllerComponents,
@@ -37,7 +37,7 @@ class ExistingReturnQuestionController @Inject()(mcc: MessagesControllerComponen
                                                  template: views.html.confirmPastReturn)
                                                 (implicit val appConfig: ApplicationConfig)
 
-  extends FrontendController(mcc) with ClientHelper with WithUrlEncodedAndMultipartFormBinding {
+  extends FrontendController(mcc) with ClientHelper with WithDefaultFormBinding {
 
   implicit val ec: ExecutionContext = mcc.executionContext
 

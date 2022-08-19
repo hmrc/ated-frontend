@@ -2,7 +2,7 @@ package helpers.stubs
 
 import helpers.IntegrationConstants
 import play.api.Application
-import play.api.mvc.{DefaultCookieHeaderEncoding, DefaultSessionCookieBaker}
+import play.api.mvc.{DefaultCookieHeaderEncoding, DefaultSessionCookieBaker, Cookie}
 import uk.gov.hmrc.auth.core.retrieve.{LegacyCredentials, SimpleRetrieval}
 
 trait GGLoginStub extends IntegrationConstants {
@@ -19,15 +19,16 @@ trait GGLoginStub extends IntegrationConstants {
     Map(
       "sessionId" -> sessionId,
       "userId" -> "/auth/oid/1234567890",
-      "authToken" -> "token",
+      "authToken" -> authToken,
       SimpleRetrieval("authProviderId", LegacyCredentials.reads).toString -> "GGW",
       lastRequestTimestamp -> rollbackTimestamp
     ) ++ additionalData
   }
 
-  def getSessionCookie(additionalData: Map[String, String] = Map(), timeStampRollback: Long = 0): String = {
-    val cookie = signerSession.encodeAsCookie(signerSession.deserialize(cookieData(additionalData, timeStampRollback)))
-    val encodedCookie = cookieHeader.encodeSetCookieHeader(Seq(cookie))
-    encodedCookie
-  }
+  def getCookie(additionalData: Map[String, String] = Map(), timeStampRollback: Long = 0): Cookie =
+    signerSession.encodeAsCookie(signerSession.deserialize(cookieData(additionalData, timeStampRollback)))
+
+  def getSessionCookie(additionalData: Map[String, String] = Map(), timeStampRollback: Long = 0): String =
+    cookieHeader.encodeSetCookieHeader(Seq(getCookie(additionalData, timeStampRollback)))
+
 }

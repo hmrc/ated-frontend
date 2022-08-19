@@ -10,6 +10,7 @@ import play.api.libs.ws.WSResponse
 import uk.gov.hmrc.http.HeaderNames
 
 class PeriodSummaryControllerISpec extends IntegrationBase with AuthAudit with KeyStore {
+  val sessionCookie = getCookie()
 
   "respond with a status of 200" when {
     "viewing the period summary of 2019" in {
@@ -37,8 +38,9 @@ class PeriodSummaryControllerISpec extends IntegrationBase with AuthAudit with K
       val controllerUrl = controllers.routes.PeriodSummaryController.view(period2019).url
 
       val resp: WSResponse = await(client(controllerUrl)
-        .withHttpHeaders(HN.SET_COOKIE -> getSessionCookie())
-        .addHttpHeaders(HeaderNames.xSessionId -> sessionId)
+        .withCookies(encryptedCookie(sessionCookie))
+        .addHttpHeaders(HN.SET_COOKIE -> getSessionCookie())
+        //.addHttpHeaders(HeaderNames.xSessionId -> sessionId)
         .get
       )
 
@@ -73,8 +75,9 @@ class PeriodSummaryControllerISpec extends IntegrationBase with AuthAudit with K
       val controllerUrl = controllers.routes.PeriodSummaryController.view(period2020).url
 
       val resp: WSResponse = await(client(controllerUrl)
-        .withHttpHeaders(HN.SET_COOKIE -> getSessionCookie())
-        .addHttpHeaders(HeaderNames.xSessionId -> sessionId)
+        .withCookies(encryptedCookie(sessionCookie))
+        .addHttpHeaders(HN.SET_COOKIE -> getSessionCookie())
+        //.addHttpHeaders(HeaderNames.xSessionId -> sessionId)
         .get
       )
 
@@ -109,8 +112,9 @@ class PeriodSummaryControllerISpec extends IntegrationBase with AuthAudit with K
       val controllerUrl = controllers.routes.PeriodSummaryController.view(period2020).url
 
       val resp: WSResponse = await(client(controllerUrl)
-        .withHttpHeaders(HN.SET_COOKIE -> getSessionCookie())
-        .addHttpHeaders(HeaderNames.xSessionId -> sessionId)
+        .withCookies(encryptedCookie(sessionCookie))
+        .addHttpHeaders(HN.SET_COOKIE -> getSessionCookie())
+        //.addHttpHeaders(HeaderNames.xSessionId -> sessionId)
         .get
       )
 
