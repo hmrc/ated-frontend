@@ -3,9 +3,8 @@ package controllers.reliefs
 
 import helpers.IntegrationBase
 import helpers.stubs.{AuthAudit, KeyStore}
-import play.api.http.{HeaderNames => HN}
+//import play.api.http.{HeaderNames => HN}
 import play.api.libs.ws.WSResponse
-import uk.gov.hmrc.http.HeaderNames
 
 class ReliefDeclarationControllerISpec extends IntegrationBase with AuthAudit with KeyStore {
 
@@ -14,13 +13,11 @@ class ReliefDeclarationControllerISpec extends IntegrationBase with AuthAudit wi
 
       stubAuthAudit()
       stubKeyStore()
-      stubGet(s"/ated/$atedRef/ated/reliefs/submit/$period", 200, relief)
-
+      stubPost(s"/ated/$atedRef/ated/reliefs/submit/$period", 200, relief)
       val controllerUrl = controllers.reliefs.routes.ReliefDeclarationController.submit(period).url
-      val sessionCookie = getCookie()
-      val resp: WSResponse = await(client(controllerUrl)
-        .withCookies(encryptedCookie(sessionCookie))
-        .addHttpHeaders(HN.SET_COOKIE -> getSessionCookie())
+      //val sessionCookie = getMockCookie
+      val resp: WSResponse = await(client(controllerUrl).withMethod("POST")
+        //.addHttpHeaders(HN.SET_COOKIE -> getSessionCookie())
         //.addHttpHeaders(HeaderNames.xSessionId -> sessionId)
         .post("")
       )

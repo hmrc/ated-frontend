@@ -12,12 +12,7 @@ import play.api.libs.ws.WSRequest
 import play.api.test.{DefaultAwaitTimeout, FutureAwaits}
 import uk.gov.hmrc.http.HeaderNames
 import play.api.libs.ws.WSClient
-import play.api.libs.ws.{WSRequest, DefaultWSCookie, WSCookie}
-import uk.gov.hmrc.play.bootstrap.frontend.filters.crypto.SessionCookieCrypto
-import play.api.mvc.{Session, SessionCookieBaker}
-import uk.gov.hmrc.http.SessionKeys
-import uk.gov.hmrc.crypto.PlainText
-import play.api.mvc.Cookie
+import play.api.http.{HeaderNames => HN}
 
 trait IntegrationBase extends PlaySpec
   with BeforeAndAfterEach
@@ -39,32 +34,11 @@ trait IntegrationBase extends PlaySpec
     "Csrf-Token" -> "nocheck"
   )
   lazy val client: WSClient = app.injector.instanceOf[WSClient]
-  lazy val cookieCrypto: SessionCookieCrypto = app.injector.instanceOf[SessionCookieCrypto]
-  lazy val cookieBaker: SessionCookieBaker = app.injector.instanceOf[SessionCookieBaker]
-
-  // def mockSessionCookie: WSCookie = {
-  //   val sessionCookie = cookieBaker.encodeAsCookie(Session(Map(
-  //     SessionKeys.lastRequestTimestamp -> System.currentTimeMillis().toString,
-  //     SessionKeys.authToken -> BearerToken,
-  //     SessionKeys.sessionId -> SessionId
-  //   )))
-
-  //   encryptedCookie(sessionCookie)
-  // }
-
-  def encryptedCookie(sessionCookie: Cookie): WSCookie =
-    DefaultWSCookie(
-      sessionCookie.name,
-      cookieCrypto.crypto.encrypt(PlainText(sessionCookie.value)).value,
-      sessionCookie.domain,
-      Some(sessionCookie.path),
-      sessionCookie.maxAge.map(_.toLong),
-      sessionCookie.secure,
-      sessionCookie.httpOnly
-    )
 
   def client(path: String): WSRequest = ws.url(s"http://localhost:$port$path")
+    .withCookies(encryptedSessionCookie())
     .withHttpHeaders(headers:_*)
+    .addHttpHeaders(HN.SET_COOKIE -> getCookieAsHeader)
     .withFollowRedirects(false)
 
   override def beforeAll(): Unit = {
