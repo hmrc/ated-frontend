@@ -13,7 +13,7 @@ class ReliefDeclarationControllerISpec extends IntegrationBase with AuthAudit wi
 
       stubAuthAudit()
       stubKeyStore()
-      stubPost(s"/ated/$atedRef/ated/reliefs/submit/$period", 200, relief)
+      stubGet(s"/ated/$atedRef/ated/reliefs/submit/$period", 200, relief)
       val controllerUrl = controllers.reliefs.routes.ReliefDeclarationController.submit(period).url
       val resp: WSResponse = await(client(controllerUrl).withMethod("POST").post(""))
 

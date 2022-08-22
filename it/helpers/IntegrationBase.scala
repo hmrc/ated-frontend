@@ -31,11 +31,14 @@ trait IntegrationBase extends PlaySpec
   )
   lazy val client: WSClient = app.injector.instanceOf[WSClient]
 
-  def client(path: String): WSRequest = ws.url(s"http://localhost:$port$path")
-    .withCookies(encryptedSessionCookie())
-    .withHttpHeaders(headers:_*)
-    .addHttpHeaders(HN.SET_COOKIE -> getCookieAsHeader)
-    .withFollowRedirects(false)
+  def client(path: String): WSRequest =  {
+    val sessionCookie = getSessionCookie
+    ws.url(s"http://localhost:$port$path")
+      .withCookies(encryptedSessionCookie(sessionCookie))
+      .withHttpHeaders(headers:_*)
+      .addHttpHeaders(HN.SET_COOKIE -> getCookieHeader(sessionCookie))
+      .withFollowRedirects(false)
+  }
 
   override def beforeAll(): Unit = {
     super.beforeAll()
