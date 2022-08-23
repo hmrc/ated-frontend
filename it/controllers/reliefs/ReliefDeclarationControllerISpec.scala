@@ -3,7 +3,6 @@ package controllers.reliefs
 
 import helpers.IntegrationBase
 import helpers.stubs.{AuthAudit, KeyStore}
-//import play.api.http.{HeaderNames => HN}
 import play.api.libs.ws.WSResponse
 
 class ReliefDeclarationControllerISpec extends IntegrationBase with AuthAudit with KeyStore {
