@@ -54,6 +54,7 @@ trait IntegrationApplication extends GuiceOneServerPerSuite with WireMockConfig 
       "metrics.durationUnit"                                -> "SECONDS",
       "metrics.showSamples"                                 -> true,
       "metrics.jvm"                                         -> false,
-      "metrics.enabled"                                     -> true
+      "metrics.enabled"                                     -> true,
+      "play.filters.csrf.header.bypassHeaders.Csrf-Token" -> "nocheck"
     )).build()
 }

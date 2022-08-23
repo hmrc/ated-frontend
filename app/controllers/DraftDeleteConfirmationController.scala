@@ -24,7 +24,7 @@ import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{PropertyDetailsService, ReliefsService, ServiceInfoService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-
+import uk.gov.hmrc.play.bootstrap.controller.WithDefaultFormBinding
 import scala.concurrent.{ExecutionContext, Future}
 
 class DraftDeleteConfirmationController @Inject()(mcc: MessagesControllerComponents,
@@ -36,7 +36,7 @@ class DraftDeleteConfirmationController @Inject()(mcc: MessagesControllerCompone
                                                   template: views.html.confirmDeleteDraft)
                                                  (implicit val appConfig: ApplicationConfig)
 
-  extends FrontendController(mcc) with ClientHelper {
+  extends FrontendController(mcc) with ClientHelper with WithDefaultFormBinding {
 
   implicit val ec: ExecutionContext = mcc.executionContext
 
