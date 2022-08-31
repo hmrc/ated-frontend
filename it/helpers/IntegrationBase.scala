@@ -10,6 +10,9 @@ import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach}
 import org.scalatestplus.play.PlaySpec
 import play.api.libs.ws.WSRequest
 import play.api.test.{DefaultAwaitTimeout, FutureAwaits}
+import uk.gov.hmrc.http.HeaderNames
+import play.api.libs.ws.WSClient
+import play.api.http.{HeaderNames => HN}
 
 trait IntegrationBase extends PlaySpec
   with BeforeAndAfterEach
@@ -21,8 +24,21 @@ trait IntegrationBase extends PlaySpec
   with DefaultAwaitTimeout
   with IntegrationConstants {
 
-  def client(path: String): WSRequest = ws.url(s"http://localhost:$port$path")
-    .withFollowRedirects(false)
+  val headers = List(
+    HeaderNames.xSessionId -> sessionId,
+    HeaderNames.authorisation -> authToken,
+    "Csrf-Token" -> "nocheck"
+  )
+  lazy val client: WSClient = app.injector.instanceOf[WSClient]
+
+  def client(path: String): WSRequest =  {
+    val sessionCookie = getSessionCookie
+    ws.url(s"http://localhost:$port$path")
+      .withCookies(encryptedSessionCookie(sessionCookie))
+      .withHttpHeaders(headers:_*)
+      .addHttpHeaders(HN.SET_COOKIE -> getCookieHeader(sessionCookie))
+      .withFollowRedirects(false)
+  }
 
   override def beforeAll(): Unit = {
     super.beforeAll()

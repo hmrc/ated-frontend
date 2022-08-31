@@ -32,7 +32,7 @@ import uk.gov.hmrc.play.audit.DefaultAuditConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants._
 import utils.AtedUtils
-
+import uk.gov.hmrc.play.bootstrap.controller.WithDefaultFormBinding
 import scala.concurrent.{ExecutionContext, Future}
 
 class PropertyDetailsAddressController @Inject()(mcc: MessagesControllerComponents,
@@ -46,7 +46,7 @@ class PropertyDetailsAddressController @Inject()(mcc: MessagesControllerComponen
                                                  template: views.html.propertyDetails.propertyDetailsAddress)
                                                 (implicit val appConfig: ApplicationConfig)
 
-  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with Auditable with ControllerIds {
+  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with Auditable with ControllerIds with WithDefaultFormBinding {
 
   implicit val ec: ExecutionContext = mcc.executionContext
 

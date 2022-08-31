@@ -2,32 +2,44 @@ package helpers.stubs
 
 import helpers.IntegrationConstants
 import play.api.Application
-import play.api.mvc.{DefaultCookieHeaderEncoding, DefaultSessionCookieBaker}
+import play.api.mvc.{Session, DefaultCookieHeaderEncoding, SessionCookieBaker, Cookie}
 import uk.gov.hmrc.auth.core.retrieve.{LegacyCredentials, SimpleRetrieval}
+import play.api.mvc.{Session, SessionCookieBaker}
+import uk.gov.hmrc.http.SessionKeys
+import uk.gov.hmrc.play.bootstrap.frontend.filters.crypto.SessionCookieCrypto
+import play.api.libs.ws.{DefaultWSCookie, WSCookie}
+import uk.gov.hmrc.crypto.PlainText
+
 
 trait GGLoginStub extends IntegrationConstants {
 
   val app: Application
-  lazy val signerSession: DefaultSessionCookieBaker = app.injector.instanceOf[DefaultSessionCookieBaker]
+  lazy val signerSession: SessionCookieBaker = app.injector.instanceOf[SessionCookieBaker]
   lazy val cookieHeader: DefaultCookieHeaderEncoding = app.injector.instanceOf[DefaultCookieHeaderEncoding]
+  lazy val cookieCrypto: SessionCookieCrypto = app.injector.instanceOf[SessionCookieCrypto]
+  lazy val cookieData = Map(
+    SessionKeys.lastRequestTimestamp -> System.currentTimeMillis().toString,
+    "userId" -> "/auth/oid/1234567890",
+    SimpleRetrieval("authProviderId", LegacyCredentials.reads).toString -> "GGW",
+    SessionKeys.authToken -> authToken,
+    SessionKeys.sessionId -> sessionId
+  )
 
-  private def cookieData(additionalData: Map[String, String], timeStampRollback: Long): Map[String, String] = {
-    val timeStamp = new java.util.Date().getTime
-    val rollbackTimestamp = (timeStamp - timeStampRollback).toString
-    val lastRequestTimestamp = "ts"
+  def encryptedSessionCookie(cookie: Cookie = getSessionCookie): WSCookie =
+    encryptedCookie(getSessionCookie)
 
-    Map(
-      "sessionId" -> sessionId,
-      "userId" -> "/auth/oid/1234567890",
-      "authToken" -> "token",
-      SimpleRetrieval("authProviderId", LegacyCredentials.reads).toString -> "GGW",
-      lastRequestTimestamp -> rollbackTimestamp
-    ) ++ additionalData
-  }
+  def getSessionCookie: Cookie = signerSession.encodeAsCookie(Session(cookieData))
+  def getCookieHeader(sessionCookie: Cookie): String = cookieHeader.encodeSetCookieHeader(Seq(getSessionCookie))
 
-  def getSessionCookie(additionalData: Map[String, String] = Map(), timeStampRollback: Long = 0): String = {
-    val cookie = signerSession.encodeAsCookie(signerSession.deserialize(cookieData(additionalData, timeStampRollback)))
-    val encodedCookie = cookieHeader.encodeSetCookieHeader(Seq(cookie))
-    encodedCookie
-  }
+  private def encryptedCookie(sessionCookie: Cookie): WSCookie =
+    DefaultWSCookie(
+      sessionCookie.name,
+      cookieCrypto.crypto.encrypt(PlainText(sessionCookie.value)).value,
+      sessionCookie.domain,
+      Some(sessionCookie.path),
+      sessionCookie.maxAge.map(_.toLong),
+      sessionCookie.secure,
+      sessionCookie.httpOnly
+    )
+
 }

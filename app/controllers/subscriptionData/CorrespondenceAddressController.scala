@@ -26,7 +26,7 @@ import play.api.{Environment, Logging}
 import services.{ServiceInfoService, SubscriptionDataService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{AtedUtils, CountryCodeUtils}
-
+import uk.gov.hmrc.play.bootstrap.controller.WithDefaultFormBinding
 import scala.concurrent.{ExecutionContext, Future}
 
 class CorrespondenceAddressController @Inject()(mcc: MessagesControllerComponents,
@@ -37,7 +37,7 @@ class CorrespondenceAddressController @Inject()(mcc: MessagesControllerComponent
                                                 template: views.html.subcriptionData.correspondenceAddress,
                                                 templateError: views.html.global_error)
                                                (implicit val appConfig: ApplicationConfig)
-  extends FrontendController(mcc) with CountryCodeUtils with Logging {
+  extends FrontendController(mcc) with CountryCodeUtils with WithDefaultFormBinding with Logging {
 
   implicit val ec: ExecutionContext = mcc.executionContext
 

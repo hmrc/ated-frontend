@@ -5,12 +5,9 @@ import config.ApplicationConfig
 import config.featureswitch.FeatureSwitch
 import helpers.IntegrationBase
 import helpers.stubs.{AuthAudit, KeyStore}
-import play.api.http.{HeaderNames => HN}
 import play.api.libs.ws.WSResponse
-import uk.gov.hmrc.http.HeaderNames
 
 class PeriodSummaryControllerISpec extends IntegrationBase with AuthAudit with KeyStore {
-
   "respond with a status of 200" when {
     "viewing the period summary of 2019" in {
       val period2019 = 2019
@@ -36,11 +33,7 @@ class PeriodSummaryControllerISpec extends IntegrationBase with AuthAudit with K
 
       val controllerUrl = controllers.routes.PeriodSummaryController.view(period2019).url
 
-      val resp: WSResponse = await(client(controllerUrl)
-        .withHttpHeaders(HN.SET_COOKIE -> getSessionCookie())
-        .addHttpHeaders(HeaderNames.xSessionId -> sessionId)
-        .get
-      )
+      val resp: WSResponse = await(client(controllerUrl).get)
 
       resp.status mustBe 200
       resp.body.contains("Social housing") mustBe true
@@ -72,11 +65,7 @@ class PeriodSummaryControllerISpec extends IntegrationBase with AuthAudit with K
 
       val controllerUrl = controllers.routes.PeriodSummaryController.view(period2020).url
 
-      val resp: WSResponse = await(client(controllerUrl)
-        .withHttpHeaders(HN.SET_COOKIE -> getSessionCookie())
-        .addHttpHeaders(HeaderNames.xSessionId -> sessionId)
-        .get
-      )
+      val resp: WSResponse = await(client(controllerUrl).get)
 
       resp.status mustBe 200
       resp.body.contains("Social housing") mustBe true
@@ -108,11 +97,7 @@ class PeriodSummaryControllerISpec extends IntegrationBase with AuthAudit with K
 
       val controllerUrl = controllers.routes.PeriodSummaryController.view(period2020).url
 
-      val resp: WSResponse = await(client(controllerUrl)
-        .withHttpHeaders(HN.SET_COOKIE -> getSessionCookie())
-        .addHttpHeaders(HeaderNames.xSessionId -> sessionId)
-        .get
-      )
+      val resp: WSResponse = await(client(controllerUrl).get)
 
       resp.status mustBe 200
       resp.body.contains("Social housing") mustBe false

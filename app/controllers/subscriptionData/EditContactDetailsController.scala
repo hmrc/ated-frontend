@@ -25,7 +25,7 @@ import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{ServiceInfoService, SubscriptionDataService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-
+import uk.gov.hmrc.play.bootstrap.controller.WithDefaultFormBinding
 import scala.concurrent.{ExecutionContext, Future}
 
 class EditContactDetailsController @Inject()(mcc: MessagesControllerComponents,
@@ -35,7 +35,7 @@ class EditContactDetailsController @Inject()(mcc: MessagesControllerComponents,
                                              template: views.html.subcriptionData.editContactDetails)
                                             (implicit val appConfig: ApplicationConfig)
 
-  extends FrontendController(mcc) {
+  extends FrontendController(mcc) with WithDefaultFormBinding {
 
 implicit val ec: ExecutionContext = mcc.executionContext
 

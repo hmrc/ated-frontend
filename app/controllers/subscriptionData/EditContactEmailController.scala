@@ -23,7 +23,7 @@ import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{ServiceInfoService, SubscriptionDataService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-
+import uk.gov.hmrc.play.bootstrap.controller.WithDefaultFormBinding
 import scala.concurrent.{ExecutionContext, Future}
 
 class EditContactEmailController @Inject()(mcc: MessagesControllerComponents,
@@ -33,7 +33,7 @@ class EditContactEmailController @Inject()(mcc: MessagesControllerComponents,
                                            template: views.html.subcriptionData.editContactEmail)
                                           (implicit val appConfig: ApplicationConfig)
 
-  extends FrontendController(mcc) {
+  extends FrontendController(mcc) with WithDefaultFormBinding {
 
   implicit val ec: ExecutionContext = mcc.executionContext
 

@@ -7,6 +7,8 @@ trait IntegrationConstants {
 
   val sessionId = s"stubbed-${UUID.randomUUID}"
 
+  val authToken = "token"
+
   val period = 2019
 
   val atedRef = "XN1200000100001"

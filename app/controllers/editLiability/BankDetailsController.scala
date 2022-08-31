@@ -22,7 +22,6 @@ import controllers.auth.{AuthAction, ClientHelper}
 import controllers.{BackLinkController, ControllerIds}
 import forms.BankDetailForms
 import forms.BankDetailForms.bankDetailsForm
-
 import javax.inject.Inject
 import models.BankDetails
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -30,6 +29,7 @@ import services.{ChangeLiabilityReturnService, ServiceInfoService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedUtils.sanitiseBankDetails
 
+import uk.gov.hmrc.play.bootstrap.controller.WithDefaultFormBinding
 import scala.concurrent.{ExecutionContext, Future}
 
 class BankDetailsController @Inject()(mcc: MessagesControllerComponents,
@@ -40,7 +40,7 @@ class BankDetailsController @Inject()(mcc: MessagesControllerComponents,
                                       val backLinkCacheConnector: BackLinkCacheConnector,
                                       template: views.html.editLiability.bankDetails)
                                      (implicit val appConfig: ApplicationConfig)
-  extends FrontendController(mcc) with BackLinkController with ClientHelper with ControllerIds {
+  extends FrontendController(mcc) with BackLinkController with ClientHelper with ControllerIds with WithDefaultFormBinding {
 
   implicit val ec: ExecutionContext = mcc.executionContext
 
