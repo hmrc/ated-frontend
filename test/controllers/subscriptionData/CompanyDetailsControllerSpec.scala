@@ -180,7 +180,7 @@ class Setup {
             document.title() must be(TitleBuilder.buildTitle("Your ATED details"))
             document.select("div.hmrc-user-research-banner") must not be null
             document.select("div.hmrc-user-research-banner").text() must include("Help improve HMRC services")
-            document.getElementsByClass("hmrc-user-research-banner__close").text() must be("No thanks")
+            document.getElementsByClass("hmrc-user-research-banner__close").text() must include("No thanks, I do not want to take part in user research, hide this message")
         }
       }
 

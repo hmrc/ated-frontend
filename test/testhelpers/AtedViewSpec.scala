@@ -61,7 +61,7 @@ trait AtedViewSpec extends PlaySpec with JsoupArgumentMatchers with GuiceOneServ
     }
   }
 
-  def pageWithElementAndText(element: String, value: String): Unit = { //TODO refactor to be nicer
+  def pageWithElementAndText(element: String, value: String): Unit = {
     s"have a id named $element with value $value" in {
       doc must haveElementWithIdAndText(value, element)
     }

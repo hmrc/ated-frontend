@@ -221,7 +221,7 @@ class AccountSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
             document.getElementsByClass("hmrc-user-research-banner__link")
               .text() must be("Sign up to take part in user research (opens in new tab)")
             document.getElementsByClass("hmrc-user-research-banner__close")
-              .text() must be("No thanks")
+              .text() must include("No thanks, I do not want to take part in user research, hide this message")
         }
       }
 

@@ -96,7 +96,6 @@ object BankDetailForms {
     "iban" -> optional(of[Iban])
   )(BankDetails.apply)(BankDetails.unapply))
 
-  //scalastyle:off cyclomatic.complexity
   def validateBankDetails(bankDetails: Form[BankDetails]): Form[BankDetails] = {
     val hasUKBankAccount = bankDetails.data.get("hasUKBankAccount").map(_.toBoolean)
 
@@ -107,15 +106,6 @@ object BankDetailForms {
         case _ => Seq(Some(FormError("hasUKBankAccount", "ated.bank-details.error-key.hasUKBankAccount.empty")))
       }
     }
-
-//    def validateAccountName: Seq[Option[FormError]] = {
-//      val accountName = bankDetails.data.get("accountName").map(_.trim)
-//      if (accountName.getOrElse("").isEmpty) Seq(Some(FormError("accountName", "ated.bank-details.error-key.accountName.empty")))
-//      else if (accountName.nonEmpty && accountName.getOrElse("").length > 60) {
-//        Seq(Some(FormError("accountName", "ated.bank-details.error-key.accountName.max-len")))
-//      }
-//      else Seq()
-//    }
 
     def validateAccountNumber: Seq[Option[FormError]] = {
       val accountNumber = bankDetails.data.get("accountNumber").map(_.trim)
@@ -157,9 +147,7 @@ object BankDetailForms {
       else Seq()
     }
 
-
     addErrorsToForm(bankDetails, validate.flatten)
-
   }
 
   private def addErrorsToForm[A](form: Form[A], formErrors: Seq[FormError]): Form[A] = {
