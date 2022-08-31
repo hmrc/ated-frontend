@@ -26,7 +26,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{ServiceInfoService, SubscriptionDataService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.CountryCodeUtils
-
+import uk.gov.hmrc.play.bootstrap.controller.WithDefaultFormBinding
 import scala.concurrent.{ExecutionContext, Future}
 
 class RegisteredDetailsController @Inject()(mcc: MessagesControllerComponents,
@@ -36,7 +36,7 @@ class RegisteredDetailsController @Inject()(mcc: MessagesControllerComponents,
                                             val environment: Environment,
                                             template: views.html.subcriptionData.registeredDetails)
                                            (implicit val appConfig: ApplicationConfig)
-  extends FrontendController(mcc) with CountryCodeUtils {
+  extends FrontendController(mcc) with CountryCodeUtils with WithDefaultFormBinding {
 
   implicit val ec : ExecutionContext = mcc.executionContext
 

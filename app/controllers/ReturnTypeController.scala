@@ -26,7 +26,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{ServiceInfoService, SummaryReturnsService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants._
-
+import uk.gov.hmrc.play.bootstrap.controller.WithDefaultFormBinding
 import scala.concurrent.{ExecutionContext, Future}
 
 class ReturnTypeController @Inject()(mcc: MessagesControllerComponents,
@@ -38,7 +38,7 @@ class ReturnTypeController @Inject()(mcc: MessagesControllerComponents,
                                      template: views.html.returnType)
                                     (implicit val appConfig: ApplicationConfig)
 
-  extends FrontendController(mcc) with BackLinkController with ClientHelper with ControllerIds {
+  extends FrontendController(mcc) with BackLinkController with ClientHelper with ControllerIds with WithDefaultFormBinding {
 
   val controllerId: String = "ReturnTypeController"
   implicit val ec: ExecutionContext = mcc.executionContext

@@ -94,7 +94,8 @@ class AuthAction @Inject()(appConfig: ApplicationConfig,
         }
       case _ => throw new RuntimeException("Authorisation exception")
     } recover {
-      case e: AuthorisationException => handleException(e)
+      case e: AuthorisationException =>
+        handleException(e)
     }
   }
 

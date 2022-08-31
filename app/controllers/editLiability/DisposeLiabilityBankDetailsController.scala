@@ -27,7 +27,7 @@ import models.BankDetails
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{DisposeLiabilityReturnService, ServiceInfoService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-
+import uk.gov.hmrc.play.bootstrap.controller.WithDefaultFormBinding
 import scala.concurrent.{ExecutionContext, Future}
 
 class DisposeLiabilityBankDetailsController @Inject()(mcc: MessagesControllerComponents,
@@ -39,7 +39,7 @@ class DisposeLiabilityBankDetailsController @Inject()(mcc: MessagesControllerCom
                                                       val backLinkCacheConnector: BackLinkCacheConnector,
                                                       template: views.html.editLiability.disposeLiabilityBankDetails)
                                                      (implicit val appConfig: ApplicationConfig)
-  extends FrontendController(mcc) with ClientHelper with BackLinkController {
+  extends FrontendController(mcc) with ClientHelper with BackLinkController with WithDefaultFormBinding {
 
   implicit val ec: ExecutionContext = mcc.executionContext
 

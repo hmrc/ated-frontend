@@ -28,7 +28,7 @@ import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService, Se
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants.SelectedPreviousReturn
 import utils.AtedUtils
-
+import uk.gov.hmrc.play.bootstrap.controller.WithDefaultFormBinding
 import scala.concurrent.ExecutionContext
 
 class PropertyDetailsInReliefController @Inject()(mcc: MessagesControllerComponents,
@@ -43,7 +43,7 @@ class PropertyDetailsInReliefController @Inject()(mcc: MessagesControllerCompone
                                                   template: views.html.propertyDetails.propertyDetailsInRelief)
                                                  (implicit val appConfig: ApplicationConfig)
 
-  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper {
+  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with WithDefaultFormBinding {
 
   implicit val ec: ExecutionContext = mcc.executionContext
   override val controllerId: String = "PropertyDetailsInReliefController"

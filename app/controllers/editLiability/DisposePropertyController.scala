@@ -26,7 +26,7 @@ import models.DisposeLiability
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{DisposeLiabilityReturnService, ServiceInfoService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-
+import uk.gov.hmrc.play.bootstrap.controller.WithDefaultFormBinding
 import scala.concurrent.{ExecutionContext, Future}
 
 class DisposePropertyController @Inject()(mcc: MessagesControllerComponents,
@@ -38,7 +38,7 @@ class DisposePropertyController @Inject()(mcc: MessagesControllerComponents,
                                           val backLinkCacheConnector: BackLinkCacheConnector,
                                           template: views.html.editLiability.dataOfDisposal)
                                          (implicit val appConfig: ApplicationConfig)
-  extends FrontendController(mcc) with BackLinkController with ClientHelper {
+  extends FrontendController(mcc) with BackLinkController with ClientHelper with WithDefaultFormBinding {
 
   implicit val ec: ExecutionContext = mcc.executionContext
 
