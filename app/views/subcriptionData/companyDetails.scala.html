@@ -99,7 +99,8 @@
       value = Value(content = Text(registrationDetails.map(_.name).getOrElse(""))),
       classes = "govuk-summary-list__row--no-actions"))
 
-    val atedRefRow = Some(SummaryListRow(key = Key(content = Text(messages("ated.company-details.ated-reference-number"))),
+    val atedRefRow = Some(SummaryListRow(
+      key = Key(content = Text(messages("ated.company-details.ated-reference-number"))),
       value = Value(content = Text(authContext.atedReferenceNumber)),
       classes = "govuk-summary-list__row--no-actions"))
 
@@ -125,8 +126,18 @@
             <div id="reg_number">${details.idNumber}</div>
             <div id="reg_country">${appConfig.getSelectedCountry(details.issuingCountryCode)}</div>
             <div id="reg_issuer">${details.issuingInstitution}</div>
-            </div>""")),
-          classes = "govuk-summary-list__row--no-actions")
+            </div>"""
+          )),
+          actions = registrationDetails match {
+            case Some(rd) if rd.isEditable => Some(Actions(
+              items = Seq(ActionItem(
+                href = controllers.subscriptionData.routes.OverseasCompanyRegistrationController.edit.url,
+                content = Text(messages("ated.change")),
+                visuallyHiddenText = Some(messages("ated.company-details.overseas_reg_number")),
+                attributes = Map("id" -> "registered-edit-os")))))
+            case _ => None
+          }
+        )
     }
 
     val correspondenceAddressRow = Some(SummaryListRow(

@@ -94,12 +94,11 @@
             <p class="govuk-body" id="editLiability-text">
                 @messages("ated.edit-liability.return-type.no-edit-legend")
                 <a class="govuk-link" href="https://www.gov.uk/government/organisations/hm-revenue-customs/contact/annual-tax-on-enveloped-dwellings-ated" rel="noreferrer noopener" target="_blank">@messages("ated.edit-liability.return-type.no-edit-legend2")</a>.
-            </p>
-
-            <p class="govuk-body">
-                <input type="hidden" name="editLiabilityType" value="DP">
                 @messages("ated.edit-liability.return-type.no-edit-legend3")
             </p>
+
+            <input type="hidden" name="editLiabilityType" value="DP">
+
 
             @govukButton(Button(
                 content = Text(messages("ated.edit-liability.return-type.no-edit-legend4")),

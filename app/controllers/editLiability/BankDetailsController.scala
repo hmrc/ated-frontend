@@ -22,11 +22,13 @@ import controllers.auth.{AuthAction, ClientHelper}
 import controllers.{BackLinkController, ControllerIds}
 import forms.BankDetailForms
 import forms.BankDetailForms.bankDetailsForm
+
 import javax.inject.Inject
 import models.BankDetails
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{ChangeLiabilityReturnService, ServiceInfoService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
+import utils.AtedUtils.sanitiseBankDetails
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -69,7 +71,7 @@ class BankDetailsController @Inject()(mcc: MessagesControllerComponents,
             formWithErrors =>
               currentBackLink.map(backLink => BadRequest(template(formWithErrors, oldFormBundleNo, serviceInfoContent, backLink))),
             bankData => {
-              changeLiabilityReturnService.cacheChangeLiabilityReturnBank(oldFormBundleNo, bankData) flatMap { _ => {
+              changeLiabilityReturnService.cacheChangeLiabilityReturnBank(oldFormBundleNo, sanitiseBankDetails(bankData)) flatMap { _ => {
                 redirectWithBackLink(
                   editLiabilitySummaryId,
                   controllers.editLiability.routes.EditLiabilitySummaryController.viewSummary(oldFormBundleNo),

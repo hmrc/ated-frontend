@@ -60,11 +60,11 @@ class disposeLiabilityBankDetailsSpec extends AnyFeatureSpec with GuiceOneAppPer
       val document = Jsoup.parse(html.toString())
 
       Then("The header should match - Is the bank account in the UK?")
-      assert(document.title() === "Is the bank account in the UK? - GOV.UK")
-      assert(document.select("h1").text.contains("Is the bank account in the UK?"))
+      assert(document.title() === "Enter your bank account details - GOV.UK")
+      assert(document.select("h1").text.contains("Enter your bank account details"))
 
       Then("The subheader should be - Change return")
-      assert(document.select("h1").text.contains("This section is Change return"))
+      assert(document.getElementsByClass("govuk-caption-xl").text.contains("This section is: Change return"))
 
       Then("The fields should have the correct titles")
       And("No data is populated")
@@ -74,13 +74,16 @@ class disposeLiabilityBankDetailsSpec extends AnyFeatureSpec with GuiceOneAppPer
       assert(document.getElementsByAttributeValue("for", "hasUKBankAccount-2").text() contains "No")
       assert(document.getElementById("name-of-person").text() === "Name of bank account holder")
 
-      assert(document.getElementById("hidden-bank-details-uk").text() === "Account number Sort code")
-      assert(document.getElementById("account-number").text() === "Account number")
-      assert(document.getElementById("sort-code").text() === "Sort code")
+      assert(document.getElementsByAttributeValue("for","accountNumber").text() === "Account number")
+      assert(document.getElementById("accountNumber-hint").text() === "Must be between 6 and 8 digits long")
+      assert(document.getElementsByAttributeValue("for" ,"sortCode").text() === "Sort code")
+      assert(document.getElementById("sortCode-hint").text() === "Must be 6 digits long")
+      assert(document.getElementById("accountNumber").attr("type") === "number")
 
-      assert(document.getElementById("hidden-bank-details-non-uk").text() === "IBAN SWIFT code")
-      assert(document.getElementById("iban-code").text() === "IBAN")
-      assert(document.getElementById("bic-swift-code").text() === "SWIFT code")
+      assert(document.getElementsByAttributeValue("for","iban").text() === "IBAN")
+      assert(document.getElementById("iban-hint").text() === "You can ask your bank or check your bank statement")
+      assert(document.getElementsByAttributeValue("for","bicSwiftCode").text() === "SWIFT code")
+      assert(document.getElementById("bicSwiftCode-hint").text() === "Must be between 8 and 11 characters long. You can ask your bank or check your bank statement")
 
       Then("The submit button should have the correct name")
       assert(document.getElementById("submit").text() === "Save and continue")

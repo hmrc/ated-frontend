@@ -92,11 +92,11 @@ Feature("The user can view an edit liability type page") {
       assert(document.getElementsByTag("h1").text.contains("Your return cannot be changed online"))
 
       assert(document.getElementById("editLiability-text")
-        .text() === "Your original return is too complex to edit online. To make any changes contact the ATED helpline (opens in new tab).")
+        .text() === "To make any changes contact the ATED helpline (opens in new tab). You can still report the disposal of the property online.")
 
       assert(document.getElementById("editLiabilityType-dp") === null)
 
-      assert(document.getElementById("reportDisposeLink").text() === "Report the disposal of the property")
+      assert(document.getElementById("reportDisposeLink").text() === "Dispose of the property")
 
       Then("The back link is correct")
       assert(document.getElementsByClass("govuk-back-link").text === "Back")

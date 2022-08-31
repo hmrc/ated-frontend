@@ -127,8 +127,8 @@ class BankDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite wit
           result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be(TitleBuilder.buildTitle("Is the bank account in the UK?"))
-            document.getElementsByTag("h1").text() must include("This section is Change return")
+            document.title() must be(TitleBuilder.buildTitle("Enter your bank account details"))
+            document.getElementsByClass("govuk-caption-xl").text() must include("This section is: Change return")
             assert(document.getElementById("service-info-list").text() === "Home Manage account Messages Help and contact")
             document.getElementsByClass("govuk-back-link").text must be("Back")
             document.getElementsByClass("govuk-back-link").attr("href") must include("http://backlink")

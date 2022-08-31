@@ -69,7 +69,7 @@
           label = Label(content = Text(messages("ated.country"))),
           items = Seq(SelectItem(Some(""), "Select a country")) ++ listOfIsoCode.map {
               case (code, country) => SelectItem(
-                  value = Some(country),
+                  value = Some(code),
                   text = country)
           }
       ).withFormField(registeredDetailsForm("addressDetails.countryCode")))
