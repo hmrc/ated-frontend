@@ -19,6 +19,7 @@ package forms
 import models._
 import play.api.data.Forms._
 import play.api.data.format.Formatter
+import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}
 import play.api.data.{Form, FormError, Mapping}
 
 import scala.annotation.tailrec
@@ -74,34 +75,36 @@ object BankDetailForms {
     "hasBankDetails" -> optional(boolean).verifying("ated.bank-details.error-key.hasBankDetails.empty", a => a.isDefined)
   )(HasBankDetails.apply)(HasBankDetails.unapply))
 
+   lazy val accountNameConstraint: Constraint[Option[String]] = Constraint("accountName.validation") ({ data =>
+    val accountName = data.map(_.trim)
+    val errors  = {
+      if (accountName.getOrElse("").isEmpty) Seq(ValidationError("ated.bank-details.error-key.accountName.empty"))
+      else if (accountName.nonEmpty && accountName.getOrElse("").length > 60) {
+        Seq(ValidationError("ated.bank-details.error-key.accountName.max-len"))
+      }
+      else Nil
+    }
+    if (errors.isEmpty) Valid else Invalid(errors)
+  })
+
   val bankDetailsForm: Form[BankDetails] = Form(mapping(
-    "hasUKBankAccount" -> optional(boolean).verifying("ated.bank-details.error-key.hasUKBankAccount.empty", a => a.isDefined),
-    "accountName" -> optional(text),
-    "accountNumber" -> optional(text).verifying("ated.bank-details.error-key.accountNumber.max-len", a => a.size < 19),
+    "hasUKBankAccount" -> optional(boolean),
+    "accountName" -> optional(text).verifying(accountNameConstraint),
+    "accountNumber" -> optional(text),
     "sortCode" -> sortCodeTuple,
     "bicSwiftCode" -> optional(of[BicSwiftCode]),
     "iban" -> optional(of[Iban])
   )(BankDetails.apply)(BankDetails.unapply))
 
-  //scalastyle:off cyclomatic.complexity
   def validateBankDetails(bankDetails: Form[BankDetails]): Form[BankDetails] = {
     val hasUKBankAccount = bankDetails.data.get("hasUKBankAccount").map(_.toBoolean)
 
     def validate: Seq[Option[FormError]] = {
       hasUKBankAccount match {
-        case Some(false) => validateAccountName ++ validateIBAN ++ validateBicSwiftCode
-        case Some(true) => validateAccountName ++ validateAccountNumber ++ validateSortCode
+        case Some(false) => validateIBAN ++ validateBicSwiftCode
+        case Some(true) => validateAccountNumber ++ validateSortCode
         case _ => Seq(Some(FormError("hasUKBankAccount", "ated.bank-details.error-key.hasUKBankAccount.empty")))
       }
-    }
-
-    def validateAccountName: Seq[Option[FormError]] = {
-      val accountName = bankDetails.data.get("accountName").map(_.trim)
-      if (accountName.getOrElse("").length == 0) Seq(Some(FormError("accountName", "ated.bank-details.error-key.accountName.empty")))
-      else if (accountName.nonEmpty && accountName.getOrElse("").length > 60) {
-        Seq(Some(FormError("accountName", "ated.bank-details.error-key.accountName.max-len")))
-      }
-      else Seq()
     }
 
     def validateAccountNumber: Seq[Option[FormError]] = {
@@ -144,22 +147,7 @@ object BankDetailForms {
       else Seq()
     }
 
-
-    val form = if (!bankDetails.hasErrors) {
-      val formErrors = validate.flatten
-      addErrorsToForm(bankDetails, formErrors)
-    } else {
-      bankDetails
-    }
-    hasUKBankAccount.map(
-      if(_) {
-        val data = form.data.filterKeys(x => !(x == "iban" || x == "bicSwiftCode"))
-        form.bind(data)
-      } else {
-        val data = form.data.filterKeys(x => !(x == "accountNumber" || x == "sortCode"))
-        form.bind(data)
-      }
-    ).getOrElse(form)
+    addErrorsToForm(bankDetails, validate.flatten)
   }
 
   private def addErrorsToForm[A](form: Form[A], formErrors: Seq[FormError]): Form[A] = {

@@ -27,6 +27,8 @@ import models.BankDetails
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{DisposeLiabilityReturnService, ServiceInfoService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
+import utils.AtedUtils.sanitiseBankDetails
+
 import uk.gov.hmrc.play.bootstrap.controller.WithDefaultFormBinding
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -89,7 +91,7 @@ class DisposeLiabilityBankDetailsController @Inject()(mcc: MessagesControllerCom
             formWithErrors =>
               currentBackLink.map(backLink => BadRequest(template(formWithErrors, oldFormBundleNo, serviceInfoContent, backLink))),
             bankData => {
-              disposeLiabilityReturnService.cacheDisposeLiabilityReturnBank(oldFormBundleNo, bankData) flatMap {
+              disposeLiabilityReturnService.cacheDisposeLiabilityReturnBank(oldFormBundleNo, sanitiseBankDetails(bankData)) flatMap {
                 _ => {
                   redirectWithBackLink(
                     disposeLiabilitySummaryController.controllerId,

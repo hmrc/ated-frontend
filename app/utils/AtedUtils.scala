@@ -165,4 +165,11 @@ object AtedUtils {
       case 12 => "December"
     }
   }
+
+  def sanitiseBankDetails(bankDetails: BankDetails): BankDetails =
+    bankDetails.hasUKBankAccount match {
+      case Some(true) => bankDetails.copy(iban = None, bicSwiftCode = None)
+      case Some(false) => bankDetails.copy(accountNumber = None, sortCode = None)
+      case _ => bankDetails
+    }
 }

@@ -139,8 +139,8 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
           result =>
             status(result) must be(OK)
             val doc = Jsoup.parse(contentAsString(result))
-            doc.title() must be("Is the bank account in the UK? - GOV.UK")
-            doc.getElementsByClass("govuk-caption-xl").text() must be("This section is Change return")
+            doc.title() must be("Enter your bank account details - GOV.UK")
+            doc.getElementsByClass("govuk-caption-xl").text() must be("This section is: Change return")
             assert(doc.getElementById("service-info-list").text() === "Home Manage account Messages Help and contact")
         }
       }
@@ -164,7 +164,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
           result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be(TitleBuilder.buildTitle("Is the bank account in the UK?"))
+            document.title() must be(TitleBuilder.buildTitle("Enter your bank account details"))
 
             document.getElementsByClass("govuk-back-link").text must be("Back")
             document.getElementsByClass("govuk-back-link").attr("href") must include("/ated/liability/123456789012/dispose/summary")

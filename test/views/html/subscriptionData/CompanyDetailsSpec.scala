@@ -23,6 +23,7 @@ import play.twirl.api.Html
 import testhelpers.{AtedViewSpec, MockAuthUtil}
 import uk.gov.hmrc.auth.core.retrieve.~
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
+import views.html.subcriptionData.companyDetails
 
 class CompanyDetailsSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil {
 
@@ -31,7 +32,7 @@ class CompanyDetailsSpec extends AtedViewSpec with MockitoSugar with MockAuthUti
   val authMock: Enrolments ~ Some[AffinityGroup] ~ Some[String] = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
   setAuthMocks(authMock)
 
-  val injectedViewInstance = app.injector.instanceOf[views.html.subcriptionData.companyDetails]
+  val injectedViewInstance: companyDetails = app.injector.instanceOf[views.html.subcriptionData.companyDetails]
 
   "Company Details view" must {
     "have correct page title" in {
@@ -61,8 +62,6 @@ class CompanyDetailsSpec extends AtedViewSpec with MockitoSugar with MockAuthUti
         rows.get(5).text mustBe messages("ated.company-details.contact-preference.label")
       }
 
-
-
       "display First Name" in {
         doc must haveElementWithIdAndText("name1", "firstName")
       }
@@ -91,11 +90,10 @@ class CompanyDetailsSpec extends AtedViewSpec with MockitoSugar with MockAuthUti
 
   }
 
-
-  val addressDetails = AddressDetails(addressType = "", addressLine1 = "some street", addressLine2 = "some area", addressLine3 = Some("some county"), postalCode = Some("ne981zz"), countryCode = "GB")
-  val contactDetails = ContactDetails(emailAddress = Some("a@b.c"))
-  val correspondence = Address(Some("name1"), Some("name2"), addressDetails = addressDetails, contactDetails = Some(contactDetails))
-  val businessPartnerDetails = RegisteredDetails(isEditable = false, "testName",
+  val addressDetails: AddressDetails = AddressDetails(addressType = "", addressLine1 = "some street", addressLine2 = "some area", addressLine3 = Some("some county"), postalCode = Some("ne981zz"), countryCode = "GB")
+  val contactDetails: ContactDetails = ContactDetails(emailAddress = Some("a@b.c"))
+  val correspondence: Address = Address(Some("name1"), Some("name2"), addressDetails = addressDetails, contactDetails = Some(contactDetails))
+  val businessPartnerDetails: RegisteredDetails = RegisteredDetails(isEditable = false, "testName",
     RegisteredAddressDetails(addressLine1 = "bpline1",
       addressLine2 = "bpline2",
       addressLine3 = Some("bpline3"),
@@ -103,14 +101,13 @@ class CompanyDetailsSpec extends AtedViewSpec with MockitoSugar with MockAuthUti
       postalCode = Some("postCode"),
       countryCode = "GB"))
 
-  val businessPartnerDetailsEditable = RegisteredDetails(isEditable = true, "testName",
+  val businessPartnerDetailsEditable: RegisteredDetails = RegisteredDetails(isEditable = true, "testName",
     RegisteredAddressDetails(addressLine1 = "bpline1",
       addressLine2 = "bpline2",
       addressLine3 = Some("bpline3"),
       addressLine4 = Some("bpline4"),
       postalCode = Some("postCode"),
       countryCode = "GB"))
-
 
 
   override def view: Html = injectedViewInstance(Some(correspondence),

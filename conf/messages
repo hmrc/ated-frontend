@@ -46,9 +46,7 @@ error.invalid = Invalid value
 error.required = You must answer this question
 error.title.prefix = Error:
 
-ated.error.no-account-ref = No Account Reference Defined for this user
 ated.error.summaryHeader = There is a problem
-ated.error.mandatory = You must enter {0}
 ated.error.address.line-1 =  Address line 1 cannot be more than 35 characters
 ated.error.address.line-2 =  Address line 2 cannot be more than 35 characters
 ated.error.address.line-3 =  Address line 3 cannot be more than 35 characters
@@ -72,10 +70,6 @@ ated.generic.error.message = You will be able to use the service later.
 ated.generic.error.message2 = Your saved returns and drafts are not affected by this problem.
 
 
-##### DECLARATION ERROR MESSAGE
-
-ated.checkbox-i-agree.confirm.error = Please confirm that you want to submit this
-
 ##### ERROR MESSAGE OVERRIDES
 
 error.invalid.date.format = You must enter a valid date
@@ -98,36 +92,13 @@ unauthorised.button.signout = Sign out
 
 unauthorised.sa.header = You are trying to sign in with your Self Assessment ID. If you are an overseas landlord or client you need to use your limited company ID
 
-##### WELCOME
-
-ated.welcome.title = Register for ATED for {0} to {1}
-ated.welcome.header = Register for ATED for {0} to {1}
-ated.welcome.list-title = Before 1 April 2016, use this service to either:
-ated.welcome.start.button = Start now
-ated.welcome.before-start-title = Before you start
-ated.welcome.related.header = Elsewhere on GOV.UK
-
 ##### ACCOUNT SUMMARY
 
-ated.account.title = ATED account
-ated.account.header = ATED account
-ated.account-summary.title = ATED account summary
-ated.account-summary.header = ATED account summary
-ated.account-summary.ated-reference.text = Your ATED account reference is
-ated.account-summary.next-steps.heading = Next steps
-ated.account-summary.claim-reliefs.text = Claim reliefs for ATED
 ated.account-summary.appoint-agent.text = Appoint an agent for ATED
-ated.account-summary.error.no-account-ref = No account reference exists
-ated.account-summary.logout-button = Finish and sign out
-ated.account-summary.relief-text = From 1 April 2016 you will be able to use this service to submit an ATED return and/or claim relief.
-ated.account-summary.view-change-button = View or change
-ated.account-summary-back = Back to all your clients
-ated.account-summary-screen-reader = the period
 ated.account-summary.peak-guidance.warning = Deadline for {0} to {1} returns: 30 April {0}.
 ated.account-summary.peak-guidance.text.1 = This is the deadline for returns and payments for all ATED-eligible properties that you own on 1 April {0}.
 ated.account-summary.peak-guidance.text.2 = Returns for newly acquired ATED properties must be sent to HMRC within 30 days of the date of acquisition (90 days from start date for new builds).
 ated.account-summary.outside-peak-guidance.warning = Returns for newly acquired ATED properties must be sent to HMRC within 30 days (90 days for new builds).
-ated.account-summary.outside-peak-guidance.text = Returns for {0} to {1} for all properties in the scope of ATED are due by 30 April {0}.
 ated.account-summary.current-year-returns = Current year returns
 ated.account-summary.showing = Showing {0} of {1} returns
 ated.account-summary.view-or-change = View or change
@@ -143,15 +114,14 @@ ated.account-summary.coop.housing.paragraph.one = From 3 March 2021, qualifying 
 ated.account-summary.coop.housing.paragraph.two = Housing co-operatives that qualify for relief and have already paid ATED for the period beginning 1 April 2020 can claim a repayment by amending their original return.
 ated.account-summary.coop.housing.text = Read the ATED technical guidance for more information (opens in new tab)
 
-
 ##### SELECT PERIOD
 
 ated.select-period.title = Select an ATED chargeable period
 ated.select-period.header = Select an ATED chargeable period
 ated.select-period.text = The chargeable period for a year runs from the 1 April to 31 March.
-##############ated.select-period.error.general.period = There is a problem with the period option
 ated.select-period.more-years = I want to submit a return before 2015
-ated.select-period.more-years.answer = Any ATED returns before these periods need to be submitted on a paper form. To request a paper form <a class="govuk-link" href="https://www.gov.uk/government/organisations/hm-revenue-customs/contact/annual-tax-on-enveloped-dwellings-ated"> contact the call centre</a>.
+ated.select-period.more-years.answer = Any ATED returns before these periods need to be submitted on a paper form. To request a paper form
+ated.select-period.more-years.answer.link = contact the call centre (opens in new tab)
 
 ##### CHOOSE RELIEFS
 
@@ -160,9 +130,6 @@ ated.choose-reliefs.subheader = Create return
 ated.choose-reliefs.header = What reliefs are you claiming?
 ated.choose-reliefs.info = You can select more than one relief code. A single relief code can cover one or more properties.
 ated.choose-reliefs.label = Select all reliefs that apply
-
-ated.choose-reliefs.question = What are ATED relief codes?
-ated.choose-reliefs.answer = More detailed information on relief codes can be found on <a href="https://www.tax.service.gov.uk/information/help?helpcategory=shortform&helpid=ATEDReliefCode">HMRC help.</a>
 
 ated.choose-reliefs.rentalBusiness = Rental businesses
 ated.choose-reliefs.openToPublic = Open to the public
@@ -187,10 +154,7 @@ ated.choose-single-relief.socialHousing = Social housing
 ated.choose-single-relief.providerSocialOrHousing = Provider of social housing or housing co-operative
 ated.choose-single-relief.equityRelease = Equity release scheme (home reversion plans)
 
---ated.choose-reliefs.relief-hint = For example, 31 3 2016
 ated.choose-reliefs.relief-hint = For example, {0}
-ated.choose-reliefs.relief-question = What is the relief start date?
-ated.choose-reliefs.relief-answer = For example, if you have 5 properties in relief, the relief start date would be the date the first property was eligible for relief.
 
 ated.choose-reliefs.avoidance-title = Is an avoidance scheme being used for any of these reliefs?
 ated.choose-reliefs.avoidance-question = What is an avoidance scheme?
@@ -205,7 +169,6 @@ ated.choose-reliefs-further.information.text = We do not need any further inform
 ated.choose-reliefs.error = You must select at least one relief
 ated.choose-reliefs.continue = Save and continue
 ated.choose-reliefs.date = When did the {0} start?
-##############ated.choose-reliefs.error.general.isAvoidanceScheme = There is a problem with the avoidance scheme question
 ated.choose-reliefs.error.general.reliefs = You must select at least one relief
 
 ated.choose-reliefs.error.date.mandatory.rentalBusinessDate = Rental business start date must be valid
@@ -235,29 +198,11 @@ ated.reliefs.error.title = There is a problem with your ATED return
 ated.reliefs.error.wrong-period = There is a problem with your ATED return. No details have been saved so you must return to your account summary and start again.
 ated.reliefs.error.ated-home = ATED Account Summary
 
-##### RELIEF DECLARATION
-
-ated.relief-declaration.title = Relief declaration
-ated.relief-declaration.claim-reliefs-for = Claim reliefs for {0}
-ated.relief-declaration.header = Relief declaration
-ated.relief-declaration.subheader = For ATED period from {0} to {1}
-ated.relief-declaration.text = Reliefs claimed
-ated.relief-declaration.info = I confirm that my client has confirmed that the information contained is correct to the best of their knowledge and belief. They acknowledge that each relief claimed is an individual return and they are in possession of all the relevant information in support of this claim.
-ated.relief-declaration.button = Confirm and submit returns
-ated.relief-declaration.cancel = Cancel
-ated.relief-declaration.notice = These are the relief declaration returns you are submitting got the chargeable period.
-ated.relief-declaration.avoidance = Avoidance scheme reference number
-ated.relief-declaration.addrelief = Add or change relief
-ated.relief-declaration.date-from = Date from
-ated.relief-declaration.date-to = Date to
-
 ##### RELIEF AVOIDANCE SCHEME
 
 ated.avoidance-schemes.title = Enter your avoidance scheme number
 ated.avoidance-schemes.pre-header = Create return
 ated.avoidance-schemes.header = Enter your avoidance scheme number
-ated.avoidance-schemes.question =  What is an avoidance scheme?
-ated.avoidance-schemes.answer = <p>HMRC never approves tax avoidance schemes. You must tell us if you are using a tax avoidance scheme that falls within the Disclosure of Tax Avoidance Schemes (DOTAS).</p><p>You will have received your scheme reference number (SRN) and promoter reference number (PRN):</p><ul class="bullets"><li>from your scheme provider on form AAG6 Disclosure of avoidance scheme – Notification of scheme reference number</li><li>direct from HMRC</li></ul><p>More information on<a href="www.gov.uk/disclosure-of-tax-avoidance-schemes-overview"> tax avoidance schemes</a>.</p>
 ated.avoidance-schemes.reliefs.text = Reliefs claimed
 ated.avoidance-schemes.avoidance-scheme.header = Avoidance scheme reference number
 ated.avoidance-schemes.avoidance-scheme.text = {0} Avoidance scheme reference number
@@ -283,72 +228,14 @@ ated.reliefs-sent.change-circumstances.p1 = If any change in your circumstances 
 ated.reliefs-sent.change-circumstances.p2 = This will help to keep our records up to date so we know not to expect a return for that type of relief next year.
 ated.reliefs-sent.change-circumstances.p3 = When emailing please include your ATED reference number or if you do not have the number please give your company name. Do not include any further personal or financial details. Sending information over the internet is generally not completely secure, and we cannot guarantee the security of your data while it’s in transit. Any data you send is at your own risk.
 
-##### FEEDBACK
-
-label.feedback = Feedback
-label.satisfaction_survey = Satisfaction survey
-label.very_easy = Very easy
-label.easy = Easy
-label.neither_easy_or_difficult = Neither easy or difficult
-label.difficult = Difficult
-label.very_difficult = Very difficult
-label.how_easy_was_the_service_to_use = How easy was the service to use?
-label.yes = Yes
-label.no = No
-label.how_satisfied_were_you_with_the_service = How satisfied were you with the service?
-label.what_else_would_you_like_to_see_in_the_service = What else would you like to see in the service?
-label.very_satisfied = Very satisfied
-label.neither_satisfied_or_dissatisfied = Neither satisfied or dissatisfied
-label.very_dissatisfied = Very dissatisfied
-label.satisfied = Satisfied
-label.neutral = Neutral
-label.dissatisfied = Dissatisfied
-label.limit_is_1200_characters = (Limit is 1,200 characters)
-label.please_dont_include_any_personal_or_financial_information = Please do not include any personal or financial information, for example your National Insurance or credit card numbers.
-label.send_feedback = Send feedback
-label.signed_out = ATED feedback questionnaire
-label.thanks_for_your_feedback = Thanks for your feedback
-label.youre_signed_out = You are signed out
-label.youre_now_signed_out_of_your_ated_account = We use your feedback to make our services better.
-label.explore_gov_uk = Explore GOV.UK
-title.satisfied = Satisfied
-title.dissatisfied = Dissatisfied
-feedback.redirect-startpage = Please return to start page
-
-##### LEAVE FEEDBACK PAGE
-
-ated.leave-feedback.title = Leave feedback
-ated.leave-feedback.heading = Leave Feedback
-ated.leave-feedback.instruction = You will not get a reply to any feedback. If you want to raise a technical problem or get a response use the get help with this page link. Do not include any personal or financial information.
-ated.leave-feedback.summaryInfo = What were you trying to do today?
-ated.leave-feedback.moreInfo = What would you like to tell us?
-ated.leave-feedback.experience-level.label = Overall, how do you feel about your experience using the service today?
-ated.leave-feedback.submit.button = Send feedback
-
-#####ated.leave-feedback.moreInfo-error.general.experienceLevel = There is a problem with the your experience question
-#####ated.leave-feedback.moreInfo-error.general.summaryInfo = There is a problem with the what were you trying to do question
-#####ated.leave-feedback.moreInfo-error.general.moreInfo = There is a problem with the what would you like to tell us question
-#####ated.leave-feedback.experience-error = Select an option for this question
-#####ated.leave-feedback.error.mandatory = You must answer this question
-
-##### THANKS
-
-ated.thanks.heading = Thank you
-ated.thanks.title = Thank you
-ated.thanks.text = Your feedback will help us improve the service.
-ated.thanks.link = Continue with what you were doing
-
 ##### AVOIDANCE SCHEME PAGE
 
 ated.claim-relief.avoidance-scheme.yes = Yes
 ated.claim-relief.avoidance-scheme.no = No
-ated.claim-relief.avoidance-scheme.legend = Are you using an avoidance scheme for any, or part, of these reliefs?
 ated.claim-relief.avoidance-scheme.selected = You must answer the avoidance scheme question
 ated.avoidance-schemes.continue = Continue
 ated.avoidance-schemes.scheme.empty = You must enter a reference number
 ated.avoidance-schemes.promoter.empty = You must enter a reference number
-ated.avoidance-scheme.cancel = Cancel
-
 
 ated.avoidance-scheme-error.general.empty.rentalBusinessScheme = You must enter a reference number for rental business avoidance scheme
 ated.avoidance-scheme-error.general.empty.rentalBusinessSchemePromoter = You must enter a reference number for rental business promoter
@@ -371,7 +258,6 @@ ated.avoidance-scheme-error.general.empty.providerSocialOrHousingSchemePromoter 
 ated.avoidance-scheme-error.general.empty.equityReleaseScheme = You must enter a reference number for equity release avoidance scheme
 ated.avoidance-scheme-error.general.empty.equityReleaseSchemePromoter = You must enter a reference number for equity release promoter
 
-
 ated.avoidance-scheme-error.general.wrong-length.rentalBusinessScheme = The scheme number for rental business must be 8 digits
 ated.avoidance-scheme-error.general.wrong-length.rentalBusinessSchemePromoter = The reference number for rental business promoter must be 8 digits
 ated.avoidance-scheme-error.general.wrong-length.openToPublicScheme = The scheme number for open to public avoidance scheme must be 8 digits
@@ -392,7 +278,6 @@ ated.avoidance-scheme-error.general.wrong-length.providerSocialOrHousingScheme =
 ated.avoidance-scheme-error.general.wrong-length.providerSocialOrHousingSchemePromoter = The reference number for provider of social housing or housing co-operative promoter must be 8 digits
 ated.avoidance-scheme-error.general.wrong-length.equityReleaseScheme = The scheme number for equity release avoidance scheme must be 8 digits
 ated.avoidance-scheme-error.general.wrong-length.equityReleaseSchemePromoter = The reference number for equity release promoter must be 8 digits
-
 
 ated.avoidance-scheme-error.general.numeric-error.rentalBusinessScheme = The scheme number for rental business can only contain numbers
 ated.avoidance-scheme-error.general.numeric-error.rentalBusinessSchemePromoter = The reference number for rental business promoter can only contain numbers
@@ -415,114 +300,56 @@ ated.avoidance-scheme-error.general.numeric-error.providerSocialOrHousingSchemeP
 ated.avoidance-scheme-error.general.numeric-error.equityReleaseScheme = The scheme number for equity release avoidance scheme can only contain numbers
 ated.avoidance-scheme-error.general.numeric-error.equityReleaseSchemePromoter = The reference number for equity release promoter can only contain numbers
 
-
 ##### PREV PERIOD SUMMARY
+
 ated.prev-period-summary.title = Your previous returns
 ated.prev-period-summary.header = Your previous returns
 ated.prev-period-summary.headerNoReturns = Create an ATED return for
-
 ated.prev-period-summary-screen-reader = the period
-
-
-ated.prev-period-summary.sub-header = What type of return would you like to submit for the period from 1 April 2015 to 31 March 2016?
-ated.prev-period-summary.chargeable = Chargeable return
-ated.prev-period-summary.relief-return = Relief return
-ated.prev-period-summary.sidebar.balance = Your balance
-ated.prev-period-summary.sidebar.correspondence-address = Correspondence Address
-ated.prev-period-summary.sidebar.pay.link = <a id="sidebar.link-text" href="https://www.gov.uk/guidance/pay-annual-tax-on-enveloped-dwellings">Deadlines and ways to pay</a>
-ated.prev-period-summary.sidebar.owed.link = <a id="sidebar.link-text" href="https://www.gov.uk/guidance/pay-annual-tax-on-enveloped-dwellings">Ways to be paid</a>
-ated.prev-period-summary.sidebar.question = What does this balance include
-ated.prev-period-summary.sidebar.answer = It can include penalties. It does not include any balance you may have from previous paper returns.
-ated.prev-period-summary.no-returns.text = No returns have been created yet
 ated.prev-period-summary-th.period = Period
 ated.prev-period-summary-th.chargeable = Chargeable
 ated.prev-period-summary-th.reliefs = Relief
 ated.prev-period-summary-th.drafts = Draft
 
-ated.prev-period-summary.sidebar.contact-details.header = ATED contact
-ated.prev-period-summary.agent.no-returns = You have no returns
 ated.prev-period-summary.agent.no-previous-returns = You have no previous returns.
 ated.prev-period-summary.createRuturn.text = Create a new ATED return for the chargeable period
-
-ated.prev-period-summary.agent-appoint.text = You can appoint an agent to act on your behalf or create your own returns.
-ated.prev-period-summary.appoint-agent-info.text = If you want to appoint an agent you need to re-authorise your agent as the 64-8 and the ATED 1 do not cover the new online service.
 ated.prev-period-summary.chareablePeriods.text = View or change returns for these chargeable periods.
-
-ated.prev-period-summary.sidebar.balance-info= There can be a 24-hour delay before you see any updates to your balance.
-ated.prev-period-summary.sidebar.ated-reference.text = ATED reference
-ated.prev-period-summary.button = Continue
-ated.prev-period-summary.success = Your ATED account has been created successfully
-ated.prev-period-summary.company-details.link = View your ATED details
-ated.prev-period-summary.return-type.error = Select an option for type of return
 ated.prev-period-summary.create-return.link = Create a new return
-ated.prev-period-summary.contact.details.heading = Contact details
-ated.prev-period-summary.create-relief.text = You can create a relief declaration return where no tax is due.
-ated.prev-period-summary.create-relief.text.indent = You cannot view returns you have previously submitted using this service.
 ated.prev-period-summary.create-return.button = Create a new return
-ated.prev-period-summary.correspondence-address.heading = Correspondence address
-ated.prev-period-summary.no-return.text = You can create a return where an ATED charge is due or a relief return where no ATED charge is due.
-ated.prev-period-summary.table.screen-reader.headings-help = You are on the ATED table, column headings are as follows
-ated.prev-period-summary.table.screen-reader.number-of = Number of
-ated.prev-period-summary.table.screen-reader.period-from = Period from
 
 ##### SUMMARY RETURN
 
 ated.summary-return.title = Your ATED summary
 ated.summary-return.header = Your ATED summary
-ated.summary-return.sub-header = What type of return would you like to submit for the period from 1 April 2015 to 31 March 2016?
-ated.summary-return.chargeable = Chargeable return
-ated.summary-return.relief-return = Relief return
 ated.summary-return.sidebar.balance = Your balance
-ated.summary-return.sidebar.correspondence-address = Correspondence Address
 ated.summary-return.sidebar.pay.link = Deadlines and ways to pay
 ated.summary-return.sidebar.owed.link = Ways to be paid
-ated.summary-return.sidebar.question = What does this balance include
-ated.summary-return.sidebar.answer = It can include penalties. It does not include any balance you may have from previous paper returns.
-ated.account-summary.no-returns.text = No returns have been created yet
-ated.account-summary-th.period = Period
-ated.account-summary-th.chargeable = Chargeable
-ated.account-summary-th.reliefs = Relief
-ated.account-summary-th.drafts = Draft
 ated.account-summary.view-all = View all returns for {0} to {1}
 ated.account-summary.create-new-return = Create a new return for {0} to {1}
 
-ated.summary-return.sidebar.contact-details.header = ATED contact
 ated.account-summary.agent.no-returns = You have no returns
 ated.account-summary.agent-appoint.text = You can appoint an agent to act on your behalf or create your own returns.
 ated.account-summary.appoint-agent-info.text = If you want to appoint an agent you need to re-authorise your agent as the 64-8 and the ATED 1 do not cover the new online service.
 
-ated.summary-return.sidebar.balance-info= There can be a 24-hour delay before you see any updates to your balance.
-ated.summary-return.sidebar.ated-reference.text = ATED reference
-ated.summary-return.button = Continue
-ated.summary-return.success = Your ATED account has been created successfully
+ated.summary-return.sidebar.balance-info = There can be a 24-hour delay before you see any updates to your balance.
 ated.summary-return.company-details.link = View your ATED details
 ated.summary-return.return-type.error = Select an option for type of return
 ated.account-summary.create-return.link = Create a new return
-ated.summary-return.contact.details.heading = Contact details
-ated.account-summary.create-relief.text = You can create a relief declaration return where no tax is due.
-ated.account-summary.create-relief.text.indent = You cannot view returns you have previously submitted using this service.
-ated.account-summary.create-return.button = Create a return
 ated.account-summary.create-return-other.link = Create, view or change returns for other years
-ated.summary-return.correspondence-address.heading = Correspondence address
-ated.summary-return.no-return.text = You can create a return where an ATED charge is due or a relief return where no ATED charge is due.
 ated.summary-return.table.screen-reader.headings-help = You are on the ATED table, column headings are as follows
 ated.summary-return.table.screen-reader.number-of = Number of
-ated.summary-return.table.screen-reader.period-from = Period from
 
 ##### RETURN TYPE
 
 ated.return-type.title = Select a type of return
 ated.return-type.pre-header = Create return
 ated.return-type.header = Select a type of return
-ated.return-type.sub-header = This is for the period from {0} to the {1}.
 ated.return-type.chargeable = For a property where an ATED charge is due
 ated.return-type.relief-return = For a property or properties in relief where no ATED charge is due
 ated.return-type.button = Continue
 ated.return-type.return-type.error = You must select a return type
 ated.return-type.back-link = Back
-#####ated.return-type.error.general.returnType = There is a problem with the type of return
 ated.return-type.help.question = What if my property is in both relief and charge?
-ated.return-type.help.answer =  <ul class="list-bullet"><li>When the same dwelling is in both relief and charge within a chargeable period you will need to submit a return or relief declaration and edit it.</li><li>If your property is in relief you must first submit a relief declaration return then change the return to a chargeable return.</li><li>If your property is initially liable for a charge you must first submit a chargeable return then change it to a relief return.</li></ul>
 
 ##### PROPERTY DETAILS ADDRESS
 
@@ -543,14 +370,6 @@ ated.property-details.references = You can find the property’s title number on
 ated.property-details-titleNumber.reveal =  I do not know my property’s title number
 ated.property-details-titleNumber-reveal.text = This is a number issued by the Land Registry when land is first registered. If you do not have a copy of the title deeds for the property you can find it by doing a
 ated.property-details-titleNumber-reveal.text.link = Land Registry search (opens in new tab)
-ated.property-details-localAuthorityNumber-reveal = I do not know my local authority number
-ated.property-details-localAuthorityNumber.text = <p>Enter the number of the local authority in the area where the lead property is situated. If a property falls between more than one local authority boundary enter the code for either, preferably the authority into whose area most of the property falls.</p><a href="https://www.gov.uk/hmrc-internal-manuals/stamp-duty-land-tax-manual/sdltm62320">Find your local authority number</a>
-ated.property-title.yes = Yes
-ated.property-title.no = No
-ated.property-title.error-field-name = You must select an option for the property’s title number
-ated.property-lan.yes = Yes
-ated.property-lan.no = No
-ated.property-details.continue = Continue
 ated.addressProperty.line_1 = Address line 1
 ated.addressProperty.line_2 = Address line 2
 ated.addressProperty.line_3 = Address line 3 (optional)
@@ -558,20 +377,6 @@ ated.addressProperty.line_4 = Address line 4 (optional)
 ated.addressProperty.postcode = Postcode (optional)
 ated.propertyReference.titleNumber = What is the property’s title number? (optional)
 ated.propertyReference.titleNumber.hint = For example, CS72532
-ated.propertyReference.titleNumber.error = You must enter the property’s title number.
-ated.propertyReference.titleNumber.error.length = Property’s title number cannot be more than 40 characters.
-ated.property-details.back.link = Back
-#####ated.property-details-address-error.general.line_1 = There is a problem with address line 1
-#####ated.property-details-address-error.general.line_2 = There is a problem with address line 2
-#####ated.property-details-address-error.general.line_3 = There is a problem with address line 3
-#####ated.property-details-address-error.general.line_4 = There is a problem with address line 4
-#####ated.property-details-address-error.general.postcode = There is a problem with the postcode
-#####ated.property-details-address-error.general.addressProperty.line_1 = There is a problem with address line 1
-#####ated.property-details-address-error.general.addressProperty.line_2 = There is a problem with address line 2
-#####ated.property-details-address-error.general.addressProperty.line_3 = There is a problem with address line 3
-#####ated.property-details-address-error.general.addressProperty.line_4 = There is a problem with address line 4
-#####ated.property-details-address-error.general.addressProperty.postcode = There is a problem with the postcode
-#####ated.property-details-address-error.general.titleNumber = There is a problem with property’s title number
 
 ##### PROPERTY DETAILS NEW BUILD DATES
 
@@ -582,11 +387,6 @@ ated.property-details-value.newBuildDates.paragraphTwo = If you have both dates,
 ated.property-details-value.newBuildDates.dateQuestionOne = When was the property first occupied?
 ated.property-details-value.newBuildDates.dateQuestionTwo = When did the local council register the property for council tax (completion date)?
 ated.property-details-value.newBuildDates.exampleDate = For example 31 3 2018
-
-ated.property-details-value.newBuildOccupyDate.error.not-in-period = The date when the property was first occupied must be in the chargeable period
-ated.property-details-value.newBuildOccupyDate.error.too-early = The date when the property was first occupied must be in the chargeable period
-ated.property-details-value.newBuildRegisterDate.error.not-in-period = The registration date must be in the chargeable period
-ated.property-details-value.newBuildRegisterDate.error.too-early = The date when the property was first occupied must be in the chargeable period
 
 ated.property-details-value-error.newBuildDates.errorEmpty = You must enter a property first occupied date or a registration date
 ated.property-details-value-error.newBuildDates.occupiedDateError = The date when the property was first occupied must be in the chargeable period
@@ -600,8 +400,6 @@ ated.property-details-value-error.newBuildDates.invalidRegDateError = Enter a re
 
 ated.property-details-value.newBuildValue.title = What was the value of the property on {0} {1} {2}?
 ated.property-details-value.newBuildValue.header = What was the value of the property on {0} {1} {2}?
-ated.property-details-value.newBuildValue.paragraphExample = Enter the value in GBP, for example £1,500,000?
-ated.property-details-value.newBuildValue.newBuildValueQuestion = What was the value of the property in GBP at this date?
 ated.property-details-value.newBuildValue.hintText = Enter the value in GBP, for example £1,500,000
 
 ated.property-details-value-error.newBuildValue.emptyValue = You must enter the value of the property on the start date
@@ -611,8 +409,6 @@ ated.property-details-value-error.newBuildValue.invalidValue = The value of the 
 
 ated.property-details-value.whenAcquired.title = When did you acquire the property?
 ated.property-details-value.whenAcquired.header = When did you acquire the property?
-ated.property-details-value.whenAcquired.dateQuestion = What date was the property acquired?
-ated.property-details-value.whenAcquired.exampleDate = For example 31 3 2013
 
 ated.property-details-value-error.whenAcquired.futureDateError = The date when the property was acquired must be in the past
 ated.property-details-value-error.whenAcquired.invalidDateError = Enter a real date when the property was acquired
@@ -621,11 +417,11 @@ ated.property-details-value-error.whenAcquired.invalidDateError = Enter a real d
 
 ated.property-details-value.valueAcquired.title = What was the value of the property on {0} {1} {2}?
 ated.property-details-value.valueAcquired.header = What was the value of the property on {0} {1} {2}?
-#####ated.property-details-value.valueAcquired.valueQuestion = What was the value of the property on the date it was acquired, in GBP?
 ated.property-details-value.valueAcquired.hintText = Enter the value in GBP, for example £1,500,000
 
 ated.property-details-value-error.valueAcquired.emptyValue = You must enter the value of the property on the acquisition date
 ated.property-details-value-error.valueAcquired.invalidValue = The value of the property must be an amount of money
+
 ##### PROPERTY DETAILS VALUE
 
 ated.property-details-value.revaluedValue.error.too-low = The property value cannot be less than the lowest band
@@ -635,34 +431,20 @@ ated.property-details-value.header = Has the value of your property changed for 
 ated.property-details-value.yes = Yes
 ated.property-details-value.no = No
 
-ated.property-details-value.newBuildValue.error.too-low = The property value cannot be below the lowest band
-ated.property-details-value.notNewBuildValue.error.too-low = The property value cannot be below the lowest band
-#####ated.change-relief-return.error.empty.general.changeRelief = There is a problem with this page
-ated.property-details-value-error.general.anAcquisition = Select yes if you bought or sold land, or extended an existing lease on the property, for £40,000 or more In this chargeable period
 ated.property-details-value.revaluedValue.error.too-high = The property value must be less than 14 characters
-ated.property-details-value.notNewBuildValue.error.too-high = The property value must be less than 14 characters
 ated.property-details-value.ownedBeforePolicyYearValue.error.empty = You must enter a valid property value
 ated.property-details-value.ownedBeforePolicyYearValue.error.too-high = The property value must be less than 14 characters.
 ated.property-details-value.ownedBeforePolicyYearValue.error.too-low = The property value cannot be below the lowest band
-ated.property-details-value.newBuildValue.error.too-high = The property value must be less than 14 characters.
 
 ated.property-details-value.anAcquisition.title = In this chargeable period, have you bought or sold land, or extended an existing lease on the property, for £40,000 or more?
 ated.property-details-value.anAcquisition.header = In this chargeable period, have you bought or sold land, or extended an existing lease on the property, for £40,000 or more?
 ated.property-details-value.anAcquisition.error-field-name = You must answer this question
-ated.property-details-value.anAcquisition.legend = In this chargeable period, have you bought or sold land, or extended an existing lease on the property, for £40,000 or more?
 ated.property-details-value.anAcquisition.what = Why is the £40,000 level important?
 
 ated.property-details-value.anAcquisition.what.text1 = Buying land or extending an existing lease for £40,000 or more (acquisition) would trigger a revaluation. If the property moves into a higher property band this means you have to pay more tax.
 ated.property-details-value.anAcquisition.what.text2 = Selling any land connected to the property for £40,000 or more (disposal) would trigger a revaluation. If the property moves into a lower property band this means you have to pay less tax.
 ated.property-details-value.anAcquisition.what.text3 = Further information on this can be found in the
 ated.property-details-value.anAcquisition.what.text3.link = ATED technical guidance (opens in new tab)
-
-ated.property-details-value.propertyDetailsValue.newBuildDate.error.empty = You must enter a property build date
-ated.property-details-value.propertyDetailsValue.notNewBuildDate.error.empty = You must enter a property acquired date
-ated.property-details-value.propertyDetailsValue.revaluedDate.error.empty = You must enter a valuation date
-ated.property-details-value.propertyDetailsValue.partAcqDispDate.error.empty = You must enter a partial disposal or acquisition date
-ated.property-details-value.propertyDetailsValue.valuationDate.error.empty = You must enter a valuation date
-ated.property-details-value.propertyDetailsValue.valuationDate-hint = For example, {0}
 
 ated.property-details-value.isPropertyRevalued.title = Has the property been revalued since the £40,000 or more change?
 ated.property-details-value.isPropertyRevalued.header = Has the property been revalued since the £40,000 or more change?
@@ -681,10 +463,8 @@ ated.property-details-value.partAcqDispDate = What date did you make the £40,00
 ated.property-details-value.partAcqDispDate.hint = For example, {0}
 ated.property-details-value.revaluedDate.error.empty = You must enter a revalued date
 ated.property-details-value.partAcqDispDate.error.empty = You must enter the date when you made the £40,000 or more change
-ated.property-details-value.revaluedDate.error.too-early = The revaluation date must be in this chargeable period
 ated.property-details-value.revaluedDate.error.too-late = The revaluation date must be in this chargeable period
 ated.property-details-value.revaluedDate.error.in-future = The property revaluation date cannot be in the future
-ated.property-details-value.partAcqDispDate.error.too-early = The date when you made the £40,000 or more change must be in this chargeable period
 ated.property-details-value.partAcqDispDate.error.too-late = The date when you made the £40,000 or more change must be in this chargeable period
 ated.property-details-value.partAcqDispDate.error.in-future = The date when you made the £40,000 or more change cannot be in the future
 ated.property-details-value.isOwnedBeforeValuationYear.title = Did the company own this property on or before 1 April {0}?
@@ -704,61 +484,16 @@ ated.property-details-value.isNewBuild.what-is-this = What is a new build?
 ated.property-details-value.isNewBuild.text = A new build or new dwelling means the company or chargeable person are the first to own the property after it was built. If a new build comes into charge for the first time, you must submit a return to HMRC within 90 days of that event. The normal filing deadline is 30 days.
 ated.property-details-value.isNewBuild.error.non-selected = Select yes if the property is a new build
 ated.property-details-value.newBuildDate = What was the date the property was first occupied?
-ated.property-details-value.localAuthRegDate = What was the date the local council registered the property for council tax?
-
-ated.property-details-value.newBuildDate.error.empty = You must enter a property first occupied date
-ated.property-details-value.newBuildDate.error.not-in-period = The property first occupied date must be in this chargeable period
-ated.property-details-value.newBuildDate.error.too-early = The property first occupied date must be in this chargeable period
-ated.property-details-value.newBuildDate.error.too-late = The property first occupied date cannot be in the future.
-
-ated.property-details-value.localAuthRegDate.error.empty = You must enter a property local council registered date
-ated.property-details-value.localAuthRegDate.error.not-in-period = The property local council registered date must be in this chargeable period
-ated.property-details-value.localAuthRegDate.error.too-early = The property local council registered date must be in this chargeable period
-ated.property-details-value.localAuthRegDate.error.too-late = The property local council registered date cannot be in the future.
 
 ated.property-details-value.newBuildValue = What was the value of the property in GBP at this date?
 ated.property-details-value.newBuildValue.hint = For example, £1,500,000
-ated.property-details-value.newBuildValue.error = You must enter a date within the chargeable period
-ated.property-details-value.newBuildValue.error.empty = You must enter a property value
-ated.property-details-value.notNewBuildValue = What was the value of the property on the date it was acquired, in GBP?
-ated.property-details-value.notNewBuildValue.hint = For example, £1,500,000
-ated.property-details-value.notNewBuildValue.error.empty = You must enter a property value
-ated.property-details-value.notNewBuildDate = What date was the property acquired?
-ated.property-details-value.notNewBuildDate.hint = For example, 31 3 2013
-ated.property-details-value.notNewBuildDate.error.empty = You must enter a property acquired date
-ated.property-details-value.notNewBuildDate.error.too-late = The property acquired date cannot be in the future
 
 ated.property-details-value.isValuedByAgent.title = Was the property professionally valued?
 ated.property-details-value.isValuedByAgent.header = Was the property professionally valued?
 ated.property-details-value.isValuedByAgent = Was the property professionally valued?
 ated.property-details-value.isValuedByAgent.error.non-selected = You must answer the question
-ated.property-details-value.valuationDate = What was the date of the valuation?
-ated.property-details-value.valuationDate.hint = For example, 31 3 2012
-ated.property-details-value.valuationDate.error.empty = You must enter a date of valuation
-ated.property-details-value.valuationDate.error.too-late = The valuation date cannot be in the future
-#####ated.property-details-value-error.general.isPropertyRevalued = There is a problem with this question
-#####ated.property-details-value-error.general.revaluedValue = There is a problem with the property value
-#####ated.property-details-value-error.general.revaluedDate = There is a problem with the property revalued date
-#####ated.property-details-value-error.general.isOwnedBeforePolicyYear = There is a problem with this question
-#####ated.property-details-value-error.general.ownedBeforePolicyYearValue = There is a problem with the property value
-#####ated.property-details-value-error.general.newBuildDate = There is a problem with the property first occupied date
-#####ated.property-details-value-error.general.localAuthRegDate = There is a problem with the property local council registered date
-ated.property-details-value-error.general.newBuildValue = You must enter the value of the property on the start date
-ated.property-details-value-error.general.acquiredValue = You must enter the value of the property on the acquisition date
-#####ated.property-details-value-error.general.acquiredDate = There is a problem with the date
-#####ated.property-details-value-error.general.newBuildOccupyDate = There is a problem with the first occupied date
-#####ated.property-details-value-error.general.newBuildRegisterDate = There is a problem with the local council registration date
-#####ated.property-details-value-error.general.notNewBuildDate = There is a problem with the property acquired date
-#####ated.property-details-value-error.general.notNewBuildValue = There is a problem with the property value
-#####ated.property-details-value-error.general.isValuedByAgent = There is a problem with this question
-#####ated.property-details-value-error.general.valuationDate = There is a problem with the date of valuation
-#####ated.property-details-value-error.general.partAcqDispDate = There is a problem with the date for the £40,000 change
-ated.property-details-value-error.general.isNewBuild = Select yes if the property is a new build
 
 ##### PROPERTY DETAILS PERIOD
-
-ated.property-details-period.title = Enter additional ATED details
-ated.property-details-period.header = Enter additional ATED details
 
 ated.property-details-period.isFullPeriod.title = Is the ATED charge for the full chargeable period?
 ated.property-details-period.isFullPeriod.header = Is the ATED charge for the full chargeable period?
@@ -769,10 +504,8 @@ ated.property-details-period.isInRelief.title = Was the property in relief for a
 ated.property-details-period.isInRelief.header = Was the property in relief for any part of the ATED chargeable period?
 ated.property-details-period.isInRelief = Was the property in relief for any part of the ATED chargeable period?
 ated.property-details-period.isInRelief.error-field-name = You must answer the question
-#####ated.property-details-period-error.general.isInRelief = There is a problem with this question
 ated.property-details-period.yes = Yes
 ated.property-details-period.no = No
-ated.property-details-period.whatIsDate = What is the date?
 
 ated.property-details-period.change-dates-liable.title = Enter the dates this change applies to
 ated.property-details-period.change-dates-liable.header = Enter the dates this change applies to
@@ -787,8 +520,6 @@ ated.property-details-period.datesLiable.startDate.error = The liability start d
 ated.property-details-period.datesLiable.startDate.error.empty = You must enter a liability start date
 ated.property-details-period.datesLiable.startDate.error.too-early = The liability start date cannot be before this chargeable period
 ated.property-details-period.datesLiable.startDate.error.too-late = The liability start date cannot be after this chargeable period
-ated.property-details-period.datesLiable.startDate.invalid.error = The liability start date must not be between an already added period
-ated.property-details-period.datesLiable.endDate.invalid.error = The liability end date must not be between an already added period
 ated.property-details-period.datesLiable.overlap.error = No periods of charge or relief can overlap
 
 ated.property-details-period.datesLiable.endDate = What was the end date in this chargeable period when the property stopped being liable for a charge?
@@ -801,14 +532,8 @@ ated.property-details-period.datesLiable.endDate.error.too-late = The liability 
 ated.property-details-period.datesLiable.endDate.error.before-start-date = The liability end date cannot be before the liability start date
 ated.property-details-period.datesLiable.endDate.error.before-start-date-and-too-early = The liability end date cannot be before the liability start date and must be within this chargeable period
 
-#######ated.property-details-period.datesLiable.general.error.startDate = There is a problem with the liability start date
-#######ated.property-details-period.datesLiable.general.error.endDate = There is a problem with the liability end date
-
-#####ated.property-details-period.datesLiable.general.error.date = There is a problem with the date field(s)
-
 ated.property-details-period.chooseRelief.title = Select the type of relief
 ated.property-details-period.chooseRelief.header = Select the type of relief
-#####ated.property-details-period.chooseRelief.error.reliefDescription = There is a problem with this question
 ated.property-details-period.chooseRelief.error.non-selected = Please choose a type of relief
 
 ated.property-details-period.datesInRelief.title = Add the dates when the property was in relief and was not liable for an ATED charge
@@ -817,21 +542,11 @@ ated.property-details-period.datesInRelief.startDate = What was the start date i
 ated.property-details-period.datesInRelief.startDate.hint = For example, {0}
 ated.property-details-period.datesInRelief.startDate.error = The relief start date must be in this chargeable period
 ated.property-details-period.datesInRelief.startDate.error.empty = You must enter a relief start date
-ated.property-details-period.datesInRelief.startDate.error.too-early = The start date cannot be before this chargeable period
-ated.property-details-period.datesInRelief.startDate.error.too-late = The start date cannot be after this chargeable period
-ated.property-details-period.datesInRelief.overlap.error = No periods of charge or relief can overlap
 
-#####ated.property-details-period.datesInRelief.general.error.startDate = There is a problem with the relief start date
-#####ated.property-details-period.datesInRelief.general.error.endDate = There is a problem with the relief end date
 ated.property-details-period.datesInRelief.endDate = What was the end date in this current period, when the relief ended?
 ated.property-details-period.datesInRelief.endDate.hint = For example, {0}
 ated.property-details-period.datesInRelief.endDate.error = The relief end date must be in this chargeable period
-ated.property-details-period.datesInRelief.endDate.error.incomplete = You must enter a valid relief end date
 ated.property-details-period.datesInRelief.endDate.error.empty = You must enter a relief end date
-ated.property-details-period.datesInRelief.endDate.error.too-early = The end date cannot be before this chargeable period
-ated.property-details-period.datesInRelief.endDate.error.too-late = The end date cannot be after this chargeable period
-ated.property-details-period.datesInRelief.endDate.error.before-start-date = The relief end date cannot be before the relief start date
-ated.property-details-period.datesInRelief.endDate.error.before-start-date-and-too-early = The relief end date cannot be before the liability start date and must be within this chargeable period
 
 ated.property-details-period.periodsInRelief.title = Add periods when the property was in relief and when it was liable for an ATED charge
 ated.property-details-period.periodsInRelief.header = Add periods when the property was in relief and when it was liable for an ATED charge
@@ -848,8 +563,6 @@ ated.property-details-period.dispose.return-type = Disposed of property
 ated.property-details-period.isTaxAvoidance.title = Is a tax avoidance scheme being used?
 ated.property-details-period.isTaxAvoidance.header = Is a tax avoidance scheme being used?
 ated.property-details-period.isTaxAvoidance = Is an avoidance scheme being used?
-ated.property-details-period.isTaxAvoidance.what = What is an avoidance scheme?
-ated.property-details-period.isTaxAvoidance.what.text = <p>HMRC never approves tax avoidance schemes. You must tell us if you are using a tax avoidance scheme that falls within the Disclosure of Tax Avoidance Schemes (DOTAS).</p><p>You will have received your scheme reference number (SRN) and promoter reference number (PRN):</p><ul class="bullets"><li>from your scheme provider on form AAG6 Disclosure of avoidance scheme – Notification of scheme reference number</li><li>direct from HMRC</li></ul><p>More information on<a href="www.gov.uk/disclosure-of-tax-avoidance-schemes-overview"> tax avoidance schemes</a>.</p>
 ated.property-details-period.isTaxAvoidance.error-field-name = You must answer the question
 ated.property-details-period.taxAvoidanceScheme = Avoidance scheme reference number
 ated.property-details-period.taxAvoidanceScheme.error.empty = You must enter a valid avoidance scheme reference number
@@ -859,10 +572,6 @@ ated.property-details-period.taxAvoidancePromoterReference = Promoter reference 
 ated.property-details-period.taxAvoidancePromoterReference.error.empty = You must enter a valid promoter reference number
 ated.property-details-period.taxAvoidancePromoterReference.error.wrong-length = The promoter reference number should be 8 numbers
 ated.property-details-period.taxAvoidancePromoterReference.error.numbers = The promoter reference number can only contain numbers
-#####ated.property-details-period-error.general.isFullPeriod = There is a problem with this question
-#####ated.property-details-period-error.general.isTaxAvoidance = There is a problem with this question
-#####ated.property-details-period-error.general.taxAvoidanceScheme = There is a problem with the avoidance scheme reference number
-#####ated.property-details-period-error.general.taxAvoidancePromoterReference = There is a problem with the promoter reference number
 
 ated.property-details-period.supportingInfo.title = Do you have any supporting information to add? (optional)
 ated.property-details-period.supportingInfo.header = Do you have any supporting information to add? (optional)
@@ -870,7 +579,6 @@ ated.property-details-period.supportingInfo = Supporting information (optional)
 ated.property-details-period.supportingInfo.hint = How to send additional information about your return (opens in new tab)
 ated.property-details-period-error.supportingInfo = You cannot enter more than 200 characters in supporting information
 ated.property-details-period-error.supportingInfo.invalid = You cannot enter special characters. For example £, or @.
-#####ated.property-details-period-error.general.supportingInfo = There is a problem with your supporting information
 
 ##### CHARGEABLE RETURN CONFIRMATION
 
@@ -900,20 +608,11 @@ ated.chargeable-return-confirmation.back-to-ated-link.text = Your ATED summary
 ated.chargeable-return-declaration.title = Returns declaration
 ated.chargeable-return-declaration.header = Returns declaration
 
-#ated.chargeable-return-declaration.warning = This draft will be saved for 60 days or until it is submitted.
-
 ated.chargeable-return-declaration.before-declaration.client = Before you can submit your return to HMRC you must read and agree to the following statement. If you give false information you may have to pay financial penalties and face prosecution.
 ated.chargeable-return-declaration.before-declaration.agent = Before your client’s return can be submitted to HMRC, you must read and agree to the following statement. Your client’s approval may be in electronic or non-electronic form. If your client gives false information, they may have to pay financial penalties and face prosecution.
 
 ated.chargeable-return-declaration.i-confirm-that.bullet-text.agent = I confirm that my client has approved the information contained in this return as being correct and complete to the best of their knowledge and belief.
 ated.chargeable-return-declaration.i-declare-that.bullet-text.client = I declare that the information I have given on this return is correct and complete.
-ated.chargeable-return-declaration.return = Return
-ated.chargeable-return-declaration.value = Value
-ated.chargeable-return-declaration.tax = ATED tax
-ated.chargeable-return-declaration.period = Liability period
-ated.chargeable-return-declaration.status = Return status
-ated.chargeable-return-declaration.period-text = Full year
-ated.chargeable-return-declaration.status-text = Draft
 
 ated.chargeable-return-declaration.submit = Agree and submit return
 ated.summary-return.confirm.error = Please confirm that you want to submit this
@@ -926,7 +625,6 @@ ated.company-details.header = Your ATED details
 ated.company-details.ated-reference-number = ATED reference number
 ated.company-details.name = Name
 ated.company-details.registered-address = Registered address
-ated.company-details.registered-address.edit = Edit
 ated.company-details.correspondence-address = Correspondence address
 ated.company-details.contact-address = ATED contact details
 ated.company-details.back = Back to your ATED summary
@@ -955,28 +653,11 @@ ated.non-uk-reg.issuingInstitution.length = The institution that issued the over
 ated.correspondence-address.title = Edit your correspondence address
 ated.correspondence-address.subheader = Manage your ATED service
 ated.correspondence-address.header = Edit your correspondence address
-ated.correspondence-address.address-type = Address type
-ated.address.address = Address
 ated.address.line-1 = You must enter address line 1
 ated.address.line-2 = You must enter address line 2
 ated.address.line-3 = Address line 3
 ated.address.line-4 = Address line 4
-ated.address.postcode = Postcode (optional)
-ated.address.postcode.field = Postcode
-
-#ated.address.country = ISO country code
-
 ated.address.country = You must enter a country
-ated.address.country.select = Select one country
-ated.address.country.instruction = The ISO country code is internationally recognised and identifies a specific country. For example, United States = ‘US’ and Germany = ‘DE’
-ated.correspondence-address.save = Save
-ated.correspondence-address.save.error = Something has gone wrong, try again later.
-#####ated.correspondence-address.error.general.addressLine1 = There is a problem with address line 1
-#####ated.correspondence-address.error.general.addressLine2 = There is a problem with address line 2
-#####ated.correspondence-address.error.general.addressLine3 = There is a problem with address line 3
-#####ated.correspondence-address.error.general.addressLine4 = There is a problem with address line 4
-#####ated.correspondence-address.error.general.countryCode = There is a problem with country field
-#####ated.correspondence-address.error.general.postalCode = There is a problem with postcode
 ated.correspondence-address.error.uk.postalCode = You must enter a UK postcode if UK is selected in the country field.
 
 ##### REGISTERED DETAILS
@@ -988,20 +669,9 @@ ated.registered-details.save = Save
 ated.registered-details.postcode = Postcode
 ated.registered-details.safeId = SafeId
 ated.registered-details.isEditable = Is editable
-#####ated.registered-address.error.general.name = There is a problem with business name
 ated.registered-details.businessName.length = Business name must not be more than 105 characters
-#####ated.registered-address.error.general.addressDetails.addressLine1 = There is a problem with address line 1
-#####ated.registered-address.error.general.addressDetails.addressLine2 = There is a problem with address line 2
-#####ated.registered-address.error.general.addressDetails.addressLine3 = There is a problem with address line 3
-#####ated.registered-address.error.general.addressDetails.addressLine4 = There is a problem with address line 4
-#####ated.registered-address.error.general.addressDetails.countryCode = There is a problem with country field
-ated.registered-address.error.general.addressType = Something has gone wrong, try again later.
 ated.registered-details.save.error = Something has gone wrong, try again later.
 
-ated.contact-address.edit = Edit
-ated.contact-address.subheader = ATED account registration
-ated.contact-address.edit.title = Edit contact address
-ated.correspondence-address.edit.title = Edit correspondence address
 ated.contact-details.title = Edit your ATED contact details
 ated.contact-details.header = Edit your ATED contact details
 ated.contact-details.subheader = The person responsible for ATED related queries.
@@ -1011,11 +681,6 @@ ated.contact-details.lastName = Last name
 ated.contact-details.phoneNumber = Telephone
 ated.contact-details.emailAddress = Email
 ated.contact-details.email-consent.message = They / I am happy to be contacted by email
-ated.contact-details.save = Save
-#####ated.contact-details.error.general.firstName = There is a problem with first name. Check it and try again.
-#####ated.contact-details.error.general.lastName = There is a problem with last name. Check it and try again.
-#####ated.contact-details.error.general.emailAddress = There is a problem with email address. Check it and try again.
-#####ated.contact-details.error.general.phoneNumber = There is a problem with telephone number. Check it and try again.
 ated.contact-details-first-name.error = You must enter a first name
 ated.contact-details-first-name.length = First name cannot be more than 35 characters
 ated.contact-details-last-name.error = You must enter a last name
@@ -1029,13 +694,14 @@ ated.contact-email.error = Email address is not valid
 # this is error thrown for save failure
 ated.contact-details.error.general.addressType = Something has gone wrong, try again later.
 ated.contact-details.email.risk.help.text = What are the risks of email and why we need your consent
-ated.contact-details.email.risk.help.answer = <p>HMRC may need to send information to you by email. Any emails from HMRC are not secure and any information you send to us by email is at your own risk. In order for us to send emails to you, you must confirm (for yourself or by your agent) that you are happy with this and that you understand the risks of sending information containing your personal details by email.</p><p>Please note: If a response contains any confidential information, we will only reply by letter or telephone. Letters may lead to delays in dealing with enquiries. If you think you have been sent a suspicious email, do not follow any links within the email or disclose any personal details. Forward any suspicious emails to <a class="govuk-link" href="mailto:phishing@hmrc.gsi.gov.uk">phishing@hmrc.gsi.gov.uk</a></p>
+ated.contact-details.email.risk.help.answer_p1 = HMRC may need to send information to you by email. Any emails from HMRC are not secure and any information you send to us by email is at your own risk. In order for us to send emails to you, you must confirm (for yourself or by your agent) that you are happy with this and that you understand the risks of sending information containing your personal details by email.
+ated.contact-details.email.risk.help.answer_p2 = Please note: If a response contains any confidential information, we will only reply by letter or telephone. Letters may lead to delays in dealing with enquiries. If you think you have been sent a suspicious email, do not follow any links within the email or disclose any personal details. Forward any suspicious emails to
+ated.contact-details.email.risk.help.answer.link = phishing@hmrc.gsi.gov.uk
 
 ##### EDIT CONTACT EMAIL
 
 ated.contact-details-edit-email.title = Edit your ATED email address
 ated.contact-details-edit-email.header = Edit your ATED email address
-ated.contact-details-edit-email-agent.header = Edit your clients ATED email address
 ated.contact-details-edit-email.subheader = Manage your ATED service
 ated.contact-details-email-lede = If we can use email rather than letter there will be less delays in dealing with enquiries.
 
@@ -1046,45 +712,12 @@ ated.period-summary.title = Your ATED returns for {0} to {1}
 ated.period-summary.subheader = For ATED period from {0} to {1}
 ated.period-summary.tabs.current-returns = Current returns
 ated.period-summary.tabs.past-returns = Past returns
-ated.period-summary-th.return = Return
 ated.period-summary-th.status = Status
-ated.period-summary-th.from = From
-ated.period-summary-th.to = To
-ated.period-summary-th.charge = Charge
-ated.period-summary-th.action = Action
 ated.period-summary.view-edit.button = View or change
 ated.period-summary.view.button = View
-ated.period-summary.back = Back
 ated.period-summary.sr.relieftype = relief type,
 ated.period-summary.sr.address = address,
 ated.period-summary.sr.return = the return for
-
-##### EDIT CLIENT NAME
-
-ated.agent.edit-client.header = Change the display name for {0}
-ated.agent.edit-client.title  = Change the display name for {0}
-ated.agent.edit-client.subheader = You can change the displayed name of your clients. This does not change the official company name.
-ated.agent.edit-client.display.name = Display name
-ated.agent.edit-client.ated-reference-number = Ated Reference Number
-ated.agent.edit-client.display.name.empty.error = You must enter a display name
-ated.agent.edit-client.save = Save Changes
-ated.agent.edit-client.back = Back
-
-ated.agent.remove-client.title = Are you sure you want to remove {0} ?
-ated.agent.remove-client.header = Are you sure you want to remove {0} ?
-ated.agent.remove-client.subheader = Once you have removed a client you will no longer be able to act on their behalf.
-ated.agent.remove-client.confirm = Confirm
-ated.agent.remove.confirmation.title = You have removed {0}
-ated.agent.remove.confirmation.header = You have removed {0}
-ated.agent.remove.empty-error = Client remove question must be answered
-
-ated.agent.reject-client.title = Are you sure you want to reject the request from {0} ?
-ated.agent.reject-client.header = Are you sure you want to reject the request from {0} ?
-ated.agent.reject-client.subheader = Rejecting a client request means you will not be able to act on their behalf unless they submit another request.
-ated.agent.reject-client.confirm = Confirm
-ated.agent.reject.confirmation.title = You have rejected {0}
-ated.agent.reject.confirmation.header = You have rejected {0}
-ated.agent.reject.empty-error = Client reject question must be answered
 
 ##### FORM BUNDLE RETURN
 
@@ -1121,8 +754,6 @@ ated.form-bundle.view.return.status = Status
 ated.form-bundle.view.return.date = Return date
 ated.form-bundle.view.return.ated.charge = Based on the information you have given us your ATED charge is
 
-ated.form-bundle.back = Back
-
 ##### ADDRESS LOOKUP
 
 ated.address-lookup.title = Find the property’s address
@@ -1136,13 +767,11 @@ ated.address-lookup.results.title = Select the address of the property
 ated.address-lookup.results.header = Select the address of the property
 ated.address-lookup.search-criteria.header = Postcode
 ated.address-lookup.search-criteria.change = Change postcode
-ated.address-lookup.search-criteria.change-label = Change postcode
 ated.address-lookup.search-results.header = Property address
 ated.address-lookup.no-address-found.text = No addresses were found for this postcode
 ated.address-lookup.address-not-in-list-link.title = I cannot find my address in the list
 ated.address-lookup.address-manual-entry-link.title = Manually enter the address
 ated.address-lookup.error.non-selected.field = You must select a previous return
-ated.address-lookup.error.general.selected = There is something wrong with the address
 ated.address-lookup.error.general.selected-address = There is something wrong with the selected address
 
 #### CONFIRM ADDRESS
@@ -1170,27 +799,13 @@ ated.edit-liability.dispose.title = Your return cannot be changed online
 ated.edit-liability.header = Have you disposed of the property?
 ated.edit-liability.header2 = Your return cannot be changed online
 ated.edit-liability.p1 = This includes sale, de-enveloping or demolishing.
-ated.edit-liability.return-type.legend = Select the type of changes you want to make to your return
-ated.edit-liability.return-type.no-edit-legend = Your original return is too complex to edit online. To make any changes contact the 
+ated.edit-liability.return-type.no-edit-legend = To make any changes contact the
 ated.edit-liability.return-type.no-edit-legend2 = ATED helpline (opens in new tab)
-ated.edit-liability.return-type.no-edit-legend3 = You can still:
-ated.edit-liability.return-type.no-edit-legend4 = Report the disposal of the property
+ated.edit-liability.return-type.no-edit-legend3 = You can still report the disposal of the property online.
+ated.edit-liability.return-type.no-edit-legend4 = Dispose of the property
 ated.edit-liability.dispose-property.yes = Yes
 ated.edit-liability.dispose-property.no = No
-ated.edit-liability.move-property.label = Move a property into relief
 ated.edit-liability.edit-return-type.error = Select yes if you have disposed of the property
-
-##### AGENT CLIENT RELATIONSHIP DETAILS
-
-ated.agent-client-relationship-details.title = Agent Client Relationship Details
-ated.agent-client-relationship-details.header = Agent Client Relationship Details
-ated.agent-client-relationship-details.arn = Unique Authorisation Number
-ated.agent-client-relationship-details.ated-ref-no = Ated Reference Number
-ated.agent-client-relationship-details.active-only = Active only
-ated.agent-client-relationship-details.agent = Agent
-ated.agent-client-relationship-details.from = From date
-ated.agent-client-relationship-details.to = To date
-#####ated.agent-client-relationship-details-error.general.arn = There is a problem with the unique authorisation number
 
 ##### VIEW RELIEF RETURN DETAILS PAGE
 
@@ -1204,9 +819,6 @@ ated.view-relief-return.promoter.no = Promoter reference number
 ated.view-relief-return.status = Status
 ated.view-relief-return.status.submitted = Submitted
 ated.view-relief-return.submission-date = Submission date
-ated.view-relief-return.charge.text = Based on the information you have given us your ATED charge is
-ated.view-relief-return.charge = 0
-ated.view-relief-return.edit-return-button = Change return
 
 ##### CHANGE RELIEF RETURN PAGE
 
@@ -1245,7 +857,6 @@ ated.property-details-summary.table.dates-of-liability.header = Dates of liabili
 ated.property-details-summary.table.dates-of-liability.edit-link.title =  Dates of liability
 ated.property-details-summary.table.period.text = {0} to {1}
 ated.property-details-summary.table.supporting-info.header = Supporting information
-ated.property-details-summary.table.supporting-info.edit-link.title =  supporting information
 ated.property-details-summary.table.property-ated-details.additional-information.label = Additional information
 ated.property-details-summary.table.property-ated-details.avoidance-scheme.header = Avoidance scheme
 ated.property-details-summary.table.property-ated-details.avoidance-scheme.edit-link.title = avoidance scheme
@@ -1258,7 +869,6 @@ ated.property-details-summary.table.ated-charge.text = Based on the information 
 ated.property-details-summary.table.revised-ated-charge-further.text = Based on the information you have given us your revised ATED charge for this further return is
 ated.property-details-summary.table.revised-ated-charge-amended.text = Based on the information you have given us your revised ATED charge for this amended return is
 ated.property-details-summary.table.revised-ated-charge-changed.text = Based on the information you have given us your revised ATED charge for this changed return is
-ated.property-details-summary.table.revised-ated-charge-to-relief.text = Based on the information you have given us your revised ATED charge is
 ated.property-details-summary.saved-draft.text = This draft is saved for up to 60 days.
 ated.property-details-summary.print.view = Print this return
 ated.property-details-summary.saved-returns.link.text = Save as draft
@@ -1289,14 +899,6 @@ ated.relief-summary.avoidanceSchmRefNum-promoter = Promoter reference number
 ated.relief-summary.status = Status
 ated.relief-summary.none = None
 ated.relief-summary.draft = Draft
-ated.relief-summary.table.edit-relief-link.title = relief
-ated.relief-summary.table.edit-relief-link.lending = relief lending
-ated.relief-summary.table.edit-relief-link.rental = relief rental business
-ated.relief-summary.table.edit-relief-link.openToPublic = relief open to public
-ated.relief-summary.table.edit-relief-link.propertyDeveloper = relief property developer
-ated.relief-summary.table.edit-relief-link.farmHouses = relief farm houses
-ated.relief-summary.table.edit-relief-link.socialHousing =  relief farm social housing
-ated.relief-edit-link.screen-reader = relief details
 
 ated.relief-summary.relief-end-date =  to 31 March
 ated.relief-summary.table.ated-charge.text = Based on the information you have given us your ATED charge is
@@ -1321,34 +923,11 @@ ated.relief-summary.before-declaration.client = Before you can submit your retur
 ated.relief-summary.i-declare-that.client = I declare that:
 ated.relief-summary.i-declare-that.bullet-text.client =  the information I have given on this return (or each of these returns) is correct
 ated.relief-summary.i-declare-that.bulletb-text.client = I am eligible for the reliefs claimed
-ated.relief-summary.notification = Each type of relief claimed is an individual ATED return.
 ated.relief-summary.declaration.submit = Agree and submit returns
-ated.relief-return.confirm.error = Please confirm that you want to submit this
 
 ##### CHANGE LIABILITY RETURN VALUE PAGE
 
 ated.change-liability.value.previous-value-text = Based on the information you have previously given us the value of your property for the purposes of ATED is
-
-##### CHANGE LIABILITY RETURN PERIOD PAGE
-
-ated.change-liability.period.isTaxAvoidance.label = Is a tax avoidance scheme being used?
-ated.change-liability.period.startDate.label = What was the first date, in this chargeable period, that this change applies to?
-ated.change-liability.period.endDate.label = What was the last date, in this chargeable period, that this change applies to?
-#####ated.edit-liability-details-period-error.general.startDate = There is a problem with the start date question
-ated.change-liability.period.startDate.empty-error = You must enter a liability start date
-ated.change-liability.period.startDate.date-before-period = The liabilty start date cannot be before this chargeable period.
-ated.change-liability.period.startDate.date-before-period-hint = For example, {0}
-ated.change-liability.period.startDate.date-after-period = The liability start date cannot be after this chargeable period.
-ated.change-liability.period.endDate.date-after-period-hint = For example, {0}
-ated.change-liability.period.startDate.startDate-after-endDate = The start date cannot be after the end date.
-#####ated.edit-liability-details-period-error.general.endDate = There is a problem with the end date question
-ated.change-liability.period.endDate.date-before-period = The liability end date cannot be before this chargeable period.
-ated.change-liability.period.endDate.date-after-period = The liability end date cannot be after this chargeable period.
-ated.change-liability.period.endDate.empty-error = You must enter a liability end date
-#####ated.edit-liability-details-period-error.general.taxAvoidanceScheme = There is a problem with the avoidance scheme reference number
-#####ated.edit-liability-details-period-error.general.taxAvoidancePromoterReference = There is a problem with the promoter reference number
-#####ated.edit-liability-details-period-error.general.isTaxAvoidance = There is a problem with the avoidance scheme question
-#####ated.edit-liability.error.general.editLiabilityType = Answer yes if you have disposed of the property
 
 ##### EDIT LIABILITY DECLARATION PAGE
 
@@ -1365,9 +944,6 @@ ated.edit-liability.declaration.submit.change = Agree and submit
 
 ##### EDIT LIABILITY SENT PAGE
 
-ated.edit-liability.sent.further.title = Further return confirmation
-ated.edit-liability.sent.amend.title = Amended return confirmation
-ated.edit-liability.sent.change.title = Change in details return confirmation
 ated.edit-liabilty.sent.view-message = You can view your completed returns, overall balance, payment references and ways to pay in the ATED online service.
 ated.edit-liabilty.sent.receipt-message = You will not receive an email confirmation.
 ated.edit-liabilty.sent.charges-heading = Charges for this return
@@ -1408,45 +984,40 @@ ated.bank-details.has-bank-details.title = Do you have a bank account where we c
 ated.bank-details.has-bank-details.header = Do you have a bank account where we could pay a refund?
 ated.bank-details.has-bank-details.paragraph.text = We need bank details for the payment of any refunds that may be due.
 
-ated.bank-details.title = Is the bank account in the UK?
-ated.bank-details.header = Is the bank account in the UK?
-ated.bank-details.legend = Bank details
+ated.bank-details.title = Enter your bank account details
+ated.bank-details.header = Enter your bank account details
+ated.bank-details.location.label = Is the bank account in the UK?
+ated.bank-details.account.number.hint = Must be between 6 and 8 digits long
+ated.bank-details.sort.code.hint = Must be 6 digits long
+ated.bank-details.iban.hint = You can ask your bank or check your bank statement
+ated.bank-details.swift.hint = Must be between 8 and 11 characters long. You can ask your bank or check your bank statement
 
-ated.bank-details.have-uk-bank-account.legend = Do you have a UK bank account?
+#####ated.bank-details.legend = Bank details
+
 ated.bank-details.uk-bank-account.name.label = Name of bank account holder
 ated.bank-details.uk-bank-account.number.label = Account number
 ated.bank-details.uk-bank-account.sort-code.label = Sort code
 ated.bank-details.non-uk-bank-account.iban.label = IBAN
 ated.bank-details.non-uk-bank-account.bic-swift-code.label = SWIFT code
-ated.bank-details.uk-bank-account.no-selected.important-text = If you require a repayment into a non-UK bank account HMRC will be in touch regarding payment.
-##########ated.bank-details.error-key.accountName = There is a problem with the account holder name
-ated.bank-details.error-key.accountName.empty = You must enter the name of the bank account holder
+ated.bank-details.error-key.accountName.empty = Enter the name of the bank account holder
 ated.bank-details.error-key.accountName.max-len = The account holder name cannot be more than 60 characters
-##########ated.bank-details.error-key.accountNumber = There is a problem with the account number
-ated.bank-details.error-key.accountNumber.empty = You must enter an account number
+ated.bank-details.error-key.accountNumber.empty = Enter an account number
 ated.bank-details.error-key.accountNumber.max-len = The account number cannot be more than 18 characters
 ated.bank-details.error-key.accountNumber.invalid = You must enter a valid account number
-###########ated.bank-details.error-key.sortCode = There is a problem with the sort code
-ated.bank-details.error-key.sortCode.empty = You must enter a sort code
+ated.bank-details.error-key.sortCode.empty = Enter a sort code
 ated.bank-details.error-key.sortCode.invalid = You must enter a valid sort code
-###########ated.bank-details.error-key.hasUKBankAccount = There is a problem with the UK bank account question
-ated.bank-details.error-key.hasUKBankAccount.empty = You must answer the UK bank account question
-##############ated.bank-details.error-key.hasBankDetails = There is a problem with the bank details question
+ated.bank-details.error-key.hasUKBankAccount.empty = Select yes if your bank account is in the UK
 ated.bank-details.error-key.hasBankDetails.empty = You must answer the bank details question
 
-##############ated.bank-details.error-key.iban = There is a problem with the IBAN
-ated.bank-details.error-key.iban.empty = You must enter the IBAN
+ated.bank-details.error-key.iban.empty = Enter an IBAN
 ated.bank-details.error-key.iban.max-len = The IBAN cannot be more than 34 characters
 ated.bank-details.error-key.iban.invalid = The IBAN cannot be more than 34 characters
-##############ated.bank-details.error-key.bicSwiftCode = There is a problem with the SWIFT code
-ated.bank-details.error-key.bicSwiftCode.empty = You must enter the SWIFT code
+ated.bank-details.error-key.bicSwiftCode.empty = Enter a SWIFT code
 ated.bank-details.error-key.bicSwiftCode.invalid = The SWIFT code must be 8 or 11 characters
 
 ##### EDIT LIABILITY SUMMARY PAGE
 
-ated.edit-liability.summary.bank-details.ated-details.header = ATED details
 ated.edit-liability.summary.bank-details.header = Bank details
-ated.edit-liability.summary.bank-details.edit-link.title = Edit Bank details
 ated.edit-liability.summary.bank-details.account-holder-name = Account holder name
 ated.edit-liability.summary.bank-details.type-of-account = Type of bank account
 ated.edit-liability.summary.bank-details.account-number = Account number
@@ -1455,10 +1026,6 @@ ated.edit-liability.summary.bank-details.iban = IBAN
 ated.edit-liability.summary.bank-details.bic-swift-code = SWIFT Code
 ated.edit-liability.summary.print.view = Print this return
 ated.edit-liability.summary.print.header = Further return for {0}
-ated.edit-liability.summary.period.edit-link.title = Edit dates of relief
-ated.edit-liability-summary.relief-type.label = Type of relief
-ated.edit-liability-summary.date-from.label = Date from
-ated.edit-liability-summary.date-to.label = Date to
 ated.edit-liability.summary.bank-details.return-status.header = Return status
 ated.edit-liability.summary.bank-details.return-status.label = Status
 ated.edit-liability.summary.bank-details.supply-bank-details = Supply bank details
@@ -1481,86 +1048,18 @@ ated.dispose-property.summary.print.header = Amended return for {0}
 
 ##### EDIT LIABILITY VALUE PAGE
 
-#####ated.change-property-value-error.general.propertyDetailsValue.isPropertyRevalued = There is a problem with the property revalued question
-#####ated.change-property-value-error.general.propertyDetailsValue.revaluedValue = There is a problem with the property revalued value
-#####ated.change-property-value-error.general.propertyDetailsValue.revaluedDate = There is a problem with the property revalued date
-#####ated.change-property-value-error.general.propertyDetailsValue.partAcqDispDate = There is a problem with the property partial disposal or acquisition date
-#####ated.change-property-value-error.general.propertyDetailsValue.isOwnedBeforePolicyYear = There is a problem with this question
-#####ated.change-property-value-error.general.propertyDetailsValue.isValuedByAgent = There is a problem with the professionally valued question
-#####ated.change-property-value-error.general.propertyDetailsValue.isNewBuild = There is a problem with the new build question
-#####ated.change-property-value-error.general.propertyDetailsValue.newBuildDate = There is a problem with the property build date
-#####ated.change-property-value-error.general.propertyDetailsValue.newBuildValue = There is a problem with the property value
-#####ated.change-property-value-error.general.propertyDetailsValue.notNewBuildDate =There is a problem with the property acquired date
-#####ated.change-property-value-error.general.propertyDetailsValue.notNewBuildValue = There is a problem with the property value
-#####ated.change-property-value-error.general.propertyDetailsValue.ownedBeforePolicyYearValue = There is a problem with the property value
-#####ated.change-property-value-error.general.propertyDetailsValue.valuationDate = There is a problem with the date of valuation
-#####ated.change-property-value-error.general.hasValueChanged = Select if the value of your property has changed or not
-
 ated.change-property-value.hasValueChanged.error.non-selected = You must answer the property value question
-ated.change-property-value.anAcquisition.error.non-selected = You must answer the acquisition or partial disposal question
-ated.change-property-value.isPropertyRevalued.error.non-selected = You must answer the property revalued question
-ated.change-property-value.isOwnedBeforePolicyYear.error.non-selected = You must answer this question
-
-ated.change-property-value.isNewBuild.error.non-selected = You must answer the question
-ated.change-property-value.isValuedByAgent.error.non-selected = You must answer the professionally valued question
-
-ated.change-liability.period.propertyDetailsValue.valuationDate.date-before-period = The valuation date must be in this chargeable period
-ated.change-liability.period.propertyDetailsValue.valuationDate.date-after-period = The valuation date must be in this chargeable period
-
-ated.change-liability.period.propertyDetailsValue.revaluedDate.date-before-period = The revaluation date must be in this chargeable period
-ated.change-liability.period.propertyDetailsValue.revaluedDate.date-after-period = The revaluation date must be in this chargeable period
-
-ated.change-liability.period.propertyDetailsValue.partAcqDispDate.date-before-period = The property partial disposal or acquisition date must be in this chargeable period
-ated.change-liability.period.propertyDetailsValue.partAcqDispDate.date-after-period = The property partial disposal or acquisition date must be in this chargeable period
-
-ated.change-liability.period.propertyDetailsValue.newBuildDate.date-before-period = The occupied date must be in this chargeable period
-ated.change-liability.period.propertyDetailsValue.newBuildDate.date-after-period = The occupied date must be in this chargeable period
-
-ated.change-liability.period.propertyDetailsValue.notNewBuildDate.date-before-period = The property acquired date must be in this chargeable period
-ated.change-liability.period.propertyDetailsValue.notNewBuildDate.date-after-period = The property acquired date must be in this chargeable period
-
-ated.change-liability.period.propertyDetailsValue.newBuildDate.after-today = The occupied date cannot be in the future.
-ated.change-liability.period.propertyDetailsValue.valuationDate.after-today = The valuation date cannot be in the future.
-ated.change-liability.period.propertyDetailsValue.notNewBuildDate.after-today = The property acquired date cannot be in the future.
-ated.change-liability.period.propertyDetailsValue.revaluedDate.after-today = The revaluation date cannot be in the future.
-ated.change-liability.period.propertyDetailsValue.partAcqDispDate.after-today = The property partial disposal or acquisition date cannot be in the future.
 
 ##### DISPOSE PROPERTY
 
-#####ated.dispose-property.error.general.dateOfDisposal = There is a problem with date of disposal
 ated.dispose-property.dateOfDisposal.error.empty =  You must enter date of disposal
 ated.dispose-property.period.dateOfDisposal.date-before-period = The date of disposal must be in this chargeable period
 ated.dispose-property.period.dateOfDisposal.date-after-period = The date of disposal must be in this chargeable period
 ated.dispose-property.period.dateOfDisposal.date-after-today = The property disposal date cannot be in the future.
 
-##### CLIENT BANNER
-
-ated.client-banner.agent.pending = You have requested <span class="heading-small">{0}</span> to act as your agent
-
 ##### AGENT BANNER
 
 ated.agent.banner = You are viewing the returns of <strong>{0}</strong>
-
-##### WANT TO CHANGE AGENT
-
-ated.change-agent.wantToChange.title = Are you sure you want {0} to no longer act on your behalf?
-ated.change-agent.wantToChange.header = Are you sure you want {0} to no longer act on your behalf?
-ated.change-agent.wantToChange.information = This will remove all authority that you have given to your agent to act on your behalf for ATED.
-ated.change-agent.wantToChange.not-selected-error = Change agent question must be answered
-
-##### WANT TO APPOINT AGENT
-
-ated.want-to-appoint-agent.wantToAppoint.title = Do you want to appoint another agent to act on your behalf?
-ated.want-to-appoint-agent.wantToAppoint.header = Do you want to appoint another agent to act on your behalf?
-ated.want-to-appoint-agent.wantToAppoint.not-selected-error = Appoint another agent question must be answered
-
-##### CONFIRMATION OF CHANGE AGENT
-
-ated.change-agent-confirmation.title = You have cancelled the authority of {0}
-ated.change-agent-confirmation.header = You have cancelled the authority of {0}
-ated.change-agent-confirmation.not-receive-email = You will not receive an email confirmation.
-ated.change-agent-confirmation.what-next.info-1 = you can create a return
-ated.change-agent-confirmation.what-next.info-2 = you can appoint another agent to act on your behalf
 
 ##### WRONG CLIENT ERROR MESSAGE
 
@@ -1571,38 +1070,25 @@ ated.selected-client-error.wrong.client.HrefLink = https://myaccount.gateway.gov
 ated.selected-client-error.wrong.client.HrefMessage = set up Administrators and Assistants
 ated.selected-client-error.wrong.client.PostHrefMessage = rather than sharing credentials.
 
-
 ated.client-problem.title = There was a problem when you set up this client
 ated.client-problem.header = There was a problem when you set up this client
 ated.client-problem.message = You need to remove the client using ''edit'' and use ''add a new client'' to add the client again.
 ated.client-problem.HrefMessage = View all my clients
 
-ated.property-details-calculate.error.other = Error while calculating draft property details amount
-ated.submit-draft-reliefs.error.other = Error while submitting draft reliefs
-ated.submit-draft-chargeable.error.other = Error while submitting draft chargeable
-
 ##### DELETE DRAFT RETURN
 
 ated.delete-draft.header = Are you sure you want to delete this draft return?
 ated.delete-draft.title = Are you sure you want to delete this draft return?
-ated.delete-draft.error = delete draft return
-ated.delete-drafts.error.general.yesNo = Select if you want to delete this draft or not
 yes-no.error.mandatory.delete.draft = You must answer this question
 yes-no.error.mandatory.existing.returns = Select yes if you filed a return for this property last year
-yes-no.error.mandatory.draft.delete = The existing return question must be answered
-
 
 ##### SELECT PAST RETURNS
 
-ated.confirm-past-return-question.title = Did you file a return for this property last year?
 ated.confirm-past-return-question.header = Did you file a return for this property in {0} to {1}?
-ated.confirm-past-return.error = existing return
 ated.confirm-past-return.p1 = Did you file a return for this property in the previous chargeable period - April 1 {0} to March 31 {1}?
-ated.confirm-past-return-question.error.general.yesNo = Select yes if you filed a return for this property last year
 
 ated.select-past-return.title = Select the property from your previous year returns
 ated.select-past-return.header = Select the property from your previous year returns
-ated.select-past-return.general.selected = Select the property from your previous year returns
 ated.select-past-return.reveal = The property I want is not listed
 ated.select-past-return.reveal.text.1 = If the property is not listed, you can
 ated.select-past-return.reveal.text.2 = continue with this return
@@ -1610,18 +1096,9 @@ ated.select-past-return.reveal.text.3 = but you must
 ated.select-past-return.reveal.text.4 = contact the ATED helpline (opens in new tab)
 ated.select-past-return.reveal.text.5 = to ensure HMRC has this information.
 
-urbanner.message.text = Help improve digital services by joining the HMRC user panel (opens in new window)
-urbanner.message.reject = No thanks
-
-ated.property-details-value.ownedBeforePolicyYearValue.error.non-selected = You must answer the property owned before 1 April {0} question.
-ated.property-details-value.notNewBuildDate.error.too-early = The property acquired date cannot be before 1 April {0}
-ated.property-details-value.valuationDate.error.too-early = The property valuation date cannot be before 1 April {0}
-
-
 ##### BTA BANNER
 
 btaNavLinks.home = Home
 btaNavLinks.manageAccount = Manage account
 btaNavLinks.messages = Messages
 btaNavLinks.helpAndContact = Help and contact
-

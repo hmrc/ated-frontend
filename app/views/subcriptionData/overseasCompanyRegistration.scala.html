@@ -64,7 +64,7 @@
                 label = Label(content = Text(messages("ated.non-uk-reg.issuingCountry"))),
                 items = Seq(SelectItem(Some(""), "Select a country")) ++ listOfIsoCode.map {
                     case (code, country) => SelectItem(
-                        value = Some(country),
+                        value = Some(code),
                         text = country)
                 }
             ).withFormField(overseasCompanyRegistrationForm("countryCode")))

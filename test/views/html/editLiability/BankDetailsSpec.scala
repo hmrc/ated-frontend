@@ -58,12 +58,12 @@ class BankDetailsSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil {
        def view: Html = injectedViewInstance(eform, "oldFormBundleNo", Html(""), Some("backLink"))
       val errorDoc = doc(view)
 
-      errorDoc.select("ul.govuk-error-summary__list > li > a").get(0).text() mustBe "You must enter the name of the bank account holder"
-      errorDoc.select("ul.govuk-error-summary__list > li > a").get(1).text() mustBe "You must enter an account number"
-      errorDoc.select("ul.govuk-error-summary__list > li > a").get(2).text() mustBe "You must enter a sort code"
-      errorDoc.getElementById("accountNumber-error").text() mustBe "Error: You must enter an account number"
-      errorDoc.getElementById("sortCode-error").text() mustBe "Error: You must enter a sort code"
-      errorDoc.getElementById("accountName-error").text() mustBe "Error: You must enter the name of the bank account holder"
+      errorDoc.select("ul.govuk-error-summary__list > li > a").get(0).text() mustBe "Enter the name of the bank account holder"
+      errorDoc.select("ul.govuk-error-summary__list > li > a").get(1).text() mustBe "Enter an account number"
+      errorDoc.select("ul.govuk-error-summary__list > li > a").get(2).text() mustBe "Enter a sort code"
+      errorDoc.getElementById("accountNumber-error").text() mustBe "Error: Enter an account number"
+      errorDoc.getElementById("sortCode-error").text() mustBe "Error: Enter a sort code"
+      errorDoc.getElementById("accountName-error").text() mustBe "Error: Enter the name of the bank account holder"
     }
 
     "check page errors for non uk account" in {
@@ -75,12 +75,12 @@ class BankDetailsSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil {
        def view: Html = injectedViewInstance(eform, "oldFormBundleNo", Html(""), Some("backLink"))
       val errorDoc = doc(view)
 
-      errorDoc.select("ul.govuk-error-summary__list > li > a").get(0).text() mustBe "You must enter the name of the bank account holder"
-      errorDoc.select("ul.govuk-error-summary__list > li > a").get(1).text() mustBe "You must enter the IBAN"
-      errorDoc.select("ul.govuk-error-summary__list > li > a").get(2).text() mustBe "You must enter the SWIFT code"
-      errorDoc.getElementById("bicSwiftCode-error").text() mustBe "Error: You must enter the SWIFT code"
-      errorDoc.getElementById("iban-error").text() mustBe "Error: You must enter the IBAN"
-      errorDoc.getElementById("accountName-error").text() mustBe "Error: You must enter the name of the bank account holder"
+      errorDoc.select("ul.govuk-error-summary__list > li > a").get(0).text() mustBe "Enter the name of the bank account holder"
+      errorDoc.select("ul.govuk-error-summary__list > li > a").get(1).text() mustBe "Enter an IBAN"
+      errorDoc.select("ul.govuk-error-summary__list > li > a").get(2).text() mustBe "Enter a SWIFT code"
+      errorDoc.getElementById("bicSwiftCode-error").text() mustBe "Error: Enter a SWIFT code"
+      errorDoc.getElementById("iban-error").text() mustBe "Error: Enter an IBAN"
+      errorDoc.getElementById("accountName-error").text() mustBe "Error: Enter the name of the bank account holder"
     }
   }
 
