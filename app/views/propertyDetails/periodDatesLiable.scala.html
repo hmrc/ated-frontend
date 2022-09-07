@@ -17,53 +17,98 @@
 @import models._
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
-@this(atedMain: atedMain, formHelper: FormWithCSRF)
-@(id: String, periodKey: Int, propertyDetailsForm: Form[PropertyDetailsDatesLiable], title: String, mode: Option[String], serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
-@import uk.gov.hmrc.play.views.html.helpers._
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
+@import views.ViewUtils.titleBuilder
 @import views.html.helpers._
 @import _root_.utils._
 
-@implicitFormInstance = @{ Some(propertyDetailsForm) }
+
+@this(newMain: newMain,
+        govukButton : GovukButton,
+        govukBackLink : GovukBackLink,
+        govukDateInput : GovukDateInput,
+        govukErrorSummary : GovukErrorSummary, 
+      formHelper: FormWithCSRF)
+
+@(id: String, periodKey: Int, propertyDetailsForm: Form[PropertyDetailsDatesLiable], title: String, mode: Option[String], serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
 
-@atedMain(title = messages(title),
+@implicitFormInstance = @{Some(propertyDetailsForm) }
+
+@backLinkHtml = {
+    @if(backLink.isDefined) {
+        @govukBackLink(BackLink(
+            href = backLink.get,
+            content = Text("Back")
+        ))
+    }
+}
+
+@dateItems = @{
+    Seq(InputItem(attributes = Map("maxLength" -> "2")),
+        InputItem(attributes = Map("maxLength" -> "2")),
+        InputItem(attributes = Map("maxLength" -> "4"))
+    )
+}
+
+@pageHeader = @{title}
+
+@newMain(title = titleBuilder(messages(title), Some(propertyDetailsForm)),
           serviceInfoContent = serviceInfoContent) {
-  @pageHeadersAndError(backLink, "pre-heading", messages("ated.property-details.pre-header"), messages("property-details-header"), messages(title),
-      Some(atedErrorSummary(propertyDetailsForm, "ated.property-details-period.datesLiable.general.error")))
 
-  @formHelper(action=controllers.propertyDetails.routes.PeriodDatesLiableController.save(id, periodKey, mode)) {
+    @backLinkHtml
 
+    @if(propertyDetailsForm.errors.nonEmpty) {
+      @govukErrorSummary(ErrorSummary().withFormErrorsAsText(propertyDetailsForm, mapping = Map("startDate" -> "startDate.day", "endDate" -> "endDate.day")))
+    }
 
-    <div class="form-group">
-      @atedDateFieldsFree(
-        formItem = propertyDetailsForm,
-        fieldName = "startDate",
-        label = Html(messages("ated.property-details-period.datesLiable.startDate")),
-        isNested = false,
-        defaultDateOption = None,
-        periodKey,
-        '_hintText -> messages("ated.property-details-period.datesLiable.startDate.hint", PeriodUtils.periodStartDate(periodKey).toString(messages("ated.date-format.numeric"))),
-        '_groupClass -> "form-group date",
-        '_idName -> "startDate"
-      )
+    <header>
+      <h1 class="govuk-heading-xl govuk-!-margin-bottom-5">
+          <span class="govuk-caption-xl">
+              <span class="govuk-visually-hidden">
+                  @messages("ated.screen-reader.section")
+              </span>
+              @messages(AtedUtils.getPropertyDetailsPreHeader(mode))
+          </span>
+              @messages(pageHeader)
+      </h1>
+    </header>
 
-      @atedDateFieldsFree(
-        formItem = propertyDetailsForm,
-        fieldName = "endDate",
-        label = Html(messages("ated.property-details-period.datesLiable.endDate")),
-        isNested = false,
-        defaultDateOption = None,
-        periodKey,
-        '_hintText -> messages("ated.property-details-period.datesLiable.endDate.hint", PeriodUtils.periodEndDate(periodKey).toString(messages("ated.date-format.numeric"))),
-        '_groupClass -> "form-group date",
-        '_idName -> "endDate"
-      )
-    </div>
+    @formHelper(action=controllers.propertyDetails.routes.PeriodDatesLiableController.save(id, periodKey, mode)) {
 
-    <button class="button" id="submit" type="submit">
-        @messages("ated.save-and-continue")
-    </button>
+        @govukDateInput(DateInput(
+            hint = Some(Hint(
+              content = Text(messages("ated.property-details-period.datesInRelief.startDate.hint",
+                    PeriodUtils.periodStartDate(periodKey).toString(messages("ated.date-format.numeric"))))
+            )),
+            fieldset = Some(Fieldset(
+              legend = Some(Legend(
+                content = Text(messages("ated.property-details-period.datesLiable.startDate")),
+                classes = "govuk-label--s"
+              ))
+            )),
+            items = dateItems
+        ).withFormField(propertyDetailsForm("startDate")))
 
-  }
+        @govukDateInput(DateInput(
+            hint = Some(Hint(
+              content = Text(messages("ated.property-details-period.datesInRelief.endDate.hint",
+                    PeriodUtils.periodEndDate(periodKey).toString(messages("ated.date-format.numeric"))))
+            )),
+            fieldset = Some(Fieldset(
+              legend = Some(Legend(
+                content = Text(messages("ated.property-details-period.datesLiable.endDate")),
+                classes = "govuk-label--s"
+              ))
+            )),
+            items = dateItems
+        ).withFormField(propertyDetailsForm("endDate")))
+
+        @govukButton(Button(
+            content = Text(messages("ated.save-and-continue")),
+            attributes = Map("id" -> "submit")
+        ))
+    }
 
 }

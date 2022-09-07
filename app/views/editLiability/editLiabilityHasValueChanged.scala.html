@@ -14,47 +14,96 @@
  * limitations under the License.
  *@
 
-@import models._
-@import config.ApplicationConfig
-@import play.twirl.api.HtmlFormat
-@this(atedMain: atedMain, formHelper: FormWithCSRF)
-@(oldLiabilityAmount: Option[BigDecimal], oldFormBundleNo: String, liabilityValueDetailsForm: Form[HasValueChanged], mode: Option[String], serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
-@import uk.gov.hmrc.play.views.html.helpers._
-@import views.html.helpers._
 @import _root_.utils.AtedUtils._
+@import config.ApplicationConfig
+@import models._
+@import play.twirl.api.HtmlFormat
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
+@import views.ViewUtils.titleBuilder
+@import views.html.helpers.formattedPounds
 
-@implicitFormInstance = {
-  Some(liabilityValueDetailsForm)
+@this(newMain: newMain,
+        formHelper: FormWithCSRF,
+        govukRadios : GovukRadios,
+        govukButton : GovukButton,
+        govukErrorSummary: GovukErrorSummary,
+        govukBackLink: GovukBackLink)
+
+@(oldLiabilityAmount: Option[BigDecimal],
+        oldFormBundleNo: String,
+        liabilityValueDetailsForm: Form[HasValueChanged],
+        mode: Option[String],
+        serviceInfoContent: Html = HtmlFormat.empty,
+        backLink: Option[String]
+)(implicit authContext: StandardAuthRetrievals,
+        messages: Messages,
+        request: Request[AnyContent],
+        appConfig: ApplicationConfig)
+
+@backLinkHtml = {
+    @if(backLink.isDefined) {
+        @govukBackLink(BackLink(
+            href = backLink.get,
+            content = Text("Back")
+        ))
+    }
 }
 
-@atedMain(title = messages("ated.property-details-value.title"), serviceInfoContent = serviceInfoContent) {
+@newMain(title = titleBuilder(messages("ated.property-details-value.title"), Some(liabilityValueDetailsForm)), serviceInfoContent = serviceInfoContent) {
 
-  @pageHeadersAndError(backLink, "pre-heading", messages(getPropertyDetailsPreHeader(mode)), "property-details-header", messages("ated.property-details-value.header"),
-      Some(atedErrorSummary(liabilityValueDetailsForm, "ated.change-property-value-error.general")))
+    @backLinkHtml
 
-    <p class="display-block ated-line-height" id="value-text">
-      @messages("ated.change-liability.value.previous-value-text")
-      <span class="heading-large inline-heading-style" id="return-charge">
-      @oldLiabilityAmount.map(formattedPounds(_))
-      </span>
+    @if(liabilityValueDetailsForm.hasErrors) {
+        @govukErrorSummary(ErrorSummary().withFormErrorsAsText(liabilityValueDetailsForm))
+    }
+
+    <header>
+        <h1 class="govuk-heading-xl govuk-!-margin-bottom-5">
+            <span class="govuk-caption-xl">
+                <span class="govuk-visually-hidden">
+                @messages("ated.screen-reader.section")
+                </span>
+                @messages(getPropertyDetailsPreHeader(mode))
+            </span>
+            @messages("ated.property-details-value.header")
+        </h1>
+    </header>
+
+    <p class="govuk-body" id="value-text">
+        @messages("ated.change-liability.value.previous-value-text")
+        <span class="govuk-heading-l" id="return-charge">
+            @oldLiabilityAmount.map(formattedPounds(_))
+        </span>
     </p>
 
-  @formHelper(action = controllers.editLiability.routes.EditLiabilityHasValueChangedController.save(oldFormBundleNo)) {
+    @formHelper(action = controllers.editLiability.routes.EditLiabilityHasValueChangedController.save(oldFormBundleNo)) {
 
-    <div id="hasValueChanged" class="form-group">
-      @atedInputRadioGroupNew(liabilityValueDetailsForm("hasValueChanged"),
-        Seq("true" -> messages("ated.property-details-value.yes"),
-          "false" -> messages("ated.property-details-value.no")),
-          '_legend -> messages("ated.property-details-value.header"),
-          '_legendClass -> "visuallyhidden",
-          '_groupClass -> "inline",
-          '_labelClass -> "block-label",
-          '_labelAfter -> true
+        @govukRadios(Radios(
+            fieldset = Some(Fieldset(
+                legend = Some(Legend(
+                    content = Text(messages("ated.property-details-value.header")),
+                    classes = "govuk-visually-hidden"
+                )),
+            )),
+            items = Seq(
+                RadioItem(
+                    content = Text(messages("ated.property-details-value.yes")),
+                    value = Some("true")
+                ),
+                RadioItem(
+                    content = Text(messages("ated.property-details-value.no")),
+                    value = Some("false")
+                )
+            ),
+            classes = "govuk-radios--inline"
+        ).withFormField(liabilityValueDetailsForm("hasValueChanged"))
         )
-    </div>
 
-    <button class="button" id="submit" type="submit">@messages("ated.save-and-continue")</button>
-
-  }
+        @govukButton(Button(
+            content = Text(messages("ated.save-and-continue")),
+            attributes = Map("type" -> "submit", "id" -> "submit")
+        ))
+    }
 
 }

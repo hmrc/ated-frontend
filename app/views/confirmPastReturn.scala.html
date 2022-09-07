@@ -16,47 +16,78 @@
 
 @import forms.AtedForms._
 @import models._
-@import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
 
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
+@import uk.gov.hmrc.govukfrontend.views.Implicits._
+@import views.ViewUtils.titleBuilder
 
-@this(atedMain: atedMain, formHelper: FormWithCSRF)
+@this(newMain: newMain, formHelper: FormWithCSRF,
+        govukRadios: GovukRadios,
+        govukButton : GovukButton,
+        govukBackLink : GovukBackLink,
+        govukErrorSummary: GovukErrorSummary)
+
 @(confirmExistingReturn: Form[YesNoQuestion],
         periodKey: Int,
         returnType: String,
         serviceInfoContent: Html = HtmlFormat.empty,
         backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
-@atedMain(title = messages("ated.confirm-past-return-question.header",  (periodKey-1).toString, periodKey.toString), serviceInfoContent = serviceInfoContent) {
-@pageHeadersAndError(
-    backLink,
-    "pre-header",
-    messages("ated.return-type.pre-header"),
-    "return-type-header",
-    messages("ated.confirm-past-return-question.header", (periodKey-1).toString, periodKey.toString),
-    Some(atedErrorSummary(confirmExistingReturn, "ated.confirm-past-return-question.error.general")))
+@backLinkHtml = {
+    @if(backLink.isDefined) {
+        @govukBackLink(BackLink(
+            href = backLink.get,
+            content = Text("Back")
+        ))
+    }
+}
 
-    <p class="page-header-margin">
+@newMain(title = titleBuilder(messages("ated.confirm-past-return-question.header", (periodKey-1).toString, periodKey.toString), Some(confirmExistingReturn)), serviceInfoContent = serviceInfoContent) {
+
+    @backLinkHtml
+
+    @if(confirmExistingReturn.errors.nonEmpty) {
+        @govukErrorSummary(ErrorSummary().withFormErrorsAsText(confirmExistingReturn))
+    }
+
+    <header>
+        <h1 class="govuk-heading-xl govuk-!-margin-bottom-5">
+            <span class="govuk-caption-xl">
+                <span class="govuk-visually-hidden">
+                    @messages("ated.screen-reader.section")
+                </span>
+                @messages("ated.return-type.pre-header")
+            </span>
+            @messages("ated.confirm-past-return-question.header", (periodKey-1).toString, periodKey.toString)
+        </h1>
+    </header>
+
+    <p class="govuk-body">
         @messages("ated.confirm-past-return.p1", (periodKey-1).toString, periodKey.toString)
     </p>
 
-    @formHelper(action = controllers.routes.ExistingReturnQuestionController.submit(periodKey, returnType)) {
-        <div class="form-group" id="pastReturn">
-        @atedInputRadioGroupNew(
-            confirmExistingReturn("yesNo"),
-            Seq("true" -> messages("ated.label.yes"),
-                "false" -> messages("ated.label.no")),
-            '_groupClass -> "inline",
-            '_legendClass -> "screen-reader-text",
-            '_legend -> messages("ated.confirm-past-return-question.header"),
-            '_labelClass -> "block-label",
-            '_labelAfter -> true
-        )
-        </div>
+@formHelper(action = controllers.routes.ExistingReturnQuestionController.submit(periodKey, returnType)) {
 
-        <button class="button" id="submit" type="submit">@messages("ated.save-and-continue")</button>
+    @govukRadios(
+       Radios(
+            items = Seq(
+                RadioItem(
+                    content = Text(messages("ated.label.yes")),
+                    value = Some("true")
+                ),RadioItem(
+                    content = Text(messages("ated.label.no")),
+                    value = Some("false")
+                )),
+            classes = "govuk-radios--inline"
 
+       ).withFormField(confirmExistingReturn("yesNo")))
+
+        @govukButton(Button(
+            content = Text(messages("ated.save-and-continue")),
+            inputType = Some("submit"),
+        attributes = Map("id" -> "submit")
+        ))
     }
 }

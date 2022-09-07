@@ -17,7 +17,6 @@
 package controllers.reliefs
 
 import java.util.UUID
-
 import builders.SessionBuilder
 import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
@@ -41,6 +40,7 @@ import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.AtedConstants
 import views.html.BtaNavigationLinks
+import views.html.reliefs.changeReliefReturn
 
 import scala.concurrent.Future
 
@@ -54,11 +54,11 @@ class ChangeReliefReturnControllerSpec extends PlaySpec with GuiceOneServerPerSu
   val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
   val mockBackLinkCacheConnector: BackLinkCacheConnector = mock[BackLinkCacheConnector]
   val mockAddressLookupController: AddressLookupController = mock[AddressLookupController]
-    val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
+  val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
-  val injectedViewInstance = app.injector.instanceOf[views.html.reliefs.changeReliefReturn]
+  val injectedViewInstance: changeReliefReturn = app.injector.instanceOf[views.html.reliefs.changeReliefReturn]
 
   val periodKey: Int = 2015
 
@@ -148,7 +148,11 @@ class Setup {
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
             document.title() must be("Change your ATED return - GOV.UK")
-            document.getElementById("relief-return-header").text() must be("Change your ATED return")
+            document.getElementsByClass("govuk-caption-xl").text must be ("This section is: Change return")
+            document.getElementsByTag("h1").text() must include ("Change return Change your ATED return")
+            document.getElementsByAttributeValue("for", "changeRelief").text() must be("Change return details")
+            document.getElementsByAttributeValue("for", "changeRelief-2").text() must be("Create chargeable return")
+            document.getElementsByClass("govuk-button").text() must be("Continue")
           }
         }
       }
@@ -164,7 +168,7 @@ class Setup {
               result =>
                 status(result) must be(BAD_REQUEST)
                 val doc = Jsoup.parse(contentAsString(result))
-                doc.getElementsByClass("error-notification").html() must include("You must select an option")
+                doc.getElementsByClass("govuk-error-message").html() must include("You must select an option")
                 contentAsString(result) must include("You must select an option")
             }
           }

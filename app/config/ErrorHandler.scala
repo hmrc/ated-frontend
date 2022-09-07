@@ -24,23 +24,23 @@ import play.twirl.api.Html
 import uk.gov.hmrc.play.bootstrap.frontend.http.FrontendErrorHandler
 
 class ErrorHandler @Inject()(val messagesApi: MessagesApi,
+                             val templateError: views.html.global_error,
                              val configuration: Configuration,
-                             val applicationConfig: ApplicationConfig) extends FrontendErrorHandler {
+                             implicit val applicationConfig: ApplicationConfig) extends FrontendErrorHandler {
 
   override def standardErrorTemplate(pageTitle: String, heading: String, message: String)
                                     (implicit request: Request[_]): Html = {
-    applicationConfig.templateError(pageTitle, heading, message, None, None, None, None, Html(""), applicationConfig)
+    templateError(pageTitle, heading, message, None, None, None, None, Html(""))
   }
 
   override def internalServerErrorTemplate(implicit request: Request[_]): Html = {
-    applicationConfig.templateError(Messages("ated.generic.error.title"),
+    templateError(Messages("ated.generic.error.title"),
       Messages("ated.generic.error.header"),
       Messages("ated.generic.error.message"),
       Some(Messages("ated.generic.error.message2")),
       None,
       None,
       None,
-      Html(""),
-      applicationConfig)
+      Html(""))
   }
 }

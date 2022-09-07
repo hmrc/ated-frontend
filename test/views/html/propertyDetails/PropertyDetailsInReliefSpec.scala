@@ -16,6 +16,7 @@
 
 package views.html.propertyDetails
 
+import builders.TitleBuilder
 import config.ApplicationConfig
 import forms.PropertyDetailsForms
 import models.StandardAuthRetrievals
@@ -25,27 +26,37 @@ import testhelpers.{AtedViewSpec, MockAuthUtil}
 
 class PropertyDetailsInReliefSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil {
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
-  val injectedViewInstance = app.injector.instanceOf[views.html.propertyDetails.propertyDetailsInRelief]
-
-  implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
-"Property Details in-relief view" must {
-    behave like pageWithTitle(messages("ated.property-details-period.isInRelief.title"))
-    behave like pageWithHeader(messages("ated.property-details-period.isInRelief.header"))
-    behave like pageWithPreHeading(messages("ated.property-details.pre-header"))
-    behave like pageWithBackLink
-    behave like pageWithContinueButtonForm("/ated/liability/create/in-relief/save//period/2014")
-    behave like pageWithYesNoRadioButton("isInRelief-true", "isInRelief-false",
-    messages("ated.property-details-period.yes"),
-    messages("ated.property-details-period.no"))
-
-    "check page errors" in {
-      doc.getElementsMatchingOwnText(messages("ated.property-details-period.isInRelief.error-field-name")).hasText mustBe true
-      doc.getElementsMatchingOwnText(messages("ated.property-details-period-error.general.isInRelief")).hasText mustBe true
-    }
-  }
-
+  val injectedViewInstance: propertyDetailsInRelief = app.injector.instanceOf[views.html.propertyDetails.propertyDetailsInRelief]
   private val form = PropertyDetailsForms.periodsInAndOutReliefForm.withError("isInRelief",
     messages("ated.property-details-period.isInRelief.error-field-name"))
+
   override def view: Html = injectedViewInstance("",2014,  form, None, Html(""), Some("backLink"))
 
+  implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
+
+  "The Property Details Professionally Valued View page" must {
+    "have a the correct page title" in {
+      doc.title mustBe TitleBuilder.buildErrorTitle(messages("ated.property-details-period.isInRelief.title"))
+    }
+    "have the correct page header" in {
+      doc.getElementsByTag("h1").text() must include (messages("ated.property-details-period.isInRelief.header"))
+    }
+    "have the correct pre heading" in {
+      doc.getElementsByClass("govuk-caption-xl").text() mustBe ("This section is " + messages("ated.property-details.pre-header"))
+    }
+    "have a backlink" in {
+      doc.getElementsByClass("govuk-back-link").text mustBe "Back"
+    }
+    "have a continue button" in {
+      doc.getElementsByClass("govuk-button").text mustBe "Save and continue"
+    }
+    "have a yes/no radio button" in {
+      doc.getElementsByAttributeValue("for","isInRelief").text() mustBe messages("ated.property-details-value.yes")
+      doc.getElementsByAttributeValue("for","isInRelief-2").text() mustBe messages("ated.property-details-value.no")
+    }
+    "check page errors" in {
+      doc.getElementById("isInRelief-error").text() mustBe ("Error: " + messages("ated.property-details-period.isInRelief.error-field-name"))
+      doc.getElementsByClass("govuk-error-summary__list").text() mustBe messages("ated.property-details-period.isInRelief.error-field-name")
+    }
+  }
 }

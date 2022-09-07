@@ -169,8 +169,9 @@ class Setup {
             val document = Jsoup.parse(contentAsString(result))
             document.title() must be ("Has the value of your property changed for the purposes of ATED? - GOV.UK")
 
-            document.getElementById("backLinkHref").text must be("Back")
-            document.getElementById("backLinkHref").attr("href") must include("/ated/liability/create/summary/12345678901")
+            document.getElementsByClass("govuk-back-link").text must be("Back")
+            document.getElementsByClass("govuk-back-link").attr("href") must include("/ated/liability/create/summary/12345678901")
+
         }
       }
     }

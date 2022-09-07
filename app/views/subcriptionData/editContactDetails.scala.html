@@ -16,51 +16,49 @@
 
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
-@this(atedMain: atedMain, formHelper: FormWithCSRF)
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
+@import views.ViewUtils.titleBuilder
+
+@this(newMain: newMain, formHelper: FormWithCSRF, input: GovukInput, button: GovukButton, govukBackLink: GovukBackLink, govukErrorSummary: GovukErrorSummary)
 @(editContactDetailsForm: Form[models.EditContactDetails], serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
-@import uk.gov.hmrc.play.views.html.helpers._
-@import views.html.helpers._
 
-@implicitFormInstance = @{ Some(editContactDetailsForm) }
+@backLinkHtml = {
+    @if(backLink.isDefined) {
+        @govukBackLink(BackLink(
+            href = backLink.get,
+            content = Text("Back")
+        ))
+    }
+}
 
-@atedMain(title = messages("ated.contact-details.title"), serviceInfoContent = serviceInfoContent) {
+@newMain(title = titleBuilder(messages("ated.contact-details.title"), Some(editContactDetailsForm)), serviceInfoContent = serviceInfoContent) {
 
-  @pageHeadersAndError(backLink, "pre-heading", messages("ated.contact-details-edit.subheader"), "contact-details-header", messages("ated.contact-details.header"),
-      Some(atedErrorSummary(editContactDetailsForm, "ated.contact-details.error.general")))
+    @backLinkHtml
 
-  <div class="form-group">
-    <p id="contact-details-subheader"> @messages("ated.contact-details.subheader")</p>
-  </div>
+    @if(editContactDetailsForm.hasErrors) {
+        @govukErrorSummary(ErrorSummary().withFormErrorsAsText(editContactDetailsForm))
+    }
+
+    <h1 class="govuk-heading-xl govuk-!-margin-bottom-5">
+        <span class="govuk-visually-hidden">@messages("ated.screen-reader.section")</span>
+        <span class="govuk-caption-xl hmrc-caption-xl">@messages("ated.contact-details-edit.subheader")</span>
+        @messages("ated.contact-details.header")
+    </h1>
+
+    <p id="contact-details-subheader" class="govuk-body"> @messages("ated.contact-details.subheader")</p>
 
   @formHelper(action = controllers.subscriptionData.routes.EditContactDetailsController.submit) {
 
-    <div class="form-group">
 
       <div id="contact-address-form">
 
-        @atedInputNew(editContactDetailsForm("firstName"),
-        '_label -> Html(messages("ated.contact-details.firstName")),
-        '_labelClass -> "form-label-bold",
-        '_showConstraints -> false)
-
-        @atedInputNew(editContactDetailsForm("lastName"),
-        '_label -> Html(messages("ated.contact-details.lastName")),
-        '_labelClass -> "form-label-bold",
-        '_showConstraints -> false)
-
-        @atedInputNew(editContactDetailsForm("phoneNumber"),
-        '_label -> Html(messages("ated.contact-details.phoneNumber")),
-        '_labelClass -> "form-label-bold",
-        '_showConstraints -> false,
-        '_type -> "tel")
+        @input(Input(label = Label(content = Text(messages("ated.contact-details.firstName")))).withFormField(editContactDetailsForm("firstName")))
+        @input(Input(label = Label(content = Text(messages("ated.contact-details.lastName")))).withFormField(editContactDetailsForm("lastName")))
+        @input(Input(label = Label(content = Text(messages("ated.contact-details.phoneNumber"))), inputType = "tel").withFormField(editContactDetailsForm("phoneNumber")))
 
       </div>
 
-    </div>
-
-
-    <button class="button" id="submit" type="submit">@messages("ated.save-changes")</button>
-
+      @button(Button(content = Text(messages("ated.save-changes"))))
 
   }
 

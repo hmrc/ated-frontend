@@ -17,39 +17,74 @@
 package views.html
 
 import config.ApplicationConfig
-import forms.AtedForms
+import forms.AtedForms.returnTypeForm
 import models.StandardAuthRetrievals
-import org.scalatestplus.mockito.MockitoSugar
+import play.api.test.Injecting
 import play.twirl.api.Html
 import testhelpers.{AtedViewSpec, MockAuthUtil}
 
-class ReturnTypeSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil {
+class ReturnTypeSpec extends AtedViewSpec with MockAuthUtil with Injecting {
+
+  implicit val mockAppConfig: ApplicationConfig = inject[ApplicationConfig]
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
 
-  implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
-"Return Type view" must {
-    behave like pageWithTitle(messages("ated.return-type.title"))
-    behave like pageWithHeader(messages("ated.return-type.header"))
-    behave like pageWithPreHeading(messages("ated.return-type.pre-header"))
-    behave like pageWithBackLink
-    behave like pageWithButtonForm("/ated/return-type?periodKey=2014", messages("ated.return-type.button"))
-    behave like pageWithYesNoRadioButton("returnType-cr", "returnType-rr",
-      messages("ated.return-type.chargeable"),
-      messages("ated.return-type.relief-return"))
+  val injectedView = inject[views.html.returnType]
+  def view: Html = injectedView(2021, returnTypeForm, Html(""), Some("http://backLink"))
 
-    "check contents" in {
-      doc.getElementsContainingOwnText(messages("ated.return-type.header")).hasText must be(true)
+
+  "The ReturnType view" when {
+    "No data has been entered" must {
+
+      "have the correct page title" in {
+        doc.title() mustBe "Select a type of return - GOV.UK"
+      }
+
+      "have correct heading" in {
+        doc.getElementsByTag("h1").text must include("Select a type of return")
+      }
+
+      "have correct caption" in {
+        doc.getElementsByClass("govuk-caption-xl").text mustBe "This section is Create return"
+      }
+
+      "have a backLink" in {
+        val backLink = new CssSelector("a.govuk-back-link")
+        doc must backLink
+      }
+
+      behave like pageWithButtonForm("/ated/return-type?periodKey=2021", messages("ated.return-type.button"))
+      behave like pageWithYesNoRadioButton("returnType", "returnType-2",
+        messages("ated.return-type.chargeable"),
+        messages("ated.return-type.relief-return"))
+
     }
+    "Form is submitted with no data" must {
+      def view: Html = injectedView(2021, returnTypeForm.bind(Map("returnType" -> "")), Html(""), Some("http://backLink"))
 
-    "check page errors" in {
-      doc.getElementsMatchingOwnText(messages("ated.summary-return.return-type.error")).hasText mustBe true
-      doc.getElementsMatchingOwnText(messages("ated.return-type.error.general.returnType")).hasText mustBe true
+      "append 'Error: ' to the page title" in {
+        doc(view).title mustBe "Error: Select a type of return - GOV.UK"
+      }
+
+      "display an error summary" in {
+        val errorSummary = new CssSelector("div.govuk-error-summary")
+        doc(view) must errorSummary
+      }
+
+      "have 'There is a problem' h2" in {
+        doc(view).getElementsByTag("h2").first.text mustBe("There is a problem")
+      }
+
+      "have error message in the summary, linking to the field" in {
+        val errorLink = doc(view).select("ul.govuk-error-summary__list > li > a")
+
+        errorLink.text mustBe "Select an option for type of return"
+        errorLink.attr("href") mustBe "#returnType"
+      }
+
+      "have an error message displayed at the field" in {
+        doc(view).getElementById("returnType-error").text must include("Select an option for type of return")
+      }
     }
   }
-
-  private val form = AtedForms.returnTypeForm.withError("returnType",
-    messages("ated.summary-return.return-type.error"))
-  val injectedViewInstance = app.injector.instanceOf[views.html.returnType]
-  override def view: Html = injectedViewInstance(2014,  form, Html(""), Some("backLink"))
 
 }

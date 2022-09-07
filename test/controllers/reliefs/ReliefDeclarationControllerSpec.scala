@@ -17,7 +17,6 @@
 package controllers.reliefs
 
 import java.util.UUID
-
 import builders.{SessionBuilder, TitleBuilder}
 import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
@@ -38,7 +37,8 @@ import testhelpers.MockAuthUtil
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import utils.AtedConstants
-import views.html.BtaNavigationLinks
+import views.html.{BtaNavigationLinks, global_error}
+import views.html.reliefs.reliefDeclaration
 
 import scala.concurrent.Future
 
@@ -51,12 +51,12 @@ class ReliefDeclarationControllerSpec extends PlaySpec with GuiceOneServerPerSui
   val mockReliefsService: ReliefsService = mock[ReliefsService]
   val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
   val mockBackLinkCacheConnector: BackLinkCacheConnector = mock[BackLinkCacheConnector]
-    val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
+  val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
-  lazy val injectedViewInstance = app.injector.instanceOf[views.html.reliefs.reliefDeclaration]
-  lazy val injectedViewInstanceError = app.injector.instanceOf[views.html.global_error]
+  lazy val injectedViewInstance: reliefDeclaration = app.injector.instanceOf[views.html.reliefs.reliefDeclaration]
+  lazy val injectedViewInstanceError: global_error = app.injector.instanceOf[views.html.global_error]
 
   val periodKey = 2015
 
@@ -178,7 +178,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
 
   override def beforeEach(): Unit = {
 
-reset(mockReliefsService)
+    reset(mockReliefsService)
     reset(mockDelegationService)
     reset(mockDataCacheConnector)
     reset(mockBackLinkCacheConnector)

@@ -16,17 +16,37 @@
 
 @import config.featureswitch.FeatureSwitch
 @import config.ApplicationConfig
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+
+@this(govukWarningText : GovukWarningText, coopHousing: coopHousing)
 
 @(duringPeak: Boolean, currentYear: Int, taxYearStartingYear: Int)(implicit messages: Messages, appConfig: ApplicationConfig)
 
-@if(duringPeak){
-    @warning(messages("ated.account-summary.peak-guidance.warning", currentYear.toString, (currentYear + 1).toString))
-    @if(appConfig.isEnabled(FeatureSwitch.CooperativeHousing)){@coopHousing()}
-    <p>@messages("ated.account-summary.peak-guidance.text.1", currentYear.toString)</p>
-    <p>@messages("ated.account-summary.peak-guidance.text.2")</p>
-}else{
-    @warning(messages("ated.account-summary.outside-peak-guidance.warning"))
-    @if(appConfig.isEnabled(FeatureSwitch.CooperativeHousing)){@coopHousing()}
-    <p>@messages("ated.account-summary.outside-peak-guidance-part-one.text", (taxYearStartingYear + 1).toString, (taxYearStartingYear + 2).toString)</p>
-    <p>@messages("ated.account-summary.outside-peak-guidance-part-two.text", (taxYearStartingYear + 1).toString)</p>
-}
+    @if(duringPeak){
+
+        @govukWarningText(WarningText(
+            iconFallbackText = "Warning",
+            content = Text(messages("ated.account-summary.peak-guidance.warning", currentYear.toString, (currentYear + 1).toString))
+        ))
+
+        @if(appConfig.isEnabled(FeatureSwitch.CooperativeHousing)){
+            @coopHousing()
+        }
+
+        <p class="govuk-body">@messages("ated.account-summary.peak-guidance.text.1", currentYear.toString)</p>
+        <p class="govuk-body">@messages("ated.account-summary.peak-guidance.text.2")</p>
+
+    } else {
+
+        @govukWarningText(WarningText(
+            iconFallbackText = "Warning",
+            content = Text(messages("ated.account-summary.outside-peak-guidance.warning"))
+        ))
+
+        @if(appConfig.isEnabled(FeatureSwitch.CooperativeHousing)){
+            @coopHousing()
+        }
+
+        <p class="govuk-body">@messages("ated.account-summary.outside-peak-guidance-part-one.text", (taxYearStartingYear + 1).toString, (taxYearStartingYear + 2).toString)</p>
+        <p class="govuk-body">@messages("ated.account-summary.outside-peak-guidance-part-two.text", (taxYearStartingYear + 1).toString)</p>
+    }

@@ -17,56 +17,65 @@
 @import org.joda.time.LocalDate
 @import models._
 @import config.ApplicationConfig
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
+@import views.ViewUtils.titleBuilder
 @import play.twirl.api.HtmlFormat
-
-@this(atedMain: atedMain, formHelper: FormWithCSRF)
-@(id: String, periodKey: Int, propertyDetailsForm: Form[PropertyDetailsNewBuildValue], mode: Option[String], serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String], date: LocalDate)(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
-@import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
 @import _root_.utils._
 @import utils.AtedUtils.intToMonth
 
+@this(newMain: newMain,
+        govukInput : GovukInput,
+        govukButton : GovukButton,
+        govukDetails : GovukDetails,
+        govukErrorSummary : GovukErrorSummary,
+        govukBackLink : GovukBackLink,
+        formHelper: FormWithCSRF)
+
+
+@(id: String, periodKey: Int, propertyDetailsForm: Form[PropertyDetailsNewBuildValue], mode: Option[String], serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String], date: LocalDate)(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
+
+
 @implicitFormInstance = @{
-Some(propertyDetailsForm)
+    Some(propertyDetailsForm)
 }
 
-@pageScripts = {
-<script src='@controllers.routes.Assets.versioned("javascript/show-hide-content.js")'></script>
-<script src='@controllers.routes.Assets.versioned("javascript/propertyDetailsNewBuild.js")'></script>
-<script>
-    $(document).ready(function() {
-     // Where .multiple-choice uses the data-target attribute
-      // to toggle hidden content
-      var showHideContent = new GOVUK.ShowHideContent()
-      showHideContent.init()
-    });
-  </script>
+@backLinkHtml = {
+    @if(backLink.isDefined) {
+        @govukBackLink(BackLink(
+            href = backLink.get,
+            content = Text("Back")
+        ))
+    }
 }
 
+@newMain(title = titleBuilder(messages("ated.property-details-value.newBuildValue.title",date.dayOfMonth().get().toString, intToMonth(date.monthOfYear().get()), date.year().get().toString), Some(propertyDetailsForm)),
+serviceInfoContent = serviceInfoContent) {
 
-@atedMain(title = messages("ated.property-details-value.newBuildValue.title",date.dayOfMonth().get().toString, intToMonth(date.monthOfYear().get()), date.year().get().toString),
-serviceInfoContent = serviceInfoContent,
-pageScripts = Some(pageScripts)) {
+    @backLinkHtml
 
-@pageHeadersAndError(backLink, "pre-heading", messages(AtedUtils.getPropertyDetailsPreHeader(mode)), messages("property-details-header"), messages("ated.property-details-value.newBuildValue.header",  date.dayOfMonth().get().toString, intToMonth(date.monthOfYear().get()), date.year().get().toString),
-Some(atedErrorWithBoundarySummary(propertyDetailsForm, "ated.property-details-value-error.general", None, periodKey)))
+    @if(propertyDetailsForm.errors.nonEmpty) {
+        @govukErrorSummary(ErrorSummary().withFormErrorsAsText(propertyDetailsForm))
+    }
 
-@formHelper(action = controllers.propertyDetails.routes.PropertyDetailsNewBuildValueController.save(id, periodKey, mode, date)) {
+    @formHelper(action = controllers.propertyDetails.routes.PropertyDetailsNewBuildValueController.save(id, periodKey, mode, date)) {
 
-    <div>
-        @atedInputValue(propertyDetailsForm("newBuildValue"),
-        '_label -> messages("ated.property-details-value.newBuildValue.newBuildValueQuestion"),
-        '_labelClass -> "visuallyhidden",
-        '_inputClass -> "form-control-indent",
-        '_hintText -> messages("ated.property-details-value.newBuildValue.hintText"),
-        '_id -> "newBuildValue",
-        '_showConstraints -> false,
-        '_type -> "text")
-    </div>
+        @govukInput(Input(
+            classes = "govuk-input--width-10",
+            hint = Some(Hint(
+                content = Text(messages("ated.property-details-value.newBuildValue.hintText")))),
+            prefix = Some(PrefixOrSuffix(content = Text("£")))
+            ).withFormField(propertyDetailsForm("newBuildValue"))
+            .withHeadingAndSectionCaption(
+                heading = Text(messages("ated.property-details-value.newBuildValue.header", date.dayOfMonth().get().toString, intToMonth(date.monthOfYear().get()), date.year().get().toString)),
+                sectionCaption = Text(messages(AtedUtils.getPropertyDetailsPreHeader(mode)))
+        ))
 
-<button class="button" id="submit" type="submit">@messages("ated.save-and-continue")</button>
-
-
-}
+        @govukButton(Button(
+            content = Text(messages("ated.save-and-continue")),
+            attributes = Map("id" -> "submit")
+        ))
+    }
 
 }

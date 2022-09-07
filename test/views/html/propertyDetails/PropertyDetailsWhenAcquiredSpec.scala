@@ -27,30 +27,46 @@ class PropertyDetailsWhenAcquiredSpec extends AtedViewSpec with MockAuthUtil {
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
 
   implicit val appConfig: ApplicationConfig = mock[ApplicationConfig]
-  val injectedViewInstance = app.injector.instanceOf[views.html.propertyDetails.propertyDetailsWhenAcquired]
-
-  "Property Details New Build Value view" must {
-    behave like pageWithTitle(messages("ated.property-details-value.whenAcquired.title"))
-    behave like pageWithHeader(messages("ated.property-details-value.whenAcquired.header"))
-    behave like pageWithElement("whenAcquired")
-    behave like pageWithBackLink
-    behave like pageWithContinueButtonForm(s"/ated/liability/create/when-acquired/save/0/period/0")
-
-    "return an error when the date is in the future" in {
-      val form = PropertyDetailsForms.propertyDetailsWhenAcquiredDatesForm.withError("acquiredDate", "ated.property-details-value-error.whenAcquired.futureDateError")
-      val newDoc = doc(injectedViewInstance("0", 0, form, None, Html(""), Some("backLink")))
-      newDoc.getElementsMatchingOwnText(messages("ated.property-details-value-error.whenAcquired.futureDateError")).hasText mustBe true
-    }
-
-    "return an error when the date is invalid" in {
-      val form = PropertyDetailsForms.propertyDetailsWhenAcquiredDatesForm.withError("acquiredDate", "ated.property-details-value-error.whenAcquired.invalidDateError")
-      val newDoc = doc(injectedViewInstance("0", 0, form, None, Html(""), Some("backLink")))
-      newDoc.getElementsMatchingOwnText(messages("ated.property-details-value-error.whenAcquired.invalidDateError")).hasText mustBe true
-    }
-  }
+  val injectedViewInstance: propertyDetailsWhenAcquired = app.injector.instanceOf[views.html.propertyDetails.propertyDetailsWhenAcquired]
 
   private val form = PropertyDetailsForms.propertyDetailsWhenAcquiredDatesForm
 
   override def view: Html = injectedViewInstance("0", 0, form, None, Html(""), Some("backLink"))
 
+  "The property details acquisition view for a valid form" must {
+    "have the correct page title" in {
+      doc.title mustBe (messages("ated.property-details-value.whenAcquired.title") + " - GOV.UK")
+    }
+
+    "have the correct header" in {
+      doc.getElementsByTag("h1").text() must include (messages("ated.property-details-value.whenAcquired.header"))
+    }
+
+    "have the correct pre heading" in {
+      doc.getElementsByClass("govuk-caption-xl").text() mustBe ("This section is " + messages("ated.property-details.pre-header"))
+    }
+
+    "have a backlink" in {
+      doc.getElementsByClass("govuk-back-link").text() mustBe "Back"
+    }
+
+    "have a continue button" in {
+      doc.getElementsByClass("govuk-button").text() mustBe "Save and continue"
+    }
+
+    "have a date input" in {
+      doc.getElementById("acquiredDate").className mustBe "govuk-date-input"
+    }
+
+    "have the correct errors when the date is in the future" in {
+      val form = PropertyDetailsForms.propertyDetailsWhenAcquiredDatesForm.withError("acquiredDate", "ated.property-details-value-error.whenAcquired.futureDateError")
+      val newDoc = doc(injectedViewInstance("0", 0, form, None, Html(""), Some("backLink")))
+      newDoc.getElementById("acquiredDate-error").text() mustBe ("Error: " + messages("ated.property-details-value-error.whenAcquired.futureDateError"))
+    }
+    "have the correct errors when the date is invalid" in {
+      val form = PropertyDetailsForms.propertyDetailsWhenAcquiredDatesForm.withError("acquiredDate", "ated.property-details-value-error.whenAcquired.invalidDateError")
+      val newDoc = doc(injectedViewInstance("0", 0, form, None, Html(""), Some("backLink")))
+      newDoc.getElementsByClass("govuk-error-summary__list").text() mustBe messages("ated.property-details-value-error.whenAcquired.invalidDateError")
+    }
+  }
 }

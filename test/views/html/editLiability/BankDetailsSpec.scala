@@ -19,6 +19,8 @@ package views.html.editLiability
 import config.ApplicationConfig
 import forms.BankDetailForms
 import models.StandardAuthRetrievals
+import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.data.{Form, FormError}
 import play.twirl.api.Html
@@ -29,15 +31,21 @@ class BankDetailsSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil {
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
   val injectedViewInstance = app.injector.instanceOf[views.html.editLiability.bankDetails]
+  private val form = BankDetailForms.bankDetailsForm
+  override def view: Html = injectedViewInstance(form, "oldFormBundleNo", Html(""), Some("backLink"))
+  override def doc: Document = Jsoup.parse(view.toString())
+  override def doc(view: Html): Document = Jsoup.parse(view.toString())
 
 "Bank Details view" must {
 
     behave like pageWithTitle(messages("ated.bank-details.title"))
-    behave like pageWithHeader(messages("ated.bank-details.title"))
-    behave like pageWithPreHeading(messages("ated.property-details.pre-header-change"))
-    behave like pageWithBackLink
+  doc.getElementsByTag("h1").text.contains(messages("ated.bank-details.title"))
+  doc.getElementsByTag("h1").text.contains(messages("ated.property-details.pre-header-change"))
+  doc.getElementsByClass("govuk-back-link").text === "Back"
+  doc.getElementsByClass("govuk-back-link").attr("href") === "http://backLink"
+//    behave like pageWithBackLink
     behave like pageWithContinueButtonForm("/ated/liability/oldFormBundleNo/change/bank-details")
-    behave like pageWithYesNoRadioButton("hasUKBankAccount-true", "hasUKBankAccount-false",
+    behave like pageWithYesNoRadioButton("hasUKBankAccount", "hasUKBankAccount-2",
       messages("ated.label.yes"),
       messages("ated.label.no"))
 
@@ -50,35 +58,35 @@ class BankDetailsSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil {
        def view: Html = injectedViewInstance(eform, "oldFormBundleNo", Html(""), Some("backLink"))
       val errorDoc = doc(view)
 
-      errorDoc.getElementsMatchingOwnText(messages("ated.bank-details.error-key.accountName.empty")).hasText mustBe true
-      errorDoc.getElementsMatchingOwnText(messages("ated.bank-details.error-key.accountName")).hasText mustBe true
-      errorDoc.getElementsMatchingOwnText(messages("ated.bank-details.error-key.accountNumber.empty")).hasText mustBe true
-      errorDoc.getElementsMatchingOwnText(messages("ated.bank-details.error-key.accountNumber")).hasText mustBe true
-      errorDoc.getElementsMatchingOwnText(messages("ated.bank-details.error-key.sortCode.empty")).hasText mustBe true
-      errorDoc.getElementsMatchingOwnText(messages("ated.bank-details.error-key.sortCode")).hasText mustBe true
+      errorDoc.select("ul.govuk-error-summary__list > li > a").get(0).text() mustBe "Enter the name of the bank account holder"
+      errorDoc.select("ul.govuk-error-summary__list > li > a").get(1).text() mustBe "Enter an account number"
+      errorDoc.select("ul.govuk-error-summary__list > li > a").get(2).text() mustBe "Enter a sort code"
+      errorDoc.getElementById("accountNumber-error").text() mustBe "Error: Enter an account number"
+      errorDoc.getElementById("sortCode-error").text() mustBe "Error: Enter a sort code"
+      errorDoc.getElementById("accountName-error").text() mustBe "Error: Enter the name of the bank account holder"
     }
 
     "check page errors for non uk account" in {
       val eform = Form(form.mapping, Map("hasUKBankAccount" -> "false"),
         Seq(FormError("accountName", messages("ated.bank-details.error-key.accountName.empty")),
-        FormError("bicSwiftCode", messages("ated.bank-details.error-key.iban.empty")),
-        FormError("iban", messages("ated.bank-details.error-key.bicSwiftCode.empty")))
+        FormError("iban", messages("ated.bank-details.error-key.iban.empty")),
+        FormError("bicSwiftCode", messages("ated.bank-details.error-key.bicSwiftCode.empty")))
         , form.value)
        def view: Html = injectedViewInstance(eform, "oldFormBundleNo", Html(""), Some("backLink"))
       val errorDoc = doc(view)
 
-      errorDoc.getElementsMatchingOwnText(messages("ated.bank-details.error-key.accountName.empty")).hasText mustBe true
-      errorDoc.getElementsMatchingOwnText(messages("ated.bank-details.error-key.accountName")).hasText mustBe true
-      errorDoc.getElementsMatchingOwnText(messages("ated.bank-details.error-key.iban.empty")).hasText mustBe true
-      errorDoc.getElementsMatchingOwnText(messages("ated.bank-details.error-key.iban")).hasText mustBe true
-      errorDoc.getElementsMatchingOwnText(messages("ated.bank-details.error-key.bicSwiftCode.empty")).hasText mustBe true
-      errorDoc.getElementsMatchingOwnText(messages("ated.bank-details.error-key.bicSwiftCode")).hasText mustBe true
+      errorDoc.select("ul.govuk-error-summary__list > li > a").get(0).text() mustBe "Enter the name of the bank account holder"
+      errorDoc.select("ul.govuk-error-summary__list > li > a").get(1).text() mustBe "Enter an IBAN"
+      errorDoc.select("ul.govuk-error-summary__list > li > a").get(2).text() mustBe "Enter a SWIFT code"
+      errorDoc.getElementById("bicSwiftCode-error").text() mustBe "Error: Enter a SWIFT code"
+      errorDoc.getElementById("iban-error").text() mustBe "Error: Enter an IBAN"
+      errorDoc.getElementById("accountName-error").text() mustBe "Error: Enter the name of the bank account holder"
     }
   }
 
   "Bank details" must {
     "have account name " in {
-      doc must haveInputLabelWithText("accountName", messages("ated.bank-details.uk-bank-account.name.label"))
+      doc.select("#name-of-person > div > label").text() mustBe messages("ated.bank-details.uk-bank-account.name.label")
     }
 
     "have account number" in {
@@ -86,9 +94,7 @@ class BankDetailsSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil {
     }
 
     "have sort code" in {
-      doc must haveInputLabelWithText("sortCode_firstElement", messages("First two numbers"))
-      doc must haveInputLabelWithText("sortCode_secondElement", messages("Second two numbers"))
-      doc must haveInputLabelWithText("sortCode_thirdElement", messages("Third two numbers"))
+      doc must haveInputLabelWithText("sortCode", messages("Sort code"))
     }
 
     "have iban code" in {
@@ -100,9 +106,5 @@ class BankDetailsSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil {
     }
 
   }
-
-
-  private val form = BankDetailForms.bankDetailsForm
-  override def view: Html = injectedViewInstance(form, "oldFormBundleNo", Html(""), Some("backLink"))
 
 }

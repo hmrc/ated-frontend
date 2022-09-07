@@ -22,35 +22,38 @@ import models.StandardAuthRetrievals
 import org.joda.time.format.DateTimeFormat
 import org.joda.time.{DateTimeZone, LocalDate}
 import org.jsoup.Jsoup
-import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
+import org.scalatest.featurespec.AnyFeatureSpec
+import org.scalatest.{BeforeAndAfterEach, GivenWhenThen}
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.i18n.{Messages, MessagesApi}
+import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import play.twirl.api.Html
 import testhelpers.MockAuthUtil
 import utils.PeriodUtils
 import utils.PeriodUtils._
+import views.html.editLiability.editLiabilitySummary
 
-class editLiabilitySummarySpec extends FeatureSpec with GuiceOneServerPerSuite with MockitoSugar
+class editLiabilitySummarySpec extends AnyFeatureSpec with GuiceOneServerPerSuite with MockitoSugar
   with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
 
-  implicit val request = FakeRequest()
+  implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
 
-  val injectedViewInstance = app.injector.instanceOf[views.html.editLiability.editLiabilitySummary]
+  val injectedViewInstance: editLiabilitySummary = app.injector.instanceOf[views.html.editLiability.editLiabilitySummary]
 
   val thisYear: Int = calculatePeakStartYear()
   val nextYear: Int = thisYear + 1
 
   def formatDate(date: LocalDate): String = DateTimeFormat.forPattern("d MMMM yyyy").withZone(DateTimeZone.forID("Europe/London")).print(date)
-  feature("The user can view their property details summary before they submit it") {
+  Feature("The user can view their property details summary before they submit it") {
 
     info("as a client i want to be my property details summary")
 
-    scenario("Amended charge with periods") {
+    Scenario("Amended charge with periods") {
 
       Given("the client is creating a new liability and want to add multiple periods")
       When("The user views the page")
@@ -65,25 +68,24 @@ class editLiabilitySummarySpec extends FeatureSpec with GuiceOneServerPerSuite w
       val document = Jsoup.parse(html.toString())
 
       Then("The header should match - Check your details are correct")
-      assert(document.getElementById("edit-liability-summary-header").text === "Check your details are correct")
+      assert(document.getElementsByTag("h1").text contains "Check your details are correct")
 
       Then("The subheader should be - Change return")
-      assert(document.getElementById("pre-heading").text() === "This section is: Change return")
+      assert(document.getElementsByClass("govuk-caption-xl").text() equals "This section is: Change return")
 
       assert(document.getElementById("details-text").text() === s"For the ATED period from " +
         s"${formatDate(periodStartDate(calculatePeakStartYear()))} to ${formatDate(periodEndDate(calculatePeakStartYear()))}.")
       assert(document.getElementById("edit-liability-header").text() === "Property details")
-
       assert(document.getElementById("property-address-label").text() === "Address")
       assert(document.getElementById("property-title-number-label").text() === "Property’s title number")
       assert(document.getElementById("property-value-header").text() === "Value of the property")
       assert(document.getElementById("property-value-label-0").text() === "Value for the purposes of ATED")
       assert(document.getElementById("property-date-of-valuation-label-0").text() === "Professionally valued")
       assert(document.getElementById("dates-of-liability-header").text() === "Dates of liability")
-      assert(document.getElementById("return-type-0").text === "Liable for charge")
-      assert(document.getElementById("period-0").text === "1 April " + thisYear + " to 31 August "  + thisYear)
-      assert(document.getElementById("return-type-1").text === "Rental business")
-      assert(document.getElementById("period-1").text === "1 September " + thisYear + " to 31 March " + nextYear)
+      assert(document.getElementById("return-type-0").text() === "Liable for charge")
+      assert(document.getElementById("period-0").text() === "1 April " + thisYear + " to 31 August "  + thisYear)
+      assert(document.getElementById("return-type-1").text() === "Rental business")
+      assert(document.getElementById("period-1").text() === "1 September " + thisYear + " to 31 March " + nextYear)
       assert(document.getElementById("return-type-2") === null)
       assert(document.getElementById("period-2") === null)
       assert(document.getElementById("supporting-info-header").text() === "Supporting information")
@@ -99,10 +101,10 @@ class editLiabilitySummarySpec extends FeatureSpec with GuiceOneServerPerSuite w
       assert(document.getElementById("ated-charge-value").text() === "£1,000")
 
       Then("The back link is correct")
-      assert(document.getElementById("backLinkHref").text === "Back")
+      assert(document.getElementsByClass("govuk-back-link").text === "Back")
     }
 
-    scenario("Changed charge with periods") {
+    Scenario("Changed charge with periods") {
 
       Given("the client is creating a new liability and want to add multiple periods")
       When("The user views the page")
@@ -117,10 +119,10 @@ class editLiabilitySummarySpec extends FeatureSpec with GuiceOneServerPerSuite w
       val document = Jsoup.parse(html.toString())
 
       Then("The header should match - Check your details are correct")
-      assert(document.getElementById("edit-liability-summary-header").text === "Check your details are correct")
+      assert(document.getElementsByTag("h1").text contains  "Check your details are correct")
 
       Then("The subheader should be - Change return")
-      assert(document.getElementById("pre-heading").text() === "This section is: Change return")
+      assert(document.getElementsByClass("govuk-caption-xl").text() === "This section is: Change return")
 
       assert(document.getElementById("details-text").text() === s"For the ATED period from " +
         s"${formatDate(periodStartDate(calculatePeakStartYear()))} to ${formatDate(periodEndDate(calculatePeakStartYear()))}.")
@@ -132,10 +134,10 @@ class editLiabilitySummarySpec extends FeatureSpec with GuiceOneServerPerSuite w
       assert(document.getElementById("property-value-label-0").text() === "Value for the purposes of ATED")
       assert(document.getElementById("property-date-of-valuation-label-0").text() === "Professionally valued")
       assert(document.getElementById("dates-of-liability-header").text() === "Dates of liability")
-      assert(document.getElementById("return-type-0").text === "Liable for charge")
-      assert(document.getElementById("period-0").text === "1 April " + thisYear + " to 31 August "  + thisYear)
-      assert(document.getElementById("return-type-1").text === "Rental business")
-      assert(document.getElementById("period-1").text === "1 September " + thisYear + " to 31 March " + nextYear)
+      assert(document.getElementById("return-type-0").text() === "Liable for charge")
+      assert(document.getElementById("period-0").text() === "1 April " + thisYear + " to 31 August "  + thisYear)
+      assert(document.getElementById("return-type-1").text() === "Rental business")
+      assert(document.getElementById("period-1").text() === "1 September " + thisYear + " to 31 March " + nextYear)
       assert(document.getElementById("return-type-2") === null)
       assert(document.getElementById("period-2") === null)
       assert(document.getElementById("supporting-info-header").text() === "Supporting information")
@@ -151,11 +153,11 @@ class editLiabilitySummarySpec extends FeatureSpec with GuiceOneServerPerSuite w
       assert(document.getElementById("ated-charge-value").text() === "£1,000")
 
       Then("The back link is correct")
-      assert(document.getElementById("backLinkHref").text === "Back")
-      assert(document.getElementById("backLinkHref").attr("href") === "http://backLink")
+      assert(document.getElementsByClass("govuk-back-link").text === "Back")
+      assert(document.getElementsByClass("govuk-back-link").attr("href") === "http://backLink")
     }
 
-    scenario("Further Charge the basic summary with no periods") {
+    Scenario("Further Charge the basic summary with no periods") {
 
       Given("the client is creating a new liability and want to add multiple periods")
       When("The user views the page")
@@ -168,10 +170,10 @@ class editLiabilitySummarySpec extends FeatureSpec with GuiceOneServerPerSuite w
       val document = Jsoup.parse(html.toString())
 
       Then("The header should match - Check your details are correct")
-      assert(document.getElementById("edit-liability-summary-header").text === "Check your details are correct")
+      assert(document.getElementsByTag("h1").text contains "Check your details are correct")
 
       Then("The subheader should be - Change return")
-      assert(document.getElementById("pre-heading").text() === "This section is: Change return")
+      assert(document.getElementsByClass("govuk-caption-xl").text() === "This section is: Change return")
 
       assert(document.getElementById("details-text").text() === s"For the ATED period from " +
         s"${formatDate(periodStartDate(calculatePeakStartYear()))} to ${formatDate(periodEndDate(calculatePeakStartYear()))}.")
@@ -198,8 +200,8 @@ class editLiabilitySummarySpec extends FeatureSpec with GuiceOneServerPerSuite w
       assert(document.getElementById("ated-charge-value").text() === "£1,000")
 
       Then("The back link is correct")
-      assert(document.getElementById("backLinkHref").text === "Back")
-      assert(document.getElementById("backLinkHref").attr("href") === "http://backLink")
+      assert(document.getElementsByClass("govuk-back-link").text === "Back")
+      assert(document.getElementsByClass("govuk-back-link").attr("href") === "http://backLink")
     }
   }
 

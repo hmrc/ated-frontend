@@ -17,7 +17,6 @@
 package controllers.subscriptionData
 
 import java.util.UUID
-
 import builders.{SessionBuilder, TitleBuilder}
 import config.ApplicationConfig
 import connectors.DataCacheConnector
@@ -41,6 +40,7 @@ import testhelpers.MockAuthUtil
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import views.html.BtaNavigationLinks
+import views.html.subcriptionData.registeredDetails
 
 import scala.concurrent.Future
 
@@ -54,11 +54,11 @@ class RegisteredDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSui
   val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
   val mockDetailsService: DetailsService = mock[DetailsService]
   val mockSubscriptionDataService: SubscriptionDataService = mock[SubscriptionDataService]
-    val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
+  val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
-  val injectedViewInstance = app.injector.instanceOf[views.html.subcriptionData.registeredDetails]
+  val injectedViewInstance: registeredDetails = app.injector.instanceOf[views.html.subcriptionData.registeredDetails]
 
 class Setup {
 
@@ -149,19 +149,19 @@ class Setup {
 
               document.title() must be (TitleBuilder.buildTitle("Edit business name and address"))
               assert(document.getElementById("service-info-list").text() === "Home Manage account Messages Help and contact")
-              document.getElementById("registered-details-header").text() must be("Edit business name and address")
-              document.getElementById("registered-address-line-1").attr("value") must be("")
-              document.getElementById("registered-address-line-2").attr("value") must be("")
-              document.getElementById("registered-address-line-3").attr("value") must be("")
-              document.getElementById("registered-address-line-4").attr("value") must be("")
-              document.getElementById("addressDetails-postalCode").attr("value") must be("")
-              document.getElementById("registered-country_field").text() must include("Country")
-              document.getElementById("submit").text() must be("Save")
+              document.select("h1").text() must include("Edit business name and address")
+              document.getElementById("addressDetails.addressLine1").attr("value") must be("")
+              document.getElementById("addressDetails.addressLine2").attr("value") must be("")
+              document.getElementById("addressDetails.addressLine3").attr("value") must be("")
+              document.getElementById("addressDetails.addressLine4").attr("value") must be("")
+              document.getElementById("addressDetails.postalCode").attr("value") must be("")
+              document.getElementsByAttributeValue("for", "addressDetails.countryCode").text() must include("Country")
+              document.getElementsByTag("button").text() must be("Save")
           }
         }
 
         "show the Registered details view with populated data" in new Setup {
-          val businessPartnerDetails = RegisteredDetails(isEditable = false, "testName",
+          val businessPartnerDetails: RegisteredDetails = RegisteredDetails(isEditable = false, "testName",
             RegisteredAddressDetails(addressLine1 = "bpline1",
               addressLine2 = "bpline2",
               addressLine3 = Some("bpline3"),
@@ -174,14 +174,14 @@ class Setup {
               val document = Jsoup.parse(contentAsString(result))
 
               document.title() must be (TitleBuilder.buildTitle("Edit business name and address"))
-              document.getElementById("registered-details-header").text() must be("Edit business name and address")
-              document.getElementById("registered-address-line-1").attr("value") must be("bpline1")
-              document.getElementById("registered-address-line-2").attr("value") must be("bpline2")
-              document.getElementById("registered-address-line-3").attr("value") must be("bpline3")
-              document.getElementById("registered-address-line-4").attr("value") must be("bpline4")
-              document.getElementById("addressDetails-postalCode").attr("value") must be("postCode")
-              document.getElementById("registered-country_field").text() must include("Country")
-              document.getElementById("submit").text() must be("Save")
+              document.select("h1").text() must include("Edit business name and address")
+              document.getElementById("addressDetails.addressLine1").attr("value") must be("bpline1")
+              document.getElementById("addressDetails.addressLine2").attr("value") must be("bpline2")
+              document.getElementById("addressDetails.addressLine3").attr("value") must be("bpline3")
+              document.getElementById("addressDetails.addressLine4").attr("value") must be("bpline4")
+              document.getElementById("addressDetails.postalCode").attr("value") must be("postCode")
+              document.getElementsByAttributeValue("for", "addressDetails.countryCode").text() must include("Country")
+              document.getElementsByTag("button").text() must be("Save")
           }
         }
       }
@@ -255,10 +255,10 @@ class Setup {
               result =>
                 status(
                   result) must be(BAD_REQUEST)
-                contentAsString(result) must include("You must enter Business name")
-                contentAsString(result) must include("You must enter Address line 1")
-                contentAsString(result) must include("You must enter Address line 2")
-                contentAsString(result) must include("You must enter Country")
+                contentAsString(result) must include("You must enter a business name")
+                contentAsString(result) must include("You must enter address line 1")
+                contentAsString(result) must include("You must enter address line 2")
+                contentAsString(result) must include("You must enter a country")
             }
           }
 
@@ -278,10 +278,10 @@ class Setup {
               result =>
                 status(
                   result) must be(BAD_REQUEST)
-                contentAsString(result) must include("You must enter Business name")
-                contentAsString(result) must include("You must enter Address line 1")
-                contentAsString(result) must include("You must enter Address line 2")
-                contentAsString(result) must include("You must enter Country")
+                contentAsString(result) must include("You must enter a business name")
+                contentAsString(result) must include("You must enter address line 1")
+                contentAsString(result) must include("You must enter address line 2")
+                contentAsString(result) must include("You must enter a country")
             }
           }
 
@@ -306,7 +306,7 @@ class Setup {
                 contentAsString(result) must include("Address line 3 cannot be more than 35 characters")
                 contentAsString(result) must include("Address line 4 cannot be more than 35 characters")
                 contentAsString(result) must include("You must enter a valid postcode")
-                contentAsString(result) must include("You must enter Country")
+                contentAsString(result) must include("You must enter a country")
             }
           }
         }

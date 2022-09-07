@@ -16,107 +16,78 @@
 
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
+@import views.ViewUtils.titleBuilder
 
-@this(atedMain: atedMain, formHelper: FormWithCSRF)
+@this(newMain: newMain, formHelper: FormWithCSRF, input: GovukInput, errorSummary: GovukErrorSummary, select: GovukSelect, govukBackLink: GovukBackLink, button: GovukButton, fieldset: GovukFieldset)
 @(registeredDetailsForm: Form[models.RegisteredDetails], listOfIsoCode: List[(String, String)], serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
-@import uk.gov.hmrc.play.views.html.helpers._
-@import views.html.helpers._
 
 @pageScripts = {
-<script src='@controllers.routes.Assets.versioned("javascript/accessible-autocomplete.min.js")'></script>
-<script>
-    $(document).ready(function() {
-
-      accessibleAutocomplete.enhanceSelectElement({
-        selectElement: document.querySelector('#countryCode')
-      })
-
-    });
-  </script>
+    <script src='@controllers.routes.Assets.versioned("javascript/autocomplete.min.js")'></script>
+    <script>
+        accessibleAutocomplete.enhanceSelectElement({
+            defaultValue: '',
+            selectElement: document.querySelector('#addressDetails\\.countryCode')
+        });
+    </script>
 }
 
-@implicitFormInstance = @{ Some(registeredDetailsForm) }
+@backLinkHtml = {
+    @if(backLink.isDefined) {
+        @govukBackLink(BackLink(
+            href = backLink.get,
+            content = Text("Back")
+        ))
+    }
+}
 
-@atedMain(title = messages("ated.registered-details.title"), serviceInfoContent = serviceInfoContent, pageScripts = Some(pageScripts)) {
+@newMain(title = titleBuilder(messages("ated.registered-details.title"), Some(registeredDetailsForm)), serviceInfoContent = serviceInfoContent, pageScripts = Some(pageScripts)) {
 
+    @backLinkHtml
 
-  @pageHeadersAndError(backLink, "pre-header", messages("ated.company-details.preheader"), "registered-details-header", messages("ated.registered-details.header"),
-      Some(atedErrorSummary(registeredDetailsForm, "ated.registered-address.error.general")))
+    @if(registeredDetailsForm.hasErrors) {
+        @errorSummary(ErrorSummary().withFormErrorsAsText(registeredDetailsForm))
+    }
+
+    <h1 class="govuk-heading-xl govuk-!-margin-bottom-5">
+        <span class="govuk-visually-hidden">@messages("ated.screen-reader.section")</span>
+        <span class="govuk-caption-xl hmrc-caption-xl">@messages("ated.company-details.preheader")</span>
+        @messages("ated.registered-details.header")
+    </h1>
 
   @formHelper(action = controllers.subscriptionData.routes.RegisteredDetailsController.submit) {
     <div class="form-group">
 
       <div id="registered-address-form">
 
-        @atedInputNew(registeredDetailsForm("name"),
-          '_id -> "business-name",
-          '_label ->  Html(messages("ated.registered-details.business-name")),
-          '_labelClass -> "form-label-bold",
-          '_showConstraints -> false)
-
-        @atedInputNew(registeredDetailsForm("addressDetails.addressLine1"),
-          '_id -> "registered-address-line-1",
-          '_label ->  Html(messages("ated.address.address")),
-          '_labelClass -> "form-label-bold",
-          '_showConstraints -> false)
-
-        @atedInputNew(registeredDetailsForm("addressDetails.addressLine2"),
-          '_id -> "registered-address-line-2",
-          '_label ->  Html(messages("ated.address.line-2")),
-          '_labelClass ->  "visuallyhidden",
-          '_showConstraints -> false)
-
-        @atedInputNew(registeredDetailsForm("addressDetails.addressLine3"),
-          '_id -> "registered-address-line-3",
-          '_label ->  Html(messages("ated.address.line-3")),
-          '_labelClass ->  "visuallyhidden",
-          '_showConstraints -> false)
-
-        @atedInputNew(registeredDetailsForm("addressDetails.addressLine4"),
-          '_id -> "registered-address-line-4",
-          '_label ->  Html(messages("ated.address.line-4")),
-          '_labelClass ->  "visuallyhidden",
-          '_showConstraints -> false)
-
-        @atedDropdown(
-          registeredDetailsForm("addressDetails.countryCode"),
-          elementOptions = listOfIsoCode,
-          displayEmptyValue = false,
-          '_id -> "registered-country",
-          '_labelClass -> "form-label-bold",
-          '_label -> Html(messages("ated.address.country")))
+      @input(Input(label = Label(content = Text(messages("ated.businessName")))).withFormField(registeredDetailsForm("name")))
+      @input(Input(label = Label(content = Text(messages("ated.addressLine1")))).withFormField(registeredDetailsForm("addressDetails.addressLine1")))
+      @input(Input(label = Label(content = Text(messages("ated.addressLine2")))).withFormField(registeredDetailsForm("addressDetails.addressLine2")))
+      @input(Input(label = Label(content = Text(messages("ated.addressLine3"))), classes = "govuk-!-width-two-thirds").withFormField(registeredDetailsForm("addressDetails.addressLine3")))
+      @input(Input(label = Label(content = Text(messages("ated.addressLine4"))), classes = "govuk-!-width-two-thirds").withFormField(registeredDetailsForm("addressDetails.addressLine4")))
+      @select(Select(
+          label = Label(content = Text(messages("ated.country"))),
+          items = Seq(SelectItem(Some(""), "Select a country")) ++ listOfIsoCode.map {
+              case (code, country) => SelectItem(
+                  value = Some(code),
+                  text = country)
+          }
+      ).withFormField(registeredDetailsForm("addressDetails.countryCode")))
 
       </div>
 
     </div>
 
-    <div class="form-group">
-        <button class="button" id="submit" type="submit">@messages("ated.registered-details.save")</button>
-    </div>
+    @button(Button(content = Text(messages("ated.registered-details.save"))))
 
     <div class="form-group">
-      @atedInput(registeredDetailsForm("safeid"),
-        '_type -> "hidden",
-        '_label ->  Html(messages("ated.registered-details.safeId")),
-        '_labelClass ->  "visuallyhidden",
-        '_showConstraints -> false)
 
-      @atedInput(registeredDetailsForm("isEditable"),
-        '_type -> "hidden",
-        '_label ->  Html(messages("ated.registered-details.isEditable")),
-        '_labelClass ->  "visuallyhidden",
-        '_showConstraints -> false)
+    @input(Input(label = Label(content = Text(messages("ated.registered-details.safeId")), classes = "govuk-visually-hidden"), inputType = "hidden").withFormField(registeredDetailsForm("safeId")))
+    @input(Input(label = Label(content = Text(messages("ated.registered-details.isEditable")), classes = "govuk-visually-hidden"), inputType = "hidden").withFormField(registeredDetailsForm("isEditable")))
+    @input(Input(label = Label(content = Text(messages("ated.registered-details.postcode")), classes = "govuk-visually-hidden"), inputType = "hidden").withFormField(registeredDetailsForm("addressDetails.postalCode")))
 
-      @atedInput(registeredDetailsForm("addressDetails.postalCode"),
-        '_type -> "hidden",
-        '_label ->  Html(messages("ated.registered-details.postcode")),
-        '_labelClass ->  "visuallyhidden",
-        '_showConstraints -> false)
     </div>
-
   }
-
-
 }
 
 

@@ -17,77 +17,99 @@
 @import models._
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
-
-@this(atedMain: atedMain, formHelper: FormWithCSRF)
-@(id: String, periodKey: Int, propertyDetailsForm: Form[PropertyDetailsNewBuildDates], mode: Option[String], serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
-@import uk.gov.hmrc.play.views.html.helpers._
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
+@import views.ViewUtils.titleBuilder
 @import views.html.helpers._
 @import _root_.utils._
 
+
+@this(newMain: newMain,
+        govukButton : GovukButton,
+        govukBackLink : GovukBackLink,
+        govukDateInput : GovukDateInput,
+        govukErrorSummary : GovukErrorSummary,
+        formHelper: FormWithCSRF)
+
+@(id: String, periodKey: Int, propertyDetailsForm: Form[PropertyDetailsNewBuildDates], mode: Option[String], serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
+
 @implicitFormInstance = @{
-Some(propertyDetailsForm)
+    Some(propertyDetailsForm)
 }
 
-@pageScripts = {
-<script src='@controllers.routes.Assets.versioned("javascript/show-hide-content.js")'></script>
-<script src='@controllers.routes.Assets.versioned("javascript/propertyDetailsNewBuild.js")'></script>
-<script>
-    $(document).ready(function() {
-     // Where .multiple-choice uses the data-target attribute
-      // to toggle hidden content
-      var showHideContent = new GOVUK.ShowHideContent()
-      showHideContent.init()
-    });
-
-</script>
-}
-
-@atedMain(title = messages("ated.property-details-value.newBuildDates.title"),
-serviceInfoContent = serviceInfoContent,
-pageScripts = Some(pageScripts)) {
-
-@pageHeadersAndError(backLink, "pre-heading", messages(AtedUtils.getPropertyDetailsPreHeader(mode)), messages("property-details-header"), messages("ated.property-details-value.newBuildDates.header"),
-Some(atedErrorWithBoundarySummary(propertyDetailsForm, "ated.property-details-value-error.general", None, periodKey)))
-
-<p id="paragraphFirst">
-    @messages("ated.property-details-value.newBuildDates.paragraphOne")
-</p>
-
-<p id="paragraphTwo">
-    @messages("ated.property-details-value.newBuildDates.paragraphTwo")
-</p>
-
-@formHelper(action = controllers.propertyDetails.routes.PropertyDetailsNewBuildDatesController.save(id, periodKey, mode)) {
-<div id="dateOfFirstOccupation">
-    @atedDateFieldsFree(
-    formItem = propertyDetailsForm,
-    fieldName = "newBuildOccupyDate",
-    label = Html(messages("ated.property-details-value.newBuildDates.dateQuestionOne")),
-    isNested = false,
-    defaultDateOption = None,
-    periodKey,
-    '_hintText -> messages("ated.property-details-value.newBuildDates.exampleDate"),
-    '_groupClass -> "form-group date",
-    '_idName -> "newBuildOccupyDate"
+@dateItems = @{
+    Seq(InputItem(attributes = Map("maxLength" -> "2")),
+        InputItem(attributes = Map("maxLength" -> "2")),
+        InputItem(attributes = Map("maxLength" -> "4"))
     )
-</div>
-
-<div id="dateOfLocalCouncilReg">
-    @atedDateFieldsFree(
-    formItem = propertyDetailsForm,
-    fieldName = "newBuildRegisterDate",
-    label = Html(messages("ated.property-details-value.newBuildDates.dateQuestionTwo")),
-    isNested = false,
-    defaultDateOption = None,
-    periodKey,
-    '_hintText -> messages("ated.property-details-value.newBuildDates.exampleDate"),
-    '_groupClass -> "form-group date",
-    '_idName -> "newBuildRegisterDate"
-    )
-</div>
-
-<button class="button" id="submit" type="submit">@messages("ated.save-and-continue")</button>
-
 }
+
+@backLinkHtml = {
+    @if(backLink.isDefined) {
+        @govukBackLink(BackLink(
+            href = backLink.get,
+            content = Text("Back")
+        ))
+    }
+}
+
+@newMain(title = titleBuilder(messages("ated.property-details-value.newBuildDates.title"), Some(propertyDetailsForm)),
+    serviceInfoContent = serviceInfoContent) {
+
+    @backLinkHtml
+
+    @if(propertyDetailsForm.errors.nonEmpty) {
+        @govukErrorSummary(ErrorSummary().withFormErrorsAsText(propertyDetailsForm, mapping = Map("newBuildOccupyDate" -> "newBuildOccupyDate.day", "newBuildRegisterDate" -> "newBuildRegisterDate.day")))
+    }
+
+    <header>
+        <h1 class="govuk-heading-xl govuk-!-margin-bottom-5">
+            <span class="govuk-caption-xl">
+                <span class="govuk-visually-hidden">
+                    @messages("ated.screen-reader.section")
+                </span>
+                @messages(AtedUtils.getPropertyDetailsPreHeader(mode))
+            </span>
+                @messages("ated.property-details-value.newBuildDates.header")
+        </h1>
+    </header>
+
+    <p id="paragraphFirst" class="govuk-body">@messages("ated.property-details-value.newBuildDates.paragraphOne")</p>
+
+    <p id="paragraphTwo" class="govuk-body">@messages("ated.property-details-value.newBuildDates.paragraphTwo")</p>
+
+    @formHelper(action = controllers.propertyDetails.routes.PropertyDetailsNewBuildDatesController.save(id, periodKey, mode)) {
+
+        @govukDateInput(DateInput(
+            hint = Some(Hint(
+              content = Text(messages("ated.property-details-value.newBuildDates.exampleDate"))
+            )),
+            fieldset = Some(Fieldset(
+              legend = Some(Legend(
+                content = Text(messages("ated.property-details-value.newBuildDates.dateQuestionOne")),
+                classes = "govuk-label--s"
+              ))
+            )),
+            items = dateItems
+        ).withFormField(propertyDetailsForm("newBuildOccupyDate")))
+
+        @govukDateInput(DateInput(
+          hint = Some(Hint(
+            content = Text(messages("ated.property-details-value.newBuildDates.exampleDate"))
+          )),
+          fieldset = Some(Fieldset(
+            legend = Some(Legend(
+              content = Text(messages("ated.property-details-value.newBuildDates.dateQuestionTwo")),
+              classes = "govuk-label--s"
+            ))
+          )),
+          items = dateItems
+        ).withFormField(propertyDetailsForm("newBuildRegisterDate")))
+
+        @govukButton(Button(
+            content = Text(messages("ated.save-and-continue")),
+            attributes = Map("id" -> "submit")
+        ))
+    }
 
 }

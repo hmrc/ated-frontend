@@ -59,10 +59,10 @@ class IsFullTaxPeriodController @Inject()(mcc: MessagesControllerComponents,
                   answer match {
                     case Some(true) =>
                       Future.successful(Ok(template(id, propertyDetails.periodKey, isFullTaxPeriodForm,
-                        PeriodUtils.periodStartDate(propertyDetails.periodKey), PeriodUtils.periodEndDate(propertyDetails.periodKey), serviceInfoContent, backLink)))
+                        PeriodUtils.periodStartDate(propertyDetails.periodKey), PeriodUtils.periodEndDate(propertyDetails.periodKey), None, serviceInfoContent, backLink)))
                     case _ =>
                       Future.successful(Ok(template(id, propertyDetails.periodKey, filledForm,
-                        PeriodUtils.periodStartDate(propertyDetails.periodKey), PeriodUtils.periodEndDate(propertyDetails.periodKey), serviceInfoContent, backLink)))
+                        PeriodUtils.periodStartDate(propertyDetails.periodKey), PeriodUtils.periodEndDate(propertyDetails.periodKey), None,serviceInfoContent, backLink)))
                   }
                 )
               }
@@ -81,6 +81,7 @@ class IsFullTaxPeriodController @Inject()(mcc: MessagesControllerComponents,
               val filledForm = isFullTaxPeriodForm.fill(PropertyDetailsFullTaxPeriod(propertyDetails.period.flatMap(_.isFullPeriod)))
               Future.successful(Ok(template(id, propertyDetails.periodKey, filledForm,
                 PeriodUtils.periodStartDate(propertyDetails.periodKey), PeriodUtils.periodEndDate(propertyDetails.periodKey),
+                None,
                 serviceInfoContent,
                 AtedUtils.getSummaryBackLink(id, None)))
               )
@@ -98,7 +99,7 @@ class IsFullTaxPeriodController @Inject()(mcc: MessagesControllerComponents,
             formWithError => {
               currentBackLink.map(backLink =>
                 BadRequest(template(id, periodKey, formWithError,
-                  PeriodUtils.periodStartDate(periodKey), PeriodUtils.periodEndDate(periodKey), serviceInfoContent, backLink))
+                  PeriodUtils.periodStartDate(periodKey), PeriodUtils.periodEndDate(periodKey), None, serviceInfoContent, backLink))
               )
             },
             propertyDetails => {

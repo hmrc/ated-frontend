@@ -76,7 +76,7 @@ class CorrespondenceAddressController @Inject()(mcc: MessagesControllerComponent
                   case None =>
                     logger.warn(s"[CorrespondenceAddressController][submit] - Unable to update address")
                     Ok(templateError("ated.generic.error.title", "ated.generic.error.header",
-                      "ated.generic.error.message", Some("ated.generic.error.message2"), None, None, None, serviceInfoContent, appConfig))
+                      "ated.generic.error.message", Some("ated.generic.error.message2"), None, None, None, serviceInfoContent))
                 }
               }
           }

@@ -15,13 +15,14 @@
  *@
 
 @import config.ApplicationConfig
-@this(atedMain: atedMain)
+@import views.ViewUtils.titleBuilder
+@this(newMain: newMain)
 @()(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
-@atedMain(title = messages("ated.reliefs.error.title")) {
+@newMain(title = titleBuilder(messages("ated.reliefs.error.title"))) {
+ <div class="govuk-form-group">
+   <h1 class="govuk-heading-xl govuk-!-margin-bottom-5" id="relief-error-title">@messages("ated.reliefs.error.wrong-period")</h1>
 
-  <h1 id="relief-error-title">@messages("ated.reliefs.error.wrong-period")</h1>
-
-  <a href="@controllers.routes.HomeController.home()" id="relief-error-ated-home-link">@messages("ated.reliefs.error.ated-home")</a>
-
+   <a class="govuk-link govuk-body" href="@controllers.routes.HomeController.home()" id="relief-error-ated-home-link">@messages("ated.reliefs.error.ated-home")</a>
+ </div>
 }

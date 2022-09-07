@@ -88,13 +88,11 @@ class Setup {
       val periodKey: Int = 2015
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
-      val backLink = "/ated/form-bundle/12345678901/" + periodKey
       setAuthMocks(authMock)
       when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(btaNavigationLinksView()(messages,mockAppConfig)))
       when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
         (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-      when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(Some(backLink)))
       val result = testEditLiabilityTypeController.editLiability("12345678901", periodKey, editAllowed = true)
         .apply(SessionBuilder.buildRequestWithSession(userId, queryParams))
       test(result)
@@ -132,12 +130,12 @@ class Setup {
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
             document.title must be("Have you disposed of the property? - GOV.UK")
-            document.getElementById("edit-liability-header").text() must be("Have you disposed of the property?")
-            assert(!document.getElementById("editLiabilityType-cr").hasAttr("checked"))
-            assert(!document.getElementById("editLiabilityType-dp").hasAttr("checked"))
+            document.getElementsByTag("h1").text() must include("Have you disposed of the property?")
+            assert(!document.getElementById("editLiabilityType").hasAttr("checked"))
+            assert(!document.getElementById("editLiabilityType-2").hasAttr("checked"))
             assert(document.getElementById("service-info-list").text() === "Home Manage account Messages Help and contact")
-            document.getElementById("backLinkHref").text must be("Back")
-            document.getElementById("backLinkHref").attr("href") must be("/ated/form-bundle/12345678901/2015")
+            document.getElementsByClass("govuk-back-link").text must be("Back")
+            document.getElementsByClass("govuk-back-link").attr("href") must include("/ated/form-bundle/12345678901/2015")
         }, queryParams = None)
       }
 
@@ -147,11 +145,11 @@ class Setup {
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
             document.title must be("Have you disposed of the property? - GOV.UK")
-            document.getElementById("edit-liability-header").text() must be("Have you disposed of the property?")
-            assert(document.getElementById("editLiabilityType-cr").hasAttr("checked"))
+            document.getElementsByTag("h1").text() must include("Have you disposed of the property?")
+            assert(document.getElementById("editLiabilityType-2").hasAttr("checked"))
             assert(document.getElementById("service-info-list").text() === "Home Manage account Messages Help and contact")
-            document.getElementById("backLinkHref").text must be("Back")
-            document.getElementById("backLinkHref").attr("href") must be("/ated/form-bundle/12345678901/2015")
+            document.getElementsByClass("govuk-back-link").text must be("Back")
+            document.getElementsByClass("govuk-back-link").attr("href") must include("/ated/form-bundle/12345678901/2015")
         }, queryParams = Some(Tuple2("disposal", Seq("false"))))
       }
 
@@ -161,17 +159,16 @@ class Setup {
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
             document.title must be("Have you disposed of the property? - GOV.UK")
-            document.getElementById("edit-liability-header").text() must be("Have you disposed of the property?")
-            assert(document.getElementById("editLiabilityType-dp").hasAttr("checked"))
+            document.getElementsByTag("h1").text() must include("Have you disposed of the property?")
+            assert(document.getElementById("editLiabilityType").hasAttr("checked"))
             assert(document.getElementById("service-info-list").text() === "Home Manage account Messages Help and contact")
-            document.getElementById("backLinkHref").text must be("Back")
-            document.getElementById("backLinkHref").attr("href") must be("/ated/form-bundle/12345678901/2015")
+            document.getElementsByClass("govuk-back-link").text must be("Back")
+            document.getElementsByClass("govuk-back-link").attr("href") must include("/ated/form-bundle/12345678901/2015")
         }, queryParams = Some(Tuple2("disposal", Seq("true"))))
       }
     }
 
     "continue" must {
-
       "if user doesn't select any radio button, show form error with bad_request" in new Setup {
         val fakeRequest: FakeRequest[AnyContentAsJson] = FakeRequest().withJsonBody(Json.parse("""{"editLiabilityType": ""}"""))
         when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))

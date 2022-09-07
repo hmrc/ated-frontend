@@ -21,12 +21,9 @@
     <head>
         <meta name="charset" charset="UTF-8">
         <title>@title</title>
-        <link href='@{s"${appConfig.assetsPrefix}/stylesheets/application.min.css"}' media="all" rel="stylesheet" type="text/css">
-        <link href='@controllers.routes.Assets.versioned("stylesheets/main.css")' media="all" rel="stylesheet" type="text/css">
-        <link href='@controllers.routes.Assets.versioned("stylesheets/bta.css")' media="all" rel="stylesheet" type="text/css">
+        <link rel="stylesheet" href='@controllers.routes.Assets.versioned("stylesheets/application.css")'  type="text/css">
         <link href='@controllers.routes.Assets.versioned("stylesheets/print-friendly.css")' media="all" rel="stylesheet" type="text/css">
-        <link href='@controllers.template.routes.Template.at("images/favicon.ico")' media="all" rel="shortcut icon" type="image/x-icon" />
-        <link href='@controllers.template.routes.Template.at("stylesheets/fonts.css")' media="all" rel="stylesheet" type="text/css" />
+        <link href='@uk.gov.hmrc.hmrcfrontend.controllers.routes.Assets.at(s"govuk/images/favicon.ico").url' media="all" rel="shortcut icon" type="image/x-icon"/>
     </head>
 
     <body>

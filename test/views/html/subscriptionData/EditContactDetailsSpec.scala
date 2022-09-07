@@ -29,10 +29,19 @@ class EditContactDetailsSpec extends AtedViewSpec with MockitoSugar with MockAut
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
   val injectedViewInstance = app.injector.instanceOf[views.html.subcriptionData.editContactDetails]
 "Edit contact details view" must {
-      behave like pageWithTitle(messages("ated.contact-details.title"))
-      behave like pageWithHeader(messages("ated.contact-details.header"))
-      behave like pageWithPreHeading(messages("ated.contact-details-edit.subheader"))
-      behave like pageWithBackLink
+
+  "have correct page title" in {
+    doc.title mustBe messages("ated.contact-details.title") + " - GOV.UK"
+  }
+
+  "have correct heading and caption" in {
+    doc.select("h1").text must include("This section is: Manage your ATED service Edit your ATED contact details")
+  }
+
+  "have a backLink" in {
+    val backLink = new CssSelector("a.govuk-back-link")
+    doc must backLink
+  }
     }
 
   "Edit contact details page" must {
@@ -41,26 +50,26 @@ class EditContactDetailsSpec extends AtedViewSpec with MockitoSugar with MockAut
       doc must haveElementWithIdAndText(messages("ated.contact-details.subheader"), "contact-details-subheader")
     }
     "display first name label correctly" in {
-      doc must haveElementWithIdAndText(messages("ated.contact-details.firstName"), "firstName_field")
+      doc.getElementsByAttributeValue("for", "firstName").text mustBe messages("ated.contact-details.firstName")
     }
     "display correct value in the first name field" in {
       doc must haveValueElement("firstName", "Y")
     }
     "display last name label correctly" in {
-      doc must haveElementWithIdAndText(messages("ated.contact-details.lastName"), "lastName_field")
+      doc.getElementsByAttributeValue("for", "lastName").text mustBe messages("ated.contact-details.lastName")
     }
     "display correct value in the last name field" in {
       doc must haveValueElement("lastName", "Z")
     }
     "display telephone label correctly" in {
-      doc must haveElementWithIdAndText(messages("ated.contact-details.phoneNumber"), "phoneNumber_field")
+      doc.getElementsByAttributeValue("for", "phoneNumber").text mustBe messages("ated.contact-details.phoneNumber")
     }
     "display correct value in the phone number field" in {
       doc must haveValueElement("phoneNumber", "0191")
     }
 
     "display submit button" in {
-      doc must haveSubmitButton(messages("ated.save-changes"))
+      doc.getElementsByClass("govuk-button").text mustBe messages("ated.save-changes")
     }
 
     "display correct submit form url" in {

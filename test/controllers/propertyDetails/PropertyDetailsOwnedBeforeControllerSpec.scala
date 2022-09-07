@@ -167,7 +167,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
-              document.getElementById("property-details-header").text() must be(s"Did the company own this property on or before 1 April $valuationPeriod?")
+              document.getElementsByTag("h1").text().contains(s"Did the company own this property on or before 1 April $valuationPeriod?") must be(true)
               assert(document.getElementById("service-info-list").text() === "Home Manage account Messages Help and contact")
           }
         }
@@ -184,10 +184,9 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
           result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
-            document.getElementById("property-details-header").text() must be(s"Did the company own this property on or before 1 April $valuationPeriod?")
-
-            document.getElementById("backLinkHref").text must be("Back")
-            document.getElementById("backLinkHref").attr("href") must include("/ated/liability/create/summary")
+            document.getElementsByTag("h1").text().contains(s"Did the company own this property on or before 1 April $valuationPeriod?") must be(true)
+            document.getElementsByClass("govuk-back-link").text must be("Back")
+            document.getElementsByClass("govuk-back-link").attr("href") must include("/ated/liability/create/summary")
 
         }
       }

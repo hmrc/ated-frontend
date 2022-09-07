@@ -26,7 +26,7 @@ import org.scalatestplus.play.guice.GuiceOneAppPerTest
 import play.api.i18n.{Lang, Messages, MessagesApi, MessagesImpl}
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
-import play.twirl.api.Html
+import play.twirl.api.{Html, HtmlFormat}
 import testhelpers.MockAuthUtil
 import utils.{PeriodUtils, TestModels}
 
@@ -40,7 +40,7 @@ class PrevPeriodsSummarySpec extends PlaySpec with MockAuthUtil with GuiceOneApp
   when(mockAppConfig.atedPeakStartDay)
     .thenReturn("16")
 
-  lazy val injectedViewInstance = app.injector.instanceOf[views.html.prevPeriodsSummary]
+  lazy val injectedViewInstance: prevPeriodsSummary = app.injector.instanceOf[views.html.prevPeriodsSummary]
 
   val periodKey2015: Int = 2015
   lazy val currentPeriod: Int = PeriodUtils.calculatePeakStartYear()
@@ -49,7 +49,7 @@ class PrevPeriodsSummarySpec extends PlaySpec with MockAuthUtil with GuiceOneApp
   val currentPeriodData: SummaryReturnsModel = summaryReturnsModel(periodKey = currentPeriod)
 
 
-  lazy val view = injectedViewInstance(
+  lazy val view: HtmlFormat.Appendable = injectedViewInstance(
     data,
     Some(address),
     Some(organisationName),
@@ -72,12 +72,16 @@ class PrevPeriodsSummarySpec extends PlaySpec with MockAuthUtil with GuiceOneApp
       }
 
       "have the correct h1" in {
-        assert(document.select("h1").text() === "Your previous returns")
+        assert(document.select("h1").text() contains "Your previous returns")
+      }
+
+      "have the correct caption" in {
+        assert(document.getElementsByClass("govuk-caption-xl").text === s"You have logged in as:$organisationName")
       }
 
       "have the correct backlink" in {
-        assert(document.getElementById("backLinkHref").text === "Back")
-        assert(document.getElementById("backLinkHref").attr("href") === "http://backLink")
+        assert(document.getElementsByClass("govuk-back-link").text === "Back")
+        assert(document.getElementsByClass("govuk-back-link").attr("href") === "http://backLink")
       }
     }
 
@@ -106,7 +110,8 @@ class PrevPeriodsSummarySpec extends PlaySpec with MockAuthUtil with GuiceOneApp
 
         lazy val document: Document = Jsoup.parse(view.body)
 
-        assert(document.getElementById("prev-period-summary-header").text === s"Create an ATED return for " +
+        assert(document.getElementsByClass("govuk-caption-xl").text === s"You have logged in as:$organisationName")
+        assert(document.getElementsByTag("h1").text contains s"Create an ATED return for " +
           s"${PeriodUtils.calculatePeakStartYear()-1} to ${PeriodUtils.calculatePeakStartYear()} or earlier")
       }
     }

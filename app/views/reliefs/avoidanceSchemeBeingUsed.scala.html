@@ -17,63 +17,113 @@
 @import models._
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
-@this(atedMain: atedMain, formHelper: FormWithCSRF)
-@(periodKey: Int, isTaxAvoidanceForm: Form[IsTaxAvoidance], periodStartDate: org.joda.time.LocalDate, serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
-
+@import uk.gov.hmrc.govukfrontend.views.Implicits._
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.hmrcfrontend.views.Implicits.RichErrorSummary
+@import views.ViewUtils.titleBuilder
 @import uk.gov.hmrc.play.views.html._
-@import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
-@import views.html.helpers.error._
 @import utils._
+
+@this(
+    newMain: newMain,
+    formHelper: FormWithCSRF,
+    govukRadios: GovukRadios,
+    govukErrorSummary: GovukErrorSummary,
+    govukDetails : GovukDetails,
+    govukButton : GovukButton,
+    govukBackLink : GovukBackLink)
+
+@(periodKey: Int,
+    isTaxAvoidanceForm: Form[IsTaxAvoidance],
+    periodStartDate: org.joda.time.LocalDate,
+    serviceInfoContent: Html = HtmlFormat.empty,
+    backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
 @formattedPeriodStartDate = @{periodStartDate.toString(messages("ated.date-format.numeric"))}
 
-@pageScripts = {
-<script src='@controllers.routes.Assets.versioned("javascript/chooseReliefs.js")'></script>
+@backLinkHtml = {
+    @if(backLink.isDefined) {
+        @govukBackLink(BackLink(
+            href = backLink.get,
+            content = Text("Back")
+        ))
+    }
 }
 
-@implicitFormInstance = @{ Some(isTaxAvoidanceForm) }
-
-@atedMain(title = messages("ated.choose-reliefs.avoidance-title"), serviceInfoContent = serviceInfoContent, pageScripts = Some(pageScripts)) {
-@pageHeadersAndError(backLink, "pre-heading", messages("ated.choose-reliefs.subheader"), "choose-reliefs-header", messages("ated.choose-reliefs.avoidance-title"),
-    Some(atedErrorSummary(isTaxAvoidanceForm, "ated.choose-reliefs.error.general")))
-
-
-    <details id="whatIsTaxAvoidanceScheme">
-        <summary aria-controls="whatIsTaxAvoidanceScheme-0" tabindex="0" class="summary font-small" id="whatIsTaxAvoidanceSchemeQuestion">
-            @messages("ated.choose-reliefs.avoidance-question")
-        </summary>
-        <div id="whatIsTaxAvoidanceScheme-0" class="panel-indent font-xsmall">
-            <p id="taxAvoidanceReveal-p1">@messages("ated.choose-reliefs.avoidance-reveal-line-1")</p>
-            <p id="taxAvoidanceReveal-p2">@messages("ated.choose-reliefs.avoidance-reveal-line-2")</p>
-            <ul class="list list-bullet">
+@detailsTxt = {
+    <div id="whatIsTaxAvoidanceScheme-0" >
+            <p class="govuk-body" id="taxAvoidanceReveal-p1">@messages("ated.choose-reliefs.avoidance-reveal-line-1")</p>
+            <p class="govuk-body" id="taxAvoidanceReveal-p2">@messages("ated.choose-reliefs.avoidance-reveal-line-2")</p>
+            <ul class="govuk-list govuk-list--bullet">
                 <li>@messages("ated.choose-reliefs.avoidance-info-line-1")</li>
                 <li>@messages("ated.choose-reliefs.avoidance-info-line-2")</li>
             </ul>
-            <p id="moreINfoOnTaxAvoidance">@Html(messages("ated.choose-reliefs.avoidance-more-info"))</p>
-        </div>
-    </details>
+            <p class="govuk-body" id="moreINfoOnTaxAvoidance">
+                <a class="govuk-link govuk-body" href="https://www.gov.uk/guidance/disclosure-of-tax-avoidance-schemes-overview" rel="noreferrer noopener" target="_blank">@Html(messages("ated.choose-reliefs.avoidance-more-info"))</a>
+            </p>
+    </div>
+}
+
+@newMain(title = titleBuilder(messages("ated.choose-reliefs.avoidance-title"), Some(isTaxAvoidanceForm)),
+         serviceInfoContent = serviceInfoContent) {
+
+    @backLinkHtml
+
+    @if(isTaxAvoidanceForm.errors.nonEmpty) {
+        @govukErrorSummary(ErrorSummary(
+            errorList = Seq(
+                ErrorLink(
+                    href = Some("#isAvoidanceScheme"),
+                    content = Text(Messages("ated.claim-relief.avoidance-scheme.selected"))
+             )),
+            title = Text(Messages("ated.error.summaryHeader"))
+        ))
+    }
+
+    <header>
+        <h1 class="govuk-heading-xl govuk-!-margin-bottom-5">
+            <span class="govuk-caption-xl"><span class="govuk-visually-hidden">@messages("ated.screen-reader.section") </span>@messages("ated.choose-reliefs.subheader")</span>
+            @messages("ated.choose-reliefs.avoidance-title")
+        </h1>
+    </header>
+
+    @govukDetails(Details(
+        summary = Text(Messages("ated.choose-reliefs.avoidance-question")),
+        content = HtmlContent(detailsTxt)
+    ))
 
     @formHelper(action=controllers.reliefs.routes.AvoidanceSchemeBeingUsedController.send(periodKey)) {
 
-    <div id="isAvoidanceScheme">
-      @atedInputRadioGroupNew(isTaxAvoidanceForm("isAvoidanceScheme"),
-        Seq(
-          "true" -> messages("ated.claim-relief.avoidance-scheme.yes"),
-          "false" -> messages("ated.claim-relief.avoidance-scheme.no")),
-          '_fieldsetAttributesHelpQuestion -> "isAvoidanceScheme-help-question",
-          '_legend -> messages("ated.choose-reliefs.avoidance-title"),
-          '_labelClass -> "block-label",
-          '_groupClass -> "form-group  inline",
-          '_legendClass -> "visuallyhidden",
-          '_labelAfter -> true
-        )
-    </div>
+    @govukRadios(
+        Radios(
+            fieldset = Some(Fieldset(
+                classes = "govuk-radios--inline",
+                    legend = Some(Legend(
+                        content = Text(messages("ated.choose-reliefs.avoidance-title")),
+                        classes = "govuk-visually-hidden"
+                    )),
+                )),
+                items = Seq(
+                    RadioItem(
+                        content = Text(Messages("ated.claim-relief.avoidance-scheme.yes")),
+                        value = Some("true")
+                    ),
+                    RadioItem(
+                        content = Text(Messages("ated.claim-relief.avoidance-scheme.no")),
+                        value = Some("false")
+                    )
+                ),
+                errorMessage = if(isTaxAvoidanceForm.hasErrors) Some(ErrorMessage(content = Text(messages(isTaxAvoidanceForm.errors.map(e => e.message))))) else None
+        ).withFormField(isTaxAvoidanceForm("isAvoidanceScheme")))
 
-    <div class="form-group">
-      <button class="button" id="submit" type="submit">@messages("ated.choose-reliefs.continue")</button>
+    <div class="govuk-form-group">
+        @govukButton(Button(
+            content = Text(messages("ated.choose-reliefs.continue")),
+            inputType = Some("submit"),
+            attributes = Map("id" -> "submit")
+        ))
     </div>
-
 
   }
 }

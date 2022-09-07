@@ -17,7 +17,6 @@
 package controllers.subscriptionData
 
 import java.util.UUID
-
 import builders.{SessionBuilder, TitleBuilder}
 import config.ApplicationConfig
 import connectors.DataCacheConnector
@@ -39,6 +38,7 @@ import uk.gov.hmrc.auth.core.retrieve.~
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
 import uk.gov.hmrc.http.HeaderCarrier
 import views.html.BtaNavigationLinks
+import views.html.subcriptionData.companyDetails
 
 import scala.concurrent.Future
 
@@ -51,11 +51,11 @@ class CompanyDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
   val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
   val mockSubscriptionDataService: SubscriptionDataService = mock[SubscriptionDataService]
   val mockDetailsService: DetailsService = mock[DetailsService]
-    val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
+  val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
-  val injectedViewInstance = app.injector.instanceOf[views.html.subcriptionData.companyDetails]
+  val injectedViewInstance: companyDetails = app.injector.instanceOf[views.html.subcriptionData.companyDetails]
 
 class Setup {
 
@@ -115,7 +115,7 @@ class Setup {
   override def beforeEach(): Unit = {
   }
 
-  val clientMandateDetails = ClientMandateDetails("agentName", "changeLink", "email", "changeEmailLink")
+  val clientMandateDetails: ClientMandateDetails = ClientMandateDetails("agentName", "changeLink", "email", "changeEmailLink")
 
   "CompanyDetailsController" must {
     "unauthorised users" must {
@@ -136,9 +136,9 @@ class Setup {
     "Authorised Users" must {
 
       "return contact details view with editable address" in new Setup {
-        val addressDetails = AddressDetails(addressType = "", addressLine1 = "", addressLine2 = "", countryCode = "GB")
-        val correspondence = Address(Some("name1"), Some("name2"), addressDetails = addressDetails)
-        val businessPartnerDetails = RegisteredDetails(isEditable = true, "testName",
+        val addressDetails: AddressDetails = AddressDetails(addressType = "", addressLine1 = "", addressLine2 = "", countryCode = "GB")
+        val correspondence: Address = Address(Some("name1"), Some("name2"), addressDetails = addressDetails)
+        val businessPartnerDetails: RegisteredDetails = RegisteredDetails(isEditable = true, "testName",
           RegisteredAddressDetails(addressLine1 = "bpline1",
             addressLine2 = "bpline2",
             addressLine3 = Some("bpline3"),
@@ -152,19 +152,19 @@ class Setup {
             val document = Jsoup.parse(contentAsString(result))
 
             document.title() must be (TitleBuilder.buildTitle("Your ATED details"))
-            document.getElementById("company-details-header").text() must be("Your ATED details")
-            document.getElementById("registered-edit").text() must be("Edit Registered address")
+            document.getElementsByTag("h1").text() must include("Your ATED details")
+            document.getElementById("registered-edit").text() must be("Change Registered address")
             document.getElementById("registered-edit").attr("href") must be("/ated/registered-details")
 
-            document.getElementById("backLinkHref").text() must be("Back")
-            document.getElementById("backLinkHref").attr("href") must be("/ated/account-summary")
+            document.getElementsByClass("govuk-back-link").text() must be("Back")
+            document.getElementsByClass("govuk-back-link").attr("href") must be("/ated/account-summary")
         }
       }
 
       "return contact details view with UR banner" in new Setup {
-        val addressDetails = AddressDetails(addressType = "", addressLine1 = "", addressLine2 = "", countryCode = "GB")
-        val correspondence = Address(Some("name1"), Some("name2"), addressDetails = addressDetails)
-        val businessPartnerDetails = RegisteredDetails(isEditable = true, "testName",
+        val addressDetails: AddressDetails = AddressDetails(addressType = "", addressLine1 = "", addressLine2 = "", countryCode = "GB")
+        val correspondence: Address = Address(Some("name1"), Some("name2"), addressDetails = addressDetails)
+        val businessPartnerDetails: RegisteredDetails = RegisteredDetails(isEditable = true, "testName",
           RegisteredAddressDetails(addressLine1 = "bpline1",
             addressLine2 = "bpline2",
             addressLine3 = Some("bpline3"),
@@ -178,17 +178,17 @@ class Setup {
             val document = Jsoup.parse(contentAsString(result))
 
             document.title() must be(TitleBuilder.buildTitle("Your ATED details"))
-            document.getElementById("ur-panel") must not be null
-            document.getElementById("ur-panel").text() must be("Help improve digital services by joining the HMRC user panel (opens in new window) No thanks")
-            document.getElementsByClass("banner-panel__close").text() must be("No thanks")
+            document.select("div.hmrc-user-research-banner") must not be null
+            document.select("div.hmrc-user-research-banner").text() must include("Help improve HMRC services")
+            document.getElementsByClass("hmrc-user-research-banner__close").text() must include("No thanks, I do not want to take part in user research, hide this message")
         }
       }
 
       "return contact details view with NO editable address" in new Setup {
-        val addressDetails = AddressDetails(addressType = "", addressLine1 = "", addressLine2 = "", countryCode = "GB")
-        val contactDetails = ContactDetails(emailAddress = Some("a@b.c"))
-        val correspondence = Address(Some("name1"), Some("name2"), addressDetails = addressDetails, contactDetails = Some(contactDetails))
-        val businessPartnerDetails = RegisteredDetails(isEditable = false, "testName",
+        val addressDetails: AddressDetails = AddressDetails(addressType = "", addressLine1 = "", addressLine2 = "", countryCode = "GB")
+        val contactDetails: ContactDetails = ContactDetails(emailAddress = Some("a@b.c"))
+        val correspondence: Address = Address(Some("name1"), Some("name2"), addressDetails = addressDetails, contactDetails = Some(contactDetails))
+        val businessPartnerDetails: RegisteredDetails = RegisteredDetails(isEditable = false, "testName",
           RegisteredAddressDetails(addressLine1 = "bpline1",
             addressLine2 = "bpline2",
             addressLine3 = Some("bpline3"),
@@ -202,10 +202,10 @@ class Setup {
             val document = Jsoup.parse(contentAsString(result))
 
             document.title() must be (TitleBuilder.buildTitle("Your ATED details"))
-            document.getElementById("company-details-header").text() must be("Your ATED details")
+            document.getElementsByTag("h1").text() must include("Your ATED details")
 
-            document.getElementById("registered-address-label").text() must be("Registered address")
-            Option(document.getElementById("registered-edit")) must be(None)
+            document.select("dt.govuk-summary-list__key").get(2).text() must be("Registered address")
+            document.select("registered-edit").size() mustBe 0
         }
       }
 

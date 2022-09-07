@@ -23,6 +23,7 @@ import play.twirl.api.Html
 import testhelpers.{AtedViewSpec, MockAuthUtil}
 import uk.gov.hmrc.auth.core.retrieve.~
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
+import views.html.subcriptionData.companyDetails
 
 class CompanyDetailsSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil {
 
@@ -31,61 +32,35 @@ class CompanyDetailsSpec extends AtedViewSpec with MockitoSugar with MockAuthUti
   val authMock: Enrolments ~ Some[AffinityGroup] ~ Some[String] = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
   setAuthMocks(authMock)
 
-  val injectedViewInstance = app.injector.instanceOf[views.html.subcriptionData.companyDetails]
+  val injectedViewInstance: companyDetails = app.injector.instanceOf[views.html.subcriptionData.companyDetails]
 
   "Company Details view" must {
-    behave like pageWithTitle(messages("ated.company-details.title"))
-    behave like pageWithHeader(messages("ated.company-details.header"))
-    behave like pageWithPreHeading(messages("ated.company-details.preheader"))
-    behave like pageWithBackLink
+    "have correct page title" in {
+      doc.title mustBe messages("ated.company-details.title") + " - GOV.UK"
+    }
+
+    "have correct heading and caption" in {
+      doc.select("h1").text must include("This section is: Manage your ATED service Your ATED details")
+    }
+
+    "have a backLink" in {
+      val backLink = new CssSelector("a.govuk-back-link")
+      doc must backLink
+    }
   }
 
   "Company Details page" must {
     "display company details of the user" when {
-      "display name label correctly" in {
-        doc must haveElementWithIdAndText(messages("ated.company-details.name"), "company-name-header")
-      }
+      "have rows for all details" in {
+        val rows = doc.select("dl.govuk-summary-list dt")
 
-      "display ated reference number" in {
-        doc must haveElementWithIdAndText(messages("ated.company-details.ated-reference-number"), "ated-reference-number")
+        rows.get(0).text mustBe messages("ated.company-details.name")
+        rows.get(1).text mustBe messages("ated.company-details.ated-reference-number")
+        rows.get(2).text mustBe messages("ated.company-details.registered-address")
+        rows.get(3).text mustBe messages("ated.company-details.correspondence-address")
+        rows.get(4).text mustBe messages("ated.company-details.contact-address")
+        rows.get(5).text mustBe messages("ated.company-details.contact-preference.label")
       }
-
-      "display ated reference value" in {
-        doc must haveElementWithIdAndText("XN1200000100001", "ated-reference-number-val")
-      }
-
-      "display registered address" in {
-        doc must haveElementWithIdAndText(messages("ated.company-details.registered-address"), "registered-address-label")
-      }
-
-      "display correspondence address" in {
-        doc must haveElementWithIdAndText(messages("ated.company-details.correspondence-address"), "correspondence-address-label")
-      }
-
-      "display address line one" in {
-        doc must haveElementWithIdAndText("some street", "line_1")
-      }
-
-      "display address line two" in {
-        doc must haveElementWithIdAndText("some area", "line_2")
-      }
-
-      "display address line three" in {
-        doc must haveElementWithIdAndText("some county", "line_3")
-      }
-
-      "display postCode" in {
-        doc must haveElementWithIdAndText("ne981zz", "postcode")
-      }
-
-      "display Country Code" in {
-        doc must haveElementWithIdAndText("United Kingdom", "countryCode")
-      }
-
-      "display ATED contact details" in {
-        doc must haveElementWithIdAndText(messages("ated.company-details.contact-address"), "contact-details-label")
-      }
-
 
       "display First Name" in {
         doc must haveElementWithIdAndText("name1", "firstName")
@@ -93,10 +68,6 @@ class CompanyDetailsSpec extends AtedViewSpec with MockitoSugar with MockAuthUti
 
       "display Last Name" in {
         doc must haveElementWithIdAndText("name2", "lastName")
-      }
-
-      "display email address" in {
-        doc must haveElementWithIdAndText(messages("ated.company-details.contact-preference.label"), "contact-pref-label")
       }
 
       "display edit link for correspondence address" in {
@@ -112,18 +83,17 @@ class CompanyDetailsSpec extends AtedViewSpec with MockitoSugar with MockAuthUti
       }
 
       "display Back to your ATED summary link" in {
-        doc must haveLinkWithUrlWithID("back", "/ated/account-summary")
+        doc.select("a.govuk-button").attr("href") mustBe "/ated/account-summary"
       }
 
     }
 
   }
 
-
-  val addressDetails = AddressDetails(addressType = "", addressLine1 = "some street", addressLine2 = "some area", addressLine3 = Some("some county"), postalCode = Some("ne981zz"), countryCode = "GB")
-  val contactDetails = ContactDetails(emailAddress = Some("a@b.c"))
-  val correspondence = Address(Some("name1"), Some("name2"), addressDetails = addressDetails, contactDetails = Some(contactDetails))
-  val businessPartnerDetails = RegisteredDetails(isEditable = false, "testName",
+  val addressDetails: AddressDetails = AddressDetails(addressType = "", addressLine1 = "some street", addressLine2 = "some area", addressLine3 = Some("some county"), postalCode = Some("ne981zz"), countryCode = "GB")
+  val contactDetails: ContactDetails = ContactDetails(emailAddress = Some("a@b.c"))
+  val correspondence: Address = Address(Some("name1"), Some("name2"), addressDetails = addressDetails, contactDetails = Some(contactDetails))
+  val businessPartnerDetails: RegisteredDetails = RegisteredDetails(isEditable = false, "testName",
     RegisteredAddressDetails(addressLine1 = "bpline1",
       addressLine2 = "bpline2",
       addressLine3 = Some("bpline3"),
@@ -131,14 +101,13 @@ class CompanyDetailsSpec extends AtedViewSpec with MockitoSugar with MockAuthUti
       postalCode = Some("postCode"),
       countryCode = "GB"))
 
-  val businessPartnerDetailsEditable = RegisteredDetails(isEditable = true, "testName",
+  val businessPartnerDetailsEditable: RegisteredDetails = RegisteredDetails(isEditable = true, "testName",
     RegisteredAddressDetails(addressLine1 = "bpline1",
       addressLine2 = "bpline2",
       addressLine3 = Some("bpline3"),
       addressLine4 = Some("bpline4"),
       postalCode = Some("postCode"),
       countryCode = "GB"))
-
 
 
   override def view: Html = injectedViewInstance(Some(correspondence),

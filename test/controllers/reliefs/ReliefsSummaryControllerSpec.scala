@@ -17,7 +17,6 @@
 package controllers.reliefs
 
 import java.util.UUID
-
 import builders._
 import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
@@ -40,6 +39,7 @@ import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import utils.{AtedConstants, PeriodUtils}
 import views.html.BtaNavigationLinks
+import views.html.reliefs.{invalidPeriodKey, reliefsPrintFriendly, reliefsSummary}
 
 import scala.concurrent.Future
 
@@ -52,13 +52,13 @@ class ReliefsSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
   val mockBackLinkCacheConnector: BackLinkCacheConnector = mock[BackLinkCacheConnector]
   val mockSubscriptionDataService: SubscriptionDataService = mock[SubscriptionDataService]
   val mockReliefDeclarationController: ReliefDeclarationController = mock[ReliefDeclarationController]
-    val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
+  val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
-  val injectedViewInstance = app.injector.instanceOf[views.html.reliefs.reliefsSummary]
-  val injectedViewInstancePrint = app.injector.instanceOf[views.html.reliefs.reliefsPrintFriendly]
-  val injectedViewInstancePeriod = app.injector.instanceOf[views.html.reliefs.invalidPeriodKey]
+  val injectedViewInstance: reliefsSummary = app.injector.instanceOf[views.html.reliefs.reliefsSummary]
+  val injectedViewInstancePrint: reliefsPrintFriendly = app.injector.instanceOf[views.html.reliefs.reliefsPrintFriendly]
+  val injectedViewInstancePeriod: invalidPeriodKey = app.injector.instanceOf[views.html.reliefs.invalidPeriodKey]
 
   val organisationName = "ACME Limited"
   val periodKey = 2015
@@ -198,14 +198,15 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
               val document = Jsoup.parse(contentAsString(result))
               document.title() must be(TitleBuilder.buildTitle("Check your details are correct"))
               assert(document.getElementById("service-info-list").text() === "Home Manage account Messages Help and contact")
-              document.getElementById("property-details-summary-header").text() must be("Check your details are correct")
+              document.getElementsByTag("h1").text() contains "Check your details are correct"
+              document.getElementsByClass("govuk-caption-xl").text() must be ("This section is: Create return")
               document.getElementById("details-text").text() must be("For the ATED period from 1 April 2015 to 31 March 2016.")
               document.getElementById("tas-er").text() must be("12345678")
               document.getElementById("ated-charge-value").text() must be("£0")
               document.getElementById("submit").text() must be("Confirm and continue")
               document.getElementById("submit-disabled-text") must be (null)
-              document.getElementById("backLinkHref").text must be("Back")
-              document.getElementById("backLinkHref").attr("href") must include("http://backLink")
+              document.getElementsByClass("govuk-back-link").text must be("Back")
+              document.getElementsByClass("govuk-back-link").attr("href") must include("http://backLink")
           }
         }
 
@@ -218,7 +219,8 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
               document.title() must be(TitleBuilder.buildTitle("Check your details are correct"))
-              document.getElementById("property-details-summary-header").text() must be("Check your details are correct")
+              document.getElementsByTag("h1").text() contains "Check your details are correct"
+              document.getElementsByClass("govuk-caption-xl").text() must be ("This section is: Create return")
               document.getElementById("details-text").text() must be("For the ATED period from 1 April 2015 to 31 March 2016.")
               document.getElementById("tas-er").text() must be("11111111")
               document.getElementById("ated-charge-value").text() must be("£0")
@@ -236,7 +238,8 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
               document.title() must be(TitleBuilder.buildTitle("Check your details are correct"))
-              document.getElementById("property-details-summary-header").text() must be("Check your details are correct")
+              document.getElementsByTag("h1").text() contains "Check your details are correct"
+              document.getElementsByClass("govuk-caption-xl").text() must be ("This section is: Create return")
               document.getElementById("details-text").text() must be("For the ATED period from 1 April 2015 to 31 March 2016.")
               document.getElementById("ated-charge-value").text() must be("Not yet calculated")
           }
@@ -251,7 +254,8 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
               document.title() must be(TitleBuilder.buildTitle("Check your details are correct"))
-              document.getElementById("property-details-summary-header").text() must be("Check your details are correct")
+              document.getElementsByTag("h1").text() contains "Check your details are correct"
+              document.getElementsByClass("govuk-caption-xl").text() must be ("This section is: Create return")
               document.getElementById("details-text").text() must be("For the ATED period from 1 April 2015 to 31 March 2016.")
               document.getElementById("ated-charge-value").text() must be("Not yet calculated")
           }
