@@ -1059,7 +1059,7 @@ ated.dispose-property.period.dateOfDisposal.date-after-today = The property disp
 
 ##### AGENT BANNER
 
-ated.agent.banner = You are viewing the returns of <strong>{0}</strong>
+ated.agent.banner = You are viewing the returns of <strong class="govuk-!-font-weight-bold">{0}</strong>
 
 ##### WRONG CLIENT ERROR MESSAGE
 

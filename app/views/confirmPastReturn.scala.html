@@ -52,13 +52,26 @@
         @govukErrorSummary(ErrorSummary().withFormErrorsAsText(confirmExistingReturn))
     }
 
+    <header>
+        <h1 class="govuk-heading-xl govuk-!-margin-bottom-5">
+            <span class="govuk-caption-xl">
+                <span class="govuk-visually-hidden">
+                    @messages("ated.screen-reader.section")
+                </span>
+                @messages("ated.return-type.pre-header")
+            </span>
+            @messages("ated.confirm-past-return-question.header", (periodKey-1).toString, periodKey.toString)
+        </h1>
+    </header>
+
+    <p class="govuk-body">
+        @messages("ated.confirm-past-return.p1", (periodKey-1).toString, periodKey.toString)
+    </p>
+
 @formHelper(action = controllers.routes.ExistingReturnQuestionController.submit(periodKey, returnType)) {
 
     @govukRadios(
        Radios(
-            hint = Some(Hint(
-                content = Text(messages("ated.confirm-past-return.p1", (periodKey-1).toString, periodKey.toString))
-            )),
             items = Seq(
                 RadioItem(
                     content = Text(messages("ated.label.yes")),
@@ -69,11 +82,7 @@
                 )),
             classes = "govuk-radios--inline"
 
-       ).withFormField(confirmExistingReturn("yesNo"))
-        .withHeadingAndSectionCaption(
-            heading = HtmlContent(messages("ated.confirm-past-return-question.header", (periodKey-1).toString, periodKey.toString)),
-            sectionCaption = Text(messages("ated.return-type.pre-header"))
-        ))
+       ).withFormField(confirmExistingReturn("yesNo")))
 
         @govukButton(Button(
             content = Text(messages("ated.save-and-continue")),
