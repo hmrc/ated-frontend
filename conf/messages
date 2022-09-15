@@ -696,7 +696,7 @@ ated.contact-details.error.general.addressType = Something has gone wrong, try a
 ated.contact-details.email.risk.help.text = What are the risks of email and why we need your consent
 ated.contact-details.email.risk.help.answer_p1 = HMRC may need to send information to you by email. Any emails from HMRC are not secure and any information you send to us by email is at your own risk. In order for us to send emails to you, you must confirm (for yourself or by your agent) that you are happy with this and that you understand the risks of sending information containing your personal details by email.
 ated.contact-details.email.risk.help.answer_p2 = Please note: If a response contains any confidential information, we will only reply by letter or telephone. Letters may lead to delays in dealing with enquiries. If you think you have been sent a suspicious email, do not follow any links within the email or disclose any personal details. Forward any suspicious emails to
-ated.contact-details.email.risk.help.answer.link = phishing@hmrc.gsi.gov.uk
+ated.contact-details.email.risk.help.answer.link = phishing@hmrc.gov.uk
 
 ##### EDIT CONTACT EMAIL
 
@@ -899,6 +899,7 @@ ated.relief-summary.avoidanceSchmRefNum-promoter = Promoter reference number
 ated.relief-summary.status = Status
 ated.relief-summary.none = None
 ated.relief-summary.draft = Draft
+ated.relief-summary.for = for
 
 ated.relief-summary.relief-end-date =  to 31 March
 ated.relief-summary.table.ated-charge.text = Based on the information you have given us your ATED charge is

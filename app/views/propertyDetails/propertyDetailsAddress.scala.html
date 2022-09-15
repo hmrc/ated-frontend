@@ -114,13 +114,15 @@
         @govukInput(Input(
             label = Label(
               content = Text(messages("ated.addressProperty.line_3"))
-            )
+            ),
+            classes = "govuk-!-width-two-thirds"
         ).withFormField(propertyDetailsForm("line_3")))
 
         @govukInput(Input(
             label = Label(
               content = Text(messages("ated.addressProperty.line_4"))
-            )
+            ),
+        classes = "govuk-!-width-two-thirds"
         ).withFormField(propertyDetailsForm("line_4")))
 
         @govukInput(Input(

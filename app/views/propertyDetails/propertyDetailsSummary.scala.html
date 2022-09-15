@@ -83,7 +83,7 @@ backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages
 
 
 @propertyTitle = {
-<span id="property-title-number">@propertyDetails.title.map(_.titleNumber).fold(messages("ated.property-details-summary.field-blank"))(x => if(x == "") messages("ated.property-details-summary.field-blank") else x)</span>
+    <span id="property-title-number">@propertyDetails.title.map(_.titleNumber).fold(messages("ated.property-details-summary.field-blank"))(x => if(x == "") messages("ated.property-details-summary.field-blank") else x)</span>
 }
 
 @newMain(title = titleBuilder(messages("ated.property-details-summary.title")),
@@ -120,7 +120,8 @@ backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages
               items = Seq(
                 ActionItem(
                   href = controllers.propertyDetails.routes.PropertyDetailsAddressController.editFromSummary(propertyDetails.id).url,
-                  content = Text(messages("ated.change"))
+                  content = Text(messages("ated.change")),
+                  visuallyHiddenText = Some(messages("ated.property-details-summary.table.property-details.address.label"))
                 )
               )
             ))
@@ -136,7 +137,8 @@ backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages
               items = Seq(
                 ActionItem(
                   href = controllers.propertyDetails.routes.PropertyDetailsTitleController.editFromSummary(propertyDetails.id).url,
-                  content = Text(messages("ated.change"))
+                  content = Text(messages("ated.change")),
+                  visuallyHiddenText = Some(messages("ated.property-details-summary.table.property-details.title-number.label"))
                 )
               )
             ))
@@ -166,7 +168,8 @@ backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages
                          } else {
                             controllers.propertyDetails.routes.PropertyDetailsOwnedBeforeController.editFromSummary(propertyDetails.id).url
                         },
-                  content = Text(messages("ated.change"))
+                  content = Text(messages("ated.change")),
+                  visuallyHiddenText = Some(messages("ated.form-bundle.view.return.value.only"))
               ))
           ))
         )),
@@ -191,7 +194,8 @@ backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages
                          } else {
                             controllers.propertyDetails.routes.PropertyDetailsOwnedBeforeController.editFromSummary(propertyDetails.id).url
                          },
-                  content = Text(messages("ated.change"))
+                  content = Text(messages("ated.change")),
+                  visuallyHiddenText = Some(messages(PeriodUtils.getPeriodValueMessage(index, valuesToDisplay.size)))
               ))
           ))
         )),
@@ -216,7 +220,8 @@ backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages
                   items = Seq(
                     ActionItem(
                       href = controllers.propertyDetails.routes.PropertyDetailsProfessionallyValuedController.editFromSummary(propertyDetails.id).url,
-                      content = Text(messages("ated.change"))
+                      content = Text(messages("ated.change")),
+                      visuallyHiddenText = Some(messages("ated.form-bundle.view.isValuedByAgent.message"))
                     )
                   )
                 ))
@@ -239,7 +244,8 @@ backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages
                   items = Seq(
                     ActionItem(
                       href = controllers.propertyDetails.routes.PropertyDetailsProfessionallyValuedController.editFromSummary(propertyDetails.id).url,
-                      content = Text(messages("ated.change"))
+                      content = Text(messages("ated.change")),
+                      visuallyHiddenText = Some(messages("ated.form-bundle.view.isValuedByAgent.message"))
                     )
                   )
                 ))
@@ -262,7 +268,8 @@ backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages
                   items = Seq(
                       ActionItem(
                           href = controllers.propertyDetails.routes.PropertyDetailsProfessionallyValuedController.editFromSummary(propertyDetails.id).url,
-                          content = Text(messages("ated.change"))
+                          content = Text(messages("ated.change")),
+                          visuallyHiddenText = Some(messages("ated.form-bundle.view.isValuedByAgent.message"))
                       )
                   )
                 ))
@@ -286,7 +293,8 @@ backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages
                       items = Seq(
                           ActionItem(
                               href = controllers.propertyDetails.routes.PropertyDetailsProfessionallyValuedController.editFromSummary(propertyDetails.id).url,
-                              content = Text(messages("ated.change"))
+                              content = Text(messages("ated.change")),
+                              visuallyHiddenText = Some(messages("ated.form-bundle.view.isValuedByAgent.message"))
                           )
                       )
                   ))
@@ -311,7 +319,8 @@ backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages
             items = Seq(
               ActionItem(
                 href = controllers.propertyDetails.routes.IsFullTaxPeriodController.editFromSummary(propertyDetails.id).url,
-                content = Text(messages("ated.change"))
+                content = Text(messages("ated.change")),
+                visuallyHiddenText = Some(messages("ated.property-details-period.liability.return-type"))
               )
             )
           ))
@@ -334,7 +343,8 @@ backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages
               items = Seq(
                 ActionItem(
                   href = controllers.propertyDetails.routes.IsFullTaxPeriodController.editFromSummary(propertyDetails.id).url,
-                  content = Text(messages("ated.change"))
+                  content = Text(messages("ated.change")),
+                  visuallyHiddenText = Some(messages((period.description).getOrElse("")))
                 )
               )
             ))
@@ -361,7 +371,8 @@ backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages
               items = Seq(
                 ActionItem(
                   href = controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceController.editFromSummary(propertyDetails.id).url,
-                  content = Text(messages("ated.change"))
+                  content = Text(messages("ated.change")),
+                  visuallyHiddenText = Some(messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.label"))
                 )
               )
             ))
@@ -377,7 +388,8 @@ backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages
               items = Seq(
                 ActionItem(
                   href = controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceController.editFromSummary(propertyDetails.id).url,
-                  content = Text(messages("ated.change"))
+                  content = Text(messages("ated.change")),
+                  visuallyHiddenText = Some(messages("ated.property-details-summary.table.property-ated-details.promoter-reference.label"))
                 )
               )
             ))
@@ -400,7 +412,8 @@ backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages
               items = Seq(
                 ActionItem(
                   href = controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceController.editFromSummary(propertyDetails.id).url,
-                  content = Text(messages("ated.change"))
+                  content = Text(messages("ated.change")),
+                  visuallyHiddenText = Some(messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.header"))
                 )
               )
             ))
@@ -423,7 +436,8 @@ backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages
               items = Seq(
                 ActionItem(
                   href = controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceController.editFromSummary(propertyDetails.id).url,
-                  content = Text(messages("ated.change"))
+                  content = Text(messages("ated.change")),
+                  visuallyHiddenText = Some(messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.header"))
                 )
               )
             ))
@@ -450,7 +464,8 @@ backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages
               items = Seq(
                 ActionItem(
                   href = controllers.propertyDetails.routes.PropertyDetailsSupportingInfoController.editFromSummary(propertyDetails.id).url,
-                  content = Text(messages("ated.change"))
+                  content = Text(messages("ated.change")),
+                  visuallyHiddenText = Some(messages("ated.property-details-summary.table.property-ated-details.additional-information.label"))
               ))
           ))
         )),
@@ -489,17 +504,17 @@ backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages
       content = Text(messages("ated.property-details-summary.saved-draft.text"))
     ))
 
-    <ul class="govuk-list">
-      <li>
-          <a id="print-friendly-liability-link" class="govuk-link" href="@controllers.propertyDetails.routes.PropertyDetailsSummaryController.viewPrintFriendlyLiabilityReturn(propertyDetails.id)" target="_blank">@messages("ated.property-details-summary.print.view")</a>
-      </li>
-      <li>
-          <a id="save-as-draft" class="govuk-link" href="@controllers.routes.AccountSummaryController.view">@messages("ated.property-details-summary.saved-returns.link.text")</a>
-      </li>
-      <li>
-          <a id="delete-draft" class="govuk-link" href="@controllers.propertyDetails.routes.PropertyDetailsSummaryController.deleteDraft(propertyDetails.id, propertyDetails.periodKey)">@messages("ated.property-details-summary.delete-draft.link.text")</a>
-      </li>
-    </ul>
+    <p class="govuk-body">
+      <a id="print-friendly-liability-link" class="govuk-link" href="@controllers.propertyDetails.routes.PropertyDetailsSummaryController.viewPrintFriendlyLiabilityReturn(propertyDetails.id)" target="_blank">@messages("ated.property-details-summary.print.view")</a>
+    </p>
+
+    <p class="govuk-body">
+      <a id="save-as-draft" class="govuk-link" href="@controllers.routes.AccountSummaryController.view">@messages("ated.property-details-summary.saved-returns.link.text")</a>
+    </p>
+
+    <p class="govuk-body">
+      <a id="delete-draft" class="govuk-link" href="@controllers.propertyDetails.routes.PropertyDetailsSummaryController.deleteDraft(propertyDetails.id, propertyDetails.periodKey)">@messages("ated.property-details-summary.delete-draft.link.text")</a>
+    </p>
 
     @formHelper(action=controllers.propertyDetails.routes.PropertyDetailsSummaryController.submit(propertyDetails.id)) {
         @if(propertyDetails.calculated.isEmpty){

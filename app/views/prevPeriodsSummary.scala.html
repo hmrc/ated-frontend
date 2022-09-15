@@ -83,9 +83,9 @@
                     <th scope="col" class="govuk-table__header">
                         <span class="govuk-visually-hidden">@messages("ated.summary-return.table.screen-reader.headings-help")</span>
                         @messages("ated.prev-period-summary-th.period")</th>
-                    <th id="charge-title" scope="col" class="govuk-table__header">@messages("ated.prev-period-summary-th.chargeable")</th>
-                    <th id="relief-title" scope="col" class="govuk-table__header">@messages("ated.prev-period-summary-th.reliefs")</th>
-                    <th id="draft-title" scope="col" class="govuk-table__header">@messages("ated.prev-period-summary-th.drafts")</th>
+                    <th id="charge-title" scope="col" class="govuk-table__header govuk-table__header--numeric">@messages("ated.prev-period-summary-th.chargeable")</th>
+                    <th id="relief-title" scope="col" class="govuk-table__header govuk-table__header--numeric">@messages("ated.prev-period-summary-th.reliefs")</th>
+                    <th id="draft-title" scope="col" class="govuk-table__header govuk-table__header--numeric">@messages("ated.prev-period-summary-th.drafts")</th>
                 </tr>
             </thead>
             <tbody class="govuk-table__body">
@@ -100,15 +100,15 @@
                             </span>
                         </a>
                     </td>
-                    <td id="charge-number-@i" class="govuk-table__cell">
+                    <td id="charge-number-@i" class="govuk-table__cell govuk-table__cell--numeric">
                         <span class="govuk-visually-hidden">@messages("ated.summary-return.table.screen-reader.number-of") @messages("ated.prev-period-summary-th.chargeable")</span>
                         @periodSummaryWithDraft.submittedReturns.fold(0)(a => a.currentLiabilityReturns.size + a.oldLiabilityReturns.size)
                     </td>
-                    <td id="reliefs-number-@i" class="govuk-table__cell">
+                    <td id="reliefs-number-@i" class="govuk-table__cell govuk-table__cell--numeric">
                         <span class="govuk-visually-hidden">@messages("ated.summary-return.table.screen-reader.number-of") @messages("ated.prev-period-summary-th.reliefs")</span>
                         @periodSummaryWithDraft.submittedReturns.fold(0)(a => a.reliefReturns.size)
                     </td>
-                    <td id="draft-number-@i" class="govuk-table__cell">
+                    <td id="draft-number-@i" class="govuk-table__cell govuk-table__cell--numeric">
                         <span class="govuk-visually-hidden">@messages("ated.summary-return.table.screen-reader.number-of") @messages("ated.prev-period-summary-th.drafts")</span>
                         @periodSummaryWithDraft.draftReturns.size
                     </td>

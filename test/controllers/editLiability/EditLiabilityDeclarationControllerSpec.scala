@@ -177,10 +177,10 @@ class EditLiabilityDeclarationControllerSpec extends PlaySpec with GuiceOneServe
           val document = Jsoup.parse(contentAsString(result))
           document.title() must be(TitleBuilder.buildTitle("Amended return declaration"))
           document.getElementsByClass("govuk-heading-xl").text() must include("Amended return declaration")
-          document.getElementById("relief-declaration-before-declaration-text")
-            .text() must be("Before you can submit your return to HMRC you must read and agree to the following statement. If you give false information you may have to pay financial penalties and face prosecution.")
-          document.getElementsByClass("govuk-warning-text__text")
-            .text() must be("Warning I declare that the information I have given on this return is correct and complete.")
+          document.getElementById("edit-declaration-before-declaration-text")
+            .text() must be("! Warning Before you can submit your return to HMRC you must read and agree to the following statement. If you give false information you may have to pay financial penalties and face prosecution.")
+          document.getElementById("edit-liability-client")
+            .text() must be("I declare that the information I have given on this return is correct and complete.")
           document.getElementById("submit").text() must be("Agree and submit amended return")
         }
       }
@@ -194,10 +194,10 @@ class EditLiabilityDeclarationControllerSpec extends PlaySpec with GuiceOneServe
           val document = Jsoup.parse(contentAsString(result))
           document.title() must be(TitleBuilder.buildTitle("Further return declaration"))
           document.getElementsByClass("govuk-heading-xl").text() must include("Further return declaration")
-          document.getElementById("relief-declaration-before-declaration-text")
-            .text() must be("Before you can submit your return to HMRC you must read and agree to the following statement. If you give false information you may have to pay financial penalties and face prosecution.")
-          document.getElementsByClass("govuk-warning-text__text")
-            .text() must be("Warning I declare that the information I have given on this return is correct and complete.")
+          document.getElementById("edit-declaration-before-declaration-text")
+            .text() must be("! Warning Before you can submit your return to HMRC you must read and agree to the following statement. If you give false information you may have to pay financial penalties and face prosecution.")
+          document.getElementById("edit-liability-client")
+            .text() must be("I declare that the information I have given on this return is correct and complete.")
           document.getElementById("submit").text() must be("Agree and submit further return")
         }
       }
@@ -211,10 +211,10 @@ class EditLiabilityDeclarationControllerSpec extends PlaySpec with GuiceOneServe
           val document = Jsoup.parse(contentAsString(result))
           document.title() must be(TitleBuilder.buildTitle("Change in details declaration"))
           document.getElementsByClass("govuk-heading-xl").text() must include("Change in details declaration")
-          document.getElementById("relief-declaration-before-declaration-text")
-            .text() must be("Before you can submit your return to HMRC you must read and agree to the following statement. If you give false information you may have to pay financial penalties and face prosecution.")
-          document.getElementsByClass("govuk-warning-text__text")
-            .text() must be("Warning I declare that the information I have given on this return is correct and complete.")
+          document.getElementById("edit-declaration-before-declaration-text")
+            .text() must be("! Warning Before you can submit your return to HMRC you must read and agree to the following statement. If you give false information you may have to pay financial penalties and face prosecution.")
+          document.getElementById("edit-liability-client")
+            .text() must be("I declare that the information I have given on this return is correct and complete.")
           document.getElementById("submit").text() must be("Agree and submit")
         }
       }
@@ -237,10 +237,10 @@ class EditLiabilityDeclarationControllerSpec extends PlaySpec with GuiceOneServe
         viewWithAuthorisedDelegatedUser(Some(cL2)) { result =>
           status(result) must be(OK)
           val document = Jsoup.parse(contentAsString(result))
-          document.getElementById("relief-declaration-before-declaration-text")
-            .text() must be("Before your client’s return can be submitted to HMRC, you must read and agree to the following statement. Your client’s approval may be in electronic or non-electronic form. If your client gives false information, they may have to pay financial penalties and face prosecution.")
-          document.getElementsByClass("govuk-warning-text__text")
-            .text() must be("Warning I confirm that my client has approved the information contained in this return as being correct and complete to the best of their knowledge and belief.")
+          document.getElementById("edit-declaration-before-declaration-text")
+            .text() must be("! Warning Before your client’s return can be submitted to HMRC, you must read and agree to the following statement. Your client’s approval may be in electronic or non-electronic form. If your client gives false information, they may have to pay financial penalties and face prosecution.")
+          document.getElementById("edit-liability-agent")
+            .text() must be("I confirm that my client has approved the information contained in this return as being correct and complete to the best of their knowledge and belief.")
           document.getElementById("submit").text() must be("Agree and submit")
         }
       }

@@ -213,10 +213,10 @@ class ReliefDeclarationControllerSpec extends PlaySpec with GuiceOneServerPerSui
               document.title() must be(TitleBuilder.buildTitle("Returns declaration"))
               document.getElementById("relief-declaration-before-declaration-text")
                 .text() must be(
-                "Before you can submit your return to HMRC you must read and agree to the following statement. If you give false information you may have to pay financial penalties and face prosecution.")
+                "! Warning Before you can submit your return to HMRC you must read and agree to the following statement. If you give false information you may have to pay financial penalties and face prosecution.")
               document.getElementById("relief-declaration-mid-declaration-text").text() must be("Each type of relief claimed is an individual ATED return.")
               document.getElementById("declare-or-confirm").text() must be("I declare that:")
-              document.getElementById("declaration-confirmation-text")
+              document.getElementById("declaration-confirmation-text-1")
                 .text() must be("the information I have given on this return (or each of these returns) is correct")
               document.getElementById("submit").text() must be("Agree and submit returns")
           }
@@ -229,10 +229,10 @@ class ReliefDeclarationControllerSpec extends PlaySpec with GuiceOneServerPerSui
               val document = Jsoup.parse(contentAsString(result))
               document.title() must be(TitleBuilder.buildTitle("Returns declaration"))
               document.getElementById("relief-declaration-before-declaration-text")
-                .text() must be("Before your client’s return or returns can be submitted to HMRC, you must read and agree to the following statement. Your client’s approval may be in electronic or non-electronic form. If your client gives false information, they may have to pay financial penalties and face prosecution.")
+                .text() must be("! Warning Before your client’s return or returns can be submitted to HMRC, you must read and agree to the following statement. Your client’s approval may be in electronic or non-electronic form. If your client gives false information, they may have to pay financial penalties and face prosecution.")
               document.getElementById("relief-declaration-mid-declaration-text").text() must be("Each type of relief claimed is an individual ATED return.")
               document.getElementById("declare-or-confirm").text() must be("I confirm that my client has:")
-              document.getElementById("declaration-confirmation-text")
+              document.getElementById("declaration-confirmation-text-1")
                 .text() must be("approved the information contained in this return (or each of these returns) as being correct")
               document.getElementById("submit").text() must be("Agree and submit returns")
           }
