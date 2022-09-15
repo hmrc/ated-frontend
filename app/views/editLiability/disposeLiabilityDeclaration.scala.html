@@ -59,24 +59,23 @@
         </h1>
     </header>
 
-    <p class="govuk-body" id="dispose-liability-declaration-before-declaration-text">
-        @if(authContext.delegationModel.isDefined) {
-            @messages("ated.edit-liability.before-declaration.agent")
-        } else {
-            @messages("ated.edit-liability.before-declaration.client")
-        }
-    </p>
+    @govukWarningText(WarningText(
+        iconFallbackText = "Warning",
+        content = HtmlContent(if(authContext.delegationModel.isDefined) {messages("ated.edit-liability.before-declaration.agent")} else {messages("ated.edit-liability.before-declaration.client")}),
+        attributes  = Map ("id" -> "dispose-liability-declaration-before-declaration-text")
+    ))
 
     @if(authContext.delegationModel.isDefined) {
-        @govukWarningText(WarningText(
-            iconFallbackText = "Warning",
-            content = Text(messages("ated.edit-liability.i-confirm-that.bullet-text.agent"))
-        ))
+
+        <p class="govuk-body" id="dispose-liability-agent">
+            @messages("ated.edit-liability.i-confirm-that.bullet-text.agent")
+        </p>
+
     } else {
-        @govukWarningText(WarningText(
-            iconFallbackText = "Warning",
-            content = Text(messages("ated.edit-liability.i-declare-that.bullet-text.client"))
-        ))
+        <p class="govuk-body" id="dispose-liability-client">
+            @messages("ated.edit-liability.i-declare-that.bullet-text.client")
+        </p>
+
     }
 
     @formHelper(action = controllers.editLiability.routes.DisposeLiabilityDeclarationController.submit(oldFormBundleNum)) {

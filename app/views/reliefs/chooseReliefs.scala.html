@@ -261,12 +261,15 @@
 
         @formHelper(action=controllers.reliefs.routes.ChooseReliefsController.send(periodKey)) {
 
-            <legend id="choose-reliefs-legend" class="govuk-visually-hidden">@messages("ated.choose-reliefs.header")</legend>
-
             <div id="reliefs">
-
                 @govukCheckboxes(Checkboxes(
-                name = "reliefs",
+                    fieldset = Some(Fieldset(
+                        legend = Some(Legend(
+                            content = Text(messages("ated.choose-reliefs.header")),
+                            classes = "govuk-visually-hidden"
+                        ))
+                    )),
+                    name = "reliefs",
                     items = Seq(
                         CheckboxItem(
                             name = Some("rentalBusiness"),

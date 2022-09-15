@@ -54,37 +54,37 @@
   <br>
   <span id="address-line-2">@messages(disposeLiability.formBundleReturn.propertyDetails.address.addressLine2)</span>
   <br>
-@if(disposeLiability.formBundleReturn.propertyDetails.address.postalCode.isDefined) {
-  <span id="address-postcode">@disposeLiability.formBundleReturn.propertyDetails.address.postalCode</span>
-}
+  @if(disposeLiability.formBundleReturn.propertyDetails.address.postalCode.isDefined) {
+    <span id="address-postcode">@disposeLiability.formBundleReturn.propertyDetails.address.postalCode</span>
+  }
 }
 
 @disposeLiabilityDate = {
-@disposeLiability.disposeLiability.map(x => x.dateOfDisposal.fold(
-  incomplete
-)
-        (date => Html(date.toString(messages("ated.date-format"))))
-)
+  @disposeLiability.disposeLiability.map(x => x.dateOfDisposal.fold(
+    incomplete
+  )
+  (date => Html(date.toString(messages("ated.date-format"))))
+  )
 }
 
 @bankDetailsAccountName = {
-@disposeLiability.bankDetails.flatMap(_.bankDetails.map(_.accountName))
+  @disposeLiability.bankDetails.flatMap(_.bankDetails.map(_.accountName))
 }
 
 @bankDetailsAccountNumber = {
-@disposeLiability.bankDetails.flatMap(_.bankDetails.map(_.accountNumber))
+  @disposeLiability.bankDetails.flatMap(_.bankDetails.map(_.accountNumber))
 }
 
 @bankDetailsAccountSortCode = {
-@disposeLiability.bankDetails.flatMap(_.bankDetails.map(_.sortCode))
+  @disposeLiability.bankDetails.flatMap(_.bankDetails.map(_.sortCode))
 }
 
 @bankDetailsAccountNumberIBAN = {
-@disposeLiability.bankDetails.flatMap(_.bankDetails.map(_.iban))
+  @disposeLiability.bankDetails.flatMap(_.bankDetails.map(_.iban))
 }
 
 @bankDetailsAccountSwiftCode = {
-@disposeLiability.bankDetails.flatMap(_.bankDetails.map(_.bicSwiftCode))
+  @disposeLiability.bankDetails.flatMap(_.bankDetails.map(_.bicSwiftCode))
 }
 
 @newMain(title = titleBuilder(messages("ated.property-details-summary.title")),
