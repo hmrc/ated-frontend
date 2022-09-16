@@ -202,12 +202,6 @@ class AtedConnector @Inject()(appConfig: ApplicationConfig,
     http.GET[HttpResponse](getUrl)
   }
 
-  def deleteDraftReliefs(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[HttpResponse] = {
-    val userLink = authContext.atedReferenceNumber
-    val deleteUrl = s"""$serviceURL$userLink/ated/$retrieveDraftReliefURI/drafts"""
-    http.DELETE[HttpResponse](deleteUrl)
-  }
-
   def deleteDraftReliefsByYear(periodKey: Int)(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[HttpResponse] = {
     val userLink = authContext.atedReferenceNumber
     val deleteUrl = s"""$serviceURL$userLink/ated/$retrieveDraftReliefURI/drafts/$periodKey"""

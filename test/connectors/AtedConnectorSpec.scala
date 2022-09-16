@@ -407,18 +407,6 @@ class AtedConnectorSpec extends PlaySpec with GuiceOneAppPerSuite with MockitoSu
       }
     }
 
-    "deleteDraftReliefs" must {
-      "return HttpResponse" in new Setup {
-        implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
-        when(mockHttp.DELETE[HttpResponse](any(), any())(any(), any(), any()))
-          .thenReturn(Future.successful(HttpResponse(OK, "")))
-        val result: Future[HttpResponse] = testAtedConnector.deleteDraftReliefs
-        val response: HttpResponse = await(result)
-        response.status must be(OK)
-      }
-    }
-
-
     "delete draft relief return" must {
       "for successful submit, return submit response" in new Setup {
         val successResponse: JsValue = Json.toJson(Seq(ReliefBuilder.reliefTaxAvoidance(periodKey)))

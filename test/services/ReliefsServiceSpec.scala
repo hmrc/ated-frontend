@@ -492,18 +492,6 @@ class ReliefsServiceSpec extends PlaySpec with MockitoSugar with PrivateMethodTe
       }
     }
 
-    "delete relief returns" must {
-      "remove the draft reliefs from the cache" in new Setup {
-        implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
-
-        when(mockAtedConnector.deleteDraftReliefs(any(), any()))
-          .thenReturn(Future.successful(HttpResponse(OK, "")))
-
-        val result: Future[HttpResponse] = testReliefsService.clearDraftReliefs
-        await(result).status must be(OK)
-      }
-    }
-
     "delete relief draft returns from period key" must {
 
       "delete the draft return from mongodb" in new Setup {

@@ -22,10 +22,7 @@ import play.api.i18n.Messages
 import play.api.mvc.Results._
 import play.api.mvc.{AnyContent, Request, Result}
 import services.ReliefsService
-import uk.gov.hmrc.http.HeaderCarrier
 import utils.PeriodUtils
-
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 trait ReliefHelpers {
@@ -33,17 +30,11 @@ trait ReliefHelpers {
   def reliefsService: ReliefsService
   val templateInvalidPeriodKey: views.html.reliefs.invalidPeriodKey
 
-  def validatePeriodKey(periodKey: Int)(block: Future[Result])
-                       (implicit authContext: StandardAuthRetrievals,
-                        hc: HeaderCarrier, request: Request[AnyContent],
-                        messages: Messages, appConfig: ApplicationConfig): Future[Result] = {
-    if (PeriodUtils.calculatePeakStartYear() >= periodKey) {
-      block
-    } else {
-      for {
-        _ <- reliefsService.clearDraftReliefs
-      } yield BadRequest(templateInvalidPeriodKey())
-    }
-  }
+  def
+  validatePeriodKey(periodKey: Int)(block: Future[Result])(implicit authContext: StandardAuthRetrievals,
+                                                                    request: Request[AnyContent],
+                                                                    messages: Messages,
+                                                                    appConfig: ApplicationConfig): Future[Result] =
+    if (PeriodUtils.calculatePeakStartYear() >= periodKey) block else Future.successful(BadRequest(templateInvalidPeriodKey()))
 
 }

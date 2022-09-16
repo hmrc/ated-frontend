@@ -116,8 +116,6 @@ class ReliefsService @Inject()(atedConnector: AtedConnector,
     }
   }
 
-  def clearDraftReliefs(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[HttpResponse] = atedConnector.deleteDraftReliefs
-
   private def updateReliefs(atedRefNo: String, periodKey: Int, reliefs: Reliefs)(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier) = {
     for {
       draftReliefs <- retrieveDraftReliefs(atedRefNo, periodKey)
