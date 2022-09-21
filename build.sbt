@@ -24,7 +24,7 @@ lazy val scoverageSettings = {
     )
   }
 
-val silencerVersion = "1.7.1"
+val silencerVersion = "1.7.6"
 
 lazy val microservice = Project(appName, file("."))
     .enablePlugins(Seq(play.sbt.PlayScala, SbtDistributablesPlugin) ++ plugins: _*)
@@ -34,7 +34,7 @@ lazy val microservice = Project(appName, file("."))
     .settings(scalaSettings: _*)
     .settings(publishingSettings: _*)
     .settings(defaultSettings(): _*)
-    .settings(scalaVersion := "2.12.12")
+    .settings(scalaVersion := "2.12.15")
     .settings(playSettings ++ scoverageSettings: _*)
   .settings(inConfig(TemplateTest)(Defaults.testSettings): _*)
   .settings(inConfig(TemplateItTest)(Defaults.itSettings): _*)
@@ -48,11 +48,11 @@ lazy val microservice = Project(appName, file("."))
       libraryDependencies ++= appDependencies,
       retrieveManaged := true,
       routesGenerator := InjectedRoutesGenerator,
-      parallelExecution          in Test := true,
-      fork                       in Test := true,
-      Keys.fork                  in IntegrationTest :=  false,
-      unmanagedSourceDirectories in IntegrationTest := (baseDirectory in IntegrationTest)(base => Seq(base / "it")).value,
-      parallelExecution in IntegrationTest := false,
+      Test / parallelExecution   := true,
+      Test / fork                := true,
+      IntegrationTest / Keys.fork :=  false,
+      IntegrationTest / unmanagedSourceDirectories := (IntegrationTest / baseDirectory)(base => Seq(base / "it")).value,
+      IntegrationTest / parallelExecution := false,
       routesImport += "config.JodaLocalDateRoutes._"
     )
     .disablePlugins(JUnitXmlReportPlugin)
@@ -65,4 +65,3 @@ lazy val microservice = Project(appName, file("."))
       )
     )
     .disablePlugins(JUnitXmlReportPlugin)
-
