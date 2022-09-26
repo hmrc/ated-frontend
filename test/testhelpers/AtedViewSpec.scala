@@ -22,12 +22,12 @@ import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.i18n.{Messages, MessagesApi}
+import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import play.twirl.api.Html
 
 trait AtedViewSpec extends PlaySpec with JsoupArgumentMatchers with GuiceOneServerPerSuite with MockitoSugar {
-
-  implicit val request = FakeRequest()
+  implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
 
   def view: Html
@@ -61,7 +61,7 @@ trait AtedViewSpec extends PlaySpec with JsoupArgumentMatchers with GuiceOneServ
     }
   }
 
-  def pageWithElementAndText(element: String, value: String): Unit = { //TODO refactor to be nicer
+  def pageWithElementAndText(element: String, value: String): Unit = {
     s"have a id named $element with value $value" in {
       doc must haveElementWithIdAndText(value, element)
     }

@@ -23,24 +23,24 @@
 
     <script src='@controllers.routes.Assets.versioned("javascript/printFriendly.js")'></script>
 
-    <h1 id="header">
+    <h1 class="govuk-heading-xl govuk-!-margin-bottom-5" id="header">
         @messages("ated.chargeable-return-confirmation.submitted.text")
     </h1>
 
-    <p><span id="receipt-message-title" class="heading-medium">@messages("ated.chargeable-return-confirmation.charge.heading")</span></p>
+    <h2 id="receipt-message-title" class="govuk-heading-m">@messages("ated.chargeable-return-confirmation.charge.heading")</h2>
 
-    <p id="adjusted-amount">@messages("ated.chargeable-return-confirmation.amount.message")</p>
+    <p class="govuk-body" id="adjusted-amount">@messages("ated.chargeable-return-confirmation.amount.message")</p>
 
     @submittedReturnResponse.map { returnResponse =>
         @returnResponse.liabilityReturnResponse.map { liabilityReturnResponse =>
-            <p id="owed-amount">@Html(messages("ated.chargeable-return-confirmation.owe.text", pounds(liabilityReturnResponse.head.liabilityAmount)))</p>
-            <p id="reference-text">@Html(messages("ated.chargeable-return-confirmation.reference.text", liabilityReturnResponse.head.paymentReference.getOrElse("")))</p>
-            <p id="late-payment">@Html(messages("ated.chargeable-return-late-payment-pf.text"))</p>
+            <p class="govuk-body" id="owed-amount">@Html(messages("ated.chargeable-return-confirmation.owe.text", pounds(liabilityReturnResponse.head.liabilityAmount)))</p>
+            <p class="govuk-body" id="reference-text">@Html(messages("ated.chargeable-return-confirmation.reference.text", liabilityReturnResponse.head.paymentReference.getOrElse("")))</p>
+            <p class="govuk-body" id="late-payment">@Html(messages("ated.chargeable-return-late-payment-pf.text"))</p>
         }
     }
 
-    <div class="form-group">
-        <p id="not-receive-email">
+    <div class="govuk-form-group">
+        <p class="govuk-body" id="not-receive-email">
             @messages("ated.chargeable-return-confirmation.not-receive-text")
         </p>
     </div>

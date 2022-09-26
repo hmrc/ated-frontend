@@ -21,45 +21,55 @@
 @(balance: Option[BigDecimal], correspondence: Option[Address], organisationName: Option[String], clientBanner: Html)(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 @import views.html.helpers._
 
-    <div class="related">
-        <div class="service-info">
-            <h2 class="balance-display heading-medium" id="sidebar.balance-header">@messages("ated.summary-return.sidebar.balance")</h2>
+<hr class="service-banner">
 
-            <p class="balance-display heading-large" id="sidebar.balance-content">
+    <div class="related">
+        <div>
+            <h2 class="balance-display govuk-heading-m" id="sidebar.balance-header">@messages("ated.summary-return.sidebar.balance")</h2>
+
+            <p class="govuk-heading-l" id="sidebar.balance-content">
                 @formattedPounds(balance.getOrElse(BigDecimal(0)).abs) @if(balance.getOrElse(BigDecimal(0)) > 0) {
-                <span class="heading-medium">@messages("ated.debit") </span>
+                <span class="govuk-!-font-size-24">@messages("ated.debit")</span>
             } @if(balance.getOrElse(BigDecimal(0)) < 0) {
-                <span class="heading-medium">@messages("ated.credit")</span>
+                <span class="govuk-!-font-size-24">@messages("ated.credit")</span>
             } </p>
 
-            <p id="sidebar.balance-info">@messages("ated.summary-return.sidebar.balance-info")</p>
+            <p class="govuk-body" id="sidebar.balance-info">@messages("ated.summary-return.sidebar.balance-info")</p>
 
             @if(balance.getOrElse(BigDecimal(0)) > 0) {
-                <p>@Html(messages("ated.summary-return.sidebar.pay.link")) </p>
+            <p class="govuk-body">
+                <a class= "govuk-link" id="sidebar.link-text" href="https://www.gov.uk/guidance/pay-annual-tax-on-enveloped-dwellings">
+                    @messages("ated.summary-return.sidebar.pay.link")
+                </a>
+            </p>
             }
 
             @if(balance.getOrElse(BigDecimal(0)) < 0) {
-                <p>@Html(messages("ated.summary-return.sidebar.owed.link"))</p>
+            <p class="govuk-body">
+                <a class= "govuk-link" id="sidebar.link-text" href="https://www.gov.uk/guidance/pay-annual-tax-on-enveloped-dwellings">
+                    @messages("ated.summary-return.sidebar.owed.link")
+                </a>
+            </p>
             }
 
             @correspondence.map { _ =>
-                <p>
-                    <a href="@controllers.subscriptionData.routes.CompanyDetailsController.view" id="change-details-link">
+                <p class="govuk-body">
+                    <a  class= "govuk-link" id="change-details-link" href="@controllers.subscriptionData.routes.CompanyDetailsController.view">
                         @messages("ated.summary-return.company-details.link")
                     </a>
                 </p>
             }
 
             @if(authContext.delegationModel.isEmpty && clientBanner == HtmlFormat.empty) {
-                <p id="sidebar.appoint">
-                    <a id="appoint-agent" href="@appConfig.clientApproveAgentMandate">
+                <p id="sidebar.appoint" class="govuk-body">
+                    <a  class= "govuk-link" id="appoint-agent" href="@appConfig.clientApproveAgentMandate">
                         @messages("ated.account-summary.appoint-agent.text")
                     </a>
                 </p>
             }
 
-            <p>
-                <a id="create-return-other" href="@controllers.routes.PrevPeriodsSummaryController.view">
+            <p class="govuk-body">
+                <a  class= "govuk-link" id="create-return-other" href="@controllers.routes.PrevPeriodsSummaryController.view">
                    @messages("ated.account-summary.create-return-other.link")
                 </a>
             </p>

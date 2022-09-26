@@ -19,29 +19,30 @@
 @()(implicit messages: Messages, appConfig: config.AppConfig)
 
 <nav class="centered-content bta-navigation" aria-label="Business Tax navigation">
-    <ul id="service-info-list">
-           <li>
-            <a id="service-info-home-link"
-               href="@appConfig.btaHomeUrl">
+    <ul id="service-info-list" class="govuk-list">
+        <li>
+            <a id="service-info-home-link" class="govuk-link"
+                href="@appConfig.btaHomeUrl">
                 @messages("btaNavLinks.home")
             </a>
-           </li>
+        </li>
 
         <li>
-            <a id="service-info-manage-account-link"
+            <a id="service-info-manage-account-link" class="govuk-link"
                href="@appConfig.btaManageAccountUrl">
                 @messages("btaNavLinks.manageAccount")
             </a>
         </li>
+
         <li>
-            <a id="service-info-messages-link"
+            <a id="service-info-messages-link" class="govuk-link"
                href="@appConfig.btaMessagesUrl">
                 @messages("btaNavLinks.messages")
             </a>
+        </li>
 
-    </li>
         <li>
-            <a id="service-info-help-and-contact-link"
+            <a id="service-info-help-and-contact-link" class="govuk-link"
                href="@appConfig.btaHelpAndContactUrl">
                 @messages("btaNavLinks.helpAndContact")
             </a>

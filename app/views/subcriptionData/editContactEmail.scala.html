@@ -16,70 +16,78 @@
 
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
-@this(atedMain: atedMain, formHelper: FormWithCSRF)
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
+@import views.ViewUtils.titleBuilder
+
+@this(newMain: newMain, formHelper: FormWithCSRF, govukBackLink: GovukBackLink, errorSummary: GovukErrorSummary,
+radios: GovukRadios, input: GovukInput, details: GovukDetails, button: GovukButton)
 @(editContactDetailsEmailForm: Form[models.EditContactDetailsEmail], serviceInfoContent: Html = HtmlFormat.empty, backLink:Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
-@import uk.gov.hmrc.play.views.html.helpers._
-@import views.html.helpers._
 
-@implicitFormInstance = @{ Some(editContactDetailsEmailForm) }
-
-@pageScripts = {
-<script src='@controllers.routes.Assets.versioned("javascript/edit-contact-email.js")'></script>
+@backLinkHtml = {
+    @if(backLink.isDefined) {
+        @govukBackLink(BackLink(
+            href = backLink.get,
+            content = Text("Back")
+        ))
+    }
 }
 
-@atedMain(title = messages("ated.contact-details-edit-email.header"), serviceInfoContent = serviceInfoContent, pageScripts = Some(pageScripts)) {
-    @pageHeadersAndError(backLink, "pre-heading", messages("ated.contact-details-edit-email.subheader"), "contact-details-email-header", messages("ated.contact-details-edit-email.header"))
+@revealHtml = {
+    @input(Input(
+        label = Label(content = Text(messages("ated.contact-details.emailAddress")))
+    ).withFormField(editContactDetailsEmailForm("emailAddress")))
+}
 
-    <p id="lede">@messages("ated.contact-details-email-lede")</p>
+@emailDetails = {
+    <p>@messages("ated.contact-details.email.risk.help.answer_p1")</p>
+    <p>@messages("ated.contact-details.email.risk.help.answer_p2")
+        <a class="govuk-link" href="mailto:phishing@@hmrc.gov.uk"> @messages("ated.contact-details.email.risk.help.answer.link")</a>
+    </p>
+}
 
-    <div class="form-group">
+@newMain(title = titleBuilder(messages("ated.contact-details-edit-email.header"), Some(editContactDetailsEmailForm)), serviceInfoContent = serviceInfoContent) {
+    @backLinkHtml
+
+    @if(editContactDetailsEmailForm.hasErrors) {
+        @errorSummary(ErrorSummary().withFormErrorsAsText(editContactDetailsEmailForm))
+    }
+
+    <h1 class="govuk-heading-xl govuk-!-margin-bottom-5">
+        <span class="govuk-visually-hidden">@messages("ated.screen-reader.section")</span>
+        <span class="govuk-caption-xl hmrc-caption-xl">@messages("ated.contact-details-edit-email.subheader")</span>
+        @messages("ated.contact-details-edit-email.header")
+    </h1>
+
+    <p id="lede" class="govuk-body">@messages("ated.contact-details-email-lede")</p>
+
         <div id = "email-consent-risk">
 
-            <details>
-                <summary aria-controls="email-consent-content-0" tabindex="0" class="summary font-xsmall" id="email-risk-question">
-                    @messages("ated.contact-details.email.risk.help.text")
-                </summary>
-                <div id="email-consent-content-0" class="panel-indent font-xsmall">
-                    <p id="email-risk-ans">@Html(messages("ated.contact-details.email.risk.help.answer"))</p>
-                </div>
-            </details>
+        @details(Details(
+            summary = Text(messages("ated.contact-details.email.risk.help.text")),
+            content = HtmlContent(emailDetails)))
 
         </div>
-    </div>
-
 
     @formHelper(action = controllers.subscriptionData.routes.EditContactEmailController.submit) {
 
-    <div class="form-group">
+        @radios(Radios(
+            fieldset = Some(Fieldset(
+                legend = Some(Legend(
+                    content = Text("ated.contact-details.email-consent.message"),
+                    classes = "govuk-visually-hidden"
+                ))
+            )),
+            items = Seq(
+                RadioItem(
+                    content = Text(messages("ated.label.yes")),
+                    value = Some("true"),
+                    conditionalHtml = Some(revealHtml)),
+                RadioItem(
+                    content = Text(messages("ated.label.no")),
+                    value = Some("false")))
+        ).withFormField(editContactDetailsEmailForm("emailConsent")))
 
-        <div class="form-group">
-
-            @atedInputRadioGroupNew(editContactDetailsEmailForm("emailConsent"),
-            Seq("true" -> messages("ated.label.yes"),
-            "false" -> messages("ated.label.no")),
-            '_legend -> messages("ated.contact-details.email-consent.message"),
-            '_legendClass -> "screen-reader-text",
-            '_groupClass -> "inline",
-            '_labelClass -> "block-label",
-            '_labelAfter -> true)
-
-        </div>
-
-        <div class="form-group panel-indent" id="contact-address-form">
-
-            @atedInputNew(editContactDetailsEmailForm("emailAddress"),
-            '_label -> Html(messages("ated.contact-details.emailAddress")),
-            '_labelClass -> "form-label-bold",
-            '_inputClass -> "form-control-indent",
-            '_showConstraints -> false,
-            '_type -> "email")
-
-        </div>
-
-    </div>
-
-    <button class="button" id="submit" type="submit">@messages("ated.save-changes")</button>
-
+    @button(Button(content = Text(messages("ated.save-changes"))))
 
     }
 }

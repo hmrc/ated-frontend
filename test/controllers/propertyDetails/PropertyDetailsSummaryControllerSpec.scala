@@ -17,7 +17,6 @@
 package controllers.propertyDetails
 
 import java.util.UUID
-
 import builders.{PropertyDetailsBuilder, SessionBuilder, _}
 import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
@@ -39,6 +38,7 @@ import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import utils.AtedConstants
 import views.html.BtaNavigationLinks
+import views.html.propertyDetails.propertyDetailsSummary
 
 import scala.concurrent.Future
 
@@ -53,11 +53,11 @@ class PropertyDetailsSummaryControllerSpec extends PlaySpec with GuiceOneServerP
   val mockBackLinkCacheConnector: BackLinkCacheConnector = mock[BackLinkCacheConnector]
   val mockSubscriptionDataService: SubscriptionDataService = mock[SubscriptionDataService]
   val mockPropertyDetailsDeclarationController: PropertyDetailsDeclarationController = mock[PropertyDetailsDeclarationController]
-    val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
+  val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
-  val injectedViewInstance = app.injector.instanceOf[views.html.propertyDetails.propertyDetailsSummary]
+  val injectedViewInstance: propertyDetailsSummary = app.injector.instanceOf[views.html.propertyDetails.propertyDetailsSummary]
 
   val organisationName = "ACME Limited"
 
@@ -93,7 +93,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
-      when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(btaNavigationLinksView()(messages,mockAppConfig)))
+      when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(btaNavigationLinksView()(messages, mockAppConfig)))
       when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
         (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
       when(mockPropertyDetailsService.calculateDraftPropertyDetails(ArgumentMatchers.eq("1"))(ArgumentMatchers.any(), ArgumentMatchers.any())).
@@ -178,11 +178,11 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
           }
         }
 
-        "no periods should be displayed if we have none" in new Setup {
+        "no periods should be displayed with incomplete sections" in new Setup {
 
           val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails(id = "1", postCode = Some("123456"), liabilityAmount =
             Some(BigDecimal(1000.20))).copy(period = None)
-          getWithAuthorisedUser (propertyDetails){
+          getWithAuthorisedUser(propertyDetails) {
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
@@ -192,14 +192,15 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
               document.getElementById("address-line-3").text() must be("addr3")
               document.getElementById("address-line-4").text() must be("addr4")
               document.getElementById("address-postcode").text() must be("123456")
-              document.getElementById("edit-property-address-details").attr("href") must include("/ated/liability/create/address/edit-summary/1")
-              document.getElementById("edit-property-title-details").attr("href") must include("/ated/liability/create/title/edit/1")
-              document.getElementById("edit-property-professionally-value-1").attr("href") must include("/ated/liability/create/owned-before/edit-summary/1")
-              document.getElementById("edit-property-professionally-valued-details-incomplete").attr("href") must include("/ated/liability/create/valued/edit/1")
-              document.getElementById("edit-dates-of-liablity-incomplete").attr("href") must include("/ated/liability/create/full-tax-period/edit-summary/1")
-              document.getElementById("edit-avoidance-scheme-header-incomplete").attr("href") must include("/ated/liability/create/tax-avoidance/edit-summary/1")
-              document.getElementById("edit-supporting-details").attr("href") must include("/ated/liability/create/supporting-info/edit-summary/1")
+              document.select("#property-details > div:nth-child(1) > dd.govuk-summary-list__actions > a").attr("href") must include("/ated/liability/create/address/edit-summary/1")
+              document.select("#property-details > div:nth-child(2) > dd.govuk-summary-list__actions > a").attr("href") must include("/ated/liability/create/title/edit/1")
+              document.select("#value-purpose-ated-0 > div > dd.govuk-summary-list__actions > a").attr("href") must include("/ated/liability/create/owned-before/edit-summary/1")
+              document.select("#professionally-valued-incomplete > div > dd.govuk-summary-list__actions > a").attr("href") must include("/ated/liability/create/valued/edit/1")
+              document.select("#dates-of-liability-incomplete > div > dd.govuk-summary-list__actions > a").attr("href") must include("/ated/liability/create/full-tax-period/edit-summary/1")
+              document.select("#avoidance-scheme-incomplete > div:nth-child(1) > dd.govuk-summary-list__actions > a").attr("href") must include("/ated/liability/create/tax-avoidance/edit-summary/1")
+              document.select("#supporting-information > div > dd.govuk-summary-list__actions > a").attr("href") must include("/ated/liability/create/supporting-info/edit-summary/1")
               document.getElementById("print-friendly-liability-link").attr("href") must include("/ated/liability/create/summary/1/print")
+              document.getElementById("save-as-draft").attr("href") must include("/ated/account-summary")
               document.getElementById("delete-draft").attr("href") must include("/ated/liability/delete/draft/1/2019")
           }
         }
@@ -207,7 +208,6 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
     }
 
     "submit" must {
-
       "redirect to declaration page" in new Setup {
         when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
         submitWithAuthorisedUser {

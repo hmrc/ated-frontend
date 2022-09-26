@@ -229,14 +229,10 @@ class ConfirmAddressControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
               document.title() must be(TitleBuilder.buildTitle("Confirm address"))
               assert(document.getElementById("service-info-list").text() === "Home Manage account Messages Help and contact")
               document.getElementById("editAddress").text() must be("Edit address")
-              document.getElementById("submit").text() must be("Confirm and continue")
-              document.getElementById("address-line1").text() must be("addr1")
-              document.getElementById("address-line2").text() must be("addr2")
-              document.getElementById("address-line3").text() must be("addr3")
-              document.getElementById("address-line4").text() must be("addr4")
-              document.getElementById("postcode").text() must be("")
-              document.getElementById("backLinkHref").text must be("Back")
-              document.getElementById("backLinkHref").attr("href") must include("/ated/liability/address-lookup/view/2015")
+              document.getElementsByClass("govuk-button").text() must be("Confirm and continue")
+              document.getElementById("address").text() must be("addr1 addr2 addr3 addr4")
+              document.getElementsByClass("govuk-back-link").text must be("Back")
+              document.getElementsByClass("govuk-back-link").attr("href") must include("/ated/liability/address-lookup/view/2015")
           }
         }
           "show correct property details with a back link to enter address manually" in new Setup {
@@ -246,14 +242,10 @@ class ConfirmAddressControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
                 val document = Jsoup.parse(contentAsString(result))
                 document.title() must be(TitleBuilder.buildTitle("Confirm address"))
                 document.getElementById("editAddress").text() must be("Edit address")
-                document.getElementById("submit").text() must be("Confirm and continue")
-                document.getElementById("address-line1").text() must be("addr1")
-                document.getElementById("address-line2").text() must be("addr2")
-                document.getElementById("address-line3").text() must be("addr3")
-                document.getElementById("address-line4").text() must be("addr4")
-                document.getElementById("postcode").text() must be("")
-                document.getElementById("backLinkHref").text must be("Back")
-                document.getElementById("backLinkHref").attr("href") must include("/ated/liability/create/address/view/1/false/2015?mode=editSubmitted")
+                document.getElementsByClass("govuk-button").text() must be("Confirm and continue")
+                document.getElementById("address").text() must be("addr1 addr2 addr3 addr4")
+                document.getElementsByClass("govuk-back-link").text must be("Back")
+                document.getElementsByClass("govuk-back-link").attr("href") must include("/ated/liability/create/address/view/1/false/2015?mode=editSubmitted")
             }
           }
             "show correct property details with a back link to select property from previous year" in new Setup {
@@ -263,14 +255,11 @@ class ConfirmAddressControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
                   val document = Jsoup.parse(contentAsString(result))
                   document.title() must be(TitleBuilder.buildTitle("Confirm address"))
                   document.getElementById("editAddress").text() must be("Edit address")
-                  document.getElementById("submit").text() must be("Confirm and continue")
-                  document.getElementById("address-line1").text() must be("addr1")
-                  document.getElementById("address-line2").text() must be("addr2")
-                  document.getElementById("address-line3").text() must be("addr3")
-                  document.getElementById("address-line4").text() must be("addr4")
-                  document.getElementById("postcode").text() must be("")
-                  document.getElementById("backLinkHref").text must be("Back")
-                  document.getElementById("backLinkHref").attr("href") must include("/ated/existing-return/select/2015/charge")
+                  document.getElementsByClass("govuk-button").text() must be("Confirm and continue")
+                  document.getElementById("address").text() must be("addr1 addr2 addr3 addr4")
+                  document.getElementsByClass("govuk-back-link").text must be("Back")
+                  document.getElementsByClass("govuk-back-link").text must be("Back")
+                  document.getElementsByClass("govuk-back-link").attr("href") must include("/ated/existing-return/select/2015/charge")
               }
             }
 
@@ -307,12 +296,8 @@ class ConfirmAddressControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
             val document = Jsoup.parse(contentAsString(result))
             document.title() must be(TitleBuilder.buildTitle("Confirm address"))
             document.getElementById("editAddress").text() must be("Edit address")
-            document.getElementById("submit").text() must be("Confirm and continue")
-            document.getElementById("address-line1").text() must be("addr1")
-            document.getElementById("address-line2").text() must be("addr2")
-            document.getElementById("address-line3").text() must be("addr3")
-            document.getElementById("address-line4").text() must be("addr4")
-            document.getElementById("postcode").text() must be("postCode")
+            document.getElementsByClass("govuk-button").text() must be("Confirm and continue")
+            document.getElementById("address").text() must be("addr1 addr2 addr3 addr4 postCode")
         }
       }
 

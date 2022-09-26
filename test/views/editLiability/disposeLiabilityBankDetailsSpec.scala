@@ -20,34 +20,37 @@ import config.ApplicationConfig
 import forms.BankDetailForms._
 import models.StandardAuthRetrievals
 import org.jsoup.Jsoup
-import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
+import org.scalatest.featurespec.AnyFeatureSpec
+import org.scalatest.{BeforeAndAfterEach, GivenWhenThen}
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Messages, MessagesApi}
+import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import play.twirl.api.Html
-import testhelpers.MockAuthUtil
+import testhelpers.{GovukTestHelpers, MockAuthUtil}
 import uk.gov.hmrc.auth.core.retrieve.~
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
+import views.html.editLiability.disposeLiabilityBankDetails
 
-class disposeLiabilityBankDetailsSpec extends FeatureSpec with GuiceOneAppPerSuite with MockitoSugar
-  with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
+class disposeLiabilityBankDetailsSpec extends AnyFeatureSpec with GuiceOneAppPerSuite with MockitoSugar
+  with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil with GovukTestHelpers {
 
-  implicit val request = FakeRequest()
+  implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
   implicit val authContext: StandardAuthRetrievals = organisationStandardRetrievals
 
-  val injectedViewInstance = app.injector.instanceOf[views.html.editLiability.disposeLiabilityBankDetails]
+  val injectedViewInstance: disposeLiabilityBankDetails = app.injector.instanceOf[views.html.editLiability.disposeLiabilityBankDetails]
 
   val authMock: Enrolments ~ Some[AffinityGroup] ~ Some[String] = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
   setAuthMocks(authMock)
 
-    feature("The user can whether they have bank details") {
+    Feature("The user can whether they have bank details") {
 
     info("as a client i want change whether I send my bank details")
 
-    scenario("allow indicating bank details status") {
+    Scenario("allow indicating bank details status") {
 
       Given("the client is prompted to add thier bank details")
       When("The user views the page")
@@ -57,32 +60,35 @@ class disposeLiabilityBankDetailsSpec extends FeatureSpec with GuiceOneAppPerSui
       val document = Jsoup.parse(html.toString())
 
       Then("The header should match - Is the bank account in the UK?")
-      assert(document.title() === "Is the bank account in the UK? - GOV.UK")
-      assert(document.select("h1").text === "Is the bank account in the UK?")
+      assert(document.title() === "Enter your bank account details - GOV.UK")
+      assert(document.select("h1").text.contains("Enter your bank account details"))
 
       Then("The subheader should be - Change return")
-      assert(document.getElementById("pre-heading").text() === "This section is: Change return")
+      assert(document.getElementsByClass("govuk-caption-xl").text.contains("This section is: Change return"))
 
       Then("The fields should have the correct titles")
       And("No data is populated")
-      assert(document.getElementById("hasUKBankAccount-id").text() === "Yes No")
+      assert(document.getElementById("hasUKBankAccount").text() === "")
+      assert(document.getElementById("hasUKBankAccount-2").text() === "")
+      assert(document.getElementsByAttributeValue("for", "hasUKBankAccount").text() contains "Yes")
+      assert(document.getElementsByAttributeValue("for", "hasUKBankAccount-2").text() contains "No")
       assert(document.getElementById("name-of-person").text() === "Name of bank account holder")
 
-      assert(document.getElementById("hidden-bank-details-uk").text() === "Account number Sort code First two numbers Second two numbers Third two numbers")
-      assert(document.getElementById("account-number").text() === "Account number")
-      assert(document.getElementById("sort-code").text() === "Sort code First two numbers Second two numbers Third two numbers")
+      assert(document.getElementsByAttributeValue("for","accountNumber").text() === "Account number")
+      assert(document.getElementById("accountNumber-hint").text() === "Must be between 6 and 8 digits long")
+      assert(document.getElementsByAttributeValue("for" ,"sortCode").text() === "Sort code")
+      assert(document.getElementById("sortCode-hint").text() === "Must be 6 digits long")
+      assert(document.getElementById("accountNumber").attr("type") === "number")
 
-      assert(document.getElementById("hidden-bank-details-non-uk").text() === "IBAN SWIFT code")
-      assert(document.getElementById("iban-code").text() === "IBAN")
-      assert(document.getElementById("bic-swift-code").text() === "SWIFT code")
+      assert(document.getElementsByAttributeValue("for","iban").text() === "IBAN")
+      assert(document.getElementById("iban-hint").text() === "You can ask your bank or check your bank statement")
+      assert(document.getElementsByAttributeValue("for","bicSwiftCode").text() === "SWIFT code")
+      assert(document.getElementById("bicSwiftCode-hint").text() === "Must be between 8 and 11 characters long. You can ask your bank or check your bank statement")
 
       Then("The submit button should have the correct name")
       assert(document.getElementById("submit").text() === "Save and continue")
 
-      Then("The back link is correct")
-      assert(document.getElementById("backLinkHref").text === "Back")
-      assert(document.getElementById("backLinkHref").attr("href") === "http://backLink")
+      checkBackLink(document)
     }
   }
-
 }

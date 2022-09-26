@@ -17,11 +17,22 @@
 @import models._
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
-@import uk.gov.hmrc.play.views.html.helpers._
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
+@import views.ViewUtils.titleBuilder
 @import views.html.helpers._
 @import _root_.utils._
 @import config.featureswitch.FeatureSwitch
-@this(atedMain: atedMain, formHelper: FormWithCSRF)
+
+
+@this(newMain: newMain,
+      govukButton : GovukButton,
+      govukBackLink : GovukBackLink,
+      govukRadios : GovukRadios,
+      govukErrorSummary : GovukErrorSummary,
+      formHelper: FormWithCSRF)
+
+
 @(id: String, periodKey: Int, propertyDetailsForm: Form[PeriodChooseRelief], serviceInfoContent: Html = HtmlFormat.empty, backLink:Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
 
@@ -36,37 +47,75 @@
     }
 }
 
-@atedMain(title = messages("ated.property-details-period.chooseRelief.title"),
+@backLinkHtml = {
+    @if(backLink.isDefined) {
+        @govukBackLink(BackLink(
+            href = backLink.get,
+            content = Text("Back")
+        ))
+    }
+}
+
+@newMain(title = titleBuilder(messages("ated.property-details-period.chooseRelief.title"), Some(propertyDetailsForm)),
           serviceInfoContent = serviceInfoContent) {
 
-  @pageHeadersAndError(backLink, "pre-heading", messages("ated.property-details.pre-header"), "property-details-header", messages("ated.property-details-period.chooseRelief.header"),
-      Some(atedErrorSummary(propertyDetailsForm, "ated.property-details-period.chooseRelief.error")))
+@backLinkHtml
+
+@if(propertyDetailsForm.errors.nonEmpty) {
+    @govukErrorSummary(ErrorSummary().withFormErrorsAsText(propertyDetailsForm))
+}
 
   @formHelper(action=controllers.propertyDetails.routes.PeriodChooseReliefController.save(id, periodKey)) {
 
-      <div class="form-group">
-        @atedInputRadioGroupNew(propertyDetailsForm("reliefDescription"),
-        Seq(
-        ReliefsUtils.RentalBusinessDesc -> messages("ated.choose-single-relief.rentalBusiness"),
-        ReliefsUtils.OpenToPublicDesc -> messages("ated.choose-single-relief.openToPublic"),
-        ReliefsUtils.PropDevDesc -> messages("ated.choose-single-relief.propertyDeveloper"),
-        ReliefsUtils.PropTradingDesc -> messages("ated.choose-single-relief.propertyTrading"),
-        ReliefsUtils.LendingDesc -> messages("ated.choose-single-relief.lending"),
-        ReliefsUtils.EmpOccDesc -> messages("ated.choose-single-relief.employeeOccupation"),
-        ReliefsUtils.FarmHouseDesc -> messages("ated.choose-single-relief.farmHouses"),
-        ReliefsUtils.SocialHouseDesc -> messages(chooseSingleReliefsocialHousingMessage),
-        ReliefsUtils.EquityReleaseDesc -> messages("ated.choose-single-relief.equityRelease")
-        ),
-        '_legend ->messages("ated.property-details-period.chooseRelief.header"),
-        '_legendClass -> "visuallyhidden" ,
-        '_labelClass -> "block-label",
-        '_labelAfter -> true
+    @govukRadios(Radios(
+        items = Seq(
+          RadioItem(
+            content = Text(messages("ated.choose-single-relief.rentalBusiness")),
+            value = Some(ReliefsUtils.RentalBusinessDesc)
+          ),
+          RadioItem(
+            content = Text(messages("ated.choose-single-relief.openToPublic")),
+            value = Some(ReliefsUtils.OpenToPublicDesc)
+          ),
+          RadioItem(
+            content = Text(messages("ated.choose-single-relief.propertyDeveloper")),
+            value = Some(ReliefsUtils.PropDevDesc)
+          ),
+          RadioItem(
+            content = Text(messages("ated.choose-single-relief.propertyTrading")),
+            value = Some(ReliefsUtils.PropTradingDesc)
+          ),
+          RadioItem(
+            content = Text(messages("ated.choose-single-relief.lending")),
+            value = Some(ReliefsUtils.LendingDesc)
+          ),
+          RadioItem(
+            content = Text(messages("ated.choose-single-relief.employeeOccupation")),
+            value = Some(ReliefsUtils.EmpOccDesc)
+          ),
+          RadioItem(
+            content = Text(messages("ated.choose-single-relief.farmHouses")),
+            value = Some(ReliefsUtils.FarmHouseDesc)
+          ),
+          RadioItem(
+            content = Text(messages(chooseSingleReliefsocialHousingMessage)),
+            value = Some(ReliefsUtils.SocialHouseDesc)
+          ),
+          RadioItem(
+            content = Text(messages("ated.choose-single-relief.equityRelease")),
+            value = Some(ReliefsUtils.EquityReleaseDesc)
+          )
         )
-      </div>
+      ).withFormField(propertyDetailsForm("reliefDescription"))
+        .withHeadingAndSectionCaption(
+            heading = Text(messages("ated.property-details-period.chooseRelief.header")),
+            sectionCaption = Text(messages("ated.property-details.pre-header"))
+        ))
 
-      <button class="button" id="submit" type="submit">
-          @messages("ated.save-and-continue")
-      </button>
+    @govukButton(Button(
+        content = Text(messages("ated.save-and-continue")),
+        attributes = Map("id" -> "submit")
+    ))
   }
 
 }

@@ -17,7 +17,6 @@
 package controllers
 
 import java.util.UUID
-
 import builders.SessionBuilder
 import config.ApplicationConfig
 import controllers.auth.AuthAction
@@ -29,8 +28,10 @@ import play.api.mvc.{MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import testhelpers.MockAuthUtil
-import uk.gov.hmrc.auth.core.AffinityGroup
+import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
+import uk.gov.hmrc.auth.core.retrieve.~
 import uk.gov.hmrc.http.HeaderCarrier
+import views.html.unauthorised
 
 import scala.concurrent.Future
 
@@ -41,7 +42,7 @@ class ApplicationControllerSpec extends PlaySpec with MockitoSugar with GuiceOne
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
 
   val mockMcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
-  val injectedViewInstance = app.injector.instanceOf[views.html.unauthorised]
+  val injectedViewInstance: unauthorised = app.injector.instanceOf[views.html.unauthorised]
 
   class Setup {
 
@@ -112,6 +113,9 @@ class ApplicationControllerSpec extends PlaySpec with MockitoSugar with GuiceOne
         "load the unauthorised page" in new Setup {
           getWithUnAuthorisedUser { result =>
             contentAsString(result) must include("You need to sign in with a different Gateway ID")
+            contentAsString(result) must include("UK businesses, trusts and partnerships")
+            contentAsString(result) must include("Non-UK businesses, trusts and partnerships, including non-resident landlords")
+            contentAsString(result) must include("Do not set up a new Gateway ID if your business is already registered for ATED")
           }
         }
       }
@@ -155,9 +159,9 @@ class ApplicationControllerSpec extends PlaySpec with MockitoSugar with GuiceOne
     "redirectToGuidance" must {
       "redirect the user" in new Setup {
         val userId = s"user-${UUID.randomUUID}"
-        val authMock = authResultDefault(AffinityGroup.Individual, defaultEnrolmentSet)
+        val authMock: Enrolments ~ Some[AffinityGroup] ~ Some[String] = authResultDefault(AffinityGroup.Individual, defaultEnrolmentSet)
         setAuthMocks(authMock)
-        val result = testApplicationController.redirectToGuidance().apply(SessionBuilder.buildRequestWithSession(userId))
+        val result: Future[Result] = testApplicationController.redirectToGuidance().apply(SessionBuilder.buildRequestWithSession(userId))
         redirectLocation(result).get must include("/guidance/register-for-the-annual-tax-on-enveloped-dwellings-online-service")
       }
     }

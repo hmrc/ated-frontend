@@ -16,6 +16,7 @@
 
 package views.html.propertyDetails
 
+import builders.TitleBuilder
 import config.ApplicationConfig
 import forms.PropertyDetailsForms
 import models.StandardAuthRetrievals
@@ -27,36 +28,43 @@ import utils.PeriodUtils
 
 class PropertyDetailsOwnedBeforeSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil {
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
-  val injectedViewInstance = app.injector.instanceOf[views.html.propertyDetails.propertyDetailsOwnedBefore]
+  val injectedViewInstance: propertyDetailsOwnedBefore = app.injector.instanceOf[views.html.propertyDetails.propertyDetailsOwnedBefore]
 
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
-"Property Details Owned Before view" must {
-    behave like pageWithTitle(messages("ated.property-details-value.isOwnedBeforeValuationYear.title", PeriodUtils.calculateLowerTaxYearBoundary(2014).getYear.toString))
-    behave like pageWithHeader(messages("ated.property-details-value.isOwnedBeforeValuationYear.title", PeriodUtils.calculateLowerTaxYearBoundary(2014).getYear.toString))
-    behave like pageWithPreHeading(messages("ated.property-details.pre-header"))
-    behave like pageWithBackLink
-    behave like pageWithContinueButtonForm("/ated/liability/create/owned-before/save//period/2014")
-    behave like pageWithYesNoRadioButton("isOwnedBeforePolicyYear-true", "isOwnedBeforePolicyYear-false",
-      messages("ated.property-details-value.yes"),
-      messages("ated.property-details-value.no"))
 
-    "check page contents and errors" in {
+  private val form = PropertyDetailsForms.propertyDetailsOwnedBeforeForm
+  override def view: Html = injectedViewInstance("",2014,  form, None, Html(""), Some("backLink"))
+
+  "The Property Details owned before page" must {
+    "have a the correct page title" in {
+      doc.title mustBe TitleBuilder.buildTitle(messages("ated.property-details-value.isOwnedBeforeValuationYear.title", PeriodUtils.calculateLowerTaxYearBoundary(2014).getYear.toString))
+    }
+    "have the correct page header" in {
+      doc.getElementsByTag("h1").text() must include (messages("ated.property-details-value.isOwnedBeforeValuationYear.title", PeriodUtils.calculateLowerTaxYearBoundary(2014).getYear.toString))
+    }
+    "have the correct pre heading" in {
+      doc.getElementsByClass("govuk-caption-xl").text() mustBe ("This section is " + messages("ated.property-details.pre-header"))
+    }
+    "have a backlink" in {
+      doc.getElementsByClass("govuk-back-link").text() mustBe "Back"
+    }
+    "have a continue button" in {
+      doc.getElementsByClass("govuk-button").text() mustBe "Save and continue"
+    }
+    "have a yes/no radio button" in {
+      doc.getElementsByAttributeValue("for","isOwnedBeforePolicyYear").text() mustBe messages("ated.property-details-value.yes")
+      doc.getElementsByAttributeValue("for","isOwnedBeforePolicyYear-2").text() mustBe messages("ated.property-details-value.no")
+    }
+    "have the correct error messages" in {
       val eform = Form(form.mapping, Map("isOwnedBeforePolicyYear" -> "true"),
         Seq(FormError("ownedBeforePolicyYearValue", messages("ated.property-details-value.ownedBeforePolicyYearValue.error.empty")))
         , form.value)
       def view: Html = injectedViewInstance("",2014,  eform, None, Html(""), Some("backLink"))
       val errorDoc = doc(view)
 
-      errorDoc.getElementsMatchingOwnText(messages("ated.property-details-value-error.general.ownedBeforePolicyYearValue")).hasText mustBe true
-      errorDoc.getElementsMatchingOwnText(messages("ated.property-details-value.ownedBeforePolicyYearValue.error.empty")).hasText mustBe true
-
-      errorDoc.getElementsMatchingOwnText(messages("ated.property-details-value.ownedBeforevaluationYear.Value")).hasText mustBe true
-      errorDoc.getElementsMatchingOwnText(messages("ated.property-details-value.ownedBeforevaluationYear.hint")).hasText mustBe true
+      errorDoc.getElementById("ownedBeforePolicyYearValue-error").text() mustBe ("Error: " + messages("ated.property-details-value.ownedBeforePolicyYearValue.error.empty"))
+      errorDoc.getElementsByClass("govuk-error-summary__list").text() mustBe messages("ated.property-details-value.ownedBeforePolicyYearValue.error.empty")
     }
-
   }
-
-  private val form = PropertyDetailsForms.propertyDetailsOwnedBeforeForm
-  override def view: Html = injectedViewInstance("",2014,  form, None, Html(""), Some("backLink"))
 
 }

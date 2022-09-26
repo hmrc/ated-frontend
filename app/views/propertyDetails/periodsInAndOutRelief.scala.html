@@ -17,7 +17,20 @@
 @import models._
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
-@this(atedMain: atedMain, formHelper: FormWithCSRF)
+@import views.ViewUtils.titleBuilder
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
+@import views.html.helpers._
+@import _root_.utils._
+@import views.ViewUtils.titleBuilder
+
+@this(newMain: newMain,
+      govukButton : GovukButton,
+      govukBackLink : GovukBackLink,
+      govukErrorSummary : GovukErrorSummary,
+      govukTable : GovukTable,
+      formHelper: FormWithCSRF)
+
 @(id: String, periodKey: Int,
  propertyDetailsForm: Form[PropertyDetailsInRelief],
  periods : Seq[models.LineItem],
@@ -25,71 +38,112 @@
  serviceInfoContent: Html = HtmlFormat.empty,
  backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
-@import uk.gov.hmrc.play.views.html.helpers._
-@import views.html.helpers._
-@import _root_.utils._
-
 @implicitFormInstance = @{ Some(propertyDetailsForm) }
 
+@backLinkHtml = {
+  @if(backLink.isDefined) {
+    @govukBackLink(BackLink(
+      href = backLink.get,
+      content = Text("Back")
+    ))
+  }
+}
 
-@atedMain(title = messages("ated.property-details-period.periodsInRelief.title"),
-          serviceInfoContent = serviceInfoContent) {
-          @pageHeadersAndError(backLink,
-            "pre-heading",
-            messages(AtedUtils.getPropertyDetailsPreHeader(mode)),
-            "property-details-header",
-            messages("ated.property-details-period.periodsInRelief.header"),
-            Some(atedErrorSummary(propertyDetailsForm, "ated.property-details-period-error.general")
-          ))
+@deleteLink(period: LineItem) = {
+  <a href="@controllers.propertyDetails.routes.PeriodsInAndOutReliefController.deletePeriod(id, period.startDate)" class="govuk-link govuk-body" id="delete-period-@periods.indexOf(period).toString()">
+      @messages("ated.property-details-period.periodsInRelief.delete")
+      <span class="govuk-visually-hidden">
+          @messages((period.description).getOrElse(""))
+          @period.startDate.toString(messages("ated.date-format")) @messages("ated.to")
+          @period.endDate.toString(messages("ated.date-format"))
+      </span>
+  </a>
+}
+
+@newMain(title = titleBuilder(messages("ated.property-details-period.periodsInRelief.title"), Some(propertyDetailsForm)), serviceInfoContent = serviceInfoContent) {
+
+    @backLinkHtml
+
+    @if(propertyDetailsForm.errors.nonEmpty) {
+        @govukErrorSummary(ErrorSummary().withFormErrorsAsText(propertyDetailsForm))
+    }
+
+<header>
+    <h1 class="govuk-heading-xl govuk-!-margin-bottom-5">
+        <span class="govuk-caption-xl">
+            <span class="govuk-visually-hidden">
+                @messages("ated.screen-reader.section")
+            </span>
+            @messages(AtedUtils.getPropertyDetailsPreHeader(mode))
+        </span>
+        @messages("ated.property-details-period.periodsInRelief.header")
+    </h1>
+</header>
 
   @if(periods.isEmpty){
-    <p id="no-periods">@messages("ated.property-details-period.periodsInRelief.no-periods")</p>
-    <div class="divider--top--thick"></div>
-  }else {
-    <table id="period-summary">
-      <thead>
-        <tr>
-          <th id="date-from-header">@messages("ated.property-details-period.periodsInRelief.date-from-header")</th>
-          <th id="date-to-header">@messages("ated.property-details-period.periodsInRelief.date-to-header")</th>
-          <th id="return-type-header" colspan="2">@messages("ated.property-details-period.periodsInRelief.return-type-header")</th>
-        </tr>
-      </thead>
-      @for((period, index) <- periods.zipWithIndex) {
-      <tr>
-        <td id="date-from-value-@index">@period.startDate.toString(messages("ated.date-format"))</td>
-        <td id="date-to-value-@index">@period.endDate.toString(messages("ated.date-format"))</td>
-        <td id="return-type-value-@index">@messages((period.description).getOrElse(""))</td>
-        <td id="action-@index">
-          <a href="@controllers.propertyDetails.routes.PeriodsInAndOutReliefController.deletePeriod(id, period.startDate)" id="delete-period-@index">
-            @messages("ated.property-details-period.periodsInRelief.delete")
-            <span class="visuallyhidden">
-              @messages((period.description).getOrElse(""))
-              @period.startDate.toString(messages("ated.date-format")) @messages("ated.to") 
-              @period.endDate.toString(messages("ated.date-format"))
-            </span>
-          </a>
-        </td>
-      </tr>
-      }
-    </table>
+    <p id="no-periods" class="govuk-body">@messages("ated.property-details-period.periodsInRelief.no-periods")</p>
+    <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">  
+  } else {
+
+    @govukTable(Table(
+        rows = periods.flatMap(period => Seq(
+            Seq(
+                TableRow(
+                    content = Text(period.startDate.toString(messages("ated.date-format"))),
+                    attributes = Map("id" -> "date-from-value-".concat(periods.indexOf(period).toString()))
+                ),
+                TableRow(
+                    content = Text(period.endDate.toString(messages("ated.date-format"))),
+                    attributes = Map("id" -> "date-to-value-".concat(periods.indexOf(period).toString()))
+                ),
+                TableRow(
+                    content = Text(messages((period.description).getOrElse(""))),
+                    attributes = Map("id" -> "return-type-value-".concat(periods.indexOf(period).toString()))
+                ),
+                TableRow(
+                    content = HtmlContent(deleteLink(period)),
+                    attributes = Map("id" -> "action-".concat(periods.indexOf(period).toString()))
+                )
+            )
+        )),
+        head = Some(Seq(
+            HeadCell(
+                content = Text(messages("ated.property-details-period.periodsInRelief.date-from-header")),
+                attributes = Map("id" -> "date-from-header")
+            ),
+            HeadCell(
+                content = Text(messages("ated.property-details-period.periodsInRelief.date-to-header")),
+                attributes = Map("id" -> "date-to-header")
+            ),
+            HeadCell(
+                content = Text(messages("ated.property-details-period.periodsInRelief.return-type-header")),
+                attributes = Map("id" -> "return-type-header"),
+                colspan=Some(2)
+            )
+      )),
+      captionClasses = "govuk-table__caption--m",
+    ))
   }
 
-  <div class="margin-bottom-default">
-    <a href="@controllers.propertyDetails.routes.PeriodDatesLiableController.add(id, periodKey)"
-       id="add-period-charge" class="button--secondary btn-margin">
-      @messages("ated.property-details-period.periodsInRelief.add-charge")
-    </a>
+    @govukButton(Button(
+          classes = "govuk-button--secondary",
+          href = Some(controllers.propertyDetails.routes.PeriodDatesLiableController.add(id, periodKey).url),
+          content = Text(messages("ated.property-details-period.periodsInRelief.add-charge")),
+          attributes = Map("id" -> "add-period-charge")
+    ))
 
-    <a href="@controllers.propertyDetails.routes.PeriodChooseReliefController.add(id, periodKey)"
-       id="add-period-in-relief" class="button--secondary btn-margin">
-      @messages("ated.property-details-period.periodsInRelief.add-relief")
-    </a>
-  </div>
+    @govukButton(Button(
+        classes = "govuk-button--secondary",
+        href = Some(controllers.propertyDetails.routes.PeriodChooseReliefController.add(id, periodKey).url),
+        content = Text(messages("ated.property-details-period.periodsInRelief.add-relief")),
+        attributes = Map("id" -> "add-period-in-relief")
+      ))
 
   @formHelper(action=controllers.propertyDetails.routes.PeriodsInAndOutReliefController.continue(id, periodKey)) {
 
-   <button class="button" id="submit" type="submit">@messages("ated.save-and-continue")</button>
-
+    @govukButton(Button(
+        content = Text(messages("ated.save-and-continue")),
+        attributes = Map("id" -> "submit")
+    ))
   }
-
 }

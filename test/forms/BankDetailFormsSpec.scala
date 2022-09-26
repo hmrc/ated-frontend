@@ -16,6 +16,7 @@
 
 package forms
 
+import forms.BankDetailForms.bankDetailsForm
 import models.{BicSwiftCode, Iban, SortCode}
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
@@ -30,22 +31,30 @@ class BankDetailFormsSpec extends PlaySpec with GuiceOneServerPerSuite {
   val validUkData: Map[String, String] = Map("hasUKBankAccount" -> "true",
       "accountName" -> "Account Name",
       "accountNumber" -> "12345678",
-      "sortCode.firstElement" -> "11",
-      "sortCode.secondElement" -> "22",
-      "sortCode.thirdElement" -> "33"
+      "sortCode" -> "112233"
     )
 
+  val nonValidUkData: Map[String, String] = Map("hasUKBankAccount" -> "true",
+    "accountName" -> "Account Name",
+    "accountNumber" -> "aaaaaa",
+    "sortCode" -> "aaaaaa"
+  )
+
   val validNonUkData: Map[String, String] = Map("hasUKBankAccount" -> "false",
-    "bicSwiftCode" -> "123654789654",
+    "accountName" -> "Account Name",
+    "bicSwiftCode" -> "12345678998",
     "iban" -> "GADGSDGADSGF"
+  )
+  val nonValidNonUkData: Map[String, String] = Map("hasUKBankAccount" -> "false",
+    "accountName" -> "Account Name",
+    "bicSwiftCode" -> "aaaaaa",
+    "iban" -> "aaaaaa"
   )
 
   val maxLengthUkData: Map[String, String] = Map("hasUKBankAccount" -> "true",
     "accountName" -> "Account Name"*20,
     "accountNumber" -> "12345678"*10,
-    "sortCode.firstElement" -> "11"*10,
-    "sortCode.secondElement" -> "22"*10,
-    "sortCode.thirdElement" -> "33"*10
+    "sortCode" -> "112233"*100
   )
 
   val maxLengthNonUkData: Map[String, String] = Map("hasUKBankAccount" -> "false",
@@ -57,9 +66,7 @@ class BankDetailFormsSpec extends PlaySpec with GuiceOneServerPerSuite {
   val emptyUkData: Map[String, String] = Map("hasUKBankAccount" -> "true",
     "accountName" -> "",
     "accountNumber" -> "",
-    "sortCode.firstElement" -> "",
-    "sortCode.secondElement" -> "",
-    "sortCode.thirdElement" -> ""
+    "sortCode" -> ""
   )
 
   val emptyNonUkData: Map[String, String] = Map("hasUKBankAccount" -> "false",
@@ -71,9 +78,9 @@ class BankDetailFormsSpec extends PlaySpec with GuiceOneServerPerSuite {
   "bankDetailsForm" must {
     "pass through validation" when {
       "supplied with valid data for uk accounts" in {
-        BankDetailForms.bankDetailsForm.bind(validUkData).fold(
+        BankDetailForms.validateBankDetails(bankDetailsForm.bind(validUkData)).fold(
           formWithErrors => {
-            formWithErrors.errors.isEmpty mustBe true
+            fail(s"form should not have errors. Errors: ${formWithErrors.errors}")
 
           },
           success => {
@@ -85,13 +92,13 @@ class BankDetailFormsSpec extends PlaySpec with GuiceOneServerPerSuite {
       }
 
       "supplied with valid data for non uk accounts" in {
-        BankDetailForms.bankDetailsForm.bind(validNonUkData).fold(
+        BankDetailForms.validateBankDetails(bankDetailsForm.bind(validNonUkData)).fold(
           formWithErrors => {
-            formWithErrors.errors.isEmpty mustBe true
+            fail(s"form should not have errors. Errors: ${formWithErrors.errors}")
 
           },
           success => {
-            success.bicSwiftCode mustBe Some(BicSwiftCode("123654789654"))
+            success.bicSwiftCode mustBe Some(BicSwiftCode("12345678998"))
             success.iban mustBe Some(Iban("GADGSDGADSGF"))
           }
         )
@@ -101,10 +108,11 @@ class BankDetailFormsSpec extends PlaySpec with GuiceOneServerPerSuite {
     "fail validation" when {
 
       "supplied with empty form" in {
-        BankDetailForms.bankDetailsForm.bind(Map.empty[String, String]).fold (
+        BankDetailForms.validateBankDetails(bankDetailsForm.bind(Map.empty[String, String])).fold (
           formWithErrors => {
-            formWithErrors.errors.length mustBe 1
-            formWithErrors.errors.head.message mustBe "ated.bank-details.error-key.hasUKBankAccount.empty"
+            formWithErrors.errors.length mustBe 2
+            formWithErrors.errors.head.message mustBe "ated.bank-details.error-key.accountName.empty"
+            formWithErrors.errors.last.message mustBe "ated.bank-details.error-key.hasUKBankAccount.empty"
           },
           _ => {
             fail("Form should give an error")
@@ -113,7 +121,7 @@ class BankDetailFormsSpec extends PlaySpec with GuiceOneServerPerSuite {
       }
 
       "supplied with uk account 'empty form'" in {
-        BankDetailForms.validateBankDetails(BankDetailForms.bankDetailsForm.bind(emptyUkData)).fold (
+        BankDetailForms.validateBankDetails(bankDetailsForm.bind(emptyUkData)).fold (
           formWithErrors => {
             formWithErrors.errors.length mustBe 3
             formWithErrors.errors.head.message mustBe "ated.bank-details.error-key.accountName.empty"
@@ -170,6 +178,32 @@ class BankDetailFormsSpec extends PlaySpec with GuiceOneServerPerSuite {
         )
 
       }
+
+      "supplied with uk account form non valid data" in {
+        BankDetailForms.validateBankDetails(BankDetailForms.bankDetailsForm.bind(nonValidUkData)).fold (
+          formWithErrors => {
+            formWithErrors.errors.length mustBe 2
+            formWithErrors.errors.head.message mustBe "ated.bank-details.error-key.accountNumber.invalid"
+            formWithErrors.errors.last.message mustBe "ated.bank-details.error-key.sortCode.invalid"
+          },
+          _ => {
+            fail("Form should give an error")
+          }
+        )
+      }
+
+      "supplied with non uk account form non valid data" in {
+        BankDetailForms.validateBankDetails(BankDetailForms.bankDetailsForm.bind(nonValidNonUkData)).fold (
+          formWithErrors => {
+            formWithErrors.errors.length mustBe 1
+            formWithErrors.errors.head.message mustBe "ated.bank-details.error-key.bicSwiftCode.invalid"
+          },
+          _ => {
+            fail("Form should give an error")
+          }
+        )
+      }
+
     }
   }
 

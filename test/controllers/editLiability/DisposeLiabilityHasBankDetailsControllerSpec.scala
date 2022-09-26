@@ -17,7 +17,6 @@
 package controllers.editLiability
 
 import java.util.UUID
-
 import builders._
 import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
@@ -151,10 +150,11 @@ class DisposeLiabilityHasBankDetailsControllerSpec extends PlaySpec with GuiceOn
             status(result) must be(OK)
             val doc = Jsoup.parse(contentAsString(result))
             doc.title() must be("Do you have a bank account where we could pay a refund? - GOV.UK")
-            doc.getElementById("pre-heading").text() must be("This section is: Change return")
+            doc.getElementsByClass("govuk-caption-xl").text() must be("This section is Change return")
+            doc.getElementsByTag("h1").text() must include("Do you have a bank account where we could pay a refund?")
             assert(doc.getElementById("service-info-list").text() === "Home Manage account Messages Help and contact")
-            doc.getElementById("backLinkHref").text must be("Back")
-            doc.getElementById("backLinkHref").attr("href") must include("http://backlink")
+            doc.getElementsByClass("govuk-back-link").text must be("Back")
+            doc.getElementsByClass("govuk-back-link").attr("href") must include("http://backlink")
         }
       }
 
@@ -168,7 +168,6 @@ class DisposeLiabilityHasBankDetailsControllerSpec extends PlaySpec with GuiceOn
     }
 
     "editFromSummary" must {
-
       "return a status of OK and have the back link set to the summary page" in new Setup {
         val disposeLiabilityReturn: DisposeLiabilityReturn = DisposeLiabilityReturnBuilder
           .generateDisposeLiabilityReturn("12345678901")
@@ -179,8 +178,8 @@ class DisposeLiabilityHasBankDetailsControllerSpec extends PlaySpec with GuiceOn
             val document = Jsoup.parse(contentAsString(result))
             document.title() must be(TitleBuilder.buildTitle("Do you have a bank account where we could pay a refund?"))
 
-            document.getElementById("backLinkHref").text must be("Back")
-            document.getElementById("backLinkHref").attr("href") must include("/ated/liability/123456789012/dispose/summary")
+            document.getElementsByClass("govuk-back-link").text must be("Back")
+            document.getElementsByClass("govuk-back-link").attr("href") must include("/ated/liability/123456789012/dispose/summary")
         }
       }
 

@@ -17,7 +17,7 @@ lazy val playSettings: Seq[Setting[_]] = Seq.empty
 lazy val scoverageSettings = {
     import scoverage.ScoverageKeys
     Seq(
-      ScoverageKeys.coverageExcludedPackages := "<empty>;Reverse.*;app.Routes.*;prod.*;testOnlyDoNotUseInAppConf.*;uk.gov.hmrc.BuildInfo*;.*MicroserviceAuditConnector*;.*MicroserviceAuthConnector*;.*WSHttp*;uk.gov.hmrc.agentclientmandate.config.*;",
+      ScoverageKeys.coverageExcludedPackages := "<empty>;Reverse.*;app.Routes.*;prod.*;testOnlyDoNotUseInAppConf.*;config.*;uk.gov.hmrc.BuildInfo*;.*MicroserviceAuditConnector*;.*MicroserviceAuthConnector*;.*WSHttp*;uk.gov.hmrc.agentclientmandate.config.*;",
       ScoverageKeys.coverageMinimumStmtTotal := 80,
       ScoverageKeys.coverageFailOnMinimum := true,
       ScoverageKeys.coverageHighlighting := true
@@ -41,7 +41,9 @@ lazy val microservice = Project(appName, file("."))
     .settings(
       TwirlKeys.templateImports ++= Seq(
         "views.html.helper.form",
-        "uk.gov.hmrc.play.views.html.helpers.FormWithCSRF"
+        "uk.gov.hmrc.govukfrontend.views.html.components._",
+        "uk.gov.hmrc.hmrcfrontend.views.html.components.implicits._",
+        "uk.gov.hmrc.hmrcfrontend.views.html.helpers._"
       ),
       addTestReportOption(IntegrationTest, "int-test-reports"),
       inConfig(IntegrationTest)(Defaults.itSettings),

@@ -17,7 +17,6 @@
 package controllers.reliefs
 
 import java.util.UUID
-
 import builders.{SessionBuilder, TitleBuilder}
 import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
@@ -38,7 +37,8 @@ import testhelpers.MockAuthUtil
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import utils.AtedConstants
-import views.html.BtaNavigationLinks
+import views.html.{BtaNavigationLinks, global_error}
+import views.html.reliefs.reliefDeclaration
 
 import scala.concurrent.Future
 
@@ -51,12 +51,12 @@ class ReliefDeclarationControllerSpec extends PlaySpec with GuiceOneServerPerSui
   val mockReliefsService: ReliefsService = mock[ReliefsService]
   val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
   val mockBackLinkCacheConnector: BackLinkCacheConnector = mock[BackLinkCacheConnector]
-    val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
+  val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
-  lazy val injectedViewInstance = app.injector.instanceOf[views.html.reliefs.reliefDeclaration]
-  lazy val injectedViewInstanceError = app.injector.instanceOf[views.html.global_error]
+  lazy val injectedViewInstance: reliefDeclaration = app.injector.instanceOf[views.html.reliefs.reliefDeclaration]
+  lazy val injectedViewInstanceError: global_error = app.injector.instanceOf[views.html.global_error]
 
   val periodKey = 2015
 
@@ -178,7 +178,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
 
   override def beforeEach(): Unit = {
 
-reset(mockReliefsService)
+    reset(mockReliefsService)
     reset(mockDelegationService)
     reset(mockDataCacheConnector)
     reset(mockBackLinkCacheConnector)
@@ -213,10 +213,10 @@ reset(mockReliefsService)
               document.title() must be(TitleBuilder.buildTitle("Returns declaration"))
               document.getElementById("relief-declaration-before-declaration-text")
                 .text() must be(
-                "Before you can submit your return to HMRC you must read and agree to the following statement. If you give false information you may have to pay financial penalties and face prosecution.")
+                "! Warning Before you can submit your return to HMRC you must read and agree to the following statement. If you give false information you may have to pay financial penalties and face prosecution.")
               document.getElementById("relief-declaration-mid-declaration-text").text() must be("Each type of relief claimed is an individual ATED return.")
               document.getElementById("declare-or-confirm").text() must be("I declare that:")
-              document.getElementById("declaration-confirmation-text")
+              document.getElementById("declaration-confirmation-text-1")
                 .text() must be("the information I have given on this return (or each of these returns) is correct")
               document.getElementById("submit").text() must be("Agree and submit returns")
           }
@@ -229,10 +229,10 @@ reset(mockReliefsService)
               val document = Jsoup.parse(contentAsString(result))
               document.title() must be(TitleBuilder.buildTitle("Returns declaration"))
               document.getElementById("relief-declaration-before-declaration-text")
-                .text() must be("Before your client’s return or returns can be submitted to HMRC, you must read and agree to the following statement. Your client’s approval may be in electronic or non-electronic form. If your client gives false information, they may have to pay financial penalties and face prosecution.")
+                .text() must be("! Warning Before your client’s return or returns can be submitted to HMRC, you must read and agree to the following statement. Your client’s approval may be in electronic or non-electronic form. If your client gives false information, they may have to pay financial penalties and face prosecution.")
               document.getElementById("relief-declaration-mid-declaration-text").text() must be("Each type of relief claimed is an individual ATED return.")
               document.getElementById("declare-or-confirm").text() must be("I confirm that my client has:")
-              document.getElementById("declaration-confirmation-text")
+              document.getElementById("declaration-confirmation-text-1")
                 .text() must be("approved the information contained in this return (or each of these returns) as being correct")
               document.getElementById("submit").text() must be("Agree and submit returns")
           }

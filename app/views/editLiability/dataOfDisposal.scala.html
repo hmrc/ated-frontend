@@ -14,45 +14,71 @@
  * limitations under the License.
  *@
 
-@import models._
 @import config.ApplicationConfig
+@import models._
 @import play.twirl.api.HtmlFormat
-@this(atedMain: atedMain, formHelper: FormWithCSRF)
-@(disposeLiabilityForm: Form[DisposeLiability], oldFormBundleNo: String, serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String], periodKey: Int)(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
-@import uk.gov.hmrc.play.views.html.helpers._
-@import views.html.helpers._
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import views.ViewUtils.titleBuilder
 
-@implicitFormInstance = @{ Some(disposeLiabilityForm) }
+@this(newMain: newMain,
+        formHelper: FormWithCSRF,
+        govukDateInput : GovukDateInput,
+        govukButton : GovukButton,
+        govukErrorSummary : GovukErrorSummary,
+        govukBackLink : GovukBackLink)
 
-@atedMain(title = messages("ated.dispose-property.disposal-date.title"),
-          serviceInfoContent = serviceInfoContent) {
+@(disposeLiabilityForm: Form[DisposeLiability],
+        oldFormBundleNo: String,
+        serviceInfoContent: Html = HtmlFormat.empty,
+        backLink: Option[String],
+        periodKey: Int
+)(implicit authContext: StandardAuthRetrievals,
+        messages: Messages,
+        request: Request[AnyContent],
+        appConfig: ApplicationConfig)
 
-  @pageHeadersAndError(backLink, "pre-heading", messages("ated.property-details.pre-header-dispose"), "dispose-property-header", messages("ated.dispose-property.disposal-date.header"),
-      Some(atedErrorSummary(disposeLiabilityForm, "ated.dispose-property.error.general")))
+@dateItems = @{
+    Seq(InputItem(attributes = Map("maxLength" -> "2")),
+        InputItem(attributes = Map("maxLength" -> "2")),
+        InputItem(attributes = Map("maxLength" -> "4"))
+    )
+}
 
-  @formHelper(action=controllers.editLiability.routes.DisposePropertyController.save(oldFormBundleNo)) {
+@backLinkHtml = {
+    @if(backLink.isDefined) {
+        @govukBackLink(BackLink(
+            href = backLink.get,
+            content = Text("Back")
+        ))
+    }
+}
 
-    <div id="date-of-disposal" class="form-group">
-      @atedDateFieldsFree(
-        formItem = disposeLiabilityForm,
-        fieldName = "dateOfDisposal",
-        label = Html(""),
-        isNested = false,
-        defaultDateOption = None,
-        periodKey,
-          '_hintText -> messages("ated.date.hint"),
-        '_groupClass -> "date",
-        '_idName -> "dateOfDisposal"
-      )
+@newMain(title = titleBuilder(messages("ated.dispose-property.disposal-date.title"), Some(disposeLiabilityForm)), serviceInfoContent = serviceInfoContent) {
 
-    </div>
+    @backLinkHtml
 
-    <div class="form-group">
-      <button class="button" id="submit" type="submit">@messages("ated.save-and-continue")</button>
+    @if(disposeLiabilityForm.errors.nonEmpty) {
+        @govukErrorSummary(ErrorSummary().withFormErrorsAsText(disposeLiabilityForm, mapping = Map("dateOfDisposal" -> "dateOfDisposal.day")))
+    }
 
-      <input type="hidden" class="form-control" name="periodKey" id="id" value=@disposeLiabilityForm("periodKey").value>
-    </div>
+    @formHelper(action = controllers.editLiability.routes.DisposePropertyController.save(oldFormBundleNo)) {
 
-  }
+        @govukDateInput(DateInput(
+            hint = Some(Hint(
+                content = Text(messages("ated.date.hint"))
+            )),
+            items = dateItems
+            ).withFormField(disposeLiabilityForm("dateOfDisposal"))
+            .withHeadingAndSectionCaption(
+                heading = Text(messages("ated.dispose-property.disposal-date.header")),
+                sectionCaption = Text(messages("ated.property-details.pre-header-dispose"))
+        ))
+
+        @govukButton(Button(
+            content = Text(messages("ated.save-and-continue")),
+            attributes = Map("type" -> "submit", "id" -> "submit")
+        ))
+        <input type="hidden" name="periodKey" id="id" value=@disposeLiabilityForm("periodKey").value>
+    }
 
 }

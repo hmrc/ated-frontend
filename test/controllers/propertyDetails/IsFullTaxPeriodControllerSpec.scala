@@ -42,7 +42,6 @@ import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.AtedConstants
 import views.html.BtaNavigationLinks
-
 import scala.concurrent.Future
 
 class IsFullTaxPeriodControllerSpec extends PlaySpec with GuiceOneServerPerSuite
@@ -57,8 +56,8 @@ class IsFullTaxPeriodControllerSpec extends PlaySpec with GuiceOneServerPerSuite
   val mockBackLinkCacheConnector: BackLinkCacheConnector = mock[BackLinkCacheConnector]
   val mockPropertyDetailsInReliefController: PropertyDetailsInReliefController = mock[PropertyDetailsInReliefController]
   val mockPropertyDetailsTaxAvoidanceController: PropertyDetailsTaxAvoidanceController = mock[PropertyDetailsTaxAvoidanceController]
-    val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
+  val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
   val injectedViewInstance = app.injector.instanceOf[views.html.propertyDetails.isFullTaxPeriod]
@@ -67,13 +66,13 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
 
   class Setup {
 
-    val mockAuthAction: AuthAction = new AuthAction (
+    val mockAuthAction: AuthAction = new AuthAction(
       mockAppConfig,
       mockDelegationService,
       mockAuthConnector
     )
 
-    val testIsFullTaxPeriodController: IsFullTaxPeriodController = new IsFullTaxPeriodController (
+    val testIsFullTaxPeriodController: IsFullTaxPeriodController = new IsFullTaxPeriodController(
       mockMcc,
       mockAuthAction,
       mockPropertyDetailsInReliefController,
@@ -99,7 +98,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
-      when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(btaNavigationLinksView()(messages,mockAppConfig)))
+      when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(btaNavigationLinksView()(messages, mockAppConfig)))
       when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
       when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
 
@@ -214,9 +213,8 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
           result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
-
-            document.getElementById("isFullPeriod-true").attr("checked") must be("")
-            document.getElementById("isFullPeriod-false").attr("checked") must be("checked")
+            document.getElementById("isFullPeriod").attr("value") must be("true")
+            document.getElementById("isFullPeriod-2").attr("value") must be("false")
             assert(document.getElementById("service-info-list").text() === "Home Manage account Messages Help and contact")
         }
       }
@@ -236,8 +234,8 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
             val document = Jsoup.parse(contentAsString(result))
             document.title() must be(TitleBuilder.buildTitle("Is the ATED charge for the full chargeable period?"))
 
-            document.getElementById("backLinkHref").text must be("Back")
-            document.getElementById("backLinkHref").attr("href") must include("/ated/liability/create/summary")
+            document.getElementsByClass("govuk-back-link").text must be("Back")
+            document.getElementsByClass("govuk-back-link").attr("href") must include("/ated/liability/create/summary")
         }
       }
     }
@@ -255,7 +253,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
 
     "Authorised users" must {
       "for invalid data, return BAD_REQUEST" in new Setup {
-        val inputJson: JsValue = Json.parse( """{"isFullPeriod": "2"}""")
+        val inputJson: JsValue = Json.parse("""{"isFullPeriod": "2"}""")
         when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
 
         submitWithAuthorisedUser(inputJson) {

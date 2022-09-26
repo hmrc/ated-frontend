@@ -17,107 +17,139 @@
 @import models._
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
-
-@this(atedMain: atedMain, formHelper: FormWithCSRF)
-@(id: String, periodKey: Int, propertyDetailsForm: Form[PropertyDetailsRevalued], mode: Option[String], serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
-@import uk.gov.hmrc.play.views.html.helpers._
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
+@import views.ViewUtils.titleBuilder
 @import views.html.helpers._
 @import _root_.utils._
+
+@this(newMain: newMain, 
+     govukButton : GovukButton,
+     govukRadios : GovukRadios,
+     govukBackLink : GovukBackLink,
+     govukErrorSummary : GovukErrorSummary,
+     govukInput : GovukInput,
+     govukWarningText : GovukWarningText,
+     govukDateInput : GovukDateInput,
+    formHelper: FormWithCSRF)
+
+@(id: String, periodKey: Int, propertyDetailsForm: Form[PropertyDetailsRevalued], mode: Option[String], serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
+
 
 @implicitFormInstance = @{
   Some(propertyDetailsForm)
 }
 
-@pageScripts = {
-  <script src='@controllers.routes.Assets.versioned("javascript/show-hide-content.js")'></script>
-  <script src='@controllers.routes.Assets.versioned("javascript/propertyDetailsRevalued.js")'></script>
-  <script>
-    $(document).ready(function() {
-     // Where .multiple-choice uses the data-target attribute
-      // to toggle hidden content
-      var showHideContent = new GOVUK.ShowHideContent()
-      showHideContent.init()
-    });
-  </script>
+@backLinkHtml = {
+    @if(backLink.isDefined) {
+        @govukBackLink(BackLink(
+            href = backLink.get,
+            content = Text("Back")
+        ))
+    }
 }
 
+@dateItems = @{
+    Seq(InputItem(attributes = Map("maxLength" -> "2")),
+        InputItem(attributes = Map("maxLength" -> "2")),
+        InputItem(attributes = Map("maxLength" -> "4"))
+    )
+}
 
-@atedMain(title = messages("ated.property-details-value.isPropertyRevalued.title"),
+@conditionalYes = {
+    @govukDateInput(DateInput(
+        hint = Some(Hint(
+            content = Text(messages("ated.property-details-value.partAcqDispDate.hint", PeriodUtils.periodEndDate(periodKey).toString(messages("ated.date-format.numeric"))))
+        )),
+        items = dateItems,
+        fieldset = Some(Fieldset(
+            legend = Some(Legend(
+            content = Text(messages("ated.property-details-value.partAcqDispDate"))
+            ))
+        ))
+    ).withFormField(propertyDetailsForm("partAcqDispDate")))
+
+    @govukInput(Input(
+        classes = "govuk-input--width-10",
+        label = Label(
+            content = Text(messages("ated.property-details-value.revaluedValue"))
+        ),
+        hint = Some(Hint(
+            content = Text(messages("ated.property-details-value.revaluedValue.hint"))
+        )),
+        prefix = Some(PrefixOrSuffix(
+            content = Text("£")
+        ))
+    ).withFormField(propertyDetailsForm("revaluedValue")))
+
+    @govukDateInput(DateInput(
+        hint = Some(Hint(
+            content = Text(messages("ated.property-details-value.revaluedDate.hint", PeriodUtils.periodEndDate(periodKey).toString(messages("ated.date-format.numeric"))))
+        )),
+        items = dateItems,
+        fieldset = Some(Fieldset(
+            legend = Some(Legend(
+            content = Text(messages("ated.property-details-value.revaluedDate"))
+            ))
+        ))
+    ).withFormField(propertyDetailsForm("revaluedDate")))
+
+}
+
+@conditionalNo = {
+    @govukWarningText(WarningText(
+        iconFallbackText = "Warning",
+        content = Text(messages("ated.property-details-value.isPropertyRevalued.no-text"))
+    ))
+}
+
+@pageScripts = {
+  <script src='@controllers.routes.Assets.versioned("javascript/propertyDetailsRevalued.js")'></script>
+}
+
+@newMain(title = titleBuilder(messages("ated.property-details-value.isPropertyRevalued.title"), Some(propertyDetailsForm)),
           serviceInfoContent = serviceInfoContent,
           pageScripts = Some(pageScripts)) {
 
-  @pageHeadersAndError(backLink, "pre-heading", messages(AtedUtils.getPropertyDetailsPreHeader(mode)), "property-details-header", messages("ated.property-details-value.isPropertyRevalued.header"),
-      Some(atedErrorSummary(propertyDetailsForm, "ated.property-details-value-error.general")))
+    @formHelper(action = controllers.propertyDetails.routes.PropertyDetailsRevaluedController.save(id, periodKey, mode)) {
 
-  @formHelper(action = controllers.propertyDetails.routes.PropertyDetailsRevaluedController.save(id, periodKey, mode)) {
+        @backLinkHtml
 
+        @if(propertyDetailsForm.errors.nonEmpty) {
+            @govukErrorSummary(ErrorSummary().withFormErrorsAsText(
+                propertyDetailsForm, mapping = Map("partAcqDispDate" -> "partAcqDispDate.day", "revaluedDate" -> "revaluedDate.day")
+            ))
+        }
 
-      <div class="form-group" id="isPropertyRevalued">
-      @atedInputRadioGroupReveal(
-        propertyDetailsForm("isPropertyRevalued"),
-        Seq("true" -> (messages("ated.property-details-value.yes"), Some("revalued")),
-          "false" -> (messages("ated.property-details-value.no"), Some("notRevalued"))),
-        '_groupClass -> "inline",
-        '_labelClass -> "block-label",
-        '_labelAfter -> true
-      )
-      </div>
-
-      <div class="form-group">
-        <div id="revalued" class="panel-indent js-hidden">
-          <div class="form-field">
-            @atedDateFieldsFree(
-            formItem = propertyDetailsForm,
-            fieldName = "partAcqDispDate",
-            label = Html(messages("ated.property-details-value.partAcqDispDate")),
-            isNested = false,
-            defaultDateOption = None,
-            periodKey,
-            '_hintText -> messages("ated.property-details-value.partAcqDispDate.hint", PeriodUtils.periodEndDate(periodKey).toString(messages("ated.date-format.numeric"))),
-            '_groupClass -> "form-group date",
-            '_idName -> "partAcqDispDate"
+        @govukRadios(Radios(
+            items = Seq(
+              RadioItem(
+                content = Text(messages("ated.property-details-value.yes")),
+                value = Some("true"),
+                conditionalHtml = Some(conditionalYes)
+              ),
+              RadioItem(
+                content = Text(messages("ated.property-details-value.no")),
+                value = Some("false"),
+                conditionalHtml = Some(conditionalNo)
+              )
             )
-          </div>
+            ).withFormField(propertyDetailsForm("isPropertyRevalued"))
+            .withHeadingAndSectionCaption(
+                heading = Text(messages("ated.property-details-value.isPropertyRevalued.header", PeriodUtils.calculateLowerTaxYearBoundary(periodKey).getYear.toString)),
+                sectionCaption = Text(messages(AtedUtils.getPropertyDetailsPreHeader(mode)))
+        ))
 
-            @atedInputValue(propertyDetailsForm("revaluedValue"),
-            '_label -> Html(messages("ated.property-details-value.revaluedValue")),
-            '_labelClass -> "form-label-bold",
-            '_inputClass -> "form-control-indent",
-            '_hintText -> messages("ated.property-details-value.revaluedValue.hint"),
-            '_id -> "revaluedValue",
-            '_showConstraints -> false,
-            '_type -> "text")
+        @govukButton(Button(
+            content = Text(messages("ated.save-and-continue")),
+            attributes = Map("id" -> "submit")
+        ))
 
-           <div class="form-field">
-            @atedDateFieldsFree(
-            formItem = propertyDetailsForm,
-            fieldName = "revaluedDate",
-            label = Html(messages("ated.property-details-value.revaluedDate")),
-            isNested = false,
-            defaultDateOption = None,
-            periodKey,
-            '_hintText -> messages("ated.property-details-value.revaluedDate.hint", PeriodUtils.periodEndDate(periodKey).toString(messages("ated.date-format.numeric"))),
-            '_groupClass -> "form-group date",
-            '_idName -> "revaluedDate"
-            )
-           </div>
-
-          </div>
-      </div>
-
-      <div id="notRevalued" class="panel-indent js-hidden">
-
-        <div class="form-group">
-          <div class="confirmation-notice">
-            <div class="important-notice">@messages("ated.property-details-value.isPropertyRevalued.no-text")</div>
-          </div>
-        </div>
-
-      </div>
-
-     <p id="back-to-ated"><a class="button " id="back-to-ated-link" href="@controllers.routes.AccountSummaryController.view">@messages("ated.company-details.back")</a></p>
-     <button class="button" id="submit" type="submit">@messages("ated.save-and-continue")</button>
-
-  }
+        @govukButton(Button(
+            content = Text(messages("ated.company-details.back")),
+            href=Some(controllers.routes.AccountSummaryController.view.url),
+            attributes = Map("id" -> "back-to-ated")
+        ))
+    }
 
 }

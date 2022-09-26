@@ -21,31 +21,34 @@ import forms.ReliefForms.reliefsForm
 import models.{Reliefs, StandardAuthRetrievals}
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
-import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
+import org.scalatest.featurespec.AnyFeatureSpec
+import org.scalatest.{BeforeAndAfterEach, GivenWhenThen}
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Messages, MessagesApi}
+import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import play.twirl.api.Html
 import testhelpers.MockAuthUtil
 import utils.PeriodUtils
+import views.html.reliefs.chooseReliefs
 
-class chooseReliefsSpec extends FeatureSpec with GuiceOneAppPerSuite with MockitoSugar
+class chooseReliefsSpec extends AnyFeatureSpec with GuiceOneAppPerSuite with MockitoSugar
   with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
 
-  implicit val request = FakeRequest()
+  implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
-implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
-  val injectedViewInstance = app.injector.instanceOf[views.html.reliefs.chooseReliefs]
+  implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
+  val injectedViewInstance: chooseReliefs = app.injector.instanceOf[views.html.reliefs.chooseReliefs]
 
   val periodKey = 2015
 
-  feature("The user can view the choose reliefs page") {
+  Feature("The user can view the choose reliefs page") {
 
     info("as a client I want to be able to select reliefs for my properties")
 
-    scenario("show the reliefs we can choose") {
+    Scenario("show the reliefs we can choose") {
 
       Given("the client is creating a new relief and want to see the options")
       When("The user views the page")
@@ -55,71 +58,71 @@ implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetr
       val document = Jsoup.parse(html.toString())
 
       Then("The header should match - What reliefs are you claiming?")
-      assert(document.select("h1").text === "What reliefs are you claiming?")
+      assert(document.getElementsByTag("h1").text contains "What reliefs are you claiming?")
 
       Then("The subheader should be - Create return")
-      assert(document.getElementById("pre-heading").text() === "This section is: Create return")
+      assert(document.getElementsByClass("govuk-caption-xl").text() === "This section is: Create return")
 
       Then("The the text on the screen should be correct")
       assert(document.getElementById("lede-text").text() === "You can select more than one relief code. A single relief code can cover one or more properties.")
       assert(document.getElementById("choose-reliefs-label").text() === "Select all reliefs that apply")
-      assert(document.getElementById("rentalBusiness_field").text() === "Rental businesses")
-      assert(document.getElementById("rentalBusinessDate_legend").text() === "When did the Rental business start?")
-      assert(document.getElementById("rentalBusinessDate_hint")
+      assert(document.getElementsByAttributeValue("for", "rentalBusiness").text() === "Rental businesses")
+      assert(document.select("#conditional-rentalBusiness > div > fieldset > legend").text() === "When did the Rental business start?")
+      assert(document.getElementById("rentalBusinessDate-hint")
         .text() ===s"For example, ${PeriodUtils.periodStartDate(periodKey).toString(messages("ated.date-format.numeric"))}")
-      assert(document.getElementById("openToPublic_field").text() === "Open to the public")
-      assert(document.getElementById("openToPublicDate_legend").text() === "When did the Open to the public start?")
-      assert(document.getElementById("openToPublicDate_hint")
+      assert(document.getElementsByAttributeValue("for", "openToPublic").text() === "Open to the public")
+      assert(document.select("#conditional-openToPublic > div > fieldset > legend").text() === "When did the Open to the public start?")
+      assert(document.getElementById("openToPublicDate-hint")
         .text() ===s"For example, ${PeriodUtils.periodStartDate(periodKey).toString(messages("ated.date-format.numeric"))}")
-      assert(document.getElementById("propertyDeveloper_field").text() === "Property developers")
-      assert(document.getElementById("propertyDeveloperDate_legend").text() === "When did the Property developer start?")
-      assert(document.getElementById("propertyDeveloperDate_hint")
+      assert(document.getElementsByAttributeValue("for", "propertyDeveloper").text() === "Property developers")
+      assert(document.select("#conditional-propertyDeveloper > div > fieldset > legend").text() === "When did the Property developer start?")
+      assert(document.getElementById("propertyDeveloperDate-hint")
         .text() ===s"For example, ${PeriodUtils.periodStartDate(periodKey).toString(messages("ated.date-format.numeric"))}")
-      assert(document.getElementById("propertyTrading_field").text() === "Property trading")
-      assert(document.getElementById("propertyTradingDate_legend").text() === "When did the Property trading start?")
-      assert(document.getElementById("propertyTradingDate_hint")
+      assert(document.getElementsByAttributeValue("for", "propertyTrading").text() === "Property trading")
+      assert(document.select("#conditional-propertyTrading > div > fieldset > legend").text() === "When did the Property trading start?")
+      assert(document.getElementById("propertyTradingDate-hint")
         .text() ===s"For example, ${PeriodUtils.periodStartDate(periodKey).toString(messages("ated.date-format.numeric"))}")
-      assert(document.getElementById("lending_field").text() === "Lending")
-      assert(document.getElementById("lendingDate_legend").text() === "When did the Lending start?")
-      assert(document.getElementById("lendingDate_hint")
+      assert(document.getElementsByAttributeValue("for", "lending").text() === "Lending")
+      assert(document.select("#conditional-lending > div > fieldset > legend").text() === "When did the Lending start?")
+      assert(document.getElementById("lendingDate-hint")
         .text() ===s"For example, ${PeriodUtils.periodStartDate(periodKey).toString(messages("ated.date-format.numeric"))}")
-      assert(document.getElementById("employeeOccupation_field").text() === "Employee occupation")
-      assert(document.getElementById("employeeOccupationDate_legend").text() === "When did the Employee occupation start?")
-      assert(document.getElementById("employeeOccupationDate_hint")
+      assert(document.getElementsByAttributeValue("for", "employeeOccupation").text() === "Employee occupation")
+      assert(document.select("#conditional-employeeOccupation > div > fieldset > legend").text() === "When did the Employee occupation start?")
+      assert(document.getElementById("employeeOccupationDate-hint")
         .text() ===s"For example, ${PeriodUtils.periodStartDate(periodKey).toString(messages("ated.date-format.numeric"))}")
-      assert(document.getElementById("farmHouses_field").text() === "Farmhouses")
-      assert(document.getElementById("farmHousesDate_legend").text() === "When did the Farmhouse start?")
-      assert(document.getElementById("farmHousesDate_hint")
+      assert(document.getElementsByAttributeValue("for", "farmHouses").text() === "Farmhouses")
+      assert(document.select("#conditional-farmHouses > div > fieldset > legend").text() === "When did the Farmhouse start?")
+      assert(document.getElementById("farmHousesDate-hint")
         .text() ===s"For example, ${PeriodUtils.periodStartDate(periodKey).toString(messages("ated.date-format.numeric"))}")
-      assert(document.getElementById("socialHousing_field").text() === "Social housing")
-      assert(document.getElementById("socialHousingDate_legend").text() === "When did the Social housing start?")
-      assert(document.getElementById("socialHousingDate_hint")
+      assert(document.getElementsByAttributeValue("for", "socialHousing").text() === "Social housing")
+      assert(document.select("#conditional-socialHousing > div > fieldset > legend").text() === "When did the Social housing start?")
+      assert(document.getElementById("socialHousingDate-hint")
         .text() ===s"For example, ${PeriodUtils.periodStartDate(periodKey).toString(messages("ated.date-format.numeric"))}")
-      assert(document.getElementById("equityRelease_field").text() === "Equity release scheme (home reversion plans)")
-      assert(document.getElementById("equityReleaseDate_legend").text() === "When did the Equity release scheme (home reversion plans) start?")
-      assert(document.getElementById("equityReleaseDate_hint")
+      assert(document.getElementsByAttributeValue("for", "equityRelease").text() === "Equity release scheme (home reversion plans)")
+      assert(document.select("#conditional-equityRelease > div > fieldset > legend").text() === "When did the Equity release scheme (home reversion plans) start?")
+      assert(document.getElementById("equityReleaseDate-hint")
         .text() ===s"For example, ${PeriodUtils.periodStartDate(periodKey).toString(messages("ated.date-format.numeric"))}")
-      assert(document.getElementById("rentalBusiness").attr("checked") === "")
-      assert(document.getElementById("openToPublic").attr("checked") === "")
-      assert(document.getElementById("propertyDeveloper").attr("checked") === "")
-      assert(document.getElementById("propertyTrading").attr("checked") === "")
-      assert(document.getElementById("lending").attr("checked") === "")
-      assert(document.getElementById("employeeOccupation").attr("checked") === "")
-      assert(document.getElementById("farmHouses").attr("checked") === "")
-      assert(document.getElementById("socialHousing").attr("checked") === "")
-      assert(document.getElementById("equityRelease").attr("checked") === "")
+      assertResult(false)(document.getElementById("rentalBusiness").outerHtml().contains("checked"))
+      assertResult(false)(document.getElementById("openToPublic").outerHtml().contains("checked"))
+      assertResult(false)(document.getElementById("propertyDeveloper").outerHtml().contains("checked"))
+      assertResult(false)(document.getElementById("propertyTrading").outerHtml().contains("checked"))
+      assertResult(false)(document.getElementById("lending").outerHtml().contains("checked"))
+      assertResult(false)(document.getElementById("employeeOccupation").outerHtml().contains("checked"))
+      assertResult(false)(document.getElementById("farmHouses").outerHtml().contains("checked"))
+      assertResult(false)(document.getElementById("socialHousing").outerHtml().contains("checked"))
+      assertResult(false)(document.getElementById("equityRelease").outerHtml().contains("checked"))
 
       assert(document.getElementById("submit").text() === "Save and continue")
 
-      assert(document.getElementById("rentalBusiness_field").text() === "Rental businesses")
+      assert(document.getElementsByAttributeValue("for", "rentalBusiness").text() === "Rental businesses")
       assert(document.getElementById("rentalBusiness").attr("checked") === "")
-      assert(document.getElementById("rentalBusinessDate_legend").text() === "When did the Rental business start?")
+      assert(document.select("#conditional-rentalBusiness > div > fieldset > legend").text() === "When did the Rental business start?")
 
       Then("The back link is correct")
-      assert(document.getElementById("backLinkHref").text === "Back")
+      assert(document.getElementsByClass("govuk-back-link").text === "Back")
     }
 
-    scenario("show the reliefs we have previously chosen") {
+    Scenario("show the reliefs we have previously chosen") {
 
       Given("the client is creating a new relief and want to see the options")
       When("The user views the page")
@@ -130,29 +133,29 @@ implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetr
       val document = Jsoup.parse(html.toString())
 
       Then("The header should match - What reliefs are you claiming?")
-      assert(document.select("h1").text === "What reliefs are you claiming?")
+      assert(document.getElementsByTag("h1").text() contains ("What reliefs are you claiming?"))
 
       Then("The subheader should be - Create return")
-      assert(document.getElementById("pre-heading").text() === "This section is: Create return")
+      assert(document.getElementsByClass("govuk-caption-xl").text() === "This section is: Create return")
 
       Then("The the text on the screen should be correct")
       assert(document.getElementById("lede-text").text() === "You can select more than one relief code. A single relief code can cover one or more properties.")
 
-      assert(document.getElementById("rentalBusiness").attr("checked") === "checked")
-      assert(document.getElementById("openToPublic").attr("checked") === "")
-      assert(document.getElementById("propertyDeveloper").attr("checked") === "")
-      assert(document.getElementById("propertyTrading").attr("checked") === "")
-      assert(document.getElementById("lending").attr("checked") === "")
-      assert(document.getElementById("employeeOccupation").attr("checked") === "")
-      assert(document.getElementById("farmHouses").attr("checked") === "")
-      assert(document.getElementById("socialHousing").attr("checked") === "")
-      assert(document.getElementById("equityRelease").attr("checked") === "")
+      assert(document.getElementById("rentalBusiness").outerHtml() contains "checked")
+      assertResult(false)(document.getElementById("openToPublic").outerHtml().contains("checked"))
+      assertResult(false)(document.getElementById("propertyDeveloper").outerHtml().contains("checked"))
+      assertResult(false)(document.getElementById("propertyTrading").outerHtml().contains("checked"))
+      assertResult(false)(document.getElementById("lending").outerHtml().contains("checked"))
+      assertResult(false)(document.getElementById("employeeOccupation").outerHtml().contains("checked"))
+      assertResult(false)(document.getElementById("farmHouses").outerHtml().contains("checked"))
+      assertResult(false)(document.getElementById("socialHousing").outerHtml().contains("checked"))
+      assertResult(false)(document.getElementById("equityRelease").outerHtml().contains("checked"))
 
       assert(document.getElementById("submit").text() === "Save and continue")
 
       Then("The back link is correct")
-      assert(document.getElementById("backLinkHref").text === "Back")
-      assert(document.getElementById("backLinkHref").attr("href") === "http://backLink")
+      assert(document.getElementsByClass("govuk-back-link").text === "Back")
+      assert(document.getElementsByClass("govuk-back-link").attr("href") === "http://backLink")
 
     }
   }

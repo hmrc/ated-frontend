@@ -17,7 +17,6 @@
 package controllers.propertyDetails
 
 import java.util.UUID
-
 import builders.{SessionBuilder, TitleBuilder}
 import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
@@ -42,6 +41,7 @@ import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.AtedConstants
 import views.html.BtaNavigationLinks
+import views.html.propertyDetails.selectPreviousReturn
 
 import scala.concurrent.Future
 
@@ -58,11 +58,11 @@ class SelectExistingReturnAddressControllerSpec extends PlaySpec with GuiceOneSe
   val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
   val mockBackLinkCacheConnector: BackLinkCacheConnector = mock[BackLinkCacheConnector]
   val mockConfirmAddressController: ConfirmAddressController = mock[ConfirmAddressController]
-    val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
+  val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
-  val injectedViewInstance = app.injector.instanceOf[views.html.propertyDetails.selectPreviousReturn]
+  val injectedViewInstance: selectPreviousReturn = app.injector.instanceOf[views.html.propertyDetails.selectPreviousReturn]
   val returnTypeCharge: String = "CR"
   val returnTypeRelief: String = "RR"
 
@@ -108,7 +108,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
-      when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(btaNavigationLinksView()(messages,mockAppConfig)))
+      when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(btaNavigationLinksView()(messages, mockAppConfig)))
       when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
         (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
       when(mockSummaryReturnsService.retrieveCachedPreviousReturnAddressList(ArgumentMatchers.any())).thenReturn(Future.successful(prevReturns))
@@ -165,7 +165,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
       when(mockDataCacheConnector.saveFormData[Boolean]
         (ArgumentMatchers.eq(AtedConstants.SelectedPreviousReturn), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(true))
       when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
-      when (mockPropertyDetailsService.saveDraftPropertyDetailsAddress(ArgumentMatchers.any(), ArgumentMatchers.any())
+      when(mockPropertyDetailsService.saveDraftPropertyDetailsAddress(ArgumentMatchers.any(), ArgumentMatchers.any())
       (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(""))
       val result = testSelectExistingReturnAddressController.continue(periodKey, returnTypeCharge)
         .apply(SessionBuilder.updateRequestWithSession(FakeRequest().withJsonBody(inputJson), userId))
@@ -173,11 +173,8 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
     }
   }
 
-  override def beforeEach(): Unit = {
-  }
-
   "SelectExistingReturnAddressController" must {
-    val prevReturns = Some(Seq(PreviousReturns("1, addressLine1", "12345678",  new LocalDate("2015-04-02"), true)))
+    val prevReturns = Some(Seq(PreviousReturns("1, addressLine1", "12345678", new LocalDate("2015-04-02"), true)))
     "view" must {
       "unauthorised users" must {
 
@@ -197,7 +194,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
-              document.title() must be (TitleBuilder.buildTitle("Select the property from your previous year returns"))
+              document.title() must be(TitleBuilder.buildTitle("Select the property from your previous year returns"))
               assert(document.getElementById("service-info-list").text() === "Home Manage account Messages Help and contact")
           }
         }
@@ -212,10 +209,10 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
-              document.title() must be (TitleBuilder.buildTitle("Select the property from your previous year returns"))
-              document.body().getElementsByTag("label").toString must include ("12345676")
-              document.body().getElementsByTag("label").toString must include ("12345679")
-              document.body().getElementsByTag("label").size() must be (2)
+              document.title() must be(TitleBuilder.buildTitle("Select the property from your previous year returns"))
+              document.body().getElementById("selected").attr("value") must be("12345676")
+              document.body().getElementById("selected-2").attr("value") must be("12345679")
+              document.body().getElementsByTag("label").size() must be(2)
           }
         }
 
@@ -229,10 +226,10 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
-              document.title() must be (TitleBuilder.buildTitle("Select the property from your previous year returns"))
-              document.body().getElementsByTag("label").toString must include ("12345671")
-              document.body().getElementsByTag("label").toString must include ("12345674")
-              document.body().getElementsByTag("label").size() must be (2)
+              document.title() must be(TitleBuilder.buildTitle("Select the property from your previous year returns"))
+              document.body().getElementById("selected-2").attr("value") must be("12345671")
+              document.body().getElementById("selected").attr("value")must be("12345674")
+              document.body().getElementsByTag("label").size() must be(2)
           }
         }
 
@@ -250,10 +247,10 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
-              document.title() must be (TitleBuilder.buildTitle("Select the property from your previous year returns"))
-              document.body().getElementsByTag("label").toString must include ("12345673")
-              document.body().getElementsByTag("label").toString must include ("12345678")
-              document.body().getElementsByTag("label").size() must be (2)
+              document.title() must be(TitleBuilder.buildTitle("Select the property from your previous year returns"))
+              document.body().getElementById("selected-2").attr("value") must include("12345673")
+              document.body().getElementById("selected").attr("value") must include("12345678")
+              document.body().getElementsByTag("label").size() must be(2)
           }
         }
 
@@ -267,8 +264,8 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
-              document.title() must be (TitleBuilder.buildTitle("Select the property from your previous year returns"))
-              document.body().getElementsByTag("label").size() must be (3)
+              document.title() must be(TitleBuilder.buildTitle("Select the property from your previous year returns"))
+              document.body().getElementsByTag("label").size() must be(3)
           }
         }
 
@@ -277,7 +274,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
-              document.title() must be (TitleBuilder.buildTitle("Select the property from your previous year returns"))
+              document.title() must be(TitleBuilder.buildTitle("Select the property from your previous year returns"))
           }
         }
       }
@@ -288,7 +285,6 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
         result =>
           status(result) must be(SEE_OTHER)
           redirectLocation(result).get must include("/ated/liability/create/address/2015")
-
       }
     }
 
@@ -303,13 +299,12 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
         }
       }
 
-
       "submitting an invalid request should fail and return to the search results page" in new Setup {
         saveWithAuthorisedUser(None, prevReturns, None, None, None, Json.toJson(AddressSelected(None))) {
           result =>
             status(result) must be(BAD_REQUEST)
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be (TitleBuilder.buildTitle("Select the property from your previous year returns"))
+            document.title() must be(TitleBuilder.buildErrorTitle("Select the property from your previous year returns"))
         }
       }
 
@@ -318,8 +313,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
           result =>
             status(result) must be(BAD_REQUEST)
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be(TitleBuilder.buildTitle("Select the property from your previous year returns"))
-
+            document.title() must be(TitleBuilder.buildErrorTitle("Select the property from your previous year returns"))
         }
       }
 
@@ -328,26 +322,25 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
           result =>
             status(result) must be(BAD_REQUEST)
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be(TitleBuilder.buildTitle("Select the property from your previous year returns"))
+            document.title() must be(TitleBuilder.buildErrorTitle("Select the property from your previous year returns"))
 
         }
       }
 
       "submitting an valid request should get the form bundle return and save in keystore" in new Setup {
-        val formBundleProp = FormBundleProperty(BigDecimal(100), new LocalDate("2015-09-08"),
+        val formBundleProp: FormBundleProperty = FormBundleProperty(BigDecimal(100), new LocalDate("2015-09-08"),
           new LocalDate("2015-10-12"), "Relief", Some("Property developers"))
-        val formBundleAddress = FormBundleAddress("1 addressLine1", "addressLine2", Some("addressLine3"), Some("AddressLine4"), Some("XX11XX"), "GB")
-        val formBundlePropertyDetails = FormBundlePropertyDetails(Some("title here"), formBundleAddress, Some("additional details"))
-        val viewReturn = FormBundleReturn("2014", formBundlePropertyDetails,
+        val formBundleAddress: FormBundleAddress = FormBundleAddress("1 addressLine1", "addressLine2", Some("addressLine3"), Some("AddressLine4"), Some("XX11XX"), "GB")
+        val formBundlePropertyDetails: FormBundlePropertyDetails = FormBundlePropertyDetails(Some("title here"), formBundleAddress, Some("additional details"))
+        val viewReturn: FormBundleReturn = FormBundleReturn("2014", formBundlePropertyDetails,
           Some(new LocalDate("2013-10-10")),
           Some(BigDecimal(100)),
           Some("ABCdefgh"),
           Some("PromABCdefgh"),
           Some("1234"), true, true, new LocalDate("2015-05-10"), BigDecimal(9324), "1234567891", List(formBundleProp))
-        val answer = Some(true)
-        val pkey = Some(SelectPeriod(Some("2018")))
-        val propertyDetails = Some(PropertyDetails("12", 2018, PropertyDetailsAddress("1 oak", "Divine court", Some("Leerty"), Some("Berkshire"), Some("ZZ11ZZ"))))
-
+        val answer: Option[Boolean] = Some(true)
+        val pkey: Option[SelectPeriod] = Some(SelectPeriod(Some("2018")))
+        val propertyDetails: Option[PropertyDetails] = Some(PropertyDetails("12", 2018, PropertyDetailsAddress("1 oak", "Divine court", Some("Leerty"), Some("Berkshire"), Some("ZZ11ZZ"))))
 
         saveWithAuthorisedUser(Some(viewReturn), prevReturns, answer, pkey, propertyDetails, Json.toJson(AddressSelected(Some("12345678")))) {
           result =>
@@ -363,4 +356,4 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
       }
     }
   }
- }
+}

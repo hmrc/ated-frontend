@@ -18,32 +18,23 @@ package views.html
 
 import config.ApplicationConfig
 import models.StandardAuthRetrievals
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
-import org.mockito.Mockito.when
-import org.scalatestplus.play.PlaySpec
-import org.scalatestplus.play.guice.GuiceOneAppPerTest
-import play.api.i18n.{Lang, Messages, MessagesApi, MessagesImpl}
-import play.api.mvc.AnyContentAsEmpty
-import play.api.test.FakeRequest
-import play.twirl.api.Html
-import testhelpers.MockAuthUtil
+import org.scalatest.Assertion
+import play.api.i18n.MessagesApi
+import play.api.test.Injecting
+import play.twirl.api.{Html, HtmlFormat}
+import testhelpers.{AtedViewSpec, MockAuthUtil}
 import utils.TestModels
 
-class AccountSummarySpec extends PlaySpec with MockAuthUtil with GuiceOneAppPerTest with TestModels {
+class AccountSummarySpec extends AtedViewSpec with MockAuthUtil with TestModels with Injecting {
 
-  implicit val mockAppConfig: ApplicationConfig = mock[ApplicationConfig]
-  implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
+  implicit val mockAppConfig: ApplicationConfig = inject[ApplicationConfig]
+ 
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
   implicit lazy val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-  implicit lazy val messages: Messages = MessagesImpl(Lang("en-GB"), messagesApi)
 
-  lazy val injectedViewInstance = app.injector.instanceOf[views.html.accountSummary]
+  val injectedViewInstance: accountSummary = inject[views.html.accountSummary]
 
-  when(mockAppConfig.atedPeakStartDay)
-    .thenReturn("16")
-
-  lazy val view = injectedViewInstance(
+  val view: HtmlFormat.Appendable = injectedViewInstance(
     currentYearReturnsForDisplay,
     totalCurrentYearReturns = 2,
     hasPastReturns = false,
@@ -58,37 +49,39 @@ class AccountSummarySpec extends PlaySpec with MockAuthUtil with GuiceOneAppPerT
     true
   )
 
-  def row(rowNumber: Int) = s"#content > article > dl > div:nth-child($rowNumber)"
+  def row(rowNumber: Int) = s"#main-content > div > div.govuk-grid-column-two-thirds > dl > div:nth-child($rowNumber)"
 
-  def checkRowItem(rowNum: Int, col1: String, col2: String, col3: String, href: String) = {
-    assert(document.select(s"${row(rowNum)} > dt").text() === col1)
-    assert(document.select(s"${row(rowNum)} > dd.govuk-summary-list__value").text() === col2)
-    assert(document.select(s"${row(rowNum)} > dd.govuk-summary-list__actions > a").attr("href") === href)
-    assert(document.select(s"${row(rowNum)} > dd.govuk-summary-list__actions > a").text().contains(col3))
+  def checkRowItem(rowNum: Int, col1: String, col2: String, col3: String, href: String): Assertion = {
+    assert(doc.select(s"${row(rowNum)} > dt").text() === col1)
+    assert(doc.select(s"${row(rowNum)} > dd.govuk-summary-list__value").text() === col2)
+    assert(doc.select(s"${row(rowNum)} > dd.govuk-summary-list__actions > a").attr("href") === href)
+    assert(doc.select(s"${row(rowNum)} > dd.govuk-summary-list__actions > a").text().contains(col3))
   }
-
-  lazy val document: Document = Jsoup.parse(view.body)
 
   "AccountSummary" when {
 
     "regardless of returns data" should {
       "have the correct title" in {
-        assert(document.title() === "Your ATED summary - GOV.UK")
+        assert(doc.title() === "Your ATED summary - GOV.UK")
       }
 
       "have the correct h1" in {
-        assert(document.select("h1").text() === "Your ATED summary")
+        assert(doc.select("h1").text() contains "Your ATED summary")
+      }
+
+      "have the correct caption" in {
+        assert(doc.select(".govuk-caption-xl").text() === s"You have logged in as:$organisationName")
       }
 
       "have the correct banner link" in {
-        assert(document.select(".header__menu__proposition-name").attr("href") === "/ated/home")
+        assert(doc.select(".hmrc-header__service-name").attr("href") === "/ated/home")
       }
     }
 
     "the user has property and relief returns for the current year" should {
 
       "have the correct heading" in {
-        assert(document.select("#content > article > h2").text() === "Current year returns")
+        assert(doc.select("#main-content > div > div.govuk-grid-column-two-thirds > h2").text() === "Current year returns")
       }
 
       "show the returns" in {
@@ -97,20 +90,20 @@ class AccountSummarySpec extends PlaySpec with MockAuthUtil with GuiceOneAppPerT
       }
 
       "not show the View all returns link if there are less than 6 returns and no past returns" in {
-        assert(document.select("#view-all-returns").size() === 0)
+        assert(doc.select("#view-all-returns").size() === 0)
       }
 
       "show the Create a new return for current tax year button" in {
-        assert(document.select(
+        assert(doc.select(
           "#create-return-1").text === s"Create a new return for $currentTaxYear to ${currentTaxYear + 1}"
         )
-        assert(document.select(
+        assert(doc.select(
           "#create-return-1").attr("href") === s"/ated/period-summary/$currentTaxYear/createReturn?fromAccountSummary=true"
         )
       }
 
       "show content to say how many returns are being displayed" in {
-        assert(document.select("#content > article > div.govuk-hint").text === "Showing 2 of 2 returns")
+        assert(doc.select(".govuk-hint").text === "Showing 2 of 2 returns")
       }
     }
 
@@ -133,15 +126,13 @@ class AccountSummarySpec extends PlaySpec with MockAuthUtil with GuiceOneAppPerT
         false
       )
 
-      lazy val document: Document = Jsoup.parse(view.body)
-
       "show the view all returns link" in {
-        assert(document.select("#view-all-returns").text === s"View all returns for $currentTaxYear to ${currentTaxYear + 1}")
-        assert(document.select("#view-all-returns").attr("href") === s"/ated/period-summary/$currentTaxYear")
+        assert(doc(view).select("#view-all-returns").text === s"View all returns for $currentTaxYear to ${currentTaxYear + 1}")
+        assert(doc(view).select("#view-all-returns").attr("href") === s"/ated/period-summary/$currentTaxYear")
       }
 
       "show content to say how many returns are being displayed" in {
-        assert(document.select("#content > article > div.govuk-hint").text === "Showing 5 of 6 returns")
+        assert(doc(view).select(".govuk-hint").text === "Showing 5 of 6 returns")
       }
 
     }
@@ -163,15 +154,12 @@ class AccountSummarySpec extends PlaySpec with MockAuthUtil with GuiceOneAppPerT
           false
         )
 
-        lazy val document: Document = Jsoup.parse(view.body)
-
-        assert(document.select("#view-all-returns").text === s"View all returns for $currentTaxYear to ${currentTaxYear + 1}")
-        assert(document.select("#view-all-returns").attr("href") === s"/ated/period-summary/$currentTaxYear")
-
+        assert(doc(view).select("#view-all-returns").text === s"View all returns for $currentTaxYear to ${currentTaxYear + 1}")
+        assert(doc(view).select("#view-all-returns").attr("href") === s"/ated/period-summary/$currentTaxYear")
       }
 
       "show content to say how many returns are being displayed" in {
-        assert(document.select("#content > article > div.govuk-hint").text === "Showing 2 of 2 returns")
+        assert(doc(view).select(".govuk-hint").text === "Showing 2 of 2 returns")
       }
     }
   }

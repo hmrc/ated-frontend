@@ -17,44 +17,70 @@
 @import models._
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
+@import views.ViewUtils.titleBuilder
+@import views.html.helpers._
+@import _root_.utils._
+@import utils.AtedUtils.getPropertyDetailsPreHeader
 
-@this(atedMain: atedMain, formHelper: FormWithCSRF)
+@this(newMain: newMain, 
+     govukButton : GovukButton,
+     govukRadios : GovukRadios,
+     govukBackLink : GovukBackLink,
+     govukErrorSummary : GovukErrorSummary,
+     govukInput : GovukInput,
+    formHelper: FormWithCSRF)
+
 @(id: String, periodKey: Int, propertyDetailsForm: Form[PropertyDetailsProfessionallyValued],
   mode: Option[String],
   serviceInfoContent: Html = HtmlFormat.empty,
   backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
-@import uk.gov.hmrc.play.views.html.helpers._
-@import views.html.helpers._
-@import _root_.utils._
 
 @implicitFormInstance = @{
   Some(propertyDetailsForm)
 }
 
+@backLinkHtml = {
+    @if(backLink.isDefined) {
+        @govukBackLink(BackLink(
+            href = backLink.get,
+            content = Text("Back")
+        ))
+    }
+}
 
-@atedMain(title = messages("ated.property-details-value.isValuedByAgent.title"),
-          serviceInfoContent = serviceInfoContent) {
+@newMain(title = titleBuilder(messages("ated.property-details-value.isValuedByAgent.title"), Some(propertyDetailsForm)), serviceInfoContent = serviceInfoContent) {
 
-  @pageHeadersAndError(backLink, "pre-heading", messages(AtedUtils.getPropertyDetailsPreHeader(mode)), "property-details-header", messages("ated.property-details-value.isValuedByAgent.header"),
-      Some(atedErrorSummary(propertyDetailsForm, "ated.property-details-value-error.general")))
+  @backLinkHtml
+
+  @if(propertyDetailsForm.errors.nonEmpty) {
+    @govukErrorSummary(ErrorSummary().withFormErrorsAsText(propertyDetailsForm))
+  }
 
   @formHelper(action = controllers.propertyDetails.routes.PropertyDetailsProfessionallyValuedController.save(id, periodKey, mode)) {
 
-      <div class="form-group" id="isValuedByAgent">
-        @atedInputRadioGroupNew(
-        propertyDetailsForm("isValuedByAgent"),
-        Seq("true" -> messages("ated.property-details-value.yes"),
-        "false" -> messages("ated.property-details-value.no")),
-        '_legend -> messages("ated.property-details-value.isValuedByAgent.header"),
-        '_legendClass -> "visuallyhidden",
-        '_groupClass -> "inline",
-        '_labelClass -> "block-label",
-        '_labelAfter -> true
-        )
-      </div>
+      @govukRadios(Radios(
+         items = Seq(
+             RadioItem(
+                 content = Text(messages("ated.property-details-value.yes")),
+                 value = Some("true")
+             ),
+             RadioItem(
+                 content = Text(messages("ated.property-details-value.no")),
+                 value = Some("false"))
+             ),
+            classes = "govuk-radios--inline"
+            ).withFormField(propertyDetailsForm("isValuedByAgent"))
+             .withHeadingAndSectionCaption(
+                 heading = Text(messages("ated.property-details-value.isValuedByAgent.header")),
+                 sectionCaption = Text(messages(AtedUtils.getPropertyDetailsPreHeader(mode)))
+     ))
 
-      <button class="button" id="submit" type="submit">@messages("ated.save-and-continue")</button>
-
+    @govukButton(Button(
+        content = Text(messages("ated.save-and-continue")),
+        attributes = Map("id" -> "submit")
+    ))
   }
 
 }

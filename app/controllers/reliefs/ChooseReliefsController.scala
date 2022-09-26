@@ -99,7 +99,7 @@ class ChooseReliefsController @Inject()(mcc: MessagesControllerComponents,
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
           validatePeriodKey(periodKey) {
             val data = addParamsToRequest(Map("periodKey" -> ArrayBuffer(periodKey.toString)))
-            reliefsForm.bindFromRequest(ReliefsUtils.cleanDateTuples(data.get)).fold(
+            validateForm(reliefsForm.bindFromRequest(ReliefsUtils.cleanDateTuples(data.get))).fold(
               formWithError =>
                 currentBackLink.map { backLink =>
                   BadRequest(template(periodKey, formWithError, PeriodUtils.periodStartDate(periodKey), serviceInfoContent, backLink))

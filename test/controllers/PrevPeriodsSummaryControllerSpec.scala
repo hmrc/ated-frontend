@@ -17,7 +17,6 @@
 package controllers
 
 import java.util.UUID
-
 import builders.{SessionBuilder, TitleBuilder}
 import config.ApplicationConfig
 import connectors.{AgentClientMandateFrontendConnector, DataCacheConnector}
@@ -42,7 +41,7 @@ import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.play.partials.HtmlPartial
 import utils.TestModels
-import views.html.BtaNavigationLinks
+import views.html.{BtaNavigationLinks, prevPeriodsSummary}
 
 import scala.concurrent.Future
 
@@ -58,13 +57,13 @@ class PrevPeriodsSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSu
   val mockMandateFrontendConnector: AgentClientMandateFrontendConnector = mock[AgentClientMandateFrontendConnector]
   val mockDetailsService: DetailsService = mock[DetailsService]
   val mockDateService: DateService = mock[DateService]
-    val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
+  val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
   when(mockDateService.now()).thenReturn(LocalDate.now())
   when(mockAppConfig.atedPeakStartDay).thenReturn("16")
-  val injectedViewInstance = app.injector.instanceOf[views.html.prevPeriodsSummary]
+  val injectedViewInstance: prevPeriodsSummary = app.injector.instanceOf[views.html.prevPeriodsSummary]
 
   val periodKey2015: Int = 2015
 
@@ -180,7 +179,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
 
     "the user has invalid enrolments" must {
       "redirect to unauthorised URL" in new Setup {
-        val data = SummaryReturnsModel(None, Seq(), Seq())
+        val data: SummaryReturnsModel = SummaryReturnsModel(None, Seq(), Seq())
         getWithForbiddenUser(data, None) { result =>
           redirectLocation(result).get must include("/ated/unauthorised")
         }
@@ -197,12 +196,13 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
             val document = Jsoup.parse(contentAsString(result))
 
             document.title() must be(TitleBuilder.buildTitle("Your previous returns"))
-            document.getElementById("prev-period-summary-header").text() must be("Your previous returns")
+            document.getElementsByTag("h1").text() must include ("Your previous returns")
+            document.getElementsByClass("govuk-caption-xl").text() must be(s"You have logged in as:$organisationName")
         }
       }
 
       "show the create a return and appoint an agent link if there are no returns and no delegation" in new Setup {
-        val data = SummaryReturnsModel(None, Seq())
+        val data: SummaryReturnsModel = SummaryReturnsModel(None, Seq())
         getWithAuthorisedUser(data, None) {
           result =>
             status(result) must be(OK)
@@ -214,7 +214,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
       }
 
       "show the create a return button and no appoint an agent link if there are no returns and there is delegation" in new Setup {
-        val data = SummaryReturnsModel(None, Seq())
+        val data: SummaryReturnsModel = SummaryReturnsModel(None, Seq())
         getWithAuthorisedDelegatedUser(data, None) {
           result =>
             status(result) must be(OK)
@@ -227,7 +227,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
 
       "throw exception for no safe id" in new Setup {
         val httpValue = 200
-        val data = SummaryReturnsModel(None, Seq())
+        val data: SummaryReturnsModel = SummaryReturnsModel(None, Seq())
         val userId = s"user-${UUID.randomUUID}"
         val authMock: Enrolments ~ Some[AffinityGroup] ~ Some[String] = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
         setAuthMocks(authMock)

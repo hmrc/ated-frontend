@@ -17,7 +17,6 @@
 package controllers.propertyDetails
 
 import java.util.UUID
-
 import builders.{PropertyDetailsBuilder, SessionBuilder, TitleBuilder}
 import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
@@ -39,7 +38,8 @@ import testhelpers.MockAuthUtil
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import utils.AtedConstants
-import views.html.BtaNavigationLinks
+import views.html.{BtaNavigationLinks, global_error}
+import views.html.propertyDetails.propertyDetailsDeclaration
 
 import scala.concurrent.Future
 
@@ -55,8 +55,8 @@ class PropertyDetailsDeclarationControllerSpec extends PlaySpec with GuiceOneSer
   lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
-  val injectedViewInstance = app.injector.instanceOf[views.html.propertyDetails.propertyDetailsDeclaration]
-  val injectedViewInstanceError = app.injector.instanceOf[views.html.global_error]
+  val injectedViewInstance: propertyDetailsDeclaration = app.injector.instanceOf[views.html.propertyDetails.propertyDetailsDeclaration]
+  val injectedViewInstanceError: global_error = app.injector.instanceOf[views.html.global_error]
 
 
   class Setup {
@@ -215,11 +215,11 @@ class PropertyDetailsDeclarationControllerSpec extends PlaySpec with GuiceOneSer
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
               document.title() must be(TitleBuilder.buildTitle("Returns declaration"))
-              document.getElementById("chargeable-return-before-declaration-text")
-                .text() must be("Before you can submit your return to HMRC you must read and agree to the following statement. If you give false information you may have to pay financial penalties and face prosecution.")
-              document.getElementById("declaration-confirmation-text")
-                .text() must be("I declare that the information I have given on this return is correct and complete.")
-              document.getElementById("submit").text() must be("Agree and submit return")
+              document.getElementById("create-liability-declaration-before-declaration-text")
+                .text.contains("Before you can submit your return to HMRC you must read and agree to the following statement. If you give false information you may have to pay financial penalties and face prosecution.") must be(true)
+              document.getElementById("create-liability-client")
+                .text.contains("I declare that the information I have given on this return is correct and complete.") must be(true)
+              document.getElementsByClass("govuk-button").text() must be("Agree and submit return")
               assert(document.getElementById("service-info-list").text() === "Home Manage account Messages Help and contact")
           }
         }
@@ -236,11 +236,9 @@ class PropertyDetailsDeclarationControllerSpec extends PlaySpec with GuiceOneSer
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
               document.title() must be(TitleBuilder.buildTitle("Returns declaration"))
-              document.getElementById("chargeable-return-before-declaration-text")
-                .text() must be("Before your client’s return can be submitted to HMRC, you must read and agree to the following statement. Your client’s approval may be in electronic or non-electronic form. If your client gives false information, they may have to pay financial penalties and face prosecution.")
-              document.getElementById("declaration-confirmation-text")
-                .text() must be("I confirm that my client has approved the information contained in this return as being correct and complete to the best of their knowledge and belief.")
-              document.getElementById("submit").text() must be("Agree and submit return")
+              document.getElementById("create-liability-declaration-before-declaration-text").text must be ("! Warning Before your client’s return can be submitted to HMRC, you must read and agree to the following statement. Your client’s approval may be in electronic or non-electronic form. If your client gives false information, they may have to pay financial penalties and face prosecution.")
+              document.getElementById("create-liability-agent").text must be ("I confirm that my client has approved the information contained in this return as being correct and complete to the best of their knowledge and belief.")
+              document.getElementsByClass("govuk-button").text() must be("Agree and submit return")
           }
         }
       }

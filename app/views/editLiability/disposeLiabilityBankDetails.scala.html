@@ -17,96 +17,157 @@
 @import models._
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
-@this(atedMain: atedMain, formHelper: FormWithCSRF)
-@(bankDetailsForm: Form[BankDetails], oldFormBundleNo: String, serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
-@import uk.gov.hmrc.play.views.html.helpers._
-@import views.html.helpers._
+@import views.ViewUtils.titleBuilder
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.Implicits._
 
-@implicitFormInstance = @{ Some(bankDetailsForm) }
+@this(newMain: newMain,
+        formHelper: FormWithCSRF,
+        govukRadios : GovukRadios,
+        govukInput: GovukInput,
+        govukButton : GovukButton,
+        govukErrorSummary: GovukErrorSummary,
+        govukBackLink: GovukBackLink)
 
-@pageScripts = {
-  <script src='@controllers.routes.Assets.versioned("javascript/bankDetails.js")'></script>
-  <script src='@controllers.routes.Assets.versioned("javascript/show-hide-content.js")'></script>
-  <script>
-    $(document).ready(function() {
-     // Where .multiple-choice uses the data-target attribute
-      // to toggle hidden content
-      var showHideContent = new GOVUK.ShowHideContent()
-      showHideContent.init()
-    });
-  </script>
+@(bankDetailsForm: Form[BankDetails],
+        oldFormBundleNo: String,
+        serviceInfoContent: Html = HtmlFormat.empty,
+        backLink: Option[String]
+)(implicit authContext: StandardAuthRetrievals,
+        messages: Messages,
+        request: Request[AnyContent],
+        appConfig: ApplicationConfig)
+
+@backLinkHtml = {
+    @if(backLink.isDefined) {
+        @govukBackLink(BackLink(
+            href = backLink.get,
+            content = Text("Back")
+        ))
+    }
 }
 
-@atedMain(title = messages("ated.bank-details.title"),
-          pageScripts = Some(pageScripts),
-          serviceInfoContent = serviceInfoContent) {
+@yesHtml = {
+    <div id="hidden-bank-details-uk">
+        <div id="account-number" class="govuk-form-group">
+            @govukInput(Input(
+                inputType = "number",
+                label = Label(
+                    content = Text(messages("ated.bank-details.uk-bank-account.number.label"))
+                ),
+                classes = "govuk-!-width-one-third",
+                hint = Some(Hint(
+                    content = Text(messages("ated.bank-details.account.number.hint"))
+                ))
+            ).withFormField(bankDetailsForm("accountNumber")))
+        </div>
 
-  @pageHeadersAndError(backLink, "pre-heading", messages("ated.property-details.pre-header-dispose"), "bank-details-header", messages("ated.bank-details.header"),
-      Some(atedErrorSummary(bankDetailsForm, "ated.bank-details.error-key")))
-
-  @formHelper(action=controllers.editLiability.routes.DisposeLiabilityBankDetailsController.save(oldFormBundleNo)) {
-    <div class="form-group" id="hasUKBankAccount-id">
-      @atedInputRadioGroupReveal(
-        bankDetailsForm("hasUKBankAccount"),
-        Seq(
-        "true" -> (messages("ated.label.yes"), Some("hidden-bank-details")),
-        "false" -> (messages("ated.label.no"), Some("hidden-bank-details"))
-        ),
-        '_labelClass -> "block-label",
-        '_groupClass -> "inline",
-        '_labelAfter -> true
-      )
+        <div id="sort-code" class="govuk-form-group">
+            @govukInput(Input(
+                inputType = "number",
+                label = Label(
+                    content = Text(messages("ated.bank-details.uk-bank-account.sort-code.label"))
+                ),
+                classes = "govuk-!-width-one-third",
+                hint = Some(Hint(
+                    content = Text(messages("ated.bank-details.sort.code.hint"))
+                ))
+            ).withFormField(bankDetailsForm("sortCode")))
+        </div>
     </div>
+}
 
-    <div id="hidden-bank-details" class="panel-indent form-control-indent js-hidden">
-      <fieldset>
-        <div id="name-of-person" class="form-field">
-          @atedInputNew(bankDetailsForm("accountName"),
-          '_label -> messages("ated.bank-details.uk-bank-account.name.label"),
-          '_id -> "accountName",
-          '_showConstraints -> false)
+@noHtml = {
+    <div id="hidden-bank-details-non-uk">
+        <div id="iban-code" class="govuk-form-group">
+            @govukInput(Input(
+                inputType = "text",
+                label = Label(
+                    content = Text(messages("ated.bank-details.non-uk-bank-account.iban.label"))
+                ),
+                hint = Some(Hint(
+                    content = Text(messages("ated.bank-details.iban.hint"))
+                ))
+            ).withFormField(bankDetailsForm("iban")))
         </div>
 
-        <div id="hidden-bank-details-uk">
-          <div id="account-number" class="form-field">
-            @atedInputNew(bankDetailsForm("accountNumber"),
-            '_label -> messages("ated.bank-details.uk-bank-account.number.label"),
-            '_id -> "accountNumber",
-            '_showConstraints -> false,
-            '_type -> "number")
-          </div>
-          <div id="sort-code">
-            @sortCode(
-              bankDetailsForm,
-              "sortCode",
-              messages("ated.bank-details.uk-bank-account.sort-code.label"),
-              '_label -> messages("ated.bank-details.uk-bank-account.number.label")
-            )
-          </div>
+        <div id="bic-swift-code" class="govuk-form-group">
+            @govukInput(Input(
+                inputType = "text",
+                label = Label(
+                    content = Text(messages("ated.bank-details.non-uk-bank-account.bic-swift-code.label"))
+                ),
+                classes = "govuk-!-width-one-third",
+                hint = Some(Hint(
+                    content = Text(messages("ated.bank-details.swift.hint"))
+                ))
+            ).withFormField(bankDetailsForm("bicSwiftCode")))
         </div>
-
-        <div id="hidden-bank-details-non-uk">
-          <div id="iban-code" class="form-field">
-            @atedInputNew(bankDetailsForm("iban"),
-            '_label -> messages("ated.bank-details.non-uk-bank-account.iban.label"),
-            '_id -> "iban",
-            '_showConstraints -> false)
-          </div>
-
-          <div id="bic-swift-code">
-            @atedInputNew(bankDetailsForm("bicSwiftCode"),
-            '_label -> messages("ated.bank-details.non-uk-bank-account.bic-swift-code.label"),
-            '_id -> "bicSwiftCode",
-            '_showConstraints -> false)
-          </div>
-        </div>
-
-      </fieldset>
     </div>
+}
+
+@newMain(title = titleBuilder(messages("ated.bank-details.title"), Some(bankDetailsForm)),
+    serviceInfoContent = serviceInfoContent) {
+
+    @backLinkHtml
+
+    @if(bankDetailsForm.hasErrors) {
+        @govukErrorSummary(ErrorSummary().withFormErrorsAsText(bankDetailsForm))
+    }
+
+     <header>
+        <h1 class="govuk-heading-xl govuk-!-margin-bottom-3">
+            <span class="govuk-caption-xl">
+                <span class="govuk-visually-hidden">
+                @messages("ated.screen-reader.section")
+                </span>
+                @messages("ated.property-details.pre-header-dispose")
+            </span>
+            @messages("ated.bank-details.header")
+        </h1>
+    </header>
+
+    @formHelper(action = controllers.editLiability.routes.DisposeLiabilityBankDetailsController.save(oldFormBundleNo)) {
 
 
-    <button class="button margin-top-default" id="submit" type="submit">@messages("ated.save-and-continue")</button>
+        <div id="name-of-person" class="govuk-form-group">
+            @govukInput(Input(
+                inputType = "text",
+                label = Label(
+                    content = Text(messages("ated.bank-details.uk-bank-account.name.label")),
+                    classes = "govuk-label--m"
+                ),
+                autocomplete = Some("name")
+            ).withFormField(bankDetailsForm("accountName")))
+        </div>
 
-  }
+        <div class="govuk-form-group" id="hasUKBankAccount-id">
+            @govukRadios(Radios(
+                fieldset = Some(Fieldset(
+                    legend = Some(Legend(
+                        content = Text(messages("ated.bank-details.location.label")),
+                        classes = "govuk-fieldset__legend--m",
+                    ))
+                )),
+                items = Seq(
+                    RadioItem(
+                        content = Text(messages("ated.label.yes")),
+                        value = Some("true"),
+                        conditionalHtml = Some(yesHtml)
+                    ),
+                    RadioItem(
+                        content = Text(messages("ated.label.no")),
+                        value = Some("false"),
+                        conditionalHtml = Some(noHtml)
+                    )
+                )
+            ).withFormField(bankDetailsForm("hasUKBankAccount")))
+        </div>
+
+        @govukButton(Button(
+            content = Text(messages("ated.save-and-continue")),
+            attributes = Map("type" -> "submit", "id" -> "submit")
+        ))
+    }
 
 }

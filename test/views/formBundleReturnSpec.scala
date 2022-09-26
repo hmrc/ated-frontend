@@ -25,26 +25,28 @@ import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.i18n.{Messages, MessagesApi}
+import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import play.twirl.api.Html
 import testhelpers.MockAuthUtil
 import utils.{AtedConstants, PeriodUtils}
+import views.html.formBundleReturn
 
 class formBundleReturnSpec extends FeatureSpec with GuiceOneServerPerSuite with MockitoSugar
   with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
 
-  implicit val request = FakeRequest()
+  implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
 
-  val injectedViewInstance = app.injector.instanceOf[views.html.formBundleReturn]
+  val injectedViewInstance: formBundleReturn = app.injector.instanceOf[views.html.formBundleReturn]
 
-  val formBundleProp = FormBundleProperty(BigDecimal(100), new LocalDate("2015-09-08"),
+  val formBundleProp: FormBundleProperty = FormBundleProperty(BigDecimal(100), new LocalDate("2015-09-08"),
     new LocalDate("2015-10-12"), AtedConstants.LiabilityReturnType, None)
-  val formBundleAddress = FormBundleAddress("100 addressLine1", "addressLine2", Some("addressLine3"), Some("AddressLine4"), Some("XX11XX"), "GB")
-  val formBundlePropertyDetails = FormBundlePropertyDetails(Some("title here"), formBundleAddress, Some("additional details"))
-  val viewReturnWithSinglePeriod =
+  val formBundleAddress: FormBundleAddress = FormBundleAddress("100 addressLine1", "addressLine2", Some("addressLine3"), Some("AddressLine4"), Some("XX11XX"), "GB")
+  val formBundlePropertyDetails: FormBundlePropertyDetails = FormBundlePropertyDetails(Some("title here"), formBundleAddress, Some("additional details"))
+  val viewReturnWithSinglePeriod: FormBundleReturn =
     FormBundleReturn("2014",
     formBundlePropertyDetails, Some(new LocalDate("2013-10-10")), Some(BigDecimal(100)), Some("ABCdefgh"), Some("12345678"), Some("1234"), professionalValuation = true, ninetyDayRuleApplies = true,
       new LocalDate("2015-05-10"), BigDecimal(9324), "1234567891",
@@ -92,10 +94,10 @@ class formBundleReturnSpec extends FeatureSpec with GuiceOneServerPerSuite with 
       val document = Jsoup.parse(html.toString())
 
       Then("The header should match - View return")
-      assert(document.getElementById("form-bundle-header").text === "View return")
+      assert(document.getElementsByTag("h1").text contains "View return")
 
       Then("The subheader should be - ACME Ltd")
-      assert(document.getElementById("form-bundle-subheader").text() === "You have logged in as: ACME Ltd")
+      assert(document.getElementsByClass("govuk-caption-xl").text() === "You have logged in as:ACME Ltd")
 
       Then("The text should be - From the ATED chargeable period from 1 April 2015 to 31 March 2016.")
       assert(document.getElementById("form-bundle-text").text() === "From the ATED chargeable period from 1 April 2015 to 31 March 2016.")
@@ -103,7 +105,7 @@ class formBundleReturnSpec extends FeatureSpec with GuiceOneServerPerSuite with 
       Then("The the fields should be correct")
       assert(document.getElementById("th-view-return-property") === null)
 
-      assert(document.getElementById("backLinkHref").text === "Back")
+      assert(document.getElementsByClass("govuk-back-link").text === "Back")
     }
     scenario("View the Form Bundle when we have a Form Bundle with a single period") {
 
@@ -121,10 +123,10 @@ class formBundleReturnSpec extends FeatureSpec with GuiceOneServerPerSuite with 
       val document = Jsoup.parse(html.toString())
 
       Then("The header should match - View return")
-      assert(document.getElementById("form-bundle-header").text === "View return")
+      assert(document.getElementsByTag("h1").text contains "View return")
 
       Then("The subheader should be - ''")
-      assert(document.getElementById("form-bundle-subheader").text() === "You have logged in as:")
+      assert(document.getElementsByClass("govuk-caption-xl").text() === "You have logged in as:")
 
       Then("The text should be - From the ATED chargeable period from 1 April 2015 to 31 March 2016.")
       assert(document.getElementById("form-bundle-text").text() === "From the ATED chargeable period from 1 April 2015 to 31 March 2016.")
@@ -172,8 +174,8 @@ class formBundleReturnSpec extends FeatureSpec with GuiceOneServerPerSuite with 
 
       assert(document.getElementById("submit") === null)
 
-      assert(document.getElementById("backLinkHref").text === "Back")
-      assert(document.getElementById("backLinkHref").attr("href") === "http://backLink")
+      assert(document.getElementsByClass("govuk-back-link").text === "Back")
+      assert(document.getElementsByClass("govuk-back-link").attr("href") === "http://backLink")
     }
 
     scenario("View the Form Bundle when we have a Form Bundle with a single period and is editable") {
@@ -192,10 +194,10 @@ class formBundleReturnSpec extends FeatureSpec with GuiceOneServerPerSuite with 
       val document = Jsoup.parse(html.toString())
 
       Then("The header should match - View return")
-      assert(document.getElementById("form-bundle-header").text === "View return")
+      assert(document.getElementsByTag("h1").text contains "View return")
 
       Then("The subheader should be - ACME Ltd")
-      assert(document.getElementById("form-bundle-subheader").text() === "You have logged in as: ACME Ltd")
+      assert(document.getElementsByClass("govuk-caption-xl").text() === "You have logged in as:ACME Ltd")
 
       Then("The text should be - From the ATED chargeable period from 1 April 2015 to 31 March 2016.")
       assert(document.getElementById("form-bundle-text").text() === "From the ATED chargeable period from 1 April 2015 to 31 March 2016.")
@@ -260,10 +262,10 @@ class formBundleReturnSpec extends FeatureSpec with GuiceOneServerPerSuite with 
       val document = Jsoup.parse(html.toString())
 
       Then("The header should match - View return")
-      assert(document.getElementById("form-bundle-header").text === "View return")
+      assert(document.getElementsByTag("h1").text contains "View return")
 
       Then("The subheader should be - ACME Ltd")
-      assert(document.getElementById("form-bundle-subheader").text() === "You have logged in as: ACME Ltd")
+      assert(document.getElementsByClass("govuk-caption-xl").text() === "You have logged in as:ACME Ltd")
 
       Then("The text should be - From the ATED chargeable period from 1 April 2015 to 31 March 2016.")
       assert(document.getElementById("form-bundle-text").text() === "From the ATED chargeable period from 1 April 2015 to 31 March 2016.")
@@ -335,10 +337,10 @@ class formBundleReturnSpec extends FeatureSpec with GuiceOneServerPerSuite with 
       val document = Jsoup.parse(html.toString())
 
       Then("The header should match - View return")
-      assert(document.getElementById("form-bundle-header").text === "View return")
+      assert(document.getElementsByTag("h1").text contains "View return")
 
       Then("The subheader should be - ACME Ltd")
-      assert(document.getElementById("form-bundle-subheader").text() === "You have logged in as: ACME Ltd")
+      assert(document.getElementsByClass("govuk-caption-xl").text() === "You have logged in as:ACME Ltd")
 
       Then("The text should be - From the ATED chargeable period from 1 April 2015 to 31 March 2016.")
       assert(document.getElementById("form-bundle-text").text() === "From the ATED chargeable period from 1 April 2015 to 31 March 2016.")

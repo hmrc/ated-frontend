@@ -18,95 +18,88 @@
 @import config.ApplicationConfig
 @import views.html.helpers._
 @import play.twirl.api.HtmlFormat
+@import views.ViewUtils.titleBuilder
 
-@this(atedMain: atedMain)
+@this(newMain: newMain,
+    peakGuidance: peakGuidance,
+    govukButton : GovukButton)
+
 @(returnsCurrentTaxYear: Seq[AccountSummaryRowModel], totalCurrentYearReturns: Int, hasPastReturns: Boolean,
         otherReturns: SummaryReturnsModel, correspondence: Option[Address], organisationName: Option[String],
         serviceInfoContent: Html = HtmlFormat.empty, clientBanner: Html, duringPeak: Boolean, currentYear: Int,
         taxYearStartingYear: Int, fromAccountSummary: Boolean)(implicit authContext: StandardAuthRetrievals,
         messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig, applicationConfig: config.AppConfig)
 
-@pageScripts = {
-    <script src='@controllers.routes.Assets.versioned("javascript/accountSummary.js")'></script>
-}
 
-@atedMain(
-    title = messages("ated.summary-return.title"),
-    pageScripts = Some(pageScripts),
-    sidebarLinks = Some(_accountSummary_sideBar(otherReturns.atedBalance, correspondence, organisationName, clientBanner)),
-    sidebarClass = Some("related"),
+@newMain(
+    title = titleBuilder(messages("ated.summary-return.title")),
     serviceInfoContent = serviceInfoContent,
-    banner = clientBanner,
-    showUrBanner = Some(true)
+    sideBar = Some(_accountSummary_sideBar(otherReturns.atedBalance, correspondence, organisationName, clientBanner)),
+    showUrBanner = Some(true),
+    banner = clientBanner
 ) {
+        <header>
+            <h1 class="govuk-heading-xl govuk-!-margin-bottom-5">
+                <span class="govuk-caption-xl"><span class="govuk-visually-hidden">@messages("ated.screen-reader.section-name")</span>@organisationName.getOrElse("")</span>
+                @messages("ated.summary-return.header")
+            </h1>
+        </header>
 
-    @pageHeadersAndError(None,
-        "client-summary-subheader",
-        organisationName.getOrElse(""),
-        "account-summary-header",
-        messages("ated.summary-return.header"),
-        subHeaderPrefix = Some(messages("ated.screen-reader.section-name"))
-    )
+        @peakGuidance(duringPeak, currentYear, taxYearStartingYear)
 
-    @peakGuidance(duringPeak, currentYear, taxYearStartingYear)
-
-    @if(otherReturns.returnsOtherTaxYears.isEmpty && returnsCurrentTaxYear.isEmpty) {
-        <h2 class="heading-small" id="return-summary-no-returns">@messages("ated.account-summary.agent.no-returns")</h2>
-        @if(authContext.delegationModel.isEmpty) {
-            <p id="return-summary-no-returns-appoint-agent">@messages("ated.account-summary.agent-appoint.text")</p>
-            <p id="return-summary-no-returns-appoint-agent-info">@messages("ated.account-summary.appoint-agent-info.text")</p>
-        }
-
-        <div>
-            <a class="button" id="create-return-0"
-            href="@controllers.routes.PeriodSummaryController.createReturn(taxYearStartingYear, fromAccountSummary)">
-                @messages(
-                    "ated.account-summary.create-new-return",
-                    taxYearStartingYear.toString,
-                    (taxYearStartingYear+1).toString
-                )
-            </a>
-        </div>
-
-    } else {
-
-        @if(returnsCurrentTaxYear.nonEmpty) {
-            <br />
-            <h2 class="heading-medium">@messages("ated.account-summary.current-year-returns")</h2>
-            <div class="govuk-hint">
-              @messages("ated.account-summary.showing", returnsCurrentTaxYear.size, totalCurrentYearReturns)
-            </div>
-            <dl class="govuk-summary-list govuk-!-margin-bottom-9">
-                @returnsCurrentTaxYear.map { rtn =>
-                    @accountSummaryRow(
-                        rtn.description,
-                        messages(rtn.returnType),
-                        messages("ated.account-summary.view-or-change"),
-                        rtn.route
-                    )
-                }
-            </dl>
-
-            @if(totalCurrentYearReturns > 5 || hasPastReturns) {
-                <a id="view-all-returns" href="@controllers.routes.PeriodSummaryController.view(taxYearStartingYear)">
-                  @messages(
-                      "ated.account-summary.view-all", taxYearStartingYear.toString, (taxYearStartingYear + 1).toString
-                  )
-                </a>
+        @if(otherReturns.returnsOtherTaxYears.isEmpty && returnsCurrentTaxYear.isEmpty) {
+            <h2 class="govuk-heading-s" id="return-summary-no-returns">@messages("ated.account-summary.agent.no-returns")</h2>
+            @if(authContext.delegationModel.isEmpty) {
+                <p class="govuk-body" id="return-summary-no-returns-appoint-agent">@messages("ated.account-summary.agent-appoint.text")</p>
+                <p class="govuk-body" id="return-summary-no-returns-appoint-agent-info">@messages("ated.account-summary.appoint-agent-info.text")</p>
             }
 
-        }else{
-            @noReturnsText()
+            <div class="govuk-form-group">
+                @govukButton(Button(
+                    href = Some(controllers.routes.PeriodSummaryController.createReturn(taxYearStartingYear, fromAccountSummary).url),
+                    content = Text(messages("ated.account-summary.create-new-return", taxYearStartingYear.toString, (taxYearStartingYear+1).toString)),
+                    attributes = Map("id" -> "create-return-0")
+                ))
+            </div>
+
+        } else {
+
+            @if(returnsCurrentTaxYear.nonEmpty) {
+                <h2 class="govuk-heading-m govuk-!-padding-top-5">@messages("ated.account-summary.current-year-returns")</h2>
+                <div class="govuk-hint">
+                  @messages("ated.account-summary.showing", returnsCurrentTaxYear.size, totalCurrentYearReturns)
+                </div>
+                <dl class="govuk-summary-list govuk-!-margin-bottom-9">
+                    @returnsCurrentTaxYear.map { rtn =>
+                        @accountSummaryRow(
+                            rtn.description,
+                            messages(rtn.returnType),
+                            messages("ated.account-summary.view-or-change"),
+                            rtn.route
+                        )
+                    }
+                </dl>
+
+                @if(totalCurrentYearReturns > 5 || hasPastReturns) {
+                    <div class="govuk-form-group">
+                        <a id="view-all-returns" class="govuk-link govuk-!-font-size-19" href="@controllers.routes.PeriodSummaryController.view(taxYearStartingYear)">
+                          @messages(
+                              "ated.account-summary.view-all", taxYearStartingYear.toString, (taxYearStartingYear + 1).toString
+                          )
+                        </a>
+                    </div>
+                }
+
+                } else {
+                    @noReturnsText()
+                }
+
+            <div class="govuk-form-group">
+                @govukButton(Button(
+                    href = Some(controllers.routes.PeriodSummaryController.createReturn(taxYearStartingYear, fromAccountSummary).url),
+                    content = Text(messages("ated.account-summary.create-new-return", taxYearStartingYear.toString, (taxYearStartingYear+1).toString)),
+                    attributes = Map("id" -> "create-return-1")
+                ))
+            </div>
         }
-
-        <div>
-            <a class="button" id="create-return-1"
-            href="@controllers.routes.PeriodSummaryController.createReturn(taxYearStartingYear, fromAccountSummary)">
-                @messages("ated.account-summary.create-new-return",
-                    taxYearStartingYear.toString,
-                    (taxYearStartingYear+1).toString)
-            </a>
-        </div>
-
-    }
 }

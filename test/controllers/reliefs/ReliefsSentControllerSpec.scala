@@ -17,7 +17,6 @@
 package controllers.reliefs
 
 import java.util.UUID
-
 import builders.{SessionBuilder, TitleBuilder}
 import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
@@ -41,6 +40,7 @@ import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.AtedConstants._
 import views.html.BtaNavigationLinks
+import views.html.reliefs.reliefsSent
 
 import scala.concurrent.Future
 
@@ -54,11 +54,11 @@ class ReliefsSentControllerSpec extends PlaySpec with GuiceOneServerPerSuite wit
   val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
   val mockBackLinkCacheConnector: BackLinkCacheConnector = mock[BackLinkCacheConnector]
   val mockSubscriptionDataService: SubscriptionDataService = mock[SubscriptionDataService]
-    val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
+  val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
-  val injectedViewInstance = app.injector.instanceOf[views.html.reliefs.reliefsSent]
+  val injectedViewInstance: reliefsSent = app.injector.instanceOf[views.html.reliefs.reliefsSent]
 
   val periodKey = 2015
   val submittedDate: String = LocalDate.now().toString(DateTimeFormat.forPattern("d MMMM yyyy"))
