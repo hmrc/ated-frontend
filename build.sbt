@@ -50,11 +50,11 @@ lazy val microservice = Project(appName, file("."))
       libraryDependencies ++= appDependencies,
       retrieveManaged := true,
       routesGenerator := InjectedRoutesGenerator,
-      parallelExecution          in Test := true,
-      fork                       in Test := true,
-      Keys.fork                  in IntegrationTest :=  false,
-      unmanagedSourceDirectories in IntegrationTest := (baseDirectory in IntegrationTest)(base => Seq(base / "it")).value,
-      parallelExecution in IntegrationTest := false,
+      Test / parallelExecution   := true,
+      Test / fork                := true,
+      IntegrationTest / Keys.fork :=  false,
+      IntegrationTest / unmanagedSourceDirectories := (IntegrationTest / baseDirectory)(base => Seq(base / "it")).value,
+      IntegrationTest / parallelExecution := false,
       routesImport += "config.JodaLocalDateRoutes._"
     )
     .disablePlugins(JUnitXmlReportPlugin)
@@ -67,4 +67,3 @@ lazy val microservice = Project(appName, file("."))
       )
     )
     .disablePlugins(JUnitXmlReportPlugin)
-
