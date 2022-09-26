@@ -24,7 +24,7 @@ lazy val scoverageSettings = {
     )
   }
 
-val silencerVersion = "1.7.6"
+val silencerVersion = "1.7.1"
 
 lazy val microservice = Project(appName, file("."))
     .enablePlugins(Seq(play.sbt.PlayScala, SbtDistributablesPlugin) ++ plugins: _*)
@@ -34,7 +34,7 @@ lazy val microservice = Project(appName, file("."))
     .settings(scalaSettings: _*)
     .settings(publishingSettings: _*)
     .settings(defaultSettings(): _*)
-    .settings(scalaVersion := "2.12.15")
+    .settings(scalaVersion := "2.12.12")
     .settings(playSettings ++ scoverageSettings: _*)
   .settings(inConfig(TemplateTest)(Defaults.testSettings): _*)
   .settings(inConfig(TemplateItTest)(Defaults.itSettings): _*)
