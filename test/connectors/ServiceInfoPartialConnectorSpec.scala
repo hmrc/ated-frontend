@@ -70,10 +70,11 @@ class ServiceInfoPartialConnectorSpec extends ControllerBaseSpec {
         await(connector.getServiceInfoPartial()) mustBe btanl()
       }
     }
-
+    //temporary solution to the BTA banner
     "a successful response is returned" should {
       "return the Bta partial" in new Test {
-        await(connector.getServiceInfoPartial()) mustBe validHtml
+//        await(connector.getServiceInfoPartial()) mustBe validHtml
+        await(connector.getServiceInfoPartial()) mustBe btanl()
       }
     }
   }

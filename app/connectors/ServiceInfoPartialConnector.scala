@@ -39,13 +39,20 @@ class ServiceInfoPartialConnector @Inject()(val http: HttpClient,
 
   lazy val btaUrl: String = config.btaBaseUrl + "/business-account/partial/service-info"
 
-  def getServiceInfoPartial()(implicit request: Request[_], executionContext: ExecutionContext): Future[Html] =
-    http.GET[HtmlPartial](btaUrl) recover connectionExceptionsAsHtmlPartialFailure map {
-      p =>
-        p.successfulContentOrElse(btaNavigationLinks())
-    } recover {
-      case _ =>
-        logger.warn(s"[ServiceInfoPartialConnector][getServiceInfoPartial] - Unexpected future failed error")
-        btaNavigationLinks()
-    }
+//temporary solution to the BTA banner
+
+//  def getServiceInfoPartial()(implicit request: Request[_], executionContext: ExecutionContext): Future[Html] =
+//    http.GET[HtmlPartial](btaUrl) recover connectionExceptionsAsHtmlPartialFailure map {
+//      p =>
+//        p.successfulContentOrElse(btaNavigationLinks())
+//    } recover {
+//      case _ =>
+//        logger.warn(s"[ServiceInfoPartialConnector][getServiceInfoPartial] - Unexpected future failed error")
+//        btaNavigationLinks()
+//    }
+
+  def getServiceInfoPartial()(implicit request: Request[_], executionContext: ExecutionContext): Future[Html] = {
+    Future.successful(btaNavigationLinks())
+  }
+
 }
