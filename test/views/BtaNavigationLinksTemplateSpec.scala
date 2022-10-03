@@ -31,7 +31,7 @@ class BtaNavigationLinksTemplateSpec extends PlaySpec with MockitoSugar with Gui
 
   val injector: Injector = app.injector
   val messagesApi: MessagesApi = injector.instanceOf[MessagesApi]
-  implicit val mockAppConfig: ApplicationConfig = mock[ApplicationConfig]
+  implicit val appConfig: ApplicationConfig = injector.instanceOf[ApplicationConfig]
   lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
   lazy implicit val lang: Lang = injector.instanceOf[Lang]
 
@@ -45,7 +45,7 @@ class BtaNavigationLinksTemplateSpec extends PlaySpec with MockitoSugar with Gui
 
   "btaNavigationLinks" should {
 
-    val view: Html = btaNavigationLinksView()(messages,mockAppConfig)
+    val view: Html = btaNavigationLinksView()(messages,appConfig)
     lazy implicit val document: Document = Jsoup.parse(view.body)
 
 
@@ -58,7 +58,7 @@ class BtaNavigationLinksTemplateSpec extends PlaySpec with MockitoSugar with Gui
       }
 
       "should have a link to home" in {
-        homeLink.attr("href") mustBe mockAppConfig.btaHomeUrl
+        homeLink.attr("href") mustBe appConfig.btaHomeUrl
       }
 
     }
@@ -72,7 +72,7 @@ class BtaNavigationLinksTemplateSpec extends PlaySpec with MockitoSugar with Gui
       }
 
       "should have a link to Manage account" in {
-        manageAccountLink.attr("href") mustBe mockAppConfig.btaManageAccountUrl
+        manageAccountLink.attr("href") mustBe appConfig.btaManageAccountUrl
       }
 
     }
@@ -86,7 +86,7 @@ class BtaNavigationLinksTemplateSpec extends PlaySpec with MockitoSugar with Gui
       }
 
       "should have a link to Messages" in {
-        messagesLink.attr("href") mustBe mockAppConfig.btaMessagesUrl
+        messagesLink.attr("href") mustBe appConfig.btaMessagesUrl
       }
 
     }
@@ -100,7 +100,7 @@ class BtaNavigationLinksTemplateSpec extends PlaySpec with MockitoSugar with Gui
       }
 
       "should have a link to Help and contact" in {
-        helpAndContactLink.attr("href") mustBe mockAppConfig.btaHelpAndContactUrl
+        helpAndContactLink.attr("href") mustBe appConfig.btaHelpAndContactUrl
       }
 
     }
