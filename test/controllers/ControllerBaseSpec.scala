@@ -28,6 +28,7 @@ import play.api.inject.Injector
 import play.api.mvc.{AnyContentAsEmpty, AnyContentAsFormUrlEncoded, MessagesControllerComponents}
 import play.api.test.FakeRequest
 import testhelpers.TestUtil
+import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.ExecutionContext
 
@@ -45,6 +46,7 @@ class ControllerBaseSpec extends PlaySpec with MockitoSugar with GuiceOneAppPerS
   implicit val mockAppConfig: ApplicationConfig = mock[ApplicationConfig]
   implicit val system: ActorSystem = ActorSystem()
   implicit lazy val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
+  implicit val hc = HeaderCarrier()
 
 
   lazy val fakeRequestWithSession: FakeRequest[AnyContentAsEmpty.type] = fakeRequest.withSession(
