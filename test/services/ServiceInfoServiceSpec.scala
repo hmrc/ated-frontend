@@ -22,19 +22,22 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import play.api.test.Helpers._
 import play.twirl.api.{Html, HtmlFormat}
+import views.html.{BtaNavigationLinks, service_info}
 
 import scala.concurrent.Future
 
 class ServiceInfoServiceSpec extends ControllerBaseSpec {
 
   val mockConnector: ServiceInfoPartialConnector = mock[ServiceInfoPartialConnector]
-  val service: ServiceInfoService = new ServiceInfoService(mockConnector)
+  val btanl: BtaNavigationLinks = injector.instanceOf[BtaNavigationLinks]
+  val serviceInfoView: service_info = injector.instanceOf[service_info]
+  val service: ServiceInfoService = new ServiceInfoService(mockConnector,serviceInfoView, btanl)(messagesApi, mockAppConfig)
   val validHtml: Html = Html("<nav>btalink<nav>")
   val htmlError: Html = Html("error")
 
   "getServiceInfo Partial" should {
     "return bta Partial" in {
-      when(mockConnector.getServiceInfoPartial()(any(), any())).thenReturn(Future.successful(validHtml))
+      when(mockConnector.getNavLinks((any(), any())).thenReturn(Future.successful(validHtml))
 
       val result: Html = await(service.getPartial(fakeRequest, organisationStandardRetrievals, ec))
       val expectedResult: Html = validHtml

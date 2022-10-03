@@ -16,10 +16,10 @@
 
 package views
 
-import mocks.MockAppConfig
+import config.ApplicationConfig
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
-import org.scalamock.scalatest.MockFactory
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Lang, MessagesApi, MessagesImpl}
@@ -27,11 +27,11 @@ import play.api.inject.Injector
 import play.twirl.api.Html
 import views.html.BtaNavigationLinks
 
-class BtaNavigationLinksTemplateSpec extends PlaySpec with MockFactory with GuiceOneAppPerSuite {
+class BtaNavigationLinksTemplateSpec extends PlaySpec with MockitoSugar with GuiceOneAppPerSuite {
 
   val injector: Injector = app.injector
   val messagesApi: MessagesApi = injector.instanceOf[MessagesApi]
-  implicit val mockAppConfig: MockAppConfig = new MockAppConfig(app.configuration)
+  implicit val mockAppConfig: ApplicationConfig = mock[ApplicationConfig]
   lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
   lazy implicit val lang: Lang = injector.instanceOf[Lang]
 

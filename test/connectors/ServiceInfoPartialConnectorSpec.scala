@@ -16,7 +16,6 @@
 
 package connectors
 
-import config.AtedHeaderCarrierForPartialsConverter
 import controllers.ControllerBaseSpec
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
@@ -45,7 +44,7 @@ class ServiceInfoPartialConnectorSpec extends ControllerBaseSpec {
       when(mockHttp.GET[HtmlPartial](any(), any(), any())(any(), any(), any()))
         .thenReturn(result)
 
-      new ServiceInfoPartialConnector(mockHttp, header, btanl)(messagesApi, mockAppConfig)
+      new ServiceInfoPartialConnector(mockHttp, mockAppConfig , header)
     }
 
   }

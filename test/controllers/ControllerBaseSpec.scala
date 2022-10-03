@@ -17,8 +17,7 @@
 package controllers
 
 import akka.actor.ActorSystem
-import config.AppConfig
-import mocks.MockAppConfig
+import config.ApplicationConfig
 import models.StandardAuthRetrievals
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
@@ -43,7 +42,7 @@ class ControllerBaseSpec extends PlaySpec with MockitoSugar with GuiceOneAppPerS
   val organisationStandardRetrievals: StandardAuthRetrievals = StandardAuthRetrievals(defaultEnrolmentSet, Some(organisationAffinity), Some(delegationModel))
 
   implicit val ec: ExecutionContext = injector.instanceOf[ExecutionContext]
-  implicit val mockAppConfig: AppConfig = new MockAppConfig(app.configuration)
+  implicit val mockAppConfig: ApplicationConfig = mock[ApplicationConfig]
   implicit val system: ActorSystem = ActorSystem()
   implicit lazy val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 

@@ -16,43 +16,27 @@
 
 package connectors
 
-import config.{AppConfig, AtedHeaderCarrierForPartialsConverter}
-import javax.inject.{Inject, Singleton}
+import config.ApplicationConfig
+import models.requests.NavContent
 import play.api.Logging
-import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.Request
-import play.twirl.api.Html
-import uk.gov.hmrc.http.HttpClient
-import uk.gov.hmrc.play.partials.HtmlPartial
-import uk.gov.hmrc.play.partials.HtmlPartial._
-import views.html.BtaNavigationLinks
+import uk.gov.hmrc.http.HttpReads.Implicits._
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class ServiceInfoPartialConnector @Inject()(val http: HttpClient,
-                                            hcForPartials: AtedHeaderCarrierForPartialsConverter,
-                                            btaNavigationLinks: BtaNavigationLinks)
-                                           (implicit val messagesApi: MessagesApi,
-                                            val config: AppConfig) extends HtmlPartialHttpReads with I18nSupport with Logging {
-  import hcForPartials._
+class ServiceInfoPartialConnector @Inject()(http: HttpClient, config: ApplicationConfig) extends Logging {
 
-  lazy val btaUrl: String = config.btaBaseUrl + "/business-account/partial/service-info"
 
-//temporary solution to the BTA banner
+  lazy val btaNavLinksUrl: String = config.btaBaseUrl + "/business-account/partial/nav-links"
 
-//  def getServiceInfoPartial()(implicit request: Request[_], executionContext: ExecutionContext): Future[Html] =
-//    http.GET[HtmlPartial](btaUrl) recover connectionExceptionsAsHtmlPartialFailure map {
-//      p =>
-//        p.successfulContentOrElse(btaNavigationLinks())
-//    } recover {
-//      case _ =>
-//        logger.warn(s"[ServiceInfoPartialConnector][getServiceInfoPartial] - Unexpected future failed error")
-//        btaNavigationLinks()
-//    }
-
-  def getServiceInfoPartial()(implicit request: Request[_], executionContext: ExecutionContext): Future[Html] = {
-    Future.successful(btaNavigationLinks())
+  def getNavLinks(implicit ec: ExecutionContext, hc : HeaderCarrier): Future[Option[NavContent]] = {
+    http.GET[Option[NavContent]](s"$btaNavLinksUrl")
+      .recover{
+        case e =>
+          logger.warn(s"[ServiceInfoPartialConnector][getNavLinks] - Unexpected error ${e.getMessage}")
+          None
+      }
   }
-
 }
