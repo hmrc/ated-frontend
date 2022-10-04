@@ -30,8 +30,8 @@ import scala.concurrent.Future
 class ServiceInfoPartialConnectorSpec extends ControllerBaseSpec {
   val btanl: BtaNavigationLinks = injector.instanceOf[BtaNavigationLinks]
   val validHtml: Html = Html("<nav>BTA lINK</nav>")
-  val navLinks = NavLinks("en", "/nav", None)
-  val navContent = NavContent(navLinks, navLinks, navLinks, navLinks, navLinks)
+  val navLinks: NavLinks = NavLinks("en", "/nav", None)
+  val navContent: NavContent = NavContent(navLinks, navLinks, navLinks, navLinks)
 
   private trait Test {
     val result: Future[Option[NavContent]] = Future.successful(Some(navContent))

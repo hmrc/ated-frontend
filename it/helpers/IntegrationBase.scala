@@ -27,6 +27,7 @@ trait IntegrationBase extends PlaySpec
   val headers = List(
     HeaderNames.xSessionId -> sessionId,
     HeaderNames.authorisation -> authToken,
+    "Cookie" -> "cookie",
     "Csrf-Token" -> "nocheck"
   )
   lazy val client: WSClient = app.injector.instanceOf[WSClient]

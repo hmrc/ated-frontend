@@ -29,8 +29,7 @@ object NavLinks {
 case class NavContent(home: NavLinks,
                       account: NavLinks,
                       messages: NavLinks,
-                      help: NavLinks,
-                      forms: NavLinks
+                      help: NavLinks
                      )
 
 object NavContent {
