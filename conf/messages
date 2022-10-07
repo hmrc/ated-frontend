@@ -543,6 +543,11 @@ ated.property-details-period.datesInRelief.startDate.hint = For example, {0}
 ated.property-details-period.datesInRelief.startDate.error = The relief start date must be in this chargeable period
 ated.property-details-period.datesInRelief.startDate.error.empty = You must enter a relief start date
 
+ated.property-details-value.newBuildOccupyDate.error.not-in-period = The date when the property was first occupied must be in the chargeable period
+ated.property-details-value.newBuildOccupyDate.error.too-early = The date when the property was first occupied must be in the chargeable period
+ated.property-details-value.newBuildRegisterDate.error.not-in-period = The registration date must be in the chargeable period
+ated.property-details-value.newBuildRegisterDate.error.too-early = The date when the property was first occupied must be in the chargeable period
+
 ated.property-details-period.datesInRelief.endDate = What was the end date in this current period, when the relief ended?
 ated.property-details-period.datesInRelief.endDate.hint = For example, {0}
 ated.property-details-period.datesInRelief.endDate.error = The relief end date must be in this chargeable period

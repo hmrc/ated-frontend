@@ -4,7 +4,7 @@ package controllers
 import config.ApplicationConfig
 import config.featureswitch.FeatureSwitch
 import helpers.IntegrationBase
-import helpers.stubs.{AuthAudit, KeyStore}
+import helpers.stubs.{AuthAudit, KeyStore, ServiceInfoPartialConnectorStub}
 import play.api.libs.ws.WSResponse
 
 class PeriodSummaryControllerISpec extends IntegrationBase with AuthAudit with KeyStore {
@@ -12,7 +12,8 @@ class PeriodSummaryControllerISpec extends IntegrationBase with AuthAudit with K
     "viewing the period summary of 2019" in {
       val period2019 = 2019
 
-      stubAuthAudit()
+      stubAuth()
+      ServiceInfoPartialConnectorStub.withResponseForNavLinks()(200, Some(testNavLinkJson))
       stubKeyStore()
       stubGet("/ated/XN1200000100001/returns/partial-summary", 200,
         s"""{
@@ -44,7 +45,8 @@ class PeriodSummaryControllerISpec extends IntegrationBase with AuthAudit with K
 
       val period2020 = 2020
 
-      stubAuthAudit()
+      stubAuth()
+      ServiceInfoPartialConnectorStub.withResponseForNavLinks()(200, Some(testNavLinkJson))
       stubKeyStore()
       stubGet("/ated/XN1200000100001/returns/partial-summary", 200,
         s"""{
@@ -76,7 +78,8 @@ class PeriodSummaryControllerISpec extends IntegrationBase with AuthAudit with K
 
       val period2020 = 2020
 
-      stubAuthAudit()
+      stubAuth()
+      ServiceInfoPartialConnectorStub.withResponseForNavLinks()(200, Some(testNavLinkJson))
       stubKeyStore()
       stubGet("/ated/XN1200000100001/returns/partial-summary", 200,
         s"""{

@@ -34,7 +34,7 @@ class ServiceInfoServiceSpec extends ControllerBaseSpec {
   val serviceInfoView: service_info = injector.instanceOf[service_info]
   val service: ServiceInfoService = new ServiceInfoService(mockConnector,serviceInfoView, btanl)(messagesApi, mockAppConfig)
   val navLinks = NavLinks("en", "/nav", None)
-  val navContent = NavContent(navLinks, navLinks, navLinks, navLinks, navLinks)
+  val navContent = NavContent(navLinks, navLinks, navLinks, navLinks)
 
   "getServiceInfo Partial" should {
     "return bta Partial" in {

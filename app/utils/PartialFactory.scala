@@ -43,8 +43,6 @@ object PartialFactory {
             ListLinks(navLinks.messages.en, navLinks.messages.url, Some(notificationBadgeCount(navLinks.messages.alerts.getOrElse(0)))),
             ListLinks(navLinks.help.en, navLinks.help.url)
           )
-
-
   }
 
 }

@@ -21,7 +21,7 @@ import com.github.tomakehurst.wiremock.client.WireMock._
 object ServiceInfoPartialConnectorStub {
 
   def withResponseForNavLinks()(status: Int, optBody: Option[String]): Unit =
-    stubFor(get(urlMatching("/business-account/partial/nav-links")) willReturn {
+    stubFor(get(urlEqualTo("/business-account/partial/nav-links")) willReturn {
       val coreResponse = aResponse().withStatus(status)
       optBody match {
         case Some(body) => coreResponse.withBody(body)
@@ -30,5 +30,5 @@ object ServiceInfoPartialConnectorStub {
     })
 
   def verifyNavlinksContent(count: Int): Unit =
-    verify(count, getRequestedFor(urlMatching("/business-account/partial/nav-links")))
+    verify(count, getRequestedFor(urlEqualTo("/business-account/partial/nav-links")))
 }

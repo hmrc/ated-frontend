@@ -32,29 +32,6 @@ class ServiceInfoPartialConnectorISpec extends PlaySpec with IntegrationBase wit
 
   lazy val connector: ServiceInfoPartialConnector = inject[ServiceInfoPartialConnector]
 
-  val testNavLinkJson: String =
-    """
-      |{
-      | "home":{
-      |         "en" : "Home",
-      |         "url": "http://localhost:9020/business-account"
-      |       },
-      | "account":{
-      |           "en" : "Manage account",
-      |           "url" : "http://localhost:9020/business-account/manage-account"
-      |       },
-      | "messages":{
-      |             "en" : "Messages",
-      |             "url" : "http://localhost:9020/business-account/messages",
-      |             "alerts": 5
-      |       },
-      | "help":{
-      |         "en" : "Help and contact",
-      |         "url" : "http://localhost:9733/business-account/help"
-      |       }
-      | }""".stripMargin
-
-
   "ServiceInfoPartialConnector" when {
 
     "Requesting NavLinks Content" should {
@@ -66,7 +43,7 @@ class ServiceInfoPartialConnectorISpec extends PlaySpec with IntegrationBase wit
           messages = NavLinks("Messages", "http://localhost:9020/business-account/messages", Some(5)),
           help = NavLinks("Help and contact", "http://localhost:9733/business-account/help")))
 
-        stubAuthAudit()
+        stubAuth()
         ServiceInfoPartialConnectorStub.withResponseForNavLinks()(200, Some(testNavLinkJson))
 
         val result: Future[Option[NavContent]] = connector.getNavLinks(ec, hc)
@@ -78,7 +55,7 @@ class ServiceInfoPartialConnectorISpec extends PlaySpec with IntegrationBase wit
       }
 
       "Return None with failed status" in {
-        stubAuthAudit()
+        stubAuth()
         ServiceInfoPartialConnectorStub.withResponseForNavLinks()(500, None)
 
         val result: Future[Option[NavContent]] = connector.getNavLinks(ec, hc)
@@ -90,8 +67,4 @@ class ServiceInfoPartialConnectorISpec extends PlaySpec with IntegrationBase wit
       }
     }
   }
-
-
-
 }
-
