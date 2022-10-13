@@ -30,9 +30,9 @@ class CountryCodeUtilsSpec extends PlaySpec with GuiceOneServerPerSuite with Moc
   "CountryCodeUtils" must {
     "getSelectedCountry" must {
       "bring the correct country from the file" in new Setup {
-        getSelectedCountry("GB") must be("United Kingdom")
-        getSelectedCountry("US") must be("United States")
-        getSelectedCountry("VG") must be("British Virgin Islands")
+        getSelectedCountry("GB") must be("United Kingdom of Great Britain and Northern Ireland (the)")
+        getSelectedCountry("US") must be("United States of America (the)")
+        getSelectedCountry("VG") must be("Virgin Islands (British)")
         getSelectedCountry("UG") must be("Uganda")
         getSelectedCountry("zz") must be("zz")
       }
@@ -40,8 +40,8 @@ class CountryCodeUtilsSpec extends PlaySpec with GuiceOneServerPerSuite with Moc
 
     "getIsoCodeMap" must {
       "return map of country iso-code to country name" in new Setup {
-        getIsoCodeTupleList must contain(("US", "United States"))
-        getIsoCodeTupleList must contain(("GB", "United Kingdom :UK, GB, Great Britain"))
+        getIsoCodeTupleList must contain(("US", "United States of America (the)"))
+        getIsoCodeTupleList must contain(("GB", "United Kingdom of Great Britain and Northern Ireland (the)"))
         getIsoCodeTupleList must contain(("UG", "Uganda"))
       }
     }
