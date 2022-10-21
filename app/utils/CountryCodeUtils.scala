@@ -17,12 +17,10 @@
 package utils
 
 import java.util.PropertyResourceBundle
+
 import play.api.Environment
 
-import java.io.InputStreamReader
-import java.nio.charset.Charset
 import scala.collection.JavaConverters._
-import scala.io.Codec
 import scala.util.{Success, Try}
 
 trait CountryCodeUtils {
@@ -31,9 +29,7 @@ trait CountryCodeUtils {
 
   lazy val resourceStream: PropertyResourceBundle =
     (environment.resourceAsStream("country-code.properties") flatMap { stream =>
-      val inputStreamReader: InputStreamReader = new InputStreamReader(stream, "UTF-8")
-
-      val optBundle: Option[PropertyResourceBundle] = Try(new PropertyResourceBundle(inputStreamReader)) match {
+      val optBundle: Option[PropertyResourceBundle] = Try(new PropertyResourceBundle(stream)) match {
         case Success(bundle) => Some(bundle)
         case _               => None
       }
