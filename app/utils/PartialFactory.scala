@@ -28,21 +28,13 @@ object PartialFactory {
     }
   }
 
-  def formsNav(form: NavLinks): ListLinks = {
-    form.alerts match {
-      case Some(alert) if alert.equals(0) => ListLinks("", "", showBoolean = Some(false))
-      case Some(alert) => ListLinks(form.en, form.url, Some(notificationBadgeCount(alert)))
-      case _ => ListLinks("", "", showBoolean = Some(false))
-    }
-  }
-
   def partialList(navLinks: NavContent): Seq[ListLinks] = {
-        Seq(
-            ListLinks(navLinks.home.en, navLinks.home.url),
-            ListLinks(navLinks.account.en, navLinks.account.url),
-            ListLinks(navLinks.messages.en, navLinks.messages.url, Some(notificationBadgeCount(navLinks.messages.alerts.getOrElse(0)))),
-            ListLinks(navLinks.help.en, navLinks.help.url)
-          )
+    Seq(
+      ListLinks(navLinks.home.en, navLinks.home.url),
+      ListLinks(navLinks.account.en, navLinks.account.url),
+      ListLinks(navLinks.messages.en, navLinks.messages.url, Some(notificationBadgeCount(navLinks.messages.alerts.getOrElse(0)))),
+      ListLinks(navLinks.help.en, navLinks.help.url)
+    )
   }
 
 }
