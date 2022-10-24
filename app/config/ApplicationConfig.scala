@@ -24,17 +24,10 @@ import utils.CountryCodeUtils
 
 import javax.inject.Inject
 
-trait AppConfig {
-  val btaBaseUrl: String
-  val btaHomeUrl: String
-  val btaMessagesUrl: String
-  val btaManageAccountUrl: String
-  val btaHelpAndContactUrl: String
-}
 
 class ApplicationConfig @Inject()(val conf: ServicesConfig,
                                   val environment: Environment,
-                                  val templateError: views.html.global_error) extends CountryCodeUtils with AppConfig with FeatureSwitching {
+                                  val templateError: views.html.global_error) extends CountryCodeUtils with FeatureSwitching {
 
   private def loadConfig(key: String) = conf.getString(key)
 
@@ -42,11 +35,11 @@ class ApplicationConfig @Inject()(val conf: ServicesConfig,
   private lazy val helpAndContactFrontendUrl: String = conf.getString(Keys.helpAndContactFrontendBase)
 
   val contactFormServiceIdentifier = "ATED"
-  override lazy val btaBaseUrl: String = conf.baseUrl(Keys.businessTaxAccountBase)
-  override lazy val btaHomeUrl: String = conf.getString(Keys.businessTaxAccountHost) + conf.getString(Keys.businessTaxAccountUrl)
-  override lazy val btaMessagesUrl: String = btaHomeUrl + conf.getString(Keys.businessTaxAccountMessagesUrl)
-  override lazy val btaManageAccountUrl: String = btaHomeUrl + conf.getString(Keys.businessTaxAccountManageAccountUrl)
-  override lazy val btaHelpAndContactUrl: String = helpAndContactFrontendUrl + conf.getString(Keys.helpAndContactHelpUrl)
+  lazy val btaBaseUrl: String = conf.baseUrl(Keys.businessTaxAccountBase)
+  lazy val btaHomeUrl: String = conf.getString(Keys.businessTaxAccountHost) + conf.getString(Keys.businessTaxAccountUrl)
+  lazy val btaMessagesUrl: String = btaHomeUrl + conf.getString(Keys.businessTaxAccountMessagesUrl)
+  lazy val btaManageAccountUrl: String = btaHomeUrl + conf.getString(Keys.businessTaxAccountManageAccountUrl)
+  lazy val btaHelpAndContactUrl: String = helpAndContactFrontendUrl + conf.getString(Keys.helpAndContactHelpUrl)
   lazy val assetsPrefix: String = loadConfig("assets.url") + loadConfig("assets.version")
   lazy val betaFeedbackUrl = s"$contactHost/contact/beta-feedback"
   lazy val betaFeedbackUnauthenticatedUrl = s"$contactHost/contact/beta-feedback-unauthenticated"

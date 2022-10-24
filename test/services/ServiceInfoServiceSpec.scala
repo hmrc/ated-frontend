@@ -18,33 +18,36 @@ package services
 
 import connectors.ServiceInfoPartialConnector
 import controllers.ControllerBaseSpec
+import models.requests.{NavContent, NavLinks}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import play.api.test.Helpers._
 import play.twirl.api.{Html, HtmlFormat}
+import views.html.{BtaNavigationLinks, service_info}
 
 import scala.concurrent.Future
 
 class ServiceInfoServiceSpec extends ControllerBaseSpec {
 
   val mockConnector: ServiceInfoPartialConnector = mock[ServiceInfoPartialConnector]
-  val service: ServiceInfoService = new ServiceInfoService(mockConnector)
-  val validHtml: Html = Html("<nav>btalink<nav>")
-  val htmlError: Html = Html("error")
+  val btanl: BtaNavigationLinks = injector.instanceOf[BtaNavigationLinks]
+  val serviceInfoView: service_info = injector.instanceOf[service_info]
+  val service: ServiceInfoService = new ServiceInfoService(mockConnector,serviceInfoView, btanl)(messagesApi, mockAppConfig)
+  val navLinks = NavLinks("en", "/nav", None)
+  val navContent = NavContent(navLinks, navLinks, navLinks, navLinks)
 
   "getServiceInfo Partial" should {
     "return bta Partial" in {
-      when(mockConnector.getServiceInfoPartial()(any(), any())).thenReturn(Future.successful(validHtml))
+      when(mockConnector.getNavLinks(any(), any())).thenReturn(Future.successful(Some(navContent)))
 
-      val result: Html = await(service.getPartial(fakeRequest, organisationStandardRetrievals, ec))
-      val expectedResult: Html = validHtml
+      val result: Html = await(service.getPartial(ec, organisationStandardRetrievals, fakeRequest ))
+      val expectedResult: Html = serviceInfoView(utils.PartialFactory.partialList(navContent))
 
       result mustBe expectedResult
     }
     "return error HTML for an agent" in {
-      when(mockConnector.getServiceInfoPartial()(any(),any())).thenReturn(Future.successful(htmlError))
 
-      val result: Html = await(service.getPartial(fakeRequest, agentStandardRetrievals, ec))
+      val result: Html = await(service.getPartial(ec, agentStandardRetrievals, fakeRequest))
       val expectedResult: Html = HtmlFormat.empty
 
       result mustBe expectedResult

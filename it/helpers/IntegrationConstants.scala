@@ -392,4 +392,26 @@ trait IntegrationConstants {
       |""".stripMargin
   }
 
+  val testNavLinkJson: String =
+    """
+      |{
+      | "home":{
+      |         "en" : "Home",
+      |         "url": "http://localhost:9020/business-account"
+      |       },
+      | "account":{
+      |           "en" : "Manage account",
+      |           "url" : "http://localhost:9020/business-account/manage-account"
+      |       },
+      | "messages":{
+      |             "en" : "Messages",
+      |             "url" : "http://localhost:9020/business-account/messages",
+      |             "alerts": 5
+      |       },
+      | "help":{
+      |         "en" : "Help and contact",
+      |         "url" : "http://localhost:9733/business-account/help"
+      |       }
+      | }""".stripMargin
+
 }

@@ -14,17 +14,21 @@
  * limitations under the License.
  */
 
-package mocks
+package helpers.stubs
 
-import config.AppConfig
-import play.api.{Configuration, Mode}
+import com.github.tomakehurst.wiremock.client.WireMock._
 
-class MockAppConfig(val runModeConfiguration: Configuration, val mode: Mode = Mode.Test) extends AppConfig {
+object ServiceInfoPartialConnectorStub {
 
-  override val btaBaseUrl: String = ""
-  override val btaHomeUrl: String = "bta-url"
-  override val btaHelpAndContactUrl: String = "bta-help-and-contact-url"
-  override val btaManageAccountUrl: String = "bta-manage-account-url"
-  override val btaMessagesUrl: String = "bta-messages-url"
+  def withResponseForNavLinks()(status: Int, optBody: Option[String]): Unit =
+    stubFor(get(urlEqualTo("/business-account/partial/nav-links")) willReturn {
+      val coreResponse = aResponse().withStatus(status)
+      optBody match {
+        case Some(body) => coreResponse.withBody(body)
+        case _          => coreResponse
+      }
+    })
 
+  def verifyNavlinksContent(count: Int): Unit =
+    verify(count, getRequestedFor(urlEqualTo("/business-account/partial/nav-links")))
 }

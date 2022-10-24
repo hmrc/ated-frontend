@@ -16,22 +16,43 @@
 
 package services
 
+import config.ApplicationConfig
 import connectors.ServiceInfoPartialConnector
-import javax.inject.{Inject, Singleton}
 import models.StandardAuthRetrievals
-import play.api.mvc._
+import play.api.i18n.{Messages, MessagesApi}
+import play.api.mvc.Request
+import play.mvc.Http.HeaderNames
 import play.twirl.api.{Html, HtmlFormat}
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.http.HeaderCarrierConverter
+import utils.PartialFactory
+import views.html.{BtaNavigationLinks, service_info}
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class ServiceInfoService @Inject()(val serviceInfoPartialConnector: ServiceInfoPartialConnector){
+class ServiceInfoService @Inject()(serviceInfoPartialConnector: ServiceInfoPartialConnector,
+                                      service_info: service_info,
+                                      btaNavigationLinks: BtaNavigationLinks)
+                                      (implicit val messagesApi: MessagesApi, config: ApplicationConfig) extends HeaderCarrierConverter{
 
-  def getPartial(implicit request: Request[_], authContext: StandardAuthRetrievals, executionContext: ExecutionContext): Future[Html] = {
+  def getPartial(implicit ec: ExecutionContext, authContext: StandardAuthRetrievals, request: Request[_]): Future[Html] = {
+    val headerCarrier: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
+    implicit val hc: HeaderCarrier = headerCarrier.copy(extraHeaders = headerCarrier.headers(Seq(HeaderNames.COOKIE)))
+    val maybeNavLinks = serviceInfoPartialConnector.getNavLinks
+    implicit val messages: Messages = messagesApi.preferred(request)
+
     if(authContext.isAgent){
       Future.successful(HtmlFormat.empty)
     } else {
-      serviceInfoPartialConnector.getServiceInfoPartial()
+
+        for {
+          navLinks <- maybeNavLinks
+        } yield {
+          navLinks.map(n =>
+            service_info(PartialFactory.partialList(n))).getOrElse(btaNavigationLinks())
+        }
     }
   }
 }

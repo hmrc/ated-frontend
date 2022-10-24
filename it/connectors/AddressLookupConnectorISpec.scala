@@ -18,7 +18,7 @@ class AddressLookupConnectorISpec extends IntegrationBase with AuthAudit with In
     "findByPostcode is called" should {
 
       "return a list of adresses when AL call succeeds" in {
-        stubAuthAudit()
+        stubAuth()
         AddressLookupStub.postPostcodePartialSuccessResponse
 
         await(connector.findByPostcode(AddressLookup("BB000BB", None))) mustBe
@@ -51,20 +51,20 @@ class AddressLookupConnectorISpec extends IntegrationBase with AuthAudit with In
       }
 
       "return Nil if AL call returns invalid Json" in {
-        stubAuthAudit()
+        stubAuth()
         AddressLookupStub.responsePostPostcode("BB000BB")(OK, s"""[{id : 1233213, "address" : {}]""")
         await(connector.findByPostcode(AddressLookup("BB000BB", None))) mustBe Nil
       }
 
       "return Nil if AL call returns Not Found" in {
-        stubAuthAudit()
+        stubAuth()
         AddressLookupStub.responsePostPostcode("BB000BB")(NOT_FOUND, "")
         await(connector.findByPostcode(AddressLookup("BB000BB", None))) mustBe Nil
       }
     }
 
     "return Nil if AL call returns Internal Server Error" in {
-      stubAuthAudit()
+      stubAuth()
       AddressLookupStub.responsePostPostcode("BB000BB")(INTERNAL_SERVER_ERROR, "")
       await(connector.findByPostcode(AddressLookup("BB000BB", None))) mustBe Nil
     }
@@ -73,7 +73,7 @@ class AddressLookupConnectorISpec extends IntegrationBase with AuthAudit with In
   "findById is called" should {
 
     "return OK status and an address when AL call succeeds" in {
-      stubAuthAudit()
+      stubAuth()
       AddressLookupStub.postByIdSuccessResponse
 
       await(connector.findById("200000706253")) mustBe
@@ -94,19 +94,19 @@ class AddressLookupConnectorISpec extends IntegrationBase with AuthAudit with In
     }
 
     "return Nil if AL call returns invalid Json" in {
-      stubAuthAudit()
+      stubAuth()
       AddressLookupStub.responsePostUprn("21362571762")(OK, s"""[{uprn : 1233213, "address" : {}]""")
       await(connector.findById("21362571762")) mustBe Nil
     }
 
     "return Nil if AL call returns Not Found" in {
-      stubAuthAudit()
+      stubAuth()
       AddressLookupStub.responsePostUprn("21362571762")(NOT_FOUND, "")
       await(connector.findById("21362571762")) mustBe Nil
     }
 
     "return Nil if AL call returns Internal Server Error" in {
-      stubAuthAudit()
+      stubAuth()
       AddressLookupStub.responsePostUprn("21362571762")(INTERNAL_SERVER_ERROR, "")
       await(connector.findById("21362571762")) mustBe Nil
     }

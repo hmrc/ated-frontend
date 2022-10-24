@@ -10,7 +10,7 @@ class ReliefDeclarationControllerISpec extends IntegrationBase with AuthAudit wi
   "respond with a status of SEE OTHER (303)" when {
     "submitting a relief" in {
 
-      stubAuthAudit()
+      stubAuth()
       stubKeyStore()
       stubGet(s"/ated/$atedRef/ated/reliefs/submit/$period", 200, relief)
       val controllerUrl = controllers.reliefs.routes.ReliefDeclarationController.submit(period).url
