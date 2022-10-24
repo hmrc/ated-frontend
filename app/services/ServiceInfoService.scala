@@ -28,9 +28,10 @@ import uk.gov.hmrc.play.http.HeaderCarrierConverter
 import utils.PartialFactory
 import views.html.{BtaNavigationLinks, service_info}
 
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
+@Singleton
 class ServiceInfoService @Inject()(serviceInfoPartialConnector: ServiceInfoPartialConnector,
                                       service_info: service_info,
                                       btaNavigationLinks: BtaNavigationLinks)
