@@ -65,7 +65,7 @@
     </header>
 
     <p class="govuk-body">
-        @messages("ated.confirm-past-return.p1", (periodKey-1).toString, periodKey.toString)
+        @messages("ated.confirm-past-return.p1")
     </p>
 
 @formHelper(action = controllers.routes.ExistingReturnQuestionController.submit(periodKey, returnType)) {

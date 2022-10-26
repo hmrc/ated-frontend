@@ -1091,7 +1091,7 @@ yes-no.error.mandatory.existing.returns = Select yes if you filed a return for t
 ##### SELECT PAST RETURNS
 
 ated.confirm-past-return-question.header = Did you file a return for this property in {0} to {1}?
-ated.confirm-past-return.p1 = Did you file a return for this property in the previous chargeable period - April 1 {0} to March 31 {1}?
+ated.confirm-past-return.p1 = The previous chargeable period runs from April 1 to March 31
 
 ated.select-past-return.title = Select the property from your previous year returns
 ated.select-past-return.header = Select the property from your previous year returns
