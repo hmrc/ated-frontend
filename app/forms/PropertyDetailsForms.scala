@@ -17,11 +17,11 @@
 package forms
 
 import forms.AtedForms.validatePostCodeFormat
+import forms.ReliefForms._
 import models._
 import org.joda.time.LocalDate
 import play.api.data.Forms._
 import play.api.data.{Form, FormError, Mapping}
-import uk.gov.hmrc.play.mappers.DateTuple._
 import utils.AtedUtils
 
 import scala.annotation.tailrec
@@ -101,8 +101,8 @@ object PropertyDetailsForms {
     mapping(
       "isPropertyRevalued" -> optional(boolean).verifying("ated.property-details-value.isPropertyRevalued.error.non-selected", x => x.isDefined),
       "revaluedValue" -> valueValidation,
-      "revaluedDate" -> dateTuple,
-      "partAcqDispDate" -> dateTuple
+      "revaluedDate" -> DateTupleCustomErrorImpl("error.invalid.date.format").dateTuple,
+      "partAcqDispDate" -> DateTupleCustomErrorImpl("error.invalid.date.format").dateTuple
     )(PropertyDetailsRevalued.apply)(PropertyDetailsRevalued.unapply))
 
   val propertyDetailsOwnedBeforeForm = Form(
@@ -124,10 +124,10 @@ object PropertyDetailsForms {
 
   val propertyDetailsNewBuildDatesForm = Form(
     mapping(
-      "newBuildOccupyDate" -> dateTuple
+      "newBuildOccupyDate" -> DateTupleCustomErrorImpl("error.invalid.date.format").dateTuple
         .verifying("ated.property-details-value-error.newBuildDates.invalidOccupiedDateError", x => x.isDefined)
         .verifying("ated.property-details-value-error.newBuildDates.futureOccupiedError", x => isInPast(x)),
-      "newBuildRegisterDate" -> dateTuple
+      "newBuildRegisterDate" -> DateTupleCustomErrorImpl("error.invalid.date.format").dateTuple
         .verifying("ated.property-details-value-error.newBuildDates.invalidRegDateError", x => x.isDefined)
         .verifying("ated.property-details-value-error.newBuildDates.futureRegError", x => isInPast(x))
     )(PropertyDetailsNewBuildDates.apply)(PropertyDetailsNewBuildDates.unapply)
@@ -147,7 +147,7 @@ object PropertyDetailsForms {
 
   val propertyDetailsWhenAcquiredDatesForm = Form(
     mapping(
-      "acquiredDate" -> dateTuple
+      "acquiredDate" -> DateTupleCustomErrorImpl("error.invalid.date.format").dateTuple
         .verifying("ated.property-details-value-error.whenAcquired.invalidDateError", x => x.isDefined)
         .verifying("ated.property-details-value-error.whenAcquired.futureDateError", x => isInPast(x))
     )(PropertyDetailsWhenAcquiredDates.apply)(PropertyDetailsWhenAcquiredDates.unapply)
@@ -166,8 +166,8 @@ object PropertyDetailsForms {
   )
   val periodDatesLiableForm: Form[PropertyDetailsDatesLiable] = Form(
     mapping(
-      "startDate" -> mandatoryDateTuple("ated.property-details-period.datesLiable.startDate.error.empty"),
-      "endDate" -> mandatoryDateTuple("ated.property-details-period.datesLiable.endDate.error.empty")
+      "startDate" -> DateTupleCustomErrorImpl("error.invalid.date.format").mandatoryDateTuple("ated.property-details-period.datesLiable.startDate.error.empty"),
+      "endDate" -> DateTupleCustomErrorImpl("error.invalid.date.format").mandatoryDateTuple("ated.property-details-period.datesLiable.endDate.error.empty")
     )(PropertyDetailsDatesLiable.apply)(PropertyDetailsDatesLiable.unapply)
   )
 
@@ -183,8 +183,8 @@ object PropertyDetailsForms {
 
   val periodInReliefDatesForm = Form(
     mapping(
-      "startDate" -> mandatoryDateTuple("ated.property-details-period.datesInRelief.startDate.error.empty"),
-      "endDate" -> mandatoryDateTuple("ated.property-details-period.datesInRelief.endDate.error.empty"),
+      "startDate" -> DateTupleCustomErrorImpl("error.invalid.date.format").mandatoryDateTuple("ated.property-details-period.datesInRelief.startDate.error.empty"),
+      "endDate" -> DateTupleCustomErrorImpl("error.invalid.date.format").mandatoryDateTuple("ated.property-details-period.datesInRelief.endDate.error.empty"),
       "description" -> optional(text)
     )(PropertyDetailsDatesInRelief.apply)(PropertyDetailsDatesInRelief.unapply)
   )
@@ -238,7 +238,6 @@ object PropertyDetailsForms {
   object PropertyValueField {
     def isValid(value: String): Boolean = Try(value.toLong).isSuccess
   }
-
 
   //scalastyle:off cyclomatic.complexity
   def validatePropertyDetailsRevalued(periodKey: Int, f: Form[PropertyDetailsRevalued]): Form[PropertyDetailsRevalued] = {
@@ -333,6 +332,5 @@ object PropertyDetailsForms {
 
     y(form, formErrors)
   }
-
 
 }

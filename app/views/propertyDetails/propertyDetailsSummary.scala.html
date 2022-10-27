@@ -525,7 +525,7 @@ backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages
                         attributes = Map("id" -> "submit-enabled")
                     ))
             } else {
-            <p id="submit-disabled-text">@messages("ated.property-details-summary.submit-disabled-text")</p>
+            <p id="submit-disabled-text" class="govuk-body">@messages("ated.property-details-summary.submit-disabled-text")</p>
             }
         }
     }

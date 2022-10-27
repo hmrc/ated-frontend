@@ -31,23 +31,15 @@ class ApplicationConfig @Inject()(val conf: ServicesConfig,
 
   private def loadConfig(key: String) = conf.getString(key)
 
-  private lazy val contactHost = conf.getString("contact-frontend.host")
   private lazy val helpAndContactFrontendUrl: String = conf.getString(Keys.helpAndContactFrontendBase)
 
-  val contactFormServiceIdentifier = "ATED"
   lazy val btaBaseUrl: String = conf.baseUrl(Keys.businessTaxAccountBase)
   lazy val btaHomeUrl: String = conf.getString(Keys.businessTaxAccountHost) + conf.getString(Keys.businessTaxAccountUrl)
   lazy val btaMessagesUrl: String = btaHomeUrl + conf.getString(Keys.businessTaxAccountMessagesUrl)
   lazy val btaManageAccountUrl: String = btaHomeUrl + conf.getString(Keys.businessTaxAccountManageAccountUrl)
   lazy val btaHelpAndContactUrl: String = helpAndContactFrontendUrl + conf.getString(Keys.helpAndContactHelpUrl)
-  lazy val assetsPrefix: String = loadConfig("assets.url") + loadConfig("assets.version")
-  lazy val betaFeedbackUrl = s"$contactHost/contact/beta-feedback"
-  lazy val betaFeedbackUnauthenticatedUrl = s"$contactHost/contact/beta-feedback-unauthenticated"
-  lazy val reportAProblemPartialUrl = s"$contactHost/contact/problem_reports_ajax?service=$contactFormServiceIdentifier"
-  lazy val reportAProblemNonJSUrl = s"$contactHost/contact/problem_reports_nonjs?service=$contactFormServiceIdentifier"
   lazy val atedFrontendHost: String = conf.getString("microservice.services.ated-frontend.host")
   lazy val defaultTimeoutSeconds: Int = loadConfig("defaultTimeoutSeconds").toInt
-  lazy val timeoutCountdown: Int = loadConfig("timeoutCountdown").toInt
   lazy val urBannerToggle: Boolean = loadConfig("urBanner.toggle").toBoolean
   lazy val urBannerLink: String = loadConfig("urBanner.link")
   lazy val serviceSignOut:String = loadConfig("service-signout.url")
