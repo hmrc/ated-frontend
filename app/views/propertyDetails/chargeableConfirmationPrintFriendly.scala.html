@@ -15,7 +15,7 @@
  *@
 
 @import config.ApplicationConfig
-@import uk.gov.hmrc.play.views.formatting.Money.pounds
+@import utils.Money._
 @(submittedReturnResponse: Option[SubmitReturnsResponse], organisationName: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 @import views.html.helpers._
 

@@ -240,6 +240,9 @@ object ReliefForms {
     val invalidDateErrorKey: String
     val dateTuple: Mapping[Option[LocalDate]] = dateTuple(validate = true)
 
+    def mandatoryDateTuple(error: String): Mapping[LocalDate] =
+      dateTuple.verifying(error, data => data.isDefined).transform(o => o.get, v => if (v == null) None else Some(v))
+
     def dateTuple(validate: Boolean = true): Mapping[Option[LocalDate]] =
       tuple(
         "year"  -> optional(text),

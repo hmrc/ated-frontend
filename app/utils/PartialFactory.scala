@@ -16,7 +16,7 @@
 
 package utils
 
-import models.requests.{ListLinks, NavContent, NavLinks}
+import models.requests.{ListLinks, NavContent}
 
 object PartialFactory {
 
