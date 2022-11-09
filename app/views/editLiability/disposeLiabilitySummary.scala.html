@@ -141,20 +141,20 @@
     attributes = Map("id" -> "property-details")
     ))
   </div>
-
+    <!--Bank account section-->
   <div class="govuk-form-group govuk-!-padding-top-4" id="cya-bank-details">
 
   @if(disposeLiability.bankDetails.map(_.hasBankDetails) == Some(true)) {
-
+    <!--Answered YES to Do you have a bank account-->
     <h2 id="bank-details-header" class="govuk-heading-m govuk-!-padding-bottom-4">@messages("ated.edit-liability.summary.bank-details.header")</h2>
 
     @if(!disposeLiability.bankDetails.flatMap(_.bankDetails).isDefined) {
-
+      <!--Enter your bank account not answered-->
       @govukSummaryList(SummaryList(
         rows = Seq(
           SummaryListRow(
             key = Key(
-              content = Text(messages("ated.edit-liability.summary.bank-details.type-of-account"))
+              content = Text(messages("ated.edit-liability.summary.bank-details.supply-bank-details"))
             ),
             value = Value(
               content = HtmlContent(incomplete)
@@ -164,7 +164,7 @@
                 ActionItem(
                   href = controllers.editLiability.routes.DisposeLiabilityBankDetailsController.editFromSummary(disposeLiability.id.toString).url,
                   content = HtmlContent(messages("ated.change")),
-                  visuallyHiddenText = Some(messages("ated.edit-liability.summary.bank-details.type-of-account"))
+                  visuallyHiddenText = Some(messages("ated.edit-liability.summary.bank-details.supply-bank-details"))
                 )
               )
             ))
@@ -176,15 +176,32 @@
     } else {
 
       @if(disposeLiability.bankDetails.flatMap(_.bankDetails.flatMap(_.hasUKBankAccount)) == Some(true)) {
-
+        <!--Has UK bank account-->
         @govukSummaryList(SummaryList(
           rows = Seq(
+          SummaryListRow(
+              key = Key(
+                content = Text(messages("ated.edit-liability.summary.bank-details.supply-bank-details"))
+              ),
+              value = Value(
+                content = Text(messages("ated.label.yes"))
+              ),
+              actions = Some(Actions(
+                items = Seq(
+                  ActionItem(
+                    href = controllers.editLiability.routes.DisposeLiabilityHasBankDetailsController.editFromSummary(disposeLiability.id.toString).url,
+                    content = HtmlContent(messages("ated.change")),
+                    visuallyHiddenText = Some(messages("ated.edit-liability.summary.bank-details.supply-bank-details"))
+                  )
+                )
+              ))
+            ),
             SummaryListRow(
               key = Key(
                 content = Text(messages("ated.edit-liability.summary.bank-details.type-of-account"))
               ),
               value = Value(
-                content = Text(messages("ated.label-bank-account-type.uk"))
+                content = Text(messages("ated.label.yes"))
               ),
               actions = Some(Actions(
                 items = Seq(
@@ -212,7 +229,6 @@
                   )
                 )
               ))
-
             ),
             SummaryListRow(
               key = Key(
@@ -252,15 +268,32 @@
           )
 
       } else {
-
+        <!--Has overseas bank account-->
         @govukSummaryList(SummaryList(
           rows = Seq(
+            SummaryListRow(
+              key = Key(
+                content = Text(messages("ated.edit-liability.summary.bank-details.supply-bank-details"))
+              ),
+              value = Value(
+                content = Text(messages("ated.label.yes"))
+              ),
+              actions = Some(Actions(
+                items = Seq(
+                  ActionItem(
+                    href = controllers.editLiability.routes.DisposeLiabilityHasBankDetailsController.editFromSummary(disposeLiability.id.toString).url,
+                    content = HtmlContent(messages("ated.change")),
+                    visuallyHiddenText = Some(messages("ated.edit-liability.summary.bank-details.supply-bank-details"))
+                  )
+                )
+              ))
+            ),
             SummaryListRow(
               key = Key(
                 content = Text(messages("ated.edit-liability.summary.bank-details.type-of-account"))
               ),
               value = Value(
-                content = HtmlContent(messages("ated.label-bank-account-type.overseas"))
+                content = HtmlContent(messages("ated.label.no"))
               ),
               actions = Some(Actions(
                 items = Seq(
@@ -331,33 +364,60 @@
 
   } else {
 
-    @if(!disposeLiability.bankDetails.isDefined) {
+    @if(disposeLiability.bankDetails.map(_.hasBankDetails) == Some(false)) {
+      <!--Answered NO to Do you have a bank account-->
+      <h2 id="bank-details-header-no-bank-account" class="govuk-heading-m govuk-!-padding-bottom-4">@messages("ated.edit-liability.summary.bank-details.header")</h2>
 
-    <h2 id="bank-details-header-incomplete" class="govuk-heading-m govuk-!-padding-bottom-4">@messages("ated.edit-liability.summary.bank-details.header")</h2>
-
-    @govukSummaryList(SummaryList(
-        rows = Seq(
-          SummaryListRow(
-            key = Key(
-              content = Text(messages("ated.edit-liability.summary.bank-details.supply-bank-details"))
-            ),
-            value = Value(
-              content = HtmlContent(incomplete)
-            ),
-            actions = Some(Actions(
-              items = Seq(
-                ActionItem(
-                  href = controllers.editLiability.routes.DisposeLiabilityHasBankDetailsController.editFromSummary(disposeLiability.id.toString).url,
-                  content = HtmlContent(messages("ated.change")),
-                  visuallyHiddenText = Some(messages("ated.edit-liability.summary.bank-details.supply-bank-details"))
+        @govukSummaryList(SummaryList(
+          rows = Seq(
+            SummaryListRow(
+              key = Key(
+                content = Text(messages("ated.edit-liability.summary.bank-details.supply-bank-details"))
+              ),
+              value = Value(
+                content = Text(messages("ated.label.no"))
+              ),
+              actions = Some(Actions(
+                items = Seq(
+                  ActionItem(
+                    href = controllers.editLiability.routes.DisposeLiabilityHasBankDetailsController.editFromSummary(disposeLiability.id.toString).url,
+                    content = HtmlContent(messages("ated.change")),
+                    visuallyHiddenText = Some(messages("ated.edit-liability.summary.bank-details.supply-bank-details"))
+                  )
                 )
-              )
-            ))
-          )
+              ))
+            )),
+            attributes = Map("id" -> "bank-details-answered-no"))
         )
-      ))
-    }
+    } else {
+      @if(!disposeLiability.bankDetails.isDefined) {
+          <!--Do you have a bank account not answered-->
+          <h2 id="bank-details-header-incomplete" class="govuk-heading-m govuk-!-padding-bottom-4">@messages("ated.edit-liability.summary.bank-details.header")</h2>
+
+          @govukSummaryList(SummaryList(
+              rows = Seq(
+                SummaryListRow(
+                  key = Key(
+                    content = Text(messages("ated.edit-liability.summary.bank-details.supply-bank-details"))
+                  ),
+                  value = Value(
+                    content = HtmlContent(incomplete)
+                  ),
+                  actions = Some(Actions(
+                    items = Seq(
+                      ActionItem(
+                        href = controllers.editLiability.routes.DisposeLiabilityHasBankDetailsController.editFromSummary(disposeLiability.id.toString).url,
+                        content = HtmlContent(messages("ated.change")),
+                        visuallyHiddenText = Some(messages("ated.edit-liability.summary.bank-details.supply-bank-details"))
+                      )
+                    )
+                  ))
+                )),
+                attributes = Map("id" -> "do-you-have-bank-account-incomplete"))
+          )
+      }
   }
+}
   </div>
 
   <div class="govuk-form-group govuk-!-padding-top-4" id="cya-return-status">

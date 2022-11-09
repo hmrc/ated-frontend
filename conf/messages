@@ -1025,7 +1025,7 @@ ated.bank-details.error-key.bicSwiftCode.invalid = The SWIFT code must be 8 or 1
 
 ated.edit-liability.summary.bank-details.header = Bank details
 ated.edit-liability.summary.bank-details.account-holder-name = Account holder name
-ated.edit-liability.summary.bank-details.type-of-account = Type of bank account
+ated.edit-liability.summary.bank-details.type-of-account = UK bank account
 ated.edit-liability.summary.bank-details.account-number = Account number
 ated.edit-liability.summary.bank-details.sort-code = Sort code
 ated.edit-liability.summary.bank-details.iban = IBAN
@@ -1034,7 +1034,7 @@ ated.edit-liability.summary.print.view = Print this return
 ated.edit-liability.summary.print.header = Further return for {0}
 ated.edit-liability.summary.bank-details.return-status.header = Return status
 ated.edit-liability.summary.bank-details.return-status.label = Status
-ated.edit-liability.summary.bank-details.supply-bank-details = Supply bank details
+ated.edit-liability.summary.bank-details.supply-bank-details = Bank account to pay a refund
 ated.label-bank-account-type.uk = UK
 ated.label-bank-account-type.overseas = Overseas
 
