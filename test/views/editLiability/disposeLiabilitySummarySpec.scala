@@ -41,11 +41,18 @@ class disposeLiabilitySummarySpec extends PlaySpec with GuiceOneAppPerSuite
   val injectedViewInstance: disposeLiabilitySummary = app.injector.instanceOf[views.html.editLiability.disposeLiabilitySummary]
 
   val bankDetailsYesButNoDetails: Option[BankDetailsModel] = Some(BankDetailsModel(hasBankDetails = true, bankDetails = None))
+  val bankDetailsHasNoBankAccount: Option[BankDetailsModel] = Some(BankDetailsModel(hasBankDetails = false))
   val completedBankDetails: Option[BankDetailsModel] = Some(BankDetailsModel(hasBankDetails = true,
     bankDetails = Some(BankDetails(hasUKBankAccount = Some(true),
       accountName = Some("Account name"),
       accountNumber = Some("12312312"),
       sortCode = Some(SortCode("12","12","12")))))
+  )
+  val completedBankDetailsOverseas: Option[BankDetailsModel] = Some(BankDetailsModel(hasBankDetails = true,
+    bankDetails = Some(BankDetails(hasUKBankAccount = Some(false),
+      accountName = Some("Overseas account name"),
+      iban = Some(Iban("111222333444555")),
+      bicSwiftCode = Some(BicSwiftCode("12345678999")))))
   )
 
   def disposeLiabilityReturn(bankDetails: Option[BankDetailsModel],
@@ -63,15 +70,17 @@ class disposeLiabilitySummarySpec extends PlaySpec with GuiceOneAppPerSuite
       "the user has not answered the bank details question" in {
         val html = injectedViewInstance(disposeLiabilityReturn(None), Html(""), Some("http://backLink"))
         val document = Jsoup.parse(html.toString())
-        assert(document.getElementsByClass("button").size() === 0)
+        assert(document.getElementsByClass("govuk-button").size() === 0)
+        assert(document.select("#do-you-have-bank-account-incomplete > div > dt").text() === "Bank account to pay a refund")
         assert(document.getElementsByClass("govuk-tag--red").text() === "INCOMPLETE")
       }
 
-      "the user has answered yes to the bank details question but not provided bank details" in {
+      "the user has answered YES to the bank details question but not provided bank details" in {
         val html = injectedViewInstance(disposeLiabilityReturn(bankDetailsYesButNoDetails),
             Html(""), Some("http://backLink"))
         val document = Jsoup.parse(html.toString())
-        assert(document.getElementsByClass("button").size() === 0)
+        assert(document.getElementsByClass("govuk-button").size() === 0)
+        assert(document.select("#account-type-incomplete > div > dt").text() === "Bank account to pay a refund")
         assert(document.getElementsByClass("govuk-tag--red").text() === "INCOMPLETE")
       }
     }
@@ -83,13 +92,57 @@ class disposeLiabilitySummarySpec extends PlaySpec with GuiceOneAppPerSuite
         val document = Jsoup.parse(html.toString())
         assert(document.getElementsByClass("govuk-button").size() === 1)
       }
+
+      "all required disposal details have been provided and the user has a UK bank account" in {
+        val html = injectedViewInstance(disposeLiabilityReturn(completedBankDetails),
+          Html(""), Some("http://backLink"))
+        val document = Jsoup.parse(html.toString())
+        assert(document.getElementsByClass("govuk-button").size() === 1)
+        assert(document.select("#bank-details-uk > div:nth-child(1) > dt").text() === "Bank account to pay a refund")
+        assert(document.select("#bank-details-uk > div:nth-child(1) > dd.govuk-summary-list__value").text() === "Yes")
+        assert(document.select("#bank-details-uk > div:nth-child(2) > dt").text() === "UK bank account")
+        assert(document.select("#bank-details-uk > div:nth-child(2) > dd.govuk-summary-list__value").text() === "Yes")
+        assert(document.select("#bank-details-uk > div:nth-child(3) > dt").text() === "Account holder name")
+        assert(document.select("#bank-details-uk > div:nth-child(3) > dd.govuk-summary-list__value").text() === "Account name")
+        assert(document.select("#bank-details-uk > div:nth-child(4) > dt").text() === "Account number")
+        assert(document.select("#bank-details-uk > div:nth-child(4) > dd.govuk-summary-list__value").text() === "12312312")
+        assert(document.select("#bank-details-uk > div:nth-child(5) > dt").text() === "Sort code")
+        assert(document.select("#bank-details-uk > div:nth-child(5) > dd.govuk-summary-list__value").text() === "12 - 12 - 12")
+      }
+
+      "all required disposal details have been provided and the user has an overseas bank account" in {
+        val html = injectedViewInstance(disposeLiabilityReturn(completedBankDetailsOverseas),
+          Html(""), Some("http://backLink"))
+        val document = Jsoup.parse(html.toString())
+        assert(document.getElementsByClass("govuk-button").size() === 1)
+        assert(document.select("#bank-details-overseas > div:nth-child(1) > dt").text() === "Bank account to pay a refund")
+        assert(document.select("#bank-details-overseas > div:nth-child(1) > dd.govuk-summary-list__value").text() === "Yes")
+        assert(document.select("#bank-details-overseas > div:nth-child(2) > dt").text() === "UK bank account")
+        assert(document.select("#bank-details-overseas > div:nth-child(2) > dd.govuk-summary-list__value").text() === "No")
+        assert(document.select("#bank-details-overseas > div:nth-child(3) > dt").text() === "Account holder name")
+        assert(document.select("#bank-details-overseas > div:nth-child(3) > dd.govuk-summary-list__value").text() === "Overseas account name")
+        assert(document.select("#bank-details-overseas > div:nth-child(4) > dt").text() === "IBAN")
+        assert(document.select("#bank-details-overseas > div:nth-child(4) > dd.govuk-summary-list__value").text() === "111222333444555")
+        assert(document.select("#bank-details-overseas > div:nth-child(5) > dt").text() === "SWIFT Code")
+        assert(document.select("#bank-details-overseas > div:nth-child(5) > dd.govuk-summary-list__value").text() === "1234 56 78 999")
+      }
+
+      "all required disposal details have been provided and the user has answered NO to the bank details question" in {
+        val html = injectedViewInstance(disposeLiabilityReturn(bankDetailsHasNoBankAccount),
+          Html(""), Some("http://backLink"))
+        val document = Jsoup.parse(html.toString())
+        assert(document.select("#bank-details-answered-no > div > dt").text() === "Bank account to pay a refund")
+        assert(document.select("#bank-details-answered-no > div > dd.govuk-summary-list__value").text() === "No")
+        assert(document.getElementsByClass("govuk-button").size() === 1)
+      }
     }
 
-    "show incomplete next to the disposal date" when {
+    "hide the submit button and show incomplete next to the disposal date" when {
       "the disposal date has not been provided" in {
         val html = injectedViewInstance(disposeLiabilityReturn(completedBankDetails, None),
           Html(""), Some("http://backLink"))
         val document = Jsoup.parse(html.toString())
+        assert(document.getElementsByClass("govuk-button").size() === 0)
         assert(document.getElementsByClass("govuk-tag--red").text() === "INCOMPLETE")
       }
     }
