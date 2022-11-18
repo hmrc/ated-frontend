@@ -24,7 +24,9 @@
         messages: Messages,
         request: Request[AnyContent],
         appConfig: ApplicationConfig)
+
 @incomplete = {<strong class="govuk-tag govuk-tag--red">@messages("ated.label.incomplete")</strong>}
+
 @printFriendly(messages("ated.property-details-summary.title")) {
 
 <script src='@controllers.routes.Assets.versioned("javascript/printFriendly.js")'></script>
@@ -60,7 +62,12 @@
 
         <tr class="govuk-table__row">
             <th scope="row" id="property-title-disposal-date-label" class="govuk-table__header">@messages("ated.dispose-property.summary.disposal-date-label")</th>
-            <td class="govuk-table__cell" id="property-title-disposal-date">@disposeLiability.disposeLiability.flatMap(x => x.dateOfDisposal.map(y => y.toString(messages("ated.date-format"))))</td>
+
+            @if(!disposeLiability.disposeLiability.flatMap(_.dateOfDisposal).isDefined) {
+                 <td class="govuk-table__cell" id="property-title-disposal-date-incomplete">@incomplete</td>
+                } else {
+                <td class="govuk-table__cell" id="property-title-disposal-date">@disposeLiability.disposeLiability.flatMap(x => x.dateOfDisposal.map(y => y.toString(messages("ated.date-format"))))</td>
+                }
         </tr>
     </tbody>
 
@@ -103,7 +110,7 @@
                       <th id="sort-code-label" scope="row" class="govuk-table__header">@messages("ated.edit-liability.summary.bank-details.sort-code")</th>
                       <td class="govuk-table__cell" id="sort-code-value">@disposeLiability.bankDetails.flatMap(_.bankDetails.map(_.sortCode))</td>
                     </tr>
-                }else {
+                } else {
 
                     <tr class="govuk-table__row">
                         <th id="bank-account-supplied-label" scope="row" class="govuk-table__header">@messages("ated.edit-liability.summary.bank-details.supply-bank-details")</th>

@@ -1036,7 +1036,6 @@ ated.edit-liability.summary.bank-details.return-status.header = Return status
 ated.edit-liability.summary.bank-details.return-status.label = Status
 ated.edit-liability.summary.bank-details.supply-bank-details = Bank account to pay a refund
 ated.label-bank-account-type.uk = UK
-ated.label-bank-account-type.overseas = Overseas
 
 ##### DISPOSE LIABILITY DATE OF DISPOSAL PAGE
 
