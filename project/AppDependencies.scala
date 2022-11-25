@@ -13,7 +13,7 @@ object AppDependencies {
     "uk.gov.hmrc"       %% "domain"                     % "8.1.0-play-28",
     "uk.gov.hmrc"       %% "http-caching-client"        % "9.6.0-play-28",
     "com.typesafe.play" %% "play-json-joda"             % "2.9.3",
-    "uk.gov.hmrc"       %% "play-frontend-hmrc"         % "3.32.0-play-28"
+    "uk.gov.hmrc"       %% "play-frontend-hmrc"         % "3.34.0-play-28"
   )
 
   trait TestDependencies {
@@ -26,14 +26,13 @@ object AppDependencies {
       override lazy val test: Seq[ModuleID] = Seq(
         "uk.gov.hmrc"                  %% "bootstrap-test-play-28"      % "5.25.0"            % scope,
         "org.scalatestplus.play"       %% "scalatestplus-play"          % "5.1.0"             % scope,
-        "org.pegdown"                  %  "pegdown"                     % "1.6.0"             % scope,
         "org.jsoup"                    %  "jsoup"                       % "1.15.3"            % scope,
         "com.typesafe.play"            %% "play-test"                   % PlayVersion.current % scope,
         "org.scalatestplus"            %% "mockito-3-12"                % "3.2.10.0"          % scope,
-        "org.mockito"                  %  "mockito-core"                % "4.8.1"             % scope,
+        "org.mockito"                  %  "mockito-core"                % "4.9.0"             % scope,
         "com.github.tomakehurst"       %  "wiremock-jre8"               % "2.35.0"            % scope,
         "org.scalamock"                %% "scalamock-scalatest-support" % "3.6.0"             % scope,
-        "com.fasterxml.jackson.module" %% "jackson-module-scala"        % "2.14.0"            % scope
+        "com.fasterxml.jackson.module" %% "jackson-module-scala"        % "2.14.1"            % scope
       )
     }.test
   }
