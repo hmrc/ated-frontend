@@ -23,13 +23,15 @@
 @(overseasCompanyRegistrationForm: Form[models.OverseasCompanyRegistration], listOfIsoCode: List[(String, String)], serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
 @pageScripts = {
-    <script src='@controllers.routes.Assets.versioned("javascript/autocomplete.min.js")'></script>
-        <script>
-            accessibleAutocomplete.enhanceSelectElement({
-                defaultValue: '',
-                selectElement: document.querySelector('#countryCode')
-            });
-        </script>
+
+    <script type="text/javascript" src='@controllers.routes.Assets.versioned("javascript/location-autocomplete.min.js")'></script>
+    <script type="text/javascript">
+      openregisterLocationPicker({
+        defaultValue: '',
+        selectElement: document.getElementById('countryCode'),
+        url: '@controllers.routes.Assets.versioned("location-autocomplete-graph.json")'
+      })
+    </script>
 }
 
 @backLinkHtml = {

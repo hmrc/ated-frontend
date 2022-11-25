@@ -1,0 +1,7556 @@
+{
+  "country:AF": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Afghanistan"
+    }
+  },
+  "country:AL": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Albania"
+    }
+  },
+  "country:DZ": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Algeria"
+    }
+  },
+  "country:AS": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "American Samoa"
+    }
+  },
+  "country:AD": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Andorra"
+    }
+  },
+  "country:AO": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Angola"
+    }
+  },
+  "country:AI": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Anguilla"
+    }
+  },
+  "country:AQ": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Antarctica"
+    }
+  },
+  "country:AG": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Antigua and Barbuda"
+    }
+  },
+  "country:AR": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Argentina"
+    }
+  },
+  "country:AM": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Armenia"
+    }
+  },
+  "country:AW": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Aruba"
+    }
+  },
+  "country:AU": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Australia"
+    }
+  },
+  "country:AT": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Austria"
+    }
+  },
+  "country:AZ": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Azerbaijan"
+    }
+  },
+  "country:BS": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Bahamas (the)"
+    }
+  },
+  "country:BH": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Bahrain"
+    }
+  },
+  "country:BD": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Bangladesh"
+    }
+  },
+  "country:BB": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Barbados"
+    }
+  },
+  "country:BY": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Belarus"
+    }
+  },
+  "country:BE": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Belgium"
+    }
+  },
+  "country:BZ": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Belize"
+    }
+  },
+  "country:BJ": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Benin"
+    }
+  },
+  "country:BM": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Bermuda"
+    }
+  },
+  "country:BT": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Bhutan"
+    }
+  },
+  "country:BO": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Bolivia (Plurinational State of)"
+    }
+  },
+  "country:BQ": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Bonaire, Sint Eustatius and Saba"
+    }
+  },
+  "country:BA": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Bosnia and Herzegovina"
+    }
+  },
+  "country:BW": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Botswana"
+    }
+  },
+  "country:BV": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Bouvet Island"
+    }
+  },
+  "country:BR": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Brazil"
+    }
+  },
+  "country:IO": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "British Indian Ocean Territory (the)"
+    }
+  },
+  "country:BN": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Brunei Darussalam"
+    }
+  },
+  "country:BG": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Bulgaria"
+    }
+  },
+  "country:BF": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Burkina Faso"
+    }
+  },
+  "country:BI": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Burundi"
+    }
+  },
+  "country:CV": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Cabo Verde"
+    }
+  },
+  "country:KH": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Cambodia"
+    }
+  },
+  "country:CM": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Cameroon"
+    }
+  },
+  "country:CA": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Canada"
+    }
+  },
+  "country:KY": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Cayman Islands (the)"
+    }
+  },
+  "country:CF": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Central African Republic (the)"
+    }
+  },
+  "country:TD": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Chad"
+    }
+  },
+  "country:CL": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Chile"
+    }
+  },
+  "country:CN": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "China"
+    }
+  },
+  "country:CX": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Christmas Island"
+    }
+  },
+  "country:CC": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Cocos (Keeling) Islands (the)"
+    }
+  },
+  "country:CO": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Colombia"
+    }
+  },
+  "country:KM": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Comoros (the)"
+    }
+  },
+  "country:CD": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Congo (the Democratic Republic of the)"
+    }
+  },
+  "country:CG": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Congo (the)"
+    }
+  },
+  "country:CK": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Cook Islands (the)"
+    }
+  },
+  "country:CR": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Costa Rica"
+    }
+  },
+  "country:HR": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Croatia"
+    }
+  },
+  "country:CU": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Cuba"
+    }
+  },
+  "country:CW": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Curaçao"
+    }
+  },
+  "country:CY": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Cyprus"
+    }
+  },
+  "country:CZ": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Czechia"
+    }
+  },
+  "country:CI": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Côte d'Ivoire"
+    }
+  },
+  "country:DK": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Denmark"
+    }
+  },
+  "country:DJ": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Djibouti"
+    }
+  },
+  "country:DM": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Dominica"
+    }
+  },
+  "country:DO": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Dominican Republic (the)"
+    }
+  },
+  "country:EC": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Ecuador"
+    }
+  },
+  "country:EG": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Egypt"
+    }
+  },
+  "country:SV": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "El Salvador"
+    }
+  },
+  "country:GQ": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Equatorial Guinea"
+    }
+  },
+  "country:ER": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Eritrea"
+    }
+  },
+  "country:EE": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Estonia"
+    }
+  },
+  "country:SZ": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Eswatini"
+    }
+  },
+  "country:ET": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Ethiopia"
+    }
+  },
+  "country:FK": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Falkland Islands (the) [Malvinas]"
+    }
+  },
+  "country:FO": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Faroe Islands (the)"
+    }
+  },
+  "country:FJ": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Fiji"
+    }
+  },
+  "country:FI": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Finland"
+    }
+  },
+  "country:FR": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "France"
+    }
+  },
+  "country:GF": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "French Guiana"
+    }
+  },
+  "country:PF": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "French Polynesia"
+    }
+  },
+  "country:TF": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "French Southern Territories (the)"
+    }
+  },
+  "country:GA": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Gabon"
+    }
+  },
+  "country:GM": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Gambia (the)"
+    }
+  },
+  "country:GE": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Georgia"
+    }
+  },
+  "country:DE": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Germany"
+    }
+  },
+  "country:GH": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Ghana"
+    }
+  },
+  "country:GI": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Gibraltar"
+    }
+  },
+  "country:GR": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Greece"
+    }
+  },
+  "country:GL": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Greenland"
+    }
+  },
+  "country:GD": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Grenada"
+    }
+  },
+  "country:GP": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Guadeloupe"
+    }
+  },
+  "country:GU": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Guam"
+    }
+  },
+  "country:GT": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Guatemala"
+    }
+  },
+  "country:GG": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Guernsey"
+    }
+  },
+  "country:GN": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Guinea"
+    }
+  },
+  "country:GW": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Guinea-Bissau"
+    }
+  },
+  "country:GY": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Guyana"
+    }
+  },
+  "country:HT": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Haiti"
+    }
+  },
+  "country:HM": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Heard Island and McDonald Islands"
+    }
+  },
+  "country:VA": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Holy See (the)"
+    }
+  },
+  "country:HN": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Honduras"
+    }
+  },
+  "country:HK": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Hong Kong"
+    }
+  },
+  "country:HU": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Hungary"
+    }
+  },
+  "country:IS": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Iceland"
+    }
+  },
+  "country:IN": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "India"
+    }
+  },
+  "country:ID": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Indonesia"
+    }
+  },
+  "country:IR": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Iran (Islamic Republic of)"
+    }
+  },
+  "country:IQ": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Iraq"
+    }
+  },
+  "country:IE": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Ireland"
+    }
+  },
+  "country:IM": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Isle of Man"
+    }
+  },
+  "country:IL": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Israel"
+    }
+  },
+  "country:IT": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Italy"
+    }
+  },
+  "country:JM": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Jamaica"
+    }
+  },
+  "country:JP": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Japan"
+    }
+  },
+  "country:JE": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Jersey"
+    }
+  },
+  "country:JO": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Jordan"
+    }
+  },
+  "country:KZ": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Kazakhstan"
+    }
+  },
+  "country:KE": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Kenya"
+    }
+  },
+  "country:KI": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Kiribati"
+    }
+  },
+  "country:KP": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Korea (the Democratic People's Republic of)"
+    }
+  },
+  "country:KR": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Korea (the Republic of)"
+    }
+  },
+  "country:KW": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Kuwait"
+    }
+  },
+  "country:KG": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Kyrgyzstan"
+    }
+  },
+  "country:LA": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Lao People's Democratic Republic (the)"
+    }
+  },
+  "country:LV": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Latvia"
+    }
+  },
+  "country:LB": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Lebanon"
+    }
+  },
+  "country:LS": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Lesotho"
+    }
+  },
+  "country:LR": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Liberia"
+    }
+  },
+  "country:LY": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Libya"
+    }
+  },
+  "country:LI": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Liechtenstein"
+    }
+  },
+  "country:LT": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Lithuania"
+    }
+  },
+  "country:LU": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Luxembourg"
+    }
+  },
+  "country:MO": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Macao"
+    }
+  },
+  "country:MG": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Madagascar"
+    }
+  },
+  "country:MW": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Malawi"
+    }
+  },
+  "country:MY": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Malaysia"
+    }
+  },
+  "country:MV": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Maldives"
+    }
+  },
+  "country:ML": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Mali"
+    }
+  },
+  "country:MT": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Malta"
+    }
+  },
+  "country:MH": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Marshall Islands (the)"
+    }
+  },
+  "country:MQ": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Martinique"
+    }
+  },
+  "country:MR": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Mauritania"
+    }
+  },
+  "country:MU": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Mauritius"
+    }
+  },
+  "country:YT": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Mayotte"
+    }
+  },
+  "country:MX": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Mexico"
+    }
+  },
+  "country:FM": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Micronesia (Federated States of)"
+    }
+  },
+  "country:MD": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Moldova (the Republic of)"
+    }
+  },
+  "country:MC": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Monaco"
+    }
+  },
+  "country:MN": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Mongolia"
+    }
+  },
+  "country:ME": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Montenegro"
+    }
+  },
+  "country:MS": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Montserrat"
+    }
+  },
+  "country:MA": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Morocco"
+    }
+  },
+  "country:MZ": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Mozambique"
+    }
+  },
+  "country:MM": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Myanmar"
+    }
+  },
+  "country:NA": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Namibia"
+    }
+  },
+  "country:NR": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Nauru"
+    }
+  },
+  "country:NP": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Nepal"
+    }
+  },
+  "country:NL": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Netherlands (the)"
+    }
+  },
+  "country:NC": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "New Caledonia"
+    }
+  },
+  "country:NZ": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "New Zealand"
+    }
+  },
+  "country:NI": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Nicaragua"
+    }
+  },
+  "country:NE": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Niger (the)"
+    }
+  },
+  "country:NG": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Nigeria"
+    }
+  },
+  "country:NU": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Niue"
+    }
+  },
+  "country:NF": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Norfolk Island"
+    }
+  },
+  "country:MK": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "North Macedonia"
+    }
+  },
+  "country:MP": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Northern Mariana Islands (the)"
+    }
+  },
+  "country:NO": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Norway"
+    }
+  },
+  "country:OM": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Oman"
+    }
+  },
+  "country:PK": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Pakistan"
+    }
+  },
+  "country:PW": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Palau"
+    }
+  },
+  "country:PS": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Palestine, State of"
+    }
+  },
+  "country:PA": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Panama"
+    }
+  },
+  "country:PG": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Papua New Guinea"
+    }
+  },
+  "country:PY": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Paraguay"
+    }
+  },
+  "country:PE": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Peru"
+    }
+  },
+  "country:PH": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Philippines (the)"
+    }
+  },
+  "country:PN": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Pitcairn"
+    }
+  },
+  "country:PL": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Poland"
+    }
+  },
+  "country:PT": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Portugal"
+    }
+  },
+  "country:PR": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Puerto Rico"
+    }
+  },
+  "country:QA": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Qatar"
+    }
+  },
+  "country:RO": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Romania"
+    }
+  },
+  "country:RU": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Russian Federation (the)"
+    }
+  },
+  "country:RW": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Rwanda"
+    }
+  },
+  "country:RE": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Réunion"
+    }
+  },
+  "country:BL": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Saint Barthélemy"
+    }
+  },
+  "country:SH": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Saint Helena, Ascension and Tristan da Cunha"
+    }
+  },
+  "country:KN": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Saint Kitts and Nevis"
+    }
+  },
+  "country:LC": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Saint Lucia"
+    }
+  },
+  "country:MF": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Saint Martin (French part)"
+    }
+  },
+  "country:PM": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Saint Pierre and Miquelon"
+    }
+  },
+  "country:VC": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Saint Vincent and the Grenadines"
+    }
+  },
+  "country:WS": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Samoa"
+    }
+  },
+  "country:SM": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "San Marino"
+    }
+  },
+  "country:ST": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Sao Tome and Principe"
+    }
+  },
+  "country:SA": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Saudi Arabia"
+    }
+  },
+  "country:SN": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Senegal"
+    }
+  },
+  "country:RS": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Serbia"
+    }
+  },
+  "country:SC": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Seychelles"
+    }
+  },
+  "country:SL": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Sierra Leone"
+    }
+  },
+  "country:SG": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Singapore"
+    }
+  },
+  "country:SX": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Sint Maarten (Dutch part)"
+    }
+  },
+  "country:SK": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Slovakia"
+    }
+  },
+  "country:SI": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Slovenia"
+    }
+  },
+  "country:SB": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Solomon Islands"
+    }
+  },
+  "country:SO": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Somalia"
+    }
+  },
+  "country:ZA": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "South Africa"
+    }
+  },
+  "country:GS": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "South Georgia and the South Sandwich Islands"
+    }
+  },
+  "country:SS": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "South Sudan"
+    }
+  },
+  "country:ES": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Spain"
+    }
+  },
+  "country:LK": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Sri Lanka"
+    }
+  },
+  "country:SD": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Sudan (the)"
+    }
+  },
+  "country:SR": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Suriname"
+    }
+  },
+  "country:SJ": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Svalbard and Jan Mayen"
+    }
+  },
+  "country:SE": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Sweden"
+    }
+  },
+  "country:CH": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Switzerland"
+    }
+  },
+  "country:SY": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Syrian Arab Republic (the)"
+    }
+  },
+  "country:TW": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Taiwan (Province of China)"
+    }
+  },
+  "country:TJ": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Tajikistan"
+    }
+  },
+  "country:TZ": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Tanzania, the United Republic of"
+    }
+  },
+  "country:TH": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Thailand"
+    }
+  },
+  "country:TL": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Timor-Leste"
+    }
+  },
+  "country:TG": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Togo"
+    }
+  },
+  "country:TK": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Tokelau"
+    }
+  },
+  "country:TO": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Tonga"
+    }
+  },
+  "country:TT": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Trinidad and Tobago"
+    }
+  },
+  "country:TN": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Tunisia"
+    }
+  },
+  "country:TM": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Turkmenistan"
+    }
+  },
+  "country:TC": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Turks and Caicos Islands (the)"
+    }
+  },
+  "country:TV": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Tuvalu"
+    }
+  },
+  "country:TR": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Türkiye"
+    }
+  },
+  "country:UG": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Uganda"
+    }
+  },
+  "country:UA": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Ukraine"
+    }
+  },
+  "country:AE": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "United Arab Emirates (the)"
+    }
+  },
+  "country:GB": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "United Kingdom of Great Britain and Northern Ireland (the)"
+    }
+  },
+  "country:UM": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "United States Minor Outlying Islands (the)"
+    }
+  },
+  "country:US": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "United States of America (the)"
+    }
+  },
+  "country:UY": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Uruguay"
+    }
+  },
+  "country:UZ": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Uzbekistan"
+    }
+  },
+  "country:VU": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Vanuatu"
+    }
+  },
+  "country:VE": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Venezuela (Bolivarian Republic of)"
+    }
+  },
+  "country:VN": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Viet Nam"
+    }
+  },
+  "country:VG": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Virgin Islands (British)"
+    }
+  },
+  "country:VI": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Virgin Islands (U.S.)"
+    }
+  },
+  "country:WF": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Wallis and Futuna"
+    }
+  },
+  "country:EH": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Western Sahara"
+    }
+  },
+  "country:YE": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Yemen"
+    }
+  },
+  "country:ZM": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Zambia"
+    }
+  },
+  "country:ZW": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Zimbabwe"
+    }
+  },
+  "country:AX": {
+    "edges": {
+      "from": [
+      ]
+    },
+    "meta": {
+      "canonical": true,
+      "canonical-mask": 1,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Åland Islands"
+    }
+  },
+  "nym:AX": {
+    "edges": {
+      "from": [
+        "country:AX"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "AX"
+    }
+  },
+  "nym:Aland Islands": {
+    "edges": {
+      "from": [
+        "country:AX"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": false,
+      "stable-name": false
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Aland Islands"
+    }
+  },
+  "nym:DZ": {
+    "edges": {
+      "from": [
+        "country:DZ"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "DZ"
+    }
+  },
+  "nym:AS": {
+    "edges": {
+      "from": [
+        "country:AS"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "AS"
+    }
+  },
+  "nym:AD": {
+    "edges": {
+      "from": [
+        "country:AD"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "AD"
+    }
+  },
+  "nym:AO": {
+    "edges": {
+      "from": [
+        "country:AO"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "AO"
+    }
+  },
+  "nym:AI": {
+    "edges": {
+      "from": [
+        "country:AI"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "AI"
+    }
+  },
+  "nym:AQ": {
+    "edges": {
+      "from": [
+        "country:AQ"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "AQ"
+    }
+  },
+  "nym:AG": {
+    "edges": {
+      "from": [
+        "country:AG"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "AG"
+    }
+  },
+  "nym:AM": {
+    "edges": {
+      "from": [
+        "country:AM"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "AM"
+    }
+  },
+  "nym:AW": {
+    "edges": {
+      "from": [
+        "country:AW"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "AW"
+    }
+  },
+  "nym:AT": {
+    "edges": {
+      "from": [
+        "country:AT"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "AT"
+    }
+  },
+  "nym:BS": {
+    "edges": {
+      "from": [
+        "country:BS"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "BS"
+    }
+  },
+  "nym:BH": {
+    "edges": {
+      "from": [
+        "country:BH"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "BH"
+    }
+  },
+  "nym:BD": {
+    "edges": {
+      "from": [
+        "country:BD"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "BD"
+    }
+  },
+  "nym:BB": {
+    "edges": {
+      "from": [
+        "country:BB"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "BB"
+    }
+  },
+  "nym:BY": {
+    "edges": {
+      "from": [
+        "country:BY"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "BY"
+    }
+  },
+  "nym:BZ": {
+    "edges": {
+      "from": [
+        "country:BZ"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "BZ"
+    }
+  },
+  "nym:BJ": {
+    "edges": {
+      "from": [
+        "country:BJ"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "BJ"
+    }
+  },
+  "nym:BM": {
+    "edges": {
+      "from": [
+        "country:BM"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "BM"
+    }
+  },
+  "nym:BT": {
+    "edges": {
+      "from": [
+        "country:BT"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "BT"
+    }
+  },
+  "nym:BQ": {
+    "edges": {
+      "from": [
+        "country:BQ"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "BQ"
+    }
+  },
+  "nym:BA": {
+    "edges": {
+      "from": [
+        "country:BA"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "BA"
+    }
+  },
+  "nym:BW": {
+    "edges": {
+      "from": [
+        "country:BW"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "BW"
+    }
+  },
+  "nym:BV": {
+    "edges": {
+      "from": [
+        "country:BV"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "BV"
+    }
+  },
+  "nym:IO": {
+    "edges": {
+      "from": [
+        "country:IO"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "IO"
+    }
+  },
+  "nym:BN": {
+    "edges": {
+      "from": [
+        "country:BN"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "BN"
+    }
+  },
+  "nym:BG": {
+    "edges": {
+      "from": [
+        "country:BG"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "BG"
+    }
+  },
+  "nym:BF": {
+    "edges": {
+      "from": [
+        "country:BF"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "BF"
+    }
+  },
+  "nym:BI": {
+    "edges": {
+      "from": [
+        "country:BI"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "BI"
+    }
+  },
+  "nym:CV": {
+    "edges": {
+      "from": [
+        "country:CV"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "CV"
+    }
+  },
+  "nym:KH": {
+    "edges": {
+      "from": [
+        "country:KH"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "KH"
+    }
+  },
+  "nym:CM": {
+    "edges": {
+      "from": [
+        "country:CM"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "CM"
+    }
+  },
+  "nym:KY": {
+    "edges": {
+      "from": [
+        "country:KY"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "KY"
+    }
+  },
+  "nym:CF": {
+    "edges": {
+      "from": [
+        "country:CF"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "CF"
+    }
+  },
+  "nym:TD": {
+    "edges": {
+      "from": [
+        "country:TD"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "TD"
+    }
+  },
+  "nym:CL": {
+    "edges": {
+      "from": [
+        "country:CL"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "CL"
+    }
+  },
+  "nym:CN": {
+    "edges": {
+      "from": [
+        "country:CN"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "CN"
+    }
+  },
+  "nym:CX": {
+    "edges": {
+      "from": [
+        "country:CX"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "CX"
+    }
+  },
+  "nym:CC": {
+    "edges": {
+      "from": [
+        "country:CC"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "CC"
+    }
+  },
+  "nym:KM": {
+    "edges": {
+      "from": [
+        "country:KM"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "KM"
+    }
+  },
+  "nym:CD": {
+    "edges": {
+      "from": [
+        "country:CD"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "CD"
+    }
+  },
+  "nym:CG": {
+    "edges": {
+      "from": [
+        "country:CG"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "CG"
+    }
+  },
+  "nym:CK": {
+    "edges": {
+      "from": [
+        "country:CK"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "CK"
+    }
+  },
+  "nym:CR": {
+    "edges": {
+      "from": [
+        "country:CR"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "CR"
+    }
+  },
+  "nym:HR": {
+    "edges": {
+      "from": [
+        "country:HR"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "HR"
+    }
+  },
+  "nym:CW": {
+    "edges": {
+      "from": [
+        "country:CW"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "CW"
+    }
+  },
+  "nym:Curacao": {
+    "edges": {
+      "from": [
+        "country:CW"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": false,
+      "stable-name": false
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Curacao"
+    }
+  },
+  "nym:CI": {
+    "edges": {
+      "from": [
+        "country:CI"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "CI"
+    }
+  },
+  "nym:Cote": {
+    "edges": {
+      "from": [
+        "country:CI"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": false,
+      "stable-name": false
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Cote"
+    }
+  },
+  "nym:Ivory Coast": {
+    "edges": {
+      "from": [
+        "country:CI"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": false,
+      "stable-name": false
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Ivory Coast"
+    }
+  },
+  "nym:DK": {
+    "edges": {
+      "from": [
+        "country:DK"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "DK"
+    }
+  },
+  "nym:DM": {
+    "edges": {
+      "from": [
+        "country:DM"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "DM"
+    }
+  },
+  "nym:SV": {
+    "edges": {
+      "from": [
+        "country:SV"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "SV"
+    }
+  },
+  "nym:GQ": {
+    "edges": {
+      "from": [
+        "country:GQ"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "GQ"
+    }
+  },
+  "nym:EE": {
+    "edges": {
+      "from": [
+        "country:EE"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "EE"
+    }
+  },
+  "nym:SZ": {
+    "edges": {
+      "from": [
+        "country:SZ"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "SZ"
+    }
+  },
+  "nym:FK": {
+    "edges": {
+      "from": [
+        "country:FK"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "FK"
+    }
+  },
+  "nym:FO": {
+    "edges": {
+      "from": [
+        "country:FO"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "FO"
+    }
+  },
+  "nym:FJ": {
+    "edges": {
+      "from": [
+        "country:FJ"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "FJ"
+    }
+  },
+  "nym:GF": {
+    "edges": {
+      "from": [
+        "country:GF"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "GF"
+    }
+  },
+  "nym:PF": {
+    "edges": {
+      "from": [
+        "country:PF"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "PF"
+    }
+  },
+  "nym:TF": {
+    "edges": {
+      "from": [
+        "country:TF"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "TF"
+    }
+  },
+  "nym:GM": {
+    "edges": {
+      "from": [
+        "country:GM"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "GM"
+    }
+  },
+  "nym:DE": {
+    "edges": {
+      "from": [
+        "country:DE"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "DE"
+    }
+  },
+  "nym:GL": {
+    "edges": {
+      "from": [
+        "country:GL"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "GL"
+    }
+  },
+  "nym:GD": {
+    "edges": {
+      "from": [
+        "country:GD"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "GD"
+    }
+  },
+  "nym:GP": {
+    "edges": {
+      "from": [
+        "country:GP"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "GP"
+    }
+  },
+  "nym:GT": {
+    "edges": {
+      "from": [
+        "country:GT"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "GT"
+    }
+  },
+  "nym:GG": {
+    "edges": {
+      "from": [
+        "country:GG"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "GG"
+    }
+  },
+  "nym:GN": {
+    "edges": {
+      "from": [
+        "country:GN"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "GN"
+    }
+  },
+  "nym:GW": {
+    "edges": {
+      "from": [
+        "country:GW"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "GW"
+    }
+  },
+  "nym:GY": {
+    "edges": {
+      "from": [
+        "country:GY"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "GY"
+    }
+  },
+  "nym:HT": {
+    "edges": {
+      "from": [
+        "country:HT"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "HT"
+    }
+  },
+  "nym:HM": {
+    "edges": {
+      "from": [
+        "country:HM"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "HM"
+    }
+  },
+  "nym:VA": {
+    "edges": {
+      "from": [
+        "country:VA"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "VA"
+    }
+  },
+  "nym:HN": {
+    "edges": {
+      "from": [
+        "country:HN"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "HN"
+    }
+  },
+  "nym:HK": {
+    "edges": {
+      "from": [
+        "country:HK"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "HK"
+    }
+  },
+  "nym:IS": {
+    "edges": {
+      "from": [
+        "country:IS"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "IS"
+    }
+  },
+  "nym:ID": {
+    "edges": {
+      "from": [
+        "country:ID"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "ID"
+    }
+  },
+  "nym:IQ": {
+    "edges": {
+      "from": [
+        "country:IQ"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "IQ"
+    }
+  },
+  "nym:IE": {
+    "edges": {
+      "from": [
+        "country:IE"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "IE"
+    }
+  },
+  "nym:IM": {
+    "edges": {
+      "from": [
+        "country:IM"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "IM"
+    }
+  },
+  "nym:IL": {
+    "edges": {
+      "from": [
+        "country:IL"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "IL"
+    }
+  },
+  "nym:JM": {
+    "edges": {
+      "from": [
+        "country:JM"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "JM"
+    }
+  },
+  "nym:JP": {
+    "edges": {
+      "from": [
+        "country:JP"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "JP"
+    }
+  },
+  "nym:KZ": {
+    "edges": {
+      "from": [
+        "country:KZ"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "KZ"
+    }
+  },
+  "nym:KP": {
+    "edges": {
+      "from": [
+        "country:KP"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "KP"
+    }
+  },
+  "nym:KR": {
+    "edges": {
+      "from": [
+        "country:KR"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "KR"
+    }
+  },
+  "nym:KW": {
+    "edges": {
+      "from": [
+        "country:KW"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "KW"
+    }
+  },
+  "nym:KG": {
+    "edges": {
+      "from": [
+        "country:KG"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "KG"
+    }
+  },
+  "nym:LV": {
+    "edges": {
+      "from": [
+        "country:LV"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "LV"
+    }
+  },
+  "nym:LB": {
+    "edges": {
+      "from": [
+        "country:LB"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "LB"
+    }
+  },
+  "nym:LS": {
+    "edges": {
+      "from": [
+        "country:LS"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "LS"
+    }
+  },
+  "nym:LR": {
+    "edges": {
+      "from": [
+        "country:LR"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "LR"
+    }
+  },
+  "nym:LY": {
+    "edges": {
+      "from": [
+        "country:KY"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "LY"
+    }
+  },
+  "nym:LT": {
+    "edges": {
+      "from": [
+        "country:LT"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "LT"
+    }
+  },
+  "nym:MO": {
+    "edges": {
+      "from": [
+        "country:MO"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "MO"
+    }
+  },
+  "nym:MG": {
+    "edges": {
+      "from": [
+        "country:MG"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "MG"
+    }
+  },
+  "nym:MW": {
+    "edges": {
+      "from": [
+        "country:MW"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "MW"
+    }
+  },
+  "nym:MY": {
+    "edges": {
+      "from": [
+        "country:MY"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "MY"
+    }
+  },
+  "nym:MV": {
+    "edges": {
+      "from": [
+        "country:MV"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "MV"
+    }
+  },
+  "nym:ML": {
+    "edges": {
+      "from": [
+        "country:ML"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "ML"
+    }
+  },
+  "nym:MT": {
+    "edges": {
+      "from": [
+        "country:MT"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "MT"
+    }
+  },
+  "nym:MH": {
+    "edges": {
+      "from": [
+        "country:MH"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "MH"
+    }
+  },
+  "nym:MQ": {
+    "edges": {
+      "from": [
+        "country:MQ"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "MQ"
+    }
+  },
+  "nym:MR": {
+    "edges": {
+      "from": [
+        "country:MR"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "MR"
+    }
+  },
+  "nym:MU": {
+    "edges": {
+      "from": [
+        "country:MU"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "MU"
+    }
+  },
+  "nym:YT": {
+    "edges": {
+      "from": [
+        "country:YT"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "YT"
+    }
+  },
+  "nym:MX": {
+    "edges": {
+      "from": [
+        "country:MX"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "MX"
+    }
+  },
+  "nym:FM": {
+    "edges": {
+      "from": [
+        "country:FM"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "FM"
+    }
+  },
+  "nym:MD": {
+    "edges": {
+      "from": [
+        "country:MD"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "MD"
+    }
+  },
+  "nym:MC": {
+    "edges": {
+      "from": [
+        "country:MC"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "MC"
+    }
+  },
+  "nym:MN": {
+    "edges": {
+      "from": [
+        "country:MN"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "MN"
+    }
+  },
+  "nym:ME": {
+    "edges": {
+      "from": [
+        "country:ME"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "ME"
+    }
+  },
+  "nym:MS": {
+    "edges": {
+      "from": [
+        "country:MS"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "MS"
+    }
+  },
+  "nym:MA": {
+    "edges": {
+      "from": [
+        "country:MA"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "MA"
+    }
+  },
+  "nym:MZ": {
+    "edges": {
+      "from": [
+        "country:MZ"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "MZ"
+    }
+  },
+  "nym:MM": {
+    "edges": {
+      "from": [
+        "country:MM"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "MM"
+    }
+  },
+  "nym:NR": {
+    "edges": {
+      "from": [
+        "country:NR"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "NR"
+    }
+  },
+  "nym:NP": {
+    "edges": {
+      "from": [
+        "country:NP"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "NP"
+    }
+  },
+  "nym:NL": {
+    "edges": {
+      "from": [
+        "country:NL"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "NL"
+    }
+  },
+  "nym:NC": {
+    "edges": {
+      "from": [
+        "country:NC"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "NC"
+    }
+  },
+  "nym:NZ": {
+    "edges": {
+      "from": [
+        "country:NZ"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "NZ"
+    }
+  },
+  "nym:NE": {
+    "edges": {
+      "from": [
+        "country:NE"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "NE"
+    }
+  },
+  "nym:NG": {
+    "edges": {
+      "from": [
+        "country:NG"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "NG"
+    }
+  },
+  "nym:NU": {
+    "edges": {
+      "from": [
+        "country:NU"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "NU"
+    }
+  },
+  "nym:NF": {
+    "edges": {
+      "from": [
+        "country:NF"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "NF"
+    }
+  },
+  "nym:MK": {
+    "edges": {
+      "from": [
+        "country:MK"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "MK"
+    }
+  },
+  "nym:MP": {
+    "edges": {
+      "from": [
+        "country:MP"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "MP"
+    }
+  },
+  "nym:PK": {
+    "edges": {
+      "from": [
+        "country:PK"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "PK"
+    }
+  },
+  "nym:PW": {
+    "edges": {
+      "from": [
+        "country:PW"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "PW"
+    }
+  },
+  "nym:PS": {
+    "edges": {
+      "from": [
+        "country:PS"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "PS"
+    }
+  },
+  "nym:PG": {
+    "edges": {
+      "from": [
+        "country:PG"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "PG"
+    }
+  },
+  "nym:PY": {
+    "edges": {
+      "from": [
+        "country:PY"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "PY"
+    }
+  },
+  "nym:PN": {
+    "edges": {
+      "from": [
+        "country:PN"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "PN"
+    }
+  },
+  "nym:PL": {
+    "edges": {
+      "from": [
+        "country:PL"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "PL"
+    }
+  },
+  "nym:PT": {
+    "edges": {
+      "from": [
+        "country:PT"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "PT"
+    }
+  },
+  "nym:PR": {
+    "edges": {
+      "from": [
+        "country:PR"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "PR"
+    }
+  },
+  "nym:RE": {
+    "edges": {
+      "from": [
+        "country:RE"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "RE"
+    }
+  },
+  "nym:Reunion": {
+    "edges": {
+      "from": [
+        "country:RE"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": false,
+      "stable-name": false
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Reunion"
+    }
+  },
+  "nym:BL": {
+    "edges": {
+      "from": [
+        "country:BL"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "BL"
+    }
+  },
+  "nym:Saint Barthelemy": {
+    "edges": {
+      "from": [
+        "country:BL"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": false,
+      "stable-name": false
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Saint Barthelemy"
+    }
+  },
+  "nym:St Barth": {
+    "edges": {
+      "from": [
+        "country:BL"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": false,
+      "stable-name": false
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "St Barth"
+    }
+  },
+  "nym:St. Barthelemy": {
+    "edges": {
+      "from": [
+        "country:BL"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": false,
+      "stable-name": false
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "St. Barthelemy"
+    }
+  },
+  "nym:SH": {
+    "edges": {
+      "from": [
+        "country:SH"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "SH"
+    }
+  },
+  "nym:KN": {
+    "edges": {
+      "from": [
+        "country:KN"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "KN"
+    }
+  },
+  "nym:LC": {
+    "edges": {
+      "from": [
+        "country:LC"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "LC"
+    }
+  },
+  "nym:MF": {
+    "edges": {
+      "from": [
+        "country:MF"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "MF"
+    }
+  },
+  "nym:PM": {
+    "edges": {
+      "from": [
+        "country:PM"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "PM"
+    }
+  },
+  "nym:VC": {
+    "edges": {
+      "from": [
+        "country:VC"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "VC"
+    }
+  },
+  "nym:WS": {
+    "edges": {
+      "from": [
+        "country:WS"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "WS"
+    }
+  },
+  "nym:SM": {
+    "edges": {
+      "from": [
+        "country:SM"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "SM"
+    }
+  },
+  "nym:ST": {
+    "edges": {
+      "from": [
+        "country:ST"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "ST"
+    }
+  },
+  "nym:SN": {
+    "edges": {
+      "from": [
+        "country:SN"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "SN"
+    }
+  },
+  "nym:RS": {
+    "edges": {
+      "from": [
+        "country:RS"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "RS"
+    }
+  },
+  "nym:SC": {
+    "edges": {
+      "from": [
+        "country:SC"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "SC"
+    }
+  },
+  "nym:SL": {
+    "edges": {
+      "from": [
+        "country:SL"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "SL"
+    }
+  },
+  "nym:SG": {
+    "edges": {
+      "from": [
+        "country:SG"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "SG"
+    }
+  },
+  "nym:SX": {
+    "edges": {
+      "from": [
+        "country:SX"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "SX"
+    }
+  },
+  "nym:SK": {
+    "edges": {
+      "from": [
+        "country:SK"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "SK"
+    }
+  },
+  "nym:SI": {
+    "edges": {
+      "from": [
+        "country:SI"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "SI"
+    }
+  },
+  "nym:SB": {
+    "edges": {
+      "from": [
+        "country:SB"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "SB"
+    }
+  },
+  "nym:ZA": {
+    "edges": {
+      "from": [
+        "country:ZA"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "ZA"
+    }
+  },
+  "nym:GS": {
+    "edges": {
+      "from": [
+        "country:GS"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "GS"
+    }
+  },
+  "nym:SS": {
+    "edges": {
+      "from": [
+        "country:SS"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "SS"
+    }
+  },
+  "nym:ES": {
+    "edges": {
+      "from": [
+        "country:ES"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "ES"
+    }
+  },
+  "nym:LK": {
+    "edges": {
+      "from": [
+        "country:LK"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "LK"
+    }
+  },
+  "nym:SD": {
+    "edges": {
+      "from": [
+        "country:SD"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "SD"
+    }
+  },
+  "nym:SR": {
+    "edges": {
+      "from": [
+        "country:SR"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "SR"
+    }
+  },
+  "nym:SJ": {
+    "edges": {
+      "from": [
+        "country:SJ"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "SJ"
+    }
+  },
+  "nym:SE": {
+    "edges": {
+      "from": [
+        "country:SE"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "SE"
+    }
+  },
+  "nym:CH": {
+    "edges": {
+      "from": [
+        "country:CH"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "CH"
+    }
+  },
+  "nym:TW": {
+    "edges": {
+      "from": [
+        "country:TW"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "TW"
+    }
+  },
+  "nym:TJ": {
+    "edges": {
+      "from": [
+        "country:TJ"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "TJ"
+    }
+  },
+  "nym:TZ": {
+    "edges": {
+      "from": [
+        "country:TZ"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "TZ"
+    }
+  },
+  "nym:TL": {
+    "edges": {
+      "from": [
+        "country:TL"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "TL"
+    }
+  },
+  "nym:TG": {
+    "edges": {
+      "from": [
+        "country:TG"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "TG"
+    }
+  },
+  "nym:TK": {
+    "edges": {
+      "from": [
+        "country:TK"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "TK"
+    }
+  },
+  "nym:TT": {
+    "edges": {
+      "from": [
+        "country:TT"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "TT"
+    }
+  },
+  "nym:TN": {
+    "edges": {
+      "from": [
+        "country:TN"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "TN"
+    }
+  },
+  "nym:TM": {
+    "edges": {
+      "from": [
+        "country:TM"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "TM"
+    }
+  },
+  "nym:TC": {
+    "edges": {
+      "from": [
+        "country:TC"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "TC"
+    }
+  },
+  "nym:TV": {
+    "edges": {
+      "from": [
+        "country:TV"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "TV"
+    }
+  },
+  "nym:TR": {
+    "edges": {
+      "from": [
+        "country:TR"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "TR"
+    }
+  },
+  "nym:Turkey": {
+    "edges": {
+      "from": [
+        "country:TR"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": false,
+      "stable-name": false
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Turkey"
+    }
+  },
+  "nym:Republic of Turkey": {
+    "edges": {
+      "from": [
+        "country:TR"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": false,
+      "stable-name": false
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Republic of Turkey"
+    }
+  },
+  "nym:Turkiye": {
+    "edges": {
+      "from": [
+        "country:TR"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": false,
+      "stable-name": false
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Turkiye"
+    }
+  },
+  "nym:UA": {
+    "edges": {
+      "from": [
+        "country:UA"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "UA"
+    }
+  },
+  "nym:AE": {
+    "edges": {
+      "from": [
+        "country:AE"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "AE"
+    }
+  },
+  "nym:GB": {
+    "edges": {
+      "from": [
+        "country:GB"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "GB"
+    }
+  },
+  "nym:GBN": {
+    "edges": {
+      "from": [
+        "country:GB"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "GBN"
+    }
+  },
+  "nym:UK": {
+    "edges": {
+      "from": [
+        "country:GB"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": false,
+      "stable-name": false
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "UK"
+    }
+  },
+  "nym:U.K.": {
+    "edges": {
+      "from": [
+        "country:GB"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": false,
+      "stable-name": false
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "U.K."
+    }
+  },
+  "nym:England": {
+    "edges": {
+      "from": [
+        "country:GB"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": false,
+      "stable-name": false
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "England"
+    }
+  },
+  "nym:SCT": {
+    "edges": {
+      "from": [
+        "country:GB"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "SCT"
+    }
+  },
+  "nym:Scotland": {
+    "edges": {
+      "from": [
+        "country:GB"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": false,
+      "stable-name": false
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Scotland"
+    }
+  },
+  "nym:WLS": {
+    "edges": {
+      "from": [
+        "country:GB"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "WLS"
+    }
+  },
+  "nym:Wales": {
+    "edges": {
+      "from": [
+        "country:GB"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": false,
+      "stable-name": false
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "Wales"
+    }
+  },
+  "nym:NIR": {
+    "edges": {
+      "from": [
+        "country:GB"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "NIR"
+    }
+  },
+  "nym:UM": {
+    "edges": {
+      "from": [
+        "country:UM"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "UM"
+    }
+  },
+  "nym:US": {
+    "edges": {
+      "from": [
+        "country:US"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "US"
+    }
+  },
+  "nym:UY": {
+    "edges": {
+      "from": [
+        "country:UY"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "UY"
+    }
+  },
+  "nym:VU": {
+    "edges": {
+      "from": [
+        "country:VU"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "VU"
+    }
+  },
+  "nym:VN": {
+    "edges": {
+      "from": [
+        "country:VN"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "VN"
+    }
+  },
+  "nym:VG": {
+    "edges": {
+      "from": [
+        "country:VG"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "VG"
+    }
+  },
+  "nym:WF": {
+    "edges": {
+      "from": [
+        "country:WF"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "WF"
+    }
+  },
+  "nym:EH": {
+    "edges": {
+      "from": [
+        "country:EH"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "EH"
+    }
+  },
+  "nym:ZM": {
+    "edges": {
+      "from": [
+        "country:ZM"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "ZM"
+    }
+  },
+  "nym:ZW": {
+    "edges": {
+      "from": [
+        "country:ZW"
+      ]
+    },
+    "meta": {
+      "canonical": false,
+      "canonical-mask": 0,
+      "display-name": true,
+      "stable-name": true
+    },
+    "names": {
+      "cy": false,
+      "en-GB": "ZW"
+    }
+  }
+}
