@@ -107,13 +107,6 @@ ated.account-summary.outside-peak-guidance-part-two.text = This is for all prope
 ated.account-summary.no-returns-heading = You have no returns
 ated.account-summary.no-returns = You can appoint an agent to act on your behalf or create your own returns. If you want to appoint an agent you need to re-authorise your agent as the 64-8 and the ATED 1 does not cover the new online service.
 
-##### COOP HOUSING
-
-ated.account-summary.coop.housing.dropdown = Relief for housing co-operatives
-ated.account-summary.coop.housing.paragraph.one = From 3 March 2021, qualifying housing co-operatives that submit ATED returns can claim relief for periods beginning 1 April 2020.
-ated.account-summary.coop.housing.paragraph.two = Housing co-operatives that qualify for relief and have already paid ATED for the period beginning 1 April 2020 can claim a repayment by amending their original return.
-ated.account-summary.coop.housing.text = Read the ATED technical guidance for more information (opens in new tab)
-
 ##### SELECT PERIOD
 
 ated.select-period.title = Select an ATED chargeable period
