@@ -91,6 +91,7 @@ GET     /liability/:formBundleNo/change/has-bank-details/edit-summary       cont
 GET     /liability/:formBundleNo/change/has-bank-details                    controllers.editLiability.HasBankDetailsController.view(formBundleNo: String)
 POST    /liability/:formBundleNo/change/has-bank-details                    controllers.editLiability.HasBankDetailsController.save(formBundleNo: String)
 GET     /liability/:formBundleNo/change/bank-details                        controllers.editLiability.BankDetailsController.view(formBundleNo: String)
+GET     /liability/:formBundleNo/change/bank-details/edit-summary           controllers.editLiability.BankDetailsController.editFromSummary(formBundleNo: String)
 POST    /liability/:formBundleNo/change/bank-details                        controllers.editLiability.BankDetailsController.save(formBundleNo: String)
 GET     /liability/:formBundleNo/change/summary                             controllers.editLiability.EditLiabilitySummaryController.view(formBundleNo: String)
 POST    /liability/:formBundleNo/change/summary                             controllers.editLiability.EditLiabilitySummaryController.submit(formBundleNo: String)

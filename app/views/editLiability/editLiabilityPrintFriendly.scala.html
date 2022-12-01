@@ -28,6 +28,10 @@
         request: Request[AnyContent],
         appConfig: ApplicationConfig)
 
+@incomplete = {
+    <strong class="govuk-tag govuk-tag--red">@messages("ated.label.incomplete")</strong>
+}
+
 @printFriendly(messages("ated.property-details-summary.title")) {
 
 <script src='@controllers.routes.Assets.versioned("javascript/printFriendly.js")'></script>
@@ -86,29 +90,62 @@
         }
     </tbody>
 
-    @if(changeLiability.bankDetails.exists(_.hasBankDetails)){
+    @if(changeLiability.bankDetails.map(_.hasBankDetails) == Some(true)) {
 
       <tbody class="govuk-table__body">
         <tr class="govuk-table__row">
             <th colspan="2" scope="row" class="govuk-table__header govuk-!-font-size-24 govuk-!-padding-top-9" id="bank-details-header">@messages("ated.edit-liability.summary.bank-details.header")</th>
         </tr>
 
-        <tr class="govuk-table__row">
-          <th id="account-holder-name-label" scope="row" class="govuk-table__header">@messages("ated.edit-liability.summary.bank-details.account-holder-name")</th>
-          <td class="govuk-table__cell" id="account-holder-name-value">@changeLiability.bankDetails.flatMap(_.bankDetails.map(_.accountName))</td>
-        </tr>
+        @if(!changeLiability.bankDetails.flatMap(_.bankDetails).isDefined) {
+            <tr class="govuk-table__row">
+                <th id="account-type-incomplete-label" scope="row" class="govuk-table__header">@messages("ated.edit-liability.summary.bank-details.supply-bank-details")</th>
+                <td class="govuk-table__cell" id="account-type-incomplete">@incomplete</td>
+            </tr>
 
-        @if(changeLiability.bankDetails.flatMap(_.bankDetails.flatMap(_.hasUKBankAccount)).contains(true)){
+        } else {
+        @if(changeLiability.bankDetails.flatMap(_.bankDetails.flatMap(_.hasUKBankAccount)) == Some(true)) {
           <tr class="govuk-table__row">
-            <th id="account-number-label" scope="row" class="govuk-table__header">@messages("ated.edit-liability.summary.bank-details.account-number")</th>
-            <td class="govuk-table__cell" id="account-number-value">@changeLiability.bankDetails.flatMap(_.bankDetails.map(_.accountNumber))</td>
+              <th id="has-account-uk-label" scope="row" class="govuk-table__header">@messages("ated.edit-liability.summary.bank-details.supply-bank-details")</th>
+              <td class="govuk-table__cell" id="has-account-uk-value">@messages("ated.label.yes")</td>
           </tr>
 
           <tr class="govuk-table__row">
-            <th id="sort-code-label" scope="row" class="govuk-table__header">@messages("ated.edit-liability.summary.bank-details.sort-code")</th>
-            <td class="govuk-table__cell" id="sort-code-value">@changeLiability.bankDetails.flatMap(_.bankDetails.map(_.sortCode))</td>
+              <th id="uk-account-label" scope="row" class="govuk-table__header">@messages("ated.edit-liability.summary.bank-details.type-of-account")</th>
+              <td class="govuk-table__cell" id="uk-account-value">@messages("ated.label.yes")</td>
           </tr>
+
+          <tr class="govuk-table__row">
+              <th id="account-holder-name-label" scope="row" class="govuk-table__header">@messages("ated.edit-liability.summary.bank-details.account-holder-name")</th>
+              <td class="govuk-table__cell" id="account-holder-name-value">@changeLiability.bankDetails.flatMap(_.bankDetails.map(_.accountName))</td>
+          </tr>
+
+          <tr class="govuk-table__row">
+              <th id="account-number-label" scope="row" class="govuk-table__header">@messages("ated.edit-liability.summary.bank-details.account-number")</th>
+              <td class="govuk-table__cell" id="account-number-value">@changeLiability.bankDetails.flatMap(_.bankDetails.map(_.accountNumber))</td>
+          </tr>
+
+          <tr class="govuk-table__row">
+              <th id="sort-code-label" scope="row" class="govuk-table__header">@messages("ated.edit-liability.summary.bank-details.sort-code")</th>
+              <td class="govuk-table__cell" id="sort-code-value">@changeLiability.bankDetails.flatMap(_.bankDetails.map(_.sortCode))</td>
+          </tr>
+
         }else {
+
+          <tr class="govuk-table__row">
+              <th id="has-account-overseas-label" scope="row" class="govuk-table__header">@messages("ated.edit-liability.summary.bank-details.supply-bank-details")</th>
+              <td class="govuk-table__cell" id="has-account-overseas">@messages("ated.label.yes")</td>
+          </tr>
+
+          <tr class="govuk-table__row">
+              <th id="overseas-account-label" scope="row" class="govuk-table__header">@messages("ated.edit-liability.summary.bank-details.type-of-account")</th>
+              <td class="govuk-table__cell" id="overseas-account-value">@messages("ated.label.no")</td>
+          </tr>
+
+          <tr class="govuk-table__row">
+              <th id="overseas-account-holder-name-label" scope="row" class="govuk-table__header">@messages("ated.edit-liability.summary.bank-details.account-holder-name")</th>
+              <td class="govuk-table__cell" id="overseas-account-holder-name-value">@changeLiability.bankDetails.flatMap(_.bankDetails.map(_.accountName))</td>
+          </tr>
 
           <tr class="govuk-table__row">
             <th id="iban-label" scope="row" class="govuk-table__header">@messages("ated.edit-liability.summary.bank-details.iban")</th>
@@ -119,8 +156,31 @@
             <th id="bic-swift-code-label" class="govuk-table__header">@messages("ated.edit-liability.summary.bank-details.bic-swift-code")</th>
             <td class="govuk-table__cell" id="bic-swift-code-value">@changeLiability.bankDetails.flatMap(_.bankDetails.map(_.bicSwiftCode))</td>
           </tr>
-            }
-      </tbody>
+        }
+      }
+      } else {
+      @if(changeLiability.bankDetails.map(_.hasBankDetails) == Some(false)) {
+        <tr class="govuk-table__row">
+            <th colspan="2" scope="row" class="govuk-table__header govuk-!-font-size-24 govuk-!-padding-top-9" id="bank-details-header-no-bank-account">@messages("ated.edit-liability.summary.bank-details.header")</th>
+        </tr>
+
+        <tr class="govuk-table__row">
+            <th id="bank-details-answered-no-label" class="govuk-table__header">@messages("ated.edit-liability.summary.bank-details.supply-bank-details")</th>
+            <td class="govuk-table__cell" id="bank-details-answered-no">@messages("ated.label.no")</td>
+        </tr>
+
+      } else {
+      @if(!changeLiability.bankDetails.isDefined && changeLiability.calculated.flatMap(_.amountDueOrRefund) < Some(0)) {
+        <tr class="govuk-table__row">
+            <th colspan="2" scope="row" class="govuk-table__header govuk-!-font-size-24 govuk-!-padding-top-9" id="bank-details-header-incomplete">@messages("ated.edit-liability.summary.bank-details.header")</th>
+        </tr>
+
+        <tr class="govuk-table__row">
+            <th id="do-you-have-bank-account-incomplete-label" class="govuk-table__header">@messages("ated.edit-liability.summary.bank-details.supply-bank-details")</th>
+            <td class="govuk-table__cell" id="do-you-have-bank-account-incomplete">@incomplete</td>
+        </tr>
+      }}
+    </tbody>
     }
 
     <tbody class="govuk-table__body">
