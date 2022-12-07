@@ -19,7 +19,6 @@
 @import play.twirl.api.HtmlFormat
 @import views.html.helpers._
 @import utils._
-@import config.featureswitch.FeatureSwitch
 @import uk.gov.hmrc.govukfrontend.views.Implicits._
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 @import uk.gov.hmrc.hmrcfrontend.views.Implicits.RichErrorSummary
@@ -39,7 +38,7 @@
     backLink: Option[String])(reliefsTaxAvoidance : Option[ReliefsTaxAvoidance])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
 @chooseReliefsocialHousingMessage = @{
-    if (periodKey >= 2020 && appConfig.isEnabled(FeatureSwitch.CooperativeHousing)) {
+    if (periodKey >= 2020) {
         "ated.choose-reliefs.providerSocialOrHousing"
     } else {
         "ated.choose-reliefs.socialHousing"
@@ -47,7 +46,7 @@
 }
 
 @fieldSetId = @{
-    if (periodKey >= 2020 && appConfig.isEnabled(FeatureSwitch.CooperativeHousing)) {
+    if (periodKey >= 2020) {
         "providerSocialOrHousingScheme"
     } else {
         "socialHousingScheme"

@@ -17,10 +17,8 @@
 @import models._
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
-@import config.featureswitch.FeatureSwitch
 @import views.html.helpers._
 @import utils._
-@import config.featureswitch.FeatureSwitching
 @import uk.gov.hmrc.govukfrontend.views.Implicits._
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 @import uk.gov.hmrc.hmrcfrontend.views.Implicits.RichErrorSummary
@@ -45,7 +43,7 @@
 @formattedPeriodStartDate = @{periodStartDate.toString(messages("ated.date-format.numeric"))}
 
 @chooseReliefsocialHousingMessage = @{
-  if (periodKey >= 2020 && appConfig.isEnabled(FeatureSwitch.CooperativeHousing)) {
+  if (periodKey >= 2020) {
     "ated.choose-reliefs.providerSocialOrHousing"
   } else {
     "ated.choose-reliefs.socialHousing"
@@ -53,7 +51,7 @@
 }
 
 @chooseSingleReliefsocialHousingMessage = @{
-  if (periodKey >= 2020 && appConfig.isEnabled(FeatureSwitch.CooperativeHousing)) {
+  if (periodKey >= 2020) {
     "ated.choose-single-relief.providerSocialOrHousing"
   } else {
     "ated.choose-single-relief.socialHousing"
@@ -61,7 +59,7 @@
 }
 
 @fieldSetId = @{
-  if (periodKey >= 2020 && appConfig.isEnabled(FeatureSwitch.CooperativeHousing)) {
+  if (periodKey >= 2020) {
     "providerSocialOrHousingDate"
   } else {
     "socialHousingDate"
@@ -69,7 +67,7 @@
 }
 
 @amendedForm = @{
-  if (periodKey >= 2020 && appConfig.isEnabled(FeatureSwitch.CooperativeHousing)) {
+  if (periodKey >= 2020) {
     reliefsForm.copy(errors = reliefsForm.errors.map(
       error => if(error.args.headOption.contains("socialHousingDate")) {
         error.copy(args = Seq("providerSocialOrHousingDate"))

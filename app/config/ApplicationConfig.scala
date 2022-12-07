@@ -16,7 +16,6 @@
 
 package config
 
-import config.featureswitch.FeatureSwitching
 import config.{ConfigKeys => Keys}
 import play.api.Environment
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
@@ -27,7 +26,7 @@ import javax.inject.Inject
 
 class ApplicationConfig @Inject()(val conf: ServicesConfig,
                                   val environment: Environment,
-                                  val templateError: views.html.global_error) extends CountryCodeUtils with FeatureSwitching {
+                                  val templateError: views.html.global_error) extends CountryCodeUtils {
 
   private def loadConfig(key: String) = conf.getString(key)
 
