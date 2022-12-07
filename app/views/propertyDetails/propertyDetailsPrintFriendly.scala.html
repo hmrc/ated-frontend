@@ -22,6 +22,9 @@
 
 @(propertyDetails : PropertyDetails, periods : Seq[models.LineItem], valuesToDisplay: Seq[models.LineItemValue], organisationName: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
+@incomplete = {
+  <strong class="govuk-tag govuk-tag--red">@messages("ated.label.incomplete")</strong>
+}
 
 @printFriendly(messages("ated.property-details-summary.title")) {
 
@@ -62,12 +65,18 @@
       <tr>
         <th colspan="2" scope="row" class="govuk-table__header govuk-!-font-size-24 govuk-!-padding-top-9" id="property-value-header">@messages("ated.property-details-summary.table.property-value.header")</th>
       </tr>
-
-      @for((valueObj, index) <- valuesToDisplay.zipWithIndex) {
-      <tr class="govuk-table__row">
-        <th class="govuk-table__cell" id="property-value-label-@index">@messages(PeriodUtils.getPeriodValueMessage(index, valuesToDisplay.size))</th>
-        <td class="govuk-table__cell" id="property-value-value-@index">@formattedPounds(valueObj.propertyValue)</td>
-      </tr>
+      @if(PeriodUtils.isListEmpty(valuesToDisplay)) {
+        <tr class="govuk-table__row">
+          <th class="govuk-table__cell" id="value-purpose-ated-incomplete-label">@messages("ated.form-bundle.view.return.value.only")</th>
+          <td class="govuk-table__cell" id="value-purpose-ated-incomplete">@incomplete</td>
+        </tr>
+      } else {
+        @for((valueObj, index) <- valuesToDisplay.zipWithIndex) {
+          <tr class="govuk-table__row">
+            <th class="govuk-table__cell" id="property-value-label-@index">@messages(PeriodUtils.getPeriodValueMessage(index, valuesToDisplay.size))</th>
+            <td class="govuk-table__cell" id="property-value-value-@index">@formattedPounds(valueObj.propertyValue)</td>
+          </tr>
+        }
       }
 
       <tr class="govuk-table__row">

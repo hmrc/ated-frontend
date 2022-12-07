@@ -63,6 +63,25 @@ class BankDetailsController @Inject()(mcc: MessagesControllerComponents,
     }
   }
 
+
+  def editFromSummary(oldFormBundleNo: String): Action[AnyContent] = Action.async { implicit request =>
+    authAction.authorisedAction { implicit authContext =>
+      ensureClientContext {
+        serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+          changeLiabilityReturnService.retrieveSubmittedLiabilityReturnAndCache(oldFormBundleNo) flatMap {
+            case Some(x) =>
+              Future.successful {
+                val backLink = Some(controllers.editLiability.routes.DisposeLiabilitySummaryController.view(oldFormBundleNo).url)
+                val bankDetails = x.bankDetails.flatMap(_.bankDetails).fold(BankDetails())(a => a)
+                Ok(template(bankDetailsForm.fill(bankDetails), oldFormBundleNo, serviceInfoContent, backLink))
+              }
+            case None => Future.successful(Redirect(controllers.routes.AccountSummaryController.view))
+          }
+        }
+      }
+    }
+  }
+
   def save(oldFormBundleNo: String): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
