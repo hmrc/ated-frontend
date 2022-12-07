@@ -17,7 +17,6 @@
 package models
 
 import config.ApplicationConfig
-import config.featureswitch.FeatureSwitch
 import org.joda.time.LocalDate
 import play.api.libs.json.JodaWrites._
 import play.api.libs.json.JodaReads._
@@ -101,7 +100,7 @@ object SummaryReturnsModel {
       val allReturns: Seq[PeriodSummaryReturns] = (json \ "allReturns").as[Seq[PeriodSummaryReturns]]
 
       val allReturnsForSocialHousing: Seq[PeriodSummaryReturns] = allReturns.map { returnsForPeriod =>
-        if (returnsForPeriod.periodKey >= 2020 && applicationConfig.isEnabled(FeatureSwitch.CooperativeHousing)) {
+        if (returnsForPeriod.periodKey >= 2020) {
           returnsForPeriod.copy(submittedReturns = returnsForPeriod.submittedReturns.map( submittedReturns =>
             submittedReturns.copy(reliefReturns = submittedReturns.reliefReturns.map( reliefReturn =>
               if (reliefReturn.reliefType == "Social housing") {
@@ -135,11 +134,11 @@ object SummaryReturnsModel {
     }
   }
 
-  implicit def writes(implicit applicationConfig: ApplicationConfig): Writes[SummaryReturnsModel] = Writes { returnsModel =>
+  implicit def writes: Writes[SummaryReturnsModel] = Writes { returnsModel =>
     val allReturns = returnsModel.returnsCurrentTaxYear ++ returnsModel.returnsOtherTaxYears
 
     val allReturnsForSocialHousing: Seq[PeriodSummaryReturns] = allReturns.map { returnsForPeriod =>
-      if (returnsForPeriod.periodKey >= 2020 && applicationConfig.isEnabled(FeatureSwitch.CooperativeHousing)) {
+      if (returnsForPeriod.periodKey >= 2020) {
         returnsForPeriod.copy(submittedReturns = returnsForPeriod.submittedReturns.map( submittedReturns =>
           submittedReturns.copy(reliefReturns = submittedReturns.reliefReturns.map( reliefReturn =>
             if (reliefReturn.reliefType == newSocialHousingDescription) {

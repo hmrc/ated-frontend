@@ -17,7 +17,6 @@
 package views.reliefs
 
 import config.ApplicationConfig
-import config.featureswitch.FeatureSwitch
 import forms.ReliefForms.taxAvoidanceForm
 import models.{Reliefs, ReliefsTaxAvoidance, StandardAuthRetrievals, TaxAvoidance}
 import org.joda.time.LocalDate
@@ -61,9 +60,7 @@ class AvoidanceSchemesSpec extends AnyFeatureSpec with GuiceOneAppPerSuite with 
       assert(document.getElementsByAttributeValue("for", "socialHousingSchemePromoter").text() contains "Social housing Promoter reference number")
     }
 
-    Scenario("show the avoidance scheme page with social housing in 2020 with the feature switch enabled") {
-
-      mockAppConfig.enable(FeatureSwitch.CooperativeHousing)
+    Scenario("show the avoidance scheme page with social housing in 2020") {
 
       val reliefsTaxAvoidance: ReliefsTaxAvoidance = ReliefsTaxAvoidance("123456", 2020, Reliefs(
         2020, socialHousing = true, socialHousingDate = Some(LocalDate.parse("2020-04-01"))

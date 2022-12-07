@@ -17,7 +17,6 @@
 package utils
 
 import config.ApplicationConfig
-import config.featureswitch.FeatureSwitch
 import models.SubmittedReliefReturns
 import org.joda.time.LocalDate
 import org.scalatestplus.mockito.MockitoSugar
@@ -55,9 +54,7 @@ class ReliefsUtilsSpec extends PlaySpec with MockitoSugar with GuiceOneServerPer
       ReliefsUtils.convertETMPReliefNameForSingleRelief("not found description", periodKey) must be("not found description")
     }
 
-    "return the ATED relief description when passed the ETMP description, in 2020, with the feature switch enabled" in {
-      mockAppConfig.enable(FeatureSwitch.CooperativeHousing)
-
+    "return the ATED relief description when passed the ETMP description, in 2020" in {
       val periodKey = 2020
 
       ReliefsUtils.convertETMPReliefNameForSingleRelief(ReliefsUtils.RentalBusinessDesc, periodKey) must be("ated.choose-single-relief.rentalBusiness")

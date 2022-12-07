@@ -17,7 +17,6 @@
 package views.html.reliefs
 
 import config.ApplicationConfig
-import config.featureswitch.FeatureSwitch
 import forms.ReliefForms
 import forms.ReliefForms._
 import models.{Reliefs, StandardAuthRetrievals}
@@ -121,15 +120,11 @@ class ChooseReliefsSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil
       doc must haveElementWithId("socialHousingDate")
     }
 
-    "display social housing for 2020 with feature switch enabled" in {
-      mockAppConfig.enable(FeatureSwitch.CooperativeHousing)
-
+    "display social housing for 2020" in {
       doc2020.getElementsByAttributeValue("for", "socialHousing").text() mustBe "Provider of social housing or housing co-operative"
     }
 
-    "display social housing start date for 2020 with feature switch enabled" in {
-      mockAppConfig.enable(FeatureSwitch.CooperativeHousing)
-
+    "display social housing start date for 2020" in {
       doc2020 must haveElementWithId("conditional-socialHousing")
     }
 

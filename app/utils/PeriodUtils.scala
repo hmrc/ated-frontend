@@ -65,14 +65,14 @@ object PeriodUtils {
   val liabilityReturnTypeDesc = "ated.property-details-period.liability.return-type"
   val disposeReturnTypeDesc = "ated.property-details-period.dispose.return-type"
 
-  def getDisplayPeriods(propertyDetails: Option[PropertyDetailsPeriod], periodKey: Int)(implicit applicationConfig: ApplicationConfig): Seq[LineItem] = {
+  def getDisplayPeriods(propertyDetails: Option[PropertyDetailsPeriod], periodKey: Int): Seq[LineItem] = {
     val liabilityPeriods = propertyDetails.map(_.liabilityPeriods).getOrElse(Nil)
     val reliefPeriods = propertyDetails.map(_.reliefPeriods).getOrElse(Nil)
 
     sortAndConvertLineItemsForDisplay(liabilityPeriods ++ reliefPeriods, periodKey)
   }
 
-  def getDisplayFormBundleProperties(lineItems: Seq[FormBundleProperty], periodKey: Int)(implicit applicationConfig: ApplicationConfig): Seq[LineItem] = {
+  def getDisplayFormBundleProperties(lineItems: Seq[FormBundleProperty], periodKey: Int): Seq[LineItem] = {
     def mergeValueChanges(lineItems: Seq[FormBundleProperty]) = {
       val startingVal = List[FormBundleProperty]()
       lineItems.foldLeft(startingVal){
@@ -90,7 +90,7 @@ object PeriodUtils {
     sortAndConvertLineItemsForDisplay(filteredFormBundle.map(item => LineItem(item.`type`, item.dateFrom, item.dateTo, item.reliefDescription)), periodKey)
   }
 
-  private def sortAndConvertLineItemsForDisplay(lineItems: Seq[LineItem], periodKey: Int)(implicit applicationConfig: ApplicationConfig) = {
+  private def sortAndConvertLineItemsForDisplay(lineItems: Seq[LineItem], periodKey: Int) = {
     implicit val lineItemOrdering: Ordering[LineItem] = Ordering.by(_.startDate)
 
     lineItems.map{

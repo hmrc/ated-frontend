@@ -17,7 +17,6 @@
 package views.reliefs
 
 import config.ApplicationConfig
-import config.featureswitch.FeatureSwitch
 import models.{Reliefs, ReliefsTaxAvoidance, StandardAuthRetrievals, TaxAvoidance}
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
@@ -64,12 +63,10 @@ class ReliefsSummarySpec extends AnyFeatureSpec with GuiceOneAppPerSuite with Mo
       assert(document.getElementById("submit-disabled-text").text() contains "You cannot submit returns until 1 April.")
     }
 
-    Scenario("show the summary of the relief return during the draft period (month of March) in 2020 with the feature switch enabled") {
+    Scenario("show the summary of the relief return during the draft period (month of March) in 2020") {
 
       Given("the client has created a new relief return and is viewing the summary of entered info")
       When("The user views the page")
-
-      mockAppConfig.enable(FeatureSwitch.CooperativeHousing)
 
       val reliefsTaxAvoidance: ReliefsTaxAvoidance = ReliefsTaxAvoidance("123456", 2020, Reliefs(
         2020, socialHousing = true, socialHousingDate = Some(LocalDate.parse("2020-04-01"))

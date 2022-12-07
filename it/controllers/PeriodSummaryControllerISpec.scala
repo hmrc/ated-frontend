@@ -1,8 +1,6 @@
 
 package controllers
 
-import config.ApplicationConfig
-import config.featureswitch.FeatureSwitch
 import helpers.IntegrationBase
 import helpers.stubs.{AuthAudit, KeyStore, ServiceInfoPartialConnectorStub}
 import play.api.libs.ws.WSResponse
@@ -40,41 +38,7 @@ class PeriodSummaryControllerISpec extends IntegrationBase with AuthAudit with K
       resp.body.contains("Social housing") mustBe true
     }
 
-    "viewing the period summary of 2020 with the social housing feature flag disabled" in {
-      app.injector.instanceOf[ApplicationConfig].disable(FeatureSwitch.CooperativeHousing)
-
-      val period2020 = 2020
-
-      stubAuth()
-      ServiceInfoPartialConnectorStub.withResponseForNavLinks()(200, Some(testNavLinkJson))
-      stubKeyStore()
-      stubGet("/ated/XN1200000100001/returns/partial-summary", 200,
-        s"""{
-           |"allReturns" : [
-           | {
-           |   "periodKey" : $period2020,
-           |   "draftReturns" : [
-           |     {
-           |       "periodKey" : $period2020,
-           |       "id" : "testId",
-           |       "description" : "Social housing",
-           |       "returnType" : "Relief"
-           |     }
-           |   ]
-           | }
-           |]
-           |}""".stripMargin)
-
-      val controllerUrl = controllers.routes.PeriodSummaryController.view(period2020).url
-
-      val resp: WSResponse = await(client(controllerUrl).get)
-
-      resp.status mustBe 200
-      resp.body.contains("Social housing") mustBe true
-    }
-
-    "viewing the period summary of 2020 with the social housing feature flag enabled" in {
-      app.injector.instanceOf[ApplicationConfig].enable(FeatureSwitch.CooperativeHousing)
+    "viewing the period summary of 2020" in {
 
       val period2020 = 2020
 

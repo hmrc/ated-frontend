@@ -17,7 +17,6 @@
 package views.propertyDetails
 
 import config.ApplicationConfig
-import config.featureswitch.FeatureSwitch
 import forms.PropertyDetailsForms._
 import models.{PeriodChooseRelief, StandardAuthRetrievals}
 import org.jsoup.Jsoup
@@ -81,12 +80,10 @@ Feature("The user can add a period that the property is in relief") {
       assert(document.getElementsByClass("govuk-back-link").text === "Back")
     }
 
-  Scenario("allow selecting a relief in 2020 with the social housing feature switch") {
+  Scenario("allow selecting a relief in 2020") {
 
     Given("the client is adding a relief")
     When("The user views the page")
-
-    mockAppConfig.enable(FeatureSwitch.CooperativeHousing)
 
     val html = injectedViewInstance("1", 2020, periodChooseReliefForm, Html(""), Some("backLink"))
 

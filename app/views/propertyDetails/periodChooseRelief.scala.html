@@ -22,7 +22,6 @@
 @import views.ViewUtils.titleBuilder
 @import views.html.helpers._
 @import _root_.utils._
-@import config.featureswitch.FeatureSwitch
 
 
 @this(newMain: newMain,
@@ -40,7 +39,7 @@
 
 
 @chooseSingleReliefsocialHousingMessage = @{
-    if (periodKey >= 2020 && appConfig.isEnabled(FeatureSwitch.CooperativeHousing)) {
+    if (periodKey >= 2020) {
         "ated.choose-single-relief.providerSocialOrHousing"
     } else {
         "ated.choose-single-relief.socialHousing"

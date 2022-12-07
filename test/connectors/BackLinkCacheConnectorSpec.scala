@@ -49,7 +49,7 @@ class BackLinkCacheConnectorSpec extends PlaySpec with GuiceOneAppPerSuite with 
 
     "fetchAndGetBackLink" must {
 
-      "fetch saved BusinessDetails from SessionCache with Feature Switch on" in new Setup {
+      "fetch saved BusinessDetails from SessionCache" in new Setup {
         val backLink: BackLinkModel = BackLinkModel(Some("testBackLink"))
 
         when(mockSessionCache.fetchAndGetEntry[BackLinkModel](any())(any(), any(), any()))

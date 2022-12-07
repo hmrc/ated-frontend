@@ -16,8 +16,6 @@
 
 package forms
 
-import config.ApplicationConfig
-import config.featureswitch.FeatureSwitch
 import models._
 import org.joda.time.LocalDate
 import play.api.data.Forms._
@@ -157,9 +155,9 @@ object ReliefForms {
 
 
   //scalastyle:off cyclomatic.complexity
-  def validateTaxAvoidance(f: Form[TaxAvoidance], periodKey: Int)(implicit applicationConfig: ApplicationConfig): Form[TaxAvoidance] = {
+  def validateTaxAvoidance(f: Form[TaxAvoidance], periodKey: Int): Form[TaxAvoidance] = {
     def validateAvoidanceScheme(avoidanceFieldName: String): Seq[Option[FormError]] = {
-      val messageKeySuffix =  if (periodKey >= 2020 && applicationConfig.isEnabled(FeatureSwitch.CooperativeHousing) && avoidanceFieldName == "socialHousingScheme") "providerSocialOrHousingScheme" else avoidanceFieldName
+      val messageKeySuffix =  if (periodKey >= 2020 && avoidanceFieldName == "socialHousingScheme") "providerSocialOrHousingScheme" else avoidanceFieldName
       val avoidanceSchemeNo = f.data.get(avoidanceFieldName)
       avoidanceSchemeNo.getOrElse("") match {
         case a if a.isEmpty => Seq(Some(FormError(avoidanceFieldName, s"ated.avoidance-scheme-error.general.empty.$messageKeySuffix")))
@@ -169,7 +167,7 @@ object ReliefForms {
       }
     }
     def validatePromoterReference(promoterFieldName: String): Seq[Option[FormError]] = {
-      val messageKeySuffix =  if (periodKey >= 2020 && applicationConfig.isEnabled(FeatureSwitch.CooperativeHousing) && promoterFieldName == "socialHousingSchemePromoter") "providerSocialOrHousingSchemePromoter" else promoterFieldName
+      val messageKeySuffix =  if (periodKey >= 2020 && promoterFieldName == "socialHousingSchemePromoter") "providerSocialOrHousingSchemePromoter" else promoterFieldName
       val promoterReference = f.data.get(promoterFieldName)
       promoterReference.getOrElse("") match {
         case a if a.isEmpty => Seq(Some(FormError(promoterFieldName, s"ated.avoidance-scheme-error.general.empty.$messageKeySuffix")))
