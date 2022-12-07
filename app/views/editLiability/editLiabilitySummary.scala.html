@@ -165,82 +165,214 @@
     }
   </div>
 
-  <div class="govuk-form-group" id="bank-details-section">
+  <!--Bank account section-->
+  <div class="govuk-form-group govuk-!-padding-top-4" id="bank-details-section">
   @if(changeLiability.bankDetails.map(_.hasBankDetails) == Some(true)) {
+    <!--Answered YES to Do you have a bank account-->
+    <h2 id="bank-details-header" class="govuk-heading-m govuk-!-padding-bottom-4">@messages("ated.edit-liability.summary.bank-details.header")</h2>
 
-    <dl class="govuk-summary-list">
-      <div class="govuk-summary-list__row govuk-summary-list__row--no-border">
-        <dt class="govuk-summary-list__key">
-          <h2 id="bank-details-header" class="govuk-heading-m">@messages("ated.edit-liability.summary.bank-details.header")</h2>
-        </dt>
-        <dd class="govuk-summary-list__actions">
-          <a class="govuk-link" id="edit-bank-details" href="@controllers.editLiability.routes.HasBankDetailsController.editFromSummary(changeLiability.id.toString)">
-            @messages("ated.change")<span class="govuk-visually-hidden">@messages("ated.edit-liability.summary.bank-details.header")</span>
-          </a>
-        </dd>
-      </div>
-    </dl>
-
-    @if(changeLiability.bankDetails.flatMap(_.bankDetails.flatMap(_.hasUKBankAccount)) == Some(true)) {
-
+    @if(!changeLiability.bankDetails.flatMap(_.bankDetails).isDefined) {
+      <!--Enter your bank account not answered-->
       <dl class="govuk-summary-list">
         <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key" id="uk-account-holder-name-label">
-            @messages("ated.edit-liability.summary.bank-details.account-holder-name")
+          <dt class="govuk-summary-list__key" id="account-type-incomplete-label">
+            @messages("ated.edit-liability.summary.bank-details.supply-bank-details")
           </dt>
-          <dd class="govuk-summary-list__value" id="uk-account-holder-name-value">
-            @changeLiability.bankDetails.flatMap(_.bankDetails.map(_.accountName))
+          <dd class="govuk-summary-list__value" id="account-type-incomplete">
+            @incomplete
           </dd>
-        </div>
-        <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key" id="account-number-label">
-            @messages("ated.edit-liability.summary.bank-details.account-number")
-          </dt>
-          <dd class="govuk-summary-list__value" id="account-number-value">
-            @changeLiability.bankDetails.flatMap(_.bankDetails.map(_.accountNumber))
-          </dd>
-        </div>
-        <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key" id="sort-code-label">
-            @messages("ated.edit-liability.summary.bank-details.sort-code")
-          </dt>
-          <dd class="govuk-summary-list__value" id="sort-code-value">
-            @changeLiability.bankDetails.flatMap(_.bankDetails.map(_.sortCode))
+          <dd class="govuk-summary-list__actions">
+            <a class="govuk-link" id="edit-account-type-incomplete" href="@controllers.editLiability.routes.BankDetailsController.editFromSummary(changeLiability.id.toString)">
+              @messages("ated.change")<span class="govuk-visually-hidden">@messages("ated.edit-liability.summary.bank-details.supply-bank-details")</span>
+            </a>
           </dd>
         </div>
       </dl>
-
     } else {
+      @if(changeLiability.bankDetails.flatMap(_.bankDetails.flatMap(_.hasUKBankAccount)) == Some(true)) {
+        <!--Has UK bank account-->
+        <dl class="govuk-summary-list">
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key" id="has-account-uk-label">
+              @messages("ated.edit-liability.summary.bank-details.supply-bank-details")
+            </dt>
+            <dd class="govuk-summary-list__value" id="has-account-uk">
+              @messages("ated.label.yes")
+            </dd>
+            <dd class="govuk-summary-list__actions">
+              <a class="govuk-link" id="edit-has-account-uk" href="@controllers.editLiability.routes.HasBankDetailsController.editFromSummary(changeLiability.id.toString)">
+                @messages("ated.change")<span class="govuk-visually-hidden">@messages("ated.edit-liability.summary.bank-details.supply-bank-details")</span>
+              </a>
+            </dd>
+          </div>
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key" id="uk-account-label">
+              @messages("ated.edit-liability.summary.bank-details.type-of-account")
+            </dt>
+            <dd class="govuk-summary-list__value" id="uk-account">
+              @messages("ated.label.yes")
+            </dd>
+            <dd class="govuk-summary-list__actions">
+              <a class="govuk-link" id="edit-uk-account" href="@controllers.editLiability.routes.BankDetailsController.editFromSummary(changeLiability.id.toString)">
+                @messages("ated.change")<span class="govuk-visually-hidden">@messages("ated.edit-liability.summary.bank-details.type-of-account")</span>
+              </a>
+            </dd>
+          </div>
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key" id="uk-account-holder-name-label">
+              @messages("ated.edit-liability.summary.bank-details.account-holder-name")
+            </dt>
+            <dd class="govuk-summary-list__value" id="uk-account-holder-name-value">
+              @changeLiability.bankDetails.flatMap(_.bankDetails.map(_.accountName))
+            </dd>
+            <dd class="govuk-summary-list__actions">
+              <a class="govuk-link" id="edit-uk-account-holder-name" href="@controllers.editLiability.routes.BankDetailsController.editFromSummary(changeLiability.id.toString)">
+                @messages("ated.change")<span class="govuk-visually-hidden">@messages("ated.edit-liability.summary.bank-details.account-holder-name")</span>
+              </a>
+            </dd>
+          </div>
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key" id="account-number-label">
+              @messages("ated.edit-liability.summary.bank-details.account-number")
+            </dt>
+            <dd class="govuk-summary-list__value" id="account-number-value">
+              @changeLiability.bankDetails.flatMap(_.bankDetails.map(_.accountNumber))
+            </dd>
+            <dd class="govuk-summary-list__actions">
+              <a class="govuk-link" id="edit-account-number" href="@controllers.editLiability.routes.BankDetailsController.editFromSummary(changeLiability.id.toString)">
+                @messages("ated.change")<span class="govuk-visually-hidden">@messages("ated.edit-liability.summary.bank-details.account-number")</span>
+              </a>
+            </dd>
+          </div>
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key" id="sort-code-label">
+              @messages("ated.edit-liability.summary.bank-details.sort-code")
+            </dt>
+            <dd class="govuk-summary-list__value" id="sort-code-value">
+              @changeLiability.bankDetails.flatMap(_.bankDetails.map(_.sortCode))
+            </dd>
+            <dd class="govuk-summary-list__actions">
+              <a class="govuk-link" id="edit-sort-code" href="@controllers.editLiability.routes.BankDetailsController.editFromSummary(changeLiability.id.toString)">
+                @messages("ated.change")<span class="govuk-visually-hidden">@messages("ated.edit-liability.summary.bank-details.sort-code")</span>
+              </a>
+            </dd>
+          </div>
+        </dl>
+      } else {
+        <!--Has overseas bank account-->
+        <dl class="govuk-summary-list">
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key" id="has-account-overseas-label">
+              @messages("ated.edit-liability.summary.bank-details.supply-bank-details")
+            </dt>
+            <dd class="govuk-summary-list__value" id="has-account-overseas">
+              @messages("ated.label.yes")
+            </dd>
+            <dd class="govuk-summary-list__actions">
+              <a class="govuk-link" id="edit-has-account-overseas" href="@controllers.editLiability.routes.HasBankDetailsController.editFromSummary(changeLiability.id.toString)">
+                @messages("ated.change")<span class="govuk-visually-hidden">@messages("ated.edit-liability.summary.bank-details.supply-bank-details")</span>
+              </a>
+            </dd>
+          </div>
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key" id="overseas-account-label">
+              @messages("ated.edit-liability.summary.bank-details.type-of-account")
+            </dt>
+            <dd class="govuk-summary-list__value" id="overseas-account">
+              @messages("ated.label.no")
+            </dd>
+            <dd class="govuk-summary-list__actions">
+              <a class="govuk-link" id="edit-overseas-account" href="@controllers.editLiability.routes.BankDetailsController.editFromSummary(changeLiability.id.toString)">
+                @messages("ated.change")<span class="govuk-visually-hidden">@messages("ated.edit-liability.summary.bank-details.type-of-account")</span>
+              </a>
+            </dd>
+          </div>
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key" id="overseas-account-holder-name-label">
+              @messages("ated.edit-liability.summary.bank-details.account-holder-name")
+            </dt>
+            <dd class="govuk-summary-list__value" id="overseas-account-holder-name-value">
+              @changeLiability.bankDetails.flatMap(_.bankDetails.map(_.accountName))
+            </dd>
+            <dd class="govuk-summary-list__actions">
+              <a class="govuk-link" id="edit-overseas-account-holder-name" href="@controllers.editLiability.routes.BankDetailsController.editFromSummary(changeLiability.id.toString)">
+                @messages("ated.change")<span class="govuk-visually-hidden">@messages("ated.edit-liability.summary.bank-details.account-holder-name")</span>
+              </a>
+            </dd>
+          </div>
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key" id="iban-label">
+              @messages("ated.edit-liability.summary.bank-details.iban")
+            </dt>
+            <dd class="govuk-summary-list__value" id="iban-value">
+              @changeLiability.bankDetails.flatMap(_.bankDetails.map(_.iban))
+            </dd>
+            <dd class="govuk-summary-list__actions">
+              <a class="govuk-link" id="edit-iban" href="@controllers.editLiability.routes.BankDetailsController.editFromSummary(changeLiability.id.toString)">
+                @messages("ated.change")<span class="govuk-visually-hidden">@messages("ated.edit-liability.summary.bank-details.iban")</span>
+              </a>
+            </dd>
+          </div>
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key" id="bic-swift-code-label">
+              @messages("ated.edit-liability.summary.bank-details.bic-swift-code")
+            </dt>
+            <dd class="govuk-summary-list__value" id="bic-swift-code-value">
+              @changeLiability.bankDetails.flatMap(_.bankDetails.map(_.bicSwiftCode))
+            </dd>
+            <dd class="govuk-summary-list__actions">
+              <a class="govuk-link" id="edit-bic-swift" href="@controllers.editLiability.routes.HasBankDetailsController.editFromSummary(changeLiability.id.toString)">
+                @messages("ated.change")<span class="govuk-visually-hidden">@messages("ated.edit-liability.summary.bank-details.bic-swift-code")</span>
+              </a>
+            </dd>
+          </div>
+        </dl>
+      }
+    }
+  } else {
+    @if(changeLiability.bankDetails.map(_.hasBankDetails) == Some(false)) {
+    <!--Answered NO to Do you have a bank account-->
+      <h2 id="bank-details-header-no-bank-account" class="govuk-heading-m govuk-!-padding-bottom-4">@messages("ated.edit-liability.summary.bank-details.header")</h2>
 
       <dl class="govuk-summary-list">
         <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key" id="overseas-account-holder-name-label">
-            @messages("ated.edit-liability.summary.bank-details.account-holder-name")
+          <dt class="govuk-summary-list__key" id="bank-details-answered-no-label">
+            @messages("ated.edit-liability.summary.bank-details.supply-bank-details")
           </dt>
-          <dd class="govuk-summary-list__value" id="overseas-account-holder-name-value">
-            @changeLiability.bankDetails.flatMap(_.bankDetails.map(_.accountName))
+          <dd class="govuk-summary-list__value" id="bank-details-answered-no">
+            @messages("ated.label.no")
+          </dd>
+          <dd class="govuk-summary-list__actions">
+            <a class="govuk-link" id="edit-bank-details-answered-no" href="@controllers.editLiability.routes.HasBankDetailsController.editFromSummary(changeLiability.id.toString)">
+              @messages("ated.change")<span class="govuk-visually-hidden">@messages("ated.edit-liability.summary.bank-details.supply-bank-details")</span>
+            </a>
           </dd>
         </div>
+      </dl>
+  } else {
+    @if(!changeLiability.bankDetails.isDefined && changeLiability.calculated.flatMap(_.amountDueOrRefund) < Some(0)) {
+      <!--Do you have a bank account not answered-->
+      <h2 id="bank-details-header-incomplete" class="govuk-heading-m govuk-!-padding-bottom-4">@messages("ated.edit-liability.summary.bank-details.header")</h2>
+
+      <dl class="govuk-summary-list">
         <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key" id="iban-label">
-            @messages("ated.edit-liability.summary.bank-details.iban")
+          <dt class="govuk-summary-list__key" id="do-you-have-bank-account-incomplete-label">
+            @messages("ated.edit-liability.summary.bank-details.supply-bank-details")
           </dt>
-          <dd class="govuk-summary-list__value" id="iban-value">
-            @changeLiability.bankDetails.flatMap(_.bankDetails.map(_.iban))
+          <dd class="govuk-summary-list__value" id="do-you-have-bank-account-incomplete">
+            @incomplete
           </dd>
-        </div>
-        <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key" id="bic-swift-code-label">
-            @messages("ated.edit-liability.summary.bank-details.bic-swift-code")
-          </dt>
-          <dd class="govuk-summary-list__value" id="bic-swift-code-value">
-            @changeLiability.bankDetails.flatMap(_.bankDetails.map(_.bicSwiftCode))
+          <dd class="govuk-summary-list__actions">
+            <a class="govuk-link" id="edit-bank-details-incomplete" href="@controllers.editLiability.routes.HasBankDetailsController.editFromSummary(changeLiability.id.toString)">
+              @messages("ated.change")<span class="govuk-visually-hidden">@messages("ated.edit-liability.summary.bank-details.supply-bank-details")</span>
+            </a>
           </dd>
         </div>
       </dl>
     }
   }
-  </div>
+  }
+</div>
 
   <div class="govuk-form-group" id="liability-dates-section">
 
