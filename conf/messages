@@ -389,6 +389,14 @@ ated.property-details-value-error.newBuildDates.futureRegError = The registratio
 ated.property-details-value-error.newBuildDates.invalidOccupiedDateError = Enter a real date when the property was first occupied
 ated.property-details-value-error.newBuildDates.invalidRegDateError = Enter a real registration date
 
+##### PROPERTY DETAILS NEW BUILD DATES UPDATE
+
+ated.property-details-value.no-start-date.title = No start date was provided
+ated.property-details-value.no-start-date.header = No start date was provided
+ated.property-details-value.no-start-date.first-para = No date was provided for when the property was first occupied or for when the local council registered the property for council tax.
+ated.property-details-value.no-start-date.second-para = You need to enter one or both of these dates to continue your application.
+ated.property-details-value.no-start-date.continue = Continue application
+
 ##### PROPERTY DETAILS NEW BUILD VALUE
 
 ated.property-details-value.newBuildValue.title = What was the value of the property on {0} {1} {2}?
