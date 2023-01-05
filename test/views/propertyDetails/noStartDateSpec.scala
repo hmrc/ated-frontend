@@ -29,44 +29,40 @@ import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import play.twirl.api.Html
 import testhelpers.MockAuthUtil
-import views.html.propertyDetails.confirmAddress
+import views.html.propertyDetails.propertyDetailsNoStartDate
 
-class confirmAddressSpec extends AnyFeatureSpec with GuiceOneAppPerSuite with MockitoSugar
+class noStartDateSpec extends AnyFeatureSpec with GuiceOneAppPerSuite with MockitoSugar
   with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
 
   implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
-  val injectedViewInstance: confirmAddress = app.injector.instanceOf[views.html.propertyDetails.confirmAddress]
+  val injectedViewInstance: propertyDetailsNoStartDate = app.injector.instanceOf[views.html.propertyDetails.propertyDetailsNoStartDate]
 
-  Feature("The user can view their property address details before they confirm and continue") {
+  Feature("The user views to the No start date error/warning page before they return the orignal questioning") {
 
-    info("as a client I want to view my property address details")
+    info("as a client I want to view the no start date kickout page")
 
-    Scenario("return the property address") {
+    Scenario("describe missing date requirements") {
 
-      Given("the client has entered an address")
-      When("The user views the confirm address page")
-      val propertyDetails: PropertyDetailsAddress = PropertyDetailsBuilder.getPropertyDetailsAddress(postCode = Some("XX1 1XX"))
-      val html = injectedViewInstance("1", 2015, propertyDetails, mode = None, Html(""), Some("http://backLink"))
+      Given("the client has failed to enter the sufficient information")
+      When("The user doesnt enter either start date")
+      val html = injectedViewInstance("1", Html(""), Some("http://backLink"))
       val document = Jsoup.parse(html.toString())
-      Then("The title should match - Confirm address - GOV.UK")
-      assert(document.title() === "Confirm address - GOV.UK")
+      Then("The title should match - No start date was provided - GOV.UK")
+      assert(document.title() === "No start date was provided - GOV.UK")
 
-      Then("The header should match - Confirm address")
-      assert(document.getElementsByTag("h1").text() contains "Confirm address")
+      Then("The header should match - No start date was provided")
+      assert(document.getElementsByTag("h1").text() contains "No start date was provided")
 
       Then("The subheader should be - Create return")
       assert(document.getElementsByClass("govuk-caption-xl").text() === "This section is: Create return")
 
-      assert(document.getElementById("address").text() contains  "addr1")
-      assert(document.getElementById("address").text() contains "addr2")
-      assert(document.getElementById("address").text() contains "addr3")
-      assert(document.getElementById("address").text() contains "addr4")
-      assert(document.getElementById("address").text() contains "XX1 1XX")
-      assert(document.getElementById("edit-address-link").text() === "Edit address")
-      assert(document.getElementsByClass("govuk-button").text() === "Confirm and continue")
+      val paragraphs = document.getElementsByTag("p")
+      assert(paragraphs.first.text() contains "No date was provided for when the property was first occupied or for when the local council registered the property for council tax." )
+      assert(paragraphs.last.text() contains "You need to enter one or both of these dates to continue your application." )
+      assert(document.getElementsByClass("govuk-button").text() === "Continue application")
 
       Then("The back link is correct")
       assert(document.getElementsByClass("govuk-back-link").text === "Back")
