@@ -389,6 +389,11 @@ ated.property-details-value-error.newBuildDates.futureRegError = The registratio
 ated.property-details-value-error.newBuildDates.invalidOccupiedDateError = Enter a real date when the property was first occupied
 ated.property-details-value-error.newBuildDates.invalidRegDateError = Enter a real registration date
 
+##### PROPERTY DETAILS Do you know when property occupied
+
+ated.property-details.property-occupied.title = Do you know when the property was first occupied?
+ated.property-details.property-occupied.header =Do you know when the property was first occupied?
+
 ##### PROPERTY DETAILS NEW BUILD VALUE
 
 ated.property-details-value.newBuildValue.title = What was the value of the property on {0} {1} {2}?
