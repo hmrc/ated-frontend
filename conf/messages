@@ -391,8 +391,8 @@ ated.property-details-value-error.newBuildDates.invalidRegDateError = Enter a re
 
 ##### PROPERTY DETAILS Do you know when property occupied
 
-ated.property-details.property-occupied.title = Do you know when the property was first occupied?
-ated.property-details.property-occupied.header =Do you know when the property was first occupied?
+ated.property-details.first-occupied-known.title = Do you know when the property was first occupied?
+ated.property-details.first-occupied-known.header = Do you know when the property was first occupied?
 
 ##### PROPERTY DETAILS NEW BUILD VALUE
 
