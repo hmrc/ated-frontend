@@ -18,12 +18,13 @@
 @import play.twirl.api.HtmlFormat
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 @import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
+@import utils.AtedUtils
 @import views.ViewUtils.titleBuilder
 @import views.html.helpers._
 
 @this(newMain: newMain, govukButton : GovukButton, govukBackLink : GovukBackLink, formHelper: FormWithCSRF)
 
-@(id: String, serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
+@(id: String, serviceInfoContent: Html = HtmlFormat.empty, mode: Option[String], backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
 @backLinkHtml = {
     @if(backLink.isDefined) {
@@ -44,7 +45,7 @@
             <span class="govuk-visually-hidden">
                 @messages("ated.screen-reader.section")
             </span>
-            @messages("ated.property-details.pre-header")
+            @messages(AtedUtils.getPropertyDetailsPreHeader(mode))
         </span>
         @messages("ated.property-details-value.no-start-date.header")
     </h1>

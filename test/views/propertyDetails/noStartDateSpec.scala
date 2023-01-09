@@ -48,7 +48,7 @@ class noStartDateSpec extends AnyFeatureSpec with GuiceOneAppPerSuite with Mocki
 
       Given("the client has failed to enter the sufficient information")
       When("The user doesnt enter either start date")
-      val html = injectedViewInstance("1", Html(""), Some("http://backLink"))
+      val html = injectedViewInstance("1", Html(""), None, Some("http://backLink"))
       val document = Jsoup.parse(html.toString())
       Then("The title should match - No start date was provided - GOV.UK")
       assert(document.title() === "No start date was provided - GOV.UK")
@@ -58,6 +58,31 @@ class noStartDateSpec extends AnyFeatureSpec with GuiceOneAppPerSuite with Mocki
 
       Then("The subheader should be - Create return")
       assert(document.getElementsByClass("govuk-caption-xl").text() === "This section is: Create return")
+
+      val paragraphs = document.getElementsByTag("p")
+      assert(paragraphs.first.text() contains "No date was provided for when the property was first occupied or for when the local council registered the property for council tax." )
+      assert(paragraphs.last.text() contains "You need to enter one or both of these dates to continue your application." )
+      assert(document.getElementsByClass("govuk-button").text() === "Continue application")
+
+      Then("The back link is correct")
+      assert(document.getElementsByClass("govuk-back-link").text === "Back")
+      assert(document.getElementsByClass("govuk-back-link").attr("href") === "http://backLink")
+    }
+
+    Scenario("describe missing date requirements when editing a return") {
+
+      Given("the client has failed to enter the sufficient information")
+      When("The user doesnt enter either start date")
+      val html = injectedViewInstance("1", Html(""), Some(utils.AtedUtils.EDIT_SUBMITTED), Some("http://backLink"))
+      val document = Jsoup.parse(html.toString())
+      Then("The title should match - No start date was provided - GOV.UK")
+      assert(document.title() === "No start date was provided - GOV.UK")
+
+      Then("The header should match - No start date was provided")
+      assert(document.getElementsByTag("h1").text() contains "No start date was provided")
+
+      Then("The subheader should be - Change return")
+      assert(document.getElementsByClass("govuk-caption-xl").text() === "This section is: Change return")
 
       val paragraphs = document.getElementsByTag("p")
       assert(paragraphs.first.text() contains "No date was provided for when the property was first occupied or for when the local council registered the property for council tax." )

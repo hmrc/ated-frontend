@@ -40,13 +40,13 @@ class PropertyDetailsNoStartDateController @Inject()(mcc: MessagesControllerComp
   implicit val ec: ExecutionContext = mcc.executionContext
   val controllerId = "PropertyDetailsNoStartDateController"
 
-  def view(id: String): Action[AnyContent] = Action.async { implicit request =>
+  def view(id: String, mode: Option[String]=None): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
           propertyDetailsCacheResponse(id) {
             case PropertyDetailsCacheSuccessResponse(response) =>
-              currentBackLink.map(backLink => Ok(view(controllerId, serviceInfoContent, backLink)))
+              currentBackLink.map(backLink => Ok(view(controllerId, serviceInfoContent, mode, backLink)))
           }
         }
       }
