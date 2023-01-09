@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -250,7 +250,7 @@ class DisposePropertyControllerSpec extends PlaySpec with GuiceOneServerPerSuite
 
             val document = Jsoup.parse(contentAsString(result))
             document.title() must be(TitleBuilder.buildTitle("Error: When did you dispose of the property?"))
-            document.getElementById("error-summary-title").text must include("There is a problem")
+            document.getElementsByClass("govuk-error-summary__title").text must include("There is a problem")
             document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("You must enter date of disposal")
         }
       }
@@ -267,7 +267,7 @@ class DisposePropertyControllerSpec extends PlaySpec with GuiceOneServerPerSuite
 
             val document = Jsoup.parse(contentAsString(result))
             document.title() must be(TitleBuilder.buildTitle("Error: When did you dispose of the property?"))
-            document.getElementById("error-summary-title").text must include("There is a problem")
+            document.getElementsByClass("govuk-error-summary__title").text must include("There is a problem")
             document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("You must enter a valid date")
         }
       }
@@ -284,7 +284,7 @@ class DisposePropertyControllerSpec extends PlaySpec with GuiceOneServerPerSuite
 
             val document = Jsoup.parse(contentAsString(result))
             document.title() must be(TitleBuilder.buildTitle("Error: When did you dispose of the property?"))
-            document.getElementById("error-summary-title").text must include("There is a problem")
+            document.getElementsByClass("govuk-error-summary__title").text must include("There is a problem")
             document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("The date of disposal must be in this chargeable period")
         }
       }
