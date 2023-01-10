@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -214,7 +214,7 @@ class ChooseReliefsSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil
 
   val injectedViewInstance: chooseReliefs = app.injector.instanceOf[views.html.reliefs.chooseReliefs]
 
-  override def haveErrorSummary(expectedText: String) = new CssSelectorWithTextMatcher(expectedText, "#main-content > div > div > div > div > ul > li > a")
+  override def haveErrorSummary(expectedText: String) = new CssSelectorWithTextMatcher(expectedText, "#main-content > div > div > div > div > div > ul > li > a")
   override def haveErrorNotification(expectedText: String) = new CssSelectorWithTextMatcher(expectedText, ".govuk-error-message")
 
 
