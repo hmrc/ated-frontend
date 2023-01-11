@@ -22,7 +22,7 @@ import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms._
 import javax.inject.Inject
 import models.DateCouncilRegisteredKnown
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Call, Action, AnyContent, MessagesControllerComponents}
 import services._
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants.NewBuildCouncilRegisteredDateKnown
@@ -74,8 +74,8 @@ class DateCouncilRegisteredKnownController @Inject()(mcc: MessagesControllerComp
               dataCacheConnector.saveFormData[DateCouncilRegisteredKnown](NewBuildCouncilRegisteredDateKnown, form).flatMap{_ =>
                 redirectWithBackLink(
                   controllerId,
-                  controllers.propertyDetails.routes.PropertyDetailsNewBuildDatesController.view(id),
-                  Some(nextPage(id, form.isDateCouncilRegisteredKnown))
+                  nextPage(id, form.isDateCouncilRegisteredKnown, mode),
+                  Some(controllers.propertyDetails.routes.DateCouncilRegisteredKnownController.view(id, mode).url)
                 )
               }
             }
@@ -85,9 +85,11 @@ class DateCouncilRegisteredKnownController @Inject()(mcc: MessagesControllerComp
     }
   }
 
-  private def nextPage(id: String, isDateCouncilRegisteredKnown: Option[Boolean]): String =
+  private def nextPage(id: String, isDateCouncilRegisteredKnown: Option[Boolean], mode: Option[String]): Call = {
     isDateCouncilRegisteredKnown match {
-      case Some(true) => controllers.propertyDetails.routes.DateCouncilRegisteredKnownController.view(id).url
-      case _ => controllers.propertyDetails.routes.DateCouncilRegisteredKnownController.view(id).url
+      case Some(true) => controllers.propertyDetails.routes.PropertyDetailsNewBuildDatesController.view(id)
+      case Some(false) => controllers.propertyDetails.routes.PropertyDetailsNewBuildDatesController.view(id)
+      case _ => controllers.propertyDetails.routes.PropertyDetailsNewBuildDatesController.view(id)
     }
+  }
 }

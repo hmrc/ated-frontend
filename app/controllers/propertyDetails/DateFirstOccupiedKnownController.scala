@@ -22,7 +22,7 @@ import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms._
 import javax.inject.Inject
 import models.PropertyDetailsDateFirstOccupiedKnown
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Call, Action, AnyContent, MessagesControllerComponents}
 import services._
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants.NewBuildFirstOccupiedDateKnown
@@ -74,8 +74,8 @@ class DateFirstOccupiedKnownController @Inject()(mcc: MessagesControllerComponen
               dataCacheConnector.saveFormData[PropertyDetailsDateFirstOccupiedKnown](NewBuildFirstOccupiedDateKnown, form).flatMap{_ =>
                 redirectWithBackLink(
                   controllerId,
-                  controllers.propertyDetails.routes.PropertyDetailsNewBuildDatesController.view(id),
-                  Some(nextPage(id, form.isDateFirstOccupiedKnown, mode))
+                  nextPage(id, form.isDateFirstOccupiedKnown, mode),
+                  Some(controllers.propertyDetails.routes.DateFirstOccupiedKnownController.view(id, mode).url)
                 )
               }
             }
@@ -85,10 +85,12 @@ class DateFirstOccupiedKnownController @Inject()(mcc: MessagesControllerComponen
     }
   }
 
-  private def nextPage(id: String, isDateFirstOccupiedKnown: Option[Boolean], mode: Option[String]): String =
+  private def nextPage(id: String, isDateFirstOccupiedKnown: Option[Boolean], mode: Option[String]): Call = {
+    println(s" ******* isDateFirstOccupiedKnown = $isDateFirstOccupiedKnown")
     isDateFirstOccupiedKnown match {
-      case Some(true) => controllers.propertyDetails.routes.DateFirstOccupiedKnownController.view(id, mode).url
-      case Some(false) => controllers.propertyDetails.routes.DateCouncilRegisteredKnownController.view(id, mode).url
-      case _ => controllers.propertyDetails.routes.DateFirstOccupiedKnownController.view(id, mode).url
+      case Some(true) => controllers.propertyDetails.routes.DateFirstOccupiedKnownController.view(id, mode)
+      case Some(false) => controllers.propertyDetails.routes.DateCouncilRegisteredKnownController.view(id, mode)
+      case _ => controllers.propertyDetails.routes.DateFirstOccupiedKnownController.view(id, mode)
     }
+  }
 }
