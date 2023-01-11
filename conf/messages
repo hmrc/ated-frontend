@@ -393,6 +393,7 @@ ated.property-details-value-error.newBuildDates.invalidRegDateError = Enter a re
 
 ated.property-details.first-occupied-known.title = Do you know when the property was first occupied?
 ated.property-details.first-occupied-known.header = Do you know when the property was first occupied?
+ated.property-details.first-occupied-known.non-selected = Select yes if you know when the property was first occupied
 
 ##### PROPERTY DETAILS NEW BUILD DATES UPDATE
 
