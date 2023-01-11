@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -91,9 +91,9 @@ class PropertyDetailsTaxAvoidanceHtmlViewSpec extends AtedViewSpec with MockitoS
       val errorDoc = doc(view)
 
       errorDoc.getElementById("taxAvoidanceScheme-error").text() mustBe ("Error: " + messages("ated.property-details-period.taxAvoidanceScheme.error.empty"))
-      errorDoc.select("#main-content > div > div > div > div > ul > li:nth-child(1) > a").text() mustBe messages("ated.property-details-period.taxAvoidanceScheme.error.empty")
+      errorDoc.select("#main-content > div > div > div > div > div > ul > li:nth-child(1) > a").text() mustBe messages("ated.property-details-period.taxAvoidanceScheme.error.empty")
       errorDoc.getElementById("taxAvoidancePromoterReference-error").text() mustBe ("Error: " + messages("ated.property-details-period.taxAvoidancePromoterReference.error.empty"))
-      errorDoc.select("#main-content > div > div > div > div > ul > li:nth-child(2) > a").text() mustBe messages("ated.property-details-period.taxAvoidancePromoterReference.error.empty")
+      errorDoc.select("#main-content > div > div > div > div > div > ul > li:nth-child(2) > a").text() mustBe messages("ated.property-details-period.taxAvoidancePromoterReference.error.empty")
     }
 
   }
