@@ -50,7 +50,6 @@ class DateFirstOccupiedKnownSpec extends AnyFeatureSpec with GuiceOneAppPerSuite
 
       Given("the client has not entered any information")
       When("The client views the page")
-      //val dateFirstOccupiedKnown: PropertyDetailsDateFirstOccupiedKnown = PropertyDetailsDateFirstOccupiedKnown(None)
       val html = injectedViewInstance("1", dateFirstOccupiedKnownForm, None, Html(""), Some("http://backLink"))
       val document = Jsoup.parse(html.toString())
       Then("The title should match - Do you know when the property was first occupied? - GOV.UK")

@@ -21,7 +21,7 @@ import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.{AuthAction, ClientHelper}
 import javax.inject.{Inject, Singleton}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService}
+import services.{PropertyDetailsService, ServiceInfoService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import scala.concurrent.ExecutionContext
 
@@ -44,13 +44,9 @@ class PropertyDetailsNoStartDateController @Inject()(mcc: MessagesControllerComp
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
-          propertyDetailsCacheResponse(id) {
-            case PropertyDetailsCacheSuccessResponse(response) =>
-              currentBackLink.map(backLink => Ok(view(controllerId, serviceInfoContent, mode, backLink)))
-          }
+          currentBackLink.map(backLink => Ok(view(controllerId, serviceInfoContent, mode, backLink)))
         }
       }
     }
   }
-
 }
