@@ -20,5 +20,6 @@ dist
 .bsp
 .bloop
 .metals
+.DS_Store
 project/.bloop
 project/metals.sbt

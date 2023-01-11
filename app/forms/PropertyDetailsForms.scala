@@ -124,8 +124,8 @@ object PropertyDetailsForms {
 
   val firstOccupiedKnownForm = Form(
     mapping(
-      "isWhenFirstOccupiedKnown" -> optional(boolean).verifying("ated.property-details-value.isWhenFirstOccupiedKnown.error.non-selected", x => x.isDefined)
-    )(PropertyDetailsFirstOccupiedKnown.apply)(PropertyDetailsFirstOccupiedKnown.unapply)
+      "isDateFirstOccupiedKnown" -> optional(boolean).verifying("ated.property-details-value.isDateFirstOccupiedKnown.error.non-selected", x => x.isDefined)
+    )(PropertyDetailsDateFirstOccupiedKnown.apply)(PropertyDetailsDateFirstOccupiedKnown.unapply)
   )
 
   val propertyDetailsNewBuildDatesForm = Form(

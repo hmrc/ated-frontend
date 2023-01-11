@@ -30,7 +30,7 @@
       govukErrorSummary : GovukErrorSummary,
       formHelper: FormWithCSRF)
 
-@(id: String, periodKey: Int, firstOccupiedKnownForm: Form[PropertyDetailsFirstOccupiedKnown], mode: Option[String], serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
+@(id: String, firstOccupiedKnownForm: Form[PropertyDetailsDateFirstOccupiedKnown], mode: Option[String], serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
 @implicitFormInstance = @{
   Some(firstOccupiedKnownForm)
@@ -67,9 +67,10 @@
       </h1>
     </header>
 
-  @formHelper(action = controllers.propertyDetails.routes.PropertyDetailsFirstOccupiedController.save(id, periodKey, mode)) {
+  @formHelper(action = controllers.propertyDetails.routes.DateFirstOccupiedKnownController.save(id, mode)) {
 
     @govukRadios(Radios(
+      classes = "govuk-radios--inline",
       fieldset = Some(Fieldset(
           legend = Some(Legend(
               content = Text(messages("ated.property-details.first-occupied-known.header")),
@@ -83,7 +84,7 @@
           RadioItem(
               content = Text(messages("ated.property-details-value.no")),
               value = Some("false")))
-      ).withFormField(firstOccupiedKnownForm("isWhenFirstOccupiedKnown"))
+      ).withFormField(firstOccupiedKnownForm("isDateFirstOccupiedKnown"))
     )
 
     @govukButton(Button(

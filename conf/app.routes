@@ -158,8 +158,8 @@ GET      /liability/create/valued/edit/:propertyKey                            c
 GET      /liability/create/new-build-start/view/:propertyKey                    controllers.propertyDetails.PropertyDetailsNewBuildDatesController.view(propertyKey: String)
 POST     /liability/create/new-build-start/save/:propertyKey/period/:periodKey  controllers.propertyDetails.PropertyDetailsNewBuildDatesController.save(propertyKey: String, periodKey: Int, mode: Option[String] ?=None)
 
-GET      /liability/create/new-build/do-you-know-when-property-first-occupied/:propertyKey   controllers.propertyDetails.PropertyDetailsFirstOccupiedController.view(propertyKey: String)
-POST     /liability/create/new-build/do-you-know-when-property-first-occupied/:propertyKey   controllers.propertyDetails.PropertyDetailsFirstOccupiedController.save(propertyKey: String, periodKey: Int, mode: Option[String] ?=None)
+GET      /liability/create/new-build/do-you-know-when-property-first-occupied/:propertyKey   controllers.propertyDetails.DateFirstOccupiedKnownController.view(propertyKey: String, mode: Option[String] ?=None)
+POST     /liability/create/new-build/do-you-know-when-property-first-occupied/:propertyKey   controllers.propertyDetails.DateFirstOccupiedKnownController.save(propertyKey: String, mode: Option[String] ?=None)
 
 GET      /liability/create/new-build-value/view/:propertyKey                                 controllers.propertyDetails.PropertyDetailsNewBuildValueController.view(propertyKey: String)
 POST     /liability/create/new-build-value/save/:propertyKey/period/:periodKey/date/:date    controllers.propertyDetails.PropertyDetailsNewBuildValueController.save(propertyKey: String, periodKey: Int, mode: Option[String] ?=None, date: org.joda.time.LocalDate)
