@@ -389,6 +389,18 @@ ated.property-details-value-error.newBuildDates.futureRegError = The registratio
 ated.property-details-value-error.newBuildDates.invalidOccupiedDateError = Enter a real date when the property was first occupied
 ated.property-details-value-error.newBuildDates.invalidRegDateError = Enter a real registration date
 
+##### PROPERTY DETAILS Do you know when property occupied
+
+ated.property-details.first-occupied-known.title = Do you know when the property was first occupied?
+ated.property-details.first-occupied-known.header = Do you know when the property was first occupied?
+ated.property-details.first-occupied-known.non-selected = Select yes if you know when the property was first occupied
+
+##### PROPERTY DETAILS Do you know when local council property registered the property
+
+ated.property-details.council-registered-known.title = Do you know when the local council registered the property for council tax?
+ated.property-details.council-registered-known.header = Do you know when the local council registered the property for council tax?
+ated.property-details.council-registered-known.non-selected = Select yes if you know when the local council registered the property for council tax
+
 ##### PROPERTY DETAILS NEW BUILD DATES UPDATE
 
 ated.property-details-value.no-start-date.title = No start date was provided
