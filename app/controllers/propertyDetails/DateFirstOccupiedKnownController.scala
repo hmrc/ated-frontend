@@ -75,7 +75,7 @@ class DateFirstOccupiedKnownController @Inject()(mcc: MessagesControllerComponen
                 redirectWithBackLink(
                   controllerId,
                   controllers.propertyDetails.routes.PropertyDetailsNewBuildDatesController.view(id),
-                  Some(nextPage(id, form.isDateFirstOccupiedKnown))
+                  Some(nextPage(id, form.isDateFirstOccupiedKnown, mode))
                 )
               }
             }
@@ -85,9 +85,10 @@ class DateFirstOccupiedKnownController @Inject()(mcc: MessagesControllerComponen
     }
   }
 
-  private def nextPage(id: String, isDateFirstOccupiedKnown: Option[Boolean]): String =
+  private def nextPage(id: String, isDateFirstOccupiedKnown: Option[Boolean], mode: Option[String]): String =
     isDateFirstOccupiedKnown match {
-      case Some(true) => controllers.propertyDetails.routes.DateFirstOccupiedKnownController.view(id).url
-      case _ => controllers.propertyDetails.routes.DateFirstOccupiedKnownController.view(id).url
+      case Some(true) => controllers.propertyDetails.routes.DateFirstOccupiedKnownController.view(id, mode).url
+      case Some(false) => controllers.propertyDetails.routes.DateCouncilRegisteredKnownController.view(id, mode).url
+      case _ => controllers.propertyDetails.routes.DateFirstOccupiedKnownController.view(id, mode).url
     }
 }

@@ -36,7 +36,7 @@ class DateCouncilRegisteredKnownController @Inject()(mcc: MessagesControllerComp
                                                   val propertyDetailsService: PropertyDetailsService,
                                                   val dataCacheConnector: DataCacheConnector,
                                                   val backLinkCacheConnector: BackLinkCacheConnector,
-                                                  view: views.html.propertyDetails.dateFirstOccupiedKnown)
+                                                  view: views.html.propertyDetails.dateCouncilRegisteredKnown)
                                                  (implicit val appConfig: ApplicationConfig)
 
   extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with WithDefaultFormBinding {
@@ -52,7 +52,7 @@ class DateCouncilRegisteredKnownController @Inject()(mcc: MessagesControllerComp
             dataCacheConnector.fetchAndGetFormData[DateCouncilRegisteredKnown](NewBuildCouncilRegisteredDateKnown).flatMap { councilRegistered =>
               val displayData = councilRegistered.getOrElse(DateCouncilRegisteredKnown(None))
               Future.successful(Ok(view(id,
-                dateFirstOccupiedKnownForm.fill(displayData),
+                dateCouncilRegisteredKnownForm.fill(displayData),
                 mode,
                 serviceInfoContent,
                 backLink)
@@ -68,14 +68,14 @@ class DateCouncilRegisteredKnownController @Inject()(mcc: MessagesControllerComp
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
-          dateFirstOccupiedKnownForm.bindFromRequest.fold(
+          dateCouncilRegisteredKnownForm.bindFromRequest.fold(
             formWithError => currentBackLink.map(backLink => BadRequest(view(id, formWithError, mode, serviceInfoContent, backLink))),
             form => {
               dataCacheConnector.saveFormData[DateCouncilRegisteredKnown](NewBuildCouncilRegisteredDateKnown, form).flatMap{_ =>
                 redirectWithBackLink(
                   controllerId,
                   controllers.propertyDetails.routes.PropertyDetailsNewBuildDatesController.view(id),
-                  Some(nextPage(id, form.isDateFirstOccupiedKnown))
+                  Some(nextPage(id, form.isDateCouncilRegisteredKnown))
                 )
               }
             }
@@ -85,9 +85,9 @@ class DateCouncilRegisteredKnownController @Inject()(mcc: MessagesControllerComp
     }
   }
 
-  private def nextPage(id: String, isFirstOccupiedDateKnown: Option[Boolean]): String =
-    isFirstOccupiedDateKnown match {
-      case Some(true) => controllers.propertyDetails.routes.DateFirstOccupiedKnownController.view(id).url
-      case _ => controllers.propertyDetails.routes.DateFirstOccupiedKnownController.view(id).url
+  private def nextPage(id: String, isDateCouncilRegisteredKnown: Option[Boolean]): String =
+    isDateCouncilRegisteredKnown match {
+      case Some(true) => controllers.propertyDetails.routes.DateCouncilRegisteredKnownController.view(id).url
+      case _ => controllers.propertyDetails.routes.DateCouncilRegisteredKnownController.view(id).url
     }
 }
