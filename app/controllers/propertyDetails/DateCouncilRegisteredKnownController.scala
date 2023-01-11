@@ -85,11 +85,11 @@ class DateCouncilRegisteredKnownController @Inject()(mcc: MessagesControllerComp
     }
   }
 
-  private def nextPage(id: String, isDateCouncilRegisteredKnown: Option[Boolean], mode: Option[String]): Call = {
+  private def nextPage(id: String, isDateCouncilRegisteredKnown: Option[Boolean], mode: Option[String]): Call =
     isDateCouncilRegisteredKnown match {
       case Some(true) => controllers.propertyDetails.routes.PropertyDetailsNewBuildDatesController.view(id)
       case Some(false) => controllers.propertyDetails.routes.PropertyDetailsNewBuildDatesController.view(id)
       case _ => controllers.propertyDetails.routes.PropertyDetailsNewBuildDatesController.view(id)
     }
-  }
+
 }

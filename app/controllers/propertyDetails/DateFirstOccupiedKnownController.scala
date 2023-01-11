@@ -85,12 +85,11 @@ class DateFirstOccupiedKnownController @Inject()(mcc: MessagesControllerComponen
     }
   }
 
-  private def nextPage(id: String, isDateFirstOccupiedKnown: Option[Boolean], mode: Option[String]): Call = {
-    println(s" ******* isDateFirstOccupiedKnown = $isDateFirstOccupiedKnown")
+  private def nextPage(id: String, isDateFirstOccupiedKnown: Option[Boolean], mode: Option[String]): Call =
     isDateFirstOccupiedKnown match {
       case Some(true) => controllers.propertyDetails.routes.DateFirstOccupiedKnownController.view(id, mode)
       case Some(false) => controllers.propertyDetails.routes.DateCouncilRegisteredKnownController.view(id, mode)
       case _ => controllers.propertyDetails.routes.DateFirstOccupiedKnownController.view(id, mode)
     }
-  }
+
 }
