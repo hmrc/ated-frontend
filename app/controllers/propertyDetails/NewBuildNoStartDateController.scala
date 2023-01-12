@@ -26,13 +26,13 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import scala.concurrent.ExecutionContext
 
 @Singleton
-class PropertyDetailsNoStartDateController @Inject()(mcc: MessagesControllerComponents,
+class NewBuildNoStartDateController @Inject()(mcc: MessagesControllerComponents,
                                                      authAction: AuthAction,
                                                      serviceInfoService: ServiceInfoService,
                                                      val propertyDetailsService: PropertyDetailsService,
                                                      val dataCacheConnector: DataCacheConnector,
                                                      val backLinkCacheConnector: BackLinkCacheConnector,
-                                                     view: views.html.propertyDetails.propertyDetailsNoStartDate)
+                                                     view: views.html.propertyDetails.newBuildNoStartDate)
                                                     (implicit val appConfig: ApplicationConfig)
 
   extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper {

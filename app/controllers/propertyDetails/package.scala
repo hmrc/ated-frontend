@@ -17,7 +17,7 @@
 package controllers
 
 package object propertyDetails {
-  val NoStartDateControllerId: String = "PropertyDetailsNoStartDateController"
+  val NoStartDateControllerId: String = "NewBuildNoStartDateController"
   val DateFirstOccupiedKnownControllerId: String = "DateFirstOccupiedKnownController"
   val DateCouncilRegisteredKnownControllerId: String = "DateCouncilRegisteredKnownController"
   val NewBuildDatesControllerId: String = "PropertyDetailsNewBuildDatesController"

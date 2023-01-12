@@ -89,7 +89,7 @@ class DateCouncilRegisteredKnownController @Inject()(mcc: MessagesControllerComp
                     case _ =>
                       redirectWithBackLink(
                         NoStartDateControllerId,
-                        controllers.propertyDetails.routes.PropertyDetailsNoStartDateController.view(id,mode),
+                        controllers.propertyDetails.routes.NewBuildNoStartDateController.view(id,mode),
                         Some(controllers.propertyDetails.routes.DateCouncilRegisteredKnownController.view(id, mode).url)
                       )
                   }

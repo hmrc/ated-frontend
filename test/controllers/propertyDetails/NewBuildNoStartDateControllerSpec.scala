@@ -37,11 +37,11 @@ import testhelpers.MockAuthUtil
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.AtedConstants
-import views.html.propertyDetails.propertyDetailsNoStartDate
+import views.html.propertyDetails.newBuildNoStartDate
 import play.twirl.api.HtmlFormat
 import scala.concurrent.Future
 
-class PropertyDetailsNoStartDateControllerSpec extends PlaySpec with GuiceOneServerPerSuite with BeforeAndAfterEach with MockitoSugar with MockAuthUtil {
+class NewBuildNoStartDateControllerSpec extends PlaySpec with GuiceOneServerPerSuite with BeforeAndAfterEach with MockitoSugar with MockAuthUtil {
 
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
   implicit lazy val hc: HeaderCarrier = HeaderCarrier()
@@ -52,7 +52,7 @@ class PropertyDetailsNoStartDateControllerSpec extends PlaySpec with GuiceOneSer
   val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
   lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
-  val injectedViewInstance: propertyDetailsNoStartDate = app.injector.instanceOf[views.html.propertyDetails.propertyDetailsNoStartDate]
+  val injectedViewInstance: newBuildNoStartDate = app.injector.instanceOf[views.html.propertyDetails.newBuildNoStartDate]
 
   class Setup {
 
@@ -62,7 +62,7 @@ class PropertyDetailsNoStartDateControllerSpec extends PlaySpec with GuiceOneSer
       mockAuthConnector
     )
 
-    val noStartDateController: PropertyDetailsNoStartDateController = new PropertyDetailsNoStartDateController(
+    val noStartDateController: NewBuildNoStartDateController = new NewBuildNoStartDateController(
       mockMcc,
       mockAuthAction,
       mockServiceInfoService,
@@ -99,7 +99,7 @@ class PropertyDetailsNoStartDateControllerSpec extends PlaySpec with GuiceOneSer
     }
   }
 
-  "PropertyDetailsNoStartDateController" must {
+  "NewBuildNoStartDateController" must {
 
     "view" must {
 
