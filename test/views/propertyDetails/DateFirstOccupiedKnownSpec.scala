@@ -30,7 +30,7 @@ import play.api.test.FakeRequest
 import play.twirl.api.Html
 import testhelpers.MockAuthUtil
 import views.html.propertyDetails.dateFirstOccupiedKnown
-import models.PropertyDetailsDateFirstOccupiedKnown
+import models.DateFirstOccupiedKnown
 import forms.PropertyDetailsForms.dateFirstOccupiedKnownForm
 
 class DateFirstOccupiedKnownSpec extends AnyFeatureSpec with GuiceOneAppPerSuite with MockitoSugar

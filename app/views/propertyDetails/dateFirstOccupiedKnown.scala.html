@@ -30,7 +30,7 @@
       govukErrorSummary : GovukErrorSummary,
       formHelper: FormWithCSRF)
 
-@(id: String, dateFirstOccupiedKnownForm: Form[PropertyDetailsDateFirstOccupiedKnown], mode: Option[String], serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
+@(id: String, dateFirstOccupiedKnownForm: Form[DateFirstOccupiedKnown], mode: Option[String], serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
 @implicitFormInstance = @{
   Some(dateFirstOccupiedKnownForm)

@@ -40,7 +40,7 @@ import utils.AtedConstants
 import views.html.propertyDetails.dateFirstOccupiedKnown
 import play.twirl.api.HtmlFormat
 import scala.concurrent.Future
-import models.PropertyDetailsDateFirstOccupiedKnown
+import models.DateFirstOccupiedKnown
 
 class DateFirstOccupiedKnownControllerSpec extends PlaySpec with GuiceOneServerPerSuite with BeforeAndAfterEach with MockitoSugar with MockAuthUtil {
 
@@ -91,8 +91,8 @@ class DateFirstOccupiedKnownControllerSpec extends PlaySpec with GuiceOneServerP
         .thenReturn(Future.successful(HtmlFormat.empty))
       when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
         (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-      when(mockDataCacheConnector.fetchAndGetFormData[PropertyDetailsDateFirstOccupiedKnown](ArgumentMatchers.eq(AtedConstants.NewBuildFirstOccupiedDateKnown))
-        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(PropertyDetailsDateFirstOccupiedKnown(None))))
+      when(mockDataCacheConnector.fetchAndGetFormData[DateFirstOccupiedKnown](ArgumentMatchers.eq(AtedConstants.NewBuildFirstOccupiedDateKnown))
+        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(DateFirstOccupiedKnown(None))))
 
       when(mockPropertyDetailsService.retrieveDraftPropertyDetails(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())) thenReturn {
         Future.successful(PropertyDetailsCacheSuccessResponse(PropertyDetailsBuilder.getPropertyDetails("1")))

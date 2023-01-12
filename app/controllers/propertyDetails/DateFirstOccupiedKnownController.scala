@@ -20,16 +20,16 @@ import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms._
-import javax.inject.Inject
-import models.PropertyDetailsDateFirstOccupiedKnown
-import play.api.mvc.{Call, Action, AnyContent, MessagesControllerComponents}
+import javax.inject.{Singleton, Inject}
+import models.DateFirstOccupiedKnown
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services._
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants.NewBuildFirstOccupiedDateKnown
 import uk.gov.hmrc.play.bootstrap.controller.WithDefaultFormBinding
 import scala.concurrent.{ExecutionContext, Future}
 
-
+@Singleton
 class DateFirstOccupiedKnownController @Inject()(mcc: MessagesControllerComponents,
                                                   authAction: AuthAction,
                                                   serviceInfoService: ServiceInfoService,
@@ -42,15 +42,15 @@ class DateFirstOccupiedKnownController @Inject()(mcc: MessagesControllerComponen
   extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with WithDefaultFormBinding {
 
   implicit val ec: ExecutionContext = mcc.executionContext
-  val controllerId: String = "DateFirstOccupiedKnownController"
+  val controllerId: String = DateFirstOccupiedKnownControllerId
 
   def view(id: String, mode: Option[String] = None): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
           currentBackLink.flatMap { backLink =>
-            dataCacheConnector.fetchAndGetFormData[PropertyDetailsDateFirstOccupiedKnown](NewBuildFirstOccupiedDateKnown).flatMap { firstOccupied =>
-              val displayData = firstOccupied.getOrElse(PropertyDetailsDateFirstOccupiedKnown(None))
+            dataCacheConnector.fetchAndGetFormData[DateFirstOccupiedKnown](NewBuildFirstOccupiedDateKnown).flatMap { firstOccupied =>
+              val displayData = firstOccupied.getOrElse(DateFirstOccupiedKnown(Some(false)))
               Future.successful(Ok(view(id,
                 dateFirstOccupiedKnownForm.fill(displayData),
                 mode,
@@ -71,12 +71,19 @@ class DateFirstOccupiedKnownController @Inject()(mcc: MessagesControllerComponen
           dateFirstOccupiedKnownForm.bindFromRequest.fold(
             formWithError => currentBackLink.map(backLink => BadRequest(view(id, formWithError, mode, serviceInfoContent, backLink))),
             form => {
-              dataCacheConnector.saveFormData[PropertyDetailsDateFirstOccupiedKnown](NewBuildFirstOccupiedDateKnown, form).flatMap{_ =>
-                redirectWithBackLink(
-                  controllerId,
-                  nextPage(id, form.isDateFirstOccupiedKnown, mode),
-                  Some(controllers.propertyDetails.routes.DateFirstOccupiedKnownController.view(id, mode).url)
-                )
+              dataCacheConnector.saveFormData[DateFirstOccupiedKnown](NewBuildFirstOccupiedDateKnown, form).flatMap{
+                case DateFirstOccupiedKnown(Some(true)) =>
+                  redirectWithBackLink(
+                    NewBuildDatesControllerId,
+                    controllers.propertyDetails.routes.PropertyDetailsNewBuildDatesController.view(id),
+                    Some(controllers.propertyDetails.routes.DateFirstOccupiedKnownController.view(id, mode).url)
+                  )
+                case _ =>
+                  redirectWithBackLink(
+                    DateFirstOccupiedKnownControllerId,
+                    controllers.propertyDetails.routes.DateCouncilRegisteredKnownController.view(id, mode),
+                    Some(controllers.propertyDetails.routes.DateFirstOccupiedKnownController.view(id, mode).url)
+                  )
               }
             }
           )
@@ -84,12 +91,5 @@ class DateFirstOccupiedKnownController @Inject()(mcc: MessagesControllerComponen
       }
     }
   }
-
-  private def nextPage(id: String, isDateFirstOccupiedKnown: Option[Boolean], mode: Option[String]): Call =
-    isDateFirstOccupiedKnown match {
-      case Some(true) => controllers.propertyDetails.routes.DateFirstOccupiedKnownController.view(id, mode)
-      case Some(false) => controllers.propertyDetails.routes.DateCouncilRegisteredKnownController.view(id, mode)
-      case _ => controllers.propertyDetails.routes.DateFirstOccupiedKnownController.view(id, mode)
-    }
 
 }

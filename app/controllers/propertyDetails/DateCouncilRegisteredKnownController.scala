@@ -20,16 +20,16 @@ import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms._
-import javax.inject.Inject
-import models.DateCouncilRegisteredKnown
-import play.api.mvc.{Call, Action, AnyContent, MessagesControllerComponents}
+import javax.inject.{Singleton, Inject}
+import models.{DateFirstOccupiedKnown, DateCouncilRegisteredKnown}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services._
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.AtedConstants.NewBuildCouncilRegisteredDateKnown
+import utils.AtedConstants.{NewBuildFirstOccupiedDateKnown, NewBuildCouncilRegisteredDateKnown}
 import uk.gov.hmrc.play.bootstrap.controller.WithDefaultFormBinding
 import scala.concurrent.{ExecutionContext, Future}
 
-
+@Singleton
 class DateCouncilRegisteredKnownController @Inject()(mcc: MessagesControllerComponents,
                                                   authAction: AuthAction,
                                                   serviceInfoService: ServiceInfoService,
@@ -42,7 +42,7 @@ class DateCouncilRegisteredKnownController @Inject()(mcc: MessagesControllerComp
   extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with WithDefaultFormBinding {
 
   implicit val ec: ExecutionContext = mcc.executionContext
-  val controllerId: String = "DateCouncilRegisteredKnownController"
+  val controllerId: String = DateCouncilRegisteredKnownControllerId
 
   def view(id: String, mode: Option[String] = None): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
@@ -71,12 +71,28 @@ class DateCouncilRegisteredKnownController @Inject()(mcc: MessagesControllerComp
           dateCouncilRegisteredKnownForm.bindFromRequest.fold(
             formWithError => currentBackLink.map(backLink => BadRequest(view(id, formWithError, mode, serviceInfoContent, backLink))),
             form => {
-              dataCacheConnector.saveFormData[DateCouncilRegisteredKnown](NewBuildCouncilRegisteredDateKnown, form).flatMap{_ =>
-                redirectWithBackLink(
-                  controllerId,
-                  nextPage(id, form.isDateCouncilRegisteredKnown, mode),
-                  Some(controllers.propertyDetails.routes.DateCouncilRegisteredKnownController.view(id, mode).url)
-                )
+              dataCacheConnector.saveFormData[DateCouncilRegisteredKnown](NewBuildCouncilRegisteredDateKnown, form).flatMap{
+                case DateCouncilRegisteredKnown(Some(true)) =>
+                  redirectWithBackLink(
+                    NewBuildDatesControllerId,
+                    controllers.propertyDetails.routes.PropertyDetailsNewBuildDatesController.view(id),
+                    Some(controllers.propertyDetails.routes.DateCouncilRegisteredKnownController.view(id, mode).url)
+                  )
+                case _ =>
+                  dataCacheConnector.fetchAndGetFormData[DateFirstOccupiedKnown](NewBuildFirstOccupiedDateKnown).flatMap{
+                    case Some(DateFirstOccupiedKnown(Some(true))) =>
+                      redirectWithBackLink(
+                        NewBuildDatesControllerId,
+                        controllers.propertyDetails.routes.PropertyDetailsNewBuildDatesController.view(id),
+                        Some(controllers.propertyDetails.routes.DateCouncilRegisteredKnownController.view(id, mode).url)
+                      )
+                    case _ =>
+                      redirectWithBackLink(
+                        NoStartDateControllerId,
+                        controllers.propertyDetails.routes.PropertyDetailsNoStartDateController.view(id,mode),
+                        Some(controllers.propertyDetails.routes.DateCouncilRegisteredKnownController.view(id, mode).url)
+                      )
+                  }
               }
             }
           )
@@ -84,12 +100,5 @@ class DateCouncilRegisteredKnownController @Inject()(mcc: MessagesControllerComp
       }
     }
   }
-
-  private def nextPage(id: String, isDateCouncilRegisteredKnown: Option[Boolean], mode: Option[String]): Call =
-    isDateCouncilRegisteredKnown match {
-      case Some(true) => controllers.propertyDetails.routes.PropertyDetailsNewBuildDatesController.view(id)
-      case Some(false) => controllers.propertyDetails.routes.PropertyDetailsNewBuildDatesController.view(id)
-      case _ => controllers.propertyDetails.routes.PropertyDetailsNewBuildDatesController.view(id)
-    }
 
 }
