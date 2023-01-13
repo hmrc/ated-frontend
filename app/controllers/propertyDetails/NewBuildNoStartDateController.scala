@@ -21,36 +21,32 @@ import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.{AuthAction, ClientHelper}
 import javax.inject.{Inject, Singleton}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService}
+import services.{PropertyDetailsService, ServiceInfoService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import scala.concurrent.ExecutionContext
 
 @Singleton
-class PropertyDetailsNoStartDateController @Inject()(mcc: MessagesControllerComponents,
+class NewBuildNoStartDateController @Inject()(mcc: MessagesControllerComponents,
                                                      authAction: AuthAction,
                                                      serviceInfoService: ServiceInfoService,
                                                      val propertyDetailsService: PropertyDetailsService,
                                                      val dataCacheConnector: DataCacheConnector,
                                                      val backLinkCacheConnector: BackLinkCacheConnector,
-                                                     view: views.html.propertyDetails.propertyDetailsNoStartDate)
+                                                     view: views.html.propertyDetails.newBuildNoStartDate)
                                                     (implicit val appConfig: ApplicationConfig)
 
   extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper {
 
   implicit val ec: ExecutionContext = mcc.executionContext
-  val controllerId = "PropertyDetailsNoStartDateController"
+  val controllerId = NoStartDateControllerId
 
   def view(id: String, mode: Option[String]=None): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
-          propertyDetailsCacheResponse(id) {
-            case PropertyDetailsCacheSuccessResponse(response) =>
-              currentBackLink.map(backLink => Ok(view(controllerId, serviceInfoContent, mode, backLink)))
-          }
+          currentBackLink.map(backLink => Ok(view(controllerId, serviceInfoContent, mode, backLink)))
         }
       }
     }
   }
-
 }

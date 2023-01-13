@@ -34,6 +34,10 @@ object AtedConstants {
 
   val AddressTypeCorrespondence: String = "Correspondence"
 
+  val NewBuildFirstOccupiedDateKnown: String = "date-first-occupied-known"
+  val NewBuildFirstOccupiedDate: String = "date-first-occupied"
+  val NewBuildCouncilRegisteredDateKnown: String = "date-council-registered-known"
+
   val PeriodKey: String = "2015"
   val PeriodStartMonth: String = "4"
   val PeriodStartDay: String = "1"

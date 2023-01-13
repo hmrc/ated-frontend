@@ -45,7 +45,7 @@ class PropertyDetailsNewBuildDatesController @Inject()(mcc: MessagesControllerCo
   extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with WithDefaultFormBinding {
 
   implicit val ec: ExecutionContext = mcc.executionContext
-  val controllerId: String = "PropertyDetailsNewBuildDatesController"
+  val controllerId: String = NewBuildDatesControllerId
 
   def view(id: String): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>

@@ -118,6 +118,18 @@ object PropertyDetailsNewBuild {
   implicit val formats: OFormat[PropertyDetailsNewBuild] = Json.format[PropertyDetailsNewBuild]
 }
 
+case class DateFirstOccupiedKnown(isDateFirstOccupiedKnown: Option[Boolean] = None)
+
+object DateFirstOccupiedKnown {
+  implicit val formats: OFormat[DateFirstOccupiedKnown] = Json.format[DateFirstOccupiedKnown]
+}
+
+case class DateCouncilRegisteredKnown(isDateCouncilRegisteredKnown: Option[Boolean] = None)
+
+object DateCouncilRegisteredKnown {
+  implicit val formats: OFormat[DateCouncilRegisteredKnown] = Json.format[DateCouncilRegisteredKnown]
+}
+
 case class PropertyDetailsNewBuildDates(newBuildOccupyDate: Option[LocalDate],
                                         newBuildRegisterDate: Option[LocalDate])
 

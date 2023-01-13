@@ -122,6 +122,18 @@ object PropertyDetailsForms {
     )(PropertyDetailsNewBuild.apply)(PropertyDetailsNewBuild.unapply)
   )
 
+  val dateFirstOccupiedKnownForm = Form(
+    mapping(
+      "isDateFirstOccupiedKnown" -> optional(boolean).verifying("ated.property-details.first-occupied-known.non-selected", x => x.isDefined)
+    )(DateFirstOccupiedKnown.apply)(DateFirstOccupiedKnown.unapply)
+  )
+
+  val dateCouncilRegisteredKnownForm = Form(
+    mapping(
+      "isDateCouncilRegisteredKnown" -> optional(boolean).verifying("ated.property-details.council-registered-known.non-selected", x => x.isDefined)
+    )(DateCouncilRegisteredKnown.apply)(DateCouncilRegisteredKnown.unapply)
+  )
+
   val propertyDetailsNewBuildDatesForm = Form(
     mapping(
       "newBuildOccupyDate" -> DateTupleCustomErrorImpl("error.invalid.date.format").dateTuple

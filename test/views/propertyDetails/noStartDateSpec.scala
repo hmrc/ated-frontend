@@ -29,7 +29,7 @@ import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import play.twirl.api.Html
 import testhelpers.MockAuthUtil
-import views.html.propertyDetails.propertyDetailsNoStartDate
+import views.html.propertyDetails.newBuildNoStartDate
 
 class noStartDateSpec extends AnyFeatureSpec with GuiceOneAppPerSuite with MockitoSugar
   with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
@@ -38,7 +38,7 @@ class noStartDateSpec extends AnyFeatureSpec with GuiceOneAppPerSuite with Mocki
   implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
-  val injectedViewInstance: propertyDetailsNoStartDate = app.injector.instanceOf[views.html.propertyDetails.propertyDetailsNoStartDate]
+  val injectedViewInstance: newBuildNoStartDate = app.injector.instanceOf[views.html.propertyDetails.newBuildNoStartDate]
 
   Feature("The user views to the No start date error/warning page before they return the orignal questioning") {
 
