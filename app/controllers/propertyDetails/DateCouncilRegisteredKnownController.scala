@@ -25,7 +25,8 @@ import models.{DateFirstOccupiedKnown, DateCouncilRegisteredKnown}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services._
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.AtedConstants.{NewBuildFirstOccupiedDateKnown, NewBuildCouncilRegisteredDateKnown}
+import utils.AtedConstants.{SelectedPreviousReturn, NewBuildFirstOccupiedDateKnown, NewBuildCouncilRegisteredDateKnown}
+import utils.AtedUtils
 import uk.gov.hmrc.play.bootstrap.controller.WithDefaultFormBinding
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -44,20 +45,25 @@ class DateCouncilRegisteredKnownController @Inject()(mcc: MessagesControllerComp
   implicit val ec: ExecutionContext = mcc.executionContext
   val controllerId: String = DateCouncilRegisteredKnownControllerId
 
-  def view(id: String, mode: Option[String] = None): Action[AnyContent] = Action.async { implicit request =>
+  def view(id: String): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
-          currentBackLink.flatMap { backLink =>
-            dataCacheConnector.fetchAndGetFormData[DateCouncilRegisteredKnown](NewBuildCouncilRegisteredDateKnown).flatMap { councilRegistered =>
-              val displayData = councilRegistered.getOrElse(DateCouncilRegisteredKnown(None))
-              Future.successful(Ok(view(id,
-                dateCouncilRegisteredKnownForm.fill(displayData),
-                mode,
-                serviceInfoContent,
-                backLink)
-              ))
-            }
+          propertyDetailsCacheResponse(id) {
+            case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
+              currentBackLink.flatMap { backLink =>
+                dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
+                  dataCacheConnector.fetchAndGetFormData[DateCouncilRegisteredKnown](NewBuildCouncilRegisteredDateKnown).flatMap { councilRegistered =>
+                    val displayData = councilRegistered.getOrElse(DateCouncilRegisteredKnown(None))
+                    Future.successful(Ok(view(id,
+                      dateCouncilRegisteredKnownForm.fill(displayData),
+                      AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn),
+                      serviceInfoContent,
+                      backLink)
+                    ))
+                  }
+                }
+              }
           }
         }
       }
@@ -74,23 +80,23 @@ class DateCouncilRegisteredKnownController @Inject()(mcc: MessagesControllerComp
               dataCacheConnector.saveFormData[DateCouncilRegisteredKnown](NewBuildCouncilRegisteredDateKnown, form).flatMap{
                 case DateCouncilRegisteredKnown(Some(true)) =>
                   redirectWithBackLink(
-                    NewBuildDatesControllerId,
-                    controllers.propertyDetails.routes.PropertyDetailsNewBuildDatesController.view(id),
-                    Some(controllers.propertyDetails.routes.DateCouncilRegisteredKnownController.view(id, mode).url)
+                    DateCouncilRegisteredControllerId,
+                    controllers.propertyDetails.routes.DateCouncilRegisteredController.view(id),
+                    Some(controllers.propertyDetails.routes.DateCouncilRegisteredKnownController.view(id).url)
                   )
                 case _ =>
                   dataCacheConnector.fetchAndGetFormData[DateFirstOccupiedKnown](NewBuildFirstOccupiedDateKnown).flatMap{
                     case Some(DateFirstOccupiedKnown(Some(true))) =>
                       redirectWithBackLink(
-                        NewBuildDatesControllerId,
-                        controllers.propertyDetails.routes.PropertyDetailsNewBuildDatesController.view(id),
-                        Some(controllers.propertyDetails.routes.DateCouncilRegisteredKnownController.view(id, mode).url)
+                        NewBuildValueControllerId,
+                        controllers.propertyDetails.routes.PropertyDetailsNewBuildValueController.view(id),
+                        Some(controllers.propertyDetails.routes.DateCouncilRegisteredKnownController.view(id).url)
                       )
                     case _ =>
                       redirectWithBackLink(
                         NoStartDateControllerId,
-                        controllers.propertyDetails.routes.NewBuildNoStartDateController.view(id,mode),
-                        Some(controllers.propertyDetails.routes.DateCouncilRegisteredKnownController.view(id, mode).url)
+                        controllers.propertyDetails.routes.NewBuildNoStartDateController.view(id),
+                        Some(controllers.propertyDetails.routes.DateCouncilRegisteredKnownController.view(id).url)
                       )
                   }
               }

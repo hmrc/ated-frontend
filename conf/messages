@@ -389,6 +389,14 @@ ated.property-details-value-error.newBuildDates.futureRegError = The registratio
 ated.property-details-value-error.newBuildDates.invalidOccupiedDateError = Enter a real date when the property was first occupied
 ated.property-details-value-error.newBuildDates.invalidRegDateError = Enter a real registration date
 
+##### PROPERTY DETAILS NO START DATE
+
+ated.property-details-value.no-start-date.title = No start date was provided
+ated.property-details-value.no-start-date.header = No start date was provided
+ated.property-details-value.no-start-date.first-para = No date was provided for when the property was first occupied or for when the local council registered the property for council tax.
+ated.property-details-value.no-start-date.second-para = You need to enter one or both of these dates to continue your application.
+ated.property-details-value.no-start-date.continue = Continue application
+
 ##### PROPERTY DETAILS Do you know when property occupied
 
 ated.property-details.first-occupied-known.title = Do you know when the property was first occupied?
@@ -401,13 +409,33 @@ ated.property-details.council-registered-known.title = Do you know when the loca
 ated.property-details.council-registered-known.header = Do you know when the local council registered the property for council tax?
 ated.property-details.council-registered-known.non-selected = Select yes if you know when the local council registered the property for council tax
 
-##### PROPERTY DETAILS NEW BUILD DATES UPDATE
+##### PROPERTY DETAILS When was the property fist occupied?
 
-ated.property-details-value.no-start-date.title = No start date was provided
-ated.property-details-value.no-start-date.header = No start date was provided
-ated.property-details-value.no-start-date.first-para = No date was provided for when the property was first occupied or for when the local council registered the property for council tax.
-ated.property-details-value.no-start-date.second-para = You need to enter one or both of these dates to continue your application.
-ated.property-details-value.no-start-date.continue = Continue application
+ated.property-details.first-occupied-date.title = When was the property first occupied?
+ated.property-details.first-occupied-date.header = When was the property first occupied?
+ated.property-details.first-occupied-date.exampleDate = For example, 17 4 2022
+
+ated.property-details.first-occupied-date.empty = Date when the property first occupied must be a valid date
+ated.property-details.first-occupied-date.invalidInputType = Date when the property first occupied must be a valid date
+ated.property-details-value.dateFirstOccupied.error.too-early = Date when the property was first occupied must be in the chargeable period
+ated.property-details-value.dateFirstOccupied.error.too-late = Date when the property was first occupied must be in the chargeable period
+ated.property-details-value.dateFirstOccupied.error.not-in-period = Date when the property was first occupied must be in the chargeable period
+ated.property-details.first-occupied-date.notValidDate = Date when the property first occupied must be in the correct foramt, like 17 4 2022
+ated.property-details.first-occupied-dates.inFuture = Date when the property was first occupied cannot be in the future
+
+##### PROPERTY DETAILS When was the property council registered?
+
+ated.property-details.council-registered-date.title = When did the local council register the property for council tax?
+ated.property-details.council-registered-date.header = When did the local council register the property for council tax?
+ated.property-details.council-registered-date.exampleDate = For example, 17 4 2022
+
+ated.property-details.council-registered-date.empty = Date when the local council registered the property for council tax must be a valid date
+ated.property-details.council-registered-date.invalidInputType = Date when the local council registered the property for council tax must be a valid date
+ated.property-details-value.dateCouncilRegistered.error.too-early = Date when the local council registered the property for council tax must be in the chargeable period
+ated.property-details-value.dateCouncilRegistered.error.too-late = Date when the local council registered the property for council tax must be in the chargeable period
+ated.property-details-value.dateCouncilRegistered.error.not-in-period = Date when the local council registered the property for council tax must be in the chargeable period
+ated.property-details.council-registered-date.notValidDate = Date when the local council registered the property for council tax must be in the correct foramt, like 17 4 2022
+ated.property-details.council-registered-dates.inFuture = Date when the local council registered the property for council tax cannot be in the future
 
 ##### PROPERTY DETAILS NEW BUILD VALUE
 

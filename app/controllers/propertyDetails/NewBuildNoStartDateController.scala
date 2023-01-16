@@ -24,6 +24,9 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{PropertyDetailsService, ServiceInfoService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import scala.concurrent.ExecutionContext
+import utils.AtedConstants.SelectedPreviousReturn
+import utils.AtedUtils
+import services._
 
 @Singleton
 class NewBuildNoStartDateController @Inject()(mcc: MessagesControllerComponents,
@@ -40,11 +43,19 @@ class NewBuildNoStartDateController @Inject()(mcc: MessagesControllerComponents,
   implicit val ec: ExecutionContext = mcc.executionContext
   val controllerId = NoStartDateControllerId
 
-  def view(id: String, mode: Option[String]=None): Action[AnyContent] = Action.async { implicit request =>
+  def view(id: String): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
-          currentBackLink.map(backLink => Ok(view(controllerId, serviceInfoContent, mode, backLink)))
+          propertyDetailsCacheResponse(id) {
+            case PropertyDetailsCacheSuccessResponse(propertyDetails) => currentBackLink.flatMap { backLink =>
+              dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
+                currentBackLink.map(backLink =>
+                  Ok(view(controllerId, serviceInfoContent, AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn), backLink))
+                )
+              }
+            }
+          }
         }
       }
     }

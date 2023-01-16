@@ -54,7 +54,7 @@
  <p class="govuk-body">@messages("ated.property-details-value.no-start-date.first-para")</p>
  <p class="govuk-body">@messages("ated.property-details-value.no-start-date.second-para")</p>
 
-  @formHelper(action = controllers.propertyDetails.routes.DateFirstOccupiedKnownController.view(id, mode)) {
+  @formHelper(action = controllers.propertyDetails.routes.DateFirstOccupiedKnownController.view(id)) {
       <div class="govuk-form-group govuk-!-padding-top-3">
           @govukButton(Button(
               content = Text(messages("ated.property-details-value.no-start-date.continue")),

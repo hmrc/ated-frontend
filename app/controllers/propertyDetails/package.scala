@@ -21,4 +21,7 @@ package object propertyDetails {
   val DateFirstOccupiedKnownControllerId: String = "DateFirstOccupiedKnownController"
   val DateCouncilRegisteredKnownControllerId: String = "DateCouncilRegisteredKnownController"
   val NewBuildDatesControllerId: String = "PropertyDetailsNewBuildDatesController"
+  val DateFirstOccupiedControllerId: String = "DateFirstOccupiedController"
+  val DateCouncilRegisteredControllerId: String = "DateCouncilRegisteredController"
+  val NewBuildValueControllerId: String = "PropertyDetailsNewBuildValueController"
 }

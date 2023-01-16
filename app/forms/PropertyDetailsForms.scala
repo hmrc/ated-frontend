@@ -134,6 +134,22 @@ object PropertyDetailsForms {
     )(DateCouncilRegisteredKnown.apply)(DateCouncilRegisteredKnown.unapply)
   )
 
+  val dateFirstOccupiedForm = Form(
+    mapping(
+      "dateFirstOccupied" -> DateTupleCustomErrorImpl("ated.property-details.first-occupied-date.invalidInputType").dateTuple
+        .verifying("ated.property-details.first-occupied-date.empty", x => x.isDefined)
+        .verifying("ated.property-details.first-occupied-dates.inFuture", x => isInPast(x)),
+    )(DateFirstOccupied.apply)(DateFirstOccupied.unapply)
+  )
+
+  val dateCouncilRegisteredForm = Form(
+    mapping(
+      "dateCouncilRegistered" -> DateTupleCustomErrorImpl("ated.property-details.council-registered-date.invalidInputType").dateTuple
+        .verifying("ated.property-details.council-registered-date.empty", x => x.isDefined)
+        .verifying("ated.property-details.council-registered-dates.inFuture", x => isInPast(x)),
+    )(DateCouncilRegistered.apply)(DateCouncilRegistered.unapply)
+  )
+
   val propertyDetailsNewBuildDatesForm = Form(
     mapping(
       "newBuildOccupyDate" -> DateTupleCustomErrorImpl("error.invalid.date.format").dateTuple
@@ -281,6 +297,20 @@ object PropertyDetailsForms {
   def validatePropertyDetailsNewBuild(periodKey: Int, f: Form[PropertyDetailsNewBuild]): Form[PropertyDetailsNewBuild] = {
     if (!f.hasErrors) {
       val formErrors = PropertyDetailsFormsValidation.validateBuildDate(periodKey, f, f.get.isNewBuild).flatten
+      addErrorsToForm(f, formErrors)
+    } else f
+  }
+
+  def validateNewBuildFirstOccupiedDate(periodKey: Int, f: Form[DateFirstOccupied]): Form[DateFirstOccupied] = {
+    if (!f.hasErrors) {
+      val formErrors = PropertyDetailsFormsValidation.validatedFirstOccupiedDate(periodKey, f).flatten
+      addErrorsToForm(f, formErrors)
+    } else f
+  }
+
+  def validateNewBuildCouncilRegisteredDate(periodKey: Int, f: Form[DateCouncilRegistered]): Form[DateCouncilRegistered] = {
+    if (!f.hasErrors) {
+      val formErrors = PropertyDetailsFormsValidation.validatedCouncilRegisteredDate(periodKey, f).flatten
       addErrorsToForm(f, formErrors)
     } else f
   }
