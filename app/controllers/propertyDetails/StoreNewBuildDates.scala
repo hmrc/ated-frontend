@@ -16,21 +16,11 @@
 
 package controllers.propertyDetails
 
-import config.ApplicationConfig
-import connectors.{BackLinkCacheConnector, DataCacheConnector}
-import controllers.auth.{AuthAction, ClientHelper}
-import forms.PropertyDetailsForms
-import forms.PropertyDetailsForms._
-import javax.inject.Inject
+import connectors.DataCacheConnector
 import models.PropertyDetailsNewBuildDates
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.MessagesControllerComponents
 import services._
-import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.AtedConstants.SelectedPreviousReturn
-import utils.AtedUtils
-import uk.gov.hmrc.play.bootstrap.controller.WithDefaultFormBinding
 import scala.concurrent.{ExecutionContext, Future}
-import org.joda.time.LocalDate
 import models.{DateCouncilRegistered, DateFirstOccupied}
 import utils.AtedConstants._
 import play.api.Logging
@@ -39,7 +29,6 @@ trait StoreNewBuildDates extends Logging {
   val mcc: MessagesControllerComponents
   val propertyDetailsService: PropertyDetailsService
   val dataCacheConnector: DataCacheConnector
-
   implicit val ec: ExecutionContext
 
   def storeNewBuildDatesFromCache(id: String)

@@ -30,7 +30,7 @@ import utils.AtedConstants.SelectedPreviousReturn
 import utils.AtedUtils
 import utils.AtedConstants.NewBuildFirstOccupiedDate
 import uk.gov.hmrc.play.bootstrap.controller.WithDefaultFormBinding
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 import org.joda.time.LocalDate
 
 @Singleton
@@ -55,15 +55,15 @@ class DateFirstOccupiedController @Inject()(mcc: MessagesControllerComponents,
           propertyDetailsCacheResponse(id) {
             case PropertyDetailsCacheSuccessResponse(propertyDetails) => currentBackLink.flatMap { backLink =>
               dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
-                dataCacheConnector.fetchAndGetFormData[DateFirstOccupied](NewBuildFirstOccupiedDate).flatMap { dateFirstOccupied =>
+                dataCacheConnector.fetchAndGetFormData[DateFirstOccupied](NewBuildFirstOccupiedDate).map { dateFirstOccupied =>
                   val dfo: Option[LocalDate] = dateFirstOccupied.map(_.dateFirstOccupied).getOrElse(propertyDetails.value.flatMap(_.newBuildDate))
-                  Future.successful(Ok(template(id,
+                  Ok(template(id,
                     propertyDetails.periodKey,
                     dateFirstOccupiedForm.fill(DateFirstOccupied(dfo)),
                     AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn),
                     serviceInfoContent,
                     backLink)
-                  ))
+                  )
                 }
               }
             }
@@ -79,12 +79,9 @@ class DateFirstOccupiedController @Inject()(mcc: MessagesControllerComponents,
         ensureClientContext {
           serviceInfoService.getPartial.flatMap { serviceInfoContent =>
             PropertyDetailsForms.validateNewBuildFirstOccupiedDate(periodKey, dateFirstOccupiedForm.bindFromRequest).fold(
-              formWithError => {
-                currentBackLink.map(backLink =>
-                  BadRequest(template(id, periodKey, formWithError, mode, serviceInfoContent, backLink))
-                )
-              },
-              form => {
+              formWithError =>
+                currentBackLink.map(backLink => BadRequest(template(id, periodKey, formWithError, mode, serviceInfoContent, backLink))),
+              form =>
                 dataCacheConnector.saveFormData[DateFirstOccupied](NewBuildFirstOccupiedDate, form).flatMap{_ =>
                   redirectWithBackLink(
                     DateCouncilRegisteredKnownControllerId,
@@ -92,7 +89,6 @@ class DateFirstOccupiedController @Inject()(mcc: MessagesControllerComponents,
                     Some(controllers.propertyDetails.routes.DateFirstOccupiedController.view(id).url)
                   )
                 }
-              }
             )
           }
         }

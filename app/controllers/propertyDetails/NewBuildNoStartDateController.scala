@@ -30,13 +30,13 @@ import services._
 
 @Singleton
 class NewBuildNoStartDateController @Inject()(mcc: MessagesControllerComponents,
-                                                     authAction: AuthAction,
-                                                     serviceInfoService: ServiceInfoService,
-                                                     val propertyDetailsService: PropertyDetailsService,
-                                                     val dataCacheConnector: DataCacheConnector,
-                                                     val backLinkCacheConnector: BackLinkCacheConnector,
-                                                     view: views.html.propertyDetails.newBuildNoStartDate)
-                                                    (implicit val appConfig: ApplicationConfig)
+                                              authAction: AuthAction,
+                                              serviceInfoService: ServiceInfoService,
+                                              val propertyDetailsService: PropertyDetailsService,
+                                              val dataCacheConnector: DataCacheConnector,
+                                              val backLinkCacheConnector: BackLinkCacheConnector,
+                                              view: views.html.propertyDetails.newBuildNoStartDate)
+                                             (implicit val appConfig: ApplicationConfig)
 
   extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper {
 
@@ -48,13 +48,12 @@ class NewBuildNoStartDateController @Inject()(mcc: MessagesControllerComponents,
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
           propertyDetailsCacheResponse(id) {
-            case PropertyDetailsCacheSuccessResponse(propertyDetails) => currentBackLink.flatMap { backLink =>
+            case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
               dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
                 currentBackLink.map(backLink =>
                   Ok(view(id, serviceInfoContent, AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn), backLink))
                 )
               }
-            }
           }
         }
       }
@@ -62,15 +61,13 @@ class NewBuildNoStartDateController @Inject()(mcc: MessagesControllerComponents,
   }
 
   def continue(id: String): Action[AnyContent] = Action.async { implicit request =>
-    authAction.authorisedAction {
-      implicit authContext => {
-        ensureClientContext {
-          redirectWithBackLink(
-            DateFirstOccupiedKnownControllerId,
-            controllers.propertyDetails.routes.DateFirstOccupiedKnownController.view(id),
-            Some(controllers.propertyDetails.routes.NewBuildNoStartDateController .view(id).url)
-          )
-        }
+    authAction.authorisedAction{implicit authContext =>
+      ensureClientContext {
+        redirectWithBackLink(
+          DateFirstOccupiedKnownControllerId,
+          controllers.propertyDetails.routes.DateFirstOccupiedKnownController.view(id),
+          Some(controllers.propertyDetails.routes.NewBuildNoStartDateController .view(id).url)
+        )
       }
     }
   }

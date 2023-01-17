@@ -402,7 +402,7 @@ ated.property-details.no-start-date.continue = Continue application
 ated.property-details.earliest-start-date.title = Your start date will be the earliest date you provided
 ated.property-details.earliest-start-date.header = Your start date will be the earliest date you provided
 ated.property-details.earliest-start-date.first-para = We will use the earliest of the dates that you provided for when the property was first occupied or when the local council registered the property for council tax.
-ated.property-details.earliest-start-date.second-para = The date that we will use is {0}
+ated.property-details.earliest-start-date.second-para = The date that we will use is {0} {1} {2}
 
 ##### PROPERTY DETAILS Do you know when property occupied
 

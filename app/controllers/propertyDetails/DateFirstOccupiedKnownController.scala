@@ -28,7 +28,7 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants.{SelectedPreviousReturn, NewBuildFirstOccupiedDateKnown, NewBuildFirstOccupiedDate}
 import utils.AtedUtils
 import uk.gov.hmrc.play.bootstrap.controller.WithDefaultFormBinding
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 @Singleton
 class DateFirstOccupiedKnownController @Inject()(mcc: MessagesControllerComponents,
@@ -53,14 +53,15 @@ class DateFirstOccupiedKnownController @Inject()(mcc: MessagesControllerComponen
             case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
             currentBackLink.flatMap { backLink =>
               dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
-                dataCacheConnector.fetchAndGetFormData[DateFirstOccupiedKnown](NewBuildFirstOccupiedDateKnown).flatMap { firstOccupied =>
-                  val displayData = firstOccupied.getOrElse(DateFirstOccupiedKnown(None))
-                  Future.successful(Ok(view(id,
+                dataCacheConnector.fetchAndGetFormData[DateFirstOccupiedKnown](NewBuildFirstOccupiedDateKnown).map { firstOccupied =>
+                  val newBuildDateKnown: Boolean = propertyDetails.value.flatMap(_.newBuildDate).isDefined
+                  val displayData = firstOccupied.getOrElse(DateFirstOccupiedKnown(Some(newBuildDateKnown)))
+                  Ok(view(id,
                     dateFirstOccupiedKnownForm.fill(displayData),
                     AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn),
                     serviceInfoContent,
                     backLink)
-                  ))
+                  )
                 }
               }
             }

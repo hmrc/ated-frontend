@@ -28,7 +28,7 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants.{SelectedPreviousReturn, NewBuildFirstOccupiedDateKnown, NewBuildCouncilRegisteredDateKnown, NewBuildCouncilRegisteredDate}
 import utils.AtedUtils
 import uk.gov.hmrc.play.bootstrap.controller.WithDefaultFormBinding
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 @Singleton
 class DateCouncilRegisteredKnownController @Inject()(val mcc: MessagesControllerComponents,
@@ -53,14 +53,15 @@ class DateCouncilRegisteredKnownController @Inject()(val mcc: MessagesController
             case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
               currentBackLink.flatMap { backLink =>
                 dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
-                  dataCacheConnector.fetchAndGetFormData[DateCouncilRegisteredKnown](NewBuildCouncilRegisteredDateKnown).flatMap { councilRegistered =>
-                    val displayData = councilRegistered.getOrElse(DateCouncilRegisteredKnown(None))
-                    Future.successful(Ok(view(id,
+                  dataCacheConnector.fetchAndGetFormData[DateCouncilRegisteredKnown](NewBuildCouncilRegisteredDateKnown).map { councilRegistered =>
+                    val councilRegisteredDateKnown: Boolean = propertyDetails.value.flatMap(_.localAuthRegDate).isDefined
+                    val displayData = councilRegistered.getOrElse(DateCouncilRegisteredKnown(Some(councilRegisteredDateKnown)))
+                    Ok(view(id,
                       dateCouncilRegisteredKnownForm.fill(displayData),
                       AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn),
                       serviceInfoContent,
                       backLink)
-                    ))
+                    )
                   }
                 }
               }
@@ -85,8 +86,11 @@ class DateCouncilRegisteredKnownController @Inject()(val mcc: MessagesController
                     Some(controllers.propertyDetails.routes.DateCouncilRegisteredKnownController.view(id).url)
                   )
                 case _ =>
+                  // Date not known => Clear any previously store date from cache
                   dataCacheConnector.saveFormData[DateCouncilRegistered](NewBuildCouncilRegisteredDate, DateCouncilRegistered(None)).flatMap{_ =>
+                    // Fetch status of First occupied date
                     dataCacheConnector.fetchAndGetFormData[DateFirstOccupiedKnown](NewBuildFirstOccupiedDateKnown).flatMap{
+                      // First occupied date known => store date from current cached values
                       case Some(DateFirstOccupiedKnown(Some(true))) =>
                         storeNewBuildDatesFromCache(id).flatMap{ _ =>
                           redirectWithBackLink(
@@ -95,8 +99,8 @@ class DateCouncilRegisteredKnownController @Inject()(val mcc: MessagesController
                             Some(controllers.propertyDetails.routes.DateCouncilRegisteredKnownController.view(id).url)
                           )
                         }
-
                       case _ =>
+                        // No First occupied date and no council regstration date => Inform user via kickout page
                         redirectWithBackLink(
                           NoStartDateControllerId,
                           controllers.propertyDetails.routes.NewBuildNoStartDateController.view(id),

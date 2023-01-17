@@ -50,13 +50,12 @@ class PropertyDetailsNewBuildValueController @Inject()(mcc: MessagesControllerCo
   val controllerId: String = NewBuildValueControllerId
 
   def view(id: String): Action[AnyContent] = Action.async { implicit request =>
-    println(s" ***************** PropertyDetailsNewBuildValueController id = $id")
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
           propertyDetailsCacheResponse(id) {
             case PropertyDetailsCacheSuccessResponse(propertyDetails) => currentBackLink.flatMap { backLink =>
-              dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
+              dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).map { isPrevReturn =>
                 val displayData = PropertyDetailsNewBuildValue(propertyDetails.value.flatMap(_.newBuildValue))
 
                 val newBuildDate = propertyDetails.value.flatMap(_.newBuildDate).getOrElse(new LocalDate())
@@ -64,14 +63,14 @@ class PropertyDetailsNewBuildValueController @Inject()(mcc: MessagesControllerCo
 
                 val dynamicDate = getEarliestDate(newBuildDate, localRegDate)
 
-                Future.successful(Ok(template(id,
+                Ok(template(id,
                   propertyDetails.periodKey,
                   propertyDetailsNewBuildValueForm.fill(displayData),
                   AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn),
                   serviceInfoContent,
                   backLink,
                   dynamicDate)
-                ))
+                )
               }
             }
           }
