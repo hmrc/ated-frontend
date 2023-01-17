@@ -21,10 +21,11 @@
 @import utils.AtedUtils
 @import views.ViewUtils.titleBuilder
 @import views.html.helpers._
+@import org.joda.time.LocalDate
 
 @this(newMain: newMain, govukButton : GovukButton, govukBackLink : GovukBackLink, formHelper: FormWithCSRF)
 
-@(id: String, serviceInfoContent: Html = HtmlFormat.empty, mode: Option[String], backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
+@(id: String, when: LocalDate, serviceInfoContent: Html = HtmlFormat.empty, mode: Option[String], backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
 @backLinkHtml = {
     @if(backLink.isDefined) {
@@ -35,7 +36,7 @@
     }
 }
 
-@newMain(title = titleBuilder(messages("ated.property-details.no-start-date.title"), None), serviceInfoContent = serviceInfoContent) {
+@newMain(title = titleBuilder(messages("ated.property-details.earliest-start-date.title"), None), serviceInfoContent = serviceInfoContent) {
 
   @backLinkHtml
 
@@ -47,17 +48,17 @@
             </span>
             @messages(AtedUtils.getPropertyDetailsPreHeader(mode))
         </span>
-        @messages("ated.property-details.no-start-date.header")
+        @messages("ated.property-details.earliest-start-date.header")
     </h1>
  </header>
 
- <p class="govuk-body">@messages("ated.property-details.no-start-date.first-para")</p>
- <p class="govuk-body">@messages("ated.property-details.no-start-date.second-para")</p>
+ <p class="govuk-body">@messages("ated.property-details.earliest-start-date.first-para")</p>
+ <p class="govuk-body">@messages("ated.property-details.earliest-start-date.second-para", when.toString)</p>
 
-  @formHelper(action = controllers.propertyDetails.routes.DateFirstOccupiedKnownController.view(id)) {
+  @formHelper(action = controllers.propertyDetails.routes.EarliestStartDateInUseController.continue(id)) {
       <div class="govuk-form-group govuk-!-padding-top-3">
           @govukButton(Button(
-              content = Text(messages("ated.property-details.no-start-date.continue")),
+              content = Text(messages("ated.continue")),
               attributes = Map("id" -> "submit")
           ))
       </div>

@@ -21,17 +21,17 @@ import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms._
 import javax.inject.{Singleton, Inject}
-import models.{DateFirstOccupiedKnown, DateCouncilRegisteredKnown}
+import models.{DateFirstOccupiedKnown, DateCouncilRegisteredKnown, DateCouncilRegistered}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services._
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.AtedConstants.{SelectedPreviousReturn, NewBuildFirstOccupiedDateKnown, NewBuildCouncilRegisteredDateKnown}
+import utils.AtedConstants.{SelectedPreviousReturn, NewBuildFirstOccupiedDateKnown, NewBuildCouncilRegisteredDateKnown, NewBuildCouncilRegisteredDate}
 import utils.AtedUtils
 import uk.gov.hmrc.play.bootstrap.controller.WithDefaultFormBinding
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class DateCouncilRegisteredKnownController @Inject()(mcc: MessagesControllerComponents,
+class DateCouncilRegisteredKnownController @Inject()(val mcc: MessagesControllerComponents,
                                                   authAction: AuthAction,
                                                   serviceInfoService: ServiceInfoService,
                                                   val propertyDetailsService: PropertyDetailsService,
@@ -40,7 +40,7 @@ class DateCouncilRegisteredKnownController @Inject()(mcc: MessagesControllerComp
                                                   view: views.html.propertyDetails.dateCouncilRegisteredKnown)
                                                  (implicit val appConfig: ApplicationConfig)
 
-  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with WithDefaultFormBinding {
+  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with WithDefaultFormBinding with StoreNewBuildDates {
 
   implicit val ec: ExecutionContext = mcc.executionContext
   val controllerId: String = DateCouncilRegisteredKnownControllerId
@@ -85,20 +85,25 @@ class DateCouncilRegisteredKnownController @Inject()(mcc: MessagesControllerComp
                     Some(controllers.propertyDetails.routes.DateCouncilRegisteredKnownController.view(id).url)
                   )
                 case _ =>
-                  dataCacheConnector.fetchAndGetFormData[DateFirstOccupiedKnown](NewBuildFirstOccupiedDateKnown).flatMap{
-                    case Some(DateFirstOccupiedKnown(Some(true))) =>
-                      redirectWithBackLink(
-                        NewBuildValueControllerId,
-                        controllers.propertyDetails.routes.PropertyDetailsNewBuildValueController.view(id),
-                        Some(controllers.propertyDetails.routes.DateCouncilRegisteredKnownController.view(id).url)
-                      )
-                    case _ =>
-                      redirectWithBackLink(
-                        NoStartDateControllerId,
-                        controllers.propertyDetails.routes.NewBuildNoStartDateController.view(id),
-                        Some(controllers.propertyDetails.routes.DateCouncilRegisteredKnownController.view(id).url)
-                      )
-                  }
+                  dataCacheConnector.saveFormData[DateCouncilRegistered](NewBuildCouncilRegisteredDate, DateCouncilRegistered(None)).flatMap{_ =>
+                    dataCacheConnector.fetchAndGetFormData[DateFirstOccupiedKnown](NewBuildFirstOccupiedDateKnown).flatMap{
+                      case Some(DateFirstOccupiedKnown(Some(true))) =>
+                        storeNewBuildDatesFromCache(id).flatMap{ _ =>
+                          redirectWithBackLink(
+                            NewBuildValueControllerId,
+                            controllers.propertyDetails.routes.PropertyDetailsNewBuildValueController.view(id),
+                            Some(controllers.propertyDetails.routes.DateCouncilRegisteredKnownController.view(id).url)
+                          )
+                        }
+
+                      case _ =>
+                        redirectWithBackLink(
+                          NoStartDateControllerId,
+                          controllers.propertyDetails.routes.NewBuildNoStartDateController.view(id),
+                          Some(controllers.propertyDetails.routes.DateCouncilRegisteredKnownController.view(id).url)
+                        )
+                    }
+                }
               }
             }
           )

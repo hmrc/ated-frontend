@@ -21,11 +21,11 @@ import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms._
 import javax.inject.{Singleton, Inject}
-import models.DateFirstOccupiedKnown
+import models.{DateFirstOccupied, DateFirstOccupiedKnown}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services._
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.AtedConstants.{SelectedPreviousReturn, NewBuildFirstOccupiedDateKnown}
+import utils.AtedConstants.{SelectedPreviousReturn, NewBuildFirstOccupiedDateKnown, NewBuildFirstOccupiedDate}
 import utils.AtedUtils
 import uk.gov.hmrc.play.bootstrap.controller.WithDefaultFormBinding
 import scala.concurrent.{ExecutionContext, Future}
@@ -54,7 +54,7 @@ class DateFirstOccupiedKnownController @Inject()(mcc: MessagesControllerComponen
             currentBackLink.flatMap { backLink =>
               dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
                 dataCacheConnector.fetchAndGetFormData[DateFirstOccupiedKnown](NewBuildFirstOccupiedDateKnown).flatMap { firstOccupied =>
-                  val displayData = firstOccupied.getOrElse(DateFirstOccupiedKnown(Some(false)))
+                  val displayData = firstOccupied.getOrElse(DateFirstOccupiedKnown(None))
                   Future.successful(Ok(view(id,
                     dateFirstOccupiedKnownForm.fill(displayData),
                     AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn),
@@ -76,7 +76,7 @@ class DateFirstOccupiedKnownController @Inject()(mcc: MessagesControllerComponen
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
           dateFirstOccupiedKnownForm.bindFromRequest.fold(
             formWithError => currentBackLink.map(backLink => BadRequest(view(id, formWithError, mode, serviceInfoContent, backLink))),
-            form => {
+            form =>
               dataCacheConnector.saveFormData[DateFirstOccupiedKnown](NewBuildFirstOccupiedDateKnown, form).flatMap{
                 case DateFirstOccupiedKnown(Some(true)) =>
                   redirectWithBackLink(
@@ -85,13 +85,14 @@ class DateFirstOccupiedKnownController @Inject()(mcc: MessagesControllerComponen
                     Some(controllers.propertyDetails.routes.DateFirstOccupiedKnownController.view(id).url)
                   )
                 case _ =>
-                  redirectWithBackLink(
-                    DateFirstOccupiedKnownControllerId,
-                    controllers.propertyDetails.routes.DateCouncilRegisteredKnownController.view(id),
-                    Some(controllers.propertyDetails.routes.DateFirstOccupiedKnownController.view(id).url)
-                  )
+                  dataCacheConnector.saveFormData[DateFirstOccupied](NewBuildFirstOccupiedDate, DateFirstOccupied(None)).flatMap{_ =>
+                    redirectWithBackLink(
+                      DateFirstOccupiedKnownControllerId,
+                      controllers.propertyDetails.routes.DateCouncilRegisteredKnownController.view(id),
+                      Some(controllers.propertyDetails.routes.DateFirstOccupiedKnownController.view(id).url)
+                    )
+                  }
               }
-            }
           )
         }
       }

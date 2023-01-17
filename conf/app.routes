@@ -161,6 +161,10 @@ POST     /liability/create/new-build-start/save/:propertyKey/period/:periodKey  
 ###
 ###   New build date journey
 GET      /liability/create/new-build/kickout/:propertyKey                      controllers.propertyDetails.NewBuildNoStartDateController.view(propertyKey: String)
+POST      /liability/create/new-build/kickout/:propertyKey                     controllers.propertyDetails.NewBuildNoStartDateController.continue(propertyKey: String)
+
+GET      /liability/create/new-build/your-start-date-earliest-provided/:propertyKey   controllers.propertyDetails.EarliestStartDateInUseController.view(propertyKey: String)
+POST     /liability/create/new-build/your-start-date-earliest-provided/:propertyKey   controllers.propertyDetails.EarliestStartDateInUseController.continue(propertyKey: String)
 
 GET      /liability/create/new-build/do-you-know-when-property-first-occupied/:propertyKey   controllers.propertyDetails.DateFirstOccupiedKnownController.view(propertyKey: String)
 POST     /liability/create/new-build/do-you-know-when-property-first-occupied/:propertyKey   controllers.propertyDetails.DateFirstOccupiedKnownController.save(propertyKey: String, mode: Option[String] ?=None)

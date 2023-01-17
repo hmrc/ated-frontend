@@ -391,11 +391,18 @@ ated.property-details-value-error.newBuildDates.invalidRegDateError = Enter a re
 
 ##### PROPERTY DETAILS NO START DATE
 
-ated.property-details-value.no-start-date.title = No start date was provided
-ated.property-details-value.no-start-date.header = No start date was provided
-ated.property-details-value.no-start-date.first-para = No date was provided for when the property was first occupied or for when the local council registered the property for council tax.
-ated.property-details-value.no-start-date.second-para = You need to enter one or both of these dates to continue your application.
-ated.property-details-value.no-start-date.continue = Continue application
+ated.property-details.no-start-date.title = No start date was provided
+ated.property-details.no-start-date.header = No start date was provided
+ated.property-details.no-start-date.first-para = No date was provided for when the property was first occupied or for when the local council registered the property for council tax.
+ated.property-details.no-start-date.second-para = You need to enter one or both of these dates to continue your application.
+ated.property-details.no-start-date.continue = Continue application
+
+##### PROPERTY DETAILS Earliest Start date in use
+
+ated.property-details.earliest-start-date.title = Your start date will be the earliest date you provided
+ated.property-details.earliest-start-date.header = Your start date will be the earliest date you provided
+ated.property-details.earliest-start-date.first-para = We will use the earliest of the dates that you provided for when the property was first occupied or when the local council registered the property for council tax.
+ated.property-details.earliest-start-date.second-para = The date that we will use is {0}
 
 ##### PROPERTY DETAILS Do you know when property occupied
 

@@ -50,6 +50,7 @@ class PropertyDetailsNewBuildValueController @Inject()(mcc: MessagesControllerCo
   val controllerId: String = NewBuildValueControllerId
 
   def view(id: String): Action[AnyContent] = Action.async { implicit request =>
+    println(s" ***************** PropertyDetailsNewBuildValueController id = $id")
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
