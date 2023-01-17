@@ -29,7 +29,7 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants.{NewBuildCouncilRegisteredDate, NewBuildFirstOccupiedDateKnown, SelectedPreviousReturn}
 import utils.AtedUtils
 import uk.gov.hmrc.play.bootstrap.controller.WithDefaultFormBinding
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 import org.joda.time.LocalDate
 
 @Singleton

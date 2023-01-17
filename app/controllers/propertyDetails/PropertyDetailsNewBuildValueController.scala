@@ -31,7 +31,7 @@ import utils.AtedUtils
 import utils.AtedUtils.getEarliestDate
 import views.html
 import uk.gov.hmrc.play.bootstrap.controller.WithDefaultFormBinding
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 
 class PropertyDetailsNewBuildValueController @Inject()(mcc: MessagesControllerComponents,
