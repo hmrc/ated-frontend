@@ -54,8 +54,9 @@ class DateFirstOccupiedKnownController @Inject()(mcc: MessagesControllerComponen
             currentBackLink.flatMap { backLink =>
               dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
                 dataCacheConnector.fetchAndGetFormData[DateFirstOccupiedKnown](NewBuildFirstOccupiedDateKnown).map { firstOccupied =>
-                  val newBuildDateKnown: Boolean = propertyDetails.value.flatMap(_.newBuildDate).isDefined
-                  val displayData = firstOccupied.getOrElse(DateFirstOccupiedKnown(Some(newBuildDateKnown)))
+                  val firstOccupiedDateKnown: Option[Boolean] = propertyDetails.value.flatMap(_.isBuildDateKnown)
+                  val displayData = firstOccupied.getOrElse(DateFirstOccupiedKnown(firstOccupiedDateKnown))
+
                   Ok(view(id,
                     dateFirstOccupiedKnownForm.fill(displayData),
                     AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn),

@@ -54,8 +54,9 @@ class DateCouncilRegisteredKnownController @Inject()(val mcc: MessagesController
               currentBackLink.flatMap { backLink =>
                 dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
                   dataCacheConnector.fetchAndGetFormData[DateCouncilRegisteredKnown](NewBuildCouncilRegisteredDateKnown).map { councilRegistered =>
-                    val councilRegisteredDateKnown: Boolean = propertyDetails.value.flatMap(_.localAuthRegDate).isDefined
-                    val displayData = councilRegistered.getOrElse(DateCouncilRegisteredKnown(Some(councilRegisteredDateKnown)))
+                    val councilRegisteredDateKnown: Option[Boolean] = propertyDetails.value.flatMap(_.isLocalAuthRegDateKnown)
+                    val displayData = councilRegistered.getOrElse(DateCouncilRegisteredKnown(councilRegisteredDateKnown))
+
                     Ok(view(id,
                       dateCouncilRegisteredKnownForm.fill(displayData),
                       AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn),
