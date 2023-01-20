@@ -61,6 +61,14 @@ object PropertyDetailsFormsValidation {
       validateDate(periodKey, f, "notNewBuildDate", isMandatory = true)
   }
 
+  def validatedFirstOccupiedDate(periodKey: Int, f: Form[_]): Seq[Option[FormError]] = {
+    validateDate(periodKey, f, "dateFirstOccupied", mustBeInChargeablePeriod = true, isMandatory = true)
+  }
+
+  def validatedCouncilRegisteredDate(periodKey: Int, f: Form[_]): Seq[Option[FormError]] = {
+    validateDate(periodKey, f, "dateCouncilRegistered", mustBeInChargeablePeriod = true, isMandatory = true)
+  }
+
   def validatedNewBuildDate(periodKey: Int, f: Form[_]): Seq[Option[FormError]] = {
     validateDate(periodKey, f, "newBuildOccupyDate", mustBeInChargeablePeriod = true, isMandatory = true) ++
       validateDate(periodKey, f, "newBuildRegisterDate", mustBeInChargeablePeriod = true, isMandatory = true)

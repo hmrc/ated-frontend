@@ -37,12 +37,12 @@ import testhelpers.MockAuthUtil
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.AtedConstants
-import views.html.propertyDetails.dateCouncilRegisteredKnown
+import views.html.propertyDetails.dateFirstOccupied
 import play.twirl.api.HtmlFormat
 import scala.concurrent.Future
-import models.DateCouncilRegisteredKnown
+import models.DateFirstOccupied
 
-class DateCouncilRegisteredKnownControllerSpec extends PlaySpec with GuiceOneServerPerSuite with BeforeAndAfterEach with MockitoSugar with MockAuthUtil {
+class DateFirstOccupiedControllerSpec extends PlaySpec with GuiceOneServerPerSuite with BeforeAndAfterEach with MockitoSugar with MockAuthUtil {
 
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
   implicit lazy val hc: HeaderCarrier = HeaderCarrier()
@@ -53,7 +53,7 @@ class DateCouncilRegisteredKnownControllerSpec extends PlaySpec with GuiceOneSer
   val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
   lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
-  val injectedViewInstance: dateCouncilRegisteredKnown = app.injector.instanceOf[views.html.propertyDetails.dateCouncilRegisteredKnown]
+  val injectedViewInstance: dateFirstOccupied = app.injector.instanceOf[views.html.propertyDetails.dateFirstOccupied]
 
   class Setup {
 
@@ -63,7 +63,7 @@ class DateCouncilRegisteredKnownControllerSpec extends PlaySpec with GuiceOneSer
       mockAuthConnector
     )
 
-    val dateCouncilRegisteredKnownController: DateCouncilRegisteredKnownController = new DateCouncilRegisteredKnownController(
+    val dateFirstOccupiedKnownController: DateFirstOccupiedController = new DateFirstOccupiedController(
       mockMcc,
       mockAuthAction,
       mockServiceInfoService,
@@ -79,7 +79,7 @@ class DateCouncilRegisteredKnownControllerSpec extends PlaySpec with GuiceOneSer
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
       setInvalidAuthMocks(authMock)
-      val result = dateCouncilRegisteredKnownController.view("1").apply(SessionBuilder.buildRequestWithSession(userId))
+      val result = dateFirstOccupiedKnownController.view("1").apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
 
@@ -91,8 +91,8 @@ class DateCouncilRegisteredKnownControllerSpec extends PlaySpec with GuiceOneSer
         .thenReturn(Future.successful(HtmlFormat.empty))
       when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
         (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-      when(mockDataCacheConnector.fetchAndGetFormData[DateCouncilRegisteredKnown](ArgumentMatchers.eq(AtedConstants.NewBuildCouncilRegisteredDateKnown))
-        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(DateCouncilRegisteredKnown(None))))
+      when(mockDataCacheConnector.fetchAndGetFormData[DateFirstOccupied](ArgumentMatchers.eq(AtedConstants.NewBuildFirstOccupiedDateKnown))
+        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(DateFirstOccupied(None))))
       when(mockDataCacheConnector.fetchAndGetFormData[Boolean](ArgumentMatchers.any())
         (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
 
@@ -100,12 +100,12 @@ class DateCouncilRegisteredKnownControllerSpec extends PlaySpec with GuiceOneSer
         Future.successful(PropertyDetailsCacheSuccessResponse(PropertyDetailsBuilder.getPropertyDetails("1")))
       }
       when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
-      val result = dateCouncilRegisteredKnownController.view("1").apply(SessionBuilder.buildRequestWithSession(userId))
+      val result = dateFirstOccupiedKnownController.view("1").apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
   }
 
-  "DateCouncilRegisteredKnownController" must {
+  "DateFirstOccupiedKnownController" must {
 
     "view" must {
 
@@ -126,12 +126,12 @@ class DateCouncilRegisteredKnownControllerSpec extends PlaySpec with GuiceOneSer
 
       "Authorised users" must {
 
-        "show Do you know when the local council registered the property for council tax? page" in new Setup {
+        "show When was the property first occupied? question page" in new Setup {
           getWithAuthorisedUser {
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
-              document.title() must be(TitleBuilder.buildTitle("Do you know when the local council registered the property for council tax?"))
+              document.title() must be(TitleBuilder.buildTitle("When was the property first occupied?"))
           }
         }
       }

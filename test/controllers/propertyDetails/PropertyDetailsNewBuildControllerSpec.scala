@@ -193,7 +193,7 @@ class Setup {
           submitWithAuthorisedUser(formBody) {
             result =>
               status(result) must be(SEE_OTHER)
-              redirectLocation(result).get must include("/liability/create/new-build-start/view")
+              redirectLocation(result).get must include("/liability/create/new-build/do-you-know-when-property-first-occupied")
           }
         }
 

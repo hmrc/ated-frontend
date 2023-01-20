@@ -37,12 +37,12 @@ import testhelpers.MockAuthUtil
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.AtedConstants
-import views.html.propertyDetails.dateCouncilRegisteredKnown
+import views.html.propertyDetails.dateCouncilRegistered
 import play.twirl.api.HtmlFormat
 import scala.concurrent.Future
 import models.DateCouncilRegisteredKnown
 
-class DateCouncilRegisteredKnownControllerSpec extends PlaySpec with GuiceOneServerPerSuite with BeforeAndAfterEach with MockitoSugar with MockAuthUtil {
+class DateCouncilRegisteredControllerSpec extends PlaySpec with GuiceOneServerPerSuite with BeforeAndAfterEach with MockitoSugar with MockAuthUtil {
 
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
   implicit lazy val hc: HeaderCarrier = HeaderCarrier()
@@ -53,7 +53,7 @@ class DateCouncilRegisteredKnownControllerSpec extends PlaySpec with GuiceOneSer
   val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
   lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
-  val injectedViewInstance: dateCouncilRegisteredKnown = app.injector.instanceOf[views.html.propertyDetails.dateCouncilRegisteredKnown]
+  val injectedViewInstance: dateCouncilRegistered = app.injector.instanceOf[views.html.propertyDetails.dateCouncilRegistered]
 
   class Setup {
 
@@ -63,7 +63,7 @@ class DateCouncilRegisteredKnownControllerSpec extends PlaySpec with GuiceOneSer
       mockAuthConnector
     )
 
-    val dateCouncilRegisteredKnownController: DateCouncilRegisteredKnownController = new DateCouncilRegisteredKnownController(
+    val dateCouncilRegisteredKnownController: DateCouncilRegisteredController = new DateCouncilRegisteredController(
       mockMcc,
       mockAuthAction,
       mockServiceInfoService,
@@ -126,12 +126,12 @@ class DateCouncilRegisteredKnownControllerSpec extends PlaySpec with GuiceOneSer
 
       "Authorised users" must {
 
-        "show Do you know when the local council registered the property for council tax? page" in new Setup {
+        "show When did the local council register the property for council tax? page" in new Setup {
           getWithAuthorisedUser {
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
-              document.title() must be(TitleBuilder.buildTitle("Do you know when the local council registered the property for council tax?"))
+              document.title() must be(TitleBuilder.buildTitle("When did the local council register the property for council tax?"))
           }
         }
       }
