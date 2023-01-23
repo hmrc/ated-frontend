@@ -89,7 +89,7 @@ class DateFirstOccupiedKnownController @Inject()(mcc: MessagesControllerComponen
                 case _ =>
                   dataCacheConnector.saveFormData[DateFirstOccupied](NewBuildFirstOccupiedDate, DateFirstOccupied(None)).flatMap{_ =>
                     redirectWithBackLink(
-                      DateFirstOccupiedKnownControllerId,
+                      DateCouncilRegisteredKnownControllerId,
                       controllers.propertyDetails.routes.DateCouncilRegisteredKnownController.view(id),
                       Some(controllers.propertyDetails.routes.DateFirstOccupiedKnownController.view(id).url)
                     )
