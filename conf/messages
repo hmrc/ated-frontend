@@ -434,7 +434,7 @@ ated.property-details.first-occupied-dates.inFuture = Date when the property was
 
 ated.property-details.council-registered-date.title = When did the local council register the property for council tax?
 ated.property-details.council-registered-date.header = When did the local council register the property for council tax?
-ated.property-details.council-registered-date.exampleDate = For example, 17 4 2022
+ated.property-details.council-registered-date.exampleDate = This is usually the completion date, like 17 4 2022
 
 ated.property-details.council-registered-date.empty = Date when the local council registered the property for council tax must be a valid date
 ated.property-details.council-registered-date.invalidInputType = Date when the local council registered the property for council tax must be a valid date
