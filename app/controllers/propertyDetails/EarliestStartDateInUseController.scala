@@ -42,7 +42,7 @@ class EarliestStartDateInUseController @Inject()(mcc: MessagesControllerComponen
   extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper {
 
   implicit val ec: ExecutionContext = mcc.executionContext
-  val controllerId = EarliestStartDateInUseControllerId
+  val controllerId: String = EarliestStartDateInUseControllerId
 
   def view(id: String): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>

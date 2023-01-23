@@ -122,43 +122,32 @@ object PropertyDetailsForms {
     )(PropertyDetailsNewBuild.apply)(PropertyDetailsNewBuild.unapply)
   )
 
-  val dateFirstOccupiedKnownForm = Form(
+  val dateFirstOccupiedKnownForm: Form[DateFirstOccupiedKnown] = Form(
     mapping(
       "isDateFirstOccupiedKnown" -> optional(boolean).verifying("ated.property-details.first-occupied-known.non-selected", x => x.isDefined)
     )(DateFirstOccupiedKnown.apply)(DateFirstOccupiedKnown.unapply)
   )
 
-  val dateCouncilRegisteredKnownForm = Form(
+  val dateCouncilRegisteredKnownForm: Form[DateCouncilRegisteredKnown] = Form(
     mapping(
       "isDateCouncilRegisteredKnown" -> optional(boolean).verifying("ated.property-details.council-registered-known.non-selected", x => x.isDefined)
     )(DateCouncilRegisteredKnown.apply)(DateCouncilRegisteredKnown.unapply)
   )
 
-  val dateFirstOccupiedForm = Form(
+  val dateFirstOccupiedForm: Form[DateFirstOccupied] = Form(
     mapping(
       "dateFirstOccupied" -> DateTupleCustomErrorImpl("ated.property-details.first-occupied-date.invalidInputType").dateTuple
         .verifying("ated.property-details.first-occupied-date.empty", x => x.isDefined)
-        .verifying("ated.property-details.first-occupied-dates.inFuture", x => isInPast(x)),
+        .verifying("ated.property-details.first-occupied-dates.inFuture", x => isInPast(x))
     )(DateFirstOccupied.apply)(DateFirstOccupied.unapply)
   )
 
-  val dateCouncilRegisteredForm = Form(
+  val dateCouncilRegisteredForm: Form[DateCouncilRegistered] = Form(
     mapping(
       "dateCouncilRegistered" -> DateTupleCustomErrorImpl("ated.property-details.council-registered-date.invalidInputType").dateTuple
         .verifying("ated.property-details.council-registered-date.empty", x => x.isDefined)
-        .verifying("ated.property-details.council-registered-dates.inFuture", x => isInPast(x)),
+        .verifying("ated.property-details.council-registered-dates.inFuture", x => isInPast(x))
     )(DateCouncilRegistered.apply)(DateCouncilRegistered.unapply)
-  )
-
-  val propertyDetailsNewBuildDatesForm = Form(
-    mapping(
-      "newBuildOccupyDate" -> DateTupleCustomErrorImpl("error.invalid.date.format").dateTuple
-        .verifying("ated.property-details-value-error.newBuildDates.invalidOccupiedDateError", x => x.isDefined)
-        .verifying("ated.property-details-value-error.newBuildDates.futureOccupiedError", x => isInPast(x)),
-      "newBuildRegisterDate" -> DateTupleCustomErrorImpl("error.invalid.date.format").dateTuple
-        .verifying("ated.property-details-value-error.newBuildDates.invalidRegDateError", x => x.isDefined)
-        .verifying("ated.property-details-value-error.newBuildDates.futureRegError", x => isInPast(x))
-    )(PropertyDetailsNewBuildDates.apply)(PropertyDetailsNewBuildDates.unapply)
   )
 
   val propertyDetailsNewBuildValueForm = Form(
