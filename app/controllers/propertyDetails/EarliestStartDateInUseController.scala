@@ -27,21 +27,22 @@ import scala.concurrent.ExecutionContext
 import utils.AtedConstants.SelectedPreviousReturn
 import utils.AtedUtils
 import services._
+import org.joda.time.LocalDate
 
 @Singleton
-class NewBuildNoStartDateController @Inject()(mcc: MessagesControllerComponents,
-                                              authAction: AuthAction,
-                                              serviceInfoService: ServiceInfoService,
-                                              val propertyDetailsService: PropertyDetailsService,
-                                              val dataCacheConnector: DataCacheConnector,
-                                              val backLinkCacheConnector: BackLinkCacheConnector,
-                                              view: views.html.propertyDetails.newBuildNoStartDate)
-                                             (implicit val appConfig: ApplicationConfig)
+class EarliestStartDateInUseController @Inject()(mcc: MessagesControllerComponents,
+                                                 authAction: AuthAction,
+                                                 serviceInfoService: ServiceInfoService,
+                                                 val propertyDetailsService: PropertyDetailsService,
+                                                 val dataCacheConnector: DataCacheConnector,
+                                                 val backLinkCacheConnector: BackLinkCacheConnector,
+                                                 view: views.html.propertyDetails.earliestStartDateInUse)
+                                                (implicit val appConfig: ApplicationConfig)
 
   extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper {
 
   implicit val ec: ExecutionContext = mcc.executionContext
-  val controllerId = NoStartDateControllerId
+  val controllerId = EarliestStartDateInUseControllerId
 
   def view(id: String): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
@@ -50,8 +51,12 @@ class NewBuildNoStartDateController @Inject()(mcc: MessagesControllerComponents,
           propertyDetailsCacheResponse(id) {
             case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
               dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
+                val newBuildDate: LocalDate = propertyDetails.value.flatMap(_.newBuildDate).getOrElse(new LocalDate())
+                val localRegDate: LocalDate = propertyDetails.value.flatMap(_.localAuthRegDate).getOrElse(new LocalDate())
+                val dynamicDate = AtedUtils.getEarliestDate(newBuildDate, localRegDate)
+
                 currentBackLink.map(backLink =>
-                  Ok(view(id, serviceInfoContent, AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn), backLink))
+                  Ok(view(id, dynamicDate, serviceInfoContent, AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn), backLink))
                 )
               }
           }
@@ -61,12 +66,12 @@ class NewBuildNoStartDateController @Inject()(mcc: MessagesControllerComponents,
   }
 
   def continue(id: String): Action[AnyContent] = Action.async { implicit request =>
-    authAction.authorisedAction{implicit authContext =>
+    authAction.authorisedAction{ implicit authContext =>
       ensureClientContext {
         redirectWithBackLink(
-          DateFirstOccupiedKnownControllerId,
-          controllers.propertyDetails.routes.DateFirstOccupiedKnownController.view(id),
-          Some(controllers.propertyDetails.routes.NewBuildNoStartDateController .view(id).url)
+          NewBuildValueControllerId,
+          controllers.propertyDetails.routes.PropertyDetailsNewBuildValueController.view(id),
+          Some(controllers.propertyDetails.routes.EarliestStartDateInUseController .view(id).url)
         )
       }
     }

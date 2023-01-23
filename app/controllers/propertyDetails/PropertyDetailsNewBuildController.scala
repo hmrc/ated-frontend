@@ -89,8 +89,8 @@ class PropertyDetailsNewBuildController @Inject()(mcc: MessagesControllerCompone
                   propertyDetails.isNewBuild match {
                     case Some(true) =>
                       redirectWithBackLink(
-                        propertyDetailsNewBuildDatesController.controllerId,
-                        controllers.propertyDetails.routes.PropertyDetailsNewBuildDatesController.view(id),
+                        DateFirstOccupiedKnownControllerId,
+                        controllers.propertyDetails.routes.DateFirstOccupiedKnownController.view(id),
                         Some(controllers.propertyDetails.routes.PropertyDetailsNewBuildController.view(id).url)
                       )
                     case Some(false) =>
