@@ -26,21 +26,6 @@ import play.api.data.Form
 
 class PropertyDetailsFormsValidationSpec extends PlaySpec with GuiceOneServerPerSuite {
 
-  "validatedNewBuildDate" should {
-    "return the correct error message when a date is missing" in {
-    val testOccupyDate = "2000-07-03"
-    val testRegDate = ""
-
-    val testPropertyDetailsNewBuildDatesForm = propertyDetailsNewBuildDatesForm.bind(Map(
-      "newBuildOccupyDate" -> testOccupyDate,
-      "newBuildRegisterDate" -> testRegDate
-    ))
-
-    testPropertyDetailsNewBuildDatesForm.errors.last.message mustBe "ated.property-details-value-error.newBuildDates.invalidRegDateError"
-
-    }
-  }
-
   "validatePropertyNewBuildValue" should {
     "return the correct error message when the value is empty"  in {
       val testPropertyDetailsNewBuildValueForm = propertyDetailsNewBuildValueForm.bind(Map(

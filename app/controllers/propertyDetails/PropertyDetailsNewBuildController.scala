@@ -33,7 +33,6 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class PropertyDetailsNewBuildController @Inject()(mcc: MessagesControllerComponents,
                                                   authAction: AuthAction,
-                                                  propertyDetailsNewBuildDatesController: PropertyDetailsNewBuildDatesController,
                                                   propertyDetailsWhenAcquiredController: PropertyDetailsWhenAcquiredController,
                                                   serviceInfoService: ServiceInfoService,
                                                   val propertyDetailsService: PropertyDetailsService,

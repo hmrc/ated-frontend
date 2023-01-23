@@ -41,7 +41,7 @@ class NewBuildNoStartDateController @Inject()(mcc: MessagesControllerComponents,
   extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper {
 
   implicit val ec: ExecutionContext = mcc.executionContext
-  val controllerId = NoStartDateControllerId
+  val controllerId: String = NoStartDateControllerId
 
   def view(id: String): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>

@@ -51,7 +51,6 @@ class PropertyDetailsNewBuildControllerSpec extends PlaySpec with GuiceOneServer
   val mockPropertyDetailsService: PropertyDetailsService = mock[PropertyDetailsService]
   val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
   val mockBackLinkCacheConnector: BackLinkCacheConnector = mock[BackLinkCacheConnector]
-  val mockPropertyDetailsNewBuildDatesController: PropertyDetailsNewBuildDatesController = mock[PropertyDetailsNewBuildDatesController]
   val mockPropertyDetailsWhenAcquiredController: PropertyDetailsWhenAcquiredController = mock[PropertyDetailsWhenAcquiredController]
     val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
@@ -72,7 +71,6 @@ class Setup {
   val testPropertyDetailsNewBuildController: PropertyDetailsNewBuildController = new PropertyDetailsNewBuildController(
     mockMcc,
     mockAuthAction,
-    mockPropertyDetailsNewBuildDatesController,
     mockPropertyDetailsWhenAcquiredController,
     mockServiceInfoService,
     mockPropertyDetailsService,

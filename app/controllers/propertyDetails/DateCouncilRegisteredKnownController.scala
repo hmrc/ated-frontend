@@ -101,7 +101,7 @@ class DateCouncilRegisteredKnownController @Inject()(val mcc: MessagesController
                           )
                         }
                       case _ =>
-                        // No First occupied date and no council regstration date => Inform user via kickout page
+                        // No First occupied date and no council registration date => Inform user via kickout page
                         redirectWithBackLink(
                           NoStartDateControllerId,
                           controllers.propertyDetails.routes.NewBuildNoStartDateController.view(id),
