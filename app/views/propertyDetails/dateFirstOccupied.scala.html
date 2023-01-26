@@ -78,7 +78,8 @@
 
         @govukDateInput(DateInput(
             hint = Some(Hint(
-              content = Text(messages("ated.property-details.first-occupied-date.exampleDate"))
+              content = Text(messages("ated.property-details.first-occupied-date.exampleDate",
+                                      PeriodUtils.periodStartDate(periodKey).toString(messages("ated.date-format.numeric"))))
             )),
             fieldset = Some(Fieldset(
               legend = Some(Legend(
