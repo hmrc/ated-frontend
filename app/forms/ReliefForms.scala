@@ -26,6 +26,9 @@ import utils.PeriodUtils._
 import scala.annotation.tailrec
 import scala.util.Try
 
+sealed trait DateError
+case object EmptyDate extends DateError
+case object InvalidDate extends DateError
 
 object ReliefForms {
 
@@ -54,71 +57,74 @@ object ReliefForms {
   val reliefsForm: Form[Reliefs] = Form(mapping(
     "periodKey" -> number,
     "rentalBusiness" -> boolean,
-    "rentalBusinessDate" -> DateTupleCustomErrorImpl("ated.choose-reliefs.error.date.mandatory.rentalBusinessDate").dateTuple,
+    "rentalBusinessDate" -> dateTuple(),
     "openToPublic" -> boolean,
-    "openToPublicDate" -> DateTupleCustomErrorImpl("ated.choose-reliefs.error.date.mandatory.openToPublicDate").dateTuple,
+    "openToPublicDate" -> dateTuple(),
     "propertyDeveloper" -> boolean,
-    "propertyDeveloperDate" -> DateTupleCustomErrorImpl("ated.choose-reliefs.error.date.mandatory.propertyDeveloperDate").dateTuple,
+    "propertyDeveloperDate" -> dateTuple(),
     "propertyTrading" -> boolean,
-    "propertyTradingDate" -> DateTupleCustomErrorImpl("ated.choose-reliefs.error.date.mandatory.propertyTradingDate").dateTuple,
+    "propertyTradingDate" -> dateTuple(),
     "lending" -> boolean,
-    "lendingDate" -> DateTupleCustomErrorImpl("ated.choose-reliefs.error.date.mandatory.lendingDate").dateTuple,
+    "lendingDate" -> dateTuple(),
     "employeeOccupation" -> boolean,
-    "employeeOccupationDate" -> DateTupleCustomErrorImpl("ated.choose-reliefs.error.date.mandatory.employeeOccupationDate").dateTuple,
+    "employeeOccupationDate" -> dateTuple(),
     "farmHouses" -> boolean,
-    "farmHousesDate" -> DateTupleCustomErrorImpl("ated.choose-reliefs.error.date.mandatory.farmHousesDate").dateTuple,
+    "farmHousesDate" -> dateTuple(),
     "socialHousing" -> boolean,
-    "socialHousingDate" -> DateTupleCustomErrorImpl("ated.choose-reliefs.error.date.mandatory.socialHousingDate").dateTuple,
+    "socialHousingDate" -> dateTuple(),
     "equityRelease" -> boolean,
-    "equityReleaseDate" -> DateTupleCustomErrorImpl("ated.choose-reliefs.error.date.mandatory.equityReleaseDate").dateTuple,
+    "equityReleaseDate" -> dateTuple(),
     "isAvoidanceScheme" -> optional(boolean)
   )
   (Reliefs.apply)(Reliefs.unapply)
     .verifying(reliefSelectedConstraint)
   )
 
-  val fields = Seq(
-    ("rentalBusiness", "rentalBusinessDate"),
-    ("openToPublic", "openToPublicDate"),
-    ("propertyDeveloper", "propertyDeveloperDate"),
-    ("propertyTrading", "propertyTradingDate"),
-    ("lending", "lendingDate"),
-    ("employeeOccupation", "employeeOccupationDate"),
-    ("farmHouses", "farmHousesDate"),
-    ("socialHousing", "socialHousingDate"),
-    ("equityRelease", "equityReleaseDate")
-  )
+    val fields = Seq(
+      ("rentalBusiness", "rentalBusinessDate"),
+      ("openToPublic", "openToPublicDate"),
+      ("propertyDeveloper", "propertyDeveloperDate"),
+      ("propertyTrading", "propertyTradingDate"),
+      ("lending", "lendingDate"),
+      ("employeeOccupation", "employeeOccupationDate"),
+      ("farmHouses", "farmHousesDate"),
+      ("socialHousing", "socialHousingDate"),
+      ("equityRelease", "equityReleaseDate")
+    )
 
+  //scalastyle:off cyclomatic.complexity
   def validateForm(f: Form[Reliefs]): Form[Reliefs] = {
-    if (!f.hasErrors) {
-      val formErrors = {
-        fields.map { x =>
-          val reliefBool = f.data.get(x._1)
-          val periodKey = f.data.get("periodKey").get.toInt
-          val reliefDate: Option[LocalDate] = {
-            (f.data.get(s"${x._2}.day"), f.data.get(s"${x._2}.month"), f.data.get(s"${x._2}.year")) match {
-              case (Some(d), Some(m), Some(y)) => try {
-                Some(new LocalDate(y.trim.toInt, m.trim.toInt, d.trim.toInt))
-              } catch {
-                case _ : Throwable => None
-              }
-              case _ => None
+    val formErrors = {
+      fields.map { x =>
+        val reliefBool = f.data.get(x._1)
+        val periodKey = f.data.get("periodKey").get.toInt
+        val reliefDate: Either[DateError, LocalDate] = {
+          (f.data.get(s"${x._2}.day"), f.data.get(s"${x._2}.month"), f.data.get(s"${x._2}.year")) match {
+            case (Some(d), Some(m), Some(y)) if(d.isEmpty && m.isEmpty && y.isEmpty) => Left(EmptyDate)
+            case (Some(d), Some(m), Some(y)) => try {
+              Right(new LocalDate(y.trim.toInt, m.trim.toInt, d.trim.toInt))
+            } catch {
+              case _ : Throwable => Left(InvalidDate)
             }
-          }
-          reliefBool match {
-            case Some("true") => {
-              if (reliefDate.isEmpty) {
-                Seq(FormError(s"${x._2}", s"ated.choose-reliefs.error.date.mandatory.${x._2}"))
-              } else if (isPeriodTooEarly(periodKey, reliefDate) || isPeriodTooLate(periodKey, reliefDate)) {
-                Seq(FormError(s"${x._2}", s"ated.choose-reliefs.error.date.chargePeriod.${x._2}"))
-              } else Nil
-            }
-            case _ => Nil
+            case (None, None, None) => Left(EmptyDate)
+            case _ => Left(InvalidDate)
           }
         }
+        reliefBool match {
+          case Some("true") => {
+            reliefDate match {
+              // Keeping the empty and invalid cases separate as a reminder that we should differentiate these error messages
+              case Left(EmptyDate) => Seq(FormError(s"${x._2}", s"ated.choose-reliefs.error.date.mandatory.${x._2}"))
+              case Left(InvalidDate) => Seq(FormError(s"${x._2}", s"ated.choose-reliefs.error.date.mandatory.${x._2}"))
+              case Right(date) if (isPeriodTooEarly(periodKey, Some(date)) || isPeriodTooLate(periodKey, Some(date))) => Seq(FormError(s"${x._2}", s"ated.choose-reliefs.error.date.chargePeriod.${x._2}"))
+              case _ => Nil
+            }
+          }
+          case _ => Nil
+        }
       }
-      addErrorsToForm(f, formErrors.flatten)
-    } else f
+    }
+    addErrorsToForm(f, formErrors.flatten)
   }
 
   val isTaxAvoidanceForm: Form[IsTaxAvoidance] = Form(mapping(
@@ -151,8 +157,6 @@ object ReliefForms {
   )
   (TaxAvoidance.apply)(TaxAvoidance.unapply)
   )
-
-
 
   //scalastyle:off cyclomatic.complexity
   def validateTaxAvoidance(f: Form[TaxAvoidance], periodKey: Int): Form[TaxAvoidance] = {
@@ -231,61 +235,25 @@ object ReliefForms {
     y(form, formErrors)
   }
 
-  case class DateTupleCustomErrorImpl(invalidDateErrorKey: String) extends DateTupleCustomError
-  trait DateTupleCustomError {
-
-
-    val invalidDateErrorKey: String
-    val dateTuple: Mapping[Option[LocalDate]] = dateTuple(validate = true)
-
-    def mandatoryDateTuple(error: String): Mapping[LocalDate] =
-      dateTuple.verifying(error, data => data.isDefined).transform(o => o.get, v => if (v == null) None else Some(v))
-
-    def dateTuple(validate: Boolean = true): Mapping[Option[LocalDate]] =
-      tuple(
-        "year"  -> optional(text),
-        "month" -> optional(text),
-        "day"   -> optional(text)
-      ).verifying(
-        invalidDateErrorKey,
-        data =>
-          (data._1, data._2, data._3) match {
-            case (None, None, None)                   => true
-            case (yearOption, monthOption, dayOption) =>
-              try {
-                val y = yearOption.getOrElse(throw new Exception("Year missing")).trim
-                if (y.length != 4) {
-                  throw new Exception("Year must be 4 digits")
-                }
-                new LocalDate(
-                  y.toInt,
-                  monthOption.getOrElse(throw new Exception("Month missing")).trim.toInt,
-                  dayOption.getOrElse(throw new Exception("Day missing")).trim.toInt
-                )
-                true
-              } catch {
-                case _: Throwable =>
-                  if (validate) {
-                    false
-                  } else {
-                    true
-                  }
-              }
+  private def dateTuple(): Mapping[Option[LocalDate]] =
+    tuple(
+      "year"  -> optional(text),
+      "month" -> optional(text),
+      "day"   -> optional(text)
+    ).transform(
+      {
+        case (Some(y), Some(m), Some(d)) =>
+          try Some(new LocalDate(y.trim.toInt, m.trim.toInt, d.trim.toInt))
+          catch {
+            case e: Exception => None
           }
-      ).transform(
-        {
-          case (Some(y), Some(m), Some(d)) =>
-            try Some(new LocalDate(y.trim.toInt, m.trim.toInt, d.trim.toInt))
-            catch {
-              case e: Exception => None
-            }
-          case (a, b, c)                   => None
-        },
-        (date: Option[LocalDate]) =>
-          date match {
-            case Some(d) => (Some(d.getYear.toString), Some(d.getMonthOfYear.toString), Some(d.getDayOfMonth.toString))
-            case _       => (None, None, None)
-          }
-      )
-  }
+        case (a, b, c)                   => None
+      },
+      (date: Option[LocalDate]) =>
+        date match {
+          case Some(d) => (Some(d.getYear.toString), Some(d.getMonthOfYear.toString), Some(d.getDayOfMonth.toString))
+          case _       => (None, None, None)
+        }
+    )
+
 }
