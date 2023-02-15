@@ -16,7 +16,7 @@
 
 package forms
 
-import forms.ReliefForms.DateTupleCustomErrorImpl
+import forms.mappings.DateTupleCustomError
 import models._
 import org.joda.time.LocalDate
 import play.api.data.Forms._
@@ -27,6 +27,7 @@ import utils.AtedUtils
 import utils.PeriodUtils._
 
 import scala.annotation.tailrec
+import scala.util.matching.Regex
 
 
 object AtedForms {
@@ -45,14 +46,14 @@ object AtedForms {
   val phoneLength = 24
   val faxLength = 24
   val businessNameLength = 105
-  val telephoneRegex = """^[A-Z0-9)\/(\-*#]+$""".r
-  val emailRegex =
+  val telephoneRegex: Regex = """^[A-Z0-9)\/(\-*#]+$""".r
+  val emailRegex: Regex =
     """^(?!\.)("([^"\r\\]|\\["\r\\])*"|([-a-zA-Z0-9!#$%&'*+/=?^_`{|}~]|(?<!\.)\.)*)
       |(?<!\.)@[a-zA-Z0-9][\w\.-]*[a-zA-Z0-9]\.[a-zA-Z][a-zA-Z\.]*[a-zA-Z]$""".r
-  val PostCodeRegex = "^[A-Z]{1,2}[0-9][0-9A-Z]?\\s?[0-9][A-Z]{2}|BFPO\\s?[0-9]{1,10}".r
-  val addressLineRegex = """^([A-Za-z0-9\s\&\-\,\@\#\.\'])*$""".r
+  val PostCodeRegex: Regex = "^[A-Z]{1,2}[0-9][0-9A-Z]?\\s?[0-9][A-Z]{2}|BFPO\\s?[0-9]{1,10}".r
+  val addressLineRegex: Regex = """^([A-Za-z0-9\s\&\-\,\@\#\.\'])*$""".r
 
-  val registeredDetailsForm = Form(
+  val registeredDetailsForm: Form[RegisteredDetails] = Form(
     mapping(
       "isEditable" -> boolean,
       "name" -> text
@@ -82,7 +83,7 @@ object AtedForms {
     )(RegisteredDetails.apply)(RegisteredDetails.unapply)
   )
 
-  val correspondenceAddressForm = Form(
+  val correspondenceAddressForm: Form[AddressDetails] = Form(
     mapping(
       "addressType" -> text,
       "addressLine1" -> text
@@ -105,7 +106,7 @@ object AtedForms {
   )
 
 
-  val editContactDetailsForm = Form(
+  val editContactDetailsForm: Form[EditContactDetails] = Form(
     mapping(
       "firstName" -> text
         .verifying("ated.contact-details-first-name.error", x => checkBlankFieldLength(x))
@@ -126,7 +127,7 @@ object AtedForms {
   )
 
 
-  val editContactDetailsEmailForm = Form(
+  val editContactDetailsEmailForm: Form[EditContactDetailsEmail] = Form(
     mapping(
       "emailAddress" -> text,
       "emailConsent" -> boolean
@@ -158,7 +159,7 @@ object AtedForms {
     } else f
   }
 
-  val editReliefForm = Form(
+  val editReliefForm: Form[EditRelief] = Form(
     mapping(
       "changeRelief" -> optional(text).verifying("ated.change-relief-return.error.empty", returnType => returnType.isDefined)
     )(EditRelief.apply)(EditRelief.unapply)
@@ -213,15 +214,15 @@ object AtedForms {
 
   }
 
-  val selectPeriodForm = Form(mapping(
+  val selectPeriodForm: Form[SelectPeriod] = Form(mapping(
     "period" -> optional(text).verifying("ated.summary-return.return-type.error", selectPeriod => selectPeriod.isDefined)
   )(SelectPeriod.apply)(SelectPeriod.unapply))
 
-  val returnTypeForm = Form(mapping(
+  val returnTypeForm: Form[ReturnType] = Form(mapping(
     "returnType" -> optional(text).verifying("ated.summary-return.return-type.error", returnType => returnType.isDefined)
   )(ReturnType.apply)(ReturnType.unapply))
 
-  val editLiabilityReturnTypeForm = Form(mapping(
+  val editLiabilityReturnTypeForm: Form[EditLiabilityReturnType] = Form(mapping(
     "editLiabilityType" -> optional(text).verifying("ated.edit-liability.edit-return-type.error", editReturnType => editReturnType.isDefined)
   )(EditLiabilityReturnType.apply)(EditLiabilityReturnType.unapply))
 
@@ -232,7 +233,7 @@ object AtedForms {
   val disposeLiabilityForm: Form[DisposeLiability] = {
     Form(
       mapping(
-        "dateOfDisposal" -> DateTupleCustomErrorImpl("error.invalid.date.format").dateTuple,
+        "dateOfDisposal" -> DateTupleCustomError("error.invalid.date.format").dateTuple,
         "periodKey" -> number
       )(DisposeLiability.apply)(DisposeLiability.unapply)
     )
@@ -301,7 +302,7 @@ object AtedForms {
 
   class YesNoQuestionExistingReturnsForm() {
 
-    val yesNoQuestionForm =
+    val yesNoQuestionForm: Form[YesNoQuestion] =
       Form(
         mapping(
           "yesNo" -> optional(boolean).verifying("yes-no.error.mandatory.existing.returns", x => x.isDefined)
@@ -311,7 +312,7 @@ object AtedForms {
 
   class YesNoQuestionDraftDeleteForm() {
 
-    val yesNoQuestionForm =
+    val yesNoQuestionForm: Form[YesNoQuestion] =
       Form(
         mapping(
           "yesNo" -> optional(boolean).verifying("yes-no.error.mandatory.delete.draft", x => x.isDefined)
