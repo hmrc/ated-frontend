@@ -29,9 +29,13 @@ class AddressLookupService @Inject()(addressLookupConnector: AddressLookupConnec
 
   val ADDRESS_LOOKUP_SEARCH_RESULTS = "ADDRESS-LOOKUP-SEARCH-RESULTS"
 
+  implicit object AddressOrdering extends Ordering[AddressLookupRecord] {
+    def compare(a: AddressLookupRecord, b: AddressLookupRecord): Int = a.uprn compare b.uprn
+  }
+
   def find(searchCriteria: AddressLookup)(implicit hc: HeaderCarrier): Future[AddressSearchResults] = {
     addressLookupConnector.findByPostcode(searchCriteria).flatMap{
-      foundData => storeSearchResults(AddressSearchResults(searchCriteria, foundData))
+      foundData => storeSearchResults(AddressSearchResults(searchCriteria, foundData.sorted))
     }
   }
 
