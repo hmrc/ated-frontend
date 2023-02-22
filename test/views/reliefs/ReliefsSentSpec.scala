@@ -75,9 +75,9 @@ class ReliefsSentSpec extends AnyFeatureSpec with GuiceOneAppPerSuite with Mocki
       assert(document.select("#email-confirmation").text === "You will not receive an email confirmation.")
 
       Then("There will be a link to print confirmation")
-      val link = document.select("#print-friendly-relief-link")
+      val link = document.select("#print")
       assert(link.text === "Print confirmation")
-      assert(link.attr("href").contains("/ated/reliefs/2015/sent-reliefs-print"))
+      assert(link.attr("href").contains("javascript:window.print();"))
 
       Then("The first h2 should be correct")
       assert(document.select("h2").first().text === "The ATED charge for these returns is £0")
@@ -97,16 +97,16 @@ class ReliefsSentSpec extends AnyFeatureSpec with GuiceOneAppPerSuite with Mocki
       assert(document.select("#receipt-message-2").text === "Change or ending of relief type")
 
       Then("The paragraph about change in circumstances should be correct")
-      assert(document.select("#main-content > div > div > p:nth-child(11)").text === "If any change in your " +
+      assert(document.select("#main-content > div > div > p:nth-child(12)").text === "If any change in your " +
         "circumstances means you will no longer claim for one or more relief types next year, you need to contact " +
         "HMRC on atedadditionalinfo.ctiaa@hmrc.gov.uk to tell us which relief types you will not claim.")
 
       Then("The sentence about keeping records up to date should be correct")
-      assert(document.select("#main-content > div > div > p:nth-child(12)").text === "This will help to keep " +
+      assert(document.select("#main-content > div > div > p:nth-child(13)").text === "This will help to keep " +
         "our records up to date so we know not to expect a return for that type of relief next year.")
 
       Then("The sentence about emailing should be correct")
-      assert(document.select("#main-content > div > div > p:nth-child(13)").text === "When emailing please " +
+      assert(document.select("#main-content > div > div > p:nth-child(14)").text === "When emailing please " +
         "include your ATED reference number or if you do not have the number please give your company name. Do not " +
         "include any further personal or financial details. Sending information over the internet is generally not " +
         "completely secure, and we cannot guarantee the security of your data while it’s in transit. Any data you " +

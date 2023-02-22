@@ -36,10 +36,9 @@
   <p class="govuk-body" id="completed-returns">@messages("ated.reliefs-sent.completed-message")</p>
   <p class="govuk-body" id="email-confirmation">@messages("ated.reliefs-sent.email-message")<p>
 
-  <a class="govuk-link govuk-!-font-size-19" href="@controllers.reliefs.routes.ReliefsSentController.viewPrintFriendlyReliefSent(periodKey)"
-  id="print-friendly-relief-link" target="_blank">
-    @messages("ated.reliefs-sent.print-link")
-  </a>
+    <div class="govuk-form-group govuk-body govuk-!-display-none-print">
+        <a id="print"  href="javascript:window.print();" class="govuk-link govuk-body print-hidden">@Messages("ated.reliefs-sent.print-link")</a>
+    </div>
 
   <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
 
