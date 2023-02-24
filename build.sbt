@@ -5,7 +5,6 @@ import sbt.Keys._
 import sbt._
 import uk.gov.hmrc.DefaultBuildSettings.{addTestReportOption, defaultSettings, scalaSettings}
 import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin
-import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin.publishingSettings
 import uk.gov.hmrc.versioning.SbtGitVersioning.autoImport.majorVersion
 
 val appName = "ated-frontend"
@@ -32,7 +31,6 @@ lazy val microservice = Project(appName, file("."))
     .settings(majorVersion := 3)
     .configs(IntegrationTest)
     .settings(scalaSettings: _*)
-    .settings(publishingSettings: _*)
     .settings(defaultSettings(): _*)
     .settings(scalaVersion := "2.12.12")
     .settings(playSettings ++ scoverageSettings: _*)
