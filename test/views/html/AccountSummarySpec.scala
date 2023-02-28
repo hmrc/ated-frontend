@@ -69,6 +69,13 @@ class AccountSummarySpec extends AtedViewSpec with MockAuthUtil with TestModels 
         assert(doc.select("h1").text() contains "Your ATED summary")
       }
 
+      "have the correct valuation date change banner" in {
+        assert(doc.select("#valuation-banner1").text() contains "Properties must be revalued every 5 years in line with ATED legislation.")
+        assert(doc.select("#valuation-banner2").text() contains "The 2023 to 2024 chargeable period is a revaluation year.")
+        assert(doc.select("#valuation-banner3").text() contains "For properties acquired on or before 1 April 2022, use this date as the revaluation date.")
+        assert(doc.select("#valuation-banner4").text() contains "For properties acquired after 1 April 2022, use the acquisition date as the valuation date.")
+      }
+
       "have the correct caption" in {
         assert(doc.select(".govuk-caption-xl").text() === s"You have logged in as:$organisationName")
       }

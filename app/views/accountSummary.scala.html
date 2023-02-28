@@ -22,7 +22,8 @@
 
 @this(newMain: newMain,
     peakGuidance: peakGuidance,
-    govukButton : GovukButton)
+    govukButton : GovukButton,
+    govukNotificationBanner : GovukNotificationBanner)
 
 @(returnsCurrentTaxYear: Seq[AccountSummaryRowModel], totalCurrentYearReturns: Int, hasPastReturns: Boolean,
         otherReturns: SummaryReturnsModel, correspondence: Option[Address], organisationName: Option[String],
@@ -30,6 +31,14 @@
         taxYearStartingYear: Int, fromAccountSummary: Boolean)(implicit authContext: StandardAuthRetrievals,
         messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
+@html = {
+    <ul class="govuk-list govuk-list--bullet">
+        <li id="valuation-banner1">@Html(messages("ated.valuation.banner.p1"))</li>
+        <li id="valuation-banner2">@Html(messages("ated.valuation.banner.p2"))</li>
+        <li id="valuation-banner3">@Html(messages("ated.valuation.banner.p3"))</li>
+        <li id="valuation-banner4">@Html(messages("ated.valuation.banner.p4"))</li>
+    </ul>
+}
 
 @newMain(
     title = titleBuilder(messages("ated.summary-return.title")),
@@ -44,6 +53,10 @@
                 @messages("ated.summary-return.header")
             </h1>
         </header>
+
+        @govukNotificationBanner(NotificationBanner(
+            content = HtmlContent(html)
+        ))
 
         @peakGuidance(duringPeak, currentYear, taxYearStartingYear)
 

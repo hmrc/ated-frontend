@@ -1120,6 +1120,13 @@ ated.dispose-property.period.dateOfDisposal.date-after-today = The property disp
 
 ated.agent.banner = You are viewing the returns of <strong class="govuk-!-font-weight-bold">{0}</strong>
 
+##### VALUATION DATE CHANGE BANNER
+
+ated.valuation.banner.p1 = Properties must be revalued every 5 years in line with ATED legislation.
+ated.valuation.banner.p2 = The 2023 to 2024 chargeable period is a revaluation year.
+ated.valuation.banner.p3 = For properties acquired <strong class="govuk-!-font-weight-bold">on or before</strong> 1 April 2022, use this date as the revaluation date.
+ated.valuation.banner.p4 = For properties acquired <strong class="govuk-!-font-weight-bold">after</strong> 1 April 2022, use the acquisition date as the valuation date.
+
 ##### WRONG CLIENT ERROR MESSAGE
 
 ated.selected-client-error.wrong.client.header = There is a problem with your sign in details
