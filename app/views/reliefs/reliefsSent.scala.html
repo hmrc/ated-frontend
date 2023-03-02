@@ -19,10 +19,12 @@
 @import views.html.helpers._
 @import play.twirl.api.HtmlFormat
 @import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.hmrcfrontend.views.html.components._
 @import views.ViewUtils.titleBuilder
 @this(newMain: newMain,
       govukPanel : GovukPanel,
-      govukButton : GovukButton)
+      govukButton : GovukButton,
+      hmrcBanner: HmrcBanner)
 
 @(periodKey: Int,
     serviceInfoContent: Html = HtmlFormat.empty,
@@ -30,7 +32,9 @@
 
 @newMain(title = titleBuilder(messages("ated.relief-sent.title")), serviceInfoContent = serviceInfoContent) {
 
-  @printLogo()
+  <div class="showPrint">
+      @hmrcBanner(Banner())
+  </div>
 
   @govukPanel(Panel(
      title = Text(Messages("ated.relief-sent.banner-text"))
