@@ -21,6 +21,7 @@
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 @import uk.gov.hmrc.hmrcfrontend.views.html.components._
 @import views.ViewUtils.titleBuilder
+
 @this(newMain: newMain,
       govukPanel : GovukPanel,
       govukButton : GovukButton,
@@ -44,7 +45,7 @@
   <p class="govuk-body" id="email-confirmation">@messages("ated.reliefs-sent.email-message")<p>
 
   <div class="govuk-form-group govuk-body govuk-!-display-none-print">
-    <a id="print"  href="javascript:window.print();" class="govuk-link govuk-body print-hidden">@Messages("ated.reliefs-sent.print-link")</a>
+    <a id="print" href="javascript:window.print();" class="govuk-link govuk-body print-hidden">@Messages("ated.reliefs-sent.print-link")</a>
   </div>
 
   <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">

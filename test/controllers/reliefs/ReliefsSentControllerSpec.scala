@@ -99,7 +99,6 @@ class ReliefsSentControllerSpec extends PlaySpec with GuiceOneServerPerSuite wit
       test(result)
     }
 
-
     def getWithAuthorisedUserNoReliefs(test: Future[Result] => Any) {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
