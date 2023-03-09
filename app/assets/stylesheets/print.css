@@ -7,6 +7,10 @@
 
 @media print {
 
+    .govuk-main-wrapper > .govuk-grid-row > div[class*='govuk-grid-column-'] {
+            width: 100%;
+    }
+
    /* Hide unnecessary elements */
    .cbanner-govuk-cookie-banner,
    .govuk-skip-link,
