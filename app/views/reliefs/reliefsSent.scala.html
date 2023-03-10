@@ -16,12 +16,16 @@
 
 @import config.ApplicationConfig
 @import models._
+@import views.html.helpers._
 @import play.twirl.api.HtmlFormat
 @import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.hmrcfrontend.views.html.components._
 @import views.ViewUtils.titleBuilder
+
 @this(newMain: newMain,
       govukPanel : GovukPanel,
-      govukButton : GovukButton)
+      govukButton : GovukButton,
+      hmrcBanner: HmrcBanner)
 
 @(periodKey: Int,
     serviceInfoContent: Html = HtmlFormat.empty,
@@ -29,17 +33,20 @@
 
 @newMain(title = titleBuilder(messages("ated.relief-sent.title")), serviceInfoContent = serviceInfoContent) {
 
-    @govukPanel(Panel(
-        title = Text(Messages("ated.relief-sent.banner-text"))
-      ))
+  <div class="showPrint">
+      @hmrcBanner(Banner())
+  </div>
+
+  @govukPanel(Panel(
+     title = Text(Messages("ated.relief-sent.banner-text"))
+  ))
 
   <p class="govuk-body" id="completed-returns">@messages("ated.reliefs-sent.completed-message")</p>
   <p class="govuk-body" id="email-confirmation">@messages("ated.reliefs-sent.email-message")<p>
 
-  <a class="govuk-link govuk-!-font-size-19" href="@controllers.reliefs.routes.ReliefsSentController.viewPrintFriendlyReliefSent(periodKey)"
-  id="print-friendly-relief-link" target="_blank">
-    @messages("ated.reliefs-sent.print-link")
-  </a>
+  <div class="govuk-form-group govuk-body govuk-!-display-none-print">
+    <a id="print" href="javascript:window.print();" class="govuk-link govuk-body print-hidden">@Messages("ated.reliefs-sent.print-link")</a>
+  </div>
 
   <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
 

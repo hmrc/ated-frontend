@@ -37,7 +37,6 @@ GET            /reliefs/:periodKey/relief-declaration                       cont
 POST           /reliefs/:periodKey/submit-reliefs                           controllers.reliefs.ReliefDeclarationController.submit(periodKey: Int)
 
 GET            /reliefs/:periodKey/sent-reliefs                             controllers.reliefs.ReliefsSentController.view(periodKey: Int)
-GET            /reliefs/:periodKey/sent-reliefs-print                       controllers.reliefs.ReliefsSentController.viewPrintFriendlyReliefSent(periodKey: Int)
 
 GET            /reliefs/:periodKey/print                                    controllers.reliefs.ReliefsSummaryController.viewPrintFriendlyReliefReturn(periodKey: Int)
 GET            /reliefs/:periodKey/delete                                   controllers.reliefs.ReliefsSummaryController.deleteDraft(periodKey: Int)

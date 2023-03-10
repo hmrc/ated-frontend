@@ -99,22 +99,6 @@ class ReliefsSentControllerSpec extends PlaySpec with GuiceOneServerPerSuite wit
       test(result)
     }
 
-    def getPrintFriendlyWithAuthorisedUser(test: Future[Result] => Any) {
-      val userId = s"user-${UUID.randomUUID}"
-      val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
-      setAuthMocks(authMock)
-      when(mockReliefsService.retrieveDraftReliefs(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
-      val reliefReturnResponse = ReliefReturnResponse(reliefDescription = "Farmhouses",formBundleNumber = "form-bundle-123")
-      val submitReturnsResponse = SubmitReturnsResponse(processingDate = DateTime.now().toString, reliefReturnResponse = Some(Seq(reliefReturnResponse)), None)
-      when(mockDataCacheConnector.fetchAndGetFormData[SubmitReturnsResponse](ArgumentMatchers.eq(SubmitReturnsResponseFormId))
-        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(submitReturnsResponse)))
-      when(mockSubscriptionDataService.getOrganisationName(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(organisationName)))
-      val result = testReliefsSentController.viewPrintFriendlyReliefSent(periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
-
-      test(result)
-    }
-
-
     def getWithAuthorisedUserNoReliefs(test: Future[Result] => Any) {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
@@ -163,15 +147,6 @@ class ReliefsSentControllerSpec extends PlaySpec with GuiceOneServerPerSuite wit
 
             val document = Jsoup.parse(contentAsString(result))
             document.title() must be (TitleBuilder.buildTitle("Your returns have been successfully submitted - Annual Tax on enveloped dwellings"))
-          }
-        }
-
-        "return print friendly sent relief success view" in new Setup {
-          getPrintFriendlyWithAuthorisedUser { result =>
-            status(result) must be(OK)
-
-            val document = Jsoup.parse(contentAsString(result))
-            document.title() must be("Your returns have been successfully submitted - Annual Tax on enveloped dwellings")
           }
         }
 
