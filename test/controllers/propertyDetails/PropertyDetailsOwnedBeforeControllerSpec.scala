@@ -17,12 +17,12 @@
 package controllers.propertyDetails
 
 import java.util.UUID
-
 import builders.{PropertyDetailsBuilder, SessionBuilder}
 import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.AuthAction
 import models._
+import org.joda.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
@@ -55,16 +55,13 @@ class PropertyDetailsOwnedBeforeControllerSpec extends PlaySpec with GuiceOneSer
   val mockBackLinkCacheConnector: BackLinkCacheConnector = mock[BackLinkCacheConnector]
   val mockPropertyDetailsNewBuildController: PropertyDetailsNewBuildController = mock[PropertyDetailsNewBuildController]
   val mockPropertyDetailsProfessionallyValuedController: PropertyDetailsProfessionallyValuedController = mock[PropertyDetailsProfessionallyValuedController]
-    val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
+  val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
   val injectedViewInstance = app.injector.instanceOf[views.html.propertyDetails.propertyDetailsOwnedBefore]
 
-  val periodKey: Int = calculatePeakStartYear()
-  val valuationPeriod: String = PeriodUtils.calculateLowerTaxYearBoundary(periodKey).getYear.toString
-
-  class Setup {
+  class Setup(year: Int = 2022) {
 
     val mockAuthAction: AuthAction = new AuthAction(
       mockAppConfig,
@@ -83,6 +80,9 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
       mockBackLinkCacheConnector,
       injectedViewInstance
     )
+
+    val periodKey: Int = calculatePeakStartYear(LocalDate.parse(s"$year-3-16"))
+    val valuationPeriod: String = PeriodUtils.calculateLowerTaxYearBoundary(periodKey).getYear.toString
 
     def getWithUnAuthorisedUser(test: Future[Result] => Any) {
       val userId = s"user-${UUID.randomUUID}"
@@ -161,12 +161,37 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
     "accessed by an Authorised user" when {
       "a property is found using the id provided" must {
 
-        "show the chargeable property details view" in new Setup {
+        "show the chargeable property details view for valuation period 2017" in new Setup {
           val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
           getDataWithAuthorisedUser("1", propertyDetails) {
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
+
+              document.getElementsByTag("h1").text().contains(s"Did the company own this property on or before 1 April $valuationPeriod?") must be(true)
+              assert(document.getElementById("service-info-list").text() === "Home Manage account Messages Help and contact")
+          }
+        }
+
+        "show the chargeable property details view for different valuation period 2022" in new Setup(2023) {
+          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"), periodKey = periodKey)
+          getDataWithAuthorisedUser("1", propertyDetails) {
+            result =>
+              status(result) must be(OK)
+              val document = Jsoup.parse(contentAsString(result))
+
+              document.getElementsByTag("h1").text().contains(s"Did the company own this property on or before 1 April $valuationPeriod?") must be(true)
+              assert(document.getElementById("service-info-list").text() === "Home Manage account Messages Help and contact")
+          }
+        }
+
+        "show the chargeable property details view for different valuation period 2012" in new Setup(2015) {
+          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"), periodKey = periodKey)
+          getDataWithAuthorisedUser("1", propertyDetails) {
+            result =>
+              status(result) must be(OK)
+              val document = Jsoup.parse(contentAsString(result))
+
               document.getElementsByTag("h1").text().contains(s"Did the company own this property on or before 1 April $valuationPeriod?") must be(true)
               assert(document.getElementById("service-info-list").text() === "Home Manage account Messages Help and contact")
           }
@@ -184,6 +209,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
           result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
+
             document.getElementsByTag("h1").text().contains(s"Did the company own this property on or before 1 April $valuationPeriod?") must be(true)
             document.getElementsByClass("govuk-back-link").text must be("Back")
             document.getElementsByClass("govuk-back-link").attr("href") must include("/ated/liability/create/summary")

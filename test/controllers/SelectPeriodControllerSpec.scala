@@ -76,7 +76,7 @@ class SelectPeriodControllerSpec extends PlaySpec with GuiceOneAppPerSuite with 
       mockDataCacheConnector,
       injectedViewInstance
     ) {
-      override def endDate(): LocalDate = LocalDate.parse(s"$endYear-05-20")
+      override def currentDate: LocalDate = LocalDate.parse(s"$endYear-05-20")
     }
 
     def getWithAuthorisedUser(test: Future[Result] => Any) {
@@ -161,13 +161,9 @@ class SelectPeriodControllerSpec extends PlaySpec with GuiceOneAppPerSuite with 
             document.title() must be(TitleBuilder.buildTitle("Select an ATED chargeable period"))
             document.getElementsByTag("h1").text() must include("Select an ATED chargeable period")
             document.getElementById("period-hint").text() must be("The chargeable period for a year runs from the 1 April to 31 March.")
-            document.getElementsByAttributeValue("for", "period-7").text() must be("2015 to 2016")
-            document.getElementsByAttributeValue("for", "period-6").text() must be("2016 to 2017")
-            document.getElementsByAttributeValue("for", "period-5").text() must be("2017 to 2018")
-            document.getElementsByAttributeValue("for", "period-4").text() must be("2018 to 2019")
-            document.getElementsByAttributeValue("for", "period-3").text() must be("2019 to 2020")
-            document.getElementsByAttributeValue("for", "period-2").text() must be("2020 to 2021")
-            document.getElementsByAttributeValue("for", "period").text() must be("2021 to 2022")
+            document.getElementsByAttributeValue("for", "period-3").text() must be("2015 to 2016")
+            document.getElementsByAttributeValue("for", "period-2").text() must be("2016 to 2017")
+            document.getElementsByAttributeValue("for", "period").text() must be("2017 to 2018")
             document.getElementById("submit").text() must be("Continue")
           }
         }
@@ -179,8 +175,8 @@ class SelectPeriodControllerSpec extends PlaySpec with GuiceOneAppPerSuite with 
             document.title() must be(TitleBuilder.buildTitle("Select an ATED chargeable period"))
             document.getElementsByTag("h1").text() must include("Select an ATED chargeable period")
             document.getElementById("period-hint").text() must be("The chargeable period for a year runs from the 1 April to 31 March.")
-            document.getElementsByAttributeValue("for", "period-7").text() must be("2015 to 2016")
-            document.getElementsByAttributeValue("for", "period-6").text() must be("2016 to 2017")
+            document.getElementsByAttributeValue("for", "period-2").text() must be("2015 to 2016")
+            document.getElementsByAttributeValue("for", "period").text() must be("2016 to 2017")
             document.getElementById("submit").text() must be("Continue")
           }
         }
@@ -192,9 +188,11 @@ class SelectPeriodControllerSpec extends PlaySpec with GuiceOneAppPerSuite with 
             document.title() must be(TitleBuilder.buildTitle("Select an ATED chargeable period"))
             document.getElementsByTag("h1").text() must include("Select an ATED chargeable period")
             document.getElementById("period-hint").text() must be("The chargeable period for a year runs from the 1 April to 31 March.")
-            document.getElementsByAttributeValue("for", "period-7").text() must be("2015 to 2016")
-            document.getElementsByAttributeValue("for", "period-6").text() must be("2016 to 2017")
-            document.getElementsByAttributeValue("for", "period-3").text() must be("2019 to 2020")
+            document.getElementsByAttributeValue("for", "period-5").text() must be("2015 to 2016")
+            document.getElementsByAttributeValue("for", "period-4").text() must be("2016 to 2017")
+            document.getElementsByAttributeValue("for", "period-3").text() must be("2017 to 2018")
+            document.getElementsByAttributeValue("for", "period-2").text() must be("2018 to 2019")
+            document.getElementsByAttributeValue("for", "period").text() must be("2019 to 2020")
             document.getElementById("submit").text() must be("Continue")
           }
         }
@@ -206,10 +204,10 @@ class SelectPeriodControllerSpec extends PlaySpec with GuiceOneAppPerSuite with 
             document.title() must be(TitleBuilder.buildTitle("Select an ATED chargeable period"))
             document.getElementsByTag("h1").text() must include("Select an ATED chargeable period")
             document.getElementById("period-hint").text() must be("The chargeable period for a year runs from the 1 April to 31 March.")
-            document.getElementsByAttributeValue("for", "period-7").text() must be("2015 to 2016")
-            assert(document.getElementById("period-7").outerHtml() contains "checked")
-            document.getElementsByAttributeValue("for", "period-6").text() must be("2016 to 2017")
-            document.getElementsByAttributeValue("for", "period-5").text() must be("2017 to 2018")
+            document.getElementsByAttributeValue("for", "period-3").text() must be("2015 to 2016")
+            assert(document.getElementById("period-3").outerHtml() contains "checked")
+            document.getElementsByAttributeValue("for", "period-2").text() must be("2016 to 2017")
+            document.getElementsByAttributeValue("for", "period").text() must be("2017 to 2018")
             document.getElementById("submit").text() must be("Continue")
           }
         }
@@ -228,9 +226,9 @@ class SelectPeriodControllerSpec extends PlaySpec with GuiceOneAppPerSuite with 
 
                 doc.getElementsByClass("govuk-error-summary__list").html() must include("Select an option for type of return")
                 doc.getElementsByClass("govuk-error-message").html() must include("Select an option for type of return")
-                doc.getElementsByAttributeValue("for", "period-7").text() must be("2015 to 2016")
-                doc.getElementsByAttributeValue("for", "period-6").text() must be("2016 to 2017")
-                doc.getElementsByAttributeValue("for", "period-5").text() must be("2017 to 2018")
+                doc.getElementsByAttributeValue("for", "period-8").text() must be("2015 to 2016")
+                doc.getElementsByAttributeValue("for", "period-7").text() must be("2016 to 2017")
+                doc.getElementsByAttributeValue("for", "period-6").text() must be("2017 to 2018")
                 assert(doc.getElementById(s"period-${peakStartYear}_field") === null)
             }
           }

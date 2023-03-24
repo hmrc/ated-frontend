@@ -45,13 +45,13 @@ class SelectPeriodController @Inject()(mcc: MessagesControllerComponents,
   val controllerId = "SelectPeriodController"
 
 
-  def endDate(): LocalDate = LocalDate.now()
+  def currentDate: LocalDate = LocalDate.now()
 
   def view: Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
-          val peakStartYear = PeriodUtils.calculatePeakStartYear()
+          val peakStartYear = PeriodUtils.calculatePeakStartYear(currentDate)
           val periods = PeriodUtils.getPeriods(peakStartYear)
           dataCacheConnector.fetchAndGetFormData[SelectPeriod](RetrieveSelectPeriodFormId) map {
             case Some(data) => Ok(template(selectPeriodForm.fill(data), periods, serviceInfoContent, getBackLink()))
