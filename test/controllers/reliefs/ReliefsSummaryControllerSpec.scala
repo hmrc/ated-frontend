@@ -39,7 +39,7 @@ import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.{AtedConstants, PeriodUtils}
 import views.html.BtaNavigationLinks
-import views.html.reliefs.{invalidPeriodKey, reliefsPrintFriendly, reliefsSummary}
+import views.html.reliefs.{invalidPeriodKey, reliefsSummary}
 
 import scala.concurrent.Future
 
@@ -57,7 +57,6 @@ class ReliefsSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
   val injectedViewInstance: reliefsSummary = app.injector.instanceOf[views.html.reliefs.reliefsSummary]
-  val injectedViewInstancePrint: reliefsPrintFriendly = app.injector.instanceOf[views.html.reliefs.reliefsPrintFriendly]
   val injectedViewInstancePeriod: invalidPeriodKey = app.injector.instanceOf[views.html.reliefs.invalidPeriodKey]
 
   val organisationName = "ACME Limited"
@@ -85,7 +84,6 @@ class ReliefsSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
       mockDataCacheConnector,
       mockBackLinkCacheConnector,
       injectedViewInstance,
-      injectedViewInstancePrint,
       injectedViewInstancePeriod
     )
 
@@ -106,6 +104,7 @@ class ReliefsSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
         (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
       when(mockReliefsService.retrieveDraftReliefs(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(testReliefs))
       when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(Some("http://backLink")))
+      when(mockSubscriptionDataService.getOrganisationName(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(organisationName)))
       val result = testReliefsSummaryController.view(periodKeyLocal).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
@@ -118,30 +117,6 @@ class ReliefsSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
         (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
       val result = testReliefsSummaryController.continue(periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
 
-      test(result)
-    }
-
-    def getPrintFriendlyWithAuthorisedUser(testReliefs: Option[ReliefsTaxAvoidance])(test: Future[Result] => Any) {
-      val userId = s"user-${UUID.randomUUID}"
-      val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
-      setAuthMocks(authMock)
-      when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
-        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-      when(mockReliefsService.retrieveDraftReliefs(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(testReliefs))
-      when(mockSubscriptionDataService.getOrganisationName(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(organisationName)))
-      val result = testReliefsSummaryController.viewPrintFriendlyReliefReturn(periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
-      test(result)
-    }
-
-    def getWithForbiddenUser(testReliefs: Option[ReliefsTaxAvoidance])(test: Future[Result] => Any) {
-      val userId = s"user-${UUID.randomUUID}"
-      val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
-      setForbiddenAuthMocks(authMock)
-      when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
-        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-      when(mockReliefsService.retrieveDraftReliefs(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(testReliefs))
-      when(mockSubscriptionDataService.getOrganisationName(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(organisationName)))
-      val result = testReliefsSummaryController.viewPrintFriendlyReliefReturn(periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
 
@@ -287,56 +262,6 @@ class ReliefsSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
           result =>
             status(result) must be(SEE_OTHER)
             redirectLocation(result) must be(Some("/ated/reliefs/2015/relief-declaration"))
-        }
-      }
-    }
-
-    "print friendly view" must {
-
-      "called for authorised user" must {
-
-        "status should be OK where full data completed" in new Setup {
-          getPrintFriendlyWithAuthorisedUser(Some(
-            ReliefBuilder.reliefTaxAvoidance(periodKey,
-              Reliefs(periodKey = periodKey, isAvoidanceScheme = Some(true), openToPublic = true),
-              taxAvoidance = TaxAvoidance(openToPublicScheme = Some("12345678"), openToPublicSchemePromoter = Some("87654321"))
-            ))) {
-            result =>
-              status(result) must be(OK)
-              val document = Jsoup.parse(contentAsString(result))
-              document.title() must be("Check your details are correct")
-              document.getElementById("property-details-summary-header").text() must be("Relief returns for ACME Limited")
-              document.getElementById("details-text").text() must be("For the ATED period from 1 April 2015 to 31 March 2016.")
-              document.getElementById("tas-otp-val").text() must be("12345678")
-              document.getElementById("reliefs-print-charge-value").text() must be("£0")
-          }
-        }
-
-        "status should be OK where partial data completed" in new Setup {
-          getPrintFriendlyWithAuthorisedUser(Some(
-            ReliefBuilder.reliefTaxAvoidance(periodKey,
-              Reliefs(periodKey = periodKey, isAvoidanceScheme = Some(true), openToPublic = true),
-              taxAvoidance = TaxAvoidance(openToPublicScheme = Some("12345678"))
-            ))) {
-            result =>
-              status(result) must be(OK)
-              val document = Jsoup.parse(contentAsString(result))
-              document.title() must be("Check your details are correct")
-              document.getElementById("property-details-summary-header").text() must be("Relief returns for ACME Limited")
-              document.getElementById("details-text").text() must be("For the ATED period from 1 April 2015 to 31 March 2016.")
-              document.getElementById("tas-otp-val").text() must be("12345678")
-              document.getElementById("reliefs-print-charge-value").text() must be("Not yet calculated")
-          }
-        }
-
-        "respond with a redirect to unauthorised URL" in new Setup {
-          getWithForbiddenUser(Some(
-            ReliefBuilder.reliefTaxAvoidance(periodKey,
-              Reliefs(periodKey = periodKey, isAvoidanceScheme = Some(true), openToPublic = true),
-              taxAvoidance = TaxAvoidance(openToPublicScheme = Some("12345678"))
-            ))){ result =>
-            redirectLocation(result).get must include("/ated/unauthorised")
-          }
         }
       }
     }

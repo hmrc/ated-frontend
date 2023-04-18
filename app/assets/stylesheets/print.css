@@ -19,6 +19,8 @@
    .govuk-link,
    .govuk-button,
    .govuk-phase-banner,
+   .govuk-back-link,
+   .govuk-caption-xl,
    .print-hidden{
    	display: none;
    }
@@ -48,11 +50,33 @@
        float:left;
        margin-right:10px;
        width:30.0%;
-       height:24px;
+       height:10px;
        box-sizing:border-box;
        font-weight:bold;
-       font-family: "GDS Transport",arial,sans-serif;
        font-size: 19px;
    }
+
+   .govuk-summary-list__key, .govuk-summary-list__value {
+           display: table-cell;
+           padding-top: 10px;
+           padding-right: 20px;
+           padding-bottom: 10px;
+           width: 40%;
+       }
+
+       .govuk-summary-list__row {
+            display: table-row;
+       }
+
+       .govuk-summary-list__key {
+           width: 40%;
+       }
+
+       .govuk-summary-list {
+           display: table;
+           width: 100%;
+           table-layout: fixed;
+           border-collapse: collapse;
+       }
 
 }

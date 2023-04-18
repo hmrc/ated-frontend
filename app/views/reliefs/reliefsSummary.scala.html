@@ -21,20 +21,23 @@
 @import play.twirl.api.HtmlFormat
 @import uk.gov.hmrc.govukfrontend.views.Implicits._
 @import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.hmrcfrontend.views.html.components._
 @import views.ViewUtils.titleBuilder
 
 @this(newMain: newMain,
   formHelper: FormWithCSRF,
   govukButton : GovukButton,
   govukBackLink : GovukBackLink,
-  govukWarningText : GovukWarningText)
+  govukWarningText : GovukWarningText,
+  hmrcBanner: HmrcBanner)
 
 @(periodKey: Int,
   reliefsTaxAvoidance : Option[ReliefsTaxAvoidance],
   canSubmit: Boolean,
   isComplete: Boolean,
   serviceInfoContent: Html = HtmlFormat.empty,
-  backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
+  backLink: Option[String],
+  organisationName: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
 @socialHousingMessage = @{
   if (periodKey >= 2020) {
@@ -54,10 +57,17 @@
 
 @newMain(title = titleBuilder(messages("ated.relief-summary.title")), serviceInfoContent = serviceInfoContent) {
 
+  <div class="showPrint">
+      @hmrcBanner(Banner())
+  </div>
+
   @backLinkHtml
 
+  <p id="reliefs-print-ated-ref" class="govuk-body showPrint govuk-!-margin-top-5">@messages("ated.refNo", authContext.atedReferenceNumber)</p>
+
   <header>
-    <h1 class="govuk-heading-xl govuk-!-margin-bottom-5" id="property-details-summary-header">
+    <h1 class="govuk-heading-xl showPrint govuk-!-margin-bottom-5" id="property-details-summary-header-print">@messages("ated.relief-summary.print.header", organisationName.getOrElse(""))</h1>
+    <h1 class="govuk-heading-xl govuk-!-margin-bottom-5 govuk-!-display-none-print" id="property-details-summary-header">
       <span class="govuk-caption-xl"><span class="govuk-visually-hidden">@messages("ated.screen-reader.section") </span>@messages("ated.choose-reliefs.subheader")</span>
       @messages("ated.relief-summary.header")
     </h1>
@@ -804,19 +814,19 @@
     }
   </span></p>
 
-  <div class="govuk-inset-text">
+  <div class="govuk-inset-text print-hidden">
     <p class="govuk-body">@messages("ated.relief-summary.saved-draft.text")</p>
   </div>
 
 </div>
 
-@govukWarningText(WarningText(
+  @govukWarningText(WarningText(
     iconFallbackText = "Warning",
     content = Text(Messages("ated.choose-reliefs-further.information.text"))
   ))
 
   <p class="govuk-body">
-      <a class="govuk-link" href="@controllers.reliefs.routes.ReliefsSummaryController.viewPrintFriendlyReliefReturn(periodKey)" id="print-friendly-relief-link" target="_blank">@messages("ated.relief-summary.print.view")</a>
+    <a id="print-friendly-relief-link" href="javascript:window.print();" class="govuk-link govuk-body print-hidden">@Messages("ated.relief-summary.print.view")</a>
   </p>
 
   <p class="govuk-body">
@@ -826,6 +836,8 @@
   <p class="govuk-body">
       <a class="govuk-link" href="@controllers.reliefs.routes.ReliefsSummaryController.deleteDraft(periodKey)" id="delete-draft">@messages("ated.property-details-summary.delete-draft.link.text")</a>
   </p>
+
+  @printBoxes()
 
   @formHelper(action=controllers.reliefs.routes.ReliefsSummaryController.continue(periodKey)) {
       @if(!isComplete){
