@@ -25,7 +25,6 @@ import models.ReliefsTaxAvoidance
 import org.joda.time.LocalDate
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{ReliefsService, ServiceInfoService, SubscriptionDataService}
-import uk.gov.hmrc.http.ForbiddenException
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedUtils
 
@@ -40,7 +39,6 @@ class ReliefsSummaryController @Inject()(mcc: MessagesControllerComponents,
                                          val dataCacheConnector: DataCacheConnector,
                                          val backLinkCacheConnector: BackLinkCacheConnector,
                                          template: views.html.reliefs.reliefsSummary,
-                                         templatePrintFriendly: views.html.reliefs.reliefsPrintFriendly,
                                          val templateInvalidPeriodKey: views.html.reliefs.invalidPeriodKey)
                                         (implicit val appConfig: ApplicationConfig)
   extends FrontendController(mcc) with BackLinkController with ReliefHelpers with ClientHelper {
@@ -56,13 +54,15 @@ class ReliefsSummaryController @Inject()(mcc: MessagesControllerComponents,
             backLink <- currentBackLink
             serviceInfoContent <- serviceInfoService.getPartial
             retrievedData <- reliefsService.retrieveDraftReliefs(authContext.atedReferenceNumber, periodKey)
+            organisationName <- subscriptionDataService.getOrganisationName
           } yield {
             val canSubmit = AtedUtils.canSubmit(periodKey, LocalDate.now)
             Ok(template(retrievedData.map(_.periodKey).getOrElse(periodKey),
               retrievedData, canSubmit,
               isComplete(retrievedData),
               serviceInfoContent,
-              backLink))
+              backLink,
+              organisationName))
           }
         }
       }
@@ -102,25 +102,6 @@ class ReliefsSummaryController @Inject()(mcc: MessagesControllerComponents,
           )
         }
       }
-    }
-  }
-
-  def viewPrintFriendlyReliefReturn(periodKey: Int): Action[AnyContent] = Action.async { implicit request =>
-    authAction.authorisedAction { implicit authContext =>
-      ensureClientContext {
-        validatePeriodKey(periodKey) {
-          for {
-            retrievedData <- reliefsService.retrieveDraftReliefs(authContext.atedReferenceNumber, periodKey)
-            organisationName <- subscriptionDataService.getOrganisationName
-          } yield {
-            Ok(templatePrintFriendly(periodKey, retrievedData, isComplete(retrievedData), organisationName))
-          }
-        }
-      }
-    } recover {
-      case _: ForbiddenException     =>
-        logger.warn("[ReliefsSummaryController][viewPrintFriendlyReliefReturn] Forbidden exception")
-        authAction.unauthorisedUrl()
     }
   }
 

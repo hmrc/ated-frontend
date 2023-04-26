@@ -53,7 +53,7 @@ class ReliefsSummarySpec extends AnyFeatureSpec with GuiceOneAppPerSuite with Mo
         2015, socialHousing = true, socialHousingDate = Some(LocalDate.parse("2015-04-01"))
       ), TaxAvoidance(), LocalDate.now(), LocalDate.now())
 
-      val html = injectedViewInstance(2015, Some(reliefsTaxAvoidance), canSubmit = false, isComplete = true, Html(""), None)
+      val html = injectedViewInstance(2015, Some(reliefsTaxAvoidance), canSubmit = false, isComplete = true, Html(""), None, None )
 
       val document = Jsoup.parse(html.toString())
 
@@ -72,7 +72,7 @@ class ReliefsSummarySpec extends AnyFeatureSpec with GuiceOneAppPerSuite with Mo
         2020, socialHousing = true, socialHousingDate = Some(LocalDate.parse("2020-04-01"))
       ), TaxAvoidance(), LocalDate.now(), LocalDate.now())
 
-      val html = injectedViewInstance(2020, Some(reliefsTaxAvoidance), canSubmit = false, isComplete = true, Html(""), None)
+      val html = injectedViewInstance(2020, Some(reliefsTaxAvoidance), canSubmit = false, isComplete = true, Html(""), None, None)
 
       val document = Jsoup.parse(html.toString())
 
@@ -110,7 +110,7 @@ class ReliefsSummarySpec extends AnyFeatureSpec with GuiceOneAppPerSuite with Mo
           equityReleaseDate = Some(LocalDate.parse("2021-04-01"))
         ), TaxAvoidance(), LocalDate.now(), LocalDate.now())
 
-      val html = injectedViewInstance(2021, Some(reliefsTaxAvoidance), canSubmit = true, isComplete = true, Html(""), None)
+      val html = injectedViewInstance(2021, Some(reliefsTaxAvoidance), canSubmit = true, isComplete = true, Html(""), None, None)
 
       val document = Jsoup.parse(html.toString())
 
@@ -184,7 +184,7 @@ class ReliefsSummarySpec extends AnyFeatureSpec with GuiceOneAppPerSuite with Mo
           equityReleaseSchemePromoter = Some("12345678")
         ), LocalDate.now(), LocalDate.now())
 
-      val html = injectedViewInstance(2021, Some(reliefsTaxAvoidance), canSubmit = true, isComplete = true, Html(""), None)
+      val html = injectedViewInstance(2021, Some(reliefsTaxAvoidance), canSubmit = true, isComplete = true, Html(""), None, None)
 
       val document = Jsoup.parse(html.toString())
 
