@@ -213,7 +213,7 @@
           )))
     }
 
-    val rows: Seq[SummaryListRow] = Seq(nameRow, atedRefRow, registeredAddressRow, overseasCompanyRegistrationRow, correspondenceAddressRow, contactDetailsROW, contactPreferenceRow, appointedAgentRow, agentEmailRow).flatten
+    val rows: Seq[SummaryListRow] = Seq(nameRow, appointedAgentRow, atedRefRow, registeredAddressRow, overseasCompanyRegistrationRow, correspondenceAddressRow, contactDetailsROW, contactPreferenceRow, agentEmailRow).flatten
     govukSummaryList(SummaryList(rows))
   }
 
