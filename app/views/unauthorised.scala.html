@@ -17,15 +17,28 @@
 @import config.ApplicationConfig
 @import error.individual
 @import views.ViewUtils.titleBuilder
+@import uk.gov.hmrc.govukfrontend.views.html.components._
 
-@this(atedNoAuthMain: atedNoAuthMain, individual: individual )
+@this(atedNoAuthMain: atedNoAuthMain, individual: individual, govukButton : GovukButton, formHelper: FormWithCSRF)
 @()(implicit isSa: Boolean, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
 @atedNoAuthMain(title = titleBuilder(messages("unauthorised.title"))) {
 
   @if(isSa) {
-    <h1 class="govuk-heading-xl govuk-!-margin-bottom-5">@messages("unauthorised.sa.header")</h1>
-  } else {
+    <h1 class="govuk-heading-xl">@messages("unauthorised.sa.header")</h1>
+    <p class="govuk-body">@messages("unauthorised.sa.p1")</p>
+    <p class="govuk-body">@messages("unauthorised.sa.p2")</p>
+
+    @formHelper(action=controllers.routes.ApplicationController.logout) {
+//CHANGE URL
+
+     @govukButton(Button(
+     content = Text(messages("ated.sign-out")),
+     attributes = Map("id" -> "startAgain")
+     ))
+        }
+    }
+else {
     @individual()
   }
 }
