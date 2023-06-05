@@ -15,10 +15,13 @@
  *@
 
 @import config.ApplicationConfig
+@import views.ViewUtils.titleBuilder
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 
-@this(govukWarningText : GovukWarningText, govukButton : GovukButton)
+@this(layout: layoutNoAuth, govukWarningText : GovukWarningText, govukButton : GovukButton)
 @()(implicit messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
+
+@layout(pageTitle = Some(titleBuilder(messages("unauthorised.title"))), showSignOutLink = false) {
 
 <h1 class="govuk-heading-xl govuk-!-margin-bottom-5">@messages("unauthorised.header")</h1>
 
@@ -51,3 +54,4 @@
       href = Some("/ated/sign-out-individual")
    ))
 </div>
+}

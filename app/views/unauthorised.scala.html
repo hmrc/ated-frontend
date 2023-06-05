@@ -15,16 +15,14 @@
  *@
 
 @import config.ApplicationConfig
-@import error.individual
 @import views.ViewUtils.titleBuilder
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 
-@this(layout: layoutNoAuth, individual: individual, govukButton : GovukButton, formHelper: FormWithCSRF)
-@()(implicit isSa: Boolean, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
+@this(layout: layoutNoAuth, govukButton : GovukButton, formHelper: FormWithCSRF)
+@()(implicit messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
-@layout(pageTitle = Some(titleBuilder(messages("unauthorised.title"))), showSignOutLink = false) {
+@layout(pageTitle = Some(titleBuilder(messages("unauthorised.sa.title"))), showSignOutLink = false) {
 
-  @if(isSa) {
     <h1 class="govuk-heading-xl">@messages("unauthorised.sa.header")</h1>
     <p class="govuk-body">@messages("unauthorised.sa.p1")</p>
     <p class="govuk-body">@messages("unauthorised.sa.p2")</p>
@@ -34,8 +32,4 @@
      attributes = Map("id" -> "startAgain"),
      href = Some(controllers.routes.ApplicationController.redirectToSignIn.url)
      ))</div>
-
-    } else {
-    @individual()
-  }
 }

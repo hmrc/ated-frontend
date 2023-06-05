@@ -14,25 +14,25 @@
  * limitations under the License.
  */
 
-package views
+package views.error
 
 import config.ApplicationConfig
 import org.jsoup.Jsoup
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
+import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
-import play.api.i18n.{Messages, MessagesApi}
-import views.html.unauthorised
+import views.html.error.individual
 
-class unauthorisedViewSpec extends PlaySpec with GuiceOneAppPerSuite {
+class individualViewSpec extends PlaySpec with GuiceOneAppPerSuite {
 
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
   implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
-  val injectedViewInstance: unauthorised = app.injector.instanceOf[views.html.unauthorised]
+  val injectedViewInstance: individual = app.injector.instanceOf[views.html.error.individual]
 
-  "unauthorised" must {
+  "individual" must {
     val html = injectedViewInstance()
     val document = Jsoup.parse(html.toString())
     "have the correct title" in {

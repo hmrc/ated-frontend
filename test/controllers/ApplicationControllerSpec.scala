@@ -31,6 +31,7 @@ import testhelpers.MockAuthUtil
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
 import uk.gov.hmrc.auth.core.retrieve.~
 import uk.gov.hmrc.http.HeaderCarrier
+import views.html.error.individual
 import views.html.unauthorised
 
 import scala.concurrent.Future
@@ -42,7 +43,8 @@ class ApplicationControllerSpec extends PlaySpec with MockitoSugar with GuiceOne
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
 
   val mockMcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
-  val injectedViewInstance: unauthorised = app.injector.instanceOf[views.html.unauthorised]
+  val injectedUnauthorisedView: unauthorised = app.injector.instanceOf[views.html.unauthorised]
+  val injectedIndividualView: individual = app.injector.instanceOf[views.html.error.individual]
 
   class Setup {
 
@@ -55,7 +57,8 @@ class ApplicationControllerSpec extends PlaySpec with MockitoSugar with GuiceOne
     val testApplicationController: ApplicationController = new ApplicationController(
       mockMcc,
       mockAuthAction,
-      injectedViewInstance
+      injectedUnauthorisedView,
+      injectedIndividualView
     )
 
     def getWithUnAuthorisedUser(test: Future[Result] => Any) {
