@@ -187,8 +187,11 @@ ated.choose-reliefs.error.date.chargePeriod.socialHousingDate = Social housing s
 ated.choose-reliefs.error.date.chargePeriod.providerSocialOrHousingDate = Provider of social housing or housing co-operative start date must be in this chargeable period
 ated.choose-reliefs.error.date.chargePeriod.equityReleaseDate = Equity release start date must be in this chargeable period
 
-ated.reliefs.error.title = There is a problem with your ATED return
-ated.reliefs.error.wrong-period = There is a problem with your ATED return. No details have been saved so you must return to your account summary and start again.
+ated.reliefs.error.title = There has been a problem
+ated.reliefs.error.wrong-period.header = There has been a problem
+ated.reliefs.error.wrong-period = No details have been saved. You need to go back to your ATED summary to create a new ATED return.
+ated.reliefs.error.wrong-period.button = Back to your ATED summary
+
 ated.reliefs.error.ated-home = ATED Account Summary
 
 ##### RELIEF AVOIDANCE SCHEME
