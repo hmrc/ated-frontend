@@ -96,8 +96,8 @@ class ApplicationControllerSpec extends PlaySpec with MockitoSugar with GuiceOne
 
         "load the unauthorised page" in new Setup {
           getWithUnAuthorisedUserSa { result =>
-            contentAsString(result) must include("You are trying to sign in with your Self Assessment ID. " +
-              "If you are an overseas landlord or client you need to use your limited company ID")
+            contentAsString(result) must include("You have tried to sign in to your ATED account using your Self Assessment Government Gateway user ID.")
+            contentAsString(result) must include("If you are an overseas landlord or client you need to sign out and then sign in using the Government Gateway user ID for your business to access your ATED account")
           }
         }
       }
@@ -163,6 +163,14 @@ class ApplicationControllerSpec extends PlaySpec with MockitoSugar with GuiceOne
         setAuthMocks(authMock)
         val result: Future[Result] = testApplicationController.redirectToGuidance().apply(SessionBuilder.buildRequestWithSession(userId))
         redirectLocation(result).get must include("/guidance/register-for-the-annual-tax-on-enveloped-dwellings-online-service")
+      }
+    }
+
+    "redirectToSignIn" must {
+      "redirect the user" in new Setup {
+        val result: Future[Result] = testApplicationController.redirectToSignIn().apply(FakeRequest())
+        redirectLocation(result).get must include ("http://localhost:9553/bas-gateway/sign-in?continue_url=http://localhost:9916/ated/home")
+        status(result) mustBe SEE_OTHER
       }
     }
   }

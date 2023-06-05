@@ -90,6 +90,7 @@ unauthorised.nonUK.p3 = The person or agent who registered your business for ATE
 unauthorised.nonUK.p4 = If you are stuck, use the 'Get help with this service' link to find out who registered your company for ATED and how to get access. Give them your ATED reference number if you have it.
 unauthorised.button.signout = Sign out
 
+unauthorised.sa.title = There has been a problem
 unauthorised.sa.header = There has been a problem
 unauthorised.sa.p1 = You have tried to sign in to your ATED account using your Self Assessment Government Gateway user ID.
 unauthorised.sa.p2 = If you are an overseas landlord or client you need to sign out and then sign in using the Government Gateway user ID for your business to access your ATED account.
