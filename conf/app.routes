@@ -8,6 +8,8 @@ GET            /unauthorised                                                cont
 GET            /cancel                                                      controllers.ApplicationController.cancel
 GET            /keep-alive                                                  controllers.ApplicationController.keepAlive
 GET            /logout                                                      controllers.ApplicationController.logout
+GET            /sign-out                                                    controllers.ApplicationController.redirectToSignIn
+GET            /sign-out-individual                                         controllers.ApplicationController.redirectToGuidance()
 
 GET            /account-summary                                             controllers.AccountSummaryController.view
 GET            /prev-period-summary                                         controllers.PrevPeriodsSummaryController.view
@@ -25,7 +27,6 @@ POST           /reliefs/:periodKey/send                                     cont
 GET            /reliefs/:periodKey/avoidance-schemes-used                   controllers.reliefs.AvoidanceSchemeBeingUsedController.view(periodKey: Int)
 GET            /reliefs/:periodKey/avoidance-schemes-used/edit              controllers.reliefs.AvoidanceSchemeBeingUsedController.editFromSummary(periodKey: Int)
 POST           /reliefs/:periodKey/avoidance-schemes-used/send              controllers.reliefs.AvoidanceSchemeBeingUsedController.send(periodKey: Int)
-
 
 GET            /reliefs/:periodKey/avoidance-schemes                        controllers.reliefs.AvoidanceSchemesController.view(periodKey: Int)
 POST           /reliefs/:periodKey/submit-avoidance-schemes                 controllers.reliefs.AvoidanceSchemesController.submit(periodKey: Int)
@@ -80,7 +81,6 @@ POST    /liability/:formBundleNo/edit/:periodKey                            cont
 GET     /liability/:formBundleNo/change/address                             controllers.propertyDetails.PropertyDetailsAddressController.editSubmittedReturn(formBundleNo: String)
 GET     /liability/:formBundleNo/change/dates-liable                        controllers.editLiability.EditLiabilityDatesLiableController.view(formBundleNo: String)
 POST    /liability/:formBundleNo/change/dates-liable/period/:periodKey      controllers.editLiability.EditLiabilityDatesLiableController.save(formBundleNo: String, periodKey: Int)
-
 
 GET     /liability/:formBundleNo/change/edit-summary                        controllers.editLiability.EditLiabilityHasValueChangedController.editFromSummary(formBundleNo: String, isPrevReturn: Option[Boolean] ?=None)
 GET     /liability/:formBundleNo/change/value                               controllers.editLiability.EditLiabilityHasValueChangedController.view(formBundleNo: String)
@@ -173,7 +173,6 @@ POST     /liability/create/new-build/when-property-first-occupied/:propertyKey  
 GET      /liability/create/new-build/when-local-council-register-property-council-tax/:propertyKey   controllers.propertyDetails.DateCouncilRegisteredController.view(propertyKey: String)
 POST     /liability/create/new-build/when-local-council-register-property-council-tax/:propertyKey   controllers.propertyDetails.DateCouncilRegisteredController.save(propertyKey: String, periodKey: Int, mode: Option[String] ?=None)
 
-
 ###
 
 GET      /liability/create/new-build-value/view/:propertyKey                                 controllers.propertyDetails.PropertyDetailsNewBuildValueController.view(propertyKey: String)
@@ -206,7 +205,6 @@ GET      /liability/create/dates-liable/view/:propertyKey                      c
 GET      /liability/create/dates-liable/add/:propertyKey/period/:periodKey     controllers.propertyDetails.PeriodDatesLiableController.add(propertyKey: String, periodKey: Int)
 POST     /liability/create/dates-liable/save/:propertyKey/period/:periodKey    controllers.propertyDetails.PeriodDatesLiableController.save(propertyKey: String, periodKey: Int, mode: Option[String] ?= None)
 
-
 GET      /liability/create/in-relief/choose/add/:propertyKey/period/:periodKey    controllers.propertyDetails.PeriodChooseReliefController.add(propertyKey: String, periodKey: Int)
 POST     /liability/create/in-relief/choose/save/:propertyKey/period/:periodKey   controllers.propertyDetails.PeriodChooseReliefController.save(propertyKey: String, periodKey: Int)
 GET      /liability/create/in-relief/dates/add/:propertyKey/period/:periodKey     controllers.propertyDetails.PeriodInReliefDatesController.add(propertyKey: String, periodKey: Int)
@@ -233,8 +231,6 @@ GET      /liability/create/create-confirmation-print                    controll
 GET     /view-relief-return/:periodKey/:formBundleNo                    controllers.reliefs.ViewReliefReturnController.viewReliefReturn(periodKey: Int, formBundleNo: String)
 POST    /view-relief-return/submit/:periodKey/:formBundleNumber         controllers.reliefs.ViewReliefReturnController.submit(periodKey: Int, formBundleNumber: String)
 
-GET     /sign-out-individual                                            controllers.ApplicationController.redirectToGuidance()
-
 GET     /draft/delete/confirmation/view/:periodKey/:returnType          controllers.DraftDeleteConfirmationController.view(propertyKey: Option[String] ?=None, periodKey: Int, returnType: String)
 POST    /draft/delete/confirmation/submit/:periodKey/:returnType        controllers.DraftDeleteConfirmationController.submit(propertyKey: Option[String] ?=None, periodKey: Int, returnType: String)
 
@@ -242,7 +238,6 @@ POST    /draft/delete/confirmation/submit/:periodKey/:returnType        controll
 
 GET     /existing-return/confirmation/:periodKey/:returnType            controllers.ExistingReturnQuestionController.view(periodKey: Int, returnType: String)
 POST    /existing-return/confirmation/:periodKey/:returnType            controllers.ExistingReturnQuestionController.submit(periodKey: Int, returnType: String)
-
 
 GET     /existing-return/select/:periodKey/:returnType                  controllers.propertyDetails.SelectExistingReturnAddressController.view(periodKey: Int, returnType: String)
 POST    /existing-return/select/:periodKey/:returnType                  controllers.propertyDetails.SelectExistingReturnAddressController.continue(periodKey: Int, returnType: String)

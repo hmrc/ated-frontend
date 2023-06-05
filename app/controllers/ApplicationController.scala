@@ -56,4 +56,8 @@ class ApplicationController @Inject()(mcc: MessagesControllerComponents,
     Redirect(appConfig.signOutRedirect).withNewSession
   }
 
+  def redirectToSignIn: Action[AnyContent] = Action {
+    Redirect(appConfig.signIn).withNewSession
+  }
+
 }

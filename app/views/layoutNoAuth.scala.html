@@ -28,7 +28,7 @@
     hmrcTrackingConsentSnippet: HmrcTrackingConsentSnippet
 )
 
-@(beforeContent: Option[Html] = None, pageTitle: Option[String] = None, serviceInfoContent: Html, scripts: Option[Html], isUserResearchBannerVisible: Boolean = false, banner: Html = HtmlFormat.empty)(contentBlock: Html)(
+@(beforeContent: Option[Html] = None, pageTitle: Option[String] = None, serviceInfoContent: Html = HtmlFormat.empty, scripts: Option[Html] = None, isUserResearchBannerVisible: Boolean = false, banner: Html = HtmlFormat.empty, showSignOutLink: Boolean = true)(contentBlock: Html)(
     implicit request: Request[_], messages: Messages, appConfig: ApplicationConfig)
 
 @beforeContentBlock = {
@@ -48,11 +48,16 @@
 
 @signOutUrl = @{(controllers.routes.ApplicationController.logout.url)}
 
+@signOutLink = @{
+    if(showSignOutLink) Some(signOutUrl)
+    else None
+}
+
 @hmrcLayout(
     pageTitle = pageTitle,
     additionalHeadBlock = Some(headBlock),
     serviceUrl = Some(routes.HomeController.home(None).url),
-    signOutUrl = Some(signOutUrl),
+    signOutUrl = signOutLink,
     beforeContentBlock = Some(beforeContentBlock),
     nonce = CSPNonce.get
 )(content)

@@ -19,26 +19,23 @@
 @import views.ViewUtils.titleBuilder
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 
-@this(atedNoAuthMain: atedNoAuthMain, individual: individual, govukButton : GovukButton, formHelper: FormWithCSRF)
+@this(layout: layoutNoAuth, individual: individual, govukButton : GovukButton, formHelper: FormWithCSRF)
 @()(implicit isSa: Boolean, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
-@atedNoAuthMain(title = titleBuilder(messages("unauthorised.title"))) {
+@layout(pageTitle = Some(titleBuilder(messages("unauthorised.title"))), showSignOutLink = false) {
 
   @if(isSa) {
     <h1 class="govuk-heading-xl">@messages("unauthorised.sa.header")</h1>
     <p class="govuk-body">@messages("unauthorised.sa.p1")</p>
     <p class="govuk-body">@messages("unauthorised.sa.p2")</p>
 
-    @formHelper(action=controllers.routes.ApplicationController.logout) {
-//CHANGE URL
-
-     @govukButton(Button(
+     <div>@govukButton(Button(
      content = Text(messages("ated.sign-out")),
-     attributes = Map("id" -> "startAgain")
-     ))
-        }
-    }
-else {
+     attributes = Map("id" -> "startAgain"),
+     href = Some(controllers.routes.ApplicationController.redirectToSignIn.url)
+     ))</div>
+
+    } else {
     @individual()
   }
 }
