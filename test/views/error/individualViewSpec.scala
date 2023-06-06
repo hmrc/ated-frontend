@@ -36,19 +36,33 @@ class individualViewSpec extends PlaySpec with GuiceOneAppPerSuite {
     val html = injectedViewInstance()
     val document = Jsoup.parse(html.toString())
     "have the correct title" in {
-      document.title mustBe "There has been a problem - GOV.UK"
+      document.title mustBe "You need to sign in with a different Gateway ID - GOV.UK"
     }
+
     "have the correct heading" in {
-      document.select("h1").text mustBe "There has been a problem"
+      document.select("h1").text mustBe "You need to sign in with a different Gateway ID"
     }
     "have the correct content" in {
-      document.select("main p").get(0).text mustBe "You have tried to sign in to your ATED account using your Self Assessment Government Gateway user ID."
-      document.select("main p").get(1).text mustBe "If you are an overseas landlord or client you need to sign out and then sign in using the Government Gateway user ID for your business to access your ATED account."
+      document.select("main h2").get(0).text mustBe "UK businesses, trusts and partnerships"
+      document.select("main h2").get(1).text mustBe "Non-UK businesses, trusts and partnerships, including non-resident landlords"
+      document.select("main p").get(0).text mustBe "You need to use the Gateway ID you use to access Corporation Tax for a company or Self Assessment for a trust or partnership."
+      document.select("main p").get(1).text mustBe "If you are registering for ATED for the first time, and you are registering a business based outside the UK, you will need to create an organisation account."
+      document.select("main p").get(2).text mustBe "First create a new Gateway ID from this page by selecting Create sign-in details. When you are asked what type of account you require, select Organisation."
+      document.select("main p").get(3).text mustBe "The person or agent who registered your business for ATED should sign in."
+      document.select("main p").get(4).text mustBe "If you are stuck, use the Get help with this service link to find out who registered your company for ATED and how to get access. Give them your ATED reference number if you have it."
+    }
+    "have a link to the sign-in page" in {
+      document.select("main a").get(0).text mustBe "create a new Gateway ID from this page"
+      document.select("main a").get(0).attr("href") mustBe "https://www.tax.service.gov.uk/bas-gateway/sign-in?continue_url=/ated/home/&origin=ated-frontend"
     }
     "have a link styled like a button" in {
-      document.getElementById("startAgain").text mustBe "Sign out"
-      document.getElementById("startAgain").attr("href") mustBe "/ated/sign-out"
-      document.getElementById("startAgain").hasClass("govuk-button") mustBe true
+      document.select("main a").get(1).text mustBe "Sign out"
+      document.select("main a").get(1).attr("href") mustBe "/ated/sign-out-individual"
+      document.select("main a").get(1).hasClass("govuk-button") mustBe true
+    }
+    "have a Gateway ID warning" in {
+      document.select("main div").get(2).text mustBe "! Warning Do not set up a new Gateway ID if your business is already registered for ATED"
+      document.select("main div").get(2).hasClass("govuk-warning-text") mustBe true
     }
   }
 }
