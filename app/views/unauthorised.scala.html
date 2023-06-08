@@ -15,17 +15,21 @@
  *@
 
 @import config.ApplicationConfig
-@import error.individual
 @import views.ViewUtils.titleBuilder
+@import uk.gov.hmrc.govukfrontend.views.html.components._
 
-@this(atedNoAuthMain: atedNoAuthMain, individual: individual )
-@()(implicit isSa: Boolean, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
+@this(layout: layoutNoAuth, govukButton : GovukButton, formHelper: FormWithCSRF)
+@()(implicit messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
-@atedNoAuthMain(title = titleBuilder(messages("unauthorised.title"))) {
+@layout(pageTitle = Some(titleBuilder(messages("unauthorised.sa.title"))), showSignOutLink = false) {
 
-  @if(isSa) {
-    <h1 class="govuk-heading-xl govuk-!-margin-bottom-5">@messages("unauthorised.sa.header")</h1>
-  } else {
-    @individual()
-  }
+    <h1 class="govuk-heading-xl">@messages("unauthorised.sa.header")</h1>
+    <p class="govuk-body">@messages("unauthorised.sa.p1")</p>
+    <p class="govuk-body">@messages("unauthorised.sa.p2")</p>
+
+     <div>@govukButton(Button(
+     content = Text(messages("ated.sign-out")),
+     attributes = Map("id" -> "startAgain"),
+     href = Some(controllers.routes.ApplicationController.redirectToSignIn.url)
+     ))</div>
 }

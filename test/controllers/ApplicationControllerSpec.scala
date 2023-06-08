@@ -31,6 +31,7 @@ import testhelpers.MockAuthUtil
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
 import uk.gov.hmrc.auth.core.retrieve.~
 import uk.gov.hmrc.http.HeaderCarrier
+import views.html.error.individual
 import views.html.unauthorised
 
 import scala.concurrent.Future
@@ -42,7 +43,8 @@ class ApplicationControllerSpec extends PlaySpec with MockitoSugar with GuiceOne
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
 
   val mockMcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
-  val injectedViewInstance: unauthorised = app.injector.instanceOf[views.html.unauthorised]
+  val injectedUnauthorisedView: unauthorised = app.injector.instanceOf[views.html.unauthorised]
+  val injectedIndividualView: individual = app.injector.instanceOf[views.html.error.individual]
 
   class Setup {
 
@@ -55,7 +57,8 @@ class ApplicationControllerSpec extends PlaySpec with MockitoSugar with GuiceOne
     val testApplicationController: ApplicationController = new ApplicationController(
       mockMcc,
       mockAuthAction,
-      injectedViewInstance
+      injectedUnauthorisedView,
+      injectedIndividualView
     )
 
     def getWithUnAuthorisedUser(test: Future[Result] => Any) {
@@ -96,8 +99,8 @@ class ApplicationControllerSpec extends PlaySpec with MockitoSugar with GuiceOne
 
         "load the unauthorised page" in new Setup {
           getWithUnAuthorisedUserSa { result =>
-            contentAsString(result) must include("You are trying to sign in with your Self Assessment ID. " +
-              "If you are an overseas landlord or client you need to use your limited company ID")
+            contentAsString(result) must include("You have tried to sign in to your ATED account using your Self Assessment Government Gateway user ID.")
+            contentAsString(result) must include("If you are an overseas landlord or client you need to sign out and then sign in using the Government Gateway user ID for your business to access your ATED account")
           }
         }
       }
@@ -163,6 +166,14 @@ class ApplicationControllerSpec extends PlaySpec with MockitoSugar with GuiceOne
         setAuthMocks(authMock)
         val result: Future[Result] = testApplicationController.redirectToGuidance().apply(SessionBuilder.buildRequestWithSession(userId))
         redirectLocation(result).get must include("/guidance/register-for-the-annual-tax-on-enveloped-dwellings-online-service")
+      }
+    }
+
+    "redirectToSignIn" must {
+      "redirect the user" in new Setup {
+        val result: Future[Result] = testApplicationController.redirectToSignIn().apply(FakeRequest())
+        redirectLocation(result).get must include ("http://localhost:9553/bas-gateway/sign-in?continue_url=http://localhost:9916/ated/home")
+        status(result) mustBe SEE_OTHER
       }
     }
   }

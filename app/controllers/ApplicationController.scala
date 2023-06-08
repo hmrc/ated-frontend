@@ -27,14 +27,19 @@ import scala.util.Try
 
 class ApplicationController @Inject()(mcc: MessagesControllerComponents,
                                       authAction: AuthAction,
-                                      template: views.html.unauthorised)
+                                      template: views.html.unauthorised,
+                                      individual: views.html.error.individual)
                                      (implicit val appConfig: ApplicationConfig)
   extends FrontendController(mcc) {
 
   implicit val ec: ExecutionContext = mcc.executionContext
 
   def unauthorised(isSa: Boolean): Action[AnyContent] = Action.async { implicit request =>
-    Future.successful(Ok(template()(isSa, implicitly, implicitly, implicitly)))
+    if(isSa) {
+      Future.successful(Ok(template()(implicitly, implicitly, implicitly)))
+    } else {
+      Future.successful(Ok(individual()(implicitly, implicitly, implicitly)))
+    }
   }
 
   def cancel: Action[AnyContent] = Action {
@@ -54,6 +59,10 @@ class ApplicationController @Inject()(mcc: MessagesControllerComponents,
 
   def redirectToGuidance: Action[AnyContent] = Action {
     Redirect(appConfig.signOutRedirect).withNewSession
+  }
+
+  def redirectToSignIn: Action[AnyContent] = Action {
+    Redirect(appConfig.signIn).withNewSession
   }
 
 }
