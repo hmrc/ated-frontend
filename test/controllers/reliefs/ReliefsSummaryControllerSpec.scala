@@ -244,10 +244,12 @@ class ReliefsSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
             result =>
               status(result) must be(BAD_REQUEST)
               val document = Jsoup.parse(contentAsString(result))
-              document.title() must be(TitleBuilder.buildTitle("There is a problem with your ATED return"))
-              document.getElementById("relief-error-title")
-                .text() must be("There is a problem with your ATED return. No details have been saved so you must return to your account summary and start again.")
-              document.getElementById("relief-error-ated-home-link").text() must be("ATED Account Summary")
+              document.getElementsByClass("govuk-back-link").attr("href") must include("javascript:history.back()")
+              document.title() must be(TitleBuilder.buildTitle("There has been a problem"))
+              document.getElementsByTag("h1").text() must be ("There has been a problem")
+              document.getElementById("relief-error-body")
+                .text() must be("No details have been saved. You need to go back to your ATED summary to create a new ATED return.")
+              document.getElementById("relief-error-ated-home-link").text() must be("Back to your ATED summary")
           }
         }
 

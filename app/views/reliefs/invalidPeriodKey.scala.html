@@ -16,13 +16,35 @@
 
 @import config.ApplicationConfig
 @import views.ViewUtils.titleBuilder
-@this(newMain: newMain)
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+
+@this(newMain: newMain,
+        govukBackLink : GovukBackLink,
+        govukButton : GovukButton)
+
 @()(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
-@newMain(title = titleBuilder(messages("ated.reliefs.error.title"))) {
- <div class="govuk-form-group">
-   <h1 class="govuk-heading-xl govuk-!-margin-bottom-5" id="relief-error-title">@messages("ated.reliefs.error.wrong-period")</h1>
+@backLinkHtml = {
+   @govukBackLink(BackLink(
+        href = "javascript:history.back()",
+        content = Text("Back")
+   ))
+}
 
-   <a class="govuk-link govuk-body" href="@controllers.routes.HomeController.home()" id="relief-error-ated-home-link">@messages("ated.reliefs.error.ated-home")</a>
+@newMain(title = titleBuilder(messages("ated.reliefs.error.title"))) {
+
+ @backLinkHtml
+
+ <div class="govuk-form-group">
+   <h1 class="govuk-heading-xl govuk-!-margin-bottom-10" id="relief-error-title">@messages("ated.reliefs.error.wrong-period.header")</h1>
+
+     <p class="govuk-body govuk-!-padding-bottom-5" id="relief-error-body">@messages("ated.reliefs.error.wrong-period")</p>
+
+     @govukButton(Button(
+        content = Text(messages("ated.reliefs.error.wrong-period.button")),
+        href=Some(controllers.routes.HomeController.home().url),
+        attributes = Map("id" -> "relief-error-ated-home-link")
+     ))
+
  </div>
 }
