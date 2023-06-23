@@ -17,11 +17,13 @@
 package forms
 
 import forms.AtedForms.validatePostCodeFormat
+import forms.ReliefForms.{baseDateFormMapping, manageDateFormRequest}
 import forms.mappings.DateTupleCustomError
 import models._
 import org.joda.time.LocalDate
 import play.api.data.Forms._
-import play.api.data.{Form, FormError, Mapping}
+import play.api.data.{Form, FormBinding, FormError, Mapping}
+import play.api.mvc.{AnyContent, Request}
 import utils.AtedUtils
 
 import scala.annotation.tailrec
@@ -136,18 +138,46 @@ object PropertyDetailsForms {
 
   val dateFirstOccupiedForm: Form[DateFirstOccupied] = Form(
     mapping(
-      "dateFirstOccupied" -> DateTupleCustomError("ated.property-details.first-occupied-date.invalidInputType").dateTuple
-        .verifying("ated.property-details.first-occupied-date.empty", x => x.isDefined)
-        .verifying("ated.property-details.first-occupied-dates.inFuture", x => isInPast(x))
+      "dateFirstOccupied" -> baseDateFormMapping
     )(DateFirstOccupied.apply)(DateFirstOccupied.unapply)
   )
 
+  def dateFirstOccupiedFormValidation(
+                                                      implicit request: Request[AnyContent],
+                                                      formBinding: FormBinding
+                                                    ): (Seq[(String, Either[List[String], LocalDate])], Seq[FormError]) = manageDateFormRequest(
+    List("dateFirstOccupied"),
+    "error.invalid.date.format",
+    "ated.property-details.first-occupied-date.dayError",
+    "ated.property-details.first-occupied-date.monthError",
+    "ated.property-details.first-occupied-date.yearError",
+    "ated.property-details.first-occupied-date.realDateError"
+  )
+
+//  val dateCouncilRegisteredForm: Form[DateCouncilRegistered] = Form(
+//    mapping(
+//      "dateCouncilRegistered" -> DateTupleCustomError("ated.property-details.council-registered-date.invalidInputType").dateTuple
+//        .verifying("ated.property-details.council-registered-date.empty", x => x.isDefined)
+//        .verifying("ated.property-details.council-registered-dates.inFuture", x => isInPast(x))
+//    )(DateCouncilRegistered.apply)(DateCouncilRegistered.unapply)
+//  )
+
   val dateCouncilRegisteredForm: Form[DateCouncilRegistered] = Form(
     mapping(
-      "dateCouncilRegistered" -> DateTupleCustomError("ated.property-details.council-registered-date.invalidInputType").dateTuple
-        .verifying("ated.property-details.council-registered-date.empty", x => x.isDefined)
-        .verifying("ated.property-details.council-registered-dates.inFuture", x => isInPast(x))
+      "dateCouncilRegistered" -> baseDateFormMapping
     )(DateCouncilRegistered.apply)(DateCouncilRegistered.unapply)
+  )
+
+  def dateCouncilRegisteredFormValidation(
+                                       implicit request: Request[AnyContent],
+                                       formBinding: FormBinding
+                                     ): (Seq[(String, Either[List[String], LocalDate])], Seq[FormError]) = manageDateFormRequest(
+    List("dateCouncilRegistered"),
+    "ated.property-details.council-registered-date.invalidInputType",
+    "ated.property-details.council-registered-date.dayError",
+    "ated.property-details.council-registered-date.monthError",
+    "ated.property-details.council-registered-date.yearError",
+    "ated.property-details.council-registered-date.realDateError"
   )
 
   val propertyDetailsNewBuildValueForm: Form[PropertyDetailsNewBuildValue] = Form(
@@ -162,12 +192,32 @@ object PropertyDetailsForms {
     )(PropertyDetailsValueOnAcquisition.apply)(PropertyDetailsValueOnAcquisition.unapply)
   )
 
+//  val propertyDetailsWhenAcquiredDatesForm = Form(
+//    mapping(
+//      "acquiredDate" -> DateTupleCustomErrorImpl("error.invalid.date.format").dateTuple
+//        .verifying("ated.property-details-value-error.whenAcquired.invalidDateError", x => x.isDefined)
+//        .verifying("ated.property-details-value-error.whenAcquired.futureDateError", x => isInPast(x))
+//    )(PropertyDetailsWhenAcquiredDates.apply)(PropertyDetailsWhenAcquiredDates.unapply)
+//  )
+
   val propertyDetailsWhenAcquiredDatesForm: Form[PropertyDetailsWhenAcquiredDates] = Form(
     mapping(
-      "acquiredDate" -> DateTupleCustomError("error.invalid.date.format").dateTuple
-        .verifying("ated.property-details-value-error.whenAcquired.invalidDateError", x => x.isDefined)
-        .verifying("ated.property-details-value-error.whenAcquired.futureDateError", x => isInPast(x))
+      "acquiredDate" -> baseDateFormMapping
     )(PropertyDetailsWhenAcquiredDates.apply)(PropertyDetailsWhenAcquiredDates.unapply)
+  )
+
+  def propertyDetailsWhenAcquiredDatesFormValidation(
+                                                      implicit request: Request[AnyContent],
+                                                      formBinding: FormBinding
+                                                    ): (Seq[(String, Either[List[String], LocalDate])], Seq[FormError]) = manageDateFormRequest(
+    List("acquiredDate"),
+    "ated.property-details-value-error.whenAcquired.invalidDateError",
+    "ated.property-details-value-error.whenAcquired.dayError",
+    "ated.property-details-value-error.whenAcquired.monthError",
+    "ated.property-details-value-error.whenAcquired.yearError",
+    "ated.property-details-value-error.whenAcquired.realDateError",
+    Some("ated.property-details-value-error.whenAcquired.realDateError"),
+    Some(LocalDate.now().plusDays(1))
   )
 
   val isFullTaxPeriodForm: Form[PropertyDetailsFullTaxPeriod] = Form(
@@ -186,6 +236,29 @@ object PropertyDetailsForms {
       "startDate" -> DateTupleCustomError("error.invalid.date.format").mandatoryDateTuple("ated.property-details-period.datesLiable.startDate.error.empty"),
       "endDate" -> DateTupleCustomError("error.invalid.date.format").mandatoryDateTuple("ated.property-details-period.datesLiable.endDate.error.empty")
     )(PropertyDetailsDatesLiable.apply)(PropertyDetailsDatesLiable.unapply)
+  )
+
+  def mandatoryDateWrapper(mapping : Mapping[Option[LocalDate]]): Mapping[LocalDate] = {
+    mapping.verifying("", data => data.isDefined).transform[LocalDate](o => o.get, v => Option(v))
+  }
+
+//  val periodDatesLiableForm: Form[PropertyDetailsDatesLiable] = Form(
+//    mapping(
+//      "startDate" -> mandatoryDateWrapper(baseDateFormMapping),
+//      "endDate" -> mandatoryDateWrapper(baseDateFormMapping),
+//    )(PropertyDetailsDatesLiable.apply)(PropertyDetailsDatesLiable.unapply)
+//  )
+
+  def periodDatesLiableFormValidation(
+                                           implicit request: Request[AnyContent],
+                                           formBinding: FormBinding
+                                         ): (Seq[(String, Either[List[String], LocalDate])], Seq[FormError]) = manageDateFormRequest(
+    List("startDate", "endDate"),
+    "ated.property-details-period.datesLiable.invalidInputType",
+    "ated.property-details-period.datesLiable.dayError",
+    "ated.property-details-period.datesLiable.monthError",
+    "ated.property-details-period.datesLiable.yearError",
+    "ated.property-details-period.datesLiable.realDateError"
   )
 
   lazy val mandatoryRadio: Mapping[String] = optional(text)

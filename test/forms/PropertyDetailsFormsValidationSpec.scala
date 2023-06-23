@@ -22,9 +22,13 @@ import models.PropertyDetailsDatesLiable
 import org.joda.time.LocalDate
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
-import play.api.data.Form
+import play.api.data.{DefaultFormBinding, Form}
+import play.api.mvc.{AnyContentAsEmpty, AnyContentAsFormUrlEncoded, MessagesControllerComponents}
+import play.api.test.FakeRequest
 
 class PropertyDetailsFormsValidationSpec extends PlaySpec with GuiceOneServerPerSuite {
+
+  val mockMcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
 
   "validatePropertyNewBuildValue" should {
     "return the correct error message when the value is empty"  in {
@@ -36,23 +40,30 @@ class PropertyDetailsFormsValidationSpec extends PlaySpec with GuiceOneServerPer
     }
   }
 
+  implicit val defaultFormBinding: DefaultFormBinding = new DefaultFormBinding(mockMcc.parsers.DefaultMaxTextLength)
   "validatePropertyWhenAcquiredDates" should {
-    "return the correct error message when the value is empty"  in {
-      val testPropertyDetailsWhenAcquiredForm = propertyDetailsWhenAcquiredDatesForm.bind(Map(
-        "acquiredDate" -> ""
-      ))
+    "return the correct error message when the value is empty" in {
+      implicit val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = FakeRequest()
+        .withFormUrlEncodedBody(
+          "acquiredDate" -> ""
+        )
 
-      testPropertyDetailsWhenAcquiredForm.errors.head.message mustBe "ated.property-details-value-error.whenAcquired.invalidDateError"
+      val (validation, errs) = propertyDetailsWhenAcquiredDatesFormValidation
+
+      errs.head.message mustBe "ated.property-details-value-error.whenAcquired.invalidDateError"
     }
 
     "return the correct error message when the date is in the future" in {
       val testFutureDate = "2025-01-01"
 
-      val testPropertyDetailsWhenAcquiredForm = propertyDetailsWhenAcquiredDatesForm.bind(Map(
-        "acquiredDate" -> testFutureDate
-      ))
+      implicit val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = FakeRequest()
+        .withFormUrlEncodedBody(
+          "acquiredDate" -> testFutureDate
+        )
 
-      testPropertyDetailsWhenAcquiredForm.errors.last.message mustBe "ated.property-details-value-error.whenAcquired.invalidDateError"
+      val (validation, errs) = propertyDetailsWhenAcquiredDatesFormValidation
+
+      errs.head.message mustBe "ated.property-details-value-error.whenAcquired.invalidDateError"
     }
 
   }
