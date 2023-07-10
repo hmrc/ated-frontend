@@ -20,11 +20,16 @@ import models._
 import org.joda.time.LocalDate
 import play.api.data.Forms._
 import play.api.data.validation.{Constraint, Invalid, Valid}
-import play.api.data.{Form, FormError, Mapping}
+import play.api.data.{Form, FormBinding, FormError, Mapping}
+import play.api.mvc.{AnyContent, Request}
 import utils.PeriodUtils._
 
+import java.io
+import java.time.YearMonth
 import scala.annotation.tailrec
+import scala.collection.immutable
 import scala.util.Try
+import scala.util.matching.Regex
 
 sealed trait DateError
 case object EmptyDate extends DateError
@@ -226,7 +231,7 @@ object ReliefForms {
     ).flatten.nonEmpty
   }
 
-  private def addErrorsToForm[A](form: Form[A], formErrors: Seq[FormError]): Form[A] = {
+  def addErrorsToForm[A](form: Form[A], formErrors: Seq[FormError]): Form[A] = {
     @tailrec
     def y(f: Form[A], fe: Seq[FormError]): Form[A] = {
       if (fe.isEmpty) f
@@ -256,4 +261,243 @@ object ReliefForms {
         }
     )
 
+  def processRequestToDateFormData(dateFields: List[String], data: Map[String, Seq[String]]): Seq[(String, (Option[String], Option[String], Option[String]))] = {
+    val map = data.foldLeft(Map.empty[String, String]) {
+      case (s, (key, values)) =>
+        if (key.endsWith("[]")) {
+          val k = key.dropRight(2)
+          s ++ values.zipWithIndex.map { case (v, i) => s"$k[$i]" -> v }
+        } else {
+          s + (key -> values.headOption.getOrElse(""))
+        }
+    }
+
+
+    dateFields.map { field =>
+      val dateFieldKeyDay = field + "." + "day"
+      val dateFieldKeyMonth = field + "." + "month"
+      val dateFieldKeyYear = field + "." + "year"
+
+      val dateMappings = List(dateFieldKeyDay, dateFieldKeyMonth, dateFieldKeyYear).foldLeft[Map[String, String]](Map.empty[String, String])((agg, cur) =>
+        map.get(cur) match {
+          case Some(res) => agg + (cur -> res)
+          case _ => agg
+        }
+      )
+
+      field -> (dateMappings.get(dateFieldKeyDay), dateMappings.get(dateFieldKeyMonth), dateMappings.get(dateFieldKeyYear))
+    }
+  }
+
+  val baseDateFormMapping: Mapping[Option[LocalDate]] = tuple(
+    "year" -> optional(text),
+    "month" -> optional(text),
+    "day" -> optional(text)
+  ).transform[Option[LocalDate]](
+    {
+      case (Some(y), Some(m), Some(d)) =>
+        try Some(new LocalDate(y.trim.toInt, m.trim.toInt, d.trim.toInt))
+        catch {
+          case _: Exception => None
+        }
+      case (_, _, _) => None
+    },
+    {
+      case Some(d) => (Some(d.getYear.toString), Some(d.getMonthOfYear.toString), Some(d.getDayOfMonth.toString))
+      case _ => (None, None, None)
+    }
+  )
+
+  def stripDuplicateDateFieldErrors[A](fieldValidation: Seq[(String, Either[List[String], LocalDate])],
+                                       formWithError: Form[A]): Form[A] = {
+    val dateFormErrors: Seq[String] = fieldValidation.flatMap { entry =>
+      entry._2 match {
+        case Left(_) => Some(entry._1)
+        case _ => None
+      }
+    }
+    val originalFormErrors: Seq[FormError] = formWithError.errors
+    val editedFormErrors: Seq[FormError] = originalFormErrors.flatMap { formError =>
+      if (dateFormErrors.contains(formError.key)) {
+        None
+      } else {
+        Some(formError)
+      }
+    }
+
+    formWithError.copy(errors = editedFormErrors)
+  }
+
+  def manageDateFormRequest(
+                              dateFields: List[String],
+                              emptyError: String,
+                              dayError: String,
+                              monthError: String,
+                              yearError: String,
+                              realDateError: String,
+                              dateRangeError: Option[String] = None,
+                              dateNotInFutureOf: Option[LocalDate] = None,
+                              dateNotInPastOf: Option[LocalDate] = None
+                           )(implicit request: Request[AnyContent], formBinding: FormBinding): (Seq[(String, Either[List[String], LocalDate])], Seq[FormError]) = {
+    val data: Seq[(String, (Option[String], Option[String], Option[String]))] =
+      processRequestToDateFormData(dateFields, formBinding.apply(request))
+
+    val accufieldData: Seq[(String, Option[FormError], Either[List[String], LocalDate])] = data.map { fieldData =>
+      val dateInputValidation: Either[List[String], LocalDate] = DateInputValidation().validateDate(fieldData._2)
+
+      val validationErrors: Option[String] = dateInputValidation match {
+        case Left(errors) => errors match {
+          case Nil => Some(emptyError)
+          case list if list.contains("day") => Some(dayError)
+          case list if list.contains("month") => Some(monthError)
+          case list if list.contains("year") => Some(yearError)
+          case list if list.contains("invalid") => Some(realDateError)
+        }
+        case Right(date) =>
+          (dateNotInPastOf, dateNotInFutureOf) match {
+            case (Some(pastDate), _) => if (date.compareTo(pastDate) >= 1) {
+              None
+            } else {
+              dateRangeError
+            }
+            case (_, Some(futureDate)) => if (date.compareTo(futureDate) <= 1) {
+              None
+            } else {
+              dateRangeError
+            }
+            case _ => None
+          }
+      }
+
+      val formWithErrors: Option[FormError] = validationErrors match {
+        case Some(content) => Some(FormError(fieldData._1, content))
+        case _ => None
+      }
+
+      (fieldData._1, formWithErrors, dateInputValidation)
+    }
+
+    val formErrors: Seq[FormError] = accufieldData.flatMap { data =>
+      data._2
+    }
+
+    (accufieldData.map { fieldData =>
+      (fieldData._1, fieldData._3)
+    }, formErrors)
+  }
+
+  case class DateInputValidation(futureBound: Boolean = false) {
+
+    val mapping: Mapping[(Option[String], Option[String], Option[String])] = tuple(
+      "year" -> optional(text),
+      "month" -> optional(text),
+      "day" -> optional(text)
+    )
+
+    def getMapping(): Mapping[Option[LocalDate]] = {
+
+
+      mapping.transform(
+        {
+          case (y, m, d) => validateDate((d, m, y)) match {
+            case Left(_) => None
+            case Right(value) => Some(value)
+          }
+        },
+        {
+          case Some(d) => (Some(d.getYear.toString), Some(d.getMonthOfYear.toString), Some(d.getDayOfMonth.toString))
+          case _ => (None, None, None)
+        }
+      )
+    }
+
+    val maxDay = 31
+    val maxMonth = 12
+    val maxYear = 9999
+    def asPositiveInt(value: String, max: Int = maxYear): Option[Int] = {
+      matchedInt(value, "\\d{1,10}".r).flatMap(x => if (x < 0 || x > max) None else Some(x))
+    }
+
+    private def matchedInt(value: String, regex: Regex): Option[Int] =
+      regex.findFirstIn(value.filterNot(_.equals(' '))).flatMap(a => Try(a.toInt).toOption)
+
+    val knownLeapYear = 2000
+
+    def validateDate(input: (Option[String], Option[String], Option[String])): Either[List[String], LocalDate] = {
+      (input._1.flatMap(asPositiveInt(_, maxDay)), input._2.flatMap(asPositiveInt(_, maxMonth)), input._3.flatMap(asPositiveInt(_))) match {
+        case (Some(dy), Some(mn), Some(yr)) if YearMonth.of(yr, mn).isValidDay(dy) =>
+          Try(new LocalDate(yr, mn, dy)).toEither.left.map(_ => Nil)
+        case (Some(_), Some(_), Some(_)) => Left(List("invalid"))
+        case (Some(dy), Some(mn), None) if YearMonth.of(knownLeapYear, mn).isValidDay(dy) =>
+          Left(List("year"))
+        case (None, None, None) => Left(Nil)
+        case (dy, mn, yr) =>
+          Left(List(
+            dy.fold[Option[String]](Some("day"))(_ => None),
+            mn.fold[Option[String]](Some("month"))(_ => None),
+            yr.fold[Option[String]](Some("year"))(_ => None)
+          ).flatten)
+      }
+    }
+  }
+
+  case class DateTupleCustomErrorImpl(invalidDateErrorKey: String) extends DateTupleCustomError
+  trait DateTupleCustomError {
+
+
+    val invalidDateErrorKey: String
+    val dateTuple: Mapping[Option[LocalDate]] = dateTuple()
+
+    def mandatoryDateTuple(error: String): Mapping[LocalDate] =
+      dateTuple.verifying(error, data => data.isDefined).transform(o => o.get, v => Option(v))
+
+    def dateTuple(validate: Boolean = true): Mapping[Option[LocalDate]] = {
+      val x = tuple(
+        "year"  -> optional(text),
+        "month" -> optional(text),
+        "day"   -> optional(text)
+      ).verifying(
+        invalidDateErrorKey,
+        data =>
+          (data._1, data._2, data._3) match {
+            case (None, None, None)                   => true
+            case (yearOption, monthOption, dayOption) =>
+              try {
+                val y = yearOption.getOrElse(throw new Exception("Year missing")).trim
+                if (y.length != 4) {
+                  throw new Exception("Year must be 4 digits")
+                }
+                new LocalDate(
+                  y.toInt,
+                  monthOption.getOrElse(throw new Exception("Month missing")).trim.toInt,
+                  dayOption.getOrElse(throw new Exception("Day missing")).trim.toInt
+                )
+                true
+              } catch {
+                case _: Throwable =>
+                  if (validate) {
+                    false
+                  } else {
+                    true
+                  }
+              }
+          }
+      )
+
+        x.transform(
+        {
+          case (Some(y), Some(m), Some(d)) =>
+            try Some(new LocalDate(y.trim.toInt, m.trim.toInt, d.trim.toInt))
+            catch {
+              case _: Exception => None
+            }
+          case (_, _, _) => None
+        },
+        {
+          case Some(d) => (Some(d.getYear.toString), Some(d.getMonthOfYear.toString), Some(d.getDayOfMonth.toString))
+          case _ => (None, None, None)
+        }
+      )
+    }
+  }
 }

@@ -17,6 +17,7 @@
 package forms
 
 import config.ApplicationConfig
+import forms.PropertyDetailsForms.propertyDetailsWhenAcquiredDatesForm
 import forms.ReliefForms._
 import models._
 import org.scalatestplus.mockito.MockitoSugar
@@ -26,6 +27,8 @@ import play.api.data.{Form, FormError}
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
+
+import java.time.LocalDate
 
 
 class ReliefFormsSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar {
@@ -343,6 +346,87 @@ class ReliefFormsSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoS
           "rentalBusiness" -> true, "rentalBusinessDate" ->  Map("day" -> "1", "month" -> "7", "year" -> periodKey.toString)), maxChars)
         form.hasErrors mustBe false
       }
+    }
+  }
+
+  "dateInputValidation" must {
+    "detect valid dates and convert to a successful date" in {
+      val date1 = DateInputValidation().validateDate((Some("4"), Some("5"), Some("1999")))
+      date1.right.get.getDayOfMonth mustBe 4
+      date1.right.get.getYear mustBe 1999
+      date1.right.get.getMonthOfYear mustBe 5
+
+      val date2 = DateInputValidation().validateDate((Some("28"), Some("2"), Some("1999")))
+      date2.right.get.getDayOfMonth mustBe 28
+      date2.right.get.getYear mustBe 1999
+      date2.right.get.getMonthOfYear mustBe 2
+
+      val date3 = DateInputValidation().validateDate((Some("29"), Some("2"), Some("2000")))
+      date3.right.get.getDayOfMonth mustBe 29
+      date3.right.get.getYear mustBe 2000
+      date3.right.get.getMonthOfYear mustBe 2
+    }
+
+    "fail if any of the fields are not convertable to numbers" in {
+      val date1 = DateInputValidation().validateDate((Some("4"), Some("string"), Some("1999")))
+      date1.left.get.contains("month") mustBe true
+
+      val date2 = DateInputValidation().validateDate((Some("4"), Some("string"), Some("anotherstring")))
+      date2.left.get.contains("month") mustBe true
+      date2.left.get.contains("year") mustBe true
+    }
+
+    "fail when the dates are integers but do not create a valid date for the year" in {
+      val date1 = DateInputValidation().validateDate((Some("4"), Some("13"), Some("1999")))
+      date1.left.get.contains("month") mustBe true
+
+      val date2 = DateInputValidation().validateDate((Some("31"), Some("2"), Some("1999")))
+      date2.left.get.contains("invalid") mustBe true
+
+      val date3 = DateInputValidation().validateDate((Some("29"), Some("2"), Some("1999")))
+      date3.left.get.contains("invalid") mustBe true
+
+      val date4 = DateInputValidation().validateDate((Some("32"), Some("5"), Some("1999")))
+      date4.left.get.contains("day") mustBe true
+
+      val date5 = DateInputValidation().validateDate((Some("12"), Some("5"), Some("19999")))
+      date5.left.get.contains("year") mustBe true
+    }
+  }
+
+  "processRequestToDateFormData" must {
+    "process correct date fields" in {
+      processRequestToDateFormData(List("dateField"), Map(
+        "dateField.year" -> Seq("2000"),
+        "dateField.month" -> Seq("12"),
+        "dateField.day" -> Seq("25")
+      )) mustBe List(("dateField", (Some("25"), Some("12"), Some("2000"))))
+    }
+  }
+
+  "stripDuplicateDateFieldErrors" must {
+    "strip duplicate errors from the original form" in {
+      val fieldValidation = Seq(
+        "dateField" -> Left(List("day"))
+      )
+
+      val formErrors = Seq(FormError("dateField", "error"))
+      val formWithErrors = addErrorsToForm(propertyDetailsWhenAcquiredDatesForm, formErrors)
+
+      val strippedForm: Form[PropertyDetailsWhenAcquiredDates] = stripDuplicateDateFieldErrors(fieldValidation, formWithErrors)
+      strippedForm.errors.size mustBe 0
+    }
+
+    "do not strip non duplicate errors from the original form" in {
+      val fieldValidation = Seq(
+        "dateField" -> Left(List("day"))
+      )
+
+      val formErrors = Seq(FormError("notDateField", "error"))
+      val formWithErrors = addErrorsToForm(propertyDetailsWhenAcquiredDatesForm, formErrors)
+
+      val strippedForm: Form[PropertyDetailsWhenAcquiredDates] = stripDuplicateDateFieldErrors(fieldValidation, formWithErrors)
+      strippedForm.errors.size mustBe 1
     }
   }
 }

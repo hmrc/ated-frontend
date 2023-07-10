@@ -20,8 +20,13 @@ import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms._
+import forms.ReliefForms
+import forms.ReliefForms.{DateInputValidation, manageDateFormRequest, processRequestToDateFormData}
+
 import javax.inject.Inject
 import models.PropertyDetailsWhenAcquiredDates
+import org.joda.time.LocalDate
+import play.api.data.FormError
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services._
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
@@ -29,6 +34,7 @@ import utils.AtedConstants.SelectedPreviousReturn
 import utils.AtedUtils
 import views.html
 import uk.gov.hmrc.play.bootstrap.controller.WithDefaultFormBinding
+
 import scala.concurrent.{ExecutionContext, Future}
 
 
@@ -75,22 +81,35 @@ class PropertyDetailsWhenAcquiredController @Inject()(mcc: MessagesControllerCom
       implicit authContext => {
         ensureClientContext {
           serviceInfoService.getPartial.flatMap { serviceInfoContent =>
-            propertyDetailsWhenAcquiredDatesForm.bindFromRequest.fold(
+
+            val formProcess = propertyDetailsWhenAcquiredDatesFormValidation
+
+            val (fieldValidation, errs) = formProcess
+
+            propertyDetailsWhenAcquiredDatesForm.bindFromRequest().fold(
               formWithError => {
+                val strippedForm = ReliefForms.stripDuplicateDateFieldErrors(fieldValidation, formWithError)
+
                 currentBackLink.map(backLink =>
-                  BadRequest(template(id, periodKey, formWithError, mode, serviceInfoContent, backLink))
+                  BadRequest(template(id, periodKey, ReliefForms.addErrorsToForm(strippedForm, errs), mode, serviceInfoContent, backLink))
                 )
               },
               propertyDetails => {
-                for {
-                  _ <- propertyDetailsService.saveDraftPropertyDetailsWhenAcquiredDates(id, propertyDetails)
-                  result <-
-                    redirectWithBackLink(
-                      propertyDetailsValueAcquiredController.controllerId,
-                      controllers.propertyDetails.routes.PropertyDetailsValueAcquiredController.view(id),
-                      Some(controllers.propertyDetails.routes.PropertyDetailsWhenAcquiredController.view(id).url)
-                    )
-                } yield result
+                errs match {
+                  case errList @ List(errs) => currentBackLink.map(backLink =>
+                    BadRequest(template(id, periodKey, ReliefForms.addErrorsToForm(propertyDetailsWhenAcquiredDatesForm.bindFromRequest(), errList), mode, serviceInfoContent, backLink))
+                  )
+                  case _ =>
+                    for {
+                      _ <- propertyDetailsService.saveDraftPropertyDetailsWhenAcquiredDates(id, propertyDetails)
+                      result <-
+                        redirectWithBackLink(
+                          propertyDetailsValueAcquiredController.controllerId,
+                          controllers.propertyDetails.routes.PropertyDetailsValueAcquiredController.view(id),
+                          Some(controllers.propertyDetails.routes.PropertyDetailsWhenAcquiredController.view(id).url)
+                        )
+                    } yield result
+                }
               }
             )
           }

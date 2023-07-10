@@ -19,8 +19,9 @@ package controllers.propertyDetails
 import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.{AuthAction, ClientHelper}
-import forms.PropertyDetailsForms
+import forms.{PropertyDetailsForms, ReliefForms}
 import forms.PropertyDetailsForms._
+
 import javax.inject.Inject
 import models._
 import play.api.i18n.I18nSupport
@@ -29,6 +30,7 @@ import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService, Se
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import uk.gov.hmrc.play.bootstrap.controller.WithDefaultFormBinding
+
 import scala.concurrent.{ExecutionContext, Future}
 
 class PeriodDatesLiableController @Inject()(mcc: MessagesControllerComponents,
@@ -88,31 +90,44 @@ class PeriodDatesLiableController @Inject()(mcc: MessagesControllerComponents,
         propertyDetailsCacheResponse(id) {
           case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
             val lineItems = propertyDetails.period.map(_.liabilityPeriods).getOrElse(Nil) ++ propertyDetails.period.map(_.reliefPeriods).getOrElse(Nil)
+
+            val (validation, errs) = periodDatesLiableFormValidation
+
             PropertyDetailsForms.validatePropertyDetailsDatesLiable(periodKey, periodDatesLiableForm.bindFromRequest, mode.contains("add"), lineItems).fold(
               formWithError => {
+                val strippedForm = ReliefForms.stripDuplicateDateFieldErrors(validation, formWithError)
+
                 getBackLink(id, mode).map { backLink =>
-                  BadRequest(template(id, periodKey, formWithError,
+                  BadRequest(template(id, periodKey, ReliefForms.addErrorsToForm(strippedForm, errs),
                     getTitle(mode), mode, serviceInfoContent, backLink))
                 }
               },
               propertyDetails => {
-                mode match {
-                  case Some("add") =>
-                    for {
-                      _ <- propertyDetailsService.addDraftPropertyDetailsDatesLiable(id, propertyDetails)
-                    } yield {
-                      Redirect(controllers.propertyDetails.routes.PeriodsInAndOutReliefController.view(id))
+                errs match {
+                  case errList@List(errs) =>
+                    getBackLink(id, mode).map { backLink =>
+                      BadRequest(template(id, periodKey, ReliefForms.addErrorsToForm(periodDatesLiableForm.bindFromRequest, errList),
+                        getTitle(mode), mode, serviceInfoContent, backLink))
                     }
                   case _ =>
-                    for {
-                      _ <- propertyDetailsService.saveDraftPropertyDetailsDatesLiable(id, propertyDetails)
-                      result <- ensureClientContext(redirectWithBackLink(
-                        propertyDetailsTaxAvoidanceController.controllerId,
-                        controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceController.view(id),
-                        Some(controllers.propertyDetails.routes.PeriodDatesLiableController.view(id).url)
-                      ))
-                    } yield {
-                      result
+                    mode match {
+                      case Some("add") =>
+                        for {
+                          _ <- propertyDetailsService.addDraftPropertyDetailsDatesLiable(id, propertyDetails)
+                        } yield {
+                          Redirect(controllers.propertyDetails.routes.PeriodsInAndOutReliefController.view(id))
+                        }
+                      case _ =>
+                        for {
+                          _ <- propertyDetailsService.saveDraftPropertyDetailsDatesLiable(id, propertyDetails)
+                          result <- ensureClientContext(redirectWithBackLink(
+                            propertyDetailsTaxAvoidanceController.controllerId,
+                            controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceController.view(id),
+                            Some(controllers.propertyDetails.routes.PeriodDatesLiableController.view(id).url)
+                          ))
+                        } yield {
+                          result
+                        }
                     }
                 }
               }

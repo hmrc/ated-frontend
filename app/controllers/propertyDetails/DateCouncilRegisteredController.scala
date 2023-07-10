@@ -19,16 +19,18 @@ package controllers.propertyDetails
 import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.{AuthAction, ClientHelper}
-import forms.PropertyDetailsForms
+import forms.{PropertyDetailsForms, ReliefForms}
 import forms.PropertyDetailsForms._
-import javax.inject.{Singleton, Inject}
-import models.{DateFirstOccupiedKnown, DateCouncilRegistered}
+
+import javax.inject.{Inject, Singleton}
+import models.{DateCouncilRegistered, DateFirstOccupiedKnown}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services._
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants.{NewBuildCouncilRegisteredDate, NewBuildFirstOccupiedDateKnown, SelectedPreviousReturn}
 import utils.AtedUtils
 import uk.gov.hmrc.play.bootstrap.controller.WithDefaultFormBinding
+
 import scala.concurrent.ExecutionContext
 import org.joda.time.LocalDate
 
@@ -75,27 +77,33 @@ class DateCouncilRegisteredController @Inject()(val mcc: MessagesControllerCompo
       implicit authContext => {
         ensureClientContext {
           serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+            val formProcess = dateCouncilRegisteredFormValidation
+
+            val (fieldValidation, errs) = formProcess
+
             PropertyDetailsForms.validateNewBuildCouncilRegisteredDate(periodKey, dateCouncilRegisteredForm.bindFromRequest).fold(
-              formWithError =>
-                currentBackLink.map(backLink => BadRequest(template(id, periodKey, formWithError, mode, serviceInfoContent, backLink))),
+              formWithError => {
+                val strippedForm = ReliefForms.stripDuplicateDateFieldErrors(fieldValidation, formWithError)
+                currentBackLink.map(backLink => BadRequest(template(id, periodKey, formWithError, mode, serviceInfoContent, backLink)))
+              },
               form =>
-                dataCacheConnector.saveFormData[DateCouncilRegistered](NewBuildCouncilRegisteredDate, form).flatMap{_ =>
-                  storeNewBuildDatesFromCache(id).flatMap{ _ =>
-                    dataCacheConnector.fetchAndGetFormData[DateFirstOccupiedKnown](NewBuildFirstOccupiedDateKnown).flatMap{
-                      case Some(DateFirstOccupiedKnown(Some(true))) =>
-                        redirectWithBackLink(
-                          EarliestStartDateInUseControllerId,
-                          controllers.propertyDetails.routes.EarliestStartDateInUseController.view(id),
-                          Some(controllers.propertyDetails.routes.DateCouncilRegisteredController .view(id).url)
-                        )
-                      case _ =>
-                        redirectWithBackLink(
-                          NewBuildValueControllerId,
-                          controllers.propertyDetails.routes.PropertyDetailsNewBuildValueController.view(id),
-                          Some(controllers.propertyDetails.routes.DateCouncilRegisteredController .view(id).url)
-                        )
+                dataCacheConnector.saveFormData[DateCouncilRegistered](NewBuildCouncilRegisteredDate, form).flatMap { _ =>
+                    storeNewBuildDatesFromCache(id).flatMap { _ =>
+                      dataCacheConnector.fetchAndGetFormData[DateFirstOccupiedKnown](NewBuildFirstOccupiedDateKnown).flatMap {
+                        case Some(DateFirstOccupiedKnown(Some(true))) =>
+                          redirectWithBackLink(
+                            EarliestStartDateInUseControllerId,
+                            controllers.propertyDetails.routes.EarliestStartDateInUseController.view(id),
+                            Some(controllers.propertyDetails.routes.DateCouncilRegisteredController.view(id).url)
+                          )
+                        case _ =>
+                          redirectWithBackLink(
+                            NewBuildValueControllerId,
+                            controllers.propertyDetails.routes.PropertyDetailsNewBuildValueController.view(id),
+                            Some(controllers.propertyDetails.routes.DateCouncilRegisteredController.view(id).url)
+                          )
+                      }
                     }
-                  }
                 }
             )
           }
