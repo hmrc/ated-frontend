@@ -19,16 +19,20 @@ package controllers.propertyDetails
 import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.{AuthAction, ClientHelper}
-import forms.PropertyDetailsForms
+import forms.{PropertyDetailsForms, ReliefForms}
 import forms.PropertyDetailsForms._
+
 import javax.inject.Inject
 import models.PropertyDetailsRevalued
+import org.joda.time.LocalDate
+import play.api.data.{Form, FormError}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services._
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants.SelectedPreviousReturn
 import utils.AtedUtils
 import uk.gov.hmrc.play.bootstrap.controller.WithDefaultFormBinding
+
 import scala.concurrent.ExecutionContext
 
 class PropertyDetailsRevaluedController @Inject()(mcc: MessagesControllerComponents,
@@ -77,20 +81,38 @@ class PropertyDetailsRevaluedController @Inject()(mcc: MessagesControllerCompone
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
-          PropertyDetailsForms.validatePropertyDetailsRevalued(periodKey, propertyDetailsRevaluedForm.bindFromRequest).fold(
+          val formProcess: (Seq[(String, Either[List[String], LocalDate])], Seq[FormError]) = propertyDetailsRevaluedDateFormValidation
+          val formProcess1 = propertyDetailsPartAcqDispDateFormValidation
+
+          val (fieldValidation, errs) = formProcess
+          val (fieldValidation1, errs1) = formProcess1
+
+          val combinedErrors: Seq[FormError] = errs1 ++ errs
+
+          propertyDetailsRevaluedForm.bindFromRequest().fold(
             formWithError => {
-              currentBackLink.map(backLink => BadRequest(template(id, periodKey, formWithError, mode, serviceInfoContent, backLink)))
+              val strippedForm: Form[PropertyDetailsRevalued] = ReliefForms.stripDuplicateDateFieldErrors( fieldValidation1 ++ fieldValidation , formWithError)
+
+              currentBackLink.map(backLink =>
+                BadRequest(template(id, periodKey, ReliefForms.addErrorsToForm(strippedForm, errs1 ++ errs), mode, serviceInfoContent, backLink))
+              )
             },
             propertyDetails => {
-              for {
-                _ <- propertyDetailsService.saveDraftPropertyDetailsRevalued(id, propertyDetails)
-                result <-
-                  redirectWithBackLink(
-                    isFullTaxPeriodController.controllerId,
-                    controllers.propertyDetails.routes.IsFullTaxPeriodController.view(id),
-                    Some(controllers.propertyDetails.routes.PropertyDetailsRevaluedController.view(id).url)
-                  )
-              } yield result
+              combinedErrors match {
+                case errList @ List(accumulatedErrors) => currentBackLink.map(backLink =>
+                  BadRequest(template(id, periodKey, ReliefForms.addErrorsToForm(propertyDetailsRevaluedForm.bindFromRequest(), errList), mode, serviceInfoContent, backLink))
+                )
+                case _ =>
+                  for {
+                    _ <- propertyDetailsService.saveDraftPropertyDetailsRevalued(id, propertyDetails)
+                    result <-
+                      redirectWithBackLink(
+                        isFullTaxPeriodController.controllerId,
+                        controllers.propertyDetails.routes.IsFullTaxPeriodController.view(id),
+                        Some(controllers.propertyDetails.routes.PropertyDetailsRevaluedController.view(id).url)
+                      )
+                  } yield result
+              }
             }
           )
         }
@@ -98,3 +120,5 @@ class PropertyDetailsRevaluedController @Inject()(mcc: MessagesControllerCompone
     }
   }
 }
+
+
