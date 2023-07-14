@@ -37,7 +37,7 @@ case class DateTupleCustomError(invalidDateErrorKey: String){
       invalidDateErrorKey,
       data =>
         (data._1, data._2, data._3) match {
-          case (None, None, None)                   => true
+          case (None, None, None)                   => false
           case (yearOption, monthOption, dayOption) =>
             try {
               val y = yearOption.getOrElse(throw new Exception("Year missing")).trim

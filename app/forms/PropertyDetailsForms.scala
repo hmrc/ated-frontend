@@ -99,6 +99,14 @@ object PropertyDetailsForms {
     mapping("anAcquisition" -> optional(boolean).verifying("ated.property-details-value.anAcquisition.error-field-name", x => x.isDefined)
     )(PropertyDetailsAcquisition.apply)(PropertyDetailsAcquisition.unapply))
 
+  val propertyDetailsRevaluedForm1: Form[PropertyDetailsRevalued] = Form(
+    mapping(
+      "isPropertyRevalued" -> optional(boolean).verifying("ated.property-details-value.isPropertyRevalued.error.non-selected", x => x.isDefined),
+      "revaluedValue" -> valueValidation,
+      "revaluedDate" -> DateTupleCustomError("error.invalid.date.format").dateTuple,
+      "partAcqDispDate" -> DateTupleCustomError("error.invalid.date.format").dateTuple
+    )(PropertyDetailsRevalued.apply)(PropertyDetailsRevalued.unapply))
+
   val propertyDetailsRevaluedForm: Form[PropertyDetailsRevalued] = Form(
     mapping(
       "isPropertyRevalued" -> optional(boolean).verifying("ated.property-details-value.isPropertyRevalued.error.non-selected", x => x.isDefined),
@@ -232,6 +240,18 @@ object PropertyDetailsForms {
     "ated.property-details-value-error.revaluedDate.realDateError"
   )
 
+  def propertyDetailsPartAcqDispDateFormValidation(
+                                                    implicit request: Request[AnyContent],
+                                                    formBinding: FormBinding
+                                                  ): (Seq[(String, Either[List[String], LocalDate])], Seq[FormError]) = manageDateFormRequest(
+    List("partAcqDispDate"),
+    "ated.property-details-value-error.partAcqDispDate.invalidDateError",
+    "ated.property-details-value-error.partAcqDispDate.dayError",
+    "ated.property-details-value-error.partAcqDispDate.monthError",
+    "ated.property-details-value-error.partAcqDispDate.yearError",
+    "ated.property-details-value-error.partAcqDispDate.realDateError"
+  )
+
   val isFullTaxPeriodForm: Form[PropertyDetailsFullTaxPeriod] = Form(
     mapping(
       "isFullPeriod" -> optional(boolean).verifying("ated.property-details-period.isFullPeriod.error-field-name", x => x.isDefined)
@@ -248,17 +268,6 @@ object PropertyDetailsForms {
       "startDate" -> DateTupleCustomError("error.invalid.date.format").mandatoryDateTuple("ated.property-details-period.datesLiable.startDate.error.empty"),
       "endDate" -> DateTupleCustomError("error.invalid.date.format").mandatoryDateTuple("ated.property-details-period.datesLiable.endDate.error.empty")
     )(PropertyDetailsDatesLiable.apply)(PropertyDetailsDatesLiable.unapply)
-  )
-  def propertyDetailsPartAcqDispDateFormValidation(
-                                                    implicit request: Request[AnyContent],
-                                                    formBinding: FormBinding
-                                                  ): (Seq[(String, Either[List[String], LocalDate])], Seq[FormError]) = manageDateFormRequest(
-    List("partAcqDispDate"),
-    "ated.property-details-value-error.partAcqDispDate.invalidDateError",
-    "ated.property-details-value-error.partAcqDispDate.dayError",
-    "ated.property-details-value-error.partAcqDispDate.monthError",
-    "ated.property-details-value-error.partAcqDispDate.yearError",
-    "ated.property-details-value-error.partAcqDispDate.realDateError"
   )
 
   def mandatoryDateWrapper(mapping : Mapping[Option[LocalDate]]): Mapping[LocalDate] = {
