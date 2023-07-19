@@ -46,6 +46,11 @@ class PropertyDetailsRevaluedController @Inject()(mcc: MessagesControllerCompone
   implicit val ec: ExecutionContext = mcc.executionContext
   val controllerId: String = "PropertyDetailsRevaluedController"
 
+  val dateFields = Seq(
+    ("revaluedDate", "Revaluation date"),
+    ("partAcqDispDate", "The date when you made the £40,000 or more change")
+  )
+
   def view(id: String): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
@@ -77,7 +82,7 @@ class PropertyDetailsRevaluedController @Inject()(mcc: MessagesControllerCompone
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
-          PropertyDetailsForms.validatePropertyDetailsRevalued(periodKey, propertyDetailsRevaluedForm.bindFromRequest).fold(
+          validatePropertyDetailsRevaluedForm(periodKey, propertyDetailsRevaluedForm.bindFromRequest, dateFields).fold(
             formWithError => {
               currentBackLink.map(backLink => BadRequest(template(id, periodKey, formWithError, mode, serviceInfoContent, backLink)))
             },

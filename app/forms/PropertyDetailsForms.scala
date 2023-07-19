@@ -101,8 +101,8 @@ object PropertyDetailsForms {
     mapping(
       "isPropertyRevalued" -> optional(boolean).verifying("ated.property-details-value.isPropertyRevalued.error.non-selected", x => x.isDefined),
       "revaluedValue" -> valueValidation,
-      "revaluedDate" -> DateTupleCustomError("error.invalid.date.format").dateTuple,
-      "partAcqDispDate" -> DateTupleCustomError("error.invalid.date.format").dateTuple
+      "revaluedDate" -> DateTupleCustomError("ated.error.date.invalid").dateTupleOptional(),
+      "partAcqDispDate" -> DateTupleCustomError("ated.error.date.invalid").dateTupleOptional()
     )(PropertyDetailsRevalued.apply)(PropertyDetailsRevalued.unapply))
 
   val propertyDetailsOwnedBeforeForm: Form[PropertyDetailsOwnedBefore] = Form(
@@ -364,4 +364,51 @@ object PropertyDetailsForms {
     y(form, formErrors)
   }
 
+  //scalastyle:off cyclomatic.complexity
+  def validatePropertyDetailsRevaluedForm(periodKey : Int, f: Form[PropertyDetailsRevalued], dateFields : Seq[(String, String)] ): Form[PropertyDetailsRevalued] = {
+    val formErrors = {
+      dateFields.map { x =>
+        (f.data.get(s"${x._1}.day"), f.data.get(s"${x._1}.month"), f.data.get(s"${x._1}.year")) match {
+          case (Some(d), Some(m), Some(y)) if (d.isEmpty && m.isEmpty && y.isEmpty)  =>
+            Seq(FormError(s"${x._1}", s"ated.error.date.empty", Seq(x._2)))
+          case (None, None, None) => Seq(FormError(s"${x._1}", s"ated.error.date.empty", Seq(x._2)))
+          case (Some(d), Some(m), Some(y)) =>
+            if (d.isEmpty && !m.isEmpty && !y.isEmpty)
+              Seq(FormError(s"${x._1}.day", s"ated.error.date.day.missing", Seq(x._2)))
+            else if (!d.isEmpty && m.isEmpty && !y.isEmpty)
+              Seq(FormError(s"${x._1}.month", s"ated.error.date.month.missing", Seq(x._2)))
+            else if (!d.isEmpty && !m.isEmpty && y.isEmpty)
+              Seq(FormError(s"${x._1}.year", s"ated.error.date.year.missing", Seq(x._2)))
+            else if (d.isEmpty && m.isEmpty && !y.isEmpty)
+              Seq(FormError(s"${x._1}.day", s"ated.error.date.daymonth.missing", Seq(x._2)))
+            else if (d.isEmpty && !m.isEmpty && y.isEmpty)
+              Seq(FormError(s"${x._1}.day", s"ated.error.date.dayyear.missing", Seq(x._2)))
+            else if (!d.isEmpty && m.isEmpty && y.isEmpty)
+              Seq(FormError(s"${x._1}.month", s"ated.error.date.monthyear.missing", Seq(x._2)))
+            else {
+              try {
+                val day = d.trim.toInt
+                val month = m.trim.toInt
+                val year = y.trim.toInt
+
+                if (!(day >= 1 && day <= 31)) {
+                  Seq(FormError(s"${x._1}.day", s"ated.error.day.invalid", Seq(x._2)))
+                }
+                else if (!(month >= 1 && month <= 12)) {
+                  Seq(FormError(s"${x._1}.month", s"ated.error.month.invalid", Seq(x._2)))
+                }
+                else {
+                  new LocalDate(y.trim.toInt, m.trim.toInt, d.trim.toInt)
+                  Seq()
+                }
+              } catch {
+                case _: Throwable => Seq(FormError(s"${x._1}.day", s"ated.error.date.invalid", Seq(x._2)))
+              }
+            }
+        }
+
+      }
+    }
+    validatePropertyDetailsRevalued(periodKey, addErrorsToForm(f, formErrors.flatten))
+  }
 }

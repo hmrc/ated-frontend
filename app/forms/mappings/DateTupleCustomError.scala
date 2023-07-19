@@ -73,4 +73,27 @@ case class DateTupleCustomError(invalidDateErrorKey: String){
           case _       => (None, None, None)
         }
     )
+
+   def dateTupleOptional(): Mapping[Option[LocalDate]] =
+    tuple(
+      "year" -> optional(text),
+      "month" -> optional(text),
+      "day" -> optional(text)
+    ).transform(
+      {
+        case (Some(y), Some(m), Some(d)) =>
+          try Some(new LocalDate(y.trim.toInt, m.trim.toInt, d.trim.toInt))
+          catch {
+            case e: Exception => None
+          }
+        case (a, b, c) => None
+      },
+      (date: Option[LocalDate]) =>
+        date match {
+          case Some(d) => (Some(d.getYear.toString), Some(d.getMonthOfYear.toString), Some(d.getDayOfMonth.toString))
+          case _ => (None, None, None)
+        }
+    )
+
 }
+

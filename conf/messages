@@ -61,6 +61,18 @@ ated.error.titleNumber.invalid = You cannot enter special characters. For exampl
 ated.error.address.postalcode = The postcode cannot be more than 9 characters
 ated.error.address.postalcode.format = You must enter a valid postcode
 
+ated.error.date.empty =  {0} cannot be empty
+ated.error.date.invalid = {0} must be a valid date
+ated.error.date.day.missing = {0} must include the day
+ated.error.date.month.missing =  {0} must include the month
+ated.error.date.year.missing =  {0} must include the year
+ated.error.date.daymonth.missing =  {0} must include the day and month
+ated.error.date.dayyear.missing =  {0} must include the day and year
+ated.error.date.monthyear.missing = {0} must include the month and year
+
+ated.error.day.invalid = Enter a day for {0} between 1 and 31
+ated.error.month.invalid = Enter a month for {0} between 1 and 12
+
 ated.error.address.country = You must enter a country
 ated.error.address.country.non-uk = You cannot select United Kingdom when adding a non-UK address
 
