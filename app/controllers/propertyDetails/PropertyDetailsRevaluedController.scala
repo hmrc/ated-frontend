@@ -47,8 +47,8 @@ class PropertyDetailsRevaluedController @Inject()(mcc: MessagesControllerCompone
   val controllerId: String = "PropertyDetailsRevaluedController"
 
   val dateFields = Seq(
-    ("revaluedDate", "Revaluation date"),
-    ("partAcqDispDate", "The date when you made the £40,000 or more change")
+    ("partAcqDispDate", "The date when you made the £40,000 or more change"),
+    ("revaluedDate", "Revaluation date")
   )
 
   def view(id: String): Action[AnyContent] = Action.async { implicit request =>

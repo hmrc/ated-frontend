@@ -105,7 +105,7 @@ class PropertyDetailsRevaluedSpec extends PlaySpec with GuiceOneServerPerSuite {
         PropertyDetailsForms.validatePropertyDetailsRevalued(periodKey,  propertyDetailsRevaluedForm.bind(input)).fold(
           hasErrors => {
             hasErrors.errors.length mustBe  2
-            hasErrors.errors.head.message mustBe "error.invalid.date.format"
+            hasErrors.errors.head.message mustBe "ated.property-details-value.partAcqDispDate.error.empty"
           },
           _ => {
             fail("There is some problem")
