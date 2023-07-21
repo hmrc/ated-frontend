@@ -260,7 +260,7 @@ object PropertyDetailsForms {
   def validatePropertyDetailsRevalued(periodKey: Int, f: Form[PropertyDetailsRevalued]): Form[PropertyDetailsRevalued] = {
     if (!f.hasErrors) {
       val formErrors = (PropertyDetailsFormsValidation.checkPartAcqDispDate(periodKey, f.get.isPropertyRevalued, f.get.partAcqDispDate)
-        ++ validateValue(f.get.isPropertyRevalued.contains(true), "revaluedValue", f.get.revaluedValue, f)
+        //++ validateValue(f.get.isPropertyRevalued.contains(true), "revaluedValue", f.get.revaluedValue, f)
         ++ PropertyDetailsFormsValidation.checkRevaluedDate(periodKey, f.get.isPropertyRevalued, f.get.revaluedDate)
         ).flatten
       addErrorsToForm(f, formErrors)
@@ -375,7 +375,8 @@ object PropertyDetailsForms {
       } else {
         Seq()
       }
-    validatePropertyDetailsRevalued(periodKey, addErrorsToForm(f, formErrors.flatten))
+    val validationValueErrors = validateValue(f.get.isPropertyRevalued.contains(true), "revaluedValue", f.get.revaluedValue, f)
+    validatePropertyDetailsRevalued(periodKey, addErrorsToForm(f, formErrors.flatten ++ validationValueErrors.flatten))
   }
 
   def validateDateFields(day: Option[String], month: Option[String], year: Option[String], dateFields : Seq[(String, String)]) : Seq[FormError] = {

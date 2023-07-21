@@ -27,6 +27,11 @@ class PropertyDetailsRevaluedSpec extends PlaySpec with GuiceOneServerPerSuite {
   implicit lazy val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
   implicit lazy val messages: Messages = messagesApi.preferred(FakeRequest())
 
+  val dateFields = Seq(
+    ("partAcqDispDate", "The date when you made the £40,000 or more change"),
+    ("revaluedDate", "Revaluation date")
+  )
+
   "PropertyDetailsRevaluedForm" must {
     "throw error" when {
       "form is empty" in {
@@ -55,9 +60,8 @@ class PropertyDetailsRevaluedSpec extends PlaySpec with GuiceOneServerPerSuite {
         )
         PropertyDetailsForms.validatePropertyDetailsRevalued(periodKey,  propertyDetailsRevaluedForm.bind(input)).fold(
           hasErrors => {
-            hasErrors.errors.length mustBe  3
+            hasErrors.errors.length mustBe  2
             hasErrors.errors.head.message mustBe "ated.property-details-value.partAcqDispDate.error.empty"
-            hasErrors.errors(1).message mustBe "ated.property-details-value.revaluedValue.error.empty"
             hasErrors.errors.last.message mustBe "ated.property-details-value.revaluedDate.error.empty"
           },
           _ => {
@@ -146,7 +150,7 @@ class PropertyDetailsRevaluedSpec extends PlaySpec with GuiceOneServerPerSuite {
           "revaluedDate.month" -> "10",
           "revaluedDate.year" -> "2010"
         )
-        PropertyDetailsForms.validatePropertyDetailsRevalued(periodKey,  propertyDetailsRevaluedForm.bind(input)).fold(
+        PropertyDetailsForms.validatePropertyDetailsRevaluedForm(periodKey,  propertyDetailsRevaluedForm.bind(input), dateFields).fold(
           hasErrors => {
             hasErrors.errors.length mustBe  1
             hasErrors.errors.head.message mustBe "ated.property-details-value.revaluedValue.error.too-low"
@@ -168,10 +172,55 @@ class PropertyDetailsRevaluedSpec extends PlaySpec with GuiceOneServerPerSuite {
           "revaluedDate.month" -> "10",
           "revaluedDate.year" -> "2010"
         )
-        PropertyDetailsForms.validatePropertyDetailsRevalued(periodKey,  propertyDetailsRevaluedForm.bind(input)).fold(
+        PropertyDetailsForms.validatePropertyDetailsRevaluedForm(periodKey,  propertyDetailsRevaluedForm.bind(input), dateFields).fold(
           hasErrors => {
             hasErrors.errors.length mustBe  1
             hasErrors.errors.head.message mustBe "ated.property-details-value.revaluedValue.error.too-high"
+          },
+          _ => {
+            fail("There is some problem")
+          }
+        )
+      }
+
+      "Option 'yes' is selected and valuation value is empty" in {
+        val periodKey = 2018
+        val input: Map[String, String] = Map("isPropertyRevalued" -> "true",
+          "partAcqDispDate.day" -> "13",
+          "partAcqDispDate.month" -> "10",
+          "partAcqDispDate.year" -> "2010",
+          "revaluedValue" -> "",
+          "revaluedDate.day" -> "12",
+          "revaluedDate.month" -> "10",
+          "revaluedDate.year" -> "2010"
+        )
+        PropertyDetailsForms.validatePropertyDetailsRevaluedForm(periodKey, propertyDetailsRevaluedForm.bind(input), dateFields).fold(
+          hasErrors => {
+            hasErrors.errors.length mustBe 1
+            hasErrors.errors.head.message mustBe "ated.property-details-value.revaluedValue.error.empty"
+          },
+          _ => {
+            fail("There is some problem")
+          }
+        )
+      }
+
+      "Option 'yes' is selected and revaluedDate.day is empty" in {
+        val periodKey = 2018
+        val input: Map[String, String] = Map("isPropertyRevalued" -> "true",
+          "partAcqDispDate.day" -> "13",
+          "partAcqDispDate.month" -> "10",
+          "partAcqDispDate.year" -> "2010",
+          "revaluedValue" -> "150000000",
+          "revaluedDate.day" -> "",
+          "revaluedDate.month" -> "10",
+          "revaluedDate.year" -> "2010"
+        )
+        PropertyDetailsForms.validatePropertyDetailsRevaluedForm(periodKey, propertyDetailsRevaluedForm.bind(input), dateFields).fold(
+          hasErrors => {
+            println(hasErrors.errors)
+            hasErrors.errors.length mustBe 1
+            hasErrors.errors.head.message mustBe "ated.error.date.day.missing"
           },
           _ => {
             fail("There is some problem")
