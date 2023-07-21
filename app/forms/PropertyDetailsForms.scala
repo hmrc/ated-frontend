@@ -379,7 +379,7 @@ object PropertyDetailsForms {
     validatePropertyDetailsRevalued(periodKey, addErrorsToForm(f, formErrors.flatten ++ validationValueErrors.flatten))
   }
 
-  def validateDateFields(day: Option[String], month: Option[String], year: Option[String], dateFields : Seq[(String, String)]) : Seq[FormError] = {
+  def validateDateFields(day: Option[String], month: Option[String], year: Option[String], dateFields : Seq[(String, String)], isPastValidationRequired : Option[Boolean] = None) : Seq[FormError] = {
     dateFields.flatMap { x =>
       (day, month, year) match {
         case (None, None, None) => Seq(FormError(s"${x._1}", s"ated.error.date.empty", Seq(x._2)))
@@ -410,9 +410,19 @@ object PropertyDetailsForms {
               else if (!(month >= 1 && month <= 12)) {
                 Seq(FormError(s"${x._1}.month", s"ated.error.month.invalid", Seq(x._2)))
               }
+              else if(y.trim.length != 4) {
+                Seq(FormError(s"${x._1}.year", s"ated.error.date.year.length", Seq(x._2)))
+              }
               else {
-                new LocalDate(y.trim.toInt, m.trim.toInt, d.trim.toInt)
-                Seq()
+                val validatedDate = new LocalDate(y.trim.toInt, m.trim.toInt, d.trim.toInt)
+                if(isPastValidationRequired.contains(true) && validatedDate.isBefore(LocalDate.now())) {
+                  Seq(FormError(s"${x._1}.day", s"ated.error.date.past", Seq(x._2)))
+                else {
+                    .)
+                  }
+                } else {
+                  Seq()
+                }
               }
             } catch {
               case _: Throwable => Seq(FormError(s"${x._1}.day", s"ated.error.date.invalid", Seq(x._2)))
