@@ -68,6 +68,7 @@ ated.error.date.month.missing =  {0} must include the month
 ated.error.date.year.missing =  {0} must include the year
 ated.error.date.year.length = Year for {0} must be 4 digits
 ated.error.date.past = {0} cannot be in the past
+ated.error.date.invalid.day.month = Invalid day and month for {0}
 ated.error.date.daymonth.missing =  {0} must include the day and month
 ated.error.date.dayyear.missing =  {0} must include the day and year
 ated.error.date.monthyear.missing = {0} must include the month and year
