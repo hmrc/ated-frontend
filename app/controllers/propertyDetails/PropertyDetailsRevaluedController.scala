@@ -20,14 +20,17 @@ import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms._
+
 import javax.inject.Inject
 import models.PropertyDetailsRevalued
+import play.api.i18n.{Messages, MessagesApi, MessagesImpl}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services._
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants.SelectedPreviousReturn
 import utils.AtedUtils
 import uk.gov.hmrc.play.bootstrap.controller.WithDefaultFormBinding
+
 import scala.concurrent.ExecutionContext
 
 class PropertyDetailsRevaluedController @Inject()(mcc: MessagesControllerComponents,
@@ -45,8 +48,10 @@ class PropertyDetailsRevaluedController @Inject()(mcc: MessagesControllerCompone
   implicit val ec: ExecutionContext = mcc.executionContext
   val controllerId: String = "PropertyDetailsRevaluedController"
 
+  implicit lazy val messages: Messages = MessagesImpl(mcc.langs.availables.head, messagesApi)
+
   val dateFields = Seq(
-    ("partAcqDispDate", "The date when you made the £40,000 or more change"),
+    ("partAcqDispDate", Messages("ated.property-details-value.partAcqDispDate.messageKey")),
     ("revaluedDate", "Revaluation date")
   )
 
