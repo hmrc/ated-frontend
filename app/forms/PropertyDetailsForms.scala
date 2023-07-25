@@ -24,7 +24,6 @@ import play.api.data.Forms._
 import play.api.data.{Form, FormError, Mapping}
 import utils.AtedUtils
 
-import java.time.YearMonth
 import scala.annotation.tailrec
 import scala.util.Try
 import scala.util.matching.Regex
@@ -369,7 +368,7 @@ object PropertyDetailsForms {
     val formErrors =
       if(f.get.isPropertyRevalued.contains(true)) {
         dateFields.map { x =>
-          validateDateFields(f.data.get(s"${x._1}.day"), f.data.get(s"${x._1}.month"), f.data.get(s"${x._1}.year"),
+          DateTupleCustomError.validateDateFields(f.data.get(s"${x._1}.day"), f.data.get(s"${x._1}.month"), f.data.get(s"${x._1}.year"),
             Seq((x._1, x._2)))
         }
       } else {
@@ -379,58 +378,5 @@ object PropertyDetailsForms {
     validatePropertyDetailsRevalued(periodKey, addErrorsToForm(f, formErrors.flatten ++ validationValueErrors.flatten))
   }
 
-  def validateDateFields(day: Option[String], month: Option[String], year: Option[String], dateFields : Seq[(String, String)], isPastValidationRequired : Option[Boolean] = None) : Seq[FormError] = {
-    dateFields.flatMap { x =>
-      ((day, month, year)  : @unchecked) match {
-        case (None, None, None) => Seq(FormError(s"${x._1}", s"ated.error.date.empty", Seq(x._2)))
-        case (Some(d), Some(m), Some(y)) =>
-          if (d.isEmpty && m.isEmpty && y.isEmpty) {
-            Seq(FormError(s"${x._1}", s"ated.error.date.empty", Seq(x._2)))
-          } else if (d.isEmpty && m.nonEmpty && y.nonEmpty) {
-            Seq(FormError(s"${x._1}.day", s"ated.error.date.day.missing", Seq(x._2)))
-          } else if (!d.isEmpty && m.isEmpty && y.nonEmpty) {
-            Seq(FormError(s"${x._1}.month", s"ated.error.date.month.missing", Seq(x._2)))
-          } else if (d.nonEmpty && m.nonEmpty && y.isEmpty) {
-            Seq(FormError(s"${x._1}.year", s"ated.error.date.year.missing", Seq(x._2)))
-          } else if (d.isEmpty && m.isEmpty && y.nonEmpty) {
-            Seq(FormError(s"${x._1}.day", s"ated.error.date.daymonth.missing", Seq(x._2)))
-          } else if (d.isEmpty && m.nonEmpty && y.isEmpty) {
-            Seq(FormError(s"${x._1}.day", s"ated.error.date.dayyear.missing", Seq(x._2)))
-          } else if (d.nonEmpty && m.isEmpty && y.isEmpty)
-            Seq(FormError(s"${x._1}.month", s"ated.error.date.monthyear.missing", Seq(x._2)))
-          else {
-            try {
-              val day = d.trim.toInt
-              val month = m.trim.toInt
-              val year = y.trim.toInt
-              val validLeapYear = 2020
-
-              if (!(day >= 1 && day <= 31)) {
-                Seq(FormError(s"${x._1}.day", s"ated.error.day.invalid", Seq(x._2)))
-              }
-              else if (!(month >= 1 && month <= 12)) {
-                Seq(FormError(s"${x._1}.month", s"ated.error.month.invalid", Seq(x._2)))
-              }
-              else if(y.trim.length != 4) {
-                Seq(FormError(s"${x._1}.year", s"ated.error.date.year.length", Seq(x._2)))
-              }
-              else if (!YearMonth.of(validLeapYear, month).isValidDay(day)) {
-                Seq(FormError(s"${x._1}.day", s"ated.error.date.invalid.day.month", Seq(x._2)))
-              }
-              else {
-                val validatedDate = new LocalDate(y.trim.toInt, m.trim.toInt, d.trim.toInt)
-                if(isPastValidationRequired.contains(true) && validatedDate.isBefore(LocalDate.now())) {
-                  Seq(FormError(s"${x._1}.day", s"ated.error.date.past", Seq(x._2)))
-                } else {
-                  Seq()
-                }
-              }
-            } catch {
-              case _: Throwable => Seq(FormError(s"${x._1}.day", s"ated.error.date.invalid", Seq(x._2)))
-            }
-          }
-      }
-    }
-  }
 
 }

@@ -17,6 +17,7 @@
 package forms
 
 import forms.PropertyDetailsForms.propertyDetailsRevaluedForm
+import forms.mappings.DateTupleCustomError
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.i18n.{Messages, MessagesApi}
@@ -482,7 +483,7 @@ class PropertyDetailsRevaluedSpec extends PlaySpec with GuiceOneServerPerSuite {
       }
 
       "Option 'yes' is selected and past date values for partAcqDispDate and revaluedDate" in {
-        PropertyDetailsForms.validateDateFields(Some("2"), Some("3"), Some("2011"), dateFields, Some(true)).map(
+        DateTupleCustomError.validateDateFields(Some("2"), Some("3"), Some("2011"), dateFields, Some(true)).map(
           x => x.message mustBe "ated.error.date.past"
         )
       }
