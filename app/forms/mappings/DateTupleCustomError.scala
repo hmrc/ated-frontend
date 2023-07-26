@@ -101,7 +101,7 @@ case class DateTupleCustomError(invalidDateErrorKey: String){
 
 case object DateTupleCustomError {
 
-  def validateDateFields(day: Option[String], month: Option[String], year: Option[String], dateFields: Seq[(String, String)], isPastValidationRequired: Option[Boolean] = None): Seq[FormError] = {
+  def validateDateFields(day: Option[String], month: Option[String], year: Option[String], dateFields: Seq[(String, String)], dateForPastValidation: Option[LocalDate] = None): Seq[FormError] = {
     dateFields.flatMap { x =>
       ((day, month, year): @unchecked) match {
         case (None, None, None) => Seq(FormError(s"${x._1}", s"ated.error.date.empty", Seq(x._2)))
@@ -141,10 +141,10 @@ case object DateTupleCustomError {
               }
               else {
                 val validatedDate = new LocalDate(y.trim.toInt, m.trim.toInt, d.trim.toInt)
-                if (isPastValidationRequired.contains(true) && validatedDate.isBefore(LocalDate.now())) {
-                  Seq(FormError(s"${x._1}.day", s"ated.error.date.past", Seq(x._2)))
-                } else {
-                  Seq()
+                dateForPastValidation match {
+                  case Some(pastDate) if(validatedDate.isBefore(pastDate)) =>
+                    Seq(FormError(s"${x._1}.day", s"ated.error.date.past", Seq(x._2)))
+                  case _ => Seq()
                 }
               }
             } catch {
