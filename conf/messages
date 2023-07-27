@@ -1139,6 +1139,7 @@ ated.dispose-property.dateOfDisposal.error.empty =  You must enter date of dispo
 ated.dispose-property.period.dateOfDisposal.date-before-period = The date of disposal must be in this chargeable period
 ated.dispose-property.period.dateOfDisposal.date-after-period = The date of disposal must be in this chargeable period
 ated.dispose-property.period.dateOfDisposal.date-after-today = The property disposal date cannot be in the future.
+ated.property-details-value.dateOfDisposal.messageKey = Date of disposal
 
 ##### AGENT BANNER
 

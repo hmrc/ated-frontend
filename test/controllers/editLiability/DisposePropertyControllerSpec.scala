@@ -228,7 +228,7 @@ class DisposePropertyControllerSpec extends PlaySpec with GuiceOneServerPerSuite
 
       "for invalid data, return BAD_REQUEST" in new Setup {
         val inputJson: JsValue = Json.parse(
-          """{"dateOfDisposal.day": "wooooooooow", "periodKey": 2017}""".stripMargin)
+          """{"dateOfDisposal.day": "wo", "dateOfDisposal.month": "", "dateOfDisposal.year": "", "periodKey": 2017}""".stripMargin)
         when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
         saveWithAuthorisedUser(oldFormBundleNum, inputJson) {
           result =>
@@ -251,7 +251,7 @@ class DisposePropertyControllerSpec extends PlaySpec with GuiceOneServerPerSuite
             val document = Jsoup.parse(contentAsString(result))
             document.title() must be(TitleBuilder.buildTitle("Error: When did you dispose of the property?"))
             document.getElementsByClass("govuk-error-summary__title").text must include("There is a problem")
-            document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("You must enter date of disposal")
+            document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("Date of disposal cannot be empty")
         }
       }
 
@@ -268,7 +268,7 @@ class DisposePropertyControllerSpec extends PlaySpec with GuiceOneServerPerSuite
             val document = Jsoup.parse(contentAsString(result))
             document.title() must be(TitleBuilder.buildTitle("Error: When did you dispose of the property?"))
             document.getElementsByClass("govuk-error-summary__title").text must include("There is a problem")
-            document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("You must enter a valid date")
+            document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("Invalid day and month for Date of disposal")
         }
       }
 

@@ -23,7 +23,7 @@ import forms.PropertyDetailsForms._
 
 import javax.inject.Inject
 import models.PropertyDetailsRevalued
-import play.api.i18n.{Messages, MessagesApi, MessagesImpl}
+import play.api.i18n.{Messages, MessagesImpl}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services._
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
