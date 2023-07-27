@@ -47,8 +47,8 @@ class PeriodInReliefDatesController @Inject()(mcc: MessagesControllerComponents,
     MessagesImpl(mcc.langs.availables.head, messagesApi)
 
   val dateFields = Seq(
-    ("inReliefStartDate", Messages("ated.property-details-period.datesInRelief.startDate.messageKey")),
-    ("inReliefEndDate", Messages("ated.property-details-period.datesInRelief.endDate.messageKey"))
+    ("startDate", Messages("ated.property-details-period.datesInRelief.startDate.messageKey")),
+    ("endDate", Messages("ated.property-details-period.datesInRelief.endDate.messageKey"))
   )
 
   def add(id: String, periodKey: Int) : Action[AnyContent] = Action.async { implicit request =>

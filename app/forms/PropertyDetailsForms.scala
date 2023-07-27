@@ -16,12 +16,14 @@
 
 package forms
 
+import controllers.propertyDetails
 import forms.AtedForms.validatePostCodeFormat
 import forms.mappings.DateTupleCustomError
 import models._
 import org.joda.time.LocalDate
 import play.api.data.Forms._
 import play.api.data.{Form, FormError, Mapping}
+import services.PropertyDetailsCacheSuccessResponse
 import utils.AtedUtils
 
 import scala.annotation.tailrec
@@ -334,18 +336,15 @@ object PropertyDetailsForms {
     } else basicErrorForm
   }
 
-  def validatePropertyDetailsRevaluedForm2(periodKey: Int, f: Form[PropertyDetailsRevalued], dateFields: Seq[(String, String)]): Form[PropertyDetailsRevalued] = {
+  def validatePropertyDetailsDatesInReliefForm(periodKey: Int, f: Form[PropertyDetailsDatesInRelief], dateFields: Seq[(String, String)]): Form[PropertyDetailsDatesInRelief] = {
     val formErrors =
-      if (f.get.isPropertyRevalued.contains(true)) {
         dateFields.map { x =>
           DateTupleCustomError.validateDateFields(f.data.get(s"${x._1}.day"), f.data.get(s"${x._1}.month"), f.data.get(s"${x._1}.year"),
             Seq((x._1, x._2)))
         }
-      } else {
-        Seq()
-      }
-    val validationValueErrors = validateValue(f.get.isPropertyRevalued.contains(true), "revaluedValue", f.get.revaluedValue, f)
-    validatePropertyDetailsRevalued(periodKey, addErrorsToForm(f, formErrors.flatten ++ validationValueErrors.flatten))
+      case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
+        val lineItems = propertyDetails.period.map(_.liabilityPeriods).getOrElse(Nil) ++ propertyDetails.period.map(_.reliefPeriods).getOrElse(Nil)
+    validatePropertyDetailsDatesInRelief(periodKey, addErrorsToForm(f, formErrors.flatten))
   }
 
   private def validateValue(requiresValidation: Boolean, fieldName: String, fieldValue: Option[BigDecimal], f: Form[_]): Seq[Option[FormError]] = {
