@@ -27,6 +27,7 @@ import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService, Se
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import uk.gov.hmrc.play.bootstrap.controller.WithDefaultFormBinding
 import scala.concurrent.{ExecutionContext, Future}
+import play.api.i18n.{Messages, MessagesImpl, MessagesApi}
 
 class PeriodInReliefDatesController @Inject()(mcc: MessagesControllerComponents,
                                               authAction: AuthAction,
@@ -41,6 +42,14 @@ class PeriodInReliefDatesController @Inject()(mcc: MessagesControllerComponents,
 
   implicit val ec: ExecutionContext = mcc.executionContext
   val controllerId: String = "PeriodInReliefDatesController"
+
+  implicit lazy val messages: Messages =
+    MessagesImpl(mcc.langs.availables.head, messagesApi)
+
+  val dateFields = Seq(
+    ("inReliefStartDate", Messages("ated.property-details-period.datesInRelief.startDate.messageKey")),
+    ("inReliefEndDate", Messages("ated.property-details-period.datesInRelief.endDate.messageKey"))
+  )
 
   def add(id: String, periodKey: Int) : Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>

@@ -334,6 +334,20 @@ object PropertyDetailsForms {
     } else basicErrorForm
   }
 
+  def validatePropertyDetailsRevaluedForm2(periodKey: Int, f: Form[PropertyDetailsRevalued], dateFields: Seq[(String, String)]): Form[PropertyDetailsRevalued] = {
+    val formErrors =
+      if (f.get.isPropertyRevalued.contains(true)) {
+        dateFields.map { x =>
+          DateTupleCustomError.validateDateFields(f.data.get(s"${x._1}.day"), f.data.get(s"${x._1}.month"), f.data.get(s"${x._1}.year"),
+            Seq((x._1, x._2)))
+        }
+      } else {
+        Seq()
+      }
+    val validationValueErrors = validateValue(f.get.isPropertyRevalued.contains(true), "revaluedValue", f.get.revaluedValue, f)
+    validatePropertyDetailsRevalued(periodKey, addErrorsToForm(f, formErrors.flatten ++ validationValueErrors.flatten))
+  }
+
   private def validateValue(requiresValidation: Boolean, fieldName: String, fieldValue: Option[BigDecimal], f: Form[_]): Seq[Option[FormError]] = {
     if (requiresValidation) {
       if (f.data.contains(fieldName) && !f.data.get(fieldName).contains("")) {
