@@ -101,8 +101,8 @@ object PropertyDetailsForms {
     mapping(
       "isPropertyRevalued" -> optional(boolean).verifying("ated.property-details-value.isPropertyRevalued.error.non-selected", x => x.isDefined),
       "revaluedValue" -> valueValidation,
-      "revaluedDate" -> DateTupleCustomError("error.invalid.date.format").dateTuple,
-      "partAcqDispDate" -> DateTupleCustomError("error.invalid.date.format").dateTuple
+      "revaluedDate" -> DateTupleCustomError("ated.error.date.invalid").dateTupleOptional(),
+      "partAcqDispDate" -> DateTupleCustomError("ated.error.date.invalid").dateTupleOptional()
     )(PropertyDetailsRevalued.apply)(PropertyDetailsRevalued.unapply))
 
   val propertyDetailsOwnedBeforeForm: Form[PropertyDetailsOwnedBefore] = Form(
@@ -260,7 +260,6 @@ object PropertyDetailsForms {
   def validatePropertyDetailsRevalued(periodKey: Int, f: Form[PropertyDetailsRevalued]): Form[PropertyDetailsRevalued] = {
     if (!f.hasErrors) {
       val formErrors = (PropertyDetailsFormsValidation.checkPartAcqDispDate(periodKey, f.get.isPropertyRevalued, f.get.partAcqDispDate)
-        ++ validateValue(f.get.isPropertyRevalued.contains(true), "revaluedValue", f.get.revaluedValue, f)
         ++ PropertyDetailsFormsValidation.checkRevaluedDate(periodKey, f.get.isPropertyRevalued, f.get.revaluedDate)
         ).flatten
       addErrorsToForm(f, formErrors)
@@ -363,5 +362,21 @@ object PropertyDetailsForms {
 
     y(form, formErrors)
   }
+
+  //scalastyle:off cyclomatic.complexity
+  def validatePropertyDetailsRevaluedForm(periodKey : Int, f: Form[PropertyDetailsRevalued], dateFields : Seq[(String, String)] ): Form[PropertyDetailsRevalued] = {
+    val formErrors =
+      if(f.get.isPropertyRevalued.contains(true)) {
+        dateFields.map { x =>
+          DateTupleCustomError.validateDateFields(f.data.get(s"${x._1}.day"), f.data.get(s"${x._1}.month"), f.data.get(s"${x._1}.year"),
+            Seq((x._1, x._2)))
+        }
+      } else {
+        Seq()
+      }
+    val validationValueErrors = validateValue(f.get.isPropertyRevalued.contains(true), "revaluedValue", f.get.revaluedValue, f)
+    validatePropertyDetailsRevalued(periodKey, addErrorsToForm(f, formErrors.flatten ++ validationValueErrors.flatten))
+  }
+
 
 }

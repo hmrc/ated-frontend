@@ -19,16 +19,18 @@ package controllers.propertyDetails
 import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.{AuthAction, ClientHelper}
-import forms.PropertyDetailsForms
 import forms.PropertyDetailsForms._
+
 import javax.inject.Inject
 import models.PropertyDetailsRevalued
+import play.api.i18n.{Messages, MessagesApi, MessagesImpl}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services._
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants.SelectedPreviousReturn
 import utils.AtedUtils
 import uk.gov.hmrc.play.bootstrap.controller.WithDefaultFormBinding
+
 import scala.concurrent.ExecutionContext
 
 class PropertyDetailsRevaluedController @Inject()(mcc: MessagesControllerComponents,
@@ -45,6 +47,13 @@ class PropertyDetailsRevaluedController @Inject()(mcc: MessagesControllerCompone
 
   implicit val ec: ExecutionContext = mcc.executionContext
   val controllerId: String = "PropertyDetailsRevaluedController"
+
+  implicit lazy val messages: Messages = MessagesImpl(mcc.langs.availables.head, messagesApi)
+
+  val dateFields = Seq(
+    ("partAcqDispDate", Messages("ated.property-details-value.partAcqDispDate.messageKey")),
+    ("revaluedDate", Messages("ated.property-details-value.revaluedDate.messageKey"))
+  )
 
   def view(id: String): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
@@ -77,7 +86,7 @@ class PropertyDetailsRevaluedController @Inject()(mcc: MessagesControllerCompone
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
-          PropertyDetailsForms.validatePropertyDetailsRevalued(periodKey, propertyDetailsRevaluedForm.bindFromRequest).fold(
+          validatePropertyDetailsRevaluedForm(periodKey, propertyDetailsRevaluedForm.bindFromRequest, dateFields).fold(
             formWithError => {
               currentBackLink.map(backLink => BadRequest(template(id, periodKey, formWithError, mode, serviceInfoContent, backLink)))
             },
