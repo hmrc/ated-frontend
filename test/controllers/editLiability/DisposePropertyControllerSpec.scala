@@ -228,7 +228,7 @@ class DisposePropertyControllerSpec extends PlaySpec with GuiceOneServerPerSuite
 
       "for invalid data, return BAD_REQUEST" in new Setup {
         val inputJson: JsValue = Json.parse(
-          """{"dateOfDisposal.day": "wo", "dateOfDisposal.month": "", "dateOfDisposal.year": "", "periodKey": 2017}""".stripMargin)
+          """{"dateOfDisposal.day": "wooooooooow", "dateOfDisposal.month": "", "dateOfDisposal.year": "", "periodKey": 2017}""".stripMargin)
         when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
         saveWithAuthorisedUser(oldFormBundleNum, inputJson) {
           result =>
