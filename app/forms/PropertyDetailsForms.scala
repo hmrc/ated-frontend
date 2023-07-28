@@ -202,8 +202,8 @@ object PropertyDetailsForms {
 
   val periodInReliefDatesForm: Form[PropertyDetailsDatesInRelief] = Form(
     mapping(
-      "startDate" -> DateTupleCustomError("error.invalid.date.format").mandatoryDateTuple("ated.property-details-period.datesInRelief.startDate.error.empty"),
-      "endDate" -> DateTupleCustomError("error.invalid.date.format").mandatoryDateTuple("ated.property-details-period.datesInRelief.endDate.error.empty"),
+      "startDate" -> DateTupleCustomError("ated.error.date.invalid").dateTupleOptional(),
+      "endDate" -> DateTupleCustomError("ated.error.date.invalid").dateTupleOptional(),
       "description" -> optional(text)
     )(PropertyDetailsDatesInRelief.apply)(PropertyDetailsDatesInRelief.unapply)
   )
