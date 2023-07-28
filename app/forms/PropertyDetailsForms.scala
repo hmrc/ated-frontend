@@ -336,15 +336,13 @@ object PropertyDetailsForms {
     } else basicErrorForm
   }
 
-  def validatePropertyDetailsDatesInReliefForm(periodKey: Int, f: Form[PropertyDetailsDatesInRelief], dateFields: Seq[(String, String)]): Form[PropertyDetailsDatesInRelief] = {
+  def validatePropertyDetailsDatesInReliefForm(periodKey: Int, f: Form[PropertyDetailsDatesInRelief], dateFields: Seq[(String, String)], lineItems: List[LineItem]): Form[PropertyDetailsDatesInRelief] = {
     val formErrors =
         dateFields.map { x =>
           DateTupleCustomError.validateDateFields(f.data.get(s"${x._1}.day"), f.data.get(s"${x._1}.month"), f.data.get(s"${x._1}.year"),
             Seq((x._1, x._2)))
         }
-      case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
-        val lineItems = propertyDetails.period.map(_.liabilityPeriods).getOrElse(Nil) ++ propertyDetails.period.map(_.reliefPeriods).getOrElse(Nil)
-    validatePropertyDetailsDatesInRelief(periodKey, addErrorsToForm(f, formErrors.flatten))
+    validatePropertyDetailsDatesInRelief(periodKey, addErrorsToForm(f, formErrors.flatten), lineItems)
   }
 
   private def validateValue(requiresValidation: Boolean, fieldName: String, fieldValue: Option[BigDecimal], f: Form[_]): Seq[Option[FormError]] = {

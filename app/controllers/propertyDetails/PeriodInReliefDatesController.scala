@@ -67,7 +67,8 @@ class PeriodInReliefDatesController @Inject()(mcc: MessagesControllerComponents,
           propertyDetailsCacheResponse(id) {
             case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
               val lineItems = propertyDetails.period.map(_.liabilityPeriods).getOrElse(Nil) ++ propertyDetails.period.map(_.reliefPeriods).getOrElse(Nil)
-              PropertyDetailsForms.validatePropertyDetailsDatesInRelief(periodKey, periodInReliefDatesForm.bindFromRequest, lineItems).fold(
+                PropertyDetailsForms.validatePropertyDetailsDatesInReliefForm(periodKey, periodInReliefDatesForm.bindFromRequest, dateFields, lineItems)
+                .fold(
                 formWithError => {
                   Future.successful(BadRequest(template(id, periodKey, formWithError, serviceInfoContent, getBackLink(id, periodKey))))
                 },
