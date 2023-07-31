@@ -136,10 +136,8 @@ object PropertyDetailsForms {
 
   val dateFirstOccupiedForm: Form[DateFirstOccupied] = Form(
     mapping(
-      "dateFirstOccupied" -> DateTupleCustomError("ated.property-details.first-occupied-date.invalidInputType").dateTuple
-        .verifying("ated.property-details.first-occupied-date.empty", x => x.isDefined)
-        .verifying("ated.property-details.first-occupied-dates.inFuture", x => isInPast(x))
-    )(DateFirstOccupied.apply)(DateFirstOccupied.unapply)
+      "dateFirstOccupied" -> DateTupleCustomError("ated.property-details.first-occupied-date.invalidInputType").dateTupleOptional()
+        )(DateFirstOccupied.apply)(DateFirstOccupied.unapply)
   )
 
   val dateCouncilRegisteredForm: Form[DateCouncilRegistered] = Form(
@@ -289,11 +287,25 @@ object PropertyDetailsForms {
     } else f
   }
 
-  def validateNewBuildFirstOccupiedDate(periodKey: Int, f: Form[DateFirstOccupied]): Form[DateFirstOccupied] = {
-    if (!f.hasErrors) {
+  def validateNewBuildFirstOccupiedDate(periodKey: Int, f: Form[DateFirstOccupied], dateFields : Seq[(String, String)] ): Form[DateFirstOccupied] = {
+
+    val dateValidationErrors =
+     if (!f.hasErrors) {
+      dateFields.map { x =>
+        DateTupleCustomError.validateDateFields(f.data.get(s"${x._1}.day"), f.data.get(s"${x._1}.month"), f.data.get(s"${x._1}.year"),
+          Seq((x._1, x._2)), dateForFutureValidation = Some(LocalDate.now()))
+      }
+    } else {
+       Seq()
+     }
+
+    val preValidatedForm = addErrorsToForm(f, dateValidationErrors.flatten)
+
+    if (!preValidatedForm.hasErrors) {
       val formErrors = PropertyDetailsFormsValidation.validatedFirstOccupiedDate(periodKey, f).flatten
       addErrorsToForm(f, formErrors)
-    } else f
+    } else preValidatedForm
+
   }
 
   def validateNewBuildCouncilRegisteredDate(periodKey: Int, f: Form[DateCouncilRegistered]): Form[DateCouncilRegistered] = {
