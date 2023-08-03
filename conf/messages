@@ -72,6 +72,7 @@ ated.error.date.invalid.day.month = Invalid day and month for {0}
 ated.error.date.daymonth.missing =  {0} must include the day and month
 ated.error.date.dayyear.missing =  {0} must include the day and year
 ated.error.date.monthyear.missing = {0} must include the month and year
+ated.error.date.future = {0} cannot be in the future
 
 
 ated.error.day.invalid = Enter a day for {0} between 1 and 31
@@ -457,6 +458,7 @@ ated.property-details.council-registered-date.title = When did the local council
 ated.property-details.council-registered-date.header = When did the local council register the property for council tax?
 ated.property-details.council-registered-date.exampleDate = This is usually the completion date, like {0}
 
+ated.property-details.council-registered-date.messageKey = Date when the local council registered the property for council tax
 ated.property-details.council-registered-date.empty = Date when the local council registered the property for council tax must be a valid date
 ated.property-details.council-registered-date.invalidInputType = Date when the local council registered the property for council tax must be a valid date
 ated.property-details-value.dateCouncilRegistered.error.too-early = Date when the local council registered the property for council tax must be in the chargeable period
