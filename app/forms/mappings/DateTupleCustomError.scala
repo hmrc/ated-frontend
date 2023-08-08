@@ -161,7 +161,7 @@ case object DateTupleCustomError {
             } else Seq()
           }
           case "year" => {
-            val year = dateFieldValue.trim.toInt
+            dateFieldValue.trim.toInt
             if (dateFieldValue.trim.length != 4) {
               Seq(FormError(s"${formField}.year", s"ated.error.date.year.length", Seq(messageKey)))
             } else Seq()
