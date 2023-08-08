@@ -132,6 +132,7 @@ case object DateTupleCustomError {
                   } else {
 
                     val validatedDate = new LocalDate(y.trim.toInt, m.trim.toInt, d.trim.toInt)
+
                     dateForPastValidation match {
                       case Some(pastDate) if validatedDate.isBefore(pastDate) =>
                         Seq(FormError(s"${x._1}.day", s"ated.error.date.past", Seq(x._2)))

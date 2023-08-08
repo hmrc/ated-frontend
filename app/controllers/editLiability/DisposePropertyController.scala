@@ -24,7 +24,7 @@ import forms.AtedForms.{disposeLiabilityForm, validateForm}
 
 import javax.inject.Inject
 import models.DisposeLiability
-import play.api.i18n.{MessagesImpl, Messages}
+import play.api.i18n.{Messages, MessagesImpl}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{DisposeLiabilityReturnService, ServiceInfoService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
