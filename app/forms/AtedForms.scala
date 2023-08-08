@@ -233,35 +233,41 @@ object AtedForms {
   val disposeLiabilityForm: Form[DisposeLiability] = {
     Form(
       mapping(
-        "dateOfDisposal" -> DateTupleCustomError("error.invalid.date.format").dateTuple,
+        "dateOfDisposal" -> DateTupleCustomError("error.invalid.date.format").dateTupleOptional(),
         "periodKey" -> number
       )(DisposeLiability.apply)(DisposeLiability.unapply)
     )
   }
 
-  def validateForm(f: Form[DisposeLiability]): Form[DisposeLiability] = {
+  def validateForm(f: Form[DisposeLiability], dateFields : Seq[(String, String)]): Form[DisposeLiability] = {
+
     if (!f.hasErrors) {
       val formErrors = {
-          val periodKey = f.data.get("periodKey").get.toInt
-          val dateOfDisposal: Option[LocalDate] = {
-            (f.data.get("dateOfDisposal.day"), f.data.get("dateOfDisposal.month"), f.data.get("dateOfDisposal.year")) match {
-              case (Some(d), Some(m), Some(y)) => try {
-                Some(new LocalDate(y.trim.toInt, m.trim.toInt, d.trim.toInt))
-              } catch {
-                case _ : Throwable => None
-              }
-              case _ => None
+        val periodKey = f.data.get("periodKey").get.toInt
+        val dateOfDisposal: Option[LocalDate] = {
+          (f.data.get("dateOfDisposal.day"), f.data.get("dateOfDisposal.month"), f.data.get("dateOfDisposal.year")) match {
+            case (Some(d), Some(m), Some(y)) => try {
+              Some(new LocalDate(y.trim.toInt, m.trim.toInt, d.trim.toInt))
+            } catch {
+              case _: Throwable => None
             }
+            case _ => None
           }
-              if (dateOfDisposal.isEmpty) {
-                Seq(FormError("dateOfDisposal", "ated.dispose-property.dateOfDisposal.error.empty"))
-              } else if (isPeriodTooEarly(periodKey, dateOfDisposal)) {
-                Seq(FormError("dateOfDisposal", "ated.dispose-property.period.dateOfDisposal.date-before-period"))
-              } else if (isPeriodTooLate(periodKey, dateOfDisposal)) {
-                Seq(FormError("dateOfDisposal", "ated.dispose-property.period.dateOfDisposal.date-after-period"))
+        }
+        val dateValidationErrors = DateTupleCustomError.validateDateFields(f.data.get("dateOfDisposal.day"), f.data.get("dateOfDisposal.month"),
+          f.data.get("dateOfDisposal.year"), dateFields)
+
+        if (dateValidationErrors.isEmpty) {
+          if (isPeriodTooEarly(periodKey, dateOfDisposal)) {
+            Seq(FormError("dateOfDisposal", "ated.dispose-property.period.dateOfDisposal.date-before-period"))
+          } else if (isPeriodTooLate(periodKey, dateOfDisposal)) {
+            Seq(FormError("dateOfDisposal", "ated.dispose-property.period.dateOfDisposal.date-after-period"))
           } else if (isAfterPresentDay(dateOfDisposal)) {
-                Seq(FormError("dateOfDisposal", "ated.dispose-property.period.dateOfDisposal.date-after-today"))
-              } else Nil
+            Seq(FormError("dateOfDisposal", "ated.dispose-property.period.dateOfDisposal.date-after-today"))
+          } else Nil
+        }
+        else dateValidationErrors
+
       }
       addErrorsToForm(f, formErrors)
     } else f

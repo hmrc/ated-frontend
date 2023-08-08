@@ -21,12 +21,15 @@ import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.BackLinkController
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.AtedForms.{disposeLiabilityForm, validateForm}
+
 import javax.inject.Inject
 import models.DisposeLiability
+import play.api.i18n.{MessagesImpl, Messages}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{DisposeLiabilityReturnService, ServiceInfoService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import uk.gov.hmrc.play.bootstrap.controller.WithDefaultFormBinding
+
 import scala.concurrent.{ExecutionContext, Future}
 
 class DisposePropertyController @Inject()(mcc: MessagesControllerComponents,
@@ -43,6 +46,12 @@ class DisposePropertyController @Inject()(mcc: MessagesControllerComponents,
   implicit val ec: ExecutionContext = mcc.executionContext
 
   val controllerId: String = "DisposePropertyController"
+
+  implicit lazy val messages: Messages = MessagesImpl(mcc.langs.availables.head, messagesApi)
+
+  val dateFields = Seq(
+    ("dateOfDisposal", Messages("ated.property-details-value.dateOfDisposal.messageKey"))
+  )
 
   def view(oldFormBundleNo: String) : Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
@@ -88,7 +97,7 @@ class DisposePropertyController @Inject()(mcc: MessagesControllerComponents,
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
-          validateForm(disposeLiabilityForm.bindFromRequest).fold(
+          validateForm(disposeLiabilityForm.bindFromRequest, dateFields).fold(
             formWithErrors => {
               currentBackLink.map { backLink =>
                 BadRequest(
