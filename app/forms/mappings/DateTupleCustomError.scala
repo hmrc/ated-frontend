@@ -132,9 +132,16 @@ case object DateTupleCustomError {
                   } else {
 
                     val validatedDate = new LocalDate(y.trim.toInt, m.trim.toInt, d.trim.toInt)
+
                     dateForPastValidation match {
                       case Some(pastDate) if validatedDate.isBefore(pastDate) =>
                         Seq(FormError(s"${x._1}.day", s"ated.error.date.past", Seq(x._2)))
+                      case _ => Seq()
+                    }
+
+                    dateForFutureValidation match {
+                      case Some(futureDate) if (validatedDate.isAfter(futureDate)) =>
+                        Seq(FormError(s"${x._1}.day", s"ated.error.date.future", Seq(x._2)))
                       case _ => Seq()
                     }
 
@@ -142,34 +149,6 @@ case object DateTupleCustomError {
                 } else {
                 Seq(dateSeqErrors.head)
               }
-              else if (!(month >= 1 && month <= 12)) {
-                Seq(FormError(s"${x._1}.month", s"ated.error.month.invalid", Seq(x._2)))
-              }
-              else if (y.trim.length != 4) {
-                Seq(FormError(s"${x._1}.year", s"ated.error.date.year.length", Seq(x._2)))
-              }
-              else if (!YearMonth.of(validLeapYear, month).isValidDay(day)) {
-                Seq(FormError(s"${x._1}.day", s"ated.error.date.invalid.day.month", Seq(x._2)))
-              }
-              else {
-                val validatedDate = new LocalDate(y.trim.toInt, m.trim.toInt, d.trim.toInt)
-
-                dateForPastValidation match {
-                  case Some(pastDate) if(validatedDate.isBefore(pastDate)) =>
-                    Seq(FormError(s"${x._1}.day", s"ated.error.date.past", Seq(x._2)))
-                  case _ => Seq()
-                }
-
-                dateForFutureValidation match {
-                  case Some(futureDate) if (validatedDate.isAfter(futureDate)) =>
-                    Seq(FormError(s"${x._1}.day", s"ated.error.date.future", Seq(x._2)))
-                  case _ => Seq()
-                }
-              }
-            } catch {
-              case _: Throwable => Seq(FormError(s"${x._1}.day", s"ated.error.date.invalid", Seq(x._2)))
-            }
-
           }
       }
     }
