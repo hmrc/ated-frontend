@@ -268,7 +268,7 @@ class DisposePropertyControllerSpec extends PlaySpec with GuiceOneServerPerSuite
             val document = Jsoup.parse(contentAsString(result))
             document.title() must be(TitleBuilder.buildTitle("Error: When did you dispose of the property?"))
             document.getElementsByClass("govuk-error-summary__title").text must include("There is a problem")
-            document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("Invalid day and month for Date of disposal")
+            document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("Invalid day and month for date of disposal")
         }
       }
 
