@@ -445,6 +445,7 @@ ated.property-details.first-occupied-date.title = When was the property first oc
 ated.property-details.first-occupied-date.header = When was the property first occupied?
 ated.property-details.first-occupied-date.exampleDate = For example, {0}
 
+ated.property-details.first-occupied-date.messageKey = Date when the property was first occupied
 ated.property-details.first-occupied-date.empty = Date when the property first occupied must be a valid date
 ated.property-details.first-occupied-date.invalidInputType = Date when the property first occupied must be a valid date
 ated.property-details-value.dateFirstOccupied.error.too-early = Date when the property was first occupied must be in the chargeable period
@@ -1137,7 +1138,7 @@ ated.change-property-value.hasValueChanged.error.non-selected = You must answer 
 
 ##### DISPOSE PROPERTY
 
-ated.dispose-property.dateOfDisposal.error.empty =  You must enter date of disposal
+ated.dispose-property.dateOfDisposal.error.empty =  Date of disposal cannot be empty
 ated.dispose-property.period.dateOfDisposal.date-before-period = The date of disposal must be in this chargeable period
 ated.dispose-property.period.dateOfDisposal.date-after-period = The date of disposal must be in this chargeable period
 ated.dispose-property.period.dateOfDisposal.date-after-today = The property disposal date cannot be in the future.
