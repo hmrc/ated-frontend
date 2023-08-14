@@ -796,7 +796,6 @@ ated.period-summary.sr.return = the return for
 ated.property-details-period.datesInRelief.startDate.error.too-early = The start date cannot be before this chargeable period
 ated.property-details-period.datesInRelief.startDate.error.too-late = The start date cannot be after this chargeable period
 ated.property-details-period.datesInRelief.overlap.error = No periods of charge or relief can overlap
-ated.property-details-period.datesInRelief.endDate.error.incomplete = You must enter a valid relief end date
 ated.property-details-period.datesInRelief.endDate.error.too-early = The end date cannot be before this chargeable period
 ated.property-details-period.datesInRelief.endDate.error.too-late = The end date cannot be after this chargeable period
 ated.property-details-period.datesInRelief.endDate.error.before-start-date = The relief end date cannot be before the relief start date
