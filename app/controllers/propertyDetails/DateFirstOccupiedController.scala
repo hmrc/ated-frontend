@@ -32,6 +32,7 @@ import utils.AtedConstants.NewBuildFirstOccupiedDate
 import uk.gov.hmrc.play.bootstrap.controller.WithDefaultFormBinding
 import scala.concurrent.ExecutionContext
 import org.joda.time.LocalDate
+import play.api.i18n.{Messages, MessagesImpl}
 
 @Singleton
 class DateFirstOccupiedController @Inject()(mcc: MessagesControllerComponents,
@@ -47,6 +48,10 @@ class DateFirstOccupiedController @Inject()(mcc: MessagesControllerComponents,
 
   implicit val ec: ExecutionContext = mcc.executionContext
   val controllerId: String = DateFirstOccupiedControllerId
+
+  implicit lazy val messages: Messages = MessagesImpl(mcc.langs.availables.head, messagesApi)
+
+  val dateFields = Seq(("dateFirstOccupied", Messages("ated.property-details.first-occupied-date.messageKey")))
 
   def view(id: String): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
@@ -78,7 +83,7 @@ class DateFirstOccupiedController @Inject()(mcc: MessagesControllerComponents,
       implicit authContext => {
         ensureClientContext {
           serviceInfoService.getPartial.flatMap { serviceInfoContent =>
-            PropertyDetailsForms.validateNewBuildFirstOccupiedDate(periodKey, dateFirstOccupiedForm.bindFromRequest).fold(
+            PropertyDetailsForms.validateNewBuildFirstOccupiedDate(periodKey, dateFirstOccupiedForm.bindFromRequest, dateFields).fold(
               formWithError =>
                 currentBackLink.map(backLink => BadRequest(template(id, periodKey, formWithError, mode, serviceInfoContent, backLink))),
               form =>
