@@ -100,7 +100,9 @@ case class DateTupleCustomError(invalidDateErrorKey: String){
 
 case object DateTupleCustomError {
 
-  def validateDateFields(day: Option[String], month: Option[String], year: Option[String], dateFields: Seq[(String, String)], dateForPastValidation: Option[LocalDate] = None): Seq[FormError] = {
+  def validateDateFields(day: Option[String], month: Option[String], year: Option[String], dateFields: Seq[(String, String)],
+                         dateForPastValidation: Option[LocalDate] = None,
+                         dateForFutureValidation: Option[LocalDate] = None): Seq[FormError] = {
     dateFields.flatMap { x =>
       ((day, month, year): @unchecked) match {
         case (None, None, None) => Seq(FormError(s"${x._1}", s"ated.error.date.empty", Seq(x._2)))
@@ -126,13 +128,20 @@ case object DateTupleCustomError {
               if(dateSeqErrors.isEmpty) {
                   val validLeapYear = 2020
                   if (!YearMonth.of(validLeapYear, m.trim.toInt).isValidDay(d.trim.toInt)) {
-                    Seq(FormError(s"${x._1}.day", s"ated.error.date.invalid.day.month", Seq(x._2)))
+                    Seq(FormError(s"${x._1}.day", s"ated.error.date.invalid.day.month", Seq(x._2.toLowerCase)))
                   } else {
 
                     val validatedDate = new LocalDate(y.trim.toInt, m.trim.toInt, d.trim.toInt)
+
                     dateForPastValidation match {
                       case Some(pastDate) if validatedDate.isBefore(pastDate) =>
                         Seq(FormError(s"${x._1}.day", s"ated.error.date.past", Seq(x._2)))
+                      case _ => Seq()
+                    }
+
+                    dateForFutureValidation match {
+                      case Some(futureDate) if (validatedDate.isAfter(futureDate)) =>
+                        Seq(FormError(s"${x._1}.day", s"ated.error.date.future", Seq(x._2)))
                       case _ => Seq()
                     }
 
@@ -151,19 +160,19 @@ case object DateTupleCustomError {
           case "day" => {
             val day = dateFieldValue.trim.toInt
             if (!(day >= 1 && day <= 31)) {
-              Seq(FormError(s"${formField}.day", s"ated.error.day.invalid", Seq(messageKey)))
+              Seq(FormError(s"${formField}.day", s"ated.error.day.invalid", Seq(messageKey.toLowerCase)))
             } else Seq()
           }
           case "month" => {
             val month = dateFieldValue.trim.toInt
             if (!(month >= 1 && month <= 12)) {
-              Seq(FormError(s"${formField}.month", s"ated.error.month.invalid", Seq(messageKey)))
+              Seq(FormError(s"${formField}.month", s"ated.error.month.invalid", Seq(messageKey.toLowerCase)))
             } else Seq()
           }
           case "year" => {
             dateFieldValue.trim.toInt
             if (dateFieldValue.trim.length != 4) {
-              Seq(FormError(s"${formField}.year", s"ated.error.date.year.length", Seq(messageKey)))
+              Seq(FormError(s"${formField}.year", s"ated.error.date.year.length", Seq(messageKey.toLowerCase)))
             } else Seq()
           }
         }

@@ -226,7 +226,39 @@ class DisposePropertyControllerSpec extends PlaySpec with GuiceOneServerPerSuite
 
     "save" must {
 
-      "for invalid data, return BAD_REQUEST" in new Setup {
+      "for invalid data - missing day and month, return BAD_REQUEST" in new Setup {
+        val inputJson: JsValue = Json.parse(
+          """{"dateOfDisposal.day": "", "dateOfDisposal.month": "", "dateOfDisposal.year": "2015", "periodKey": 2017}""".stripMargin)
+        when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+        saveWithAuthorisedUser(oldFormBundleNum, inputJson) {
+          result =>
+            status(result) must be(BAD_REQUEST)
+            verify(mockDisposeLiabilityReturnService, times(0))
+              .cacheDisposeLiabilityReturnDate(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())
+
+            val document = Jsoup.parse(contentAsString(result))
+            document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("Date of disposal must include the day and month")
+
+        }
+      }
+
+      "for invalid date - missing day and year, return BAD_REQUEST" in new Setup {
+        val inputJson: JsValue = Json.parse(
+          """{"dateOfDisposal.day": "", "dateOfDisposal.month": "12", "dateOfDisposal.year": "", "periodKey": 2017}""".stripMargin)
+        when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+        saveWithAuthorisedUser(oldFormBundleNum, inputJson) {
+          result =>
+            status(result) must be(BAD_REQUEST)
+            verify(mockDisposeLiabilityReturnService, times(0))
+              .cacheDisposeLiabilityReturnDate(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())
+
+            val document = Jsoup.parse(contentAsString(result))
+            document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("Date of disposal must include the day and year")
+
+        }
+      }
+
+      "for invalid data - missing month and year, return BAD_REQUEST" in new Setup {
         val inputJson: JsValue = Json.parse(
           """{"dateOfDisposal.day": "wooooooooow", "dateOfDisposal.month": "", "dateOfDisposal.year": "", "periodKey": 2017}""".stripMargin)
         when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
@@ -235,6 +267,122 @@ class DisposePropertyControllerSpec extends PlaySpec with GuiceOneServerPerSuite
             status(result) must be(BAD_REQUEST)
             verify(mockDisposeLiabilityReturnService, times(0))
               .cacheDisposeLiabilityReturnDate(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())
+
+            val document = Jsoup.parse(contentAsString(result))
+            document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("Date of disposal must include the month and year")
+
+        }
+      }
+
+      "for invalid data - day out of range, return BAD_REQUEST" in new Setup {
+        val inputJson: JsValue = Json.parse(
+          """{"dateOfDisposal.day": "32", "dateOfDisposal.month": "1", "dateOfDisposal.year": "2015", "periodKey": 2017}""".stripMargin)
+        when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+        saveWithAuthorisedUser(oldFormBundleNum, inputJson) {
+          result =>
+            status(result) must be(BAD_REQUEST)
+            verify(mockDisposeLiabilityReturnService, times(0))
+              .cacheDisposeLiabilityReturnDate(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())
+
+            val document = Jsoup.parse(contentAsString(result))
+            document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("Enter a day for date of disposal between 1 and 31")
+
+        }
+      }
+
+      "for invalid data - month out of range, return BAD_REQUEST" in new Setup {
+        val inputJson: JsValue = Json.parse(
+          """{"dateOfDisposal.day": "31", "dateOfDisposal.month": "13", "dateOfDisposal.year": "2015", "periodKey": 2017}""".stripMargin)
+        when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+        saveWithAuthorisedUser(oldFormBundleNum, inputJson) {
+          result =>
+            status(result) must be(BAD_REQUEST)
+            verify(mockDisposeLiabilityReturnService, times(0))
+              .cacheDisposeLiabilityReturnDate(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())
+
+            val document = Jsoup.parse(contentAsString(result))
+            document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("Enter a month for date of disposal between 1 and 12")
+
+        }
+      }
+
+      "for invalid data - missing day, return BAD_REQUEST" in new Setup {
+        val inputJson: JsValue = Json.parse(
+          """{"dateOfDisposal.day": "", "dateOfDisposal.month": "12", "dateOfDisposal.year": "2015", "periodKey": 2017}""".stripMargin)
+        when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+        saveWithAuthorisedUser(oldFormBundleNum, inputJson) {
+          result =>
+            status(result) must be(BAD_REQUEST)
+            verify(mockDisposeLiabilityReturnService, times(0))
+              .cacheDisposeLiabilityReturnDate(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())
+
+            val document = Jsoup.parse(contentAsString(result))
+            document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("Date of disposal must include the day")
+
+        }
+      }
+
+      "for invalid data - missing month, return BAD_REQUEST" in new Setup {
+        val inputJson: JsValue = Json.parse(
+          """{"dateOfDisposal.day": "1", "dateOfDisposal.month": "", "dateOfDisposal.year": "2015", "periodKey": 2017}""".stripMargin)
+        when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+        saveWithAuthorisedUser(oldFormBundleNum, inputJson) {
+          result =>
+            status(result) must be(BAD_REQUEST)
+            verify(mockDisposeLiabilityReturnService, times(0))
+              .cacheDisposeLiabilityReturnDate(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())
+
+            val document = Jsoup.parse(contentAsString(result))
+            document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("Date of disposal must include the month")
+
+        }
+      }
+
+      "for invalid data - missing year, return BAD_REQUEST" in new Setup {
+        val inputJson: JsValue = Json.parse(
+          """{"dateOfDisposal.day": "1", "dateOfDisposal.month": "1", "dateOfDisposal.year": "", "periodKey": 2017}""".stripMargin)
+        when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+        saveWithAuthorisedUser(oldFormBundleNum, inputJson) {
+          result =>
+            status(result) must be(BAD_REQUEST)
+            verify(mockDisposeLiabilityReturnService, times(0))
+              .cacheDisposeLiabilityReturnDate(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())
+
+            val document = Jsoup.parse(contentAsString(result))
+            document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("Date of disposal must include the year")
+
+        }
+      }
+
+      "for invalid data - year less than 4 digits, return BAD_REQUEST" in new Setup {
+        val inputJson: JsValue = Json.parse(
+          """{"dateOfDisposal.day": "1", "dateOfDisposal.month": "1", "dateOfDisposal.year": "123", "periodKey": 2017}""".stripMargin)
+        when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+        saveWithAuthorisedUser(oldFormBundleNum, inputJson) {
+          result =>
+            status(result) must be(BAD_REQUEST)
+            verify(mockDisposeLiabilityReturnService, times(0))
+              .cacheDisposeLiabilityReturnDate(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())
+
+            val document = Jsoup.parse(contentAsString(result))
+            document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("Year for date of disposal must be 4 digits")
+
+        }
+      }
+
+      "for invalid data - non numeric inputs, return BAD_REQUEST" in new Setup {
+        val inputJson: JsValue = Json.parse(
+          """{"dateOfDisposal.day": "a", "dateOfDisposal.month": "b", "dateOfDisposal.year": "c", "periodKey": 2017}""".stripMargin)
+        when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+        saveWithAuthorisedUser(oldFormBundleNum, inputJson) {
+          result =>
+            status(result) must be(BAD_REQUEST)
+            verify(mockDisposeLiabilityReturnService, times(0))
+              .cacheDisposeLiabilityReturnDate(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())
+
+            val document = Jsoup.parse(contentAsString(result))
+            document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("Date of disposal must be a valid date")
+
         }
       }
 
@@ -268,7 +416,7 @@ class DisposePropertyControllerSpec extends PlaySpec with GuiceOneServerPerSuite
             val document = Jsoup.parse(contentAsString(result))
             document.title() must be(TitleBuilder.buildTitle("Error: When did you dispose of the property?"))
             document.getElementsByClass("govuk-error-summary__title").text must include("There is a problem")
-            document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("Invalid day and month for Date of disposal")
+            document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("Invalid day and month for date of disposal")
         }
       }
 
