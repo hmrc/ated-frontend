@@ -356,6 +356,19 @@ class DateCouncilRegisteredControllerSpec extends PlaySpec with GuiceOneServerPe
             document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("Date when the local council registered the property for council tax must be a valid date")
         })
       }
+
+      "save function called with invalid dates - invalid date 29/02 - must return BAD_REQUEST" in new Setup {
+
+        val inputJsonWithInvalidDate: JsValue = Json.parse(
+          s"""{"dateCouncilRegistered.day": "29", "dateCouncilRegistered.month": "02", "dateCouncilRegistered.year": "2027", "periodKey": 2016}""".stripMargin)
+        saveWithAuthorisedUser(inputJsonWithInvalidDate, {
+          result =>
+            status(result) must be(BAD_REQUEST)
+            val document = Jsoup.parse(contentAsString(result))
+            document.getElementsByClass("govuk-error-summary__title").text must include("There is a problem")
+            document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("Date when the local council registered the property for council tax must be a valid date")
+        })
+      }
     }
   }
 }
