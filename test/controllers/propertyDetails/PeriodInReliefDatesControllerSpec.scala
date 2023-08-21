@@ -201,6 +201,24 @@ reset(mockDelegationService)
               redirectLocation(result).get must include("/liability/create/periods-in-relief/view/1")
           }
         }
+
+        "for invalid data, -- empty start date - return BAD_REQUEST" in new Setup {
+          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+          val formBody = List(
+            ("startDate.day", ""),
+            ("startDate.month", "6"),
+            ("startDate.year", "2015"),
+            ("endDate.day", "1"),
+            ("endDate.month", "8"),
+            ("endDate.year", "2015"))
+          submitWithAuthorisedUser(formBody, propertyDetails) {
+            result =>
+              status(result) must be(BAD_REQUEST)
+              val document = Jsoup.parse(contentAsString(result))
+              document.getElementsByClass("govuk-error-summary__title").text must include("There is a problem")
+              document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("Relief start date must include the day")
+          }
+        }
       }
     }
   }

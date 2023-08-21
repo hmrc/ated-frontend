@@ -130,19 +130,24 @@ case object DateTupleCustomError {
                   if (!YearMonth.of(validLeapYear, m.trim.toInt).isValidDay(d.trim.toInt)) {
                     Seq(FormError(s"${x._1}.day", s"ated.error.date.invalid.day.month", Seq(x._2.toLowerCase)))
                   } else {
+                    try {
+                      val validatedDate = new LocalDate(y.trim.toInt, m.trim.toInt, d.trim.toInt)
 
-                    val validatedDate = new LocalDate(y.trim.toInt, m.trim.toInt, d.trim.toInt)
+                      dateForPastValidation match {
+                        case Some(pastDate) if validatedDate.isBefore(pastDate) =>
+                          Seq(FormError(s"${x._1}.day", s"ated.error.date.past", Seq(x._2)))
+                        case _ => Seq()
+                      }
 
-                    dateForPastValidation match {
-                      case Some(pastDate) if validatedDate.isBefore(pastDate) =>
-                        Seq(FormError(s"${x._1}.day", s"ated.error.date.past", Seq(x._2)))
-                      case _ => Seq()
+                      dateForFutureValidation match {
+                        case Some(futureDate) if (validatedDate.isAfter(futureDate)) =>
+                          Seq(FormError(s"${x._1}.day", s"ated.error.date.future", Seq(x._2)))
+                        case _ => Seq()
+                      }
                     }
-
-                    dateForFutureValidation match {
-                      case Some(futureDate) if (validatedDate.isAfter(futureDate)) =>
-                        Seq(FormError(s"${x._1}.day", s"ated.error.date.future", Seq(x._2)))
-                      case _ => Seq()
+                    catch
+                    {
+                      case _: Throwable => Seq(FormError(s"${x._1}.day", s"ated.error.date.invalid", Seq(x._2)))
                     }
 
                   }
