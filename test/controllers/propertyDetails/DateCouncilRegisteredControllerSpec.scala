@@ -126,21 +126,12 @@ class DateCouncilRegisteredControllerSpec extends PlaySpec with GuiceOneServerPe
       when(mockDataCacheConnector.fetchAndGetFormData[DateCouncilRegistered](ArgumentMatchers.eq(NewBuildCouncilRegisteredDate))
         (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(DateCouncilRegistered(Some(LocalDate.now())))))
       when(mockPropertyDetailsService.saveDraftPropertyDetailsNewBuildDates(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())) thenReturn {
-        Future.successful(1)
-      }
-
-
-
+        Future.successful(1)}
       when(mockDataCacheConnector.fetchAndGetFormData[DateFirstOccupiedKnown](ArgumentMatchers.eq(NewBuildFirstOccupiedDateKnown))
         (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(DateFirstOccupiedKnown(Some(true)))))
-
       when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
         .thenReturn(Future.successful(None))
 
-      /*when(mockPropertyDetailsService.retrieveDraftPropertyDetails(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())) thenReturn {
-        Future.successful(PropertyDetailsCacheSuccessResponse(PropertyDetailsBuilder.getPropertyDetails("1")))
-      }
-      when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))*/
       val result = dateCouncilRegisteredKnownController.save("1", 2016, Some("mode")).apply(SessionBuilder.buildRequestWithSession(userId).withJsonBody(inputJson))
       test(result)
     }
