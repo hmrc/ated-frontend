@@ -144,15 +144,12 @@ case object DateTupleCustomError {
                           Seq(FormError(s"${x._1}.day", s"ated.error.date.future", Seq(x._2)))
                         case _ => Seq()
                       }
-                    }
-                    catch
-                    {
+                    } catch {
                       case _: Throwable => Seq(FormError(s"${x._1}.day", s"ated.error.date.invalid", Seq(x._2)))
                     }
-
                   }
                 } else {
-                Seq(dateSeqErrors.head)
+                  Seq(dateSeqErrors.head)
               }
           }
       }

@@ -142,9 +142,7 @@ object PropertyDetailsForms {
 
   val dateCouncilRegisteredForm: Form[DateCouncilRegistered] = Form(
     mapping(
-      "dateCouncilRegistered" -> DateTupleCustomError("ated.property-details.council-registered-date.invalidInputType").dateTuple
-        .verifying("ated.property-details.council-registered-date.empty", x => x.isDefined)
-        .verifying("ated.property-details.council-registered-dates.inFuture", x => isInPast(x))
+      "dateCouncilRegistered" -> DateTupleCustomError("ated.property-details.council-registered-date.invalidInputType").dateTupleOptional()
     )(DateCouncilRegistered.apply)(DateCouncilRegistered.unapply)
   )
 
@@ -308,11 +306,24 @@ object PropertyDetailsForms {
 
   }
 
-  def validateNewBuildCouncilRegisteredDate(periodKey: Int, f: Form[DateCouncilRegistered]): Form[DateCouncilRegistered] = {
-    if (!f.hasErrors) {
+  def validateNewBuildCouncilRegisteredDate(periodKey: Int, f: Form[DateCouncilRegistered], dateFields : Seq[(String, String)]): Form[DateCouncilRegistered] = {
+    val dateValidationErrors =
+      if (!f.hasErrors) {
+        dateFields.map { x =>
+          DateTupleCustomError.validateDateFields(f.data.get(s"${x._1}.day"), f.data.get(s"${x._1}.month"), f.data.get(s"${x._1}.year"),
+            Seq((x._1, x._2)), dateForFutureValidation = Some(LocalDate.now()))
+        }
+      } else {
+        Seq()
+      }
+
+    val preValidatedForm = addErrorsToForm(f, dateValidationErrors.flatten)
+
+    if (!preValidatedForm.hasErrors) {
       val formErrors = PropertyDetailsFormsValidation.validatedCouncilRegisteredDate(periodKey, f).flatten
       addErrorsToForm(f, formErrors)
-    } else f
+    }
+    else preValidatedForm
   }
 
   def validatePropertyDetailsNewBuildDates(periodKey: Int, f: Form[PropertyDetailsNewBuildDates]): Form[PropertyDetailsNewBuildDates] = {
