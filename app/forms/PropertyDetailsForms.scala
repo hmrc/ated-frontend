@@ -179,8 +179,8 @@ object PropertyDetailsForms {
   )
   val periodDatesLiableForm: Form[PropertyDetailsDatesLiable] = Form(
     mapping(
-      "startDate" -> DateTupleCustomError("error.invalid.date.format").mandatoryDateTuple("ated.property-details-period.datesLiable.startDate.error.empty"),
-      "endDate" -> DateTupleCustomError("error.invalid.date.format").mandatoryDateTuple("ated.property-details-period.datesLiable.endDate.error.empty")
+      "startDate" -> DateTupleCustomError("error.invalid.date.format").dateTupleOptional(),
+      "endDate" -> DateTupleCustomError("error.invalid.date.format").dateTupleOptional()
     )(PropertyDetailsDatesLiable.apply)(PropertyDetailsDatesLiable.unapply)
   )
 
@@ -333,11 +333,23 @@ object PropertyDetailsForms {
     } else f
   }
 
-  def validatePropertyDetailsDatesLiable(periodKey: Int, f: Form[PropertyDetailsDatesLiable], periodsCheck: Boolean, currentPeriods: List[LineItem] = Nil): Form[PropertyDetailsDatesLiable] = {
-    val basicErrorForm = if (!f.hasErrors) {
+  def validatePropertyDetailsDatesLiable(periodKey: Int, f: Form[PropertyDetailsDatesLiable], periodsCheck: Boolean, currentPeriods: List[LineItem] = Nil, dateFields : Seq[(String, String)]): Form[PropertyDetailsDatesLiable] = {
+    val dateValidationErrors =
+      if (!f.hasErrors) {
+        dateFields.map { x =>
+          DateTupleCustomError.validateDateFields(f.data.get(s"${x._1}.day"), f.data.get(s"${x._1}.month"), f.data.get(s"${x._1}.year"),
+            Seq((x._1, x._2)), dateForFutureValidation = Some(LocalDate.now()))
+        }
+      } else {
+        Seq()
+      }
+
+    val preValidatedForm = addErrorsToForm(f, dateValidationErrors.flatten)
+
+    val basicErrorForm = if (!preValidatedForm.hasErrors) {
       val formErrors = (PropertyDetailsFormsValidation.validateStartEndDates("ated.property-details-period.datesLiable", periodKey, f)).flatten
       addErrorsToForm(f, formErrors)
-    } else f
+    } else preValidatedForm
 
     if (!basicErrorForm.hasErrors && periodsCheck) {
       val formErrors = (PropertyDetailsFormsValidation.validateDatesInExistingPeriod("ated.property-details-period.datesLiable", currentPeriods, f)).flatten

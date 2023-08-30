@@ -594,6 +594,8 @@ ated.property-details-period.datesLiable.startDate.error.empty = You must enter 
 ated.property-details-period.datesLiable.startDate.error.too-early = The liability start date cannot be before this chargeable period
 ated.property-details-period.datesLiable.startDate.error.too-late = The liability start date cannot be after this chargeable period
 ated.property-details-period.datesLiable.overlap.error = No periods of charge or relief can overlap
+ated.property-details-period.datesLiable.startDate.messageKey = The liability start date
+ated.property-details-period.datesLiable.endDate.messageKey = The liability end date
 
 ated.property-details-period.datesLiable.endDate = What was the end date in this chargeable period when the property stopped being liable for a charge?
 ated.property-details-period.datesLiable.endDate.hint = For example, {0}

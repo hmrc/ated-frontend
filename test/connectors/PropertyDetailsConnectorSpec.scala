@@ -466,7 +466,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with GuiceOneAppPerSuite wit
     }
 
     "save property details DatesLiable" must {
-      val propertyDetails = new PropertyDetailsDatesLiable(new LocalDate("1970-01-01"), new LocalDate("1970-01-01"))
+      val propertyDetails = new PropertyDetailsDatesLiable(Some(new LocalDate("1970-01-01")), Some(new LocalDate("1970-01-01")))
 
       "for successful save, return PropertyDetails title for a user" in new Setup {
         val successResponse: JsValue = Json.toJson(propertyDetails)
@@ -492,7 +492,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with GuiceOneAppPerSuite wit
 
     "add DatesLiable" must {
       val propertyDetails = PropertyDetailsDatesLiable(
-        new LocalDate("2999-02-03"), new LocalDate("2999-03-04")
+        Some(new LocalDate("2999-02-03")), Some(new LocalDate("2999-03-04"))
       )
 
       "for successful add, return PropertyDetails title for a user" in new Setup {
@@ -519,7 +519,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with GuiceOneAppPerSuite wit
 
     "delete Period" must {
       val propertyDetails = PropertyDetailsDatesLiable(
-        new LocalDate("2999-02-03"), new LocalDate("2999-03-04")
+        Some(new LocalDate("2999-02-03")), Some(new LocalDate("2999-03-04"))
       )
 
       "for successful delete, return PropertyDetails title for a user" in new Setup {
@@ -528,7 +528,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with GuiceOneAppPerSuite wit
           (any(), any(), any())
           (any(), any(), any(), any())).thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))
 
-        val result: Future[HttpResponse] = testPropertyDetailsConnector.deleteDraftPropertyDetailsPeriod("1", propertyDetails.startDate)
+        val result: Future[HttpResponse] = testPropertyDetailsConnector.deleteDraftPropertyDetailsPeriod("1", propertyDetails.startDate.get)
         val response: HttpResponse = await(result)
         response.status must be(OK)
       }
@@ -538,7 +538,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with GuiceOneAppPerSuite wit
           (any(), any(), any())
           (any(), any(), any(), any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, "")))
 
-        val result: Future[HttpResponse] = testPropertyDetailsConnector.deleteDraftPropertyDetailsPeriod("1", propertyDetails.startDate)
+        val result: Future[HttpResponse] = testPropertyDetailsConnector.deleteDraftPropertyDetailsPeriod("1", propertyDetails.startDate.get)
         val response: HttpResponse = await(result)
         response.status must be(BAD_REQUEST)
       }
