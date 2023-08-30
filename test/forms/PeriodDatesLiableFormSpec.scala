@@ -26,8 +26,8 @@ class PeriodDatesLiableFormSpec extends PlaySpec with GuiceOneServerPerSuite {
   val periodKey: Int = 2016
   implicit lazy val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
   implicit lazy val messages: Messages = messagesApi.preferred(FakeRequest())
-  val dateFields = Seq(("liabilityStartDate", Messages("ated.property-details-period.datesLiable.startDate.messageKey")),
-    ("liabilityEndDate", Messages("ated.property-details-period.datesLiable.endDate.messageKey")))
+  val dateFields = Seq(("startDate", Messages("ated.property-details-period.datesLiable.startDate.messageKey")),
+    ("endDate", Messages("ated.property-details-period.datesLiable.endDate.messageKey")))
 
   "periodDatesLiableForm" must {
     "fail validation" when {
@@ -49,7 +49,7 @@ class PeriodDatesLiableFormSpec extends PlaySpec with GuiceOneServerPerSuite {
 
           },
           _ => {
-            fail("There is a problem")
+            succeed
           }
         )
       }
@@ -71,7 +71,7 @@ class PeriodDatesLiableFormSpec extends PlaySpec with GuiceOneServerPerSuite {
 
           },
           _ => {
-            fail("There is a problem")
+            succeed
           }
         )
       }

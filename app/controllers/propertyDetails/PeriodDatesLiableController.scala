@@ -49,8 +49,8 @@ class PeriodDatesLiableController @Inject()(mcc: MessagesControllerComponents,
 
   implicit lazy val messages: Messages = MessagesImpl(mcc.langs.availables.head, messagesApi)
 
-  val dateFields = Seq(("liabilityStartDate", Messages("ated.property-details-period.datesLiable.startDate.messageKey")),
-    ("liabilityEndDate", Messages("ated.property-details-period.datesLiable.endDate.messageKey")))
+  val dateFields = Seq(("startDate", Messages("ated.property-details-period.datesLiable.startDate.messageKey")),
+    ("endDate", Messages("ated.property-details-period.datesLiable.endDate.messageKey")))
 
   def view(id: String): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>

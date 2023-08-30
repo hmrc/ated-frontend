@@ -212,10 +212,10 @@ reset(mockPropertyDetailsService)
               status(result) must be(BAD_REQUEST)
 
               val document = Jsoup.parse(contentAsString(result))
-              assert(document.getElementById("startDate-error").text() === "Error: You must enter a liability start date")
-              assert(document.getElementById("endDate-error").text() === "Error: You must enter a liability end date")
-              assert(document.getElementsByClass("govuk-list govuk-error-summary__list").text() contains "You must enter a liability start date")
-              assert(document.getElementsByClass("govuk-list govuk-error-summary__list").text() contains "You must enter a liability end date")
+              assert(document.getElementById("startDate-error").text() === "Error: The liability start date cannot be empty")
+              assert(document.getElementById("endDate-error").text() === "Error: The liability end date cannot be empty")
+              assert(document.getElementsByClass("govuk-list govuk-error-summary__list").text() contains "The liability start date cannot be empty")
+              assert(document.getElementsByClass("govuk-list govuk-error-summary__list").text() contains "The liability end date cannot be empty")
           }
         }
 
