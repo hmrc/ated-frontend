@@ -25,6 +25,7 @@ import utils.PeriodUtils._
 
 import scala.annotation.tailrec
 import scala.util.Try
+import scala.util.matching.Regex
 
 sealed trait DateError
 case object EmptyDate extends DateError
@@ -226,7 +227,7 @@ object ReliefForms {
     ).flatten.nonEmpty
   }
 
-  private def addErrorsToForm[A](form: Form[A], formErrors: Seq[FormError]): Form[A] = {
+  def addErrorsToForm[A](form: Form[A], formErrors: Seq[FormError]): Form[A] = {
     @tailrec
     def y(f: Form[A], fe: Seq[FormError]): Form[A] = {
       if (fe.isEmpty) f
@@ -255,5 +256,4 @@ object ReliefForms {
           case _       => (None, None, None)
         }
     )
-
 }

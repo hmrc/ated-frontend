@@ -20,15 +20,17 @@ import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms._
-import javax.inject.Inject
 import models.PropertyDetailsWhenAcquiredDates
+import play.api.i18n.{Messages, MessagesImpl}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services._
+import uk.gov.hmrc.play.bootstrap.controller.WithDefaultFormBinding
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants.SelectedPreviousReturn
 import utils.AtedUtils
 import views.html
-import uk.gov.hmrc.play.bootstrap.controller.WithDefaultFormBinding
+
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 
@@ -70,12 +72,17 @@ class PropertyDetailsWhenAcquiredController @Inject()(mcc: MessagesControllerCom
     }
   }
 
+  implicit lazy val messages: Messages = MessagesImpl(mcc.langs.availables.head, messagesApi)
+
+  val dateFields = Seq(("acquiredDate", Messages("ated.property-details.council-registered-date.messageKey")))
+
   def save(id: String, periodKey: Int, mode: Option[String]): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction {
       implicit authContext => {
         ensureClientContext {
           serviceInfoService.getPartial.flatMap { serviceInfoContent =>
-            propertyDetailsWhenAcquiredDatesForm.bindFromRequest.fold(
+
+            validateWhenAcquiredDate(periodKey, propertyDetailsWhenAcquiredDatesForm.bindFromRequest(), dateFields).fold(
               formWithError => {
                 currentBackLink.map(backLink =>
                   BadRequest(template(id, periodKey, formWithError, mode, serviceInfoContent, backLink))
