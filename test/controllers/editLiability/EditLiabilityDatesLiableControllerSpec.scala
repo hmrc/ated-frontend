@@ -206,7 +206,7 @@ reset(mockPropertyDetailsService)
 
       "Authorised users" must {
         "for invalid data, return BAD_REQUEST" in new Setup {
-          when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+          when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(Some("backLink")))
           submitWithAuthorisedUser(Nil) {
             result =>
               status(result) must be(BAD_REQUEST)
@@ -219,6 +219,265 @@ reset(mockPropertyDetailsService)
           }
         }
 
+        "for invalid data, -- empty start and end dates - return BAD_REQUEST" in new Setup {
+          val startAndEndDatesList = List(
+            ("startDate.day", ""),
+            ("startDate.month", ""),
+            ("startDate.year", ""),
+            ("endDate.day", ""),
+            ("endDate.month", ""),
+            ("endDate.year", ""))
+          when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(Some("")))
+          submitWithAuthorisedUser(startAndEndDatesList) {
+            result =>
+              status(result) must be(BAD_REQUEST)
+              val document = Jsoup.parse(contentAsString(result))
+              document.getElementsByClass("govuk-error-summary__title").text must include("There is a problem")
+              document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("The liability start date cannot be empty")
+              document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("The liability end date cannot be empty")
+          }
+        }
+
+        "for invalid data, -- empty day values for start and end dates - return BAD_REQUEST" in new Setup {
+          val startAndEndDatesList = List(
+            ("startDate.day", ""),
+            ("startDate.month", "6"),
+            ("startDate.year", "2015"),
+            ("endDate.day", ""),
+            ("endDate.month", "8"),
+            ("endDate.year", "2015"))
+
+          when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(Some("")))
+          submitWithAuthorisedUser(startAndEndDatesList) {
+            result =>
+              status(result) must be(BAD_REQUEST)
+              val document = Jsoup.parse(contentAsString(result))
+              document.getElementsByClass("govuk-error-summary__title").text must include("There is a problem")
+              document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("The liability start date must include the day")
+              document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("The liability end date must include the day")
+          }
+        }
+
+        "for invalid data, -- empty month values for start and end dates - return BAD_REQUEST" in new Setup {
+          val formBody = List(
+            ("startDate.day", "1"),
+            ("startDate.month", ""),
+            ("startDate.year", "2015"),
+            ("endDate.day", "1"),
+            ("endDate.month", ""),
+            ("endDate.year", "2015"))
+
+          when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(Some("")))
+          submitWithAuthorisedUser(formBody) {
+            result =>
+              status(result) must be(BAD_REQUEST)
+              val document = Jsoup.parse(contentAsString(result))
+              document.getElementsByClass("govuk-error-summary__title").text must include("There is a problem")
+              document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("The liability start date must include the month")
+              document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("The liability end date must include the month")
+          }
+        }
+
+        "for invalid data, -- empty year values for start and end dates - return BAD_REQUEST" in new Setup {
+          val formBody = List(
+            ("startDate.day", "1"),
+            ("startDate.month", "6"),
+            ("startDate.year", ""),
+            ("endDate.day", "1"),
+            ("endDate.month", "8"),
+            ("endDate.year", ""))
+
+          when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(Some("")))
+          submitWithAuthorisedUser(formBody) {
+            result =>
+              status(result) must be(BAD_REQUEST)
+              val document = Jsoup.parse(contentAsString(result))
+              document.getElementsByClass("govuk-error-summary__title").text must include("There is a problem")
+              document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("The liability start date must include the year")
+              document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("The liability start date must include the year")
+          }
+        }
+
+        "for invalid data, -- empty day & month values for start and end dates - return BAD_REQUEST" in new Setup {
+          val formBody = List(
+            ("startDate.day", ""),
+            ("startDate.month", ""),
+            ("startDate.year", "2016"),
+            ("endDate.day", ""),
+            ("endDate.month", ""),
+            ("endDate.year", "2016"))
+
+          when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(Some("")))
+          submitWithAuthorisedUser(formBody) {
+            result =>
+              status(result) must be(BAD_REQUEST)
+              val document = Jsoup.parse(contentAsString(result))
+              document.getElementsByClass("govuk-error-summary__title").text must include("There is a problem")
+              document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("The liability start date must include the day and month")
+              document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("The liability end date must include the day and month")
+          }
+        }
+
+        "for invalid data, -- empty day & year values for start and end dates - return BAD_REQUEST" in new Setup {
+          val formBody = List(
+            ("startDate.day", ""),
+            ("startDate.month", "6"),
+            ("startDate.year", ""),
+            ("endDate.day", ""),
+            ("endDate.month", "8"),
+            ("endDate.year", ""))
+
+          when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(Some("")))
+          submitWithAuthorisedUser(formBody) {
+            result =>
+              status(result) must be(BAD_REQUEST)
+              val document = Jsoup.parse(contentAsString(result))
+              document.getElementsByClass("govuk-error-summary__title").text must include("There is a problem")
+              document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("The liability start date must include the day and year")
+              document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("The liability end date must include the day and year")
+          }
+        }
+
+        "for invalid data, -- empty month & year values for start and end dates - return BAD_REQUEST" in new Setup {
+          val formBody = List(
+            ("startDate.day", "1"),
+            ("startDate.month", ""),
+            ("startDate.year", ""),
+            ("endDate.day", "1"),
+            ("endDate.month", ""),
+            ("endDate.year", ""))
+
+          when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(Some("")))
+          submitWithAuthorisedUser(formBody) {
+            result =>
+              status(result) must be(BAD_REQUEST)
+              val document = Jsoup.parse(contentAsString(result))
+              document.getElementsByClass("govuk-error-summary__title").text must include("There is a problem")
+              document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("The liability start date must include the month and year")
+              document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("The liability end date must include the month and year")
+          }
+        }
+
+        "for invalid data, -- invalid day value start and end dates - return BAD_REQUEST" in new Setup {
+          val formBody = List(
+            ("startDate.day", "41"),
+            ("startDate.month", "6"),
+            ("startDate.year", "2016"),
+            ("endDate.day", "99"),
+            ("endDate.month", "8"),
+            ("endDate.year", "2016"))
+
+          when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(Some("")))
+          submitWithAuthorisedUser(formBody) {
+            result =>
+              status(result) must be(BAD_REQUEST)
+              val document = Jsoup.parse(contentAsString(result))
+              document.getElementsByClass("govuk-error-summary__title").text must include("There is a problem")
+              document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("Enter a day for the liability start date between 1 and 31")
+              document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("Enter a day for the liability end date between 1 and 31")
+          }
+        }
+
+        "for invalid data, -- invalid month value start and end dates - return BAD_REQUEST" in new Setup {
+          val formBody = List(
+            ("startDate.day", "1"),
+            ("startDate.month", "16"),
+            ("startDate.year", "2016"),
+            ("endDate.day", "1"),
+            ("endDate.month", "18"),
+            ("endDate.year", "2016"))
+
+          when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(Some("")))
+          submitWithAuthorisedUser(formBody) {
+            result =>
+              status(result) must be(BAD_REQUEST)
+              val document = Jsoup.parse(contentAsString(result))
+              document.getElementsByClass("govuk-error-summary__title").text must include("There is a problem")
+              document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("Enter a month for the liability start date between 1 and 12")
+              document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("Enter a month for the liability end date between 1 and 12")
+          }
+        }
+
+        "for invalid data, -- value that does not contain 4-digit value for year for start and end dates - return BAD_REQUEST" in new Setup {
+          val formBody = List(
+            ("startDate.day", "1"),
+            ("startDate.month", "6"),
+            ("startDate.year", "20167"),
+            ("endDate.day", "1"),
+            ("endDate.month", "8"),
+            ("endDate.year", "201333"))
+
+          when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(Some("")))
+          submitWithAuthorisedUser(formBody) {
+            result =>
+              status(result) must be(BAD_REQUEST)
+              val document = Jsoup.parse(contentAsString(result))
+              document.getElementsByClass("govuk-error-summary__title").text must include("There is a problem")
+              document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("Year for the liability start date must be 4 digits")
+              document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("Year for the liability end date must be 4 digits")
+          }
+        }
+
+        "for invalid data, -- Relief Start and End dates have incorrect combination of day & month fields - return BAD_REQUEST" in new Setup {
+          val formBody = List(
+            ("startDate.day", "30"),
+            ("startDate.month", "2"),
+            ("startDate.year", "2016"),
+            ("endDate.day", "31"),
+            ("endDate.month", "9"),
+            ("endDate.year", "2016"))
+
+          when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(Some("")))
+          submitWithAuthorisedUser(formBody) {
+            result =>
+              status(result) must be(BAD_REQUEST)
+              val document = Jsoup.parse(contentAsString(result))
+              document.getElementsByClass("govuk-error-summary__title").text must include("There is a problem")
+              document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("Invalid day and month for the liability start date")
+              document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("Invalid day and month for the liability end date")
+          }
+        }
+
+        "for invalid data, -- Relief Start and End dates have invalid values - return BAD_REQUEST" in new Setup {
+          val formBody = List(
+            ("startDate.day", "30"),
+            ("startDate.month", "2"),
+            ("startDate.year", "abcd"),
+            ("endDate.day", "31"),
+            ("endDate.month", "9"),
+            ("endDate.year", "defg"))
+
+          when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(Some("")))
+          submitWithAuthorisedUser(formBody) {
+            result =>
+              status(result) must be(BAD_REQUEST)
+              val document = Jsoup.parse(contentAsString(result))
+              document.getElementsByClass("govuk-error-summary__title").text must include("There is a problem")
+              document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("The liability start date must be a valid date")
+              document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("The liability end date must be a valid date")
+          }
+        }
+
+        "for invalid data, -- Relief Start and End dates have invalid values, -- return BAD_REQUEST" in new Setup {
+          val formBody = List(
+            ("startDate.day", "29"),
+            ("startDate.month", "2"),
+            ("startDate.year", "2017"),
+            ("endDate.day", "29"),
+            ("endDate.month", "2"),
+            ("endDate.year", "2017"))
+
+          when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(Some("")))
+          submitWithAuthorisedUser(formBody) {
+            result =>
+              status(result) must be(BAD_REQUEST)
+              val document = Jsoup.parse(contentAsString(result))
+              document.getElementsByClass("govuk-error-summary__title").text must include("There is a problem")
+              document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("The liability start date must be a valid date")
+              document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("The liability end date must be a valid date")
+          }
+        }
+
         "for valid data forward to the TaxAvoidance Page" in new Setup {
           val formBody = List(
             ("startDate.day", "1"),
@@ -227,6 +486,7 @@ reset(mockPropertyDetailsService)
             ("endDate.day", "1"),
             ("endDate.month", "8"),
             ("endDate.year", "2015"))
+
           when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
           submitWithAuthorisedUser(formBody) {
             result =>
