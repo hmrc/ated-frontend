@@ -352,7 +352,7 @@ object PropertyDetailsForms {
       if (!f.hasErrors) {
         dateFields.map { x =>
           DateTupleCustomError.validateDateFields(f.data.get(s"${x._1}.day"), f.data.get(s"${x._1}.month"), f.data.get(s"${x._1}.year"),
-            Seq((x._1, x._2)), dateForFutureValidation = Some(LocalDate.now()))
+            Seq((x._1, x._2)))
         }
       } else {
         Seq()
