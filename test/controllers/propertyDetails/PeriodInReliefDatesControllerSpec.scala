@@ -51,8 +51,8 @@ class PeriodInReliefDatesControllerSpec extends PlaySpec with GuiceOneAppPerSuit
   val mockPropertyDetailsService: PropertyDetailsService = mock[PropertyDetailsService]
   val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
   val mockBackLinkCacheConnector: BackLinkCacheConnector = mock[BackLinkCacheConnector]
-    val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
+  val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
   val injectedViewInstance = app.injector.instanceOf[views.html.propertyDetails.periodInReliefDates]
