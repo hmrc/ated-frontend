@@ -22,7 +22,6 @@ import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.AuthAction
 import models._
-import org.joda.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
@@ -451,9 +450,6 @@ reset(mockDelegationService)
 
         "for valid data with too old period (before 2019) when adding a period return to the Periods Summary Page" in new Setup {
           val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode")).copy(period = None)
-          val presentYear = LocalDate.now().getYear.toString
-          val futureMonth = LocalDate.now().plusMonths(1).getMonthOfYear.toString
-          val futureMonthPlusOne = LocalDate.now().plusMonths(2).getMonthOfYear.toString
 
           val formBody = List(
             ("startDate.day", "1"),
@@ -473,11 +469,7 @@ reset(mockDelegationService)
         }
 
         "for valid data with future dates for both when adding a period return to the Periods Summary Page" in new Setup {
-          val presentYear = LocalDate.now().plusYears(2).getYear.toString
           val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode")).copy(period = None, periodKey = 2023)
-          val futureMonth = LocalDate.now().plusMonths(1).getMonthOfYear.toString
-
-          System.out.println("$$$$$$ = " + PropertyDetails.toString)
 
           val formBody = List(
             ("startDate.day", "15"),
