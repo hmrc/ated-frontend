@@ -17,12 +17,12 @@
 package controllers.propertyDetails
 
 import java.util.UUID
-
 import builders.{PropertyDetailsBuilder, SessionBuilder, TitleBuilder}
 import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.AuthAction
 import models._
+import org.joda.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
@@ -446,6 +446,53 @@ reset(mockDelegationService)
               document.getElementsByClass("govuk-error-summary__title").text must include("There is a problem")
               document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("Relief start date must be a valid date")
               document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("Relief end date must be a valid date")
+          }
+        }
+
+        "for valid data with too old period (before 2019) when adding a period return to the Periods Summary Page" in new Setup {
+          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode")).copy(period = None)
+          val presentYear = LocalDate.now().getYear.toString
+          val futureMonth = LocalDate.now().plusMonths(1).getMonthOfYear.toString
+          val futureMonthPlusOne = LocalDate.now().plusMonths(2).getMonthOfYear.toString
+
+          val formBody = List(
+            ("startDate.day", "1"),
+            ("startDate.month", "8"),
+            ("startDate.year", "2014"),
+            ("endDate.day", "1"),
+            ("endDate.month", "7"),
+            ("endDate.year", "2014"))
+          submitWithAuthorisedUser(formBody, propertyDetails) {
+            result =>
+              status(result) must be(BAD_REQUEST)
+              val document = Jsoup.parse(contentAsString(result))
+              document.getElementsByClass("govuk-error-summary__title").text must include("There is a problem")
+              document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("The start date cannot be before this chargeable period")
+              document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("The relief end date cannot be before the liability start date and must be within this chargeable period")
+          }
+        }
+
+        "for valid data with future dates for both when adding a period return to the Periods Summary Page" in new Setup {
+          val presentYear = LocalDate.now().plusYears(2).getYear.toString
+          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode")).copy(period = None, periodKey = 2023)
+          val futureMonth = LocalDate.now().plusMonths(1).getMonthOfYear.toString
+
+          System.out.println("$$$$$$ = " + PropertyDetails.toString)
+
+          val formBody = List(
+            ("startDate.day", "15"),
+            ("startDate.month", "2"),
+            ("startDate.year", "2022"),
+            ("endDate.day", "16"),
+            ("endDate.month", "2"),
+            ("endDate.year", "2022"))
+          submitWithAuthorisedUser(formBody, propertyDetails) {
+            result =>
+              status(result) must be(BAD_REQUEST)
+              val document = Jsoup.parse(contentAsString(result))
+              document.getElementsByClass("govuk-error-summary__title").text must include("There is a problem")
+              document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("The start date cannot be after this chargeable period")
+              document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("The end date cannot be after this chargeable period")
           }
         }
       }
