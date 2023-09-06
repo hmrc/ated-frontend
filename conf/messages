@@ -617,6 +617,7 @@ ated.property-details-period.datesInRelief.startDate = What was the start date i
 ated.property-details-period.datesInRelief.startDate.hint = For example, {0}
 ated.property-details-period.datesInRelief.startDate.error = The relief start date must be in this chargeable period
 ated.property-details-period.datesInRelief.startDate.error.empty = You must enter a relief start date
+ated.property-details-period.datesInRelief.startDate.messageKey = Relief start date
 
 ated.property-details-value.newBuildOccupyDate.error.not-in-period = The date when the property was first occupied must be in the chargeable period
 ated.property-details-value.newBuildOccupyDate.error.too-early = The date when the property was first occupied must be in the chargeable period
@@ -627,6 +628,7 @@ ated.property-details-period.datesInRelief.endDate = What was the end date in th
 ated.property-details-period.datesInRelief.endDate.hint = For example, {0}
 ated.property-details-period.datesInRelief.endDate.error = The relief end date must be in this chargeable period
 ated.property-details-period.datesInRelief.endDate.error.empty = You must enter a relief end date
+ated.property-details-period.datesInRelief.endDate.messageKey = Relief end date
 
 ated.property-details-period.periodsInRelief.title = Add periods when the property was in relief and when it was liable for an ATED charge
 ated.property-details-period.periodsInRelief.header = Add periods when the property was in relief and when it was liable for an ATED charge
@@ -801,7 +803,6 @@ ated.period-summary.sr.return = the return for
 ated.property-details-period.datesInRelief.startDate.error.too-early = The start date cannot be before this chargeable period
 ated.property-details-period.datesInRelief.startDate.error.too-late = The start date cannot be after this chargeable period
 ated.property-details-period.datesInRelief.overlap.error = No periods of charge or relief can overlap
-ated.property-details-period.datesInRelief.endDate.error.incomplete = You must enter a valid relief end date
 ated.property-details-period.datesInRelief.endDate.error.too-early = The end date cannot be before this chargeable period
 ated.property-details-period.datesInRelief.endDate.error.too-late = The end date cannot be after this chargeable period
 ated.property-details-period.datesInRelief.endDate.error.before-start-date = The relief end date cannot be before the relief start date

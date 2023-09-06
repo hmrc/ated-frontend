@@ -17,7 +17,6 @@
 package controllers.propertyDetails
 
 import java.util.UUID
-
 import builders.{PropertyDetailsBuilder, SessionBuilder, TitleBuilder}
 import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
@@ -52,8 +51,8 @@ class PeriodInReliefDatesControllerSpec extends PlaySpec with GuiceOneAppPerSuit
   val mockPropertyDetailsService: PropertyDetailsService = mock[PropertyDetailsService]
   val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
   val mockBackLinkCacheConnector: BackLinkCacheConnector = mock[BackLinkCacheConnector]
-    val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
+  val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
   val injectedViewInstance = app.injector.instanceOf[views.html.propertyDetails.periodInReliefDates]
@@ -199,6 +198,293 @@ reset(mockDelegationService)
             result =>
               status(result) must be(SEE_OTHER)
               redirectLocation(result).get must include("/liability/create/periods-in-relief/view/1")
+          }
+        }
+
+        "for invalid data, -- empty start and end dates - return BAD_REQUEST" in new Setup {
+          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+          val formBody = List(
+            ("startDate.day", ""),
+            ("startDate.month", ""),
+            ("startDate.year", ""),
+            ("endDate.day", ""),
+            ("endDate.month", ""),
+            ("endDate.year", ""))
+          submitWithAuthorisedUser(formBody, propertyDetails) {
+            result =>
+              status(result) must be(BAD_REQUEST)
+              val document = Jsoup.parse(contentAsString(result))
+              document.getElementsByClass("govuk-error-summary__title").text must include("There is a problem")
+              document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("Relief start date cannot be empty")
+              document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("Relief end date cannot be empty")
+          }
+        }
+
+        "for invalid data, -- empty day values for start and end dates - return BAD_REQUEST" in new Setup {
+          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+          val formBody = List(
+            ("startDate.day", ""),
+            ("startDate.month", "6"),
+            ("startDate.year", "2015"),
+            ("endDate.day", ""),
+            ("endDate.month", "8"),
+            ("endDate.year", "2015"))
+          submitWithAuthorisedUser(formBody, propertyDetails) {
+            result =>
+              status(result) must be(BAD_REQUEST)
+              val document = Jsoup.parse(contentAsString(result))
+              document.getElementsByClass("govuk-error-summary__title").text must include("There is a problem")
+              document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("Relief start date must include the day")
+              document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("Relief end date must include the day")
+          }
+        }
+
+        "for invalid data, -- empty month values for start and end dates - return BAD_REQUEST" in new Setup {
+          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+          val formBody = List(
+            ("startDate.day", "1"),
+            ("startDate.month", ""),
+            ("startDate.year", "2015"),
+            ("endDate.day", "1"),
+            ("endDate.month", ""),
+            ("endDate.year", "2015"))
+          submitWithAuthorisedUser(formBody, propertyDetails) {
+            result =>
+              status(result) must be(BAD_REQUEST)
+              val document = Jsoup.parse(contentAsString(result))
+              document.getElementsByClass("govuk-error-summary__title").text must include("There is a problem")
+              document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("Relief start date must include the month")
+              document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("Relief end date must include the month")
+          }
+        }
+
+        "for invalid data, -- empty year values for start and end dates - return BAD_REQUEST" in new Setup {
+          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+          val formBody = List(
+            ("startDate.day", "1"),
+            ("startDate.month", "6"),
+            ("startDate.year", ""),
+            ("endDate.day", "1"),
+            ("endDate.month", "8"),
+            ("endDate.year", ""))
+          submitWithAuthorisedUser(formBody, propertyDetails) {
+            result =>
+              status(result) must be(BAD_REQUEST)
+              val document = Jsoup.parse(contentAsString(result))
+              document.getElementsByClass("govuk-error-summary__title").text must include("There is a problem")
+              document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("Relief start date must include the year")
+              document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("Relief end date must include the year")
+          }
+        }
+
+        "for invalid data, -- empty day & month values for start and end dates - return BAD_REQUEST" in new Setup {
+          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+          val formBody = List(
+            ("startDate.day", ""),
+            ("startDate.month", ""),
+            ("startDate.year", "2016"),
+            ("endDate.day", ""),
+            ("endDate.month", ""),
+            ("endDate.year", "2016"))
+          submitWithAuthorisedUser(formBody, propertyDetails) {
+            result =>
+              status(result) must be(BAD_REQUEST)
+              val document = Jsoup.parse(contentAsString(result))
+              document.getElementsByClass("govuk-error-summary__title").text must include("There is a problem")
+              document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("Relief start date must include the day and month")
+              document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("Relief end date must include the day and month")
+          }
+        }
+
+        "for invalid data, -- empty day & year values for start and end dates - return BAD_REQUEST" in new Setup {
+          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+          val formBody = List(
+            ("startDate.day", ""),
+            ("startDate.month", "6"),
+            ("startDate.year", ""),
+            ("endDate.day", ""),
+            ("endDate.month", "8"),
+            ("endDate.year", ""))
+          submitWithAuthorisedUser(formBody, propertyDetails) {
+            result =>
+              status(result) must be(BAD_REQUEST)
+              val document = Jsoup.parse(contentAsString(result))
+              document.getElementsByClass("govuk-error-summary__title").text must include("There is a problem")
+              document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("Relief start date must include the day and year")
+              document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("Relief end date must include the day and year")
+          }
+        }
+
+        "for invalid data, -- empty month & year values for start and end dates - return BAD_REQUEST" in new Setup {
+          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+          val formBody = List(
+            ("startDate.day", "1"),
+            ("startDate.month", ""),
+            ("startDate.year", ""),
+            ("endDate.day", "1"),
+            ("endDate.month", ""),
+            ("endDate.year", ""))
+          submitWithAuthorisedUser(formBody, propertyDetails) {
+            result =>
+              status(result) must be(BAD_REQUEST)
+              val document = Jsoup.parse(contentAsString(result))
+              document.getElementsByClass("govuk-error-summary__title").text must include("There is a problem")
+              document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("Relief start date must include the month and year")
+              document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("Relief end date must include the month and year")
+          }
+        }
+
+        "for invalid data, -- invalid day value start and end dates - return BAD_REQUEST" in new Setup {
+          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+          val formBody = List(
+            ("startDate.day", "41"),
+            ("startDate.month", "6"),
+            ("startDate.year", "2016"),
+            ("endDate.day", "99"),
+            ("endDate.month", "8"),
+            ("endDate.year", "2016"))
+          submitWithAuthorisedUser(formBody, propertyDetails) {
+            result =>
+              status(result) must be(BAD_REQUEST)
+              val document = Jsoup.parse(contentAsString(result))
+              document.getElementsByClass("govuk-error-summary__title").text must include("There is a problem")
+              document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("Enter a day for relief start date between 1 and 31")
+              document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("Enter a day for relief end date between 1 and 31")
+          }
+        }
+
+        "for invalid data, -- invalid month value start and end dates - return BAD_REQUEST" in new Setup {
+          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+          val formBody = List(
+            ("startDate.day", "1"),
+            ("startDate.month", "16"),
+            ("startDate.year", "2016"),
+            ("endDate.day", "1"),
+            ("endDate.month", "18"),
+            ("endDate.year", "2016"))
+          submitWithAuthorisedUser(formBody, propertyDetails) {
+            result =>
+              status(result) must be(BAD_REQUEST)
+              val document = Jsoup.parse(contentAsString(result))
+              document.getElementsByClass("govuk-error-summary__title").text must include("There is a problem")
+              document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("Enter a month for relief start date between 1 and 12")
+              document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("Enter a month for relief end date between 1 and 12")
+          }
+        }
+
+        "for invalid data, -- value that does not contain 4-digit value for year for start and end dates - return BAD_REQUEST" in new Setup {
+          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+          val formBody = List(
+            ("startDate.day", "1"),
+            ("startDate.month", "6"),
+            ("startDate.year", "20167"),
+            ("endDate.day", "1"),
+            ("endDate.month", "8"),
+            ("endDate.year", "201333"))
+          submitWithAuthorisedUser(formBody, propertyDetails) {
+            result =>
+              status(result) must be(BAD_REQUEST)
+              val document = Jsoup.parse(contentAsString(result))
+              document.getElementsByClass("govuk-error-summary__title").text must include("There is a problem")
+              document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("Year for relief start date must be 4 digits")
+              document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("Year for relief end date must be 4 digits")
+          }
+        }
+
+        "for invalid data, -- Relief Start and End dates have incorrect combination of day & month fields - return BAD_REQUEST" in new Setup {
+          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+          val formBody = List(
+            ("startDate.day", "30"),
+            ("startDate.month", "2"),
+            ("startDate.year", "2016"),
+            ("endDate.day", "31"),
+            ("endDate.month", "9"),
+            ("endDate.year", "2016"))
+          submitWithAuthorisedUser(formBody, propertyDetails) {
+            result =>
+              status(result) must be(BAD_REQUEST)
+              val document = Jsoup.parse(contentAsString(result))
+              document.getElementsByClass("govuk-error-summary__title").text must include("There is a problem")
+              document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("Invalid day and month for relief start date")
+              document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("Invalid day and month for relief end date")
+          }
+        }
+
+        "for invalid data, -- Relief Start and End dates have invalid values - return BAD_REQUEST" in new Setup {
+          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+          val formBody = List(
+            ("startDate.day", "30"),
+            ("startDate.month", "2"),
+            ("startDate.year", "abcd"),
+            ("endDate.day", "31"),
+            ("endDate.month", "9"),
+            ("endDate.year", "defg"))
+          submitWithAuthorisedUser(formBody, propertyDetails) {
+            result =>
+              status(result) must be(BAD_REQUEST)
+              val document = Jsoup.parse(contentAsString(result))
+              document.getElementsByClass("govuk-error-summary__title").text must include("There is a problem")
+              document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("Relief start date must be a valid date")
+              document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("Relief end date must be a valid date")
+          }
+        }
+
+        "for invalid data, -- Relief Start and End dates have invalid values, -- return BAD_REQUEST" in new Setup {
+          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+          val formBody = List(
+            ("startDate.day", "29"),
+            ("startDate.month", "2"),
+            ("startDate.year", "2017"),
+            ("endDate.day", "29"),
+            ("endDate.month", "2"),
+            ("endDate.year", "2017"))
+          submitWithAuthorisedUser(formBody, propertyDetails) {
+            result =>
+              status(result) must be(BAD_REQUEST)
+              val document = Jsoup.parse(contentAsString(result))
+              document.getElementsByClass("govuk-error-summary__title").text must include("There is a problem")
+              document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("Relief start date must be a valid date")
+              document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("Relief end date must be a valid date")
+          }
+        }
+
+        "for valid data with too old period (before 2019) when adding a period return to the Periods Summary Page" in new Setup {
+          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode")).copy(period = None)
+
+          val formBody = List(
+            ("startDate.day", "1"),
+            ("startDate.month", "8"),
+            ("startDate.year", "2014"),
+            ("endDate.day", "1"),
+            ("endDate.month", "7"),
+            ("endDate.year", "2014"))
+          submitWithAuthorisedUser(formBody, propertyDetails) {
+            result =>
+              status(result) must be(BAD_REQUEST)
+              val document = Jsoup.parse(contentAsString(result))
+              document.getElementsByClass("govuk-error-summary__title").text must include("There is a problem")
+              document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("The start date cannot be before this chargeable period")
+              document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("The relief end date cannot be before the liability start date and must be within this chargeable period")
+          }
+        }
+
+        "for valid data with future dates for both when adding a period return to the Periods Summary Page" in new Setup {
+          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode")).copy(period = None, periodKey = 2023)
+
+          val formBody = List(
+            ("startDate.day", "15"),
+            ("startDate.month", "2"),
+            ("startDate.year", "2022"),
+            ("endDate.day", "16"),
+            ("endDate.month", "2"),
+            ("endDate.year", "2022"))
+          submitWithAuthorisedUser(formBody, propertyDetails) {
+            result =>
+              status(result) must be(BAD_REQUEST)
+              val document = Jsoup.parse(contentAsString(result))
+              document.getElementsByClass("govuk-error-summary__title").text must include("There is a problem")
+              document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("The start date cannot be after this chargeable period")
+              document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("The end date cannot be after this chargeable period")
           }
         }
       }

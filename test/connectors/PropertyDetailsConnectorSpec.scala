@@ -546,7 +546,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with GuiceOneAppPerSuite wit
 
     "add DatesInRelief" must {
       val propertyDetails = PropertyDetailsDatesInRelief(
-        new LocalDate("2999-02-03"), new LocalDate("2999-03-04")
+        Some(new LocalDate("2999-02-03")), Some(new LocalDate("2999-03-04"))
       )
 
       "for successful add, return PropertyDetails title for a user" in new Setup {

@@ -149,7 +149,7 @@ case object DateTupleCustomError {
                     }
                   }
                 } else {
-                Seq(dateSeqErrors.head)
+                  Seq(dateSeqErrors.head)
               }
           }
       }

@@ -196,8 +196,8 @@ object PeriodChooseRelief {
 }
 
 
-case class PropertyDetailsDatesInRelief(startDate: LocalDate,
-                                        endDate: LocalDate,
+case class PropertyDetailsDatesInRelief(startDate: Option[LocalDate],
+                                        endDate: Option[LocalDate],
                                         description: Option[String] = None)
 
 object PropertyDetailsDatesInRelief {

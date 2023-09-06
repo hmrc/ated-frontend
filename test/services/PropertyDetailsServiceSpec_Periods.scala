@@ -205,7 +205,7 @@ class PropertyDetailsServiceSpec_Periods extends PlaySpec with GuiceOneServerPer
 
     "add DatesInRelief" must {
       val propertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
-      val propValue = new PropertyDetailsDatesInRelief(new LocalDate("1970-01-01"), new LocalDate("1970-01-01"))
+      val propValue = new PropertyDetailsDatesInRelief(Some(new LocalDate("1970-01-01")), Some(new LocalDate("1970-01-01")))
 
 
       "add the value and return the response from the connector" in new Setup {
@@ -236,7 +236,7 @@ class PropertyDetailsServiceSpec_Periods extends PlaySpec with GuiceOneServerPer
 
     "delete period" must {
       val propertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
-      val propValue = new PropertyDetailsDatesInRelief(new LocalDate("1970-01-01"), new LocalDate("1970-01-01"))
+      val propValue = new PropertyDetailsDatesInRelief(Some(new LocalDate("1970-01-01")), Some(new LocalDate("1970-01-01")))
 
 
       "delete the value and return the response from the connector" in new Setup {
@@ -244,7 +244,7 @@ class PropertyDetailsServiceSpec_Periods extends PlaySpec with GuiceOneServerPer
         when(mockPropertyDetailsConnector.deleteDraftPropertyDetailsPeriod(ArgumentMatchers.eq("1"), ArgumentMatchers.any())
         (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))
 
-        val result: Future[PropertyDetails] = testPropertyDetailsService.deleteDraftPropertyDetailsPeriod("1", propValue.startDate)
+        val result: Future[PropertyDetails] = testPropertyDetailsService.deleteDraftPropertyDetailsPeriod("1", propValue.startDate.get)
         await(result) must be(propertyDetails)
 
       }
@@ -254,7 +254,7 @@ class PropertyDetailsServiceSpec_Periods extends PlaySpec with GuiceOneServerPer
         when(mockPropertyDetailsConnector.deleteDraftPropertyDetailsPeriod(ArgumentMatchers.eq("1"), ArgumentMatchers.any())
         (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, successResponse.toString)))
 
-        val result: Future[PropertyDetails] = testPropertyDetailsService.deleteDraftPropertyDetailsPeriod("1", propValue.startDate)
+        val result: Future[PropertyDetails] = testPropertyDetailsService.deleteDraftPropertyDetailsPeriod("1", propValue.startDate.get)
         val thrown: InternalServerException = the[InternalServerException] thrownBy await(result)
         thrown.getMessage must be(s"[PropertyDetailsService][deleteDraftPropertyDetailsPeriod] Invalid status when saving Property Details :$BAD_REQUEST")
 
