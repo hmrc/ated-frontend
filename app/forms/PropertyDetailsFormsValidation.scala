@@ -103,9 +103,6 @@ object PropertyDetailsFormsValidation {
       case Right(a) if dateFallsInCurrentPeriod(periodKey, Some(a)) => Seq(None)
       case Right(a) if isPeriodTooEarly(periodKey, Some(a)) => Seq(Some(FormError("startDate", s"$messageStart.startDate.error.too-early")))
       case Right(a) if isPeriodTooLate(periodKey, Some(a)) => Seq(Some(FormError("startDate", s"$messageStart.startDate.error.too-late")))
-      case Right(a) => Seq(Some(FormError("startDate", s"$messageStart.startDate.error")))
-      case Left(false) => Seq(Some(FormError("startDate", s"$messageStart.startDate.error.incomplete")))
-      case Left(true) => Seq(Some(FormError("startDate", s"$messageStart.startDate.error.empty")))
     }
     val endDate = (formDate2Option("startDate", form), formDate2Option("endDate", form)) match {
       case (Right(sd), Right(ed)) if ed.isBefore(sd) && isPeriodTooEarly(periodKey, Some(ed)) => Seq(Some(FormError("endDate", s"$messageStart.endDate.error.before-start-date-and-too-early")))
@@ -113,9 +110,6 @@ object PropertyDetailsFormsValidation {
       case (_, Right(ed)) if dateFallsInCurrentPeriod(periodKey, Some(ed)) => Seq(None)
       case (_, Right(ed)) if isPeriodTooEarly(periodKey, Some(ed)) => Seq(Some(FormError("endDate", s"$messageStart.endDate.error.too-early")))
       case (_, Right(ed)) if isPeriodTooLate(periodKey, Some(ed)) => Seq(Some(FormError("endDate", s"$messageStart.endDate.error.too-late")))
-      case (_, Right(ed)) => Seq(Some(FormError("endDate", s"$messageStart.endDate.error")))
-      case (_, Left(false)) => Seq(Some(FormError("endDate", s"$messageStart.endDate.error.incomplete")))
-      case (_, Left(true)) => Seq(Some(FormError("endDate", s"$messageStart.endDate.error.empty")))
     }
 
     startDate ++ endDate
