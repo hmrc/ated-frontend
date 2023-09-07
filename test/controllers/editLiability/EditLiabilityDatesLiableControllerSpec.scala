@@ -478,6 +478,46 @@ reset(mockPropertyDetailsService)
           }
         }
 
+        "for invalid data, -- Relief Start and End dates have inappropriate order and range, -- return BAD_REQUEST" in new Setup {
+          val formBody = List(
+            ("startDate.day", "25"),
+            ("startDate.month", "2"),
+            ("startDate.year", "2024"),
+            ("endDate.day", "2"),
+            ("endDate.month", "2"),
+            ("endDate.year", "2024"))
+
+          when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(Some("")))
+          submitWithAuthorisedUser(formBody) {
+            result =>
+              status(result) must be(BAD_REQUEST)
+              val document = Jsoup.parse(contentAsString(result))
+              document.getElementsByClass("govuk-error-summary__title").text must include("There is a problem")
+              document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("The liability start date cannot be after this chargeable period")
+              document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("The liability end date cannot be before the liability start date")
+          }
+        }
+
+        "for invalid data, -- Relief Start and End dates both out of chargeable period, -- return BAD_REQUEST" in new Setup {
+          val formBody = List(
+            ("startDate.day", "1"),
+            ("startDate.month", "6"),
+            ("startDate.year", "2020"),
+            ("endDate.day", "1"),
+            ("endDate.month", "8"),
+            ("endDate.year", "2020"))
+
+          when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(Some("")))
+          submitWithAuthorisedUser(formBody) {
+            result =>
+              status(result) must be(BAD_REQUEST)
+              val document = Jsoup.parse(contentAsString(result))
+              document.getElementsByClass("govuk-error-summary__title").text must include("There is a problem")
+              document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("The liability start date cannot be after this chargeable period")
+              document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("The liability end date cannot be after this chargeable period")
+          }
+        }
+
         "for valid data forward to the TaxAvoidance Page" in new Setup {
           val formBody = List(
             ("startDate.day", "1"),
