@@ -346,9 +346,15 @@ object PropertyDetailsForms {
 
     val preValidatedForm = addErrorsToForm(f, dateValidationErrors.flatten)
 
-    val basicErrorForm = if (!preValidatedForm.hasErrors) {
-      val formErrors = (PropertyDetailsFormsValidation.validateStartEndDates("ated.property-details-period.datesLiable", periodKey, f)).flatten
-      addErrorsToForm(f, formErrors)
+    val datesToAvoidValidation = dateValidationErrors.flatten.toList.map(x => x.key match {
+      case dwedwe if dwedwe.startsWith("startDate") => "startDate"
+      case dwedwe if dwedwe.startsWith("endDate") => "endDate"
+      case _ => ""
+    })
+
+    val basicErrorForm = if (!preValidatedForm.hasErrors || (preValidatedForm.hasErrors && datesToAvoidValidation.nonEmpty)) {
+      val formErrors = (PropertyDetailsFormsValidation.validateStartEndDates("ated.property-details-period.datesLiable", periodKey, f, datesToAvoidValidation)).flatten
+      addErrorsToForm(f, formErrors ++ preValidatedForm.errors)
     } else preValidatedForm
 
     if (!basicErrorForm.hasErrors && periodsCheck) {
