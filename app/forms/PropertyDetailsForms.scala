@@ -347,8 +347,8 @@ object PropertyDetailsForms {
     val preValidatedForm = addErrorsToForm(f, dateValidationErrors.flatten)
 
     val datesToAvoidValidation = dateValidationErrors.flatten.toList.map(x => x.key match {
-      case dwedwe if dwedwe.startsWith("startDate") => "startDate"
-      case dwedwe if dwedwe.startsWith("endDate") => "endDate"
+      case dateKey if dateKey.startsWith("startDate") => "startDate"
+      case dateKey if dateKey.startsWith("endDate") => "endDate"
       case _ => ""
     })
 

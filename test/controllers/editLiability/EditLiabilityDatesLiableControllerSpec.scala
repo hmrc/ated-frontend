@@ -55,8 +55,8 @@ class EditLiabilityDatesLiableControllerSpec extends PlaySpec with GuiceOneServe
   val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
   val mockBackLinkCacheConnector: BackLinkCacheConnector = mock[BackLinkCacheConnector]
   val mockPropertyDetailsTaxAvoidanceController: PropertyDetailsTaxAvoidanceController = mock[PropertyDetailsTaxAvoidanceController]
-    val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
+  val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
   val injectedViewInstance = app.injector.instanceOf[views.html.editLiability.editLiabilityDatesLiable]
@@ -131,13 +131,13 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
 
   override def beforeEach(): Unit = {
 
-reset(mockPropertyDetailsService)
-    reset(mockDelegationService)
-    reset(mockDataCacheConnector)
-    reset(mockBackLinkCacheConnector)
-    reset(mockPropertyDetailsTaxAvoidanceController)
+    reset(mockPropertyDetailsService)
+        reset(mockDelegationService)
+        reset(mockDataCacheConnector)
+        reset(mockBackLinkCacheConnector)
+        reset(mockPropertyDetailsTaxAvoidanceController)
 
-  }
+      }
 
     "view" must {
 
@@ -515,6 +515,26 @@ reset(mockPropertyDetailsService)
               document.getElementsByClass("govuk-error-summary__title").text must include("There is a problem")
               document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("The liability start date cannot be after this chargeable period")
               document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("The liability end date cannot be after this chargeable period")
+          }
+        }
+
+        "for invalid data, -- Only one of Relief Start and End dates is out of chargeable period and the other with invalid date, -- return BAD_REQUEST" in new Setup {
+          val formBody = List(
+            ("startDate.day", "23"),
+            ("startDate.month", "04"),
+            ("startDate.year", "2022"),
+            ("endDate.day", "45"),
+            ("endDate.month", "07"),
+            ("endDate.year", "2022"))
+
+          when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(Some("")))
+          submitWithAuthorisedUser(formBody) {
+            result =>
+              status(result) must be(BAD_REQUEST)
+              val document = Jsoup.parse(contentAsString(result))
+              document.getElementsByClass("govuk-error-summary__title").text must include("There is a problem")
+              document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("The liability start date cannot be after this chargeable period")
+              document.getElementsByClass("govuk-list govuk-error-summary__list").text must include("Enter a day for the liability end date between 1 and 31")
           }
         }
 
