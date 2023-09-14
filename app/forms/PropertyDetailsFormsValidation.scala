@@ -98,19 +98,23 @@ object PropertyDetailsFormsValidation {
     } else Seq(None)
   }
 
-  def validateStartEndDates(messageStart: String, periodKey: Int, form: Form[_]): Seq[Option[FormError]] = {
-    val startDate = formDate2Option("startDate", form) match {
-      case Right(a) if dateFallsInCurrentPeriod(periodKey, Some(a)) => Seq(None)
-      case Right(a) if isPeriodTooEarly(periodKey, Some(a)) => Seq(Some(FormError("startDate", s"$messageStart.startDate.error.too-early")))
-      case Right(a) if isPeriodTooLate(periodKey, Some(a)) => Seq(Some(FormError("startDate", s"$messageStart.startDate.error.too-late")))
-    }
-    val endDate = (formDate2Option("startDate", form), formDate2Option("endDate", form)) match {
-      case (Right(sd), Right(ed)) if ed.isBefore(sd) && isPeriodTooEarly(periodKey, Some(ed)) => Seq(Some(FormError("endDate", s"$messageStart.endDate.error.before-start-date-and-too-early")))
-      case (Right(sd), Right(ed)) if ed.isBefore(sd) => Seq(Some(FormError("endDate", s"$messageStart.endDate.error.before-start-date")))
-      case (_, Right(ed)) if dateFallsInCurrentPeriod(periodKey, Some(ed)) => Seq(None)
-      case (_, Right(ed)) if isPeriodTooEarly(periodKey, Some(ed)) => Seq(Some(FormError("endDate", s"$messageStart.endDate.error.too-early")))
-      case (_, Right(ed)) if isPeriodTooLate(periodKey, Some(ed)) => Seq(Some(FormError("endDate", s"$messageStart.endDate.error.too-late")))
-    }
+  def validateStartEndDates(messageStart: String, periodKey: Int, form: Form[_], datesToAvoidValidation : Seq[String] = Seq.empty): Seq[Option[FormError]] = {
+    val startDate = if(!datesToAvoidValidation.contains("startDate")) {
+        formDate2Option("startDate", form) match {
+        case Right(a) if dateFallsInCurrentPeriod(periodKey, Some(a)) => Seq(None)
+        case Right(a) if isPeriodTooEarly(periodKey, Some(a)) => Seq(Some(FormError("startDate", s"$messageStart.startDate.error.too-early")))
+        case Right(a) if isPeriodTooLate(periodKey, Some(a)) => Seq(Some(FormError("startDate", s"$messageStart.startDate.error.too-late")))
+      }
+    } else Seq()
+    val endDate = if(datesToAvoidValidation.isEmpty) {
+      (formDate2Option("startDate", form), formDate2Option("endDate", form)) match {
+        case (Right(sd), Right(ed)) if ed.isBefore(sd) && isPeriodTooEarly(periodKey, Some(ed)) => Seq(Some(FormError("endDate", s"$messageStart.endDate.error.before-start-date-and-too-early")))
+        case (Right(sd), Right(ed)) if ed.isBefore(sd) => Seq(Some(FormError("endDate", s"$messageStart.endDate.error.before-start-date")))
+        case (_, Right(ed)) if dateFallsInCurrentPeriod(periodKey, Some(ed)) => Seq(None)
+        case (_, Right(ed)) if isPeriodTooEarly(periodKey, Some(ed)) => Seq(Some(FormError("endDate", s"$messageStart.endDate.error.too-early")))
+        case (_, Right(ed)) if isPeriodTooLate(periodKey, Some(ed)) => Seq(Some(FormError("endDate", s"$messageStart.endDate.error.too-late")))
+      }
+    } else Seq()
 
     startDate ++ endDate
   }

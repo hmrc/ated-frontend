@@ -21,14 +21,16 @@ import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms
 import forms.PropertyDetailsForms._
+
 import javax.inject.Inject
 import models._
-import play.api.i18n.I18nSupport
+import play.api.i18n.{I18nSupport, Messages, MessagesImpl}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import uk.gov.hmrc.play.bootstrap.controller.WithDefaultFormBinding
+
 import scala.concurrent.{ExecutionContext, Future}
 
 class PeriodDatesLiableController @Inject()(mcc: MessagesControllerComponents,
@@ -45,6 +47,11 @@ class PeriodDatesLiableController @Inject()(mcc: MessagesControllerComponents,
   implicit val ec: ExecutionContext = mcc.executionContext
   val controllerId: String = "PeriodDatesLiableController"
 
+  implicit lazy val messages: Messages = MessagesImpl(mcc.langs.availables.head, messagesApi)
+
+  val dateFields = Seq(("startDate", Messages("ated.property-details-period.datesLiable.startDate.messageKey")),
+    ("endDate", Messages("ated.property-details-period.datesLiable.endDate.messageKey")))
+
   def view(id: String): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
@@ -54,7 +61,7 @@ class PeriodDatesLiableController @Inject()(mcc: MessagesControllerComponents,
               val liabilityPeriod = propertyDetails.period.flatMap(_.liabilityPeriods.headOption)
 
               val filledForm = liabilityPeriod match {
-                case Some(lineItem) => periodDatesLiableForm.fill(PropertyDetailsDatesLiable(lineItem.startDate, lineItem.endDate))
+                case Some(lineItem) => periodDatesLiableForm.fill(PropertyDetailsDatesLiable(Some(lineItem.startDate), Some(lineItem.endDate)))
                 case _ => periodDatesLiableForm
               }
               val mode = None
@@ -88,7 +95,7 @@ class PeriodDatesLiableController @Inject()(mcc: MessagesControllerComponents,
         propertyDetailsCacheResponse(id) {
           case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
             val lineItems = propertyDetails.period.map(_.liabilityPeriods).getOrElse(Nil) ++ propertyDetails.period.map(_.reliefPeriods).getOrElse(Nil)
-            PropertyDetailsForms.validatePropertyDetailsDatesLiable(periodKey, periodDatesLiableForm.bindFromRequest, mode.contains("add"), lineItems).fold(
+            PropertyDetailsForms.validatePropertyDetailsDatesLiable(periodKey, periodDatesLiableForm.bindFromRequest, mode.contains("add"), lineItems, dateFields).fold(
               formWithError => {
                 getBackLink(id, mode).map { backLink =>
                   BadRequest(template(id, periodKey, formWithError,

@@ -105,8 +105,8 @@ class IsFullTaxPeriodController @Inject()(mcc: MessagesControllerComponents,
             propertyDetails => {
               propertyDetails.isFullPeriod match {
                 case Some(true) =>
-                  val isFullTaxPeriod = IsFullTaxPeriod(isFullPeriod = true, Some(PropertyDetailsDatesLiable(PeriodUtils.periodStartDate(periodKey),
-                    PeriodUtils.periodEndDate(periodKey))))
+                  val isFullTaxPeriod = IsFullTaxPeriod(isFullPeriod = true, Some(PropertyDetailsDatesLiable(Some(PeriodUtils.periodStartDate(periodKey)),
+                    Some(PeriodUtils.periodEndDate(periodKey)))))
                   propertyDetailsService.saveDraftIsFullTaxPeriod(id, isFullTaxPeriod).flatMap(_ =>
                     redirectWithBackLink(
                       propertyDetailsTaxAvoidanceController.controllerId,

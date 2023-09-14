@@ -175,8 +175,8 @@ object PropertyDetailsFullTaxPeriod {
   implicit val formats: OFormat[PropertyDetailsFullTaxPeriod] = Json.format[PropertyDetailsFullTaxPeriod]
 }
 
-case class PropertyDetailsDatesLiable(startDate: LocalDate,
-                                      endDate: LocalDate)
+case class PropertyDetailsDatesLiable(startDate: Option[LocalDate],
+                                      endDate: Option[LocalDate])
 
 object PropertyDetailsDatesLiable {
   implicit val formats: OFormat[PropertyDetailsDatesLiable] = Json.format[PropertyDetailsDatesLiable]

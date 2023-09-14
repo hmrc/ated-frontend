@@ -22,12 +22,15 @@ import controllers.auth.{AuthAction, ClientHelper}
 import controllers.propertyDetails.{PropertyDetailsHelpers, PropertyDetailsTaxAvoidanceController}
 import forms.PropertyDetailsForms
 import forms.PropertyDetailsForms._
+
 import javax.inject.Inject
 import models._
+import play.api.i18n.{Messages, MessagesImpl}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import uk.gov.hmrc.play.bootstrap.controller.WithDefaultFormBinding
+
 import scala.concurrent.ExecutionContext
 
 class EditLiabilityDatesLiableController @Inject()(mcc: MessagesControllerComponents,
@@ -46,6 +49,11 @@ class EditLiabilityDatesLiableController @Inject()(mcc: MessagesControllerCompon
 
   val controllerId = "EditLiabilityDatesLiableController"
 
+  implicit lazy val messages: Messages = MessagesImpl(mcc.langs.availables.head, messagesApi)
+
+  val dateFields = Seq(("startDate", Messages("ated.property-details-period.datesLiable.startDate.messageKey")),
+    ("endDate", Messages("ated.property-details-period.datesLiable.endDate.messageKey")))
+
   def view(formBundleNo: String) : Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
@@ -55,7 +63,7 @@ class EditLiabilityDatesLiableController @Inject()(mcc: MessagesControllerCompon
               val liabilityPeriod = propertyDetails.period.flatMap(_.liabilityPeriods.headOption)
 
               val filledForm = liabilityPeriod match {
-                case Some(lineItem) => periodDatesLiableForm.fill(PropertyDetailsDatesLiable(lineItem.startDate, lineItem.endDate))
+                case Some(lineItem) => periodDatesLiableForm.fill(PropertyDetailsDatesLiable(Some(lineItem.startDate), Some(lineItem.endDate)))
                 case _ => periodDatesLiableForm
               }
               currentBackLink.map(backLink =>
@@ -71,7 +79,7 @@ class EditLiabilityDatesLiableController @Inject()(mcc: MessagesControllerCompon
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
-          PropertyDetailsForms.validatePropertyDetailsDatesLiable(periodKey, periodDatesLiableForm.bindFromRequest, periodsCheck = false).fold(
+          PropertyDetailsForms.validatePropertyDetailsDatesLiable(periodKey, periodDatesLiableForm.bindFromRequest, periodsCheck = false, dateFields = dateFields).fold(
             formWithError => {
               currentBackLink.map(backLink =>
                 BadRequest(template(formBundleNo, periodKey, formWithError, serviceInfoContent, backLink))
