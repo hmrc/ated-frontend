@@ -74,7 +74,7 @@ class PropertyDetailsWhenAcquiredController @Inject()(mcc: MessagesControllerCom
 
   implicit lazy val messages: Messages = MessagesImpl(mcc.langs.availables.head, messagesApi)
 
-  val dateFields = Seq(("acquiredDate", Messages("ated.property-details.council-registered-date.messageKey")))
+  val dateFields: Seq[(String, String)] = Seq(("acquiredDate", Messages("ated.property-details.whenAcquired.messageKey")))
 
   def save(id: String, periodKey: Int, mode: Option[String]): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction {

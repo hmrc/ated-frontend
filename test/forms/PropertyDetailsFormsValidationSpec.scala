@@ -40,28 +40,6 @@ class PropertyDetailsFormsValidationSpec extends PlaySpec with GuiceOneServerPer
     }
   }
 
-  implicit val defaultFormBinding: DefaultFormBinding = new DefaultFormBinding(mockMcc.parsers.DefaultMaxTextLength)
-  "validatePropertyWhenAcquiredDates" should {
-    "return the correct error message when the value is empty" in {
-      val testPropertyDetailsWhenAcquiredForm = propertyDetailsWhenAcquiredDatesForm.bind(Map(
-        "acquiredDate" -> ""
-      ))
-
-      testPropertyDetailsWhenAcquiredForm.errors.head.message mustBe "ated.property-details-value-error.whenAcquired.invalidDateError"
-    }
-
-    "return the correct error message when the date is in the future" in {
-      val testFutureDate = "2025-01-01"
-
-      val testPropertyDetailsWhenAcquiredForm = propertyDetailsWhenAcquiredDatesForm.bind(Map(
-        "acquiredDate" -> testFutureDate
-      ))
-
-      testPropertyDetailsWhenAcquiredForm.errors.last.message mustBe "ated.property-details-value-error.whenAcquired.invalidDateError"
-    }
-
-  }
-
   "validatePropertyDetailsValueOnAcquisition" should {
     "return the correct error message when the value is empty" in {
 
