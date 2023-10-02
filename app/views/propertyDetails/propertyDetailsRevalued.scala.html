@@ -36,11 +36,6 @@
 
 @(id: String, periodKey: Int, propertyDetailsForm: Form[PropertyDetailsRevalued], mode: Option[String], serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
-
-@implicitFormInstance = @{
-  Some(propertyDetailsForm)
-}
-
 @backLinkHtml = {
     @if(backLink.isDefined) {
         @govukBackLink(BackLink(
@@ -99,7 +94,7 @@
 
 @conditionalNo = {
     @govukWarningText(WarningText(
-        iconFallbackText = "Warning",
+        iconFallbackText = Some("Warning"),
         content = Text(messages("ated.property-details-value.isPropertyRevalued.no-text"))
     ))
 }

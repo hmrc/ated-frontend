@@ -35,9 +35,6 @@
 @(id: String, periodKey: Int, propertyDetailsForm: Form[PeriodChooseRelief], serviceInfoContent: Html = HtmlFormat.empty, backLink:Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
 
-@implicitFormInstance = @{ Some(propertyDetailsForm) }
-
-
 @chooseSingleReliefsocialHousingMessage = @{
     if (periodKey >= 2020) {
         "ated.choose-single-relief.providerSocialOrHousing"

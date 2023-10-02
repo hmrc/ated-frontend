@@ -24,10 +24,7 @@
         paymentReference: Option[String],
         amountDueOrRefund: BigDecimal,
         liabilityAmount : BigDecimal
-)(implicit authContext: StandardAuthRetrievals,
-        messages: Messages,
-        request: Request[AnyContent],
-        appConfig: ApplicationConfig)
+)(implicit messages: Messages)
 
 @printFriendly(messages("ated.relief-sent.title")) {
 

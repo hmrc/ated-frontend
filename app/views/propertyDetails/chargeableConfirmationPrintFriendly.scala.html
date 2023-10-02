@@ -16,7 +16,7 @@
 
 @import config.ApplicationConfig
 @import utils.Money._
-@(submittedReturnResponse: Option[SubmitReturnsResponse], organisationName: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
+@(submittedReturnResponse: Option[SubmitReturnsResponse], organisationName: Option[String])(implicit messages: Messages)
 @import views.html.helpers._
 @import views.html.helper.CSPNonce
 

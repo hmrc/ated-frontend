@@ -49,17 +49,6 @@
     }
 }
 
-@implicitFormInstance = @{
-    Some(propertyDetailsForm)
-}
-
-@idAppearing = @{
-    id match {
-        case Some(x) => x
-        case _ => oldFormBundleNo.getOrElse("")
-    }
-}
-
 @pageTitle = @{
     if(fromConfirmAddressPage) {
         messages("ated.property-details.editAddress")

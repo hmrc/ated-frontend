@@ -16,12 +16,12 @@
 
 package models
 
-import play.api.libs.json.Json
+import play.api.libs.json.{Json, OFormat}
 
 case class OverseasCompanyRegistration(businessUniqueId: Option[String] = None,
                                        issuingInstitution: Option[String] = None,
                                        countryCode: Option[String] = None)
 
 object OverseasCompanyRegistration {
-  implicit val formats = Json.format[OverseasCompanyRegistration]
+  implicit val formats: OFormat[OverseasCompanyRegistration] = Json.format[OverseasCompanyRegistration]
 }

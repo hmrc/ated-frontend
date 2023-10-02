@@ -35,10 +35,6 @@
 
 @(id: String, periodKey: Int, propertyDetailsForm: Form[PropertyDetailsValueOnAcquisition], mode: Option[String], serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String], date: LocalDate)(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
-@implicitFormInstance = @{
-    Some(propertyDetailsForm)
-}
-
 @backLinkHtml = {
     @if(backLink.isDefined) {
         @govukBackLink(BackLink(

@@ -88,7 +88,6 @@
     serviceUrl = Some(routes.HomeController.home(None).url),
     signOutUrl = Some(signOutUrl),
     beforeContentBlock = Some(beforeContentBlock),
-    nonce = CSPNonce.get,
     additionalScriptsBlock = Some(additionalScripts),
     mainContentLayout = Some(sideBar match {
                                 case Some(sideBar) => twoThirdsOneThirdMainContent(sideBar)

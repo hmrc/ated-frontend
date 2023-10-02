@@ -16,12 +16,13 @@
 
 package models
 
-import play.api.libs.json.{JodaReads, JodaWrites, Json}
+import org.joda.time.DateTime
+import play.api.libs.json.{JodaReads, JodaWrites, Json, OFormat, Reads, Writes}
 
 case class ReliefReturnResponse(reliefDescription: String, formBundleNumber: String)
 
 object ReliefReturnResponse {
-  implicit val formats = Json.format[ReliefReturnResponse]
+  implicit val formats: OFormat[ReliefReturnResponse] = Json.format[ReliefReturnResponse]
 }
 
 case class LiabilityReturnResponse(
@@ -33,7 +34,7 @@ case class LiabilityReturnResponse(
                                     )
 
 object LiabilityReturnResponse {
-  implicit val formats = Json.format[LiabilityReturnResponse]
+  implicit val formats: OFormat[LiabilityReturnResponse] = Json.format[LiabilityReturnResponse]
 }
 
 
@@ -45,9 +46,9 @@ case class SubmitReturnsResponse(
 
 object SubmitReturnsResponse {
   val dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ" //DateTime
-  implicit val jodaDateTimeReads = JodaReads.jodaDateReads(dateFormat)
-  implicit val jodaDateTimeWrites = JodaWrites.jodaDateWrites(dateFormat)
-  implicit val formats = Json.format[SubmitReturnsResponse]
+  implicit val jodaDateTimeReads: Reads[DateTime] = JodaReads.jodaDateReads(dateFormat)
+  implicit val jodaDateTimeWrites: Writes[DateTime] = JodaWrites.jodaDateWrites(dateFormat)
+  implicit val formats: OFormat[SubmitReturnsResponse] = Json.format[SubmitReturnsResponse]
 }
 
 case class AlreadySubmittedReturnsResponse(
@@ -56,5 +57,5 @@ case class AlreadySubmittedReturnsResponse(
                                 )
 
 object AlreadySubmittedReturnsResponse {
-  implicit val formats = Json.format[AlreadySubmittedReturnsResponse]
+  implicit val formats: OFormat[AlreadySubmittedReturnsResponse] = Json.format[AlreadySubmittedReturnsResponse]
 }
