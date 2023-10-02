@@ -27,7 +27,7 @@ import services.ServiceInfoService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants.RetrieveSelectPeriodFormId
 import utils.ReferrerUtils
-import uk.gov.hmrc.play.bootstrap.controller.WithDefaultFormBinding
+import uk.gov.hmrc.play.bootstrap.controller.WithUnsafeDefaultFormBinding
 import scala.concurrent.{ExecutionContext, Future}
 
 class ExistingReturnQuestionController @Inject()(mcc: MessagesControllerComponents,
@@ -37,7 +37,7 @@ class ExistingReturnQuestionController @Inject()(mcc: MessagesControllerComponen
                                                  template: views.html.confirmPastReturn)
                                                 (implicit val appConfig: ApplicationConfig)
 
-  extends FrontendController(mcc) with ClientHelper with WithDefaultFormBinding {
+  extends FrontendController(mcc) with ClientHelper with WithUnsafeDefaultFormBinding {
 
   implicit val ec: ExecutionContext = mcc.executionContext
 
@@ -65,7 +65,7 @@ class ExistingReturnQuestionController @Inject()(mcc: MessagesControllerComponen
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
           dataCacheConnector.saveFormData[SelectPeriod](RetrieveSelectPeriodFormId, SelectPeriod(Some(periodKey.toString)))
           val form = new YesNoQuestionExistingReturnsForm
-          form.yesNoQuestionForm.bindFromRequest.fold(
+          form.yesNoQuestionForm.bindFromRequest().fold(
             formWithError =>
               Future.successful(BadRequest(template(formWithError, periodKey, returnType, serviceInfoContent, getBackLink(periodKey, returnType)))
               ),

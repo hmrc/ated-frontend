@@ -26,7 +26,7 @@ import play.api.{Environment, Logging}
 import services.{ServiceInfoService, SubscriptionDataService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{AtedUtils, CountryCodeUtils}
-import uk.gov.hmrc.play.bootstrap.controller.WithDefaultFormBinding
+import uk.gov.hmrc.play.bootstrap.controller.WithUnsafeDefaultFormBinding
 import scala.concurrent.{ExecutionContext, Future}
 
 class CorrespondenceAddressController @Inject()(mcc: MessagesControllerComponents,
@@ -37,7 +37,7 @@ class CorrespondenceAddressController @Inject()(mcc: MessagesControllerComponent
                                                 template: views.html.subcriptionData.correspondenceAddress,
                                                 templateError: views.html.global_error)
                                                (implicit val appConfig: ApplicationConfig)
-  extends FrontendController(mcc) with CountryCodeUtils with WithDefaultFormBinding with Logging {
+  extends FrontendController(mcc) with CountryCodeUtils with WithUnsafeDefaultFormBinding with Logging {
 
   implicit val ec: ExecutionContext = mcc.executionContext
 
@@ -61,7 +61,7 @@ class CorrespondenceAddressController @Inject()(mcc: MessagesControllerComponent
   def submit: Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       serviceInfoService.getPartial.flatMap { serviceInfoContent =>
-        AtedForms.verifyUKPostCode(correspondenceAddressForm.bindFromRequest).fold(
+        AtedForms.verifyUKPostCode(correspondenceAddressForm.bindFromRequest()).fold(
           formWithErrors => Future.successful(BadRequest(template(formWithErrors,
             getIsoCodeTupleList, serviceInfoContent, getBackLink))),
           addressData => {

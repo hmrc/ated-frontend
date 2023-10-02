@@ -28,7 +28,7 @@ import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService, Se
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants._
 import utils.AtedUtils
-import uk.gov.hmrc.play.bootstrap.controller.WithDefaultFormBinding
+import uk.gov.hmrc.play.bootstrap.controller.WithUnsafeDefaultFormBinding
 import scala.concurrent.{ExecutionContext, Future}
 
 class PropertyDetailsSupportingInfoController @Inject()(mcc: MessagesControllerComponents,
@@ -43,7 +43,7 @@ class PropertyDetailsSupportingInfoController @Inject()(mcc: MessagesControllerC
                                                         templateError: views.html.global_error)
                                                        (implicit val appConfig: ApplicationConfig)
 
-  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with WithDefaultFormBinding {
+  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with WithUnsafeDefaultFormBinding {
 
   implicit val ec: ExecutionContext = mcc.executionContext
   val controllerId: String = "PropertyDetailsSupportingInfoController"
@@ -96,7 +96,7 @@ class PropertyDetailsSupportingInfoController @Inject()(mcc: MessagesControllerC
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
-          propertyDetailsSupportingInfoForm.bindFromRequest.fold(
+          propertyDetailsSupportingInfoForm.bindFromRequest().fold(
             formWithError => {
               currentBackLink.map(backLink => BadRequest(template(id, periodKey, formWithError, mode, serviceInfoContent, backLink)))
             },

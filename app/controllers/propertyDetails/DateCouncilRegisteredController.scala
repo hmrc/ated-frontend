@@ -29,7 +29,7 @@ import services._
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants.{NewBuildCouncilRegisteredDate, NewBuildFirstOccupiedDateKnown, SelectedPreviousReturn}
 import utils.AtedUtils
-import uk.gov.hmrc.play.bootstrap.controller.WithDefaultFormBinding
+import uk.gov.hmrc.play.bootstrap.controller.WithUnsafeDefaultFormBinding
 
 import scala.concurrent.ExecutionContext
 import org.joda.time.LocalDate
@@ -45,7 +45,7 @@ class DateCouncilRegisteredController @Inject()(val mcc: MessagesControllerCompo
                                                        template: views.html.propertyDetails.dateCouncilRegistered)
                                                       (implicit val appConfig: ApplicationConfig)
 
-  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with WithDefaultFormBinding with StoreNewBuildDates {
+  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with WithUnsafeDefaultFormBinding with StoreNewBuildDates {
 
   implicit val ec: ExecutionContext = mcc.executionContext
   val controllerId: String = DateCouncilRegisteredControllerId
@@ -82,7 +82,7 @@ class DateCouncilRegisteredController @Inject()(val mcc: MessagesControllerCompo
       implicit authContext => {
         ensureClientContext {
           serviceInfoService.getPartial.flatMap { serviceInfoContent =>
-            PropertyDetailsForms.validateNewBuildCouncilRegisteredDate(periodKey, dateCouncilRegisteredForm.bindFromRequest, dateFields).fold(
+            PropertyDetailsForms.validateNewBuildCouncilRegisteredDate(periodKey, dateCouncilRegisteredForm.bindFromRequest(), dateFields).fold(
               formWithError =>
                 currentBackLink.map(backLink => BadRequest(template(id, periodKey, formWithError, mode, serviceInfoContent, backLink))),
               form =>

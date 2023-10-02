@@ -28,7 +28,7 @@ import play.api.data.Form
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, MessagesRequest}
 import services.ServiceInfoService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import uk.gov.hmrc.play.bootstrap.controller.WithDefaultFormBinding
+import uk.gov.hmrc.play.bootstrap.controller.WithUnsafeDefaultFormBinding
 import scala.concurrent.{ExecutionContext, Future}
 
 class EditLiabilityTypeController @Inject()(mcc: MessagesControllerComponents,
@@ -42,7 +42,7 @@ class EditLiabilityTypeController @Inject()(mcc: MessagesControllerComponents,
                                             template: views.html.editLiability.editLiability)
                                            (implicit val appConfig: ApplicationConfig)
 
-  extends FrontendController(mcc) with BackLinkController with ClientHelper with WithDefaultFormBinding {
+  extends FrontendController(mcc) with BackLinkController with ClientHelper with WithUnsafeDefaultFormBinding {
 
   implicit val ec: ExecutionContext = mcc.executionContext
 
@@ -72,7 +72,7 @@ class EditLiabilityTypeController @Inject()(mcc: MessagesControllerComponents,
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
-          editLiabilityReturnTypeForm.bindFromRequest.fold(
+          editLiabilityReturnTypeForm.bindFromRequest().fold(
             formWithErrors =>
               Future.successful(BadRequest(
                 template(formWithErrors, oldFormBundleNo, periodKey, editAllowed, serviceInfoContent, returnToFormBundle(oldFormBundleNo, periodKey)))),

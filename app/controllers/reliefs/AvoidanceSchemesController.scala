@@ -27,7 +27,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{ReliefsService, ServiceInfoService}
 import uk.gov.hmrc.http.ForbiddenException
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import uk.gov.hmrc.play.bootstrap.controller.WithDefaultFormBinding
+import uk.gov.hmrc.play.bootstrap.controller.WithUnsafeDefaultFormBinding
 import scala.concurrent.ExecutionContext
 
 class AvoidanceSchemesController @Inject()(mcc: MessagesControllerComponents,
@@ -41,7 +41,7 @@ class AvoidanceSchemesController @Inject()(mcc: MessagesControllerComponents,
                                            val templateInvalidPeriodKey: views.html.reliefs.invalidPeriodKey)
                                           (implicit val appConfig: ApplicationConfig)
 
-  extends FrontendController(mcc) with BackLinkController with ReliefHelpers with ClientHelper with WithDefaultFormBinding {
+  extends FrontendController(mcc) with BackLinkController with ReliefHelpers with ClientHelper with WithUnsafeDefaultFormBinding {
 
   implicit val ec: ExecutionContext = mcc.executionContext
   val controllerId: String = "AvoidanceSchemesController"
@@ -75,7 +75,7 @@ class AvoidanceSchemesController @Inject()(mcc: MessagesControllerComponents,
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         validatePeriodKey(periodKey) {
-          validateTaxAvoidance(taxAvoidanceForm.bindFromRequest, periodKey).fold(
+          validateTaxAvoidance(taxAvoidanceForm.bindFromRequest(), periodKey).fold(
             formWithError => {
               for {
                 backLink <- currentBackLink

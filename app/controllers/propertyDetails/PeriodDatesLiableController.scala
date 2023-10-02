@@ -29,7 +29,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import uk.gov.hmrc.play.bootstrap.controller.WithDefaultFormBinding
+import uk.gov.hmrc.play.bootstrap.controller.WithUnsafeDefaultFormBinding
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -42,7 +42,7 @@ class PeriodDatesLiableController @Inject()(mcc: MessagesControllerComponents,
                                             val backLinkCacheConnector: BackLinkCacheConnector,
                                             template: views.html.propertyDetails.periodDatesLiable)
                                            (implicit val appConfig: ApplicationConfig)
-  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with I18nSupport with WithDefaultFormBinding {
+  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with I18nSupport with WithUnsafeDefaultFormBinding {
 
   implicit val ec: ExecutionContext = mcc.executionContext
   val controllerId: String = "PeriodDatesLiableController"
@@ -95,7 +95,7 @@ class PeriodDatesLiableController @Inject()(mcc: MessagesControllerComponents,
         propertyDetailsCacheResponse(id) {
           case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
             val lineItems = propertyDetails.period.map(_.liabilityPeriods).getOrElse(Nil) ++ propertyDetails.period.map(_.reliefPeriods).getOrElse(Nil)
-            PropertyDetailsForms.validatePropertyDetailsDatesLiable(periodKey, periodDatesLiableForm.bindFromRequest, mode.contains("add"), lineItems, dateFields).fold(
+            PropertyDetailsForms.validatePropertyDetailsDatesLiable(periodKey, periodDatesLiableForm.bindFromRequest(), mode.contains("add"), lineItems, dateFields).fold(
               formWithError => {
                 getBackLink(id, mode).map { backLink =>
                   BadRequest(template(id, periodKey, formWithError,

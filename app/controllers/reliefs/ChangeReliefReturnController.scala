@@ -26,7 +26,7 @@ import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{ReliefsService, ServiceInfoService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import uk.gov.hmrc.play.bootstrap.controller.WithDefaultFormBinding
+import uk.gov.hmrc.play.bootstrap.controller.WithUnsafeDefaultFormBinding
 import scala.concurrent.{ExecutionContext, Future}
 
 class ChangeReliefReturnController @Inject()(mcc: MessagesControllerComponents,
@@ -40,7 +40,7 @@ class ChangeReliefReturnController @Inject()(mcc: MessagesControllerComponents,
                                              template: views.html.reliefs.changeReliefReturn)
                                             (implicit val appConfig: ApplicationConfig)
 
-  extends FrontendController(mcc) with BackLinkController with ClientHelper with WithDefaultFormBinding {
+  extends FrontendController(mcc) with BackLinkController with ClientHelper with WithUnsafeDefaultFormBinding {
 
   implicit val ec: ExecutionContext = mcc.executionContext
   val controllerId = "ChangeReliefReturnController"
@@ -62,7 +62,7 @@ class ChangeReliefReturnController @Inject()(mcc: MessagesControllerComponents,
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
-          editReliefForm.bindFromRequest.fold(
+          editReliefForm.bindFromRequest().fold(
             formWithError =>
               currentBackLink.flatMap(backLink =>
                 Future.successful(BadRequest(template(periodKey, formBundleNumber, formWithError, serviceInfoContent, backLink)))
