@@ -8,12 +8,12 @@ object AppDependencies {
 
   val compile: Seq[ModuleID] = Seq(
     ws,
-    "uk.gov.hmrc"       %% "bootstrap-frontend-play-28" % "5.25.0",
-    "uk.gov.hmrc"       %% "play-partials"              % "8.3.0-play-28",
-    "uk.gov.hmrc"       %% "domain"                     % "8.1.0-play-28",
-    "uk.gov.hmrc"       %% "http-caching-client"        % "9.6.0-play-28",
-    "com.typesafe.play" %% "play-json-joda"             % "2.9.4",
-    "uk.gov.hmrc"       %% "play-frontend-hmrc"         % "6.8.0-play-28"
+    "uk.gov.hmrc"       %% "bootstrap-frontend-play-28" % "7.22.0",
+    "uk.gov.hmrc"       %% "play-partials"              % "8.4.0-play-28",
+    "uk.gov.hmrc"       %% "domain"                     % "8.3.0-play-28",
+    "uk.gov.hmrc"       %% "http-caching-client"        % "10.0.0-play-28",
+    "com.typesafe.play" %% "play-json-joda"             % "2.10.1",
+    "uk.gov.hmrc"       %% "play-frontend-hmrc"         % "7.21.0-play-28"
   )
 
   trait TestDependencies {
@@ -31,7 +31,6 @@ object AppDependencies {
         "org.scalatestplus"            %% "mockito-3-12"                % "3.2.10.0"          % scope,
         "org.mockito"                  %  "mockito-core"                % "4.11.0"            % scope,
         "com.github.tomakehurst"       %  "wiremock-jre8"               % "2.35.0"            % scope,
-        "org.scalamock"                %% "scalamock-scalatest-support" % "3.6.0"             % scope,
         "com.fasterxml.jackson.module" %% "jackson-module-scala"        % "2.15.2"            % scope
       )
     }.test
