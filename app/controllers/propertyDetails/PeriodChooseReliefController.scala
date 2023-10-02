@@ -24,7 +24,7 @@ import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{PropertyDetailsService, ServiceInfoService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import uk.gov.hmrc.play.bootstrap.controller.WithDefaultFormBinding
+import uk.gov.hmrc.play.bootstrap.controller.WithUnsafeDefaultFormBinding
 import scala.concurrent.{ExecutionContext, Future}
 
 class PeriodChooseReliefController @Inject()(mcc: MessagesControllerComponents,
@@ -36,7 +36,7 @@ class PeriodChooseReliefController @Inject()(mcc: MessagesControllerComponents,
                                              template: views.html.propertyDetails.periodChooseRelief)
                                             (implicit val appConfig: ApplicationConfig)
 
-  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with WithDefaultFormBinding {
+  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with WithUnsafeDefaultFormBinding {
 
   implicit val ec: ExecutionContext = mcc.executionContext
 
@@ -54,7 +54,7 @@ class PeriodChooseReliefController @Inject()(mcc: MessagesControllerComponents,
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
-          periodChooseReliefForm.bindFromRequest.fold(
+          periodChooseReliefForm.bindFromRequest().fold(
             formWithError =>
               Future.successful(
                 BadRequest(template(id, periodKey, formWithError, serviceInfoContent, getBackLink(id)))

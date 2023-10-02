@@ -27,7 +27,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{ChangeLiabilityReturnService, ServiceInfoService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedUtils
-import uk.gov.hmrc.play.bootstrap.controller.WithDefaultFormBinding
+import uk.gov.hmrc.play.bootstrap.controller.WithUnsafeDefaultFormBinding
 import scala.concurrent.{ExecutionContext, Future}
 
 class HasBankDetailsController @Inject()(mcc: MessagesControllerComponents,
@@ -39,7 +39,7 @@ class HasBankDetailsController @Inject()(mcc: MessagesControllerComponents,
                                          val backLinkCacheConnector: BackLinkCacheConnector,
                                          template: views.html.editLiability.hasBankDetails)
                                         (implicit val appConfig: ApplicationConfig)
-  extends FrontendController(mcc) with BackLinkController with ClientHelper with ControllerIds with WithDefaultFormBinding {
+  extends FrontendController(mcc) with BackLinkController with ClientHelper with ControllerIds with WithUnsafeDefaultFormBinding {
 
   implicit val ec: ExecutionContext = mcc.executionContext
 
@@ -85,7 +85,7 @@ class HasBankDetailsController @Inject()(mcc: MessagesControllerComponents,
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
-          hasBankDetailsForm.bindFromRequest.fold(
+          hasBankDetailsForm.bindFromRequest().fold(
             formWithErrors => currentBackLink.map(backLink => BadRequest(
               template(formWithErrors, oldFormBundleNo, serviceInfoContent, backLink))),
             bankData => {

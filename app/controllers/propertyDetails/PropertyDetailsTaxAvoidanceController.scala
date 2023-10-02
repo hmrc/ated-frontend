@@ -28,7 +28,7 @@ import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService, Se
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants.SelectedPreviousReturn
 import utils.AtedUtils
-import uk.gov.hmrc.play.bootstrap.controller.WithDefaultFormBinding
+import uk.gov.hmrc.play.bootstrap.controller.WithUnsafeDefaultFormBinding
 import scala.concurrent.{ExecutionContext, Future}
 
 class PropertyDetailsTaxAvoidanceController @Inject()(mcc: MessagesControllerComponents,
@@ -40,7 +40,7 @@ class PropertyDetailsTaxAvoidanceController @Inject()(mcc: MessagesControllerCom
                                                       val backLinkCacheConnector: BackLinkCacheConnector,
                                                       template: views.html.propertyDetails.propertyDetailsTaxAvoidance)
                                                      (implicit val appConfig: ApplicationConfig)
-  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with WithDefaultFormBinding {
+  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with WithUnsafeDefaultFormBinding {
 
   implicit val ec: ExecutionContext = mcc.executionContext
   val controllerId: String = "PropertyDetailsTaxAvoidanceController"
@@ -100,7 +100,7 @@ class PropertyDetailsTaxAvoidanceController @Inject()(mcc: MessagesControllerCom
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
-          PropertyDetailsForms.validatePropertyDetailsTaxAvoidance(propertyDetailsTaxAvoidanceForm.bindFromRequest).fold(
+          PropertyDetailsForms.validatePropertyDetailsTaxAvoidance(propertyDetailsTaxAvoidanceForm.bindFromRequest()).fold(
             formWithError =>
               currentBackLink.map(backLink => BadRequest(template(id, periodKey, formWithError, mode, serviceInfoContent, backLink))),
             propertyDetails => {

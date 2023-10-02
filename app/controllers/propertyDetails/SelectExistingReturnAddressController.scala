@@ -25,7 +25,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{FormBundleReturnsService, PropertyDetailsService, ServiceInfoService, SummaryReturnsService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants._
-import uk.gov.hmrc.play.bootstrap.controller.WithDefaultFormBinding
+import uk.gov.hmrc.play.bootstrap.controller.WithUnsafeDefaultFormBinding
 import scala.concurrent.{ExecutionContext, Future}
 
 class SelectExistingReturnAddressController @Inject()(mcc: MessagesControllerComponents,
@@ -41,7 +41,7 @@ class SelectExistingReturnAddressController @Inject()(mcc: MessagesControllerCom
                                                       template: views.html.propertyDetails.selectPreviousReturn)
                                                      (implicit val appConfig: ApplicationConfig)
 
-  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with WithDefaultFormBinding {
+  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with WithUnsafeDefaultFormBinding {
 
   implicit val ec: ExecutionContext = mcc.executionContext
   val controllerId = "SelectExistingReturnAddressController"
@@ -92,7 +92,7 @@ class SelectExistingReturnAddressController @Inject()(mcc: MessagesControllerCom
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
-          addressSelectedForm.bindFromRequest.fold(
+          addressSelectedForm.bindFromRequest().fold(
             formWithError => {
               summaryReturnService.retrieveCachedPreviousReturnAddressList.map { prevReturns =>
                 val addressList = prevReturns.getOrElse(Nil)

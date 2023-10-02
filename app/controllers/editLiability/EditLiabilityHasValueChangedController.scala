@@ -28,7 +28,7 @@ import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService, Se
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants.SelectedPreviousReturn
 import utils.AtedUtils
-import uk.gov.hmrc.play.bootstrap.controller.WithDefaultFormBinding
+import uk.gov.hmrc.play.bootstrap.controller.WithUnsafeDefaultFormBinding
 import scala.concurrent.{ExecutionContext, Future}
 
 class EditLiabilityHasValueChangedController @Inject()(mcc: MessagesControllerComponents,
@@ -41,7 +41,7 @@ class EditLiabilityHasValueChangedController @Inject()(mcc: MessagesControllerCo
                                                        val backLinkCacheConnector: BackLinkCacheConnector,
                                                        template: views.html.editLiability.editLiabilityHasValueChanged)
                                                       (implicit val appConfig: ApplicationConfig)
-  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with WithDefaultFormBinding {
+  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with WithUnsafeDefaultFormBinding {
 
   implicit val ec: ExecutionContext = mcc.executionContext
 
@@ -90,7 +90,7 @@ class EditLiabilityHasValueChangedController @Inject()(mcc: MessagesControllerCo
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
-          hasValueChangedForm.bindFromRequest.fold(
+          hasValueChangedForm.bindFromRequest().fold(
             formWithErrors => {
               propertyDetailsCacheResponse(oldFormBundleNo) {
                 case PropertyDetailsCacheSuccessResponse(propertyDetails) =>

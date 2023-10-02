@@ -27,7 +27,7 @@ import services._
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants.{SelectedPreviousReturn, NewBuildFirstOccupiedDateKnown, NewBuildFirstOccupiedDate}
 import utils.AtedUtils
-import uk.gov.hmrc.play.bootstrap.controller.WithDefaultFormBinding
+import uk.gov.hmrc.play.bootstrap.controller.WithUnsafeDefaultFormBinding
 import scala.concurrent.ExecutionContext
 
 @Singleton
@@ -40,7 +40,7 @@ class DateFirstOccupiedKnownController @Inject()(mcc: MessagesControllerComponen
                                                   view: views.html.propertyDetails.dateFirstOccupiedKnown)
                                                  (implicit val appConfig: ApplicationConfig)
 
-  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with WithDefaultFormBinding {
+  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with WithUnsafeDefaultFormBinding {
 
   implicit val ec: ExecutionContext = mcc.executionContext
   val controllerId: String = DateFirstOccupiedKnownControllerId
@@ -76,7 +76,7 @@ class DateFirstOccupiedKnownController @Inject()(mcc: MessagesControllerComponen
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
-          dateFirstOccupiedKnownForm.bindFromRequest.fold(
+          dateFirstOccupiedKnownForm.bindFromRequest().fold(
             formWithError => currentBackLink.map(backLink => BadRequest(view(id, formWithError, mode, serviceInfoContent, backLink))),
             form =>
               dataCacheConnector.saveFormData[DateFirstOccupiedKnown](NewBuildFirstOccupiedDateKnown, form).flatMap{

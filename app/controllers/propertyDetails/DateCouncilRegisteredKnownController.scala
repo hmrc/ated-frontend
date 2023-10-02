@@ -27,7 +27,7 @@ import services._
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants.{SelectedPreviousReturn, NewBuildFirstOccupiedDateKnown, NewBuildCouncilRegisteredDateKnown, NewBuildCouncilRegisteredDate}
 import utils.AtedUtils
-import uk.gov.hmrc.play.bootstrap.controller.WithDefaultFormBinding
+import uk.gov.hmrc.play.bootstrap.controller.WithUnsafeDefaultFormBinding
 import scala.concurrent.ExecutionContext
 
 @Singleton
@@ -40,7 +40,7 @@ class DateCouncilRegisteredKnownController @Inject()(val mcc: MessagesController
                                                   view: views.html.propertyDetails.dateCouncilRegisteredKnown)
                                                  (implicit val appConfig: ApplicationConfig)
 
-  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with WithDefaultFormBinding with StoreNewBuildDates {
+  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with WithUnsafeDefaultFormBinding with StoreNewBuildDates {
 
   implicit val ec: ExecutionContext = mcc.executionContext
   val controllerId: String = DateCouncilRegisteredKnownControllerId
@@ -76,7 +76,7 @@ class DateCouncilRegisteredKnownController @Inject()(val mcc: MessagesController
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
-          dateCouncilRegisteredKnownForm.bindFromRequest.fold(
+          dateCouncilRegisteredKnownForm.bindFromRequest().fold(
             formWithError => currentBackLink.map(backLink => BadRequest(view(id, formWithError, mode, serviceInfoContent, backLink))),
             form => {
               dataCacheConnector.saveFormData[DateCouncilRegisteredKnown](NewBuildCouncilRegisteredDateKnown, form).flatMap{

@@ -27,7 +27,7 @@ import services._
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants.SelectedPreviousReturn
 import utils.AtedUtils
-import uk.gov.hmrc.play.bootstrap.controller.WithDefaultFormBinding
+import uk.gov.hmrc.play.bootstrap.controller.WithUnsafeDefaultFormBinding
 import scala.concurrent.ExecutionContext
 
 class PropertyDetailsProfessionallyValuedController @Inject()(mcc: MessagesControllerComponents,
@@ -40,7 +40,7 @@ class PropertyDetailsProfessionallyValuedController @Inject()(mcc: MessagesContr
                                                               template: views.html.propertyDetails.propertyDetailsProfessionallyValued)
                                                              (implicit val appConfig: ApplicationConfig)
 
-  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with WithDefaultFormBinding {
+  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with WithUnsafeDefaultFormBinding {
 
   implicit val ec: ExecutionContext = mcc.executionContext
   val controllerId: String = "PropertyDetailsProfessionallyValuedController"
@@ -94,7 +94,7 @@ class PropertyDetailsProfessionallyValuedController @Inject()(mcc: MessagesContr
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
-          propertyDetailsProfessionallyValuedForm.bindFromRequest.fold(
+          propertyDetailsProfessionallyValuedForm.bindFromRequest().fold(
             formWithError => {
               currentBackLink
                 .map(backLink => BadRequest(template(id, periodKey, formWithError, mode, serviceInfoContent, backLink)))

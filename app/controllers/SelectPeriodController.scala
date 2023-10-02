@@ -28,7 +28,7 @@ import services.ServiceInfoService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants._
 import utils.PeriodUtils
-import uk.gov.hmrc.play.bootstrap.controller.WithDefaultFormBinding
+import uk.gov.hmrc.play.bootstrap.controller.WithUnsafeDefaultFormBinding
 import scala.concurrent.{ExecutionContext, Future}
 
 class SelectPeriodController @Inject()(mcc: MessagesControllerComponents,
@@ -39,7 +39,7 @@ class SelectPeriodController @Inject()(mcc: MessagesControllerComponents,
                                        template: views.html.selectPeriod)
                                       (implicit val appConfig: ApplicationConfig)
 
-  extends FrontendController(mcc) with BackLinkController with ClientHelper with ControllerIds with WithDefaultFormBinding {
+  extends FrontendController(mcc) with BackLinkController with ClientHelper with ControllerIds with WithUnsafeDefaultFormBinding {
 
   implicit val ec : ExecutionContext = mcc.executionContext
   val controllerId = "SelectPeriodController"
@@ -68,7 +68,7 @@ class SelectPeriodController @Inject()(mcc: MessagesControllerComponents,
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
           val peakStartYear = PeriodUtils.calculatePeakStartYear()
           val periods = PeriodUtils.getPeriods(peakStartYear)
-          selectPeriodForm.bindFromRequest.fold(
+          selectPeriodForm.bindFromRequest().fold(
             formWithError => Future.successful(BadRequest(template(formWithError, periods, serviceInfoContent, getBackLink()))),
             periodData => {
               dataCacheConnector.saveFormData[SelectPeriod](RetrieveSelectPeriodFormId, periodData)
