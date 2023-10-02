@@ -483,6 +483,9 @@ ated.property-details-value.whenAcquired.header = When did you acquire the prope
 
 ated.property-details-value-error.whenAcquired.futureDateError = The date when the property was acquired must be in the past
 ated.property-details-value-error.whenAcquired.invalidDateError = Enter a real date when the property was acquired
+ated.property-details.whenAcquired.messageKey = Date when the property was acquired
+ated.property-details-value.acquiredDate.error.too-late = The date when the property was acquired must be in the past
+
 
 ##### PROPERTY DETAILS VALUE ACQUIRED
 

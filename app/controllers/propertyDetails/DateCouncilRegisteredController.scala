@@ -21,19 +21,18 @@ import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms
 import forms.PropertyDetailsForms._
-
-import javax.inject.{Inject, Singleton}
 import models.{DateCouncilRegistered, DateFirstOccupiedKnown}
+import org.joda.time.LocalDate
+import play.api.i18n.{Messages, MessagesImpl}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services._
+import uk.gov.hmrc.play.bootstrap.controller.WithDefaultFormBinding
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants.{NewBuildCouncilRegisteredDate, NewBuildFirstOccupiedDateKnown, SelectedPreviousReturn}
 import utils.AtedUtils
-import uk.gov.hmrc.play.bootstrap.controller.WithDefaultFormBinding
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
-import org.joda.time.LocalDate
-import play.api.i18n.{Messages, MessagesImpl}
 
 @Singleton
 class DateCouncilRegisteredController @Inject()(val mcc: MessagesControllerComponents,
@@ -86,23 +85,23 @@ class DateCouncilRegisteredController @Inject()(val mcc: MessagesControllerCompo
               formWithError =>
                 currentBackLink.map(backLink => BadRequest(template(id, periodKey, formWithError, mode, serviceInfoContent, backLink))),
               form =>
-                dataCacheConnector.saveFormData[DateCouncilRegistered](NewBuildCouncilRegisteredDate, form).flatMap{_ =>
-                  storeNewBuildDatesFromCache(id).flatMap{ _ =>
-                    dataCacheConnector.fetchAndGetFormData[DateFirstOccupiedKnown](NewBuildFirstOccupiedDateKnown).flatMap{
-                      case Some(DateFirstOccupiedKnown(Some(true))) =>
-                        redirectWithBackLink(
-                          EarliestStartDateInUseControllerId,
-                          controllers.propertyDetails.routes.EarliestStartDateInUseController.view(id),
-                          Some(controllers.propertyDetails.routes.DateCouncilRegisteredController .view(id).url)
-                        )
-                      case _ =>
-                        redirectWithBackLink(
-                          NewBuildValueControllerId,
-                          controllers.propertyDetails.routes.PropertyDetailsNewBuildValueController.view(id),
-                          Some(controllers.propertyDetails.routes.DateCouncilRegisteredController .view(id).url)
-                        )
+                dataCacheConnector.saveFormData[DateCouncilRegistered](NewBuildCouncilRegisteredDate, form).flatMap { _ =>
+                    storeNewBuildDatesFromCache(id).flatMap { _ =>
+                      dataCacheConnector.fetchAndGetFormData[DateFirstOccupiedKnown](NewBuildFirstOccupiedDateKnown).flatMap {
+                        case Some(DateFirstOccupiedKnown(Some(true))) =>
+                          redirectWithBackLink(
+                            EarliestStartDateInUseControllerId,
+                            controllers.propertyDetails.routes.EarliestStartDateInUseController.view(id),
+                            Some(controllers.propertyDetails.routes.DateCouncilRegisteredController.view(id).url)
+                          )
+                        case _ =>
+                          redirectWithBackLink(
+                            NewBuildValueControllerId,
+                            controllers.propertyDetails.routes.PropertyDetailsNewBuildValueController.view(id),
+                            Some(controllers.propertyDetails.routes.DateCouncilRegisteredController.view(id).url)
+                          )
+                      }
                     }
-                  }
                 }
             )
           }

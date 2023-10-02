@@ -22,9 +22,13 @@ import models.PropertyDetailsDatesLiable
 import org.joda.time.LocalDate
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
-import play.api.data.Form
+import play.api.data.{DefaultFormBinding, Form}
+import play.api.mvc.{AnyContentAsEmpty, AnyContentAsFormUrlEncoded, MessagesControllerComponents}
+import play.api.test.FakeRequest
 
 class PropertyDetailsFormsValidationSpec extends PlaySpec with GuiceOneServerPerSuite {
+
+  val mockMcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
 
   "validatePropertyNewBuildValue" should {
     "return the correct error message when the value is empty"  in {
@@ -34,27 +38,6 @@ class PropertyDetailsFormsValidationSpec extends PlaySpec with GuiceOneServerPer
 
       testPropertyDetailsNewBuildValueForm.errors.last.message mustBe "ated.property-details-value-error.newBuildValue.emptyValue"
     }
-  }
-
-  "validatePropertyWhenAcquiredDates" should {
-    "return the correct error message when the value is empty"  in {
-      val testPropertyDetailsWhenAcquiredForm = propertyDetailsWhenAcquiredDatesForm.bind(Map(
-        "acquiredDate" -> ""
-      ))
-
-      testPropertyDetailsWhenAcquiredForm.errors.head.message mustBe "ated.property-details-value-error.whenAcquired.invalidDateError"
-    }
-
-    "return the correct error message when the date is in the future" in {
-      val testFutureDate = "2025-01-01"
-
-      val testPropertyDetailsWhenAcquiredForm = propertyDetailsWhenAcquiredDatesForm.bind(Map(
-        "acquiredDate" -> testFutureDate
-      ))
-
-      testPropertyDetailsWhenAcquiredForm.errors.last.message mustBe "ated.property-details-value-error.whenAcquired.invalidDateError"
-    }
-
   }
 
   "validatePropertyDetailsValueOnAcquisition" should {

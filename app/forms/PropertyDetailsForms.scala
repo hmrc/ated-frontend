@@ -160,9 +160,7 @@ object PropertyDetailsForms {
 
   val propertyDetailsWhenAcquiredDatesForm: Form[PropertyDetailsWhenAcquiredDates] = Form(
     mapping(
-      "acquiredDate" -> DateTupleCustomError("error.invalid.date.format").dateTuple
-        .verifying("ated.property-details-value-error.whenAcquired.invalidDateError", x => x.isDefined)
-        .verifying("ated.property-details-value-error.whenAcquired.futureDateError", x => isInPast(x))
+      "acquiredDate" -> DateTupleCustomError("ated.property-details.whenAcquired.invalidInputType").dateTupleOptional()
     )(PropertyDetailsWhenAcquiredDates.apply)(PropertyDetailsWhenAcquiredDates.unapply)
   )
 
@@ -285,17 +283,17 @@ object PropertyDetailsForms {
     } else f
   }
 
-  def validateNewBuildFirstOccupiedDate(periodKey: Int, f: Form[DateFirstOccupied], dateFields : Seq[(String, String)] ): Form[DateFirstOccupied] = {
+  def validateNewBuildFirstOccupiedDate(periodKey: Int, f: Form[DateFirstOccupied], dateFields: Seq[(String, String)]): Form[DateFirstOccupied] = {
 
     val dateValidationErrors =
-     if (!f.hasErrors) {
-      dateFields.map { x =>
-        DateTupleCustomError.validateDateFields(f.data.get(s"${x._1}.day"), f.data.get(s"${x._1}.month"), f.data.get(s"${x._1}.year"),
-          Seq((x._1, x._2)), dateForFutureValidation = Some(LocalDate.now()))
+      if (!f.hasErrors) {
+        dateFields.map { x =>
+          DateTupleCustomError.validateDateFields(f.data.get(s"${x._1}.day"), f.data.get(s"${x._1}.month"), f.data.get(s"${x._1}.year"),
+            Seq((x._1, x._2)), dateForFutureValidation = Some(LocalDate.now()))
+        }
+      } else {
+        Seq()
       }
-    } else {
-       Seq()
-     }
 
     val preValidatedForm = addErrorsToForm(f, dateValidationErrors.flatten)
 
@@ -306,7 +304,28 @@ object PropertyDetailsForms {
 
   }
 
-  def validateNewBuildCouncilRegisteredDate(periodKey: Int, f: Form[DateCouncilRegistered], dateFields : Seq[(String, String)]): Form[DateCouncilRegistered] = {
+  def validateWhenAcquiredDate(periodKey: Int, f: Form[PropertyDetailsWhenAcquiredDates], dateFields: Seq[(String, String)]): Form[PropertyDetailsWhenAcquiredDates] = {
+
+    val dateValidationErrors =
+      if (!f.hasErrors) {
+        dateFields.map { x =>
+          DateTupleCustomError.validateDateFields(f.data.get(s"${x._1}.day"), f.data.get(s"${x._1}.month"), f.data.get(s"${x._1}.year"),
+            Seq((x._1, x._2)))
+        }
+      } else {
+        Seq()
+      }
+
+    val preValidatedForm = addErrorsToForm(f, dateValidationErrors.flatten)
+
+    if (!preValidatedForm.hasErrors) {
+      val formErrors = PropertyDetailsFormsValidation.validatedWhenAcquiredDate(periodKey, f).flatten
+      addErrorsToForm(f, formErrors)
+    } else preValidatedForm
+
+  }
+
+  def validateNewBuildCouncilRegisteredDate(periodKey: Int, f: Form[DateCouncilRegistered], dateFields: Seq[(String, String)]): Form[DateCouncilRegistered] = {
     val dateValidationErrors =
       if (!f.hasErrors) {
         dateFields.map { x =>
@@ -333,7 +352,7 @@ object PropertyDetailsForms {
     } else f
   }
 
-  def validatePropertyDetailsDatesLiable(periodKey: Int, f: Form[PropertyDetailsDatesLiable], periodsCheck: Boolean, currentPeriods: List[LineItem] = Nil, dateFields : Seq[(String, String)]): Form[PropertyDetailsDatesLiable] = {
+  def validatePropertyDetailsDatesLiable(periodKey: Int, f: Form[PropertyDetailsDatesLiable], periodsCheck: Boolean, currentPeriods: List[LineItem] = Nil, dateFields: Seq[(String, String)]): Form[PropertyDetailsDatesLiable] = {
     val dateValidationErrors =
       if (!f.hasErrors) {
         dateFields.map { x =>
@@ -364,7 +383,7 @@ object PropertyDetailsForms {
   }
 
   def validatePropertyDetailsDatesInRelief(periodKey: Int, f: Form[PropertyDetailsDatesInRelief], currentPeriods: List[LineItem],
-                                           dateFields : Seq[(String, String)]): Form[PropertyDetailsDatesInRelief] = {
+                                           dateFields: Seq[(String, String)]): Form[PropertyDetailsDatesInRelief] = {
 
     val dateValidationErrors =
       if (!f.hasErrors) {
