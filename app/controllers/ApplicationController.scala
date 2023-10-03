@@ -36,7 +36,7 @@ class ApplicationController @Inject()(mcc: MessagesControllerComponents,
 
   def unauthorised(isSa: Boolean): Action[AnyContent] = Action.async { implicit request =>
     if(isSa) {
-      Future.successful(Ok(template()(implicitly, implicitly, implicitly)))
+      Future.successful(Ok(template()(implicitly, implicitly)))
     } else {
       Future.successful(Ok(individual()(implicitly, implicitly, implicitly)))
     }

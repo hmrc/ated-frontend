@@ -82,7 +82,7 @@
 
       <tr class="govuk-table__row">
         <th class="govuk-table__cell" id="property-date-of-valuation-label">@messages("ated.form-bundle.view.isValuedByAgent.message")</th>
-        @if(propertyDetails.value.map(x => x.isValuedByAgent.getOrElse()).contains(true)) {
+        @if(propertyDetails.value.map(x => x.isValuedByAgent.getOrElse(None)).contains(true)) {
           <td class="govuk-table__cell" id="property-is-Valued-by-agent-yes">@messages("ated.form-bundle.view.isValuedByAgent.yes")</td>
         }else{
           <td class="govuk-table__cell" id="property-is-Valued-by-agent-no">@messages("ated.form-bundle.view.isValuedByAgent.no")</td>
