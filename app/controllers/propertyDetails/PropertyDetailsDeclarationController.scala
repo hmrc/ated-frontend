@@ -68,7 +68,7 @@ class PropertyDetailsDeclarationController @Inject()(mcc: MessagesControllerComp
               cacheResponse.calculated match {
                 case Some(_) =>
                   propertyDetailsService.submitDraftPropertyDetails(id) flatMap { response =>
-                    response.status match {
+                    (response.status: @unchecked) match {
                       case OK => Future.successful(Redirect(controllers.propertyDetails.routes.ChargeableReturnConfirmationController.confirmation))
                       case BAD_REQUEST if response.body.contains("Agent not Valid") =>
                         Future.successful(BadRequest(templateError("ated.client-problem.title",

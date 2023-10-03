@@ -190,7 +190,7 @@ class SummaryReturnsService @Inject()(atedConnector: AtedConnector, dataCacheCon
         rtn => AccountSummaryRowModel(
           description = rtn.description,
           returnType = draftType,
-          route = rtn.returnType match {
+          route = (rtn.returnType: @unchecked) match {
             case TypeReliefDraft =>
               controllers.routes.PeriodSummaryController
                 .viewReturn(currentTaxYear).toString

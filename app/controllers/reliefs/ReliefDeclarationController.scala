@@ -63,7 +63,7 @@ class ReliefDeclarationController @Inject()(mcc: MessagesControllerComponents,
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
           reliefsService.submitDraftReliefs(authContext.atedReferenceNumber, periodKey) flatMap { response =>
-            response.status match {
+            (response.status: @unchecked) match {
               case OK => Future.successful(Redirect(controllers.reliefs.routes.ReliefsSentController.view(periodKey)))
               case BAD_REQUEST if response.body.contains("Agent not Valid") => {
                 serviceInfoService.getPartial.flatMap { serviceInfoContent =>

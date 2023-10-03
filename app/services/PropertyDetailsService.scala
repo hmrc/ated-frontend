@@ -291,7 +291,7 @@ class PropertyDetailsService @Inject()(propertyDetailsConnector: PropertyDetails
     validateCalculateDraftPropertyDetails(id, isChangeLiability = true).flatMap {
       case true =>
       propertyDetailsConnector.calculateDraftChangeLiability(id) map { propertyDetailsResponse =>
-        propertyDetailsResponse.status match {
+        (propertyDetailsResponse.status: @unchecked) match {
           case OK => Some(propertyDetailsResponse.json.as[PropertyDetails])
           case NO_CONTENT =>
             logger.info("[PropertyDetailsService][calculateDraftChangeLiability] " +
