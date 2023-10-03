@@ -156,11 +156,11 @@ object PropertyDetailsFormsValidation {
     val date = formDate2Option(dateField, f)
     val valuationYear = PeriodUtils.calculateLowerTaxYearBoundary(periodKey)
 
-    if (date.right.exists(a => new LocalDate(a).isBefore(new LocalDate(s"$valuationYear")) && !noDateTooEarly)) {
+    if (date.exists(a => new LocalDate(a).isBefore(new LocalDate(s"$valuationYear")) && !noDateTooEarly)) {
       Seq(Some(FormError(dateField, s"ated.property-details-value.$dateField.error.too-early")))
-    } else if (date.right.exists(a => new LocalDate(a).isAfter(new LocalDate()))) {
+    } else if (date.exists(a => new LocalDate(a).isAfter(new LocalDate()))) {
       Seq(Some(FormError(dateField, s"ated.property-details-value.$dateField.error.too-late")))
-    } else if (mustBeInChargeablePeriod && date.right.exists(a => PeriodUtils.isPeriodTooEarly(periodKey, Some(a)) ||
+    } else if (mustBeInChargeablePeriod && date.exists(a => PeriodUtils.isPeriodTooEarly(periodKey, Some(a)) ||
       PeriodUtils.isPeriodTooLate(periodKey, Some(a)))) {
       Seq(Some(FormError(dateField, s"ated.property-details-value.$dateField.error.not-in-period")))
     } else if (isMandatory && date.left.exists(a => a)) {

@@ -20,7 +20,8 @@ import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.BackLinkController
 import controllers.auth.{AuthAction, ClientHelper}
-import forms.ReliefForms._
+import forms.ReliefForms.isTaxAvoidanceForm
+
 import javax.inject.Inject
 import models.IsTaxAvoidance
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -102,7 +103,7 @@ class AvoidanceSchemeBeingUsedController @Inject()(mcc: MessagesControllerCompon
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
           validatePeriodKey(periodKey) {
-            val data = AtedUtils.addParamsToRequest(Map("periodKey" -> ArrayBuffer(periodKey.toString)))
+            val data = AtedUtils.addParamsToRequest(Map("periodKey" -> ArrayBuffer(periodKey.toString).toSeq))
             isTaxAvoidanceForm.bindFromRequest(data.get).fold(
               formWithError =>
                 currentBackLink.map(backLink =>
