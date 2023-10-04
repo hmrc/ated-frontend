@@ -24,13 +24,13 @@ object AppDependencies {
   object Test {
     def apply(): Seq[ModuleID] = new TestDependencies {
       override lazy val test: Seq[ModuleID] = Seq(
-        "uk.gov.hmrc"                  %% "bootstrap-test-play-28"      % "5.25.0"            % scope,
+        "uk.gov.hmrc"                  %% "bootstrap-test-play-28"      % "7.22.0"            % scope,
         "org.scalatestplus.play"       %% "scalatestplus-play"          % "5.1.0"             % scope,
         "org.jsoup"                    %  "jsoup"                       % "1.16.1"            % scope,
         "com.typesafe.play"            %% "play-test"                   % PlayVersion.current % scope,
         "org.scalatestplus"            %% "mockito-3-12"                % "3.2.10.0"          % scope,
         "org.mockito"                  %  "mockito-core"                % "4.11.0"            % scope,
-        "com.github.tomakehurst"       %  "wiremock-jre8"               % "2.35.0"            % scope,
+        "com.github.tomakehurst"       %  "wiremock-jre8"               % "3.0.1"            % scope,
         "com.fasterxml.jackson.module" %% "jackson-module-scala"        % "2.15.2"            % scope
       )
     }.test
