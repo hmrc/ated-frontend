@@ -149,7 +149,7 @@
           @messages("ated.form-bundle.view.isValuedByAgent.message")
         </dt>
         <dd class="govuk-summary-list__value">
-          @if(changeLiability.value.map(x => x.isValuedByAgent.getOrElse(None)).contains(true)) {
+          @if(changeLiability.value.map(x => x.isValuedByAgent.getOrElse(false)).contains(true)) {
             <span id="property-is-Valued-by-agent-yes-@index">@messages("ated.form-bundle.view.isValuedByAgent.yes")</span>
           } else {
             <span id="property-is-Valued-by-agent-no-@index">@messages("ated.form-bundle.view.isValuedByAgent.no")</span>
