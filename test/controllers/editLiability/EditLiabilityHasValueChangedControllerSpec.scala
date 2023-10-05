@@ -83,7 +83,7 @@ class Setup {
     injectedViewInstance
   )
 
-  def viewWithAuthorisedUser(propertyDetails: PropertyDetails)(test: Future[Result] => Any) {
+  def viewWithAuthorisedUser(propertyDetails: PropertyDetails)(test: Future[Result] => Any): Unit = {
     val userId = s"user-${UUID.randomUUID}"
     val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
     setAuthMocks(authMock)
@@ -99,7 +99,7 @@ class Setup {
     test(result)
   }
 
-  def editFromSummary(propertyDetails: PropertyDetails)(test: Future[Result] => Any) {
+  def editFromSummary(propertyDetails: PropertyDetails)(test: Future[Result] => Any): Unit = {
     val userId = s"user-${UUID.randomUUID}"
     val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
     setAuthMocks(authMock)
@@ -114,7 +114,7 @@ class Setup {
   }
 
 
-  def saveWithAuthorisedUser(propertyDetails: Option[PropertyDetails], inputJson: JsValue)(test: Future[Result] => Any) {
+  def saveWithAuthorisedUser(propertyDetails: Option[PropertyDetails], inputJson: JsValue)(test: Future[Result] => Any): Unit = {
     val userId = s"user-${UUID.randomUUID}"
     val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
     setAuthMocks(authMock)
@@ -134,7 +134,7 @@ class Setup {
   }
 }
 
-  override def beforeEach: Unit = {
+  override def beforeEach(): Unit = {
 
     reset(mockPropertyDetailsOwnedBeforeController)
     reset(mockIsFullTaxPeriodController)

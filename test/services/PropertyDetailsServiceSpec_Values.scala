@@ -48,7 +48,7 @@ class PropertyDetailsServiceSpec_Values extends PlaySpec with MockitoSugar with 
     )
   }
 
-  override def beforeEach: Unit = {
+  override def beforeEach(): Unit = {
   }
 
   "PropertyDetailsService" must {

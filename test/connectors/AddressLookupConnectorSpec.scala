@@ -46,7 +46,7 @@ class AddressLookupConnectorSpec extends PlaySpec with GuiceOneAppPerSuite with 
       mockHttp
     )
   }
-  override def beforeEach: Unit = {
+  override def beforeEach(): Unit = {
     reset(mockHttp)
   }
 

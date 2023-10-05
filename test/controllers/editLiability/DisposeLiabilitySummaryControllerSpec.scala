@@ -83,7 +83,7 @@ class DisposeLiabilitySummaryControllerSpec extends PlaySpec with GuiceOneServer
       injectedViewInstance
     )
 
-    def viewWithAuthorisedUser(disposeLiabilityReturn: Option[DisposeLiabilityReturn] = None)(test: Future[Result] => Any) {
+    def viewWithAuthorisedUser(disposeLiabilityReturn: Option[DisposeLiabilityReturn] = None)(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
@@ -99,7 +99,7 @@ class DisposeLiabilitySummaryControllerSpec extends PlaySpec with GuiceOneServer
       test(result)
     }
 
-    def submitWithAuthorisedUser(test: Future[Result] => Any) {
+    def submitWithAuthorisedUser(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
@@ -110,7 +110,7 @@ class DisposeLiabilitySummaryControllerSpec extends PlaySpec with GuiceOneServer
       test(result)
     }
 
-    def getPrintFriendlyWithAuthorisedUser(disposeLiabilityReturn: Option[DisposeLiabilityReturn] = None)(test: Future[Result] => Any) {
+    def getPrintFriendlyWithAuthorisedUser(disposeLiabilityReturn: Option[DisposeLiabilityReturn] = None)(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
@@ -126,7 +126,7 @@ class DisposeLiabilitySummaryControllerSpec extends PlaySpec with GuiceOneServer
     }
   }
 
-  override def beforeEach: Unit = {
+  override def beforeEach(): Unit = {
 
     reset(mockDisposeLiabilityReturnService)
     reset(mockSubscriptionDataService)

@@ -45,7 +45,7 @@ class AddressLookupServiceSpec extends PlaySpec with GuiceOneServerPerSuite with
     )
   }
 
-  override def beforeEach: Unit = {
+  override def beforeEach(): Unit = {
   }
 
   "find" must {

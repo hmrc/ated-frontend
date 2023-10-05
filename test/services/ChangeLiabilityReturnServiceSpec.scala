@@ -64,7 +64,7 @@ class ChangeLiabilityReturnServiceSpec extends PlaySpec with GuiceOneServerPerSu
     )
   }
 
-  override def beforeEach: Unit = {
+  override def beforeEach(): Unit = {
   }
 
   "ChangeLiabilityReturnService" must {

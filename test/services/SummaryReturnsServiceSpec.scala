@@ -52,7 +52,7 @@ class SummaryReturnsServiceSpec extends PlaySpec with MockitoSugar with BeforeAn
     )
   }
 
-  override def beforeEach: Unit = {
+  override def beforeEach(): Unit = {
     reset(mockAtedConnector)
     reset(mockDataCacheConnector)
   }

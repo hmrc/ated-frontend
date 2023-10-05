@@ -84,7 +84,7 @@ class Setup {
     injectedViewInstance
   )
 
-    def editLiabilityWithAuthorisedUser(test: Future[Result] => Any, queryParams: Option[(String, Seq[String])]) {
+    def editLiabilityWithAuthorisedUser(test: Future[Result] => Any, queryParams: Option[(String, Seq[String])]): Unit = {
       val periodKey: Int = 2015
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
@@ -98,7 +98,7 @@ class Setup {
       test(result)
     }
 
-    def continueWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsJson])(test: Future[Result] => Any) {
+    def continueWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsJson])(test: Future[Result] => Any): Unit = {
       val periodKey: Int = 2015
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
@@ -111,7 +111,7 @@ class Setup {
     }
 }
 
-  override def beforeEach: Unit = {
+  override def beforeEach(): Unit = {
 
     reset(mockPropertyDetailsAddressController)
     reset(mockAddressLookupController)

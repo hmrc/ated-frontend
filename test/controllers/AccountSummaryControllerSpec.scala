@@ -93,7 +93,7 @@ class AccountSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
     )
 
     def getWithAuthorisedUser(returnsSummaryWithDraft: SummaryReturnsModel,
-                              correspondence: Option[Address] = None)(test: Future[Result] => Any) {
+                              correspondence: Option[Address] = None)(test: Future[Result] => Any): Unit = {
       val httpValue = 200
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
@@ -115,7 +115,7 @@ class AccountSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
     }
 
     def getWithForbiddenUser(returnsSummaryWithDraft: SummaryReturnsModel,
-                             correspondence: Option[Address] = None)(test: Future[Result] => Any) {
+                             correspondence: Option[Address] = None)(test: Future[Result] => Any): Unit = {
       val httpValue = 200
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
@@ -139,7 +139,7 @@ class AccountSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
     }
 
     def getWithAuthorisedDelegatedUser(returnsSummaryWithDraft: SummaryReturnsModel,
-                                       correspondence: Option[Address] = None)(test: Future[Result] => Any) {
+                                       correspondence: Option[Address] = None)(test: Future[Result] => Any): Unit = {
       val httpValue = 200
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Agent, agentEnrolmentSet)
@@ -158,7 +158,7 @@ class AccountSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
       test(result)
     }
 
-    def getWithUnAuthorisedUser(test: Future[Result] => Any) {
+    def getWithUnAuthorisedUser(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
       setInvalidAuthMocks(authMock)

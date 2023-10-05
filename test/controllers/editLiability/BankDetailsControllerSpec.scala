@@ -77,7 +77,7 @@ class BankDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite wit
     )
 
 
-    def viewWithAuthorisedUser(changeLiabilityReturnOpt: Option[PropertyDetails])(test: Future[Result] => Any) {
+    def viewWithAuthorisedUser(changeLiabilityReturnOpt: Option[PropertyDetails])(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
@@ -93,7 +93,7 @@ class BankDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite wit
       test(result)
     }
 
-    def saveWithAuthorisedUser(inputJson: JsValue)(test: Future[Result] => Any) {
+    def saveWithAuthorisedUser(inputJson: JsValue)(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
@@ -108,7 +108,7 @@ class BankDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite wit
     }
   }
 
-  override def beforeEach: Unit = {
+  override def beforeEach(): Unit = {
     reset(mockAuthConnector)
     reset(mockDelegationService)
     reset(mockChangeLiabilityReturnService)

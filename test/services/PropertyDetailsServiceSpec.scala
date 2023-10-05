@@ -47,7 +47,7 @@ class PropertyDetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite wi
      mockDataCacheConnector
    )
  }
-  override def beforeEach: Unit = {
+  override def beforeEach(): Unit = {
     reset(mockPropertyDetailsConnector)
   }
 

@@ -82,7 +82,7 @@ class Setup {
     injectedViewInstance
   )
 
-  def viewWithAuthorisedUser(x: Option[EditLiabilityReturnsResponseModel] = None)(test: Future[Result] => Any) {
+  def viewWithAuthorisedUser(x: Option[EditLiabilityReturnsResponseModel] = None)(test: Future[Result] => Any): Unit = {
     val userId = s"user-${UUID.randomUUID}"
     val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
     setAuthMocks(authMock)
@@ -95,7 +95,7 @@ class Setup {
     test(result)
   }
 
-  def getPrintFriendlyWithAuthorisedUser(x: Option[EditLiabilityReturnsResponseModel] = None)(test: Future[Result] => Any) {
+  def getPrintFriendlyWithAuthorisedUser(x: Option[EditLiabilityReturnsResponseModel] = None)(test: Future[Result] => Any): Unit = {
     val userId = s"user-${UUID.randomUUID}"
     val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
     setAuthMocks(authMock)
@@ -111,7 +111,7 @@ class Setup {
 
 }
 
-  override def beforeEach: Unit = {
+  override def beforeEach(): Unit = {
 
     reset(mockSubscriptionDataService)
     reset(mockDelegationService)

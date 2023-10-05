@@ -61,7 +61,7 @@ class ApplicationControllerSpec extends PlaySpec with MockitoSugar with GuiceOne
       injectedIndividualView
     )
 
-    def getWithUnAuthorisedUser(test: Future[Result] => Any) {
+    def getWithUnAuthorisedUser(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
       setAuthMocks(authMock)
@@ -69,7 +69,7 @@ class ApplicationControllerSpec extends PlaySpec with MockitoSugar with GuiceOne
       test(result)
     }
 
-    def getWithUnAuthorisedUserSa(test: Future[Result] => Any) {
+    def getWithUnAuthorisedUserSa(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Individual, saEnrolmentSet)
       setAuthMocks(authMock)
@@ -77,7 +77,7 @@ class ApplicationControllerSpec extends PlaySpec with MockitoSugar with GuiceOne
       test(result)
     }
 
-    def keepAliveWithAuthorisedUser(test: Future[Result] => Any) {
+    def keepAliveWithAuthorisedUser(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)

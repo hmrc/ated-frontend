@@ -49,7 +49,7 @@ class AtedConnectorSpec extends PlaySpec with GuiceOneAppPerSuite with MockitoSu
 
   val periodKey: String = "2015"
 
-  override def beforeEach: Unit = {
+  override def beforeEach(): Unit = {
     reset(mockHttp)
   }
 

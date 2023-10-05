@@ -44,7 +44,7 @@ class AgentClientMandateFrontendConnectorSpec extends PlaySpec with GuiceOneAppP
     )
   }
 
-  override def beforeEach: Unit = {
+  override def beforeEach(): Unit = {
     reset(mockHttp)
   }
 

@@ -40,7 +40,7 @@ class DelegationServiceSpec extends PlaySpec with MockitoSugar with BeforeAndAft
     )
   }
 
-  override def beforeEach: Unit = {
+  override def beforeEach(): Unit = {
     reset(mockDelegationConnector)
   }
 

@@ -105,7 +105,7 @@ class DisposeLiabilitySentControllerSpec extends PlaySpec with GuiceOneServerPer
     }
   }
 
-  override def beforeEach: Unit = {
+  override def beforeEach(): Unit = {
 
     reset(mockSubscriptionDataService)
     reset(mockDelegationService)

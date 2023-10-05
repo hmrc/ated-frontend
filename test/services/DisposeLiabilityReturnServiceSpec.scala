@@ -56,7 +56,7 @@ class DisposeLiabilityReturnServiceSpec extends PlaySpec with GuiceOneServerPerS
   )
 }
 
-  override def beforeEach: Unit = {
+  override def beforeEach(): Unit = {
     reset(mockAtedConnector)
     reset(mockDataCacheConnector)
   }

@@ -51,7 +51,7 @@ class AuthActionSpec extends PlaySpec with MockitoSugar with BeforeAndAfterEach 
     val testAuthAction : AuthAction = new AuthAction(mockAppConfig, mockDelegationService, mockAuthConnector)
   }
 
-  override def beforeEach: Unit = {
+  override def beforeEach(): Unit = {
     reset(mockDelegationService)
     reset(mockAuthConnector)
   }

@@ -82,7 +82,7 @@ class FormBundleReturnsServiceSpec extends PlaySpec with GuiceOneServerPerSuite 
     """.stripMargin
 
 
-  override def beforeEach: Unit = {
+  override def beforeEach(): Unit = {
     reset(mockConnector)
   }
 

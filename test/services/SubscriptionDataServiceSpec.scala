@@ -52,7 +52,7 @@ class SubscriptionDataServiceSpec extends PlaySpec with MockitoSugar with Before
     )
   }
 
-  override def beforeEach: Unit = {
+  override def beforeEach(): Unit = {
     reset(mockSubscriptionDataAdapterService)
     reset(mockDataCacheConnector)
     reset(mockDetailsService)

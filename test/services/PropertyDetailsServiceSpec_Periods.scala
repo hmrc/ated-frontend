@@ -49,7 +49,7 @@ class PropertyDetailsServiceSpec_Periods extends PlaySpec with GuiceOneServerPer
    )
  }
 
-  override def beforeEach: Unit = {
+  override def beforeEach(): Unit = {
   }
 
   "PropertyDetailsService" must {

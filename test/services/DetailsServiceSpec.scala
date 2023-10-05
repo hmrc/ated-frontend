@@ -51,7 +51,7 @@ class DetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite with Mocki
     )
   }
 
-  override def beforeEach: Unit = {
+  override def beforeEach(): Unit = {
     reset(mockAtedConnector)
     reset(mockMandateFrontendConnector)
   }

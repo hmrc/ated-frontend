@@ -132,7 +132,7 @@ class Setup {
   }
 }
 
-  override def beforeEach: Unit = {
+  override def beforeEach(): Unit = {
 
     reset(mockSubscriptionDataService)
     reset(mockDelegationService)

@@ -77,7 +77,7 @@ class Setup {
     injectedViewInstance
   )
 
-  def viewWithAuthorisedUser(test: Future[Result] => Any) {
+  def viewWithAuthorisedUser(test: Future[Result] => Any): Unit = {
     val userId = s"user-${UUID.randomUUID}"
     val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
     noDelegationModelAuthMocks(authMock)
@@ -89,7 +89,7 @@ class Setup {
     test(result)
   }
 
-  def viewWithAuthorisedDelegatedUser(test: Future[Result] => Any) {
+  def viewWithAuthorisedDelegatedUser(test: Future[Result] => Any): Unit = {
     val userId = s"user-${UUID.randomUUID}"
     val authMock = authResultDefault(AffinityGroup.Agent, defaultEnrolmentSet)
     setAuthMocks(authMock)
@@ -101,7 +101,7 @@ class Setup {
   }
 
 
-  def submitWithAuthorisedUser(a: Option[DisposeLiabilityReturn], oldForBundle: String = oldFormBundleNum)(test: Future[Result] => Any) {
+  def submitWithAuthorisedUser(a: Option[DisposeLiabilityReturn], oldForBundle: String = oldFormBundleNum)(test: Future[Result] => Any): Unit = {
     val userId = s"user-${UUID.randomUUID}"
     val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
     setAuthMocks(authMock)

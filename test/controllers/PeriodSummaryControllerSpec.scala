@@ -84,7 +84,7 @@ class PeriodSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite w
       mockBackLinkCacheConnector,
       injectedViewInstance
     )
-    def createReturnWithAuthorisedUser()(test: Future[Result] => Any) {
+    def createReturnWithAuthorisedUser()(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
@@ -95,7 +95,7 @@ class PeriodSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite w
       test(result)
     }
 
-    def createReturnWithAuthorisedUserFromAccountSummary()(test: Future[Result] => Any) {
+    def createReturnWithAuthorisedUserFromAccountSummary()(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
@@ -107,7 +107,7 @@ class PeriodSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite w
       test(result)
     }
 
-    def getWithAuthorisedUser(periodSummaries: Option[PeriodSummaryReturns] = None)(test: Future[Result] => Any) {
+    def getWithAuthorisedUser(periodSummaries: Option[PeriodSummaryReturns] = None)(test: Future[Result] => Any): Unit = {
       val period: Int = 2015
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
@@ -126,7 +126,7 @@ class PeriodSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite w
       test(result)
     }
 
-    def getWithAuthorisedUserPastTab(periodSummaries: Option[PeriodSummaryReturns] = None)(test: Future[Result] => Any) {
+    def getWithAuthorisedUserPastTab(periodSummaries: Option[PeriodSummaryReturns] = None)(test: Future[Result] => Any): Unit = {
       val period: Int = 2015
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
@@ -145,7 +145,7 @@ class PeriodSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite w
       test(result)
     }
 
-    def getWithUnAuthorisedUser(test: Future[Result] => Any) {
+    def getWithUnAuthorisedUser(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
       setInvalidAuthMocks(authMock)
@@ -153,7 +153,7 @@ class PeriodSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite w
       test(result)
     }
 
-    def viewReturnWithAuthorisedUser()(test: Future[Result] => Any) {
+    def viewReturnWithAuthorisedUser()(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
@@ -162,7 +162,7 @@ class PeriodSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite w
       test(result)
     }
 
-    def viewChargeableWithAuthorisedUser()(test: Future[Result] => Any) {
+    def viewChargeableWithAuthorisedUser()(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
@@ -172,7 +172,7 @@ class PeriodSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite w
       test(result)
     }
 
-    def viewChargeableEditWithAuthorisedUser()(test: Future[Result] => Any) {
+    def viewChargeableEditWithAuthorisedUser()(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
@@ -182,7 +182,7 @@ class PeriodSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite w
       test(result)
     }
 
-    def viewDisposalWithAuthorisedUser()(test: Future[Result] => Any) {
+    def viewDisposalWithAuthorisedUser()(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)

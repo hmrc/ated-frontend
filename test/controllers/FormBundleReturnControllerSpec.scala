@@ -79,7 +79,7 @@ class FormBundleReturnControllerSpec extends PlaySpec with GuiceOneServerPerSuit
       injectedViewInstance
     )
 
-    def getWithAuthorisedUser(formBundleReturn: Option[FormBundleReturn], periodSummaries: Option[PeriodSummaryReturns] = None)(test: Future[Result] => Any) {
+    def getWithAuthorisedUser(formBundleReturn: Option[FormBundleReturn], periodSummaries: Option[PeriodSummaryReturns] = None)(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
@@ -100,7 +100,7 @@ class FormBundleReturnControllerSpec extends PlaySpec with GuiceOneServerPerSuit
       test(result)
     }
 
-    def getWithUnAuthorisedUser(test: Future[Result] => Any) {
+    def getWithUnAuthorisedUser(test: Future[Result] => Any): Unit = {
       val periodKey: Int = 2014
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)

@@ -53,7 +53,7 @@ class HomeControllerSpec extends PlaySpec with GuiceOneServerPerSuite with Mocki
       mockAppConfig
     )
 
-    def homeWithAuthorisedAgent(test: Future[Result] => Any) {
+    def homeWithAuthorisedAgent(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Agent, agentEnrolmentSet)
       setAuthMocks(authMock)
@@ -61,7 +61,7 @@ class HomeControllerSpec extends PlaySpec with GuiceOneServerPerSuite with Mocki
       test(result)
     }
 
-    def homeWithUnsubscribedUser(test: Future[Result] => Any) {
+    def homeWithUnsubscribedUser(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
       setAuthMocks(authMock)
@@ -69,7 +69,7 @@ class HomeControllerSpec extends PlaySpec with GuiceOneServerPerSuite with Mocki
       test(result)
     }
 
-    def homeWithUnsubscribedAgent(test: Future[Result] => Any) {
+    def homeWithUnsubscribedAgent(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
       setAuthMocks(authMock)
@@ -77,7 +77,7 @@ class HomeControllerSpec extends PlaySpec with GuiceOneServerPerSuite with Mocki
       test(result)
     }
 
-    def homeWithAuthorisedUser(test: Future[Result] => Any) {
+    def homeWithAuthorisedUser(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
@@ -85,7 +85,7 @@ class HomeControllerSpec extends PlaySpec with GuiceOneServerPerSuite with Mocki
       test(result)
     }
 
-    def homeWithAuthorisedUserFromBTA(test: Future[Result] => Any) {
+    def homeWithAuthorisedUserFromBTA(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
@@ -93,7 +93,7 @@ class HomeControllerSpec extends PlaySpec with GuiceOneServerPerSuite with Mocki
       test(result)
     }
 
-    def homeWithUnAuthorisedUser(test: Future[Result] => Any) {
+    def homeWithUnAuthorisedUser(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
       setInvalidAuthMocks(authMock)
