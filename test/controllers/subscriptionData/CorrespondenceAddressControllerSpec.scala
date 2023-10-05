@@ -79,7 +79,7 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
       injectedViewInstanceError
     )
 
-    def getWithAuthorisedUser(companyDetails: Option[Address]=None)(test: Future[Result] => Any) {
+    def getWithAuthorisedUser(companyDetails: Option[Address]=None)(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
@@ -89,7 +89,7 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
       test(result)
     }
 
-    def getWithUnAuthorisedUser(test: Future[Result] => Any) {
+    def getWithUnAuthorisedUser(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
       setInvalidAuthMocks(authMock)
@@ -98,7 +98,7 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
     }
 
     def submitWithAuthorisedUserSuccess(testAddress: Option[AddressDetails] = None)
-                                       (fakeRequest: FakeRequest[AnyContentAsJson])(test: Future[Result] => Any) {
+                                       (fakeRequest: FakeRequest[AnyContentAsJson])(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
@@ -109,7 +109,7 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
       test(result)
     }
 
-    def submitWithUnAuthorisedUser(test: Future[Result] => Any) {
+    def submitWithUnAuthorisedUser(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
       setInvalidAuthMocks(authMock)

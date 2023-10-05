@@ -83,7 +83,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
     )
 
 
-    def getWithUnAuthorisedUser(test: Future[Result] => Any) {
+    def getWithUnAuthorisedUser(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
       setInvalidAuthMocks(authMock)
@@ -91,7 +91,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
       test(result)
     }
 
-    def getDataWithAuthorisedUser(id: String, propertyDetails: PropertyDetails)(test: Future[Result] => Any) {
+    def getDataWithAuthorisedUser(id: String, propertyDetails: PropertyDetails)(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
@@ -107,7 +107,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
       test(result)
     }
 
-    def saveWithUnAuthorisedUser(test: Future[Result] => Any) {
+    def saveWithUnAuthorisedUser(test: Future[Result] => Any): Unit = {
       val periodKey: Int = 2015
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
@@ -116,7 +116,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
       test(result)
     }
 
-    def submitWithAuthorisedUser(id: String, inputJson: JsValue, mode: Option[String] = None)(test: Future[Result] => Any) {
+    def submitWithAuthorisedUser(id: String, inputJson: JsValue, mode: Option[String] = None)(test: Future[Result] => Any): Unit = {
       val periodKey: Int = 2015
       val userId = s"user-${UUID.randomUUID}"
       when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
@@ -130,7 +130,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
       test(result)
     }
 
-    def editFromSummary(id: String, propertyDetails: PropertyDetails)(test: Future[Result] => Any) {
+    def editFromSummary(id: String, propertyDetails: PropertyDetails)(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)

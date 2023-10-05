@@ -95,7 +95,7 @@ class Setup {
     injectedViewInstanceResults
   )
 
-  def viewWithUnAuthorisedUser(test: Future[Result] => Any) {
+  def viewWithUnAuthorisedUser(test: Future[Result] => Any): Unit = {
     val userId = s"user-${UUID.randomUUID}"
     val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
     setInvalidAuthMocks(authMock)
@@ -106,7 +106,7 @@ class Setup {
     test(result)
   }
 
-  def viewWithAuthorisedUser(id: Option[String])(test: Future[Result] => Any) {
+  def viewWithAuthorisedUser(id: Option[String])(test: Future[Result] => Any): Unit = {
     val userId = s"user-${UUID.randomUUID}"
     val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
     setAuthMocks(authMock)
@@ -119,7 +119,7 @@ class Setup {
     test(result)
   }
 
-  def findWithUnAuthorisedUser(test: Future[Result] => Any) {
+  def findWithUnAuthorisedUser(test: Future[Result] => Any): Unit = {
     val userId = s"user-${UUID.randomUUID}"
     val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
     setInvalidAuthMocks(authMock)
@@ -129,7 +129,7 @@ class Setup {
     test(result)
   }
 
-  def findWithAuthorisedUser(id: Option[String], inputJson: JsValue, results: AddressSearchResults)(test: Future[Result] => Any) {
+  def findWithAuthorisedUser(id: Option[String], inputJson: JsValue, results: AddressSearchResults)(test: Future[Result] => Any): Unit = {
     val userId = s"user-${UUID.randomUUID}"
     val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
     setAuthMocks(authMock)
@@ -140,7 +140,7 @@ class Setup {
     test(result)
   }
 
-  def saveWithUnAuthorisedUser(test: Future[Result] => Any) {
+  def saveWithUnAuthorisedUser(test: Future[Result] => Any): Unit = {
     val userId = s"user-${UUID.randomUUID}"
     val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
     setInvalidAuthMocks(authMock)
@@ -154,7 +154,7 @@ class Setup {
                              periodKey: Int,
                              inputJson: JsValue,
                              results: Option[AddressSearchResults],
-                             selected: Option[PropertyDetailsAddress])(test: Future[Result] => Any) {
+                             selected: Option[PropertyDetailsAddress])(test: Future[Result] => Any): Unit = {
     val userId = s"user-${UUID.randomUUID}"
     val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
     setAuthMocks(authMock)
@@ -167,7 +167,7 @@ class Setup {
     test(result)
   }
 
-  def manualAddressRedirect(id: Option[String])(test: Future[Result] => Any) {
+  def manualAddressRedirect(id: Option[String])(test: Future[Result] => Any): Unit = {
     val userId = s"user-${UUID.randomUUID}"
     val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
     setAuthMocks(authMock)

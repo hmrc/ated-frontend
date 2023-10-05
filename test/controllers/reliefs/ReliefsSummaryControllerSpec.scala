@@ -87,7 +87,7 @@ class ReliefsSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
       injectedViewInstancePeriod
     )
 
-    def getWithUnAuthorisedUser(test: Future[Result] => Any) {
+    def getWithUnAuthorisedUser(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
       setInvalidAuthMocks(authMock)
@@ -95,7 +95,7 @@ class ReliefsSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
       test(result)
     }
 
-    def getWithAuthorisedUser(testReliefs: Option[ReliefsTaxAvoidance], periodKeyLocal: Int = periodKey)(test: Future[Result] => Any) {
+    def getWithAuthorisedUser(testReliefs: Option[ReliefsTaxAvoidance], periodKeyLocal: Int = periodKey)(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
@@ -109,7 +109,7 @@ class ReliefsSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
       test(result)
     }
 
-    def submitWithAuthorisedUser(test: Future[Result] => Any) {
+    def submitWithAuthorisedUser(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
@@ -120,7 +120,7 @@ class ReliefsSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
       test(result)
     }
 
-    def getWithDeleteDraftLink(test: Future[Result] => Any) {
+    def getWithDeleteDraftLink(test: Future[Result] => Any): Unit = {
       val periodKey: Int = 2017
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)

@@ -96,7 +96,7 @@ class AvoidanceSchemeBeingUsedControllerSpec extends PlaySpec with GuiceOneServe
       injectedViewInstanceKey
     )
 
-    def getAuthorisedUserNone(test: Future[Result] => Any) {
+    def getAuthorisedUserNone(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
@@ -108,7 +108,7 @@ class AvoidanceSchemeBeingUsedControllerSpec extends PlaySpec with GuiceOneServe
       test(result)
     }
 
-    def getAuthorisedUserSome(test: Future[Result] => Any) {
+    def getAuthorisedUserSome(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
@@ -124,7 +124,7 @@ class AvoidanceSchemeBeingUsedControllerSpec extends PlaySpec with GuiceOneServe
       test(result)
     }
 
-    def getForbiddenUserSome(test: Future[Result] => Any) {
+    def getForbiddenUserSome(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
       setForbiddenAuthMocks(authMock)
@@ -136,7 +136,7 @@ class AvoidanceSchemeBeingUsedControllerSpec extends PlaySpec with GuiceOneServe
       test(result)
     }
 
-    def getWithUnAuthorisedUser(test: Future[Result] => Any) {
+    def getWithUnAuthorisedUser(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
       setInvalidAuthMocks(authMock)
@@ -144,7 +144,7 @@ class AvoidanceSchemeBeingUsedControllerSpec extends PlaySpec with GuiceOneServe
       test(result)
     }
 
-    def submitWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
+    def submitWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(btaNavigationLinksView()(messages,mockAppConfig)))
       when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
@@ -160,7 +160,7 @@ class AvoidanceSchemeBeingUsedControllerSpec extends PlaySpec with GuiceOneServe
       test(result)
     }
 
-    def submitForbiddenUserNone(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
+    def submitForbiddenUserNone(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(btaNavigationLinksView()(messages,mockAppConfig)))
       when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
@@ -178,7 +178,7 @@ class AvoidanceSchemeBeingUsedControllerSpec extends PlaySpec with GuiceOneServe
 
 
 
-    def editFromSummary(reliefs: Option[ReliefsTaxAvoidance]= None)(test: Future[Result] => Any) {
+    def editFromSummary(reliefs: Option[ReliefsTaxAvoidance]= None)(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
@@ -190,7 +190,7 @@ class AvoidanceSchemeBeingUsedControllerSpec extends PlaySpec with GuiceOneServe
       test(result)
     }
 
-    def editForbiddenUserNone(reliefs: Option[ReliefsTaxAvoidance]= None)(test: Future[Result] => Any) {
+    def editForbiddenUserNone(reliefs: Option[ReliefsTaxAvoidance]= None)(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
       setForbiddenAuthMocks(authMock)

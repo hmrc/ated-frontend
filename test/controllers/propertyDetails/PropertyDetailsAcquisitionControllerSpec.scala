@@ -80,7 +80,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
       mockBackLinkCacheConnector,
       injectedViewInstance
     )
-    def getWithUnAuthorisedUser(test: Future[Result] => Any) {
+    def getWithUnAuthorisedUser(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
       setInvalidAuthMocks(authMock)
@@ -88,7 +88,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
       test(result)
     }
 
-    def getDataWithAuthorisedUser(id: String, propertyDetails: PropertyDetails)(test: Future[Result] => Any) {val userId = s"user-${UUID.randomUUID}"
+    def getDataWithAuthorisedUser(id: String, propertyDetails: PropertyDetails)(test: Future[Result] => Any): Unit = {val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
       when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(btaNavigationLinksView()(messages,mockAppConfig)))
@@ -103,7 +103,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
       test(result)
     }
 
-    def editFromSummary(id: String, propertyDetails: PropertyDetails)(test: Future[Result] => Any) {val userId = s"user-${UUID.randomUUID}"
+    def editFromSummary(id: String, propertyDetails: PropertyDetails)(test: Future[Result] => Any): Unit = {val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
       when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
@@ -117,7 +117,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
       test(result)
     }
 
-    def saveWithUnAuthorisedUser(test: Future[Result] => Any) {
+    def saveWithUnAuthorisedUser(test: Future[Result] => Any): Unit = {
       val periodKey: Int = 2015
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
@@ -126,7 +126,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
       test(result)
     }
 
-    def submitWithAuthorisedUser(inputJson: JsValue)(test: Future[Result] => Any) {
+    def submitWithAuthorisedUser(inputJson: JsValue)(test: Future[Result] => Any): Unit = {
       val periodKey: Int = 2015
       val userId = s"user-${UUID.randomUUID}"
       when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))

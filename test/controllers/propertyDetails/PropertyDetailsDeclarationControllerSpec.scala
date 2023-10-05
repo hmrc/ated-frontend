@@ -129,7 +129,7 @@ class PropertyDetailsDeclarationControllerSpec extends PlaySpec with GuiceOneSer
       test(result)
     }
 
-    def submitWithUnAuthorisedUser(test: Future[Result] => Any) {
+    def submitWithUnAuthorisedUser(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
       setInvalidAuthMocks(authMock)
@@ -137,7 +137,7 @@ class PropertyDetailsDeclarationControllerSpec extends PlaySpec with GuiceOneSer
       test(result)
     }
 
-    def submitWithAuthorisedUser(inputJson: JsValue)(test: Future[Result] => Any) {
+    def submitWithAuthorisedUser(inputJson: JsValue)(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
         (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
@@ -154,7 +154,7 @@ class PropertyDetailsDeclarationControllerSpec extends PlaySpec with GuiceOneSer
       test(result)
     }
 
-    def submitWithAuthorisedUserNoCalc(inputJson: JsValue)(test: Future[Result] => Any) {
+    def submitWithAuthorisedUserNoCalc(inputJson: JsValue)(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
         (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
@@ -171,7 +171,7 @@ class PropertyDetailsDeclarationControllerSpec extends PlaySpec with GuiceOneSer
       test(result)
     }
 
-    def submitWithAuthorisedInvalidAgent(inputJson: JsValue)(test: Future[Result] => Any) {
+    def submitWithAuthorisedInvalidAgent(inputJson: JsValue)(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)

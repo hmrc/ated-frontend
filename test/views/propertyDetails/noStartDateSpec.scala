@@ -16,9 +16,8 @@
 
 package views.propertyDetails
 
-import builders.PropertyDetailsBuilder
 import config.ApplicationConfig
-import models.{PropertyDetailsAddress, StandardAuthRetrievals}
+import models.StandardAuthRetrievals
 import org.jsoup.Jsoup
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.{BeforeAndAfterEach, GivenWhenThen}

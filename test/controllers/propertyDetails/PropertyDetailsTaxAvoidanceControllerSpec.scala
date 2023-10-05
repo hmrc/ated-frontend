@@ -83,7 +83,7 @@ class PropertyDetailsTaxAvoidanceControllerSpec extends PlaySpec with GuiceOneSe
       injectedViewInstance
     )
 
-    def getWithUnAuthorisedUser(test: Future[Result] => Any) {
+    def getWithUnAuthorisedUser(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
       setInvalidAuthMocks(authMock)
@@ -91,7 +91,7 @@ class PropertyDetailsTaxAvoidanceControllerSpec extends PlaySpec with GuiceOneSe
       test(result)
     }
 
-    def getDataWithAuthorisedUser(propertyDetails: PropertyDetails)(test: Future[Result] => Any) {
+    def getDataWithAuthorisedUser(propertyDetails: PropertyDetails)(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
@@ -107,7 +107,7 @@ class PropertyDetailsTaxAvoidanceControllerSpec extends PlaySpec with GuiceOneSe
       test(result)
     }
 
-    def editFromSummary(propertyDetails: PropertyDetails)(test: Future[Result] => Any) {
+    def editFromSummary(propertyDetails: PropertyDetails)(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
@@ -119,7 +119,7 @@ class PropertyDetailsTaxAvoidanceControllerSpec extends PlaySpec with GuiceOneSe
       test(result)
     }
 
-    def saveWithUnAuthorisedUser(test: Future[Result] => Any) {
+    def saveWithUnAuthorisedUser(test: Future[Result] => Any): Unit = {
       val periodKey: Int = 2015
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
@@ -128,7 +128,7 @@ class PropertyDetailsTaxAvoidanceControllerSpec extends PlaySpec with GuiceOneSe
       test(result)
     }
 
-    def submitWithAuthorisedUser(inputJson: JsValue)(test: Future[Result] => Any) {
+    def submitWithAuthorisedUser(inputJson: JsValue)(test: Future[Result] => Any): Unit = {
       val periodKey: Int = 2015
       val userId = s"user-${UUID.randomUUID}"
       when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))

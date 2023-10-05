@@ -84,7 +84,7 @@ class PropertyDetailsOwnedBeforeControllerSpec extends PlaySpec with GuiceOneSer
     val periodKey: Int = calculatePeakStartYear(LocalDate.parse(s"$year-3-16"))
     val valuationPeriod: String = PeriodUtils.calculateLowerTaxYearBoundary(periodKey).getYear.toString
 
-    def getWithUnAuthorisedUser(test: Future[Result] => Any) {
+    def getWithUnAuthorisedUser(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
       setInvalidAuthMocks(authMock)
@@ -92,7 +92,7 @@ class PropertyDetailsOwnedBeforeControllerSpec extends PlaySpec with GuiceOneSer
       test(result)
     }
 
-    def getDataWithAuthorisedUser(id: String, propertyDetails: PropertyDetails)(test: Future[Result] => Any) {
+    def getDataWithAuthorisedUser(id: String, propertyDetails: PropertyDetails)(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
@@ -108,7 +108,7 @@ class PropertyDetailsOwnedBeforeControllerSpec extends PlaySpec with GuiceOneSer
       test(result)
     }
 
-    def editFromSummary(id: String, propertyDetails: PropertyDetails)(test: Future[Result] => Any) {
+    def editFromSummary(id: String, propertyDetails: PropertyDetails)(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
@@ -120,7 +120,7 @@ class PropertyDetailsOwnedBeforeControllerSpec extends PlaySpec with GuiceOneSer
       test(result)
     }
 
-    def saveWithUnAuthorisedUser(test: Future[Result] => Any) {
+    def saveWithUnAuthorisedUser(test: Future[Result] => Any): Unit = {
       val periodKey: Int = 2015
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
@@ -129,7 +129,7 @@ class PropertyDetailsOwnedBeforeControllerSpec extends PlaySpec with GuiceOneSer
       test(result)
     }
 
-    def submitWithAuthorisedUser(inputJson: JsValue)(test: Future[Result] => Any) {
+    def submitWithAuthorisedUser(inputJson: JsValue)(test: Future[Result] => Any): Unit = {
       val periodKey: Int = 2015
       val userId = s"user-${UUID.randomUUID}"
       when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))

@@ -87,7 +87,7 @@ class ViewReliefReturnControllerSpec extends PlaySpec with GuiceOneServerPerSuit
       injectedViewInstance
     )
 
-    def getWithAuthorisedUserSuccess(test: Future[Result] => Any, isEditable: Boolean = true) {
+    def getWithAuthorisedUserSuccess(test: Future[Result] => Any, isEditable: Boolean = true): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
@@ -103,7 +103,7 @@ class ViewReliefReturnControllerSpec extends PlaySpec with GuiceOneServerPerSuit
       test(result)
     }
 
-    def getWithAuthorisedUserFailure(test: Future[Result] => Any) {
+    def getWithAuthorisedUserFailure(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
@@ -117,7 +117,7 @@ class ViewReliefReturnControllerSpec extends PlaySpec with GuiceOneServerPerSuit
       test(result)
     }
 
-    def getWithUnAuthorisedUser(test: Future[Result] => Any) {
+    def getWithUnAuthorisedUser(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
       setInvalidAuthMocks(authMock)
