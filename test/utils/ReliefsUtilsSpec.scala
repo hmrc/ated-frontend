@@ -85,7 +85,7 @@ class ReliefsUtilsSpec extends PlaySpec with MockitoSugar with GuiceOneServerPer
         }
         .map { key => (key, "true") }
         .toMap
-        .mapValues(str => Seq(str))
+        .view.mapValues(str => Seq(str)).toMap
 
       ReliefsUtils.cleanDateTuples(mapTuple).size mustBe 16
     }

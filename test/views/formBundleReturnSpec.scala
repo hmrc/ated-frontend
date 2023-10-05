@@ -21,7 +21,9 @@ import config.ApplicationConfig
 import models._
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
-import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
+import org.scalatest.Resources.scenario
+import org.scalatest.{BeforeAndAfterEach, GivenWhenThen}
+import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.i18n.{Messages, MessagesApi}
@@ -32,7 +34,7 @@ import testhelpers.MockAuthUtil
 import utils.{AtedConstants, PeriodUtils}
 import views.html.formBundleReturn
 
-class formBundleReturnSpec extends FeatureSpec with GuiceOneServerPerSuite with MockitoSugar
+class formBundleReturnSpec extends AnyFeatureSpec with GuiceOneServerPerSuite with MockitoSugar
   with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
 
   implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
@@ -76,7 +78,7 @@ class formBundleReturnSpec extends FeatureSpec with GuiceOneServerPerSuite with 
     )
 
 
-  feature("The user can view their previous returns") {
+  Feature("The user can view their previous returns") {
 
     info("as a client i want to be able to view my previous returns")
 

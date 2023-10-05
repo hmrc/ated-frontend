@@ -46,5 +46,5 @@ class TestAudit @Inject()(auditConnector: AuditConnector) extends Audit("test", 
     ()
   }
 
-  override def sendDataEvent: (DataEvent) => Unit = captureDataEvent
+  def sendDataEvent: (DataEvent) => Unit = captureDataEvent
 }

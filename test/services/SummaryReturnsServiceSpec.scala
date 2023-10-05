@@ -67,7 +67,7 @@ class SummaryReturnsServiceSpec extends PlaySpec with MockitoSugar with BeforeAn
         )
       )
 
-      val jsonTransformer = (__ \ 'allReturns).json.update(
+      val jsonTransformer = (__ \ "allReturns").json.update(
         __.read[JsArray].map { o => o ++ errantPeriod }
       )
 

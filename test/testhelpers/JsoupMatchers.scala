@@ -20,13 +20,13 @@ import org.jsoup.nodes.{Attributes, Document}
 import org.jsoup.select.Elements
 import org.scalatest.matchers.{MatchResult, Matcher}
 
-import scala.collection.JavaConverters
+import scala.jdk.javaapi.CollectionConverters._
 
 trait JsoupArgumentMatchers {
 
   class TagWithTextMatcher(expectedContent: String, tag: String) extends Matcher[Document] {
     def apply(left: Document): MatchResult = {
-      val elements: List[String] = JavaConverters.collectionAsScalaIterable(left.getElementsByTag(tag)).map(_.text).toList
+      val elements: List[String] = asScala(left.getElementsByTag(tag)).map(_.text).toList
 
       lazy val elementContents = elements.mkString("\t", "\n\t", "")
 
@@ -53,7 +53,7 @@ trait JsoupArgumentMatchers {
 
   class CssSelectorWithTextMatcher(expectedContent: String, selector: String) extends Matcher[Document] {
     def apply(left: Document): MatchResult = {
-      val elements: List[String] = JavaConverters.collectionAsScalaIterable(left.select(selector)).map(_.text).toList
+      val elements: List[String] = asScala(left.select(selector)).map(_.text).toList
 
       lazy val elementContents = elements.mkString("\t", "\n\t", "")
 
@@ -68,7 +68,7 @@ trait JsoupArgumentMatchers {
   class CssSelectorWithAttributeValueMatcher(attributeName: String, attributeValue: String, selector: String) extends Matcher[Document] {
     def apply(left: Document): MatchResult = {
 
-      val attributes: List[Attributes] = JavaConverters.collectionAsScalaIterable(left.select(selector)).map(_.attributes).toList
+      val attributes: List[Attributes] = asScala(left.select(selector)).map(_.attributes).toList
 
       lazy val attributeContents = attributes.mkString("\t", "\n\t", "")
 
@@ -83,7 +83,7 @@ trait JsoupArgumentMatchers {
   class CssSelectorWithClassMatcher(className: String, selector: String) extends Matcher[Document] {
     def apply(left: Document): MatchResult = {
 
-      val classes: List[String] = JavaConverters.collectionAsScalaIterable(left.select(selector)).map(_.className()).toList
+      val classes: List[String] = asScala(left.select(selector)).map(_.className()).toList
 
       lazy val classContents = classes.mkString("\t", "\n\t", "")
 
