@@ -83,7 +83,7 @@ class periodSummarySpec extends AnyFeatureSpec with GuiceOneAppPerSuite with Moc
   Feature("The user can view their returns") {
     info("as a client i want to be able to view my returns")
 
-    scenario("Show no return data if we have no returns") {
+    Scenario("Show no return data if we have no returns") {
 
       Given("the client has no returns")
       When("The user views the page")
