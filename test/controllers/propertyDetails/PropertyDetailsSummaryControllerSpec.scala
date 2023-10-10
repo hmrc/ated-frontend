@@ -147,9 +147,12 @@ class PropertyDetailsSummaryControllerSpec extends PlaySpec with GuiceOneServerP
   }
 
   override def beforeEach(): Unit = {
-    reset(mockDelegationService, mockDelegationService,
-      mockDataCacheConnector, mockSubscriptionDataService, mockPropertyDetailsService, mockServiceInfoService
-    )
+    reset(mockDelegationService)
+    reset(mockDelegationService)
+    reset(mockDataCacheConnector)
+    reset(mockSubscriptionDataService)
+    reset(mockPropertyDetailsService)
+    reset(mockServiceInfoService)
   }
 
   "PropertyDetailsSummaryController" must {
