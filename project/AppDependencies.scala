@@ -28,9 +28,9 @@ object AppDependencies {
         "org.scalatestplus.play"       %% "scalatestplus-play"          % "5.1.0"             % scope,
         "org.jsoup"                    %  "jsoup"                       % "1.16.1"            % scope,
         "com.typesafe.play"            %% "play-test"                   % PlayVersion.current % scope,
-        "org.scalatestplus"            %% "mockito-4-11"                % "3.2.17.0"          % scope,
-        "org.mockito"                  %  "mockito-core"                % "5.5.0"            % scope,
-        "com.github.tomakehurst"       %  "wiremock-jre8"               % "3.0.1"            % scope,
+        "org.scalatestplus"            %% "mockito-4-11" % "3.2.17.0"   % scope,
+        "org.mockito" % "mockito-core" % "5.5.0"                        % scope,
+        "com.github.tomakehurst"       %  "wiremock-jre8"               % "2.35.1"            % scope,
         "com.fasterxml.jackson.module" %% "jackson-module-scala"        % "2.15.2"            % scope
       )
     }.test
