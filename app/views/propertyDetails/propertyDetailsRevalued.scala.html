@@ -22,6 +22,7 @@
 @import views.ViewUtils.titleBuilder
 @import views.html.helpers._
 @import _root_.utils._
+@import views.html.helper.CSPNonce
 
 @this(newMain: newMain, 
      govukButton : GovukButton,
@@ -104,7 +105,7 @@
 }
 
 @pageScripts = {
-  <script src='@controllers.routes.Assets.versioned("javascript/propertyDetailsRevalued.js")'></script>
+  <script @CSPNonce.attr src='@controllers.routes.Assets.versioned("javascript/propertyDetailsRevalued.js")'></script>
 }
 
 @newMain(title = titleBuilder(messages("ated.property-details-value.isPropertyRevalued.title"), Some(propertyDetailsForm)),
