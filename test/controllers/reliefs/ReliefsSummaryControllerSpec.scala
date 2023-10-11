@@ -244,7 +244,7 @@ class ReliefsSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
             result =>
               status(result) must be(BAD_REQUEST)
               val document = Jsoup.parse(contentAsString(result))
-              document.getElementsByClass("govuk-back-link").attr("href") must include("javascript:history.back()")
+              document.getElementsByClass("govuk-back-link").attr("href") must include("#back")
               document.title() must be(TitleBuilder.buildTitle("There has been a problem"))
               document.getElementsByTag("h1").text() must be ("There has been a problem")
               document.getElementById("relief-error-body")
