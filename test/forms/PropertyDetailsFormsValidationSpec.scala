@@ -22,9 +22,8 @@ import models.PropertyDetailsDatesLiable
 import org.joda.time.LocalDate
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
-import play.api.data.{DefaultFormBinding, Form}
-import play.api.mvc.{AnyContentAsEmpty, AnyContentAsFormUrlEncoded, MessagesControllerComponents}
-import play.api.test.FakeRequest
+import play.api.data.Form
+import play.api.mvc.MessagesControllerComponents
 
 class PropertyDetailsFormsValidationSpec extends PlaySpec with GuiceOneServerPerSuite {
 

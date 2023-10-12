@@ -17,7 +17,6 @@
 package forms
 
 import config.ApplicationConfig
-import forms.PropertyDetailsForms.propertyDetailsWhenAcquiredDatesForm
 import forms.ReliefForms._
 import models._
 import org.scalatestplus.mockito.MockitoSugar
@@ -27,8 +26,6 @@ import play.api.data.{Form, FormError}
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
-
-import java.time.LocalDate
 
 
 class ReliefFormsSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar {

@@ -21,7 +21,7 @@
 @import _root_.utils.PeriodUtils
 @import views.html.helper.CSPNonce
 
-@(propertyDetails : PropertyDetails, periods : Seq[models.LineItem], valuesToDisplay: Seq[models.LineItemValue], organisationName: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages)
+@(propertyDetails : PropertyDetails, periods : Seq[models.LineItem], valuesToDisplay: Seq[models.LineItemValue], organisationName: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[_])
 
 @incomplete = {
   <strong class="govuk-tag govuk-tag--red">@messages("ated.label.incomplete")</strong>

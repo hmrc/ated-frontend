@@ -24,7 +24,8 @@
         paymentReference: Option[String],
         amountDueOrRefund: BigDecimal,
         liabilityAmount : BigDecimal
-)(implicit messages: Messages)
+)(implicit messages: Messages,
+  request: Request[_])
 
 
 @returnHeaderMessage = @{
