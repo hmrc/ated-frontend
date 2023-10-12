@@ -420,13 +420,6 @@ object PropertyDetailsForms {
     } else Seq(None)
   }
 
-  private def isInPast(maybeDate: Option[LocalDate]): Boolean = {
-    maybeDate match {
-      case Some(x) => x.isBefore(LocalDate.now().plusDays(1))
-      case None => true
-    }
-  }
-
   private def addErrorsToForm[A](form: Form[A], formErrors: Seq[FormError]): Form[A] = {
     @tailrec
     def y(f: Form[A], fe: Seq[FormError]): Form[A] = {

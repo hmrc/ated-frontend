@@ -19,9 +19,8 @@ package controllers.propertyDetails
 import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.{AuthAction, ClientHelper}
-import forms.{PropertyDetailsForms, ReliefForms}
+import forms.PropertyDetailsForms
 import forms.PropertyDetailsForms._
-
 import javax.inject.Inject
 import models._
 import play.api.i18n.{I18nSupport, Messages, MessagesImpl}

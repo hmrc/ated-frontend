@@ -80,12 +80,7 @@ class PropertyDetailsWhenAcquiredController @Inject()(mcc: MessagesControllerCom
       implicit authContext => {
         ensureClientContext {
           serviceInfoService.getPartial.flatMap { serviceInfoContent =>
-<<<<<<< HEAD
-
             validateWhenAcquiredDate(periodKey, propertyDetailsWhenAcquiredDatesForm.bindFromRequest(), dateFields).fold(
-=======
-            propertyDetailsWhenAcquiredDatesForm.bindFromRequest().fold(
->>>>>>> 7df8ae9 (DL-10659 WIP Fixing warnings)
               formWithError => {
                 currentBackLink.map(backLink =>
                   BadRequest(template(id, periodKey, formWithError, mode, serviceInfoContent, backLink))
