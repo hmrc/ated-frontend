@@ -23,6 +23,7 @@
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 @import uk.gov.hmrc.hmrcfrontend.views.html.components._
 @import views.ViewUtils.titleBuilder
+@import views.html.helper.CSPNonce
 
 @this(newMain: newMain,
   formHelper: FormWithCSRF,
@@ -826,7 +827,14 @@
   ))
 
   <p class="govuk-body">
-    <a id="print-friendly-relief-link" href="javascript:window.print();" class="govuk-link govuk-body print-hidden">@Messages("ated.relief-summary.print.view")</a>
+    <a id="print-friendly-relief-link" href="#print" class="govuk-link govuk-body print-hidden">@Messages("ated.relief-summary.print.view")</a>
+
+    <script @CSPNonce.attr>
+       document.getElementById("print-friendly-relief-link").addEventListener("click", function() {
+         event.preventDefault()
+         window.print()
+       });
+    </script>
   </p>
 
   <p class="govuk-body">

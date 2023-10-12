@@ -17,6 +17,7 @@
 @import config.ApplicationConfig
 @import _root_.utils.PeriodUtils._
 @import views.html.helpers._
+@import views.html.helper.CSPNonce
 
 @(changeLiability : PropertyDetails,
         returnType: String,
@@ -34,7 +35,7 @@
 
 @printFriendly(messages("ated.property-details-summary.title")) {
 
-<script src='@controllers.routes.Assets.versioned("javascript/printFriendly.js")'></script>
+<script @CSPNonce.attr src='@controllers.routes.Assets.versioned("javascript/printFriendly.js")'></script>
 
   <p id="change-liability-ated-ref" class="govuk-body">@messages("ated.refNo", authContext.atedReferenceNumber)</p>
 

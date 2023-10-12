@@ -18,10 +18,11 @@
 @import utils.Money._
 @(submittedReturnResponse: Option[SubmitReturnsResponse], organisationName: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 @import views.html.helpers._
+@import views.html.helper.CSPNonce
 
 @printFriendly(messages("ated.relief-sent.title")) {
 
-    <script src='@controllers.routes.Assets.versioned("javascript/printFriendly.js")'></script>
+    <script @CSPNonce.attr src='@controllers.routes.Assets.versioned("javascript/printFriendly.js")'></script>
 
     <h1 class="govuk-heading-xl govuk-!-margin-bottom-5" id="header">
         @messages("ated.chargeable-return-confirmation.submitted.text")

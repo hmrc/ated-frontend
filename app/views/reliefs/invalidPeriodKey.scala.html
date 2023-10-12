@@ -17,6 +17,7 @@
 @import config.ApplicationConfig
 @import views.ViewUtils.titleBuilder
 @import uk.gov.hmrc.govukfrontend.views.html.components._
+@import views.html.helper.CSPNonce
 
 @this(newMain: newMain,
         govukBackLink : GovukBackLink,
@@ -26,9 +27,16 @@
 
 @backLinkHtml = {
    @govukBackLink(BackLink(
-        href = "javascript:history.back()",
-        content = Text("Back")
+        href = "#back-link",
+        content = Text("Back"),
+        attributes = Map("id" -> "back-link")
    ))
+    <script @CSPNonce.attr>
+       document.getElementById("back-link").addEventListener("click", function() {
+         event.preventDefault()
+         window.history.back()
+       });
+    </script>
 }
 
 @newMain(title = titleBuilder(messages("ated.reliefs.error.title"))) {

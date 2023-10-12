@@ -18,14 +18,15 @@
 @import play.twirl.api.HtmlFormat
 @import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 @import views.ViewUtils.titleBuilder
+@import views.html.helper.CSPNonce
 
 @this(newMain: newMain, formHelper: FormWithCSRF, input: GovukInput, errorSummary: GovukErrorSummary, select: GovukSelect, govukBackLink: GovukBackLink, button: GovukButton, fieldset: GovukFieldset)
 @(registeredDetailsForm: Form[models.RegisteredDetails], listOfIsoCode: List[(String, String)], serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
 @pageScripts = {
 
-    <script type="text/javascript" src='@controllers.routes.Assets.versioned("javascript/location-autocomplete.min.js")'></script>
-    <script type="text/javascript">
+    <script @CSPNonce.attr type="text/javascript" src='@controllers.routes.Assets.versioned("javascript/location-autocomplete.min.js")'></script>
+    <script @CSPNonce.attr type="text/javascript">
       openregisterLocationPicker({
         defaultValue: '',
         selectElement: document.getElementById('addressDetails.countryCode'),
