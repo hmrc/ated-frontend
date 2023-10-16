@@ -114,6 +114,7 @@ object ReliefsUtils extends {
 
           parseRecentReturns(rest, newAnswer)
         case remReturn :: rest => parseRecentReturns(rest, Seq(remReturn))
+        //list - remReturn is single element, rest will match on rest of the list
         case _ if remReturns.size == 1 => Seq(remReturns.head)
         case _ => answer
       }
@@ -125,6 +126,7 @@ object ReliefsUtils extends {
         returnsForType.partition(recentReturnsForType.contains(_))
       }
 
-    (newestMap.keys.flatten.toSeq, newestMap.values.flatten.toSeq)
+    (newestMap.keys.flatten.toSeq.toVector, newestMap.values.flatten.toSeq)
+    //(newestMap.keys.flatten.toSeq.sortWith(_.reliefType > _.reliefType), newestMap.values.flatten.toSeq.sortWith(_.reliefType > _.reliefType))
   }
 }
