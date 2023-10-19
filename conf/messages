@@ -486,7 +486,6 @@ ated.property-details-value-error.whenAcquired.invalidDateError = Enter a real d
 ated.property-details.whenAcquired.messageKey = Date when the property was acquired
 ated.property-details-value.acquiredDate.error.too-late = The date when the property was acquired must be in the past
 
-
 ##### PROPERTY DETAILS VALUE ACQUIRED
 
 ated.property-details-value.valueAcquired.title = What was the value of the property on {0} {1} {2}?

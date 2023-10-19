@@ -70,7 +70,7 @@ object PropertyDetailsFormsValidation {
   }
 
   def validatedWhenAcquiredDate(periodKey: Int, f: Form[_]): Seq[Option[FormError]] = {
-    validateDate(periodKey, f, "acquiredDate", isMandatory = true)
+    validateDate(periodKey, f, "acquiredDate", isMandatory = true, noDateTooEarly = true)
   }
 
   def validatedNewBuildDate(periodKey: Int, f: Form[_]): Seq[Option[FormError]] = {
