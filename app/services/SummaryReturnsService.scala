@@ -18,6 +18,7 @@ package services
 
 import config.ApplicationConfig
 import connectors.{AtedConnector, DataCacheConnector}
+
 import javax.inject.Inject
 import models._
 import play.api.Logging
@@ -28,6 +29,7 @@ import utils.{PeriodUtils, ReliefsUtils}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import scala.math.Ordering.Implicits.infixOrderingOps
 
 class SummaryReturnsService @Inject()(atedConnector: AtedConnector, dataCacheConnector: DataCacheConnector)(
   implicit val appConfig: ApplicationConfig) extends Logging {
@@ -143,12 +145,14 @@ class SummaryReturnsService @Inject()(atedConnector: AtedConnector, dataCacheCon
   }
 
   def filterPeriodSummaryReturnReliefs(periodSummaryReturns: PeriodSummaryReturns, past: Boolean): PeriodSummaryReturns = {
+    def sortReturns(submittedReturns: Seq[SubmittedReliefReturns]): Seq[SubmittedReliefReturns] =
+      submittedReturns.sortBy(_.reliefType).sortWith(_.dateOfSubmission > _.dateOfSubmission)
     val optFilteredReliefReturns = periodSummaryReturns.submittedReturns
       .map(_.reliefReturns)
       .map {reliefReturns =>
         val partition = ReliefsUtils.partitionNewestReliefForType(reliefReturns)
 
-        if (past) partition._2 else partition._1
+        if (past) sortReturns(partition._2) else sortReturns(partition._1)
       }
 
     optFilteredReliefReturns match {

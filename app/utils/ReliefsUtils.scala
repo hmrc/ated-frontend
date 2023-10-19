@@ -18,10 +18,6 @@ package utils
 
 import models._
 
-import java.time.LocalDate
-import scala.math.Ordering.Implicits.infixOrderingOps
-import org.joda.time.LocalDate
-
 object ReliefsUtils extends {
 
   val RentalBusinessDesc = "Property rental businesses"
@@ -118,7 +114,6 @@ object ReliefsUtils extends {
 
           parseRecentReturns(rest, newAnswer)
         case remReturn :: rest => parseRecentReturns(rest, Seq(remReturn))
-        //list - remReturn is single element, rest will match on rest of the list
         case _ if remReturns.size == 1 => Seq(remReturns.head)
         case _ => answer
       }
@@ -130,9 +125,6 @@ object ReliefsUtils extends {
         returnsForType.partition(recentReturnsForType.contains(_))
       }
 
-    (newestMap.keys.flatten.toSeq.sortBy(_.reliefType).sortWith(_.dateOfSubmission > _.dateOfSubmission), newestMap.keys.flatten.toSeq.sortBy(_.reliefType).sortWith(_.dateOfSubmission > _.dateOfSubmission))
-
-    //(newestMap.keys.flatten.toSeq, newestMap.values.flatten.toSeq)
-    //(newestMap.keys.flatten.toSeq.toVector.sortWith(_.reliefType > _.reliefType), newestMap.values.flatten.toSeq.sortWith(_.reliefType > _.reliefType))
+    (newestMap.keys.flatten.toSeq, newestMap.values.flatten.toSeq)
   }
 }
