@@ -129,11 +129,8 @@ object ReliefsUtils extends {
         val recentReturnsForType: Seq[SubmittedReliefReturns] = parseRecentReturns(returnsForType, Nil)
         returnsForType.partition(recentReturnsForType.contains(_))
       }
-    //implicit val ordering: Ordering[SubmittedReliefReturns] = Ordering.by[SubmittedReliefReturns, LocalDate](_.dateOfSubmission).orElseBy(_.reliefType)
-//    val test = newestMap.keys.flatten.toSeq.sortBy(_.reliefType).sortWith(_.dateOfSubmission > _.dateOfSubmission)
-//    //val test2 = test.sortBy(_.reliefType)
+
     (newestMap.keys.flatten.toSeq.sortBy(_.reliefType).sortWith(_.dateOfSubmission > _.dateOfSubmission), newestMap.keys.flatten.toSeq.sortBy(_.reliefType).sortWith(_.dateOfSubmission > _.dateOfSubmission))
-    //(newestMap.keys.flatten.toSeq.sortBy(r => (r.dateOfSubmission, r.reliefType))(implicitly[Ordering[(org.joda.time.LocalDate, String)]].reverse), newestMap.keys.flatten.toSeq.sortBy(r => (r.dateOfSubmission, r.reliefType))(implicitly[Ordering[(org.joda.time.LocalDate, String)]].reverse))
 
     //(newestMap.keys.flatten.toSeq, newestMap.values.flatten.toSeq)
     //(newestMap.keys.flatten.toSeq.toVector.sortWith(_.reliefType > _.reliefType), newestMap.values.flatten.toSeq.sortWith(_.reliefType > _.reliefType))
