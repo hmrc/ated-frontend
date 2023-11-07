@@ -117,7 +117,7 @@ class ReliefsUtilsSpec extends PlaySpec with MockitoSugar with GuiceOneServerPer
       val type2Return = SubmittedReliefReturns("no3", "type 2", LocalDate.now(), LocalDate.now(), LocalDate.now().minusDays(3))
 
       val testReliefReturns = Seq(newerType1Return, olderType1Return, type2Return)
-      ReliefsUtils.partitionNewestReliefForType(testReliefReturns) mustBe Tuple2(Seq(newerType1Return, type2Return), Seq(olderType1Return))
+      ReliefsUtils.partitionNewestReliefForType(testReliefReturns) mustBe Tuple2(Seq(type2Return, newerType1Return), Seq(olderType1Return))
     }
 
     "provide many reliefs for 1 type with 2 of similar latest submission date" in {
