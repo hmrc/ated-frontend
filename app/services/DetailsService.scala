@@ -17,6 +17,7 @@
 package services
 
 import connectors.{AgentClientMandateFrontendConnector, AtedConnector, DataCacheConnector}
+
 import javax.inject.Inject
 import models._
 import play.api.Logging
@@ -25,12 +26,12 @@ import play.mvc.Http.Status._
 import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, InternalServerException}
 import utils.AtedConstants
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class DetailsService @Inject()(atedConnector: AtedConnector,
                                mandateFrontendConnector: AgentClientMandateFrontendConnector,
-                               dataCacheConnector: DataCacheConnector) extends Logging {
+                               dataCacheConnector: DataCacheConnector)
+                              (implicit val ec: ExecutionContext)extends Logging {
 
 
   val delegatedClientAtedRefNumber = "delegatedClientAtedRefNumber"

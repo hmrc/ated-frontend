@@ -27,12 +27,11 @@ import uk.gov.hmrc.http.HeaderCarrier
 import utils.AtedConstants._
 import utils.{PeriodUtils, ReliefsUtils}
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 import scala.math.Ordering.Implicits.infixOrderingOps
 
 class SummaryReturnsService @Inject()(atedConnector: AtedConnector, dataCacheConnector: DataCacheConnector)(
-  implicit val appConfig: ApplicationConfig) extends Logging {
+  implicit val appConfig: ApplicationConfig, ec: ExecutionContext) extends Logging {
 
   def getSummaryReturns(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[SummaryReturnsModel] = {
     def convertSeqOfPeriodSummariesToObject(x: Seq[PeriodSummaryReturns]): PeriodSummaryReturns = {

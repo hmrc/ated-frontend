@@ -17,15 +17,16 @@
 package services
 
 import connectors.{AddressLookupConnector, DataCacheConnector}
+
 import javax.inject.Inject
 import models._
 import uk.gov.hmrc.http.HeaderCarrier
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class AddressLookupService @Inject()(addressLookupConnector: AddressLookupConnector,
-                                     dataCacheConnector: DataCacheConnector) {
+                                     dataCacheConnector: DataCacheConnector)
+                                    (implicit val ec: ExecutionContext){
 
   val ADDRESS_LOOKUP_SEARCH_RESULTS = "ADDRESS-LOOKUP-SEARCH-RESULTS"
 

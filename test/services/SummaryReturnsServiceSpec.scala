@@ -31,12 +31,14 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import utils.AtedConstants._
 import utils.TestModels
+import play.api.test.Injecting
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-class SummaryReturnsServiceSpec extends PlaySpec with MockitoSugar with BeforeAndAfterEach with TestModels with GuiceOneServerPerSuite {
+class SummaryReturnsServiceSpec extends PlaySpec with MockitoSugar with BeforeAndAfterEach with TestModels with GuiceOneServerPerSuite with Injecting {
 
   implicit lazy val authContext: StandardAuthRetrievals = mock[StandardAuthRetrievals]
+  implicit val ec: ExecutionContext = inject[ExecutionContext]
   implicit val hc: HeaderCarrier = HeaderCarrier()
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
   val mockAtedConnector: AtedConnector = mock[AtedConnector]

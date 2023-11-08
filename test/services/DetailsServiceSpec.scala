@@ -17,7 +17,6 @@
 package services
 
 import java.util.UUID
-
 import builders.RegistrationBuilder
 import connectors.{AgentClientMandateFrontendConnector, AtedConnector, DataCacheConnector}
 import models._
@@ -34,11 +33,13 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.SessionId
 import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, HttpResponse, InternalServerException}
+import play.api.test.Injecting
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-class DetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
+class DetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with Injecting {
 
+  implicit val ec: ExecutionContext = inject[ExecutionContext]
   val mockAtedConnector: AtedConnector = mock[AtedConnector]
   val mockMandateFrontendConnector: AgentClientMandateFrontendConnector = mock[AgentClientMandateFrontendConnector]
   val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]

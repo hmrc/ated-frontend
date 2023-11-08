@@ -30,11 +30,13 @@ import play.api.test.Helpers._
 import testhelpers.MockAuthUtil
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import utils.AtedConstants._
+import play.api.test.Injecting
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-class DisposeLiabilityReturnServiceSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with MockAuthUtil {
+class DisposeLiabilityReturnServiceSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with MockAuthUtil with Injecting {
 
+  implicit val ec: ExecutionContext = inject[ExecutionContext]
   implicit val hc: HeaderCarrier = HeaderCarrier()
   implicit lazy val authContext: StandardAuthRetrievals = mock[StandardAuthRetrievals]
 

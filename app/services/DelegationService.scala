@@ -17,15 +17,15 @@
 package services
 
 import connectors.DelegationConnector
+
 import javax.inject.Inject
 import models.DelegationModel
 import play.api.Logging
 import uk.gov.hmrc.http.HeaderCarrier
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-class DelegationService @Inject()(delegationConnector: DelegationConnector) extends Logging {
+class DelegationService @Inject()(delegationConnector: DelegationConnector)(implicit val ec: ExecutionContext) extends Logging {
 
 
   def delegationCall(id: String)(implicit hc: HeaderCarrier): Future[Option[DelegationModel]] = {

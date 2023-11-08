@@ -17,7 +17,6 @@
 package services
 
 import java.util.UUID
-
 import connectors.AtedConnector
 import models.{FormBundleReturn, StandardAuthRetrievals}
 import org.joda.time.LocalDate
@@ -31,12 +30,14 @@ import play.api.libs.json.{JsValue, Json}
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.SessionId
 import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, HttpResponse, InternalServerException}
+import play.api.test.Injecting
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 
-class FormBundleReturnsServiceSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
+class FormBundleReturnsServiceSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with Injecting {
 
+  implicit val ec: ExecutionContext = inject[ExecutionContext]
   val mockConnector: AtedConnector = mock[AtedConnector]
 
   class Setup {
