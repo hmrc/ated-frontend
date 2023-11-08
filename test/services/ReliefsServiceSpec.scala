@@ -28,6 +28,7 @@ import org.mockito.{ArgumentCaptor, ArgumentMatchers}
 import org.scalatest.PrivateMethodTester
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
+import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.libs.json.{JsValue, Json}
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.SessionId
@@ -37,7 +38,7 @@ import play.api.test.Injecting
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class ReliefsServiceSpec extends PlaySpec with MockitoSugar with PrivateMethodTester with Injecting {
+class ReliefsServiceSpec extends PlaySpec with MockitoSugar with PrivateMethodTester with GuiceOneAppPerSuite with Injecting {
 
   implicit val ec: ExecutionContext = inject[ExecutionContext]
   implicit lazy val authContext: StandardAuthRetrievals = mock[StandardAuthRetrievals]

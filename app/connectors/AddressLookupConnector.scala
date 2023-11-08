@@ -17,6 +17,7 @@
 package connectors
 
 import config.ApplicationConfig
+
 import javax.inject.Inject
 import models.{AddressLookup, AddressLookupRecord}
 import play.api.Logging
@@ -25,10 +26,9 @@ import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-class AddressLookupConnector @Inject()(appConf: ApplicationConfig, http: DefaultHttpClient) extends RawResponseReads with Logging {
+class AddressLookupConnector @Inject()(appConf: ApplicationConfig, http: DefaultHttpClient)(implicit ec: ExecutionContext) extends RawResponseReads with Logging {
   val serviceURL: String = appConf.conf.baseUrl("address-lookup")
   private val LOOKUP = "/lookup"
   private val UPRN = "/by-uprn"

@@ -17,17 +17,18 @@
 package connectors
 
 import config.ApplicationConfig
+
 import javax.inject.Inject
 import models.BackLinkModel
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.cache.client.SessionCache
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class BackLinkCacheConnector @Inject()(val http: DefaultHttpClient,
-                                       appConfig: ApplicationConfig) extends SessionCache {
+                                       appConfig: ApplicationConfig)
+                                      (implicit ec: ExecutionContext)extends SessionCache {
 
   val baseUri: String = appConfig.baseUri
   val defaultSource: String = appConfig.defaultSource

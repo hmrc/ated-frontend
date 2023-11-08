@@ -17,7 +17,6 @@
 package connectors
 
 import java.util.UUID
-
 import builders.PropertyDetailsBuilder
 import config.ApplicationConfig
 import models._
@@ -29,14 +28,16 @@ import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.libs.json.{JsValue, Json}
 import play.api.test.Helpers._
+import play.api.test.Injecting
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.http.SessionId
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-class PropertyDetailsConnectorSpec extends PlaySpec with GuiceOneAppPerSuite with MockitoSugar {
+class PropertyDetailsConnectorSpec extends PlaySpec with GuiceOneAppPerSuite with MockitoSugar with Injecting {
 
+  implicit val ec: ExecutionContext = inject[ExecutionContext]
   implicit val authContext: StandardAuthRetrievals = mock[StandardAuthRetrievals]
   val mockHttp: DefaultHttpClient = mock[DefaultHttpClient]
 

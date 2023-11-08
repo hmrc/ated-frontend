@@ -26,11 +26,10 @@ import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, InternalServerExcep
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class FormBundleReturnsService @Inject()(atedConnector: AtedConnector) extends Logging {
+class FormBundleReturnsService @Inject()(atedConnector: AtedConnector)(implicit ec: ExecutionContext) extends Logging {
 
   def getFormBundleReturns(formBundleNumber: String)(implicit authContext: StandardAuthRetrievals,
-                                                     headerCarrier: HeaderCarrier,
-                                                     ec: ExecutionContext): Future[Option[FormBundleReturn]] = {
+                                                     headerCarrier: HeaderCarrier): Future[Option[FormBundleReturn]] = {
     atedConnector.retrieveFormBundleReturns(formBundleNumber).map {
       response =>
         response.status match {

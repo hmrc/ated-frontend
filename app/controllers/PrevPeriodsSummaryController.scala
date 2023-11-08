@@ -19,6 +19,7 @@ package controllers
 import config.ApplicationConfig
 import connectors.{AgentClientMandateFrontendConnector, DataCacheConnector}
 import controllers.auth.AuthAction
+
 import javax.inject.Inject
 import org.joda.time.LocalDate
 import play.api.Logging
@@ -28,7 +29,7 @@ import uk.gov.hmrc.http.ForbiddenException
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.PeriodUtils
 
-import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.ExecutionContext
 
 class PrevPeriodsSummaryController @Inject()(mcc: MessagesControllerComponents,
                                              authAction: AuthAction,
@@ -40,7 +41,8 @@ class PrevPeriodsSummaryController @Inject()(mcc: MessagesControllerComponents,
                                              serviceInfoService: ServiceInfoService,
                                              dateService: DateService,
                                              template: views.html.prevPeriodsSummary)
-                                            (implicit val appConfig: ApplicationConfig)
+                                            (implicit val appConfig: ApplicationConfig,
+                                             ec: ExecutionContext)
   extends FrontendController(mcc) with Logging {
 
   def view(): Action[AnyContent] = Action.async { implicit request =>

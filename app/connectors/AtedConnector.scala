@@ -17,18 +17,19 @@
 package connectors
 
 import config.ApplicationConfig
+
 import javax.inject.Inject
 import models._
 import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.http._
-import uk.gov.hmrc.play.bootstrap.http.{DefaultHttpClient}
+import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 import uk.gov.hmrc.http.HttpClient
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class AtedConnector @Inject()(appConfig: ApplicationConfig,
-                              httpClient: DefaultHttpClient) extends RawResponseReads {
+                              httpClient: DefaultHttpClient)
+                             (implicit ec: ExecutionContext) extends RawResponseReads {
 
   val serviceURL: String = appConfig.conf.baseUrl("ated") + "/ated/"
   val http: HttpClient = httpClient

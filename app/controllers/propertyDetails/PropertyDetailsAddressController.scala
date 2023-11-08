@@ -218,7 +218,7 @@ class PropertyDetailsAddressController @Inject()(mcc: MessagesControllerComponen
     }
   }
 
-  def auditInputAddress(address: PropertyDetailsAddress, addressEditMode: String)(implicit hc: HeaderCarrier): Unit = {
+  def auditInputAddress(address: PropertyDetailsAddress, addressEditMode: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Unit = {
     val auditType = addressEditMode match {
       case "create-address" => "manualAddressSubmitted"
       case "edit-address" => "postcodeAddressModifiedSubmitted"

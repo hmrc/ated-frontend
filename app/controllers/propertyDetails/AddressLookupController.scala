@@ -161,7 +161,7 @@ extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper wi
     }
   }
 
-  def auditInputAddress(address: PropertyDetailsAddress)(implicit hc: HeaderCarrier): Unit = {
+  def auditInputAddress(address: PropertyDetailsAddress)(implicit hc: HeaderCarrier, ec: ExecutionContext): Unit = {
     sendDataEvent("postcodeAddressSubmitted", detail = Map(
       "submittedLine1" -> address.line_1,
       "submittedLine2" -> address.line_2,

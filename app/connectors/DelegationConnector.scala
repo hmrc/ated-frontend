@@ -17,16 +17,17 @@
 package connectors
 
 import config.ApplicationConfig
+
 import javax.inject.Inject
 import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class DelegationConnector @Inject()(http: DefaultHttpClient,
-                                    appConfig: ApplicationConfig) {
+                                    appConfig: ApplicationConfig)
+                                   (implicit ec: ExecutionContext){
 
   val serviceURL: String = appConfig.conf.baseUrl("delegation")
 
