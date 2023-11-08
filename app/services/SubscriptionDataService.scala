@@ -17,17 +17,18 @@
 package services
 
 import connectors.DataCacheConnector
+
 import javax.inject.Inject
 import models._
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.AtedConstants._
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class SubscriptionDataService @Inject()(dataCacheConnector: DataCacheConnector,
                                         subscriptionDataAdapterService: SubscriptionDataAdapterService,
-                                        detailsService: DetailsService) {
+                                        detailsService: DetailsService)
+                                       (implicit ec: ExecutionContext){
 
   private def retrieveCachedData(implicit hc: HeaderCarrier): Future[Option[CachedData]] = {
     dataCacheConnector.fetchAndGetFormData[CachedData](RetrieveSubscriptionDataId)

@@ -17,23 +17,25 @@
 package services
 
 import java.util.UUID
-
 import connectors.AtedConnector
 import models._
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
+import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.libs.json.{JsValue, Json}
 import play.api.test.Helpers._
+import play.api.test.Injecting
 import uk.gov.hmrc.http.SessionId
 import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, HttpResponse, InternalServerException}
 import utils.AtedConstants
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-class SubscriptionDataAdapterServiceSpec extends PlaySpec with MockitoSugar{
+class SubscriptionDataAdapterServiceSpec extends PlaySpec with MockitoSugar with GuiceOneAppPerSuite with Injecting {
 
+  implicit val ec: ExecutionContext = inject[ExecutionContext]
   val mockAtedConnector: AtedConnector = mock[AtedConnector]
 
   class Setup {

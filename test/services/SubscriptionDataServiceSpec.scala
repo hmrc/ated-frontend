@@ -17,7 +17,6 @@
 package services
 
 import java.util.UUID
-
 import builders.RegistrationBuilder
 import connectors.DataCacheConnector
 import models._
@@ -26,15 +25,18 @@ import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
+import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.test.Helpers._
+import play.api.test.Injecting
 import uk.gov.hmrc.http.SessionId
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import utils.AtedConstants._
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-class SubscriptionDataServiceSpec extends PlaySpec with MockitoSugar with BeforeAndAfterEach {
+class SubscriptionDataServiceSpec extends PlaySpec with MockitoSugar with BeforeAndAfterEach with GuiceOneAppPerSuite with Injecting {
 
+  implicit val ec: ExecutionContext = inject[ExecutionContext]
   implicit lazy val authContext: StandardAuthRetrievals = mock[StandardAuthRetrievals]
 
   val addressDetails: AddressDetails = AddressDetails(addressType = "", addressLine1 = "", addressLine2 = "", countryCode = "GB")
