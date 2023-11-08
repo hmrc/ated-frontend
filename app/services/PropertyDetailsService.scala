@@ -38,8 +38,8 @@ case object PropertyDetailsCacheNotFoundResponse extends PropertyDetailsCacheRes
 case object PropertyDetailsCacheErrorResponse extends PropertyDetailsCacheResponse
 
 class PropertyDetailsService @Inject()(propertyDetailsConnector: PropertyDetailsConnector,
-                                       dataCacheConnector: DataCacheConnector,
-                                       ex: ExecutionContext) extends Logging {
+                                       dataCacheConnector: DataCacheConnector)
+                                      (implicit val ec: ExecutionContext) extends Logging {
 
 
   val CHOSEN_RELIEF_ID = "PROPERTY-DETAILS-CHOSEN-RELIEF"
