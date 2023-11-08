@@ -28,13 +28,15 @@ import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.libs.json.{JsValue, Json}
 import play.api.test.Helpers._
+import play.api.test.Injecting
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, InternalServerException}
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-class PropertyDetailsServiceSpec_Values extends PlaySpec with MockitoSugar with BeforeAndAfterEach with GuiceOneServerPerSuite {
+class PropertyDetailsServiceSpec_Values extends PlaySpec with MockitoSugar with BeforeAndAfterEach with GuiceOneServerPerSuite with Injecting {
 
   implicit lazy val authContext: StandardAuthRetrievals = mock[StandardAuthRetrievals]
+  implicit val ec: ExecutionContext = inject[ExecutionContext]
   implicit val hc: HeaderCarrier = HeaderCarrier()
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
 
