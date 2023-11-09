@@ -21,7 +21,8 @@ import config.ApplicationConfig
 import models._
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
-import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
+import org.scalatest.{BeforeAndAfterEach, GivenWhenThen}
+import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.i18n.{Messages, MessagesApi}
@@ -32,7 +33,7 @@ import testhelpers.MockAuthUtil
 import utils.{AtedConstants, PeriodUtils}
 import views.html.formBundleReturn
 
-class formBundleReturnSpec extends FeatureSpec with GuiceOneServerPerSuite with MockitoSugar
+class formBundleReturnSpec extends AnyFeatureSpec with GuiceOneServerPerSuite with MockitoSugar
   with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
 
   implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
@@ -76,11 +77,11 @@ class formBundleReturnSpec extends FeatureSpec with GuiceOneServerPerSuite with 
     )
 
 
-  feature("The user can view their previous returns") {
+  Feature("The user can view their previous returns") {
 
     info("as a client i want to be able to view my previous returns")
 
-    scenario("View the Form Bundle when we have none") {
+    Scenario("View the Form Bundle when we have none") {
 
       Given("the client is creating a new liability and want to add multiple periods")
       When("The user views the page")
@@ -107,7 +108,7 @@ class formBundleReturnSpec extends FeatureSpec with GuiceOneServerPerSuite with 
 
       assert(document.getElementsByClass("govuk-back-link").text === "Back")
     }
-    scenario("View the Form Bundle when we have a Form Bundle with a single period") {
+    Scenario("View the Form Bundle when we have a Form Bundle with a single period") {
 
       Given("the client is creating a new liability and want to add multiple periods")
       When("The user views the page")
@@ -178,7 +179,7 @@ class formBundleReturnSpec extends FeatureSpec with GuiceOneServerPerSuite with 
       assert(document.getElementsByClass("govuk-back-link").attr("href") === "http://backLink")
     }
 
-    scenario("View the Form Bundle when we have a Form Bundle with a single period and is editable") {
+    Scenario("View the Form Bundle when we have a Form Bundle with a single period and is editable") {
 
       Given("the client is creating a new liability and want to add multiple periods")
       When("The user views the page")
@@ -246,7 +247,7 @@ class formBundleReturnSpec extends FeatureSpec with GuiceOneServerPerSuite with 
       assert(document.getElementById("submit").text() === "Change return")
     }
 
-    scenario("View the Form Bundle when we have a Form Bundle with a multiple periods and is editable") {
+    Scenario("View the Form Bundle when we have a Form Bundle with a multiple periods and is editable") {
 
       Given("the client is creating a new liability and want to add multiple periods")
       When("The user views the page")
@@ -321,7 +322,7 @@ class formBundleReturnSpec extends FeatureSpec with GuiceOneServerPerSuite with 
       assert(document.getElementById("submit").text() === "Change return")
     }
 
-    scenario("View the Form Bundle when we have a Form Bundle that has been disposed") {
+    Scenario("View the Form Bundle when we have a Form Bundle that has been disposed") {
 
       Given("the client is creating a new liability and want to add multiple periods")
       When("The user views the page")

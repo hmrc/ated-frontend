@@ -104,14 +104,14 @@ object PropertyDetailsFormsValidation {
 
   def validateStartEndDates(messageStart: String, periodKey: Int, form: Form[_], datesToAvoidValidation : Seq[String] = Seq.empty): Seq[Option[FormError]] = {
     val startDate = if(!datesToAvoidValidation.contains("startDate")) {
-        formDate2Option("startDate", form) match {
+      (formDate2Option("startDate", form): @unchecked) match {
         case Right(a) if dateFallsInCurrentPeriod(periodKey, Some(a)) => Seq(None)
         case Right(a) if isPeriodTooEarly(periodKey, Some(a)) => Seq(Some(FormError("startDate", s"$messageStart.startDate.error.too-early")))
         case Right(a) if isPeriodTooLate(periodKey, Some(a)) => Seq(Some(FormError("startDate", s"$messageStart.startDate.error.too-late")))
       }
     } else Seq()
     val endDate = if(datesToAvoidValidation.isEmpty) {
-      (formDate2Option("startDate", form), formDate2Option("endDate", form)) match {
+      ((formDate2Option("startDate", form), formDate2Option("endDate", form)): @unchecked) match {
         case (Right(sd), Right(ed)) if ed.isBefore(sd) && isPeriodTooEarly(periodKey, Some(ed)) => Seq(Some(FormError("endDate", s"$messageStart.endDate.error.before-start-date-and-too-early")))
         case (Right(sd), Right(ed)) if ed.isBefore(sd) => Seq(Some(FormError("endDate", s"$messageStart.endDate.error.before-start-date")))
         case (_, Right(ed)) if dateFallsInCurrentPeriod(periodKey, Some(ed)) => Seq(None)
@@ -156,11 +156,11 @@ object PropertyDetailsFormsValidation {
     val date = formDate2Option(dateField, f)
     val valuationYear = PeriodUtils.calculateLowerTaxYearBoundary(periodKey)
 
-    if (date.right.exists(a => new LocalDate(a).isBefore(new LocalDate(s"$valuationYear")) && !noDateTooEarly)) {
+    if (date.exists(a => new LocalDate(a).isBefore(new LocalDate(s"$valuationYear")) && !noDateTooEarly)) {
       Seq(Some(FormError(dateField, s"ated.property-details-value.$dateField.error.too-early")))
-    } else if (date.right.exists(a => new LocalDate(a).isAfter(new LocalDate()))) {
+    } else if (date.exists(a => new LocalDate(a).isAfter(new LocalDate()))) {
       Seq(Some(FormError(dateField, s"ated.property-details-value.$dateField.error.too-late")))
-    } else if (mustBeInChargeablePeriod && date.right.exists(a => PeriodUtils.isPeriodTooEarly(periodKey, Some(a)) ||
+    } else if (mustBeInChargeablePeriod && date.exists(a => PeriodUtils.isPeriodTooEarly(periodKey, Some(a)) ||
       PeriodUtils.isPeriodTooLate(periodKey, Some(a)))) {
       Seq(Some(FormError(dateField, s"ated.property-details-value.$dateField.error.not-in-period")))
     } else if (isMandatory && date.left.exists(a => a)) {

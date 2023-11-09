@@ -26,7 +26,7 @@
   href: Option[String],
   hrefMessage: Option[String],
   postHrefMessage: Option[String],
-  serviceInfoContent: Html = HtmlFormat.empty)(implicit request: Request[_], messages: Messages, appConfig: ApplicationConfig)
+  serviceInfoContent: Html = HtmlFormat.empty)(implicit request: Request[_], messages: Messages)
 
 @secondParagraph = @{message2.getOrElse("")}
 @hrefLink = @{href.getOrElse("")}

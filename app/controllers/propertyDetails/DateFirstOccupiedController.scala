@@ -19,9 +19,8 @@ package controllers.propertyDetails
 import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.{AuthAction, ClientHelper}
-import forms.{PropertyDetailsForms, ReliefForms}
+import forms.PropertyDetailsForms
 import forms.PropertyDetailsForms._
-
 import javax.inject.{Inject, Singleton}
 import models.DateFirstOccupied
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -30,8 +29,7 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants.SelectedPreviousReturn
 import utils.AtedUtils
 import utils.AtedConstants.NewBuildFirstOccupiedDate
-import uk.gov.hmrc.play.bootstrap.controller.WithDefaultFormBinding
-
+import uk.gov.hmrc.play.bootstrap.controller.WithUnsafeDefaultFormBinding
 import scala.concurrent.ExecutionContext
 import org.joda.time.LocalDate
 import play.api.i18n.{Messages, MessagesImpl}
@@ -46,7 +44,7 @@ class DateFirstOccupiedController @Inject()(mcc: MessagesControllerComponents,
                                                        template: views.html.propertyDetails.dateFirstOccupied)
                                                       (implicit val appConfig: ApplicationConfig)
 
-  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with WithDefaultFormBinding {
+  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with WithUnsafeDefaultFormBinding {
 
   implicit val ec: ExecutionContext = mcc.executionContext
   val controllerId: String = DateFirstOccupiedControllerId
@@ -85,7 +83,7 @@ class DateFirstOccupiedController @Inject()(mcc: MessagesControllerComponents,
       implicit authContext => {
         ensureClientContext {
           serviceInfoService.getPartial.flatMap { serviceInfoContent =>
-            PropertyDetailsForms.validateNewBuildFirstOccupiedDate(periodKey, dateFirstOccupiedForm.bindFromRequest, dateFields).fold(
+            PropertyDetailsForms.validateNewBuildFirstOccupiedDate(periodKey, dateFirstOccupiedForm.bindFromRequest(), dateFields).fold(
               formWithError =>
                 currentBackLink.map(backLink => BadRequest(template(id, periodKey, formWithError, mode, serviceInfoContent, backLink))),
               form =>

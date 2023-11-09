@@ -77,7 +77,7 @@ class Setup {
       injectedViewInstance
   )
 
-  def getWithAuthorisedUser(registeredDetails: Option[RegisteredDetails]=None)(test: Future[Result] => Any) {
+  def getWithAuthorisedUser(registeredDetails: Option[RegisteredDetails]=None)(test: Future[Result] => Any): Unit = {
     val userId = s"user-${UUID.randomUUID}"
     val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
     setAuthMocks(authMock)
@@ -97,7 +97,7 @@ class Setup {
   }
 
   def submitWithAuthorisedUserSuccess(updatedDetails: Option[RegisteredDetails]=None)
-                                     (fakeRequest: FakeRequest[AnyContentAsJson])(test: Future[Result] => Any) {
+                                     (fakeRequest: FakeRequest[AnyContentAsJson])(test: Future[Result] => Any): Unit = {
     val userId = s"user-${UUID.randomUUID}"
     val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
     setAuthMocks(authMock)
@@ -107,7 +107,7 @@ class Setup {
     test(result)
   }
 
-  def submitWithUnAuthorisedUser(test: Future[Result] => Any) {
+  def submitWithUnAuthorisedUser(test: Future[Result] => Any): Unit = {
     val userId = s"user-${UUID.randomUUID}"
     val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
     setInvalidAuthMocks(authMock)

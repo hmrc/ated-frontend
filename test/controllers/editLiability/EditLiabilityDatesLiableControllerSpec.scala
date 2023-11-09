@@ -80,7 +80,7 @@ class EditLiabilityDatesLiableControllerSpec extends PlaySpec with GuiceOneServe
       injectedViewInstance
     )
 
-    def getWithUnAuthorisedUser(test: Future[Result] => Any) {
+    def getWithUnAuthorisedUser(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setInvalidAuthMocks(authMock)
@@ -88,7 +88,7 @@ class EditLiabilityDatesLiableControllerSpec extends PlaySpec with GuiceOneServe
       test(result)
     }
 
-    def getDataWithAuthorisedUser(propertyDetails: PropertyDetails)(test: Future[Result] => Any) {
+    def getDataWithAuthorisedUser(propertyDetails: PropertyDetails)(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
@@ -112,7 +112,7 @@ class EditLiabilityDatesLiableControllerSpec extends PlaySpec with GuiceOneServe
       test(result)
     }
 
-    def submitWithAuthorisedUser(formBody: List[(String, String)])(test: Future[Result] => Any) {
+    def submitWithAuthorisedUser(formBody: List[(String, String)])(test: Future[Result] => Any): Unit = {
       val periodKey: Int = 2015
       val userId = s"user-${UUID.randomUUID}"
       when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))

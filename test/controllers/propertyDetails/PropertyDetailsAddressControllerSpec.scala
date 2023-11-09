@@ -86,7 +86,7 @@ class PropertyDetailsAddressControllerSpec extends PlaySpec with GuiceOneServerP
       injectedViewInstance
     )
 
-    def createWithUnAuthorisedUser(test: Future[Result] => Any) {
+    def createWithUnAuthorisedUser(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
       setInvalidAuthMocks(authMock)
@@ -94,7 +94,7 @@ class PropertyDetailsAddressControllerSpec extends PlaySpec with GuiceOneServerP
       test(result)
     }
 
-    def createWithAuthorisedUser(test: Future[Result] => Any) {
+    def createWithAuthorisedUser(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
@@ -110,7 +110,7 @@ class PropertyDetailsAddressControllerSpec extends PlaySpec with GuiceOneServerP
       test(result)
     }
 
-    def viewDataWithAuthorisedUser(id: String, propertyDetails: PropertyDetails, fromConfirmAddressPage: Boolean)(test: Future[Result] => Any) {
+    def viewDataWithAuthorisedUser(id: String, propertyDetails: PropertyDetails, fromConfirmAddressPage: Boolean)(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
@@ -126,7 +126,7 @@ class PropertyDetailsAddressControllerSpec extends PlaySpec with GuiceOneServerP
       test(result)
     }
 
-    def viewDataWithAuthorisedUserChangeReturn(id: String, propertyDetails: PropertyDetails, fromConfirmAddressPage: Boolean)(test: Future[Result] => Any) {
+    def viewDataWithAuthorisedUserChangeReturn(id: String, propertyDetails: PropertyDetails, fromConfirmAddressPage: Boolean)(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
@@ -143,7 +143,7 @@ class PropertyDetailsAddressControllerSpec extends PlaySpec with GuiceOneServerP
       test(result)
     }
 
-    def viewSubmittedWithAuthorisedUser(id: String, propertyDetails: Option[PropertyDetails])(test: Future[Result] => Any) {
+    def viewSubmittedWithAuthorisedUser(id: String, propertyDetails: Option[PropertyDetails])(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
@@ -157,7 +157,7 @@ class PropertyDetailsAddressControllerSpec extends PlaySpec with GuiceOneServerP
       test(result)
     }
 
-    def editFromSummary(id: String, propertyDetails: PropertyDetails)(test: Future[Result] => Any) {
+    def editFromSummary(id: String, propertyDetails: PropertyDetails)(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
@@ -167,7 +167,7 @@ class PropertyDetailsAddressControllerSpec extends PlaySpec with GuiceOneServerP
       test(result)
     }
 
-    def addressLookupRedirect(id: Option[String])(test: Future[Result] => Any) {
+    def addressLookupRedirect(id: Option[String])(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
@@ -179,7 +179,7 @@ class PropertyDetailsAddressControllerSpec extends PlaySpec with GuiceOneServerP
       test(result)
     }
 
-    def saveWithUnAuthorisedUser(id: Option[String], fromConfirmAddressPage: Boolean)(test: Future[Result] => Any) {
+    def saveWithUnAuthorisedUser(id: Option[String], fromConfirmAddressPage: Boolean)(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
       setInvalidAuthMocks(authMock)
@@ -187,7 +187,7 @@ class PropertyDetailsAddressControllerSpec extends PlaySpec with GuiceOneServerP
       test(result)
     }
 
-    def submitWithAuthorisedUser(id: Option[String], inputJson: JsValue, fromConfirmAddressPage: Boolean)(test: Future[Result] => Any) {
+    def submitWithAuthorisedUser(id: Option[String], inputJson: JsValue, fromConfirmAddressPage: Boolean)(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
         (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))

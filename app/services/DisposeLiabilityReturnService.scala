@@ -17,6 +17,7 @@
 package services
 
 import connectors.{AtedConnector, DataCacheConnector}
+
 import javax.inject.Inject
 import models._
 import org.joda.time.DateTime
@@ -25,11 +26,10 @@ import play.api.http.Status._
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.AtedConstants._
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class DisposeLiabilityReturnService @Inject()(atedConnector: AtedConnector,
-                                              dataCacheConnector: DataCacheConnector) extends Logging {
+                                              dataCacheConnector: DataCacheConnector)(implicit val ec: ExecutionContext) extends Logging {
 
   def retrieveLiabilityReturn(oldFormBundleNo: String)
                              (implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[Option[DisposeLiabilityReturn]] = {

@@ -17,6 +17,6 @@
 @import scala.math.BigDecimal.RoundingMode
 @import utils.Money._
 
-@(value: BigDecimal, decimalPlaces: Int=0)(implicit messages: Messages)
+@(value: BigDecimal, decimalPlaces: Int=0)
 
 @pounds(value.setScale(decimalPlaces, RoundingMode.HALF_UP).toInt, decimalPlaces)

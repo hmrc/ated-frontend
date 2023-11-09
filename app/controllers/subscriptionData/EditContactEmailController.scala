@@ -23,7 +23,7 @@ import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{ServiceInfoService, SubscriptionDataService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import uk.gov.hmrc.play.bootstrap.controller.WithDefaultFormBinding
+import uk.gov.hmrc.play.bootstrap.controller.WithUnsafeDefaultFormBinding
 import scala.concurrent.{ExecutionContext, Future}
 
 class EditContactEmailController @Inject()(mcc: MessagesControllerComponents,
@@ -33,7 +33,7 @@ class EditContactEmailController @Inject()(mcc: MessagesControllerComponents,
                                            template: views.html.subcriptionData.editContactEmail)
                                           (implicit val appConfig: ApplicationConfig)
 
-  extends FrontendController(mcc) with WithDefaultFormBinding {
+  extends FrontendController(mcc) with WithUnsafeDefaultFormBinding {
 
   implicit val ec: ExecutionContext = mcc.executionContext
 
@@ -57,7 +57,7 @@ class EditContactEmailController @Inject()(mcc: MessagesControllerComponents,
   def submit : Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       serviceInfoService.getPartial.flatMap { serviceInfoContent =>
-        validateEmail(editContactDetailsEmailForm.bindFromRequest).fold(
+        validateEmail(editContactDetailsEmailForm.bindFromRequest()).fold(
           formWithErrors => Future.successful(BadRequest(template(formWithErrors, serviceInfoContent, getBackLink))),
           editedClientData => {
             for {

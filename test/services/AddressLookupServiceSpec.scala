@@ -27,11 +27,13 @@ import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.test.Helpers._
 import testhelpers.MockAuthUtil
 import uk.gov.hmrc.http.HeaderCarrier
+import play.api.test.Injecting
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-class AddressLookupServiceSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with MockAuthUtil {
+class AddressLookupServiceSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with MockAuthUtil with Injecting {
 
+  implicit val ec: ExecutionContext = inject[ExecutionContext]
   implicit val hc: HeaderCarrier = HeaderCarrier()
   implicit lazy val authContext: StandardAuthRetrievals = mock[StandardAuthRetrievals]
 
@@ -45,7 +47,7 @@ class AddressLookupServiceSpec extends PlaySpec with GuiceOneServerPerSuite with
     )
   }
 
-  override def beforeEach: Unit = {
+  override def beforeEach(): Unit = {
   }
 
   "find" must {

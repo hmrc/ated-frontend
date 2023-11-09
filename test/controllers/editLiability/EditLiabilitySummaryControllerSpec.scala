@@ -79,7 +79,7 @@ class Setup {
     injectedViewInstance
   )
 
-  def viewWithAuthorisedUser(propertyDetails: Option[PropertyDetails])(test: Future[Result] => Any) {
+  def viewWithAuthorisedUser(propertyDetails: Option[PropertyDetails])(test: Future[Result] => Any): Unit = {
     val userId = s"user-${UUID.randomUUID}"
     val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
     setAuthMocks(authMock)
@@ -93,7 +93,7 @@ class Setup {
     test(result)
   }
 
-  def viewSummaryWithAuthorisedUser(propertyDetails: PropertyDetails)(test: Future[Result] => Any) {
+  def viewSummaryWithAuthorisedUser(propertyDetails: PropertyDetails)(test: Future[Result] => Any): Unit = {
     val userId = s"user-${UUID.randomUUID}"
     val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
     setAuthMocks(authMock)
@@ -106,7 +106,7 @@ class Setup {
     test(result)
   }
 
-  def submitWithAuthorisedUser(test: Future[Result] => Any) {
+  def submitWithAuthorisedUser(test: Future[Result] => Any): Unit = {
     val userId = s"user-${UUID.randomUUID}"
     val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
     setAuthMocks(authMock)
@@ -116,7 +116,7 @@ class Setup {
     test(result)
   }
 
-  def getPrintFriendlyWithAuthorisedUser(propertyDetails: Option[PropertyDetails])(test: Future[Result] => Any) {
+  def getPrintFriendlyWithAuthorisedUser(propertyDetails: Option[PropertyDetails])(test: Future[Result] => Any): Unit = {
     val userId = s"user-${UUID.randomUUID}"
     val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
     setAuthMocks(authMock)

@@ -29,7 +29,7 @@
 )
 
 @(beforeContent: Option[Html] = None, pageTitle: Option[String] = None, serviceInfoContent: Html = HtmlFormat.empty, scripts: Option[Html] = None, isUserResearchBannerVisible: Boolean = false, banner: Html = HtmlFormat.empty, showSignOutLink: Boolean = true)(contentBlock: Html)(
-    implicit request: Request[_], messages: Messages, appConfig: ApplicationConfig)
+    implicit request: Request[_], messages: Messages)
 
 @beforeContentBlock = {
     @serviceInfoContent
@@ -58,6 +58,5 @@
     additionalHeadBlock = Some(headBlock),
     serviceUrl = Some(routes.HomeController.home(None).url),
     signOutUrl = signOutLink,
-    beforeContentBlock = Some(beforeContentBlock),
-    nonce = CSPNonce.get
+    beforeContentBlock = Some(beforeContentBlock)
 )(content)

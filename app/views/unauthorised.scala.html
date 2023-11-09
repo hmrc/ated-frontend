@@ -19,7 +19,7 @@
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 
 @this(layout: layoutNoAuth, govukButton : GovukButton, formHelper: FormWithCSRF)
-@()(implicit messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
+@()(implicit messages: Messages, request: Request[AnyContent])
 
 @layout(pageTitle = Some(titleBuilder(messages("unauthorised.sa.title"))), showSignOutLink = false) {
 

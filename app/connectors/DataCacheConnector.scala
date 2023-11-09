@@ -17,17 +17,18 @@
 package connectors
 
 import config.ApplicationConfig
+
 import javax.inject.Inject
 import play.api.libs.json.Format
 import uk.gov.hmrc.http.cache.client.SessionCache
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class DataCacheConnector @Inject()(val http: DefaultHttpClient,
-                                   appConfig: ApplicationConfig) extends SessionCache {
+                                   appConfig: ApplicationConfig)
+                                  (implicit ec: ExecutionContext) extends SessionCache {
 
   val baseUri: String = appConfig.baseUri
   val defaultSource: String = appConfig.defaultSource

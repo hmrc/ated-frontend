@@ -18,6 +18,7 @@ package services
 
 import config.ApplicationConfig
 import connectors.{AtedConnector, DataCacheConnector}
+
 import javax.inject.Inject
 import models._
 import play.api.Logging
@@ -26,11 +27,10 @@ import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, InternalServerException}
 import utils.AtedConstants._
 import utils.ReliefsUtils
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class ReliefsService @Inject()(atedConnector: AtedConnector,
-                               dataCacheConnector: DataCacheConnector) extends Logging {
+                               dataCacheConnector: DataCacheConnector)(implicit val ec: ExecutionContext) extends Logging {
 
   def saveDraftReliefs(atedRefNo: String, periodKey: Int, reliefs: Reliefs)
                       (implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[Option[ReliefsTaxAvoidance]] = {

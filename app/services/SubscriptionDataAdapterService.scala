@@ -17,6 +17,7 @@
 package services
 
 import connectors.AtedConnector
+
 import javax.inject.Inject
 import models._
 import play.api.Logging
@@ -24,10 +25,9 @@ import play.api.http.Status._
 import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, InternalServerException}
 import utils.AtedConstants
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-class SubscriptionDataAdapterService @Inject()(atedConnector: AtedConnector) extends Logging {
+class SubscriptionDataAdapterService @Inject()(atedConnector: AtedConnector)(implicit ec: ExecutionContext) extends Logging {
 
 
   def retrieveSubscriptionData(implicit authContext: StandardAuthRetrievals, hc: HeaderCarrier): Future[Option[SubscriptionData]] = {

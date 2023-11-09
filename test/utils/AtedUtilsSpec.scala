@@ -191,7 +191,7 @@ class AtedUtilsSpec extends PlaySpec with MockitoSugar with GuiceOneServerPerSui
 
   "adds the new parameter in the request data" in {
     implicit val request = FakeRequest()
-    AtedUtils.addParamsToRequest(Map("periodKey" -> ArrayBuffer("2017"))) must be(None)
+    AtedUtils.addParamsToRequest(Map("periodKey" -> ArrayBuffer("2017").toSeq)) must be(None)
   }
 
   "print Not Provided" when {

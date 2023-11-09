@@ -102,29 +102,20 @@ object ReliefsUtils extends {
   }
 
   def partitionNewestReliefForType(refReturns: Seq[SubmittedReliefReturns]): (Seq[SubmittedReliefReturns], Seq[SubmittedReliefReturns]) = {
-    @scala.annotation.tailrec
-    def parseRecentReturns(remReturns: Seq[SubmittedReliefReturns], answer: Seq[SubmittedReliefReturns]): Seq[SubmittedReliefReturns] =
-      remReturns match {
-        case remReturn :: rest if answer.nonEmpty =>
-          val newAnswer = answer.head.dateOfSubmission.compareTo(remReturn.dateOfSubmission) match {
-            case -1 => Seq(remReturn)
-            case 0  => answer :+ remReturn
-            case _  => answer
-          }
-
-          parseRecentReturns(rest, newAnswer)
-        case remReturn :: rest => parseRecentReturns(rest, Seq(remReturn))
-        case _ if remReturns.size == 1 => Seq(remReturns.head)
-        case _ => answer
-      }
+    
+    def latestReturns(returns: Seq[SubmittedReliefReturns], latest: Seq[SubmittedReliefReturns] = Nil): Seq[SubmittedReliefReturns] = {
+      val sorted = returns.sortWith((x, y) => x.dateOfSubmission.isAfter(y.dateOfSubmission))
+      sorted.takeWhile(_.dateOfSubmission == sorted.head.dateOfSubmission)
+    }
 
     val newestMap = refReturns
       .groupBy(_.reliefType)
       .map { case (_, returnsForType) =>
-        val recentReturnsForType: Seq[SubmittedReliefReturns] = parseRecentReturns(returnsForType, Nil)
+        val recentReturnsForType: Seq[SubmittedReliefReturns] = latestReturns(returnsForType)
         returnsForType.partition(recentReturnsForType.contains(_))
       }
 
     (newestMap.keys.flatten.toSeq, newestMap.values.flatten.toSeq)
   }
+
 }

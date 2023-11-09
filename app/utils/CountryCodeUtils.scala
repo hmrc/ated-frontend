@@ -20,7 +20,7 @@ import java.util.PropertyResourceBundle
 import play.api.Environment
 
 import java.io.InputStreamReader
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 import scala.util.{Success, Try}
 
 trait CountryCodeUtils {

@@ -26,7 +26,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{ServiceInfoService, SubscriptionDataService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.CountryCodeUtils
-import uk.gov.hmrc.play.bootstrap.controller.WithDefaultFormBinding
+import uk.gov.hmrc.play.bootstrap.controller.WithUnsafeDefaultFormBinding
 import scala.concurrent.{ExecutionContext, Future}
 
 class RegisteredDetailsController @Inject()(mcc: MessagesControllerComponents,
@@ -36,7 +36,7 @@ class RegisteredDetailsController @Inject()(mcc: MessagesControllerComponents,
                                             val environment: Environment,
                                             template: views.html.subcriptionData.registeredDetails)
                                            (implicit val appConfig: ApplicationConfig)
-  extends FrontendController(mcc) with CountryCodeUtils with WithDefaultFormBinding {
+  extends FrontendController(mcc) with CountryCodeUtils with WithUnsafeDefaultFormBinding {
 
   implicit val ec : ExecutionContext = mcc.executionContext
 
@@ -59,7 +59,7 @@ class RegisteredDetailsController @Inject()(mcc: MessagesControllerComponents,
   def submit(): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       serviceInfoService.getPartial.flatMap { serviceInfoContent =>
-        registeredDetailsForm.bindFromRequest.fold(
+        registeredDetailsForm.bindFromRequest().fold(
           formWithErrors => Future.successful(BadRequest(template(formWithErrors, getIsoCodeTupleList, serviceInfoContent, getBackLink))),
           updateDetails => {
             for {

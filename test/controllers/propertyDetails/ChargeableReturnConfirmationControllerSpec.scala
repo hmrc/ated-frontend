@@ -75,7 +75,7 @@ class Setup {
     injectedViewInstance
   )
 
-  def confirmationWithAuthorisedUser(test: Future[Result] => Any) {
+  def confirmationWithAuthorisedUser(test: Future[Result] => Any): Unit = {
     val userId = s"user-${UUID.randomUUID}"
     val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
     setAuthMocks(authMock)
@@ -91,7 +91,7 @@ class Setup {
     test(result)
   }
 
-  def confirmationWithAuthorisedUserNotFound(test: Future[Result] => Any) {
+  def confirmationWithAuthorisedUserNotFound(test: Future[Result] => Any): Unit = {
     val userId = s"user-${UUID.randomUUID}"
     val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
     setAuthMocks(authMock)
@@ -102,7 +102,7 @@ class Setup {
     test(result)
   }
 
-  def confirmationWithUnAuthorisedUser(test: Future[Result] => Any) {
+  def confirmationWithUnAuthorisedUser(test: Future[Result] => Any): Unit = {
     val userId = s"user-${UUID.randomUUID}"
     val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
     setInvalidAuthMocks(authMock)
@@ -110,12 +110,12 @@ class Setup {
     test(result)
   }
 
-  def confirmationWithUnAuthenticated(test: Future[Result] => Any) {
+  def confirmationWithUnAuthenticated(test: Future[Result] => Any): Unit = {
     val result = testChargeableReturnConfirmationController.confirmation.apply(SessionBuilder.buildRequestWithSessionNoUser)
     test(result)
   }
 
-  def getPrintFriendlyWithAuthorisedUser(test: Future[Result] => Any) {
+  def getPrintFriendlyWithAuthorisedUser(test: Future[Result] => Any): Unit = {
     val userId = s"user-${UUID.randomUUID}"
     val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
     setAuthMocks(authMock)
@@ -132,7 +132,7 @@ class Setup {
   }
 }
 
-  override def beforeEach: Unit = {
+  override def beforeEach(): Unit = {
 
     reset(mockSubscriptionDataService)
     reset(mockDelegationService)

@@ -81,7 +81,7 @@ class PropertyDetailsSummaryControllerSpec extends PlaySpec with GuiceOneServerP
       injectedViewInstance
     )
 
-    def getWithUnAuthorisedUser(test: Future[Result] => Any) {
+    def getWithUnAuthorisedUser(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
       setInvalidAuthMocks(authMock)
@@ -89,7 +89,7 @@ class PropertyDetailsSummaryControllerSpec extends PlaySpec with GuiceOneServerP
       test(result)
     }
 
-    def getWithAuthorisedUser(propertyDetails: PropertyDetails)(test: Future[Result] => Any) {
+    def getWithAuthorisedUser(propertyDetails: PropertyDetails)(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
@@ -105,7 +105,7 @@ class PropertyDetailsSummaryControllerSpec extends PlaySpec with GuiceOneServerP
       test(result)
     }
 
-    def getWithDeleteDraftLink(test: Future[Result] => Any) {
+    def getWithDeleteDraftLink(test: Future[Result] => Any): Unit = {
       val periodKey: Int = 2017
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
@@ -120,7 +120,7 @@ class PropertyDetailsSummaryControllerSpec extends PlaySpec with GuiceOneServerP
       test(result)
     }
 
-    def submitWithAuthorisedUser(test: Future[Result] => Any) {
+    def submitWithAuthorisedUser(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
@@ -130,7 +130,7 @@ class PropertyDetailsSummaryControllerSpec extends PlaySpec with GuiceOneServerP
       test(result)
     }
 
-    def getPrintFriendlyWithAuthorisedUser(propertyDetails: PropertyDetails)(test: Future[Result] => Any) {
+    def getPrintFriendlyWithAuthorisedUser(propertyDetails: PropertyDetails)(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
@@ -146,10 +146,13 @@ class PropertyDetailsSummaryControllerSpec extends PlaySpec with GuiceOneServerP
     }
   }
 
-  override def beforeEach: Unit = {
-    reset(mockDelegationService, mockDelegationService,
-      mockDataCacheConnector, mockSubscriptionDataService, mockPropertyDetailsService, mockServiceInfoService
-    )
+  override def beforeEach(): Unit = {
+    reset(mockDelegationService)
+    reset(mockDelegationService)
+    reset(mockDataCacheConnector)
+    reset(mockSubscriptionDataService)
+    reset(mockPropertyDetailsService)
+    reset(mockServiceInfoService)
   }
 
   "PropertyDetailsSummaryController" must {

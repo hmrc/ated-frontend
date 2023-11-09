@@ -24,14 +24,16 @@ import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.libs.json.JsValue
 import play.api.test.Helpers._
+import play.api.test.Injecting
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.http.cache.client.SessionCache
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-class DelegationConnectorSpec extends PlaySpec with GuiceOneAppPerSuite with MockitoSugar {
+class DelegationConnectorSpec extends PlaySpec with GuiceOneAppPerSuite with MockitoSugar with Injecting {
   implicit val hc: HeaderCarrier = HeaderCarrier()
+  implicit val ec: ExecutionContext = inject[ExecutionContext]
   val mockSessionCache: SessionCache = mock[SessionCache]
   val mockHttp: DefaultHttpClient = mock[DefaultHttpClient]
   val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]

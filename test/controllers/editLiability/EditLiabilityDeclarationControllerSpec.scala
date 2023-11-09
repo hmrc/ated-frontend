@@ -80,7 +80,7 @@ class EditLiabilityDeclarationControllerSpec extends PlaySpec with GuiceOneServe
       injectedViewInstance
     )
 
-    def viewWithUnAuthorisedUser(test: Future[Result] => Any) {
+    def viewWithUnAuthorisedUser(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
       setInvalidAuthMocks(authMock)
@@ -88,7 +88,7 @@ class EditLiabilityDeclarationControllerSpec extends PlaySpec with GuiceOneServe
       test(result)
     }
 
-    def viewWithAuthorisedUser(x: Option[PropertyDetails] = None)(test: Future[Result] => Any) {
+    def viewWithAuthorisedUser(x: Option[PropertyDetails] = None)(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       noDelegationModelAuthMocks(authMock)
@@ -103,7 +103,7 @@ class EditLiabilityDeclarationControllerSpec extends PlaySpec with GuiceOneServe
       test(result)
     }
 
-    def viewWithAuthorisedDelegatedUser(x: Option[PropertyDetails] = None)(test: Future[Result] => Any) {
+    def viewWithAuthorisedDelegatedUser(x: Option[PropertyDetails] = None)(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Agent, defaultEnrolmentSet)
       setAuthMocks(authMock)
@@ -116,7 +116,7 @@ class EditLiabilityDeclarationControllerSpec extends PlaySpec with GuiceOneServe
       test(result)
     }
 
-    def submitWithAuthorisedUser(a: Option[PropertyDetails], oldForBundle: String = formBundleNo1)(test: Future[Result] => Any) {
+    def submitWithAuthorisedUser(a: Option[PropertyDetails], oldForBundle: String = formBundleNo1)(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
@@ -134,7 +134,7 @@ class EditLiabilityDeclarationControllerSpec extends PlaySpec with GuiceOneServe
       test(result)
     }
 
-    def submitWithUnAuthorisedUser(test: Future[Result] => Any) {
+    def submitWithUnAuthorisedUser(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
       setInvalidAuthMocks(authMock)
@@ -143,7 +143,7 @@ class EditLiabilityDeclarationControllerSpec extends PlaySpec with GuiceOneServe
     }
   }
 
-  override def beforeEach: Unit = {
+  override def beforeEach(): Unit = {
 
     reset(mockChangeLiabilityReturnService)
     reset(mockDelegationService)

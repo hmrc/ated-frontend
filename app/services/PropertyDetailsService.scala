@@ -17,6 +17,7 @@
 package services
 
 import connectors.{DataCacheConnector, PropertyDetailsConnector}
+
 import javax.inject.Inject
 import models._
 import org.joda.time.LocalDate
@@ -26,8 +27,7 @@ import play.mvc.Http.Status.OK
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, InternalServerException}
 import utils.AtedConstants.SubmitReturnsResponseFormId
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 sealed trait PropertyDetailsCacheResponse
 
@@ -38,7 +38,8 @@ case object PropertyDetailsCacheNotFoundResponse extends PropertyDetailsCacheRes
 case object PropertyDetailsCacheErrorResponse extends PropertyDetailsCacheResponse
 
 class PropertyDetailsService @Inject()(propertyDetailsConnector: PropertyDetailsConnector,
-                                       dataCacheConnector: DataCacheConnector) extends Logging {
+                                       dataCacheConnector: DataCacheConnector)
+                                      (implicit val ec: ExecutionContext) extends Logging {
 
 
   val CHOSEN_RELIEF_ID = "PROPERTY-DETAILS-CHOSEN-RELIEF"
@@ -291,7 +292,7 @@ class PropertyDetailsService @Inject()(propertyDetailsConnector: PropertyDetails
     validateCalculateDraftPropertyDetails(id, isChangeLiability = true).flatMap {
       case true =>
       propertyDetailsConnector.calculateDraftChangeLiability(id) map { propertyDetailsResponse =>
-        propertyDetailsResponse.status match {
+        (propertyDetailsResponse.status: @unchecked) match {
           case OK => Some(propertyDetailsResponse.json.as[PropertyDetails])
           case NO_CONTENT =>
             logger.info("[PropertyDetailsService][calculateDraftChangeLiability] " +

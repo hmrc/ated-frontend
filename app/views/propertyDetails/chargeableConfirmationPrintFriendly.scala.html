@@ -16,9 +16,11 @@
 
 @import config.ApplicationConfig
 @import utils.Money._
-@(submittedReturnResponse: Option[SubmitReturnsResponse], organisationName: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 @import views.html.helpers._
 @import views.html.helper.CSPNonce
+
+@(submittedReturnResponse: Option[SubmitReturnsResponse], organisationName: Option[String]
+)(implicit messages: Messages, request: Request[_])
 
 @printFriendly(messages("ated.relief-sent.title")) {
 

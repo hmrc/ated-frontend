@@ -74,7 +74,7 @@ class Setup {
     injectedViewInstance
   )
 
-  def getWithUnAuthorisedUser(test: Future[Result] => Any) {
+  def getWithUnAuthorisedUser(test: Future[Result] => Any): Unit = {
     val userId = s"user-${UUID.randomUUID}"
     val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
     setInvalidAuthMocks(authMock)
@@ -83,7 +83,7 @@ class Setup {
   }
 
   def getWithAuthorisedUser(correspondence: Option[Address] = None,
-                            registeredDetails: Option[RegisteredDetails] = None)(test: Future[Result] => Any) {
+                            registeredDetails: Option[RegisteredDetails] = None)(test: Future[Result] => Any): Unit = {
     val userId = s"user-${UUID.randomUUID}"
     val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
     setAuthMocks(authMock)
@@ -101,7 +101,7 @@ class Setup {
     test(result)
   }
 
-  def getWithAuthorisedUserBack(test: Future[Result] => Any) {
+  def getWithAuthorisedUserBack(test: Future[Result] => Any): Unit = {
     val userId = s"user-${UUID.randomUUID}"
     val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
     setAuthMocks(authMock)
@@ -179,8 +179,8 @@ class Setup {
 
             document.title() must be(TitleBuilder.buildTitle("Your ATED details"))
             document.select("div.hmrc-user-research-banner") must not be null
-            document.select("div.hmrc-user-research-banner").text() must include("Help improve HMRC services")
-            document.getElementsByClass("hmrc-user-research-banner__close").text() must include("No thanks, I do not want to take part in user research, hide this message")
+            document.select("div.hmrc-user-research-banner").text() must include("Help make GOV.UK better")
+            document.getElementsByClass("hmrc-user-research-banner__close").text() must include("Hide message. I do not want to take part in research")
         }
       }
 

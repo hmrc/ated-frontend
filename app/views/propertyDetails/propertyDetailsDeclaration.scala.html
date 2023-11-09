@@ -59,7 +59,7 @@
  </header>
 
     @govukWarningText(WarningText(
-        iconFallbackText = "Warning",
+        iconFallbackText = Some("Warning"),
         content = HtmlContent(if(authContext.delegationModel.isDefined) { messages("ated.chargeable-return-declaration.before-declaration.agent")} else { messages("ated.chargeable-return-declaration.before-declaration.client")}),
         attributes  = Map ("id" -> "create-liability-declaration-before-declaration-text")
     ))

@@ -32,7 +32,7 @@ import uk.gov.hmrc.play.audit.DefaultAuditConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants._
 import utils.AtedUtils
-import uk.gov.hmrc.play.bootstrap.controller.WithDefaultFormBinding
+import uk.gov.hmrc.play.bootstrap.controller.WithUnsafeDefaultFormBinding
 import scala.concurrent.{ExecutionContext, Future}
 
 class PropertyDetailsAddressController @Inject()(mcc: MessagesControllerComponents,
@@ -46,7 +46,7 @@ class PropertyDetailsAddressController @Inject()(mcc: MessagesControllerComponen
                                                  template: views.html.propertyDetails.propertyDetailsAddress)
                                                 (implicit val appConfig: ApplicationConfig)
 
-  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with Auditable with ControllerIds with WithDefaultFormBinding {
+  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with Auditable with ControllerIds with WithUnsafeDefaultFormBinding {
 
   implicit val ec: ExecutionContext = mcc.executionContext
 
@@ -173,7 +173,7 @@ class PropertyDetailsAddressController @Inject()(mcc: MessagesControllerComponen
                 Some(controllers.propertyDetails.routes.AddressLookupController.view(id, periodKey, mode).url)
             }
           }
-          propertyDetailsAddressForm.bindFromRequest.fold(
+          propertyDetailsAddressForm.bindFromRequest().fold(
             formWithError => {
               Future.successful(BadRequest(template(
                 id,
@@ -218,7 +218,7 @@ class PropertyDetailsAddressController @Inject()(mcc: MessagesControllerComponen
     }
   }
 
-  def auditInputAddress(address: PropertyDetailsAddress, addressEditMode: String)(implicit hc: HeaderCarrier): Unit = {
+  def auditInputAddress(address: PropertyDetailsAddress, addressEditMode: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Unit = {
     val auditType = addressEditMode match {
       case "create-address" => "manualAddressSubmitted"
       case "edit-address" => "postcodeAddressModifiedSubmitted"

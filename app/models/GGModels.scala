@@ -16,46 +16,46 @@
 
 package models
 
-import play.api.libs.json.Json
+import play.api.libs.json.{Json, OFormat}
 
 case class IdentifierForDisplay(`type`: String, value: String)
 
 object IdentifierForDisplay {
-  implicit val formats = Json.format[IdentifierForDisplay]
+  implicit val formats: OFormat[IdentifierForDisplay] = Json.format[IdentifierForDisplay]
 }
 
 case class RetrieveClientAllocation(friendlyName: String, identifiersForDisplay: List[IdentifierForDisplay])
 
 object RetrieveClientAllocation {
-  implicit val formats = Json.format[RetrieveClientAllocation]
+  implicit val formats: OFormat[RetrieveClientAllocation] = Json.format[RetrieveClientAllocation]
 }
 
 case class Identifier(identifierType: String, value: String)
 
 object Identifier {
-  implicit val format = Json.format[Identifier]
+  implicit val format: OFormat[Identifier] = Json.format[Identifier]
 }
 
 case class ClientToAssign(serviceName: String, identifiers: List[Identifier])
 
 object ClientToAssign {
-  implicit val format = Json.format[ClientToAssign]
+  implicit val format: OFormat[ClientToAssign] = Json.format[ClientToAssign]
 }
 
 case class AssignClientAllocation(clientAllocation: ClientToAssign)
 
 object AssignClientAllocation {
-  implicit val format = Json.format[AssignClientAllocation]
+  implicit val format: OFormat[AssignClientAllocation] = Json.format[AssignClientAllocation]
 }
 
 case class ClientToSetFriendlyName(serviceName: String, identifiers: List[Identifier], newFriendlyName:String)
 
 object ClientToSetFriendlyName {
-  implicit val format = Json.format[ClientToSetFriendlyName]
+  implicit val format: OFormat[ClientToSetFriendlyName] = Json.format[ClientToSetFriendlyName]
 }
 
 case class SetFriendlyNameClientAllocation(clientAllocation: ClientToSetFriendlyName)
 
 object SetFriendlyNameClientAllocation {
-  implicit val format = Json.format[SetFriendlyNameClientAllocation]
+  implicit val format: OFormat[SetFriendlyNameClientAllocation] = Json.format[SetFriendlyNameClientAllocation]
 }

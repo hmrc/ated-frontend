@@ -33,7 +33,7 @@ import uk.gov.hmrc.play.audit.DefaultAuditConnector
 import uk.gov.hmrc.play.audit.model.Audit
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedUtils
-import uk.gov.hmrc.play.bootstrap.controller.WithDefaultFormBinding
+import uk.gov.hmrc.play.bootstrap.controller.WithUnsafeDefaultFormBinding
 import scala.concurrent.{ExecutionContext, Future}
 
 class AddressLookupController @Inject()(mcc: MessagesControllerComponents,
@@ -47,7 +47,7 @@ class AddressLookupController @Inject()(mcc: MessagesControllerComponents,
                                         template: views.html.propertyDetails.addressLookup,
                                         templateResults: views.html.propertyDetails.addressLookupResults)
                                        (implicit val appConfig: ApplicationConfig)
-extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with Auditable with ControllerIds with WithDefaultFormBinding {
+extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with Auditable with ControllerIds with WithUnsafeDefaultFormBinding {
 
   implicit val ec: ExecutionContext = mcc.executionContext
 
@@ -73,7 +73,7 @@ extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper wi
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
           val backLink = Some(controllers.routes.ExistingReturnQuestionController.view(periodKey, "charge").url)
-          addressLookupForm.bindFromRequest.fold(
+          addressLookupForm.bindFromRequest().fold(
             formWithError => {
               Future.successful(BadRequest(template(id, periodKey, formWithError, mode, serviceInfoContent, backLink))
               )
@@ -114,9 +114,9 @@ extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper wi
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
           val backToViewLink = Some(routes.AddressLookupController.view(id, periodKey, mode).url)
-          addressSelectedForm.bindFromRequest.fold(
+          addressSelectedForm.bindFromRequest().fold(
             formWithError => {
-              addressLookupService.retrieveCachedSearchResults.map { results =>
+              addressLookupService.retrieveCachedSearchResults().map { results =>
                 val searchResults = results.fold(new AddressSearchResults(AddressLookup("", None), Nil))(a => a)
                 BadRequest(templateResults(id, periodKey, formWithError, searchResults, mode, serviceInfoContent, backToViewLink))
               }
@@ -146,7 +146,7 @@ extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper wi
                         )
                     }
                   case _ =>
-                    addressLookupService.retrieveCachedSearchResults.map { results =>
+                    addressLookupService.retrieveCachedSearchResults().map { results =>
                       val searchResults = results.fold(new AddressSearchResults(AddressLookup("", None), Nil))(a => a)
                       val errorForm = addressSelectedForm.fill(searchCriteria)
                         .withError(FormError("selected", Messages("ated.address-lookup.error.general.selected-address")))
@@ -161,7 +161,7 @@ extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper wi
     }
   }
 
-  def auditInputAddress(address: PropertyDetailsAddress)(implicit hc: HeaderCarrier): Unit = {
+  def auditInputAddress(address: PropertyDetailsAddress)(implicit hc: HeaderCarrier, ec: ExecutionContext): Unit = {
     sendDataEvent("postcodeAddressSubmitted", detail = Map(
       "submittedLine1" -> address.line_1,
       "submittedLine2" -> address.line_2,

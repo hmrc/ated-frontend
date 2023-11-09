@@ -26,7 +26,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{DelegationService, ReliefsService, ServiceInfoService}
 import uk.gov.hmrc.http.ForbiddenException
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import uk.gov.hmrc.play.bootstrap.controller.WithDefaultFormBinding
+import uk.gov.hmrc.play.bootstrap.controller.WithUnsafeDefaultFormBinding
 import scala.concurrent.{ExecutionContext, Future}
 
 
@@ -41,7 +41,7 @@ class ReliefDeclarationController @Inject()(mcc: MessagesControllerComponents,
                                             templateError: views.html.global_error)
                                            (implicit val appConfig: ApplicationConfig)
 
-  extends FrontendController(mcc) with BackLinkController with ClientHelper with WithDefaultFormBinding with Logging {
+  extends FrontendController(mcc) with BackLinkController with ClientHelper with WithUnsafeDefaultFormBinding with Logging {
 
   implicit val ec: ExecutionContext = mcc.executionContext
   val controllerId: String = "ReliefDeclarationController"
@@ -63,7 +63,7 @@ class ReliefDeclarationController @Inject()(mcc: MessagesControllerComponents,
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
           reliefsService.submitDraftReliefs(authContext.atedReferenceNumber, periodKey) flatMap { response =>
-            response.status match {
+            (response.status: @unchecked) match {
               case OK => Future.successful(Redirect(controllers.reliefs.routes.ReliefsSentController.view(periodKey)))
               case BAD_REQUEST if response.body.contains("Agent not Valid") => {
                 serviceInfoService.getPartial.flatMap { serviceInfoContent =>

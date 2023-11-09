@@ -29,13 +29,15 @@ import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.libs.json.{JsValue, Json}
 import play.api.test.Helpers._
+import play.api.test.Injecting
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, InternalServerException}
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-class PropertyDetailsServiceSpec_Periods extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
+class PropertyDetailsServiceSpec_Periods extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with Injecting {
 
   implicit lazy val authContext: StandardAuthRetrievals = mock[StandardAuthRetrievals]
+  implicit val ec: ExecutionContext = inject[ExecutionContext]
   implicit val hc: HeaderCarrier = HeaderCarrier()
   implicit  val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
 
@@ -49,7 +51,7 @@ class PropertyDetailsServiceSpec_Periods extends PlaySpec with GuiceOneServerPer
    )
  }
 
-  override def beforeEach: Unit = {
+  override def beforeEach(): Unit = {
   }
 
   "PropertyDetailsService" must {

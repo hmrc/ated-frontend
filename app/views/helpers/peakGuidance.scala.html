@@ -19,12 +19,12 @@
 
 @this(govukWarningText : GovukWarningText)
 
-@(duringPeak: Boolean, currentYear: Int, taxYearStartingYear: Int)(implicit messages: Messages, appConfig: ApplicationConfig)
+@(duringPeak: Boolean, currentYear: Int, taxYearStartingYear: Int)(implicit messages: Messages)
 
     @if(duringPeak){
 
         @govukWarningText(WarningText(
-            iconFallbackText = "Warning",
+            iconFallbackText = Some("Warning"),
             content = Text(messages("ated.account-summary.peak-guidance.warning", currentYear.toString, (currentYear + 1).toString))
         ))
 
@@ -34,7 +34,7 @@
     } else {
 
         @govukWarningText(WarningText(
-            iconFallbackText = "Warning",
+            iconFallbackText = Some("Warning"),
             content = Text(messages("ated.account-summary.outside-peak-guidance.warning"))
         ))
 

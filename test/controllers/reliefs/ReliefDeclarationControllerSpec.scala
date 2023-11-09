@@ -80,7 +80,7 @@ class ReliefDeclarationControllerSpec extends PlaySpec with GuiceOneServerPerSui
       injectedViewInstanceError
     )
 
-    def getWithAuthorisedUser(test: Future[Result] => Any) {
+    def getWithAuthorisedUser(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       noDelegationModelAuthMocks(authMock)
@@ -93,7 +93,7 @@ class ReliefDeclarationControllerSpec extends PlaySpec with GuiceOneServerPerSui
       test(result)
     }
 
-    def getWithUnAuthorisedUser(test: Future[Result] => Any) {
+    def getWithUnAuthorisedUser(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setInvalidAuthMocks(authMock)
@@ -101,7 +101,7 @@ class ReliefDeclarationControllerSpec extends PlaySpec with GuiceOneServerPerSui
       test(result)
     }
 
-    def submitWithAuthorisedUser(test: Future[Result] => Any) {
+    def submitWithAuthorisedUser(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
@@ -118,7 +118,7 @@ class ReliefDeclarationControllerSpec extends PlaySpec with GuiceOneServerPerSui
       test(result)
     }
 
-    def submitWithAuthorisedUserNotFoundResponse(test: Future[Result] => Any) {
+    def submitWithAuthorisedUserNotFoundResponse(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
@@ -133,7 +133,7 @@ class ReliefDeclarationControllerSpec extends PlaySpec with GuiceOneServerPerSui
       test(result)
     }
 
-    def submitWithAuthorisedUserInvalidAgent(test: Future[Result] => Any) {
+    def submitWithAuthorisedUserInvalidAgent(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
@@ -148,7 +148,7 @@ class ReliefDeclarationControllerSpec extends PlaySpec with GuiceOneServerPerSui
       test(result)
     }
 
-    def submitWithUnAuthorisedUser(test: Future[Result] => Any) {
+    def submitWithUnAuthorisedUser(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setInvalidAuthMocks(authMock)
@@ -164,7 +164,7 @@ class ReliefDeclarationControllerSpec extends PlaySpec with GuiceOneServerPerSui
       test(result)
     }
 
-    def getWithAuthorisedDelegatedUser(test: Future[Result] => Any) {
+    def getWithAuthorisedDelegatedUser(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Agent, defaultEnrolmentSet)
       setAuthMocks(authMock)

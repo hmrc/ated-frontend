@@ -22,10 +22,8 @@ import play.api.data.Forms._
 import play.api.data.validation.{Constraint, Invalid, Valid}
 import play.api.data.{Form, FormError, Mapping}
 import utils.PeriodUtils._
-
 import scala.annotation.tailrec
 import scala.util.Try
-import scala.util.matching.Regex
 
 sealed trait DateError
 case object EmptyDate extends DateError

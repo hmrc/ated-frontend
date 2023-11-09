@@ -16,9 +16,8 @@
 
 package views.propertyDetails
 
-import builders.PropertyDetailsBuilder
 import config.ApplicationConfig
-import models.{PropertyDetailsAddress, StandardAuthRetrievals}
+import models.StandardAuthRetrievals
 import org.jsoup.Jsoup
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.{BeforeAndAfterEach, GivenWhenThen}
@@ -30,7 +29,6 @@ import play.api.test.FakeRequest
 import play.twirl.api.Html
 import testhelpers.MockAuthUtil
 import views.html.propertyDetails.dateFirstOccupiedKnown
-import models.DateFirstOccupiedKnown
 import forms.PropertyDetailsForms.dateFirstOccupiedKnownForm
 
 class DateFirstOccupiedKnownSpec extends AnyFeatureSpec with GuiceOneAppPerSuite with MockitoSugar

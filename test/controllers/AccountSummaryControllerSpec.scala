@@ -32,6 +32,7 @@ import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.i18n.{Lang, MessagesApi, MessagesImpl}
 import play.api.mvc.{MessagesControllerComponents, Result}
 import play.api.test.Helpers._
+import play.api.test.Injecting
 import play.twirl.api.Html
 import services._
 import testhelpers.MockAuthUtil
@@ -43,12 +44,13 @@ import utils.TestModels
 import views.html.{BtaNavigationLinks, accountSummary}
 
 import java.util.UUID
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class AccountSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar
-  with BeforeAndAfterEach with MockAuthUtil with TestModels {
+  with BeforeAndAfterEach with MockAuthUtil with TestModels with Injecting {
 
   implicit lazy val hc: HeaderCarrier = HeaderCarrier()
+  implicit val ec: ExecutionContext = inject[ExecutionContext]
   implicit val mockAppConfig: ApplicationConfig = mock[ApplicationConfig]
 
   val mockMcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
@@ -93,7 +95,7 @@ class AccountSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
     )
 
     def getWithAuthorisedUser(returnsSummaryWithDraft: SummaryReturnsModel,
-                              correspondence: Option[Address] = None)(test: Future[Result] => Any) {
+                              correspondence: Option[Address] = None)(test: Future[Result] => Any): Unit = {
       val httpValue = 200
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
@@ -115,7 +117,7 @@ class AccountSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
     }
 
     def getWithForbiddenUser(returnsSummaryWithDraft: SummaryReturnsModel,
-                             correspondence: Option[Address] = None)(test: Future[Result] => Any) {
+                             correspondence: Option[Address] = None)(test: Future[Result] => Any): Unit = {
       val httpValue = 200
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
@@ -139,7 +141,7 @@ class AccountSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
     }
 
     def getWithAuthorisedDelegatedUser(returnsSummaryWithDraft: SummaryReturnsModel,
-                                       correspondence: Option[Address] = None)(test: Future[Result] => Any) {
+                                       correspondence: Option[Address] = None)(test: Future[Result] => Any): Unit = {
       val httpValue = 200
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Agent, agentEnrolmentSet)
@@ -158,7 +160,7 @@ class AccountSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
       test(result)
     }
 
-    def getWithUnAuthorisedUser(test: Future[Result] => Any) {
+    def getWithUnAuthorisedUser(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
       setInvalidAuthMocks(authMock)
@@ -217,11 +219,11 @@ class AccountSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
             val document = Jsoup.parse(contentAsString(result))
 
             document.getElementsByClass("hmrc-user-research-banner__title")
-              .text() must be("Help improve HMRC services")
+              .text() must be("Help make GOV.UK better")
             document.getElementsByClass("hmrc-user-research-banner__link")
-              .text() must be("Sign up to take part in user research (opens in new tab)")
+              .text() must be("Sign up to take part in research (opens in new tab)")
             document.getElementsByClass("hmrc-user-research-banner__close")
-              .text() must include("No thanks, I do not want to take part in user research, hide this message")
+              .text() must include("Hide message. I do not want to take part in research")
         }
       }
 

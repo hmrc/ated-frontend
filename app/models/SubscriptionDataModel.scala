@@ -16,7 +16,7 @@
 
 package models
 
-import play.api.libs.json.Json
+import play.api.libs.json.{Json, OFormat}
 
 
 case class ContactDetails(phoneNumber: Option[String] = None,
@@ -24,7 +24,7 @@ case class ContactDetails(phoneNumber: Option[String] = None,
                           faxNumber: Option[String] = None,
                           emailAddress: Option[String] = None)
 object ContactDetails {
-  implicit val formats = Json.format[ContactDetails]
+  implicit val formats: OFormat[ContactDetails] = Json.format[ContactDetails]
 }
 
 case class EditContactDetails(firstName: String,
@@ -32,7 +32,7 @@ case class EditContactDetails(firstName: String,
                               phoneNumber: String)
 
 object EditContactDetails {
-  implicit val formats = Json.format[EditContactDetails]
+  implicit val formats: OFormat[EditContactDetails] = Json.format[EditContactDetails]
 }
 
 
@@ -41,7 +41,7 @@ case class EditContactDetailsEmail(
                               emailAddress: String,
                               emailConsent: Boolean)
 object EditContactDetailsEmail {
-  implicit val formats = Json.format[EditContactDetailsEmail]
+  implicit val formats: OFormat[EditContactDetailsEmail] = Json.format[EditContactDetailsEmail]
 }
 
 
@@ -54,7 +54,7 @@ case class AddressDetails(addressType: String,
                           postalCode: Option[String] = None,
                           countryCode: String)
 object AddressDetails {
-  implicit val formats = Json.format[AddressDetails]
+  implicit val formats: OFormat[AddressDetails] = Json.format[AddressDetails]
 }
 
 case class Address(name1: Option[String] = None,
@@ -62,13 +62,13 @@ case class Address(name1: Option[String] = None,
                    addressDetails: AddressDetails,
                    contactDetails: Option[ContactDetails] = None)
 object Address {
-  implicit val formats = Json.format[Address]
+  implicit val formats: OFormat[Address] = Json.format[Address]
 }
 
 case class SubscriptionData(safeId: String, organisationName: String, emailConsent: Option[Boolean], address : Seq[Address])
 
 object SubscriptionData {
-  implicit val formats = Json.format[SubscriptionData]
+  implicit val formats: OFormat[SubscriptionData] = Json.format[SubscriptionData]
 }
 
 
@@ -78,11 +78,11 @@ case class ChangeIndicators(nameChanged: Boolean = false,
                             contactDetailsChanged: Boolean = false)
 
 object ChangeIndicators {
-  implicit val formats = Json.format[ChangeIndicators]
+  implicit val formats: OFormat[ChangeIndicators] = Json.format[ChangeIndicators]
 }
 
 case class UpdateSubscriptionDataRequest(emailConsent: Boolean, changeIndicators: ChangeIndicators, address : Seq[Address])
 
 object UpdateSubscriptionDataRequest {
-  implicit val formats = Json.format[UpdateSubscriptionDataRequest]
+  implicit val formats: OFormat[UpdateSubscriptionDataRequest] = Json.format[UpdateSubscriptionDataRequest]
 }

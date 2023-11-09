@@ -27,8 +27,7 @@ import play.twirl.api.Html
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.AtedConstants._
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 trait ClientHelper extends Logging {
 
@@ -39,6 +38,7 @@ trait ClientHelper extends Logging {
                          (implicit authorisedRequest: StandardAuthRetrievals,
                           req: Request[AnyContent],
                           hc: HeaderCarrier,
+                          ec: ExecutionContext,
                           messages: Messages, appConfig: ApplicationConfig): Future[Result] = {
     dataCacheConnector.fetchAtedRefData[String](DelegatedClientAtedRefNumber) flatMap {
       case refNo @ Some(_) if refNo.get == authorisedRequest.atedReferenceNumber => result

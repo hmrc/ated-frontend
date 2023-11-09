@@ -17,7 +17,6 @@
 package connectors
 
 import java.util.UUID
-
 import config.ApplicationConfig
 import models._
 import org.mockito.ArgumentMatchers.any
@@ -28,15 +27,17 @@ import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.libs.json.JsValue
 import play.api.test.Helpers._
+import play.api.test.Injecting
 import testhelpers.MockAuthUtil
 import uk.gov.hmrc.http.SessionId
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-class AddressLookupConnectorSpec extends PlaySpec with GuiceOneAppPerSuite with MockitoSugar with BeforeAndAfterEach with MockAuthUtil {
+class AddressLookupConnectorSpec extends PlaySpec with GuiceOneAppPerSuite with MockitoSugar with BeforeAndAfterEach with MockAuthUtil with Injecting {
 
+  implicit val ec: ExecutionContext = inject[ExecutionContext]
   val mockHttp: DefaultHttpClient = mock[DefaultHttpClient]
   val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
 
@@ -46,7 +47,7 @@ class AddressLookupConnectorSpec extends PlaySpec with GuiceOneAppPerSuite with 
       mockHttp
     )
   }
-  override def beforeEach: Unit = {
+  override def beforeEach(): Unit = {
     reset(mockHttp)
   }
 

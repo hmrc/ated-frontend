@@ -27,7 +27,7 @@ import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService, Se
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants._
 import utils.{AtedUtils, PeriodUtils}
-import uk.gov.hmrc.play.bootstrap.controller.WithDefaultFormBinding
+import uk.gov.hmrc.play.bootstrap.controller.WithUnsafeDefaultFormBinding
 import scala.concurrent.{ExecutionContext, Future}
 
 class IsFullTaxPeriodController @Inject()(mcc: MessagesControllerComponents,
@@ -41,7 +41,7 @@ class IsFullTaxPeriodController @Inject()(mcc: MessagesControllerComponents,
                                           template: views.html.propertyDetails.isFullTaxPeriod)
                                          (implicit val appConfig: ApplicationConfig)
 
-  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with WithDefaultFormBinding {
+  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with WithUnsafeDefaultFormBinding {
 
   implicit val ec: ExecutionContext = mcc.executionContext
 
@@ -95,7 +95,7 @@ class IsFullTaxPeriodController @Inject()(mcc: MessagesControllerComponents,
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
-          isFullTaxPeriodForm.bindFromRequest.fold(
+          isFullTaxPeriodForm.bindFromRequest().fold(
             formWithError => {
               currentBackLink.map(backLink =>
                 BadRequest(template(id, periodKey, formWithError,

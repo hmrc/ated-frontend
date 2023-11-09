@@ -17,6 +17,7 @@
 package connectors
 
 import config.ApplicationConfig
+
 import javax.inject.Inject
 import models._
 import org.joda.time.LocalDate
@@ -26,11 +27,11 @@ import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class PropertyDetailsConnector @Inject()(appConfig: ApplicationConfig,
-                                         http: DefaultHttpClient) extends RawResponseReads {
+                                         http: DefaultHttpClient)
+                                        (implicit ec: ExecutionContext)extends RawResponseReads {
 
   val serviceURL: String = appConfig.conf.baseUrl("ated") + "/ated/"
   val baseURI = "ated"

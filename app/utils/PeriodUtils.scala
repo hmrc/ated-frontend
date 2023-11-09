@@ -178,8 +178,8 @@ object PeriodUtils {
   def isBlank(str: String): Boolean = str.isEmpty
 
   def calculateLowerTaxYearBoundary(periodKey: Int): LocalDate = {
-    val year = if (periodKey <= lowestBound) lowestBound else {
-      lowestBound + (5 * ((periodKey - lowestBound - 1) / 5).floor.toInt)
+    val year: Int = if (periodKey <= lowestBound) lowestBound else {
+      lowestBound + (5 * ((periodKey - lowestBound - 1) / 5))
     }
     LocalDate.parse(s"$year-4-1")
   }

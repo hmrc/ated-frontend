@@ -80,7 +80,7 @@ class Setup {
     injectedViewInstance
   )
 
-  def viewWithAuthorisedUser(changeLiabilityReturnOpt: Option[PropertyDetails])(test: Future[Result] => Any) {
+  def viewWithAuthorisedUser(changeLiabilityReturnOpt: Option[PropertyDetails])(test: Future[Result] => Any): Unit = {
     val userId = s"user-${UUID.randomUUID}"
     val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
     setAuthMocks(authMock)
@@ -97,7 +97,7 @@ class Setup {
     test(result)
   }
 
-  def editFromSummary(changeLiabilityReturnOpt: Option[PropertyDetails])(test: Future[Result] => Any) {
+  def editFromSummary(changeLiabilityReturnOpt: Option[PropertyDetails])(test: Future[Result] => Any): Unit = {
     val userId = s"user-${UUID.randomUUID}"
     val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
     setAuthMocks(authMock)
@@ -111,7 +111,7 @@ class Setup {
     test(result)
   }
 
-  def saveWithAuthorisedUser(inputJson: JsValue)(test: Future[Result] => Any) {
+  def saveWithAuthorisedUser(inputJson: JsValue)(test: Future[Result] => Any): Unit = {
     val userId = s"user-${UUID.randomUUID}"
     val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
     setAuthMocks(authMock)
@@ -126,7 +126,7 @@ class Setup {
   }
 }
 
-  override def beforeEach: Unit = {
+  override def beforeEach(): Unit = {
     reset(mockChangeLiabilityReturnService)
   }
 

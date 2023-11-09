@@ -23,15 +23,18 @@ import org.mockito.Mockito.{reset, _}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
+import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.libs.json.Json
 import play.api.test.Helpers._
+import play.api.test.Injecting
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-class DelegationServiceSpec extends PlaySpec with MockitoSugar with BeforeAndAfterEach {
+class DelegationServiceSpec extends PlaySpec with MockitoSugar with BeforeAndAfterEach with GuiceOneAppPerSuite with Injecting {
 
   val mockDelegationConnector: DelegationConnector = mock[DelegationConnector]
+  implicit val ec: ExecutionContext = inject[ExecutionContext]
   implicit val hc: HeaderCarrier = HeaderCarrier()
 
   class Setup {
@@ -40,7 +43,7 @@ class DelegationServiceSpec extends PlaySpec with MockitoSugar with BeforeAndAft
     )
   }
 
-  override def beforeEach: Unit = {
+  override def beforeEach(): Unit = {
     reset(mockDelegationConnector)
   }
 

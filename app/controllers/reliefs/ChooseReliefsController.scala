@@ -98,7 +98,7 @@ class ChooseReliefsController @Inject()(mcc: MessagesControllerComponents,
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
           validatePeriodKey(periodKey) {
-            val data = addParamsToRequest(Map("periodKey" -> ArrayBuffer(periodKey.toString)))
+            val data = addParamsToRequest(Map("periodKey" -> ArrayBuffer(periodKey.toString).toSeq))
             validateForm(reliefsForm.bindFromRequest(ReliefsUtils.cleanDateTuples(data.get))).fold(
               formWithError =>
                 currentBackLink.map { backLink =>

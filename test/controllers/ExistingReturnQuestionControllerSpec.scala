@@ -100,7 +100,7 @@ class ExistingReturnQuestionControllerSpec extends PlaySpec with GuiceOneServerP
       template
     )
 
-    def getWithAuthorisedUser(test: Future[Result] => Any) {
+    def getWithAuthorisedUser(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
@@ -114,7 +114,7 @@ class ExistingReturnQuestionControllerSpec extends PlaySpec with GuiceOneServerP
       test(result)
     }
 
-    def getWithAuthorisedUserWithSomeData(test: Future[Result] => Any, fromConfirmAddress: Boolean = false) {
+    def getWithAuthorisedUserWithSomeData(test: Future[Result] => Any, fromConfirmAddress: Boolean = false): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
@@ -135,7 +135,7 @@ class ExistingReturnQuestionControllerSpec extends PlaySpec with GuiceOneServerP
       test(result)
     }
 
-    def getWithUnAuthorisedUser(test: Future[Result] => Any) {
+    def getWithUnAuthorisedUser(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
       setInvalidAuthMocks(authMock)
@@ -143,7 +143,7 @@ class ExistingReturnQuestionControllerSpec extends PlaySpec with GuiceOneServerP
       test(result)
     }
 
-    def getWithUnAuthenticated(test: Future[Result] => Any) {
+    def getWithUnAuthenticated(test: Future[Result] => Any): Unit = {
       val result = testExistingReturnQuestionController.view(periodKey, returnTypeCharge).apply(SessionBuilder.buildRequestWithSessionNoUser)
       test(result)
     }

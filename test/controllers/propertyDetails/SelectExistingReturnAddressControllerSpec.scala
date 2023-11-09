@@ -88,7 +88,7 @@ class SelectExistingReturnAddressControllerSpec extends PlaySpec with GuiceOneSe
       injectedViewInstance
     )
 
-    def viewWithUnAuthorisedUser(test: Future[Result] => Any) {
+    def viewWithUnAuthorisedUser(test: Future[Result] => Any): Unit = {
       val periodKey: Int = 2015
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
@@ -103,7 +103,7 @@ class SelectExistingReturnAddressControllerSpec extends PlaySpec with GuiceOneSe
       test(result)
     }
 
-    def viewWithAuthorisedUser(prevReturns: Option[Seq[PreviousReturns]])(test: Future[Result] => Any) {
+    def viewWithAuthorisedUser(prevReturns: Option[Seq[PreviousReturns]])(test: Future[Result] => Any): Unit = {
       val periodKey: Int = 2015
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
@@ -117,7 +117,7 @@ class SelectExistingReturnAddressControllerSpec extends PlaySpec with GuiceOneSe
       test(result)
     }
 
-    def continueReturnRedirect(id: Option[String])(test: Future[Result] => Any) {
+    def continueReturnRedirect(id: Option[String])(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
@@ -129,7 +129,7 @@ class SelectExistingReturnAddressControllerSpec extends PlaySpec with GuiceOneSe
       test(result)
     }
 
-    def saveWithUnAuthorisedUser(test: Future[Result] => Any) {
+    def saveWithUnAuthorisedUser(test: Future[Result] => Any): Unit = {
       val periodKey: Int = 2015
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
@@ -147,7 +147,7 @@ class SelectExistingReturnAddressControllerSpec extends PlaySpec with GuiceOneSe
                                answer: Option[Boolean],
                                pKey: Option[SelectPeriod],
                                propertyDetails: Option[PropertyDetails],
-                               inputJson: JsValue)(test: Future[Result] => Any) {
+                               inputJson: JsValue)(test: Future[Result] => Any): Unit = {
       val periodKey: Int = 2014
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)

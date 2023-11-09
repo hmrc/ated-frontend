@@ -18,7 +18,7 @@
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
 
-@(balance: Option[BigDecimal], correspondence: Option[Address], organisationName: Option[String], clientBanner: Html)(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
+@(balance: Option[BigDecimal], correspondence: Option[Address], organisationName: Option[String], clientBanner: Html)(implicit authContext: StandardAuthRetrievals, messages: Messages, appConfig: ApplicationConfig)
 @import views.html.helpers._
 
 <hr class="service-banner">

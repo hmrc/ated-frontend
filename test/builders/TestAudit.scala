@@ -17,12 +17,13 @@
 package builders
 
 import java.util.concurrent.ConcurrentLinkedQueue
-
 import javax.inject.Inject
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.audit.model.Audit._
 import uk.gov.hmrc.play.audit.model.{Audit, AuditAsMagnet, DataEvent}
+
+import scala.concurrent.ExecutionContext
 
 class TestAudit @Inject()(auditConnector: AuditConnector) extends Audit("test", auditConnector) {
 
@@ -32,7 +33,7 @@ class TestAudit @Inject()(auditConnector: AuditConnector) extends Audit("test", 
   var capturedInputs: Map[String, String] = Map.empty
   private val dataEvents = new ConcurrentLinkedQueue[DataEvent]
 
-  def as[A](auditMagnet: AuditAsMagnet[A])(body: Body[A]): A = {
+  def as[A](auditMagnet: AuditAsMagnet[A])(body: Body[A])(implicit ec: ExecutionContext) : A = {
     this.capturedTxName = auditMagnet.txName
     this.capturedInputs = auditMagnet.inputs
     super.as(auditMagnet)(body)
@@ -45,5 +46,5 @@ class TestAudit @Inject()(auditConnector: AuditConnector) extends Audit("test", 
     ()
   }
 
-  override def sendDataEvent: (DataEvent) => Unit = captureDataEvent
+  def sendDataEvent: (DataEvent) => Unit = captureDataEvent
 }
