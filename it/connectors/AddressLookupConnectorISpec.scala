@@ -19,7 +19,7 @@ class AddressLookupConnectorISpec extends IntegrationBase with AuthAudit with In
 
       "return a list of adresses when AL call succeeds" in {
         stubAuth()
-        AddressLookupStub.postPostcodePartialSuccessResponse
+        AddressLookupStub.postPostcodePartialSuccessResponse()
 
         await(connector.findByPostcode(AddressLookup("BB000BB", None))) mustBe
           List(AddressLookupRecord(
@@ -74,7 +74,7 @@ class AddressLookupConnectorISpec extends IntegrationBase with AuthAudit with In
 
     "return OK status and an address when AL call succeeds" in {
       stubAuth()
-      AddressLookupStub.postByIdSuccessResponse
+      AddressLookupStub.postByIdSuccessResponse()
 
       await(connector.findById("200000706253")) mustBe
         List(AddressLookupRecord(

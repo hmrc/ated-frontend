@@ -32,7 +32,7 @@ class PeriodSummaryControllerISpec extends IntegrationBase with AuthAudit with K
 
       val controllerUrl = controllers.routes.PeriodSummaryController.view(period2019).url
 
-      val resp: WSResponse = await(client(controllerUrl).get)
+      val resp: WSResponse = await(client(controllerUrl).get())
 
       resp.status mustBe 200
       resp.body.contains("Social housing") mustBe true
@@ -64,7 +64,7 @@ class PeriodSummaryControllerISpec extends IntegrationBase with AuthAudit with K
 
       val controllerUrl = controllers.routes.PeriodSummaryController.view(period2020).url
 
-      val resp: WSResponse = await(client(controllerUrl).get)
+      val resp: WSResponse = await(client(controllerUrl).get())
 
       resp.status mustBe 200
       resp.body.contains("Social housing") mustBe false

@@ -4,7 +4,6 @@ import helpers.IntegrationConstants
 import play.api.Application
 import play.api.mvc.{Session, DefaultCookieHeaderEncoding, SessionCookieBaker, Cookie}
 import uk.gov.hmrc.auth.core.retrieve.{LegacyCredentials, SimpleRetrieval}
-import play.api.mvc.{Session, SessionCookieBaker}
 import uk.gov.hmrc.http.SessionKeys
 import uk.gov.hmrc.play.bootstrap.frontend.filters.crypto.SessionCookieCrypto
 import play.api.libs.ws.{DefaultWSCookie, WSCookie}
