@@ -130,7 +130,7 @@ class ReliefsUtilsSpec extends PlaySpec with MockitoSugar with GuiceOneServerPer
       val r6 = SubmittedReliefReturns("no7", "type 1", LocalDate.now(), LocalDate.now(), new LocalDate(2000,1,3)) 
       val r7 = SubmittedReliefReturns("no1", "type 1", LocalDate.now(), LocalDate.now(), new LocalDate(2000,1,2))
 
-      val testReliefReturns = Seq(r1,r2,r3,r4,r5,r6,r7)
+      val testReliefReturns = Seq(r5,r6,r7,r1,r2,r3,r4)
       ReliefsUtils.partitionNewestReliefForType(testReliefReturns) mustBe Tuple2(Seq(r1,r2), Seq(r3,r4,r5,r6,r7))
     }
 
