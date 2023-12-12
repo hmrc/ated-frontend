@@ -101,21 +101,37 @@ object ReliefsUtils extends {
     }
   }
 
+  // def partitionNewestReliefForType(refReturns: Seq[SubmittedReliefReturns]): (Seq[SubmittedReliefReturns], Seq[SubmittedReliefReturns]) = {
+    
+  //   def latestReturns(returns: Seq[SubmittedReliefReturns]): Seq[SubmittedReliefReturns] = {
+  //     val sorted = returns.sortWith((x, y) => x.dateOfSubmission.isAfter(y.dateOfSubmission))
+  //     sorted.takeWhile(_.dateOfSubmission == sorted.head.dateOfSubmission)
+  //   }
+
+  //   val newestMap = refReturns
+  //     .groupBy(_.reliefType)
+  //     .map { 
+  //       case (t, returnsForType) =>
+  //         val recentReturnsForType: Seq[SubmittedReliefReturns] = latestReturns(returnsForType)
+  //         returnsForType.partition(recentReturnsForType.contains(_))
+  //     }
+  //   (newestMap.keys.flatten.toSeq, newestMap.values.flatten.toSeq)
+  // }
+
   def partitionNewestReliefForType(refReturns: Seq[SubmittedReliefReturns]): (Seq[SubmittedReliefReturns], Seq[SubmittedReliefReturns]) = {
     
-    def latestReturns(returns: Seq[SubmittedReliefReturns], latest: Seq[SubmittedReliefReturns] = Nil): Seq[SubmittedReliefReturns] = {
+    def partitionIntoLatestAndOthers(returns: Seq[SubmittedReliefReturns]): (Seq[SubmittedReliefReturns], Seq[SubmittedReliefReturns]) = {
       val sorted = returns.sortWith((x, y) => x.dateOfSubmission.isAfter(y.dateOfSubmission))
-      sorted.takeWhile(_.dateOfSubmission == sorted.head.dateOfSubmission)
+      sorted.partition(_.dateOfSubmission == sorted.head.dateOfSubmission)
     }
 
-    val newestMap = refReturns
-      .groupBy(_.reliefType)
-      .map { case (_, returnsForType) =>
-        val recentReturnsForType: Seq[SubmittedReliefReturns] = latestReturns(returnsForType)
-        returnsForType.partition(recentReturnsForType.contains(_))
-      }
+    val partitioned: List[(Seq[SubmittedReliefReturns], Seq[SubmittedReliefReturns])] = refReturns
+      .groupBy(_.reliefType).values.toList  // Group returns into List of lists by reliefType
+      .sortBy(_(0).reliefType)              // Sort list to order by reliefType
+      .map(partitionIntoLatestAndOthers(_)) // Partition each list into a tuple of the latest and the others    
 
-    (newestMap.keys.flatten.toSeq, newestMap.values.flatten.toSeq)
+    // Return tuple of the latest returns of each reliefType and the others
+    (partitioned.map(_._1).flatten, partitioned.map(_._2).flatten)
   }
 
 }

@@ -117,33 +117,34 @@ class ReliefsUtilsSpec extends PlaySpec with MockitoSugar with GuiceOneServerPer
       val type2Return = SubmittedReliefReturns("no3", "type 2", LocalDate.now(), LocalDate.now(), LocalDate.now().minusDays(3))
 
       val testReliefReturns = Seq(newerType1Return, olderType1Return, type2Return)
-      ReliefsUtils.partitionNewestReliefForType(testReliefReturns) mustBe Tuple2(Seq(type2Return, newerType1Return), Seq(olderType1Return))
+      ReliefsUtils.partitionNewestReliefForType(Nil) mustBe (Nil, Nil)
+      ReliefsUtils.partitionNewestReliefForType(testReliefReturns) mustBe Tuple2(Seq(newerType1Return, type2Return), Seq(olderType1Return))
     }
 
     "provide many reliefs for 1 type with 2 of similar latest submission date" in {
-      val r1 = SubmittedReliefReturns("no1", "type 1", LocalDate.now(), LocalDate.now(), new LocalDate(2000,1,2))
-      val r2 = SubmittedReliefReturns("no2", "type 1", LocalDate.now(), LocalDate.now(), new LocalDate(2000,1,6))
-      val r3 = SubmittedReliefReturns("no3", "type 1", LocalDate.now(), LocalDate.now(), new LocalDate(2000,1,4))
-      val r4 = SubmittedReliefReturns("no4", "type 1", LocalDate.now(), LocalDate.now(), new LocalDate(2000,1,5))
-      val r5 = SubmittedReliefReturns("no5", "type 1", LocalDate.now(), LocalDate.now(), new LocalDate(2000,1,6))
-      val r6 = SubmittedReliefReturns("no6", "type 1", LocalDate.now(), LocalDate.now(), new LocalDate(2000,1,3))
-      val r7 = SubmittedReliefReturns("no7", "type 1", LocalDate.now(), LocalDate.now(), new LocalDate(2000,1,3)) 
+      val r1 = SubmittedReliefReturns("no2", "type 1", LocalDate.now(), LocalDate.now(), new LocalDate(2000,1,6))
+      val r2 = SubmittedReliefReturns("no5", "type 1", LocalDate.now(), LocalDate.now(), new LocalDate(2000,1,6))
+      val r3 = SubmittedReliefReturns("no4", "type 1", LocalDate.now(), LocalDate.now(), new LocalDate(2000,1,5))
+      val r4 = SubmittedReliefReturns("no3", "type 1", LocalDate.now(), LocalDate.now(), new LocalDate(2000,1,4))
+      val r5 = SubmittedReliefReturns("no6", "type 1", LocalDate.now(), LocalDate.now(), new LocalDate(2000,1,3))
+      val r6 = SubmittedReliefReturns("no7", "type 1", LocalDate.now(), LocalDate.now(), new LocalDate(2000,1,3)) 
+      val r7 = SubmittedReliefReturns("no1", "type 1", LocalDate.now(), LocalDate.now(), new LocalDate(2000,1,2))
 
       val testReliefReturns = Seq(r1,r2,r3,r4,r5,r6,r7)
-      ReliefsUtils.partitionNewestReliefForType(testReliefReturns) mustBe Tuple2(Seq(r2,r5), Seq(r1,r3,r4,r6,r7))
+      ReliefsUtils.partitionNewestReliefForType(testReliefReturns) mustBe Tuple2(Seq(r1,r2), Seq(r3,r4,r5,r6,r7))
     }
 
     "provide many reliefs for 1 type with 2 of similar latest submission date, alternate set" in {
-      val r1 = SubmittedReliefReturns("no1", "type 1", LocalDate.now(), LocalDate.now(), new LocalDate(2000,1,2))
-      val r2 = SubmittedReliefReturns("no6", "type 1", LocalDate.now(), LocalDate.now(), new LocalDate(2000,1,3))
-      val r3 = SubmittedReliefReturns("no2", "type 1", LocalDate.now(), LocalDate.now(), new LocalDate(2000,1,6))
+      val r1 = SubmittedReliefReturns("no2", "type 1", LocalDate.now(), LocalDate.now(), new LocalDate(2000,1,6))
+      val r2 = SubmittedReliefReturns("no5", "type 1", LocalDate.now(), LocalDate.now(), new LocalDate(2000,1,6))
+      val r3 = SubmittedReliefReturns("no4", "type 1", LocalDate.now(), LocalDate.now(), new LocalDate(2000,1,5))
       val r4 = SubmittedReliefReturns("no3", "type 1", LocalDate.now(), LocalDate.now(), new LocalDate(2000,1,4))
-      val r5 = SubmittedReliefReturns("no4", "type 1", LocalDate.now(), LocalDate.now(), new LocalDate(2000,1,5))
-      val r6 = SubmittedReliefReturns("no5", "type 1", LocalDate.now(), LocalDate.now(), new LocalDate(2000,1,6))
-      val r7 = SubmittedReliefReturns("no7", "type 1", LocalDate.now(), LocalDate.now(), new LocalDate(2000,1,3)) 
+      val r5 = SubmittedReliefReturns("no6", "type 1", LocalDate.now(), LocalDate.now(), new LocalDate(2000,1,3))
+      val r6 = SubmittedReliefReturns("no7", "type 1", LocalDate.now(), LocalDate.now(), new LocalDate(2000,1,3)) 
+      val r7 = SubmittedReliefReturns("no1", "type 1", LocalDate.now(), LocalDate.now(), new LocalDate(2000,1,2))
 
-      val testReliefReturns = Seq(r1,r2,r3,r4,r5,r6,r7)
-      ReliefsUtils.partitionNewestReliefForType(testReliefReturns) mustBe Tuple2(Seq(r3,r6), Seq(r1,r2,r4,r5,r7))
+      val testReliefReturns = Seq(r4,r5,r6,r7,r1,r2,r3)
+      ReliefsUtils.partitionNewestReliefForType(testReliefReturns) mustBe Tuple2(Seq(r1,r2), Seq(r3,r4,r5,r6,r7))
     }
 
     "provide reliefs for 2 types, one with two reliefs of the same date, one with two different dates" in {
