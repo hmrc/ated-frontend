@@ -101,23 +101,6 @@ object ReliefsUtils extends {
     }
   }
 
-  // def partitionNewestReliefForType(refReturns: Seq[SubmittedReliefReturns]): (Seq[SubmittedReliefReturns], Seq[SubmittedReliefReturns]) = {
-    
-  //   def latestReturns(returns: Seq[SubmittedReliefReturns]): Seq[SubmittedReliefReturns] = {
-  //     val sorted = returns.sortWith((x, y) => x.dateOfSubmission.isAfter(y.dateOfSubmission))
-  //     sorted.takeWhile(_.dateOfSubmission == sorted.head.dateOfSubmission)
-  //   }
-
-  //   val newestMap = refReturns
-  //     .groupBy(_.reliefType)
-  //     .map { 
-  //       case (t, returnsForType) =>
-  //         val recentReturnsForType: Seq[SubmittedReliefReturns] = latestReturns(returnsForType)
-  //         returnsForType.partition(recentReturnsForType.contains(_))
-  //     }
-  //   (newestMap.keys.flatten.toSeq, newestMap.values.flatten.toSeq)
-  // }
-
   def partitionNewestReliefForType(refReturns: Seq[SubmittedReliefReturns]): (Seq[SubmittedReliefReturns], Seq[SubmittedReliefReturns]) = {
     
     def partitionIntoLatestAndOthers(returns: Seq[SubmittedReliefReturns]): (Seq[SubmittedReliefReturns], Seq[SubmittedReliefReturns]) = {
