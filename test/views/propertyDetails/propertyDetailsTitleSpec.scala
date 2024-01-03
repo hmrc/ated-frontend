@@ -55,7 +55,7 @@ class propertyDetailsTitleSpec extends AnyFeatureSpec with GuiceOneAppPerSuite w
       val document = Jsoup.parse(html.toString())
 
       Then("The header and title should match - What is the property title number?")
-      assert(document.title() === "What is the property’s title number? (optional) - GOV.UK")
+      assert(document.title() === "What is the property’s title number? (optional) - Submit and view your ATED returns - GOV.UK")
       assert(document.getElementsByTag("h1").text() contains "What is the property’s title number? (optional)")
       Then("The subheader should be - Create return")
       assert(document.getElementsByClass("govuk-caption-xl").text() === "This section is: Create return" )
@@ -83,7 +83,7 @@ class propertyDetailsTitleSpec extends AnyFeatureSpec with GuiceOneAppPerSuite w
       val document = Jsoup.parse(html.toString())
 
       Then("The header and title should match - What is the property title number?")
-      assert(document.title() === "What is the property’s title number? (optional) - GOV.UK")
+      assert(document.title() === "What is the property’s title number? (optional) - Submit and view your ATED returns - GOV.UK")
       assert(document.getElementsByTag("h1").text() contains "What is the property’s title number? (optional)")
 
       Then("The subheader should be - Change return")

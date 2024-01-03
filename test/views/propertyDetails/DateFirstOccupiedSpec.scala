@@ -52,7 +52,7 @@ class DateFirstOccupiedSpec extends AnyFeatureSpec with GuiceOneAppPerSuite with
       val html = injectedViewInstance("1", 1, dateFirstOccupiedForm, None, Html(""), Some("http://backLink"))
       val document = Jsoup.parse(html.toString())
       Then(s"The title should match - $title - GOV.UK")
-      assert(document.title() === s"$title - GOV.UK")
+      assert(document.title() === s"$title - Submit and view your ATED returns - GOV.UK")
 
       Then("The header should match")
       assert(document.getElementsByTag("h1").text() contains title)
@@ -74,7 +74,7 @@ class DateFirstOccupiedSpec extends AnyFeatureSpec with GuiceOneAppPerSuite with
       val html = injectedViewInstance("1", 1, dateFirstOccupiedForm, Some(utils.AtedUtils.EDIT_SUBMITTED), Html(""), Some("http://backLink"))
       val document = Jsoup.parse(html.toString())
       Then("The title should match")
-      assert(document.title() === s"$title - GOV.UK")
+      assert(document.title() === s"$title - Submit and view your ATED returns - GOV.UK")
 
       Then("The header should match")
       assert(document.getElementsByTag("h1").text() contains title)

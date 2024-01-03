@@ -40,7 +40,7 @@ class ChooseReliefsSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil
   "choose relief view" must {
 
     "have correct page title" in {
-      doc.title mustBe messages("ated.choose-reliefs.title") + " - GOV.UK"
+      doc.title mustBe messages("ated.choose-reliefs.title") + " - Submit and view your ATED returns - GOV.UK"
     }
     "have correct heading" in {
       doc.getElementsByTag("h1").text must include(messages("ated.choose-reliefs.header"))

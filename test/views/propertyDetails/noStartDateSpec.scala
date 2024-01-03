@@ -49,8 +49,8 @@ class noStartDateSpec extends AnyFeatureSpec with GuiceOneAppPerSuite with Mocki
       When("The user doesnt enter either start date")
       val html = injectedViewInstance("1", Html(""), None, Some("http://backLink"))
       val document = Jsoup.parse(html.toString())
-      Then("The title should match - No start date was provided - GOV.UK")
-      assert(document.title() === "No start date was provided - GOV.UK")
+      Then("The title should match - No start date was provided - Submit and view your ATED returns - GOV.UK")
+      assert(document.title() === "No start date was provided - Submit and view your ATED returns - GOV.UK")
 
       Then("The header should match - No start date was provided")
       assert(document.getElementsByTag("h1").text() contains "No start date was provided")
@@ -74,8 +74,8 @@ class noStartDateSpec extends AnyFeatureSpec with GuiceOneAppPerSuite with Mocki
       When("The user doesnt enter either start date")
       val html = injectedViewInstance("1", Html(""), Some(utils.AtedUtils.EDIT_SUBMITTED), Some("http://backLink"))
       val document = Jsoup.parse(html.toString())
-      Then("The title should match - No start date was provided - GOV.UK")
-      assert(document.title() === "No start date was provided - GOV.UK")
+      Then("The title should match - No start date was provided - Submit and view your ATED returns - GOV.UK")
+      assert(document.title() === "No start date was provided - Submit and view your ATED returns - GOV.UK")
 
       Then("The header should match - No start date was provided")
       assert(document.getElementsByTag("h1").text() contains "No start date was provided")

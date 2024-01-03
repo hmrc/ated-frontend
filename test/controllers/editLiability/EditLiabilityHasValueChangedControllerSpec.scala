@@ -153,7 +153,7 @@ class Setup {
           result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be ("Has the value of your property changed for the purposes of ATED? - GOV.UK")
+            document.title() must be ("Has the value of your property changed for the purposes of ATED? - Submit and view your ATED returns - GOV.UK")
             assert(document.getElementById("service-info-list").text() === "Home Manage account Messages Help and contact")
         }
       }
@@ -167,7 +167,7 @@ class Setup {
           result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be ("Has the value of your property changed for the purposes of ATED? - GOV.UK")
+            document.title() must be ("Has the value of your property changed for the purposes of ATED? - Submit and view your ATED returns - GOV.UK")
 
             document.getElementsByClass("govuk-back-link").text must be("Back")
             document.getElementsByClass("govuk-back-link").attr("href") must include("/ated/liability/create/summary/12345678901")

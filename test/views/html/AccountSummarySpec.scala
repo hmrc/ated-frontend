@@ -62,7 +62,7 @@ class AccountSummarySpec extends AtedViewSpec with MockAuthUtil with TestModels 
 
     "regardless of returns data" should {
       "have the correct title" in {
-        assert(doc.title() === "Your ATED summary - GOV.UK")
+        assert(doc.title() === "Your ATED summary - Submit and view your ATED returns - GOV.UK")
       }
 
       "have the correct h1" in {

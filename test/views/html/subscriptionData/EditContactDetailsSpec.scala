@@ -31,7 +31,7 @@ class EditContactDetailsSpec extends AtedViewSpec with MockitoSugar with MockAut
 "Edit contact details view" must {
 
   "have correct page title" in {
-    doc.title mustBe messages("ated.contact-details.title") + " - GOV.UK"
+    doc.title mustBe messages("ated.contact-details.title") + " - Submit and view your ATED returns - GOV.UK"
   }
 
   "have correct heading and caption" in {

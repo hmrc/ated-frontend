@@ -55,7 +55,7 @@ class changeReliefReturnSpec extends AnyFeatureSpec with GuiceOneAppPerSuite wit
       val document = Jsoup.parse(html.toString())
 
       Then("The header and title should match - Change your ATED return")
-      assert(document.title() === "Change your ATED return - GOV.UK")
+      assert(document.title() === "Change your ATED return - Submit and view your ATED returns - GOV.UK")
       assert(document.select("h1").text contains "Change return Change your ATED return")
 
       Then("The subheader should be - Change return")

@@ -52,7 +52,7 @@ Feature("The user can view an edit liability type page") {
 
       val document = Jsoup.parse(html.toString())
       Then("the page title : Have you disposed of the property?")
-      assert(document.title() === "Have you disposed of the property? - GOV.UK")
+      assert(document.title() === "Have you disposed of the property? - Submit and view your ATED returns - GOV.UK")
 
       assert(document.getElementsByClass("govuk-caption-xl").text() === "This section is Change return")
       assert(document.getElementsByTag("h1").text.contains("Have you disposed of the property?"))
@@ -86,7 +86,7 @@ Feature("The user can view an edit liability type page") {
 
       val document = Jsoup.parse(html.toString())
       Then("the page title : Have you disposed of the property?")
-      assert(document.title() === "Have you disposed of the property? - GOV.UK")
+      assert(document.title() === "Have you disposed of the property? - Submit and view your ATED returns - GOV.UK")
 
       assert(document.getElementsByClass("govuk-caption-xl").text() === "This section is: Change return")
       assert(document.getElementsByTag("h1").text.contains("Your return cannot be changed online"))

@@ -51,8 +51,8 @@ class confirmAddressSpec extends AnyFeatureSpec with GuiceOneAppPerSuite with Mo
       val propertyDetails: PropertyDetailsAddress = PropertyDetailsBuilder.getPropertyDetailsAddress(postCode = Some("XX1 1XX"))
       val html = injectedViewInstance("1", 2015, propertyDetails, mode = None, Html(""), Some("http://backLink"))
       val document = Jsoup.parse(html.toString())
-      Then("The title should match - Confirm address - GOV.UK")
-      assert(document.title() === "Confirm address - GOV.UK")
+      Then("The title should match - Confirm address - Submit and view your ATED returns - GOV.UK")
+      assert(document.title() === "Confirm address - Submit and view your ATED returns - GOV.UK")
 
       Then("The header should match - Confirm address")
       assert(document.getElementsByTag("h1").text() contains "Confirm address")

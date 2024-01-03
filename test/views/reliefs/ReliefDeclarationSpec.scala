@@ -54,7 +54,7 @@ class ReliefDeclarationSpec extends AnyFeatureSpec with GuiceOneAppPerSuite with
       val document = Jsoup.parse(html.toString())
 
       Then("Returns declaration")
-      assert(document.title() === "Returns declaration - GOV.UK")
+      assert(document.title() === "Returns declaration - Submit and view your ATED returns - GOV.UK")
       And("The pre-header text is - Create relief return")
       assert(document.getElementsByClass("govuk-heading-xl").text() contains "Returns declaration")
       assert(document.getElementById("relief-declaration-before-declaration-text")
@@ -86,7 +86,7 @@ class ReliefDeclarationSpec extends AnyFeatureSpec with GuiceOneAppPerSuite with
 
       val document = Jsoup.parse(html.toString())
       Then("Returns declaration")
-      assert(document.title() === "Returns declaration - GOV.UK")
+      assert(document.title() === "Returns declaration - Submit and view your ATED returns - GOV.UK")
 
       And("The pre-header text is - Create relief return")
       assert(document.getElementsByClass("govuk-heading-xl").text() contains "Returns declaration")

@@ -57,11 +57,11 @@ class PropertyDetailsAcquisitionSpec extends AtedViewSpec with MockitoSugar with
 
   "The property details acquisition view for a valid form" must {
     "have the correct page title" in {
-      doc.title mustBe (messages("ated.property-details-value.anAcquisition.title") + " - GOV.UK")
+      doc.title mustBe (messages("ated.property-details-value.anAcquisition.title") + " - Submit and view your ATED returns - GOV.UK")
     }
 
     "have the correct header" in {
-      doc.title mustBe (messages("ated.property-details-value.anAcquisition.header") + " - GOV.UK")
+      doc.title mustBe (messages("ated.property-details-value.anAcquisition.header") + " - Submit and view your ATED returns - GOV.UK")
     }
 
     "have the correct pre heading" in {
@@ -89,7 +89,7 @@ class PropertyDetailsAcquisitionSpec extends AtedViewSpec with MockitoSugar with
     }
 
     "have the correct errors" in {
-      docWithErrors.title mustBe ("Error: " + messages("ated.property-details-value.anAcquisition.title") + " - GOV.UK")
+      docWithErrors.title mustBe ("Error: " + messages("ated.property-details-value.anAcquisition.title") + " - Submit and view your ATED returns - GOV.UK")
       docWithErrors.getElementsByClass("govuk-error-message").text() mustBe ("Error: " + messages("ated.property-details-value.anAcquisition.error-field-name"))
       docWithErrors.getElementsByClass("govuk-error-summary__list").text() mustBe messages("ated.property-details-value.anAcquisition.error-field-name")
     }

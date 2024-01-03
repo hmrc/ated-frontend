@@ -35,7 +35,7 @@ class PropertyDetailsWhenAcquiredSpec extends AtedViewSpec with MockAuthUtil {
 
   "The property details acquisition view for a valid form" must {
     "have the correct page title" in {
-      doc.title mustBe (messages("ated.property-details-value.whenAcquired.title") + " - GOV.UK")
+      doc.title mustBe (messages("ated.property-details-value.whenAcquired.title") + " - Submit and view your ATED returns - GOV.UK")
     }
 
     "have the correct header" in {

@@ -53,7 +53,7 @@ class editLiabilityValueSpec extends AnyFeatureSpec with GuiceOneServerPerSuite 
 
       val document = Jsoup.parse(html.toString())
       Then("the page title : Has the value of your property changed for the purposes of ATED?")
-      assert(document.title() === "Has the value of your property changed for the purposes of ATED? - GOV.UK")
+      assert(document.title() === "Has the value of your property changed for the purposes of ATED? - Submit and view your ATED returns - GOV.UK")
 
       assert(document.getElementsByTag("h1").text.contains("This section is: Create return"))
 
@@ -91,7 +91,7 @@ class editLiabilityValueSpec extends AnyFeatureSpec with GuiceOneServerPerSuite 
 
       val document = Jsoup.parse(html.toString())
       Then("the page title : Has the value of your property changed for the purposes of ATED?")
-      assert(document.title() === "Has the value of your property changed for the purposes of ATED? - GOV.UK")
+      assert(document.title() === "Has the value of your property changed for the purposes of ATED? - Submit and view your ATED returns - GOV.UK")
 
       document.getElementsByClass("govuk-caption-xl").text === "This section is: Create return"
 

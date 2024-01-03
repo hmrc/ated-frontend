@@ -129,7 +129,7 @@ class Setup {
           result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
-            document.title must be("Have you disposed of the property? - GOV.UK")
+            document.title must be("Have you disposed of the property? - Submit and view your ATED returns - GOV.UK")
             document.getElementsByTag("h1").text() must include("Have you disposed of the property?")
             assert(!document.getElementById("editLiabilityType").hasAttr("checked"))
             assert(!document.getElementById("editLiabilityType-2").hasAttr("checked"))
@@ -144,7 +144,7 @@ class Setup {
           result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
-            document.title must be("Have you disposed of the property? - GOV.UK")
+            document.title must be("Have you disposed of the property? - Submit and view your ATED returns - GOV.UK")
             document.getElementsByTag("h1").text() must include("Have you disposed of the property?")
             assert(document.getElementById("editLiabilityType-2").hasAttr("checked"))
             assert(document.getElementById("service-info-list").text() === "Home Manage account Messages Help and contact")
@@ -158,7 +158,7 @@ class Setup {
           result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
-            document.title must be("Have you disposed of the property? - GOV.UK")
+            document.title must be("Have you disposed of the property? - Submit and view your ATED returns - GOV.UK")
             document.getElementsByTag("h1").text() must include("Have you disposed of the property?")
             assert(document.getElementById("editLiabilityType").hasAttr("checked"))
             assert(document.getElementById("service-info-list").text() === "Home Manage account Messages Help and contact")

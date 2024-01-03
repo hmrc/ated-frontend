@@ -36,7 +36,7 @@ class individualViewSpec extends PlaySpec with GuiceOneAppPerSuite {
     val html = injectedViewInstance()
     val document = Jsoup.parse(html.toString())
     "have the correct title" in {
-      document.title mustBe "You need to sign in with a different Gateway ID - GOV.UK"
+      document.title mustBe "You need to sign in with a different Gateway ID - Submit and view your ATED returns - GOV.UK"
     }
 
     "have the correct heading" in {

@@ -54,8 +54,8 @@ Feature("The user can add a period that the property is in relief") {
 
       val document = Jsoup.parse(html.toString())
 
-      Then("The title should match - Add the dates when the property was in relief and was not liable for an ATED charge - GOV.UK")
-      assert(document.title() === "Add the dates when the property was in relief and was not liable for an ATED charge - GOV.UK")
+      Then("The title should match - Add the dates when the property was in relief and was not liable for an ATED charge - Submit and view your ATED returns - GOV.UK")
+      assert(document.title() === "Add the dates when the property was in relief and was not liable for an ATED charge - Submit and view your ATED returns - GOV.UK")
       Then("The header should match - Add the dates when the property was in relief and was not liable for an ATED charge")
       assert(document.select("h1").text contains "Add the dates when the property was in relief and was not liable for an ATED charge")
       Then("The subheader should be - Create return")

@@ -18,7 +18,7 @@ package builders
 
 object TitleBuilder {
 
-  def buildTitle(str: String): String = str.concat(" - GOV.UK")
+  def buildTitle(str: String): String = str.concat(" - Submit and view your ATED returns - GOV.UK")
 
   def buildErrorTitle(str: String): String = s"""Error: ${buildTitle(str)}"""
 

@@ -55,8 +55,8 @@ class periodsInAndOutReliefSpec extends AnyFeatureSpecLike with GuiceOneAppPerSu
 
       val document = Jsoup.parse(html.toString())
 
-      Then("The title should match - Add periods when the property was in relief and when it was liable for an ATED charge - GOV.UK")
-      assert(document.title() === "Add periods when the property was in relief and when it was liable for an ATED charge - GOV.UK")
+      Then("The title should match - Add periods when the property was in relief and when it was liable for an ATED charge - Submit and view your ATED returns - GOV.UK")
+      assert(document.title() === "Add periods when the property was in relief and when it was liable for an ATED charge - Submit and view your ATED returns - GOV.UK")
 
       Then("The header should match - Add periods when the property was in relief and when it was liable for an ATED charge")
       assert(document.getElementsByTag("h1").text contains "Add periods when the property was in relief and when it was liable for an ATED charge")

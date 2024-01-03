@@ -54,7 +54,7 @@ class editLiabilityDeclarationSpec extends AnyFeatureSpec with GuiceOneAppPerSui
       val document = Jsoup.parse(html.toString())
 
       Then("The header should match - Amended return declaration")
-      assert(document.title() === "Amended return declaration - GOV.UK")
+      assert(document.title() === "Amended return declaration - Submit and view your ATED returns - GOV.UK")
       assert(document.select("h1").text.contains("Amended return declaration"))
 
       Then("The subheader should be - Change return")
