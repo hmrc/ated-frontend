@@ -220,7 +220,7 @@ class Setup {
               submitWithAuthorisedUserSuccess(Some(contactAddress))(FakeRequest().withJsonBody(inputJson)) {
                 result =>
                   status(result) must be(BAD_REQUEST)
-                  contentAsString(result) must include("You must enter a first name")
+                  contentAsString(result) must include("Enter a first name")
               }
             }
 

@@ -54,9 +54,9 @@ class changeReliefReturnSpec extends AnyFeatureSpec with GuiceOneAppPerSuite wit
 
       val document = Jsoup.parse(html.toString())
 
-      Then("The header and title should match - Change your ATED return")
-      assert(document.title() === "Change your ATED return - GOV.UK")
-      assert(document.select("h1").text contains "Change return Change your ATED return")
+      Then("The header and title should match - What would you like to do with your ATED return?")
+      assert(document.title() === "What would you like to do with your ATED return? - GOV.UK")
+      assert(document.select("h1").text contains "What would you like to do with your ATED return?")
 
       Then("The subheader should be - Change return")
       assert(document.getElementsByClass("govuk-caption-xl").text() === "This section is: Change return")
@@ -69,8 +69,8 @@ class changeReliefReturnSpec extends AnyFeatureSpec with GuiceOneAppPerSuite wit
       assert(document.getElementById("titleNumber-text").text() === "If any change in your circumstances means you will no longer claim for one or more relief types next year, you need to contact HMRC on atedadditionalinfo.ctiaa@hmrc.gov.uk to tell us which relief types you will not claim.")
       assert(document.getElementById("titleNumber-text-2").text() === "This will help to keep our records up to date so we know not to expect a return for that type of relief next year.")
       assert(document.getElementById("titleNumber-text-3").text() === "When emailing please include your ATED reference number or if you do not have the number please give your company name. Do not include any further personal or financial details. Sending information over the internet is generally not completely secure, and we cannot guarantee the security of your data while it’s in transit. Any data you send is at your own risk.")
-      assert(document.getElementsByAttributeValue("for", "changeRelief").text() === "Change return details")
-      assert(document.getElementsByAttributeValue("for", "changeRelief-2").text() === "Create chargeable return")
+      assert(document.getElementsByAttributeValue("for", "changeRelief").text() === "Change an existing ATED return")
+      assert(document.getElementsByAttributeValue("for", "changeRelief-2").text() === "Create a chargeable return")
 
 
       Then("The submit button should have the correct name")

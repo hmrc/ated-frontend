@@ -83,12 +83,12 @@ class IsAvoidanceSchemeSpec extends AtedViewSpec with MockAuthUtil with Injectin
       "have error message in the summary, linking to the field" in {
         val errorLink = doc(view).select("ul.govuk-error-summary__list > li > a")
 
-        errorLink.text mustBe "You must answer the avoidance scheme question"
+        errorLink.text mustBe "Select yes if an avoidance scheme is being used for any of these reliefs"
         errorLink.attr("href") mustBe "#isAvoidanceScheme"
       }
 
       "have an error message displayed at the field" in {
-        doc(view).getElementById("isAvoidanceScheme-error").text must include("You must answer the avoidance scheme question")
+        doc(view).getElementById("isAvoidanceScheme-error").text must include("Select yes if an avoidance scheme is being used for any of these reliefs")
       }
     }
   }

@@ -266,7 +266,7 @@ class AvoidanceSchemeBeingUsedControllerSpec extends PlaySpec with GuiceOneServe
         submitWithAuthorisedUser(FakeRequest().withFormUrlEncodedBody(formBody: _*)) {
           result =>
             status(result) must be(BAD_REQUEST)
-            contentAsString(result) must include("You must answer the avoidance scheme question")
+            contentAsString(result) must include("Select yes if an avoidance scheme is being used for any of these reliefs")
         }
       }
     }
