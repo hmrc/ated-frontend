@@ -78,11 +78,11 @@
         <p class="govuk-body">@messages("ated.prev-period-summary.chareablePeriods.text")</p>
 
         <table class="govuk-table">
+            <caption class="govuk-table__caption govuk-table__caption--m govuk-visually-hidden">@messages("ated.summary-return.table.caption")</caption>
             <thead class="govuk-table__head">
                 <tr class="govuk-table__row">
                     <th scope="col" class="govuk-table__header">
-                        <span class="govuk-visually-hidden">@messages("ated.summary-return.table.screen-reader.headings-help")</span>
-                        @messages("ated.prev-period-summary-th.period")</th>
+                    @messages("ated.prev-period-summary-th.period")</th>
                     <th id="charge-title" scope="col" class="govuk-table__header govuk-table__header--numeric">@messages("ated.prev-period-summary-th.chargeable")</th>
                     <th id="relief-title" scope="col" class="govuk-table__header govuk-table__header--numeric">@messages("ated.prev-period-summary-th.reliefs")</th>
                     <th id="draft-title" scope="col" class="govuk-table__header govuk-table__header--numeric">@messages("ated.prev-period-summary-th.drafts")</th>
@@ -90,31 +90,25 @@
             </thead>
             <tbody class="govuk-table__body">
                 @summaryReturnsWithDrafts.returnsOtherTaxYears.zipWithIndex.map { case (periodSummaryWithDraft, i) =>
-                <tr class="govuk-table__row">
-                    <td class="govuk-table__cell govuk-table__cell--text">
-                        <a class="govuk-link" href="@controllers.routes.PeriodSummaryController.view(periodSummaryWithDraft.periodKey)"
-                        id="view-change-@i">
-                                Returns for @periodSummaryWithDraft.periodKey to @(periodSummaryWithDraft.periodKey.toInt + 1)
-                            <span class="govuk-visually-hidden">
-                               @messages("ated.prev-period-summary-screen-reader")
-                            </span>
-                        </a>
-                    </td>
-                    <td id="charge-number-@i" class="govuk-table__cell govuk-table__cell--numeric">
-                        <span class="govuk-visually-hidden">@messages("ated.summary-return.table.screen-reader.number-of") @messages("ated.prev-period-summary-th.chargeable")</span>
-                        @periodSummaryWithDraft.submittedReturns.fold(0)(a => a.currentLiabilityReturns.size + a.oldLiabilityReturns.size)
-                    </td>
-                    <td id="reliefs-number-@i" class="govuk-table__cell govuk-table__cell--numeric">
-                        <span class="govuk-visually-hidden">@messages("ated.summary-return.table.screen-reader.number-of") @messages("ated.prev-period-summary-th.reliefs")</span>
-                        @periodSummaryWithDraft.submittedReturns.fold(0)(a => a.reliefReturns.size)
-                    </td>
-                    <td id="draft-number-@i" class="govuk-table__cell govuk-table__cell--numeric">
-                        <span class="govuk-visually-hidden">@messages("ated.summary-return.table.screen-reader.number-of") @messages("ated.prev-period-summary-th.drafts")</span>
-                        @periodSummaryWithDraft.draftReturns.size
-                    </td>
-                </tr>
+                    <tr class="govuk-table__row">
+                        <th scope="row" class="govuk-table__cell govuk-table__cell--text govuk-!-font-weight-regular">
+                            <a class="govuk-link" href="@controllers.routes.PeriodSummaryController.view(periodSummaryWithDraft.periodKey)"
+                            id="view-change-@i">
+                                    Returns for @periodSummaryWithDraft.periodKey to @(periodSummaryWithDraft.periodKey.toInt + 1)
+                            </a>
+                        </th scope="row">
+                        <td id="charge-number-@i" class="govuk-table__cell govuk-table__cell--numeric">
+                            @periodSummaryWithDraft.submittedReturns.fold(0)(a => a.currentLiabilityReturns.size + a.oldLiabilityReturns.size)
+                        </td>
+                        <td id="reliefs-number-@i" class="govuk-table__cell govuk-table__cell--numeric">
+                            @periodSummaryWithDraft.submittedReturns.fold(0)(a => a.reliefReturns.size)
+                        </td>
+                        <td id="draft-number-@i" class="govuk-table__cell govuk-table__cell--numeric">
+                            @periodSummaryWithDraft.draftReturns.size
+                        </td>
+                    </tr>
+                }
             </tbody>
-            }
         </table>
     }
     <p class="govuk-body">@messages("ated.prev-period-summary.createRuturn.text") @(taxYearStartingYear - 1) to @(taxYearStartingYear) or earlier.</p>
