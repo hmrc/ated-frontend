@@ -21,8 +21,9 @@ import forms.mappings.DateTupleCustomError
 import models._
 import org.joda.time.LocalDate
 import play.api.data.Forms._
+import play.api.data.validation.{Constraint, Invalid, Valid}
 import play.api.data.{Form, FormError, Mapping}
-import utils.AtedUtils
+import utils.{AtedUtils, PeriodUtils}
 
 import scala.annotation.tailrec
 import scala.util.Try
@@ -105,9 +106,16 @@ object PropertyDetailsForms {
       "partAcqDispDate" -> DateTupleCustomError("ated.error.date.invalid").dateTupleOptional()
     )(PropertyDetailsRevalued.apply)(PropertyDetailsRevalued.unapply))
 
-  val propertyDetailsOwnedBeforeForm: Form[PropertyDetailsOwnedBefore] = Form(
+  def OwnedBeforeYearConstraint(periodKey: Int): Constraint[Option[Boolean]] = Constraint({ model =>
+    model match {
+      case Some(_) => Valid
+      case _ => Invalid("ated.property-details-value.isOwnedBeforeValuationYear.error.non-selected", PeriodUtils.calculateLowerTaxYearBoundary(periodKey).getYear.toString)
+    }
+  })
+
+  def propertyDetailsOwnedBeforeForm(periodKey: Int): Form[PropertyDetailsOwnedBefore] = Form(
     mapping(
-      "isOwnedBeforePolicyYear" -> optional(boolean).verifying("ated.property-details-value.isOwnedBeforeValuationYear.error.non-selected", x => x.isDefined),
+      "isOwnedBeforePolicyYear" -> optional(boolean).verifying(OwnedBeforeYearConstraint(periodKey)),
       "ownedBeforePolicyYearValue" -> valueValidation
     )(PropertyDetailsOwnedBefore.apply)(PropertyDetailsOwnedBefore.unapply))
 

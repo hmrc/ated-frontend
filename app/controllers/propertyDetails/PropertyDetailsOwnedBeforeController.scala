@@ -61,7 +61,7 @@ class PropertyDetailsOwnedBeforeController @Inject()(mcc: MessagesControllerComp
                     propertyDetails.value.flatMap(_.ownedBeforePolicyYearValue))
                   Future.successful(Ok(template(id,
                     propertyDetails.periodKey,
-                    propertyDetailsOwnedBeforeForm.fill(displayData),
+                    propertyDetailsOwnedBeforeForm(propertyDetails.periodKey).fill(displayData),
                     AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn),
                     serviceInfoContent,
                     backLink)
@@ -86,7 +86,7 @@ class PropertyDetailsOwnedBeforeController @Inject()(mcc: MessagesControllerComp
                 val mode = AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn)
                 Future.successful(Ok(template(id,
                   propertyDetails.periodKey,
-                  propertyDetailsOwnedBeforeForm.fill(displayData),
+                  propertyDetailsOwnedBeforeForm(propertyDetails.periodKey).fill(displayData),
                   mode,
                   serviceInfoContent,
                   AtedUtils.getSummaryBackLink(id, None))
@@ -102,7 +102,7 @@ class PropertyDetailsOwnedBeforeController @Inject()(mcc: MessagesControllerComp
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
-          PropertyDetailsForms.validatePropertyDetailsOwnedBefore(propertyDetailsOwnedBeforeForm.bindFromRequest()).fold(
+          PropertyDetailsForms.validatePropertyDetailsOwnedBefore(propertyDetailsOwnedBeforeForm(periodKey).bindFromRequest()).fold(
             formWithError => {
               currentBackLink.map(backLink =>
                 BadRequest(template(id, periodKey, formWithError, mode, serviceInfoContent, backLink))

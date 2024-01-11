@@ -31,8 +31,9 @@ class PropertyDetailsOwnedBeforeSpec extends AtedViewSpec with MockitoSugar with
   val injectedViewInstance: propertyDetailsOwnedBefore = app.injector.instanceOf[views.html.propertyDetails.propertyDetailsOwnedBefore]
 
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
+  def calculatedPeriodKey(periodKey: Int): String = {PeriodUtils.calculateLowerTaxYearBoundary(periodKey).getYear.toString}
 
-  private val form = PropertyDetailsForms.propertyDetailsOwnedBeforeForm
+  private val form = PropertyDetailsForms.propertyDetailsOwnedBeforeForm(2014)
   override def view: Html = injectedViewInstance("",2014,  form, None, Html(""), Some("backLink"))
 
   "The Property Details owned before page" must {
@@ -55,6 +56,62 @@ class PropertyDetailsOwnedBeforeSpec extends AtedViewSpec with MockitoSugar with
       doc.getElementsByAttributeValue("for","isOwnedBeforePolicyYear").text() mustBe messages("ated.property-details-value.yes")
       doc.getElementsByAttributeValue("for","isOwnedBeforePolicyYear-2").text() mustBe messages("ated.property-details-value.no")
     }
+
+    "have the correct error messages when no radio button is selected for 2012" in {
+      val eform = Form(form.mapping, Map("isOwnedBeforePolicyYear" -> ""),
+        Seq(FormError("isOwnedBeforePolicyYear", messages("ated.property-details-value.isOwnedBeforeValuationYear.error.non-selected", calculatedPeriodKey(2012))))
+        , form.value)
+      def view: Html = injectedViewInstance("",2012,  eform, None, Html(""), Some("backLink"))
+      val errorDoc = doc(view)
+
+      errorDoc.getElementById("isOwnedBeforePolicyYear-error").text() mustBe ("Error: " + messages("ated.property-details-value.isOwnedBeforeValuationYear.error.non-selected", "2012"))
+      errorDoc.getElementsByClass("govuk-error-summary__list").text() mustBe messages("ated.property-details-value.isOwnedBeforeValuationYear.error.non-selected", "2012")
+    }
+
+    "have the correct error messages when no radio button is selected for 2017" in {
+      val eform = Form(form.mapping, Map("isOwnedBeforePolicyYear" -> ""),
+        Seq(FormError("isOwnedBeforePolicyYear", messages("ated.property-details-value.isOwnedBeforeValuationYear.error.non-selected", calculatedPeriodKey(2017))))
+        , form.value)
+      def view: Html = injectedViewInstance("",2017,  eform, None, Html(""), Some("backLink"))
+      val errorDoc = doc(view)
+
+      errorDoc.getElementById("isOwnedBeforePolicyYear-error").text() mustBe ("Error: " + messages("ated.property-details-value.isOwnedBeforeValuationYear.error.non-selected", "2012"))
+      errorDoc.getElementsByClass("govuk-error-summary__list").text() mustBe messages("ated.property-details-value.isOwnedBeforeValuationYear.error.non-selected", "2012")
+    }
+
+    "have the correct error messages when no radio button is selected for 2018" in {
+      val eform = Form(form.mapping, Map("isOwnedBeforePolicyYear" -> ""),
+        Seq(FormError("isOwnedBeforePolicyYear", messages("ated.property-details-value.isOwnedBeforeValuationYear.error.non-selected", calculatedPeriodKey(2018))))
+        , form.value)
+      def view: Html = injectedViewInstance("",2018,  eform, None, Html(""), Some("backLink"))
+      val errorDoc = doc(view)
+
+      errorDoc.getElementById("isOwnedBeforePolicyYear-error").text() mustBe ("Error: " + messages("ated.property-details-value.isOwnedBeforeValuationYear.error.non-selected", "2017"))
+      errorDoc.getElementsByClass("govuk-error-summary__list").text() mustBe messages("ated.property-details-value.isOwnedBeforeValuationYear.error.non-selected", "2017")
+    }
+
+    "have the correct error messages when no radio button is selected for 2022" in {
+      val eform = Form(form.mapping, Map("isOwnedBeforePolicyYear" -> ""),
+        Seq(FormError("isOwnedBeforePolicyYear", messages("ated.property-details-value.isOwnedBeforeValuationYear.error.non-selected", calculatedPeriodKey(2022))))
+        , form.value)
+      def view: Html = injectedViewInstance("",2022,  eform, None, Html(""), Some("backLink"))
+      val errorDoc = doc(view)
+
+      errorDoc.getElementById("isOwnedBeforePolicyYear-error").text() mustBe ("Error: " + messages("ated.property-details-value.isOwnedBeforeValuationYear.error.non-selected", "2017"))
+      errorDoc.getElementsByClass("govuk-error-summary__list").text() mustBe messages("ated.property-details-value.isOwnedBeforeValuationYear.error.non-selected", "2017")
+    }
+
+    "have the correct error messages when no radio button is selected for 2023" in {
+      val eform = Form(form.mapping, Map("isOwnedBeforePolicyYear" -> ""),
+        Seq(FormError("isOwnedBeforePolicyYear", messages("ated.property-details-value.isOwnedBeforeValuationYear.error.non-selected", calculatedPeriodKey(2023))))
+        , form.value)
+      def view: Html = injectedViewInstance("",2023,  eform, None, Html(""), Some("backLink"))
+      val errorDoc = doc(view)
+
+      errorDoc.getElementById("isOwnedBeforePolicyYear-error").text() mustBe ("Error: " + messages("ated.property-details-value.isOwnedBeforeValuationYear.error.non-selected", "2022"))
+      errorDoc.getElementsByClass("govuk-error-summary__list").text() mustBe messages("ated.property-details-value.isOwnedBeforeValuationYear.error.non-selected", "2022")
+    }
+
     "have the correct error messages" in {
       val eform = Form(form.mapping, Map("isOwnedBeforePolicyYear" -> "true"),
         Seq(FormError("ownedBeforePolicyYearValue", messages("ated.property-details-value.ownedBeforePolicyYearValue.error.empty")))

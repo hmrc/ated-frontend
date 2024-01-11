@@ -21,20 +21,24 @@ import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.test.FakeRequest
+import utils.PeriodUtils
 
 class PropertyDetailsOwnedBeforeFormSpec extends PlaySpec with GuiceOneServerPerSuite {
 
   implicit lazy val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
   implicit lazy val messages: Messages = messagesApi.preferred(FakeRequest())
+  val periodKey = 2021
+  val calculatedPeriodKey: String = PeriodUtils.calculateLowerTaxYearBoundary(periodKey).getYear.toString
 
   "PropertyDetailsOwnedBeforeForm" must {
     "throw error" when {
       "form is empty" in {
-        val form = propertyDetailsOwnedBeforeForm.bind(Map.empty[String, String])
+        val form = propertyDetailsOwnedBeforeForm(periodKey).bind(Map.empty[String, String])
         form.fold(
           hasErrors => {
             hasErrors.errors.length mustBe 1
             hasErrors.errors.head.message mustBe "ated.property-details-value.isOwnedBeforeValuationYear.error.non-selected"
+            hasErrors.errors.head.args.head mustBe calculatedPeriodKey
           },
           _ => {
             fail("There is a problem")
@@ -47,7 +51,7 @@ class PropertyDetailsOwnedBeforeFormSpec extends PlaySpec with GuiceOneServerPer
           "ownedBeforePolicyYearValue" -> ""
         )
 
-        PropertyDetailsForms.validatePropertyDetailsOwnedBefore(propertyDetailsOwnedBeforeForm.bind(input)).fold(
+        PropertyDetailsForms.validatePropertyDetailsOwnedBefore(propertyDetailsOwnedBeforeForm(periodKey).bind(input)).fold(
           hasErrors => {
             hasErrors.errors.length mustBe  1
             hasErrors.errors.last.message mustBe "ated.property-details-value.ownedBeforePolicyYearValue.error.empty"
@@ -63,7 +67,7 @@ class PropertyDetailsOwnedBeforeFormSpec extends PlaySpec with GuiceOneServerPer
           "ownedBeforePolicyYearValue" -> "10000000000000"
         )
 
-        PropertyDetailsForms.validatePropertyDetailsOwnedBefore(propertyDetailsOwnedBeforeForm.bind(input)).fold(
+        PropertyDetailsForms.validatePropertyDetailsOwnedBefore(propertyDetailsOwnedBeforeForm(periodKey).bind(input)).fold(
           hasErrors => {
             hasErrors.errors.length mustBe  1
             hasErrors.errors.last.message mustBe "ated.property-details-value.ownedBeforePolicyYearValue.error.too-high"
@@ -79,7 +83,7 @@ class PropertyDetailsOwnedBeforeFormSpec extends PlaySpec with GuiceOneServerPer
         val input: Map[String, String] =  Map("isOwnedBeforePolicyYear" -> "true",
           "ownedBeforePolicyYearValue" -> "500000"
         )
-        PropertyDetailsForms.validatePropertyDetailsOwnedBefore(propertyDetailsOwnedBeforeForm.bind(input)).fold(
+        PropertyDetailsForms.validatePropertyDetailsOwnedBefore(propertyDetailsOwnedBeforeForm(periodKey).bind(input)).fold(
           hasErrors => {
             hasErrors.errors.length mustBe  1
             hasErrors.errors.last.message mustBe "ated.property-details-value.ownedBeforePolicyYearValue.error.too-low"
@@ -94,7 +98,7 @@ class PropertyDetailsOwnedBeforeFormSpec extends PlaySpec with GuiceOneServerPer
         val input: Map[String, String] =  Map("isOwnedBeforePolicyYear" -> "true",
           "ownedBeforePolicyYearValue" -> "ahgfhagsfhafshg"
         )
-        propertyDetailsOwnedBeforeForm.bind(input).fold(
+        propertyDetailsOwnedBeforeForm(periodKey).bind(input).fold(
           hasErrors => {
             hasErrors.errors.length mustBe  1
             hasErrors.errors.head.message mustBe "ated.property-details-value.incorrect-format"
