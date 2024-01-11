@@ -55,7 +55,7 @@ class disposeLiabilityHasBankDetailsSpec extends AnyFeatureSpec with GuiceOneApp
       val document = Jsoup.parse(html.toString())
 
       Then("The header should match - Do you have the bank details for a repayment?")
-      assert(document.title() === "Do you have a bank account where we could pay a refund? - GOV.UK")
+      assert(document.title() === "Do you have a bank account where we could pay a refund? - Submit and view your ATED returns - GOV.UK")
       assert(document.select("h1").text.contains("Do you have a bank account where we could pay a refund?"))
 
       Then("The subheader should be - Change return")

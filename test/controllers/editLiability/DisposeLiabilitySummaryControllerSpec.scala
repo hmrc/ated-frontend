@@ -144,7 +144,7 @@ class DisposeLiabilitySummaryControllerSpec extends PlaySpec with GuiceOneServer
           result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
-            document.title must be("Check your details are correct - GOV.UK")
+            document.title must be("Check your details are correct - Submit and view your ATED returns - GOV.UK")
             assert(document.getElementById("service-info-list").text() === "Home Manage account Messages Help and contact")
             document.getElementsByTag("h1").text() must include("Check your details are correct")
             document.getElementById("details-text").text() must be("For the ATED period from 1 April 2015 to 31 March 2016.")

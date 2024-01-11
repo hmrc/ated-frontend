@@ -57,7 +57,7 @@ Feature("The user can view an empty property revalue page") {
 
       val document = Jsoup.parse(html.toString())
       Then("the page title : Have you had the property revalued since you made the £40,000 change?")
-      assert(document.title() === "Has the property been revalued since the £40,000 or more change? - GOV.UK")
+      assert(document.title() === "Has the property been revalued since the £40,000 or more change? - Submit and view your ATED returns - GOV.UK")
 
       Then("The subheader should be - Create return")
       assert(document.getElementsByClass("govuk-caption-xl").text() contains "This section is Create return")
@@ -114,7 +114,7 @@ Feature("The user can view an empty property revalue page") {
 
       val document = Jsoup.parse(html.toString())
       Then("the page title : Have you had the property revalued since you made the £40,000 change?")
-      assert(document.title() === "Has the property been revalued since the £40,000 or more change? - GOV.UK")
+      assert(document.title() === "Has the property been revalued since the £40,000 or more change? - Submit and view your ATED returns - GOV.UK")
 
       Then("The subheader should be - Change return")
       assert(document.getElementsByClass("govuk-caption-xl").text() contains "This section is Change return")
@@ -164,7 +164,7 @@ Feature("The user can view an empty property revalue page") {
 
         val document = Jsoup.parse(html.toString())
         Then("the page title : Have you had the property revalued since you made the £40,000 change?")
-        assert(document.title() === "Has the property been revalued since the £40,000 or more change? - GOV.UK")
+        assert(document.title() === "Has the property been revalued since the £40,000 or more change? - Submit and view your ATED returns - GOV.UK")
 
         And("The data is populated for a property value set to false")
         assert(document.getElementsByAttributeValue("for","isPropertyRevalued").text() === "Yes")

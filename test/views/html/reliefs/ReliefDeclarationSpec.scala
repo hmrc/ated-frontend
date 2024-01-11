@@ -31,7 +31,7 @@ class ReliefDeclarationSpec extends AtedViewSpec with Injecting with MockAuthUti
   "Relief Declaration" must {
 
     "have the correct page title" in {
-      doc.title() mustBe "Returns declaration - GOV.UK"
+      doc.title() mustBe "Returns declaration - Submit and view your ATED returns - GOV.UK"
     }
 
     "have correct heading" in {

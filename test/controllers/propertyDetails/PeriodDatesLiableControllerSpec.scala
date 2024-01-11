@@ -223,7 +223,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
           result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be("Add the dates the property was liable for an ATED charge - GOV.UK")
+            document.title() must be("Add the dates the property was liable for an ATED charge - Submit and view your ATED returns - GOV.UK")
         }
       }
     }

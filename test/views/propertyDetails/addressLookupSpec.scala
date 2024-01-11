@@ -55,7 +55,7 @@ Feature("The user can search for an address via the post code") {
 
       val document = Jsoup.parse(html.toString())
       Then("The title and header should match - Find the property's address")
-      assert(document.title() === "Find the property’s address - GOV.UK")
+      assert(document.title() === "Find the property’s address - Submit and view your ATED returns - GOV.UK")
       assert(document.getElementsByTag("h1").text() contains "Find the property’s address")
       assert(document.getElementsByClass("govuk-caption-xl").text() === "This section is: Create return")
 
@@ -86,7 +86,7 @@ Feature("The user can search for an address via the post code") {
 
       val document = Jsoup.parse(html.toString())
       Then("The title and header should match - Find the property's address")
-      assert(document.title() === "Find the property’s address - GOV.UK")
+      assert(document.title() === "Find the property’s address - Submit and view your ATED returns - GOV.UK")
       assert(document.getElementsByTag("h1").text() contains "Find the property’s address")
       assert(document.getElementsByClass("govuk-caption-xl").text() === "This section is: Change return")
 

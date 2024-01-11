@@ -56,7 +56,7 @@ Feature("The user can search for an address via the post code") {
       val document = Jsoup.parse(html.toString())
 
       Then("Select the address of the property")
-      assert(document.title() === "Select the address of the property - GOV.UK")
+      assert(document.title() === "Select the address of the property - Submit and view your ATED returns - GOV.UK")
 
       Then("The header should match - Select the address of the property")
       assert(document.getElementsByTag("h1").text contains "Select the address of the property")
@@ -101,7 +101,7 @@ Feature("The user can search for an address via the post code") {
 
       val document = Jsoup.parse(html.toString())
       Then("Select the address of the property")
-      assert(document.title() === "Select the address of the property - GOV.UK")
+      assert(document.title() === "Select the address of the property - Submit and view your ATED returns - GOV.UK")
 
       Then("The header should match - Select the address of the property")
       assert(document.getElementsByTag("h1").text() contains "Select the address of the property")

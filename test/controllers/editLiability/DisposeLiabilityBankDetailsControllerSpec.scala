@@ -139,7 +139,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
           result =>
             status(result) must be(OK)
             val doc = Jsoup.parse(contentAsString(result))
-            doc.title() must be("Enter your bank account details - GOV.UK")
+            doc.title() must be("Enter your bank account details - Submit and view your ATED returns - GOV.UK")
             doc.getElementsByClass("govuk-caption-xl").text() must be("This section is: Change return")
             assert(doc.getElementById("service-info-list").text() === "Home Manage account Messages Help and contact")
         }

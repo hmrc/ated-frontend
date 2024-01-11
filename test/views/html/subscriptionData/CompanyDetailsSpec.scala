@@ -36,7 +36,7 @@ class CompanyDetailsSpec extends AtedViewSpec with MockitoSugar with MockAuthUti
 
   "Company Details view" must {
     "have correct page title" in {
-      doc.title mustBe messages("ated.company-details.title") + " - GOV.UK"
+      doc.title mustBe messages("ated.company-details.title") + " - Submit and view your ATED returns - GOV.UK"
     }
 
     "have correct heading and caption" in {

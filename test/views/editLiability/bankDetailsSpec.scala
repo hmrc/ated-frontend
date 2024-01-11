@@ -55,7 +55,7 @@ class bankDetailsSpec extends AnyFeatureSpec with GuiceOneAppPerSuite with Mocki
       val document = Jsoup.parse(html.toString())
 
       Then("The header should match - Is the bank account in the UK?")
-      assert(document.title() === "Enter your bank account details - GOV.UK")
+      assert(document.title() === "Enter your bank account details - Submit and view your ATED returns - GOV.UK")
       assert(document.select("h1").text.contains("Enter your bank account details"))
 
       Then("The subheader should be - Change return")
