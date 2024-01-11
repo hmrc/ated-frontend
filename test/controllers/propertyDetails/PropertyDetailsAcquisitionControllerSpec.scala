@@ -214,7 +214,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
               document.title() must be(
-                "In this chargeable period, have you bought or sold land, or extended an existing lease on the property, for £40,000 or more? - GOV.UK")
+                "In this chargeable period, have you bought or sold land, or extended an existing lease on the property, for £40,000 or more? - Submit and view your ATED returns - GOV.UK")
               document.getElementsByClass("govuk-back-link").text must be("Back")
               document.getElementsByClass("govuk-back-link").attr("href") must include("/ated/liability/create/summary")
 

@@ -171,7 +171,7 @@ class DisposePropertyControllerSpec extends PlaySpec with GuiceOneServerPerSuite
           result =>
             status(result) must be(OK)
             val doc = Jsoup.parse(contentAsString(result))
-            doc.title() must be("When did you dispose of the property? - GOV.UK")
+            doc.title() must be("When did you dispose of the property? - Submit and view your ATED returns - GOV.UK")
         }
       }
 

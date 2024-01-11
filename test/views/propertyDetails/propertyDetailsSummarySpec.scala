@@ -108,8 +108,8 @@ class propertyDetailsSummarySpec extends AnyFeatureSpecLike with GuiceOneAppPerS
 
       val document = Jsoup.parse(html.toString())
 
-      Then("The title should match - Check your details are correct - GOV.UK")
-      assert(document.title() === "Check your details are correct - GOV.UK")
+      Then("The title should match - Check your details are correct - Submit and view your ATED returns - GOV.UK")
+      assert(document.title() === "Check your details are correct - Submit and view your ATED returns - GOV.UK")
 
       Then("The header should match - Check your details are correct")
       assert(document.getElementsByTag("h1").text() contains "Check your details are correct")

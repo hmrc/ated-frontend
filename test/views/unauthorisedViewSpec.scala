@@ -36,7 +36,7 @@ class unauthorisedViewSpec extends PlaySpec with GuiceOneAppPerSuite {
     val html = injectedViewInstance()
     val document = Jsoup.parse(html.toString())
     "have the correct title" in {
-      document.title mustBe "There has been a problem - GOV.UK"
+      document.title mustBe "There has been a problem - Submit and view your ATED returns - GOV.UK"
     }
     "have the correct heading" in {
       document.select("h1").text mustBe "There has been a problem"

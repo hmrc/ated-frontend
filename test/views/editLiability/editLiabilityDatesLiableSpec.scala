@@ -55,7 +55,7 @@ class editLiabilityDatesLiableSpec extends AnyFeatureSpec with GuiceOneAppPerSui
       val document = Jsoup.parse(html.toString())
 
       Then("The header should match - Enter the dates this change applies to")
-      assert(document.title() === "Enter the dates this change applies to - GOV.UK")
+      assert(document.title() === "Enter the dates this change applies to - Submit and view your ATED returns - GOV.UK")
       assert(document.select("h1").text.contains("Enter the dates this change applies to"))
 
       Then("The subheader should be - Change return")

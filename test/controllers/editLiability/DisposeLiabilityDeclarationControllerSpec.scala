@@ -128,7 +128,7 @@ class Setup {
         viewWithAuthorisedUser { result =>
           status(result) must be(OK)
           val document = Jsoup.parse(contentAsString(result))
-          document.title must be("Amended return declaration - GOV.UK")
+          document.title must be("Amended return declaration - Submit and view your ATED returns - GOV.UK")
           assert(document.getElementById("service-info-list").text() === "Home Manage account Messages Help and contact")
           document.getElementsByClass("govuk-caption-xl").text() must include("This section is: Change return")
           document.getElementsByTag("h1").text() must include("Amended return declaration")
@@ -145,7 +145,7 @@ class Setup {
         viewWithAuthorisedDelegatedUser { result =>
           status(result) must be(OK)
           val document = Jsoup.parse(contentAsString(result))
-          document.title must be("Amended return declaration - GOV.UK")
+          document.title must be("Amended return declaration - Submit and view your ATED returns - GOV.UK")
           document.getElementsByClass("govuk-caption-xl").text() must include("This section is: Change return")
           document.getElementsByTag("h1").text() must include("Amended return declaration")
           document.getElementById("dispose-liability-declaration-before-declaration-text")

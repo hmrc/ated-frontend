@@ -68,7 +68,7 @@ class PrevPeriodsSummarySpec extends PlaySpec with MockAuthUtil with GuiceOneApp
 
     "regardless of returns data" should {
       "have the correct title" in {
-        assert(document.title() === "Your previous returns - GOV.UK")
+        assert(document.title() === "Your previous returns - Submit and view your ATED returns - GOV.UK")
       }
 
       "have the correct h1" in {

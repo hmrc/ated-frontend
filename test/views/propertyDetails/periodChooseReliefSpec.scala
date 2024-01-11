@@ -54,8 +54,8 @@ Feature("The user can add a period that the property is in relief") {
 
       val document = Jsoup.parse(html.toString())
 
-      Then("The title should match - Select the type of relief - GOV.UK ")
-      assert(document.title() === "Select the type of relief - GOV.UK")
+      Then("The title should match - Select the type of relief - Submit and view your ATED returns - GOV.UK ")
+      assert(document.title() === "Select the type of relief - Submit and view your ATED returns - GOV.UK")
 
       Then("The header should match - Select the type of relief")
       assert(document.select("h1").text contains "Select the type of relief")
@@ -122,8 +122,8 @@ Feature("The user can add a period that the property is in relief") {
 
       val document = Jsoup.parse(html.toString())
 
-      Then("The title should match - Select the type of relief - GOV.UK")
-      assert(document.title() === "Select the type of relief - GOV.UK")
+      Then("The title should match - Select the type of relief - Submit and view your ATED returns - GOV.UK")
+      assert(document.title() === "Select the type of relief - Submit and view your ATED returns - GOV.UK")
 
       Then("The header should match - Select the type of relief")
       assert(document.select("h1").text contains "Select the type of relief")

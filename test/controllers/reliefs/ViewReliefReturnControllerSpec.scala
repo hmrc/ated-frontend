@@ -168,7 +168,7 @@ class ViewReliefReturnControllerSpec extends PlaySpec with GuiceOneServerPerSuit
               doc.getElementById("relief-return-text").text() must be("For the ATED period from 1 April 2015 to 31 March 2016.")
               doc.getElementsByTag("h1").text() contains "View return"
               doc.getElementById("submit").text() must be("Change return")
-              doc.title() must be("View return - GOV.UK")
+              doc.title() must be("View return - Submit and view your ATED returns - GOV.UK")
               assert(doc.getElementById("service-info-list").text() === "Home Manage account Messages Help and contact")
 
               doc.getElementsByClass("govuk-back-link").text must be("Back")
@@ -185,7 +185,7 @@ class ViewReliefReturnControllerSpec extends PlaySpec with GuiceOneServerPerSuit
               doc.getElementById("relief-return-text").text() must be("For the ATED period from 1 April 2015 to 31 March 2016.")
               doc.getElementsByTag("h1").text() contains "View return"
               assert(doc.getElementById("submit") === null)
-              doc.title() must be("View return - GOV.UK")
+              doc.title() must be("View return - Submit and view your ATED returns - GOV.UK")
             }, isEditable = false
           )
         }

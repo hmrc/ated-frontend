@@ -320,7 +320,6 @@ ated.avoidance-scheme-error.general.numeric-error.equityReleaseSchemePromoter = 
 ated.prev-period-summary.title = Your previous returns
 ated.prev-period-summary.header = Your previous returns
 ated.prev-period-summary.headerNoReturns = Create an ATED return for
-ated.prev-period-summary-screen-reader = the period
 ated.prev-period-summary-th.period = Period
 ated.prev-period-summary-th.chargeable = Chargeable
 ated.prev-period-summary-th.reliefs = Relief
@@ -351,8 +350,7 @@ ated.summary-return.company-details.link = View your ATED details
 ated.summary-return.return-type.error = Select an option for type of return
 ated.account-summary.create-return.link = Create a new return
 ated.account-summary.create-return-other.link = Create, view or change returns for other years
-ated.summary-return.table.screen-reader.headings-help = You are on the ATED table, column headings are as follows
-ated.summary-return.table.screen-reader.number-of = Number of
+ated.summary-return.table.caption = Your previous ATED returns
 
 ##### RETURN TYPE
 

@@ -39,7 +39,7 @@ class IsAvoidanceSchemeSpec extends AtedViewSpec with MockAuthUtil with Injectin
     "No data has been entered" must {
 
       "have the correct page title" in {
-        doc.title() mustBe "Is an avoidance scheme being used for any of these reliefs? - GOV.UK"
+        doc.title() mustBe "Is an avoidance scheme being used for any of these reliefs? - Submit and view your ATED returns - GOV.UK"
       }
 
       "have correct heading" in {
@@ -68,7 +68,7 @@ class IsAvoidanceSchemeSpec extends AtedViewSpec with MockAuthUtil with Injectin
       def view: Html = injectedView(periodKey, isTaxAvoidanceForm.bind(Map("isAvoidanceScheme" -> "")), periodStartDate, Html(""), Some("http://backLink"))
 
       "append 'Error: ' to the page title" in {
-        doc(view).title mustBe "Error: Is an avoidance scheme being used for any of these reliefs? - GOV.UK"
+        doc(view).title mustBe "Error: Is an avoidance scheme being used for any of these reliefs? - Submit and view your ATED returns - GOV.UK"
       }
 
       "display an error summary" in {

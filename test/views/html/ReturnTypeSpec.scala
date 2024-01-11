@@ -36,7 +36,7 @@ class ReturnTypeSpec extends AtedViewSpec with MockAuthUtil with Injecting {
     "No data has been entered" must {
 
       "have the correct page title" in {
-        doc.title() mustBe "Select a type of return - GOV.UK"
+        doc.title() mustBe "Select a type of return - Submit and view your ATED returns - GOV.UK"
       }
 
       "have correct heading" in {
@@ -62,7 +62,7 @@ class ReturnTypeSpec extends AtedViewSpec with MockAuthUtil with Injecting {
       def view: Html = injectedView(2021, returnTypeForm.bind(Map("returnType" -> "")), Html(""), Some("http://backLink"))
 
       "append 'Error: ' to the page title" in {
-        doc(view).title mustBe "Error: Select a type of return - GOV.UK"
+        doc(view).title mustBe "Error: Select a type of return - Submit and view your ATED returns - GOV.UK"
       }
 
       "display an error summary" in {
