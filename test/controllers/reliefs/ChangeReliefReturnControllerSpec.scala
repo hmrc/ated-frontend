@@ -147,7 +147,7 @@ class Setup {
           getWithAuthorisedUser { result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be("What would you like to do with your ATED return? - GOV.UK")
+            document.title() must be("What would you like to do with your ATED return? - Submit and view your ATED returns - GOV.UK")
             document.getElementsByClass("govuk-caption-xl").text must be ("This section is: Change return")
             document.getElementsByTag("h1").text() must include ("What would you like to do with your ATED return?")
             document.getElementsByAttributeValue("for", "changeRelief").text() must be("Change an existing ATED return")
