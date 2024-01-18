@@ -96,7 +96,7 @@
                             id="view-change-@i">
                                     Returns for @periodSummaryWithDraft.periodKey to @(periodSummaryWithDraft.periodKey.toInt + 1)
                             </a>
-                        </th scope="row">
+                        </th>
                         <td id="charge-number-@i" class="govuk-table__cell govuk-table__cell--numeric">
                             @periodSummaryWithDraft.submittedReturns.fold(0)(a => a.currentLiabilityReturns.size + a.oldLiabilityReturns.size)
                         </td>
