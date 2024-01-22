@@ -540,15 +540,8 @@ ated.property-details-value.partAcqDispDate.error.too-late = The date when you m
 ated.property-details-value.partAcqDispDate.error.in-future = The date when you made the £40,000 or more change cannot be in the future
 ated.property-details-value.partAcqDispDate.messageKey = The date when you made the £40,000 or more change
 
-
-
-
 ated.property-details-value.isOwnedBeforeValuationYear.title = Did the company own this property on or before 1 April {0}?
 ated.property-details-value.isOwnedBeforeValuationYear.error.non-selected = Select yes if the company owned this property on or before 1 April {0}
-
-
-
-
 
 ated.property-details-value.ownedBeforevaluationYear.Value = What was the value of the property on the 1 April {0}?
 ated.property-details-value.ownedBeforevaluationYear.hint = For example, £1,500,000
@@ -572,7 +565,7 @@ ated.property-details-value.newBuildValue.hint = For example, £1,500,000
 ated.property-details-value.isValuedByAgent.title = Was the property professionally valued?
 ated.property-details-value.isValuedByAgent.header = Was the property professionally valued?
 ated.property-details-value.isValuedByAgent = Was the property professionally valued?
-ated.property-details-value.isValuedByAgent.error.non-selected = Select yes if the property professionally valued
+ated.property-details-value.isValuedByAgent.error.non-selected = Select yes if the property was professionally valued
 
 ##### PROPERTY DETAILS PERIOD
 
