@@ -255,10 +255,10 @@ class Setup {
               result =>
                 status(
                   result) must be(BAD_REQUEST)
-                contentAsString(result) must include("You must enter a business name")
-                contentAsString(result) must include("You must enter address line 1")
-                contentAsString(result) must include("You must enter address line 2")
-                contentAsString(result) must include("You must enter a country")
+                contentAsString(result) must include("Enter a business name")
+                contentAsString(result) must include("Enter address line 1")
+                contentAsString(result) must include("Enter address line 2")
+                contentAsString(result) must include("Enter a country")
             }
           }
 
@@ -278,10 +278,10 @@ class Setup {
               result =>
                 status(
                   result) must be(BAD_REQUEST)
-                contentAsString(result) must include("You must enter a business name")
-                contentAsString(result) must include("You must enter address line 1")
-                contentAsString(result) must include("You must enter address line 2")
-                contentAsString(result) must include("You must enter a country")
+                contentAsString(result) must include("Enter a business name")
+                contentAsString(result) must include("Enter address line 1")
+                contentAsString(result) must include("Enter address line 2")
+                contentAsString(result) must include("Enter a country")
             }
           }
 
@@ -305,8 +305,8 @@ class Setup {
                 contentAsString(result) must include("Address line 2 cannot be more than 35 characters")
                 contentAsString(result) must include("Address line 3 cannot be more than 35 characters")
                 contentAsString(result) must include("Address line 4 cannot be more than 35 characters")
-                contentAsString(result) must include("You must enter a valid postcode")
-                contentAsString(result) must include("You must enter a country")
+                contentAsString(result) must include("Enter a valid postcode")
+                contentAsString(result) must include("Enter a country")
             }
           }
         }

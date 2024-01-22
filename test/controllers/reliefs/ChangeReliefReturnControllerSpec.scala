@@ -147,11 +147,11 @@ class Setup {
           getWithAuthorisedUser { result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be("Change your ATED return - Submit and view your ATED returns - GOV.UK")
+            document.title() must be("What would you like to do with your ATED return? - Submit and view your ATED returns - GOV.UK")
             document.getElementsByClass("govuk-caption-xl").text must be ("This section is: Change return")
-            document.getElementsByTag("h1").text() must include ("Change return Change your ATED return")
-            document.getElementsByAttributeValue("for", "changeRelief").text() must be("Change return details")
-            document.getElementsByAttributeValue("for", "changeRelief-2").text() must be("Create chargeable return")
+            document.getElementsByTag("h1").text() must include ("What would you like to do with your ATED return?")
+            document.getElementsByAttributeValue("for", "changeRelief").text() must be("Change an existing ATED return")
+            document.getElementsByAttributeValue("for", "changeRelief-2").text() must be("Create a chargeable return")
             document.getElementsByClass("govuk-button").text() must be("Continue")
           }
         }
@@ -168,8 +168,8 @@ class Setup {
               result =>
                 status(result) must be(BAD_REQUEST)
                 val doc = Jsoup.parse(contentAsString(result))
-                doc.getElementsByClass("govuk-error-message").html() must include("You must select an option")
-                contentAsString(result) must include("You must select an option")
+                doc.getElementsByClass("govuk-error-message").html() must include("Select if you want to change an existing ATED return or create a chargeable return")
+                contentAsString(result) must include("Select if you want to change an existing ATED return or create a chargeable return")
             }
           }
           "with changeDetails selected - Redirect to choose relief page" in new Setup {

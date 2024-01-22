@@ -300,7 +300,7 @@ class AvoidanceSchemesControllerSpec extends PlaySpec with GuiceOneServerPerSuit
 
             submitWithAuthorisedUser(formInput) { result =>
               status(result) must be(BAD_REQUEST)
-              contentAsString(result) must include("You must enter a reference number")
+              contentAsString(result) must include("Enter a reference number")
             }
           }
 

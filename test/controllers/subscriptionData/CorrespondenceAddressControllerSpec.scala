@@ -308,9 +308,9 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
                 submitWithAuthorisedUserSuccess(None)(FakeRequest().withJsonBody(inputJson)) {
                   result =>
                     status(result) must be(BAD_REQUEST)
-                      contentAsString(result) must include("You must enter address line 1")
-                      contentAsString(result) must include("You must enter address line 2")
-                      contentAsString(result) must include("You must enter a country")
+                      contentAsString(result) must include("Enter address line 1")
+                      contentAsString(result) must include("Enter address line 2")
+                      contentAsString(result) must include("Enter a country")
                 }
               }
 
@@ -418,7 +418,7 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
                 submitWithAuthorisedUserSuccess(Some(addressDetails))(FakeRequest().withJsonBody(inputJson)) {
                   result =>
                     status(result) must be(BAD_REQUEST)
-                    contentAsString(result) must include("You must enter a valid postcode")
+                    contentAsString(result) must include("Enter a valid postcode")
                 }
               }
 
@@ -436,7 +436,7 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
                 submitWithAuthorisedUserSuccess(Some(addressDetails))(FakeRequest().withJsonBody(inputJson)) {
                   result =>
                     status(result) must be(BAD_REQUEST)
-                    contentAsString(result) must include("You must enter a UK postcode if UK is selected in the country field.")
+                    contentAsString(result) must include("Enter a UK postcode if UK is selected in the country field.")
                 }
               }
 
@@ -454,7 +454,7 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
                 submitWithAuthorisedUserSuccess(Some(addressDetails))(FakeRequest().withJsonBody(inputJson)) {
                   result =>
                   status(result) must be(BAD_REQUEST)
-                  contentAsString(result) must include("You must enter a country")
+                  contentAsString(result) must include("Enter a country")
                 }
                }
              }
