@@ -12,7 +12,6 @@ object AppDependencies {
     "uk.gov.hmrc"       %% "play-partials"              % "8.4.0-play-28",
     "uk.gov.hmrc"       %% "domain"                     % "8.3.0-play-28",
     "uk.gov.hmrc"       %% "http-caching-client"        % "10.0.0-play-28",
-    "com.typesafe.play" %% "play-json-joda"             % "2.10.1",
     "uk.gov.hmrc"       %% "play-frontend-hmrc"         % "7.21.0-play-28"
   )
 

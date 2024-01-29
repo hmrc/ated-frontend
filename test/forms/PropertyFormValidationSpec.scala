@@ -19,7 +19,7 @@ package forms
 
 import forms.PropertyDetailsForms._
 import models.{LineItem, PropertyDetailsDatesLiable}
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.data.FormError

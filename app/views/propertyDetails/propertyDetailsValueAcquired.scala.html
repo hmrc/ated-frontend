@@ -14,7 +14,7 @@
  * limitations under the License.
  *@
 
-@import org.joda.time.LocalDate
+@import java.time.LocalDate
 @import models._
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
@@ -30,7 +30,7 @@
         govukRadios : GovukRadios,
         govukBackLink : GovukBackLink,
         govukErrorSummary : GovukErrorSummary,
-        govukInput : GovukInput,        
+        govukInput : GovukInput,
         formHelper: FormWithCSRF)
 
 @(id: String, periodKey: Int, propertyDetailsForm: Form[PropertyDetailsValueOnAcquisition], mode: Option[String], serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String], date: LocalDate)(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)

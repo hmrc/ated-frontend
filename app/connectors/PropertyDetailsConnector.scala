@@ -20,7 +20,7 @@ import config.ApplicationConfig
 
 import javax.inject.Inject
 import models._
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import play.api.libs.json
 import play.api.libs.json.JodaWrites._
 import play.api.libs.json.{JsValue, Json}

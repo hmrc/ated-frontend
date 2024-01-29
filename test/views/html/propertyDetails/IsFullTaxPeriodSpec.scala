@@ -20,7 +20,7 @@ import builders.TitleBuilder
 import config.ApplicationConfig
 import forms.PropertyDetailsForms
 import models.StandardAuthRetrievals
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import org.scalatestplus.mockito.MockitoSugar
 import play.twirl.api.Html
 import testhelpers.{AtedViewSpec, MockAuthUtil}

@@ -16,7 +16,7 @@
 
 package services
 
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import org.scalatestplus.play.PlaySpec
 
 class DateServiceSpec extends PlaySpec {

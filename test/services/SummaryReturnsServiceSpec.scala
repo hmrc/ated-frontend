@@ -19,7 +19,7 @@ package services
 import config.ApplicationConfig
 import connectors.{AtedConnector, DataCacheConnector}
 import models.{PeriodSummaryReturns, _}
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach

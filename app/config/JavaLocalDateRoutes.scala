@@ -16,35 +16,38 @@
 
 package config
 
-import org.joda.time.LocalDate
-import org.joda.time.format.DateTimeFormat
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import play.api.mvc._
 
 
-trait JodaFormat {
+trait JavaFormat {
   val format: String
 }
 
-trait DefaultJodaFormat extends JodaFormat {
+trait DefaultJavaFormat extends JavaFormat {
   val format = "yyyyMMdd"
 }
 
-trait JodaLocalDateRoutes {
-  self: JodaFormat =>
+trait JavaLocalDateRoutes {
+  self: JavaFormat =>
 
   val format: String
 
   implicit object queryStringLocalDateBinder extends QueryStringBindable.Parsing[LocalDate](
-    dateString => DateTimeFormat.forPattern(format).parseLocalDate(dateString),
+    dateString => {
+      val localDate: LocalDate = DateTimeFormatter.ofPattern(format).parse(dateString)
+      localDate
+    },
     _.toString(format),
-    (key: String, e: Exception) => "Cannot parse parameter %s as org.joda.time.LocalDate: %s".format(key, e.getMessage)
+    (key: String, e: Exception) => "Cannot parse parameter %s as java.time.LocalDate: %s".format(key, e.getMessage)
   )
 
   implicit object pathLocalDateBinder extends PathBindable.Parsing[LocalDate](
-    dateString => DateTimeFormat.forPattern(format).parseLocalDate(dateString),
+    dateString => DateTimeFormatter.ofPattern(format).parse(dateString),
     _.toString(format),
-    (key: String, e: Exception) => "Cannot parse parameter %s as org.joda.time.LocalDate: %s".format(key, e.getMessage)
+    (key: String, e: Exception) => "Cannot parse parameter %s as java.time.LocalDate: %s".format(key, e.getMessage)
   )
 
 }
-object JodaLocalDateRoutes extends JodaLocalDateRoutes with DefaultJodaFormat
+object JavaLocalDateRoutes extends JavaLocalDateRoutes with DefaultJavaFormat

@@ -27,7 +27,7 @@ import scala.concurrent.ExecutionContext
 import utils.AtedConstants.SelectedPreviousReturn
 import utils.AtedUtils
 import services._
-import org.joda.time.LocalDate
+import java.time.LocalDate
 
 @Singleton
 class EarliestStartDateInUseController @Inject()(mcc: MessagesControllerComponents,

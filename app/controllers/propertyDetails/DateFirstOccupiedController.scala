@@ -31,7 +31,7 @@ import utils.AtedUtils
 import utils.AtedConstants.NewBuildFirstOccupiedDate
 import uk.gov.hmrc.play.bootstrap.controller.WithUnsafeDefaultFormBinding
 import scala.concurrent.ExecutionContext
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import play.api.i18n.{Messages, MessagesImpl}
 
 @Singleton

@@ -18,7 +18,7 @@ package utils
 
 import config.ApplicationConfig
 import models.SubmittedReliefReturns
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
@@ -127,7 +127,7 @@ class ReliefsUtilsSpec extends PlaySpec with MockitoSugar with GuiceOneServerPer
       val r3 = SubmittedReliefReturns("no4", "type 1", LocalDate.now(), LocalDate.now(), new LocalDate(2000,1,5))
       val r4 = SubmittedReliefReturns("no3", "type 1", LocalDate.now(), LocalDate.now(), new LocalDate(2000,1,4))
       val r5 = SubmittedReliefReturns("no6", "type 1", LocalDate.now(), LocalDate.now(), new LocalDate(2000,1,3))
-      val r6 = SubmittedReliefReturns("no7", "type 1", LocalDate.now(), LocalDate.now(), new LocalDate(2000,1,3)) 
+      val r6 = SubmittedReliefReturns("no7", "type 1", LocalDate.now(), LocalDate.now(), new LocalDate(2000,1,3))
       val r7 = SubmittedReliefReturns("no1", "type 1", LocalDate.now(), LocalDate.now(), new LocalDate(2000,1,2))
 
       val testReliefReturns = Seq(r5,r6,r7,r1,r2,r3,r4)
@@ -140,7 +140,7 @@ class ReliefsUtilsSpec extends PlaySpec with MockitoSugar with GuiceOneServerPer
       val r3 = SubmittedReliefReturns("no4", "type 1", LocalDate.now(), LocalDate.now(), new LocalDate(2000,1,5))
       val r4 = SubmittedReliefReturns("no3", "type 1", LocalDate.now(), LocalDate.now(), new LocalDate(2000,1,4))
       val r5 = SubmittedReliefReturns("no6", "type 1", LocalDate.now(), LocalDate.now(), new LocalDate(2000,1,3))
-      val r6 = SubmittedReliefReturns("no7", "type 1", LocalDate.now(), LocalDate.now(), new LocalDate(2000,1,3)) 
+      val r6 = SubmittedReliefReturns("no7", "type 1", LocalDate.now(), LocalDate.now(), new LocalDate(2000,1,3))
       val r7 = SubmittedReliefReturns("no1", "type 1", LocalDate.now(), LocalDate.now(), new LocalDate(2000,1,2))
 
       val testReliefReturns = Seq(r4,r5,r6,r7,r1,r2,r3)

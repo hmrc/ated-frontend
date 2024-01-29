@@ -22,8 +22,8 @@ import config.ApplicationConfig
 import connectors.DataCacheConnector
 import controllers.auth.AuthAction
 import models.{EditLiabilityReturnsResponse, EditLiabilityReturnsResponseModel}
-import org.joda.time.format.DateTimeFormat
-import org.joda.time.{DateTime, LocalDate}
+import java.time.format.DateTimeFormat
+import java.time.{DateTime, LocalDate}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.{reset, _}

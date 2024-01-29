@@ -17,7 +17,7 @@
 package builders
 
 import models._
-import org.joda.time.LocalDate
+import java.time.LocalDate
 
 
 object RegistrationBuilder {

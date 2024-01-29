@@ -21,7 +21,7 @@ import builders.ReliefBuilder
 import config.ApplicationConfig
 import connectors.{AtedConnector, DataCacheConnector}
 import models.{TaxAvoidance, _}
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import org.mockito.ArgumentMatchers._
 import org.mockito.Mockito._
 import org.mockito.{ArgumentCaptor, ArgumentMatchers}

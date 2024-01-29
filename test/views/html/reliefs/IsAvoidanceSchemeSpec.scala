@@ -19,7 +19,7 @@ package views.html.reliefs
 import config.ApplicationConfig
 import forms.ReliefForms.isTaxAvoidanceForm
 import models.StandardAuthRetrievals
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import play.api.test.Injecting
 import play.twirl.api.Html
 import testhelpers.{AtedViewSpec, MockAuthUtil}

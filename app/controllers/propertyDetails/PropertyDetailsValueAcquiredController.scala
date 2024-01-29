@@ -22,7 +22,7 @@ import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms._
 import javax.inject.Inject
 import models.{PropertyDetailsValueOnAcquisition, PropertyDetailsWhenAcquiredDates}
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services._
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController

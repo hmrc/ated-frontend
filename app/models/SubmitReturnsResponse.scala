@@ -16,7 +16,7 @@
 
 package models
 
-import org.joda.time.DateTime
+import java.time.DateTime
 import play.api.libs.json.{JodaReads, JodaWrites, Json, OFormat, Reads, Writes}
 
 case class ReliefReturnResponse(reliefDescription: String, formBundleNumber: String)

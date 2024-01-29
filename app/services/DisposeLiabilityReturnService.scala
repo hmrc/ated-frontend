@@ -20,7 +20,7 @@ import connectors.{AtedConnector, DataCacheConnector}
 
 import javax.inject.Inject
 import models._
-import org.joda.time.DateTime
+import java.time.DateTime
 import play.api.Logging
 import play.api.http.Status._
 import uk.gov.hmrc.http.HeaderCarrier

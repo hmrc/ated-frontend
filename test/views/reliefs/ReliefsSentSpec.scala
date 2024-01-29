@@ -18,7 +18,7 @@ package views.reliefs
 
 import config.ApplicationConfig
 import models.{ReliefReturnResponse, StandardAuthRetrievals, SubmitReturnsResponse}
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import org.jsoup.Jsoup
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.GivenWhenThen

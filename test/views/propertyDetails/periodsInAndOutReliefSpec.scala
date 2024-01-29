@@ -19,7 +19,7 @@ package views.propertyDetails
 import config.ApplicationConfig
 import forms.PropertyDetailsForms._
 import models.{LineItem, StandardAuthRetrievals}
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import org.jsoup.Jsoup
 import org.scalatest.featurespec.AnyFeatureSpecLike
 import org.scalatest.{BeforeAndAfterEach, GivenWhenThen}

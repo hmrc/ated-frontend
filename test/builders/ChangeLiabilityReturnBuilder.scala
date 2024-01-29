@@ -17,7 +17,7 @@
 package builders
 
 import models._
-import org.joda.time.{DateTime, LocalDate}
+import java.time.{DateTime, LocalDate}
 
 object ChangeLiabilityReturnBuilder {
 

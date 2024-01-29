@@ -20,7 +20,7 @@ import builders.TitleBuilder
 import config.ApplicationConfig
 import forms.PropertyDetailsForms
 import models.StandardAuthRetrievals
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import play.twirl.api.Html
 import testhelpers.{AtedViewSpec, MockAuthUtil}
 

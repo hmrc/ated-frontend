@@ -18,7 +18,7 @@ package utils
 
 import config.ApplicationConfig
 import models._
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import utils.AtedConstants._
 import scala.language.postfixOps
 

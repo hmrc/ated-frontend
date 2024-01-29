@@ -20,7 +20,7 @@ import connectors.{DataCacheConnector, PropertyDetailsConnector}
 
 import javax.inject.Inject
 import models._
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import play.api.Logging
 import play.api.http.Status._
 import play.mvc.Http.Status.OK

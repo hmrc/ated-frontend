@@ -35,7 +35,7 @@
 
 @(periodKey: Int,
     isTaxAvoidanceForm: Form[IsTaxAvoidance],
-    periodStartDate: org.joda.time.LocalDate,
+    periodStartDate: java.time.LocalDate,
     serviceInfoContent: Html = HtmlFormat.empty,
     backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 

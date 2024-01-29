@@ -19,8 +19,8 @@ package views.editLiability
 import builders.PropertyDetailsBuilder
 import config.ApplicationConfig
 import models.StandardAuthRetrievals
-import org.joda.time.format.DateTimeFormat
-import org.joda.time.{DateTimeZone, LocalDate}
+import java.time.format.DateTimeFormat
+import java.time.{DateTimeZone, LocalDate}
 import org.jsoup.Jsoup
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.{BeforeAndAfterEach, GivenWhenThen}

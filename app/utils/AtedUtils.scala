@@ -17,7 +17,7 @@
 package utils
 
 import models._
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import play.api.mvc.{AnyContent, Request}
 import utils.AtedConstants._
 import scala.language.postfixOps
