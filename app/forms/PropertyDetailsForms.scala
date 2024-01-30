@@ -451,7 +451,11 @@ object PropertyDetailsForms {
           Seq()
         }
       val validationValueErrors = validateValue(f.get.isPropertyRevalued.contains(true), "revaluedValue", f.get.revaluedValue, f)
-      validatePropertyDetailsRevalued(periodKey, addErrorsToForm(f, formErrors(0) ++ validationValueErrors.flatten ++ formErrors(1)))
+      if (f.get.isPropertyRevalued.contains(true)) {
+        validatePropertyDetailsRevalued(periodKey, addErrorsToForm(f, formErrors(0) ++ validationValueErrors.flatten ++ formErrors(1)))
+      } else {
+        validatePropertyDetailsRevalued(periodKey, addErrorsToForm(f, validationValueErrors.flatten))
+      }
     } else {
       f
     }
