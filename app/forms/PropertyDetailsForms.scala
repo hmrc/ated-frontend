@@ -440,17 +440,25 @@ object PropertyDetailsForms {
 
   //scalastyle:off cyclomatic.complexity
   def validatePropertyDetailsRevaluedForm(periodKey : Int, f: Form[PropertyDetailsRevalued], dateFields : Seq[(String, String)] ): Form[PropertyDetailsRevalued] = {
-    val formErrors =
-      if(f.get.isPropertyRevalued.contains(true)) {
-        dateFields.map { x =>
-          DateTupleCustomError.validateDateFields(f.data.get(s"${x._1}.day"), f.data.get(s"${x._1}.month"), f.data.get(s"${x._1}.year"),
-            Seq((x._1, x._2)))
+    if (!f.hasErrors) {
+      val formErrors =
+        if (f.get.isPropertyRevalued.contains(true)) {
+          dateFields.map { x =>
+            DateTupleCustomError.validateDateFields(f.data.get(s"${x._1}.day"), f.data.get(s"${x._1}.month"), f.data.get(s"${x._1}.year"),
+              Seq((x._1, x._2)))
+          }
+        } else {
+          Seq()
         }
+      val validationValueErrors = validateValue(f.get.isPropertyRevalued.contains(true), "revaluedValue", f.get.revaluedValue, f)
+      if (f.get.isPropertyRevalued.contains(true)) {
+        validatePropertyDetailsRevalued(periodKey, addErrorsToForm(f, formErrors(0) ++ validationValueErrors.flatten ++ formErrors(1)))
       } else {
-        Seq()
+        validatePropertyDetailsRevalued(periodKey, addErrorsToForm(f, validationValueErrors.flatten))
       }
-    val validationValueErrors = validateValue(f.get.isPropertyRevalued.contains(true), "revaluedValue", f.get.revaluedValue, f)
-    validatePropertyDetailsRevalued(periodKey, addErrorsToForm(f, formErrors.flatten ++ validationValueErrors.flatten))
+    } else {
+      f
+    }
   }
 
 
