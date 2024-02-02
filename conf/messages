@@ -241,7 +241,7 @@ ated.reliefs-sent.print-link = Print confirmation
 ated.reliefs-sent.change-circumstances.p0 = Change or ending of relief type
 ated.reliefs-sent.change-circumstances.p1 = If any change in your circumstances means you will no longer claim for one or more relief types next year, you need to contact HMRC on atedadditionalinfo.ctiaa@hmrc.gov.uk to tell us which relief types you will not claim.
 ated.reliefs-sent.change-circumstances.p2 = This will help to keep our records up to date so we know not to expect a return for that type of relief next year.
-ated.reliefs-sent.change-circumstances.p3 = When emailing please include your ATED reference number or if you do not have the number please give your company name. Do not include any further personal or financial details. Sending information over the internet is generally not completely secure, and we cannot guarantee the security of your data while it’s in transit. Any data you send is at your own risk.
+ated.reliefs-sent.change-circumstances.p3 = When emailing include your ATED reference number. If you do not have your ATED reference number include your company name. Do not include any further personal or financial details. Sending information over the internet is generally not completely secure, and we cannot guarantee the security of your data while it’s in transit. Any data you send is at your own risk.
 
 ##### AVOIDANCE SCHEME PAGE
 
@@ -610,7 +610,7 @@ ated.property-details-period.datesLiable.endDate.error.before-start-date-and-too
 
 ated.property-details-period.chooseRelief.title = Select the type of relief
 ated.property-details-period.chooseRelief.header = Select the type of relief
-ated.property-details-period.chooseRelief.error.non-selected = Please choose a type of relief
+ated.property-details-period.chooseRelief.error.non-selected = Choose a type of relief
 
 ated.property-details-period.datesInRelief.title = Add the dates when the property was in relief and was not liable for an ATED charge
 ated.property-details-period.datesInRelief.header = Add the dates when the property was in relief and was not liable for an ATED charge
@@ -698,7 +698,6 @@ ated.chargeable-return-declaration.i-confirm-that.bullet-text.agent = I confirm 
 ated.chargeable-return-declaration.i-declare-that.bullet-text.client = I declare that the information I have given on this return is correct and complete.
 
 ated.chargeable-return-declaration.submit = Agree and submit return
-ated.summary-return.confirm.error = Please confirm that you want to submit this
 
 ##### COMPANY CONTACT ADDRESS DETAILS
 
@@ -724,7 +723,6 @@ ated.non-uk-reg.businessUniqueId = Overseas company registration number
 ated.non-uk-reg.issuingInstitution = Institution that issued the number
 ated.non-uk-reg.issuingInstitution.hint = For example, an overseas tax department
 ated.non-uk-reg.issuingCountry = Country that issued the number
-ated.non-uk-reg.country.select = please select one country
 ated.non-uk-reg.title = Edit your overseas company registration number
 ated.non-uk-reg.header = Edit your overseas company registration number
 ated.non-uk-reg.subheader = Manage your ATED service
@@ -778,7 +776,7 @@ ated.contact-email.error = Email address is not valid
 ated.contact-details.error.general.addressType = Something has gone wrong, try again later.
 ated.contact-details.email.risk.help.text = What are the risks of email and why we need your consent
 ated.contact-details.email.risk.help.answer_p1 = HMRC may need to send information to you by email. Any emails from HMRC are not secure and any information you send to us by email is at your own risk. In order for us to send emails to you, you must confirm (for yourself or by your agent) that you are happy with this and that you understand the risks of sending information containing your personal details by email.
-ated.contact-details.email.risk.help.answer_p2 = Please note: If a response contains any confidential information, we will only reply by letter or telephone. Letters may lead to delays in dealing with enquiries. If you think you have been sent a suspicious email, do not follow any links within the email or disclose any personal details. Forward any suspicious emails to
+ated.contact-details.email.risk.help.answer_p2 = If a response contains any confidential information, we will only reply by letter or telephone. Letters may lead to delays in dealing with enquiries. If you think you have been sent a suspicious email, do not follow any links within the email or disclose any personal details. Forward any suspicious emails to
 ated.contact-details.email.risk.help.answer.link = phishing@hmrc.gov.uk
 
 ##### EDIT CONTACT EMAIL
@@ -921,7 +919,7 @@ ated.change-relief-return.text.2 = If you are changing to a new relief type for 
 ated.change-relief-return.accordian = Ending a relief claim
 ated.change-relief-return.accordian.2 = If any change in your circumstances means you will no longer claim for one or more relief types next year, you need to contact HMRC on atedadditionalinfo.ctiaa@hmrc.gov.uk to tell us which relief types you will not claim. 
 ated.change-relief-return.accordian.3 = This will help to keep our records up to date so we know not to expect a return for that type of relief next year.
-ated.change-relief-return.accordian.4 = When emailing please include your ATED reference number or if you do not have the number please give your company name. Do not include any further personal or financial details. Sending information over the internet is generally not completely secure, and we cannot guarantee the security of your data while it’s in transit. Any data you send is at your own risk.
+ated.change-relief-return.accordian.4 = When emailing include your ATED reference number. If you do not have your ATED reference number include your company name. Do not include any further personal or financial details. Sending information over the internet is generally not completely secure, and we cannot guarantee the security of your data while it’s in transit. Any data you send is at your own risk.
 ated.change-relief-return.select-change-details = Change an existing ATED return
 ated.change-relief-return.select-create-chargeable = Create a chargeable return
 ated.change-relief-return.error.empty = Select if you want to change an existing ATED return or create a chargeable return
