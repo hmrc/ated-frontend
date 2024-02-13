@@ -11,15 +11,9 @@ $hmrc-assets-path: "/ated/assets/lib/hmrc-frontend/hmrc/";
 
 // increase grey button spacing to improve accessibility for users with poor motor skills
 #add-period-charge {
-	margin-right: 30px;
+	margin: 0 30px 30px 0;
 }
 
-@media(max-width: 680px) {
-    #add-period-charge {
-        margin: 0 0 30px 0;
-    }
-
-    #add-period-in-relief {
-    	margin-bottom: 30px;
-    }
+#add-period-in-relief {
+    margin-bottom: 30px;
 }
