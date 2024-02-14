@@ -7,3 +7,13 @@ $hmrc-assets-path: "/ated/assets/lib/hmrc-frontend/hmrc/";
 @import "location-autocomplete.min";
 @import "attorneyBanner";
 @import "bta";
+
+
+// increase grey button spacing to improve accessibility for users with poor motor skills
+#add-period-charge {
+	margin: 0 30px 30px 0;
+}
+
+#add-period-in-relief {
+    margin-bottom: 30px;
+}
