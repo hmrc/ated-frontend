@@ -59,10 +59,10 @@
         </h1>
     </header>
 
-  <div class="govuk-body govuk-form-group" id="form-bundle-text">@messages("ated.form-bundle.subheader",
+  <p class="govuk-body govuk-form-group" id="form-bundle-text">@messages("ated.form-bundle.subheader",
     periodStartDate(periodKey).toString(messages("ated.date-format")),
     periodEndDate(periodKey).toString(messages("ated.date-format")))
-  </div>
+  </p>
 
   @formBundleReturn.map { formBundleReturnObj =>
 
@@ -305,12 +305,12 @@
 </dl>
 
     <div class="govuk-form-group">
-      <div id="return-charge-text" class="govuk-body">
+      <p id="return-charge-text" class="govuk-body">
         @messages("ated.form-bundle.view.return.ated.charge")
         <span class="govuk-heading-xl govuk-form-group" id="return-charge">
           @formattedPounds(formBundleReturnObj.liabilityAmount)
         </span>
-      </div>
+      </p>
     </div>
 
     <div class="govuk-form-group">

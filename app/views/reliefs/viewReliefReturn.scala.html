@@ -51,10 +51,10 @@
 
   <div class="govuk-form-group">
     @formHelper(action=controllers.reliefs.routes.ViewReliefReturnController.submit(periodKey: Int, formBundleNumber: String)) {
-    <div id="relief-return-text" class="govuk-body">@messages("ated.view-relief-return.subheader",
+    <p id="relief-return-text" class="govuk-body">@messages("ated.view-relief-return.subheader",
       PeriodUtils.periodStartDate(periodKey).toString(messages("ated.date-format")),
       PeriodUtils.periodEndDate(periodKey).toString(messages("ated.date-format")))
-    </div>
+    </p>
   </div>
 
     <div class="govuk-form-group">
@@ -126,7 +126,7 @@
     </dl>
 
     <div class="govuk-form-group govuk-body">
-      <div id="return-charge-text">@messages("ated.form-bundle.view.return.ated.charge")</div>
+      <p id="return-charge-text">@messages("ated.form-bundle.view.return.ated.charge")</p>
     </div>
 
     <div class="govuk-form-group">
