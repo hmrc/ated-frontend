@@ -58,8 +58,8 @@ class PropertyDetailsNewBuildValueController @Inject()(mcc: MessagesControllerCo
               dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).map { isPrevReturn =>
                 val displayData = PropertyDetailsNewBuildValue(propertyDetails.value.flatMap(_.newBuildValue))
 
-                val newBuildDate = propertyDetails.value.flatMap(_.newBuildDate).getOrElse(new LocalDate())
-                val localRegDate = propertyDetails.value.flatMap(_.localAuthRegDate).getOrElse(new LocalDate())
+                val newBuildDate = propertyDetails.value.flatMap(_.newBuildDate).getOrElse(LocalDate.now())
+                val localRegDate = propertyDetails.value.flatMap(_.localAuthRegDate).getOrElse(LocalDate.now())
 
                 val dynamicDate = getEarliestDate(newBuildDate, localRegDate)
 

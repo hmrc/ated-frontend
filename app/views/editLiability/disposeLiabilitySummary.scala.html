@@ -20,6 +20,7 @@
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 @import views.ViewUtils.titleBuilder
 @import views.html.helpers.formattedPounds
+@import views.formatDate
 
 @this(newMain: newMain,
         formHelper: FormWithCSRF,
@@ -63,7 +64,7 @@
   @disposeLiability.disposeLiability.map(x => x.dateOfDisposal.fold(
     incomplete
   )
-  (date => Html(date.toString(messages("ated.date-format"))))
+  (date => Html(formatDate(date, messages("ated.date-format"))))
   )
 }
 
@@ -104,7 +105,7 @@
     </h1>
   </header>
 
-  <p id="details-text" class="govuk-body">@messages("ated.property-details-summary.details-text", periodStartDate(disposeLiability.formBundleReturn.periodKey.toInt).toString(messages("ated.date-format")), periodEndDate(disposeLiability.formBundleReturn.periodKey.toInt).toString(messages("ated.date-format")))</p>
+  <p id="details-text" class="govuk-body">@messages("ated.property-details-summary.details-text", formatDate(periodStartDate(disposeLiability.formBundleReturn.periodKey.toInt), messages("ated.date-format")), formatDate(periodEndDate(disposeLiability.formBundleReturn.periodKey.toInt), messages("ated.date-format")))</p>
 
   <div class="govuk-form-group govuk-!-padding-top-4" id="cya-property-details">
 

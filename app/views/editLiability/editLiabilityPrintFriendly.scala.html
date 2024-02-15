@@ -18,6 +18,7 @@
 @import _root_.utils.PeriodUtils._
 @import views.html.helpers._
 @import views.html.helper.CSPNonce
+@import views.formatDate
 
 @(changeLiability : PropertyDetails,
         returnType: String,
@@ -42,7 +43,7 @@
     @messages("ated.edit-liability.summary.print.header", organisationName.getOrElse(""))
   </h1>
 
-  <p class="govuk-body" id="details-text">@messages("ated.property-details-summary.details-text", periodStartDate(changeLiability.periodKey).toString(messages("ated.date-format")), periodEndDate(changeLiability.periodKey).toString(messages("ated.date-format")))</p>
+  <p class="govuk-body" id="details-text">@messages("ated.property-details-summary.details-text", formatDate(periodStartDate(changeLiability.periodKey), messages("ated.date-format")), formatDate(periodEndDate(changeLiability.periodKey), messages("ated.date-format")))</p>
 
   <table id="property-summary" class="govuk-table">
 
@@ -191,7 +192,7 @@
         @for((period, index) <- periods.zipWithIndex) {
           <tr class="govuk-table__row">
             <th id="return-type-@index" scope="row" class="govuk-table__header">@messages(period.description.getOrElse(""))</th>
-            <td id="period-@index" class="govuk-table__cell">@messages("ated.property-details-summary.table.period.text", period.startDate.toString(messages("ated.date-format")), period.endDate.toString(messages("ated.date-format")))</td>
+            <td id="period-@index" class="govuk-table__cell">@messages("ated.property-details-summary.table.period.text", formatDate(period.startDate, messages("ated.date-format")), formatDate(period.endDate, messages("ated.date-format")))</td>
           </tr>
         }
     </tbody>

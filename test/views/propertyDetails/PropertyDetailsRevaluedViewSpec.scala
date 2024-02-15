@@ -106,8 +106,8 @@ Feature("The user can view an empty property revalue page") {
 
       val propertyDetailsRevalued = PropertyDetailsRevalued(isPropertyRevalued = Some(true),
         revaluedValue = Some(BigDecimal(123456.34)),
-        revaluedDate = Some(new LocalDate("1971-01-01")),
-        partAcqDispDate = Some(new LocalDate("1972-02-02")))
+        revaluedDate = Some(LocalDate.parse("1971-01-01")),
+        partAcqDispDate = Some(LocalDate.parse("1972-02-02")))
 
       val html = injectedViewInstance("1", 2015,
         propertyDetailsRevaluedForm.fill(propertyDetailsRevalued), Some(AtedUtils.EDIT_SUBMITTED), Html(""), Some("http://backLink"))

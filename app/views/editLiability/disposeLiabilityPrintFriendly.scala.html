@@ -18,6 +18,8 @@
 @import views.html.helpers._
 @import _root_.utils.PeriodUtils._
 @import views.html.helper.CSPNonce
+@import java.time.format.DateTimeFormatter
+@import views.formatDate
 
 @(disposeLiability: models.DisposeLiabilityReturn,
         organisationName: Option[String]
@@ -39,8 +41,8 @@
 
   <p class="govuk-body" id="details-text">
   @messages("ated.property-details-summary.details-text",
-    periodStartDate(disposeLiability.formBundleReturn.periodKey.toInt).toString(messages("ated.date-format")),
-    periodEndDate(disposeLiability.formBundleReturn.periodKey.toInt).toString(messages("ated.date-format")))
+    formatDate(periodStartDate(disposeLiability.formBundleReturn.periodKey.toInt), messages("ated.date-format")),
+    formatDate(periodEndDate(disposeLiability.formBundleReturn.periodKey.toInt), messages("ated.date-format")))
   </p>
 
   <table id="property-summary" class="govuk-table">
@@ -66,7 +68,7 @@
             @if(!disposeLiability.disposeLiability.flatMap(_.dateOfDisposal).isDefined) {
                  <td class="govuk-table__cell" id="property-title-disposal-date-incomplete">@incomplete</td>
                 } else {
-                <td class="govuk-table__cell" id="property-title-disposal-date">@disposeLiability.disposeLiability.flatMap(x => x.dateOfDisposal.map(y => y.toString(messages("ated.date-format"))))</td>
+                <td class="govuk-table__cell" id="property-title-disposal-date">@disposeLiability.disposeLiability.flatMap(x => x.dateOfDisposal.map(y => formatDate(y, messages("ated.date-format"))))</td>
                 }
         </tr>
     </tbody>

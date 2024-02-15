@@ -174,7 +174,7 @@ class SelectExistingReturnAddressControllerSpec extends PlaySpec with GuiceOneSe
   }
 
   "SelectExistingReturnAddressController" must {
-    val prevReturns = Some(Seq(PreviousReturns("1, addressLine1", "12345678", new LocalDate("2015-04-02"), true)))
+    val prevReturns = Some(Seq(PreviousReturns("1, addressLine1", "12345678", LocalDate.parse("2015-04-02"), true)))
     "view" must {
       "unauthorised users" must {
 
@@ -189,7 +189,7 @@ class SelectExistingReturnAddressControllerSpec extends PlaySpec with GuiceOneSe
       "Authorised users" must {
 
         "show the address details view if address list is retrieved from cache" in new Setup {
-          val prevReturns: Seq[PreviousReturns] = Seq(PreviousReturns("1, addressLine1", "12345678", new LocalDate("2015-04-02"), true))
+          val prevReturns: Seq[PreviousReturns] = Seq(PreviousReturns("1, addressLine1", "12345678", LocalDate.parse("2015-04-02"), true))
           viewWithAuthorisedUser(Some(prevReturns)) {
             result =>
               status(result) must be(OK)
@@ -201,10 +201,10 @@ class SelectExistingReturnAddressControllerSpec extends PlaySpec with GuiceOneSe
 
         "show latest address sorted by date in address details view if address list is retrieved from cache" in new Setup {
           val prevReturns: Seq[PreviousReturns] = Seq(
-            PreviousReturns("1, addressLine1", "12345678", new LocalDate("2015-03-12"), true),
-            PreviousReturns("1, addressLine1", "12345679", new LocalDate("2015-04-12"), true),
-            PreviousReturns("2, addressLine2", "12345672", new LocalDate("2015-01-12"), true),
-            PreviousReturns("2, addressLine2", "12345676", new LocalDate("2015-02-12"), true))
+            PreviousReturns("1, addressLine1", "12345678", LocalDate.parse("2015-03-12"), true),
+            PreviousReturns("1, addressLine1", "12345679", LocalDate.parse("2015-04-12"), true),
+            PreviousReturns("2, addressLine2", "12345672", LocalDate.parse("2015-01-12"), true),
+            PreviousReturns("2, addressLine2", "12345676", LocalDate.parse("2015-02-12"), true))
           viewWithAuthorisedUser(Some(prevReturns)) {
             result =>
               status(result) must be(OK)
@@ -218,10 +218,10 @@ class SelectExistingReturnAddressControllerSpec extends PlaySpec with GuiceOneSe
 
         "show latest address sorted by change allowed in address details view if address list is retrieved from cache" in new Setup {
           val prevReturns: Seq[PreviousReturns] = Seq(
-            PreviousReturns("1, addressLine1", "12345671", new LocalDate("2015-03-12"), true),
-            PreviousReturns("1, addressLine1", "12345672", new LocalDate("2015-03-12"), false),
-            PreviousReturns("2, addressLine2", "12345673", new LocalDate("2015-02-12"), false),
-            PreviousReturns("2, addressLine2", "12345674", new LocalDate("2015-02-12"), true))
+            PreviousReturns("1, addressLine1", "12345671", LocalDate.parse("2015-03-12"), true),
+            PreviousReturns("1, addressLine1", "12345672", LocalDate.parse("2015-03-12"), false),
+            PreviousReturns("2, addressLine2", "12345673", LocalDate.parse("2015-02-12"), false),
+            PreviousReturns("2, addressLine2", "12345674", LocalDate.parse("2015-02-12"), true))
           viewWithAuthorisedUser(Some(prevReturns)) {
             result =>
               status(result) must be(OK)
@@ -235,14 +235,14 @@ class SelectExistingReturnAddressControllerSpec extends PlaySpec with GuiceOneSe
 
         "show latest address sorted by change allowed with multiple addresses in address details view" in new Setup {
           val prevReturns: Seq[PreviousReturns] = Seq(
-            PreviousReturns("1, addressLine1", "12345671", new LocalDate("2015-03-12"), false),
-            PreviousReturns("1, addressLine1", "12345672", new LocalDate("2015-03-12"), false),
-            PreviousReturns("1, addressLine1", "12345673", new LocalDate("2015-03-12"), true),
-            PreviousReturns("1, addressLine1", "12345674", new LocalDate("2015-03-12"), false),
-            PreviousReturns("1, addressLine1", "12345675", new LocalDate("2015-03-12"), false),
-            PreviousReturns("1, addressLine1", "12345676", new LocalDate("2015-03-12"), false),
-            PreviousReturns("2, addressLine2", "12345677", new LocalDate("2015-02-12"), false),
-            PreviousReturns("2, addressLine2", "12345678", new LocalDate("2015-02-12"), true))
+            PreviousReturns("1, addressLine1", "12345671", LocalDate.parse("2015-03-12"), false),
+            PreviousReturns("1, addressLine1", "12345672", LocalDate.parse("2015-03-12"), false),
+            PreviousReturns("1, addressLine1", "12345673", LocalDate.parse("2015-03-12"), true),
+            PreviousReturns("1, addressLine1", "12345674", LocalDate.parse("2015-03-12"), false),
+            PreviousReturns("1, addressLine1", "12345675", LocalDate.parse("2015-03-12"), false),
+            PreviousReturns("1, addressLine1", "12345676", LocalDate.parse("2015-03-12"), false),
+            PreviousReturns("2, addressLine2", "12345677", LocalDate.parse("2015-02-12"), false),
+            PreviousReturns("2, addressLine2", "12345678", LocalDate.parse("2015-02-12"), true))
           viewWithAuthorisedUser(Some(prevReturns)) {
             result =>
               status(result) must be(OK)
@@ -256,10 +256,10 @@ class SelectExistingReturnAddressControllerSpec extends PlaySpec with GuiceOneSe
 
         "show 3 unique addresses in the address details view if address list is retrieved from cache" in new Setup {
           val prevReturns: Seq[PreviousReturns] = Seq(
-            PreviousReturns("1, addressLine1", "12345678", new LocalDate("2015-04-02"), true),
-            PreviousReturns("1, addressLine1", "12345679", new LocalDate("2015-04-02"), true),
-            PreviousReturns("2, addressLine2", "12345676", new LocalDate("2015-04-02"), true),
-            PreviousReturns("3, addressLine3", "12345672", new LocalDate("2015-04-02"), true))
+            PreviousReturns("1, addressLine1", "12345678", LocalDate.parse("2015-04-02"), true),
+            PreviousReturns("1, addressLine1", "12345679", LocalDate.parse("2015-04-02"), true),
+            PreviousReturns("2, addressLine2", "12345676", LocalDate.parse("2015-04-02"), true),
+            PreviousReturns("3, addressLine3", "12345672", LocalDate.parse("2015-04-02"), true))
           viewWithAuthorisedUser(Some(prevReturns)) {
             result =>
               status(result) must be(OK)
@@ -328,16 +328,16 @@ class SelectExistingReturnAddressControllerSpec extends PlaySpec with GuiceOneSe
       }
 
       "submitting an valid request should get the form bundle return and save in keystore" in new Setup {
-        val formBundleProp: FormBundleProperty = FormBundleProperty(BigDecimal(100), new LocalDate("2015-09-08"),
-          new LocalDate("2015-10-12"), "Relief", Some("Property developers"))
+        val formBundleProp: FormBundleProperty = FormBundleProperty(BigDecimal(100), LocalDate.parse("2015-09-08"),
+          LocalDate.parse("2015-10-12"), "Relief", Some("Property developers"))
         val formBundleAddress: FormBundleAddress = FormBundleAddress("1 addressLine1", "addressLine2", Some("addressLine3"), Some("AddressLine4"), Some("XX11XX"), "GB")
         val formBundlePropertyDetails: FormBundlePropertyDetails = FormBundlePropertyDetails(Some("title here"), formBundleAddress, Some("additional details"))
         val viewReturn: FormBundleReturn = FormBundleReturn("2014", formBundlePropertyDetails,
-          Some(new LocalDate("2013-10-10")),
+          Some(LocalDate.parse("2013-10-10")),
           Some(BigDecimal(100)),
           Some("ABCdefgh"),
           Some("PromABCdefgh"),
-          Some("1234"), true, true, new LocalDate("2015-05-10"), BigDecimal(9324), "1234567891", List(formBundleProp))
+          Some("1234"), true, true, LocalDate.parse("2015-05-10"), BigDecimal(9324), "1234567891", List(formBundleProp))
         val answer: Option[Boolean] = Some(true)
         val pkey: Option[SelectPeriod] = Some(SelectPeriod(Some("2018")))
         val propertyDetails: Option[PropertyDetails] = Some(PropertyDetails("12", 2018, PropertyDetailsAddress("1 oak", "Divine court", Some("Leerty"), Some("Berkshire"), Some("ZZ11ZZ"))))

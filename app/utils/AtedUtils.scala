@@ -107,7 +107,7 @@ object AtedUtils {
   }
 
   def canSubmit(periodKey: Int, currentDate: LocalDate): Boolean = {
-    val currentYear = if (currentDate.getMonthOfYear >= 4) currentDate.getYear else currentDate.getYear - 1
+    val currentYear = if (currentDate.getMonthValue >= 4) currentDate.getYear else currentDate.getYear - 1
     periodKey <= currentYear
   }
 

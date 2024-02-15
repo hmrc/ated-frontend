@@ -18,8 +18,8 @@ package models
 
 import java.time.LocalDate
 import play.api.libs.json.{Json, OFormat}
-import play.api.libs.json.JodaWrites._
-import play.api.libs.json.JodaReads._
+// import play.api.libs.json.EnvWrites.DefaultLocalDateWrites
+// import play.api.libs.json.EnvReads.DefaultLocalDateReads
 
 case class RegisteredAddressDetails(addressLine1: String,
                                     addressLine2: String,

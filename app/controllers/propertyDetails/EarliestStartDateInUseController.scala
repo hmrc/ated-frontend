@@ -51,8 +51,8 @@ class EarliestStartDateInUseController @Inject()(mcc: MessagesControllerComponen
           propertyDetailsCacheResponse(id) {
             case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
               dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
-                val newBuildDate: LocalDate = propertyDetails.value.flatMap(_.newBuildDate).getOrElse(new LocalDate())
-                val localRegDate: LocalDate = propertyDetails.value.flatMap(_.localAuthRegDate).getOrElse(new LocalDate())
+                val newBuildDate: LocalDate = propertyDetails.value.flatMap(_.newBuildDate).getOrElse(LocalDate.now())
+                val localRegDate: LocalDate = propertyDetails.value.flatMap(_.localAuthRegDate).getOrElse(LocalDate.now())
                 val dynamicDate = AtedUtils.getEarliestDate(newBuildDate, localRegDate)
 
                 currentBackLink.map(backLink =>

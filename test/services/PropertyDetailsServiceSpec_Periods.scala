@@ -138,7 +138,7 @@ class PropertyDetailsServiceSpec_Periods extends PlaySpec with GuiceOneServerPer
 
     "Save property Details DatesLiable" must {
       val propertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
-      val propValue = new PropertyDetailsDatesLiable(Some(new LocalDate("1970-01-01")), Some(new LocalDate("1970-01-01")))
+      val propValue = new PropertyDetailsDatesLiable(Some(LocalDate.parse("1970-01-01")), Some(LocalDate.parse("1970-01-01")))
 
 
       "save the value and return the response from the connector" in new Setup {
@@ -165,7 +165,7 @@ class PropertyDetailsServiceSpec_Periods extends PlaySpec with GuiceOneServerPer
 
     "add DatesLiable" must {
       val propertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
-      val propValue = new PropertyDetailsDatesLiable(Some(new LocalDate("1970-01-01")), Some(new LocalDate("1970-01-01")))
+      val propValue = new PropertyDetailsDatesLiable(Some(LocalDate.parse("1970-01-01")), Some(LocalDate.parse("1970-01-01")))
 
 
       "add the value and return the response from the connector" in new Setup {
@@ -207,7 +207,7 @@ class PropertyDetailsServiceSpec_Periods extends PlaySpec with GuiceOneServerPer
 
     "add DatesInRelief" must {
       val propertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
-      val propValue = new PropertyDetailsDatesInRelief(Some(new LocalDate("1970-01-01")), Some(new LocalDate("1970-01-01")))
+      val propValue = new PropertyDetailsDatesInRelief(Some(LocalDate.parse("1970-01-01")), Some(LocalDate.parse("1970-01-01")))
 
 
       "add the value and return the response from the connector" in new Setup {
@@ -238,7 +238,7 @@ class PropertyDetailsServiceSpec_Periods extends PlaySpec with GuiceOneServerPer
 
     "delete period" must {
       val propertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
-      val propValue = new PropertyDetailsDatesInRelief(Some(new LocalDate("1970-01-01")), Some(new LocalDate("1970-01-01")))
+      val propValue = new PropertyDetailsDatesInRelief(Some(LocalDate.parse("1970-01-01")), Some(LocalDate.parse("1970-01-01")))
 
 
       "delete the value and return the response from the connector" in new Setup {

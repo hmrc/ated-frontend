@@ -439,11 +439,11 @@ class ReliefsServiceSpec extends PlaySpec with MockitoSugar with PrivateMethodTe
 
     "View relief return" must {
       implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
-      val submittedReliefReturns1: SubmittedReliefReturns = SubmittedReliefReturns(formBundleNo1, "some relief", new LocalDate("2015-05-05"),
-        new LocalDate("2015-05-05"), new LocalDate("2015-05-05"))
+      val submittedReliefReturns1: SubmittedReliefReturns = SubmittedReliefReturns(formBundleNo1, "some relief", LocalDate.parse("2015-05-05"),
+        LocalDate.parse("2015-05-05"), LocalDate.parse("2015-05-05"))
       val submittedLiabilityReturns1: SubmittedLiabilityReturns =
-        SubmittedLiabilityReturns(formBundleNo2, "addr1+2", BigDecimal(1234.00), new LocalDate("2015-05-05"),
-          new LocalDate("2015-05-05"), new LocalDate("2015-05-05"), changeAllowed = true, "payment-ref-01")
+        SubmittedLiabilityReturns(formBundleNo2, "addr1+2", BigDecimal(1234.00), LocalDate.parse("2015-05-05"),
+          LocalDate.parse("2015-05-05"), LocalDate.parse("2015-05-05"), changeAllowed = true, "payment-ref-01")
       val submittedReturns: SubmittedReturns = SubmittedReturns(periodKey, Seq(submittedReliefReturns1), Seq(submittedLiabilityReturns1))
       val periodSummaryReturns: PeriodSummaryReturns = PeriodSummaryReturns(periodKey, Seq(), Some(submittedReturns))
       val data: SummaryReturnsModel = SummaryReturnsModel(Some(BigDecimal(999.99)), Seq(periodSummaryReturns))
@@ -459,8 +459,8 @@ class ReliefsServiceSpec extends PlaySpec with MockitoSugar with PrivateMethodTe
       "if summary data is found in Cache, but relief return  is None, return None" in new Setup {
         implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
         val submittedLiabilityReturns1: SubmittedLiabilityReturns =
-          SubmittedLiabilityReturns(formBundleNo2, "addr1+2", BigDecimal(1234.00), new LocalDate("2015-05-05"),
-          new LocalDate("2015-05-05"), new LocalDate("2015-05-05"), changeAllowed = true, "payment-ref-01")
+          SubmittedLiabilityReturns(formBundleNo2, "addr1+2", BigDecimal(1234.00), LocalDate.parse("2015-05-05"),
+          LocalDate.parse("2015-05-05"), LocalDate.parse("2015-05-05"), changeAllowed = true, "payment-ref-01")
         val submittedReturns: SubmittedReturns = SubmittedReturns(periodKey, Seq(), Seq(submittedLiabilityReturns1))
         val periodSummaryReturns: PeriodSummaryReturns = PeriodSummaryReturns(periodKey, Seq(), Some(submittedReturns))
         val data: SummaryReturnsModel = SummaryReturnsModel(Some(BigDecimal(999.99)), Seq(periodSummaryReturns))

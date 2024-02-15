@@ -240,7 +240,7 @@ class ReliefsSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
             ReliefBuilder.reliefTaxAvoidance(periodKey,
               Reliefs(periodKey = periodKey, isAvoidanceScheme = Some(true), openToPublic = true),
               taxAvoidance = TaxAvoidance(openToPublicScheme = Some("12345678"))
-          )), PeriodUtils.calculatePeakStartYear(new LocalDate().plusYears(2))) {
+          )), PeriodUtils.calculatePeakStartYear(LocalDate.now().plusYears(2))) {
             result =>
               status(result) must be(BAD_REQUEST)
               val document = Jsoup.parse(contentAsString(result))

@@ -17,7 +17,8 @@
 package builders
 
 import models._
-import java.time.{DateTime, LocalDate}
+import java.time.{ZonedDateTime, LocalDate}
+import java.time.format.DateTimeFormatter
 
 object ChangeLiabilityReturnBuilder {
 
@@ -26,7 +27,7 @@ object ChangeLiabilityReturnBuilder {
   def generateFormBundlePropertyDetails = FormBundlePropertyDetails(None, generateFormBundleAddress, None)
 
   def generateFormBundleReturn = {
-    FormBundleReturn("2015", generateFormBundlePropertyDetails, dateOfAcquisition = None, valueAtAcquisition = None, taxAvoidanceScheme = None, localAuthorityCode = None, professionalValuation = true, ninetyDayRuleApplies = false, dateOfSubmission = new LocalDate("2015-04-02"), liabilityAmount = BigDecimal(123.45), paymentReference = "payment-ref-123", lineItem = Seq())
+    FormBundleReturn("2015", generateFormBundlePropertyDetails, dateOfAcquisition = None, valueAtAcquisition = None, taxAvoidanceScheme = None, localAuthorityCode = None, professionalValuation = true, ninetyDayRuleApplies = false, dateOfSubmission = LocalDate.parse("2015-04-02"), liabilityAmount = BigDecimal(123.45), paymentReference = "payment-ref-123", lineItem = Seq())
   }
 
   def generatePropertyDetailsAddress = PropertyDetailsAddress("line1", "line2", None, None, None)
@@ -39,7 +40,7 @@ object ChangeLiabilityReturnBuilder {
     val fAddress = generateFormBundleAddress
     val fProperty = FormBundlePropertyDetails(None, fAddress, None)
     val fReturn = FormBundleReturn("2015", fProperty, dateOfAcquisition = None, valueAtAcquisition = None, taxAvoidanceScheme = None, localAuthorityCode = None, professionalValuation = true, ninetyDayRuleApplies = false,
-      dateOfSubmission = new LocalDate("2015-04-02"), liabilityAmount = BigDecimal(123.45), paymentReference = "payment-ref-123", lineItem = Seq())
+      dateOfSubmission = LocalDate.parse("2015-04-02"), liabilityAmount = BigDecimal(123.45), paymentReference = "payment-ref-123", lineItem = Seq())
     val propAddr = generatePropertyDetailsAddress
     val propDetCalculated = generatePropertyDetailsCalculated(112300)
     PropertyDetails(id = formBundleNo,
@@ -54,7 +55,7 @@ object ChangeLiabilityReturnBuilder {
     val fAddress = generateFormBundleAddress
     val fProperty = FormBundlePropertyDetails(None, fAddress, None)
     val fReturn = FormBundleReturn("2015", fProperty, dateOfAcquisition = None, valueAtAcquisition = None, taxAvoidanceScheme = None, localAuthorityCode = None, professionalValuation = true, ninetyDayRuleApplies = false,
-      dateOfSubmission = new LocalDate("2015-04-02"), liabilityAmount = BigDecimal(123.45), paymentReference = "payment-ref-123", lineItem = Seq())
+      dateOfSubmission = LocalDate.parse("2015-04-02"), liabilityAmount = BigDecimal(123.45), paymentReference = "payment-ref-123", lineItem = Seq())
     val propAddr = generatePropertyDetailsAddress
     PropertyDetails(id = formBundleNo,
       periodKey = 2015,
@@ -68,7 +69,7 @@ object ChangeLiabilityReturnBuilder {
     val fAddress = generateFormBundleAddress
     val fProperty = FormBundlePropertyDetails(None, fAddress, None)
     val fReturn = FormBundleReturn("2015", fProperty, dateOfAcquisition = None, valueAtAcquisition = None, taxAvoidanceScheme = None, localAuthorityCode = None, professionalValuation = true, ninetyDayRuleApplies = false,
-      dateOfSubmission = new LocalDate("2015-04-02"), liabilityAmount = BigDecimal(123.45), paymentReference = "payment-ref-123", lineItem = Seq())
+      dateOfSubmission = LocalDate.parse("2015-04-02"), liabilityAmount = BigDecimal(123.45), paymentReference = "payment-ref-123", lineItem = Seq())
     val propAddr = generatePropertyDetailsAddress
     val propDetCalculated = generatePropertyDetailsCalculated(-112300)
     PropertyDetails(id = formBundleNo,
@@ -83,7 +84,7 @@ object ChangeLiabilityReturnBuilder {
     val fAddress = generateFormBundleAddress
     val fProperty = FormBundlePropertyDetails(None, fAddress, None)
     val fReturn = FormBundleReturn("2015", fProperty, dateOfAcquisition = None, valueAtAcquisition = None, taxAvoidanceScheme = None, localAuthorityCode = None, professionalValuation = true, ninetyDayRuleApplies = false,
-      dateOfSubmission = new LocalDate("2015-04-02"), liabilityAmount = BigDecimal(123.45), paymentReference = "payment-ref-123", lineItem = Seq())
+      dateOfSubmission = LocalDate.parse("2015-04-02"), liabilityAmount = BigDecimal(123.45), paymentReference = "payment-ref-123", lineItem = Seq())
     val propAddr = generatePropertyDetailsAddress
     val propDetCalculated = generatePropertyDetailsCalculated(0)
     PropertyDetails(id = formBundleNo,
@@ -96,16 +97,16 @@ object ChangeLiabilityReturnBuilder {
 
 
   def generateCalculated = {
-    val liabilityPeriods = List(CalculatedPeriod(BigDecimal(2500000), new LocalDate("2015-4-1"), new LocalDate("2016-3-31"), "Liability"))
+    val liabilityPeriods = List(CalculatedPeriod(BigDecimal(2500000), LocalDate.parse("2015-4-1"), LocalDate.parse("2016-3-31"), "Liability"))
     val reliefPeriods = Nil
     PropertyDetailsCalculated(liabilityPeriods = liabilityPeriods, reliefPeriods = reliefPeriods,
-      acquistionDateToUse = Some(new LocalDate("2015-5-15")), acquistionValueToUse = None, professionalValuation = Some(true),
+      acquistionDateToUse = Some(LocalDate.parse("2015-5-15")), acquistionValueToUse = None, professionalValuation = Some(true),
       liabilityAmount = Some(2500),
       amountDueOrRefund = Some(BigDecimal(-500.00)))
   }
   def generateEditLiabilityResponse(oldFormBundle: String) = {
     val liability = EditLiabilityReturnsResponse("Post", oldFormBundleNumber = oldFormBundle, formBundleNumber = Some("112233445566"), liabilityAmount = BigDecimal(3500.00), amountDueOrRefund = BigDecimal(-500.00), paymentReference = Some("pay-ref-123"))
-    EditLiabilityReturnsResponseModel(processingDate = new DateTime("2016-04-20T12:41:41.839+01:00"), liabilityReturnResponse = Seq(liability), BigDecimal(1200.00))
+    EditLiabilityReturnsResponseModel(processingDate = ZonedDateTime.parse("2016-04-20T12:41:41.839+01:00", DateTimeFormatter.ISO_OFFSET_DATE_TIME), liabilityReturnResponse = Seq(liability), BigDecimal(1200.00))
   }
 
 }

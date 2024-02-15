@@ -53,7 +53,7 @@ class isAvoidanceSchemeSpec extends AnyFeatureSpec with GuiceOneAppPerSuite
       Given("the client is creating a new relief and want tell us if an avoidance scheme is being used")
       When("The user views the page")
 
-      val html = injectedViewInstance(periodKey, isTaxAvoidanceForm , new LocalDate("2015-04-01"), Html(""), Some("backLink"))
+      val html = injectedViewInstance(periodKey, isTaxAvoidanceForm , LocalDate.parse("2015-04-01"), Html(""), Some("backLink"))
 
       val document = Jsoup.parse(html.toString())
 
@@ -80,7 +80,7 @@ class isAvoidanceSchemeSpec extends AnyFeatureSpec with GuiceOneAppPerSuite
 
       val isTaxAvoidance = IsTaxAvoidance(isAvoidanceScheme = Some(true))
       val html = injectedViewInstance(periodKey, isTaxAvoidanceForm.fill(isTaxAvoidance),
-        new LocalDate("2015-04-01"), Html(""), Some("http://backLink"))
+        LocalDate.parse("2015-04-01"), Html(""), Some("http://backLink"))
 
       val document = Jsoup.parse(html.toString())
 

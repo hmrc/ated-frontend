@@ -82,7 +82,7 @@ object PropertyDetailsFormsValidation {
     if (isPropertyRevalued.contains(true)) {
       if (revaluedDate.isEmpty) {
         Seq(Some(FormError("revaluedDate", "ated.property-details-value.revaluedDate.error.empty")))
-      } else if (revaluedDate.isDefined && revaluedDate.exists(_.isAfter(new LocalDate()))) {
+      } else if (revaluedDate.isDefined && revaluedDate.exists(_.isAfter(LocalDate.now()))) {
         Seq(Some(FormError("revaluedDate", "ated.property-details-value.revaluedDate.error.in-future")))
       } else if (revaluedDate.isDefined && revaluedDate.exists(a => PeriodUtils.isPeriodTooLate(periodKey, Some(a)))) {
         Seq(Some(FormError("revaluedDate", "ated.property-details-value.revaluedDate.error.too-late")))
@@ -94,7 +94,7 @@ object PropertyDetailsFormsValidation {
     if (isPropertyRevalued.contains(true)) {
       if (partAcqDispDate.isEmpty) {
         Seq(Some(FormError("partAcqDispDate", "ated.property-details-value.partAcqDispDate.error.empty")))
-      } else if (partAcqDispDate.isDefined && partAcqDispDate.exists(_.isAfter(new LocalDate()))) {
+      } else if (partAcqDispDate.isDefined && partAcqDispDate.exists(_.isAfter(LocalDate.now()))) {
         Seq(Some(FormError("partAcqDispDate", "ated.property-details-value.partAcqDispDate.error.in-future")))
       } else if (partAcqDispDate.isDefined && partAcqDispDate.exists(a => PeriodUtils.isPeriodTooLate(periodKey, Some(a)))) {
         Seq(Some(FormError("partAcqDispDate", "ated.property-details-value.partAcqDispDate.error.too-late")))
@@ -154,11 +154,11 @@ object PropertyDetailsFormsValidation {
                    mustBeInChargeablePeriod: Boolean = false,
                    isMandatory: Boolean = false): Seq[Option[FormError]] = {
     val date = formDate2Option(dateField, f)
-    val valuationYear = PeriodUtils.calculateLowerTaxYearBoundary(periodKey)
+    val valuationYear: LocalDate = PeriodUtils.calculateLowerTaxYearBoundary(periodKey)
 
-    if (date.exists(a => new LocalDate(a).isBefore(new LocalDate(s"$valuationYear")) && !noDateTooEarly)) {
+    if (date.exists(a => a.isBefore(valuationYear) && !noDateTooEarly)) {
       Seq(Some(FormError(dateField, s"ated.property-details-value.$dateField.error.too-early")))
-    } else if (date.exists(a => new LocalDate(a).isAfter(new LocalDate()))) {
+    } else if (date.exists(a => a.isAfter(LocalDate.now()))) {
       Seq(Some(FormError(dateField, s"ated.property-details-value.$dateField.error.too-late")))
     } else if (mustBeInChargeablePeriod && date.exists(a => PeriodUtils.isPeriodTooEarly(periodKey, Some(a)) ||
       PeriodUtils.isPeriodTooLate(periodKey, Some(a)))) {
@@ -171,7 +171,7 @@ object PropertyDetailsFormsValidation {
   private[forms] def formDate2Option[A](dateField: String, f: Form[A]): Either[Boolean, LocalDate] = {
     (f.data.getOrElse(s"$dateField.day", ""), f.data.getOrElse(s"$dateField.month", ""), f.data.getOrElse(s"$dateField.year", "")) match {
       case (day, month, year) if day != "" && month != "" && year != "" =>
-        Right(new LocalDate(s"${year.trim.toInt}-${month.trim.toInt}-${day.trim.toInt}"))
+        Right(LocalDate.of(year.trim.toInt, month.trim.toInt, day.trim.toInt))
       case (day, month, year) if day != "" || month != "" || year != "" =>
         Left(false) //FIXME using booleans to denote whether the field is empty or not. Need a better way
       case _ => Left(true)

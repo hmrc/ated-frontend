@@ -25,6 +25,7 @@
 @import uk.gov.hmrc.govukfrontend.views.Implicits.RichCheckboxes
 @import uk.gov.hmrc.hmrcfrontend.views.Implicits.RichDateInput
 @import views.ViewUtils.titleBuilder
+@import views.formatDate
 
 @this(newMain: newMain,
   formHelper: FormWithCSRF,
@@ -40,7 +41,7 @@
   periodStartDate: java.time.LocalDate,
   serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
-@formattedPeriodStartDate = @{periodStartDate.toString(messages("ated.date-format.numeric"))}
+@formattedPeriodStartDate = @{formatDate(periodStartDate, messages("ated.date-format.numeric"))}
 
 @chooseReliefsocialHousingMessage = @{
   if (periodKey >= 2020) {

@@ -19,9 +19,10 @@
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 @import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 @import views.ViewUtils.titleBuilder
-@import _root_.utils.PeriodUtils
-@import _root_.utils.AtedUtils
+@import _root_.utils._
 @import views.html.helpers._
+@import views.formatDate
+@import PeriodUtils._
 
 @this(newMain: newMain, 
       govukBackLink : GovukBackLink,
@@ -101,7 +102,7 @@ backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages
        </h1>
     </header>
 
-    <p id="details-text" class="govuk-body">@messages("ated.property-details-summary.details-text", PeriodUtils.periodStartDate(propertyDetails.periodKey).toString(messages("ated.date-format")), PeriodUtils.periodEndDate(propertyDetails.periodKey).toString(messages("ated.date-format")))</p>
+    <p id="details-text" class="govuk-body">@messages("ated.property-details-summary.details-text", formatDate(periodStartDate(propertyDetails.periodKey), messages("ated.date-format")), formatDate(periodEndDate(propertyDetails.periodKey), messages("ated.date-format")))</p>
 
     <h2 id="property-details-header" class="govuk-heading-m">@messages("ated.property-details-summary.table.property-details.header")</h2>
 
@@ -335,7 +336,7 @@ backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages
               content = Text(messages((period.description).getOrElse("")))
             ),
             value = Value(
-              content = Text(messages("ated.property-details-summary.table.period.text", period.startDate.toString(messages("ated.date-format")), period.endDate.toString(messages("ated.date-format"))))
+              content = Text(messages("ated.property-details-summary.table.period.text", formatDate(period.startDate, messages("ated.date-format")), formatDate(period.endDate, messages("ated.date-format"))))
             ),
             actions = Some(Actions(
               items = Seq(

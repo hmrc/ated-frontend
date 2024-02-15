@@ -104,7 +104,7 @@ class FormBundleReturnsServiceSpec extends PlaySpec with GuiceOneServerPerSuite 
       bundleReturn.get.periodKey must be("2014")
       bundleReturn.get.propertyDetails.titleNumber must be(Some("title here"))
       bundleReturn.get.propertyDetails.additionalDetails must be(Some("additional additional"))
-      bundleReturn.get.dateOfAcquisition must be(Some(new LocalDate("2013-10-10")))
+      bundleReturn.get.dateOfAcquisition must be(Some(LocalDate.parse("2013-10-10")))
       bundleReturn.get.ninetyDayRuleApplies must be(true)
 
       bundleReturn.get.lineItem.size must be(1)

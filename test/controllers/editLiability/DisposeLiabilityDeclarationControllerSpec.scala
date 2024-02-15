@@ -23,7 +23,7 @@ import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.AuthAction
 import models._
-import java.time.DateTime
+import java.time.ZonedDateTime
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
@@ -112,7 +112,7 @@ class Setup {
     (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(a))
     val r1 = EditLiabilityReturnsResponse(mode = "Post", oldFormBundleNumber = oldForBundle, formBundleNumber = Some
     (newFormBundleNum), liabilityAmount = BigDecimal(3500.00), amountDueOrRefund = BigDecimal(0.00), paymentReference = Some("payment-ref-1"))
-    val response = EditLiabilityReturnsResponseModel(processingDate = DateTime.now(), liabilityReturnResponse = Seq(r1), BigDecimal(0.00))
+    val response = EditLiabilityReturnsResponseModel(processingDate = ZonedDateTime.now(), liabilityReturnResponse = Seq(r1), BigDecimal(0.00))
     when(mockDisposeLiabilityReturnService.submitDraftDisposeLiability(ArgumentMatchers.eq(oldFormBundleNum))
     (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(response))
     val result = testDisposeLiabilityDeclarationController.submit(oldFormBundleNum)

@@ -60,7 +60,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
   val injectedViewInstance = app.injector.instanceOf[views.html.propertyDetails.propertyDetailsNewBuildValue]
 
   val periodKey: Int = 2016
-  val testDate = new LocalDate("2020-02-02")
+  val testDate = LocalDate.parse("2020-02-02")
 
   class Setup {
 

@@ -22,7 +22,7 @@ import config.ApplicationConfig
 import connectors.DataCacheConnector
 import controllers.auth.AuthAction
 import models.{LiabilityReturnResponse, SubmitReturnsResponse}
-import java.time.DateTime
+import java.time.ZonedDateTime
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
@@ -81,7 +81,7 @@ class Setup {
     setAuthMocks(authMock)
     val liabilityReturnResponse = LiabilityReturnResponse(mode = "Post", propertyKey = "1",
       liabilityAmount = BigDecimal("123"), paymentReference = Some("Payment-123"), formBundleNumber = "form-bundle-123")
-    val submitReturnsResponse = SubmitReturnsResponse(processingDate = DateTime.now().toString, None, liabilityReturnResponse =
+    val submitReturnsResponse = SubmitReturnsResponse(processingDate = ZonedDateTime.now().toString, None, liabilityReturnResponse =
       Some(Seq(liabilityReturnResponse)))
     when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(btaNavigationLinksView()(messages,mockAppConfig)))
     when(mockDataCacheConnector.fetchAndGetFormData[SubmitReturnsResponse](ArgumentMatchers.eq(SubmitReturnsResponseFormId))
@@ -121,7 +121,7 @@ class Setup {
     setAuthMocks(authMock)
     val liabilityReturnResponse = LiabilityReturnResponse(mode = "Post", propertyKey = "1",
       liabilityAmount = BigDecimal("123"), paymentReference = Some("Payment-123"), formBundleNumber = "form-bundle-123")
-    val submitReturnsResponse = SubmitReturnsResponse(processingDate = DateTime.now().toString, None, liabilityReturnResponse =
+    val submitReturnsResponse = SubmitReturnsResponse(processingDate = ZonedDateTime.now().toString, None, liabilityReturnResponse =
       Some(Seq(liabilityReturnResponse)))
     when(mockDataCacheConnector.fetchAndGetFormData[SubmitReturnsResponse](ArgumentMatchers.eq(SubmitReturnsResponseFormId))
       (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(submitReturnsResponse)))

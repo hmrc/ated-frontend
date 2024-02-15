@@ -136,16 +136,16 @@ class FormBundleReturnControllerSpec extends PlaySpec with GuiceOneServerPerSuit
       val bd2: Int = 200
       val bd3: Int = 9324
 
-      val formBundleProp = FormBundleProperty(BigDecimal(bd1), new LocalDate("2015-09-08"), new LocalDate("2015-10-12"), "Relief",Some("Property developers"))
-      val formBundleProp2 = FormBundleProperty(BigDecimal(bd2), new LocalDate("2015-10-12"), new LocalDate("2015-12-12"), "Relief", Some("Property developers"))
+      val formBundleProp = FormBundleProperty(BigDecimal(bd1), LocalDate.parse("2015-09-08"), LocalDate.parse("2015-10-12"), "Relief",Some("Property developers"))
+      val formBundleProp2 = FormBundleProperty(BigDecimal(bd2), LocalDate.parse("2015-10-12"), LocalDate.parse("2015-12-12"), "Relief", Some("Property developers"))
       val formBundleAddress = FormBundleAddress("1 addressLine1", "addressLine2", Some("addressLine3"), Some("AddressLine4"), Some("XX11XX"), "GB")
       val formBundlePropertyDetails = FormBundlePropertyDetails(Some("title here"), formBundleAddress, Some("additional details"))
-      val viewReturn = FormBundleReturn("2014", formBundlePropertyDetails, Some(new LocalDate("2013-10-10")), Some(BigDecimal(bd1)),
-        Some("ABCdefgh"), Some("PromABCdefgh"), Some("1234"), professionalValuation = true, ninetyDayRuleApplies = true, new LocalDate("2015-05-10"),
+      val viewReturn = FormBundleReturn("2014", formBundlePropertyDetails, Some(LocalDate.parse("2013-10-10")), Some(BigDecimal(bd1)),
+        Some("ABCdefgh"), Some("PromABCdefgh"), Some("1234"), professionalValuation = true, ninetyDayRuleApplies = true, LocalDate.parse("2015-05-10"),
         BigDecimal(bd3), "1234567891", List(formBundleProp))
 
-      val viewReturnMultipleValues = FormBundleReturn("2014", formBundlePropertyDetails, Some(new LocalDate("2013-10-10")), Some(BigDecimal(bd1)),
-        Some("ABCdefgh"), Some("PromABCdefgh"), Some("1234"), professionalValuation = true, ninetyDayRuleApplies = true, new LocalDate("2015-05-10"),
+      val viewReturnMultipleValues = FormBundleReturn("2014", formBundlePropertyDetails, Some(LocalDate.parse("2013-10-10")), Some(BigDecimal(bd1)),
+        Some("ABCdefgh"), Some("PromABCdefgh"), Some("1234"), professionalValuation = true, ninetyDayRuleApplies = true, LocalDate.parse("2015-05-10"),
         BigDecimal(bd3), "1234567891", List(formBundleProp, formBundleProp2))
 
       "show the return view with data when change is allowed" in new Setup {
@@ -153,9 +153,9 @@ class FormBundleReturnControllerSpec extends PlaySpec with GuiceOneServerPerSuit
         val changeablePeriod: SubmittedLiabilityReturns = SubmittedLiabilityReturns(formBundleNo = formBundleNo1,
           description = "",
           liabilityAmount = BigDecimal(432.12),
-          dateFrom = new LocalDate("2015-09-08"),
-          dateTo = new LocalDate("2015-09-08"),
-          dateOfSubmission = new LocalDate("2015-09-08"),
+          dateFrom = LocalDate.parse("2015-09-08"),
+          dateTo = LocalDate.parse("2015-09-08"),
+          dateOfSubmission = LocalDate.parse("2015-09-08"),
           changeAllowed = true,
           paymentReference = "")
 
@@ -198,9 +198,9 @@ class FormBundleReturnControllerSpec extends PlaySpec with GuiceOneServerPerSuit
         val changeablePeriod: SubmittedLiabilityReturns = SubmittedLiabilityReturns(formBundleNo = formBundleNo1,
           description = "",
           liabilityAmount = BigDecimal(432.12),
-          dateFrom = new LocalDate("2015-09-08"),
-          dateTo = new LocalDate("2015-09-08"),
-          dateOfSubmission = new LocalDate("2015-09-08"),
+          dateFrom = LocalDate.parse("2015-09-08"),
+          dateTo = LocalDate.parse("2015-09-08"),
+          dateOfSubmission = LocalDate.parse("2015-09-08"),
           changeAllowed = true,
           paymentReference = "")
 

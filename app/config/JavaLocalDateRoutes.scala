@@ -32,20 +32,18 @@ trait DefaultJavaFormat extends JavaFormat {
 trait JavaLocalDateRoutes {
   self: JavaFormat =>
 
-  val format: String
+  val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern(format)
 
   implicit object queryStringLocalDateBinder extends QueryStringBindable.Parsing[LocalDate](
-    dateString => {
-      val localDate: LocalDate = DateTimeFormatter.ofPattern(format).parse(dateString)
-      localDate
-    },
-    _.toString(format),
+    dateString =>
+      LocalDate.from(formatter.parse(dateString)),
+    _.format(formatter),
     (key: String, e: Exception) => "Cannot parse parameter %s as java.time.LocalDate: %s".format(key, e.getMessage)
   )
 
   implicit object pathLocalDateBinder extends PathBindable.Parsing[LocalDate](
-    dateString => DateTimeFormatter.ofPattern(format).parse(dateString),
-    _.toString(format),
+    dateString => LocalDate.from(formatter.parse(dateString)),
+    _.format(formatter),
     (key: String, e: Exception) => "Cannot parse parameter %s as java.time.LocalDate: %s".format(key, e.getMessage)
   )
 

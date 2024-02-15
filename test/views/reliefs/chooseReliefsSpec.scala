@@ -32,6 +32,7 @@ import play.twirl.api.Html
 import testhelpers.MockAuthUtil
 import utils.PeriodUtils
 import views.html.reliefs.chooseReliefs
+import views.formatDate
 
 class chooseReliefsSpec extends AnyFeatureSpec with GuiceOneAppPerSuite with MockitoSugar
   with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
@@ -53,7 +54,7 @@ class chooseReliefsSpec extends AnyFeatureSpec with GuiceOneAppPerSuite with Moc
       Given("the client is creating a new relief and want to see the options")
       When("The user views the page")
 
-      val html = injectedViewInstance(periodKey, reliefsForm, new LocalDate("2015-04-01"), Html(""), Some("backLink"))
+      val html = injectedViewInstance(periodKey, reliefsForm, LocalDate.parse("2015-04-01"), Html(""), Some("backLink"))
 
       val document = Jsoup.parse(html.toString())
 
@@ -69,39 +70,39 @@ class chooseReliefsSpec extends AnyFeatureSpec with GuiceOneAppPerSuite with Moc
       assert(document.getElementsByAttributeValue("for", "rentalBusiness").text() === "Rental businesses")
       assert(document.select("#conditional-rentalBusiness > div > fieldset > legend").text() === "When did the Rental business start?")
       assert(document.getElementById("rentalBusinessDate-hint")
-        .text() ===s"For example, ${PeriodUtils.periodStartDate(periodKey).toString(messages("ated.date-format.numeric"))}")
+        .text() ===s"For example, ${formatDate(PeriodUtils.periodStartDate(periodKey), messages("ated.date-format.numeric"))}")
       assert(document.getElementsByAttributeValue("for", "openToPublic").text() === "Open to the public")
       assert(document.select("#conditional-openToPublic > div > fieldset > legend").text() === "When did the Open to the public start?")
       assert(document.getElementById("openToPublicDate-hint")
-        .text() ===s"For example, ${PeriodUtils.periodStartDate(periodKey).toString(messages("ated.date-format.numeric"))}")
+        .text() ===s"For example, ${formatDate(PeriodUtils.periodStartDate(periodKey), messages("ated.date-format.numeric"))}")
       assert(document.getElementsByAttributeValue("for", "propertyDeveloper").text() === "Property developers")
       assert(document.select("#conditional-propertyDeveloper > div > fieldset > legend").text() === "When did the Property developer start?")
       assert(document.getElementById("propertyDeveloperDate-hint")
-        .text() ===s"For example, ${PeriodUtils.periodStartDate(periodKey).toString(messages("ated.date-format.numeric"))}")
+        .text() ===s"For example, ${formatDate(PeriodUtils.periodStartDate(periodKey), messages("ated.date-format.numeric"))}")
       assert(document.getElementsByAttributeValue("for", "propertyTrading").text() === "Property trading")
       assert(document.select("#conditional-propertyTrading > div > fieldset > legend").text() === "When did the Property trading start?")
       assert(document.getElementById("propertyTradingDate-hint")
-        .text() ===s"For example, ${PeriodUtils.periodStartDate(periodKey).toString(messages("ated.date-format.numeric"))}")
+        .text() ===s"For example, ${formatDate(PeriodUtils.periodStartDate(periodKey), messages("ated.date-format.numeric"))}")
       assert(document.getElementsByAttributeValue("for", "lending").text() === "Lending")
       assert(document.select("#conditional-lending > div > fieldset > legend").text() === "When did the Lending start?")
       assert(document.getElementById("lendingDate-hint")
-        .text() ===s"For example, ${PeriodUtils.periodStartDate(periodKey).toString(messages("ated.date-format.numeric"))}")
+        .text() ===s"For example, ${formatDate(PeriodUtils.periodStartDate(periodKey), messages("ated.date-format.numeric"))}")
       assert(document.getElementsByAttributeValue("for", "employeeOccupation").text() === "Employee occupation")
       assert(document.select("#conditional-employeeOccupation > div > fieldset > legend").text() === "When did the Employee occupation start?")
       assert(document.getElementById("employeeOccupationDate-hint")
-        .text() ===s"For example, ${PeriodUtils.periodStartDate(periodKey).toString(messages("ated.date-format.numeric"))}")
+        .text() ===s"For example, ${formatDate(PeriodUtils.periodStartDate(periodKey), messages("ated.date-format.numeric"))}")
       assert(document.getElementsByAttributeValue("for", "farmHouses").text() === "Farmhouses")
       assert(document.select("#conditional-farmHouses > div > fieldset > legend").text() === "When did the Farmhouse start?")
       assert(document.getElementById("farmHousesDate-hint")
-        .text() ===s"For example, ${PeriodUtils.periodStartDate(periodKey).toString(messages("ated.date-format.numeric"))}")
+        .text() ===s"For example, ${formatDate(PeriodUtils.periodStartDate(periodKey), messages("ated.date-format.numeric"))}")
       assert(document.getElementsByAttributeValue("for", "socialHousing").text() === "Social housing")
       assert(document.select("#conditional-socialHousing > div > fieldset > legend").text() === "When did the Social housing start?")
       assert(document.getElementById("socialHousingDate-hint")
-        .text() ===s"For example, ${PeriodUtils.periodStartDate(periodKey).toString(messages("ated.date-format.numeric"))}")
+        .text() ===s"For example, ${formatDate(PeriodUtils.periodStartDate(periodKey), messages("ated.date-format.numeric"))}")
       assert(document.getElementsByAttributeValue("for", "equityRelease").text() === "Equity release scheme (home reversion plans)")
       assert(document.select("#conditional-equityRelease > div > fieldset > legend").text() === "When did the Equity release scheme (home reversion plans) start?")
       assert(document.getElementById("equityReleaseDate-hint")
-        .text() ===s"For example, ${PeriodUtils.periodStartDate(periodKey).toString(messages("ated.date-format.numeric"))}")
+        .text() ===s"For example, ${formatDate(PeriodUtils.periodStartDate(periodKey), messages("ated.date-format.numeric"))}")
       assertResult(false)(document.getElementById("rentalBusiness").outerHtml().contains("checked"))
       assertResult(false)(document.getElementById("openToPublic").outerHtml().contains("checked"))
       assertResult(false)(document.getElementById("propertyDeveloper").outerHtml().contains("checked"))
@@ -128,7 +129,7 @@ class chooseReliefsSpec extends AnyFeatureSpec with GuiceOneAppPerSuite with Moc
       When("The user views the page")
 
       val reliefs: Reliefs = Reliefs(periodKey = periodKey, rentalBusiness = true)
-      val html = injectedViewInstance(periodKey, reliefsForm.fill(reliefs), new LocalDate("2015-04-01"), Html(""), Some("http://backLink"))
+      val html = injectedViewInstance(periodKey, reliefsForm.fill(reliefs), LocalDate.parse("2015-04-01"), Html(""), Some("http://backLink"))
 
       val document = Jsoup.parse(html.toString())
 

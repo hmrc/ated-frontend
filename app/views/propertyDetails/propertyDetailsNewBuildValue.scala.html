@@ -45,7 +45,7 @@
     }
 }
 
-@newMain(title = titleBuilder(messages("ated.property-details-value.newBuildValue.title",date.dayOfMonth().get().toString, intToMonth(date.monthOfYear().get()), date.year().get().toString), Some(propertyDetailsForm)),
+@newMain(title = titleBuilder(messages("ated.property-details-value.newBuildValue.title",date.getDayOfMonth().toString, intToMonth(date.getMonthValue()), date.getYear().toString), Some(propertyDetailsForm)),
 serviceInfoContent = serviceInfoContent) {
 
     @backLinkHtml
@@ -63,7 +63,7 @@ serviceInfoContent = serviceInfoContent) {
             prefix = Some(PrefixOrSuffix(content = Text("£")))
             ).withFormField(propertyDetailsForm("newBuildValue"))
             .withHeadingAndSectionCaption(
-                heading = Text(messages("ated.property-details-value.newBuildValue.header", date.dayOfMonth().get().toString, intToMonth(date.monthOfYear().get()), date.year().get().toString)),
+                heading = Text(messages("ated.property-details-value.newBuildValue.header", date.getDayOfMonth().toString, intToMonth(date.getMonthValue()), date.getYear().toString)),
                 sectionCaption = Text(messages(AtedUtils.getPropertyDetailsPreHeader(mode)))
         ))
 

@@ -101,7 +101,7 @@ object ReliefForms {
           (f.data.get(s"${x._2}.day"), f.data.get(s"${x._2}.month"), f.data.get(s"${x._2}.year")) match {
             case (Some(d), Some(m), Some(y)) if(d.isEmpty && m.isEmpty && y.isEmpty) => Left(EmptyDate)
             case (Some(d), Some(m), Some(y)) => try {
-              Right(new LocalDate(y.trim.toInt, m.trim.toInt, d.trim.toInt))
+              Right(LocalDate.of(y.trim.toInt, m.trim.toInt, d.trim.toInt))
             } catch {
               case _ : Throwable => Left(InvalidDate)
             }
@@ -242,7 +242,7 @@ object ReliefForms {
     ).transform(
       {
         case (Some(y), Some(m), Some(d)) =>
-          try Some(new LocalDate(y.trim.toInt, m.trim.toInt, d.trim.toInt))
+          try Some(LocalDate.of(y.trim.toInt, m.trim.toInt, d.trim.toInt))
           catch {
             case e: Exception => None
           }
@@ -250,7 +250,7 @@ object ReliefForms {
       },
       (date: Option[LocalDate]) =>
         date match {
-          case Some(d) => (Some(d.getYear.toString), Some(d.getMonthOfYear.toString), Some(d.getDayOfMonth.toString))
+          case Some(d) => (Some(d.getYear.toString), Some(d.getMonthValue().toString), Some(d.getDayOfMonth.toString))
           case _       => (None, None, None)
         }
     )

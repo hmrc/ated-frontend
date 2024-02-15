@@ -32,7 +32,7 @@ class PropertyDetailsValueAcquiredSpec extends AtedViewSpec with MockAuthUtil {
   private val form = PropertyDetailsForms.propertyDetailsValueAcquiredForm
   override def view: Html = injectedViewInstance("0", 0,form, None, Html(""), Some("backLink"), testDate)
 
-  val testDate = new LocalDate("2020-03-11")
+  val testDate = LocalDate.parse("2020-03-11")
   val testDay = "11"
   val testMonth = "March"
   val testYear = "2020"

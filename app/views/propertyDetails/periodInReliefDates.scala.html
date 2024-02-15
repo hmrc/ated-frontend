@@ -23,6 +23,8 @@
 @import views.ViewUtils.titleBuilder
 @import _root_.utils._
 @import utils.AtedUtils.getPropertyDetailsPreHeader
+@import views.formatDate
+@import PeriodUtils._
 
 @this(newMain: newMain, 
      govukButton : GovukButton,
@@ -79,7 +81,7 @@
         @govukDateInput(DateInput(
             hint = Some(Hint(
               content = Text(messages("ated.property-details-period.datesInRelief.startDate.hint",
-                    PeriodUtils.periodStartDate(periodKey).toString(messages("ated.date-format.numeric"))))
+                    formatDate(periodStartDate(periodKey), messages("ated.date-format.numeric"))))
             )),
             fieldset = Some(Fieldset(
               legend = Some(Legend(
@@ -93,7 +95,7 @@
           @govukDateInput(DateInput(
             hint = Some(Hint(
               content = Text(messages("ated.property-details-period.datesInRelief.endDate.hint",
-                    PeriodUtils.periodEndDate(periodKey).toString(messages("ated.date-format.numeric"))))
+                    formatDate(periodEndDate(periodKey), messages("ated.date-format.numeric"))))
             )),
             fieldset = Some(Fieldset(
               legend = Some(Legend(

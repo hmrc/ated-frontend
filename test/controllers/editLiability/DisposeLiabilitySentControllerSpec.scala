@@ -22,8 +22,8 @@ import config.ApplicationConfig
 import connectors.DataCacheConnector
 import controllers.auth.AuthAction
 import models.{EditLiabilityReturnsResponse, EditLiabilityReturnsResponseModel}
-import java.time.format.DateTimeFormat
-import java.time.{DateTime, LocalDate}
+import java.time.format.DateTimeFormatter
+import java.time.{ZonedDateTime, LocalDate}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.{reset, _}
@@ -63,7 +63,7 @@ class DisposeLiabilitySentControllerSpec extends PlaySpec with GuiceOneServerPer
   val formBundleNo2: String = "123456789011"
   val organisationName: String = "ACME Limited"
 
-  val date: String = DateTimeFormat.forPattern("d MMMM yyyy").print(new LocalDate())
+  val date: String = LocalDate.now.format(DateTimeFormatter.ofPattern("d MMMM yyyy"))
 
   class Setup {
 
@@ -119,7 +119,7 @@ class DisposeLiabilitySentControllerSpec extends PlaySpec with GuiceOneServerPer
 
       val r1: EditLiabilityReturnsResponse = EditLiabilityReturnsResponse(mode = "Post", oldFormBundleNumber = formBundleNo1, formBundleNumber =
         Some(formBundleNo2), liabilityAmount = BigDecimal(1234.56), amountDueOrRefund = BigDecimal(-500.00), paymentReference = Some("payment-ref-01"))
-      val resp: EditLiabilityReturnsResponseModel = EditLiabilityReturnsResponseModel(DateTime.now(), liabilityReturnResponse = Seq(r1), BigDecimal(0.00))
+      val resp: EditLiabilityReturnsResponseModel = EditLiabilityReturnsResponseModel(ZonedDateTime.now(), liabilityReturnResponse = Seq(r1), BigDecimal(0.00))
       viewWithAuthorisedUser(Some(resp)) {
         result =>
           status(result) must be(OK)
@@ -156,7 +156,7 @@ class DisposeLiabilitySentControllerSpec extends PlaySpec with GuiceOneServerPer
     "take user to print friendly dispose liability confirmation" in new Setup {
       val r1: EditLiabilityReturnsResponse = EditLiabilityReturnsResponse(mode = "Post", oldFormBundleNumber = formBundleNo1, formBundleNumber =
         Some(formBundleNo2), liabilityAmount = BigDecimal(1234.56), amountDueOrRefund = BigDecimal(-500.00), paymentReference = Some("payment-ref-01"))
-      val resp: EditLiabilityReturnsResponseModel = EditLiabilityReturnsResponseModel(DateTime.now(), liabilityReturnResponse = Seq(r1), BigDecimal(0.00))
+      val resp: EditLiabilityReturnsResponseModel = EditLiabilityReturnsResponseModel(ZonedDateTime.now(), liabilityReturnResponse = Seq(r1), BigDecimal(0.00))
       getPrintFriendlyWithAuthorisedUser(Some(resp)) {
         result =>
           status(result) must be(OK)
@@ -183,7 +183,7 @@ class DisposeLiabilitySentControllerSpec extends PlaySpec with GuiceOneServerPer
     "take user to print friendly dispose liability confirmation bigger than zero" in new Setup {
       val r1: EditLiabilityReturnsResponse = EditLiabilityReturnsResponse(mode = "Post", oldFormBundleNumber = formBundleNo1, formBundleNumber =
         Some(formBundleNo2), liabilityAmount = BigDecimal(1234.56), amountDueOrRefund = BigDecimal(500.00), paymentReference = Some("payment-ref-01"))
-      val resp: EditLiabilityReturnsResponseModel = EditLiabilityReturnsResponseModel(DateTime.now(), liabilityReturnResponse = Seq(r1), BigDecimal(0.00))
+      val resp: EditLiabilityReturnsResponseModel = EditLiabilityReturnsResponseModel(ZonedDateTime.now(), liabilityReturnResponse = Seq(r1), BigDecimal(0.00))
       getPrintFriendlyWithAuthorisedUser(Some(resp)) {
         result =>
           status(result) must be(OK)
@@ -194,7 +194,7 @@ class DisposeLiabilitySentControllerSpec extends PlaySpec with GuiceOneServerPer
     "take user to print friendly dispose liability confirmation exactly zero" in new Setup {
       val r1: EditLiabilityReturnsResponse = EditLiabilityReturnsResponse(mode = "Post", oldFormBundleNumber = formBundleNo1, formBundleNumber =
         Some(formBundleNo2), liabilityAmount = BigDecimal(1234.56), amountDueOrRefund = BigDecimal(0.00), paymentReference = Some("payment-ref-01"))
-      val resp: EditLiabilityReturnsResponseModel = EditLiabilityReturnsResponseModel(DateTime.now(), liabilityReturnResponse = Seq(r1), BigDecimal(0.00))
+      val resp: EditLiabilityReturnsResponseModel = EditLiabilityReturnsResponseModel(ZonedDateTime.now(), liabilityReturnResponse = Seq(r1), BigDecimal(0.00))
       getPrintFriendlyWithAuthorisedUser(Some(resp)) {
         result =>
           status(result) must be(OK)
@@ -206,7 +206,7 @@ class DisposeLiabilitySentControllerSpec extends PlaySpec with GuiceOneServerPer
     "return further return sent page, if response found in cache and amountDueOrRefund is Negative" in new Setup {
       val r1: EditLiabilityReturnsResponse = EditLiabilityReturnsResponse(mode = "Post", oldFormBundleNumber = formBundleNo1, formBundleNumber =
         Some(formBundleNo2), liabilityAmount = BigDecimal(1234.56), amountDueOrRefund = BigDecimal(500.00), paymentReference = Some("payment-ref-01"))
-      val resp: EditLiabilityReturnsResponseModel = EditLiabilityReturnsResponseModel(DateTime.now(), liabilityReturnResponse = Seq(r1), BigDecimal(0.00))
+      val resp: EditLiabilityReturnsResponseModel = EditLiabilityReturnsResponseModel(ZonedDateTime.now(), liabilityReturnResponse = Seq(r1), BigDecimal(0.00))
       viewWithAuthorisedUser(Some(resp)) {
         result =>
           status(result) must be(OK)
@@ -218,7 +218,7 @@ class DisposeLiabilitySentControllerSpec extends PlaySpec with GuiceOneServerPer
     "return edit details return sent page, if response found in cache and amountDueOrRefund is Negative" in new Setup {
       val r1: EditLiabilityReturnsResponse = EditLiabilityReturnsResponse(mode = "Post", oldFormBundleNumber = formBundleNo1, formBundleNumber =
         Some(formBundleNo2), liabilityAmount = BigDecimal(1234.56), amountDueOrRefund = BigDecimal(0.0), paymentReference = Some("payment-ref-01"))
-      val resp: EditLiabilityReturnsResponseModel = EditLiabilityReturnsResponseModel(DateTime.now(), liabilityReturnResponse = Seq(r1), BigDecimal(0.00))
+      val resp: EditLiabilityReturnsResponseModel = EditLiabilityReturnsResponseModel(ZonedDateTime.now(), liabilityReturnResponse = Seq(r1), BigDecimal(0.00))
       viewWithAuthorisedUser(Some(resp)) {
         result =>
           status(result) must be(OK)
@@ -230,7 +230,7 @@ class DisposeLiabilitySentControllerSpec extends PlaySpec with GuiceOneServerPer
     "redirect to account summary, if response found in cache but formbundle doesn't match" in new Setup {
       val r1: EditLiabilityReturnsResponse = EditLiabilityReturnsResponse(mode = "Post", oldFormBundleNumber = formBundleNo2, formBundleNumber =
         Some(formBundleNo2), liabilityAmount = BigDecimal(1234.56), amountDueOrRefund = BigDecimal(0.0), paymentReference = Some("payment-ref-01"))
-      val resp: EditLiabilityReturnsResponseModel = EditLiabilityReturnsResponseModel(DateTime.now(), liabilityReturnResponse = Seq(r1), BigDecimal(0.00))
+      val resp: EditLiabilityReturnsResponseModel = EditLiabilityReturnsResponseModel(ZonedDateTime.now(), liabilityReturnResponse = Seq(r1), BigDecimal(0.00))
       viewWithAuthorisedUser(Some(resp)) {
         result =>
           status(result) must be(SEE_OTHER)

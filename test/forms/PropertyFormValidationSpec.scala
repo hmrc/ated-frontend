@@ -39,16 +39,16 @@ class PropertyFormValidationSpec extends PlaySpec with GuiceOneServerPerSuite {
     "pass validation" when {
 
       "form is valid" in {
-        val validPeriodDatesLiable = PropertyDetailsDatesLiable(Some(new LocalDate("2016-04-25")), Some(new LocalDate("2016-09-01")))
+        val validPeriodDatesLiable = PropertyDetailsDatesLiable(Some(LocalDate.parse("2016-04-25")), Some(LocalDate.parse("2016-09-01")))
         val form = periodDatesLiableForm.fill(validPeriodDatesLiable)
         val boundForm = PropertyDetailsForms.validatePropertyDetailsDatesLiable(periodKey, form, periodsCheck = false, dateFields = dateFields)
         boundForm.errors mustBe List()
       }
 
       "form is valid and new period does not overlap an existing one" in {
-        val validPeriodDatesLiable = PropertyDetailsDatesLiable(Some(new LocalDate("2016-08-02")), Some(new LocalDate("2016-08-31")))
-        val existingPeriods = List(LineItem("liability", new LocalDate("2016-04-15"), new LocalDate("2016-08-01")),
-          LineItem("liability", new LocalDate("2016-09-02"), new LocalDate("2016-10-01")))
+        val validPeriodDatesLiable = PropertyDetailsDatesLiable(Some(LocalDate.parse("2016-08-02")), Some(LocalDate.parse("2016-08-31")))
+        val existingPeriods = List(LineItem("liability", LocalDate.parse("2016-04-15"), LocalDate.parse("2016-08-01")),
+          LineItem("liability", LocalDate.parse("2016-09-02"), LocalDate.parse("2016-10-01")))
         val form = periodDatesLiableForm.fill(validPeriodDatesLiable)
         val boundForm = PropertyDetailsForms.validatePropertyDetailsDatesLiable(periodKey, form, periodsCheck = true, existingPeriods, dateFields)
         boundForm.errors mustBe List()
@@ -58,14 +58,14 @@ class PropertyFormValidationSpec extends PlaySpec with GuiceOneServerPerSuite {
     "throw error" when {
 
       "start date is before chargeable period" in {
-        val inValidPeriodDatesLiable = PropertyDetailsDatesLiable(Some(new LocalDate("2016-02-25")), Some(new LocalDate("2016-09-01")))
+        val inValidPeriodDatesLiable = PropertyDetailsDatesLiable(Some(LocalDate.parse("2016-02-25")), Some(LocalDate.parse("2016-09-01")))
         val form = periodDatesLiableForm.fill(inValidPeriodDatesLiable)
         val boundForm = PropertyDetailsForms.validatePropertyDetailsDatesLiable(periodKey, form, periodsCheck = false, dateFields = dateFields)
         boundForm.errors mustBe List(FormError("startDate", List("ated.property-details-period.datesLiable.startDate.error.too-early"), List()))
       }
 
       "start date is after chargeable period and end date is before start date" in {
-        val inValidPeriodDatesLiable = PropertyDetailsDatesLiable(Some(new LocalDate("2017-04-25")), Some(new LocalDate("2016-09-01")))
+        val inValidPeriodDatesLiable = PropertyDetailsDatesLiable(Some(LocalDate.parse("2017-04-25")), Some(LocalDate.parse("2016-09-01")))
         val form = periodDatesLiableForm.fill(inValidPeriodDatesLiable)
         val boundForm = PropertyDetailsForms.validatePropertyDetailsDatesLiable(periodKey, form, periodsCheck = false, dateFields = dateFields)
         boundForm.errors mustBe List(FormError("startDate", List("ated.property-details-period.datesLiable.startDate.error.too-late"), List()),
@@ -73,25 +73,25 @@ class PropertyFormValidationSpec extends PlaySpec with GuiceOneServerPerSuite {
       }
 
       "trying to add a period, where start date overlaps the existing period" in {
-        val inValidPeriodDatesLiable = PropertyDetailsDatesLiable(Some(new LocalDate("2016-04-25")), Some(new LocalDate("2016-09-01")))
-        val existingPeriods = List(LineItem("liability", new LocalDate("2016-04-15"), new LocalDate("2016-08-01")))
+        val inValidPeriodDatesLiable = PropertyDetailsDatesLiable(Some(LocalDate.parse("2016-04-25")), Some(LocalDate.parse("2016-09-01")))
+        val existingPeriods = List(LineItem("liability", LocalDate.parse("2016-04-15"), LocalDate.parse("2016-08-01")))
         val form = periodDatesLiableForm.fill(inValidPeriodDatesLiable)
         val boundForm = PropertyDetailsForms.validatePropertyDetailsDatesLiable(periodKey, form, periodsCheck = true, existingPeriods, dateFields)
         boundForm.errors mustBe List(FormError("startDate", List("ated.property-details-period.datesLiable.overlap.error"), List()))
       }
 
       "trying to add a period, where end date overlaps the existing period" in {
-        val inValidPeriodDatesLiable = PropertyDetailsDatesLiable(Some(new LocalDate("2016-04-13")), Some(new LocalDate("2016-07-01")))
-        val existingPeriods = List(LineItem("liability", new LocalDate("2016-04-15"), new LocalDate("2016-08-01")))
+        val inValidPeriodDatesLiable = PropertyDetailsDatesLiable(Some(LocalDate.parse("2016-04-13")), Some(LocalDate.parse("2016-07-01")))
+        val existingPeriods = List(LineItem("liability", LocalDate.parse("2016-04-15"), LocalDate.parse("2016-08-01")))
         val form = periodDatesLiableForm.fill(inValidPeriodDatesLiable)
         val boundForm = PropertyDetailsForms.validatePropertyDetailsDatesLiable(periodKey, form, periodsCheck = true, existingPeriods, dateFields)
         boundForm.errors mustBe List(FormError("endDate", List("ated.property-details-period.datesLiable.overlap.error"), List()))
       }
 
       "trying to add a period, where the dates encompass an existing period" in {
-        val inValidPeriodDatesLiable = PropertyDetailsDatesLiable(Some(new LocalDate("2016-04-13")), Some(new LocalDate("2016-10-02")))
-        val existingPeriods = List(LineItem("liability", new LocalDate("2016-04-15"), new LocalDate("2016-08-01")),
-          LineItem("liability", new LocalDate("2016-08-02"), new LocalDate("2016-10-01")))
+        val inValidPeriodDatesLiable = PropertyDetailsDatesLiable(Some(LocalDate.parse("2016-04-13")), Some(LocalDate.parse("2016-10-02")))
+        val existingPeriods = List(LineItem("liability", LocalDate.parse("2016-04-15"), LocalDate.parse("2016-08-01")),
+          LineItem("liability", LocalDate.parse("2016-08-02"), LocalDate.parse("2016-10-01")))
         val form = periodDatesLiableForm.fill(inValidPeriodDatesLiable)
         val boundForm = PropertyDetailsForms.validatePropertyDetailsDatesLiable(periodKey, form, periodsCheck = true, existingPeriods, dateFields)
         boundForm.errors mustBe List(FormError("startDate", List("ated.property-details-period.datesLiable.overlap.error"), List()),
@@ -99,25 +99,25 @@ class PropertyFormValidationSpec extends PlaySpec with GuiceOneServerPerSuite {
       }
 
       "trying to add a period, where the start date overlap/encompass an existing period" in {
-        val inValidPeriodDatesLiable = PropertyDetailsDatesLiable(Some(new LocalDate("2016-04-15")), Some(new LocalDate("2016-10-02")))
-        val existingPeriods = List(LineItem("liability", new LocalDate("2016-04-15"), new LocalDate("2016-08-01")),
-          LineItem("liability", new LocalDate("2016-08-02"), new LocalDate("2016-10-01")))
+        val inValidPeriodDatesLiable = PropertyDetailsDatesLiable(Some(LocalDate.parse("2016-04-15")), Some(LocalDate.parse("2016-10-02")))
+        val existingPeriods = List(LineItem("liability", LocalDate.parse("2016-04-15"), LocalDate.parse("2016-08-01")),
+          LineItem("liability", LocalDate.parse("2016-08-02"), LocalDate.parse("2016-10-01")))
         val form = periodDatesLiableForm.fill(inValidPeriodDatesLiable)
         val boundForm = PropertyDetailsForms.validatePropertyDetailsDatesLiable(periodKey, form, periodsCheck = true, existingPeriods, dateFields)
         boundForm.errors mustBe List(FormError("startDate", List("ated.property-details-period.datesLiable.overlap.error"), List()))
       }
 
       "trying to add a period, where the end date overlap/encompass an existing period" in {
-        val inValidPeriodDatesLiable = PropertyDetailsDatesLiable(Some(new LocalDate("2016-04-13")), Some(new LocalDate("2016-10-01")))
-        val existingPeriods = List(LineItem("liability", new LocalDate("2016-04-15"), new LocalDate("2016-08-01")),
-          LineItem("liability", new LocalDate("2016-08-02"), new LocalDate("2016-10-01")))
+        val inValidPeriodDatesLiable = PropertyDetailsDatesLiable(Some(LocalDate.parse("2016-04-13")), Some(LocalDate.parse("2016-10-01")))
+        val existingPeriods = List(LineItem("liability", LocalDate.parse("2016-04-15"), LocalDate.parse("2016-08-01")),
+          LineItem("liability", LocalDate.parse("2016-08-02"), LocalDate.parse("2016-10-01")))
         val form = periodDatesLiableForm.fill(inValidPeriodDatesLiable)
         val boundForm = PropertyDetailsForms.validatePropertyDetailsDatesLiable(periodKey, form, periodsCheck = true, existingPeriods, dateFields)
         boundForm.errors mustBe List(FormError("endDate", List("ated.property-details-period.datesLiable.overlap.error"), List()))
       }
 
       "end date is before chargeable period and start date" in {
-        val inValidPeriodDatesLiable = PropertyDetailsDatesLiable(Some(new LocalDate("2016-05-25")), Some(new LocalDate("2016-02-01")))
+        val inValidPeriodDatesLiable = PropertyDetailsDatesLiable(Some(LocalDate.parse("2016-05-25")), Some(LocalDate.parse("2016-02-01")))
         val form = periodDatesLiableForm.fill(inValidPeriodDatesLiable)
         val boundForm = PropertyDetailsForms.validatePropertyDetailsDatesLiable(periodKey, form, periodsCheck = false, dateFields = dateFields)
         boundForm.errors mustBe List(FormError("endDate",

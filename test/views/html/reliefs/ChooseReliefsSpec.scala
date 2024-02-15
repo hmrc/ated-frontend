@@ -35,7 +35,7 @@ class ChooseReliefsSpec extends AtedViewSpec with MockitoSugar with MockAuthUtil
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
   val periodKey = 2017
   val periodKey2020 = 2020
-  val periodStartDate = new LocalDate()
+  val periodStartDate = LocalDate.now()
 
   "choose relief view" must {
 

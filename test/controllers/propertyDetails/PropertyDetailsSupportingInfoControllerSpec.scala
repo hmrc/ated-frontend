@@ -244,7 +244,7 @@ class PropertyDetailsSupportingInfoControllerSpec extends PlaySpec with GuiceOne
         }
 
         "show the chargeable property details value view with existing data" in new Setup {
-          val propertyDetailsPeriod: Option[PropertyDetailsPeriod] = PropertyDetailsBuilder.getPropertyDetailsPeriodDatesLiable(new LocalDate("970-12-01"), new LocalDate("1999-03-02")).
+          val propertyDetailsPeriod: Option[PropertyDetailsPeriod] = PropertyDetailsBuilder.getPropertyDetailsPeriodDatesLiable(LocalDate.parse("970-12-01"), LocalDate.parse("1999-03-02")).
             map(_.copy(supportingInfo = Some("supportingInfoTextAreaData")))
 
           val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode")).copy(period = propertyDetailsPeriod)

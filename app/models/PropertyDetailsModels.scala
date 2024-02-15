@@ -19,8 +19,8 @@ package models
 import java.time.LocalDate
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
-import play.api.libs.json.JodaWrites._
-import play.api.libs.json.JodaReads._
+// import play.api.libs.json.EnvWrites._
+// import play.api.libs.json.EnvReads.DefaultLocalDateReads
 
 
 sealed trait PeriodValidity

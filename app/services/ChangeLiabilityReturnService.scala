@@ -19,7 +19,7 @@ package services
 import connectors.{AtedConnector, DataCacheConnector}
 import javax.inject.Inject
 import models._
-import java.time.DateTime
+import java.time.ZonedDateTime
 import play.api.Logging
 import play.api.mvc.MessagesControllerComponents
 import uk.gov.hmrc.http.HeaderCarrier
@@ -88,7 +88,7 @@ class ChangeLiabilityReturnService @Inject()(mcc: MessagesControllerComponents,
               dataCacheConnector.saveFormData[EditLiabilityReturnsResponseModel](formId = SubmitEditedLiabilityReturnsResponseFormId,
                 data = changeLiabilityResponse.json.as[EditLiabilityReturnsResponseModel])
           }
-        case _ => Future.successful(EditLiabilityReturnsResponseModel(DateTime.now(), Nil, BigDecimal(0.00)))
+        case _ => Future.successful(EditLiabilityReturnsResponseModel(ZonedDateTime.now(), Nil, BigDecimal(0.00)))
       }
     }
   }
