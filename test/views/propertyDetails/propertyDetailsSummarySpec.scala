@@ -48,7 +48,7 @@ class propertyDetailsSummarySpec extends AnyFeatureSpecLike with GuiceOneAppPerS
 
   val injectedViewInstance: propertyDetailsSummary = app.injector.instanceOf[views.html.propertyDetails.propertyDetailsSummary]
 
-  def formatDate(date: LocalDate): String = date.format(DateTimeFormatter.ofPattern("d MMMM yyyy").withZone(ZoneId.of("Europe/London")))
+  def formatDate(date: LocalDate): String = date.format(DateTimeFormatter.ofPattern("d LLLL yyyy").withZone(ZoneId.of("Europe/London")))
   Feature("The user can view their property details summary before they submit it") {
 
     info("as a client i want to be my property details summary")

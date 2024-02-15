@@ -63,7 +63,7 @@ class DisposeLiabilitySentControllerSpec extends PlaySpec with GuiceOneServerPer
   val formBundleNo2: String = "123456789011"
   val organisationName: String = "ACME Limited"
 
-  val date: String = LocalDate.now.format(DateTimeFormatter.ofPattern("d MMMM yyyy"))
+  val date: String = LocalDate.now.format(DateTimeFormatter.ofPattern("d LLLL yyyy"))
 
   class Setup {
 

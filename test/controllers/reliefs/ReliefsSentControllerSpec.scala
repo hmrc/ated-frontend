@@ -61,7 +61,7 @@ class ReliefsSentControllerSpec extends PlaySpec with GuiceOneServerPerSuite wit
   val injectedViewInstance: reliefsSent = app.injector.instanceOf[views.html.reliefs.reliefsSent]
 
   val periodKey = 2015
-  val submittedDate: String = LocalDate.now().format(DateTimeFormatter.ofPattern("d MMMM yyyy"))
+  val submittedDate: String = LocalDate.now().format(DateTimeFormatter.ofPattern("d LLLL yyyy"))
   val organisationName = "ACME Limited"
 
   override def beforeEach(): Unit = {

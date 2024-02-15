@@ -44,7 +44,7 @@ class propertyDetailsPrintFriendlySpec extends AnyFeatureSpecLike with GuiceOneS
   val thisYear: Int = calculatePeakStartYear()
   val nextYear: Int = thisYear + 1
 
-  def formatDate(date: LocalDate): String = date.format(DateTimeFormatter.ofPattern("d MMMM yyyy").withZone(ZoneId.of("Europe/London")))
+  def formatDate(date: LocalDate): String = date.format(DateTimeFormatter.ofPattern("d LLLL yyyy").withZone(ZoneId.of("Europe/London")))
   Feature("The user can view their property details summary before they submit it") {
 
     info("as a client i want to be my property details summary")

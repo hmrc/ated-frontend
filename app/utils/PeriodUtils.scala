@@ -181,6 +181,6 @@ object PeriodUtils {
     val year: Int = if (periodKey <= lowestBound) lowestBound else {
       lowestBound + (5 * ((periodKey - lowestBound - 1) / 5))
     }
-    LocalDate.parse(s"$year-4-1")
+    LocalDate.parse(s"$year-04-01")
   }
 }

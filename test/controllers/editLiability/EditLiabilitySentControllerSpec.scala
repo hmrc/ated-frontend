@@ -62,7 +62,7 @@ class EditLiabilitySentControllerSpec extends PlaySpec with GuiceOneServerPerSui
   val organisationName: String = "ACME Limited"
   val formBundleNo1: String = "123456789012"
   val formBundleNo2: String = "123456789011"
-  val today: String = LocalDate.now().format(DateTimeFormatter.ofPattern("d MMMM yyyy"))
+  val today: String = LocalDate.now().format(DateTimeFormatter.ofPattern("d LLLL yyyy"))
 
 class Setup {
 
