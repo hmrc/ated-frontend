@@ -172,7 +172,7 @@ class EditLiabilityDatesLiableControllerSpec extends PlaySpec with GuiceOneServe
 
         "show the chargeable property details value view with existing data" in new Setup {
           val propertyDetailsPeriod: Option[PropertyDetailsPeriod] = PropertyDetailsBuilder
-            .getPropertyDetailsPeriodDatesLiable(LocalDate.parse("2015-5-1"), LocalDate.parse("2016-2-23")).
+            .getPropertyDetailsPeriodDatesLiable(LocalDate.parse("2015-05-01"), LocalDate.parse("2016-02-23")).
             map(_.copy(isFullPeriod = Some(false), isInRelief = Some(false)))
 
           val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode")).copy(period = propertyDetailsPeriod)

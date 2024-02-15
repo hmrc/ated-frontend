@@ -114,7 +114,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
       val propertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode")).copy(period = None)
       when(mockPropertyDetailsService.deleteDraftPropertyDetailsPeriod(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(propertyDetails))
-      val result = testPeriodsInAndOutReliefController.deletePeriod("1", LocalDate.parse(s"2015-5-1")).apply(SessionBuilder.buildRequestWithSession(userId))
+      val result = testPeriodsInAndOutReliefController.deletePeriod("1", LocalDate.parse(s"2015-05-01")).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
 

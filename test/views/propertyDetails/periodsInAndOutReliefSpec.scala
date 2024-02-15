@@ -88,8 +88,8 @@ class periodsInAndOutReliefSpec extends AnyFeatureSpecLike with GuiceOneAppPerSu
       When("The user views the page")
 
       val periods = List[models.LineItem](
-        LineItem("liability", LocalDate.parse(s"2015-4-1"), LocalDate.parse(s"2015-5-1"), Some("Liable for charge")),
-        LineItem("relief", LocalDate.parse(s"2016-4-1"), LocalDate.parse(s"2016-5-1"), Some("Rental property"))
+        LineItem("liability", LocalDate.parse(s"2015-04-01"), LocalDate.parse(s"2015-05-01"), Some("Liable for charge")),
+        LineItem("relief", LocalDate.parse(s"2016-04-01"), LocalDate.parse(s"2016-05-01"), Some("Rental property"))
       )
       val html = injectedViewInstance("1", 2015,
         periodsInAndOutReliefForm, periods, Some(AtedUtils.EDIT_SUBMITTED), Html(""), Some("http://backLink"))

@@ -97,10 +97,10 @@ object ChangeLiabilityReturnBuilder {
 
 
   def generateCalculated = {
-    val liabilityPeriods = List(CalculatedPeriod(BigDecimal(2500000), LocalDate.parse("2015-4-1"), LocalDate.parse("2016-3-31"), "Liability"))
+    val liabilityPeriods = List(CalculatedPeriod(BigDecimal(2500000), LocalDate.parse("2015-04-01"), LocalDate.parse("2016-03-31"), "Liability"))
     val reliefPeriods = Nil
     PropertyDetailsCalculated(liabilityPeriods = liabilityPeriods, reliefPeriods = reliefPeriods,
-      acquistionDateToUse = Some(LocalDate.parse("2015-5-15")), acquistionValueToUse = None, professionalValuation = Some(true),
+      acquistionDateToUse = Some(LocalDate.parse("2015-05-15")), acquistionValueToUse = None, professionalValuation = Some(true),
       liabilityAmount = Some(2500),
       amountDueOrRefund = Some(BigDecimal(-500.00)))
   }

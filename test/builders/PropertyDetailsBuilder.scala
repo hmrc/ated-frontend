@@ -125,8 +125,8 @@ object PropertyDetailsBuilder {
   }
 
   def getPropertyDetailsPeriodFull(periodKey : Int = 2015): Option[PropertyDetailsPeriod] = {
-    val liabilityPeriods = List(LineItem("Liability",LocalDate.parse(s"$periodKey-4-1"), LocalDate.parse(s"$periodKey-8-31")))
-    val reliefPeriods = List(LineItem("Relief",LocalDate.parse(s"$periodKey-9-1"), LocalDate.parse(s"${periodKey+1}-3-31"), Some("Property rental businesses")))
+    val liabilityPeriods = List(LineItem("Liability",LocalDate.parse(s"$periodKey-04-01"), LocalDate.parse(s"$periodKey-08-31")))
+    val reliefPeriods = List(LineItem("Relief",LocalDate.parse(s"$periodKey-09-01"), LocalDate.parse(s"${periodKey+1}-03-31"), Some("Property rental businesses")))
     Some(new PropertyDetailsPeriod(
       isFullPeriod = Some(false),
       liabilityPeriods = liabilityPeriods,
@@ -140,7 +140,7 @@ object PropertyDetailsBuilder {
   }
 
   def getPropertyDetailsPeriodRefund(periodKey : Int = 2015): Option[PropertyDetailsPeriod] = {
-    val liabilityPeriods = List(LineItem("Liability",LocalDate.parse(s"$periodKey-4-1"), LocalDate.parse(s"${periodKey+1}-3-31")))
+    val liabilityPeriods = List(LineItem("Liability",LocalDate.parse(s"$periodKey-04-01"), LocalDate.parse(s"${periodKey+1}-03-31")))
     Some(new PropertyDetailsPeriod(
       isFullPeriod = Some(false),
       isTaxAvoidance =  Some(true),
@@ -161,8 +161,8 @@ object PropertyDetailsBuilder {
   }
 
   def getPropertyDetailsCalculated(liabilityAmount: Option[BigDecimal] = None, periodKey : Int = 2015): Option[PropertyDetailsCalculated] = {
-    val liabilityPeriods = List(CalculatedPeriod(BigDecimal(1111.11), LocalDate.parse(s"$periodKey-4-1"), LocalDate.parse(s"$periodKey-8-31"), "Liability"))
-    val reliefPeriods = List(CalculatedPeriod(BigDecimal(1111.11),LocalDate.parse(s"$periodKey-9-1"), LocalDate.parse(s"${periodKey+1}-3-31"), "Relief", Some("Property rental businesses")))
+    val liabilityPeriods = List(CalculatedPeriod(BigDecimal(1111.11), LocalDate.parse(s"$periodKey-04-01"), LocalDate.parse(s"$periodKey-08-31"), "Liability"))
+    val reliefPeriods = List(CalculatedPeriod(BigDecimal(1111.11),LocalDate.parse(s"$periodKey-09-01"), LocalDate.parse(s"${periodKey+1}-03-31"), "Relief", Some("Property rental businesses")))
     Some(new PropertyDetailsCalculated(liabilityAmount = liabilityAmount,
       liabilityPeriods = liabilityPeriods,
       reliefPeriods = reliefPeriods,
@@ -172,7 +172,7 @@ object PropertyDetailsBuilder {
   }
 
   def getPropertyDetailsCalculatedRefund(liabilityAmount: Option[BigDecimal] = Some(8875.12), periodKey : Int = 2015): Option[PropertyDetailsCalculated] = {
-    val liabilityPeriods = List(CalculatedPeriod(BigDecimal(2000000.00), LocalDate.parse(s"$periodKey-4-1"), LocalDate.parse(s"${periodKey+1}-8-31"), "Liability"))
+    val liabilityPeriods = List(CalculatedPeriod(BigDecimal(2000000.00), LocalDate.parse(s"$periodKey-04-01"), LocalDate.parse(s"${periodKey+1}-08-31"), "Liability"))
     Some(new PropertyDetailsCalculated(
       acquistionValueToUse = Some(2000000.00),
       acquistionDateToUse = Some(LocalDate.parse("2012-04-01")),

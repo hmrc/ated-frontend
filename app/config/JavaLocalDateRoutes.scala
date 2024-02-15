@@ -26,13 +26,13 @@ trait JavaFormat {
 }
 
 trait DefaultJavaFormat extends JavaFormat {
-  val format = "yyyyMMdd"
+  val format: String = "yyyyMMdd"
 }
 
 trait JavaLocalDateRoutes {
   self: JavaFormat =>
 
-  val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern(format)
+  lazy val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern(format)
 
   implicit object queryStringLocalDateBinder extends QueryStringBindable.Parsing[LocalDate](
     dateString =>

@@ -52,11 +52,11 @@ class PeriodUtilsSpec extends PlaySpec with MockitoSugar with GuiceOneServerPerS
     "calculatePeriod" must {
 
       "return the correct periodKey when the current date is on the boundary before the next peak period" in {
-        PeriodUtils.calculatePeakStartYear(LocalDate.parse("2016-3-15")) must be(`2015`)
+        PeriodUtils.calculatePeakStartYear(LocalDate.parse("2016-03-15")) must be(`2015`)
       }
 
       "return the correct periodKey when the current date is on the boundary within the new peak period" in {
-        PeriodUtils.calculatePeakStartYear(LocalDate.parse("2016-3-16")) must be(`2016`)
+        PeriodUtils.calculatePeakStartYear(LocalDate.parse("2016-03-16")) must be(`2016`)
       }
     }
 
@@ -112,12 +112,12 @@ class PeriodUtilsSpec extends PlaySpec with MockitoSugar with GuiceOneServerPerS
     }
 
     "return an ordered list if we have periods" in {
-      val liabilityPeriod1 = LineItem(AtedConstants.LiabilityReturnType,LocalDate.parse(s"$periodKey-4-1"),
-        LocalDate.parse(s"$periodKey-8-31"))
-      val liabilityPeriod2 = LineItem(AtedConstants.LiabilityReturnType,LocalDate.parse(s"${periodKey + 1}-2-1"),
-        LocalDate.parse(s"${periodKey + 1}-3-31"))
-      val reliefPeriod1 = LineItem(AtedConstants.ReliefReturnType,LocalDate.parse(s"$periodKey-9-1"),
-        LocalDate.parse(s"${periodKey + 1}-1-31"), Some("Property rental businesses"))
+      val liabilityPeriod1 = LineItem(AtedConstants.LiabilityReturnType,LocalDate.parse(s"$periodKey-04-01"),
+        LocalDate.parse(s"$periodKey-08-31"))
+      val liabilityPeriod2 = LineItem(AtedConstants.LiabilityReturnType,LocalDate.parse(s"${periodKey + 1}-02-01"),
+        LocalDate.parse(s"${periodKey + 1}-03-31"))
+      val reliefPeriod1 = LineItem(AtedConstants.ReliefReturnType,LocalDate.parse(s"$periodKey-09-01"),
+        LocalDate.parse(s"${periodKey + 1}-01-31"), Some("Property rental businesses"))
       val liabilityPeriods = List(liabilityPeriod2, liabilityPeriod1)
       val reliefPeriods = List(reliefPeriod1)
 
@@ -147,14 +147,14 @@ class PeriodUtilsSpec extends PlaySpec with MockitoSugar with GuiceOneServerPerS
     }
 
     "return an ordered list of line items wherever the value or type has changed : Each item has changed and we have disposed of the property" in {
-      val liabilityPeriod1 = FormBundleProperty(BigDecimal(123.45), LocalDate.parse(s"$periodKey-4-1"),
-        LocalDate.parse(s"$periodKey-8-31"),  AtedConstants.LiabilityReturnType, None)
-      val liabilityPeriod2 = FormBundleProperty(BigDecimal(123.45), LocalDate.parse(s"${periodKey + 1}-2-1"),
-        LocalDate.parse(s"${periodKey + 1}-3-01"), AtedConstants.LiabilityReturnType, None)
-      val reliefPeriod1 = FormBundleProperty(BigDecimal(123.45), LocalDate.parse(s"$periodKey-9-1"),
-        LocalDate.parse(s"${periodKey + 1}-1-31"), AtedConstants.ReliefReturnType, Some("Property rental businesses"))
-      val disposePeriod = FormBundleProperty(BigDecimal(123.45), LocalDate.parse(s"${periodKey + 1}-3-02"),
-        LocalDate.parse(s"${periodKey + 1}-3-31"), AtedConstants.DisposeReturnType, None)
+      val liabilityPeriod1 = FormBundleProperty(BigDecimal(123.45), LocalDate.parse(s"$periodKey-04-01"),
+        LocalDate.parse(s"$periodKey-08-31"),  AtedConstants.LiabilityReturnType, None)
+      val liabilityPeriod2 = FormBundleProperty(BigDecimal(123.45), LocalDate.parse(s"${periodKey + 1}-02-01"),
+        LocalDate.parse(s"${periodKey + 1}-03-01"), AtedConstants.LiabilityReturnType, None)
+      val reliefPeriod1 = FormBundleProperty(BigDecimal(123.45), LocalDate.parse(s"$periodKey-09-01"),
+        LocalDate.parse(s"${periodKey + 1}-01-31"), AtedConstants.ReliefReturnType, Some("Property rental businesses"))
+      val disposePeriod = FormBundleProperty(BigDecimal(123.45), LocalDate.parse(s"${periodKey + 1}-03-02"),
+        LocalDate.parse(s"${periodKey + 1}-03-31"), AtedConstants.DisposeReturnType, None)
 
       val liabilityPeriods = List(liabilityPeriod2, liabilityPeriod1, disposePeriod)
       val reliefPeriods = List(reliefPeriod1)
@@ -171,10 +171,10 @@ class PeriodUtilsSpec extends PlaySpec with MockitoSugar with GuiceOneServerPerS
     }
 
     "return an ordered list of line items wherever the value or type has changed : Merge two periods where value has changed and we have " in {
-      val liabilityPeriod1a = FormBundleProperty(BigDecimal(123.45), LocalDate.parse(s"$periodKey-4-1"),
-        LocalDate.parse(s"$periodKey-6-30"),  AtedConstants.LiabilityReturnType, None)
-      val liabilityPeriod1b = FormBundleProperty(BigDecimal(999.45), LocalDate.parse(s"$periodKey-7-1"),
-        LocalDate.parse(s"$periodKey-8-31"),  AtedConstants.LiabilityReturnType, None)
+      val liabilityPeriod1a = FormBundleProperty(BigDecimal(123.45), LocalDate.parse(s"$periodKey-04-01"),
+        LocalDate.parse(s"$periodKey-06-30"),  AtedConstants.LiabilityReturnType, None)
+      val liabilityPeriod1b = FormBundleProperty(BigDecimal(999.45), LocalDate.parse(s"$periodKey-07-01"),
+        LocalDate.parse(s"$periodKey-08-31"),  AtedConstants.LiabilityReturnType, None)
       val liabilityPeriods = List(liabilityPeriod1a, liabilityPeriod1b)
       val lineItems = PeriodUtils.getDisplayFormBundleProperties(liabilityPeriods, periodKey)
       val mergedLiability =  LineItem(
@@ -192,21 +192,21 @@ class PeriodUtilsSpec extends PlaySpec with MockitoSugar with GuiceOneServerPerS
     }
 
     "return an ordered list of line items wherever the value or type has changed : Merge multiple periods where value has changed" in {
-      val liabilityPeriod1a = FormBundleProperty(BigDecimal(123.45), LocalDate.parse(s"$periodKey-4-1"),
-        LocalDate.parse(s"$periodKey-6-30"),  AtedConstants.LiabilityReturnType, None)
-      val liabilityPeriod1b = FormBundleProperty(BigDecimal(999.45), LocalDate.parse(s"$periodKey-7-1"),
-        LocalDate.parse(s"$periodKey-8-31"),  AtedConstants.LiabilityReturnType, None)
+      val liabilityPeriod1a = FormBundleProperty(BigDecimal(123.45), LocalDate.parse(s"$periodKey-04-01"),
+        LocalDate.parse(s"$periodKey-06-30"),  AtedConstants.LiabilityReturnType, None)
+      val liabilityPeriod1b = FormBundleProperty(BigDecimal(999.45), LocalDate.parse(s"$periodKey-07-01"),
+        LocalDate.parse(s"$periodKey-08-31"),  AtedConstants.LiabilityReturnType, None)
 
-      val reliefPeriod1a = FormBundleProperty(BigDecimal(999.45), LocalDate.parse(s"$periodKey-9-1"),
+      val reliefPeriod1a = FormBundleProperty(BigDecimal(999.45), LocalDate.parse(s"$periodKey-09-01"),
         LocalDate.parse(s"$periodKey-10-31"), AtedConstants.ReliefReturnType, Some(rentalBusinessDesc))
       val reliefPeriod1b = FormBundleProperty(BigDecimal(10009.45), LocalDate.parse(s"$periodKey-10-1"),
         LocalDate.parse(s"${periodKey + 1}-12-31"), AtedConstants.ReliefReturnType, Some(rentalBusinessDesc))
 
       val reliefPeriod2 = FormBundleProperty(BigDecimal(10009.45), LocalDate.parse(s"$periodKey-12-1"),
-        LocalDate.parse(s"${periodKey + 1}-1-31"), AtedConstants.ReliefReturnType, Some(openToPublicDesc))
+        LocalDate.parse(s"${periodKey + 1}-01-31"), AtedConstants.ReliefReturnType, Some(openToPublicDesc))
 
-      val liabilityPeriod2 = FormBundleProperty(BigDecimal(10009.45), LocalDate.parse(s"${periodKey + 1}-2-1"),
-        LocalDate.parse(s"${periodKey + 1}-3-31"), AtedConstants.LiabilityReturnType, None)
+      val liabilityPeriod2 = FormBundleProperty(BigDecimal(10009.45), LocalDate.parse(s"${periodKey + 1}-02-01"),
+        LocalDate.parse(s"${periodKey + 1}-03-31"), AtedConstants.LiabilityReturnType, None)
 
 
       val liabilityPeriods = List(liabilityPeriod2, liabilityPeriod1a, liabilityPeriod1b)
@@ -248,7 +248,7 @@ class PeriodUtilsSpec extends PlaySpec with MockitoSugar with GuiceOneServerPerS
   }
 
   "getOrderedReturnPeriodValues" must {
-    val dateOfValuation = LocalDate.parse(s"${periodKey}-4-1")
+    val dateOfValuation = LocalDate.parse(s"${periodKey}-04-01")
 
     "return Nil if we have no line items" in {
 
@@ -258,8 +258,8 @@ class PeriodUtilsSpec extends PlaySpec with MockitoSugar with GuiceOneServerPerS
 
     "return the single value and date when we have one line item" in {
 
-      val liabilityPeriod1 = FormBundleProperty(BigDecimal(123.45), LocalDate.parse(s"$periodKey-4-1"),
-        LocalDate.parse(s"$periodKey-8-31"),  AtedConstants.LiabilityReturnType, None)
+      val liabilityPeriod1 = FormBundleProperty(BigDecimal(123.45), LocalDate.parse(s"$periodKey-04-01"),
+        LocalDate.parse(s"$periodKey-08-31"),  AtedConstants.LiabilityReturnType, None)
 
       val expected = List( LineItemValue(liabilityPeriod1.propertyValue, dateOfValuation))
 
@@ -270,8 +270,8 @@ class PeriodUtilsSpec extends PlaySpec with MockitoSugar with GuiceOneServerPerS
 
     "return the single value and date when we have one line item with the date being the latest date before the first period" in {
       val liabilityPeriod1 = FormBundleProperty(BigDecimal(123.45),
-        LocalDate.parse(s"$periodKey-4-1"), LocalDate.parse(s"$periodKey-8-31"),  AtedConstants.LiabilityReturnType, None)
-      val valuationDate = LocalDate.parse(s"$periodKey-4-1")
+        LocalDate.parse(s"$periodKey-04-01"), LocalDate.parse(s"$periodKey-08-31"),  AtedConstants.LiabilityReturnType, None)
+      val valuationDate = LocalDate.parse(s"$periodKey-04-01")
 
       val expected = List( LineItemValue(liabilityPeriod1.propertyValue, valuationDate))
 
@@ -281,12 +281,12 @@ class PeriodUtilsSpec extends PlaySpec with MockitoSugar with GuiceOneServerPerS
     }
 
     "return ordered value and dates when we have more than one line item each with a different value" in {
-      val liabilityPeriod1 = FormBundleProperty(BigDecimal(123.45), LocalDate.parse(s"$periodKey-4-1"),
-        LocalDate.parse(s"$periodKey-8-31"),  AtedConstants.LiabilityReturnType, None)
-      val liabilityPeriod2 = FormBundleProperty(BigDecimal(456.45), LocalDate.parse(s"${periodKey + 1}-2-1"),
-        LocalDate.parse(s"${periodKey + 1}-3-31"), AtedConstants.LiabilityReturnType, None)
-      val reliefPeriod1 = FormBundleProperty(BigDecimal(789.45), LocalDate.parse(s"$periodKey-9-1"),
-        LocalDate.parse(s"${periodKey + 1}-1-31"), AtedConstants.ReliefReturnType, Some("Property rental businesses"))
+      val liabilityPeriod1 = FormBundleProperty(BigDecimal(123.45), LocalDate.parse(s"$periodKey-04-01"),
+        LocalDate.parse(s"$periodKey-08-31"),  AtedConstants.LiabilityReturnType, None)
+      val liabilityPeriod2 = FormBundleProperty(BigDecimal(456.45), LocalDate.parse(s"${periodKey + 1}-02-01"),
+        LocalDate.parse(s"${periodKey + 1}-03-31"), AtedConstants.LiabilityReturnType, None)
+      val reliefPeriod1 = FormBundleProperty(BigDecimal(789.45), LocalDate.parse(s"$periodKey-09-01"),
+        LocalDate.parse(s"${periodKey + 1}-01-31"), AtedConstants.ReliefReturnType, Some("Property rental businesses"))
       val liabilityPeriods = List(liabilityPeriod2, liabilityPeriod1)
       val reliefPeriods = List(reliefPeriod1)
 
@@ -300,12 +300,12 @@ class PeriodUtilsSpec extends PlaySpec with MockitoSugar with GuiceOneServerPerS
     }
 
     "only return the first date and value if all values match" in {
-      val liabilityPeriod1 = FormBundleProperty(BigDecimal(123.45), LocalDate.parse(s"$periodKey-4-1"),
-        LocalDate.parse(s"$periodKey-8-31"),  AtedConstants.LiabilityReturnType, None)
-      val liabilityPeriod2 = FormBundleProperty(BigDecimal(123.45), LocalDate.parse(s"${periodKey + 1}-2-1"),
-        LocalDate.parse(s"${periodKey + 1}-3-31"), AtedConstants.LiabilityReturnType, None)
-      val reliefPeriod1 = FormBundleProperty(BigDecimal(123.45), LocalDate.parse(s"$periodKey-9-1"),
-        LocalDate.parse(s"${periodKey + 1}-1-31"), AtedConstants.ReliefReturnType, Some("Property rental businesses"))
+      val liabilityPeriod1 = FormBundleProperty(BigDecimal(123.45), LocalDate.parse(s"$periodKey-04-01"),
+        LocalDate.parse(s"$periodKey-08-31"),  AtedConstants.LiabilityReturnType, None)
+      val liabilityPeriod2 = FormBundleProperty(BigDecimal(123.45), LocalDate.parse(s"${periodKey + 1}-02-01"),
+        LocalDate.parse(s"${periodKey + 1}-03-31"), AtedConstants.LiabilityReturnType, None)
+      val reliefPeriod1 = FormBundleProperty(BigDecimal(123.45), LocalDate.parse(s"$periodKey-09-01"),
+        LocalDate.parse(s"${periodKey + 1}-01-31"), AtedConstants.ReliefReturnType, Some("Property rental businesses"))
       val liabilityPeriods = List(liabilityPeriod2, liabilityPeriod1)
       val reliefPeriods = List(reliefPeriod1)
 
@@ -318,12 +318,12 @@ class PeriodUtilsSpec extends PlaySpec with MockitoSugar with GuiceOneServerPerS
 
 
     "return two values if the value changed mid year, with the date being the date of the change" in {
-      val liabilityPeriod1 = FormBundleProperty(BigDecimal(123.45), LocalDate.parse(s"$periodKey-4-1"),
-        LocalDate.parse(s"$periodKey-8-31"),  AtedConstants.LiabilityReturnType, None)
-      val liabilityPeriod2 = FormBundleProperty(BigDecimal(999.45), LocalDate.parse(s"${periodKey + 1}-2-1"),
-        LocalDate.parse(s"${periodKey + 1}-3-31"), AtedConstants.LiabilityReturnType, None)
-      val reliefPeriod1 = FormBundleProperty(BigDecimal(999.45), LocalDate.parse(s"$periodKey-9-1"),
-        LocalDate.parse(s"${periodKey + 1}-1-31"), AtedConstants.ReliefReturnType, Some("Property rental businesses"))
+      val liabilityPeriod1 = FormBundleProperty(BigDecimal(123.45), LocalDate.parse(s"$periodKey-04-01"),
+        LocalDate.parse(s"$periodKey-08-31"),  AtedConstants.LiabilityReturnType, None)
+      val liabilityPeriod2 = FormBundleProperty(BigDecimal(999.45), LocalDate.parse(s"${periodKey + 1}-02-01"),
+        LocalDate.parse(s"${periodKey + 1}-03-31"), AtedConstants.LiabilityReturnType, None)
+      val reliefPeriod1 = FormBundleProperty(BigDecimal(999.45), LocalDate.parse(s"$periodKey-09-01"),
+        LocalDate.parse(s"${periodKey + 1}-01-31"), AtedConstants.ReliefReturnType, Some("Property rental businesses"))
       val liabilityPeriods = List(liabilityPeriod2, liabilityPeriod1)
       val reliefPeriods = List(reliefPeriod1)
 
@@ -338,12 +338,12 @@ class PeriodUtilsSpec extends PlaySpec with MockitoSugar with GuiceOneServerPerS
     }
 
     "return three values if the value changed mid year, then changed back" in {
-      val liabilityPeriod1 = FormBundleProperty(BigDecimal(123.45), LocalDate.parse(s"$periodKey-4-1"),
-        LocalDate.parse(s"$periodKey-8-31"),  AtedConstants.LiabilityReturnType, None)
-      val liabilityPeriod2 = FormBundleProperty(BigDecimal(123.45), LocalDate.parse(s"${periodKey + 1}-2-1"),
-        LocalDate.parse(s"${periodKey + 1}-3-31"), AtedConstants.LiabilityReturnType, None)
-      val reliefPeriod1 = FormBundleProperty(BigDecimal(999.45), LocalDate.parse(s"$periodKey-9-1"),
-        LocalDate.parse(s"${periodKey + 1}-1-31"), AtedConstants.ReliefReturnType, Some("Property rental businesses"))
+      val liabilityPeriod1 = FormBundleProperty(BigDecimal(123.45), LocalDate.parse(s"$periodKey-04-01"),
+        LocalDate.parse(s"$periodKey-08-31"),  AtedConstants.LiabilityReturnType, None)
+      val liabilityPeriod2 = FormBundleProperty(BigDecimal(123.45), LocalDate.parse(s"${periodKey + 1}-02-01"),
+        LocalDate.parse(s"${periodKey + 1}-03-31"), AtedConstants.LiabilityReturnType, None)
+      val reliefPeriod1 = FormBundleProperty(BigDecimal(999.45), LocalDate.parse(s"$periodKey-09-01"),
+        LocalDate.parse(s"${periodKey + 1}-01-31"), AtedConstants.ReliefReturnType, Some("Property rental businesses"))
       val liabilityPeriods = List(liabilityPeriod2, liabilityPeriod1)
       val reliefPeriods = List(reliefPeriod1)
 
