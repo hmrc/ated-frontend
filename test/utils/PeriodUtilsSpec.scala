@@ -199,10 +199,10 @@ class PeriodUtilsSpec extends PlaySpec with MockitoSugar with GuiceOneServerPerS
 
       val reliefPeriod1a = FormBundleProperty(BigDecimal(999.45), LocalDate.parse(s"$periodKey-09-01"),
         LocalDate.parse(s"$periodKey-10-31"), AtedConstants.ReliefReturnType, Some(rentalBusinessDesc))
-      val reliefPeriod1b = FormBundleProperty(BigDecimal(10009.45), LocalDate.parse(s"$periodKey-10-1"),
+      val reliefPeriod1b = FormBundleProperty(BigDecimal(10009.45), LocalDate.parse(s"$periodKey-10-01"),
         LocalDate.parse(s"${periodKey + 1}-12-31"), AtedConstants.ReliefReturnType, Some(rentalBusinessDesc))
 
-      val reliefPeriod2 = FormBundleProperty(BigDecimal(10009.45), LocalDate.parse(s"$periodKey-12-1"),
+      val reliefPeriod2 = FormBundleProperty(BigDecimal(10009.45), LocalDate.parse(s"$periodKey-12-01"),
         LocalDate.parse(s"${periodKey + 1}-01-31"), AtedConstants.ReliefReturnType, Some(openToPublicDesc))
 
       val liabilityPeriod2 = FormBundleProperty(BigDecimal(10009.45), LocalDate.parse(s"${periodKey + 1}-02-01"),

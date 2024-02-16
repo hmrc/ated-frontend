@@ -206,7 +206,7 @@ class IsFullTaxPeriodControllerSpec extends PlaySpec with GuiceOneServerPerSuite
       }
 
       "show the chargeable property details value view with existing data" in new Setup {
-        val propertyDetailsPeriod: Option[PropertyDetailsPeriod] = PropertyDetailsBuilder.getPropertyDetailsPeriodDatesLiable(LocalDate.parse("970-12-01"), LocalDate.parse("1999-03-02"))
+        val propertyDetailsPeriod: Option[PropertyDetailsPeriod] = PropertyDetailsBuilder.getPropertyDetailsPeriodDatesLiable(LocalDate.parse("1970-12-01"), LocalDate.parse("1999-03-02"))
           .map(_.copy(isFullPeriod = Some(false)))
         val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode")).copy(period = propertyDetailsPeriod)
         getDataWithAuthorisedUser(propertyDetails) {
