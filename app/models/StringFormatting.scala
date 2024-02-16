@@ -14,9 +14,23 @@
  * limitations under the License.
  */
 
+package models
+
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-package object views {
-  def formatDate(d: LocalDate, format: String): String = d.format(DateTimeFormatter.ofPattern(format))
+
+trait StringFormatting[T] {
+  def toString(format: String)(value: T): String
+}
+
+object StringFormatting {
+  implicit val stringformatting: StringFormatting[LocalDate] = new StringFormatting[LocalDate]{
+      def toString(format: String)(value: LocalDate): String = value.format(DateTimeFormatter.ofPattern(format))
+  }
+
+  // Syntax
+  implicit class StringFormattingOps[A](value: A) {
+    def toString(format: String)(implicit a: StringFormatting[A]): String = a.toString(format)(value)
+  }
 }

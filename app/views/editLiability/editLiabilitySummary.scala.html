@@ -19,7 +19,7 @@
 @import play.twirl.api.HtmlFormat
 @import views.ViewUtils.titleBuilder
 @import views.html.helpers.formattedPounds
-@import views.formatDate
+@import models.StringFormatting._
 
 @this(newMain: newMain,
         formHelper: FormWithCSRF,
@@ -87,7 +87,7 @@
     </h1>
   </header>
 
-  <p id="details-text" class="govuk-body">@messages("ated.property-details-summary.details-text", formatDate(periodStartDate(changeLiability.periodKey), messages("ated.date-format")), formatDate(periodEndDate(changeLiability.periodKey), messages("ated.date-format")))</p>
+  <p id="details-text" class="govuk-body">@messages("ated.property-details-summary.details-text", periodStartDate(changeLiability.periodKey).toString(messages("ated.date-format")), periodEndDate(changeLiability.periodKey).toString(messages("ated.date-format")))</p>
 
   <div class="govuk-form-group" id="property-summary-section">
 
@@ -386,7 +386,7 @@
             @messages((period.description).getOrElse(""))
           </dt>
           <dd class="govuk-summary-list__value" id="period-@index">
-            @messages("ated.property-details-summary.table.period.text", formatDate(period.startDate, messages("ated.date-format")), formatDate(period.endDate, messages("ated.date-format")))
+            @messages("ated.property-details-summary.table.period.text", period.startDate.toString(messages("ated.date-format")), period.endDate.toString(messages("ated.date-format")))
           </dd>
           <dd class="govuk-summary-list__actions">
             <a class="govuk-link" id="edit-dates-of-liablity-@index" href="@controllers.propertyDetails.routes.IsFullTaxPeriodController.editFromSummary(changeLiability.id)">

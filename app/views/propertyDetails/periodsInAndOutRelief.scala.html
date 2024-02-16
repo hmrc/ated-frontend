@@ -23,7 +23,7 @@
 @import views.html.helpers._
 @import _root_.utils._
 @import views.ViewUtils.titleBuilder
-@import views.formatDate
+@import models.StringFormatting._
 
 @this(newMain: newMain,
       govukButton : GovukButton,
@@ -53,8 +53,8 @@
       @messages("ated.property-details-period.periodsInRelief.delete")
       <span class="govuk-visually-hidden">
           @messages((period.description).getOrElse(""))
-          @formatDate(period.startDate, messages("ated.date-format")) @messages("ated.to")
-          @formatDate(period.endDate, messages("ated.date-format"))
+          @period.startDate.toString(messages("ated.date-format")) @messages("ated.to")
+          @period.endDate.toString(messages("ated.date-format"))
       </span>
   </a>
 }
@@ -88,11 +88,11 @@
         rows = periods.flatMap(period => Seq(
             Seq(
                 TableRow(
-                    content = Text(formatDate(period.startDate, messages("ated.date-format"))),
+                    content = Text(period.startDate.toString(messages("ated.date-format"))),
                     attributes = Map("id" -> "date-from-value-".concat(periods.indexOf(period).toString()))
                 ),
                 TableRow(
-                    content = Text(formatDate(period.endDate, messages("ated.date-format"))),
+                    content = Text(period.endDate.toString(messages("ated.date-format"))),
                     attributes = Map("id" -> "date-to-value-".concat(periods.indexOf(period).toString()))
                 ),
                 TableRow(

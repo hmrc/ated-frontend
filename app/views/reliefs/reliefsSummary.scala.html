@@ -24,7 +24,7 @@
 @import uk.gov.hmrc.hmrcfrontend.views.html.components._
 @import views.ViewUtils.titleBuilder
 @import views.html.helper.CSPNonce
-@import views.formatDate
+@import models.StringFormatting._
 
 @this(newMain: newMain,
   formHelper: FormWithCSRF,
@@ -77,8 +77,8 @@
 
   <div class="govuk-form-group">
     <p class="govuk-body" id="details-text">@messages("ated.relief-summary.details-text",
-      formatDate(periodStartDate(periodKey), messages("ated.date-format")),
-      formatDate(periodEndDate(periodKey), messages("ated.date-format")))
+      periodStartDate(periodKey).toString(messages("ated.date-format")),
+      periodEndDate(periodKey).toString(messages("ated.date-format")))
     </p>
   </div>
 
@@ -97,7 +97,7 @@
       </dt>
 
       <dd id="dates-rb" class="govuk-summary-list__value">
-        @formatDate(reliefData.reliefs.rentalBusinessDate.getOrElse(reliefData.periodStartDate), messages("ated.date-format.short")) @messages("ated.relief-summary.relief-end-date")
+        @reliefData.reliefs.rentalBusinessDate.getOrElse(reliefData.periodStartDate).toString(messages("ated.date-format.short")) @messages("ated.relief-summary.relief-end-date")
       </dd>
 
       <dd class="govuk-summary-list__actions">
@@ -181,7 +181,7 @@
       </dt>
 
       <dd class="govuk-summary-list__value" id="dates-otp">
-        @formatDate(reliefData.reliefs.openToPublicDate.getOrElse(reliefData.periodStartDate), messages("ated.date-format.short"))  @messages("ated.relief-summary.relief-end-date")
+        @reliefData.reliefs.openToPublicDate.getOrElse(reliefData.periodStartDate).toString(messages("ated.date-format.short"))  @messages("ated.relief-summary.relief-end-date")
       </dd>
 
       <dd class="govuk-summary-list__actions">
@@ -263,7 +263,7 @@
       </dt>
 
       <dd id="dates-pd" class="govuk-summary-list__value">
-        @formatDate(reliefData.reliefs.propertyDeveloperDate.getOrElse(reliefData.periodStartDate), messages("ated.date-format.short"))  @messages("ated.relief-summary.relief-end-date")
+        @reliefData.reliefs.propertyDeveloperDate.getOrElse(reliefData.periodStartDate).toString(messages("ated.date-format.short"))  @messages("ated.relief-summary.relief-end-date")
       </dd>
 
       <dd class="govuk-summary-list__actions">
@@ -342,7 +342,7 @@
         </dt>
 
         <dd id="dates-pt" class="govuk-summary-list__value">
-          @formatDate(reliefData.reliefs.propertyTradingDate.getOrElse(reliefData.periodStartDate), messages("ated.date-format.short"))  @messages("ated.relief-summary.relief-end-date")
+          @reliefData.reliefs.propertyTradingDate.getOrElse(reliefData.periodStartDate).toString(messages("ated.date-format.short"))  @messages("ated.relief-summary.relief-end-date")
         </dd>
 
         <dd class="govuk-summary-list__actions">
@@ -421,7 +421,7 @@
         </dt>
 
         <dd id="dates-ln" class="govuk-summary-list__value">
-          @formatDate(reliefData.reliefs.lendingDate.getOrElse(reliefData.periodStartDate), messages("ated.date-format.short"))  @messages("ated.relief-summary.relief-end-date")
+          @reliefData.reliefs.lendingDate.getOrElse(reliefData.periodStartDate).toString(messages("ated.date-format.short"))  @messages("ated.relief-summary.relief-end-date")
         </dd>
 
         <dd class="govuk-summary-list__actions">
@@ -500,7 +500,7 @@
         </dt>
 
         <dd id="dates-eo" class="govuk-summary-list__value">
-          @formatDate(reliefData.reliefs.employeeOccupationDate.getOrElse(reliefData.periodStartDate), messages("ated.date-format.short"))  @messages("ated.relief-summary.relief-end-date")
+          @reliefData.reliefs.employeeOccupationDate.getOrElse(reliefData.periodStartDate).toString(messages("ated.date-format.short"))  @messages("ated.relief-summary.relief-end-date")
         </dd>
 
         <dd class="govuk-summary-list__actions">
@@ -579,7 +579,7 @@
         </dt>
 
         <dd id="dates-fh" class="govuk-summary-list__value">
-          @formatDate(reliefData.reliefs.farmHousesDate.getOrElse(reliefData.periodStartDate), messages("ated.date-format.short"))  @messages("ated.relief-summary.relief-end-date")
+          @reliefData.reliefs.farmHousesDate.getOrElse(reliefData.periodStartDate).toString(messages("ated.date-format.short"))  @messages("ated.relief-summary.relief-end-date")
         </dd>
 
         <dd class="govuk-summary-list__actions">
@@ -658,7 +658,7 @@
         </dt>
 
         <dd id="dates-sh" class="govuk-summary-list__value">
-          @formatDate(reliefData.reliefs.socialHousingDate.getOrElse(reliefData.periodStartDate), messages("ated.date-format.short"))  @messages("ated.relief-summary.relief-end-date")
+          @reliefData.reliefs.socialHousingDate.getOrElse(reliefData.periodStartDate).toString(messages("ated.date-format.short"))  @messages("ated.relief-summary.relief-end-date")
         </dd>
 
         <dd class="govuk-summary-list__actions" id="dates-edit-sh">
@@ -737,7 +737,7 @@
         </dt>
 
         <dd id="dates-er" class="govuk-summary-list__value">
-          @formatDate(reliefData.reliefs.equityReleaseDate.getOrElse(reliefData.periodStartDate), messages("ated.date-format.short"))  @messages("ated.relief-summary.relief-end-date")
+          @reliefData.reliefs.equityReleaseDate.getOrElse(reliefData.periodStartDate).toString(messages("ated.date-format.short"))  @messages("ated.relief-summary.relief-end-date")
         </dd>
 
         <dd class="govuk-summary-list__actions" id="dates-edit-er">

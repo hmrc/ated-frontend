@@ -22,8 +22,7 @@
 @import views.ViewUtils.titleBuilder
 @import views.html.helpers._
 @import _root_.utils._
-@import views.formatDate
-@import PeriodUtils._
+@import models.StringFormatting._
 
 
 @this(newMain: newMain,
@@ -79,7 +78,7 @@
         @govukDateInput(DateInput(
             hint = Some(Hint(
               content = Text(messages("ated.property-details-period.datesInRelief.startDate.hint",
-                    formatDate(periodStartDate(periodKey), messages("ated.date-format.numeric"))))
+                    PeriodUtils.periodStartDate(periodKey).toString(messages("ated.date-format.numeric"))))
             )),
             fieldset = Some(Fieldset(
               legend = Some(Legend(
@@ -93,7 +92,7 @@
         @govukDateInput(DateInput(
             hint = Some(Hint(
               content = Text(messages("ated.property-details-period.datesInRelief.endDate.hint",
-                    formatDate(periodEndDate(periodKey), messages("ated.date-format.numeric"))))
+                    PeriodUtils.periodEndDate(periodKey).toString(messages("ated.date-format.numeric"))))
             )),
             fieldset = Some(Fieldset(
               legend = Some(Legend(

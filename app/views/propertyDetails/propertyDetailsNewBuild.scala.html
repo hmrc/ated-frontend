@@ -22,7 +22,6 @@
 @import views.ViewUtils.titleBuilder
 @import views.html.helpers._
 @import _root_.utils._
-@import PeriodUtils._
 
 @this(newMain: newMain,
       govukButton : GovukButton,
@@ -69,7 +68,7 @@
             </span>
             @messages(AtedUtils.getPropertyDetailsPreHeader(mode))
         </span>
-              @messages("ated.property-details-value.isNewBuild.header", calculateLowerTaxYearBoundary(periodKey).getYear.toString)
+              @messages("ated.property-details-value.isNewBuild.header", PeriodUtils.calculateLowerTaxYearBoundary(periodKey).getYear.toString)
       </h1>
     </header>
 

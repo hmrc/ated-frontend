@@ -37,7 +37,7 @@
   @import _root_.utils.PeriodUtils._
   @import _root_.utils.AtedConstants
   @import views.html.helpers._
-  @import views.formatDate
+@import models.StringFormatting._
 
 @backLinkHtml = {
     @if(backLink.isDefined) {
@@ -61,8 +61,8 @@
     </header>
 
   <div class="govuk-body govuk-form-group" id="form-bundle-text">@messages("ated.form-bundle.subheader",
-    formatDate(periodStartDate(periodKey), messages("ated.date-format")),
-    formatDate(periodEndDate(periodKey), messages("ated.date-format")))
+    periodStartDate(periodKey).toString(messages("ated.date-format")),
+    periodEndDate(periodKey).toString(messages("ated.date-format")))
   </div>
 
   @formBundleReturn.map { formBundleReturnObj =>
@@ -147,9 +147,9 @@
     <dd class="govuk-summary-list__value govuk-!-width-one-half">
       <span id="period-@index">
       @if(period.lineItemType.toLowerCase == AtedConstants.DisposeReturnType){
-      @formatDate(period.startDate, messages("ated.date-format"))
+      @period.startDate.toString(messages("ated.date-format"))
       }else {
-      @messages("ated.property-details-summary.table.period.text", formatDate(period.startDate, messages("ated.date-format")), formatDate(period.endDate, messages("ated.date-format")))
+      @messages("ated.property-details-summary.table.period.text", period.startDate.toString(messages("ated.date-format")), period.endDate.toString(messages("ated.date-format")))
       }
       </span>
     </dd>
@@ -290,7 +290,7 @@
       </dt>
 
       <dd class="govuk-summary-list__value govuk-!-width-one-half">
-        <span id="td-view-return-date">@formatDate(formBundleReturnObj.dateOfSubmission, messages("ated.date-format"))</span>
+        <span id="td-view-return-date">@formBundleReturnObj.dateOfSubmission.toString(messages("ated.date-format"))</span>
       </dd>
     </div>
 

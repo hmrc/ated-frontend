@@ -23,8 +23,7 @@
 @import views.html.helpers._
 @import _root_.utils._
 @import views.html.helper.CSPNonce
-@import views.formatDate
-@import PeriodUtils._
+@import models.StringFormatting._
 
 @this(newMain: newMain, 
      govukButton : GovukButton,
@@ -57,7 +56,7 @@
 @conditionalYes = {
     @govukDateInput(DateInput(
         hint = Some(Hint(
-            content = Text(messages("ated.property-details-value.partAcqDispDate.hint", formatDate(periodEndDate(periodKey), messages("ated.date-format.numeric"))))
+            content = Text(messages("ated.property-details-value.partAcqDispDate.hint", PeriodUtils.periodEndDate(periodKey).toString(messages("ated.date-format.numeric"))))
         )),
         items = dateItems,
         fieldset = Some(Fieldset(
@@ -82,7 +81,7 @@
 
     @govukDateInput(DateInput(
         hint = Some(Hint(
-            content = Text(messages("ated.property-details-value.revaluedDate.hint", formatDate(periodEndDate(periodKey), messages("ated.date-format.numeric"))))
+            content = Text(messages("ated.property-details-value.revaluedDate.hint", PeriodUtils.periodEndDate(periodKey).toString(messages("ated.date-format.numeric"))))
         )),
         items = dateItems,
         fieldset = Some(Fieldset(
@@ -134,7 +133,7 @@
             )
             ).withFormField(propertyDetailsForm("isPropertyRevalued"))
             .withHeadingAndSectionCaption(
-                heading = Text(messages("ated.property-details-value.isPropertyRevalued.header", calculateLowerTaxYearBoundary(periodKey).getYear.toString)),
+                heading = Text(messages("ated.property-details-value.isPropertyRevalued.header", PeriodUtils.calculateLowerTaxYearBoundary(periodKey).getYear.toString)),
                 sectionCaption = Text(messages(AtedUtils.getPropertyDetailsPreHeader(mode)))
         ))
 

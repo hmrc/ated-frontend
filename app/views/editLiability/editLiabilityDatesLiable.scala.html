@@ -20,7 +20,7 @@
 @import play.twirl.api.HtmlFormat
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 @import views.ViewUtils.titleBuilder
-@import views.formatDate
+@import models.StringFormatting._
 
 @this(newMain: newMain, formHelper: FormWithCSRF,
         govukDateInput : GovukDateInput,
@@ -78,7 +78,7 @@
 
         @govukDateInput(DateInput(
             hint = Some(Hint(
-                content = Text(messages("ated.property-details-period.datesLiable.startDate.hint", formatDate(periodStartDate(periodKey), messages("ated.date-format.numeric"))))
+                content = Text(messages("ated.property-details-period.datesLiable.startDate.hint", periodStartDate(periodKey).toString(messages("ated.date-format.numeric"))))
             )),
             fieldset = Some(Fieldset(
                 legend = Some(Legend(
@@ -90,7 +90,7 @@
 
         @govukDateInput(DateInput(
             hint = Some(Hint(
-                content = Text(messages("ated.property-details-period.datesLiable.endDate.hint", formatDate(periodEndDate(periodKey), messages("ated.date-format.numeric"))))
+                content = Text(messages("ated.property-details-period.datesLiable.endDate.hint", periodEndDate(periodKey).toString(messages("ated.date-format.numeric"))))
             )),
             fieldset = Some(Fieldset(
                 legend = Some(Legend(

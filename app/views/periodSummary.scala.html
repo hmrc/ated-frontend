@@ -21,7 +21,7 @@
 @import views.html.helpers._
 @import play.twirl.api.HtmlFormat
 @import views.ViewUtils.titleBuilder
-@import views.formatDate
+@import models.StringFormatting._
 
 @this(newMain: newMain,
     govukBackLink : GovukBackLink)
@@ -48,8 +48,8 @@
 <header>
     <h1 class="govuk-heading-xl govuk-!-margin-bottom-5">
         <span class="govuk-caption-xl"><span class="govuk-visually-hidden">@messages("ated.screen-reader.section-name") </span>@organisationName.getOrElse("")</span>
-        @messages("ated.period-summary.header", formatDate(periodStartDate(periodKey), messages("ated.date-format.summary")),
-            formatDate(periodEndDate(periodKey), messages("ated.date-format.summary")))
+        @messages("ated.period-summary.header", periodStartDate(periodKey).toString(messages("ated.date-format.summary")),
+            periodEndDate(periodKey).toString(messages("ated.date-format.summary")))
     </h1>
 </header>
 

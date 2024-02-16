@@ -21,10 +21,8 @@
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 @import views.html.helpers._
 @import _root_.utils._
+@import models.StringFormatting._
 @import views.ViewUtils.titleBuilder
-@import PeriodUtils._
-@import views.formatDate
-
 @this(newMain: newMain,
     formHelper: FormWithCSRF,
     govukButton : GovukButton,
@@ -55,8 +53,8 @@
   <div class="govuk-form-group">
     @formHelper(action=controllers.reliefs.routes.ViewReliefReturnController.submit(periodKey: Int, formBundleNumber: String)) {
     <div id="relief-return-text" class="govuk-body">@messages("ated.view-relief-return.subheader",
-      formatDate(periodStartDate(periodKey), messages("ated.date-format")),
-      formatDate(periodEndDate(periodKey), messages("ated.date-format")))
+      PeriodUtils.periodStartDate(periodKey).toString(messages("ated.date-format")),
+      PeriodUtils.periodEndDate(periodKey).toString(messages("ated.date-format")))
     </div>
   </div>
 
@@ -73,7 +71,7 @@
 
         <dd class="govuk-summary-list__actions" id="td-view-relief-from-date-0">
           <span class="govuk-visually-hidden">@messages("ated.view-relief-return.date.from")</span>
-          @formatDate(submittedReliefReturn.dateFrom, messages("ated.date-format"))
+          @submittedReliefReturn.dateFrom.toString(messages("ated.date-format"))
         </dd>
       </div>
 
@@ -83,7 +81,7 @@
         </dt>
 
         <dd class="govuk-summary-list__actions" id="td-view-relief-from-date-1">
-            <span id="td-view-relief-date-to"> <span class="govuk-visually-hidden">@messages("ated.view-relief-return.date.to")</span> @formatDate(submittedReliefReturn.dateTo, messages("ated.date-format"))</span>
+            <span id="td-view-relief-date-to"> <span class="govuk-visually-hidden">@messages("ated.view-relief-return.date.to")</span> @submittedReliefReturn.dateTo.toString(messages("ated.date-format"))</span>
         </dd>
       </div>
 
@@ -123,7 +121,7 @@
         </dt>
 
         <dd class="govuk-summary-list__actions" id="td-view-relief-from-date-5">
-          <span id="td-view-relief-submission-date"> <span class="govuk-visually-hidden">@messages("ated.view-relief-return.submission-date")</span> @formatDate(submittedReliefReturn.dateOfSubmission, messages("ated.date-format"))</span>
+          <span id="td-view-relief-submission-date"> <span class="govuk-visually-hidden">@messages("ated.view-relief-return.submission-date")</span> @submittedReliefReturn.dateOfSubmission.toString(messages("ated.date-format"))</span>
         </dd>
       </div>
     </dl>
