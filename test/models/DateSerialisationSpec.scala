@@ -24,9 +24,9 @@ import java.time.format.DateTimeFormatter
 
 class DateSerialisationSpec extends PlaySpec with MockitoSugar {
 
-  // val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssZ") //DateTime
-  // implicit val zonedDateTimeReads: Reads[ZonedDateTime] = Reads.zonedDateTimeReads(formatter)
-  // implicit val zonedDateTimeWrites: Writes[ZonedDateTime] = Writes.DefaultZonedDateTimeWrites
+  val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssZ") //DateTime
+  implicit val zonedDateTimeReads: Reads[ZonedDateTime] = Reads.zonedDateTimeReads(formatter)
+  implicit val zonedDateTimeWrites: Writes[ZonedDateTime] = zdt => JsString(zdt.format(formatter))
 
 "Date serialisation" must {
     "serialise LocalDate to standard form" in  {
@@ -34,9 +34,9 @@ class DateSerialisationSpec extends PlaySpec with MockitoSugar {
       json must be(new JsString("2024-02-16"))
     }
 
-    // "serialise DateTime to standard form" in  {
-    //   val json: JsValue = Json.toJson[ZonedDateTime](ZonedDateTime.of(2024, 2, 16, 14, 17, 0, 0, ZoneId.of("Z")))
-    //   json must be(new JsString("2024-02-16T14:17:00.000Z"))
-    // }
+    "serialise DateTime to standard form" in  {
+      val json: JsValue = Json.toJson[ZonedDateTime](ZonedDateTime.of(2024, 2, 16, 14, 17, 0, 345, ZoneId.of("Z")))
+      json must be(new JsString("2024-02-16T14:17:00+0000"))
+    }
   }
 }

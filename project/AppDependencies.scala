@@ -8,7 +8,7 @@ object AppDependencies {
 
   val compile: Seq[ModuleID] = Seq(
     ws,
-    "uk.gov.hmrc"       %% "bootstrap-frontend-play-28" % "7.22.0",
+    "uk.gov.hmrc"       %% "bootstrap-frontend-play-28" % "7.23.0",
     "uk.gov.hmrc"       %% "play-partials"              % "8.4.0-play-28",
     "uk.gov.hmrc"       %% "domain"                     % "8.3.0-play-28",
     "uk.gov.hmrc"       %% "http-caching-client"        % "10.0.0-play-28",
@@ -25,7 +25,7 @@ object AppDependencies {
       override lazy val test: Seq[ModuleID] = Seq(
         "uk.gov.hmrc"                  %% "bootstrap-test-play-28"      % "7.22.0"            % scope,
         "org.scalatestplus.play"       %% "scalatestplus-play"          % "5.1.0"             % scope,
-        "org.jsoup"                    %  "jsoup"                       % "1.16.1"            % scope,
+        "org.jsoup"                    %  "jsoup"                       % "1.17.2"            % scope,
         "com.typesafe.play"            %% "play-test"                   % PlayVersion.current % scope,
         "org.scalatestplus"            %% "mockito-4-11" % "3.2.17.0"   % scope,
         "org.mockito" % "mockito-core" % "5.5.0"                        % scope,
@@ -35,8 +35,8 @@ object AppDependencies {
     }.test
   }
 
-  val jacksonVersion = "2.15.2"
-  val jacksonDatabindVersion = "2.15.2"
+  val jacksonVersion = "2.16.1"
+  val jacksonDatabindVersion = "2.16.1"
 
   val jacksonOverrides = Seq(
     "com.fasterxml.jackson.core" % "jackson-core",

@@ -17,7 +17,8 @@
 package models
 
 import java.time.ZonedDateTime
-import play.api.libs.json.{Json, OFormat, Reads, Writes}
+import java.time.format.DateTimeFormatter
+import play.api.libs.json.{Json, JsString, OFormat, Reads, Writes}
 
 case class ReliefReturnResponse(reliefDescription: String, formBundleNumber: String)
 
@@ -45,8 +46,10 @@ case class SubmitReturnsResponse(
                                   )
 
 object SubmitReturnsResponse {
-  implicit val zonedDateTimeReads: Reads[ZonedDateTime] = Reads.DefaultZonedDateTimeReads
-  implicit val zonedDateTimeWrites: Writes[ZonedDateTime] = Writes.DefaultZonedDateTimeWrites
+  val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssZ") //DateTime
+  implicit val zonedDateTimeReads: Reads[ZonedDateTime] = Reads.zonedDateTimeReads(formatter)
+  implicit val zonedDateTimeWrites: Writes[ZonedDateTime] = zdt => JsString(zdt.format(formatter))
+
   implicit val formats: OFormat[SubmitReturnsResponse] = Json.format[SubmitReturnsResponse]
 }
 
