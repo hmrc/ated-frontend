@@ -18,9 +18,6 @@ package models
 
 import java.time.ZonedDateTime
 import play.api.libs.json.{Json, OFormat}
-// import play.api.libs.json.EnvWrites.DefaulZonedDateTimeWrites
-// import play.api.libs.json.EnvReads.DefaulZonedDateTimeReads
-
 
 case class EditLiabilityReturnsResponse(mode: String,
                                         oldFormBundleNumber: String,
@@ -39,7 +36,5 @@ case class EditLiabilityReturnsResponseModel(processingDate: ZonedDateTime,
 
 object EditLiabilityReturnsResponseModel {
 
-  // implicit val yourJodaDateWrites: Writes[DateTime] = JodaWrites.jodaDateWrites("yyyy-MM-dd'T'HH:mm:ss'Z'") // DateTime
-  // implicit val yourJodaDateReads: Reads[DateTime] = JodaReads.jodaDateReads("yyyy-MM-dd'T'HH:mm:ss'Z'") // DateTime
   implicit val formats: OFormat[EditLiabilityReturnsResponseModel] = Json.format[EditLiabilityReturnsResponseModel]
 }
