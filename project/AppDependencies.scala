@@ -23,7 +23,7 @@ object AppDependencies {
   object Test {
     def apply(): Seq[ModuleID] = new TestDependencies {
       override lazy val test: Seq[ModuleID] = Seq(
-        "uk.gov.hmrc"                  %% "bootstrap-test-play-28"      % "7.22.0"            % scope,
+        "uk.gov.hmrc"                  %% "bootstrap-test-play-28"      % "7.23.0"            % scope,
         "org.scalatestplus.play"       %% "scalatestplus-play"          % "5.1.0"             % scope,
         "org.jsoup"                    %  "jsoup"                       % "1.17.2"            % scope,
         "com.typesafe.play"            %% "play-test"                   % PlayVersion.current % scope,
