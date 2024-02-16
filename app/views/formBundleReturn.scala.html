@@ -19,6 +19,7 @@
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
 @import views.ViewUtils.titleBuilder
+@import models.StringFormatting._
 
 @this(newMain: newMain,
     govukBackLink : GovukBackLink,
@@ -37,7 +38,6 @@
   @import _root_.utils.PeriodUtils._
   @import _root_.utils.AtedConstants
   @import views.html.helpers._
-@import models.StringFormatting._
 
 @backLinkHtml = {
     @if(backLink.isDefined) {
