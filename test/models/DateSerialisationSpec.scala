@@ -18,25 +18,35 @@ package models
 
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
-import play.api.libs.json.{JsValue, JsString, Json, Reads, Writes}
+import play.api.libs.json.{JsValue, JsString, JsSuccess, Json}
 import java.time.{LocalDate, ZonedDateTime, ZoneId}
-import java.time.format.DateTimeFormatter
 
 class DateSerialisationSpec extends PlaySpec with MockitoSugar {
 
-  val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssZ") //DateTime
-  implicit val zonedDateTimeReads: Reads[ZonedDateTime] = Reads.zonedDateTimeReads(formatter)
-  implicit val zonedDateTimeWrites: Writes[ZonedDateTime] = zdt => JsString(zdt.format(formatter))
-
 "Date serialisation" must {
-    "serialise LocalDate to standard form" in  {
+    "Read LocalDate to standard form" in  {
+      val json: JsValue = new JsString("2024-02-16")
+      json.validate[LocalDate] match {
+        case JsSuccess(dte, _) if dte == LocalDate.of(2024, 2, 16) => succeed
+        case _ => fail()
+      }
+    }
+
+    "Read DateTime to standard form" in  {
+      val json: JsValue = new JsString("2024-02-16T14:17:00.000Z")
+      json.validate[ZonedDateTime] match {
+        case JsSuccess(dte, _) if dte == ZonedDateTime.of(2024, 2, 16, 14, 17, 0, 0, ZoneId.of("Z")) => succeed
+        case _ => fail()
+      }
+    }
+    "Write LocalDate to standard form" in  {
       val json: JsValue = Json.toJson[LocalDate](LocalDate.of(2024, 2, 16))
       json must be(new JsString("2024-02-16"))
     }
 
-    "serialise DateTime to standard form" in  {
-      val json: JsValue = Json.toJson[ZonedDateTime](ZonedDateTime.of(2024, 2, 16, 14, 17, 0, 345, ZoneId.of("Z")))
-      json must be(new JsString("2024-02-16T14:17:00+0000"))
+    "Write DateTime to standard form" in  {
+      val json: JsValue = Json.toJson[ZonedDateTime](ZonedDateTime.of(2024, 2, 16, 14, 17, 0, 0, ZoneId.of("Z")))
+      json must be(new JsString("2024-02-16T14:17:00Z"))
     }
   }
 }

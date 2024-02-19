@@ -18,6 +18,8 @@ package models
 
 import java.time.LocalDate
 import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json.Reads._
+import play.api.libs.json.Writes._
 
 case class PreviousReturns(address: String, formBundleNumber: String, date: LocalDate, changeAllowed: Boolean)
 
