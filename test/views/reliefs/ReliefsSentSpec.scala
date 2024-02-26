@@ -106,8 +106,8 @@ class ReliefsSentSpec extends AnyFeatureSpec with GuiceOneAppPerSuite with Mocki
         "our records up to date so we know not to expect a return for that type of relief next year.")
 
       Then("The sentence about emailing should be correct")
-      assert(document.select("#main-content > div > div > p:nth-child(15)").text === "When emailing please " +
-        "include your ATED reference number or if you do not have the number please give your company name. Do not " +
+      assert(document.select("#main-content > div > div > p:nth-child(15)").text === "When emailing include your ATED reference number." +
+        " If you do not have your ATED reference number include your company name. Do not " +
         "include any further personal or financial details. Sending information over the internet is generally not " +
         "completely secure, and we cannot guarantee the security of your data while it’s in transit. Any data you " +
         "send is at your own risk.")
