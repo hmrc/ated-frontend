@@ -19,7 +19,7 @@ package views.propertyDetails
 import config.ApplicationConfig
 import forms.PropertyDetailsForms._
 import models.{LineItem, StandardAuthRetrievals}
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import org.jsoup.Jsoup
 import org.scalatest.featurespec.AnyFeatureSpecLike
 import org.scalatest.{BeforeAndAfterEach, GivenWhenThen}
@@ -88,8 +88,8 @@ class periodsInAndOutReliefSpec extends AnyFeatureSpecLike with GuiceOneAppPerSu
       When("The user views the page")
 
       val periods = List[models.LineItem](
-        LineItem("liability", new LocalDate(s"2015-4-1"), new LocalDate(s"2015-5-1"), Some("Liable for charge")),
-        LineItem("relief", new LocalDate(s"2016-4-1"), new LocalDate(s"2016-5-1"), Some("Rental property"))
+        LineItem("liability", LocalDate.parse(s"2015-04-01"), LocalDate.parse(s"2015-05-01"), Some("Liable for charge")),
+        LineItem("relief", LocalDate.parse(s"2016-04-01"), LocalDate.parse(s"2016-05-01"), Some("Rental property"))
       )
       val html = injectedViewInstance("1", 2015,
         periodsInAndOutReliefForm, periods, Some(AtedUtils.EDIT_SUBMITTED), Html(""), Some("http://backLink"))

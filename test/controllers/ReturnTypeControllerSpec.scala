@@ -25,7 +25,7 @@ import controllers.auth.AuthAction
 import controllers.propertyDetails.{AddressLookupController, PropertyDetailsAddressController}
 import controllers.reliefs.ChooseReliefsController
 import models.{PreviousReturns, ReturnType}
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
@@ -183,7 +183,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
 
     "submit" must {
       "for authorised user" must {
-        val prevReturns = Seq(PreviousReturns("1, addressLine1", "12345678",  new LocalDate("2015-04-02"), true))
+        val prevReturns = Seq(PreviousReturns("1, addressLine1", "12345678",  LocalDate.parse("2015-04-02"), true))
         "with valid form data" must {
           "with invalid form, return BadRequest" in new Setup {
             val inputJson: JsValue = Json.parse( """{"returnType": ""}""")

@@ -20,7 +20,7 @@ import builders.TitleBuilder
 import config.ApplicationConfig
 import forms.PropertyDetailsForms
 import models.StandardAuthRetrievals
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import org.scalatestplus.mockito.MockitoSugar
 import play.twirl.api.Html
 import testhelpers.{AtedViewSpec, MockAuthUtil}
@@ -32,7 +32,7 @@ class IsFullTaxPeriodSpec extends AtedViewSpec with MockitoSugar with MockAuthUt
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
   private val form = PropertyDetailsForms.isFullTaxPeriodForm.withError("isFullPeriod",
     messages("ated.property-details-period.isFullPeriod.error-field-name"))
-  override def view: Html = injectedViewInstance("",0,  form, new LocalDate, new LocalDate, None, Html(""), Some("backLink"))
+  override def view: Html = injectedViewInstance("",0,  form, LocalDate.now(), LocalDate.now(), None, Html(""), Some("backLink"))
 
   "The property details full tax period view for a valid form" must {
     "have the correct page title" in {

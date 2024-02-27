@@ -14,14 +14,23 @@
  * limitations under the License.
  */
 
-package services
+package models
 
-import javax.inject.Singleton
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
-@Singleton
-class DateService {
 
-  def now(): LocalDate = LocalDate.now()
+trait StringFormatting[T] {
+  def toString(format: String)(value: T): String
+}
 
+object StringFormatting {
+  implicit val stringformatting: StringFormatting[LocalDate] = new StringFormatting[LocalDate]{
+      def toString(format: String)(value: LocalDate): String = value.format(DateTimeFormatter.ofPattern(format))
+  }
+
+  // Syntax
+  implicit class StringFormattingOps[A](value: A) {
+    def toString(format: String)(implicit a: StringFormatting[A]): String = a.toString(format)(value)
+  }
 }

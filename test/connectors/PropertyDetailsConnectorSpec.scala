@@ -20,7 +20,7 @@ import java.util.UUID
 import builders.PropertyDetailsBuilder
 import config.ApplicationConfig
 import models._
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import org.scalatestplus.mockito.MockitoSugar
@@ -467,7 +467,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with GuiceOneAppPerSuite wit
     }
 
     "save property details DatesLiable" must {
-      val propertyDetails = new PropertyDetailsDatesLiable(Some(new LocalDate("1970-01-01")), Some(new LocalDate("1970-01-01")))
+      val propertyDetails = new PropertyDetailsDatesLiable(Some(LocalDate.parse("1970-01-01")), Some(LocalDate.parse("1970-01-01")))
 
       "for successful save, return PropertyDetails title for a user" in new Setup {
         val successResponse: JsValue = Json.toJson(propertyDetails)
@@ -493,7 +493,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with GuiceOneAppPerSuite wit
 
     "add DatesLiable" must {
       val propertyDetails = PropertyDetailsDatesLiable(
-        Some(new LocalDate("2999-02-03")), Some(new LocalDate("2999-03-04"))
+        Some(LocalDate.parse("2999-02-03")), Some(LocalDate.parse("2999-03-04"))
       )
 
       "for successful add, return PropertyDetails title for a user" in new Setup {
@@ -520,7 +520,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with GuiceOneAppPerSuite wit
 
     "delete Period" must {
       val propertyDetails = PropertyDetailsDatesLiable(
-        Some(new LocalDate("2999-02-03")), Some(new LocalDate("2999-03-04"))
+        Some(LocalDate.parse("2999-02-03")), Some(LocalDate.parse("2999-03-04"))
       )
 
       "for successful delete, return PropertyDetails title for a user" in new Setup {
@@ -547,7 +547,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with GuiceOneAppPerSuite wit
 
     "add DatesInRelief" must {
       val propertyDetails = PropertyDetailsDatesInRelief(
-        Some(new LocalDate("2999-02-03")), Some(new LocalDate("2999-03-04"))
+        Some(LocalDate.parse("2999-02-03")), Some(LocalDate.parse("2999-03-04"))
       )
 
       "for successful add, return PropertyDetails title for a user" in new Setup {

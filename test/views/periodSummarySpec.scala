@@ -18,7 +18,7 @@ package views
 
 import config.ApplicationConfig
 import models._
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import org.jsoup.Jsoup
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.{BeforeAndAfterEach, GivenWhenThen}
@@ -51,13 +51,13 @@ class periodSummarySpec extends AnyFeatureSpec with GuiceOneAppPerSuite with Moc
   val draftReturns2: DraftReturns = DraftReturns(2015, "", "some relief", None, TypeReliefDraft)
 
   val submittedReliefReturns1: SubmittedReliefReturns = SubmittedReliefReturns(formBundleNo1, "some relief",
-    new LocalDate("2015-05-05"), new LocalDate("2015-05-05"), new LocalDate("2015-05-05"))
+    LocalDate.parse("2015-05-05"), LocalDate.parse("2015-05-05"), LocalDate.parse("2015-05-05"))
   val submittedReliefReturns1Older: SubmittedReliefReturns = SubmittedReliefReturns(formBundleNo1, "some relief",
-    new LocalDate("2015-05-05"), new LocalDate("2015-05-05"), new LocalDate("2015-04-05"))
+    LocalDate.parse("2015-05-05"), LocalDate.parse("2015-05-05"), LocalDate.parse("2015-04-05"))
   val submittedLiabilityReturns1: SubmittedLiabilityReturns = SubmittedLiabilityReturns(formBundleNo2, "addr1+2", BigDecimal(1234.00),
-    new LocalDate("2015-05-05"), new LocalDate("2015-05-05"), new LocalDate("2015-05-05"), changeAllowed = true, "payment-ref-01")
+    LocalDate.parse("2015-05-05"), LocalDate.parse("2015-05-05"), LocalDate.parse("2015-05-05"), changeAllowed = true, "payment-ref-01")
   val submittedLiabilityReturns2: SubmittedLiabilityReturns = SubmittedLiabilityReturns(formBundleNo3, "addr1+2", BigDecimal(1234.00),
-    new LocalDate("2015-05-05"), new LocalDate("2015-05-05"), new LocalDate("2015-06-06"), changeAllowed = true, "payment-ref-01")
+    LocalDate.parse("2015-05-05"), LocalDate.parse("2015-05-05"), LocalDate.parse("2015-06-06"), changeAllowed = true, "payment-ref-01")
 
   val submittedReturns: SubmittedReturns = SubmittedReturns(2015, Seq(submittedReliefReturns1, submittedReliefReturns1Older), Seq(submittedLiabilityReturns1))
   val submittedReturnsWithOld: SubmittedReturns = SubmittedReturns(2015, Seq(submittedReliefReturns1), Seq(submittedLiabilityReturns1), Seq(submittedLiabilityReturns2))

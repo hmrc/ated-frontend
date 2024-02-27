@@ -41,7 +41,7 @@ import play.twirl.api.HtmlFormat
 
 import scala.concurrent.Future
 import models.{DateCouncilRegistered, DateCouncilRegisteredKnown, DateFirstOccupied, DateFirstOccupiedKnown}
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import play.api.libs.json.{JsValue, Json}
 import utils.AtedConstants.{NewBuildCouncilRegisteredDate, NewBuildFirstOccupiedDate, NewBuildFirstOccupiedDateKnown}
 

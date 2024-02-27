@@ -23,7 +23,7 @@ import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.AuthAction
 import models._
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
@@ -58,7 +58,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
   val injectedViewInstance = app.injector.instanceOf[views.html.propertyDetails.propertyDetailsValueAcquired]
   val periodKey: Int = 2016
-  val testDate = new LocalDate("2020-02-02")
+  val testDate = LocalDate.parse("2020-02-02")
   val id = "1"
 
   class Setup {

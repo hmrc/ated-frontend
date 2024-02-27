@@ -22,8 +22,8 @@ import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.AuthAction
 import models.{ReliefReturnResponse, SubmitReturnsResponse}
-import org.joda.time.format.DateTimeFormat
-import org.joda.time.{DateTime, LocalDate}
+import java.time.format.DateTimeFormatter
+import java.time.{ZonedDateTime, LocalDate}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
@@ -61,7 +61,7 @@ class ReliefsSentControllerSpec extends PlaySpec with GuiceOneServerPerSuite wit
   val injectedViewInstance: reliefsSent = app.injector.instanceOf[views.html.reliefs.reliefsSent]
 
   val periodKey = 2015
-  val submittedDate: String = LocalDate.now().toString(DateTimeFormat.forPattern("d MMMM yyyy"))
+  val submittedDate: String = LocalDate.now().format(DateTimeFormatter.ofPattern("d LLLL yyyy"))
   val organisationName = "ACME Limited"
 
   override def beforeEach(): Unit = {
@@ -91,7 +91,7 @@ class ReliefsSentControllerSpec extends PlaySpec with GuiceOneServerPerSuite wit
       when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(btaNavigationLinksView()(messages,mockAppConfig)))
       when(mockReliefsService.retrieveDraftReliefs(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
       val reliefReturnResponse = ReliefReturnResponse(reliefDescription = "Farmhouses",formBundleNumber = "form-bundle-123")
-      val submitReturnsResponse = SubmitReturnsResponse(processingDate = DateTime.now().toString, reliefReturnResponse = Some(Seq(reliefReturnResponse)), None)
+      val submitReturnsResponse = SubmitReturnsResponse(processingDate = ZonedDateTime.now().toString, reliefReturnResponse = Some(Seq(reliefReturnResponse)), None)
       when(mockDataCacheConnector.fetchAndGetFormData[SubmitReturnsResponse](ArgumentMatchers.eq(SubmitReturnsResponseFormId))
         (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(submitReturnsResponse)))
       val result = testReliefsSentController.view(periodKey).apply(SessionBuilder.buildRequestWithSession(userId))

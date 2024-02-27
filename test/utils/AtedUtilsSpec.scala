@@ -18,7 +18,7 @@ package utils
 
 import builders.{ChangeLiabilityReturnBuilder, PropertyDetailsBuilder}
 import config.ApplicationConfig
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
@@ -118,17 +118,17 @@ class AtedUtilsSpec extends PlaySpec with MockitoSugar with GuiceOneServerPerSui
 
   "canSubmit" must {
     "return true if periodKey is less than the current year" in {
-      val currentDate = new LocalDate(2017, 3, 1)
+      val currentDate = LocalDate.of(2017, 3, 1)
       AtedUtils.canSubmit(2015, currentDate) must be(true)
     }
 
     "return true if periodKey is in the current year" in {
-      val currentDate = new LocalDate(2017, 3, 1)
+      val currentDate = LocalDate.of(2017, 3, 1)
       AtedUtils.canSubmit(2016, currentDate) must be(true)
     }
 
     "return false if periodKey is later than the current year" in {
-      val currentDate = new LocalDate(2016, 4, 1)
+      val currentDate = LocalDate.of(2016, 4, 1)
       AtedUtils.canSubmit(2017, currentDate) must be(false)
     }
   }
@@ -226,8 +226,8 @@ class AtedUtilsSpec extends PlaySpec with MockitoSugar with GuiceOneServerPerSui
 
   "getEarliestDate" should {
     "return the earliest of two dates" in {
-      val earliestDate = new LocalDate("2009-01-01")
-      val laterDate = new LocalDate("2010-03-03")
+      val earliestDate = LocalDate.parse("2009-01-01")
+      val laterDate = LocalDate.parse("2010-03-03")
       AtedUtils.getEarliestDate(earliestDate,laterDate) must be(earliestDate)
     }
   }

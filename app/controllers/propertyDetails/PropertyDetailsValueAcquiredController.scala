@@ -22,7 +22,7 @@ import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms._
 import javax.inject.Inject
 import models.{PropertyDetailsValueOnAcquisition, PropertyDetailsWhenAcquiredDates}
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services._
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
@@ -56,7 +56,7 @@ class PropertyDetailsValueAcquiredController @Inject()(mcc: MessagesControllerCo
             case PropertyDetailsCacheSuccessResponse(propertyDetails) => currentBackLink.flatMap { backLink =>
               dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
                 val displayData = PropertyDetailsValueOnAcquisition(propertyDetails.value.flatMap(_.notNewBuildValue))
-                val dynamicDate = PropertyDetailsWhenAcquiredDates(propertyDetails.value.flatMap(_.notNewBuildDate)).acquiredDate.getOrElse(new LocalDate())
+                val dynamicDate = PropertyDetailsWhenAcquiredDates(propertyDetails.value.flatMap(_.notNewBuildDate)).acquiredDate.getOrElse(LocalDate.now())
                 Future.successful(Ok(template(id,
                   propertyDetails.periodKey,
                   propertyDetailsValueAcquiredForm.fill(displayData),

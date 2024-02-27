@@ -21,7 +21,7 @@ import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms._
 import javax.inject.Inject
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController

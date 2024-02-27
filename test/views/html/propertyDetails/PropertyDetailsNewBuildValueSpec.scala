@@ -20,7 +20,7 @@ import builders.TitleBuilder
 import config.ApplicationConfig
 import forms.PropertyDetailsForms
 import models.StandardAuthRetrievals
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import play.twirl.api.Html
 import testhelpers.{AtedViewSpec, MockAuthUtil}
 
@@ -35,7 +35,7 @@ class PropertyDetailsNewBuildValueSpec extends AtedViewSpec with MockAuthUtil {
   override def view: Html = injectedViewInstance(id, periodKey,  form, None, Html(""), Some("backLink"), testDate)
 
   val periodKey = 2000
-  val testDate = new LocalDate("2020-02-02")
+  val testDate = LocalDate.parse("2020-02-02")
   val testDateString: String = testDate.toString.replace("-","")
   val testDay = "2"
   val testMonth = "February"

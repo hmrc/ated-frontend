@@ -19,28 +19,28 @@ package builders
 import builders.ChangeLiabilityReturnBuilder.generateFormBundlePropertyDetails
 import config.ApplicationConfig
 import models._
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import utils.AtedConstants
 import utils.PeriodUtils._
 
 object PropertyDetailsBuilder {
 
-  val formBundleProp: FormBundleProperty = FormBundleProperty(BigDecimal(100), new LocalDate("2015-09-08"), new LocalDate("2015-10-12"), AtedConstants.LiabilityReturnType, None)
-  val formBundlePropRefund: FormBundleProperty = FormBundleProperty(BigDecimal(727000), new LocalDate("2015-04-01"), new LocalDate("2016-01-01"), AtedConstants.ReliefReturnType, Some("Relief"))
+  val formBundleProp: FormBundleProperty = FormBundleProperty(BigDecimal(100), LocalDate.parse("2015-09-08"), LocalDate.parse("2015-10-12"), AtedConstants.LiabilityReturnType, None)
+  val formBundlePropRefund: FormBundleProperty = FormBundleProperty(BigDecimal(727000), LocalDate.parse("2015-04-01"), LocalDate.parse("2016-01-01"), AtedConstants.ReliefReturnType, Some("Relief"))
 
   def generateFormBundleReturn: FormBundleReturn = {
-    FormBundleReturn("2015", generateFormBundlePropertyDetails, dateOfAcquisition = None, valueAtAcquisition = None, taxAvoidanceScheme = None, localAuthorityCode = None, professionalValuation = true, ninetyDayRuleApplies = false, dateOfSubmission = new LocalDate("2015-04-02"), liabilityAmount = BigDecimal(123.45), paymentReference = "payment-ref-123", lineItem = Seq(formBundleProp))
+    FormBundleReturn("2015", generateFormBundlePropertyDetails, dateOfAcquisition = None, valueAtAcquisition = None, taxAvoidanceScheme = None, localAuthorityCode = None, professionalValuation = true, ninetyDayRuleApplies = false, dateOfSubmission = LocalDate.parse("2015-04-02"), liabilityAmount = BigDecimal(123.45), paymentReference = "payment-ref-123", lineItem = Seq(formBundleProp))
   }
 
   def generateFormBundleReturnRefund: FormBundleReturn = {
-    FormBundleReturn("2015", generateFormBundlePropertyDetails, dateOfAcquisition = Some(new LocalDate ("2011-05-26")), valueAtAcquisition = Some(727000.00), taxAvoidanceScheme = None, localAuthorityCode = None, professionalValuation = true, ninetyDayRuleApplies = true, dateOfSubmission = new LocalDate("2016-05-10"), liabilityAmount = BigDecimal(9375.12), paymentReference = "payment-ref-123", lineItem = Seq(formBundlePropRefund))
+    FormBundleReturn("2015", generateFormBundlePropertyDetails, dateOfAcquisition = Some(LocalDate.parse("2011-05-26")), valueAtAcquisition = Some(727000.00), taxAvoidanceScheme = None, localAuthorityCode = None, professionalValuation = true, ninetyDayRuleApplies = true, dateOfSubmission = LocalDate.parse("2016-05-10"), liabilityAmount = BigDecimal(9375.12), paymentReference = "payment-ref-123", lineItem = Seq(formBundlePropRefund))
   }
 
   def getPropertyDetailsValueRevalued(periodKey: Int): Option[PropertyDetailsValue] = {
     Some(PropertyDetailsValue(anAcquisition = Some(true),
       isPropertyRevalued = Some(true),
       revaluedValue = Some(BigDecimal(1500000)),
-      revaluedDate = Some(new LocalDate(s"$periodKey-04-01"))
+      revaluedDate = Some(LocalDate.parse(s"$periodKey-04-01"))
     ))
   }
 
@@ -48,7 +48,7 @@ object PropertyDetailsBuilder {
     Some(PropertyDetailsValue(anAcquisition = Some(true),
       isPropertyRevalued = Some(true),
       revaluedValue = Some(BigDecimal(1500000)),
-      revaluedDate = Some(new LocalDate(s"$periodKey-04-01")),
+      revaluedDate = Some(LocalDate.parse(s"$periodKey-04-01")),
       isValuedByAgent =  Some(true),
       hasValueChanged = valueChanged
     ))
@@ -56,14 +56,14 @@ object PropertyDetailsBuilder {
 
   def getPropertyDetailsNewBuildDates: Option[PropertyDetailsNewBuildDates] = {
     Some(PropertyDetailsNewBuildDates(
-      Some(new LocalDate("2010-01-01")),
-      Some(new LocalDate("2010-02-01")))
+      Some(LocalDate.parse("2010-01-01")),
+      Some(LocalDate.parse("2010-02-01")))
     )
   }
 
   def getPropertyDetailsWhenAcquired: Option[PropertyDetailsWhenAcquiredDates] = {
     Some(PropertyDetailsWhenAcquiredDates(
-      Some(new LocalDate("2010-01-01")))
+      Some(LocalDate.parse("2010-01-01")))
     )
   }
 
@@ -80,16 +80,16 @@ object PropertyDetailsBuilder {
       anAcquisition = Some(true),
       isPropertyRevalued = Some(true),
       revaluedValue = Some(BigDecimal(1111.11)),
-      revaluedDate = Some(new LocalDate("1970-01-01")),
+      revaluedDate = Some(LocalDate.parse("1970-01-01")),
       isOwnedBeforePolicyYear = Some(true),
       ownedBeforePolicyYearValue = Some(BigDecimal(1111.11)),
       isNewBuild =  Some(true),
       newBuildValue = Some(BigDecimal(1111.11)),
-      newBuildDate = Some(new LocalDate("1970-01-01")),
+      newBuildDate = Some(LocalDate.parse("1970-01-01")),
       notNewBuildValue = Some(BigDecimal(1111.11)),
-      notNewBuildDate = Some(new LocalDate("1970-01-01")),
+      notNewBuildDate = Some(LocalDate.parse("1970-01-01")),
       isValuedByAgent =  Some(true),
-      valuationDate = Some(new LocalDate("1970-01-01"))
+      valuationDate = Some(LocalDate.parse("1970-01-01"))
     ))
   }
 
@@ -125,8 +125,8 @@ object PropertyDetailsBuilder {
   }
 
   def getPropertyDetailsPeriodFull(periodKey : Int = 2015): Option[PropertyDetailsPeriod] = {
-    val liabilityPeriods = List(LineItem("Liability",new LocalDate(s"$periodKey-4-1"), new LocalDate(s"$periodKey-8-31")))
-    val reliefPeriods = List(LineItem("Relief",new LocalDate(s"$periodKey-9-1"), new LocalDate(s"${periodKey+1}-3-31"), Some("Property rental businesses")))
+    val liabilityPeriods = List(LineItem("Liability",LocalDate.parse(s"$periodKey-04-01"), LocalDate.parse(s"$periodKey-08-31")))
+    val reliefPeriods = List(LineItem("Relief",LocalDate.parse(s"$periodKey-09-01"), LocalDate.parse(s"${periodKey+1}-03-31"), Some("Property rental businesses")))
     Some(new PropertyDetailsPeriod(
       isFullPeriod = Some(false),
       liabilityPeriods = liabilityPeriods,
@@ -140,7 +140,7 @@ object PropertyDetailsBuilder {
   }
 
   def getPropertyDetailsPeriodRefund(periodKey : Int = 2015): Option[PropertyDetailsPeriod] = {
-    val liabilityPeriods = List(LineItem("Liability",new LocalDate(s"$periodKey-4-1"), new LocalDate(s"${periodKey+1}-3-31")))
+    val liabilityPeriods = List(LineItem("Liability",LocalDate.parse(s"$periodKey-04-01"), LocalDate.parse(s"${periodKey+1}-03-31")))
     Some(new PropertyDetailsPeriod(
       isFullPeriod = Some(false),
       isTaxAvoidance =  Some(true),
@@ -161,21 +161,21 @@ object PropertyDetailsBuilder {
   }
 
   def getPropertyDetailsCalculated(liabilityAmount: Option[BigDecimal] = None, periodKey : Int = 2015): Option[PropertyDetailsCalculated] = {
-    val liabilityPeriods = List(CalculatedPeriod(BigDecimal(1111.11), new LocalDate(s"$periodKey-4-1"), new LocalDate(s"$periodKey-8-31"), "Liability"))
-    val reliefPeriods = List(CalculatedPeriod(BigDecimal(1111.11),new LocalDate(s"$periodKey-9-1"), new LocalDate(s"${periodKey+1}-3-31"), "Relief", Some("Property rental businesses")))
+    val liabilityPeriods = List(CalculatedPeriod(BigDecimal(1111.11), LocalDate.parse(s"$periodKey-04-01"), LocalDate.parse(s"$periodKey-08-31"), "Liability"))
+    val reliefPeriods = List(CalculatedPeriod(BigDecimal(1111.11),LocalDate.parse(s"$periodKey-09-01"), LocalDate.parse(s"${periodKey+1}-03-31"), "Relief", Some("Property rental businesses")))
     Some(new PropertyDetailsCalculated(liabilityAmount = liabilityAmount,
       liabilityPeriods = liabilityPeriods,
       reliefPeriods = reliefPeriods,
       professionalValuation = Some(true),
-      acquistionDateToUse = Some(new LocalDate("1970-01-01"))
+      acquistionDateToUse = Some(LocalDate.parse("1970-01-01"))
     ))
   }
 
   def getPropertyDetailsCalculatedRefund(liabilityAmount: Option[BigDecimal] = Some(8875.12), periodKey : Int = 2015): Option[PropertyDetailsCalculated] = {
-    val liabilityPeriods = List(CalculatedPeriod(BigDecimal(2000000.00), new LocalDate(s"$periodKey-4-1"), new LocalDate(s"${periodKey+1}-8-31"), "Liability"))
+    val liabilityPeriods = List(CalculatedPeriod(BigDecimal(2000000.00), LocalDate.parse(s"$periodKey-04-01"), LocalDate.parse(s"${periodKey+1}-08-31"), "Liability"))
     Some(new PropertyDetailsCalculated(
       acquistionValueToUse = Some(2000000.00),
-      acquistionDateToUse = Some(new LocalDate("2012-04-01")),
+      acquistionDateToUse = Some(LocalDate.parse("2012-04-01")),
       professionalValuation = Some(false),
       liabilityPeriods = liabilityPeriods,
       liabilityAmount = liabilityAmount,

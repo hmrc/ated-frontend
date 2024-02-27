@@ -17,9 +17,9 @@
 package models
 
 import config.ApplicationConfig
-import org.joda.time.LocalDate
-import play.api.libs.json.JodaWrites._
-import play.api.libs.json.JodaReads._
+import java.time.LocalDate
+import play.api.libs.json.Reads._
+import play.api.libs.json.Writes._
 import play.api.libs.json._
 import utils.PeriodUtils
 

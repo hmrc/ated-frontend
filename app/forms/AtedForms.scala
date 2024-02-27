@@ -18,7 +18,7 @@ package forms
 
 import forms.mappings.DateTupleCustomError
 import models._
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import play.api.data.Forms._
 import play.api.data.validation.{Constraint, Invalid, Valid, ValidationResult}
 import play.api.data.{Form, FormError}
@@ -247,7 +247,7 @@ object AtedForms {
         val dateOfDisposal: Option[LocalDate] = {
           (f.data.get("dateOfDisposal.day"), f.data.get("dateOfDisposal.month"), f.data.get("dateOfDisposal.year")) match {
             case (Some(d), Some(m), Some(y)) => try {
-              Some(new LocalDate(y.trim.toInt, m.trim.toInt, d.trim.toInt))
+              Some(LocalDate.of(y.trim.toInt, m.trim.toInt, d.trim.toInt))
             } catch {
               case _: Throwable => None
             }

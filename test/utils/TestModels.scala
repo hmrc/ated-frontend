@@ -18,7 +18,7 @@ package utils
 
 import config.ApplicationConfig
 import models._
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import play.api.libs.json.{JsObject, Json}
 import utils.AtedConstants._
 
@@ -49,16 +49,16 @@ trait TestModels {
   def draftReturns4(periodKey: Int) = DraftReturns(periodKey, "", "dispose liability draft", None, TypeDisposeLiabilityDraft)
 
   val submittedReliefReturns1 = SubmittedReliefReturns(
-    formBundleNo1, "some relief", new LocalDate("2015-05-05"), new LocalDate("2015-05-05"), new LocalDate("2015-05-05"))
+    formBundleNo1, "some relief", LocalDate.parse("2015-05-05"), LocalDate.parse("2015-05-05"), LocalDate.parse("2015-05-05"))
   def submittedReliefReturnsSocialHousing(periodKey: Int): SubmittedReliefReturns = SubmittedReliefReturns(
-    formBundleNo1, if (periodKey >= 2020) "Provider of social housing or housing co-operative" else "Social housing", new LocalDate("2015-05-05"), new LocalDate("2015-05-05"), new LocalDate("2015-05-05"))
+    formBundleNo1, if (periodKey >= 2020) "Provider of social housing or housing co-operative" else "Social housing", LocalDate.parse("2015-05-05"), LocalDate.parse("2015-05-05"), LocalDate.parse("2015-05-05"))
   val submittedLiabilityReturns1 = SubmittedLiabilityReturns(
-    formBundleNo2, "addr1+2", BigDecimal(1234.00), new LocalDate("2015-05-05"), new LocalDate("2015-05-05"),
-    new LocalDate("2015-05-05"), changeAllowed = true, "payment-ref-01")
+    formBundleNo2, "addr1+2", BigDecimal(1234.00), LocalDate.parse("2015-05-05"), LocalDate.parse("2015-05-05"),
+    LocalDate.parse("2015-05-05"), changeAllowed = true, "payment-ref-01")
 
   val previousReturns = SubmittedLiabilityReturns(
-    formBundleNo3, "12 Stone Row", BigDecimal(123), new LocalDate("2015-05-05"),
-    new LocalDate("2015-05-05"), new LocalDate("2015-05-05"), changeAllowed = false, "payment-ref"
+    formBundleNo3, "12 Stone Row", BigDecimal(123), LocalDate.parse("2015-05-05"),
+    LocalDate.parse("2015-05-05"), LocalDate.parse("2015-05-05"), changeAllowed = false, "payment-ref"
   )
 
   def submittedReturns(periodKey: Int, withPastReturns: Boolean = false): SubmittedReturns = {
@@ -280,7 +280,7 @@ trait TestModels {
     )
   }
 
-  val prevReturn = PreviousReturns("1 address street", "12345678", new LocalDate("2015-04-02"), true)
+  val prevReturn = PreviousReturns("1 address street", "12345678", LocalDate.parse("2015-04-02"), true)
   val pastReturnDetails: Seq[PreviousReturns] = Seq(prevReturn)
 
   def currentYearReturnsForDisplay: Seq[AccountSummaryRowModel] = {

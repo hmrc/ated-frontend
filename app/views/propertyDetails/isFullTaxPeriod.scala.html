@@ -23,7 +23,7 @@
 @import views.html.helpers._
 @import _root_.utils._
 
-@this(newMain: newMain, 
+@this(newMain: newMain,
       govukButton : GovukButton,
       govukRadios : GovukRadios,
       govukBackLink : GovukBackLink,
@@ -33,8 +33,8 @@
 
 @(id: String, periodKey: Int,
   propertyDetailsForm: Form[PropertyDetailsFullTaxPeriod],
-  periodStartDate: org.joda.time.LocalDate,
-  periodEndDate: org.joda.time.LocalDate,
+  periodStartDate: java.time.LocalDate,
+  periodEndDate: java.time.LocalDate,
   mode: Option[String] = None,
   serviceInfoContent: Html = HtmlFormat.empty,
   backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)

@@ -19,7 +19,7 @@ package views
 import builders.PropertyDetailsBuilder
 import config.ApplicationConfig
 import models._
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import org.jsoup.Jsoup
 import org.scalatest.{BeforeAndAfterEach, GivenWhenThen}
 import org.scalatest.featurespec.AnyFeatureSpec
@@ -43,36 +43,36 @@ class formBundleReturnSpec extends AnyFeatureSpec with GuiceOneServerPerSuite wi
 
   val injectedViewInstance: formBundleReturn = app.injector.instanceOf[views.html.formBundleReturn]
 
-  val formBundleProp: FormBundleProperty = FormBundleProperty(BigDecimal(100), new LocalDate("2015-09-08"),
-    new LocalDate("2015-10-12"), AtedConstants.LiabilityReturnType, None)
+  val formBundleProp: FormBundleProperty = FormBundleProperty(BigDecimal(100), LocalDate.parse("2015-09-08"),
+    LocalDate.parse("2015-10-12"), AtedConstants.LiabilityReturnType, None)
   val formBundleAddress: FormBundleAddress = FormBundleAddress("100 addressLine1", "addressLine2", Some("addressLine3"), Some("AddressLine4"), Some("XX11XX"), "GB")
   val formBundlePropertyDetails: FormBundlePropertyDetails = FormBundlePropertyDetails(Some("title here"), formBundleAddress, Some("additional details"))
   val viewReturnWithSinglePeriod: FormBundleReturn =
     FormBundleReturn("2014",
-    formBundlePropertyDetails, Some(new LocalDate("2013-10-10")), Some(BigDecimal(100)), Some("ABCdefgh"), Some("12345678"), Some("1234"), professionalValuation = true, ninetyDayRuleApplies = true,
-      new LocalDate("2015-05-10"), BigDecimal(9324), "1234567891",
+    formBundlePropertyDetails, Some(LocalDate.parse("2013-10-10")), Some(BigDecimal(100)), Some("ABCdefgh"), Some("12345678"), Some("1234"), professionalValuation = true, ninetyDayRuleApplies = true,
+      LocalDate.parse("2015-05-10"), BigDecimal(9324), "1234567891",
       List(formBundleProp))
 
   val viewReturnWithMultiPeriod =
     FormBundleReturn("2014",
-      formBundlePropertyDetails, Some(new LocalDate("2013-10-10")), Some(BigDecimal(100)), Some("ABCdefgh"), Some("12345678"), Some("1234"), professionalValuation = true, ninetyDayRuleApplies = true,
-      new LocalDate("2015-05-10"), BigDecimal(9324), "1234567891",
+      formBundlePropertyDetails, Some(LocalDate.parse("2013-10-10")), Some(BigDecimal(100)), Some("ABCdefgh"), Some("12345678"), Some("1234"), professionalValuation = true, ninetyDayRuleApplies = true,
+      LocalDate.parse("2015-05-10"), BigDecimal(9324), "1234567891",
       List(
-        FormBundleProperty(BigDecimal(100), new LocalDate("2015-04-01"),
-          new LocalDate("2015-10-31"), AtedConstants.LiabilityReturnType, None ),
-        FormBundleProperty(BigDecimal(200), new LocalDate("2015-11-01"),
-          new LocalDate("2016-03-31"), AtedConstants.ReliefReturnType, Some("Property rental businesses"))
+        FormBundleProperty(BigDecimal(100), LocalDate.parse("2015-04-01"),
+          LocalDate.parse("2015-10-31"), AtedConstants.LiabilityReturnType, None ),
+        FormBundleProperty(BigDecimal(200), LocalDate.parse("2015-11-01"),
+          LocalDate.parse("2016-03-31"), AtedConstants.ReliefReturnType, Some("Property rental businesses"))
       )
     )
 
   val viewWithDisposePeriod =
     FormBundleReturn("2014",
-      formBundlePropertyDetails, Some(new LocalDate("2013-10-10")), Some(BigDecimal(100)), Some("ABCdefgh"), Some("12345678"), Some("1234"), professionalValuation = true, ninetyDayRuleApplies = true,
-      new LocalDate("2015-05-10"), BigDecimal(9324), "1234567891",
+      formBundlePropertyDetails, Some(LocalDate.parse("2013-10-10")), Some(BigDecimal(100)), Some("ABCdefgh"), Some("12345678"), Some("1234"), professionalValuation = true, ninetyDayRuleApplies = true,
+      LocalDate.parse("2015-05-10"), BigDecimal(9324), "1234567891",
       List(
-        FormBundleProperty(BigDecimal(100), new LocalDate("2015-04-01"),
-          new LocalDate("2015-10-31"), AtedConstants.LiabilityReturnType, None ),
-        FormBundleProperty(BigDecimal(100), new LocalDate("2015-11-01"), new LocalDate("2016-03-31"), AtedConstants.DisposeReturnType, None)
+        FormBundleProperty(BigDecimal(100), LocalDate.parse("2015-04-01"),
+          LocalDate.parse("2015-10-31"), AtedConstants.LiabilityReturnType, None ),
+        FormBundleProperty(BigDecimal(100), LocalDate.parse("2015-11-01"), LocalDate.parse("2016-03-31"), AtedConstants.DisposeReturnType, None)
       )
     )
 

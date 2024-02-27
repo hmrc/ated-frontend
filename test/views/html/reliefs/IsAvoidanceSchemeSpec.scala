@@ -19,7 +19,7 @@ package views.html.reliefs
 import config.ApplicationConfig
 import forms.ReliefForms.isTaxAvoidanceForm
 import models.StandardAuthRetrievals
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import play.api.test.Injecting
 import play.twirl.api.Html
 import testhelpers.{AtedViewSpec, MockAuthUtil}
@@ -30,7 +30,7 @@ class IsAvoidanceSchemeSpec extends AtedViewSpec with MockAuthUtil with Injectin
 
   implicit val mockAppConfig: ApplicationConfig = inject[ApplicationConfig]
   val periodKey = 2017
-  val periodStartDate = new LocalDate()
+  val periodStartDate = LocalDate.now()
   val injectedView: avoidanceSchemeBeingUsed = inject[views.html.reliefs.avoidanceSchemeBeingUsed]
 
   def view: Html = injectedView(periodKey, isTaxAvoidanceForm, periodStartDate, Html(""), Some("http://backLink"))

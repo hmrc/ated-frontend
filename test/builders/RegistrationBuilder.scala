@@ -17,7 +17,7 @@
 package builders
 
 import models._
-import org.joda.time.LocalDate
+import java.time.LocalDate
 
 
 object RegistrationBuilder {
@@ -44,7 +44,7 @@ object RegistrationBuilder {
       isEditable = false,
       isAnAgent = true,
       isAnIndividual = true,
-      individual = Some(Individual(firstName = firstName, lastName = lastName, dateOfBirth = new LocalDate("1970-01-01"))),
+      individual = Some(Individual(firstName = firstName, lastName = lastName, dateOfBirth = LocalDate.parse("1970-01-01"))),
       organisation = None,
       addressDetails = RegisteredAddressDetails(addressLine1 = "addrLine1", addressLine2 = "addrLine2", countryCode = "GB"),
       contactDetails = ContactDetails())

@@ -20,7 +20,7 @@ import connectors.{AtedConnector, DataCacheConnector}
 
 import javax.inject.Inject
 import models._
-import org.joda.time.DateTime
+import java.time.ZonedDateTime
 import play.api.Logging
 import play.api.http.Status._
 import uk.gov.hmrc.http.HeaderCarrier
@@ -91,7 +91,7 @@ class DisposeLiabilityReturnService @Inject()(atedConnector: AtedConnector,
             dataCacheConnector.saveFormData[EditLiabilityReturnsResponseModel](formId = SubmitEditedLiabilityReturnsResponseFormId,
               data = disposeLiabilityResponse.json.as[EditLiabilityReturnsResponseModel])
           }
-        case status => Future.successful(EditLiabilityReturnsResponseModel(DateTime.now(), Nil, BigDecimal(0.00)))
+        case status => Future.successful(EditLiabilityReturnsResponseModel(ZonedDateTime.now(), Nil, BigDecimal(0.00)))
       }
     }
   }
