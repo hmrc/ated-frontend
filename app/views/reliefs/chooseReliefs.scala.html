@@ -25,6 +25,7 @@
 @import uk.gov.hmrc.govukfrontend.views.Implicits.RichCheckboxes
 @import uk.gov.hmrc.hmrcfrontend.views.Implicits.RichDateInput
 @import views.ViewUtils.titleBuilder
+@import models.StringFormatting._
 
 @this(newMain: newMain,
   formHelper: FormWithCSRF,
@@ -37,7 +38,7 @@
 
 @(periodKey: Int,
   reliefsForm: Form[Reliefs],
-  periodStartDate: org.joda.time.LocalDate,
+  periodStartDate: java.time.LocalDate,
   serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
 @formattedPeriodStartDate = @{periodStartDate.toString(messages("ated.date-format.numeric"))}

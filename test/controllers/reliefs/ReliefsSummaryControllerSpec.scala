@@ -22,7 +22,7 @@ import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.AuthAction
 import models.{Reliefs, ReliefsTaxAvoidance, TaxAvoidance}
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
@@ -240,7 +240,7 @@ class ReliefsSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
             ReliefBuilder.reliefTaxAvoidance(periodKey,
               Reliefs(periodKey = periodKey, isAvoidanceScheme = Some(true), openToPublic = true),
               taxAvoidance = TaxAvoidance(openToPublicScheme = Some("12345678"))
-          )), PeriodUtils.calculatePeakStartYear(new LocalDate().plusYears(2))) {
+          )), PeriodUtils.calculatePeakStartYear(LocalDate.now().plusYears(2))) {
             result =>
               status(result) must be(BAD_REQUEST)
               val document = Jsoup.parse(contentAsString(result))

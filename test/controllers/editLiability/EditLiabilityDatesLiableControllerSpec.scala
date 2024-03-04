@@ -24,7 +24,7 @@ import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.AuthAction
 import controllers.propertyDetails.PropertyDetailsTaxAvoidanceController
 import models.{PropertyDetails, PropertyDetailsPeriod}
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
@@ -172,7 +172,7 @@ class EditLiabilityDatesLiableControllerSpec extends PlaySpec with GuiceOneServe
 
         "show the chargeable property details value view with existing data" in new Setup {
           val propertyDetailsPeriod: Option[PropertyDetailsPeriod] = PropertyDetailsBuilder
-            .getPropertyDetailsPeriodDatesLiable(new LocalDate("2015-5-1"), new LocalDate("2016-2-23")).
+            .getPropertyDetailsPeriodDatesLiable(LocalDate.parse("2015-05-01"), LocalDate.parse("2016-02-23")).
             map(_.copy(isFullPeriod = Some(false), isInRelief = Some(false)))
 
           val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode")).copy(period = propertyDetailsPeriod)

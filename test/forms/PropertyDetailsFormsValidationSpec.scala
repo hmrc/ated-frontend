@@ -19,7 +19,7 @@ package forms
 import forms.PropertyDetailsForms._
 import forms.PropertyDetailsFormsValidation.formDate2Option
 import models.PropertyDetailsDatesLiable
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.data.Form

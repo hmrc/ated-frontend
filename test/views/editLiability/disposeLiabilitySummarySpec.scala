@@ -19,7 +19,7 @@ package views.editLiability
 import builders.ChangeLiabilityReturnBuilder
 import config.ApplicationConfig
 import models._
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import org.jsoup.Jsoup
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.play.PlaySpec

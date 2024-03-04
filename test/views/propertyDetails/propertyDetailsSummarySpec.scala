@@ -19,8 +19,8 @@ package views.propertyDetails
 import builders.PropertyDetailsBuilder
 import config.ApplicationConfig
 import models.StandardAuthRetrievals
-import org.joda.time.format.DateTimeFormat
-import org.joda.time.{DateTimeZone, LocalDate}
+import java.time.format.DateTimeFormatter
+import java.time.{ZoneId, LocalDate}
 import org.jsoup.Jsoup
 import org.scalatest.featurespec.AnyFeatureSpecLike
 import org.scalatest.{BeforeAndAfterEach, GivenWhenThen}
@@ -48,7 +48,7 @@ class propertyDetailsSummarySpec extends AnyFeatureSpecLike with GuiceOneAppPerS
 
   val injectedViewInstance: propertyDetailsSummary = app.injector.instanceOf[views.html.propertyDetails.propertyDetailsSummary]
 
-  def formatDate(date: LocalDate): String = DateTimeFormat.forPattern("d MMMM yyyy").withZone(DateTimeZone.forID("Europe/London")).print(date)
+  def formatDate(date: LocalDate): String = date.format(DateTimeFormatter.ofPattern("d LLLL yyyy").withZone(ZoneId.of("Europe/London")))
   Feature("The user can view their property details summary before they submit it") {
 
     info("as a client i want to be my property details summary")

@@ -17,7 +17,7 @@
 package utils
 
 import models._
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import play.api.mvc.{AnyContent, Request}
 import utils.AtedConstants._
 import scala.language.postfixOps
@@ -107,7 +107,7 @@ object AtedUtils {
   }
 
   def canSubmit(periodKey: Int, currentDate: LocalDate): Boolean = {
-    val currentYear = if (currentDate.getMonthOfYear >= 4) currentDate.getYear else currentDate.getYear - 1
+    val currentYear = if (currentDate.getMonthValue >= 4) currentDate.getYear else currentDate.getYear - 1
     periodKey <= currentYear
   }
 

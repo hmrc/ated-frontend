@@ -22,7 +22,7 @@ import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms
 import forms.PropertyDetailsForms._
 import models.{DateCouncilRegistered, DateFirstOccupiedKnown}
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import play.api.i18n.{Messages, MessagesImpl}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services._

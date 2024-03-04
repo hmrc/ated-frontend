@@ -51,7 +51,7 @@ lazy val microservice = Project(appName, file("."))
       IntegrationTest / Keys.fork :=  false,
       IntegrationTest / unmanagedSourceDirectories := (IntegrationTest / baseDirectory)(base => Seq(base / "it")).value,
       IntegrationTest / parallelExecution := false,
-      routesImport += "config.JodaLocalDateRoutes._"
+      routesImport += "config.JavaLocalDateRoutes._"
     )
     .disablePlugins(JUnitXmlReportPlugin)
     .settings(

@@ -22,7 +22,7 @@ import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.AuthAction
 import models._
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
@@ -81,7 +81,7 @@ class PropertyDetailsOwnedBeforeControllerSpec extends PlaySpec with GuiceOneSer
       injectedViewInstance
     )
 
-    val periodKey: Int = calculatePeakStartYear(LocalDate.parse(s"$year-3-16"))
+    val periodKey: Int = calculatePeakStartYear(LocalDate.parse(s"$year-03-16"))
     val valuationPeriod: String = PeriodUtils.calculateLowerTaxYearBoundary(periodKey).getYear.toString
 
     def getWithUnAuthorisedUser(test: Future[Result] => Any): Unit = {

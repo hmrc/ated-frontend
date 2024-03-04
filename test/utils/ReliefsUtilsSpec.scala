@@ -18,7 +18,7 @@ package utils
 
 import config.ApplicationConfig
 import models.SubmittedReliefReturns
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
@@ -122,26 +122,26 @@ class ReliefsUtilsSpec extends PlaySpec with MockitoSugar with GuiceOneServerPer
     }
 
     "provide many reliefs for 1 type with 2 of similar latest submission date" in {
-      val r1 = SubmittedReliefReturns("no2", "type 1", LocalDate.now(), LocalDate.now(), new LocalDate(2000,1,6))
-      val r2 = SubmittedReliefReturns("no5", "type 1", LocalDate.now(), LocalDate.now(), new LocalDate(2000,1,6))
-      val r3 = SubmittedReliefReturns("no4", "type 1", LocalDate.now(), LocalDate.now(), new LocalDate(2000,1,5))
-      val r4 = SubmittedReliefReturns("no3", "type 1", LocalDate.now(), LocalDate.now(), new LocalDate(2000,1,4))
-      val r5 = SubmittedReliefReturns("no6", "type 1", LocalDate.now(), LocalDate.now(), new LocalDate(2000,1,3))
-      val r6 = SubmittedReliefReturns("no7", "type 1", LocalDate.now(), LocalDate.now(), new LocalDate(2000,1,3)) 
-      val r7 = SubmittedReliefReturns("no1", "type 1", LocalDate.now(), LocalDate.now(), new LocalDate(2000,1,2))
+      val r1 = SubmittedReliefReturns("no2", "type 1", LocalDate.now(), LocalDate.now(), LocalDate.of(2000,1,6))
+      val r2 = SubmittedReliefReturns("no5", "type 1", LocalDate.now(), LocalDate.now(), LocalDate.of(2000,1,6))
+      val r3 = SubmittedReliefReturns("no4", "type 1", LocalDate.now(), LocalDate.now(), LocalDate.of(2000,1,5))
+      val r4 = SubmittedReliefReturns("no3", "type 1", LocalDate.now(), LocalDate.now(), LocalDate.of(2000,1,4))
+      val r5 = SubmittedReliefReturns("no6", "type 1", LocalDate.now(), LocalDate.now(), LocalDate.of(2000,1,3))
+      val r6 = SubmittedReliefReturns("no7", "type 1", LocalDate.now(), LocalDate.now(), LocalDate.of(2000,1,3))
+      val r7 = SubmittedReliefReturns("no1", "type 1", LocalDate.now(), LocalDate.now(), LocalDate.of(2000,1,2))
 
       val testReliefReturns = Seq(r5,r6,r7,r1,r2,r3,r4)
       ReliefsUtils.partitionNewestReliefForType(testReliefReturns) mustBe Tuple2(Seq(r1,r2), Seq(r3,r4,r5,r6,r7))
     }
 
     "provide many reliefs for 1 type with 2 of similar latest submission date, alternate set" in {
-      val r1 = SubmittedReliefReturns("no2", "type 1", LocalDate.now(), LocalDate.now(), new LocalDate(2000,1,6))
-      val r2 = SubmittedReliefReturns("no5", "type 1", LocalDate.now(), LocalDate.now(), new LocalDate(2000,1,6))
-      val r3 = SubmittedReliefReturns("no4", "type 1", LocalDate.now(), LocalDate.now(), new LocalDate(2000,1,5))
-      val r4 = SubmittedReliefReturns("no3", "type 1", LocalDate.now(), LocalDate.now(), new LocalDate(2000,1,4))
-      val r5 = SubmittedReliefReturns("no6", "type 1", LocalDate.now(), LocalDate.now(), new LocalDate(2000,1,3))
-      val r6 = SubmittedReliefReturns("no7", "type 1", LocalDate.now(), LocalDate.now(), new LocalDate(2000,1,3)) 
-      val r7 = SubmittedReliefReturns("no1", "type 1", LocalDate.now(), LocalDate.now(), new LocalDate(2000,1,2))
+      val r1 = SubmittedReliefReturns("no2", "type 1", LocalDate.now(), LocalDate.now(), LocalDate.of(2000,1,6))
+      val r2 = SubmittedReliefReturns("no5", "type 1", LocalDate.now(), LocalDate.now(), LocalDate.of(2000,1,6))
+      val r3 = SubmittedReliefReturns("no4", "type 1", LocalDate.now(), LocalDate.now(), LocalDate.of(2000,1,5))
+      val r4 = SubmittedReliefReturns("no3", "type 1", LocalDate.now(), LocalDate.now(), LocalDate.of(2000,1,4))
+      val r5 = SubmittedReliefReturns("no6", "type 1", LocalDate.now(), LocalDate.now(), LocalDate.of(2000,1,3))
+      val r6 = SubmittedReliefReturns("no7", "type 1", LocalDate.now(), LocalDate.now(), LocalDate.of(2000,1,3))
+      val r7 = SubmittedReliefReturns("no1", "type 1", LocalDate.now(), LocalDate.now(), LocalDate.of(2000,1,2))
 
       val testReliefReturns = Seq(r4,r5,r6,r7,r1,r2,r3)
       ReliefsUtils.partitionNewestReliefForType(testReliefReturns) mustBe Tuple2(Seq(r1,r2), Seq(r3,r4,r5,r6,r7))

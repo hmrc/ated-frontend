@@ -16,7 +16,7 @@
 
 package forms.mappings
 
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import play.api.data.Forms.{optional, text, tuple}
 import play.api.data.{FormError, Mapping}
 
@@ -46,7 +46,7 @@ case class DateTupleCustomError(invalidDateErrorKey: String){
               if (y.length != 4) {
                 throw new Exception("Year must be 4 digits")
               }
-              new LocalDate(
+              LocalDate.of(
                 y.toInt,
                 monthOption.getOrElse(throw new Exception("Month missing")).trim.toInt,
                 dayOption.getOrElse(throw new Exception("Day missing")).trim.toInt
@@ -63,7 +63,7 @@ case class DateTupleCustomError(invalidDateErrorKey: String){
         }).transform(
       {
         case (Some(y), Some(m), Some(d)) =>
-          try Some(new LocalDate(y.trim.toInt, m.trim.toInt, d.trim.toInt))
+          try Some(LocalDate.of(y.trim.toInt, m.trim.toInt, d.trim.toInt))
           catch {
             case _: Exception => None
           }
@@ -71,7 +71,7 @@ case class DateTupleCustomError(invalidDateErrorKey: String){
       },
       (date: Option[LocalDate]) =>
         date match {
-          case Some(d) => (Some(d.getYear.toString), Some(d.getMonthOfYear.toString), Some(d.getDayOfMonth.toString))
+          case Some(d) => (Some(d.getYear.toString), Some(d.getMonthValue().toString), Some(d.getDayOfMonth.toString))
           case _       => (None, None, None)
         }
     )
@@ -84,14 +84,14 @@ case class DateTupleCustomError(invalidDateErrorKey: String){
     ).transform(
       {
         case (Some(y), Some(m), Some(d)) =>
-          try Some(new LocalDate(y.trim.toInt, m.trim.toInt, d.trim.toInt))
+          try Some(LocalDate.of(y.trim.toInt, m.trim.toInt, d.trim.toInt))
           catch {
             case _ : Exception => None
           }
         case _ => None
       },
       {
-        case Some(d) => (Some(d.getYear.toString), Some(d.getMonthOfYear.toString), Some(d.getDayOfMonth.toString))
+        case Some(d) => (Some(d.getYear.toString), Some(d.getMonthValue.toString), Some(d.getDayOfMonth.toString))
         case _ => (None, None, None)
       }
     )
@@ -131,7 +131,7 @@ case object DateTupleCustomError {
                     Seq(FormError(s"${x._1}.day", s"ated.error.date.invalid.day.month", Seq(x._2.toLowerCase)))
                   } else {
                     try {
-                      val validatedDate = new LocalDate(y.trim.toInt, m.trim.toInt, d.trim.toInt)
+                      val validatedDate = LocalDate.of(y.trim.toInt, m.trim.toInt, d.trim.toInt)
 
                       dateForPastValidation match {
                         case Some(pastDate) if validatedDate.isBefore(pastDate) =>

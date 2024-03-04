@@ -19,7 +19,7 @@ package services
 import config.ApplicationConfig
 import connectors.{AtedConnector, DataCacheConnector}
 import models.{PeriodSummaryReturns, _}
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
@@ -194,7 +194,7 @@ class SummaryReturnsServiceSpec extends PlaySpec with MockitoSugar with BeforeAn
     }
 
     "retrieveCachedPreviousReturnAddressList" must {
-      val prevReturn = PreviousReturns("1 address street", "12345678", new LocalDate("2015-04-02"), true)
+      val prevReturn = PreviousReturns("1 address street", "12345678", LocalDate.parse("2015-04-02"), true)
       val pastReturnDetails = Some(Seq(prevReturn))
 
       "retrieve cached previous returns address list" in new Setup {

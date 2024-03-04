@@ -18,18 +18,18 @@ package utils
 
 import config.ApplicationConfig
 import models._
-import org.joda.time.LocalDate
+import java.time.{LocalTime, LocalDate, ZoneOffset}
 import utils.AtedConstants._
 import scala.language.postfixOps
 
 object PeriodUtils {
-  implicit val localDateOrdering: Ordering[LocalDate] = Ordering.by(_.toDate.getTime)
+  implicit val localDateOrdering: Ordering[LocalDate] = Ordering.by(_.toEpochSecond(LocalTime.NOON, ZoneOffset.UTC))
 
   val lowestBound = 2012
 
-  def calculatePeakStartYear(date: LocalDate = new LocalDate(), month: Int = 3)(implicit appConfig: ApplicationConfig): Int = {
+  def calculatePeakStartYear(date: LocalDate = LocalDate.now(), month: Int = 3)(implicit appConfig: ApplicationConfig): Int = {
 
-    val draftReturnsAllowedFrom = new LocalDate(date.year.get(), month, appConfig.atedPeakStartDay.toInt)
+    val draftReturnsAllowedFrom = LocalDate.of(date.getYear(), month, appConfig.atedPeakStartDay.toInt)
 
     if(date.isBefore(draftReturnsAllowedFrom)) {
       date.minusYears(1).getYear
@@ -38,7 +38,7 @@ object PeriodUtils {
     }
   }
 
-  def periodStartDate(periodKey: Int): LocalDate = new LocalDate(s"$periodKey-${AtedConstants.PeriodStartMonth}-${AtedConstants.PeriodStartDay}")
+  def periodStartDate(periodKey: Int): LocalDate = LocalDate.of(periodKey, AtedConstants.PeriodStartMonth.toInt, AtedConstants.PeriodStartDay.toInt)
 
   def periodEndDate(periodKey: Int): LocalDate = periodStartDate(periodKey).plusYears(1).minusDays(1)
 
@@ -48,7 +48,7 @@ object PeriodUtils {
   }
 
   def isPeriodTooEarlyBefore2012(periodDate: Option[LocalDate]): Boolean = periodDate match {
-    case Some(x) => x.isBefore(new LocalDate("2012-04-01"))
+    case Some(x) => x.isBefore(LocalDate.of(2012,4,1))
     case _ => false
   }
 
@@ -58,7 +58,7 @@ object PeriodUtils {
   }
 
   def isAfterPresentDay(periodDate: Option[LocalDate]): Boolean = periodDate match {
-    case Some(x) => x.isAfter(new LocalDate())
+    case Some(x) => x.isAfter(LocalDate.now())
     case _ => false
   }
 
@@ -181,6 +181,6 @@ object PeriodUtils {
     val year: Int = if (periodKey <= lowestBound) lowestBound else {
       lowestBound + (5 * ((periodKey - lowestBound - 1) / 5))
     }
-    LocalDate.parse(s"$year-4-1")
+    LocalDate.parse(s"$year-04-01")
   }
 }

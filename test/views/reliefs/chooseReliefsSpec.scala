@@ -19,7 +19,7 @@ package views.reliefs
 import config.ApplicationConfig
 import forms.ReliefForms.reliefsForm
 import models.{Reliefs, StandardAuthRetrievals}
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import org.jsoup.Jsoup
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.{BeforeAndAfterEach, GivenWhenThen}
@@ -32,6 +32,7 @@ import play.twirl.api.Html
 import testhelpers.MockAuthUtil
 import utils.PeriodUtils
 import views.html.reliefs.chooseReliefs
+import models.StringFormatting._
 
 class chooseReliefsSpec extends AnyFeatureSpec with GuiceOneAppPerSuite with MockitoSugar
   with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
@@ -53,7 +54,7 @@ class chooseReliefsSpec extends AnyFeatureSpec with GuiceOneAppPerSuite with Moc
       Given("the client is creating a new relief and want to see the options")
       When("The user views the page")
 
-      val html = injectedViewInstance(periodKey, reliefsForm, new LocalDate("2015-04-01"), Html(""), Some("backLink"))
+      val html = injectedViewInstance(periodKey, reliefsForm, LocalDate.parse("2015-04-01"), Html(""), Some("backLink"))
 
       val document = Jsoup.parse(html.toString())
 
@@ -128,7 +129,7 @@ class chooseReliefsSpec extends AnyFeatureSpec with GuiceOneAppPerSuite with Moc
       When("The user views the page")
 
       val reliefs: Reliefs = Reliefs(periodKey = periodKey, rentalBusiness = true)
-      val html = injectedViewInstance(periodKey, reliefsForm.fill(reliefs), new LocalDate("2015-04-01"), Html(""), Some("http://backLink"))
+      val html = injectedViewInstance(periodKey, reliefsForm.fill(reliefs), LocalDate.parse("2015-04-01"), Html(""), Some("http://backLink"))
 
       val document = Jsoup.parse(html.toString())
 

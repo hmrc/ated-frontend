@@ -17,11 +17,11 @@
 package builders
 
 import models._
-import org.joda.time.LocalDate
+import java.time.LocalDate
 
 object DisposeLiabilityReturnBuilder {
 
-  def generateDisposalDate(periodKey: Int) = DisposeLiability(dateOfDisposal = Some(new LocalDate("2015-04-02")), periodKey = periodKey)
+  def generateDisposalDate(periodKey: Int) = DisposeLiability(dateOfDisposal = Some(LocalDate.parse("2015-04-02")), periodKey = periodKey)
 
   def generateFormBundleAddress = FormBundleAddress("line1", "line2", None, None, None, "GB")
 
@@ -30,7 +30,7 @@ object DisposeLiabilityReturnBuilder {
     val fProperty = FormBundlePropertyDetails(None, fAddress, None)
     val dispDate = generateDisposalDate(2015)
     val fReturn = FormBundleReturn("2015", fProperty, dateOfAcquisition = None, valueAtAcquisition = None, taxAvoidanceScheme = None, localAuthorityCode = None, professionalValuation = true, ninetyDayRuleApplies = false,
-      dateOfSubmission = new LocalDate("2015-04-02"), liabilityAmount = BigDecimal(123.45), paymentReference = "payment-ref-123", lineItem = Seq())
+      dateOfSubmission = LocalDate.parse("2015-04-02"), liabilityAmount = BigDecimal(123.45), paymentReference = "payment-ref-123", lineItem = Seq())
 
     DisposeLiabilityReturn(id = oldFormBundleNum, fReturn, Some(dispDate), None, None)
   }

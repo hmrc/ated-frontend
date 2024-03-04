@@ -21,7 +21,7 @@
 @import utils.AtedUtils
 @import views.ViewUtils.titleBuilder
 @import views.html.helpers._
-@import org.joda.time.LocalDate
+@import java.time.LocalDate
 @import utils.AtedUtils.intToMonth
 
 @this(newMain: newMain, govukButton : GovukButton, govukBackLink : GovukBackLink, formHelper: FormWithCSRF)
@@ -54,7 +54,7 @@
  </header>
 
  <p class="govuk-body">@messages("ated.property-details.earliest-start-date.first-para")</p>
- <p class="govuk-body">@messages("ated.property-details.earliest-start-date.second-para", when.dayOfMonth().get().toString, intToMonth(when.monthOfYear().get()), when.year().get().toString)</p>
+ <p class="govuk-body">@messages("ated.property-details.earliest-start-date.second-para", when.getDayOfMonth().toString, intToMonth(when.getMonthValue()), when.getYear().toString)</p>
 
   @formHelper(action = controllers.propertyDetails.routes.EarliestStartDateInUseController.continue(id)) {
       <div class="govuk-form-group govuk-!-padding-top-3">

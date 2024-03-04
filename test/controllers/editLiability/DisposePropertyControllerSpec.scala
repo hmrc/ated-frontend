@@ -21,7 +21,7 @@ import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.AuthAction
 import models._
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
@@ -163,7 +163,7 @@ class DisposePropertyControllerSpec extends PlaySpec with GuiceOneServerPerSuite
         val fProperty: FormBundlePropertyDetails = FormBundlePropertyDetails(None, fAddress, None)
         val fReturn: FormBundleReturn = FormBundleReturn("2015", fProperty, dateOfAcquisition = None, valueAtAcquisition = None,
           taxAvoidanceScheme = None, localAuthorityCode = None, professionalValuation = true, ninetyDayRuleApplies = false,
-          dateOfSubmission = new LocalDate("2015-04-02"), liabilityAmount = BigDecimal(123.45), paymentReference = "payment-ref-123", lineItem = Seq())
+          dateOfSubmission = LocalDate.parse("2015-04-02"), liabilityAmount = BigDecimal(123.45), paymentReference = "payment-ref-123", lineItem = Seq())
 
         val disposeLiabilityReturn: DisposeLiabilityReturn = DisposeLiabilityReturn(
           id = "12345678901", fReturn, disposeLiability = Some(DisposeLiability(None, periodKey)))
@@ -180,7 +180,7 @@ class DisposePropertyControllerSpec extends PlaySpec with GuiceOneServerPerSuite
         val fProperty: FormBundlePropertyDetails = FormBundlePropertyDetails(None, fAddress, None)
         val fReturn: FormBundleReturn = FormBundleReturn("2015", fProperty, dateOfAcquisition = None, valueAtAcquisition = None,
           taxAvoidanceScheme = None, localAuthorityCode = None, professionalValuation = true, ninetyDayRuleApplies = false,
-          dateOfSubmission = new LocalDate("2015-04-02"), liabilityAmount = BigDecimal(123.45), paymentReference = "payment-ref-123", lineItem = Seq())
+          dateOfSubmission = LocalDate.parse("2015-04-02"), liabilityAmount = BigDecimal(123.45), paymentReference = "payment-ref-123", lineItem = Seq())
 
         val disposeLiabilityReturn: DisposeLiabilityReturn = DisposeLiabilityReturn(id = "12345678901", fReturn)
         viewWithAuthorisedUser(Some(disposeLiabilityReturn)) {
