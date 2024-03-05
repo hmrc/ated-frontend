@@ -47,16 +47,16 @@ class periodSummarySpec extends AnyFeatureSpec with GuiceOneAppPerSuite with Moc
   val formBundleNo2 = "123456789013"
   val formBundleNo3 = "123456789014"
 
-  val draftReturns1: DraftReturns = DraftReturns(2015, "1", "desc", Some(BigDecimal(100.00)), TypeLiabilityDraft)
-  val draftReturns2: DraftReturns = DraftReturns(2015, "", "some relief", None, TypeReliefDraft)
+  val draftReturns1: DraftReturns = DraftReturns(2015, "1", "draftDescription", Some(BigDecimal(100.00)), TypeLiabilityDraft)
+  val draftReturns2: DraftReturns = DraftReturns(2015, "", "draftReturn", None, TypeReliefDraft)
 
-  val submittedReliefReturns1: SubmittedReliefReturns = SubmittedReliefReturns(formBundleNo1, "some relief",
+  val submittedReliefReturns1: SubmittedReliefReturns = SubmittedReliefReturns(formBundleNo1, "reliefType1",
     LocalDate.parse("2015-05-05"), LocalDate.parse("2015-05-05"), LocalDate.parse("2015-05-05"))
-  val submittedReliefReturns1Older: SubmittedReliefReturns = SubmittedReliefReturns(formBundleNo1, "some relief",
+  val submittedReliefReturns1Older: SubmittedReliefReturns = SubmittedReliefReturns(formBundleNo1, "reliefType2",
     LocalDate.parse("2015-05-05"), LocalDate.parse("2015-05-05"), LocalDate.parse("2015-04-05"))
-  val submittedLiabilityReturns1: SubmittedLiabilityReturns = SubmittedLiabilityReturns(formBundleNo2, "addr1+2", BigDecimal(1234.00),
+  val submittedLiabilityReturns1: SubmittedLiabilityReturns = SubmittedLiabilityReturns(formBundleNo2, "addressLine1+2", BigDecimal(1234.00),
     LocalDate.parse("2015-05-05"), LocalDate.parse("2015-05-05"), LocalDate.parse("2015-05-05"), changeAllowed = true, "payment-ref-01")
-  val submittedLiabilityReturns2: SubmittedLiabilityReturns = SubmittedLiabilityReturns(formBundleNo3, "addr1+2", BigDecimal(1234.00),
+  val submittedLiabilityReturns2: SubmittedLiabilityReturns = SubmittedLiabilityReturns(formBundleNo3, "addressLine1+2", BigDecimal(1234.00),
     LocalDate.parse("2015-05-05"), LocalDate.parse("2015-05-05"), LocalDate.parse("2015-06-06"), changeAllowed = true, "payment-ref-01")
 
   val submittedReturns: SubmittedReturns = SubmittedReturns(2015, Seq(submittedReliefReturns1, submittedReliefReturns1Older), Seq(submittedLiabilityReturns1))
@@ -66,19 +66,19 @@ class periodSummarySpec extends AnyFeatureSpec with GuiceOneAppPerSuite with Moc
   val periodSummaryReturnsWithOld: PeriodSummaryReturns = PeriodSummaryReturns(2015, Seq(draftReturns1, draftReturns2), Some(submittedReturnsWithOld))
   val previousPeriodSummaryReturns: PeriodSummaryReturns = PeriodSummaryReturns(2015, Nil, Some(submittedReturnsWithOld))
 
-  val currentReturnsTabText: String = "address, addr1+2 Status Submitted View or change relief type, " +
-    "some relief Status Submitted View or change relief type, " +
-    "some relief Status Submitted View or change address, " +
-    "desc Status Draft View or change address, " +
-    "some relief Status Draft View or change"
+  val currentReturnsTabText: String = "address, addressLine1+2 Status Submitted View or change the return for addressLine1+2 " +
+    "relief type, reliefType1 Status Submitted View or change the return for reliefType1 " +
+    "relief type, reliefType2 Status Submitted View or change the return for reliefType2 address, " +
+    "draftDescription Status Draft View or change the return for draftDescription address, " +
+    "draftReturn Status Draft View or change the return for draftReturn"
 
-  val currentReturnsTabTextWithOld: String = "address, addr1+2 Status Submitted View or change relief type," +
-    " some relief Status Submitted View or change address," +
-    " desc Status Draft View or change address, " +
-    "some relief Status Draft View or change"
+  val currentReturnsTabTextWithOld: String = "address, addressLine1+2 Status Submitted View or change the return for addressLine1+2 relief type," +
+    " reliefType1 Status Submitted View or change the return for reliefType1 address," +
+    " draftDescription Status Draft View or change the return for draftDescription address, " +
+    "draftReturn Status Draft View or change the return for draftReturn"
 
-  val previousReturnsTabText: String = "address, addr1+2 Status Submitted View or change relief type," +
-    " some relief Status Submitted View or change"
+  val previousReturnsTabText: String = "address, addressLine1+2 Status Submitted View or change the return for addressLine1+2 relief type," +
+    " reliefType1 Status Submitted View or change the return for reliefType1"
 
   Feature("The user can view their returns") {
     info("as a client i want to be able to view my returns")
@@ -132,7 +132,7 @@ class periodSummarySpec extends AnyFeatureSpec with GuiceOneAppPerSuite with Moc
       Then("The summary list should have data")
       assert(document.getElementById("current-returns-tab-content").text() === currentReturnsTabText)
       assert(document.getElementById("create-return").text() === "Create a new return")
-      assert(document.select("#current-liability-submitted-0").text() === "View or change")
+      assert(document.select("#current-liability-submitted-0").text() === "View or change the return for addressLine1+2")
       assert(document.select("#current-liability-submitted-0").attr("href") === s"/ated/form-bundle/123456789013/2015")
 
       assert(document.getElementsByClass("govuk-back-link").text === "Back")
@@ -141,7 +141,7 @@ class periodSummarySpec extends AnyFeatureSpec with GuiceOneAppPerSuite with Moc
 
     Scenario("Show both the current returns tab and the previous returns tab when there are previous returns.") {
 
-      Given("the client has no returns")
+      Given("the client has previous returns")
       When("The user views the page")
 
       val html = injectedViewInstance(2015, Some(periodSummaryReturnsWithOld), Some(previousPeriodSummaryReturns), Some(organisationName), Html(""), Some("http://backlink"))
@@ -159,12 +159,12 @@ class periodSummarySpec extends AnyFeatureSpec with GuiceOneAppPerSuite with Moc
       assert(document.getElementById("current-returns-tab-content").text() === currentReturnsTabTextWithOld)
       assert(document.getElementById("create-return").text() === "Create a new return")
       assert(document.getElementById("previous-returns-tab-content").text() === previousReturnsTabText)
-      assert(document.getElementById("previous-relief-submitted-0").text() === "View or change")
-      assert(document.getElementById("current-draft-liability-0").text() === "View or change")
+      assert(document.getElementById("previous-relief-submitted-0").text() === "View or change the return for reliefType1")
+      assert(document.getElementById("current-draft-liability-0").text() === "View or change the return for draftDescription")
 
-      assert(document.getElementById("current-draft-relief-1").text() === "View or change")
+      assert(document.getElementById("current-draft-relief-1").text() === "View or change the return for draftReturn")
 
-      assert(document.getElementById("previous-liability-submitted-0").text() === "View or change")
+      assert(document.getElementById("previous-liability-submitted-0").text() === "View or change the return for addressLine1+2")
 
       assert(document.select("#current-liability-submitted-0").attr("href") === s"/ated/form-bundle/123456789013/2015")
 
