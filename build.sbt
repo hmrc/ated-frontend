@@ -12,6 +12,7 @@ val appName = "ated-frontend"
 lazy val appDependencies: Seq[ModuleID] = AppDependencies()
 lazy val plugins: Seq[Plugins] = Seq(play.sbt.PlayScala)
 lazy val playSettings: Seq[Setting[_]] = Seq.empty
+lazy val silencerVersion = "1.7.14"
 
 lazy val scoverageSettings = {
     import scoverage.ScoverageKeys
@@ -36,14 +37,21 @@ lazy val microservice = Project(appName, file("."))
   .settings(inConfig(TemplateItTest)(Defaults.itSettings): _*)
     .settings(
       TwirlKeys.templateImports ++= Seq(
-        "views.html.helper.form",
-        "uk.gov.hmrc.govukfrontend.views.html.components._",
+        "uk.gov.hmrc.hmrcfrontend.views.html.components._",
         "uk.gov.hmrc.hmrcfrontend.views.html.components.implicits._",
-        "uk.gov.hmrc.hmrcfrontend.views.html.helpers._"
+        "uk.gov.hmrc.hmrcfrontend.views.html.helpers._",
+        "uk.gov.hmrc.govukfrontend.views.html.components._",
       ),
       addTestReportOption(IntegrationTest, "int-test-reports"),
       inConfig(IntegrationTest)(Defaults.itSettings),
       libraryDependencies ++= appDependencies,
+      ThisBuild / libraryDependencySchemes ++= Seq(
+        "org.scala-lang.modules" %% "scala-xml" % VersionScheme.Always
+      ),
+      libraryDependencies ++= Seq(
+        compilerPlugin("com.github.ghik" % "silencer-plugin" % silencerVersion cross CrossVersion.full),
+        "com.github.ghik" % "silencer-lib" % silencerVersion % Provided cross CrossVersion.full
+      ),
       retrieveManaged := true,
       routesGenerator := InjectedRoutesGenerator,
       Test / parallelExecution   := true,
@@ -56,7 +64,8 @@ lazy val microservice = Project(appName, file("."))
     .disablePlugins(JUnitXmlReportPlugin)
     .settings(
       resolvers += Resolver.jcenterRepo,
+      scalacOptions +=  "-feature",
       scalacOptions += "-Wconf:src=routes/.*:s",
       scalacOptions += "-Wconf:cat=unused-imports&src=html/.*:s"
     )
-    .disablePlugins(JUnitXmlReportPlugin)
+    //.disablePlugins(JUnitXmlReportPlugin)
