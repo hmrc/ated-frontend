@@ -20,15 +20,15 @@
 @import uk.gov.hmrc.hmrcfrontend.views.html.helpers.{HmrcLayout, HmrcReportTechnicalIssueHelper, HmrcTimeoutDialogHelper, HmrcTrackingConsentSnippet}
 @import views.AttorneyRegime
 @import views.html.helper.CSPNonce
-@import uk.gov.hmrc.govukfrontend.views.html.components.TwoThirdsOneThirdMainContent
+@import uk.gov.hmrc.hmrcfrontend.views.viewmodels.hmrcstandardpage._
+@import uk.gov.hmrc.hmrcfrontend.views.html.helpers.HmrcStandardPage
 
 @this(
-    hmrcLayout: HmrcLayout,
+    hmrcStandardPage: HmrcStandardPage,
     hmrcTimeoutDialogHelper: HmrcTimeoutDialogHelper,
     hmrcReportTechnicalIssueHelper: HmrcReportTechnicalIssueHelper,
     hmrcTrackingConsentSnippet: HmrcTrackingConsentSnippet,
     attorneyBanner: attorneyBanner,
-    twoThirdsOneThirdMainContent: TwoThirdsOneThirdMainContent,
     twoThirdsMainContent: TwoThirdsMainContent
 )
 
@@ -82,16 +82,18 @@
     @scripts
 }
 
-@hmrcLayout(
-    pageTitle = pageTitle,
-    additionalHeadBlock = Some(headBlock),
-    serviceUrl = Some(routes.HomeController.home(None).url),
-    signOutUrl = Some(signOutUrl),
-    beforeContentBlock = Some(beforeContentBlock),
-    additionalScriptsBlock = Some(additionalScripts),
-    mainContentLayout = Some(sideBar match {
-                                case Some(sideBar) => twoThirdsOneThirdMainContent(sideBar)
-                                case None => twoThirdsMainContent(_)
-                            }),
-    userResearchBannerUrl = urBannerUrl
+@hmrcStandardPage(
+    HmrcStandardPageParams(
+        pageTitle = pageTitle,
+        serviceURLs = ServiceURLs(
+            serviceUrl = Some(routes.HomeController.home(None).url),
+            signOutUrl = Some(signOutUrl),
+            accessibilityStatementUrl = None
+        ),
+        templateOverrides = TemplateOverrides(
+            additionalHeadBlock = Some(headBlock),
+            additionalScriptsBlock = Some(additionalScripts),
+            beforeContentBlock = Some(beforeContentBlock),
+        )
+    )
 )(content)
