@@ -16,13 +16,11 @@
 
 package controllers
 
-import java.util.UUID
 import builders.{SessionBuilder, TitleBuilder}
 import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.AuthAction
 import models.SelectPeriod
-import java.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
@@ -41,6 +39,8 @@ import uk.gov.hmrc.http.HeaderCarrier
 import utils.{AtedConstants, PeriodUtils}
 import views.html.{BtaNavigationLinks, selectPeriod}
 
+import java.time.LocalDate
+import java.util.UUID
 import scala.concurrent.Future
 
 class SelectPeriodControllerSpec extends PlaySpec with GuiceOneAppPerSuite with MockitoSugar with MockAuthUtil {
@@ -226,9 +226,9 @@ class SelectPeriodControllerSpec extends PlaySpec with GuiceOneAppPerSuite with 
 
                 doc.getElementsByClass("govuk-error-summary__list").html() must include("Select an option for type of return")
                 doc.getElementsByClass("govuk-error-message").html() must include("Select an option for type of return")
-                doc.getElementsByAttributeValue("for", "period-8").text() must be("2015 to 2016")
-                doc.getElementsByAttributeValue("for", "period-7").text() must be("2016 to 2017")
-                doc.getElementsByAttributeValue("for", "period-6").text() must be("2017 to 2018")
+                doc.getElementsByAttributeValue("for", "period-8").text() must be("2016 to 2017")
+                doc.getElementsByAttributeValue("for", "period-7").text() must be("2017 to 2018")
+                doc.getElementsByAttributeValue("for", "period-6").text() must be("2018 to 2019")
                 assert(doc.getElementById(s"period-${peakStartYear}_field") === null)
             }
           }

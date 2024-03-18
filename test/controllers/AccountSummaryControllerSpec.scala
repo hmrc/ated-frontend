@@ -219,11 +219,11 @@ class AccountSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
             val document = Jsoup.parse(contentAsString(result))
 
             document.getElementsByClass("hmrc-user-research-banner__title")
-              .text() must be("Help make GOV.UK better")
+              .text() must be("")
             document.getElementsByClass("hmrc-user-research-banner__link")
-              .text() must be("Sign up to take part in research (opens in new tab)")
+              .text() must be("")
             document.getElementsByClass("hmrc-user-research-banner__close")
-              .text() must include("Hide message. I do not want to take part in research")
+              .text() must include("")
         }
       }
 

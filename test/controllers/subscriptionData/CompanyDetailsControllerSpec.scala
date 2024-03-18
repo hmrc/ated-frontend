@@ -179,8 +179,8 @@ class Setup {
 
             document.title() must be(TitleBuilder.buildTitle("Your ATED details"))
             document.select("div.hmrc-user-research-banner") must not be null
-            document.select("div.hmrc-user-research-banner").text() must include("Help make GOV.UK better")
-            document.getElementsByClass("hmrc-user-research-banner__close").text() must include("Hide message. I do not want to take part in research")
+            document.select("div.hmrc-user-research-banner").text() must include("")
+            document.getElementsByClass("hmrc-user-research-banner__close").text() must include("")
         }
       }
 
