@@ -21,12 +21,15 @@
 @import views.AttorneyRegime
 @import views.html.helper.CSPNonce
 @import uk.gov.hmrc.govukfrontend.views.html.components.TwoThirdsOneThirdMainContent
+@import uk.gov.hmrc.hmrcfrontend.views.Aliases.UserResearchBanner
+@import uk.gov.hmrc.hmrcfrontend.views.config.StandardBetaBanner
 @import uk.gov.hmrc.hmrcfrontend.views.viewmodels.userresearchbanner._
 @import uk.gov.hmrc.hmrcfrontend.views.viewmodels.hmrcstandardpage._
 @import uk.gov.hmrc.hmrcfrontend.views.html.helpers.HmrcStandardPage
 
 @this(
     hmrcStandardPage: HmrcStandardPage,
+    standardBetaBanner: StandardBetaBanner,
     hmrcTimeoutDialogHelper: HmrcTimeoutDialogHelper,
     hmrcReportTechnicalIssueHelper: HmrcReportTechnicalIssueHelper,
     hmrcTrackingConsentSnippet: HmrcTrackingConsentSnippet,
@@ -101,6 +104,6 @@
                 }),
             ),
     pageTitle = pageTitle,
-    banners = Banners(userResearchBanner = Some(UserResearchBanner(url = urBannerUrl)))
+    banners = Banners(urBannerUrl)
     )
 )(content)
