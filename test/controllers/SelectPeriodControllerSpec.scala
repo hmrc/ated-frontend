@@ -38,7 +38,6 @@ import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.{AtedConstants, PeriodUtils}
 import views.html.{BtaNavigationLinks, selectPeriod}
-
 import java.time.LocalDate
 import java.util.UUID
 import scala.concurrent.Future
