@@ -75,8 +75,8 @@
     }
 }
 
-@urBannerUrl = @{
-    if(isUserResearchBannerVisible) Some(appConfig.urBannerLink) else None
+@urBannerWithUrl = @{
+    if(isUserResearchBannerVisible) Some(UserResearchBanner(url = appConfig.urBannerLink)) else None
 }
 
 @additionalScripts = {
@@ -102,6 +102,6 @@
                 }),
             ),
     pageTitle = pageTitle,
-    banners = Banners(urBannerUrl)
+    banners = Banners(userResearchBanner = urBannerWithUrl)
     )
 )(content)
