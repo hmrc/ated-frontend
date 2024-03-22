@@ -90,130 +90,384 @@
 }
 
 @rentalBusinessDateConditional = {
-    @govukDateInput(DateInput(
-        hint = Some(Hint(
-          content = Text(Messages("ated.choose-reliefs.relief-hint", formattedPeriodStartDate))
-        )),
-        fieldset = Some(Fieldset(
-            legend = Some(Legend(
-                content = HtmlContent(messages("ated.choose-reliefs.date", messages("ated.choose-single-relief.rentalBusiness")))
-            ))
-        )),
-        items = inputItems
+    <div class="govuk-form-group">
+      <fieldset class="govuk-fieldset" role="group" aria-describedby="rentalBusinessDate-hint">
+        <legend class="govuk-fieldset__legend">
+            @messages("ated.choose-reliefs.date", messages("ated.choose-single-relief.rentalBusiness"))
+        </legend>
+        <div id="rentalBusinessDate-hint" class="govuk-hint">
+          @messages("ated.choose-reliefs.relief-hint", formattedPeriodStartDate)
+        </div>
+        <div class="govuk-date-input" id="passport-issued">
+          <div class="govuk-date-input__item">
+            <div class="govuk-form-group">
+              <label class="govuk-label govuk-date-input__label" for="rentalBusinessDate-day">
+                <span aria-hidden="true">Day</span>
+                <span class="govuk-visually-hidden">@messages("ated.choose-single-relief.rentalBusiness.hiddenContentDay")</span>
+              </label>
+              <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="rentalBusinessDate-day" name="rentalBusinessDate-day" type="text" inputmode="numeric">
+            </div>
+          </div>
+          <div class="govuk-date-input__item">
+            <div class="govuk-form-group">
+              <label class="govuk-label govuk-date-input__label" for="rentalBusinessDate-month">
+                <span aria-hidden="true">Month</span>
+                <span class="govuk-visually-hidden">@messages("ated.choose-single-relief.rentalBusiness.hiddenContentMonth")</span>
+              </label>
+              <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="rentalBusinessDate-month" name="rentalBusinessDate-month" type="text" inputmode="numeric">
+            </div>
+          </div>
+          <div class="govuk-date-input__item">
+            <div class="govuk-form-group">
+              <label class="govuk-label govuk-date-input__label" for="rentalBusinessDate-year">
+                <span aria-hidden="true">Year</span>
+                <span class="govuk-visually-hidden">@messages("ated.choose-single-relief.rentalBusiness.hiddenContentYear")</span>
+              </label>
+              <input class="govuk-input govuk-date-input__input govuk-input--width-4" id="rentalBusinessDate-year" name="rentalBusinessDate-year" type="text" inputmode="numeric">
+            </div>
+          </div>
+        </div>
+      </fieldset>
+    </div>
 
-    ).withFormField(reliefsForm("rentalBusinessDate")))
 }
 
 @openToPublicDateConditional = {
-    @govukDateInput(DateInput(
-        hint = Some(Hint(
-            content = Text(Messages("ated.choose-reliefs.relief-hint", formattedPeriodStartDate))
-        )),
-        fieldset = Some(Fieldset(
-            legend = Some(Legend(
-                content = HtmlContent(messages("ated.choose-reliefs.date", messages("ated.choose-single-relief.openToPublic")))
-            ))
-        )),
-        items = inputItems
-    ).withFormField(reliefsForm("openToPublicDate")))
+    <div class="govuk-form-group">
+      <fieldset class="govuk-fieldset" role="group" aria-describedby="openToPublicDate-hint">
+        <legend class="govuk-fieldset__legend">
+            @messages("ated.choose-reliefs.date", messages("ated.choose-single-relief.openToPublic"))
+        </legend>
+        <div id="openToPublicDate-hint" class="govuk-hint">
+          @messages("ated.choose-reliefs.relief-hint", formattedPeriodStartDate)
+        </div>
+        <div class="govuk-date-input" id="passport-issued">
+          <div class="govuk-date-input__item">
+            <div class="govuk-form-group">
+              <label class="govuk-label govuk-date-input__label" for="openToPublicDate-day">
+                <span aria-hidden="true">Day</span>
+                <span class="govuk-visually-hidden">@messages("ated.choose-single-relief.openToPublic.hiddenContentDay")</span>
+              </label>
+              <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="openToPublicDate-day" name="openToPublicDate-day" type="text" inputmode="numeric">
+            </div>
+          </div>
+          <div class="govuk-date-input__item">
+            <div class="govuk-form-group">
+              <label class="govuk-label govuk-date-input__label" for="openToPublicDate-month">
+                <span aria-hidden="true">Month</span>
+                <span class="govuk-visually-hidden">@messages("ated.choose-single-relief.openToPublic.hiddenContentMonth")</span>
+              </label>
+              <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="openToPublicDate-month" name="openToPublicDate-month" type="text" inputmode="numeric">
+            </div>
+          </div>
+          <div class="govuk-date-input__item">
+            <div class="govuk-form-group">
+              <label class="govuk-label govuk-date-input__label" for="openToPublicDate-year">
+                <span aria-hidden="true">Year</span>
+                <span class="govuk-visually-hidden">@messages("ated.choose-single-relief.openToPublic.hiddenContentYear")</span>
+              </label>
+              <input class="govuk-input govuk-date-input__input govuk-input--width-4" id="openToPublicDate-year" name="openToPublicDate-year" type="text" inputmode="numeric">
+            </div>
+          </div>
+        </div>
+      </fieldset>
+    </div>
 }
 
 @propertyDeveloperDateConditional = {
-    @govukDateInput(DateInput(
-        hint = Some(Hint(
-            content = Text(Messages("ated.choose-reliefs.relief-hint", formattedPeriodStartDate))
-        )),
-        fieldset = Some(Fieldset(
-            legend = Some(Legend(
-                content = HtmlContent(messages("ated.choose-reliefs.date", messages("ated.choose-single-relief.propertyDeveloper")))
-            ))
-        )),
-        items = inputItems
-    ).withFormField(reliefsForm("propertyDeveloperDate")))
+    <div class="govuk-form-group">
+      <fieldset class="govuk-fieldset" role="group" aria-describedby="propertyDeveloperDate-hint">
+        <legend class="govuk-fieldset__legend">
+            @messages("ated.choose-reliefs.date", messages("ated.choose-single-relief.propertyDeveloper"))
+        </legend>
+        <div id="propertyDeveloperDate-hint" class="govuk-hint">
+          @messages("ated.choose-reliefs.relief-hint", formattedPeriodStartDate)
+        </div>
+        <div class="govuk-date-input" id="passport-issued">
+          <div class="govuk-date-input__item">
+            <div class="govuk-form-group">
+              <label class="govuk-label govuk-date-input__label" for="propertyDeveloperDate-day">
+                <span aria-hidden="true">Day</span>
+                <span class="govuk-visually-hidden">@messages("ated.choose-single-relief.propertyDeveloper.hiddenContentDay")</span>
+              </label>
+              <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="propertyDeveloperDate-day" name="propertyDeveloperDate-day" type="text" inputmode="numeric">
+            </div>
+          </div>
+          <div class="govuk-date-input__item">
+            <div class="govuk-form-group">
+              <label class="govuk-label govuk-date-input__label" for="propertyDeveloperDate-month">
+                <span aria-hidden="true">Month</span>
+                <span class="govuk-visually-hidden">@messages("ated.choose-single-relief.propertyDeveloper.hiddenContentMonth")</span>
+              </label>
+              <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="propertyDeveloperDate-month" name="propertyDeveloperDate-month" type="text" inputmode="numeric">
+            </div>
+          </div>
+          <div class="govuk-date-input__item">
+            <div class="govuk-form-group">
+              <label class="govuk-label govuk-date-input__label" for="propertyDeveloperDate-year">
+                <span aria-hidden="true">Year</span>
+                <span class="govuk-visually-hidden">@messages("ated.choose-single-relief.propertyDeveloper.hiddenContentYear")</span>
+              </label>
+              <input class="govuk-input govuk-date-input__input govuk-input--width-4" id="propertyDeveloperDate-year" name="propertyDeveloperDate-year" type="text" inputmode="numeric">
+            </div>
+          </div>
+        </div>
+      </fieldset>
+    </div>
 }
 
 @propertyTradingDateConditional = {
-    @govukDateInput(DateInput(
-        hint = Some(Hint(
-            content = Text(Messages("ated.choose-reliefs.relief-hint", formattedPeriodStartDate))
-        )),
-        fieldset = Some(Fieldset(
-            legend = Some(Legend(
-                content = HtmlContent(messages("ated.choose-reliefs.date", messages("ated.choose-single-relief.propertyTrading")))
-            ))
-        )),
-        items = inputItems
-    ).withFormField(reliefsForm("propertyTradingDate")))
+    <div class="govuk-form-group">
+      <fieldset class="govuk-fieldset" role="group" aria-describedby="propertyTradingDate-hint">
+        <legend class="govuk-fieldset__legend">
+            @messages("ated.choose-reliefs.date", messages("ated.choose-single-relief.propertyTrading"))
+        </legend>
+        <div id="propertyTradingDate-hint" class="govuk-hint">
+          @messages("ated.choose-reliefs.relief-hint", formattedPeriodStartDate)
+        </div>
+        <div class="govuk-date-input" id="passport-issued">
+          <div class="govuk-date-input__item">
+            <div class="govuk-form-group">
+              <label class="govuk-label govuk-date-input__label" for="propertyTradingDate-day">
+                <span aria-hidden="true">Day</span>
+                <span class="govuk-visually-hidden">@messages("ated.choose-single-relief.propertyTrading.hiddenContentDay")</span>
+              </label>
+              <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="propertyTradingDate-day" name="propertyTradingDate-day" type="text" inputmode="numeric">
+            </div>
+          </div>
+          <div class="govuk-date-input__item">
+            <div class="govuk-form-group">
+              <label class="govuk-label govuk-date-input__label" for="propertyTradingDate-month">
+                <span aria-hidden="true">Month</span>
+                <span class="govuk-visually-hidden">@messages("ated.choose-single-relief.propertyTrading.hiddenContentMonth")</span>
+              </label>
+              <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="propertyTradingDate-month" name="propertyTradingDate-month" type="text" inputmode="numeric">
+            </div>
+          </div>
+          <div class="govuk-date-input__item">
+            <div class="govuk-form-group">
+              <label class="govuk-label govuk-date-input__label" for="propertyTradingDate-year">
+                <span aria-hidden="true">Year</span>
+                <span class="govuk-visually-hidden">@messages("ated.choose-single-relief.propertyTrading.hiddenContentYear")</span>
+              </label>
+              <input class="govuk-input govuk-date-input__input govuk-input--width-4" id="propertyTradingDate-year" name="propertyDeveloperDate-year" type="text" inputmode="numeric">
+            </div>
+          </div>
+        </div>
+      </fieldset>
+    </div>
+
 }
 
 @lendingDateConditional = {
-    @govukDateInput(DateInput(
-        hint = Some(Hint(
-            content = Text(Messages("ated.choose-reliefs.relief-hint", formattedPeriodStartDate))
-        )),
-        fieldset = Some(Fieldset(
-            legend = Some(Legend(
-                content = HtmlContent(messages("ated.choose-reliefs.date", messages("ated.choose-single-relief.lending")))
-            ))
-        )),
-        items = inputItems
-    ).withFormField(reliefsForm("lendingDate")))
+    <div class="govuk-form-group">
+      <fieldset class="govuk-fieldset" role="group" aria-describedby="lendingDate-hint">
+        <legend class="govuk-fieldset__legend">
+            @messages("ated.choose-reliefs.date", messages("ated.choose-single-relief.lending"))
+        </legend>
+        <div id="lendingDate-hint" class="govuk-hint">
+          @messages("ated.choose-reliefs.relief-hint", formattedPeriodStartDate)
+        </div>
+        <div class="govuk-date-input" id="passport-issued">
+          <div class="govuk-date-input__item">
+            <div class="govuk-form-group">
+              <label class="govuk-label govuk-date-input__label" for="lendingDate-day">
+                <span aria-hidden="true">Day</span>
+                <span class="govuk-visually-hidden">@messages("ated.choose-single-relief.lending.hiddenContentDay")</span>
+              </label>
+              <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="lendingDate-day" name="lendingDate-day" type="text" inputmode="numeric">
+            </div>
+          </div>
+          <div class="govuk-date-input__item">
+            <div class="govuk-form-group">
+              <label class="govuk-label govuk-date-input__label" for="lendingDate-month">
+                <span aria-hidden="true">Month</span>
+                <span class="govuk-visually-hidden">@messages("ated.choose-single-relief.lending.hiddenContentMonth")</span>
+              </label>
+              <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="lendingDate-month" name="lendingDate-month" type="text" inputmode="numeric">
+            </div>
+          </div>
+          <div class="govuk-date-input__item">
+            <div class="govuk-form-group">
+              <label class="govuk-label govuk-date-input__label" for="lendingDate-year">
+                <span aria-hidden="true">Year</span>
+                <span class="govuk-visually-hidden">@messages("ated.choose-single-relief.lending.hiddenContentYear")</span>
+              </label>
+              <input class="govuk-input govuk-date-input__input govuk-input--width-4" id="lendingDate-year" name="lendingDate-year" type="text" inputmode="numeric">
+            </div>
+          </div>
+        </div>
+      </fieldset>
+    </div>
 }
 
 @employeeOccupationDateConditional = {
-    @govukDateInput(DateInput(
-        hint = Some(Hint(
-            content = Text(Messages("ated.choose-reliefs.relief-hint", formattedPeriodStartDate))
-        )),
-        fieldset = Some(Fieldset(
-            legend = Some(Legend(
-                content = HtmlContent(messages("ated.choose-reliefs.date", messages("ated.choose-single-relief.employeeOccupation")))
-            ))
-        )),
-        items = inputItems
-    ).withFormField(reliefsForm("employeeOccupationDate")))
+    <div class="govuk-form-group">
+      <fieldset class="govuk-fieldset" role="group" aria-describedby="employeeOccupationDate-hint">
+        <legend class="govuk-fieldset__legend">
+            @messages("ated.choose-reliefs.date", messages("ated.choose-single-relief.employeeOccupation"))
+        </legend>
+        <div id="employeeOccupationDate-hint" class="govuk-hint">
+          @messages("ated.choose-reliefs.relief-hint", formattedPeriodStartDate)
+        </div>
+        <div class="govuk-date-input" id="passport-issued">
+          <div class="govuk-date-input__item">
+            <div class="govuk-form-group">
+              <label class="govuk-label govuk-date-input__label" for="employeeOccupationDate-day">
+                <span aria-hidden="true">Day</span>
+                <span class="govuk-visually-hidden">@messages("ated.choose-single-relief.employeeOccupation.hiddenContentDay")</span>
+              </label>
+              <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="employeeOccupationDate-day" name="employeeOccupationDate-day" type="text" inputmode="numeric">
+            </div>
+          </div>
+          <div class="govuk-date-input__item">
+            <div class="govuk-form-group">
+              <label class="govuk-label govuk-date-input__label" for="employeeOccupationDate-month">
+                <span aria-hidden="true">Month</span>
+                <span class="govuk-visually-hidden">@messages("ated.choose-single-relief.employeeOccupation.hiddenContentMonth")</span>
+              </label>
+              <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="employeeOccupationDate-month" name="employeeOccupationDate-month" type="text" inputmode="numeric">
+            </div>
+          </div>
+          <div class="govuk-date-input__item">
+            <div class="govuk-form-group">
+              <label class="govuk-label govuk-date-input__label" for="employeeOccupationDate-year">
+                <span aria-hidden="true">Year</span>
+                <span class="govuk-visually-hidden">@messages("ated.choose-single-relief.employeeOccupation.hiddenContentYear")</span>
+              </label>
+              <input class="govuk-input govuk-date-input__input govuk-input--width-4" id="employeeOccupationDate-year" name="employeeOccupationDate-year" type="text" inputmode="numeric">
+            </div>
+          </div>
+        </div>
+      </fieldset>
+    </div>
 }
 
 @farmHousesDateConditional = {
-    @govukDateInput(DateInput(
-        hint = Some(Hint(
-            content = Text(Messages("ated.choose-reliefs.relief-hint", formattedPeriodStartDate))
-        )),
-        fieldset = Some(Fieldset(
-            legend = Some(Legend(
-                content = HtmlContent(messages("ated.choose-reliefs.date", messages("ated.choose-single-relief.farmHouses")))
-            ))
-        )),
-        items = inputItems
-    ).withFormField(reliefsForm("farmHousesDate")))
+    <div class="govuk-form-group">
+      <fieldset class="govuk-fieldset" role="group" aria-describedby="farmHousesDate-hint">
+        <legend class="govuk-fieldset__legend">
+            @messages("ated.choose-reliefs.date", messages("ated.choose-single-relief.farmHouses"))
+        </legend>
+        <div id="farmHousesDate-hint" class="govuk-hint">
+          @messages("ated.choose-reliefs.relief-hint", formattedPeriodStartDate)
+        </div>
+        <div class="govuk-date-input" id="passport-issued">
+          <div class="govuk-date-input__item">
+            <div class="govuk-form-group">
+              <label class="govuk-label govuk-date-input__label" for="farmHousesDate-day">
+                <span aria-hidden="true">Day</span>
+                <span class="govuk-visually-hidden">@messages("ated.choose-single-relief.farmHouses.hiddenContentDay")</span>
+              </label>
+              <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="farmHousesDate-day" name="farmHousesDate-day" type="text" inputmode="numeric">
+            </div>
+          </div>
+          <div class="govuk-date-input__item">
+            <div class="govuk-form-group">
+              <label class="govuk-label govuk-date-input__label" for="farmHousesDate-month">
+                <span aria-hidden="true">Month</span>
+                <span class="govuk-visually-hidden">@messages("ated.choose-single-relief.farmHouses.hiddenContentMonth")</span>
+              </label>
+              <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="farmHousesDate-month" name="farmHousesDate-month" type="text" inputmode="numeric">
+            </div>
+          </div>
+          <div class="govuk-date-input__item">
+            <div class="govuk-form-group">
+              <label class="govuk-label govuk-date-input__label" for="farmHousesDate-year">
+                <span aria-hidden="true">Year</span>
+                <span class="govuk-visually-hidden">@messages("ated.choose-single-relief.farmHouses.hiddenContentYear")</span>
+              </label>
+              <input class="govuk-input govuk-date-input__input govuk-input--width-4" id="farmHousesDate-year" name="farmHousesDate-year" type="text" inputmode="numeric">
+            </div>
+          </div>
+        </div>
+      </fieldset>
+    </div>
 }
 
 @socialHousingDateConditional = {
-    @govukDateInput(DateInput(
-        hint = Some(Hint(
-            content = Text(Messages("ated.choose-reliefs.relief-hint", formattedPeriodStartDate))
-        )),
-        fieldset = Some(Fieldset(
-            legend = Some(Legend(
-                content = HtmlContent(messages("ated.choose-reliefs.date", messages(chooseSingleReliefsocialHousingMessage)))
-            ))
-        )),
-        items = inputItems
-    ).withFormField(reliefsForm("socialHousingDate")))
+    <div class="govuk-form-group">
+      <fieldset class="govuk-fieldset" role="group" aria-describedby="socialHousingDate-hint">
+        <legend class="govuk-fieldset__legend">
+            @messages("ated.choose-reliefs.date", messages(chooseSingleReliefsocialHousingMessage))
+        </legend>
+        <div id="socialHousingDate-hint" class="govuk-hint">
+          @messages("ated.choose-reliefs.relief-hint", formattedPeriodStartDate)
+        </div>
+        <div class="govuk-date-input" id="passport-issued">
+          <div class="govuk-date-input__item">
+            <div class="govuk-form-group">
+              <label class="govuk-label govuk-date-input__label" for="socialHousingDate-day">
+                <span aria-hidden="true">Day</span>
+                <span class="govuk-visually-hidden">@messages("ated.choose-reliefs.dates", messages("ated.choose-reliefs.dates.day"), messages(chooseSingleReliefsocialHousingMessage))</span>
+              </label>
+              <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="socialHousingDate-day" name="socialHousingDate-day" type="text" inputmode="numeric">
+            </div>
+          </div>
+          <div class="govuk-date-input__item">
+            <div class="govuk-form-group">
+              <label class="govuk-label govuk-date-input__label" for="socialHousingDate-month">
+                <span aria-hidden="true">Month</span>
+                <span class="govuk-visually-hidden">@messages("ated.choose-reliefs.dates", messages("ated.choose-reliefs.dates.month"), messages(chooseSingleReliefsocialHousingMessage))</span>
+              </label>
+              <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="socialHousingDate-month" name="socialHousingDate-month" type="text" inputmode="numeric">
+            </div>
+          </div>
+          <div class="govuk-date-input__item">
+            <div class="govuk-form-group">
+              <label class="govuk-label govuk-date-input__label" for="socialHousingDate-year">
+                <span aria-hidden="true">Year</span>
+                <span class="govuk-visually-hidden">@messages("ated.choose-reliefs.dates", messages("ated.choose-reliefs.dates.year"), messages(chooseSingleReliefsocialHousingMessage))</span>
+              </label>
+              <input class="govuk-input govuk-date-input__input govuk-input--width-4" id="socialHousingDate-year" name="socialHousingDate-year" type="text" inputmode="numeric">
+            </div>
+          </div>
+        </div>
+      </fieldset>
+    </div>
+
 }
 
 @equityReleaseDateConditional = {
-    @govukDateInput(DateInput(
-        hint = Some(Hint(
-            content = Text(Messages("ated.choose-reliefs.relief-hint", formattedPeriodStartDate))
-        )),
-        fieldset = Some(Fieldset(
-            legend = Some(Legend(
-                content = HtmlContent(messages("ated.choose-reliefs.date", messages("ated.choose-single-relief.equityRelease")))
-            ))
-        )),
-        items = inputItems
-    ).withFormField(reliefsForm("equityReleaseDate")))
+    <div class="govuk-form-group">
+      <fieldset class="govuk-fieldset" role="group" aria-describedby="equityReleaseDate-hint">
+        <legend class="govuk-fieldset__legend">
+            @messages("ated.choose-reliefs.date", messages("ated.choose-single-relief.equityRelease"))
+        </legend>
+        <div id="equityReleaseDate-hint" class="govuk-hint">
+          @messages("ated.choose-reliefs.relief-hint", formattedPeriodStartDate)
+        </div>
+        <div class="govuk-date-input" id="passport-issued">
+          <div class="govuk-date-input__item">
+            <div class="govuk-form-group">
+              <label class="govuk-label govuk-date-input__label" for="equityReleaseDate-day">
+                <span aria-hidden="true">Day</span>
+                <span class="govuk-visually-hidden">@messages("ated.choose-single-relief.equityRelease.hiddenContentDay")</span>
+              </label>
+              <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="equityReleaseDate-day" name="equityReleaseDate-day" type="text" inputmode="numeric">
+            </div>
+          </div>
+          <div class="govuk-date-input__item">
+            <div class="govuk-form-group">
+              <label class="govuk-label govuk-date-input__label" for="equityReleaseDate-month">
+                <span aria-hidden="true">Month</span>
+                <span class="govuk-visually-hidden">@messages("ated.choose-single-relief.equityRelease.hiddenContentMonth")</span>
+              </label>
+              <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="equityReleaseDate-month" name="equityReleaseDate-month" type="text" inputmode="numeric">
+            </div>
+          </div>
+          <div class="govuk-date-input__item">
+            <div class="govuk-form-group">
+              <label class="govuk-label govuk-date-input__label" for="equityReleaseDate-year">
+                <span aria-hidden="true">Year</span>
+                <span class="govuk-visually-hidden">@messages("ated.choose-single-relief.equityRelease.hiddenContentYear")</span>
+              </label>
+              <input class="govuk-input govuk-date-input__input govuk-input--width-4" id="equityReleaseDate-year" name="equityReleaseDate-year" type="text" inputmode="numeric">
+            </div>
+          </div>
+        </div>
+      </fieldset>
+    </div>
 }
 
 @newMain(title = titleBuilder(messages("ated.choose-reliefs.title"), Some(amendedForm)),

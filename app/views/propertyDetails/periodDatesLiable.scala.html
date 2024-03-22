@@ -74,34 +74,85 @@
     </header>
 
     @formHelper(action=controllers.propertyDetails.routes.PeriodDatesLiableController.save(id, periodKey, mode)) {
+        <div class="govuk-form-group">
+          <fieldset class="govuk-fieldset" role="group" aria-describedby="startDate-hint">
+            <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
+              @messages("ated.property-details-period.datesLiable.startDate")
+            </legend>
+            <div id="startDate-hint" class="govuk-hint">
+              @messages("ated.property-details-period.datesInRelief.startDate.hint", PeriodUtils.periodStartDate(periodKey).toString(messages("ated.date-format.numeric")))
+            </div>
+            <div class="govuk-date-input" id="startDate">
+              <div class="govuk-date-input__item">
+                <div class="govuk-form-group">
+                  <label class="govuk-label govuk-date-input__label" for="startDate.day">
+                    <span aria-hidden="true">Day</span>
+                    <span class="govuk-visually-hidden">@messages("ated.property-details-period.datesLiable.startDate.hiddenContentDay")</span>
+                  </label>
+                  <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="startDate.day" name="startDate.day" type="text" value="1" inputmode="numeric">
+                </div>
+              </div>
+              <div class="govuk-date-input__item">
+                <div class="govuk-form-group">
+                  <label class="govuk-label govuk-date-input__label" for="startDate.month">
+                    <span aria-hidden="true">Month</span>
+                    <span class="govuk-visually-hidden">@messages("ated.property-details-period.datesLiable.startDate.hiddenContentMonth")</span>
+                  </label>
+                  <input class="govuk-input govuk-date-input__input govuk-input--width-2 govuk-input--error" id="startDate.month" name="startDate.month" type="text" inputmode="numeric">
+                </div>
+              </div>
+              <div class="govuk-date-input__item">
+                <div class="govuk-form-group">
+                  <label class="govuk-label govuk-date-input__label" for="startDate.year">
+                    <span aria-hidden="true">Year</span>
+                    <span class="govuk-visually-hidden">@messages("ated.property-details-period.datesLiable.startDate.hiddenContentYear")</span>
+                  </label>
+                  <input class="govuk-input govuk-date-input__input govuk-input--width-4" id="startDate.year" name="startDate.year" type="text" inputmode="numeric">
+                </div>
+              </div>
+            </div>
+          </fieldset>
+        </div>
 
-        @govukDateInput(DateInput(
-            hint = Some(Hint(
-              content = Text(messages("ated.property-details-period.datesInRelief.startDate.hint",
-                    PeriodUtils.periodStartDate(periodKey).toString(messages("ated.date-format.numeric"))))
-            )),
-            fieldset = Some(Fieldset(
-              legend = Some(Legend(
-                content = Text(messages("ated.property-details-period.datesLiable.startDate")),
-                classes = "govuk-label--s"
-              ))
-            )),
-            items = dateItems
-        ).withFormField(propertyDetailsForm("startDate")))
-
-        @govukDateInput(DateInput(
-            hint = Some(Hint(
-              content = Text(messages("ated.property-details-period.datesInRelief.endDate.hint",
-                    PeriodUtils.periodEndDate(periodKey).toString(messages("ated.date-format.numeric"))))
-            )),
-            fieldset = Some(Fieldset(
-              legend = Some(Legend(
-                content = Text(messages("ated.property-details-period.datesLiable.endDate")),
-                classes = "govuk-label--s"
-              ))
-            )),
-            items = dateItems
-        ).withFormField(propertyDetailsForm("endDate")))
+        <div class="govuk-form-group">
+          <fieldset class="govuk-fieldset" role="group" aria-describedby="endDate-hint">
+            <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
+                @messages("ated.property-details-period.datesLiable.endDate")
+            </legend>
+            <div id="endDate-hint" class="govuk-hint">
+              @messages("ated.property-details-period.datesInRelief.endDate.hint", PeriodUtils.periodEndDate(periodKey).toString(messages("ated.date-format.numeric")))
+            </div>
+            <div class="govuk-date-input" id="passport-issued">
+              <div class="govuk-date-input__item">
+                <div class="govuk-form-group">
+                  <label class="govuk-label govuk-date-input__label" for="endDate.day">
+                    <span aria-hidden="true">Day</span>
+                    <span class="govuk-visually-hidden">@messages("ated.property-details-period.datesLiable.endDate.hiddenContentDay")</span>
+                  </label>
+                  <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="endDate.day" name="endDate.day" type="text" inputmode="numeric">
+                </div>
+              </div>
+              <div class="govuk-date-input__item">
+                <div class="govuk-form-group">
+                  <label class="govuk-label govuk-date-input__label" for="endDate.month">
+                    <span aria-hidden="true">Month</span>
+                    <span class="govuk-visually-hidden">@messages("ated.property-details-period.datesLiable.endDate.hiddenContentMonth")</span>
+                  </label>
+                  <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="endDate.month" name="endDate.month" type="text" inputmode="numeric">
+                </div>
+              </div>
+              <div class="govuk-date-input__item">
+                <div class="govuk-form-group">
+                  <label class="govuk-label govuk-date-input__label" for="endDate-year">
+                    <span aria-hidden="true">Year</span>
+                    <span class="govuk-visually-hidden">@messages("ated.property-details-period.datesLiable.endDate.hiddenContentYear")</span>
+                  </label>
+                  <input class="govuk-input govuk-date-input__input govuk-input--width-4" id="endDate.year" name="endDate.year" type="text" inputmode="numeric">
+                </div>
+              </div>
+            </div>
+          </fieldset>
+        </div>
 
         @govukButton(Button(
             content = Text(messages("ated.save-and-continue")),
