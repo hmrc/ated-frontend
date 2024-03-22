@@ -156,15 +156,46 @@ ated.choose-reliefs.equityRelease = Equity release scheme
 ated.choose-reliefs.equityRelease-reversion = Equity release scheme (home reversion plans)
 
 ated.choose-single-relief.rentalBusiness = Rental business
+ated.choose-single-relief.rentalBusiness.hiddenContentDay = What day did the Rental business start?
+ated.choose-single-relief.rentalBusiness.hiddenContentMonth = What month did the Rental business start?
+ated.choose-single-relief.rentalBusiness.hiddenContentYear = What year did the Rental business start?
+
 ated.choose-single-relief.openToPublic = Open to the public
+ated.choose-single-relief.openToPublic.hiddenContentDay = What day did the Open to the public start?
+ated.choose-single-relief.openToPublic.hiddenContentMonth = What month did the Open to the public start?
+ated.choose-single-relief.openToPublic.hiddenContentYear = What year did the Open to the public start?
+
 ated.choose-single-relief.propertyDeveloper = Property developer
+ated.choose-single-relief.propertyDeveloper.hiddenContentDay = What day did the Property developer start?
+ated.choose-single-relief.propertyDeveloper.hiddenContentMonth = What month did the Property developer start?
+ated.choose-single-relief.propertyDeveloper.hiddenContentYear = What year did the Property developer start?
+
 ated.choose-single-relief.propertyTrading = Property trading
+ated.choose-single-relief.propertyTrading.hiddenContentDay = What day did the Property trading start?
+ated.choose-single-relief.propertyTrading.hiddenContentMonth = What month did the Property trading start?
+ated.choose-single-relief.propertyTrading.hiddenContentYear = What year did the Property trading start?
+
 ated.choose-single-relief.lending = Lending
+ated.choose-single-relief.lending.hiddenContentDay = What day did the Lending start?
+ated.choose-single-relief.lending.hiddenContentMonth = What month did the Lending start?
+ated.choose-single-relief.lending.hiddenContentYear = What year did the Lending start?
+
 ated.choose-single-relief.employeeOccupation = Employee occupation
+ated.choose-single-relief.employeeOccupation.hiddenContentDay = What day did the Employee occupation start?
+ated.choose-single-relief.employeeOccupation.hiddenContentMonth = What month did the Employee occupation start?
+ated.choose-single-relief.employeeOccupation.hiddenContentYear = What year did the Employee occupation start?
+
 ated.choose-single-relief.farmHouses = Farmhouse
+ated.choose-single-relief.farmHouses.hiddenContentDay = What day did the Farmhouse start?
+ated.choose-single-relief.farmHouses.hiddenContentMonth = What month did the Farmhouse start?
+ated.choose-single-relief.farmHouses.hiddenContentYear = What year did the Farmhouse start?
+
 ated.choose-single-relief.socialHousing = Social housing
 ated.choose-single-relief.providerSocialOrHousing = Provider of social housing or housing co-operative
 ated.choose-single-relief.equityRelease = Equity release scheme (home reversion plans)
+ated.choose-single-relief.equityRelease.hiddenContentDay = What day did the Equity release scheme (home reversion plans) start?
+ated.choose-single-relief.equityRelease.hiddenContentMonth = What month did the Equity release scheme (home reversion plans) start?
+ated.choose-single-relief.equityRelease.hiddenContentYear = What year did the Equity release scheme (home reversion plans) start?
 
 ated.choose-reliefs.relief-hint = For example, {0}
 
@@ -181,6 +212,10 @@ ated.choose-reliefs-further.information.text = We do not need any further inform
 ated.choose-reliefs.error = Select at least one relief
 ated.choose-reliefs.continue = Save and continue
 ated.choose-reliefs.date = When did the {0} start?
+ated.choose-reliefs.dates = What {0} did the {1} start?
+ated.choose-reliefs.dates.day = day
+ated.choose-reliefs.dates.month = month
+ated.choose-reliefs.dates.year = year
 ated.choose-reliefs.error.general.reliefs = Select at least one relief
 
 ated.choose-reliefs.error.date.mandatory.rentalBusinessDate = Rental business start date must be valid
@@ -583,12 +618,22 @@ ated.property-details-period.no = No
 
 ated.property-details-period.change-dates-liable.title = Enter the dates this change applies to
 ated.property-details-period.change-dates-liable.header = Enter the dates this change applies to
-ated.property-details-period.change-dates-liable.startDate = What was the first date, in this chargeable period, that this change applies to?
-ated.property-details-period.change-dates-liable.endDate = What was the last date, in this chargeable period, that this change applies to?
+ated.property-details-period.change-dates-liable.startDate = What was the first date the change applied to in this chargeable period?
+ated.property-details-period.change-dates-liable.startDate.hiddenContentDay = The first day the change applied to in this chargeable period
+ated.property-details-period.change-dates-liable.startDate.hiddenContentMonth = The first month the change applied to in this chargeable period
+ated.property-details-period.change-dates-liable.startDate.hiddenContentYear = The first year the change applied to in this chargeable period
+
+ated.property-details-period.change-dates-liable.endDate = What was the last date the change applied to in this chargeable period?
+ated.property-details-period.change-dates-liable.endDate.hiddenContentDay = The last day the change applied to in this chargeable period
+ated.property-details-period.change-dates-liable.endDate.hiddenContentMonth = The last month the change applied to in this chargeable period
+ated.property-details-period.change-dates-liable.endDate.hiddenContentYear = The last year the change applied to in this chargeable period
 
 ated.property-details-period.datesLiable.title = Enter the dates the property was liable for an ATED charge
 ated.property-details-period.datesLiable.add.title = Add the dates the property was liable for an ATED charge
-ated.property-details-period.datesLiable.startDate = What was the start date in this chargeable period when the property became liable for a charge?
+ated.property-details-period.datesLiable.startDate = What was the start date when the property became liable for a charge during this period?
+ated.property-details-period.datesLiable.startDate.hiddenContentDay = The start day when the property became liable for a charge during this period
+ated.property-details-period.datesLiable.startDate.hiddenContentMonth = The start month when the property became liable for a charge during this period
+ated.property-details-period.datesLiable.startDate.hiddenContentYear = The start year when the property became liable for a charge during this period
 ated.property-details-period.datesLiable.startDate.hint = For example, {0}
 ated.property-details-period.datesLiable.startDate.error = The liability start date must be in this chargeable period
 ated.property-details-period.datesLiable.startDate.error.empty = Enter a liability start date
@@ -598,7 +643,10 @@ ated.property-details-period.datesLiable.overlap.error = No periods of charge or
 ated.property-details-period.datesLiable.startDate.messageKey = The liability start date
 ated.property-details-period.datesLiable.endDate.messageKey = The liability end date
 
-ated.property-details-period.datesLiable.endDate = What was the end date in this chargeable period when the property stopped being liable for a charge?
+ated.property-details-period.datesLiable.endDate = What was the end date the property stopped being liable for a charge during this period?
+ated.property-details-period.datesLiable.endDate.hiddenContentDay = The end day the property stopped being liable for a charge during this period
+ated.property-details-period.datesLiable.endDate.hiddenContentMonth = The end month the property stopped being liable for a charge during this period
+ated.property-details-period.datesLiable.endDate.hiddenContentYear = The end year the property stopped being liable for a charge during this period
 ated.property-details-period.datesLiable.endDate.hint = For example, {0}
 ated.property-details-period.datesLiable.endDate.error = The liability end date must be in this chargeable period
 ated.property-details-period.datesLiable.endDate.error.incomplete = Enter a valid liability end date
@@ -614,7 +662,12 @@ ated.property-details-period.chooseRelief.error.non-selected = Choose a type of 
 
 ated.property-details-period.datesInRelief.title = Add the dates when the property was in relief and was not liable for an ATED charge
 ated.property-details-period.datesInRelief.header = Add the dates when the property was in relief and was not liable for an ATED charge
-ated.property-details-period.datesInRelief.startDate = What was the start date in this current period, when the relief started?
+ated.property-details-period.datesInRelief.startDate = What was the start date of the relief in this current period?
+ated.property-details-period.datesInRelief.startDate.hiddenContentDay = The start day of the relief in this current period?
+ated.property-details-period.datesInRelief.startDate.hiddenContentMonth = The start month of the relief in this current period?
+ated.property-details-period.datesInRelief.startDate.hiddenContentYear = The start year of the relief in this current period?
+
+
 ated.property-details-period.datesInRelief.startDate.hint = For example, {0}
 ated.property-details-period.datesInRelief.startDate.error = The relief start date must be in this chargeable period
 ated.property-details-period.datesInRelief.startDate.error.empty = Enter a relief start date
@@ -625,7 +678,11 @@ ated.property-details-value.newBuildOccupyDate.error.too-early = The date when t
 ated.property-details-value.newBuildRegisterDate.error.not-in-period = The registration date must be in the chargeable period
 ated.property-details-value.newBuildRegisterDate.error.too-early = The date when the property was first occupied must be in the chargeable period
 
-ated.property-details-period.datesInRelief.endDate = What was the end date in this current period, when the relief ended?
+ated.property-details-period.datesInRelief.endDate = What was the end date of the relief in this current period?
+ated.property-details-period.datesInRelief.endDate.hiddenContentDay = The end day of the relief in this current period?
+ated.property-details-period.datesInRelief.endDate.hiddenContentMonth = The end month of the relief in this current period?
+ated.property-details-period.datesInRelief.endDate.hiddenContentYear = The end year of the relief in this current period?
+
 ated.property-details-period.datesInRelief.endDate.hint = For example, {0}
 ated.property-details-period.datesInRelief.endDate.error = The relief end date must be in this chargeable period
 ated.property-details-period.datesInRelief.endDate.error.empty = Enter a relief end date
