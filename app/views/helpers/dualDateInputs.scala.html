@@ -1,0 +1,152 @@
+@*
+ * Copyright 2024 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import _root_.utils._
+@import models.StringFormatting._
+@import play.twirl.api.HtmlFormat
+
+@(
+        fields: (String, String),
+        legends: (String, String),
+        hints: (String, String),
+        dayHidden: (String, String),
+        monthHidden: (String, String),
+        yearHidden: (String, String),
+        periodKey: Int,
+        form: Form[_])(implicit messages: Messages)
+
+@formGroupErrorClass(field: String) = @{
+    if(form.errors.exists(_.key.contains(field))) {
+        "govuk-form-group govuk-form-group--error"
+    } else {
+        "govuk-form-group"
+    }
+}
+
+@fieldLevelErrorClass(field: String, dateField: String) = @{
+    val num = if(dateField == "year") "4" else "2"
+    if(form.errors.exists(er => er.key == field || (er.key.startsWith(field) && er.message.toLowerCase.contains(dateField)))) {
+        s"govuk-input govuk-date-input__input govuk-input--width-$num govuk-input--error"
+    } else {
+        s"govuk-input govuk-date-input__input govuk-input--width-$num"
+    }
+}
+
+@fieldLevelErrorMessage(field: String) = @{
+    val message = form.errors.collect {
+        case e if e.key.startsWith(field) =>
+            e.format
+    }
+
+    if(message.nonEmpty) {
+        Html(
+            s"""<p id="$field-error" class="govuk-error-message">
+ |            <span class="govuk-visually-hidden">Error:</span> ${message.head}
+ |        </p>""".stripMargin
+        )
+    } else HtmlFormat.empty
+}
+
+@fieldValue(field: String) = @{
+    form(field).value.map(x => s"value=$x")
+}
+
+@id(field: String, dateField: String) = @{
+    s"$field.$dateField"
+}
+
+<div class="@formGroupErrorClass(fields._1)">
+    <fieldset class="govuk-fieldset" role="group" aria-describedby="@fields._1-hint">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
+        @messages(legends._1)
+        </legend>
+        <div id="@fields._1-hint" class="govuk-hint">
+        @messages(hints._1, PeriodUtils.periodStartDate(periodKey).toString(messages("ated.date-format.numeric")))
+        </div>
+
+        @fieldLevelErrorMessage(fields._1)
+        <div class="govuk-date-input" id=@fields._1>
+            <div class="govuk-date-input__item">
+                <div class="govuk-form-group">
+                    <label class="govuk-label govuk-date-input__label" for=@id(fields._1, "day")>
+                        <span aria-hidden="true">Day</span>
+                        <span class="govuk-visually-hidden">@messages(dayHidden._1)</span>
+                    </label>
+                    <input class="@fieldLevelErrorClass(fields._1, "day")" id=@id(fields._1, "day") name=@id(fields._1, "day") type="text" inputmode="numeric" @fieldValue(s"${fields._1}.day")>
+                </div>
+            </div>
+            <div class="govuk-date-input__item">
+                <div class="govuk-form-group">
+                    <label class="govuk-label govuk-date-input__label" for=@id(fields._1, "month")>
+                        <span aria-hidden="true">Month</span>
+                        <span class="govuk-visually-hidden">@messages(monthHidden._1)</span>
+                    </label>
+                    <input class="@fieldLevelErrorClass(fields._1, "month")" id=@id(fields._1, "month") name=@id(fields._1, "month") type="text" inputmode="numeric" @fieldValue(s"${fields._1}.month")>
+                </div>
+            </div>
+            <div class="govuk-date-input__item">
+                <div class="govuk-form-group">
+                    <label class="govuk-label govuk-date-input__label" for=@id(fields._1, "year")>
+                        <span aria-hidden="true">Year</span>
+                        <span class="govuk-visually-hidden">@messages(yearHidden._1)</span>
+                    </label>
+                    <input class="@fieldLevelErrorClass(fields._1, "year")" id=@id(fields._1, "year") name=@id(fields._1, "year") type="text" inputmode="numeric" @fieldValue(s"${fields._1}.year")>
+                </div>
+            </div>
+        </div>
+    </fieldset>
+</div>
+
+<div class="@formGroupErrorClass(fields._2)">
+    <fieldset class="govuk-fieldset" role="group" aria-describedby="@fields._2-hint">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
+        @messages(legends._2)
+        </legend>
+        <div id="@fields._2-hint" class="govuk-hint">
+        @messages(hints._2, PeriodUtils.periodEndDate(periodKey).toString(messages("ated.date-format.numeric")))
+        </div>
+        @fieldLevelErrorMessage(fields._2)
+        <div class="govuk-date-input" id=@fields._2>
+            <div class="govuk-date-input__item">
+                <div class="govuk-form-group">
+                    <label class="govuk-label govuk-date-input__label" for=@id(fields._2, "day")>
+                        <span aria-hidden="true">Day</span>
+                        <span class="govuk-visually-hidden">@messages(dayHidden._2)</span>
+                    </label>
+                    <input class="@fieldLevelErrorClass(fields._2, "day")" id=@id(fields._2, "day") name=@id(fields._2, "day") type="text" inputmode="numeric" @fieldValue(s"${fields._2}.day")>
+                </div>
+            </div>
+            <div class="govuk-date-input__item">
+                <div class="govuk-form-group">
+                    <label class="govuk-label govuk-date-input__label" for=@id(fields._2, "month")>
+                        <span aria-hidden="true">Month</span>
+                        <span class="govuk-visually-hidden">@messages(monthHidden._2)</span>
+                    </label>
+                    <input class="@fieldLevelErrorClass(fields._2, "month")" id=@id(fields._2, "month") name=@id(fields._2, "month") type="text" inputmode="numeric" @fieldValue(s"${fields._2}.month")>
+                </div>
+            </div>
+            <div class="govuk-date-input__item">
+                <div class="govuk-form-group">
+                    <label class="govuk-label govuk-date-input__label" for=@id(fields._2, "year")>
+                        <span aria-hidden="true">Year</span>
+                        <span class="govuk-visually-hidden">@messages(yearHidden._2)</span>
+                    </label>
+                    <input class="@fieldLevelErrorClass(fields._2, "year")" id=@id(fields._2, "year") name=@id(fields._2, "year") type="text" inputmode="numeric" @fieldValue(s"${fields._2}.year")>
+                </div>
+            </div>
+        </div>
+    </fieldset>
+</div>
