@@ -1,5 +1,5 @@
 @*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,9 +21,13 @@
 @import views.AttorneyRegime
 @import views.html.helper.CSPNonce
 @import uk.gov.hmrc.govukfrontend.views.html.components.TwoThirdsOneThirdMainContent
+@import uk.gov.hmrc.hmrcfrontend.views.viewmodels.hmrcstandardpage.Banners
+@import uk.gov.hmrc.hmrcfrontend.views.Aliases.UserResearchBanner
+@import uk.gov.hmrc.hmrcfrontend.views.viewmodels.hmrcstandardpage._
+@import uk.gov.hmrc.hmrcfrontend.views.html.helpers.HmrcStandardPage
 
 @this(
-    hmrcLayout: HmrcLayout,
+    hmrcStandardPage: HmrcStandardPage,
     hmrcTimeoutDialogHelper: HmrcTimeoutDialogHelper,
     hmrcReportTechnicalIssueHelper: HmrcReportTechnicalIssueHelper,
     hmrcTrackingConsentSnippet: HmrcTrackingConsentSnippet,
@@ -71,8 +75,8 @@
     }
 }
 
-@urBannerUrl = @{
-    if(isUserResearchBannerVisible) Some(appConfig.urBannerLink) else None
+@urBannerWithUrl = @{
+    if(isUserResearchBannerVisible) Some(UserResearchBanner(url = appConfig.urBannerLink)) else None
 }
 
 @additionalScripts = {
@@ -82,16 +86,22 @@
     @scripts
 }
 
-@hmrcLayout(
+@hmrcStandardPage(
+    HmrcStandardPageParams(
+        serviceURLs = ServiceURLs(
+            serviceUrl = Some(routes.HomeController.home(None).url),
+            signOutUrl = Some(signOutUrl),
+            ),
+        templateOverrides = TemplateOverrides(
+            additionalHeadBlock = Some(headBlock),
+            beforeContentBlock =  Some(beforeContentBlock),
+            additionalScriptsBlock = Some(additionalScripts),
+            mainContentLayout = Some(sideBar match {
+                case Some(sideBar) => twoThirdsOneThirdMainContent(sideBar)
+                case None => twoThirdsMainContent(_)
+                }),
+            ),
     pageTitle = pageTitle,
-    additionalHeadBlock = Some(headBlock),
-    serviceUrl = Some(routes.HomeController.home(None).url),
-    signOutUrl = Some(signOutUrl),
-    beforeContentBlock = Some(beforeContentBlock),
-    additionalScriptsBlock = Some(additionalScripts),
-    mainContentLayout = Some(sideBar match {
-                                case Some(sideBar) => twoThirdsOneThirdMainContent(sideBar)
-                                case None => twoThirdsMainContent(_)
-                            }),
-    userResearchBannerUrl = urBannerUrl
+    banners = Banners(userResearchBanner = urBannerWithUrl)
+    )
 )(content)

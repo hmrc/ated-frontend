@@ -17,15 +17,16 @@
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
 @import uk.gov.hmrc.hmrcfrontend.config.AccessibilityStatementConfig
-@import uk.gov.hmrc.hmrcfrontend.views.html.helpers.{HmrcLayout, HmrcReportTechnicalIssueHelper, HmrcTimeoutDialogHelper, HmrcTrackingConsentSnippet}
+@import uk.gov.hmrc.hmrcfrontend.views.html.helpers.{HmrcLayout, HmrcReportTechnicalIssueHelper, HmrcTimeoutDialogHelper}
 @import views.AttorneyRegime
 @import views.html.helper.CSPNonce
+@import uk.gov.hmrc.hmrcfrontend.views.viewmodels.hmrcstandardpage._
+@import uk.gov.hmrc.hmrcfrontend.views.html.helpers.HmrcStandardPage
 
 @this(
-    hmrcLayout: HmrcLayout,
+    hmrcStandardPage: HmrcStandardPage,
     hmrcTimeoutDialogHelper: HmrcTimeoutDialogHelper,
     hmrcReportTechnicalIssueHelper: HmrcReportTechnicalIssueHelper,
-    hmrcTrackingConsentSnippet: HmrcTrackingConsentSnippet
 )
 
 @(beforeContent: Option[Html] = None, pageTitle: Option[String] = None, serviceInfoContent: Html = HtmlFormat.empty, scripts: Option[Html] = None, isUserResearchBannerVisible: Boolean = false, banner: Html = HtmlFormat.empty, showSignOutLink: Boolean = true)(contentBlock: Html)(
@@ -53,10 +54,16 @@
     else None
 }
 
-@hmrcLayout(
+@hmrcStandardPage(
+    HmrcStandardPageParams(
+        serviceURLs = ServiceURLs(
+            serviceUrl = Some(routes.HomeController.home(None).url),
+            signOutUrl = signOutLink,
+            ),
+        templateOverrides = TemplateOverrides(
+            additionalHeadBlock = Some(headBlock),
+            beforeContentBlock =  Some(beforeContentBlock),
+            ),
     pageTitle = pageTitle,
-    additionalHeadBlock = Some(headBlock),
-    serviceUrl = Some(routes.HomeController.home(None).url),
-    signOutUrl = signOutLink,
-    beforeContentBlock = Some(beforeContentBlock)
+    )
 )(content)
