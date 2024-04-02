@@ -66,13 +66,24 @@
 
     @formHelper(action=controllers.propertyDetails.routes.PeriodDatesLiableController.save(id, periodKey, mode)) {
 
-        @dualDateInputs(
-            fields = ("startDate", "endDate"),
-            legends = ("ated.property-details-period.datesLiable.startDate", "ated.property-details-period.datesLiable.endDate"),
-            hints = ("ated.property-details-period.datesInRelief.startDate.hint", "ated.property-details-period.datesInRelief.endDate.hint"),
-            dayHidden = ("ated.property-details-period.datesLiable.startDate.hiddenContentDay", "ated.property-details-period.datesLiable.endDate.hiddenContentDay"),
-            monthHidden = ("ated.property-details-period.datesLiable.startDate.hiddenContentMonth", "ated.property-details-period.datesLiable.endDate.hiddenContentMonth"),
-            yearHidden = ("ated.property-details-period.datesLiable.startDate.hiddenContentYear", "ated.property-details-period.datesLiable.endDate.hiddenContentYear"),
+        @dateInput(
+            field = "startDate",
+            legend = "ated.property-details-period.datesLiable.startDate",
+            hint = "ated.property-details-period.datesInRelief.startDate.hint",
+            dayHidden = "ated.property-details-period.datesLiable.startDate.hiddenContentDay",
+            monthHidden = "ated.property-details-period.datesLiable.startDate.hiddenContentMonth",
+            yearHidden = "ated.property-details-period.datesLiable.startDate.hiddenContentYear",
+            periodKey = periodKey,
+            form = propertyDetailsForm
+        )
+
+        @dateInput(
+            field = "endDate",
+            legend = "ated.property-details-period.datesLiable.endDate",
+            hint = "ated.property-details-period.datesInRelief.endDate.hint",
+            dayHidden = "ated.property-details-period.datesLiable.endDate.hiddenContentDay",
+            monthHidden = "ated.property-details-period.datesLiable.endDate.hiddenContentMonth",
+            yearHidden = "ated.property-details-period.datesLiable.endDate.hiddenContentYear",
             periodKey = periodKey,
             form = propertyDetailsForm
         )
