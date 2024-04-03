@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package connectors
+package test.connectors
 
-import helpers.IntegrationBase
-import helpers.stubs.{AuthAudit, ServiceInfoPartialConnectorStub}
+import connectors.ServiceInfoPartialConnector
 import models.requests.{NavContent, NavLinks}
 import org.scalatestplus.play.PlaySpec
 import play.api.test.Injecting
+import test.helpers.IntegrationBase
+import test.helpers.stubs.{AuthAudit, ServiceInfoPartialConnectorStub}
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.{ExecutionContext, Future}

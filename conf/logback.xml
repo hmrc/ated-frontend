@@ -53,11 +53,10 @@
         <appender-ref ref="STDOUT"/>
     </logger>
 
-    <logger name="com.codahale.metrics.graphite.GraphiteReporter" level="OFF" />
     <logger name="org.asynchttpclient.netty" level="INFO" />
     <logger name="play.core.netty.utils.ServerCookieDecoder" level="INFO" />
     <logger name="io.netty.util.internal" level="INFO" />
-    <logger name="akka.stream" level="INFO" />
+    <logger name="org.apache.pekko.stream" level="INFO" />
 
     <root level="INFO">
         <appender-ref ref="FILE"/>

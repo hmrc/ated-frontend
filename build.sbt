@@ -1,13 +1,16 @@
-import TestPhases.{TemplateItTest, TemplateTest}
 import play.routes.compiler.InjectedRoutesGenerator
 import play.sbt.routes.RoutesKeys.routesGenerator
-import sbt.Keys._
-import sbt._
-import uk.gov.hmrc.DefaultBuildSettings.{addTestReportOption, defaultSettings, scalaSettings}
+import sbt.*
+import sbt.Keys.*
+import uk.gov.hmrc.DefaultBuildSettings
+import uk.gov.hmrc.DefaultBuildSettings.{defaultSettings, scalaSettings}
 import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin
 import uk.gov.hmrc.versioning.SbtGitVersioning.autoImport.majorVersion
 
 val appName = "ated-frontend"
+
+ThisBuild / majorVersion := 3
+ThisBuild / scalaVersion := "2.13.12"
 
 lazy val appDependencies: Seq[ModuleID] = AppDependencies()
 lazy val plugins: Seq[Plugins] = Seq(play.sbt.PlayScala)
@@ -26,14 +29,9 @@ lazy val scoverageSettings = {
 lazy val microservice = Project(appName, file("."))
     .enablePlugins(Seq(play.sbt.PlayScala, SbtDistributablesPlugin) ++ plugins: _*)
     .settings(playSettings: _*)
-    .settings(majorVersion := 3)
-    .configs(IntegrationTest)
     .settings(scalaSettings: _*)
     .settings(defaultSettings(): _*)
-    .settings(scalaVersion := "2.13.8")
     .settings(playSettings ++ scoverageSettings: _*)
-  .settings(inConfig(TemplateTest)(Defaults.testSettings): _*)
-  .settings(inConfig(TemplateItTest)(Defaults.itSettings): _*)
     .settings(
       TwirlKeys.templateImports ++= Seq(
         "views.html.helper.form",
@@ -41,16 +39,11 @@ lazy val microservice = Project(appName, file("."))
         "uk.gov.hmrc.hmrcfrontend.views.html.components.implicits._",
         "uk.gov.hmrc.hmrcfrontend.views.html.helpers._"
       ),
-      addTestReportOption(IntegrationTest, "int-test-reports"),
-      inConfig(IntegrationTest)(Defaults.itSettings),
       libraryDependencies ++= appDependencies,
       retrieveManaged := true,
       routesGenerator := InjectedRoutesGenerator,
       Test / parallelExecution   := true,
       Test / fork                := true,
-      IntegrationTest / Keys.fork :=  false,
-      IntegrationTest / unmanagedSourceDirectories := (IntegrationTest / baseDirectory)(base => Seq(base / "it")).value,
-      IntegrationTest / parallelExecution := false,
       routesImport += "config.JavaLocalDateRoutes._"
     )
     .disablePlugins(JUnitXmlReportPlugin)
@@ -60,3 +53,10 @@ lazy val microservice = Project(appName, file("."))
       scalacOptions += "-Wconf:cat=unused-imports&src=html/.*:s"
     )
     .disablePlugins(JUnitXmlReportPlugin)
+
+
+lazy val it = project
+  .enablePlugins(PlayScala)
+  .dependsOn(microservice % "test->test") // the "test->test" allows reusing test code and test dependencies
+  .settings(DefaultBuildSettings.itSettings())
+  .settings(libraryDependencies ++= AppDependencies.itDependencies)
