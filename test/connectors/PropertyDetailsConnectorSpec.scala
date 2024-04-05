@@ -36,12 +36,8 @@ import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 import scala.concurrent.{ExecutionContext, Future}
 
 class PropertyDetailsConnectorSpec extends PlaySpec with GuiceOneAppPerSuite with MockitoSugar with Injecting {
-
-  implicit val ec: ExecutionContext = inject[ExecutionContext]
-  implicit val authContext: StandardAuthRetrievals = mock[StandardAuthRetrievals]
-  val mockHttp: DefaultHttpClient = mock[DefaultHttpClient]
-
   class Setup {
+    implicit val ec: ExecutionContext = inject[ExecutionContext]
     implicit val authContext: StandardAuthRetrievals = mock[StandardAuthRetrievals]
     implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
     implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
@@ -112,7 +108,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with GuiceOneAppPerSuite wit
 
     "save property details Has Value Changed" must {
       "for successful save, return PropertyDetails Has Value Changed for a user" in new Setup {
-        val propertyDetails = PropertyDetailsTitle("")
+        val propertyDetails: PropertyDetailsTitle = PropertyDetailsTitle("")
 
         val successResponse: JsValue = Json.toJson(propertyDetails)
 
@@ -138,7 +134,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with GuiceOneAppPerSuite wit
 
     "save property details title" must {
       "for successful save, return PropertyDetails title for a user" in new Setup {
-        val propertyDetails = PropertyDetailsTitle("")
+        val propertyDetails: PropertyDetailsTitle = PropertyDetailsTitle("")
 
         val successResponse: JsValue = Json.toJson(propertyDetails)
 
@@ -152,7 +148,7 @@ class PropertyDetailsConnectorSpec extends PlaySpec with GuiceOneAppPerSuite wit
       }
 
       "for an unsuccessful save, return an empty object" in new Setup {
-        val propertyDetails = PropertyDetailsTitle("")
+        val propertyDetails: PropertyDetailsTitle = PropertyDetailsTitle("")
 
         when(mockHttp.POST[JsValue, HttpResponse]
           (any(), any(), any())

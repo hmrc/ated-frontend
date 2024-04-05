@@ -16,7 +16,7 @@
 
 package controllers
 
-import akka.actor.ActorSystem
+import org.apache.pekko.actor.ActorSystem
 import config.ApplicationConfig
 import models.StandardAuthRetrievals
 import org.scalatest.BeforeAndAfterEach
@@ -46,7 +46,7 @@ class ControllerBaseSpec extends PlaySpec with MockitoSugar with GuiceOneAppPerS
   implicit val mockAppConfig: ApplicationConfig = mock[ApplicationConfig]
   implicit val system: ActorSystem = ActorSystem()
   implicit lazy val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
-  implicit val hc = HeaderCarrier()
+  implicit val hc: HeaderCarrier = HeaderCarrier()
 
 
   lazy val fakeRequestWithSession: FakeRequest[AnyContentAsEmpty.type] = fakeRequest.withSession(
