@@ -50,13 +50,15 @@
         </h1>
     </header>
 
-  <div class="govuk-form-group">
-    @formHelper(action=controllers.reliefs.routes.ViewReliefReturnController.submit(periodKey: Int, formBundleNumber: String)) {
-    <p id="relief-return-text" class="govuk-body">@messages("ated.view-relief-return.subheader",
-      PeriodUtils.periodStartDate(periodKey).toString(messages("ated.date-format")),
-      PeriodUtils.periodEndDate(periodKey).toString(messages("ated.date-format")))
-    </p>
-  </div>
+  @formHelper(action=controllers.reliefs.routes.ViewReliefReturnController.submit(periodKey: Int, formBundleNumber: String)) {
+
+    <div class="govuk-form-group">
+      <p id="relief-return-text" class="govuk-body">
+        @messages("ated.view-relief-return.subheader",
+        PeriodUtils.periodStartDate(periodKey).toString(messages("ated.date-format")),
+        PeriodUtils.periodEndDate(periodKey).toString(messages("ated.date-format")))
+      </p>
+    </div>
 
     <div class="govuk-form-group">
         <h2 id="th-view-relief-return-table-header" class="govuk-heading-m">@submittedReliefReturn.reliefType</h2>
@@ -65,62 +67,62 @@
     <dl class="govuk-summary-list">
 
       <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key">
+        <dt class="govuk-summary-list__key govuk-!-width-one-half">
           <span id="th-view-relief-return-from-date-label">@messages("ated.view-relief-return.date.from")</span>
         </dt>
 
-        <dd class="govuk-summary-list__actions" id="td-view-relief-from-date-0">
+        <dd class="govuk-summary-list__value govuk-!-width-one-third govuk-!-text-align-right" id="td-view-relief-from-date-0">
           <span class="govuk-visually-hidden">@messages("ated.view-relief-return.date.from")</span>
           @submittedReliefReturn.dateFrom.toString(messages("ated.date-format"))
         </dd>
       </div>
 
       <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key">
+        <dt class="govuk-summary-list__key govuk-!-width-two-thirds">
           <span id="th-view-relief-date-to-label">@messages("ated.view-relief-return.date.to")</span>
         </dt>
 
-        <dd class="govuk-summary-list__actions" id="td-view-relief-from-date-1">
+        <dd class="govuk-summary-list__value govuk-!-width-one-third govuk-!-text-align-right" id="td-view-relief-from-date-1">
             <span id="td-view-relief-date-to"> <span class="govuk-visually-hidden">@messages("ated.view-relief-return.date.to")</span> @submittedReliefReturn.dateTo.toString(messages("ated.date-format"))</span>
         </dd>
       </div>
 
       <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key">
+        <dt class="govuk-summary-list__key govuk-!-width-two-thirds">
           <span id="th-view-relief-avoidance-label">@messages("ated.view-relief-return.avoidance.no")</span>
         </dt>
 
-        <dd class="govuk-summary-list__actions" id="td-view-relief-from-date-2">
+        <dd class="govuk-summary-list__value govuk-!-width-one-third govuk-!-text-align-right" id="td-view-relief-from-date-2">
           <span id="td-view-relief-avoidance">  <span class="govuk-visually-hidden">@messages("ated.view-relief-return.avoidance.no")</span> @submittedReliefReturn.avoidanceSchemeNumber</span>
         </dd>
       </div>
 
       <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key">
+        <dt class="govuk-summary-list__key govuk-!-width-two-thirds">
           <span id="th-view-relief-avoidance-promoter-label">@messages("ated.view-relief-return.promoter.no")</span>
         </dt>
 
-        <dd class="govuk-summary-list__actions" id="td-view-relief-from-date-3">
+        <dd class="govuk-summary-list__value govuk-!-width-one-third govuk-!-text-align-right" id="td-view-relief-from-date-3">
           <span id="td-view-relief-avoidance-promoter"> <span class="govuk-visually-hidden">@messages("ated.view-relief-return.promoter.no")</span> @submittedReliefReturn.promoterReferenceNumber</span>
         </dd>
       </div>
 
       <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key">
+        <dt class="govuk-summary-list__key govuk-!-width-two-thirds">
           <span id="th-view-relief-status-label">@messages("ated.view-relief-return.status")</span>
         </dt>
 
-        <dd class="govuk-summary-list__actions" id="td-view-relief-from-date-4">
+        <dd class="govuk-summary-list__value govuk-!-width-one-third govuk-!-text-align-right" id="td-view-relief-from-date-4">
           <span id="td-view-relief-status"> <span class="govuk-visually-hidden">@messages("ated.view-relief-return.status")</span> @messages("ated.view-relief-return.status.submitted")</span>
         </dd>
       </div>
 
       <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key">
+        <dt class="govuk-summary-list__key govuk-!-width-two-thirds">
           <span id="th-view-relief-submission-date-label">@messages("ated.view-relief-return.submission-date")</span>
         </dt>
 
-        <dd class="govuk-summary-list__actions" id="td-view-relief-from-date-5">
+        <dd class="govuk-summary-list__value govuk-!-width-one-third govuk-!-text-align-right" id="td-view-relief-from-date-5">
           <span id="td-view-relief-submission-date"> <span class="govuk-visually-hidden">@messages("ated.view-relief-return.submission-date")</span> @submittedReliefReturn.dateOfSubmission.toString(messages("ated.date-format"))</span>
         </dd>
       </div>
