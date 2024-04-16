@@ -21,8 +21,9 @@
 @this(hmrcNotificationBadge : HmrcNotificationBadge)
 
 @(navLinks: Seq[ListLinks])
-<nav id="secondary-nav" class="hmrc-account-menu govuk-!-display-none-print">
-    <ul class="hmrc-account-menu__main govuk-grid-column-full" style="padding: 0;">
+<nav id="secondary-nav" aria-labelledby="bta-menu" class="hmrc-account-menu govuk-!-display-none-print">
+    <p class="govuk-visually-hidden" id="bta-menu">Business tax account</p>
+    <ul class="hmrc-account-menu__main govuk-grid-column-full">
         @for( nav <- navLinks) {
         @if(nav.showBoolean.contains(false)){} else {
         <li>
