@@ -4,6 +4,10 @@
     }
 }
 
+.hmrc-account-menu__main {
+    padding: 0;
+}
+
 .bta-navigation {
     padding: 10px 0 0 0;
     border-bottom: 1px solid #bfc1c3;
