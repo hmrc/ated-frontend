@@ -32,7 +32,7 @@ import play.twirl.api.Html
 import testhelpers.MockAuthUtil
 import views.html.reliefs
 
-class avoidanceSchemes extends AnyFeatureSpec with GuiceOneAppPerSuite
+class avoidanceSchemesSpec extends AnyFeatureSpec with GuiceOneAppPerSuite
   with MockitoSugar with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
 
   implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()

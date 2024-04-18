@@ -300,11 +300,14 @@ class AvoidanceSchemesControllerSpec extends PlaySpec with GuiceOneServerPerSuit
 
             submitWithAuthorisedUser(formInput) { result =>
               status(result) must be(BAD_REQUEST)
-              contentAsString(result) must include("Enter a reference number")
+
+              val document = Jsoup.parse(contentAsString(result))
+
+              document.getElementsByClass("govuk-error-summary__body").text() must be("Enter a reference number")
             }
           }
 
-          "if avoidance scheme is not valid, bad request must be returned" in new Setup {
+          "if avoidance scheme is not valid and promoter is empty, bad request must be returned" in new Setup {
             val formInput: Seq[(String, String)] = Seq(("rentalBusinessScheme", "ABC123"))
 
             when(mockBackLinkCacheConnector.fetchAndGetBackLink(any())(any()))
@@ -312,7 +315,49 @@ class AvoidanceSchemesControllerSpec extends PlaySpec with GuiceOneServerPerSuit
 
             submitWithAuthorisedUser(formInput) { result =>
               status(result) must be(BAD_REQUEST)
-              contentAsString(result) must include("The scheme number for rental business can only contain numbers")
+
+              val document = Jsoup.parse(contentAsString(result))
+
+              document.select("a[href=\"#rentalBusinessScheme\"]").text() must be("The scheme number for rental business can only contain numbers")
+              document.select("a[href=\"#rentalBusinessSchemePromoter\"]").text() must be("Enter a reference number for rental business promoter")
+              document.getElementById("rentalBusinessScheme-error").text() must be("Error: The scheme number for rental business can only contain numbers")
+              document.getElementById("rentalBusinessSchemePromoter-error").text() must be("Error: Enter a reference number for rental business promoter")
+            }
+          }
+
+          "if avoidance scheme length is greater than 8 char + letter and promoter is grater than 8 char, bad request must be returned" in new Setup {
+            val formInput: Seq[(String, String)] = Seq(("rentalBusinessScheme", "12345678a"), ("rentalBusinessSchemePromoter", "123456789"))
+
+            when(mockBackLinkCacheConnector.fetchAndGetBackLink(any())(any()))
+              .thenReturn(Future.successful(None))
+
+            submitWithAuthorisedUser(formInput) { result =>
+              status(result) must be(BAD_REQUEST)
+
+              val document = Jsoup.parse(contentAsString(result))
+
+              document.select("a[href=\"#rentalBusinessScheme\"]").text() must be("The scheme number for rental business can only contain numbers")
+              document.select("a[href=\"#rentalBusinessSchemePromoter\"]").text() must be("The reference number for rental business promoter must be 8 digits")
+              document.getElementById("rentalBusinessScheme-error").text() must be("Error: The scheme number for rental business can only contain numbers")
+              document.getElementById("rentalBusinessSchemePromoter-error").text() must be("Error: The reference number for rental business promoter must be 8 digits")
+            }
+          }
+
+          "if avoidance scheme length is greater than 8 char and promoter is invalid, bad request must be returned" in new Setup {
+            val formInput: Seq[(String, String)] = Seq(("rentalBusinessScheme", "123456789"), ("rentalBusinessSchemePromoter", "aaaaaaaa"))
+
+            when(mockBackLinkCacheConnector.fetchAndGetBackLink(any())(any()))
+              .thenReturn(Future.successful(None))
+
+            submitWithAuthorisedUser(formInput) { result =>
+              status(result) must be(BAD_REQUEST)
+
+              val document = Jsoup.parse(contentAsString(result))
+
+              document.select("a[href=\"#rentalBusinessScheme\"]").text() must be("The scheme number for rental business must be 8 digits")
+              document.select("a[href=\"#rentalBusinessSchemePromoter\"]").text() must be("The reference number for rental business promoter can only contain numbers")
+              document.getElementById("rentalBusinessScheme-error").text() must be("Error: The scheme number for rental business must be 8 digits")
+              document.getElementById("rentalBusinessSchemePromoter-error").text() must be("Error: The reference number for rental business promoter can only contain numbers")
             }
           }
 
