@@ -32,7 +32,7 @@ import play.twirl.api.Html
 import testhelpers.MockAuthUtil
 import views.html.reliefs
 
-class AvoidanceSchemesSpec extends AnyFeatureSpec with GuiceOneAppPerSuite with MockitoSugar with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
+class AvoidanceSchemesSocialHousingSpec extends AnyFeatureSpec with GuiceOneAppPerSuite with MockitoSugar with BeforeAndAfterEach with GivenWhenThen with MockAuthUtil {
 
   implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)

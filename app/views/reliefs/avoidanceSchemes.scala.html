@@ -63,12 +63,12 @@
 
                 @govukInput(
                     Input(
+                        inputmode = Some("numeric"),
                         label = Label(
                             content = HtmlContent(Messages("ated.avoidance-schemes.avoidance-scheme.text", messages(reliefCode))),
                             classes = "govuk-visually-hidden"
                         ),
-                        classes = "govuk-input--width-10",
-                        attributes = Map("maxLength" -> "8"),
+                        classes = "govuk-input--width-10"
                     ).withFormField(schemeFormValue)
                 )
             </div>
@@ -77,12 +77,12 @@
 
                 @govukInput(
                     Input(
+                        inputmode = Some("numeric"),
                         label = Label(
                             content = HtmlContent(Messages("ated.avoidance-schemes.avoidance-scheme-promoter.text", messages(reliefCode))),
                             classes = "govuk-visually-hidden"
                         ),
-                        classes = "govuk-input--width-10",
-                        attributes = Map("maxLength" -> "8"),
+                        classes = "govuk-input--width-10"
                     ).withFormField(promoterValue)
                 )
             </div>
