@@ -63,10 +63,10 @@ Feature("The user can add a period that the property is in relief") {
       Then("The date fields should have the correct titles and hints")
       assert(document.getElementById("startDate-hint").text === "For example, 1 4 2015")
       assert(document.getElementsByClass("govuk-fieldset__legend").text
-        contains "What was the start date in this current period, when the relief started?")
+        contains "What was the start date of the relief in this current period?")
       assert(document.getElementsByClass("govuk-fieldset__legend").text
-        contains "What was the end date in this current period, when the relief ended?")
-      assert(document.getElementById("endDate-hint").text === "For example, 31 3 2016")
+        contains "What was the end date of the relief in this current period?")
+      assert(document.getElementById("endDate-hint").text === "For example, 1 4 2015")
 
       Then("The date fields should have the correct default values")
       assert(document.getElementById("startDate.day").attr("value") === "")
