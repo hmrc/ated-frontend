@@ -60,6 +60,14 @@
     } else HtmlFormat.empty
 }
 
+
+@ariaDescribedby(field: String) = @{
+    form.error(field) match {
+        case Some(_) => s"$field-hint $field-error"
+        case _ => s"$field-hint"
+    }
+}
+
 @fieldValue(field: String) = @{
     form(field).value.map(x => s"value=$x")
 }
@@ -69,7 +77,7 @@
 }
 
 <div class="@formGroupErrorClass(field)">
-    <fieldset class="govuk-fieldset" role="group" aria-describedby="@field-hint">
+    <fieldset class="govuk-fieldset" role="group" aria-describedby="@ariaDescribedby(field)">
         <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
         @messages(legend)
         </legend>
