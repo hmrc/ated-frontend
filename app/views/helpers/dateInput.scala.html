@@ -28,7 +28,7 @@
         periodKey: Int,
         form: Form[_])(implicit messages: Messages)
 
-@formGroupErrorClass(field: String) = @{
+@formGroupErrorClass() = @{
     if(form.errors.exists(_.key.contains(field))) {
         "govuk-form-group govuk-form-group--error"
     } else {
@@ -36,7 +36,7 @@
     }
 }
 
-@fieldLevelErrorClass(field: String, dateField: String) = @{
+@fieldLevelErrorClass(dateField: String) = @{
     val num = if(dateField == "year") "4" else "2"
     if(form.errors.exists(er => er.key == field || (er.key.startsWith(field) && er.message.toLowerCase.contains(dateField)))) {
         s"govuk-input govuk-date-input__input govuk-input--width-$num govuk-input--error"
@@ -45,7 +45,7 @@
     }
 }
 
-@fieldLevelErrorMessage(field: String) = @{
+@fieldLevelErrorMessage() = @{
     val message = form.errors.collect {
         case e if e.key.startsWith(field) =>
             e.format
@@ -61,23 +61,23 @@
 }
 
 
-@ariaDescribedby(field: String) = @{
-    form.error(field) match {
-        case Some(_) => s"$field-hint $field-error"
-        case _ => s"$field-hint"
+@ariaDescribedby() = @{
+    form.errors.filter(_.key.contains(field)) match {
+        case x :: _ => s"$field-hint $field-error"
+        case Nil => s"$field-hint"
     }
 }
 
-@fieldValue(field: String) = @{
-    form(field).value.map(x => s"value=$x")
+@fieldValue(value: String) = @{
+    form(value).value.map(x => s"value=$x")
 }
 
-@id(field: String, dateField: String) = @{
+@id(dateField: String) = @{
     s"$field.$dateField"
 }
 
-<div class="@formGroupErrorClass(field)">
-    <fieldset class="govuk-fieldset" role="group" aria-describedby="@ariaDescribedby(field)">
+<div class="@formGroupErrorClass()">
+    <fieldset class="govuk-fieldset" role="group" aria-describedby="@ariaDescribedby()">
         <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
         @messages(legend)
         </legend>
@@ -85,33 +85,33 @@
         @messages(hint, PeriodUtils.periodStartDate(periodKey).toString(messages("ated.date-format.numeric")))
         </div>
 
-        @fieldLevelErrorMessage(field)
+        @fieldLevelErrorMessage()
         <div class="govuk-date-input" id=@field>
             <div class="govuk-date-input__item">
                 <div class="govuk-form-group">
-                    <label class="govuk-label govuk-date-input__label" for=@id(field, "day")>
+                    <label class="govuk-label govuk-date-input__label" for=@id("day")>
                         <span aria-hidden="true">Day</span>
                         <span class="govuk-visually-hidden">@messages(dayHidden)</span>
                     </label>
-                    <input class="@fieldLevelErrorClass(field, "day")" id=@id(field, "day") name=@id(field, "day") type="text" inputmode="numeric" @fieldValue(s"$field.day")>
+                    <input class="@fieldLevelErrorClass("day")" id=@id("day") name=@id("day") type="text" inputmode="numeric" @fieldValue(s"$field.day")>
                 </div>
             </div>
             <div class="govuk-date-input__item">
                 <div class="govuk-form-group">
-                    <label class="govuk-label govuk-date-input__label" for=@id(field, "month")>
+                    <label class="govuk-label govuk-date-input__label" for=@id("month")>
                         <span aria-hidden="true">Month</span>
                         <span class="govuk-visually-hidden">@messages(monthHidden)</span>
                     </label>
-                    <input class="@fieldLevelErrorClass(field, "month")" id=@id(field, "month") name=@id(field, "month") type="text" inputmode="numeric" @fieldValue(s"$field.month")>
+                    <input class="@fieldLevelErrorClass("month")" id=@id("month") name=@id("month") type="text" inputmode="numeric" @fieldValue(s"$field.month")>
                 </div>
             </div>
             <div class="govuk-date-input__item">
                 <div class="govuk-form-group">
-                    <label class="govuk-label govuk-date-input__label" for=@id(field, "year")>
+                    <label class="govuk-label govuk-date-input__label" for=@id("year")>
                         <span aria-hidden="true">Year</span>
                         <span class="govuk-visually-hidden">@messages(yearHidden)</span>
                     </label>
-                    <input class="@fieldLevelErrorClass(field, "year")" id=@id(field, "year") name=@id(field, "year") type="text" inputmode="numeric" @fieldValue(s"$field.year")>
+                    <input class="@fieldLevelErrorClass("year")" id=@id("year") name=@id("year") type="text" inputmode="numeric" @fieldValue(s"$field.year")>
                 </div>
             </div>
         </div>
