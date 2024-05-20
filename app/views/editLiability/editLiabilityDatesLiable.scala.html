@@ -19,6 +19,7 @@
 @import models._
 @import play.twirl.api.HtmlFormat
 @import uk.gov.hmrc.govukfrontend.views.html.components._
+@import views.html.helpers._
 @import views.ViewUtils.titleBuilder
 @import models.StringFormatting._
 
@@ -47,13 +48,6 @@
     }
 }
 
-@dateItems = @{
-    Seq(InputItem(attributes = Map("maxLength" -> "2")),
-        InputItem(attributes = Map("maxLength" -> "2")),
-        InputItem(attributes = Map("maxLength" -> "4"))
-    )
-}
-
 @newMain(title = titleBuilder(messages("ated.property-details-period.change-dates-liable.title"),Some(propertyDetailsForm)), serviceInfoContent = serviceInfoContent) {
 
     @backLinkHtml
@@ -76,29 +70,27 @@
 
     @formHelper(action = controllers.editLiability.routes.EditLiabilityDatesLiableController.save(formBundleNo, periodKey)) {
 
-        @govukDateInput(DateInput(
-            hint = Some(Hint(
-                content = Text(messages("ated.property-details-period.datesLiable.startDate.hint", periodStartDate(periodKey).toString(messages("ated.date-format.numeric"))))
-            )),
-            fieldset = Some(Fieldset(
-                legend = Some(Legend(
-                    content = Text(messages("ated.property-details-period.change-dates-liable.startDate"))
-                ))
-            )),
-            items = dateItems
-        ).withFormField(propertyDetailsForm("startDate")))
+        @dateInput(
+            field = "startDate",
+            legend = "ated.property-details-period.change-dates-liable.startDate",
+            hint = "ated.property-details-period.datesInRelief.startDate.hint",
+            dayHidden = "ated.property-details-period.change-dates-liable.startDate.hiddenContentDay",
+            monthHidden = "ated.property-details-period.change-dates-liable.startDate.hiddenContentMonth",
+            yearHidden = "ated.property-details-period.change-dates-liable.startDate.hiddenContentYear",
+            periodKey = periodKey,
+            form = propertyDetailsForm
+        )
 
-        @govukDateInput(DateInput(
-            hint = Some(Hint(
-                content = Text(messages("ated.property-details-period.datesLiable.endDate.hint", periodEndDate(periodKey).toString(messages("ated.date-format.numeric"))))
-            )),
-            fieldset = Some(Fieldset(
-                legend = Some(Legend(
-                    content = Text(messages("ated.property-details-period.change-dates-liable.endDate"))
-                ))
-            )),
-            items = dateItems
-        ).withFormField(propertyDetailsForm("endDate")))
+        @dateInput(
+            field = "endDate",
+            legend = "ated.property-details-period.change-dates-liable.endDate",
+            hint = "ated.property-details-period.datesInRelief.startDate.hint",
+            dayHidden = "ated.property-details-period.change-dates-liable.endDate.hiddenContentDay",
+            monthHidden = "ated.property-details-period.change-dates-liable.endDate.hiddenContentMonth",
+            yearHidden = "ated.property-details-period.change-dates-liable.endDate.hiddenContentYear",
+            periodKey = periodKey,
+            form = propertyDetailsForm
+        )
 
         @govukButton(Button(
             content = Text(messages("ated.save-and-continue")),

@@ -66,9 +66,9 @@ Feature("The user can add a period that the property is liable") {
 
       Then("The date fields should have the correct titles")
       assert(document.getElementsByTag("legend")
-        .text contains  "What was the start date in this chargeable period when the property became liable for a charge?")
+        .text contains  "What was the start date when the property became liable for a charge during this period?")
       assert(document.getElementsByTag("legend")
-        .text contains "What was the end date in this chargeable period when the property stopped being liable for a charge?")
+        .text contains "What was the end date the property stopped being liable for a charge during this period?")
 
       Then("The date fields should have the correct default values")
       assert(document.getElementById("startDate.day").attr("value") === "")
@@ -106,9 +106,9 @@ Feature("The user can add a period that the property is liable") {
 
       Then("The date fields should have the correct titles")
       assert(document.getElementsByTag("legend")
-        .text contains  "What was the start date in this chargeable period when the property became liable for a charge?")
+        .text contains  "What was the start date when the property became liable for a charge during this period?")
       assert(document.getElementsByTag("legend")
-        .text contains "What was the end date in this chargeable period when the property stopped being liable for a charge?")
+        .text contains "What was the end date the property stopped being liable for a charge during this period?")
 
       Then("The date fields should have the correct default values")
       assert(document.getElementById("startDate.day").attr("value") === "")

@@ -45,14 +45,6 @@
     }
 }
 
-@dateItems = @{
-    Seq(InputItem(attributes = Map("maxLength" -> "2")),
-        InputItem(attributes = Map("maxLength" -> "2")),
-        InputItem(attributes = Map("maxLength" -> "4"))
-    )
-}
-
-
 @newMain(title = titleBuilder(messages("ated.property-details-period.datesInRelief.title"), Some(propertyDetailsForm)),
           serviceInfoContent = serviceInfoContent) {
 
@@ -77,33 +69,27 @@
 
     @formHelper(action=controllers.propertyDetails.routes.PeriodInReliefDatesController.save(id, periodKey)) {
 
-        @govukDateInput(DateInput(
-            hint = Some(Hint(
-              content = Text(messages("ated.property-details-period.datesInRelief.startDate.hint",
-                    PeriodUtils.periodStartDate(periodKey).toString(messages("ated.date-format.numeric"))))
-            )),
-            fieldset = Some(Fieldset(
-              legend = Some(Legend(
-                content = Text(messages("ated.property-details-period.datesInRelief.startDate")),
-                classes = "govuk-label--s"
-              ))
-            )),
-            items = dateItems
-          ).withFormField(propertyDetailsForm("startDate")))
+        @dateInput(
+            field = "startDate",
+            legend = "ated.property-details-period.datesInRelief.startDate",
+            hint = "ated.property-details-period.datesInRelief.startDate.hint",
+            dayHidden = "ated.property-details-period.datesInRelief.startDate.hiddenContentDay",
+            monthHidden = "ated.property-details-period.datesInRelief.startDate.hiddenContentMonth",
+            yearHidden = "ated.property-details-period.datesInRelief.startDate.hiddenContentYear",
+            periodKey = periodKey,
+            form = propertyDetailsForm
+        )
 
-          @govukDateInput(DateInput(
-            hint = Some(Hint(
-              content = Text(messages("ated.property-details-period.datesInRelief.endDate.hint",
-                    PeriodUtils.periodEndDate(periodKey).toString(messages("ated.date-format.numeric"))))
-            )),
-            fieldset = Some(Fieldset(
-              legend = Some(Legend(
-                content = Text(messages("ated.property-details-period.datesInRelief.endDate")),
-                classes = "govuk-label--s"
-              ))
-            )),
-            items = dateItems
-          ).withFormField(propertyDetailsForm("endDate")))
+        @dateInput(
+            field = "endDate",
+            legend = "ated.property-details-period.datesInRelief.endDate",
+            hint = "ated.property-details-period.datesInRelief.endDate.hint",
+            dayHidden = "ated.property-details-period.datesInRelief.endDate.hiddenContentDay",
+            monthHidden = "ated.property-details-period.datesInRelief.endDate.hiddenContentMonth",
+            yearHidden = "ated.property-details-period.datesInRelief.endDate.hiddenContentYear",
+            periodKey = periodKey,
+            form = propertyDetailsForm
+        )
 
         @govukButton(Button(
             content = Text(messages("ated.save-and-continue")),

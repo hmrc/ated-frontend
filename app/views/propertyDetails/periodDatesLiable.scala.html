@@ -14,23 +14,21 @@
  * limitations under the License.
  *@
 
-@import models._
+@import _root_.utils._
 @import config.ApplicationConfig
+@import models._
 @import play.twirl.api.HtmlFormat
 @import uk.gov.hmrc.govukfrontend.views.html.components._
-@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 @import views.ViewUtils.titleBuilder
 @import views.html.helpers._
-@import _root_.utils._
-@import models.StringFormatting._
 
 
 @this(newMain: newMain,
         govukButton : GovukButton,
         govukBackLink : GovukBackLink,
         govukDateInput : GovukDateInput,
-        govukErrorSummary : GovukErrorSummary, 
-      formHelper: FormWithCSRF)
+        govukErrorSummary : GovukErrorSummary,
+        formHelper: FormWithCSRF)
 
 @(id: String, periodKey: Int, propertyDetailsForm: Form[PropertyDetailsDatesLiable], title: String, mode: Option[String], serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
@@ -41,13 +39,6 @@
             content = Text("Back")
         ))
     }
-}
-
-@dateItems = @{
-    Seq(InputItem(attributes = Map("maxLength" -> "2")),
-        InputItem(attributes = Map("maxLength" -> "2")),
-        InputItem(attributes = Map("maxLength" -> "4"))
-    )
 }
 
 @pageHeader = @{title}
@@ -75,33 +66,27 @@
 
     @formHelper(action=controllers.propertyDetails.routes.PeriodDatesLiableController.save(id, periodKey, mode)) {
 
-        @govukDateInput(DateInput(
-            hint = Some(Hint(
-              content = Text(messages("ated.property-details-period.datesInRelief.startDate.hint",
-                    PeriodUtils.periodStartDate(periodKey).toString(messages("ated.date-format.numeric"))))
-            )),
-            fieldset = Some(Fieldset(
-              legend = Some(Legend(
-                content = Text(messages("ated.property-details-period.datesLiable.startDate")),
-                classes = "govuk-label--s"
-              ))
-            )),
-            items = dateItems
-        ).withFormField(propertyDetailsForm("startDate")))
+        @dateInput(
+            field = "startDate",
+            legend = "ated.property-details-period.datesLiable.startDate",
+            hint = "ated.property-details-period.datesInRelief.startDate.hint",
+            dayHidden = "ated.property-details-period.datesLiable.startDate.hiddenContentDay",
+            monthHidden = "ated.property-details-period.datesLiable.startDate.hiddenContentMonth",
+            yearHidden = "ated.property-details-period.datesLiable.startDate.hiddenContentYear",
+            periodKey = periodKey,
+            form = propertyDetailsForm
+        )
 
-        @govukDateInput(DateInput(
-            hint = Some(Hint(
-              content = Text(messages("ated.property-details-period.datesInRelief.endDate.hint",
-                    PeriodUtils.periodEndDate(periodKey).toString(messages("ated.date-format.numeric"))))
-            )),
-            fieldset = Some(Fieldset(
-              legend = Some(Legend(
-                content = Text(messages("ated.property-details-period.datesLiable.endDate")),
-                classes = "govuk-label--s"
-              ))
-            )),
-            items = dateItems
-        ).withFormField(propertyDetailsForm("endDate")))
+        @dateInput(
+            field = "endDate",
+            legend = "ated.property-details-period.datesLiable.endDate",
+            hint = "ated.property-details-period.datesInRelief.endDate.hint",
+            dayHidden = "ated.property-details-period.datesLiable.endDate.hiddenContentDay",
+            monthHidden = "ated.property-details-period.datesLiable.endDate.hiddenContentMonth",
+            yearHidden = "ated.property-details-period.datesLiable.endDate.hiddenContentYear",
+            periodKey = periodKey,
+            form = propertyDetailsForm
+        )
 
         @govukButton(Button(
             content = Text(messages("ated.save-and-continue")),

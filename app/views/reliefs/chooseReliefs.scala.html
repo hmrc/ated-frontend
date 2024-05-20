@@ -82,138 +82,168 @@
     }
 }
 
-@inputItems = @{
-    Seq(InputItem(attributes = Map("maxLength" -> "2")),
-        InputItem(attributes = Map("maxLength" -> "2")),
-        InputItem(attributes = Map("maxLength" -> "4"))
-    )
+@rentalBusinessDateLegend = @{
+    messages("ated.choose-reliefs.date", messages("ated.choose-single-relief.rentalBusiness"))
+}
+
+@openToPublicDateLegend = @{
+    messages("ated.choose-reliefs.date", messages("ated.choose-single-relief.openToPublic"))
+}
+
+@propertyDeveloperDateLegend = @{
+    messages("ated.choose-reliefs.date", messages("ated.choose-single-relief.propertyDeveloper"))
+}
+
+@propertyTradingDateLegend = @{
+    messages("ated.choose-reliefs.date", messages("ated.choose-single-relief.propertyTrading"))
+}
+
+@lendingDateLegend = @{
+    messages("ated.choose-reliefs.date", messages("ated.choose-single-relief.lending"))
+}
+
+@employeeOccupationDateLegend = @{
+    messages("ated.choose-reliefs.date", messages("ated.choose-single-relief.employeeOccupation"))
+}
+
+@farmHousesDateLegend = @{
+    messages("ated.choose-reliefs.date", messages("ated.choose-single-relief.farmHouses"))
+}
+
+@equityReleaseDateLegend = @{
+    messages("ated.choose-reliefs.date", messages("ated.choose-single-relief.equityRelease"))
+}
+
+@socialHousingDateLegend = @{
+    messages("ated.choose-reliefs.date", messages(chooseSingleReliefsocialHousingMessage))
 }
 
 @rentalBusinessDateConditional = {
-    @govukDateInput(DateInput(
-        hint = Some(Hint(
-          content = Text(Messages("ated.choose-reliefs.relief-hint", formattedPeriodStartDate))
-        )),
-        fieldset = Some(Fieldset(
-            legend = Some(Legend(
-                content = HtmlContent(messages("ated.choose-reliefs.date", messages("ated.choose-single-relief.rentalBusiness")))
-            ))
-        )),
-        items = inputItems
-
-    ).withFormField(reliefsForm("rentalBusinessDate")))
+    @dateInput(
+        field = "rentalBusinessDate",
+        legend = rentalBusinessDateLegend,
+        hint = "ated.property-details-period.datesInRelief.startDate.hint",
+        dayHidden = "ated.choose-single-relief.rentalBusiness.hiddenContentDay",
+        monthHidden = "ated.choose-single-relief.rentalBusiness.hiddenContentMonth",
+        yearHidden = "ated.choose-single-relief.rentalBusiness.hiddenContentYear",
+        periodKey = periodKey,
+        form = reliefsForm
+    )
 }
 
 @openToPublicDateConditional = {
-    @govukDateInput(DateInput(
-        hint = Some(Hint(
-            content = Text(Messages("ated.choose-reliefs.relief-hint", formattedPeriodStartDate))
-        )),
-        fieldset = Some(Fieldset(
-            legend = Some(Legend(
-                content = HtmlContent(messages("ated.choose-reliefs.date", messages("ated.choose-single-relief.openToPublic")))
-            ))
-        )),
-        items = inputItems
-    ).withFormField(reliefsForm("openToPublicDate")))
+    @dateInput(
+        field = "openToPublicDate",
+        legend = openToPublicDateLegend,
+        hint = "ated.property-details-period.datesInRelief.startDate.hint",
+        dayHidden = "ated.choose-single-relief.openToPublic.hiddenContentDay",
+        monthHidden = "ated.choose-single-relief.openToPublic.hiddenContentMonth",
+        yearHidden = "ated.choose-single-relief.openToPublic.hiddenContentYear",
+        periodKey = periodKey,
+        form = reliefsForm
+    )
 }
 
+
 @propertyDeveloperDateConditional = {
-    @govukDateInput(DateInput(
-        hint = Some(Hint(
-            content = Text(Messages("ated.choose-reliefs.relief-hint", formattedPeriodStartDate))
-        )),
-        fieldset = Some(Fieldset(
-            legend = Some(Legend(
-                content = HtmlContent(messages("ated.choose-reliefs.date", messages("ated.choose-single-relief.propertyDeveloper")))
-            ))
-        )),
-        items = inputItems
-    ).withFormField(reliefsForm("propertyDeveloperDate")))
+    @dateInput(
+        field = "propertyDeveloperDate",
+        legend = propertyDeveloperDateLegend,
+        hint = "ated.property-details-period.datesInRelief.startDate.hint",
+        dayHidden = "ated.choose-single-relief.propertyDeveloper.hiddenContentDay",
+        monthHidden = "ated.choose-single-relief.propertyDeveloper.hiddenContentMonth",
+        yearHidden = "ated.choose-single-relief.propertyDeveloper.hiddenContentYear",
+        periodKey = periodKey,
+        form = reliefsForm
+    )
 }
 
 @propertyTradingDateConditional = {
-    @govukDateInput(DateInput(
-        hint = Some(Hint(
-            content = Text(Messages("ated.choose-reliefs.relief-hint", formattedPeriodStartDate))
-        )),
-        fieldset = Some(Fieldset(
-            legend = Some(Legend(
-                content = HtmlContent(messages("ated.choose-reliefs.date", messages("ated.choose-single-relief.propertyTrading")))
-            ))
-        )),
-        items = inputItems
-    ).withFormField(reliefsForm("propertyTradingDate")))
+    @dateInput(
+        field = "propertyTradingDate",
+        legend = propertyTradingDateLegend,
+        hint = "ated.property-details-period.datesInRelief.startDate.hint",
+        dayHidden = "ated.choose-single-relief.propertyTrading.hiddenContentDay",
+        monthHidden = "ated.choose-single-relief.propertyTrading.hiddenContentMonth",
+        yearHidden = "ated.choose-single-relief.propertyTrading.hiddenContentYear",
+        periodKey = periodKey,
+        form = reliefsForm
+    )
 }
 
 @lendingDateConditional = {
-    @govukDateInput(DateInput(
-        hint = Some(Hint(
-            content = Text(Messages("ated.choose-reliefs.relief-hint", formattedPeriodStartDate))
-        )),
-        fieldset = Some(Fieldset(
-            legend = Some(Legend(
-                content = HtmlContent(messages("ated.choose-reliefs.date", messages("ated.choose-single-relief.lending")))
-            ))
-        )),
-        items = inputItems
-    ).withFormField(reliefsForm("lendingDate")))
+    @dateInput(
+        field = "lendingDate",
+        legend = lendingDateLegend,
+        hint = "ated.property-details-period.datesInRelief.startDate.hint",
+        dayHidden = "ated.choose-single-relief.lending.hiddenContentDay",
+        monthHidden = "ated.choose-single-relief.lending.hiddenContentMonth",
+        yearHidden = "ated.choose-single-relief.lending.hiddenContentYear",
+        periodKey = periodKey,
+        form = reliefsForm
+    )
 }
 
 @employeeOccupationDateConditional = {
-    @govukDateInput(DateInput(
-        hint = Some(Hint(
-            content = Text(Messages("ated.choose-reliefs.relief-hint", formattedPeriodStartDate))
-        )),
-        fieldset = Some(Fieldset(
-            legend = Some(Legend(
-                content = HtmlContent(messages("ated.choose-reliefs.date", messages("ated.choose-single-relief.employeeOccupation")))
-            ))
-        )),
-        items = inputItems
-    ).withFormField(reliefsForm("employeeOccupationDate")))
+    @dateInput(
+        field = "employeeOccupationDate",
+        legend = employeeOccupationDateLegend,
+        hint = "ated.property-details-period.datesInRelief.startDate.hint",
+        dayHidden = "ated.choose-single-relief.employeeOccupation.hiddenContentDay",
+        monthHidden = "ated.choose-single-relief.employeeOccupation.hiddenContentMonth",
+        yearHidden = "ated.choose-single-relief.employeeOccupation.hiddenContentYear",
+        periodKey = periodKey,
+        form = reliefsForm
+    )
 }
 
 @farmHousesDateConditional = {
-    @govukDateInput(DateInput(
-        hint = Some(Hint(
-            content = Text(Messages("ated.choose-reliefs.relief-hint", formattedPeriodStartDate))
-        )),
-        fieldset = Some(Fieldset(
-            legend = Some(Legend(
-                content = HtmlContent(messages("ated.choose-reliefs.date", messages("ated.choose-single-relief.farmHouses")))
-            ))
-        )),
-        items = inputItems
-    ).withFormField(reliefsForm("farmHousesDate")))
+    @dateInput(
+        field = "farmHousesDate",
+        legend = farmHousesDateLegend,
+        hint = "ated.property-details-period.datesInRelief.startDate.hint",
+        dayHidden = "ated.choose-single-relief.farmHouses.hiddenContentDay",
+        monthHidden = "ated.choose-single-relief.farmHouses.hiddenContentMonth",
+        yearHidden = "ated.choose-single-relief.farmHouses.hiddenContentYear",
+        periodKey = periodKey,
+        form = reliefsForm
+    )
+}
+
+@socialHousingDateDay = @{
+    messages("ated.choose-reliefs.dates", messages("ated.choose-reliefs.dates.day"), messages(chooseSingleReliefsocialHousingMessage))
+}
+@socialHousingDateMonth = @{
+    messages("ated.choose-reliefs.dates", messages("ated.choose-reliefs.dates.month"), messages(chooseSingleReliefsocialHousingMessage))
+}
+@socialHousingDateYear = @{
+    messages("ated.choose-reliefs.dates", messages("ated.choose-reliefs.dates.year"), messages(chooseSingleReliefsocialHousingMessage))
 }
 
 @socialHousingDateConditional = {
-    @govukDateInput(DateInput(
-        hint = Some(Hint(
-            content = Text(Messages("ated.choose-reliefs.relief-hint", formattedPeriodStartDate))
-        )),
-        fieldset = Some(Fieldset(
-            legend = Some(Legend(
-                content = HtmlContent(messages("ated.choose-reliefs.date", messages(chooseSingleReliefsocialHousingMessage)))
-            ))
-        )),
-        items = inputItems
-    ).withFormField(reliefsForm("socialHousingDate")))
+    @dateInput(
+        field = "socialHousingDate",
+        legend = socialHousingDateLegend,
+        hint = "ated.property-details-period.datesInRelief.startDate.hint",
+        dayHidden = socialHousingDateDay,
+        monthHidden = socialHousingDateMonth,
+        yearHidden = socialHousingDateYear,
+        periodKey = periodKey,
+        form = reliefsForm
+    )
 }
 
 @equityReleaseDateConditional = {
-    @govukDateInput(DateInput(
-        hint = Some(Hint(
-            content = Text(Messages("ated.choose-reliefs.relief-hint", formattedPeriodStartDate))
-        )),
-        fieldset = Some(Fieldset(
-            legend = Some(Legend(
-                content = HtmlContent(messages("ated.choose-reliefs.date", messages("ated.choose-single-relief.equityRelease")))
-            ))
-        )),
-        items = inputItems
-    ).withFormField(reliefsForm("equityReleaseDate")))
+    @dateInput(
+        field = "equityReleaseDate",
+        legend = equityReleaseDateLegend,
+        hint = "ated.property-details-period.datesInRelief.startDate.hint",
+        dayHidden = "ated.choose-single-relief.equityRelease.hiddenContentDay",
+        monthHidden = "ated.choose-single-relief.equityRelease.hiddenContentMonth",
+        yearHidden = "ated.choose-single-relief.equityRelease.hiddenContentYear",
+        periodKey = periodKey,
+        form = reliefsForm
+    )
 }
 
 @newMain(title = titleBuilder(messages("ated.choose-reliefs.title"), Some(amendedForm)),
