@@ -32,8 +32,8 @@
         attributes = Map("id" -> "back-link")
    ))
     <script @CSPNonce.attr>
-       document.getElementById("back-link").addEventListener("click", function() {
-         event.preventDefault()
+       document.getElementById("back-link").addEventListener("click", function(e) {
+         e.preventDefault()
          window.history.back()
        });
     </script>

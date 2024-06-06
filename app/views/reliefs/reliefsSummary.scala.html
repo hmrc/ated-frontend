@@ -831,8 +831,8 @@
     <a id="print-friendly-relief-link" href="#print" class="govuk-link govuk-body print-hidden">@Messages("ated.relief-summary.print.view")</a>
 
     <script @CSPNonce.attr>
-       document.getElementById("print-friendly-relief-link").addEventListener("click", function() {
-         event.preventDefault()
+       document.getElementById("print-friendly-relief-link").addEventListener("click", function(e) {
+         e.preventDefault()
          window.print()
        });
     </script>
