@@ -49,8 +49,8 @@
     <a id="print" href="#print" class="govuk-link govuk-body print-hidden">@Messages("ated.reliefs-sent.print-link")</a>
 
     <script @CSPNonce.attr>
-       document.getElementById("print").addEventListener("click", function() {
-         event.preventDefault()
+       document.getElementById("print").addEventListener("click", function(e) {
+         e.preventDefault()
          window.print()
        });
     </script>

@@ -63,8 +63,8 @@
 
 @ariaDescribedby() = @{
     form.errors.filter(_.key.contains(field)) match {
-        case x :: _ => s"$field-hint $field-error"
         case Nil => s"$field-hint"
+        case _ => s"$field-hint $field-error"
     }
 }
 

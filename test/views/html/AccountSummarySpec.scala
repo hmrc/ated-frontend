@@ -81,7 +81,7 @@ class AccountSummarySpec extends AtedViewSpec with MockAuthUtil with TestModels 
       }
 
       "have the correct banner link" in {
-        assert(doc.select(".hmrc-header__service-name").attr("href") === "/ated/home")
+        assert(doc.select(".govuk-header__service-name").attr("href") === "/ated/home")
       }
     }
 
