@@ -1,0 +1,5 @@
+$govuk-assets-path: "/ated/assets/lib/govuk-frontend/govuk/assets/";
+$hmrc-assets-path: "/ated/assets/lib/hmrc-frontend/hmrc/";
+
+@import 'lib/govuk-frontend/dist/govuk/all';
+@import "lib/hmrc-frontend/hmrc/all";
