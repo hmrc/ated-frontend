@@ -14,16 +14,15 @@
  * limitations under the License.
  *@
 
-@import config.ApplicationConfig
 @(title: String)(content: Html)
 
 <html lang="en">
     <head>
         <meta name="charset" charset="UTF-8">
         <title>@title</title>
-        <link rel="stylesheet" href='@controllers.routes.Assets.versioned("stylesheets/application.css")'  type="text/css">
+        <link href="@{new uk.gov.hmrc.hmrcfrontend.config.AssetsConfig().hmrcFrontendCssUrl}"  media="all" rel="stylesheet" type="text/css" />
         <link href='@controllers.routes.Assets.versioned("stylesheets/print-friendly.css")' media="all" rel="stylesheet" type="text/css">
-        <link href='@uk.gov.hmrc.hmrcfrontend.controllers.routes.Assets.at(s"govuk/images/favicon.ico").url' media="all" rel="shortcut icon" type="image/x-icon"/>
+        <link href="https://www.tax.service.gov.uk/favicon.ico" media="all" rel="shortcut icon" type="image/x-icon"/>
     </head>
 
     <body>
