@@ -41,13 +41,6 @@
     }
 }
 
-@dateItems = @{
-    Seq(InputItem(attributes = Map("maxLength" -> "2")),
-        InputItem(attributes = Map("maxLength" -> "2")),
-        InputItem(attributes = Map("maxLength" -> "4"))
-    )
-}
-
 @newMain(title = titleBuilder(messages("ated.property-details-value.whenAcquired.title"), Some(propertyDetailsForm)),
 serviceInfoContent = serviceInfoContent) {
 
@@ -63,8 +56,7 @@ serviceInfoContent = serviceInfoContent) {
             hint = Some(Hint(
               content = Text(messages("ated.property-details-value.newBuildDates.exampleDate"))
             )),
-            items = dateItems
-        ).withFormField(propertyDetailsForm("acquiredDate"))
+        ).withDayMonthYearFormField(propertyDetailsForm("acquiredDate"))
         .withHeadingAndSectionCaption(
             heading = Text(messages("ated.property-details-value.whenAcquired.header", PeriodUtils.calculateLowerTaxYearBoundary(periodKey).getYear.toString)),
             sectionCaption = Text(messages(AtedUtils.getPropertyDetailsPreHeader(mode)))

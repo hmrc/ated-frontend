@@ -34,13 +34,6 @@
 
 @(id: String, periodKey: Int, propertyDetailsForm: Form[DateCouncilRegistered], mode: Option[String], serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
-@dateItems = @{
-    Seq(InputItem(attributes = Map("maxLength" -> "2")),
-        InputItem(attributes = Map("maxLength" -> "2")),
-        InputItem(attributes = Map("maxLength" -> "4"))
-    )
-}
-
 @backLinkHtml = {
     @if(backLink.isDefined) {
         @govukBackLink(BackLink(
@@ -84,8 +77,7 @@
                 classes = "govuk-visually-hidden"
               ))
             )),
-            items = dateItems
-        ).withFormField(propertyDetailsForm("dateCouncilRegistered")))
+        ).withDayMonthYearFormField(propertyDetailsForm("dateCouncilRegistered")))
 
         @govukButton(Button(
             content = Text(messages("ated.save-and-continue")),

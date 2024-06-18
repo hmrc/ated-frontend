@@ -46,25 +46,17 @@
     }
 }
 
-@dateItems = @{
-    Seq(InputItem(attributes = Map("maxLength" -> "2")),
-        InputItem(attributes = Map("maxLength" -> "2")),
-        InputItem(attributes = Map("maxLength" -> "4"))
-    )
-}
-
 @conditionalYes = {
     @govukDateInput(DateInput(
         hint = Some(Hint(
             content = Text(messages("ated.property-details-value.partAcqDispDate.hint", PeriodUtils.periodEndDate(periodKey).toString(messages("ated.date-format.numeric"))))
         )),
-        items = dateItems,
         fieldset = Some(Fieldset(
             legend = Some(Legend(
             content = Text(messages("ated.property-details-value.partAcqDispDate"))
             ))
         ))
-    ).withFormField(propertyDetailsForm("partAcqDispDate")))
+    ).withDayMonthYearFormField(propertyDetailsForm("partAcqDispDate")))
 
     @govukInput(Input(
         classes = "govuk-input--width-10",
@@ -83,13 +75,12 @@
         hint = Some(Hint(
             content = Text(messages("ated.property-details-value.revaluedDate.hint", PeriodUtils.periodEndDate(periodKey).toString(messages("ated.date-format.numeric"))))
         )),
-        items = dateItems,
         fieldset = Some(Fieldset(
             legend = Some(Legend(
             content = Text(messages("ated.property-details-value.revaluedDate"))
             ))
         ))
-    ).withFormField(propertyDetailsForm("revaluedDate")))
+    ).withDayMonthYearFormField(propertyDetailsForm("revaluedDate")))
 
 }
 

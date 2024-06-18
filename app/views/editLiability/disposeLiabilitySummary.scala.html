@@ -465,7 +465,7 @@
     @formHelper(action = controllers.editLiability.routes.DisposeLiabilitySummaryController.submit(disposeLiability.id.toString)) {
       @govukButton(Button(
         content = Text(messages("ated.confirm-and-continue")),
-        attributes = Map("type" -> "submit", "id" -> "submit")
+        attributes = Map("id" -> "submit")
       ))
     }
   }

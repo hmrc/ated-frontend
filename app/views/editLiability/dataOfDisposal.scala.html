@@ -37,13 +37,6 @@
         request: Request[AnyContent],
         appConfig: ApplicationConfig)
 
-@dateItems = @{
-    Seq(InputItem(attributes = Map("maxLength" -> "2")),
-        InputItem(attributes = Map("maxLength" -> "2")),
-        InputItem(attributes = Map("maxLength" -> "4"))
-    )
-}
-
 @backLinkHtml = {
     @if(backLink.isDefined) {
         @govukBackLink(BackLink(
@@ -67,8 +60,7 @@
             hint = Some(Hint(
                 content = Text(messages("ated.date.hint"))
             )),
-            items = dateItems
-            ).withFormField(disposeLiabilityForm("dateOfDisposal"))
+            ).withDayMonthYearFormField(disposeLiabilityForm("dateOfDisposal"))
             .withHeadingAndSectionCaption(
                 heading = Text(messages("ated.dispose-property.disposal-date.header")),
                 sectionCaption = Text(messages("ated.property-details.pre-header-dispose"))
@@ -76,7 +68,7 @@
 
         @govukButton(Button(
             content = Text(messages("ated.save-and-continue")),
-            attributes = Map("type" -> "submit", "id" -> "submit")
+            attributes = Map("id" -> "submit")
         ))
         <input type="hidden" name="periodKey" id="id" value=@disposeLiabilityForm("periodKey").value>
     }
