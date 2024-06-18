@@ -83,7 +83,7 @@
     @formHelper(action = controllers.editLiability.routes.EditLiabilityDeclarationController.submit(oldFormBundleNum)) {
         @govukButton(Button(
             content = Text(messages(printSubmitMsg(returnType))),
-            attributes = Map("type" -> "submit", "id" -> "submit")
+            attributes = Map("id" -> "submit")
         ))
     }
 }

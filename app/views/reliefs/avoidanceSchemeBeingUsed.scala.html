@@ -95,7 +95,6 @@
     @govukRadios(
         Radios(
             fieldset = Some(Fieldset(
-                classes = "govuk-radios--inline",
                     legend = Some(Legend(
                         content = Text(messages("ated.choose-reliefs.avoidance-title")),
                         classes = "govuk-visually-hidden"
@@ -111,7 +110,8 @@
                         value = Some("false")
                     )
                 ),
-                errorMessage = if(isTaxAvoidanceForm.hasErrors) Some(ErrorMessage(content = Text(messages(isTaxAvoidanceForm.errors.map(e => e.message))))) else None
+                errorMessage = if(isTaxAvoidanceForm.hasErrors) Some(ErrorMessage(content = Text(messages(isTaxAvoidanceForm.errors.map(e => e.message))))) else None,
+        classes = "govuk-radios--inline",
         ).withFormField(isTaxAvoidanceForm("isAvoidanceScheme")))
 
     <div class="govuk-form-group">
