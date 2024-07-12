@@ -82,6 +82,42 @@ class FormBundleReturnsServiceSpec extends PlaySpec with GuiceOneServerPerSuite 
       |}
     """.stripMargin
 
+  val tabJson: String =
+    """
+      |{
+      |  "periodKey": "2014",
+      |  "propertyDetails": {
+      |    "titleNumber": "title here",
+      |    "address": {
+      |      "addressLine1": "1 addressLine1",
+      |      "addressLine2": "addressLine2",
+      |      "postalCode": "XX11XX",
+      |      "countryCode": "GB"
+      |    },
+      |    "additionalDetails": "additional             additional"
+      |  },
+      |  "dateOfAcquisition": "2013-10-10",
+      |  "valueAtAcquisition": 100,
+      |  "dateOfValuation": "2014-10-10",
+      |  "taxAvoidanceScheme": "ABCDefgh",
+      |  "localAuthorityCode": "1234",
+      |  "professionalValuation": true,
+      |  "ninetyDayRuleApplies": true,
+      |  "dateOfSubmission": "2016-05-10",
+      |  "liabilityAmount": 9375,
+      |  "paymentReference": "abc456def123gh",
+      |  "lineItem": [
+      |    {
+      |      "propertyValue": 100,
+      |      "dateFrom": "2014-10-10",
+      |      "dateTo": "2016-10-10",
+      |      "type": "Relief",
+      |      "reliefDescription": "Property developers"
+      |    }
+      |  ]
+      |}
+    """.stripMargin
+
 
   override def beforeEach(): Unit = {
     reset(mockConnector)
@@ -141,6 +177,25 @@ class FormBundleReturnsServiceSpec extends PlaySpec with GuiceOneServerPerSuite 
       thrown.getMessage must include("Failed to retrieve form bundle return")
     }
 
+    "handle 200 for body with Illegal unquoted character ((CTRL-CHAR, code 9))" in new Setup {
+      implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
+
+      val tabResponse: JsValue = Json.parse(tabJson)
+
+      when(mockConnector.retrieveFormBundleReturns(ArgumentMatchers.eq("12345678901090"))(ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(HttpResponse(OK, tabResponse.toString)))
+      val result: Future[Option[FormBundleReturn]] = testFormBundleReturnsService.getFormBundleReturns("12345678901090")
+      val bundleReturn: Option[FormBundleReturn] = await(result)
+      bundleReturn.isDefined must be(true)
+
+      bundleReturn.get.periodKey must be("2014")
+      bundleReturn.get.propertyDetails.titleNumber must be(Some("title here"))
+      bundleReturn.get.propertyDetails.additionalDetails must be(Some("additional             additional"))
+      bundleReturn.get.dateOfAcquisition must be(Some(LocalDate.parse("2013-10-10")))
+      bundleReturn.get.ninetyDayRuleApplies must be(true)
+
+      bundleReturn.get.lineItem.size must be(1)
+    }
 
   }
 }

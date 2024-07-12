@@ -22,7 +22,8 @@ import javax.inject.Inject
 import models._
 import play.api.Logging
 import play.api.http.Status._
-import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, InternalServerException}
+import play.api.libs.json.Json
+import uk.gov.hmrc.http.{InternalServerException, BadRequestException, HeaderCarrier}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -34,7 +35,8 @@ class FormBundleReturnsService @Inject()(atedConnector: AtedConnector)(implicit 
       response =>
         response.status match {
           case OK =>
-            response.json.asOpt[FormBundleReturn]
+            val JSON = Json.parse(response.body.replaceAll("\\s", " "))
+            JSON.asOpt[FormBundleReturn]
           case NOT_FOUND => None
           case BAD_REQUEST =>
             logger.warn(s"[FormBundleReturnsService] [getFormBundleReturns] BadRequestException: [response.body] = ${response.body}")
