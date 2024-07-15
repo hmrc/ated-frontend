@@ -34,6 +34,7 @@
   hmrcBanner: HmrcBanner)
 
 @(periodKey: Int,
+  lineItemsEmpty: Boolean,
   reliefsTaxAvoidance : Option[ReliefsTaxAvoidance],
   canSubmit: Boolean,
   isComplete: Boolean,
@@ -806,15 +807,19 @@
 
 <div class="govuk-form-group">
 
-  <p class="govuk-body" id="ated-charge-text">@messages("ated.relief-summary.table.ated-charge.text")</p>
+  @if(lineItemsEmpty) {
+    <p class="govuk-body" id ="ated-no-line-items">@messages("ated.relief-summary.table.ated-no-line-items.text")</p>
+  } else {
+    <p class="govuk-body" id="ated-charge-text">@messages("ated.relief-summary.table.ated-charge.text")</p>
 
-  <p id="ated-charge-value"><span class="govuk-heading-xl govuk-form-group">
+    <p id="ated-charge-value"><span class="govuk-heading-xl govuk-form-group">
     @if(isComplete) {
       @messages("ated.relief-summary.table.ated-charge.balance")
     } else {
       @messages("ated.unknown-amount.text")
     }
-  </span></p>
+    </span></p>
+  }
 
   <div class="govuk-inset-text print-hidden">
     <p class="govuk-body">@messages("ated.relief-summary.saved-draft.text")</p>

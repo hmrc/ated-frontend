@@ -196,7 +196,7 @@ POST     /liability/create/tax-avoidance/save/:propertyKey/period/:periodKey   c
 
 GET      /liability/create/supporting-info/edit-summary/:propertyKey            controllers.propertyDetails.PropertyDetailsSupportingInfoController.editFromSummary(propertyKey: String)
 GET      /liability/create/supporting-info/view/:propertyKey                    controllers.propertyDetails.PropertyDetailsSupportingInfoController.view(propertyKey: String)
-POST     /liability/create/supporting-info/save/:propertyKey/period/:periodKey  controllers.propertyDetails.PropertyDetailsSupportingInfoController.save(propertyKey: String, periodKey: Int, mode: Option[String] ?=None)
+POST     /liability/create/supporting-info/save/:propertyKey/period/:periodKey  controllers.propertyDetails.PropertyDetailsSupportingInfoController.save(propertyKey: String, period: Option[PropertyDetailsPeriod], periodKey: Int, mode: Option[String] ?=None)
 
 GET      /liability/create/in-relief/view/:propertyKey                         controllers.propertyDetails.PropertyDetailsInReliefController.view(propertyKey: String)
 POST     /liability/create/in-relief/save/:propertyKey/period/:periodKey       controllers.propertyDetails.PropertyDetailsInReliefController.save(propertyKey: String, periodKey: Int, mode: Option[String] ?=None)

@@ -30,6 +30,7 @@ import utils.AtedConstants._
 import utils.AtedUtils
 import uk.gov.hmrc.play.bootstrap.controller.WithUnsafeDefaultFormBinding
 import scala.concurrent.{ExecutionContext, Future}
+import utils.PeriodUtils
 
 class PropertyDetailsSupportingInfoController @Inject()(mcc: MessagesControllerComponents,
                                                         authAction: AuthAction,
@@ -92,7 +93,7 @@ class PropertyDetailsSupportingInfoController @Inject()(mcc: MessagesControllerC
     }
   }
 
-  def save(id: String, periodKey: Int, mode: Option[String]): Action[AnyContent] = Action.async { implicit request =>
+  def save(id: String, period: Option[PropertyDetailsPeriod], periodKey: Int, mode: Option[String]): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
@@ -106,8 +107,15 @@ class PropertyDetailsSupportingInfoController @Inject()(mcc: MessagesControllerC
                 cachedData <- dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn)
                 _ <- propertyDetailsService.validateCalculateDraftPropertyDetails(id, AtedUtils.isEditSubmittedMode(mode) && cachedData.isEmpty)
                 _ <- propertyDetailsService.saveDraftPropertyDetailsSupportingInfo(id, propertyDetails)
+                liability <- dataCacheConnector.fetchAndGetFormData[PropertyDetailsDatesLiable](???)
+                relief <- dataCacheConnector.fetchAndGetFormData[PropertyDetailsDatesInRelief](???)
                 result <-
-                  if (AtedUtils.isEditSubmittedMode(mode) && cachedData.isEmpty) {
+                  if
+                  //(liability.isEmpty && relief.isEmpty)
+                  (PeriodUtils.getDisplayPeriods(period, periodKey).isEmpty)
+                  {
+
+                  } else if (AtedUtils.isEditSubmittedMode(mode) && cachedData.isEmpty) {
                     redirectWithBackLink(
                       editLiabilitySummaryController.controllerId,
                       controllers.editLiability.routes.EditLiabilitySummaryController.view(id),
