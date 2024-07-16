@@ -21,7 +21,6 @@ import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.{AuthAction, ClientHelper}
 import controllers.editLiability.EditLiabilitySummaryController
 import forms.PropertyDetailsForms._
-
 import javax.inject.Inject
 import models._
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -30,7 +29,6 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants._
 import utils.AtedUtils
 import uk.gov.hmrc.play.bootstrap.controller.WithUnsafeDefaultFormBinding
-
 import scala.concurrent.{ExecutionContext, Future}
 import utils.PeriodUtils
 
@@ -111,8 +109,6 @@ class PropertyDetailsSupportingInfoController @Inject()(mcc: MessagesControllerC
                     cachedData <- dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn)
                     _ <- propertyDetailsService.validateCalculateDraftPropertyDetails(id, AtedUtils.isEditSubmittedMode(mode) && cachedData.isEmpty)
                     _ <- propertyDetailsService.saveDraftPropertyDetailsSupportingInfo(id, propertyDetails)
-                    //liability <- dataCacheConnector.fetchAndGetFormData[PropertyDetailsDatesLiable](???)
-                    //relief <- dataCacheConnector.fetchAndGetFormData[PropertyDetailsDatesInRelief](???)
                     result <-
                       if (AtedUtils.isEditSubmittedMode(mode) && cachedData.isEmpty) {
                         redirectWithBackLink(
@@ -137,7 +133,6 @@ class PropertyDetailsSupportingInfoController @Inject()(mcc: MessagesControllerC
                           }
                         }
                       } else {
-                        //need to decide on this
                         redirectWithBackLink(
                           propertyDetailsSummaryController.controllerId,
                           controllers.propertyDetails.routes.PropertyDetailsSummaryController.view(id),
