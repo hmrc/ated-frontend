@@ -806,15 +806,15 @@
 
 <div class="govuk-form-group">
 
-    <p class="govuk-body" id="ated-charge-text">@messages("ated.relief-summary.table.ated-charge.text")</p>
+  <p class="govuk-body" id="ated-charge-text">@messages("ated.relief-summary.table.ated-charge.text")</p>
 
-    <p id="ated-charge-value"><span class="govuk-heading-xl govuk-form-group">
+  <p id="ated-charge-value"><span class="govuk-heading-xl govuk-form-group">
     @if(isComplete) {
       @messages("ated.relief-summary.table.ated-charge.balance")
     } else {
       @messages("ated.unknown-amount.text")
     }
-    </span></p>
+  </span></p>
 
   <div class="govuk-inset-text print-hidden">
     <p class="govuk-body">@messages("ated.relief-summary.saved-draft.text")</p>
