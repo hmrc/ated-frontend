@@ -21,21 +21,21 @@ import config.ApplicationConfig
 import javax.inject.Inject
 import models.{AddressLookup, AddressLookupRecord}
 import play.api.Logging
-import play.api.libs.json.{JsValue, Json}
+import play.api.libs.json.Json
 import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
-import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
-
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.StringContextOps
 import scala.concurrent.{ExecutionContext, Future}
 
-class AddressLookupConnector @Inject()(appConf: ApplicationConfig, http: DefaultHttpClient)(implicit ec: ExecutionContext) extends RawResponseReads with Logging {
+class AddressLookupConnector @Inject()(appConf: ApplicationConfig, http: HttpClientV2)(implicit ec: ExecutionContext) extends RawResponseReads with Logging {
   val serviceURL: String = appConf.conf.baseUrl("address-lookup")
   private val LOOKUP = "/lookup"
   private val UPRN = "/by-uprn"
 
 
   def findByPostcode(addressLookup: AddressLookup)(implicit hc: HeaderCarrier):Future[List[AddressLookupRecord]] = {
-    http.POST[JsValue, List[AddressLookupRecord]](serviceURL + LOOKUP, Json.toJson(addressLookup)).recover {
+    http.post(url"$serviceURL$LOOKUP").withBody(Json.toJson(addressLookup)).execute[List[AddressLookupRecord]].recover {
       case e : UpstreamErrorResponse => {
         logger.warn(s"[AddressLookupConnector] [findbyPoscode] - Upstream error: ${e.reportAs} message: ${e.getMessage()}")
         Nil
@@ -48,7 +48,7 @@ class AddressLookupConnector @Inject()(appConf: ApplicationConfig, http: Default
   }
 
   def findById(uprn: String)(implicit hc: HeaderCarrier):Future[List[AddressLookupRecord]] = {
-    http.POST[JsValue, List[AddressLookupRecord]](serviceURL + LOOKUP + UPRN, Json.obj("uprn" -> uprn)).recover {
+    http.post(url"$serviceURL$LOOKUP$UPRN").withBody(Json.obj("uprn" -> uprn)).execute[List[AddressLookupRecord]].recover {
       case e : UpstreamErrorResponse => {
         logger.warn(s"[AddressLookupConnector] [findById] - Upstream error: ${e.reportAs} message: ${e.getMessage()}")
         Nil

@@ -19,28 +19,29 @@ package config
 import javax.inject.Inject
 import play.api.Configuration
 import play.api.i18n.{MessagesApi, Messages}
-import play.api.mvc.Request
+import play.api.mvc.RequestHeader
 import play.twirl.api.Html
+import scala.concurrent.Future
 import uk.gov.hmrc.play.bootstrap.frontend.http.FrontendErrorHandler
 
 class ErrorHandler @Inject()(val messagesApi: MessagesApi,
                              val templateError: views.html.global_error,
                              val configuration: Configuration,
-                             implicit val applicationConfig: ApplicationConfig) extends FrontendErrorHandler {
+                             implicit val applicationConfig: ApplicationConfig, val ec: scala.concurrent.ExecutionContext) extends FrontendErrorHandler {
 
   override def standardErrorTemplate(pageTitle: String, heading: String, message: String)
-                                    (implicit request: Request[_]): Html = {
-    templateError(pageTitle, heading, message, None, None, None, None, Html(""))
+                                    (implicit request: RequestHeader): Future[Html] = {
+    Future.successful(templateError(pageTitle, heading, message, None, None, None, None, Html("")))
   }
 
-  override def internalServerErrorTemplate(implicit request: Request[_]): Html = {
-    templateError(Messages("ated.generic.error.title"),
+  override def internalServerErrorTemplate(implicit request: RequestHeader): Future[Html] = {
+    Future.successful(templateError(Messages("ated.generic.error.title"),
       Messages("ated.generic.error.header"),
       Messages("ated.generic.error.message"),
       Some(Messages("ated.generic.error.message2")),
       None,
       None,
       None,
-      Html(""))
+      Html("")))
   }
 }

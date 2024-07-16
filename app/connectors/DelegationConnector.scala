@@ -19,22 +19,21 @@ package connectors
 import config.ApplicationConfig
 
 import javax.inject.Inject
-import play.api.libs.json.{JsValue, Json}
+import play.api.libs.json.Json
 import uk.gov.hmrc.http._
-import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
-
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.StringContextOps
 import scala.concurrent.{ExecutionContext, Future}
+import uk.gov.hmrc.http.HttpReads.Implicits._
 
-class DelegationConnector @Inject()(http: DefaultHttpClient,
-                                    appConfig: ApplicationConfig)
-                                   (implicit ec: ExecutionContext){
+class DelegationConnector @Inject()(http: HttpClientV2, appConfig: ApplicationConfig)(implicit ec: ExecutionContext) {
 
   val serviceURL: String = appConfig.conf.baseUrl("delegation")
 
   def delegationDataCall(id: String)(implicit hc: HeaderCarrier): Future[HttpResponse] = {
     val jsonData = Json.parse(s"""{"internalId" : "$id"}""".stripMargin)
-    val postUrl = s"""$serviceURL/oid"""
+    val postUrl = url"""$serviceURL/oid"""
 
-    http.POST[JsValue, HttpResponse](postUrl, jsonData)(implicitly, rds = HttpReads.Implicits.readRaw, implicitly, implicitly)
+    http.post(postUrl).withBody(jsonData).execute[HttpResponse]
   }
 }
