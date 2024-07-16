@@ -96,6 +96,13 @@ class PropertyDetailsSupportingInfoController @Inject()(mcc: MessagesControllerC
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+//          propertyDetailsService.retrieveDraftPropertyDetails(id).map {
+//            case successResponse: PropertyDetailsCacheSuccessResponse =>
+//              val period: Option[PropertyDetailsPeriod] = successResponse.propertyDetails.period
+//            case _ =>
+//              Ok(templateError("ated.generic.error.title", "ated.generic.error.header",
+//                "ated.generic.error.message", Some("ated.generic.error.message2"), None, None, None, serviceInfoContent))
+//          }
           propertyDetailsCacheResponse(id) {
             case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
               val period: Option[PropertyDetailsPeriod] = propertyDetails.period
@@ -115,7 +122,8 @@ class PropertyDetailsSupportingInfoController @Inject()(mcc: MessagesControllerC
                           editLiabilitySummaryController.controllerId,
                           controllers.editLiability.routes.EditLiabilitySummaryController.view(id),
                           backLink)
-                      } else if (PeriodUtils.getDisplayPeriods(period, periodKey).nonEmpty) {
+                      } else
+                        if (PeriodUtils.getDisplayPeriods(period, periodKey).nonEmpty) {
                         propertyDetailsService.calculateDraftPropertyDetails(id).flatMap { response =>
                           response.status match {
                             case OK =>
