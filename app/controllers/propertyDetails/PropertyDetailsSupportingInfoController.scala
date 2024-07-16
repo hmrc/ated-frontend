@@ -18,14 +18,14 @@ package controllers.propertyDetails
 
 import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
-import controllers.auth.{ClientHelper, AuthAction}
+import controllers.auth.{AuthAction, ClientHelper}
 import controllers.editLiability.EditLiabilitySummaryController
 import forms.PropertyDetailsForms._
 
 import javax.inject.Inject
 import models._
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{ServiceInfoService, PropertyDetailsCacheSuccessResponse, PropertyDetailsService}
+import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants._
 import utils.AtedUtils
