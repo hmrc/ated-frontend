@@ -115,8 +115,7 @@ class PropertyDetailsSupportingInfoController @Inject()(mcc: MessagesControllerC
                           editLiabilitySummaryController.controllerId,
                           controllers.editLiability.routes.EditLiabilitySummaryController.view(id),
                           backLink)
-                      } else
-                        if (PeriodUtils.getDisplayPeriods(period, periodKey).nonEmpty) {
+                      } else if (PeriodUtils.getDisplayPeriods(period, periodKey).nonEmpty) {
                         propertyDetailsService.calculateDraftPropertyDetails(id).flatMap { response =>
                           response.status match {
                             case OK =>
