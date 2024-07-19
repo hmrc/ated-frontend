@@ -18,18 +18,15 @@ package connectors
 
 import config.ApplicationConfig
 import models.{ReturnType, StandardAuthRetrievals}
-import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.libs.json.{JsString, JsValue, Json}
-import play.api.test.Helpers._
 import play.api.test.Injecting
 import uk.gov.hmrc.http.cache.client.{CacheMap, SessionCache}
 import uk.gov.hmrc.http.SessionId
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
-import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -38,13 +35,12 @@ class DataCacheConnectorSpec extends PlaySpec with GuiceOneAppPerSuite with Mock
   implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId("test")))
   implicit val ec: ExecutionContext = inject[ExecutionContext]
   val mockSessionCache: SessionCache = mock[SessionCache]
-  val mockHttp: DefaultHttpClient = mock[DefaultHttpClient]
   val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
   implicit val authContext: StandardAuthRetrievals = mock[StandardAuthRetrievals]
 
-  class Setup {
+  class Setup extends ConnectorTest {
     val testDataCacheConnector: DataCacheConnector = new DataCacheConnector(
-      mockHttp,
+      mockHttpClient,
       mockAppConfig
     )
   }
@@ -56,9 +52,7 @@ class DataCacheConnectorSpec extends PlaySpec with GuiceOneAppPerSuite with Mock
     "saveFormData" must {
       "save form data in keystore" in new Setup {
         val returnedCacheMap = CacheMap("form-id", Map("test" -> Json.toJson(returnType)))
-        when(mockHttp.PUT[ReturnType, CacheMap]
-          (any(), any(), any())(any(), any(), any(), any()))
-          .thenReturn(Future.successful(returnedCacheMap))
+        when(requestBuilderExecute[CacheMap]).thenReturn(Future.successful(returnedCacheMap))
 
         await(testDataCacheConnector.saveFormData[ReturnType]("form-id", returnType)) must be(returnType)
 
@@ -69,8 +63,7 @@ class DataCacheConnectorSpec extends PlaySpec with GuiceOneAppPerSuite with Mock
 
     "fetchAndGetFormData" must {
       "fetch data from Keystore" in new Setup {
-        when(mockHttp.GET[CacheMap](any(), any(),any())(any(), any(), any()))
-          .thenReturn(Future.successful(CacheMap("test", Map("form-id" -> Json.toJson(returnType)))))
+        when(requestBuilderExecute[CacheMap]).thenReturn(Future.successful(CacheMap("test", Map("form-id" -> Json.toJson(returnType)))))
 
         await(testDataCacheConnector.fetchAndGetFormData[ReturnType]("form-id")) must be(Some(returnType))
       }
@@ -80,21 +73,16 @@ class DataCacheConnectorSpec extends PlaySpec with GuiceOneAppPerSuite with Mock
       "clear data from Keystore" in new Setup {
         val successResponse: JsValue = Json.parse("""{"processingDate": "2001-12-17T09:30:47Z"}""")
 
-        when(mockHttp.DELETE[HttpResponse](any(), any())(
-          any(), any(), any()))
-          .thenReturn(Future.successful(HttpResponse(200, successResponse.toString)))
+        when(requestBuilderExecute[HttpResponse]).thenReturn(Future.successful(HttpResponse(200, successResponse.toString)))
 
-        val result: Future[HttpResponse] = testDataCacheConnector.clearCache()
-        val response: HttpResponse = await(result)
-        response.status must be(OK)
-        response.json must be(successResponse)
+        val result: Future[Unit] = testDataCacheConnector.clearCache()
+        await(result) must be(())
       }
     }
 
     "fetchAtedRefData" must {
       "fetch data from Keystore" in new Setup {
-        when(mockHttp.GET[CacheMap](any(),any(),any())(any(), any(), any()))
-          .thenReturn(Future.successful(CacheMap("test", Map("form-id" -> JsString("XN1200000100001")))))
+        when(requestBuilderExecute[CacheMap]).thenReturn(Future.successful(CacheMap("test", Map("form-id" -> JsString("XN1200000100001")))))
 
         val result: Future[Option[String]] = testDataCacheConnector.fetchAtedRefData[String]("form-id")
         await(result) must be(Some("XN1200000100001"))

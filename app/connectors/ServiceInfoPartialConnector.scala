@@ -29,15 +29,13 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class ServiceInfoPartialConnector @Inject()(http: HttpClientV2, config: ApplicationConfig) extends Logging {
 
-
   lazy val btaNavLinksUrl: String = config.btaBaseUrl + "/business-account/partial/nav-links"
 
-  def getNavLinks(implicit ec: ExecutionContext, hc : HeaderCarrier): Future[Option[NavContent]] = {
+  def getNavLinks(implicit ec: ExecutionContext, hc : HeaderCarrier): Future[Option[NavContent]] =
     http.get(url"$btaNavLinksUrl").execute[Option[NavContent]]
       .recover{
         case e =>
           logger.warn(s"[ServiceInfoPartialConnector][getNavLinks] - Unexpected error ${e.getMessage}")
           None
       }
-  }
 }

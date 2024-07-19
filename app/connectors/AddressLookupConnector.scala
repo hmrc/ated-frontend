@@ -35,7 +35,8 @@ class AddressLookupConnector @Inject()(appConf: ApplicationConfig, http: HttpCli
 
 
   def findByPostcode(addressLookup: AddressLookup)(implicit hc: HeaderCarrier):Future[List[AddressLookupRecord]] = {
-    http.post(url"$serviceURL$LOOKUP").withBody(Json.toJson(addressLookup)).execute[List[AddressLookupRecord]].recover {
+    val postUrl = s"$serviceURL$LOOKUP"
+    http.post(url"$postUrl").withBody(Json.toJson(addressLookup)).execute[List[AddressLookupRecord]].recover {
       case e : UpstreamErrorResponse => {
         logger.warn(s"[AddressLookupConnector] [findbyPoscode] - Upstream error: ${e.reportAs} message: ${e.getMessage()}")
         Nil
@@ -48,7 +49,8 @@ class AddressLookupConnector @Inject()(appConf: ApplicationConfig, http: HttpCli
   }
 
   def findById(uprn: String)(implicit hc: HeaderCarrier):Future[List[AddressLookupRecord]] = {
-    http.post(url"$serviceURL$LOOKUP$UPRN").withBody(Json.obj("uprn" -> uprn)).execute[List[AddressLookupRecord]].recover {
+    val postUrl = s"$serviceURL$LOOKUP$UPRN"
+    http.post(url"$postUrl").withBody(Json.obj("uprn" -> uprn)).execute[List[AddressLookupRecord]].recover {
       case e : UpstreamErrorResponse => {
         logger.warn(s"[AddressLookupConnector] [findById] - Upstream error: ${e.reportAs} message: ${e.getMessage()}")
         Nil
