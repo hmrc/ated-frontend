@@ -24,12 +24,10 @@ import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.libs.json.Json
-import play.api.test.Helpers._
 import play.api.test.Injecting
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.cache.client.{CacheMap, SessionCache}
 import uk.gov.hmrc.http.SessionId
-import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -38,10 +36,9 @@ class BackLinkCacheConnectorSpec extends PlaySpec with GuiceOneAppPerSuite with 
   implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId("test")))
   implicit val ec: ExecutionContext = inject[ExecutionContext]
   val mockSessionCache: SessionCache = mock[SessionCache]
-  val mockHttpClient: DefaultHttpClient = mock[DefaultHttpClient]
   val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
 
-  class Setup {
+  class Setup extends ConnectorTest {
     val testBackLinkCacheConnector : BackLinkCacheConnector = new BackLinkCacheConnector (
       mockHttpClient, mockAppConfig
     )
@@ -56,8 +53,7 @@ class BackLinkCacheConnectorSpec extends PlaySpec with GuiceOneAppPerSuite with 
 
         when(mockSessionCache.fetchAndGetEntry[BackLinkModel](any())(any(), any(), any()))
           .thenReturn(Future.successful(Some(backLink)))
-        when(mockHttpClient.GET[CacheMap](any(),any(),any())(any(), any(), any()))
-          .thenReturn(Future.successful(CacheMap("test", Map("ATED_Back_Link:testPageId" -> Json.toJson(BackLinkModel(Some("testBackLink")))))))
+        when(requestBuilderExecute[CacheMap]).thenReturn(Future.successful(CacheMap("test", Map("ATED_Back_Link:testPageId" -> Json.toJson(BackLinkModel(Some("testBackLink")))))))
 
         val result: Future[Option[String]] = testBackLinkCacheConnector.fetchAndGetBackLink("testPageId")
         await(result) must be(backLink.backLink)
@@ -72,9 +68,7 @@ class BackLinkCacheConnectorSpec extends PlaySpec with GuiceOneAppPerSuite with 
         when(mockSessionCache.cache[BackLinkModel](any(), any())(any(), any(), any()))
           .thenReturn(Future.successful(returnedCacheMap))
 
-        when(mockHttpClient.PUT[BackLinkModel, CacheMap]
-          (any(), any(), any())(any(), any(), any(), any()))
-          .thenReturn(Future.successful(CacheMap("test", Map("ATED_Back_Link:testPageId" -> Json.toJson(BackLinkModel(Some("testBackLink")))))))
+        when(requestBuilderExecute[CacheMap]).thenReturn(Future.successful(CacheMap("test", Map("ATED_Back_Link:testPageId" -> Json.toJson(BackLinkModel(Some("testBackLink")))))))
 
         val result: Future[Option[String]] = testBackLinkCacheConnector.saveBackLink("testPageId", backLink.backLink)
         await(result) must be(backLink.backLink)
@@ -88,8 +82,7 @@ class BackLinkCacheConnectorSpec extends PlaySpec with GuiceOneAppPerSuite with 
         val returnedCacheMap: CacheMap = CacheMap("data", Map(testBackLinkCacheConnector.sourceId -> Json.toJson(backLink)))
         when(mockSessionCache.fetchAndGetEntry[BackLinkModel](any())(any(), any(), any()))
           .thenReturn(Future.successful(Some(backLink)))
-        when(mockHttpClient.GET[CacheMap](any(), any(), any())(any(), any(), any()))
-          .thenReturn(Future.successful(returnedCacheMap))
+        when(requestBuilderExecute[CacheMap]).thenReturn(Future.successful(returnedCacheMap))
 
         val result: Future[List[Option[String]]] = testBackLinkCacheConnector.clearBackLinks(List("testPageId", "testPageId2"))
         await(result) must be(List(None, None))

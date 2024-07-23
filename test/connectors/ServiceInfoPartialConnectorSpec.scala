@@ -18,11 +18,9 @@ package connectors
 
 import controllers.ControllerBaseSpec
 import models.requests.{NavContent, NavLinks}
-import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
-import play.api.test.Helpers._
 import play.twirl.api.Html
-import uk.gov.hmrc.http.{GatewayTimeoutException, HttpClient}
+import uk.gov.hmrc.http.GatewayTimeoutException
 import views.html.BtaNavigationLinks
 
 import scala.concurrent.Future
@@ -33,26 +31,23 @@ class ServiceInfoPartialConnectorSpec extends ControllerBaseSpec {
   val navLinks: NavLinks = NavLinks("en", "/nav", None)
   val navContent: NavContent = NavContent(navLinks, navLinks, navLinks, navLinks)
 
-  private trait Test {
+  private trait Test extends ConnectorTest {
     val result: Future[Option[NavContent]] = Future.successful(Some(navContent))
-    val mockHttp: HttpClient = mock[HttpClient]
-
 
     lazy val connector: ServiceInfoPartialConnector = {
 
-      when(mockHttp.GET[Option[NavContent]](any(), any(), any())(any(), any(), any()))
-        .thenReturn(result)
+      when(requestBuilderExecute[Option[NavContent]]).thenReturn(result)
 
-      when(mockAppConfig.btaBaseUrl).thenReturn("")
+      when(mockAppConfig.btaBaseUrl).thenReturn("http://localhost:9020")
 
-      new ServiceInfoPartialConnector(mockHttp, mockAppConfig)
+      new ServiceInfoPartialConnector(mockHttpClient, mockAppConfig)
     }
 
   }
 
   "ServiceInfoPartialConnector" should {
     "generate the correct url" in new Test {
-      connector.btaNavLinksUrl mustBe "/business-account/partial/nav-links"
+      connector.btaNavLinksUrl mustBe "http://localhost:9020/business-account/partial/nav-links"
     }
   }
 

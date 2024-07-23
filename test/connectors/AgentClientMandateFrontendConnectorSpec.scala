@@ -17,7 +17,6 @@
 package connectors
 
 import config.ApplicationConfig
-import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
@@ -38,22 +37,17 @@ class AgentClientMandateFrontendConnectorSpec extends PlaySpec with GuiceOneAppP
   val mockHttp: DefaultHttpClient = mock[DefaultHttpClient]
   val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
 
-  class Setup {
+  class Setup extends ConnectorTest {
     val testAgentClientMandateFrontendConnector: AgentClientMandateFrontendConnector = new AgentClientMandateFrontendConnector (
-      mockAppConfig, mockHttp
+      mockAppConfig, mockHttpClient
     )
-  }
-
-  override def beforeEach(): Unit = {
-    reset(mockHttp)
   }
 
   "AgentClientMandateFrontendConnector" must {
     "return the partial successfully" in new Setup {
       implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
       val html = "<h1>helloworld</h1>"
-      when(mockHttp.GET[HttpResponse](any(), any(), any())(any(), any(), any()))
-        .thenReturn(Future.successful(HttpResponse(OK, html)))
+      when(requestBuilderExecute[HttpResponse]).thenReturn(Future.successful(HttpResponse(OK, html)))
       testAgentClientMandateFrontendConnector.getClientBannerPartial("clientId", "ated").map {
         response => response.successfulContentOrEmpty must equal(html)
       }
@@ -61,9 +55,7 @@ class AgentClientMandateFrontendConnectorSpec extends PlaySpec with GuiceOneAppP
 
     "return no partial silently" in new Setup {
       implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
-
-      when(mockHttp.GET[HttpResponse](any(), any(), any())(any(), any(), any()))
-        .thenReturn(Future.successful(HttpResponse(NOT_FOUND, "")))
+      when(requestBuilderExecute[HttpResponse]).thenReturn(Future.successful(HttpResponse(NOT_FOUND, "")))
       testAgentClientMandateFrontendConnector.getClientBannerPartial("clientId", "ated").map {
         response => response.successfulContentOrEmpty must equal(Html(""))
       }
@@ -71,8 +63,7 @@ class AgentClientMandateFrontendConnectorSpec extends PlaySpec with GuiceOneAppP
 
     "return the client mandate details successfully" in new Setup {
       implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
-      when(mockHttp.GET[HttpResponse](any(), any(), any())(any(), any(), any()))
-        .thenReturn(Future.successful(HttpResponse(OK, "")))
+      when(requestBuilderExecute[HttpResponse]).thenReturn(Future.successful(HttpResponse(OK, "")))
       val result: Future[HttpResponse] = testAgentClientMandateFrontendConnector.getClientDetails("clientId", "ated")
       await(result).status must be(OK)
     }

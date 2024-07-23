@@ -17,17 +17,14 @@
 package connectors
 
 import config.ApplicationConfig
-import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
-import play.api.libs.json.JsValue
 import play.api.test.Helpers._
 import play.api.test.Injecting
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.http.cache.client.SessionCache
-import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -35,17 +32,15 @@ class DelegationConnectorSpec extends PlaySpec with GuiceOneAppPerSuite with Moc
   implicit val hc: HeaderCarrier = HeaderCarrier()
   implicit val ec: ExecutionContext = inject[ExecutionContext]
   val mockSessionCache: SessionCache = mock[SessionCache]
-  val mockHttp: DefaultHttpClient = mock[DefaultHttpClient]
   val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
 
-  class Setup {
-    val testDelegationConnector : DelegationConnector = new DelegationConnector(mockHttp, mockAppConfig)
+  class Setup extends ConnectorTest {
+    val testDelegationConnector : DelegationConnector = new DelegationConnector(mockHttpClient, mockAppConfig)
   }
 
   "DelegationDataCall" should {
     "POST with the correct information" in new Setup {
-      when(mockHttp.POST[JsValue, HttpResponse](any(), any(), any())(any(), any(), any(), any()))
-        .thenReturn(Future.successful(HttpResponse(OK, "")))
+      when(requestBuilderExecute[HttpResponse]).thenReturn(Future.successful(HttpResponse(OK, "")))
 
       val testCall: Future[HttpResponse] = testDelegationConnector.delegationDataCall("testID")
       await(testCall).status mustBe OK

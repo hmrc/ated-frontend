@@ -56,7 +56,7 @@ class PropertyDetailsSupportingInfoController @Inject()(mcc: MessagesControllerC
           propertyDetailsCacheResponse(id) {
             case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
               val filledForm = propertyDetails.period.flatMap(_.supportingInfo) match {
-                case Some(supportingInfo) => propertyDetailsSupportingInfoForm.fill(PropertyDetailsSupportingInfo(supportingInfo))
+                case Some(info) => propertyDetailsSupportingInfoForm.fill(PropertyDetailsSupportingInfo(info))
                 case _ => propertyDetailsSupportingInfoForm
               }
               currentBackLink.flatMap(backLink =>
@@ -79,7 +79,7 @@ class PropertyDetailsSupportingInfoController @Inject()(mcc: MessagesControllerC
             case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
               dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
                 val filledForm = propertyDetails.period.flatMap(_.supportingInfo) match {
-                  case Some(supportingInfo) => propertyDetailsSupportingInfoForm.fill(PropertyDetailsSupportingInfo(supportingInfo))
+                  case Some(info) => propertyDetailsSupportingInfoForm.fill(PropertyDetailsSupportingInfo(info))
                   case _ => propertyDetailsSupportingInfoForm
                 }
                 val mode = AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn)
