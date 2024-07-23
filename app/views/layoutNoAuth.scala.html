@@ -30,7 +30,7 @@
 )
 
 @(beforeContent: Option[Html] = None, pageTitle: Option[String] = None, serviceInfoContent: Html = HtmlFormat.empty, scripts: Option[Html] = None, isUserResearchBannerVisible: Boolean = false, banner: Html = HtmlFormat.empty, showSignOutLink: Boolean = true)(contentBlock: Html)(
-    implicit request: Request[_], messages: Messages)
+    implicit request: RequestHeader, messages: Messages)
 
 @beforeContentBlock = {
     @serviceInfoContent
