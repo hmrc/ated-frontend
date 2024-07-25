@@ -43,9 +43,9 @@ class AgentClientMandateFrontendConnector @Inject()(appConfig: ApplicationConfig
 
   def getClientBannerPartial(clientId: String, service: String)
                             (implicit request: Request[_], ec: ExecutionContext): Future[HtmlPartial] = {
-    val getUrl = url"$serviceUrl/$clientBannerPartialUri/$clientId/$service?returnUrl=$returnUrlHost${controllers.routes.AccountSummaryController.view}"
+    val getUrl = s"$serviceUrl/$clientBannerPartialUri/$clientId/$service?returnUrl=$returnUrlHost${controllers.routes.AccountSummaryController.view}"
 
-     httpClient.get(getUrl).execute[HttpResponse] map { response =>
+     httpClient.get(url"$getUrl").execute[HttpResponse] map { response =>
       response.status match {
         case s if s >= 200 && s <= 299 => Success(
           title = response.header("X-Title").map(UriEncoding.decodePathSegment(_, "UTF-8")),
@@ -63,8 +63,8 @@ class AgentClientMandateFrontendConnector @Inject()(appConfig: ApplicationConfig
   def getClientDetails(clientId: String, service: String)
                       (implicit request: Request[_], ec: ExecutionContext): Future[HttpResponse] = {
     val getUrl =
-      url"$serviceUrl/$clientDetailsUri/$clientId/$service?returnUrl=$returnUrlHost${controllers.subscriptionData.routes.CompanyDetailsController.view}"
+      s"$serviceUrl/$clientDetailsUri/$clientId/$service?returnUrl=$returnUrlHost${controllers.subscriptionData.routes.CompanyDetailsController.view}"
 
-    httpClient.get(getUrl).execute[HttpResponse]
+    httpClient.get(url"$getUrl").execute[HttpResponse]
   }
 }
