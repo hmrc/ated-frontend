@@ -132,8 +132,7 @@ class propertyDetailsSummarySpec extends AnyFeatureSpecLike with GuiceOneAppPerS
       assert(document.select("#avoidance-scheme > div:nth-child(1) > dt").text() === "Avoidance scheme reference number")
       assert(document.getElementById("return-status-header").text() === "Return status")
       assert(document.select("#return-status > div > dt").text() contains "Status")
-      assert(document.getElementById("ated-charge-text").text() === "Based on the information you have given us your ATED charge is")
-      assert(document.getElementById("ated-charge-value").text() === "£1,000")
+      assert(document.getElementById("ated-no-line-items").text() === "You need to complete the dates of liability to get your ATED charge.")
       assert(document.getElementById("submit-disabled-text").text() == "You cannot submit returns until 1 April.")
     }
 

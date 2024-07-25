@@ -315,7 +315,7 @@ class PropertyDetailsSupportingInfoControllerSpec extends PlaySpec with GuiceOne
           }
         }
         "for valid data, return Forward to the summary page" in new Setup {
-          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails(id = "1", Some("postCode"))
           val inputJson: JsValue = Json.toJson(PropertyDetailsSupportingInfo(""))
           when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
           submitWithAuthorisedUser(inputJson, Some(propertyDetails)) {
@@ -353,6 +353,17 @@ class PropertyDetailsSupportingInfoControllerSpec extends PlaySpec with GuiceOne
           submitWithUnknownResponse(inputJson, Some(propertyDetails)) {
             result =>
               status(result) must be(INTERNAL_SERVER_ERROR)
+          }
+        }
+
+        "for valid data with no line items, return forward to the summary page" in new Setup {
+          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails(id = "1", Some("postCode")).copy(period = None)
+          val inputJson: JsValue = Json.toJson(PropertyDetailsSupportingInfo(""))
+          when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+          submitWithAuthorisedUser(inputJson, Some(propertyDetails)) {
+            result =>
+              status(result) must be(SEE_OTHER)
+              redirectLocation(result).get must include("/liability/create/summary/")
           }
         }
       }

@@ -487,16 +487,19 @@ backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages
       attributes = Map("id" -> "return-status")
     ))
 
-    <p class="govuk-body" id="ated-charge-text">@messages("ated.property-details-summary.table.ated-charge.text")</p>
+    @if(PeriodUtils.isListEmpty(periods)) {
+        <p class="govuk-body" id="ated-no-line-items">@messages("ated.property-details-summary.table.ated-no-line-items.text")</p>
+    } else {
+        <p class="govuk-body" id="ated-charge-text">@messages("ated.property-details-summary.table.ated-charge.text")</p>
 
-
-    <p id="ated-charge-value" class="govuk-heading-xl govuk-form-group">
-      @if(propertyDetails.calculated.isEmpty) {
-        @messages("ated.unknown-amount.text")
-      } else {
-        @propertyDetails.calculated.flatMap(x=>x.liabilityAmount.map(y=>formattedPounds(y)))
-      }
-    </p>
+        <p id="ated-charge-value" class="govuk-heading-xl govuk-form-group">
+        @if(propertyDetails.calculated.isEmpty) {
+            @messages("ated.unknown-amount.text")
+        } else {
+            @propertyDetails.calculated.flatMap(x=>x.liabilityAmount.map(y=>formattedPounds(y)))
+        }
+        </p>
+    }
 
 
     @govukInsetText(InsetText(

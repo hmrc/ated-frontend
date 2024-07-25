@@ -30,6 +30,7 @@ import utils.AtedConstants._
 import utils.AtedUtils
 import uk.gov.hmrc.play.bootstrap.controller.WithUnsafeDefaultFormBinding
 import scala.concurrent.{ExecutionContext, Future}
+import utils.PeriodUtils
 
 class PropertyDetailsSupportingInfoController @Inject()(mcc: MessagesControllerComponents,
                                                         authAction: AuthAction,
@@ -47,7 +48,6 @@ class PropertyDetailsSupportingInfoController @Inject()(mcc: MessagesControllerC
 
   implicit val ec: ExecutionContext = mcc.executionContext
   val controllerId: String = "PropertyDetailsSupportingInfoController"
-
 
   def view(id: String) : Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
@@ -96,43 +96,52 @@ class PropertyDetailsSupportingInfoController @Inject()(mcc: MessagesControllerC
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
-          propertyDetailsSupportingInfoForm.bindFromRequest().fold(
-            formWithError => {
-              currentBackLink.map(backLink => BadRequest(template(id, periodKey, formWithError, mode, serviceInfoContent, backLink)))
-            },
-            propertyDetails => {
-              val backLink = Some(controllers.propertyDetails.routes.PropertyDetailsSupportingInfoController.view(id).url)
-              for {
-                cachedData <- dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn)
-                _ <- propertyDetailsService.validateCalculateDraftPropertyDetails(id, AtedUtils.isEditSubmittedMode(mode) && cachedData.isEmpty)
-                _ <- propertyDetailsService.saveDraftPropertyDetailsSupportingInfo(id, propertyDetails)
-                result <-
-                  if (AtedUtils.isEditSubmittedMode(mode) && cachedData.isEmpty) {
-                    redirectWithBackLink(
-                      editLiabilitySummaryController.controllerId,
-                      controllers.editLiability.routes.EditLiabilitySummaryController.view(id),
-                      backLink)
-                  } else {
-                    propertyDetailsService.calculateDraftPropertyDetails(id).flatMap { response =>
-                      response.status match {
-                        case OK =>
-                          redirectWithBackLink(
-                            propertyDetailsSummaryController.controllerId,
-                            controllers.propertyDetails.routes.PropertyDetailsSummaryController.view(id),
-                            backLink)
-                        case BAD_REQUEST if response.body.contains("Agent not Valid") =>
-                          Future.successful(BadRequest(templateError("ated.client-problem.title",
-                            "ated.client-problem.header", "ated.client-problem.message", None, Some(appConfig.agentRedirectedToMandate), None, None, serviceInfoContent)))
-                        case status =>
-                          logger.error(s"[PropertyDetailsSupportingInfoController][save] UNKNOWN_SAVE_STATUS - $status - ${Option(response.body).getOrElse("No response body")}")
-                          Future.successful(InternalServerError(templateError("ated.client-problem.title",
-                            "ated.client-problem.header", "ated.client-problem.message", None, Some(appConfig.agentRedirectedToMandate), None, None, serviceInfoContent)))
+          propertyDetailsCacheResponse(id) {
+            case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
+              val period: Option[PropertyDetailsPeriod] = propertyDetails.period
+              propertyDetailsSupportingInfoForm.bindFromRequest().fold(
+                formWithError => {
+                  currentBackLink.map(backLink => BadRequest(template(id, periodKey, formWithError, mode, serviceInfoContent, backLink)))
+                },
+                propertyDetails => {
+                  val backLink = Some(controllers.propertyDetails.routes.PropertyDetailsSupportingInfoController.view(id).url)
+                  for {
+                    cachedData <- dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn)
+                    _ <- propertyDetailsService.validateCalculateDraftPropertyDetails(id, AtedUtils.isEditSubmittedMode(mode) && cachedData.isEmpty)
+                    _ <- propertyDetailsService.saveDraftPropertyDetailsSupportingInfo(id, propertyDetails)
+                    result <-
+                      if (AtedUtils.isEditSubmittedMode(mode) && cachedData.isEmpty) {
+                        redirectWithBackLink(
+                          editLiabilitySummaryController.controllerId,
+                          controllers.editLiability.routes.EditLiabilitySummaryController.view(id),
+                          backLink)
+                      } else if (PeriodUtils.getDisplayPeriods(period, periodKey).nonEmpty) {
+                        propertyDetailsService.calculateDraftPropertyDetails(id).flatMap { response =>
+                          response.status match {
+                            case OK =>
+                              redirectWithBackLink(
+                                propertyDetailsSummaryController.controllerId,
+                                controllers.propertyDetails.routes.PropertyDetailsSummaryController.view(id),
+                                backLink)
+                            case BAD_REQUEST if response.body.contains("Agent not Valid") =>
+                              Future.successful(BadRequest(templateError("ated.client-problem.title",
+                                "ated.client-problem.header", "ated.client-problem.message", None, Some(appConfig.agentRedirectedToMandate), None, None, serviceInfoContent)))
+                            case status =>
+                              logger.error(s"[PropertyDetailsSupportingInfoController][save] UNKNOWN_SAVE_STATUS - $status - ${Option(response.body).getOrElse("No response body")}")
+                              Future.successful(InternalServerError(templateError("ated.client-problem.title",
+                                "ated.client-problem.header", "ated.client-problem.message", None, Some(appConfig.agentRedirectedToMandate), None, None, serviceInfoContent)))
+                          }
+                        }
+                      } else {
+                        redirectWithBackLink(
+                          propertyDetailsSummaryController.controllerId,
+                          controllers.propertyDetails.routes.PropertyDetailsSummaryController.view(id),
+                          backLink)
                       }
-                    }
-                  }
-              } yield result
-            }
-          )
+                  } yield result
+                }
+              )
+          }
         }
       }
     }
