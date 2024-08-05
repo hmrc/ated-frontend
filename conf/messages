@@ -558,6 +558,9 @@ ated.property-details-value.isPropertyRevalued.no-text = The property must be re
 ated.property-details-value.isPropertyRevalued.error = The property must be revalued before you can submit this chargeable return
 ated.property-details-value.isPropertyRevalued.error.non-selected = Select yes if the property been revalued since the £40,000 or more change
 
+ated.property-details-value.hasBeenRevalued.title = Has the property been revalued since the change of £40,000 or more?
+ated.property-details-value.hasBeenRevalued.header = Has the property been revalued since the change of £40,000 or more?
+
 ated.property-details-value.incorrect-format = The value of the property must be an amount of money
 ated.property-details-value.revaluedValue = What is the new valuation of the property in GBP?
 ated.property-details-value.revaluedValue.hint = For example, £1,500,000
