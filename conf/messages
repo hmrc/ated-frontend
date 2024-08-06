@@ -556,7 +556,7 @@ ated.property-details-value.isPropertyRevalued.header = Has the property been re
 ated.property-details-value.isPropertyRevalued = Has the property been revalued since the £40,000 or more change?
 ated.property-details-value.isPropertyRevalued.no-text = The property must be revalued before you can submit this chargeable return
 ated.property-details-value.isPropertyRevalued.error = The property must be revalued before you can submit this chargeable return
-ated.property-details-value.isPropertyRevalued.error.non-selected = Select yes if the property been revalued since the £40,000 or more change
+ated.property-details-value.isPropertyRevalued.error.non-selected = Select yes if the property has been revalued since the £40,000 or more change
 
 ated.property-details-value.hasBeenRevalued.title = Has the property been revalued since the change of £40,000 or more?
 ated.property-details-value.hasBeenRevalued.header = Has the property been revalued since the change of £40,000 or more?
