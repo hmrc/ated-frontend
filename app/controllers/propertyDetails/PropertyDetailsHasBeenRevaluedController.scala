@@ -45,7 +45,7 @@ class PropertyDetailsHasBeenRevaluedController @Inject()(mcc: MessagesController
           //propertyDetailsCacheResponse here
 
           //using dummy periodKey '2024'
-          Future.successful(Ok(template(id, 2024, None, None, propertyDetailsHasBeenRevaluedForm, serviceInfoContent)))
+          Future.successful(Ok(template(id, 2024, Some("back"), None, propertyDetailsHasBeenRevaluedForm, serviceInfoContent)))
         }
       } else Future.successful(Redirect(controllers.routes.HomeController.home()))
     }

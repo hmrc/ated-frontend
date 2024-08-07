@@ -41,7 +41,7 @@
         appConfig: ApplicationConfig
 )
 
-@newMain(titleBuilder(messages("ated.property-details-value.hasBeenRevalued.title")), serviceInfoContent = serviceInfoContent) {
+@newMain(titleBuilder(messages("ated.property-details-value.hasBeenRevalued.title"), Some(propertyDetailsHasBeenRevaluedForm)), serviceInfoContent = serviceInfoContent) {
 
  @if(backLink.isDefined) {
   @govukBackLink(BackLink(
