@@ -98,6 +98,12 @@ object PropertyDetailsForms {
     mapping("anAcquisition" -> optional(boolean).verifying("ated.property-details-value.anAcquisition.error-field-name", x => x.isDefined)
     )(PropertyDetailsAcquisition.apply)(PropertyDetailsAcquisition.unapply))
 
+  val propertyDetailsHasBeenRevaluedForm: Form[HasBeenRevalued] = Form(
+    mapping(
+      "isPropertyRevalued" -> optional(boolean).verifying("ated.property-details-value.isPropertyRevalued.error.non-selected", x => x.isDefined),
+    )(HasBeenRevalued.apply)(HasBeenRevalued.unapply)
+  )
+
   val propertyDetailsRevaluedForm: Form[PropertyDetailsRevalued] = Form(
     mapping(
       "isPropertyRevalued" -> optional(boolean).verifying("ated.property-details-value.isPropertyRevalued.error.non-selected", x => x.isDefined),

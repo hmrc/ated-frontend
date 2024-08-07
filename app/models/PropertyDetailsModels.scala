@@ -85,6 +85,11 @@ object HasValueChanged {
   implicit val formats: OFormat[HasValueChanged] = Json.format[HasValueChanged]
 }
 
+case class HasBeenRevalued(isPropertyRevalued: Option[Boolean])
+
+object HasBeenRevalued {
+  implicit val formats: OFormat[HasBeenRevalued] = Json.format[HasBeenRevalued]
+}
 case class PropertyDetailsRevalued(isPropertyRevalued: Option[Boolean] = None,
                                    revaluedValue: Option[BigDecimal] = None,
                                    revaluedDate: Option[LocalDate] = None,
