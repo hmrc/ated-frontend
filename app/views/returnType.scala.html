@@ -41,9 +41,20 @@
   }
 
   @formHelper(action=controllers.routes.ReturnTypeController.submit(periodKey)) {
+        <h2 class="govuk-caption-xl hmrc-caption-xl">
+            <span class="govuk-visually-hidden">@messages("ated.screen-reader.section")</span>
+            @messages("ated.return-type.pre-header")
+        </h2>
 
       @govukRadios(
           Radios(
+            fieldset = Some(Fieldset(
+                  legend = Some(Legend(
+                      content = Text(messages("ated.return-type.header")),
+                      isPageHeading = true,
+                      classes = "govuk-fieldset__legend--xl"
+                  )),
+              )),
                 items = Seq(
                     RadioItem(
                         content = Text(messages("ated.return-type.chargeable")),
@@ -54,10 +65,6 @@
                     )
                 )
           ).withFormField(returnTypeForm("returnType"))
-                  .withHeadingAndSectionCaption(
-              heading = Text(messages("ated.return-type.header")),
-              sectionCaption = Text(messages("ated.return-type.pre-header"))
-          )
       )
 
       @govukButton(Button(

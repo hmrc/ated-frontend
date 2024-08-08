@@ -98,7 +98,7 @@ class formBundleReturnSpec extends AnyFeatureSpec with GuiceOneServerPerSuite wi
       assert(document.getElementsByTag("h1").text contains "View return")
 
       Then("The subheader should be - ACME Ltd")
-      assert(document.getElementsByClass("govuk-caption-xl").text() === "You have logged in as:ACME Ltd")
+      assert(document.getElementsByClass("govuk-caption-xl").text() === "You are logged in as: ACME Ltd")
 
       Then("The text should be - From the ATED chargeable period from 1 April 2015 to 31 March 2016.")
       assert(document.getElementById("form-bundle-text").text() === "From the ATED chargeable period from 1 April 2015 to 31 March 2016.")
@@ -127,7 +127,7 @@ class formBundleReturnSpec extends AnyFeatureSpec with GuiceOneServerPerSuite wi
       assert(document.getElementsByTag("h1").text contains "View return")
 
       Then("The subheader should be - ''")
-      assert(document.getElementsByClass("govuk-caption-xl").text() === "You have logged in as:")
+      assert(document.getElementsByClass("govuk-caption-xl").text() === "You are logged in as:")
 
       Then("The text should be - From the ATED chargeable period from 1 April 2015 to 31 March 2016.")
       assert(document.getElementById("form-bundle-text").text() === "From the ATED chargeable period from 1 April 2015 to 31 March 2016.")
@@ -198,7 +198,7 @@ class formBundleReturnSpec extends AnyFeatureSpec with GuiceOneServerPerSuite wi
       assert(document.getElementsByTag("h1").text contains "View return")
 
       Then("The subheader should be - ACME Ltd")
-      assert(document.getElementsByClass("govuk-caption-xl").text() === "You have logged in as:ACME Ltd")
+      assert(document.getElementsByClass("govuk-caption-xl").text() === "You are logged in as: ACME Ltd")
 
       Then("The text should be - From the ATED chargeable period from 1 April 2015 to 31 March 2016.")
       assert(document.getElementById("form-bundle-text").text() === "From the ATED chargeable period from 1 April 2015 to 31 March 2016.")
@@ -266,7 +266,7 @@ class formBundleReturnSpec extends AnyFeatureSpec with GuiceOneServerPerSuite wi
       assert(document.getElementsByTag("h1").text contains "View return")
 
       Then("The subheader should be - ACME Ltd")
-      assert(document.getElementsByClass("govuk-caption-xl").text() === "You have logged in as:ACME Ltd")
+      assert(document.getElementsByClass("govuk-caption-xl").text() === "You are logged in as: ACME Ltd")
 
       Then("The text should be - From the ATED chargeable period from 1 April 2015 to 31 March 2016.")
       assert(document.getElementById("form-bundle-text").text() === "From the ATED chargeable period from 1 April 2015 to 31 March 2016.")
@@ -341,7 +341,7 @@ class formBundleReturnSpec extends AnyFeatureSpec with GuiceOneServerPerSuite wi
       assert(document.getElementsByTag("h1").text contains "View return")
 
       Then("The subheader should be - ACME Ltd")
-      assert(document.getElementsByClass("govuk-caption-xl").text() === "You have logged in as:ACME Ltd")
+      assert(document.getElementsByClass("govuk-caption-xl").text() === "You are logged in as: ACME Ltd")
 
       Then("The text should be - From the ATED chargeable period from 1 April 2015 to 31 March 2016.")
       assert(document.getElementById("form-bundle-text").text() === "From the ATED chargeable period from 1 April 2015 to 31 March 2016.")

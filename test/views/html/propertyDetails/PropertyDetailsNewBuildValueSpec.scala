@@ -50,7 +50,7 @@ class PropertyDetailsNewBuildValueSpec extends AtedViewSpec with MockAuthUtil {
       doc.getElementsByTag("h1").text() must include (messages("ated.property-details-value.newBuildValue.header",testDay,testMonth,testYear))
     }
     "have the correct pre heading" in {
-      doc.getElementsByClass("govuk-caption-xl").text mustBe "This section is Create return"
+      doc.getElementsByClass("govuk-caption-xl").text mustBe "This section is: Create return"
     }
     "have the correct hint text" in {
       doc.getElementById("newBuildValue-hint").text() mustBe "Enter the value in GBP, for example £1,500,000"

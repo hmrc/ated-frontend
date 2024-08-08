@@ -61,7 +61,7 @@ class selectPeriodSpec extends AnyFeatureSpec with GuiceOneServerPerSuite with M
       assert(document.getElementsByTag("h1").text contains "Select an ATED chargeable period")
 
       Then("The subheader should be - Create relief return")
-      assert(document.getElementsByClass("govuk-caption-xl").text() contains "This section is Create return")
+      assert(document.getElementsByClass("govuk-caption-xl").text() contains "This section is: Create return")
 
       Then("The the text on the screen should be correct")
       assert(document.getElementById("period-hint").text() === "The chargeable period for a year runs from the 1 April to 31 March.")

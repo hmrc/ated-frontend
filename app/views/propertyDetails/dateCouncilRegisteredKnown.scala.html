@@ -51,25 +51,20 @@
       @govukErrorSummary(ErrorSummary().withFormErrorsAsText(dateCouncilRegisteredKnownForm))
     }
 
-    <header>
-      <h1 class="govuk-heading-xl govuk-!-margin-bottom-5">
-        <span class="govuk-caption-xl">
-          <span class="govuk-visually-hidden">
-              @messages("ated.screen-reader.section")
-          </span>
-          @messages(AtedUtils.getPropertyDetailsPreHeader(mode))
-        </span>
-        @messages("ated.property-details.council-registered-known.header")
-      </h1>
-    </header>
 
   @formHelper(action = controllers.propertyDetails.routes.DateCouncilRegisteredKnownController.save(id, mode)) {
+
+    <h2 class="govuk-caption-xl hmrc-caption-xl">
+        <span class="govuk-visually-hidden">@messages("ated.screen-reader.section")</span>
+        @messages(AtedUtils.getPropertyDetailsPreHeader(mode))
+    </h2>
 
     @govukRadios(Radios(
       fieldset = Some(Fieldset(
           legend = Some(Legend(
               content = Text(messages("ated.property-details.council-registered-known.header")),
-              classes = "govuk-visually-hidden"
+              isPageHeading = true,
+              classes = "govuk-fieldset__legend--xl"
           ))
       )),
       items = Seq(

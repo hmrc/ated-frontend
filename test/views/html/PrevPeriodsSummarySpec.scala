@@ -76,7 +76,7 @@ class PrevPeriodsSummarySpec extends PlaySpec with MockAuthUtil with GuiceOneApp
       }
 
       "have the correct caption" in {
-        assert(document.getElementsByClass("govuk-caption-xl").text === s"You have logged in as:$organisationName")
+        assert(document.getElementsByClass("govuk-caption-xl").text === s"You are logged in as: $organisationName")
       }
 
       "have the correct backlink" in {
@@ -110,7 +110,7 @@ class PrevPeriodsSummarySpec extends PlaySpec with MockAuthUtil with GuiceOneApp
 
         lazy val document: Document = Jsoup.parse(view.body)
 
-        assert(document.getElementsByClass("govuk-caption-xl").text === s"You have logged in as:$organisationName")
+        assert(document.getElementsByClass("govuk-caption-xl").text === s"You are logged in as: $organisationName")
         assert(document.getElementsByTag("h1").text contains s"Create an ATED return for " +
           s"${PeriodUtils.calculatePeakStartYear()-1} to ${PeriodUtils.calculatePeakStartYear()} or earlier")
       }
