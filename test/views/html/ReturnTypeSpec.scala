@@ -44,7 +44,7 @@ class ReturnTypeSpec extends AtedViewSpec with MockAuthUtil with Injecting {
       }
 
       "have correct caption" in {
-        doc.getElementsByClass("govuk-caption-xl").text mustBe "This section is Create return"
+        doc.getElementsByClass("govuk-caption-xl").text mustBe "This section is: Create return"
       }
 
       "have a backLink" in {

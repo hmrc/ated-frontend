@@ -58,7 +58,7 @@ class hasBankDetailsSpec extends AnyFeatureSpec with GuiceOneAppPerSuite with Mo
       assert(document.select("h1").text.contains("Do you have a bank account where we could pay a refund?"))
 
       Then("The subheader should be - Change return")
-      assert(document.getElementsByTag("h1").text.contains("This section is: Change return"))
+      assert(document.getElementsByTag("h2").text.contains("This section is: Change return"))
 
       Then("The date fields should have the correct titles")
       And("No data is populated")

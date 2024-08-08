@@ -54,8 +54,11 @@
     @backLinkHtml
 
     <header>
-        <h1 class="govuk-heading-xl govuk-!-margin-bottom-5">
-            <span class="govuk-caption-xl"><span class="govuk-visually-hidden">@messages("ated.screen-reader.section-name")</span>@organisationName.getOrElse("")</span>
+        <h2 class="govuk-caption-xl hmrc-caption-xl">
+            <span class="govuk-visually-hidden">@messages("ated.screen-reader.section-name")</span>
+            @organisationName.getOrElse("")
+        </h2>
+        <h1 class="govuk-heading-xl">
             @messages("ated.form-bundle.header")
         </h1>
     </header>

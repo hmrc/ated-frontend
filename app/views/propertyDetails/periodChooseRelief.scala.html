@@ -63,7 +63,19 @@
 
   @formHelper(action=controllers.propertyDetails.routes.PeriodChooseReliefController.save(id, periodKey)) {
 
+      <h2 class="govuk-caption-xl hmrc-caption-xl">
+          <span class="govuk-visually-hidden">@messages("ated.screen-reader.section")</span>
+          @messages("ated.property-details.pre-header")
+      </h2>
+
     @govukRadios(Radios(
+        fieldset = Some(Fieldset(
+            legend = Some(Legend(
+                content = Text(messages("ated.property-details-period.chooseRelief.header")),
+                isPageHeading = true,
+                classes = "govuk-fieldset__legend--xl"
+            )),
+        )),
         items = Seq(
           RadioItem(
             content = Text(messages("ated.choose-single-relief.rentalBusiness")),
@@ -103,10 +115,7 @@
           )
         )
       ).withFormField(propertyDetailsForm("reliefDescription"))
-        .withHeadingAndSectionCaption(
-            heading = Text(messages("ated.property-details-period.chooseRelief.header")),
-            sectionCaption = Text(messages("ated.property-details.pre-header"))
-        ))
+    )
 
     @govukButton(Button(
         content = Text(messages("ated.save-and-continue")),

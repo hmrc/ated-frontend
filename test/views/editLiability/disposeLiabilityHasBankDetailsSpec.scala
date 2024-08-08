@@ -59,7 +59,7 @@ class disposeLiabilityHasBankDetailsSpec extends AnyFeatureSpec with GuiceOneApp
       assert(document.select("h1").text.contains("Do you have a bank account where we could pay a refund?"))
 
       Then("The subheader should be - Change return")
-      assert(document.getElementsByClass("govuk-caption-xl").text() === "This section is Change return")
+      assert(document.getElementsByClass("govuk-caption-xl").text() === "This section is: Change return")
 
       Then("The date fields should have the correct titles")
       And("No data is populated")

@@ -52,11 +52,15 @@ radios: GovukRadios, input: GovukInput, details: GovukDetails, button: GovukButt
         @errorSummary(ErrorSummary().withFormErrorsAsText(editContactDetailsEmailForm))
     }
 
-    <h1 class="govuk-heading-xl govuk-!-margin-bottom-5">
-        <span class="govuk-visually-hidden">@messages("ated.screen-reader.section")</span>
-        <span class="govuk-caption-xl hmrc-caption-xl">@messages("ated.contact-details-edit-email.subheader")</span>
-        @messages("ated.contact-details-edit-email.header")
-    </h1>
+    <header>
+        <h2 class="govuk-caption-xl hmrc-caption-xl">
+            <span class="govuk-visually-hidden">@messages("ated.screen-reader.section")</span>
+            @messages("ated.contact-details-edit-email.subheader")
+        </h2>
+        <h1 class="govuk-heading-xl">
+            @messages("ated.contact-details-edit-email.header")
+        </h1>
+    </header>
 
     <p id="lede" class="govuk-body">@messages("ated.contact-details-email-lede")</p>
 

@@ -69,8 +69,11 @@
 
   <header>
     <h1 class="govuk-heading-xl showPrint govuk-!-margin-bottom-5" id="property-details-summary-header-print">@messages("ated.relief-summary.print.header", organisationName.getOrElse(""))</h1>
-    <h1 class="govuk-heading-xl govuk-!-margin-bottom-5 govuk-!-display-none-print" id="property-details-summary-header">
-      <span class="govuk-caption-xl"><span class="govuk-visually-hidden">@messages("ated.screen-reader.section") </span>@messages("ated.choose-reliefs.subheader")</span>
+    <h2 class="govuk-caption-xl hmrc-caption-xl">
+        <span class="govuk-visually-hidden">@messages("ated.screen-reader.section")</span>
+        @messages("ated.choose-reliefs.subheader")
+    </h2>
+    <h1 class="govuk-heading-xl govuk-!-display-none-print" id="property-details-summary-header">
       @messages("ated.relief-summary.header")
     </h1>
   </header>
@@ -808,13 +811,13 @@
 
   <p class="govuk-body" id="ated-charge-text">@messages("ated.relief-summary.table.ated-charge.text")</p>
 
-  <p id="ated-charge-value"><span class="govuk-heading-xl govuk-form-group">
+  <h2 class="govuk-heading-xl govuk-form-group" id="ated-charge-value">
     @if(isComplete) {
       @messages("ated.relief-summary.table.ated-charge.balance")
     } else {
       @messages("ated.unknown-amount.text")
     }
-  </span></p>
+  </h2>
 
   <div class="govuk-inset-text print-hidden">
     <p class="govuk-body">@messages("ated.relief-summary.saved-draft.text")</p>

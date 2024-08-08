@@ -57,13 +57,11 @@
   }
 
   <header>
-     <h1 class="govuk-heading-xl govuk-!-margin-bottom-5">
-         <span class="govuk-caption-xl">
-             <span class="govuk-visually-hidden">
-                 @messages("ated.screen-reader.section")
-             </span>
-             @messages(AtedUtils.getPropertyDetailsPreHeader(mode))
-         </span>
+    <h2 class="govuk-caption-xl hmrc-caption-xl">
+        <span class="govuk-visually-hidden">@messages("ated.screen-reader.section")</span>
+        @messages(AtedUtils.getPropertyDetailsPreHeader(mode))
+      </h2>
+     <h1 class="govuk-heading-xl">
          @messages("ated.address-lookup.header")
      </h1>
   </header>

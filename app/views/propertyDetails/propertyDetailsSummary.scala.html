@@ -91,15 +91,13 @@ backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages
     @backLinkHtml
 
     <header>
-       <h1 class="govuk-heading-xl govuk-!-margin-bottom-5">
-           <span class="govuk-caption-xl">
-               <span class="govuk-visually-hidden">
-                   @messages("ated.screen-reader.section")
-               </span>
-               @messages("ated.property-details.pre-header")
-           </span>
-           @messages("ated.property-details-summary.header")
-       </h1>
+      <h2 class="govuk-caption-xl hmrc-caption-xl">
+          <span class="govuk-visually-hidden">@messages("ated.screen-reader.section")</span>
+          @messages("ated.property-details.pre-header")
+      </h2>
+      <h1 class="govuk-heading-xl">
+         @messages("ated.property-details-summary.header")
+      </h1>
     </header>
 
     <p id="details-text" class="govuk-body">@messages("ated.property-details-summary.details-text", PeriodUtils.periodStartDate(propertyDetails.periodKey).toString(messages("ated.date-format")), PeriodUtils.periodEndDate(propertyDetails.periodKey).toString(messages("ated.date-format")))</p>

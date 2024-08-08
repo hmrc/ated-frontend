@@ -58,7 +58,7 @@ class editLiabilityDeclarationSpec extends AnyFeatureSpec with GuiceOneAppPerSui
       assert(document.select("h1").text.contains("Amended return declaration"))
 
       Then("The subheader should be - Change return")
-      assert(document.getElementsByTag("h1").text.contains("This section is: Change return") === true)
+      assert(document.getElementsByTag("h2").text.contains("This section is: Change return") === true)
 
       Then("The submit button should have the correct name")
       assert(document.getElementById("submit").text() === "Agree and submit amended return")

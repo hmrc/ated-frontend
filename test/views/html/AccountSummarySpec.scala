@@ -77,7 +77,7 @@ class AccountSummarySpec extends AtedViewSpec with MockAuthUtil with TestModels 
       }
 
       "have the correct caption" in {
-        assert(doc.select(".govuk-caption-xl").text() === s"You have logged in as:$organisationName")
+        assert(doc.select(".govuk-caption-l").text() === s"You are logged in as:$organisationName")
       }
 
       "have the correct banner link" in {

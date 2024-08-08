@@ -44,7 +44,7 @@ class IsFullTaxPeriodSpec extends AtedViewSpec with MockitoSugar with MockAuthUt
     }
 
     "have the correct pre heading" in {
-      doc.getElementsByClass("govuk-caption-xl").text mustBe "This section is Create return"
+      doc.getElementsByClass("govuk-caption-xl").text mustBe "This section is: Create return"
     }
 
     "have a backlink" in {

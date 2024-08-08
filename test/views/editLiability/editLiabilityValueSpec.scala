@@ -55,7 +55,7 @@ class editLiabilityValueSpec extends AnyFeatureSpec with GuiceOneServerPerSuite 
       Then("the page title : Has the value of your property changed for the purposes of ATED?")
       assert(document.title() === "Has the value of your property changed for the purposes of ATED? - Submit and view your ATED returns - GOV.UK")
 
-      assert(document.getElementsByTag("h1").text.contains("This section is: Create return"))
+      assert(document.getElementsByTag("h2").text.contains("This section is: Create return"))
 
       assert(document.getElementById("value-text")
         .text() === "Based on the information you have previously given us the value of your property for the purposes of ATED is £123")

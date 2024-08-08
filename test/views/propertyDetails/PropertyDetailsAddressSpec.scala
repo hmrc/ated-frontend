@@ -138,7 +138,7 @@ Feature("The user can view an empty property details page") {
       assert(document.getElementsByTag("h1").text() contains "Edit address")
 
       Then("The subheader should be - Create return")
-      assert(document.getElementsByTag("h1").text() contains "This section is: Create return")
+      assert(document.getElementsByTag("h2").text() contains "This section is: Create return")
 
       Then("The address fields and action button are displayed")
       assert(document.getElementsByAttributeValue("for","line_1").text() === "Address line 1")

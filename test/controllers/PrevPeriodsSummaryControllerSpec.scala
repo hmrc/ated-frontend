@@ -199,7 +199,7 @@ class PrevPeriodsSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSu
 
             document.title() must be(TitleBuilder.buildTitle("Your previous returns"))
             document.getElementsByTag("h1").text() must include ("Your previous returns")
-            document.getElementsByClass("govuk-caption-xl").text() must be(s"You have logged in as:$organisationName")
+            document.getElementsByClass("govuk-caption-xl").text() must be(s"You are logged in as: $organisationName")
         }
       }
 

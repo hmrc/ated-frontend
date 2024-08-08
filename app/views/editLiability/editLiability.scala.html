@@ -52,7 +52,19 @@
         @*** CR = change-return, DP = dispose-property && MP = move-property ***@
 
         @if(editAllowed) {
+            <h2 class="govuk-caption-xl hmrc-caption-xl">
+                <span class="govuk-visually-hidden">@messages("ated.screen-reader.section")</span>
+                @messages("ated.edit-liability.change-return.header")
+            </h2>
+
             @govukRadios(Radios(
+                fieldset = Some(Fieldset(
+                  legend = Some(Legend(
+                      content = Text(messages("ated.edit-liability.header")),
+                      isPageHeading = true,
+                      classes = "govuk-fieldset__legend--xl"
+                  )),
+                )),
                 hint = Some(Hint(
                     content = Text(messages("ated.edit-liability.p1"))
                 )),
@@ -67,11 +79,8 @@
                     )
                 ),
                 classes = "govuk-radios--inline"
-            ).withFormField(editLiabilityReturnTypeForm("editLiabilityType"))
-             .withHeadingAndSectionCaption(
-                 heading = HtmlContent(messages("ated.edit-liability.header")),
-                 sectionCaption = HtmlContent(messages("ated.edit-liability.change-return.header"))
-            ))
+                ).withFormField(editLiabilityReturnTypeForm("editLiabilityType"))
+            )
 
             @govukButton(Button(
                 content = Text(messages("ated.save-and-continue")),
@@ -80,13 +89,11 @@
         } else {
 
             <header>
-                <h1 class="govuk-heading-xl govuk-!-margin-bottom-5">
-                    <span class="govuk-caption-xl">
-                        <span class="govuk-visually-hidden">
-                        @messages("ated.screen-reader.section")
-                        </span>
-                        @messages("ated.edit-liability.change-return.header")
-                    </span>
+                <h2 class="govuk-caption-xl hmrc-caption-xl">
+                    <span class="govuk-visually-hidden">@messages("ated.screen-reader.section")</span>
+                    @messages("ated.edit-liability.change-return.header")
+                </h2>
+                <h1 class="govuk-heading-xl">
                     @messages("ated.edit-liability.header2")
                 </h1>
             </header>

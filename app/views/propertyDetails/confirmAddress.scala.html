@@ -49,25 +49,32 @@
     @backLinkHtml
 
     <header>
-        <h1 class="govuk-heading-xl govuk-!-margin-bottom-5">
-            <span class="govuk-caption-xl">
-                <span class="govuk-visually-hidden">
-                    @messages("ated.screen-reader.section")
-                </span>
-                @messages(AtedUtils.getPropertyDetailsPreHeader(mode))
-            </span>
+        <h2 class="govuk-caption-xl hmrc-caption-xl">
+            <span class="govuk-visually-hidden">@messages("ated.screen-reader.section")</span>
+            @messages(AtedUtils.getPropertyDetailsPreHeader(mode))
+        </h2>
+        <h1 class="govuk-heading-xl">
             @messages("ated.confirm-address.header")
         </h1>
     </header>
 
     <div id="address">
-        <ul class="govuk-list">
-            <li id="address-line1">@propertyDetails.line_1</li>
-            <li id="address-line2">@propertyDetails.line_2</li>
-            <li id="address-line3">@propertyDetails.line_3.getOrElse("")</li>
-            <li id="address-line4">@propertyDetails.line_4.getOrElse("")</li>
-            <li id="postcode">@propertyDetails.postcode.getOrElse("")</li>
-        </ul>
+        <address class="govuk-body">
+            @propertyDetails.line_1<br>
+            @propertyDetails.line_2
+            @if(propertyDetails.line_3) {
+                <br>
+                @propertyDetails.line_3.getOrElse("")
+            }
+            @if(propertyDetails.line_4) {
+                <br>
+                @propertyDetails.line_4.getOrElse("")
+            }
+            @if(propertyDetails.postcode) {
+                <br>
+                @propertyDetails.postcode.getOrElse("")
+            }
+        </address>
     </div>
 
     <p id="editAddress" class="govuk-body">

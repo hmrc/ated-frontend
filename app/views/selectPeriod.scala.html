@@ -62,29 +62,36 @@
   }
 
   @formHelper(action=controllers.routes.SelectPeriodController.submit) {
+        <h2 class="govuk-caption-xl hmrc-caption-xl">
+            <span class="govuk-visually-hidden">@messages("ated.screen-reader.section")</span>
+            @messages("ated.return-type.pre-header")
+        </h2>
 
-   @govukRadios(
-       Radios(
-            hint = Some(Hint(
-                  content = Text(messages("ated.select-period.text"))
+       @govukRadios(
+           Radios(
+                fieldset = Some(Fieldset(
+                  legend = Some(Legend(
+                      content = Text(messages("ated.select-period.header")),
+                      isPageHeading = true,
+                      classes = "govuk-fieldset__legend--xl"
+                  )),
                 )),
-           items = items
-       ).withFormField(selectPeriodForm("period"))
-        .withHeadingAndSectionCaption(
-            heading = Text(messages("ated.select-period.header")),
-            sectionCaption = Text(messages("ated.return-type.pre-header"))
+                hint = Some(Hint(
+                      content = Text(messages("ated.select-period.text"))
+                    )),
+               items = items
+           ).withFormField(selectPeriodForm("period"))
         )
-   )
 
-    @govukDetails(Details(
-        summary = Text(messages("ated.select-period.more-years")),
-        content = HtmlContent(detailsContent)
-    ))
+        @govukDetails(Details(
+            summary = Text(messages("ated.select-period.more-years")),
+            content = HtmlContent(detailsContent)
+        ))
 
-    @govukButton(Button(
-        content = Text(messages("ated.return-type.button")),
-        inputType = Some("submit"),
-        attributes = Map("id" -> "submit")
-    ))
+        @govukButton(Button(
+            content = Text(messages("ated.return-type.button")),
+            inputType = Some("submit"),
+            attributes = Map("id" -> "submit")
+        ))
   }
 }

@@ -41,17 +41,15 @@
 
   @backLinkHtml
 
-   <header>
-    <h1 class="govuk-heading-xl govuk-!-margin-bottom-6">
-        <span class="govuk-caption-xl">
-            <span class="govuk-visually-hidden">
-                @messages("ated.screen-reader.section")
-            </span>
+    <header>
+        <h2 class="govuk-caption-xl hmrc-caption-xl">
+            <span class="govuk-visually-hidden">@messages("ated.screen-reader.section")</span>
             @messages(AtedUtils.getPropertyDetailsPreHeader(mode))
-        </span>
-        @messages("ated.property-details.earliest-start-date.header")
-    </h1>
- </header>
+        </h2>
+        <h1 class="govuk-heading-xl">
+            @messages("ated.property-details.earliest-start-date.header")
+        </h1>
+    </header>
 
  <p class="govuk-body">@messages("ated.property-details.earliest-start-date.first-para")</p>
  <p class="govuk-body">@messages("ated.property-details.earliest-start-date.second-para", when.getDayOfMonth().toString, intToMonth(when.getMonthValue()), when.getYear().toString)</p>

@@ -61,7 +61,7 @@ Feature("The user can add a period that the property is in relief") {
       assert(document.select("h1").text contains "Select the type of relief")
 
       Then("The subheader should be - Create return")
-      assert(document.getElementsByClass("govuk-caption-xl").text() contains "This section is Create return")
+      assert(document.getElementsByClass("govuk-caption-xl").text() contains "This section is: Create return")
 
       assert(document.getElementById("reliefDescription").attributes().get("value") === "Property rental businesses")
       assert(document.getElementById("reliefDescription-2").attributes().get("value") === "Dwellings opened to the public")
@@ -92,7 +92,7 @@ Feature("The user can add a period that the property is in relief") {
     assert(document.select("h1").text contains "Select the type of relief")
 
     Then("The subheader should be - Create return")
-    assert(document.getElementsByClass("govuk-caption-xl").text() contains "This section is Create return")
+    assert(document.getElementsByClass("govuk-caption-xl").text() contains "This section is: Create return")
 
     Then("The correct radio buttons for relief types should be present")
 
@@ -129,7 +129,7 @@ Feature("The user can add a period that the property is in relief") {
       assert(document.select("h1").text contains "Select the type of relief")
 
       Then("The subheader should be - Create return")
-      assert(document.getElementsByClass("govuk-caption-xl").text() contains "This section is Create return")
+      assert(document.getElementsByClass("govuk-caption-xl").text() contains "This section is: Create return")
 
       Then("The correct radio buttons for relief types should be present")
 

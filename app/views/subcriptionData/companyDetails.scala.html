@@ -87,11 +87,15 @@
 
   @backLinkHtml
 
-  <h1 class="govuk-heading-xl govuk-!-margin-bottom-5">
-    <span class="govuk-visually-hidden">@messages("ated.screen-reader.section")</span>
-    <span class="govuk-caption-xl hmrc-caption-xl">@messages("ated.company-details.preheader")</span>
-    @messages("ated.company-details.header")
-  </h1>
+  <header>
+    <h2 class="govuk-caption-l hmrc-caption-l">
+      <span class="govuk-visually-hidden">@messages("ated.screen-reader.section")</span>
+      @messages("ated.company-details.preheader")
+    </h2>
+    <h1 class="govuk-heading-xl">
+      @messages("ated.company-details.header")
+    </h1>
+  </header>
 
   @{
     val nameRow = Some(SummaryListRow(

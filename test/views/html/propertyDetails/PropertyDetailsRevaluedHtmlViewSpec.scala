@@ -45,7 +45,7 @@ class PropertyDetailsRevaluedHtmlViewSpec extends AtedViewSpec with MockitoSugar
       doc.getElementsByTag("h1").text() must include (messages("ated.property-details-value.isPropertyRevalued.header"))
     }
     "have the correct pre heading" in {
-      doc.getElementsByClass("govuk-caption-xl").text() mustBe ("This section is " + messages("ated.property-details.pre-header"))
+      doc.getElementsByClass("govuk-caption-xl").text() mustBe ("This section is: " + messages("ated.property-details.pre-header"))
     }
     "have a backlink" in {
       doc.getElementsByClass("govuk-back-link").text() mustBe "Back"

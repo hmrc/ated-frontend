@@ -52,11 +52,15 @@
         @errorSummary(ErrorSummary().withFormErrorsAsText(overseasCompanyRegistrationForm))
     }
 
-    <h1 class="govuk-heading-xl govuk-!-margin-bottom-5">
-        <span class="govuk-visually-hidden">@messages("ated.screen-reader.section")</span>
-        <span class="govuk-caption-xl hmrc-caption-xl">@messages("ated.non-uk-reg.subheader")</span>
-        @messages("ated.non-uk-reg.header")
-    </h1>
+    <header>
+        <h2 class="govuk-caption-xl hmrc-caption-xl">
+            <span class="govuk-visually-hidden">@messages("ated.screen-reader.section")</span>
+            @messages("ated.non-uk-reg.subheader")
+        </h2>
+        <h1 class="govuk-heading-xl">
+            @messages("ated.non-uk-reg.header")
+        </h1>
+    </header>
 
     @formHelper(action = controllers.subscriptionData.routes.OverseasCompanyRegistrationController.submit) {
 

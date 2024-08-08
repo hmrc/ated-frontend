@@ -52,26 +52,25 @@
         @govukErrorSummary(ErrorSummary().withFormErrorsAsText(confirmExistingReturn))
     }
 
-    <header>
-        <h1 class="govuk-heading-xl govuk-!-margin-bottom-5">
-            <span class="govuk-caption-xl">
-                <span class="govuk-visually-hidden">
-                    @messages("ated.screen-reader.section")
-                </span>
-                @messages("ated.return-type.pre-header")
-            </span>
-            @messages("ated.confirm-past-return-question.header", (periodKey-1).toString, periodKey.toString)
-        </h1>
-    </header>
-
-    <p class="govuk-body">
-        @messages("ated.confirm-past-return.p1")
-    </p>
-
 @formHelper(action = controllers.routes.ExistingReturnQuestionController.submit(periodKey, returnType)) {
+
+    <h2 class="govuk-caption-xl hmrc-caption-xl">
+        <span class="govuk-visually-hidden">@messages("ated.screen-reader.section")</span>
+        @messages("ated.return-type.pre-header")
+    </h2>
 
     @govukRadios(
        Radios(
+            fieldset = Some(Fieldset(
+              legend = Some(Legend(
+                  content = Text(messages("ated.confirm-past-return-question.header", (periodKey-1).toString, periodKey.toString)),
+                  isPageHeading = true,
+                  classes = "govuk-fieldset__legend--xl"
+              )),
+            )),
+            hint = Some(Hint(
+                content = Text(messages("ated.confirm-past-return.p1"))
+            )),
             items = Seq(
                 RadioItem(
                     content = Text(messages("ated.label.yes")),

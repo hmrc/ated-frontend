@@ -52,23 +52,32 @@
 
     @formHelper(action = controllers.routes.DraftDeleteConfirmationController.submit(id, periodKey, returnType)) {
 
-    @govukRadios(
-       Radios(
-            items = Seq(
-                RadioItem(
-                    content = Text(messages("ated.label.yes")),
-                    value = Some("true")
-                ),RadioItem(
-                    content = Text(messages("ated.label.no")),
-                    value = Some("false")
-                )),
-            classes = "govuk-radios--inline"
+        <h2 class="govuk-caption-xl hmrc-caption-xl">
+            <span class="govuk-visually-hidden">@messages("ated.screen-reader.section")</span>
+            @messages("ated.return-type.pre-header")
+        </h2>
 
-       ).withFormField(deleteDraftForm("yesNo"))
-        .withHeadingAndSectionCaption(
-            heading = Text(messages("ated.delete-draft.header")),
-            sectionCaption = Text(messages("ated.return-type.pre-header"))
-    ))
+        @govukRadios(
+           Radios(
+            fieldset = Some(Fieldset(
+                  legend = Some(Legend(
+                      content = Text(messages("ated.delete-draft.header")),
+                      isPageHeading = true,
+                      classes = "govuk-fieldset__legend--xl"
+                  )),
+              )),
+                items = Seq(
+                    RadioItem(
+                        content = Text(messages("ated.label.yes")),
+                        value = Some("true")
+                    ),RadioItem(
+                        content = Text(messages("ated.label.no")),
+                        value = Some("false")
+                    )),
+                classes = "govuk-radios--inline"
+
+           ).withFormField(deleteDraftForm("yesNo"))
+        )
 
         @govukButton(Button(
             content = Text(messages("ated.confirm")),
