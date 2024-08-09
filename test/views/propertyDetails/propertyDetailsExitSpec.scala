@@ -56,6 +56,9 @@ class propertyDetailsExitSpec extends PlaySpec with MockitoSugar with MockAuthUt
        "have the button with text Back to your ATED summary" in {
          assert(doc.select(".govuk-button").first().text() == "Back to your ATED summary")
        }
+       "have the button with text Back to your ATED summary should move to ated summary page" in {
+         assert(doc.select(".govuk-button").attr("href") == "/ated/account-summary")
+       }
 
      }
 
