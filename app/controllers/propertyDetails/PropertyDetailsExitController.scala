@@ -27,13 +27,13 @@ import play.api.i18n.{Messages, MessagesImpl}
 import services._
 import scala.concurrent.{ExecutionContext, Future}
 
-class propertyDetailsExitController @Inject()(mcc: MessagesControllerComponents,
-                                                  authAction: AuthAction,
-                                                  val propertyDetailsService: PropertyDetailsService,
-                                                  val dataCacheConnector: DataCacheConnector,
-                                                  val backLinkCacheConnector: BackLinkCacheConnector,
-                                                  template: views.html.propertyDetails.propertyDetailsExit)
-                                                (implicit val appConfig: ApplicationConfig)
+class PropertyDetailsExitController @Inject()(mcc: MessagesControllerComponents,
+                                              authAction: AuthAction,
+                                              val propertyDetailsService: PropertyDetailsService,
+                                              val dataCacheConnector: DataCacheConnector,
+                                              val backLinkCacheConnector: BackLinkCacheConnector,
+                                              template: views.html.propertyDetails.propertyDetailsExit)
+                                             (implicit val appConfig: ApplicationConfig)
 extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper {
 
   implicit val ec: ExecutionContext = mcc.executionContext
