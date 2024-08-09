@@ -233,6 +233,8 @@ GET      /liability/create/create-confirmation-print                    controll
 
 GET      /liability/create/cannot-submit-return                         controllers.propertyDetails.propertyDetailsExitController.view()
 
+GET      /liability/create/new-valuation                                controllers.propertyDetails.PropertyDetailsNewValuationController.view()
+
 
 ##  view Relief Returns ##
 GET     /view-relief-return/:periodKey/:formBundleNo                    controllers.reliefs.ViewReliefReturnController.viewReliefReturn(periodKey: Int, formBundleNo: String)
