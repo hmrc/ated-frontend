@@ -56,6 +56,8 @@
 
  @formHelper(action = controllers.propertyDetails.routes.PropertyDetailsHasBeenRevaluedController.save(propertyKey, periodKey, mode)) {
 
+  <h2 class="govuk-caption-l hmrc-caption-l"><span class="govuk-visually-hidden">This section is: </span>@messages(AtedUtils.getPropertyDetailsPreHeader(mode))</h2>
+
   @govukRadios(
    Radios(
     items = Seq(
@@ -70,10 +72,7 @@
     ),
     classes = "govuk-radios--inline"
    ).withFormField(propertyDetailsHasBeenRevaluedForm("isPropertyRevalued"))
-   .withHeadingAndSectionCaption(
-    heading = Text(messages("ated.property-details-value.hasBeenRevalued.header")),
-    sectionCaption = Text(messages(AtedUtils.getPropertyDetailsPreHeader(mode)))
-   )
+   .withHeading(heading = Text(messages("ated.property-details-value.hasBeenRevalued.header")))
   )
 
    @govukButton(Button(

@@ -29,7 +29,7 @@ import play.api.test.FakeRequest
 import testhelpers.MockAuthUtil
 import views.html.propertyDetails.propertyDetailsHasBeenRevalued
 
-class hasBeenRevaluedSpec extends PlaySpec with GuiceOneAppPerSuite with BeforeAndAfterEach with MockAuthUtil {
+class propertyDetailsHasBeenRevaluedSpec extends PlaySpec with GuiceOneAppPerSuite with BeforeAndAfterEach with MockAuthUtil {
 
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
   implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
@@ -58,8 +58,8 @@ class hasBeenRevaluedSpec extends PlaySpec with GuiceOneAppPerSuite with BeforeA
       }
 
       "have the correct section heading" in {
-        assert(doc.getElementsByClass("hmrc-caption").first().text == "This section is Create return")
-        assert(doc.select("span.hmrc-caption > span").hasClass("govuk-visually-hidden"))
+        assert(doc.select("h2.govuk-caption-l").first().text == "This section is: Create return")
+        assert(doc.select("h2.govuk-caption-l > span").hasClass("govuk-visually-hidden"))
       }
 
       "render 2 radio buttons correctly" in {
