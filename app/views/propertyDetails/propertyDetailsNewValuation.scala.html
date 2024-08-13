@@ -30,11 +30,11 @@
     formHelper: FormWithCSRF,
     govukErrorSummary : GovukErrorSummary)
 
-@(form: Form[PropertyDetailsNewValuation])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
+@(form: Form[PropertyDetailsNewValuation], backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
 @backLinkHtml = {
 @govukBackLink(BackLink(
-href = "#",
+href = backLink.get,
 content = Text("Back")
 ))
 }

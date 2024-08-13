@@ -116,7 +116,7 @@ object PropertyDetailsForms {
 
   val propertyDetailsNewValuationForm: Form[PropertyDetailsNewValuation] = Form(
     mapping(
-      "revaluedValue" -> valueValidation
+      "revaluedValue" -> valueValidation.verifying("ated.property-details-value.incorrect-format", model => model.isDefined)
     )(PropertyDetailsNewValuation.apply)(PropertyDetailsNewValuation.unapply)
   )
 
@@ -243,7 +243,6 @@ object PropertyDetailsForms {
     import PropertyValueField._
 
     optional(text)
-      .verifying("ated.property-details-value.incorrect-format", _.isDefined)
       .verifying("ated.property-details-value.incorrect-format", propertyValue => {
         propertyValue match {
           case Some(x) =>

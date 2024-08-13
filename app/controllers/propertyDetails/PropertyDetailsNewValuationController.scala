@@ -42,23 +42,18 @@ class PropertyDetailsNewValuationController @Inject()(mcc: MessagesControllerCom
 
   implicit val ec: ExecutionContext = mcc.executionContext
 
-  implicit lazy val messages: Messages = MessagesImpl(mcc.langs.availables.head, messagesApi)
-
   def view(): Action[AnyContent] = Action.async { implicit request =>
   authAction.authorisedAction{ implicit authContext =>
-    Future.successful(Ok(template(propertyDetailsNewValuationForm)))
+    Future.successful(Ok(template(propertyDetailsNewValuationForm, Some("back"))))
   }
   }
 
   def save(): Action[AnyContent] = Action.async { implicit request => {
-
-    println(s"hello here ********************************* ${propertyDetailsNewValuationForm}")
     authAction.authorisedAction { implicit authContext =>
       serviceInfoService.getPartial.map {  serviceInfoContent =>
         propertyDetailsNewValuationForm.bindFromRequest().fold(
           formWithErrors => {
-            println(s"hello here inside form with error ********************************* ${formWithErrors}")
-            BadRequest(template(formWithErrors))
+            BadRequest(template(formWithErrors, Some("back")))
           },
           revaluedValue => Redirect(controllers.propertyDetails.routes.PropertyDetailsNewValuationController.view())
         )
