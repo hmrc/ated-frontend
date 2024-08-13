@@ -155,7 +155,7 @@ backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages
               content = Text(messages("ated.form-bundle.view.return.value.only"))
             ),
             value = Value(
-              content = HtmlContent(incompleteTag)
+              content = HtmlContent(propertyDetails.value.flatMap(_.ownedBeforePolicyYearValue).map(decimal => Html(formattedPounds(decimal).toString())).getOrElse(incompleteTag))
             ),
             actions = Some(Actions(
               items = Seq(
@@ -170,7 +170,7 @@ backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages
               ))
           ))
         )),
-        attributes = Map("id" -> "value-purpose-ated-incomplete")
+        attributes = Map("id" -> "value-purpose-ated-0")
       ))
     } else {
     @for((valueObj, index) <- valuesToDisplay.zipWithIndex) {
