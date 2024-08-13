@@ -99,6 +99,13 @@ object PropertyDetailsRevalued {
   implicit val formats: OFormat[PropertyDetailsRevalued] = Json.format[PropertyDetailsRevalued]
 }
 
+
+case class PropertyDetailsNewValuation(revaluedValue: Option[BigDecimal] = None)
+
+object  PropertyDetailsNewValuation {
+  implicit val formats: OFormat[PropertyDetailsNewValuation] = Json.format[PropertyDetailsNewValuation]
+}
+
 case class PropertyDetailsOwnedBefore(isOwnedBeforePolicyYear: Option[Boolean] = None,
                                       ownedBeforePolicyYearValue: Option[BigDecimal] = None)
 

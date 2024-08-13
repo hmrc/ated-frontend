@@ -16,29 +16,23 @@
 
 package controllers.propertyDetails
 
-import audit.Auditable
+
 import config.ApplicationConfig
-import connectors.{BackLinkCacheConnector, DataCacheConnector}
-import controllers.ControllerIds
+
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms._
-import models.{PropertyDetailsAddress, SelectPeriod}
 import play.api.i18n.{Messages, MessagesImpl}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services._
-import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.DefaultAuditConnector
-import uk.gov.hmrc.play.audit.model.Audit
 import uk.gov.hmrc.play.bootstrap.controller.WithUnsafeDefaultFormBinding
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.AtedConstants._
-import utils.AtedUtils
+
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class PropertyDetailsNewValuationController @Inject()(mcc: MessagesControllerComponents,
-                                                      auditConnector: DefaultAuditConnector,
                                                       authAction: AuthAction,
                                                       serviceInfoService: ServiceInfoService,
                                                       template: views.html.propertyDetails.propertyDetailsNewValuation)
@@ -52,13 +46,26 @@ class PropertyDetailsNewValuationController @Inject()(mcc: MessagesControllerCom
 
   def view(): Action[AnyContent] = Action.async { implicit request =>
   authAction.authorisedAction{ implicit authContext =>
-    Future.successful(Ok(template()))
+    Future.successful(Ok(template(propertyDetailsNewValuationForm)))
   }
   }
 
+  def save(): Action[AnyContent] = Action.async { implicit request => {
 
-
-
+    println(s"hello here ********************************* ${propertyDetailsNewValuationForm}")
+    authAction.authorisedAction { implicit authContext =>
+      serviceInfoService.getPartial.map {  serviceInfoContent =>
+        propertyDetailsNewValuationForm.bindFromRequest().fold(
+          formWithErrors => {
+            println(s"hello here inside form with error ********************************* ${formWithErrors}")
+            BadRequest(template(formWithErrors))
+          },
+          revaluedValue => Redirect(controllers.propertyDetails.routes.PropertyDetailsNewValuationController.view())
+        )
+      }
+    }
+  }
+  }
 }
 
 

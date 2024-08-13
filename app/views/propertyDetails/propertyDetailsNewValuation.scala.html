@@ -18,6 +18,8 @@
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
 @import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
+@import views.ViewUtils.titleBuilder
 
 
 @this(newMain: newMain,
@@ -28,8 +30,46 @@
     formHelper: FormWithCSRF,
     govukErrorSummary : GovukErrorSummary)
 
-@()(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
-@newMain(title = "hello") {
-    <h1>This is main heading</h1>
+@(form: Form[PropertyDetailsNewValuation])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
+
+@backLinkHtml = {
+@govukBackLink(BackLink(
+href = "#",
+content = Text("Back")
+))
+}
+@newMain(title = titleBuilder(messages("ated.property_details_new_valuation.title"), Some(form))){
+
+@backLinkHtml
+
+@if(form.hasErrors) {
+  @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))
+}
+
+@formHelper(action = controllers.propertyDetails.routes.PropertyDetailsNewValuationController.save()) {
+
+       <h2 class="govuk-caption-l hmrc-caption-l"><span class="govuk-visually-hidden">This section is </span>@messages("ated.property-details.pre-header")</h2>
+        @govukInput(Input(
+            id = "revaluedValue",
+            name = "revaluedValue",
+            label = Label(
+            isPageHeading = true,
+            classes = "govuk-label--xl govuk-!-margin-bottom-8",
+            content = Text(messages("ated.property_details_new_valuation.heading"))
+            ),
+            hint = Some(Hint(
+                content = Text(messages("ated.property_details_new_valuation.hint_text"))
+            )),
+            classes = "govuk-input--width-10",
+            spellcheck = Some(false),
+            prefix = Some(PrefixOrSuffix(
+            content = Text("£")
+            ))
+        ).withFormField(form("revaluedValue"))
+)
+        @govukButton(Button(
+            content = Text(messages("ated.save-and-continue"))
+        ))
+}
 
 }

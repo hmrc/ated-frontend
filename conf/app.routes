@@ -235,6 +235,8 @@ GET      /liability/create/cannot-submit-return                         controll
 
 GET      /liability/create/new-valuation                                controllers.propertyDetails.PropertyDetailsNewValuationController.view()
 
+POST      /liability/create/new-valuation                                controllers.propertyDetails.PropertyDetailsNewValuationController.save()
+
 
 ##  view Relief Returns ##
 GET     /view-relief-return/:periodKey/:formBundleNo                    controllers.reliefs.ViewReliefReturnController.viewReliefReturn(periodKey: Int, formBundleNo: String)

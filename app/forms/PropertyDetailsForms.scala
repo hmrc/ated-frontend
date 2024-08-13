@@ -17,8 +17,10 @@
 package forms
 
 import forms.AtedForms.validatePostCodeFormat
+import forms.PropertyDetailsForms.PropertyValueField.isValid
 import forms.mappings.DateTupleCustomError
 import models._
+
 import java.time.LocalDate
 import play.api.data.Forms._
 import play.api.data.validation.{Constraint, Invalid, Valid}
@@ -111,6 +113,12 @@ object PropertyDetailsForms {
       "revaluedDate" -> DateTupleCustomError("ated.error.date.invalid").dateTupleOptional(),
       "partAcqDispDate" -> DateTupleCustomError("ated.error.date.invalid").dateTupleOptional()
     )(PropertyDetailsRevalued.apply)(PropertyDetailsRevalued.unapply))
+
+  val propertyDetailsNewValuationForm: Form[PropertyDetailsNewValuation] = Form(
+    mapping(
+      "revaluedValue" -> valueValidation
+    )(PropertyDetailsNewValuation.apply)(PropertyDetailsNewValuation.unapply)
+  )
 
   def OwnedBeforeYearConstraint(periodKey: Int): Constraint[Option[Boolean]] = Constraint({ model =>
     model match {
@@ -235,6 +243,7 @@ object PropertyDetailsForms {
     import PropertyValueField._
 
     optional(text)
+      .verifying("ated.property-details-value.incorrect-format", _.isDefined)
       .verifying("ated.property-details-value.incorrect-format", propertyValue => {
         propertyValue match {
           case Some(x) =>
