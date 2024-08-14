@@ -39,11 +39,12 @@ extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper {
   implicit val ec: ExecutionContext = mcc.executionContext
   val controllerId: String = "PropertyDetailsExitController"
 
-  implicit lazy val messages: Messages = MessagesImpl(mcc.langs.availables.head, messagesApi)
-
   def view(): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
-      Future.successful(Ok(template()))
+      if (appConfig.newRevaluedFeature) {
+        Future.successful(Ok(template()))
+      }
+      else Future.successful(Redirect(controllers.routes.HomeController.home()))
     }
   }
 }
