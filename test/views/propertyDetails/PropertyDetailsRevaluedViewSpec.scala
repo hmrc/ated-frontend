@@ -60,10 +60,10 @@ Feature("The user can view an empty property revalue page") {
       assert(document.title() === "Has the property been revalued since the £40,000 or more change? - Submit and view your ATED returns - GOV.UK")
 
       Then("The subheader should be - Create return")
-      assert(document.getElementsByClass("govuk-caption-xl").text() contains "This section is Create return")
+      assert(document.getElementsByClass("govuk-caption-xl").text() contains "This section is: Create return")
 
       And ("The header should be - Have you had the property revalued since you made the £40,000 change?")
-      assert(document.getElementsByClass("hmrc-page-heading").text() contains "Has the property been revalued since the £40,000 or more change?")
+      assert(document.getElementsByClass("govuk-fieldset__legend--xl").text() contains "Has the property been revalued since the £40,000 or more change?")
 
       And("No data is populated")
       assert(document.getElementsByAttributeValue("for","isPropertyRevalued").text() === "Yes")
@@ -117,10 +117,10 @@ Feature("The user can view an empty property revalue page") {
       assert(document.title() === "Has the property been revalued since the £40,000 or more change? - Submit and view your ATED returns - GOV.UK")
 
       Then("The subheader should be - Change return")
-      assert(document.getElementsByClass("govuk-caption-xl").text() contains "This section is Change return")
+      assert(document.getElementsByClass("govuk-caption-xl").text() contains "This section is: Change return")
 
       And ("The header should be - Have you had the property revalued since you made the £40,000 change?")
-      assert(document.getElementsByClass("hmrc-page-heading").text() contains "Has the property been revalued since the £40,000 or more change?")
+      assert(document.getElementsByClass("govuk-fieldset__legend--xl").text() contains "Has the property been revalued since the £40,000 or more change?")
 
       And("The data is populated for a property value set to true")
       assert(document.getElementsByAttributeValue("for","isPropertyRevalued").text() === "Yes")

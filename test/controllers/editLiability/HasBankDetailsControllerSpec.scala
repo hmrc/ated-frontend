@@ -142,7 +142,7 @@ class Setup {
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
             document.title() must be("Do you have a bank account where we could pay a refund? - Submit and view your ATED returns - GOV.UK")
-            document.getElementsByClass("govuk-heading-xl").text() must include("This section is: Change return")
+            document.getElementsByClass("govuk-caption-xl").text() must include("This section is: Change return")
             assert(document.getElementById("service-info-list").text() === "Home Manage account Messages Help and contact")
             document.getElementsByClass("govuk-back-link").text must be("Back")
             document.getElementsByClass("govuk-back-link").attr("href") must include("http://backlink")

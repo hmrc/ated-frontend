@@ -59,7 +59,7 @@ class editLiabilityDatesLiableSpec extends AnyFeatureSpec with GuiceOneAppPerSui
       assert(document.select("h1").text.contains("Enter the dates this change applies to"))
 
       Then("The subheader should be - Change return")
-      assert(document.getElementsByTag("h1").text.contains("This section is: Change return"))
+      assert(document.getElementsByTag("h2").text.contains("This section is: Change return"))
 
 
 

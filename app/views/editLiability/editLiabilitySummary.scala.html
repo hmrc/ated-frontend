@@ -75,17 +75,15 @@
 
   @backLinkHtml
 
-  <header>
-    <h1 id="edit-liability-summary-header" class="govuk-heading-xl">
-      <span class="govuk-caption-xl">
-        <span class="govuk-visually-hidden">
-        @messages("ated.screen-reader.section")
-        </span>
-        @messages("ated.property-details.pre-header-change")
-      </span>
-      @messages("ated.property-details-summary.header")
-    </h1>
-  </header>
+    <header>
+      <h2 class="govuk-caption-xl hmrc-caption-xl">
+          <span class="govuk-visually-hidden">@messages("ated.screen-reader.section")</span>
+          @messages("ated.property-details.pre-header-change")
+      </h2>
+      <h1 id="edit-liability-summary-header" class="govuk-heading-xl">
+        @messages("ated.property-details-summary.header")
+      </h1>
+    </header>
 
   <p id="details-text" class="govuk-body">@messages("ated.property-details-summary.details-text", periodStartDate(changeLiability.periodKey).toString(messages("ated.date-format")), periodEndDate(changeLiability.periodKey).toString(messages("ated.date-format")))</p>
 
