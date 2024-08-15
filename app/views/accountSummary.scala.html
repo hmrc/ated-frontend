@@ -21,7 +21,6 @@
 @import views.ViewUtils.titleBuilder
 
 @this(newMain: newMain,
-    peakGuidance: peakGuidance,
     govukButton : GovukButton,
     govukNotificationBanner : GovukNotificationBanner)
 
@@ -61,7 +60,9 @@
         </h1>
     </header>
 
-        @peakGuidance(duringPeak, currentYear, taxYearStartingYear)
+    <p class="govuk-body">@messages("ated.account-summary.outside-peak-guidance-part-one.text", (taxYearStartingYear + 1).toString, (taxYearStartingYear + 2).toString)
+        <b>@messages("ated.account-summary.outside-peak-guidance-part-two.text", (taxYearStartingYear + 1).toString)</b></p>
+    <p class="govuk-body">@messages("ated.account-summary.outside-peak-guidance-part-three.text", (taxYearStartingYear + 1).toString)</p>
 
         @if(otherReturns.atedBalance.getOrElse(BigDecimal(0)) > 0) {
             <h2 class="govuk-heading-l">@messages("ated.account-summary.balance-outstanding.heading")</h2>
