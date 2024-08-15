@@ -64,6 +64,7 @@
     <b>@messages("ated.account-summary.peak-guidance-part-two.text", (taxYearStartingYear + 1).toString)</b></p>
     <p class="govuk-body">@messages("ated.account-summary.peak-guidance-part-three.text", (taxYearStartingYear + 1).toString)</p>
 
+    <br>
     @if(otherReturns.atedBalance.getOrElse(BigDecimal(0)) < 0) {
         <h2 class="govuk-heading-l">@messages("ated.account-summary.balance-owed.heading")</h2>
         <p class="govuk-body">@messages("ated.account-summary.balance-owed-part-one.text")</p>
@@ -116,12 +117,11 @@
         }
         }
 
-        @if(otherReturns.returnsOtherTaxYears.isEmpty && returnsCurrentTaxYear.isEmpty) {
-            <h2 class="govuk-heading-s" id="return-summary-no-returns">@messages("ated.account-summary.agent.no-returns")</h2>
-            @if(authContext.delegationModel.isEmpty) {
-                <p class="govuk-body" id="return-summary-no-returns-appoint-agent">@messages("ated.account-summary.agent-appoint.text")</p>
-                <p class="govuk-body" id="return-summary-no-returns-appoint-agent-info">@messages("ated.account-summary.appoint-agent-info.text")</p>
-            }
+    <br>
+    <h2 class="govuk-heading-l">@messages("ated.account-summary.current-year-returns.heading")</h2>
+
+        @if(returnsCurrentTaxYear.isEmpty) {
+            <p class="govuk-body">@messages("ated.account-summary.current-year-returns-no-returns.text")</p>
 
             <div class="govuk-form-group">
                 @govukButton(Button(
@@ -134,11 +134,12 @@
         } else {
 
             @if(returnsCurrentTaxYear.nonEmpty) {
-                <h2 class="govuk-heading-m govuk-!-padding-top-5">@messages("ated.account-summary.current-year-returns")</h2>
-                <div class="govuk-hint">
-                  @messages("ated.account-summary.showing", returnsCurrentTaxYear.size, totalCurrentYearReturns)
-                </div>
-                <dl class="govuk-summary-list govuk-!-margin-bottom-9">
+                @if(totalCurrentYearReturns > 5) {
+                    <div class="govuk-hint">
+                    @messages("ated.account-summary.showing", returnsCurrentTaxYear.size, totalCurrentYearReturns)
+                    </div>
+                }
+                <dl class="govuk-summary-list">
                     @returnsCurrentTaxYear.map { rtn =>
                         @accountSummaryRow(
                             rtn.description,
@@ -149,7 +150,7 @@
                     }
                 </dl>
 
-                @if(totalCurrentYearReturns > 5 || hasPastReturns) {
+                @if(totalCurrentYearReturns > 5) {
                     <div class="govuk-form-group">
                         <a id="view-all-returns" class="govuk-link govuk-!-font-size-19" href="@controllers.routes.PeriodSummaryController.view(taxYearStartingYear)">
                           @messages(
@@ -158,9 +159,6 @@
                         </a>
                     </div>
                 }
-
-                } else {
-                    @noReturnsText()
                 }
 
             <div class="govuk-form-group">
@@ -170,5 +168,18 @@
                     attributes = Map("id" -> "create-return-1")
                 ))
             </div>
+
+            <h2 class="govuk-heading-l">@messages("ated.account-summary.previous-year-returns.heading")</h2>
+            <p class="govuk-body"><a class="govuk-link" href="@controllers.routes.PrevPeriodsSummaryController.view">@messages("ated.account-summary.previous-year-returns-link.text")</a></p>
+
+
+            <h2>Everything above this is done (other than the in progress tag for money owed and removing the sidebar)</h2>
+            @if(authContext.delegationModel.isEmpty) {
+                <p class="govuk-body" id="return-summary-no-returns-appoint-agent">@messages("ated.account-summary.agent-appoint.text")</p>
+                <p class="govuk-body" id="return-summary-no-returns-appoint-agent-info">@messages("ated.account-summary.appoint-agent-info.text")</p>
+                @noReturnsText()
+                @if(otherReturns.returnsOtherTaxYears.isEmpty) {}
+                <h2 class="govuk-heading-s" id="return-summary-no-returns">@messages("ated.account-summary.agent.no-returns")</h2>
+            }
         }
 }

@@ -114,9 +114,12 @@ unauthorised.sa.p2 = If you are an overseas landlord or client you need to sign 
 ##### ACCOUNT SUMMARY
 
 ated.account-summary.appoint-agent.text = Appoint an agent for ATED
-ated.account-summary.current-year-returns = Current year returns
+ated.account-summary.current-year-returns.heading = Current year ATED returns
+ated.account-summary.current-year-returns-no-returns.text = You have no current year returns.
 ated.account-summary.showing = Showing {0} of {1} returns
 ated.account-summary.view-or-change = View or change
+ated.account-summary.previous-year-returns.heading = Previous years ATED returns
+ated.account-summary.previous-year-returns-link.text = View or change ATED returns for previous chargeable periods.
 ated.account-summary.peak-guidance-part-one.text = The deadline for {0} to {1} returns and payments for all ATED-eligible properties that you own on 1 April {0} is
 ated.account-summary.peak-guidance-part-two.text =  30 April {0}.
 ated.account-summary.peak-guidance-part-three.text = Returns for newly acquired ATED properties must be sent to HMRC within 30 days of the date of acquisition (90 days from start date for new builds).
