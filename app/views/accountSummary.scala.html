@@ -43,22 +43,42 @@
 @newMain(
     title = titleBuilder(messages("ated.summary-return.title")),
     serviceInfoContent = serviceInfoContent,
-    sideBar = Some(_accountSummary_sideBar(otherReturns.atedBalance, correspondence, organisationName, clientBanner)),
+    sideBar =
+        //None,
+        Some(_accountSummary_sideBar(otherReturns.atedBalance, correspondence, organisationName, clientBanner)),
     showUrBanner = Some(true),
     banner = clientBanner
 ) {
-        <header>
-            <h1 class="govuk-heading-xl govuk-!-margin-bottom-5">
-                <span class="govuk-caption-xl"><span class="govuk-visually-hidden">@messages("ated.screen-reader.section-name")</span>@organisationName.getOrElse("")</span>
-                @messages("ated.summary-return.header")
-            </h1>
-        </header>
 
         @govukNotificationBanner(NotificationBanner(
             content = HtmlContent(html)
         ))
 
+    <header>
+        <h1 class="govuk-heading-xl govuk-!-margin-bottom-5">
+            <span class="govuk-caption-xl"><span class="govuk-visually-hidden">@messages("ated.screen-reader.section-name")</span>@organisationName.getOrElse("")</span>
+            @messages("ated.summary-return.header")
+        </h1>
+    </header>
+
         @peakGuidance(duringPeak, currentYear, taxYearStartingYear)
+
+        @if(otherReturns.atedBalance.getOrElse(BigDecimal(0)) > 0) {
+            <h2 class="govuk-heading-l">@messages("ated.account-summary.balance-outstanding.heading")</h2>
+            <p class="govuk-body">@messages("ated.account-summary.balance-outstanding-part-one.text")</p>
+            <p class="govuk-body">@messages("ated.account-summary.balance-outstanding-part-two.text")</p>
+
+            <dl class="govuk-summary-list">
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        @messages("ated.account-summary.balance-owed-total-due.text")
+                    </dt>
+                    <dd class="govuk-summary-list__actions">
+                        @formattedPounds(otherReturns.atedBalance.getOrElse(BigDecimal(0)).abs)
+                    </dd>
+                </div>
+            </dl>
+        }
 
         @if(otherReturns.returnsOtherTaxYears.isEmpty && returnsCurrentTaxYear.isEmpty) {
             <h2 class="govuk-heading-s" id="return-summary-no-returns">@messages("ated.account-summary.agent.no-returns")</h2>

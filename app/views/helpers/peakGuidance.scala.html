@@ -33,11 +33,7 @@
 
     } else {
 
-        @govukWarningText(WarningText(
-            iconFallbackText = Some("Warning"),
-            content = Text(messages("ated.account-summary.outside-peak-guidance.warning"))
-        ))
-
-        <p class="govuk-body">@messages("ated.account-summary.outside-peak-guidance-part-one.text", (taxYearStartingYear + 1).toString, (taxYearStartingYear + 2).toString)</p>
-        <p class="govuk-body">@messages("ated.account-summary.outside-peak-guidance-part-two.text", (taxYearStartingYear + 1).toString)</p>
+        <p class="govuk-body">@messages("ated.account-summary.outside-peak-guidance-part-one.text", (taxYearStartingYear + 1).toString, (taxYearStartingYear + 2).toString)
+        <b>@messages("ated.account-summary.outside-peak-guidance-part-two.text", (taxYearStartingYear + 1).toString)</b></p>
+        <p class="govuk-body">@messages("ated.account-summary.outside-peak-guidance-part-three.text", (taxYearStartingYear + 1).toString)</p>
     }

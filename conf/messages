@@ -121,8 +121,14 @@ ated.account-summary.outside-peak-guidance.warning = Returns for newly acquired 
 ated.account-summary.current-year-returns = Current year returns
 ated.account-summary.showing = Showing {0} of {1} returns
 ated.account-summary.view-or-change = View or change
-ated.account-summary.outside-peak-guidance-part-one.text = Returns for {0} to {1} are due by 30 April {0}.
-ated.account-summary.outside-peak-guidance-part-two.text = This is for all properties in scope of ATED on 1 April {0}.
+ated.account-summary.outside-peak-guidance-part-one.text = The dadline for {0} to {1} returns and payments for all ATED-eligible properties that you own on 1 April {0} is
+ated.account-summary.outside-peak-guidance-part-two.text =  30 April {0}.
+ated.account-summary.outside-peak-guidance-part-three.text = Returns for newly acquired ATED properties must be sent to HMRC within 30 days of the date of acquisition (90 days from start date for new builds).
+ated.account-summary.balance-outstanding.heading = Amount due
+ated.account-summary.balance-outstanding-part-one.text = You will need your payment reference number to pay. Your payment reference number is on your latest return.
+ated.account-summary.balance-outstanding-part-two.text = There can be a 24 hour delay before you see any updates on your balance after you have paid.
+ated.account-summary.balance-owed.heading = Amount owed
+ated.account-summary.balance-owed-total-due.text = Total amount due
 ated.account-summary.no-returns-heading = You have no returns
 ated.account-summary.no-returns = You can appoint an agent to act on your behalf or create your own returns. If you want to appoint an agent you need to re-authorise your agent as the 64-8 and the ATED 1 does not cover the new online service.
 
@@ -368,8 +374,8 @@ ated.prev-period-summary.create-return.button = Create a new return
 
 ##### SUMMARY RETURN
 
-ated.summary-return.title = Your ATED summary
-ated.summary-return.header = Your ATED summary
+ated.summary-return.title = Annual Tax on Enveloped Dwellings (ATED) summary
+ated.summary-return.header = Annual Tax on Enveloped Dwellings (ATED) summary
 ated.summary-return.sidebar.balance = Your balance
 ated.summary-return.sidebar.pay.link = Deadlines and ways to pay
 ated.summary-return.sidebar.owed.link = Ways to be paid
