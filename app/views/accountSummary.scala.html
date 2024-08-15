@@ -1,5 +1,5 @@
 @*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,25 +60,60 @@
         </h1>
     </header>
 
-    <p class="govuk-body">@messages("ated.account-summary.outside-peak-guidance-part-one.text", (taxYearStartingYear + 1).toString, (taxYearStartingYear + 2).toString)
-        <b>@messages("ated.account-summary.outside-peak-guidance-part-two.text", (taxYearStartingYear + 1).toString)</b></p>
-    <p class="govuk-body">@messages("ated.account-summary.outside-peak-guidance-part-three.text", (taxYearStartingYear + 1).toString)</p>
+    <p class="govuk-body">@messages("ated.account-summary.peak-guidance-part-one.text", (taxYearStartingYear + 1).toString, (taxYearStartingYear + 2).toString)
+    <b>@messages("ated.account-summary.peak-guidance-part-two.text", (taxYearStartingYear + 1).toString)</b></p>
+    <p class="govuk-body">@messages("ated.account-summary.peak-guidance-part-three.text", (taxYearStartingYear + 1).toString)</p>
 
+    @if(otherReturns.atedBalance.getOrElse(BigDecimal(0)) < 0) {
+        <h2 class="govuk-heading-l">@messages("ated.account-summary.balance-owed.heading")</h2>
+        <p class="govuk-body">@messages("ated.account-summary.balance-owed-part-one.text")</p>
+        <p class="govuk-body">@messages("ated.account-summary.balance-owed-part-two.text")</p>
+
+        <dl class="govuk-summary-list">
+            <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key">
+                @messages("ated.account-summary.balance-owed-amount-owed.text")
+                </dt>
+                <dd class="govuk-summary-list__actions">
+                @formattedPounds(otherReturns.atedBalance.getOrElse(BigDecimal(0)).abs)
+                </dd>
+            </div>
+            <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key">
+                @messages("ated.account-summary.balance-owed-status.text")
+                </dt>
+                <dd class="govuk-summary-list__actions">
+                    <strong class="govuk-tag govuk-tag--light-blue">In progress</strong>
+                </dd>
+            </div>
+        </dl>
+
+    } else {
+        <h2 class="govuk-heading-l">@messages("ated.account-summary.balance-outstanding.heading")</h2>
         @if(otherReturns.atedBalance.getOrElse(BigDecimal(0)) > 0) {
-            <h2 class="govuk-heading-l">@messages("ated.account-summary.balance-outstanding.heading")</h2>
-            <p class="govuk-body">@messages("ated.account-summary.balance-outstanding-part-one.text")</p>
-            <p class="govuk-body">@messages("ated.account-summary.balance-outstanding-part-two.text")</p>
+        <p class="govuk-body">@messages("ated.account-summary.balance-outstanding-part-one.text")</p>
+        <p class="govuk-body">@messages("ated.account-summary.balance-outstanding-part-two.text")</p>
 
-            <dl class="govuk-summary-list">
-                <div class="govuk-summary-list__row">
-                    <dt class="govuk-summary-list__key">
-                        @messages("ated.account-summary.balance-owed-total-due.text")
-                    </dt>
-                    <dd class="govuk-summary-list__actions">
-                        @formattedPounds(otherReturns.atedBalance.getOrElse(BigDecimal(0)).abs)
-                    </dd>
-                </div>
-            </dl>
+        <dl class="govuk-summary-list">
+            <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key">
+                @messages("ated.account-summary.balance-outstanding-total-due.text")
+                </dt>
+                <dd class="govuk-summary-list__actions">
+                @formattedPounds(otherReturns.atedBalance.getOrElse(BigDecimal(0)).abs)
+                </dd>
+            </div>
+        </dl>
+        @govukButton(Button(
+            href = Some("https://www.tax.service.gov.uk/pay/enter-annual-tax-enveloped-dwellings-payment-reference"),
+            content = Text(messages("ated.account-summary.pay-button.text")),
+            attributes = Map("id" -> "pay-now")
+        ))
+
+        <p class="govuk-body"><a class="govuk-link" href=@messages("https://www.gov.uk/guidance/pay-annual-tax-on-enveloped-dwellings")>@messages("ated.account-summary.other-ways-to-pay")</a></p>
+            } else {
+        <p class="govuk-body">@messages("ated.account-summary.no-payment-due.text")</p>
+        }
         }
 
         @if(otherReturns.returnsOtherTaxYears.isEmpty && returnsCurrentTaxYear.isEmpty) {
