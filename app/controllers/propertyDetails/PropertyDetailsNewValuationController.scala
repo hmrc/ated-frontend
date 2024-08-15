@@ -44,7 +44,11 @@ class PropertyDetailsNewValuationController @Inject()(mcc: MessagesControllerCom
 
   def view(): Action[AnyContent] = Action.async { implicit request =>
   authAction.authorisedAction{ implicit authContext =>
-    Future.successful(Ok(template(propertyDetailsNewValuationForm, Some("back"))))
+    if (appConfig.newRevaluedFeature) {
+      Future.successful(Ok(template(propertyDetailsNewValuationForm, Some("back"))))
+    }else{
+      Future.successful(Redirect(controllers.routes.HomeController.home()))
+    }
   }
   }
 

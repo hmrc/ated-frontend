@@ -68,7 +68,7 @@ class propertyDetailsNewValuationSpec extends PlaySpec with MockitoSugar with Mo
 
     }
 
-    "the page has been submitted without value" should {
+    "the page has been submitted with empty value" should {
       val view = injectedView(propertyDetailsNewValuationForm.bind(Map("revaluedValue" -> "")), Some("back"))
       val doc = Jsoup.parse(view.toString)
 
@@ -79,7 +79,7 @@ class propertyDetailsNewValuationSpec extends PlaySpec with MockitoSugar with Mo
       "render an error summary with the correct error message" in {
         assert(doc.getElementsByClass("govuk-error-summary").size() == 1)
         assert(doc.select("h2.govuk-error-summary__title").text() == "There is a problem")
-        assert(doc.select("ul.govuk-error-summary__list a").text() == "The value of the property must be an amount of money")
+        assert(doc.select("ul.govuk-error-summary__list a").text() == "Enter a valid property value")
       }
 
       "apply an error class to the form group apply error styling" in {
@@ -87,10 +87,11 @@ class propertyDetailsNewValuationSpec extends PlaySpec with MockitoSugar with Mo
       }
 
       "render an error message at the input field" in {
-        assert(doc.getElementById("revaluedValue-error").text() == "Error: The value of the property must be an amount of money")
+        assert(doc.getElementById("revaluedValue-error").text() == "Error: Enter a valid property value")
       }
 
     }
+
     "the page has been submitted with wrong value" should {
       val view = injectedView(propertyDetailsNewValuationForm.bind(Map("revaluedValue" -> "test data")), Some("back"))
       val doc = Jsoup.parse(view.toString)
@@ -115,4 +116,5 @@ class propertyDetailsNewValuationSpec extends PlaySpec with MockitoSugar with Mo
 
     }
   }
+
 }

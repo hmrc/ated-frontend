@@ -116,7 +116,7 @@ object PropertyDetailsForms {
 
   val propertyDetailsNewValuationForm: Form[PropertyDetailsNewValuation] = Form(
     mapping(
-      "revaluedValue" -> valueValidation.verifying("ated.property-details-value.incorrect-format", model => model.isDefined)
+      "revaluedValue" -> valueValidation.verifying("ated.property-details-value.revaluedValue.error.empty", model => model.isDefined)
     )(PropertyDetailsNewValuation.apply)(PropertyDetailsNewValuation.unapply)
   )
 
