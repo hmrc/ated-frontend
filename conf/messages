@@ -136,6 +136,9 @@ ated.account-summary.pay-button.text = Pay now
 ated.account-summary.other-ways-to-pay = Other ways you can pay
 ated.account-summary.no-payment-due.text = You have no payment due.
 ated.account-summary.no-returns-heading = You have no returns
+ated.account-summary.ated-details.heading = Your ATED details
+ated.account-summary.ated-details-company.text = Company details
+ated.account-summary.ated-details-reference.text = Reference number
 ated.account-summary.no-returns = You can appoint an agent to act on your behalf or create your own returns. If you want to appoint an agent you need to re-authorise your agent as the 64-8 and the ATED 1 does not cover the new online service.
 
 ##### SELECT PERIOD
