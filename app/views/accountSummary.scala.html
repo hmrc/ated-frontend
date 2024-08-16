@@ -19,6 +19,7 @@
 @import views.html.helpers._
 @import play.twirl.api.HtmlFormat
 @import views.ViewUtils.titleBuilder
+@import _root_.utils.AtedUtils._
 
 @this(newMain: newMain,
     govukButton : GovukButton,
@@ -26,7 +27,8 @@
 
 @(returnsCurrentTaxYear: Seq[AccountSummaryRowModel], totalCurrentYearReturns: Int, hasPastReturns: Boolean,
         otherReturns: SummaryReturnsModel, correspondence: Option[Address], organisationName: Option[String],
-        serviceInfoContent: Html = HtmlFormat.empty, clientBanner: Html, duringPeak: Boolean, currentYear: Int,
+        atedReference: String, agentDetails: Option[ClientMandateDetails], serviceInfoContent: Html = HtmlFormat.empty,
+        clientBanner: Html, duringPeak: Boolean, currentYear: Int,
         taxYearStartingYear: Int, fromAccountSummary: Boolean)(implicit authContext: StandardAuthRetrievals,
         messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
@@ -167,15 +169,6 @@
 
             <h2 class="govuk-heading-l">@messages("ated.account-summary.ated-details.heading")</h2>
     <dl class="govuk-summary-list">
-
-        @accountSummaryRow(
-            messages("ated.account-summary.ated-details-company.text"),
-            messages(organisationName.getOrElse("")),
-            messages("ated.change"),
-            "@controllers.routes.RegisteredDetailsController.edit.url"
-        )
-
-
         <div class="govuk-summary-list__row">
             <dt class="govuk-summary-list__key govuk-!-width-one-half">
             @messages("ated.account-summary.ated-details-company.text")
@@ -184,20 +177,52 @@
             @messages(organisationName.getOrElse(""))
             </dd>
             <dd class="govuk-summary-list__actions">
-                <a class="govuk-link" href="@controllers.routes.PrevPeriodsSummaryController.view">@messages("ated.change")</a>
+                <a class="govuk-link" href="@controllers.subscriptionData.routes.RegisteredDetailsController.edit">@messages("ated.change")</a>
             </dd>
         </div>
         <div class="govuk-summary-list__row">
-            <dt class="govuk-summary-list__key">
-            @messages("ated.account-summary.balance-owed-status.text")
+            <dt class="govuk-summary-list__key govuk-!-width-one-half">
+            @messages("ated.account-summary.ated-details-reference.text")
             </dt>
-            <dd class="govuk-summary-list__actions">
-                <strong class="govuk-tag govuk-tag--light-blue">In progress</strong>
+            <dd class="govuk-summary-list__value govuk-!-width-one-half">
+                @messages(atedReference)
             </dd>
         </div>
     </dl>
 
-            <h2>Everything above this is done (other than the in progress tag for money owed and removing the sidebar)</h2>
+    <h2>Everything above this is done (other than the in progress tag for money owed and removing the sidebar)</h2>
+    <h2 class="govuk-heading-l">@messages("ated.account-summary.ated-agent.heading")</h2>
+    <dl class="govuk-summary-list">
+        <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+            @messages("ated.account-summary.ated-agent-name.text")
+            </dt>
+            <dd class="govuk-summary-list__value">
+            @messages(printNotProvidedIfEmpty(agentDetails.get.agentName))
+            </dd>
+            <dd class="govuk-summary-list__actions">
+                <a class="govuk-link" href="@controllers.subscriptionData.routes.RegisteredDetailsController.edit">@messages("ated.change")</a>
+            </dd>
+        </div>
+        <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+            @messages("ated.account-summary.ated-agent-email.text")
+            </dt>
+            <dd class="govuk-summary-list__value">
+            @messages(atedReference)
+            </dd>
+        </div>
+        <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+            @messages("ated.account-summary.ated-agent-status.text")
+            </dt>
+            <dd class="govuk-summary-list__value">
+            @messages(atedReference)
+            </dd>
+        </div>
+    </dl>
+
+
             @if(authContext.delegationModel.isEmpty) {
                 <p class="govuk-body" id="return-summary-no-returns-appoint-agent">@messages("ated.account-summary.agent-appoint.text")</p>
                 <p class="govuk-body" id="return-summary-no-returns-appoint-agent-info">@messages("ated.account-summary.appoint-agent-info.text")</p>

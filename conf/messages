@@ -139,6 +139,10 @@ ated.account-summary.no-returns-heading = You have no returns
 ated.account-summary.ated-details.heading = Your ATED details
 ated.account-summary.ated-details-company.text = Company details
 ated.account-summary.ated-details-reference.text = Reference number
+ated.account-summary.ated-agent.heading = Your ATED agent
+ated.account-summary.ated-agent-name.text = Agent name
+ated.account-summary.ated-agent-email.text = Agent email address
+ated.account-summary.ated-agent-status.text = Agent status
 ated.account-summary.no-returns = You can appoint an agent to act on your behalf or create your own returns. If you want to appoint an agent you need to re-authorise your agent as the 64-8 and the ATED 1 does not cover the new online service.
 
 ##### SELECT PERIOD

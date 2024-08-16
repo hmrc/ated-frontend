@@ -56,10 +56,11 @@ class AccountSummaryController @Inject()(mcc: MessagesControllerComponents,
         _ <- dataCacheConnector.clearCache()
         allReturns <- summaryReturnsService.getSummaryReturns
         currentYearReturns <- summaryReturnsService.generateCurrentTaxYearReturns(allReturns.returnsCurrentTaxYear)
-        _ <- detailsService.cacheClientReference(authContext.atedReferenceNumber)
+        atedReference <- detailsService.cacheClientReference(authContext.atedReferenceNumber)
         correspondenceAddress <- subscriptionDataService.getCorrespondenceAddress
         organisationName <- subscriptionDataService.getOrganisationName
         safeId <- subscriptionDataService.getSafeId
+        clientMandateDetails <- detailsService.getClientMandateDetails(safeId.getOrElse(throw new RuntimeException("Could not get safeId")), "ated")
         serviceInfoContent <- serviceInfoService.getPartial
         clientBannerPartial <- mandateFrontendConnector.getClientBannerPartial(safeId.getOrElse(
           throw new RuntimeException("Could not get safeId")), "ated"
@@ -72,6 +73,8 @@ class AccountSummaryController @Inject()(mcc: MessagesControllerComponents,
           allReturns,
           correspondenceAddress,
           organisationName,
+          atedReference,
+          clientMandateDetails,
           serviceInfoContent,
           clientBannerPartial.successfulContentOrEmpty,
           duringPeak,
