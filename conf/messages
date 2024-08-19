@@ -143,6 +143,7 @@ ated.account-summary.ated-agent.heading = Your ATED agent
 ated.account-summary.ated-agent-name.text = Agent name
 ated.account-summary.ated-agent-email.text = Agent email address
 ated.account-summary.ated-agent-status.text = Agent status
+ated.account-summary.ated-no-agent.text = You can let an agent represent for ATED using an ATED1 form. However, this authority is limited to ATED and does not extend to other services.
 ated.account-summary.no-returns = You can appoint an agent to act on your behalf or create your own returns. If you want to appoint an agent you need to re-authorise your agent as the 64-8 and the ATED 1 does not cover the new online service.
 
 ##### SELECT PERIOD
