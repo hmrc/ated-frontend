@@ -155,7 +155,7 @@ backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages
               content = Text(messages("ated.form-bundle.view.return.value.only"))
             ),
             value = Value(
-              content = HtmlContent(propertyDetails.value.flatMap(_.ownedBeforePolicyYearValue).map(decimal => Html(formattedPounds(decimal).toString())).getOrElse(incompleteTag))
+              content = HtmlContent(AtedUtils.getInitialValueForSubmission(propertyDetails.value, propertyDetails.periodKey).map(decimal => Html(formattedPounds(decimal).toString())).getOrElse(incompleteTag))
             ),
             actions = Some(Actions(
               items = Seq(
