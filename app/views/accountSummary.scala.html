@@ -193,10 +193,7 @@
     <h2 style="color:red">Working on</h2>
     <h2 class="govuk-heading-l">@messages("ated.account-summary.ated-agent.heading")</h2>
 
-    @if(authContext.delegationModel.isEmpty) {
-        <p class="govuk-body">@messages("ated.account-summary.ated-no-agent.text")</p>
-        <p class="govuk-body"><a class="govuk-link" href="@appConfig.clientApproveAgentMandate">@messages("ated.account-summary.appoint-agent.text")</a></p>
-    } else {
+    @if(agentDetails.isDefined) {
 
         <dl class="govuk-summary-list">
             <div class="govuk-summary-list__row">
@@ -223,10 +220,29 @@
                 @messages("ated.account-summary.ated-agent-status.text")
                 </dt>
                 <dd class="govuk-summary-list__value">
-                    <strong class="govuk-tag govuk-tag--light-blue">In progress</strong>
+                    @if(agentDetails.get.status == "Active") {
+                        <strong class="govuk-tag govuk-tag--green">Confirmed</strong>
+                    }
+                        @if(agentDetails.get.status == "Approved") {
+                            <strong class="govuk-tag govuk-tag--light-blue">Pending</strong>
+                        }
+                             @if(agentDetails.get.status == "Cancelled") {
+                                 <strong class="govuk-tag govuk-tag--red">Revoked</strong>
+                             }
+                                 @if(agentDetails.get.status == "Rejected") {
+                                     <strong class="govuk-tag govuk-tag--red">Rejected</strong>
+                                 }
                 </dd>
             </div>
         </dl>
+
+    } else {
+
+        <p class="govuk-body">@messages("ated.account-summary.ated-no-agent.text")</p>
+        <p class="govuk-body"><a class="govuk-link" href="@appConfig.clientApproveAgentMandate">@messages("ated.account-summary.appoint-agent.text")</a></p>
+        <p>@messages(agentDetails.isDefined.toString)</p>
+
+
     }
 
     <h2 style="color:red">Everything above this is done (other than the in progress tag for money owed and removing the sidebar)</h2>
