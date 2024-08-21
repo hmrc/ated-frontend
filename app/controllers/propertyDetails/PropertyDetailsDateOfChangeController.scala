@@ -24,6 +24,7 @@ import services.{PropertyDetailsService, ServiceInfoService}
 import uk.gov.hmrc.play.bootstrap.controller.WithUnsafeDefaultFormBinding
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import forms.PropertyDetailsForms._
+import play.api.i18n.{Messages, MessagesImpl}
 import play.twirl.api.HtmlFormat
 
 import javax.inject.Inject
@@ -51,9 +52,13 @@ extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper wi
     }
   }
 
+  implicit lazy val messages: Messages = MessagesImpl(mcc.langs.availables.head, messagesApi)
+
+  val dateFields: (String, String) = ("dateOfChange", messages("ated.property-details.dateOfChange.messageKey"))
+
   def save(id: String, periodKey: Int, mode: Option[String]): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
-      propertyDetailsDateOfChangeForm.bindFromRequest().fold(
+      validateDateOfChange(periodKey, propertyDetailsDateOfChangeForm.bindFromRequest(), dateFields).fold(
         formWithError => Future.successful(BadRequest(template(id, 2024, formWithError, None, HtmlFormat.empty, None))),
         dateOfChange => Future.successful(Redirect(controllers.propertyDetails.routes.PropertyDetailsRevaluedController.view(id)))
       )

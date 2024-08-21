@@ -102,6 +102,18 @@ object PropertyDetailsFormsValidation {
     } else Seq(None)
   }
 
+  def checkDate (periodKey: Int, isPropertyRevalued: Option[Boolean], date: Option[LocalDate], field: String): Seq[Option[FormError]] = {
+    if (isPropertyRevalued.contains(true)) {
+      if (date.isEmpty) {
+        Seq(Some(FormError(field, s"ated.property-details-value.$field.error.empty")))
+      } else if (date.isDefined && date.exists(_.isAfter(LocalDate.now()))) {
+        Seq(Some(FormError(field, s"ated.property-details-value.$field.error.in-future")))
+      } else if (date.isDefined && date.exists(a => PeriodUtils.isPeriodTooLate(periodKey, Some(a)))) {
+        Seq(Some(FormError(field, s"ated.property-details-value.$field.error.too-late")))
+      } else Seq(None)
+    } else Seq(None)
+  }
+
   def validateStartEndDates(messageStart: String, periodKey: Int, form: Form[_], datesToAvoidValidation : Seq[String] = Seq.empty): Seq[Option[FormError]] = {
     val startDate = if(!datesToAvoidValidation.contains("startDate")) {
       (formDate2Option("startDate", form): @unchecked) match {

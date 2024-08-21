@@ -41,7 +41,7 @@
     @backLinkHtml
 
     @if(propertyDetailsForm.errors.nonEmpty) {
-        @govukErrorSummary(ErrorSummary().withFormErrorsAsText(propertyDetailsForm, mapping = Map("partAcqDispDate" -> "partAcqDispDate.day")))
+        @govukErrorSummary(ErrorSummary().withFormErrorsAsText(propertyDetailsForm, mapping = Map("dateOfChange" -> "dateOfChange.day")))
     }
 
     <h2 class="govuk-caption-l hmrc-caption-l"><span class="govuk-visually-hidden">This section is: </span>@messages(AtedUtils.getPropertyDetailsPreHeader(mode))</h2>
@@ -52,7 +52,7 @@
             hint = Some(Hint(
                 content = Text(messages("ated.property-details-value.dateOfChange.hint", PeriodUtils.periodStartDate(periodKey).toString(messages("ated.date-format.numeric"))))
             ))
-        ).withDayMonthYearFormField(propertyDetailsForm("partAcqDispDate"))
+        ).withDayMonthYearFormField(propertyDetailsForm("dateOfChange"))
         .withHeading(heading = Text(messages("ated.property-details-value.dateOfChange.header")))
     )
 

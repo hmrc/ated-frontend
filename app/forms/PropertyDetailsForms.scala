@@ -114,7 +114,7 @@ object PropertyDetailsForms {
 
   val propertyDetailsDateOfChangeForm: Form[DateOfChange] = Form (
     mapping(
-      "partAcqDispDate" -> DateTupleCustomError("ated.error.date.invalid").dateTupleOptional()
+      "dateOfChange" -> DateTupleCustomError("ated.error.date.invalid").dateTupleOptional()
     )(DateOfChange.apply)(DateOfChange.unapply)
   )
 
@@ -345,22 +345,20 @@ object PropertyDetailsForms {
 
   }
 
-  def validateDateOfChange(periodKey: Int, f: Form[DateOfChange], dateFields: Seq[(String, String)]): Form[DateOfChange] = {
+  def validateDateOfChange(periodKey: Int, f: Form[DateOfChange], dateFields: (String, String)): Form[DateOfChange] = {
 
     val dateValidationErrors =
       if (!f.hasErrors) {
-        dateFields.map { x =>
-          DateTupleCustomError.validateDateFields(f.data.get(s"${x._1}.day"), f.data.get(s"${x._1}.month"), f.data.get(s"${x._1}.year"),
-            Seq((x._1, x._2)))
-        }
+        DateTupleCustomError.validateDateFields(f.data.get(s"${dateFields._1}.day"), f.data.get(s"${dateFields._1}.month"), f.data.get(s"${dateFields._1}.year"),
+          Seq((dateFields._1, dateFields._2)))
       } else {
         Seq()
       }
 
-    val preValidatedForm = addErrorsToForm(f, dateValidationErrors.flatten)
+    val preValidatedForm = addErrorsToForm(f, dateValidationErrors)
 
     if (!preValidatedForm.hasErrors) {
-      val formErrors = PropertyDetailsFormsValidation.checkPartAcqDispDate(periodKey, Some(true), f.get.partAcqDispDate).flatten
+      val formErrors = PropertyDetailsFormsValidation.checkDate(periodKey, Some(true), f.get.partAcqDispDate, dateFields._1).flatten
       addErrorsToForm(f, formErrors)
     } else preValidatedForm
 
