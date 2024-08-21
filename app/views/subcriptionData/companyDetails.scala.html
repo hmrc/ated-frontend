@@ -183,37 +183,49 @@
             attributes = Map("id" -> "contactemail-edit")))))))
     }
 
-    def appointedAgentRow = clientDetails.map {
-      details =>
-        SummaryListRow(
-          key = Key(content = Text(messages("ated.company-details.appointed_agent"))),
-          value = Value(content = Text(printNotProvidedIfEmpty(details.agentName))),
-          actions = Some(Actions(
-            items = Seq(ActionItem(
-              href = details.changeAgentLink,
-              content = Text(messages("ated.change")),
-              visuallyHiddenText = Some(messages("ated.company-details.appointed_agent")),
-              attributes = Map("id" -> "appointed-agent-link")
-            ))
-          )))
-    }
+    def appointedAgentRow =
+      if(clientDetails.isDefined) {
+        if(clientDetails.get.status == "Active") {
+          clientDetails.map {
+            details =>
+              SummaryListRow(
+                key = Key(content = Text(messages("ated.company-details.appointed_agent"))),
+                value = Value(content = Text(printNotProvidedIfEmpty(details.agentName))),
+                actions = Some(Actions(
+                  items = Seq(ActionItem(
+                    href = details.changeAgentLink,
+                    content = Text(messages("ated.change")),
+                    visuallyHiddenText = Some(messages("ated.company-details.appointed_agent")),
+                    attributes = Map("id" -> "appointed-agent-link")
+                  ))
+                )))
+          }
+        }
+      }
 
-    def agentEmailRow = clientDetails.map {
-      details =>
-        SummaryListRow(
-          key = Key(content = Text(messages("ated.company-details.mandate_email"))),
-          value = Value(content = Text(printNotProvidedIfEmpty(details.email))),
-          actions = Some(Actions(
-            items = Seq(ActionItem(
-              href = details.changeEmailLink,
-              content = Text(messages("ated.change")),
-              visuallyHiddenText = Some(messages("ated.company-details.mandate_email")),
-              attributes = Map("id" -> "email-link")
-            ))
-          )))
-    }
+    def agentEmailRow =
+      if(clientDetails.isDefined) {
+        if(clientDetails.get.status == "Active") {
+          clientDetails.map {
+            details =>
+              SummaryListRow(
+                key = Key(content = Text(messages("ated.company-details.mandate_email"))),
+                value = Value(content = Text(printNotProvidedIfEmpty(details.email))),
+                actions = Some(Actions(
+                  items = Seq(ActionItem(
+                    href = details.changeEmailLink,
+                    content = Text(messages("ated.change")),
+                    visuallyHiddenText = Some(messages("ated.company-details.mandate_email")),
+                    attributes = Map("id" -> "email-link")
+                  ))
+                )))
+          }
+        }
+      }
 
-    val rows: Seq[SummaryListRow] = Seq(nameRow, appointedAgentRow, atedRefRow, registeredAddressRow, overseasCompanyRegistrationRow, correspondenceAddressRow, contactDetailsROW, contactPreferenceRow, agentEmailRow).flatten
+
+
+    val rows: Seq[SummaryListRow] = Seq(nameRow, appointedAgentRow, atedRefRow, registeredAddressRow, overseasCompanyRegistrationRow, correspondenceAddressRow, contactDetailsROW, contactPreferenceRow, agentEmailRow).flatten(_ => Seq[SummaryListRow]())
     govukSummaryList(SummaryList(rows))
   }
 

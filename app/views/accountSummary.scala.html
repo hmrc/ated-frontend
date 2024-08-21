@@ -190,62 +190,59 @@
         </div>
     </dl>
 
-    <h2 style="color:red">Working on</h2>
-    <h2 class="govuk-heading-l">@messages("ated.account-summary.ated-agent.heading")</h2>
-
-    @if(agentDetails.isDefined) {
-
-        <dl class="govuk-summary-list">
-            <div class="govuk-summary-list__row">
-                <dt class="govuk-summary-list__key">
-                @messages("ated.account-summary.ated-agent-name.text")
-                </dt>
-                <dd class="govuk-summary-list__value">
-                @messages(printNotProvidedIfEmpty(agentDetails.get.agentName))
-                </dd>
-                <dd class="govuk-summary-list__actions">
-                    <a class="govuk-link" href="@controllers.subscriptionData.routes.RegisteredDetailsController.edit">@messages("ated.change")</a>
-                </dd>
-            </div>
-            <div class="govuk-summary-list__row">
-                <dt class="govuk-summary-list__key">
-                @messages("ated.account-summary.ated-agent-email.text")
-                </dt>
-                <dd class="govuk-summary-list__value">
-                @messages(printNotProvidedIfEmpty(agentDetails.get.email))
-                </dd>
-            </div>
-            <div class="govuk-summary-list__row">
-                <dt class="govuk-summary-list__key">
-                @messages("ated.account-summary.ated-agent-status.text")
-                </dt>
-                <dd class="govuk-summary-list__value">
-                    @if(agentDetails.get.status == "Active") {
-                        <strong class="govuk-tag govuk-tag--green">Confirmed</strong>
-                    }
+    @if(authContext.isOrg) {
+        <h2 class="govuk-heading-l">@messages("ated.account-summary.ated-agent.heading")</h2>
+        @if(agentDetails.isDefined) {
+            <dl class="govuk-summary-list">
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                    @messages("ated.account-summary.ated-agent-name.text")
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                    @messages(printNotProvidedIfEmpty(agentDetails.get.agentName))
+                    </dd>
+                    <dd class="govuk-summary-list__actions">
+                        <a class="govuk-link" href="@controllers.subscriptionData.routes.RegisteredDetailsController.edit">@messages("ated.change")</a>
+                    </dd>
+                </div>
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                    @messages("ated.account-summary.ated-agent-email.text")
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                    @messages(printNotProvidedIfEmpty(agentDetails.get.email))
+                    </dd>
+                </div>
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                    @messages("ated.account-summary.ated-agent-status.text")
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                        @if(agentDetails.get.status == "Active") {
+                            <strong class="govuk-tag govuk-tag--green">Confirmed</strong>
+                        }
                         @if(agentDetails.get.status == "Approved") {
                             <strong class="govuk-tag govuk-tag--light-blue">Pending</strong>
                         }
-                             @if(agentDetails.get.status == "Cancelled") {
-                                 <strong class="govuk-tag govuk-tag--red">Revoked</strong>
-                             }
-                                 @if(agentDetails.get.status == "Rejected") {
-                                     <strong class="govuk-tag govuk-tag--red">Rejected</strong>
-                                 }
-                </dd>
-            </div>
-        </dl>
+                        @if(agentDetails.get.status == "Cancelled") {
+                            <strong class="govuk-tag govuk-tag--red">Revoked</strong>
+                        }
+                        @if(agentDetails.get.status == "Rejected") {
+                            <strong class="govuk-tag govuk-tag--red">Rejected</strong>
+                        }
+                    </dd>
+                </div>
+            </dl>
 
-    } else {
-
-        <p class="govuk-body">@messages("ated.account-summary.ated-no-agent.text")</p>
-        <p class="govuk-body"><a class="govuk-link" href="@appConfig.clientApproveAgentMandate">@messages("ated.account-summary.appoint-agent.text")</a></p>
-        <p>@messages(agentDetails.isDefined.toString)</p>
-
-
+        } else {
+            <p class="govuk-body">@messages("ated.account-summary.ated-no-agent.text")</p>
+            <p class="govuk-body"><a class="govuk-link" href="@appConfig.clientApproveAgentMandate">@messages("ated.account-summary.appoint-agent.text")</a></p>
+        }
     }
 
-    <h2 style="color:red">Everything above this is done (other than the in progress tag for money owed and removing the sidebar)</h2>
+
+    <h2 style="color:red">Working on</h2>
+    <h2 style="color:red">Below can probably be removed</h2>
             @if(authContext.delegationModel.isEmpty) {
                 <p class="govuk-body" id="return-summary-no-returns-appoint-agent">@messages("ated.account-summary.agent-appoint.text")</p>
                 <p class="govuk-body" id="return-summary-no-returns-appoint-agent-info">@messages("ated.account-summary.appoint-agent-info.text")</p>
