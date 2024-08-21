@@ -146,6 +146,9 @@ POST     /liability/create/acquisition/save/:propertyKey/period/:periodKey     c
 GET      /liability/create/revalued/view/:propertyKey                          controllers.propertyDetails.PropertyDetailsRevaluedController.view(propertyKey: String)
 POST     /liability/create/revalued/save/:propertyKey/period/:periodKey        controllers.propertyDetails.PropertyDetailsRevaluedController.save(propertyKey: String, periodKey: Int, mode: Option[String] ?=None)
 
+GET      /liability/create/date-of-change/view/:propertyKey                           controllers.propertyDetails.PropertyDetailsDateOfChangeController.view(propertyKey: String)
+POST     /liability/create/date-of-change/save/:propertyKey/period/:periodKey         controllers.propertyDetails.PropertyDetailsDateOfChangeController.save(propertyKey: String, periodKey: Int, mode: Option[String] ?=None)
+
 GET      /liability/create/has-been-revalued/view/:propertyKey                        controllers.propertyDetails.PropertyDetailsHasBeenRevaluedController.view(propertyKey: String)
 POST     /liability/create/has-been-revalued/save/:propertyKey/period/:periodKey      controllers.propertyDetails.PropertyDetailsHasBeenRevaluedController.save(propertyKey: String, periodKey: Int, mode: Option[String] ?=None)
 
