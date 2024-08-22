@@ -5,6 +5,7 @@ ated.continue = Continue
 ated.cancel = Cancel
 ated.back = Back
 ated.change = Change
+ated.change-client-link = Change client
 ated.navTitle = Submit and view your ATED returns
 ated.refNo = ATED reference number {0}
 ated.agent.acting.on.behalf.of = acting on behalf of
@@ -113,6 +114,7 @@ unauthorised.sa.p2 = If you are an overseas landlord or client you need to sign 
 
 ##### ACCOUNT SUMMARY
 
+ated.account-summary.agent-accessing-information.text = As an agent, you are accessing information about your client
 ated.account-summary.appoint-agent.text = Appoint an agent for ATED
 ated.account-summary.current-year-returns.heading = Current year ATED returns
 ated.account-summary.current-year-returns-no-returns.text = You have no current year returns.

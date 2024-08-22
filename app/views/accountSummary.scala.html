@@ -62,6 +62,13 @@
         </h1>
     </header>
 
+    @if(authContext.isAgent) {
+    <div class="govuk-inset-text govuk-!-margin-top-0">
+        <p>@messages("ated.account-summary.agent-accessing-information.text")&nbsp;<b>@organisationName.getOrElse("")</b>.
+            <a class="govuk-link" href="@appConfig.agentSummary">@messages("ated.change-client-link")</a>
+    </div>
+    }
+
     <p class="govuk-body">@messages("ated.account-summary.peak-guidance-part-one.text", (taxYearStartingYear + 1).toString, (taxYearStartingYear + 2).toString)
     <b>@messages("ated.account-summary.peak-guidance-part-two.text", (taxYearStartingYear + 1).toString)</b></p>
     <p class="govuk-body">@messages("ated.account-summary.peak-guidance-part-three.text", (taxYearStartingYear + 1).toString)</p>
