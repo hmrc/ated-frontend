@@ -43,7 +43,7 @@ class PropertyDetailsWhenAcquiredSpec extends AtedViewSpec with MockAuthUtil {
     }
 
     "have the correct pre heading" in {
-      doc.getElementsByClass("govuk-caption-xl").text() mustBe ("This section is " + messages("ated.property-details.pre-header"))
+      doc.getElementsByClass("govuk-caption-xl").text() mustBe ("This section is: " + messages("ated.property-details.pre-header"))
     }
 
     "have a backlink" in {

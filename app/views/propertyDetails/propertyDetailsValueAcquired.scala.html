@@ -55,16 +55,23 @@ serviceInfoContent = serviceInfoContent) {
 
     @formHelper(action = controllers.propertyDetails.routes.PropertyDetailsValueAcquiredController.save(id, periodKey, mode, date)) {
 
+        <h2 class="govuk-caption-xl hmrc-caption-xl">
+            <span class="govuk-visually-hidden">@messages("ated.screen-reader.section")</span>
+            @messages(AtedUtils.getPropertyDetailsPreHeader(mode))
+        </h2>
+
         @govukInput(Input(
-            classes = "govuk-input--width-10",
-            hint = Some(Hint(
-                content = Text(messages("ated.property-details-value.valueAcquired.hintText")))),
-            prefix = Some(PrefixOrSuffix(content = Text("£")))
-        ).withFormField(propertyDetailsForm("acquiredValue"))
-        .withHeadingAndSectionCaption(
-            heading = Text(messages("ated.property-details-value.valueAcquired.header", date.getDayOfMonth().toString, intToMonth(date.getMonthValue()), date.getYear().toString)),
-            sectionCaption = Text(messages(AtedUtils.getPropertyDetailsPreHeader(mode)))
-        ))
+                label = Label(
+                    content = Text(messages("ated.property-details-value.valueAcquired.header", date.getDayOfMonth().toString, intToMonth(date.getMonthValue()), date.getYear().toString)),
+                    classes = "govuk-label--xl",
+                    isPageHeading = true
+                ),
+                classes = "govuk-input--width-10",
+                hint = Some(Hint(
+                    content = Text(messages("ated.property-details-value.valueAcquired.hintText")))),
+                prefix = Some(PrefixOrSuffix(content = Text("£")))
+            ).withFormField(propertyDetailsForm("acquiredValue"))
+        )
 
         @govukButton(Button(
             content = Text(messages("ated.save-and-continue")),

@@ -150,7 +150,7 @@ class DisposeLiabilityHasBankDetailsControllerSpec extends PlaySpec with GuiceOn
             status(result) must be(OK)
             val doc = Jsoup.parse(contentAsString(result))
             doc.title() must be("Do you have a bank account where we could pay a refund? - Submit and view your ATED returns - GOV.UK")
-            doc.getElementsByClass("govuk-caption-xl").text() must be("This section is Change return")
+            doc.getElementsByClass("govuk-caption-xl").text() must be("This section is: Change return")
             doc.getElementsByTag("h1").text() must include("Do you have a bank account where we could pay a refund?")
             assert(doc.getElementById("service-info-list").text() === "Home Manage account Messages Help and contact")
             doc.getElementsByClass("govuk-back-link").text must be("Back")

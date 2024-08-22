@@ -58,15 +58,14 @@
 
     @if(prevReturns.isEmpty) {
         <header>
-             <h1 class="govuk-heading-xl govuk-!-margin-bottom-5">
-                 <span class="govuk-caption-xl">
-                     <span class="govuk-visually-hidden">
-                         @messages("ated.screen-reader.section")
-                     </span>
-                     @messages(messages("ated.return-type.pre-header"))
-                 </span>
+            <h2 class="govuk-caption-xl hmrc-caption-xl">
+                <span class="govuk-visually-hidden">@messages("ated.screen-reader.section")</span>
+                @messages(messages("ated.return-type.pre-header"))
+            </h2>
+
+            <h1 class="govuk-heading-xl">
                  @messages("ated.select-past-return.header")
-             </h1>
+            </h1>
         </header>
     }
 
@@ -77,24 +76,33 @@
   @if(!prevReturns.isEmpty) {
     @formHelper(action=controllers.propertyDetails.routes.SelectExistingReturnAddressController.continue(periodKey, returnType)) {
 
-  @govukRadios(Radios(
-    items = prevReturns flatMap (result => Seq(
-      RadioItem(
-        content = Text(result.address),
-        value = Some(result.formBundleNumber)
-      )
-    )
-  )).withFormField(addressResultsForm("selected"))
-    .withHeadingAndSectionCaption(
-        heading = Text(messages("ated.select-past-return.header")),
-        sectionCaption = Text(messages("ated.return-type.pre-header"))
-    ))
-            
+    <h2 class="govuk-caption-xl hmrc-caption-xl">
+        <span class="govuk-visually-hidden">@messages("ated.screen-reader.section")</span>
+        @messages(messages("ated.return-type.pre-header"))
+    </h2>
 
-  @govukDetails(Details(
-    summary = Text(messages("ated.select-past-return.reveal")),
-    content = HtmlContent(content)
-  ))
+      @govukRadios(Radios(
+        fieldset = Some(Fieldset(
+              legend = Some(Legend(
+                  content = Text(messages("ated.select-past-return.header")),
+                  isPageHeading = true,
+                  classes = "govuk-fieldset__legend--xl"
+              )),
+          )),
+        items = prevReturns flatMap (result => Seq(
+              RadioItem(
+                content = Text(result.address),
+                value = Some(result.formBundleNumber)
+              )
+            )
+          )).withFormField(addressResultsForm("selected"))
+        )
+
+
+      @govukDetails(Details(
+        summary = Text(messages("ated.select-past-return.reveal")),
+        content = HtmlContent(content)
+      ))
 
     @govukButton(Button(
         content = Text(messages("ated.save-and-continue")),

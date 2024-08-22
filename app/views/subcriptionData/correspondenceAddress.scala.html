@@ -58,12 +58,15 @@
     @if(correspondenceAddressForm.hasErrors) {
         @govukErrorSummary(ErrorSummary().withFormErrorsAsText(correspondenceAddressForm))
     }
-
-    <h1 class="govuk-heading-xl govuk-!-margin-bottom-5">
-        <span class="govuk-visually-hidden">@messages("ated.screen-reader.section")</span>
-        <span class="govuk-caption-xl hmrc-caption-xl">@messages("ated.correspondence-address.subheader")</span>
-        @messages("ated.correspondence-address.header")
-    </h1>
+    <header>
+        <h2 class="govuk-caption-xl hmrc-caption-xl">
+            <span class="govuk-visually-hidden">@messages("ated.screen-reader.section")</span>
+            @messages("ated.correspondence-address.subheader")
+        </h2>
+        <h1 class="govuk-heading-xl">
+            @messages("ated.correspondence-address.header")
+        </h1>
+    </header>
   @formHelper(action = controllers.subscriptionData.routes.CorrespondenceAddressController.submit) {
 
       @input(Input(inputType = "hidden").withFormField(correspondenceAddressForm("addressType")))

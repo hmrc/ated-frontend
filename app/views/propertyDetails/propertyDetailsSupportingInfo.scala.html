@@ -48,21 +48,19 @@
       @govukErrorSummary(ErrorSummary().withFormErrorsAsText(propertyDetailsForm))
     }
 
-<header>
-  <h1 class="govuk-heading-xl govuk-!-margin-bottom-5">
-      <span class="govuk-caption-xl">
-          <span class="govuk-visually-hidden">
-              @messages("ated.screen-reader.section")
-          </span>
-          @messages(AtedUtils.getPropertyDetailsPreHeader(mode))
-      </span>
-      @messages("ated.property-details-period.supportingInfo.header")
-  </h1>
-</header>
+    <header>
+        <h2 class="govuk-caption-xl hmrc-caption-xl">
+            <span class="govuk-visually-hidden">@messages("ated.screen-reader.section")</span>
+            @messages(AtedUtils.getPropertyDetailsPreHeader(mode))
+        </h2>
+        <h1 class="govuk-heading-xl">
+          @messages("ated.property-details-period.supportingInfo.header")
+        </h1>
+    </header>
 
-<p class="govuk-body">
-    <a class="govuk-link" href="https://www.gov.uk/government/publications/stld-annual-tax-on-enveloped-dwellings-ated/annual-tax-on-enveloped-dwellings-returns-guidance#sec5" rel="noreferrer noopener" target="_blank">@messages("ated.property-details-period.supportingInfo.hint")</a>
-</p>
+    <p class="govuk-body">
+        <a class="govuk-link" href="https://www.gov.uk/government/publications/stld-annual-tax-on-enveloped-dwellings-ated/annual-tax-on-enveloped-dwellings-returns-guidance#sec5" rel="noreferrer noopener" target="_blank">@messages("ated.property-details-period.supportingInfo.hint")</a>
+    </p>
 
     @formHelper(action=controllers.propertyDetails.routes.PropertyDetailsSupportingInfoController.save(id, periodKey, mode)) {
 

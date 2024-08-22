@@ -52,15 +52,24 @@ serviceInfoContent = serviceInfoContent) {
 
     @formHelper(action = controllers.propertyDetails.routes.PropertyDetailsWhenAcquiredController.save(id, periodKey, mode)) {
 
+        <h2 class="govuk-caption-xl hmrc-caption-xl">
+            <span class="govuk-visually-hidden">@messages("ated.screen-reader.section")</span>
+            @messages(AtedUtils.getPropertyDetailsPreHeader(mode))
+        </h2>
+
         @govukDateInput(DateInput(
-            hint = Some(Hint(
-              content = Text(messages("ated.property-details-value.newBuildDates.exampleDate"))
-            )),
-        ).withDayMonthYearFormField(propertyDetailsForm("acquiredDate"))
-        .withHeadingAndSectionCaption(
-            heading = Text(messages("ated.property-details-value.whenAcquired.header", PeriodUtils.calculateLowerTaxYearBoundary(periodKey).getYear.toString)),
-            sectionCaption = Text(messages(AtedUtils.getPropertyDetailsPreHeader(mode)))
-        ))
+                fieldset = Some(Fieldset(
+                  legend = Some(Legend(
+                      Text(messages("ated.property-details-value.whenAcquired.header", PeriodUtils.calculateLowerTaxYearBoundary(periodKey).getYear.toString)),
+                      isPageHeading = true,
+                      classes = "govuk-fieldset__legend--xl"
+                  )),
+                )),
+                hint = Some(Hint(
+                  content = Text(messages("ated.property-details-value.newBuildDates.exampleDate"))
+                ))
+            ).withDayMonthYearFormField(propertyDetailsForm("acquiredDate"))
+        )
 
         @govukButton(Button(
             content = Text(messages("ated.save-and-continue")),
