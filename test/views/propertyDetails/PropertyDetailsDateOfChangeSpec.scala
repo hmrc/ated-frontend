@@ -56,19 +56,44 @@ class PropertyDetailsDateOfChangeSpec extends AtedViewSpec with MockAuthUtil {
       }
 
       "have a date input" in {
-        doc.getElementById("partAcqDispDate").className() mustBe "govuk-date-input"
-        doc.getElementById("partAcqDispDate-hint").text() mustBe "For example, 1 4 2024"
+        doc.getElementById("dateOfChange").className() mustBe "govuk-date-input"
+        doc.getElementById("dateOfChange-hint").text() mustBe "For example, 1 4 2024"
       }
 
     }
-//    "submitted with an invalid form" must {
-//      "have the correct errors when the date is in the future" in {
-//
-//      }
-//
-//      "have the correct errors when the date is invalid" in {
-//
-//      }
-//    }
+
+    "submitted with an invalid form" must {
+      "have the correct errors when no date is provided" in {
+        val form = propertyDetailsDateOfChangeForm.withError("dateOfChange", "ated.error.date.empty", messages("ated.property-details-value.dateOfChange.messageKey"))
+        def view: Html = injectedViewInstance("anything", 2024, form, None, HtmlFormat.empty, Some("localhost"))
+
+        doc(view).getElementsByClass("govuk-error-summary") must not have size(0)
+        doc(view).select("ul.govuk-error-summary__list a").attr("href") mustBe "#dateOfChange.day"
+        doc(view).select("ul.govuk-error-summary__list a").text() mustBe "The date when you made the change of £40,000 or more cannot be empty"
+        doc(view).getElementById("dateOfChange-error").className() mustBe("govuk-error-message")
+        doc(view).getElementById("dateOfChange-error").text() mustBe "Error: The date when you made the change of £40,000 or more cannot be empty"
+      }
+
+      "have the correct errors when the date is in the future" in {
+        val form = propertyDetailsDateOfChangeForm.withError("dateOfChange", "ated.error.date.future", messages("ated.property-details-value.dateOfChange.messageKey"))
+        def view: Html = injectedViewInstance("anything", 2024, form, None, HtmlFormat.empty, Some("localhost"))
+
+        doc(view).getElementsByClass("govuk-error-summary") must not have size(0)
+        doc(view).select("ul.govuk-error-summary__list a").attr("href") mustBe "#dateOfChange.day"
+        doc(view).select("ul.govuk-error-summary__list a").text() mustBe "The date when you made the change of £40,000 or more cannot be in the future"
+        doc(view).getElementById("dateOfChange-error").className() mustBe("govuk-error-message")
+        doc(view).getElementById("dateOfChange-error").text() mustBe "Error: The date when you made the change of £40,000 or more cannot be in the future"
+      }
+
+      "have the correct errors when the date is invalid" in {
+        val form = propertyDetailsDateOfChangeForm.withError("dateOfChange", "ated.error.date.invalid", messages("ated.property-details-value.dateOfChange.messageKey"))
+        def view: Html = injectedViewInstance("anything", 2024, form, None, HtmlFormat.empty, Some("localhost"))
+        doc(view).getElementsByClass("govuk-error-summary") must not have size(0)
+        doc(view).select("ul.govuk-error-summary__list a").attr("href") mustBe "#dateOfChange.day"
+        doc(view).select("ul.govuk-error-summary__list a").text() mustBe "The date when you made the change of £40,000 or more must be a valid date"
+        doc(view).getElementById("dateOfChange-error").className() mustBe("govuk-error-message")
+        doc(view).getElementById("dateOfChange-error").text() mustBe "Error: The date when you made the change of £40,000 or more must be a valid date"
+      }
+    }
   }
 }
