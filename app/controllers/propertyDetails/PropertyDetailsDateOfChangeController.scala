@@ -50,6 +50,7 @@ class PropertyDetailsDateOfChangeController @Inject()(mcc: MessagesControllerCom
       if (appConfig.newRevaluedFeature) {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
           Future.successful {
+            // using 2024 as dummy periodKey
             Ok(template(id, 2024, propertyDetailsDateOfChangeForm, None, serviceInfoContent, None))
           }
         }
@@ -67,7 +68,7 @@ class PropertyDetailsDateOfChangeController @Inject()(mcc: MessagesControllerCom
       if (appConfig.newRevaluedFeature) {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
           validateDateOfChange(periodKey, propertyDetailsDateOfChangeForm.bindFromRequest(), dateFields).fold(
-            formWithError => Future.successful(BadRequest(template(id, 2024, formWithError, None, HtmlFormat.empty, None))),
+            formWithError => Future.successful(BadRequest(template(id, periodKey, formWithError, None, HtmlFormat.empty, None))),
             dateOfChange => Future.successful(Redirect(controllers.propertyDetails.routes.PropertyDetailsRevaluedController.view(id)))
           )
         }

@@ -99,7 +99,7 @@ object PropertyDetailsRevalued {
   implicit val formats: OFormat[PropertyDetailsRevalued] = Json.format[PropertyDetailsRevalued]
 }
 
-case class DateOfChange(partAcqDispDate: Option[LocalDate])
+case class DateOfChange(dateOfChange: Option[LocalDate])
 
 object DateOfChange {
   implicit val formats: OFormat[DateOfChange] = Json.format[DateOfChange]

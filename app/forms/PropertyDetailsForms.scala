@@ -358,7 +358,7 @@ object PropertyDetailsForms {
     val preValidatedForm = addErrorsToForm(f, dateValidationErrors)
 
     if (!preValidatedForm.hasErrors) {
-      val formErrors = PropertyDetailsFormsValidation.checkDate(periodKey, Some(true), f.get.partAcqDispDate, dateFields._1).flatten
+      val formErrors = PropertyDetailsFormsValidation.checkDate(periodKey, Some(true), f.get.dateOfChange, dateFields._1).flatten
       addErrorsToForm(f, formErrors)
     } else preValidatedForm
 
