@@ -1259,3 +1259,9 @@ btaNavLinks.home = Home
 btaNavLinks.manageAccount = Manage account
 btaNavLinks.messages = Messages
 btaNavLinks.helpAndContact = Help and contact
+
+##### PROPERTY DETAILS EXIT PAGE
+ated.property_details_exit.title = You cannot submit this chargeable return
+ated.property_details_exit.heading = You cannot submit this chargeable return
+ated.property_details_exit.p = The property must be revalued before you can submit this chargeable return.
+ated.property_details_exit.back_button = Back to your ATED summary
