@@ -234,7 +234,7 @@ GET      /liability/create/confirmation                                 controll
 
 GET      /liability/create/create-confirmation-print                    controllers.propertyDetails.ChargeableReturnConfirmationController.viewPrintFriendlyChargeableConfirmation
 
-GET      /liability/create/cannot-submit-return                         controllers.propertyDetails.propertyDetailsExitController.view()
+GET      /liability/create/cannot-submit-return                         controllers.propertyDetails.PropertyDetailsExitController.view()
 
 GET      /liability/create/new-valuation                                controllers.propertyDetails.PropertyDetailsNewValuationController.view()
 
