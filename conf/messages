@@ -30,7 +30,7 @@ ated.details-for = details for
 ated.address = Address
 ated.sign-out = Sign out
 ated.unknown-amount.text = Not yet calculated
-ated.screen-reader.section-name = You have logged in as:
+ated.screen-reader.section-name = You are logged in as:
 ated.screen-reader.section = This section is:
 ated.sign.here = Sign here
 ated.print.name = Print name
@@ -577,6 +577,14 @@ ated.property-details-value.revaluedDate.error.in-future = The property revaluat
 ated.property-details-value.partAcqDispDate.error.too-late = The date when you made the £40,000 or more change must be in this chargeable period
 ated.property-details-value.partAcqDispDate.error.in-future = The date when you made the £40,000 or more change cannot be in the future
 ated.property-details-value.partAcqDispDate.messageKey = The date when you made the £40,000 or more change
+
+ated.property-details-value.dateOfChange.title = What date did you make the change of £40,000 or more?
+ated.property-details-value.dateOfChange.header = What date did you make the change of £40,000 or more?
+ated.property-details-value.dateOfChange.hint = For example, {0}
+ated.property-details-value.dateOfChange.error.empty = Enter the date when you made the change of £40,000 or more
+ated.property-details-value.dateOfChange.error.too-late = The date when you made the change of £40,000 or more must be in this chargeable period
+ated.property-details-value.dateOfChange.error.in-future = The date when you made the change of £40,000 or more cannot be in the future
+ated.property-details-value.dateOfChange.messageKey = The date when you made the change of £40,000 or more
 
 ated.property-details-value.isOwnedBeforeValuationYear.title = Did the company own this property on or before 1 April {0}?
 ated.property-details-value.isOwnedBeforeValuationYear.error.non-selected = Select yes if the company owned this property on or before 1 April {0}

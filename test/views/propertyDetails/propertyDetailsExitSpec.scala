@@ -36,7 +36,7 @@ class propertyDetailsExitSpec extends PlaySpec with MockitoSugar with MockAuthUt
  implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
 
   val injectedView = app.injector.instanceOf[propertyDetailsExit]
-  val view = injectedView()
+  val view = injectedView(Some("backLink"))
   val doc = Jsoup.parse(view.toString)
 
    "propertyDetailsExitSpec" when {
@@ -44,6 +44,11 @@ class propertyDetailsExitSpec extends PlaySpec with MockitoSugar with MockAuthUt
 
        "have the correct title" in {
          assert(doc.title() == "You cannot submit this chargeable return - Submit and view your ATED returns - GOV.UK")
+       }
+
+       "correctly render a backLink" in {
+         assert(doc.getElementsByClass("govuk-back-link").first().text == "Back")
+         assert(doc.getElementsByClass("govuk-back-link").first().attr("href") == "backLink")
        }
 
        "have the heading 'You cannot submit this chargeable return'" in {

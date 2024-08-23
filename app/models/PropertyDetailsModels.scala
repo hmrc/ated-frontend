@@ -106,6 +106,12 @@ object  PropertyDetailsNewValuation {
   implicit val formats: OFormat[PropertyDetailsNewValuation] = Json.format[PropertyDetailsNewValuation]
 }
 
+case class DateOfChange(dateOfChange: Option[LocalDate])
+
+object DateOfChange {
+  implicit val formats: OFormat[DateOfChange] = Json.format[DateOfChange]
+}
+
 case class PropertyDetailsOwnedBefore(isOwnedBeforePolicyYear: Option[Boolean] = None,
                                       ownedBeforePolicyYearValue: Option[BigDecimal] = None)
 
