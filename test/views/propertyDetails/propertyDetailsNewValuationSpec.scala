@@ -39,7 +39,7 @@ class propertyDetailsNewValuationSpec extends PlaySpec with MockitoSugar with Mo
 
   "propertyDetailsNewValuationSpec" when {
     "page will " should {
-      val view = injectedView(propertyDetailsNewValuationForm, Some("back"))
+      val view = injectedView("propertyId", 2024, None, propertyDetailsNewValuationForm, Some("back"))
       val doc = Jsoup.parse(view.toString())
       "have proper tile" in {
         assert(doc.title() == "What is the new valuation of the property? - Submit and view your ATED returns - GOV.UK")
@@ -69,7 +69,7 @@ class propertyDetailsNewValuationSpec extends PlaySpec with MockitoSugar with Mo
     }
 
     "the page has been submitted with empty value" should {
-      val view = injectedView(propertyDetailsNewValuationForm.bind(Map("revaluedValue" -> "")), Some("back"))
+      val view = injectedView("propertyId", 2024, None, propertyDetailsNewValuationForm.bind(Map("revaluedValue" -> "")), Some("back"))
       val doc = Jsoup.parse(view.toString)
 
       "append 'Error: ' to the title of the page" in {
@@ -92,8 +92,8 @@ class propertyDetailsNewValuationSpec extends PlaySpec with MockitoSugar with Mo
 
     }
 
-    "the page has been submitted with wrong value" should {
-      val view = injectedView(propertyDetailsNewValuationForm.bind(Map("revaluedValue" -> "test data")), Some("back"))
+    "the page has been submitted with wrong value- non numeric" should {
+      val view = injectedView("propertyId", 2024, None, propertyDetailsNewValuationForm.bind(Map("revaluedValue" -> "test data")), Some("back"))
       val doc = Jsoup.parse(view.toString)
 
       "append 'Error: ' to the title of the page" in {
@@ -112,6 +112,54 @@ class propertyDetailsNewValuationSpec extends PlaySpec with MockitoSugar with Mo
 
       "render an error message at the input field" in {
         assert(doc.getElementById("revaluedValue-error").text() == "Error: The value of the property must be an amount of money")
+      }
+
+    }
+
+    "the page has been submitted with min value" should {
+      val view = injectedView("propertyId", 2024, None, propertyDetailsNewValuationForm.bind(Map("revaluedValue" -> "10.50")), Some("back"))
+      val doc = Jsoup.parse(view.toString)
+
+      "append 'Error: ' to the title of the page" in {
+        assert(doc.title() == "Error: What is the new valuation of the property? - Submit and view your ATED returns - GOV.UK")
+      }
+
+      "render an error summary with the correct error message" in {
+        assert(doc.getElementsByClass("govuk-error-summary").size() == 1)
+        assert(doc.select("h2.govuk-error-summary__title").text() == "There is a problem")
+        assert(doc.select("ul.govuk-error-summary__list a").text() == "The property value cannot be less than the lowest band")
+      }
+
+      "apply an error class to the form group apply error styling" in {
+        assert(doc.select("form > div").hasClass("govuk-form-group--error"))
+      }
+
+      "render an error message at the input field" in {
+        assert(doc.getElementById("revaluedValue-error").text() == "Error: The property value cannot be less than the lowest band")
+      }
+
+    }
+
+    "the page has been submitted with max value" should {
+      val view = injectedView("propertyId", 2024, None, propertyDetailsNewValuationForm.bind(Map("revaluedValue" -> "10504545454545")), Some("back"))
+      val doc = Jsoup.parse(view.toString)
+
+      "append 'Error: ' to the title of the page" in {
+        assert(doc.title() == "Error: What is the new valuation of the property? - Submit and view your ATED returns - GOV.UK")
+      }
+
+      "render an error summary with the correct error message" in {
+        assert(doc.getElementsByClass("govuk-error-summary").size() == 1)
+        assert(doc.select("h2.govuk-error-summary__title").text() == "There is a problem")
+        assert(doc.select("ul.govuk-error-summary__list a").text() == "The property value must be less than 14 characters")
+      }
+
+      "apply an error class to the form group apply error styling" in {
+        assert(doc.select("form > div").hasClass("govuk-form-group--error"))
+      }
+
+      "render an error message at the input field" in {
+        assert(doc.getElementById("revaluedValue-error").text() == "Error: The property value must be less than 14 characters")
       }
 
     }

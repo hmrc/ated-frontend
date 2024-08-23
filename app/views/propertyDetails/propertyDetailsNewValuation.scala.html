@@ -30,7 +30,7 @@
     formHelper: FormWithCSRF,
     govukErrorSummary : GovukErrorSummary)
 
-@(form: Form[PropertyDetailsNewValuation], backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
+@(id: String, periodKey: Int, mode: Option[String], form: Form[PropertyDetailsNewValuation], backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
 @backLinkHtml = {
 @govukBackLink(BackLink(
@@ -46,7 +46,7 @@ content = Text("Back")
   @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))
 }
 
-@formHelper(action = controllers.propertyDetails.routes.PropertyDetailsNewValuationController.save()) {
+@formHelper(action = controllers.propertyDetails.routes.PropertyDetailsNewValuationController.save(id, periodKey, mode)) {
 
        <h2 class="govuk-caption-l hmrc-caption-l"><span class="govuk-visually-hidden">This section is </span>@messages("ated.property-details.pre-header")</h2>
         @govukInput(Input(

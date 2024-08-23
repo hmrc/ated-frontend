@@ -121,7 +121,7 @@ object PropertyDetailsForms {
 
   val propertyDetailsNewValuationForm: Form[PropertyDetailsNewValuation] = Form(
     mapping(
-      "revaluedValue" -> valueValidation.verifying("ated.property-details-value.revaluedValue.error.empty", model => model.isDefined)
+      "revaluedValue" -> valueValidation.verifying(revaluedValueConstraint)
     )(PropertyDetailsNewValuation.apply)(PropertyDetailsNewValuation.unapply)
   )
 
@@ -129,6 +129,21 @@ object PropertyDetailsForms {
     model match {
       case Some(_) => Valid
       case _ => Invalid("ated.property-details-value.isOwnedBeforeValuationYear.error.non-selected", PeriodUtils.calculateLowerTaxYearBoundary(periodKey).getYear.toString)
+    }
+  })
+
+  private def revaluedValueConstraint(): Constraint[Option[BigDecimal]] = Constraint({ model =>
+    model match {
+      case Some(v) => {
+        if(v.toDouble >= maximumPropertyValue){
+          Invalid("ated.property-details-value.revaluedValue.error.too-high")
+        } else if(v.toDouble < minimumPropertyValue){
+          Invalid("ated.property-details-value.revaluedValue.error.too-low")
+        } else {
+          Valid
+        }
+      }
+      case _ => Invalid("ated.property-details-value.revaluedValue.error.empty")
     }
   })
 
@@ -498,6 +513,8 @@ object PropertyDetailsForms {
       f
     }
   }
+
+
 
 
 }

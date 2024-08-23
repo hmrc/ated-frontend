@@ -42,24 +42,24 @@ class PropertyDetailsNewValuationController @Inject()(mcc: MessagesControllerCom
 
   implicit val ec: ExecutionContext = mcc.executionContext
 
-  def view(): Action[AnyContent] = Action.async { implicit request =>
+  def view(id: String): Action[AnyContent] = Action.async { implicit request =>
   authAction.authorisedAction{ implicit authContext =>
     if (appConfig.newRevaluedFeature) {
-      Future.successful(Ok(template(propertyDetailsNewValuationForm, Some("back"))))
+      Future.successful(Ok(template(id, 2024, None, propertyDetailsNewValuationForm, Some("back"))))
     }else{
       Future.successful(Redirect(controllers.routes.HomeController.home()))
     }
   }
   }
 
-  def save(): Action[AnyContent] = Action.async { implicit request => {
+  def save(id: String, periodKey: Int, mode: Option[String]): Action[AnyContent] = Action.async { implicit request => {
     authAction.authorisedAction { implicit authContext =>
       serviceInfoService.getPartial.map {  serviceInfoContent =>
         propertyDetailsNewValuationForm.bindFromRequest().fold(
           formWithErrors => {
-            BadRequest(template(formWithErrors, Some("back")))
+            BadRequest(template(id, periodKey, mode, formWithErrors, Some("back")))
           },
-          revaluedValue => Redirect(controllers.propertyDetails.routes.PropertyDetailsNewValuationController.view())
+          revaluedValue => Redirect(controllers.propertyDetails.routes.PropertyDetailsNewValuationController.view(id))
         )
       }
     }

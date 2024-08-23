@@ -236,9 +236,9 @@ GET      /liability/create/create-confirmation-print                    controll
 
 GET      /liability/create/cannot-submit-return                         controllers.propertyDetails.PropertyDetailsExitController.view()
 
-GET      /liability/create/new-valuation                                controllers.propertyDetails.PropertyDetailsNewValuationController.view()
+GET      /liability/create/new-valuation/view/:propertyKey                      controllers.propertyDetails.PropertyDetailsNewValuationController.view(propertyKey: String)
 
-POST      /liability/create/new-valuation                                controllers.propertyDetails.PropertyDetailsNewValuationController.save()
+POST      /liability/create/new-valuation/save/:propertyKey/period/:periodKey   controllers.propertyDetails.PropertyDetailsNewValuationController.save(propertyKey: String, periodKey: Int, mode: Option[String] ?= None)
 
 
 ##  view Relief Returns ##
