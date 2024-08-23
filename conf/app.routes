@@ -234,6 +234,9 @@ GET      /liability/create/confirmation                                 controll
 
 GET      /liability/create/create-confirmation-print                    controllers.propertyDetails.ChargeableReturnConfirmationController.viewPrintFriendlyChargeableConfirmation
 
+GET      /liability/create/cannot-submit-return                         controllers.propertyDetails.PropertyDetailsExitController.view()
+
+
 ##  view Relief Returns ##
 GET     /view-relief-return/:periodKey/:formBundleNo                    controllers.reliefs.ViewReliefReturnController.viewReliefReturn(periodKey: Int, formBundleNo: String)
 POST    /view-relief-return/submit/:periodKey/:formBundleNumber         controllers.reliefs.ViewReliefReturnController.submit(periodKey: Int, formBundleNumber: String)
@@ -249,3 +252,5 @@ POST    /existing-return/confirmation/:periodKey/:returnType            controll
 GET     /existing-return/select/:periodKey/:returnType                  controllers.propertyDetails.SelectExistingReturnAddressController.view(periodKey: Int, returnType: String)
 POST    /existing-return/select/:periodKey/:returnType                  controllers.propertyDetails.SelectExistingReturnAddressController.continue(periodKey: Int, returnType: String)
 GET     /liability/create/address/:periodKey/:returnType                controllers.propertyDetails.SelectExistingReturnAddressController.continueWithThisReturnRedirect(periodKey: Int, returnType: String)
+
+
