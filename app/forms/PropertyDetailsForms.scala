@@ -112,6 +112,12 @@ object PropertyDetailsForms {
       "partAcqDispDate" -> DateTupleCustomError("ated.error.date.invalid").dateTupleOptional()
     )(PropertyDetailsRevalued.apply)(PropertyDetailsRevalued.unapply))
 
+  val propertyDetailsDateOfChangeForm: Form[DateOfChange] = Form (
+    mapping(
+      "dateOfChange" -> DateTupleCustomError("ated.error.date.invalid").dateTupleOptional()
+    )(DateOfChange.apply)(DateOfChange.unapply)
+  )
+
   def OwnedBeforeYearConstraint(periodKey: Int): Constraint[Option[Boolean]] = Constraint({ model =>
     model match {
       case Some(_) => Valid
@@ -334,6 +340,25 @@ object PropertyDetailsForms {
 
     if (!preValidatedForm.hasErrors) {
       val formErrors = PropertyDetailsFormsValidation.validatedWhenAcquiredDate(periodKey, f).flatten
+      addErrorsToForm(f, formErrors)
+    } else preValidatedForm
+
+  }
+
+  def validateDateOfChange(periodKey: Int, f: Form[DateOfChange], dateFields: (String, String)): Form[DateOfChange] = {
+
+    val dateValidationErrors =
+      if (!f.hasErrors) {
+        DateTupleCustomError.validateDateFields(f.data.get(s"${dateFields._1}.day"), f.data.get(s"${dateFields._1}.month"), f.data.get(s"${dateFields._1}.year"),
+          Seq((dateFields._1, dateFields._2)))
+      } else {
+        Seq()
+      }
+
+    val preValidatedForm = addErrorsToForm(f, dateValidationErrors)
+
+    if (!preValidatedForm.hasErrors) {
+      val formErrors = PropertyDetailsFormsValidation.checkDate(periodKey, Some(true), f.get.dateOfChange, dateFields._1).flatten
       addErrorsToForm(f, formErrors)
     } else preValidatedForm
 

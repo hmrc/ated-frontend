@@ -1,0 +1,66 @@
+@*
+ * Copyright 2024 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import models._
+@import config.ApplicationConfig
+@import play.twirl.api.HtmlFormat
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
+@import views.ViewUtils.titleBuilder
+@import views.html.helpers._
+@import _root_.utils._
+@import models.StringFormatting._
+
+@this(main: newMain, formHelper: FormWithCSRF, govukDateInput : GovukDateInput, govukErrorSummary : GovukErrorSummary,govukBackLink : GovukBackLink, govukButton : GovukButton)
+
+@(id: String, periodKey: Int, propertyDetailsForm: Form[DateOfChange], mode: Option[String], serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit messages: Messages, authContext: StandardAuthRetrievals, request: Request[AnyContent], appConfig: ApplicationConfig)
+
+@backLinkHtml = {
+    @if(backLink.isDefined) {
+        @govukBackLink(BackLink(
+        href = backLink.get,
+        content = Text("Back")
+        ))
+    }
+}
+
+@main(title = titleBuilder(messages("ated.property-details-value.dateOfChange.title"), Some(propertyDetailsForm)), serviceInfoContent = serviceInfoContent) {
+    @backLinkHtml
+
+    @if(propertyDetailsForm.errors.nonEmpty) {
+        @govukErrorSummary(ErrorSummary().withFormErrorsAsText(propertyDetailsForm, mapping = Map("dateOfChange" -> "dateOfChange.day")))
+    }
+
+    <h2 class="govuk-caption-l hmrc-caption-l"><span class="govuk-visually-hidden">This section is: </span>@messages(AtedUtils.getPropertyDetailsPreHeader(mode))</h2>
+
+    @formHelper(action = controllers.propertyDetails.routes.PropertyDetailsDateOfChangeController.save(id, periodKey, mode)){
+
+        @govukDateInput(DateInput(
+            hint = Some(Hint(
+                content = Text(messages("ated.property-details-value.dateOfChange.hint", PeriodUtils.periodStartDate(periodKey).toString(messages("ated.date-format.numeric"))))
+            ))
+        ).withDayMonthYearFormField(propertyDetailsForm("dateOfChange"))
+        .withHeading(heading = Text(messages("ated.property-details-value.dateOfChange.header")))
+    )
+
+        @govukButton(Button(
+            content = Text(messages("ated.save-and-continue")),
+            attributes = Map("id" -> "submit")
+        ))
+    }
+
+
+}
