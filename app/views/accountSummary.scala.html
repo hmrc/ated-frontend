@@ -44,11 +44,8 @@
 @newMain(
     title = titleBuilder(messages("ated.summary-return.title")),
     serviceInfoContent = serviceInfoContent,
-    sideBar =
-        //None,
-        Some(_accountSummary_sideBar(otherReturns.atedBalance, correspondence, organisationName, clientBanner)),
-    showUrBanner = Some(true),
-    banner = clientBanner
+    sideBar = None,
+    showUrBanner = Some(true)
 ) {
 
         @govukNotificationBanner(NotificationBanner(
