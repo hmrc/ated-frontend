@@ -60,6 +60,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
   val injectedViewInstance = app.injector.instanceOf[views.html.propertyDetails.propertyDetailsAcquisition]
+  val mockHasBeenRevaluedController: PropertyDetailsHasBeenRevaluedController = mock[PropertyDetailsHasBeenRevaluedController]
 
   class Setup {
 
@@ -74,12 +75,14 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
       mockAuthAction,
       mockIsFullTaxPeriodController,
       mockPropertyDetailsRevaluedController,
+      mockHasBeenRevaluedController,
       mockServiceInfoService,
       mockPropertyDetailsService,
       mockDataCacheConnector,
       mockBackLinkCacheConnector,
       injectedViewInstance
     )
+
     def getWithUnAuthorisedUser(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
