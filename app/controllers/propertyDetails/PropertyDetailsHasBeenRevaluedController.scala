@@ -23,6 +23,7 @@ import forms.PropertyDetailsForms.propertyDetailsHasBeenRevaluedForm
 import models.HasBeenRevalued
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService}
+import uk.gov.hmrc.play.bootstrap.controller.WithUnsafeDefaultFormBinding
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants.{HasPropertyBeenRevalued, SelectedPreviousReturn}
 import utils.AtedUtils
@@ -42,7 +43,7 @@ class PropertyDetailsHasBeenRevaluedController @Inject()(mcc: MessagesController
                                                          exitController: PropertyDetailsExitController
                                                         )(
                                                         implicit val appConfig: ApplicationConfig
-) extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper {
+) extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with WithUnsafeDefaultFormBinding {
 
   implicit val ec: ExecutionContext = mcc.executionContext
   val controllerId: String = "PropertyDetailsHasBeenRevaluedController"
