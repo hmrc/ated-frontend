@@ -244,15 +244,4 @@
         }
     }
 
-
-    <h2 style="color:red">Working on</h2>
-    <h2 style="color:red">Below can probably be removed</h2>
-            @if(authContext.delegationModel.isEmpty) {
-                <p class="govuk-body" id="return-summary-no-returns-appoint-agent">@messages("ated.account-summary.agent-appoint.text")</p>
-                <p class="govuk-body" id="return-summary-no-returns-appoint-agent-info">@messages("ated.account-summary.appoint-agent-info.text")</p>
-                @noReturnsText()
-                @if(otherReturns.returnsOtherTaxYears.isEmpty) {}
-                <h2 class="govuk-heading-s" id="return-summary-no-returns">@messages("ated.account-summary.agent.no-returns")</h2>
-            }
-
 }
