@@ -17,6 +17,7 @@
 package forms
 
 import forms.AtedForms.validatePostCodeFormat
+import forms.PropertyDetailsForms.PropertyValueField.isValid
 import forms.mappings.DateTupleCustomError
 import models._
 import java.time.LocalDate
@@ -118,10 +119,31 @@ object PropertyDetailsForms {
     )(DateOfChange.apply)(DateOfChange.unapply)
   )
 
+  val propertyDetailsNewValuationForm: Form[PropertyDetailsNewValuation] = Form(
+    mapping(
+      "revaluedValue" -> valueValidation.verifying(revaluedValueConstraint)
+    )(PropertyDetailsNewValuation.apply)(PropertyDetailsNewValuation.unapply)
+  )
+
   def OwnedBeforeYearConstraint(periodKey: Int): Constraint[Option[Boolean]] = Constraint({ model =>
     model match {
       case Some(_) => Valid
       case _ => Invalid("ated.property-details-value.isOwnedBeforeValuationYear.error.non-selected", PeriodUtils.calculateLowerTaxYearBoundary(periodKey).getYear.toString)
+    }
+  })
+
+  private def revaluedValueConstraint(): Constraint[Option[BigDecimal]] = Constraint({ model =>
+    model match {
+      case Some(v) => {
+        if(v.toDouble >= maximumPropertyValue){
+          Invalid("ated.property-details-value.revaluedValue.error.too-high")
+        } else if(v.toDouble < minimumPropertyValue){
+          Invalid("ated.property-details-value.revaluedValue.error.too-low")
+        } else {
+          Valid
+        }
+      }
+      case _ => Invalid("ated.property-details-value.revaluedValue.error.empty")
     }
   })
 
@@ -491,6 +513,8 @@ object PropertyDetailsForms {
       f
     }
   }
+
+
 
 
 }

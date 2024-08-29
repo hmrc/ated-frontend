@@ -1273,3 +1273,8 @@ ated.property_details_exit.title = You cannot submit this chargeable return
 ated.property_details_exit.heading = You cannot submit this chargeable return
 ated.property_details_exit.p = The property must be revalued before you can submit this chargeable return.
 ated.property_details_exit.back_button = Back to your ATED summary
+
+##### PROPERTY DETAILS NEW VALAUTION
+ated.property_details_new_valuation.title  = What is the new valuation of the property?
+ated.property_details_new_valuation.heading  = What is the new valuation of the property?
+ated.property_details_new_valuation.hint_text  = For example, £1,500,000
