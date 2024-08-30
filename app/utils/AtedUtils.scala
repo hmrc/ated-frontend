@@ -16,10 +16,14 @@
 
 package utils
 
-import models._
+import config.ApplicationConfig
+import models.{IsOwnedBefore2012, IsOwnedBefore2017, IsOwnedBefore2022, NotOwnedBeforePolicyYear, OwnedBeforePolicyYear, _}
+
 import java.time.LocalDate
 import play.api.mvc.{AnyContent, Request}
+import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import utils.AtedConstants._
+
 import scala.language.postfixOps
 
 
@@ -172,4 +176,21 @@ object AtedUtils {
       case Some(false) => bankDetails.copy(accountNumber = None, sortCode = None)
       case _ => bankDetails
     }
+
+  def getInitialValueForSubmission(propertyDetailsValue: Option[PropertyDetailsValue], periodKey: Int)
+                                  (implicit appConf: ApplicationConfig): Option[BigDecimal] = {
+    propertyDetailsValue match {
+      case None => None
+      case Some(value) =>
+        val ownedBefore = PropertyDetailsOwnedBefore(value.isOwnedBeforePolicyYear, value.ownedBeforePolicyYearValue)
+        (ownedBefore.policyYear(periodKey), value.isNewBuild, value.isPropertyRevalued) match {
+          case (IsOwnedBefore2012 | IsOwnedBefore2017 | IsOwnedBefore2022, _, _) => value.ownedBeforePolicyYearValue
+          case (NotOwnedBeforePolicyYear, Some(true), _) => value.newBuildValue
+          case (NotOwnedBeforePolicyYear, Some(false), _) => value.notNewBuildValue
+          case (_, _, Some(true)) => value.revaluedValue
+          case (_, _, Some(false)) => value.revaluedValue
+          case _ => None
+        }
+    }
+  }
 }

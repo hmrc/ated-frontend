@@ -16,11 +16,14 @@
 
 package models
 
+import config.ApplicationConfig
+
 import java.time.LocalDate
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 import play.api.libs.json.Reads._
 import play.api.libs.json.Writes._
+import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 sealed trait PeriodValidity
 
@@ -112,8 +115,32 @@ object DateOfChange {
   implicit val formats: OFormat[DateOfChange] = Json.format[DateOfChange]
 }
 
+sealed trait OwnedBeforePolicyYear
+
+case object IsOwnedBefore2012 extends OwnedBeforePolicyYear
+
+case object IsOwnedBefore2017 extends OwnedBeforePolicyYear
+
+case object IsOwnedBefore2022 extends OwnedBeforePolicyYear
+
+case object NotOwnedBeforePolicyYear extends OwnedBeforePolicyYear
+
 case class PropertyDetailsOwnedBefore(isOwnedBeforePolicyYear: Option[Boolean] = None,
-                                      ownedBeforePolicyYearValue: Option[BigDecimal] = None)
+                                      ownedBeforePolicyYearValue: Option[BigDecimal] = None) {
+  def policyYear(periodKey: Int)(implicit appConf: ApplicationConfig) : OwnedBeforePolicyYear = {
+    val valuation2022Active: Boolean = appConf.val2022Date
+
+    isOwnedBeforePolicyYear match {
+      case Some(true) => periodKey match {
+        case p if valuation2022Active && p >= 2023 => IsOwnedBefore2022
+        case p if p >= 2018 && (!valuation2022Active || p < 2023) => IsOwnedBefore2017
+        case p if p >= 2013 && p < 2018 => IsOwnedBefore2012
+        case _ => throw new RuntimeException("Invalid liability period")
+      }
+      case _ => NotOwnedBeforePolicyYear
+    }
+  }
+}
 
 object PropertyDetailsOwnedBefore {
 
