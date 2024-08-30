@@ -586,6 +586,14 @@ ated.property-details-value.dateOfChange.error.too-late = The date when you made
 ated.property-details-value.dateOfChange.error.in-future = The date when you made the change of £40,000 or more cannot be in the future
 ated.property-details-value.dateOfChange.messageKey = The date when you made the change of £40,000 or more
 
+ated.property-details-value.dateOfRevalue.title = What date did you revalue the property?
+ated.property-details-value.dateOfRevalue.header = What date did you revalue the property?
+ated.property-details-value.dateOfRevalue.hint = For example, {0}
+ated.property-details-value.dateOfRevalue.error.empty = Enter the date when you revalued the property
+ated.property-details-value.dateOfRevalue.error.too-late = The date when you revalued the property must be in this chargeable period
+ated.property-details-value.dateOfRevalue.error.in-future = The date when you revalued the property cannot be in the future
+ated.property-details-value.dateOfRevalue.messageKey = The date when you revalued the property
+
 ated.property-details-value.isOwnedBeforeValuationYear.title = Did the company own this property on or before 1 April {0}?
 ated.property-details-value.isOwnedBeforeValuationYear.error.non-selected = Select yes if the company owned this property on or before 1 April {0}
 
@@ -1273,3 +1281,8 @@ ated.property_details_exit.title = You cannot submit this chargeable return
 ated.property_details_exit.heading = You cannot submit this chargeable return
 ated.property_details_exit.p = The property must be revalued before you can submit this chargeable return.
 ated.property_details_exit.back_button = Back to your ATED summary
+
+##### PROPERTY DETAILS NEW VALAUTION
+ated.property_details_new_valuation.title  = What is the new valuation of the property?
+ated.property_details_new_valuation.heading  = What is the new valuation of the property?
+ated.property_details_new_valuation.hint_text  = For example, £1,500,000

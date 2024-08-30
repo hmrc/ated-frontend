@@ -19,12 +19,12 @@ package forms
 import forms.AtedForms.validatePostCodeFormat
 import forms.mappings.DateTupleCustomError
 import models._
-import java.time.LocalDate
 import play.api.data.Forms._
 import play.api.data.validation.{Constraint, Invalid, Valid}
 import play.api.data.{Form, FormError, Mapping}
 import utils.{AtedUtils, PeriodUtils}
 
+import java.time.LocalDate
 import scala.annotation.tailrec
 import scala.util.Try
 import scala.util.matching.Regex
@@ -118,10 +118,37 @@ object PropertyDetailsForms {
     )(DateOfChange.apply)(DateOfChange.unapply)
   )
 
+  val propertyDetailsNewValuationForm: Form[PropertyDetailsNewValuation] = Form(
+    mapping(
+      "revaluedValue" -> valueValidation.verifying(revaluedValueConstraint)
+    )(PropertyDetailsNewValuation.apply)(PropertyDetailsNewValuation.unapply)
+  )
+
+  val propertyDetailsDateOfRevalueForm: Form[DateOfRevalue] = Form (
+    mapping(
+      "dateOfRevalue" -> DateTupleCustomError("ated.error.date.invalid").dateTupleOptional()
+    )(DateOfRevalue.apply)(DateOfRevalue.unapply)
+  )
+
   def OwnedBeforeYearConstraint(periodKey: Int): Constraint[Option[Boolean]] = Constraint({ model =>
     model match {
       case Some(_) => Valid
       case _ => Invalid("ated.property-details-value.isOwnedBeforeValuationYear.error.non-selected", PeriodUtils.calculateLowerTaxYearBoundary(periodKey).getYear.toString)
+    }
+  })
+
+  private def revaluedValueConstraint(): Constraint[Option[BigDecimal]] = Constraint({ model =>
+    model match {
+      case Some(v) => {
+        if(v.toDouble >= maximumPropertyValue){
+          Invalid("ated.property-details-value.revaluedValue.error.too-high")
+        } else if(v.toDouble < minimumPropertyValue){
+          Invalid("ated.property-details-value.revaluedValue.error.too-low")
+        } else {
+          Valid
+        }
+      }
+      case _ => Invalid("ated.property-details-value.revaluedValue.error.empty")
     }
   })
 
@@ -359,6 +386,25 @@ object PropertyDetailsForms {
 
     if (!preValidatedForm.hasErrors) {
       val formErrors = PropertyDetailsFormsValidation.checkDate(periodKey, Some(true), f.get.dateOfChange, dateFields._1).flatten
+      addErrorsToForm(f, formErrors)
+    } else preValidatedForm
+
+  }
+
+  def validateDateOfRevalue(periodKey: Int, f: Form[DateOfRevalue], dateFields: (String, String)): Form[DateOfRevalue] = {
+
+    val dateValidationErrors =
+      if (!f.hasErrors) {
+        DateTupleCustomError.validateDateFields(f.data.get(s"${dateFields._1}.day"), f.data.get(s"${dateFields._1}.month"), f.data.get(s"${dateFields._1}.year"),
+          Seq((dateFields._1, dateFields._2)))
+      } else {
+        Seq()
+      }
+
+    val preValidatedForm = addErrorsToForm(f, dateValidationErrors)
+
+    if (!preValidatedForm.hasErrors) {
+      val formErrors = PropertyDetailsFormsValidation.checkDate(periodKey, Some(true), f.get.dateOfRevalue, dateFields._1).flatten
       addErrorsToForm(f, formErrors)
     } else preValidatedForm
 
