@@ -115,6 +115,12 @@ object DateOfChange {
   implicit val formats: OFormat[DateOfChange] = Json.format[DateOfChange]
 }
 
+case class DateOfRevalue(dateOfRevalue: Option[LocalDate])
+
+object DateOfRevalue {
+  implicit val formats: OFormat[DateOfRevalue] = Json.format[DateOfRevalue]
+}
+
 sealed trait OwnedBeforePolicyYear
 
 case object IsOwnedBefore2012 extends OwnedBeforePolicyYear
