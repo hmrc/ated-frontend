@@ -17,11 +17,16 @@
 package controllers.propertyDetails
 
 import config.ApplicationConfig
-import controllers.auth.AuthAction
+import connectors.{BackLinkCacheConnector, DataCacheConnector}
+import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms.propertyDetailsHasBeenRevaluedForm
+import models.HasBeenRevalued
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.ServiceInfoService
+import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService}
+import uk.gov.hmrc.play.bootstrap.controller.WithUnsafeDefaultFormBinding
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
+import utils.AtedConstants.{HasPropertyBeenRevalued, SelectedPreviousReturn}
+import utils.AtedUtils
 import views.html.propertyDetails.propertyDetailsHasBeenRevalued
 
 import javax.inject.Inject
@@ -30,45 +35,75 @@ import scala.concurrent.{ExecutionContext, Future}
 class PropertyDetailsHasBeenRevaluedController @Inject()(mcc: MessagesControllerComponents,
                                                          authAction: AuthAction,
                                                          template: propertyDetailsHasBeenRevalued,
-                                                         serviceInfoService: ServiceInfoService
+                                                         serviceInfoService: ServiceInfoService,
+                                                         val propertyDetailsService: PropertyDetailsService,
+                                                         val backLinkCacheConnector: BackLinkCacheConnector,
+                                                         val dataCacheConnector: DataCacheConnector,
+                                                         dateOfChangeController: PropertyDetailsDateOfChangeController,
+                                                         exitController: PropertyDetailsExitController
                                                         )(
                                                         implicit val appConfig: ApplicationConfig
-) extends FrontendController(mcc) {
+) extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with WithUnsafeDefaultFormBinding {
 
   implicit val ec: ExecutionContext = mcc.executionContext
+  val controllerId: String = "PropertyDetailsHasBeenRevaluedController"
+
   def view(id: String): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
-      //ensureClientContext should go here
-    if (appConfig.newRevaluedFeature) {
-        serviceInfoService.getPartial.flatMap { serviceInfoContent =>
-
-          //propertyDetailsCacheResponse here
-
-          //using dummy periodKey '2024'
-          Future.successful(Ok(template(id, 2024, Some("back"), None, propertyDetailsHasBeenRevaluedForm, serviceInfoContent)))
-        }
-      } else Future.successful(Redirect(controllers.routes.HomeController.home()))
+      ensureClientContext {
+        if (appConfig.newRevaluedFeature) {
+          serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+            propertyDetailsCacheResponse(id) {
+              case PropertyDetailsCacheSuccessResponse(propertyDetails) => {
+                currentBackLink.flatMap { backLink =>
+                  dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).map { isPrevReturn =>
+                    Ok(template(id,
+                      propertyDetails.periodKey,
+                      backLink,
+                      AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn),
+                      propertyDetailsHasBeenRevaluedForm.fill(HasBeenRevalued(propertyDetails.value.flatMap(_.isPropertyRevalued))),
+                      serviceInfoContent))
+                  }
+                }
+              }
+            }
+          }
+        } else Future.successful(Redirect(controllers.routes.HomeController.home()))
+      }
     }
-    }
+  }
 
 
   def save(id: String, periodKey: Int, mode: Option[String]): Action[AnyContent] = Action.async {
     implicit request =>
       authAction.authorisedAction { implicit authContext =>
-
-        //ensureClientContext should go here
-        if (appConfig.newRevaluedFeature) {
-          serviceInfoService.getPartial.map { serviceInfoContent =>
-            propertyDetailsHasBeenRevaluedForm.bindFromRequest().fold(
-
-              //using dummy periodKey '2024'
-              formWithErrors => BadRequest(template(id, 2024, None, None, formWithErrors, serviceInfoContent)),
-
-              //redirecting to original revalued control for now. Should ultimately redirect to 'date you made the £40000 change' controller
-              hasBeenRevalued => Redirect(controllers.propertyDetails.routes.PropertyDetailsRevaluedController.view(id))
-            )
-          }
-        } else Future.successful(Redirect(controllers.routes.HomeController.home()))
+        ensureClientContext {
+          if (appConfig.newRevaluedFeature) {
+            serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+              propertyDetailsHasBeenRevaluedForm.bindFromRequest().fold(
+                formWithErrors => {
+                  currentBackLink.map(backLink => BadRequest(template(id, periodKey, backLink, mode, formWithErrors, serviceInfoContent)))
+                },
+                hasBeenRevalued => {
+                  if(hasBeenRevalued.isPropertyRevalued.getOrElse(false)) {
+                    dataCacheConnector.saveFormData[HasBeenRevalued](HasPropertyBeenRevalued, hasBeenRevalued)
+                    redirectWithBackLink(
+                      dateOfChangeController.controllerId,
+                      controllers.propertyDetails.routes.PropertyDetailsDateOfChangeController.view(id),
+                      Some(controllers.propertyDetails.routes.PropertyDetailsHasBeenRevaluedController.view(id).url)
+                    )
+                  } else {
+                    redirectWithBackLink(
+                      exitController.controllerId,
+                      controllers.propertyDetails.routes.PropertyDetailsExitController.view(),
+                      Some(controllers.propertyDetails.routes.PropertyDetailsHasBeenRevaluedController.view(id).url)
+                    )
+                  }
+                }
+              )
+            }
+          } else Future.successful(Redirect(controllers.routes.HomeController.home()))
+        }
       }
   }
 }

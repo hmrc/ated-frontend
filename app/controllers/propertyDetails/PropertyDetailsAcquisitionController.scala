@@ -34,6 +34,7 @@ class PropertyDetailsAcquisitionController @Inject()(mcc: MessagesControllerComp
                                                      authAction: AuthAction,
                                                      isFullTaxPeriodController: IsFullTaxPeriodController,
                                                      propertyDetailsRevaluedController: PropertyDetailsRevaluedController,
+                                                     propertyDetailsHasBeenRevaluedController: PropertyDetailsHasBeenRevaluedController,
                                                      serviceInfoService: ServiceInfoService,
                                                      val propertyDetailsService: PropertyDetailsService,
                                                      val dataCacheConnector: DataCacheConnector,
@@ -106,11 +107,20 @@ class PropertyDetailsAcquisitionController @Inject()(mcc: MessagesControllerComp
                 _ <- propertyDetailsService.saveDraftPropertyDetailsAcquisition(id, anAcquisition)
                 result <-
                   if (anAcquisition) {
-                    redirectWithBackLink(
-                      propertyDetailsRevaluedController.controllerId,
-                      controllers.propertyDetails.routes.PropertyDetailsRevaluedController.view(id),
-                      backLink
-                    )
+                    if (appConfig.newRevaluedFeature) {
+                      redirectWithBackLink(
+                        propertyDetailsHasBeenRevaluedController.controllerId,
+                        controllers.propertyDetails.routes.PropertyDetailsHasBeenRevaluedController.view(id),
+                        backLink
+                      )
+                    } else {
+                      redirectWithBackLink(
+                        propertyDetailsRevaluedController.controllerId,
+                        controllers.propertyDetails.routes.PropertyDetailsRevaluedController.view(id),
+                        backLink
+                      )
+                    }
+
                   } else {
                     redirectWithBackLink(
                       isFullTaxPeriodController.controllerId,

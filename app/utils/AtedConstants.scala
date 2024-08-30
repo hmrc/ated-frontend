@@ -31,6 +31,7 @@ object AtedConstants {
   val RetrieveSelectPeriodFormId: String = "get-selected-period-Id"
   val RetrieveReturnTypeFormId: String = "get-selected-return-type-Id"
   val DelegatedClientAtedRefNumber: String = "delegatedClientAtedRefNumber"
+  val HasPropertyBeenRevalued: String = "hasPropertyBeenRevalued"
 
   val AddressTypeCorrespondence: String = "Correspondence"
 
