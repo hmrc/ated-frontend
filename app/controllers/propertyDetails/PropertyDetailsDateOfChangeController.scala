@@ -27,7 +27,7 @@ import forms.PropertyDetailsForms._
 import models.DateOfChange
 import play.api.i18n.{Messages, MessagesImpl}
 import play.twirl.api.HtmlFormat
-import utils.AtedConstants.SelectedPreviousReturn
+import utils.AtedConstants.{HasPropertyBeenRevalued, SelectedPreviousReturn}
 import utils.AtedUtils
 
 import javax.inject.Inject
@@ -39,7 +39,9 @@ class PropertyDetailsDateOfChangeController @Inject()(mcc: MessagesControllerCom
                                                       template: views.html.propertyDetails.propertyDetailsDateOfChange,
                                                       val propertyDetailsService: PropertyDetailsService,
                                                       val backLinkCacheConnector: BackLinkCacheConnector,
-                                                      val dataCacheConnector: DataCacheConnector)
+                                                      val dataCacheConnector: DataCacheConnector,
+                                                      newValuationController: PropertyDetailsNewValuationController,
+                                                      exitController: PropertyDetailsExitController)
                                                      (implicit val appConfig: ApplicationConfig)
 
   extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with WithUnsafeDefaultFormBinding {
@@ -78,15 +80,26 @@ class PropertyDetailsDateOfChangeController @Inject()(mcc: MessagesControllerCom
 
   def save(id: String, periodKey: Int, mode: Option[String]): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
-      //ensureClientContext should go here
-      if (appConfig.newRevaluedFeature) {
-        serviceInfoService.getPartial.flatMap { serviceInfoContent =>
-          validateDateOfChange(periodKey, propertyDetailsDateOfChangeForm.bindFromRequest(), dateFields).fold(
-            formWithError => Future.successful(BadRequest(template(id, periodKey, formWithError, None, HtmlFormat.empty, None))),
-            dateOfChange => Future.successful(Redirect(controllers.propertyDetails.routes.PropertyDetailsRevaluedController.view(id)))
-          )
-        }
-      } else Future.successful(Redirect(controllers.routes.HomeController.home()))
+      ensureClientContext {
+        if (appConfig.newRevaluedFeature) {
+          serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+            validateDateOfChange(periodKey, propertyDetailsDateOfChangeForm.bindFromRequest(), dateFields).fold(
+              formWithError => {
+                currentBackLink.map(backLink => (BadRequest(template(id, periodKey, formWithError, mode, serviceInfoContent, backLink))))
+              },
+              dateOfChange => {
+                dataCacheConnector.saveFormData[DateOfChange](HasPropertyBeenRevalued, dateOfChange)
+                redirectWithBackLink(
+                  // newValuationController.controllerId, needs to be added
+                  "PropertyDetailsNewValuationController",
+                  controllers.propertyDetails.routes.PropertyDetailsNewValuationController.view(id),
+                  Some(controllers.propertyDetails.routes.PropertyDetailsDateOfChangeController.view(id).url)
+                )
+              }
+            )
+          }
+        } else Future.successful(Redirect(controllers.routes.HomeController.home()))
+      }
     }
   }
 }
