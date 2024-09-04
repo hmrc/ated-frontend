@@ -41,6 +41,8 @@ class AccountSummarySpec extends AtedViewSpec with MockAuthUtil with TestModels 
     summaryReturnsModel(periodKey = currentTaxYear),
     Some(address),
     Some(organisationName),
+    atedReference,
+    Some(clientMandateDetails),
     Html(""),
     Html(""),
     duringPeak = false,
@@ -62,11 +64,13 @@ class AccountSummarySpec extends AtedViewSpec with MockAuthUtil with TestModels 
 
     "regardless of returns data" should {
       "have the correct title" in {
-        assert(doc.title() === "Your ATED summary - Submit and view your ATED returns - GOV.UK")
+        assert(doc.title() === "Annual Tax on Enveloped Dwellings (ATED) summary - Submit and view your ATED returns - GOV.UK")
+          //"Your ATED summary - Submit and view your ATED returns - GOV.UK"
       }
 
       "have the correct h1" in {
-        assert(doc.select("h1").text() contains "Your ATED summary")
+        assert(doc.select("h1").text() contains "Annual Tax on Enveloped Dwellings (ATED) summary")
+          //"Your ATED summary"
       }
 
       "have the correct valuation date change banner" in {
@@ -88,7 +92,8 @@ class AccountSummarySpec extends AtedViewSpec with MockAuthUtil with TestModels 
     "the user has property and relief returns for the current year" should {
 
       "have the correct heading" in {
-        assert(doc.select("#main-content > div > div.govuk-grid-column-two-thirds > h2").text() === "Current year returns")
+        assert(doc.select("#main-content > div > div.govuk-grid-column-two-thirds > h2").text() === "Current year ATED returns")
+        //Current year returns"
       }
 
       "show the returns" in {
@@ -125,6 +130,8 @@ class AccountSummarySpec extends AtedViewSpec with MockAuthUtil with TestModels 
         summaryReturnsModel(periodKey = currentTaxYear, withPastReturns = true),
         Some(address),
         Some(organisationName),
+        atedReference,
+        Some(clientMandateDetails),
         Html(""),
         Html(""),
         duringPeak = false,
@@ -153,6 +160,8 @@ class AccountSummarySpec extends AtedViewSpec with MockAuthUtil with TestModels 
           summaryReturnsModel(periodKey = currentTaxYear, withPastReturns = true),
           Some(address),
           Some(organisationName),
+          atedReference,
+          Some(clientMandateDetails),
           Html(""),
           Html(""),
           duringPeak = false,
