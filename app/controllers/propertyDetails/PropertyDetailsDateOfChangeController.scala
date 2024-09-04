@@ -27,7 +27,7 @@ import forms.PropertyDetailsForms._
 import models.DateOfChange
 import play.api.i18n.{Messages, MessagesImpl}
 import play.twirl.api.HtmlFormat
-import utils.AtedConstants.{HasPropertyBeenRevalued, SelectedPreviousReturn}
+import utils.AtedConstants.{FortyThousandValueDateOfChange, SelectedPreviousReturn}
 import utils.AtedUtils
 
 import javax.inject.Inject
@@ -88,7 +88,7 @@ class PropertyDetailsDateOfChangeController @Inject()(mcc: MessagesControllerCom
                 currentBackLink.map(backLink => (BadRequest(template(id, periodKey, formWithError, mode, serviceInfoContent, backLink))))
               },
               dateOfChange => {
-                dataCacheConnector.saveFormData[DateOfChange](HasPropertyBeenRevalued, dateOfChange)
+                dataCacheConnector.saveFormData[DateOfChange](FortyThousandValueDateOfChange, dateOfChange)
                 redirectWithBackLink(
                   // newValuationController.controllerId, needs to be added
                   "PropertyDetailsNewValuationController",
