@@ -18,16 +18,16 @@ package controllers.propertyDetails
 
 
 import config.ApplicationConfig
-
+import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.{AuthAction, ClientHelper}
-import forms.PropertyDetailsForms._
-import play.api.i18n.{Messages, MessagesImpl}
+import forms.PropertyDetailsForms.propertyDetailsNewValuationForm
+import models.PropertyDetailsNewValuation
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services._
-import uk.gov.hmrc.play.audit.DefaultAuditConnector
 import uk.gov.hmrc.play.bootstrap.controller.WithUnsafeDefaultFormBinding
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-
+import utils.AtedConstants.{SelectedPreviousReturn, propertyDetailsNewValuationValue}
+import utils.AtedUtils
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -35,32 +35,73 @@ import scala.concurrent.{ExecutionContext, Future}
 class PropertyDetailsNewValuationController @Inject()(mcc: MessagesControllerComponents,
                                                       authAction: AuthAction,
                                                       serviceInfoService: ServiceInfoService,
+                                                      val backLinkCacheConnector: BackLinkCacheConnector,
+                                                      val dataCacheConnector: DataCacheConnector,
+                                                      val propertyDetailsService: PropertyDetailsService,
+                                                      propertyDetailsDateOfRevalueController: PropertyDetailsDateOfRevalueController,
                                                       template: views.html.propertyDetails.propertyDetailsNewValuation)
                                                      (implicit val appConfig: ApplicationConfig)
 
-  extends FrontendController(mcc)  with WithUnsafeDefaultFormBinding {
+  extends FrontendController(mcc) with WithUnsafeDefaultFormBinding with PropertyDetailsHelpers with ClientHelper {
 
   implicit val ec: ExecutionContext = mcc.executionContext
+  val controllerId: String = "PropertyDetailsNewValuationController"
 
   def view(id: String): Action[AnyContent] = Action.async { implicit request =>
-  authAction.authorisedAction{ implicit authContext =>
-    if (appConfig.newRevaluedFeature) {
-      Future.successful(Ok(template(id, 2024, None, propertyDetailsNewValuationForm, Some("back"))))
-    }else{
-      Future.successful(Redirect(controllers.routes.HomeController.home()))
+    authAction.authorisedAction { implicit authContext =>
+      ensureClientContext {
+        if (appConfig.newRevaluedFeature) {
+          serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+            propertyDetailsCacheResponse(id) {
+              case PropertyDetailsCacheSuccessResponse(propertyDetails) => {
+                currentBackLink.flatMap { backLink =>
+                  dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).map { isPrevReturn =>
+                    Ok(template(id,
+                      propertyDetails.periodKey,
+                      AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn),
+                      propertyDetailsNewValuationForm.fill(PropertyDetailsNewValuation(propertyDetails.value.flatMap(_.revaluedValue))),
+                      backLink,
+                      serviceInfoContent
+                    ))
+                  }
+                }
+              }
+            }
+          }
+        } else {
+          Future.successful(Redirect(controllers.routes.HomeController.home()))
+        }
+      }
     }
-  }
   }
 
   def save(id: String, periodKey: Int, mode: Option[String]): Action[AnyContent] = Action.async { implicit request => {
     authAction.authorisedAction { implicit authContext =>
-      serviceInfoService.getPartial.map {  serviceInfoContent =>
-        propertyDetailsNewValuationForm.bindFromRequest().fold(
-          formWithErrors => {
-            BadRequest(template(id, periodKey, mode, formWithErrors, Some("back")))
-          },
-          revaluedValue => Redirect(controllers.propertyDetails.routes.PropertyDetailsNewValuationController.view(id))
-        )
+      ensureClientContext {
+        if (appConfig.newRevaluedFeature) {
+          serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+
+            propertyDetailsNewValuationForm.bindFromRequest().fold(
+              formWithErrors => {
+                currentBackLink.map(backLink => BadRequest(template(id,
+                  periodKey,
+                  mode,
+                  formWithErrors,
+                  backLink,
+                  serviceInfoContent
+                )))
+              },
+              revaluedValue => {
+                dataCacheConnector.saveFormData[PropertyDetailsNewValuation](propertyDetailsNewValuationValue, revaluedValue)
+                redirectWithBackLink(
+                  propertyDetailsDateOfRevalueController.controllerId,
+                  controllers.propertyDetails.routes.PropertyDetailsDateOfRevalueController.view(id),
+                  Some(controllers.propertyDetails.routes.PropertyDetailsNewValuationController.view(id).url)
+                )
+              }
+            )
+          }
+        } else Future.successful(Redirect(controllers.routes.HomeController.home()))
       }
     }
   }
