@@ -20,7 +20,7 @@ import builders.{PropertyDetailsBuilder, SessionBuilder}
 import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.AuthAction
-import models.{HasBeenRevalued, PropertyDetailsNewValuation}
+import models.PropertyDetailsNewValuation
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
@@ -37,7 +37,7 @@ import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.AtedConstants.DelegatedClientAtedRefNumber
 import views.html.BtaNavigationLinks
-import views.html.propertyDetails.{propertyDetailsHasBeenRevalued, propertyDetailsNewValuation}
+import views.html.propertyDetails.propertyDetailsNewValuation
 
 import java.util.UUID
 import scala.concurrent.Future
