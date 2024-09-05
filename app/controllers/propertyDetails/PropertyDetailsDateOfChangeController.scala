@@ -40,8 +40,7 @@ class PropertyDetailsDateOfChangeController @Inject()(mcc: MessagesControllerCom
                                                       val propertyDetailsService: PropertyDetailsService,
                                                       val backLinkCacheConnector: BackLinkCacheConnector,
                                                       val dataCacheConnector: DataCacheConnector,
-                                                      newValuationController: PropertyDetailsNewValuationController,
-                                                      exitController: PropertyDetailsExitController)
+                                                      newValuationController: PropertyDetailsNewValuationController)
                                                      (implicit val appConfig: ApplicationConfig)
 
   extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with WithUnsafeDefaultFormBinding {
