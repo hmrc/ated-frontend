@@ -67,6 +67,7 @@ object AtedConstants {
   val Change: String = "C"
 
   val SelectedPreviousReturn: String = "selected-previous-return"
+  val propertyDetailsNewValuationValue: String = "PropertyDetailsNewValuationValue"
 
   val draftType: String = "ated.draft"
   val submittedType: String = "ated.submitted"
