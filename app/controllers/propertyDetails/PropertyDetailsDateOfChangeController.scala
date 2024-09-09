@@ -89,8 +89,7 @@ class PropertyDetailsDateOfChangeController @Inject()(mcc: MessagesControllerCom
               dateOfChange => {
                 dataCacheConnector.saveFormData[DateOfChange](FortyThousandValueDateOfChange, dateOfChange)
                 redirectWithBackLink(
-                  // newValuationController.controllerId, needs to be added
-                  "PropertyDetailsNewValuationController",
+                  newValuationController.controllerId,
                   controllers.propertyDetails.routes.PropertyDetailsNewValuationController.view(id),
                   Some(controllers.propertyDetails.routes.PropertyDetailsDateOfChangeController.view(id).url)
                 )
