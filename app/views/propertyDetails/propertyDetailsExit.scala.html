@@ -36,9 +36,8 @@
     }
 }
 
-@newMain( title = titleBuilder(messages("ated.property_details_exit.title"))){
+@newMain( title = titleBuilder(messages("ated.property_details_exit.title")), back = Some(backLinkHtml)){
 
-    @backLinkHtml
 
     <h1 class="govuk-heading-xl">@messages("ated.property_details_exit.heading")</h1>
     <p class="govuk-body govuk-!-margin-bottom-7">@messages("ated.property_details_exit.p")</p>
