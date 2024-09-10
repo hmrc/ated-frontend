@@ -26,7 +26,6 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import forms.PropertyDetailsForms._
 import models.DateOfChange
 import play.api.i18n.{Messages, MessagesImpl}
-import play.twirl.api.HtmlFormat
 import utils.AtedConstants.{FortyThousandValueDateOfChange, SelectedPreviousReturn}
 import utils.AtedUtils
 
