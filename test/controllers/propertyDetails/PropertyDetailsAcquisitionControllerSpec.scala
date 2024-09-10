@@ -146,6 +146,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
   }
 
   override def beforeEach(): Unit = {
+                       
   }
 
   "PropertyDetailsAcquisitionController" must {
