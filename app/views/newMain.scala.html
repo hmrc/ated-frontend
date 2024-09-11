@@ -24,7 +24,8 @@
     serviceInfoContent: Html = HtmlFormat.empty,
     pageScripts: Option[Html] = None,
     sideBar: Option[Html] = None,
-    banner: Html = HtmlFormat.empty
+    banner: Html = HtmlFormat.empty,
+    back: Option[Html] = None
 )(mainContent: Html)(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
 @layout(
@@ -33,5 +34,6 @@
     scripts = pageScripts,
     isUserResearchBannerVisible = showUrBanner.getOrElse(false),
     sideBar = sideBar,
-    banner = banner
+    banner = banner,
+    beforeContent = back
     )(mainContent)

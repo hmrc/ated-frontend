@@ -40,12 +40,18 @@ extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper {
 
   def view(): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
-      if (appConfig.newRevaluedFeature) {
-        Future.successful(Ok(template(None)))
-      }else {
-        Future.successful(Redirect(controllers.routes.HomeController.home()))
-      }
+
+      ensureClientContext {
+        currentBackLink.flatMap { backLink =>
+                if (appConfig.newRevaluedFeature) {
+                  Future.successful(Ok(template(backLink)))
+                }else {
+                  Future.successful(Redirect(controllers.routes.HomeController.home()))
+                }  
+        }
+        
     }
   }
+}
 }
 
