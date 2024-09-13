@@ -137,7 +137,7 @@
                     @messages("ated.account-summary.showing", returnsCurrentTaxYear.size, totalCurrentYearReturns)
                     </div>
                 }
-                <dl class="govuk-summary-list">
+                <dl id="current-tax-year-returns" class="govuk-summary-list">
                 @returnsCurrentTaxYear.map { rtn =>
                     @accountSummaryRow(
                         rtn.description,

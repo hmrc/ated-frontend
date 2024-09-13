@@ -51,8 +51,8 @@ class AccountSummarySpec extends AtedViewSpec with MockAuthUtil with TestModels 
     true
   )
 
-  def row(rowNumber: Int) = s"#main-content > div > div.govuk-grid-column-two-thirds > dl > div:nth-child($rowNumber)"
-
+  // def row(rowNumber: Int) = s"#main-content > div > div.govuk-grid-column-two-thirds > dl > div:nth-child($rowNumber)"
+  def row(rowNumber: Int) = s"#current-tax-year-returns > div:nth-child($rowNumber)"
   def checkRowItem(rowNum: Int, col1: String, col2: String, col3: String, href: String): Assertion = {
     assert(doc.select(s"${row(rowNum)} > dt").text() === col1)
     assert(doc.select(s"${row(rowNum)} > dd.govuk-summary-list__value").text() === col2)
@@ -92,7 +92,7 @@ class AccountSummarySpec extends AtedViewSpec with MockAuthUtil with TestModels 
     "the user has property and relief returns for the current year" should {
 
       "have the correct heading" in {
-        assert(doc.select("#main-content > div > div.govuk-grid-column-two-thirds > h2").text() === "Current year ATED returns")
+        assert(doc.select("#main-content > div > div.govuk-grid-column-two-thirds > h2:nth-of-type(2)").text() === "Current year ATED returns")
         //Current year returns"
       }
 
