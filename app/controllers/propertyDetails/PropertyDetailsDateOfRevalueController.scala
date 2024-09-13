@@ -20,12 +20,15 @@ import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.{AuthAction, ClientHelper}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{PropertyDetailsService, ServiceInfoService}
+import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService}
 import uk.gov.hmrc.play.bootstrap.controller.WithUnsafeDefaultFormBinding
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import forms.PropertyDetailsForms._
+import models.DateOfRevalue
 import play.api.i18n.{Messages, MessagesImpl}
 import play.twirl.api.HtmlFormat
+import utils.AtedConstants.{DateOfRevalueConstant, SelectedPreviousReturn}
+import utils.AtedUtils
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -36,7 +39,8 @@ class PropertyDetailsDateOfRevalueController @Inject()(mcc: MessagesControllerCo
                                                       template: views.html.propertyDetails.propertyDetailsDateOfRevalue,
                                                       val propertyDetailsService: PropertyDetailsService,
                                                       val backLinkCacheConnector: BackLinkCacheConnector,
-                                                      val dataCacheConnector: DataCacheConnector)
+                                                      val dataCacheConnector: DataCacheConnector,
+                                                       isFullTaxPeriodController: IsFullTaxPeriodController)
                                                      (implicit val appConfig: ApplicationConfig)
 
   extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with WithUnsafeDefaultFormBinding {
@@ -46,15 +50,26 @@ class PropertyDetailsDateOfRevalueController @Inject()(mcc: MessagesControllerCo
 
   def view(id: String): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
-      //ensureClientContext should go here
-      if (appConfig.newRevaluedFeature) {
-        serviceInfoService.getPartial.flatMap { serviceInfoContent =>
-          Future.successful {
-            // using 2024 as dummy periodKey
-            Ok(template(id, 2024, propertyDetailsDateOfRevalueForm, None, serviceInfoContent, None))
+      ensureClientContext {
+        if (appConfig.newRevaluedFeature) {
+          serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+            propertyDetailsCacheResponse(id) {
+              case PropertyDetailsCacheSuccessResponse(propertyDetails) => {
+                currentBackLink.flatMap { backLink =>
+                  dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).map { isPrevReturn =>
+                    Ok(template(id,
+                      propertyDetails.periodKey,
+                      propertyDetailsDateOfRevalueForm.fill(DateOfRevalue(propertyDetails.value.flatMap(_.partAcqDispDate))),
+                      AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn),
+                      serviceInfoContent,
+                      backLink))
+                  }
+                }
+              }
+            }
           }
-        }
-      } else Future.successful(Redirect(controllers.routes.HomeController.home()))
+        } else Future.successful(Redirect(controllers.routes.HomeController.home()))
+      }
     }
   }
 
@@ -64,15 +79,25 @@ class PropertyDetailsDateOfRevalueController @Inject()(mcc: MessagesControllerCo
 
   def save(id: String, periodKey: Int, mode: Option[String]): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
-      //ensureClientContext should go here
-      if (appConfig.newRevaluedFeature) {
-        serviceInfoService.getPartial.flatMap { serviceInfoContent =>
-          validateDateOfRevalue(periodKey, propertyDetailsDateOfRevalueForm.bindFromRequest(), dateFields).fold(
-            formWithError => Future.successful(BadRequest(template(id, periodKey, formWithError, None, HtmlFormat.empty, None))),
-            dateOfRevalue => Future.successful(Redirect(controllers.propertyDetails.routes.PropertyDetailsRevaluedController.view(id)))
-          )
-        }
-      } else Future.successful(Redirect(controllers.routes.HomeController.home()))
+      ensureClientContext {
+        if (appConfig.newRevaluedFeature) {
+          serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+            validateDateOfRevalue(periodKey, propertyDetailsDateOfRevalueForm.bindFromRequest(), dateFields).fold(
+              formWithError => {
+                currentBackLink.map(backLink => (BadRequest(template(id, periodKey, formWithError, None, HtmlFormat.empty, None))))
+              },
+              dateOfRevalue => {
+                dataCacheConnector.saveFormData[DateOfRevalue](DateOfRevalueConstant, dateOfRevalue)
+                redirectWithBackLink(
+                  isFullTaxPeriodController.controllerId,
+                  controllers.propertyDetails.routes.IsFullTaxPeriodController.view(id),
+                  Some(controllers.propertyDetails.routes.PropertyDetailsDateOfRevalueController.view(id).url)
+                )
+              }
+            )
+          }
+        } else Future.successful(Redirect(controllers.routes.HomeController.home()))
+      }
     }
   }
 }
