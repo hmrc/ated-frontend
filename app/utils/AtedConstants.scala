@@ -33,6 +33,7 @@ object AtedConstants {
   val DelegatedClientAtedRefNumber: String = "delegatedClientAtedRefNumber"
   val HasPropertyBeenRevalued: String = "hasPropertyBeenRevalued"
   val FortyThousandValueDateOfChange: String = "dateOfChange"
+  val DateOfRevalueConstant: String = "dateOfRevalue"
 
   val AddressTypeCorrespondence: String = "Correspondence"
 
