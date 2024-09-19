@@ -34,14 +34,14 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class PropertyDetailsDateOfRevalueController @Inject()(mcc: MessagesControllerComponents,
-                                                      authAction: AuthAction,
-                                                      serviceInfoService: ServiceInfoService,
-                                                      template: views.html.propertyDetails.propertyDetailsDateOfRevalue,
-                                                      val propertyDetailsService: PropertyDetailsService,
-                                                      val backLinkCacheConnector: BackLinkCacheConnector,
-                                                      val dataCacheConnector: DataCacheConnector,
+                                                       authAction: AuthAction,
+                                                       serviceInfoService: ServiceInfoService,
+                                                       template: views.html.propertyDetails.propertyDetailsDateOfRevalue,
+                                                       val propertyDetailsService: PropertyDetailsService,
+                                                       val backLinkCacheConnector: BackLinkCacheConnector,
+                                                       val dataCacheConnector: DataCacheConnector,
                                                        isFullTaxPeriodController: IsFullTaxPeriodController)
-                                                     (implicit val appConfig: ApplicationConfig)
+                                                      (implicit val appConfig: ApplicationConfig)
 
   extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with WithUnsafeDefaultFormBinding {
 
@@ -56,13 +56,16 @@ class PropertyDetailsDateOfRevalueController @Inject()(mcc: MessagesControllerCo
             propertyDetailsCacheResponse(id) {
               case PropertyDetailsCacheSuccessResponse(propertyDetails) => {
                 currentBackLink.flatMap { backLink =>
-                  dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).map { isPrevReturn =>
-                    Ok(template(id,
-                      propertyDetails.periodKey,
-                      propertyDetailsDateOfRevalueForm.fill(DateOfRevalue(propertyDetails.value.flatMap(_.partAcqDispDate))),
-                      AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn),
-                      serviceInfoContent,
-                      backLink))
+                  dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
+                    dataCacheConnector.fetchAndGetFormData[DateOfRevalue](DateOfRevalueConstant).map { cachedDateOfRevalue =>
+                      val dateOfRevalue = cachedDateOfRevalue.flatMap(_.dateOfRevalue)
+                      Ok(template(id,
+                        propertyDetails.periodKey,
+                        propertyDetailsDateOfRevalueForm.fill(DateOfRevalue(dateOfRevalue)),
+                        AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn),
+                        serviceInfoContent,
+                        backLink))
+                    }
                   }
                 }
               }

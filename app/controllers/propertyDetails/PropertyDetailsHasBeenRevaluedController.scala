@@ -42,8 +42,8 @@ class PropertyDetailsHasBeenRevaluedController @Inject()(mcc: MessagesController
                                                          dateOfChangeController: PropertyDetailsDateOfChangeController,
                                                          exitController: PropertyDetailsExitController
                                                         )(
-                                                        implicit val appConfig: ApplicationConfig
-) extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with WithUnsafeDefaultFormBinding {
+                                                          implicit val appConfig: ApplicationConfig
+                                                        ) extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with WithUnsafeDefaultFormBinding {
 
   implicit val ec: ExecutionContext = mcc.executionContext
   val controllerId: String = "PropertyDetailsHasBeenRevaluedController"
@@ -56,13 +56,17 @@ class PropertyDetailsHasBeenRevaluedController @Inject()(mcc: MessagesController
             propertyDetailsCacheResponse(id) {
               case PropertyDetailsCacheSuccessResponse(propertyDetails) => {
                 currentBackLink.flatMap { backLink =>
-                  dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).map { isPrevReturn =>
-                    Ok(template(id,
-                      propertyDetails.periodKey,
-                      backLink,
-                      AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn),
-                      propertyDetailsHasBeenRevaluedForm.fill(HasBeenRevalued(propertyDetails.value.flatMap(_.isPropertyRevalued))),
-                      serviceInfoContent))
+                  dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
+                    dataCacheConnector.fetchAndGetFormData[HasBeenRevalued](HasPropertyBeenRevalued).map {
+                      cachedHasBeenRevalued =>
+                        val hasBeenRevalued = cachedHasBeenRevalued.flatMap(_.isPropertyRevalued)
+                        Ok(template(id,
+                          propertyDetails.periodKey,
+                          backLink,
+                          AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn),
+                          propertyDetailsHasBeenRevaluedForm.fill(HasBeenRevalued(hasBeenRevalued)),
+                          serviceInfoContent))
+                    }
                   }
                 }
               }
@@ -85,7 +89,7 @@ class PropertyDetailsHasBeenRevaluedController @Inject()(mcc: MessagesController
                   currentBackLink.map(backLink => BadRequest(template(id, periodKey, backLink, mode, formWithErrors, serviceInfoContent)))
                 },
                 hasBeenRevalued => {
-                  if(hasBeenRevalued.isPropertyRevalued.getOrElse(false)) {
+                  if (hasBeenRevalued.isPropertyRevalued.getOrElse(false)) {
                     dataCacheConnector.saveFormData[HasBeenRevalued](HasPropertyBeenRevalued, hasBeenRevalued)
                     redirectWithBackLink(
                       dateOfChangeController.controllerId,
