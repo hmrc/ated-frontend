@@ -97,6 +97,7 @@ class PropertyDetailsHasBeenRevaluedController @Inject()(mcc: MessagesController
                       Some(controllers.propertyDetails.routes.PropertyDetailsHasBeenRevaluedController.view(id).url)
                     )
                   } else {
+                    dataCacheConnector.saveFormData[HasBeenRevalued](HasPropertyBeenRevalued, hasBeenRevalued)
                     redirectWithBackLink(
                       exitController.controllerId,
                       controllers.propertyDetails.routes.PropertyDetailsExitController.view(),
