@@ -51,8 +51,8 @@ class AccountSummarySpec extends AtedViewSpec with MockAuthUtil with TestModels 
     true
   )
 
-  // def row(rowNumber: Int) = s"#main-content > div > div.govuk-grid-column-two-thirds > dl > div:nth-child($rowNumber)"
   def row(rowNumber: Int) = s"#current-tax-year-returns > div:nth-child($rowNumber)"
+
   def checkRowItem(rowNum: Int, col1: String, col2: String, col3: String, href: String): Assertion = {
     assert(doc.select(s"${row(rowNum)} > dt").text() === col1)
     assert(doc.select(s"${row(rowNum)} > dd.govuk-summary-list__value").text() === col2)
@@ -65,12 +65,10 @@ class AccountSummarySpec extends AtedViewSpec with MockAuthUtil with TestModels 
     "regardless of returns data" should {
       "have the correct title" in {
         assert(doc.title() === "Annual Tax on Enveloped Dwellings (ATED) summary - Submit and view your ATED returns - GOV.UK")
-          //"Your ATED summary - Submit and view your ATED returns - GOV.UK"
       }
 
       "have the correct h1" in {
         assert(doc.select("h1").text() contains "Annual Tax on Enveloped Dwellings (ATED) summary")
-          //"Your ATED summary"
       }
 
       "have the correct valuation date change banner" in {
@@ -93,7 +91,6 @@ class AccountSummarySpec extends AtedViewSpec with MockAuthUtil with TestModels 
 
       "have the correct heading" in {
         assert(doc.select("#main-content > div > div.govuk-grid-column-two-thirds > h2:nth-of-type(2)").text() === "Current year ATED returns")
-        //Current year returns"
       }
 
       "show the returns" in {
@@ -115,7 +112,7 @@ class AccountSummarySpec extends AtedViewSpec with MockAuthUtil with TestModels 
       }
 
       "show content to say how many returns are being displayed" in {
-        assert(doc.select(".govuk-hint").text === "Showing 2 of 2 returns")
+        assert(doc.select(".govuk-hint").text === "")
       }
     }
 
@@ -151,7 +148,7 @@ class AccountSummarySpec extends AtedViewSpec with MockAuthUtil with TestModels 
 
     }
 
-    "less than 6 returns and there is at least 1 past return" should {
+    /*"less than 6 returns and there is at least 1 past return" should {
       "show the view all returns link" in {
         val view = injectedViewInstance(
           currentYearReturnsForDisplay,
@@ -177,6 +174,33 @@ class AccountSummarySpec extends AtedViewSpec with MockAuthUtil with TestModels 
       "show content to say how many returns are being displayed" in {
         assert(doc(view).select(".govuk-hint").text === "Showing 2 of 2 returns")
       }
+    }*/
+
+    "past returns" should {
+      "show the View or change ATED returns link" in {
+        val view = injectedViewInstance(
+          currentYearReturnsForDisplay,
+          totalCurrentYearReturns = 2,
+          hasPastReturns = true,
+          summaryReturnsModel(periodKey = currentTaxYear, withPastReturns = true),
+          Some(address),
+          Some(organisationName),
+          atedReference,
+          Some(clientMandateDetails),
+          Html(""),
+          Html(""),
+          duringPeak = false,
+          currentYear,
+          currentTaxYear,
+          false
+        )
+
+        assert(doc(view).select("#previous-returns").text === "View or change ATED returns for previous chargeable periods")
+        assert(doc(view).select("#previous-returns").attr("href") === "/ated/prev-period-summary")
+      }
+
     }
+
+
   }
 }

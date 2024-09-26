@@ -46,7 +46,7 @@ trait TestModels {
     ClientMandateDetails(
       agentName = "name1",
       changeAgentLink = "",
-      email = "a.a@a.com",
+      email = "aa@a.com",
       changeEmailLink = "",
       status = "Active")
   }

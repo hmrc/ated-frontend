@@ -111,7 +111,8 @@ class AccountSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
       when(mockDetailsService.cacheClientReference(ArgumentMatchers.any())(ArgumentMatchers.any()))
         .thenReturn(Future.successful("XN1200000100001"))
       when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Html("")))
-
+      when(mockDetailsService.getClientMandateDetails(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(Some(clientMandateDetails)))
       val result = testAccountSummaryController.view().apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
@@ -203,8 +204,8 @@ class AccountSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
 
-            document.title() must be(TitleBuilder.buildTitle("Your ATED summary"))
-            document.getElementsByTag("h1").text() contains ("Your ATED summary")
+            document.title() must be(TitleBuilder.buildTitle("Annual Tax on Enveloped Dwellings (ATED) summary"))
+            document.getElementsByTag("h1").text() contains ("Annual Tax on Enveloped Dwellings (ATED) summary")
         }
       }
 
@@ -233,7 +234,7 @@ class AccountSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
           result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be(TitleBuilder.buildTitle("Your ATED summary"))
+            document.title() must be(TitleBuilder.buildTitle("Annual Tax on Enveloped Dwellings (ATED) summary"))
             document.getElementById("create-return") != null
             document.getElementById("appoint-agent") != null
         }
@@ -245,7 +246,7 @@ class AccountSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
           result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be(TitleBuilder.buildTitle("Your ATED summary"))
+            document.title() must be(TitleBuilder.buildTitle("Annual Tax on Enveloped Dwellings (ATED) summary"))
             document.getElementById("create-return") != null
             Option(document.getElementById("appoint-agent")) must be(None)
         }
@@ -266,6 +267,8 @@ class AccountSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
         when(mockSubscriptionDataService.getSafeId(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
         when(mockMandateFrontendConnector.getClientBannerPartial(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(HtmlPartial.Success(Some("thepartial"), Html(""))))
+        when(mockDetailsService.getClientMandateDetails(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+          .thenReturn(Future.successful(Some(clientMandateDetails)))
 
         val result: Future[Result] = testAccountSummaryController.view().apply(SessionBuilder.buildRequestWithSession(userId))
         val thrown: RuntimeException = the[RuntimeException] thrownBy await(result)
@@ -280,7 +283,7 @@ class AccountSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
           result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be(TitleBuilder.buildTitle("Your ATED summary"))
+            document.title() must be(TitleBuilder.buildTitle("Annual Tax on Enveloped Dwellings (ATED) summary"))
             document.getElementById("create-return") != null
             Option(document.getElementById("appoint-agent")) must be(None)
         }
