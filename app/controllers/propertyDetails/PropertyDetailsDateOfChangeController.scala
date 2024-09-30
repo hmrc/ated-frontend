@@ -53,24 +53,28 @@ class PropertyDetailsDateOfChangeController @Inject()(mcc: MessagesControllerCom
         if (appConfig.newRevaluedFeature) {
           serviceInfoService.getPartial.flatMap { serviceInfoContent =>
             propertyDetailsCacheResponse(id) {
-              case PropertyDetailsCacheSuccessResponse(propertyDetails) => {
+              case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
                 currentBackLink.flatMap { backlink =>
-                  dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).map { isPrevReturn =>
-                    Ok(template(id,
-                      propertyDetails.periodKey,
-                      propertyDetailsDateOfChangeForm.fill(DateOfChange(propertyDetails.value.flatMap(_.partAcqDispDate))),
-                      AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn),
-                      serviceInfoContent,
-                      backlink))
+                  dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
+                    dataCacheConnector.fetchAndGetFormData[DateOfChange](FortyThousandValueDateOfChange).map { cachedDateOfChange =>
+                      val dateOfChange = cachedDateOfChange.flatMap(_.dateOfChange)
+
+                      Ok(template(id,
+                        propertyDetails.periodKey,
+                        propertyDetailsDateOfChangeForm.fill(DateOfChange(dateOfChange)),
+                        AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn),
+                        serviceInfoContent,
+                        backlink))
+                    }
                   }
                 }
-              }
             }
           }
         } else Future.successful(Redirect(controllers.routes.HomeController.home()))
       }
     }
   }
+
 
   implicit lazy val messages: Messages = MessagesImpl(mcc.langs.availables.head, messagesApi)
 
