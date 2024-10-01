@@ -47,17 +47,16 @@
     showUrBanner = Some(true),
     useAttorneyBanner = false
 ) {
-
-        @govukNotificationBanner(NotificationBanner(
-            content = HtmlContent(html)
-        ))
-
     <header>
         <h1 class="govuk-heading-xl govuk-!-margin-bottom-5">
             <span class="govuk-caption-xl"><span class="govuk-visually-hidden">@messages("ated.screen-reader.section-name")</span>@organisationName.getOrElse("")</span>
             @messages("ated.summary-return.header")
         </h1>
     </header>
+
+    @govukNotificationBanner(NotificationBanner(
+    content = HtmlContent(html)
+    ))
 
     @if(authContext.isAgent) {
     <div class="govuk-inset-text govuk-!-margin-top-0">
