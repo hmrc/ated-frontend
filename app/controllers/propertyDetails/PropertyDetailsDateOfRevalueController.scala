@@ -24,10 +24,9 @@ import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService, Se
 import uk.gov.hmrc.play.bootstrap.controller.WithUnsafeDefaultFormBinding
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import forms.PropertyDetailsForms._
-import models.DateOfRevalue
+import models.{DateOfChange, DateOfRevalue, HasBeenRevalued, PropertyDetailsNewValuation, PropertyDetailsRevalued}
 import play.api.i18n.{Messages, MessagesImpl}
-import play.twirl.api.HtmlFormat
-import utils.AtedConstants.{DateOfRevalueConstant, SelectedPreviousReturn}
+import utils.AtedConstants.{DateOfRevalueConstant, FortyThousandValueDateOfChange, HasPropertyBeenRevalued, SelectedPreviousReturn, propertyDetailsNewValuationValue}
 import utils.AtedUtils
 
 import javax.inject.Inject
@@ -87,15 +86,36 @@ class PropertyDetailsDateOfRevalueController @Inject()(mcc: MessagesControllerCo
           serviceInfoService.getPartial.flatMap { serviceInfoContent =>
             validateDateOfRevalue(periodKey, propertyDetailsDateOfRevalueForm.bindFromRequest(), dateFields).fold(
               formWithError => {
-                currentBackLink.map(backLink => (BadRequest(template(id, periodKey, formWithError, None, HtmlFormat.empty, None))))
+                currentBackLink.map(backLink => (BadRequest(template(id, periodKey, formWithError, mode, serviceInfoContent, backLink))))
               },
               dateOfRevalue => {
                 dataCacheConnector.saveFormData[DateOfRevalue](DateOfRevalueConstant, dateOfRevalue)
-                redirectWithBackLink(
-                  isFullTaxPeriodController.controllerId,
-                  controllers.propertyDetails.routes.IsFullTaxPeriodController.view(id),
-                  Some(controllers.propertyDetails.routes.PropertyDetailsDateOfRevalueController.view(id).url)
-                )
+
+                val propertyDetailsFuture: Future[PropertyDetailsRevalued] = for {
+                  isPropertyRevalued <- dataCacheConnector.fetchAndGetFormData[HasBeenRevalued](HasPropertyBeenRevalued)
+                    .map(_.flatMap(_.isPropertyRevalued))
+                  revaluedValue <- dataCacheConnector.fetchAndGetFormData[PropertyDetailsNewValuation](propertyDetailsNewValuationValue)
+                    .map(_.flatMap(_.revaluedValue))
+                  dateOfChange <- dataCacheConnector.fetchAndGetFormData[DateOfChange](FortyThousandValueDateOfChange)
+                    .map(_.flatMap(_.dateOfChange))
+                } yield {
+                  PropertyDetailsRevalued(
+                    isPropertyRevalued = isPropertyRevalued,
+                    revaluedValue = revaluedValue,
+                    revaluedDate = dateOfRevalue.dateOfRevalue,
+                    partAcqDispDate = dateOfChange
+                  )
+                }
+                propertyDetailsFuture.flatMap { propertyDetails =>
+                  for {
+                    _ <- propertyDetailsService.saveDraftPropertyDetailsRevalued(id, propertyDetails)
+                    result <- redirectWithBackLink(
+                      isFullTaxPeriodController.controllerId,
+                      controllers.propertyDetails.routes.IsFullTaxPeriodController.view(id),
+                      Some(controllers.propertyDetails.routes.PropertyDetailsDateOfRevalueController.view(id).url)
+                    )
+                  } yield result
+                }
               }
             )
           }

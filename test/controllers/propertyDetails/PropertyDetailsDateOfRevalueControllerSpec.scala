@@ -20,8 +20,9 @@ import builders.{PropertyDetailsBuilder, SessionBuilder}
 import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.AuthAction
-import org.mockito.ArgumentMatchers
-import org.mockito.Mockito.when
+import models.{DateOfChange, HasBeenRevalued, PropertyDetailsNewValuation, PropertyDetailsRevalued}
+import org.mockito.{ArgumentCaptor, ArgumentMatchers, Captor}
+import org.mockito.Mockito.{verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
@@ -35,10 +36,11 @@ import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService, Se
 import testhelpers.MockAuthUtil
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
-import utils.AtedConstants.DelegatedClientAtedRefNumber
+import utils.AtedConstants.{DelegatedClientAtedRefNumber, FortyThousandValueDateOfChange, HasPropertyBeenRevalued, propertyDetailsNewValuationValue}
 import views.html.BtaNavigationLinks
 import views.html.propertyDetails.propertyDetailsDateOfRevalue
 
+import java.time.LocalDate
 import java.util.UUID
 import scala.concurrent.Future
 
@@ -149,6 +151,58 @@ class PropertyDetailsDateOfRevalueControllerSpec extends PlaySpec with GuiceOneS
       }
     }
 
+    "collect information from cache and save to database" when {
+      "newRevaluedFeature flag is set to true and user clicks button 'save and continue'" in new Setup {
+        val inputJson: JsValue = Json.obj(
+          "dateOfRevalue" -> Json.obj(
+            "day" -> 1,
+            "month" -> 4,
+            "year" -> 2020
+          )
+        )
+        val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
+        setAuthMocks(authMock)
+
+        when(mockAppConfig.newRevaluedFeature).thenReturn(true)
+        when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(customBtaNavigationLinks))
+        when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(DelegatedClientAtedRefNumber))(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
+        when(mockDataCacheConnector.fetchAndGetFormData[Boolean](ArgumentMatchers.any())
+          (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
+        when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+
+        when(mockDataCacheConnector.fetchAndGetFormData[HasBeenRevalued](ArgumentMatchers.eq(HasPropertyBeenRevalued))(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(HasBeenRevalued(Some(true)))))
+        when(mockDataCacheConnector.fetchAndGetFormData[PropertyDetailsNewValuation](ArgumentMatchers.eq(propertyDetailsNewValuationValue))
+          (ArgumentMatchers.any(), ArgumentMatchers.any()))
+          .thenReturn(Future.successful(Some(PropertyDetailsNewValuation(Some(1000000)))))
+        when(mockDataCacheConnector.fetchAndGetFormData[DateOfChange](ArgumentMatchers.eq(FortyThousandValueDateOfChange))
+          (ArgumentMatchers.any(), ArgumentMatchers.any()))
+          .thenReturn(Future.successful(Some(DateOfChange(Some(LocalDate.of(2021, 6, 15))))))
+
+        when(mockPropertyDetailsService.saveDraftPropertyDetailsRevalued(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(OK))
+
+        val result = testController.save("1", 2020, None).apply(SessionBuilder.updateRequestWithSession(FakeRequest().withJsonBody(inputJson), userId))
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result).get must include("ated/liability/create/full-tax-period/view")
+
+        val expectedPropertyDetails = PropertyDetailsRevalued(
+          isPropertyRevalued = Some(true),
+          revaluedValue = Some(1000000),
+          revaluedDate = Some(LocalDate.of(2020, 4, 1)),
+          partAcqDispDate = Some(LocalDate.of(2021, 6, 15))
+        )
+
+        verify(mockPropertyDetailsService).saveDraftPropertyDetailsRevalued(ArgumentMatchers.eq("1"),
+          ArgumentMatchers.eq(expectedPropertyDetails)
+        )(ArgumentMatchers.any(), ArgumentMatchers.any())
+
+        verify(mockDataCacheConnector).fetchAndGetFormData[HasBeenRevalued](
+          ArgumentMatchers.eq(HasPropertyBeenRevalued)
+        )(ArgumentMatchers.any(), ArgumentMatchers.any())
+
+        verify(mockBackLinkCacheConnector).saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())
+      }
+    }
+
     "redirect to next page: full tax period" when {
       "newRevaluedFeature flag is set to true and user enters valid date" in new Setup {
         val day = "1"
@@ -229,6 +283,7 @@ class PropertyDetailsDateOfRevalueControllerSpec extends PlaySpec with GuiceOneS
         contentAsString(result) must include("There is a problem")
       }
     }
+
 
     "redirect to home page" when {
       "newRevaluedFeature flag is set to false" in new Setup {
