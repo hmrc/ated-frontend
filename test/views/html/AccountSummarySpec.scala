@@ -93,6 +93,13 @@ class AccountSummarySpec extends AtedViewSpec with MockAuthUtil with TestModels 
       }
     }
 
+    "the user's amount" should {
+
+      "have the correct heading" in {
+        assert(doc.select(".govuk-heading-l").first.text() === "Amount due")
+      }
+    }
+
     "the user has property and relief returns for the current year" should {
 
       "have the correct heading" in {
@@ -102,10 +109,6 @@ class AccountSummarySpec extends AtedViewSpec with MockAuthUtil with TestModels 
       "show the returns" in {
         checkRowItem(1, "Change_Liability", "Draft", "View or change", "example/draft/route")
         checkRowItem(2, "19 Stone Row", "Submitted", "View or change", "example/non-draft/route")
-      }
-
-      "not show the View all returns link if there are less than 6 returns and no past returns" in {
-        assert(doc.select("#view-all-returns").size() === 0)
       }
 
       "show the Create a new return for current tax year button" in {
@@ -122,7 +125,7 @@ class AccountSummarySpec extends AtedViewSpec with MockAuthUtil with TestModels 
       }
     }
 
-    "more than 5 returns and no past returns" should {
+    "more than 5 returns" should {
 
       lazy val fiveReturns = currentYearReturnsForDisplay++currentYearReturnsForDisplay++Seq(currentYearReturnsForDisplay.head)
 
@@ -154,37 +157,10 @@ class AccountSummarySpec extends AtedViewSpec with MockAuthUtil with TestModels 
 
     }
 
-    /*"less than 6 returns and there is at least 1 past return" should {
-      "show the view all returns link" in {
-        val view = injectedViewInstance(
-          currentYearReturnsForDisplay,
-          totalCurrentYearReturns = 2,
-          hasPastReturns = true,
-          summaryReturnsModel(periodKey = currentTaxYear, withPastReturns = true),
-          Some(address),
-          Some(organisationName),
-          atedReference,
-          Some(clientMandateDetails),
-          Html(""),
-          Html(""),
-          duringPeak = false,
-          currentYear,
-          currentTaxYear,
-          false
-        )
-
-        assert(doc(view).select("#view-all-returns").text === s"View all returns for $currentTaxYear to ${currentTaxYear + 1}")
-        assert(doc(view).select("#view-all-returns").attr("href") === s"/ated/period-summary/$currentTaxYear")
-      }
+    "less than 6 returns" should {
 
       "show content to say how many returns are being displayed" in {
-        assert(doc(view).select(".govuk-hint").text === "Showing 2 of 2 returns")
-      }
-    }*/
-
-    "past returns" should {
-      "show the View or change ATED returns link" in {
-        val view = injectedViewInstance(
+        lazy val view = injectedViewInstance(
           currentYearReturnsForDisplay,
           totalCurrentYearReturns = 2,
           hasPastReturns = true,
@@ -200,13 +176,44 @@ class AccountSummarySpec extends AtedViewSpec with MockAuthUtil with TestModels 
           currentTaxYear,
           false
         )
+        assert(doc(view).select(".govuk-hint").text === "")
+        assert(doc.select("#view-all-returns").size() === 0)
+      }
+    }
 
-        assert(doc(view).select("#previous-returns").text === "View or change ATED returns for previous chargeable periods")
-        assert(doc(view).select("#previous-returns").attr("href") === "/ated/prev-period-summary")
+    "there is no current year ATED returns" should {
+      "have the correct info text" in {
+        lazy val view = injectedViewInstance(
+          currentYearReturnsForDisplay.empty,
+          totalCurrentYearReturns = 0,
+          hasPastReturns = true,
+          summaryReturnsModel(periodKey = currentTaxYear, withPastReturns = true),
+          Some(address),
+          Some(organisationName),
+          atedReference,
+          Some(clientMandateDetails),
+          Html(""),
+          cancelAgentUrl,
+          duringPeak = false,
+          currentYear,
+          currentTaxYear,
+          false
+        )
+        assert(doc(view).select("#empty-current-year-returns").text === "You have no current year returns.")
+      }
+    }
+
+    "show the previous years ATED returns link" should {
+      "have the correct heading" in {
+        assert(doc.select(".govuk-heading-l").get(2).text() === "Previous years ATED returns")
+      }
+
+      "show the previous year returns link" in {
+        assert(doc.select("#previous-returns").text === "View or change ATED returns for previous chargeable periods")
+        assert(doc.select("#previous-returns").attr("href") === "/ated/prev-period-summary")
       }
 
     }
-
 
   }
 }

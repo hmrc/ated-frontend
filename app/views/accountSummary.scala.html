@@ -126,7 +126,7 @@
     <h2 class="govuk-heading-l">@messages("ated.account-summary.current-year-returns.heading")</h2>
 
         @if(returnsCurrentTaxYear.isEmpty) {
-            <p class="govuk-body">@messages("ated.account-summary.current-year-returns-no-returns.text")</p>
+            <p id ="empty-current-year-returns" class="govuk-body">@messages("ated.account-summary.current-year-returns-no-returns.text")</p>
 
         } else {
 
@@ -167,10 +167,10 @@
                 ))
             </div>
 
-            <h2 class="govuk-heading-l">@messages("ated.account-summary.previous-year-returns.heading")</h2>
-            <p class="govuk-body"><a id="previous-returns" class="govuk-link" href="@controllers.routes.PrevPeriodsSummaryController.view">@messages("ated.account-summary.previous-year-returns-link.text")</a></p>
+    <h2 class="govuk-heading-l">@messages("ated.account-summary.previous-year-returns.heading")</h2>
+        <p class="govuk-body"><a id="previous-returns" class="govuk-link" href="@controllers.routes.PrevPeriodsSummaryController.view">@messages("ated.account-summary.previous-year-returns-link.text")</a></p>
+    <h2 class="govuk-heading-l">@messages("ated.account-summary.ated-details.heading")</h2>
 
-            <h2 class="govuk-heading-l">@messages("ated.account-summary.ated-details.heading")</h2>
     <dl class="govuk-summary-list">
         <div class="govuk-summary-list__row">
             <dt class="govuk-summary-list__key govuk-!-width-one-half">
