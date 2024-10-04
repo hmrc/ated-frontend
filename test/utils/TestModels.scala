@@ -30,6 +30,7 @@ trait TestModels {
   val formBundleNo2: String = "123456789013"
   val formBundleNo3: String = "876547696786"
   val atedReference: String = "XN1200000100001"
+  val cancelAgentUrl: String = ""
   val currentYear: Int = LocalDate.now().getYear
   lazy val currentTaxYear: Int = PeriodUtils.calculatePeakStartYear(LocalDate.now())
 

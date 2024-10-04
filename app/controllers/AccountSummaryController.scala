@@ -19,6 +19,7 @@ package controllers
 import config.ApplicationConfig
 import connectors.{AgentClientMandateFrontendConnector, DataCacheConnector}
 import controllers.auth.AuthAction
+import org.jsoup.Jsoup
 
 import javax.inject.{Inject, Singleton}
 import java.time.LocalDate
@@ -66,6 +67,9 @@ class AccountSummaryController @Inject()(mcc: MessagesControllerComponents,
           throw new RuntimeException("Could not get safeId")), "ated"
         )
       } yield {
+        val cancelAgentUrl = Jsoup.parse(clientBannerPartial.successfulContentOrEmpty.toString())
+          .getElementById("client-banner-text-link")
+          .attr("href")
         Ok(template(
           returnsCurrentTaxYear = currentYearReturns._1,
           totalCurrentYearReturns = currentYearReturns._2,
@@ -76,7 +80,7 @@ class AccountSummaryController @Inject()(mcc: MessagesControllerComponents,
           atedReference,
           clientMandateDetails,
           serviceInfoContent,
-          clientBannerPartial.successfulContentOrEmpty,
+          cancelAgentUrl,
           duringPeak,
           currentYear = currentDate.getYear,
           taxYearStartingYear = peakPeriodStartingYear,

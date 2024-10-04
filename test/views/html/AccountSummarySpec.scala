@@ -44,7 +44,7 @@ class AccountSummarySpec extends AtedViewSpec with MockAuthUtil with TestModels 
     atedReference,
     Some(clientMandateDetails),
     Html(""),
-    Html(""),
+    cancelAgentUrl,
     duringPeak = false,
     currentYear,
     currentTaxYear,
@@ -69,6 +69,12 @@ class AccountSummarySpec extends AtedViewSpec with MockAuthUtil with TestModels 
 
       "have the correct h1" in {
         assert(doc.select("h1").text() contains "Annual Tax on Enveloped Dwellings (ATED) summary")
+      }
+
+      "have the correct agent info" in {
+        assert(doc.select("#agent-info-text").text() contains "As an agent, you are accessing information about your client")
+        assert(doc.select("#agent-change-client").text() contains "Change client")
+        assert(doc.select("#agent-change-client").attr("href") === "http://localhost:9959/mandate/agent/summary")
       }
 
       "have the correct valuation date change banner" in {
@@ -130,7 +136,7 @@ class AccountSummarySpec extends AtedViewSpec with MockAuthUtil with TestModels 
         atedReference,
         Some(clientMandateDetails),
         Html(""),
-        Html(""),
+        cancelAgentUrl,
         duringPeak = false,
         currentYear,
         currentTaxYear,
@@ -188,7 +194,7 @@ class AccountSummarySpec extends AtedViewSpec with MockAuthUtil with TestModels 
           atedReference,
           Some(clientMandateDetails),
           Html(""),
-          Html(""),
+          cancelAgentUrl,
           duringPeak = false,
           currentYear,
           currentTaxYear,
