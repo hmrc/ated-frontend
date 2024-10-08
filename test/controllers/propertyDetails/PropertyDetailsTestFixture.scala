@@ -78,7 +78,7 @@ class PropertyDetailsTestFixture extends PlaySpec with GuiceOneServerPerSuite wi
     val authMock = authResultDefault(AffinityGroup.Organisation, enrolmentSet)
     enrolmentSet match {
       case set if set == invalidEnrolmentSet => setInvalidAuthMocks(authMock)
-      case set if set == defaultEnrolmentSet => setAuthMockExpectations(authMock)
+      case set if set == defaultEnrolmentSet => setAuthMocks(authMock)
       case _ => // should it default to invalid or default to default?
     }
   }
