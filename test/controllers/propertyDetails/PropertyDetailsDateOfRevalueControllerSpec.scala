@@ -21,9 +21,8 @@ import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.AuthAction
 import models.{DateOfChange, HasBeenRevalued, PropertyDetailsNewValuation, PropertyDetailsRevalued}
-import org.mockito.{ArgumentCaptor, ArgumentMatchers, Captor}
+import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.{verify, when}
-import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
@@ -34,7 +33,7 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers.{contentAsString, defaultAwaitTimeout, redirectLocation, status}
 import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService}
 import testhelpers.MockAuthUtil
-import uk.gov.hmrc.auth.core.AffinityGroup
+import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolment}
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.AtedConstants.{DelegatedClientAtedRefNumber, FortyThousandValueDateOfChange, HasPropertyBeenRevalued, propertyDetailsNewValuationValue}
 import views.html.BtaNavigationLinks
@@ -44,7 +43,7 @@ import java.time.LocalDate
 import java.util.UUID
 import scala.concurrent.Future
 
-class PropertyDetailsDateOfRevalueControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with MockAuthUtil{
+class PropertyDetailsDateOfRevalueControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockAuthUtil{
 
   implicit val mockAppConfig: ApplicationConfig = mock[ApplicationConfig]
   implicit lazy val hc: HeaderCarrier = HeaderCarrier()
@@ -61,7 +60,7 @@ class PropertyDetailsDateOfRevalueControllerSpec extends PlaySpec with GuiceOneS
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
   val injectedViewInstance: propertyDetailsDateOfRevalue = app.injector.instanceOf[views.html.propertyDetails.propertyDetailsDateOfRevalue]
 
-  class Setup {
+  class testFixture extends PlaySpec with GuiceOneServerPerSuite with MockAuthUtil{
     val mockAuthAction: AuthAction = new AuthAction(
       mockAppConfig,
       mockDelegationService,
@@ -79,18 +78,36 @@ class PropertyDetailsDateOfRevalueControllerSpec extends PlaySpec with GuiceOneS
       mockIsFullTaxPeriodController
     )
 
-
-    val customBtaNavigationLinks = btaNavigationLinksView()(messages, mockAppConfig)
-
     val userId = s"user-${UUID.randomUUID}"
+  }
+
+  def setupAuthForOrganisation(enrolmentSet: Set[Enrolment]): Unit = {
+    val authMock = authResultDefault(AffinityGroup.Organisation, enrolmentSet)
+    enrolmentSet match {
+      case "invalidEnrolmentSet" => setInvalidAuthMocks(authMock)
+      case "defaultEnrolmentSet" => setAuthMocks(authMock)
+    }
+  }
+
+  def setupCommonDependencies(isFeatureFlagEnabled: Boolean): Unit = {
+    when(mockAppConfig.newRevaluedFeature).thenReturn(isFeatureFlagEnabled)
+    when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(btaNavigationLinksView()(messages, mockAppConfig)))
+    when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(DelegatedClientAtedRefNumber))(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
+    when(mockDataCacheConnector.fetchAndGetFormData[Boolean](ArgumentMatchers.any())
+      (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
+    when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+  }
+
+  def setupPropertyDetails(): Unit = {
     val propertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("z11 1zz")).copy(value = None)
+    when(mockPropertyDetailsService.retrieveDraftPropertyDetails(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+      .thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propertyDetails)))
   }
 
   "PropertyDetailsDateOfRevalueController.view" must {
     "redirect to the unauthorised page" when {
-      "user fails authentication" in new Setup {
-        val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
-        setInvalidAuthMocks(authMock)
+      "user fails authentication" {
+        setupAuthForOrganisation(invalidEnrolmentSet)
         val result = testController.view("1").apply(SessionBuilder.buildRequestWithSession(userId))
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get must include("ated/unauthorised")
@@ -101,13 +118,8 @@ class PropertyDetailsDateOfRevalueControllerSpec extends PlaySpec with GuiceOneS
       "newRevaluedFeature flag is set to true" in new Setup {
         val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
         setAuthMocks(authMock)
-        when(mockAppConfig.newRevaluedFeature).thenReturn(true)
-        when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(customBtaNavigationLinks))
-        when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(DelegatedClientAtedRefNumber))(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-        when(mockDataCacheConnector.fetchAndGetFormData[Boolean](ArgumentMatchers.any())
-          (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
-        when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
-        when(mockPropertyDetailsService.retrieveDraftPropertyDetails(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propertyDetails)))
+        setupCommonDependencies(true)
+        setupPropertyDetails()
         val result = testController.view("1").apply(SessionBuilder.buildRequestWithSession(userId))
         status(result) mustBe OK
       }
@@ -123,17 +135,14 @@ class PropertyDetailsDateOfRevalueControllerSpec extends PlaySpec with GuiceOneS
         redirectLocation(result).get must include("ated/home")
       }
     }
+
     "for page errors, return BAD_REQUEST" in new Setup {
       val inputJson: JsValue = Json.obj()
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
-      when(mockAppConfig.newRevaluedFeature).thenReturn(true)
-      when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(customBtaNavigationLinks))
-      when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(DelegatedClientAtedRefNumber))(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-      when(mockDataCacheConnector.fetchAndGetFormData[Boolean](ArgumentMatchers.any())
-        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
-      when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
-      when(mockPropertyDetailsService.saveDraftPropertyDetailsRevalued(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(OK))
+
+      setupCommonDependencies(true)
+      setupPropertyDetails()
       val result = testController.save("1", 2015, None).apply(SessionBuilder.updateRequestWithSession(FakeRequest().withJsonBody(inputJson), userId))
       status(result) mustBe BAD_REQUEST
       contentAsString(result) must include("There is a problem")
@@ -152,7 +161,7 @@ class PropertyDetailsDateOfRevalueControllerSpec extends PlaySpec with GuiceOneS
     }
 
     "collect information from cache and save to database" when {
-      "newRevaluedFeature flag is set to true and user clicks button 'save and continue'" in new Setup {
+      "newRevaluedFeature flag is set to true and save invoked for a valid period" in new Setup {
         val inputJson: JsValue = Json.obj(
           "dateOfRevalue" -> Json.obj(
             "day" -> 1,
@@ -163,12 +172,7 @@ class PropertyDetailsDateOfRevalueControllerSpec extends PlaySpec with GuiceOneS
         val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
         setAuthMocks(authMock)
 
-        when(mockAppConfig.newRevaluedFeature).thenReturn(true)
-        when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(customBtaNavigationLinks))
-        when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(DelegatedClientAtedRefNumber))(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-        when(mockDataCacheConnector.fetchAndGetFormData[Boolean](ArgumentMatchers.any())
-          (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
-        when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+        setupCommonDependencies(true)
 
         when(mockDataCacheConnector.fetchAndGetFormData[HasBeenRevalued](ArgumentMatchers.eq(HasPropertyBeenRevalued))(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(HasBeenRevalued(Some(true)))))
         when(mockDataCacheConnector.fetchAndGetFormData[PropertyDetailsNewValuation](ArgumentMatchers.eq(propertyDetailsNewValuationValue))
@@ -178,7 +182,7 @@ class PropertyDetailsDateOfRevalueControllerSpec extends PlaySpec with GuiceOneS
           (ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(Some(DateOfChange(Some(LocalDate.of(2021, 6, 15))))))
 
-        when(mockPropertyDetailsService.saveDraftPropertyDetailsRevalued(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(OK))
+        setupPropertyDetails()
 
         val result = testController.save("1", 2020, None).apply(SessionBuilder.updateRequestWithSession(FakeRequest().withJsonBody(inputJson), userId))
         status(result) mustBe SEE_OTHER
@@ -217,13 +221,10 @@ class PropertyDetailsDateOfRevalueControllerSpec extends PlaySpec with GuiceOneS
         )
         val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
         setAuthMocks(authMock)
-        when(mockAppConfig.newRevaluedFeature).thenReturn(true)
-        when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(customBtaNavigationLinks))
-        when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(DelegatedClientAtedRefNumber))(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-        when(mockDataCacheConnector.fetchAndGetFormData[Boolean](ArgumentMatchers.any())
-          (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
-        when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
-        when(mockPropertyDetailsService.saveDraftPropertyDetailsRevalued(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(OK))
+
+        setupCommonDependencies(true)
+
+        setupPropertyDetails()
         val result = testController.save("1", 2015, None).apply(SessionBuilder.updateRequestWithSession(FakeRequest().withJsonBody(inputJson), userId))
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get must include("ated/liability/create/full-tax-period/view")
@@ -244,13 +245,8 @@ class PropertyDetailsDateOfRevalueControllerSpec extends PlaySpec with GuiceOneS
         )
         val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
         setAuthMocks(authMock)
-        when(mockAppConfig.newRevaluedFeature).thenReturn(true)
-        when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(customBtaNavigationLinks))
-        when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(DelegatedClientAtedRefNumber))(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-        when(mockDataCacheConnector.fetchAndGetFormData[Boolean](ArgumentMatchers.any())
-          (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
-        when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
-        when(mockPropertyDetailsService.saveDraftPropertyDetailsRevalued(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(OK))
+        setupCommonDependencies(true)
+        setupPropertyDetails()
         val result = testController.save("1", 2015, None).apply(SessionBuilder.updateRequestWithSession(FakeRequest().withJsonBody(inputJson), userId))
         status(result) mustBe BAD_REQUEST
         contentAsString(result) must include("There is a problem")
@@ -271,13 +267,10 @@ class PropertyDetailsDateOfRevalueControllerSpec extends PlaySpec with GuiceOneS
         )
         val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
         setAuthMocks(authMock)
-        when(mockAppConfig.newRevaluedFeature).thenReturn(true)
-        when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(customBtaNavigationLinks))
-        when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(DelegatedClientAtedRefNumber))(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-        when(mockDataCacheConnector.fetchAndGetFormData[Boolean](ArgumentMatchers.any())
-          (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
-        when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
-        when(mockPropertyDetailsService.saveDraftPropertyDetailsRevalued(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(OK))
+
+        setupCommonDependencies(true)
+
+
         val result = testController.save("1", 2015, None).apply(SessionBuilder.updateRequestWithSession(FakeRequest().withJsonBody(inputJson), userId))
         status(result) mustBe BAD_REQUEST
         contentAsString(result) must include("There is a problem")

@@ -86,7 +86,7 @@ class PropertyDetailsDateOfRevalueController @Inject()(mcc: MessagesControllerCo
           serviceInfoService.getPartial.flatMap { serviceInfoContent =>
             validateDateOfRevalue(periodKey, propertyDetailsDateOfRevalueForm.bindFromRequest(), dateFields).fold(
               formWithError => {
-                currentBackLink.map(backLink => (BadRequest(template(id, periodKey, formWithError, mode, serviceInfoContent, backLink))))
+                currentBackLink.map(backLink => BadRequest(template(id, periodKey, formWithError, mode, serviceInfoContent, backLink)))
               },
               dateOfRevalue => {
                 dataCacheConnector.saveFormData[DateOfRevalue](DateOfRevalueConstant, dateOfRevalue)
