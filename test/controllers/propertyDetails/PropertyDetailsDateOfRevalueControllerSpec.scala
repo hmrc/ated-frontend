@@ -16,97 +16,23 @@
 
 package controllers.propertyDetails
 
-import builders.{PropertyDetailsBuilder, SessionBuilder}
-import config.ApplicationConfig
-import connectors.{BackLinkCacheConnector, DataCacheConnector}
-import controllers.auth.AuthAction
-import models.{DateOfChange, HasBeenRevalued, PropertyDetailsNewValuation, PropertyDetailsRevalued}
-import org.mockito.ArgumentMatchers
+import builders.SessionBuilder
+import models.{HasBeenRevalued, PropertyDetailsRevalued}
+import org.mockito.ArgumentMatchers._
 import org.mockito.Mockito.{verify, when}
-import org.scalatestplus.play.PlaySpec
-import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
-import play.api.i18n.{Lang, MessagesApi, MessagesImpl}
 import play.api.libs.json.{JsValue, Json}
-import play.api.mvc.MessagesControllerComponents
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{contentAsString, defaultAwaitTimeout, redirectLocation, status}
-import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService}
-import testhelpers.MockAuthUtil
-import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolment}
-import uk.gov.hmrc.http.HeaderCarrier
-import utils.AtedConstants.{DelegatedClientAtedRefNumber, FortyThousandValueDateOfChange, HasPropertyBeenRevalued, propertyDetailsNewValuationValue}
-import views.html.BtaNavigationLinks
-import views.html.propertyDetails.propertyDetailsDateOfRevalue
+import utils.AtedConstants.HasPropertyBeenRevalued
 
 import java.time.LocalDate
-import java.util.UUID
-import scala.concurrent.Future
 
-class PropertyDetailsDateOfRevalueControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockAuthUtil{
-
-  implicit val mockAppConfig: ApplicationConfig = mock[ApplicationConfig]
-  implicit lazy val hc: HeaderCarrier = HeaderCarrier()
-
-  val mockMcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
-  val mockPropertyDetailsService: PropertyDetailsService = mock[PropertyDetailsService]
-  val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
-  val mockBackLinkCacheConnector: BackLinkCacheConnector = mock[BackLinkCacheConnector]
-  val mockNewValuationController: PropertyDetailsNewValuationController = mock[PropertyDetailsNewValuationController]
-  val mockIsFullTaxPeriodController: IsFullTaxPeriodController = mock[IsFullTaxPeriodController]
-  val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-  lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
-  val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
-  val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
-  val injectedViewInstance: propertyDetailsDateOfRevalue = app.injector.instanceOf[views.html.propertyDetails.propertyDetailsDateOfRevalue]
-
-  class testFixture extends PlaySpec with GuiceOneServerPerSuite with MockAuthUtil{
-    val mockAuthAction: AuthAction = new AuthAction(
-      mockAppConfig,
-      mockDelegationService,
-      mockAuthConnector
-    )
-
-    val testController: PropertyDetailsDateOfRevalueController = new PropertyDetailsDateOfRevalueController(
-      mockMcc,
-      mockAuthAction,
-      mockServiceInfoService,
-      injectedViewInstance,
-      mockPropertyDetailsService,
-      mockBackLinkCacheConnector,
-      mockDataCacheConnector,
-      mockIsFullTaxPeriodController
-    )
-
-    val userId = s"user-${UUID.randomUUID}"
-  }
-
-  def setupAuthForOrganisation(enrolmentSet: Set[Enrolment]): Unit = {
-    val authMock = authResultDefault(AffinityGroup.Organisation, enrolmentSet)
-    enrolmentSet match {
-      case "invalidEnrolmentSet" => setInvalidAuthMocks(authMock)
-      case "defaultEnrolmentSet" => setAuthMocks(authMock)
-    }
-  }
-
-  def setupCommonDependencies(isFeatureFlagEnabled: Boolean): Unit = {
-    when(mockAppConfig.newRevaluedFeature).thenReturn(isFeatureFlagEnabled)
-    when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(btaNavigationLinksView()(messages, mockAppConfig)))
-    when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(DelegatedClientAtedRefNumber))(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-    when(mockDataCacheConnector.fetchAndGetFormData[Boolean](ArgumentMatchers.any())
-      (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
-    when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
-  }
-
-  def setupPropertyDetails(): Unit = {
-    val propertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("z11 1zz")).copy(value = None)
-    when(mockPropertyDetailsService.retrieveDraftPropertyDetails(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
-      .thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propertyDetails)))
-  }
+class PropertyDetailsDateOfRevalueControllerSpec extends PropertyDetailsTestFixture {
 
   "PropertyDetailsDateOfRevalueController.view" must {
     "redirect to the unauthorised page" when {
-      "user fails authentication" {
+      "user fails authentication" in {
         setupAuthForOrganisation(invalidEnrolmentSet)
         val result = testController.view("1").apply(SessionBuilder.buildRequestWithSession(userId))
         status(result) mustBe SEE_OTHER
@@ -115,9 +41,8 @@ class PropertyDetailsDateOfRevalueControllerSpec extends PlaySpec with GuiceOneS
     }
 
     "render the date of revalue page" when {
-      "newRevaluedFeature flag is set to true" in new Setup {
-        val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
-        setAuthMocks(authMock)
+      "newRevaluedFeature flag is set to true" in {
+        setupAuthForOrganisation(defaultEnrolmentSet)
         setupCommonDependencies(true)
         setupPropertyDetails()
         val result = testController.view("1").apply(SessionBuilder.buildRequestWithSession(userId))
@@ -126,9 +51,8 @@ class PropertyDetailsDateOfRevalueControllerSpec extends PlaySpec with GuiceOneS
     }
 
     "redirect to home page" when {
-      "newRevaluedFeature flag is set to false" in new Setup {
-        val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
-        setAuthMocks(authMock)
+      "newRevaluedFeature flag is set to false" in {
+        setupAuthForOrganisation(defaultEnrolmentSet)
         when(mockAppConfig.newRevaluedFeature).thenReturn(false)
         val result = testController.view("1").apply(SessionBuilder.buildRequestWithSession(userId))
         status(result) mustBe SEE_OTHER
@@ -136,10 +60,9 @@ class PropertyDetailsDateOfRevalueControllerSpec extends PlaySpec with GuiceOneS
       }
     }
 
-    "for page errors, return BAD_REQUEST" in new Setup {
+    "for page errors, return BAD_REQUEST" in {
       val inputJson: JsValue = Json.obj()
-      val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
-      setAuthMocks(authMock)
+      setupAuthForOrganisation(defaultEnrolmentSet)
 
       setupCommonDependencies(true)
       setupPropertyDetails()
@@ -151,9 +74,8 @@ class PropertyDetailsDateOfRevalueControllerSpec extends PlaySpec with GuiceOneS
 
   "PropertyDetailsDateOfRevalueController.save" must {
     "redirect to the unauthorised page" when {
-      "user fails authentication" in new Setup {
-        val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
-        setInvalidAuthMocks(authMock)
+      "user fails authentication" in {
+        setupAuthForOrganisation(invalidEnrolmentSet)
         val result = testController.view("1").apply(SessionBuilder.buildRequestWithSession(userId))
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get must include("ated/unauthorised")
@@ -161,7 +83,7 @@ class PropertyDetailsDateOfRevalueControllerSpec extends PlaySpec with GuiceOneS
     }
 
     "collect information from cache and save to database" when {
-      "newRevaluedFeature flag is set to true and save invoked for a valid period" in new Setup {
+      "newRevaluedFeature flag is set to true and save invoked for a valid period" in {
         val inputJson: JsValue = Json.obj(
           "dateOfRevalue" -> Json.obj(
             "day" -> 1,
@@ -169,46 +91,47 @@ class PropertyDetailsDateOfRevalueControllerSpec extends PlaySpec with GuiceOneS
             "year" -> 2020
           )
         )
-        val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
-        setAuthMocks(authMock)
+        setupAuthForOrganisation(defaultEnrolmentSet)
 
         setupCommonDependencies(true)
 
-        when(mockDataCacheConnector.fetchAndGetFormData[HasBeenRevalued](ArgumentMatchers.eq(HasPropertyBeenRevalued))(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(HasBeenRevalued(Some(true)))))
-        when(mockDataCacheConnector.fetchAndGetFormData[PropertyDetailsNewValuation](ArgumentMatchers.eq(propertyDetailsNewValuationValue))
-          (ArgumentMatchers.any(), ArgumentMatchers.any()))
-          .thenReturn(Future.successful(Some(PropertyDetailsNewValuation(Some(1000000)))))
-        when(mockDataCacheConnector.fetchAndGetFormData[DateOfChange](ArgumentMatchers.eq(FortyThousandValueDateOfChange))
-          (ArgumentMatchers.any(), ArgumentMatchers.any()))
-          .thenReturn(Future.successful(Some(DateOfChange(Some(LocalDate.of(2021, 6, 15))))))
+        val newValuation = Some(BigDecimal.valueOf(1000000))
+        val hasPropertyBeenRevalued = Some(true)
+        val dateOfRevaluationChange = Some(LocalDate.of(2021, 6, 15))
+
+        setupDataCacheConnectorExpectations(newValuation, hasPropertyBeenRevalued, dateOfRevaluationChange)
 
         setupPropertyDetails()
 
-        val result = testController.save("1", 2020, None).apply(SessionBuilder.updateRequestWithSession(FakeRequest().withJsonBody(inputJson), userId))
+        val result = testController.save(id = "1", periodKey = 2020, mode = None)
+          .apply(
+            SessionBuilder.updateRequestWithSession(FakeRequest().withJsonBody(inputJson),
+              userId))
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get must include("ated/liability/create/full-tax-period/view")
 
         val expectedPropertyDetails = PropertyDetailsRevalued(
-          isPropertyRevalued = Some(true),
-          revaluedValue = Some(1000000),
+          isPropertyRevalued = hasPropertyBeenRevalued,
+          revaluedValue = newValuation,
           revaluedDate = Some(LocalDate.of(2020, 4, 1)),
-          partAcqDispDate = Some(LocalDate.of(2021, 6, 15))
+          partAcqDispDate = dateOfRevaluationChange
         )
 
-        verify(mockPropertyDetailsService).saveDraftPropertyDetailsRevalued(ArgumentMatchers.eq("1"),
-          ArgumentMatchers.eq(expectedPropertyDetails)
-        )(ArgumentMatchers.any(), ArgumentMatchers.any())
+        verify(mockPropertyDetailsService).saveDraftPropertyDetailsRevalued(.eq("1")
+        ,
+        eq(expectedPropertyDetails)
+        ) (any(), any())
 
         verify(mockDataCacheConnector).fetchAndGetFormData[HasBeenRevalued](
-          ArgumentMatchers.eq(HasPropertyBeenRevalued)
-        )(ArgumentMatchers.any(), ArgumentMatchers.any())
+          eq(HasPropertyBeenRevalued)
+        )(any(), any())
 
-        verify(mockBackLinkCacheConnector).saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())
+        verify(mockBackLinkCacheConnector).saveBackLink(any(), any())(any())
       }
     }
 
     "redirect to next page: full tax period" when {
-      "newRevaluedFeature flag is set to true and user enters valid date" in new Setup {
+      "newRevaluedFeature flag is set to true and user enters valid date" in {
         val day = "1"
         val month = "4"
         val year = "2015"
@@ -219,8 +142,7 @@ class PropertyDetailsDateOfRevalueControllerSpec extends PlaySpec with GuiceOneS
             "year" -> year
           )
         )
-        val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
-        setAuthMocks(authMock)
+        setupAuthForOrganisation(defaultEnrolmentSet)
 
         setupCommonDependencies(true)
 
@@ -232,45 +154,37 @@ class PropertyDetailsDateOfRevalueControllerSpec extends PlaySpec with GuiceOneS
     }
 
     "return BAD_REQUEST with error message for invalid date" when {
-      "user enters an invalid date (31st of February)" in new Setup {
-        val day = "31"
-        val month = "2"
-        val year = "2024"
+      "user enters an invalid date (31st of February)" in {
         val inputJson: JsValue = Json.obj(
           "dateOfRevalue" -> Json.obj(
-            "day" -> day,
-            "month" -> month,
-            "year" -> year
+            "day" -> "31",
+            "month" -> "2",
+            "year" -> "2024"
           )
         )
-        val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
-        setAuthMocks(authMock)
+        setupAuthForOrganisation(defaultEnrolmentSet)
         setupCommonDependencies(true)
         setupPropertyDetails()
-        val result = testController.save("1", 2015, None).apply(SessionBuilder.updateRequestWithSession(FakeRequest().withJsonBody(inputJson), userId))
+        val result = testController.save("1", 2015, None)
+          .apply(
+            SessionBuilder.updateRequestWithSession(FakeRequest().withJsonBody(inputJson),
+              userId))
         status(result) mustBe BAD_REQUEST
         contentAsString(result) must include("There is a problem")
       }
     }
 
     "return BAD_REQUEST with error message for missing date fields" when {
-      "user omits some date fields" in new Setup {
-        val day = ""
-        val month = "4"
-        val year = "2024"
+      "user omits some date fields" in {
         val inputJson: JsValue = Json.obj(
           "dateOfRevalue" -> Json.obj(
-            "day" -> day,
-            "month" -> month,
-            "year" -> year
+            "day" -> "",
+            "month" -> "4",
+            "year" -> "2024"
           )
         )
-        val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
-        setAuthMocks(authMock)
-
+        setupAuthForOrganisation(defaultEnrolmentSet)
         setupCommonDependencies(true)
-
-
         val result = testController.save("1", 2015, None).apply(SessionBuilder.updateRequestWithSession(FakeRequest().withJsonBody(inputJson), userId))
         status(result) mustBe BAD_REQUEST
         contentAsString(result) must include("There is a problem")
@@ -279,9 +193,8 @@ class PropertyDetailsDateOfRevalueControllerSpec extends PlaySpec with GuiceOneS
 
 
     "redirect to home page" when {
-      "newRevaluedFeature flag is set to false" in new Setup {
-        val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
-        setAuthMocks(authMock)
+      "newRevaluedFeature flag is set to false" in {
+        setupAuthForOrganisation(defaultEnrolmentSet)
         when(mockAppConfig.newRevaluedFeature).thenReturn(false)
         val result = testController.view("1").apply(SessionBuilder.buildRequestWithSession(userId))
         status(result) mustBe SEE_OTHER
@@ -289,5 +202,6 @@ class PropertyDetailsDateOfRevalueControllerSpec extends PlaySpec with GuiceOneS
       }
     }
   }
-
 }
+
+
