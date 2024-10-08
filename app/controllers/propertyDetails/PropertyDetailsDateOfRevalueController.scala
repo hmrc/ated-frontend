@@ -19,14 +19,14 @@ package controllers.propertyDetails
 import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.{AuthAction, ClientHelper}
+import forms.PropertyDetailsForms._
+import models._
+import play.api.i18n.{Messages, MessagesImpl}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService}
 import uk.gov.hmrc.play.bootstrap.controller.WithUnsafeDefaultFormBinding
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import forms.PropertyDetailsForms._
-import models.{DateOfChange, DateOfRevalue, HasBeenRevalued, PropertyDetailsNewValuation, PropertyDetailsRevalued}
-import play.api.i18n.{Messages, MessagesImpl}
-import utils.AtedConstants.{DateOfRevalueConstant, FortyThousandValueDateOfChange, HasPropertyBeenRevalued, SelectedPreviousReturn, propertyDetailsNewValuationValue}
+import utils.AtedConstants._
 import utils.AtedUtils
 
 import javax.inject.Inject
@@ -46,6 +46,9 @@ class PropertyDetailsDateOfRevalueController @Inject()(mcc: MessagesControllerCo
 
   implicit val ec: ExecutionContext = mcc.executionContext
   val controllerId: String = "PropertyDetailsDateOfRevalueController"
+  val dateFields: (String, String) = ("dateOfRevalue", messages("ated.property-details-value.dateOfRevalue.messageKey"))
+
+  implicit lazy val messages: Messages = MessagesImpl(mcc.langs.availables.head, messagesApi)
 
   def view(id: String): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
@@ -74,10 +77,6 @@ class PropertyDetailsDateOfRevalueController @Inject()(mcc: MessagesControllerCo
       }
     }
   }
-
-  implicit lazy val messages: Messages = MessagesImpl(mcc.langs.availables.head, messagesApi)
-
-  val dateFields: (String, String) = ("dateOfRevalue", messages("ated.property-details-value.dateOfRevalue.messageKey"))
 
   def save(id: String, periodKey: Int, mode: Option[String]): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>

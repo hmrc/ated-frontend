@@ -17,9 +17,7 @@
 package controllers.propertyDetails
 
 import builders.SessionBuilder
-import models.PropertyDetailsRevalued
-import org.mockito.ArgumentMatchers._
-import org.mockito.Mockito.{verify, when}
+import org.mockito.Mockito.when
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.json.{JsValue, Json}
 import play.api.test.FakeRequest
@@ -43,8 +41,8 @@ class PropertyDetailsDateOfRevalueControllerSpec extends PropertyDetailsTestFixt
     "render the date of revalue page" when {
       "newRevaluedFeature flag is set to true" in {
         setupAuthForOrganisation(defaultEnrolmentSet)
-        setupCommonDependencies(true)
-        setupPropertyDetails()
+        setupCommonMockExpectations(true)
+        setupPropertyDetailServiceMockExpectations()
         val result = testController.view("1").apply(SessionBuilder.buildRequestWithSession(userId))
         status(result) mustBe OK
       }
@@ -62,8 +60,8 @@ class PropertyDetailsDateOfRevalueControllerSpec extends PropertyDetailsTestFixt
 
     "for page errors, return BAD_REQUEST" in {
       setupAuthForOrganisation(defaultEnrolmentSet)
-      setupCommonDependencies(true)
-      setupPropertyDetails()
+      setupCommonMockExpectations(true)
+      setupPropertyDetailServiceMockExpectations()
       val inputJson: JsValue = Json.obj()
       val result = testController.save("1", 2015, None).apply(SessionBuilder.updateRequestWithSession(FakeRequest().withJsonBody(inputJson), userId))
       status(result) mustBe BAD_REQUEST
@@ -91,38 +89,22 @@ class PropertyDetailsDateOfRevalueControllerSpec extends PropertyDetailsTestFixt
           )
         )
         setupAuthForOrganisation(defaultEnrolmentSet)
-        setupCommonDependencies(true)
+        setupCommonMockExpectations(true)
+        setupDataCacheConnectorExpectations(
+          newValuation = Some(BigDecimal.valueOf(1000000)),
+          hasPropertyBeenRevalued = Some(true),
+          dateOfRevaluationChange = Some(LocalDate.of(2021, 6, 15))
+        )
+        setupPropertyDetailServiceMockExpectations()
 
 
-        val newValuation = Some(BigDecimal.valueOf(1000000))
-        val hasPropertyBeenRevalued = Some(true)
-        val dateOfRevaluationChange = Some(LocalDate.of(2021, 6, 15))
-
-        setupDataCacheConnectorExpectations(newValuation, hasPropertyBeenRevalued, dateOfRevaluationChange)
-        setupPropertyDetails()
-
-
-        val result = testController.save(id = "1", periodKey = 2020, mode = None)
-          .apply(
-            SessionBuilder.updateRequestWithSession(FakeRequest().withJsonBody(inputJson),
-              userId))
+        val result = testController.save("1", 2020, None).apply(SessionBuilder.updateRequestWithSession(FakeRequest().withJsonBody(inputJson), userId))
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get must include("ated/liability/create/full-tax-period/view")
 
-        val expectedPropertyDetails = PropertyDetailsRevalued(
-          isPropertyRevalued = hasPropertyBeenRevalued,
-          revaluedValue = newValuation,
-          revaluedDate = Some(LocalDate.of(2020, 4, 1)),
-          partAcqDispDate = dateOfRevaluationChange
-        )
-
-//        verify(mockPropertyDetailsService).saveDraftPropertyDetailsRevalued(eq("1"), eq(expectedPropertyDetails)(any(), any())
-//
-//        verify(mockDataCacheConnector).fetchAndGetFormData[HasBeenRevalued](
-//          eq(HasPropertyBeenRevalued)
-//        )(any(), any())
-//
-//        verify(mockBackLinkCacheConnector).saveBackLink(any(), any())(any()))
+        verifyPropertyDetailsService(Some(true), Some(1000000), Some(LocalDate.of(2020, 4, 1)), Some(LocalDate.of(2021, 6, 15)))
+        verifyDataCacheConnectorRetursHasBeenRevalued(HasPropertyBeenRevalued)
+        verifySaveBackLinkIsCalled
       }
     }
 
@@ -136,8 +118,8 @@ class PropertyDetailsDateOfRevalueControllerSpec extends PropertyDetailsTestFixt
           )
         )
         setupAuthForOrganisation(defaultEnrolmentSet)
-        setupCommonDependencies(true)
-        setupPropertyDetails()
+        setupCommonMockExpectations(true)
+        setupPropertyDetailServiceMockExpectations()
 
         val result = testController.save("1", 2015, None).
           apply(
@@ -158,8 +140,8 @@ class PropertyDetailsDateOfRevalueControllerSpec extends PropertyDetailsTestFixt
           )
         )
         setupAuthForOrganisation(defaultEnrolmentSet)
-        setupCommonDependencies(true)
-        setupPropertyDetails()
+        setupCommonMockExpectations(true)
+        setupPropertyDetailServiceMockExpectations()
         val result = testController.save("1", 2015, None)
           .apply(
             SessionBuilder.updateRequestWithSession(FakeRequest().withJsonBody(inputJson),
@@ -179,7 +161,7 @@ class PropertyDetailsDateOfRevalueControllerSpec extends PropertyDetailsTestFixt
           )
         )
         setupAuthForOrganisation(defaultEnrolmentSet)
-        setupCommonDependencies(true)
+        setupCommonMockExpectations(true)
         val result = testController.save("1", 2015, None).apply(SessionBuilder.updateRequestWithSession(FakeRequest().withJsonBody(inputJson), userId))
         status(result) mustBe BAD_REQUEST
         contentAsString(result) must include("There is a problem")
@@ -197,6 +179,8 @@ class PropertyDetailsDateOfRevalueControllerSpec extends PropertyDetailsTestFixt
       }
     }
   }
+
+
 }
 
 
