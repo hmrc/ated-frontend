@@ -23,7 +23,7 @@ import java.time.LocalDate
 import java.util.UUID
 import scala.concurrent.Future
 
-class PropertyDetailsTestFixture extends PlaySpec with GuiceOneServerPerSuite with MockAuthUtil{
+class PropertyDetailsTestFixture extends PlaySpec with GuiceOneServerPerSuite with MockAuthUtil {
 
 
   implicit val mockAppConfig: ApplicationConfig = mock[ApplicationConfig]
@@ -41,28 +41,29 @@ class PropertyDetailsTestFixture extends PlaySpec with GuiceOneServerPerSuite wi
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
   val injectedViewInstance: propertyDetailsDateOfRevalue = app.injector.instanceOf[views.html.propertyDetails.propertyDetailsDateOfRevalue]
 
-    val mockAuthAction: AuthAction = new AuthAction(
-      mockAppConfig,
-      mockDelegationService,
-      mockAuthConnector
-    )
+  val mockAuthAction: AuthAction = new AuthAction(
+    mockAppConfig,
+    mockDelegationService,
+    mockAuthConnector
+  )
 
-    val testController: PropertyDetailsDateOfRevalueController = new PropertyDetailsDateOfRevalueController(
-      mockMcc,
-      mockAuthAction,
-      mockServiceInfoService,
-      injectedViewInstance,
-      mockPropertyDetailsService,
-      mockBackLinkCacheConnector,
-      mockDataCacheConnector,
-      mockIsFullTaxPeriodController
-    )
+  val testController: PropertyDetailsDateOfRevalueController = new PropertyDetailsDateOfRevalueController(
+    mockMcc,
+    mockAuthAction,
+    mockServiceInfoService,
+    injectedViewInstance,
+    mockPropertyDetailsService,
+    mockBackLinkCacheConnector,
+    mockDataCacheConnector,
+    mockIsFullTaxPeriodController
+  )
 
-  def setupAuthForOrganisation(enrolmentSet: Set[Enrolment]) {
+  def setupAuthForOrganisation(enrolmentSet: Set[Enrolment]) = {
     val authMock = authResultDefault(AffinityGroup.Organisation, enrolmentSet)
     enrolmentSet match {
-      case "invalidEnrolmentSet" => setInvalidAuthMocks(authMock)
-      case "defaultEnrolmentSet" => setAuthMocks(authMock)
+      case set if set == invalidEnrolmentSet => setInvalidAuthMocks(authMock)
+      case set if set == defaultEnrolmentSet => setAuthMocks(authMock)
+      case _ => // should it default to invalid or default to default?
     }
   }
 
@@ -78,10 +79,11 @@ class PropertyDetailsTestFixture extends PlaySpec with GuiceOneServerPerSuite wi
       (ArgumentMatchers.any(), ArgumentMatchers.any()))
       .thenReturn(Future.successful(Some(DateOfChange(dateOfRevaluationChange))))
   }
-}
+
   def setupCommonDependencies(isFeatureFlagEnabled: Boolean): Unit = {
     when(mockAppConfig.newRevaluedFeature).thenReturn(isFeatureFlagEnabled)
-    when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(btaNavigationLinksView()(messages, mockAppConfig)))
+    val customBtaNavigationLinks = btaNavigationLinksView()(messages, mockAppConfig)
+    when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(customBtaNavigationLinks))
     when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(DelegatedClientAtedRefNumber))(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
     when(mockDataCacheConnector.fetchAndGetFormData[Boolean](ArgumentMatchers.any())
       (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
@@ -93,6 +95,7 @@ class PropertyDetailsTestFixture extends PlaySpec with GuiceOneServerPerSuite wi
     when(mockPropertyDetailsService.retrieveDraftPropertyDetails(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
       .thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propertyDetails)))
   }
-    override val userId = s"user-${UUID.randomUUID}"
+
+  override lazy val userId = s"user-${UUID.randomUUID}"
 
 }

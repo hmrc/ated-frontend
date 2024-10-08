@@ -92,18 +92,15 @@ class PropertyDetailsDateOfRevalueController @Inject()(mcc: MessagesControllerCo
                 dataCacheConnector.saveFormData[DateOfRevalue](DateOfRevalueConstant, dateOfRevalue)
 
                 val propertyDetailsFuture: Future[PropertyDetailsRevalued] = for {
-                  isPropertyRevalued <- dataCacheConnector.fetchAndGetFormData[HasBeenRevalued](HasPropertyBeenRevalued)
-                    .map(_.flatMap(_.isPropertyRevalued))
+                  hasPropertyBeenRevalued <- dataCacheConnector.fetchAndGetFormData[HasBeenRevalued](HasPropertyBeenRevalued)
                   revaluedValue <- dataCacheConnector.fetchAndGetFormData[PropertyDetailsNewValuation](propertyDetailsNewValuationValue)
-                    .map(_.flatMap(_.revaluedValue))
                   dateOfChange <- dataCacheConnector.fetchAndGetFormData[DateOfChange](FortyThousandValueDateOfChange)
-                    .map(_.flatMap(_.dateOfChange))
                 } yield {
                   PropertyDetailsRevalued(
-                    isPropertyRevalued = isPropertyRevalued,
-                    revaluedValue = revaluedValue,
+                    isPropertyRevalued = hasPropertyBeenRevalued.flatMap(_.isPropertyRevalued),
+                    revaluedValue = revaluedValue.flatMap(_.revaluedValue),
                     revaluedDate = dateOfRevalue.dateOfRevalue,
-                    partAcqDispDate = dateOfChange
+                    partAcqDispDate = dateOfChange.flatMap(_.dateOfChange)
                   )
                 }
                 propertyDetailsFuture.flatMap { propertyDetails =>
