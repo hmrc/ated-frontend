@@ -40,7 +40,7 @@ class PropertyDetailsDateOfRevalueControllerSpec extends PropertyDetailsTestFixt
 
     "render the date of revalue page" when {
       "newRevaluedFeature flag is set to true" in {
-        setupAuthForOrganisation(defaultEnrolmentSet)
+        setupAuthForOrganisation()
         setupCommonMockExpectations(true)
         setupPropertyDetailServiceMockExpectations()
         val result = testController.view("1").apply(SessionBuilder.buildRequestWithSession(userId))
@@ -50,7 +50,7 @@ class PropertyDetailsDateOfRevalueControllerSpec extends PropertyDetailsTestFixt
 
     "redirect to home page" when {
       "newRevaluedFeature flag is set to false" in {
-        setupAuthForOrganisation(defaultEnrolmentSet)
+        setupAuthForOrganisation()
         when(mockAppConfig.newRevaluedFeature).thenReturn(false)
         val result = testController.view("1").apply(SessionBuilder.buildRequestWithSession(userId))
         status(result) mustBe SEE_OTHER
@@ -59,7 +59,7 @@ class PropertyDetailsDateOfRevalueControllerSpec extends PropertyDetailsTestFixt
     }
 
     "for page errors, return BAD_REQUEST" in {
-      setupAuthForOrganisation(defaultEnrolmentSet)
+      setupAuthForOrganisation()
       setupCommonMockExpectations(true)
       setupPropertyDetailServiceMockExpectations()
       val inputJson: JsValue = Json.obj()
@@ -88,7 +88,7 @@ class PropertyDetailsDateOfRevalueControllerSpec extends PropertyDetailsTestFixt
             "year" -> 2020
           )
         )
-        setupAuthForOrganisation(defaultEnrolmentSet)
+        setupAuthForOrganisation()
         setupCommonMockExpectations(true)
         setupDataCacheConnectorExpectations(
           newValuation = Some(BigDecimal.valueOf(1000000)),
@@ -117,7 +117,7 @@ class PropertyDetailsDateOfRevalueControllerSpec extends PropertyDetailsTestFixt
             "year" -> "2015"
           )
         )
-        setupAuthForOrganisation(defaultEnrolmentSet)
+        setupAuthForOrganisation()
         setupCommonMockExpectations(true)
         setupPropertyDetailServiceMockExpectations()
 
@@ -139,7 +139,7 @@ class PropertyDetailsDateOfRevalueControllerSpec extends PropertyDetailsTestFixt
             "year" -> "2024"
           )
         )
-        setupAuthForOrganisation(defaultEnrolmentSet)
+        setupAuthForOrganisation()
         setupCommonMockExpectations(true)
         setupPropertyDetailServiceMockExpectations()
         val result = testController.save("1", 2015, None)
@@ -160,7 +160,7 @@ class PropertyDetailsDateOfRevalueControllerSpec extends PropertyDetailsTestFixt
             "year" -> "2024"
           )
         )
-        setupAuthForOrganisation(defaultEnrolmentSet)
+        setupAuthForOrganisation()
         setupCommonMockExpectations(true)
         val result = testController.save("1", 2015, None).apply(SessionBuilder.updateRequestWithSession(FakeRequest().withJsonBody(inputJson), userId))
         status(result) mustBe BAD_REQUEST
@@ -171,7 +171,7 @@ class PropertyDetailsDateOfRevalueControllerSpec extends PropertyDetailsTestFixt
 
     "redirect to home page" when {
       "newRevaluedFeature flag is set to false" in {
-        setupAuthForOrganisation(defaultEnrolmentSet)
+        setupAuthForOrganisation()
         when(mockAppConfig.newRevaluedFeature).thenReturn(false)
         val result = testController.view("1").apply(SessionBuilder.buildRequestWithSession(userId))
         status(result) mustBe SEE_OTHER

@@ -38,7 +38,6 @@ import views.html.BtaNavigationLinks
 import views.html.propertyDetails.propertyDetailsDateOfRevalue
 
 import java.time.LocalDate
-import java.util.UUID
 import scala.concurrent.Future
 
 class PropertyDetailsTestFixture extends PlaySpec with GuiceOneServerPerSuite with MockAuthUtil {
@@ -46,7 +45,6 @@ class PropertyDetailsTestFixture extends PlaySpec with GuiceOneServerPerSuite wi
 
   implicit val mockAppConfig: ApplicationConfig = mock[ApplicationConfig]
   implicit lazy val hc: HeaderCarrier = HeaderCarrier()
-  override lazy val userId = s"user-${UUID.randomUUID}"
   val mockMcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
   val mockPropertyDetailsService: PropertyDetailsService = mock[PropertyDetailsService]
   val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
@@ -74,12 +72,11 @@ class PropertyDetailsTestFixture extends PlaySpec with GuiceOneServerPerSuite wi
     mockIsFullTaxPeriodController
   )
 
-  def setupAuthForOrganisation(enrolmentSet: Set[Enrolment]) = {
+  def setupAuthForOrganisation(enrolmentSet: Set[Enrolment] = defaultEnrolmentSet) = {
     val authMock = authResultDefault(AffinityGroup.Organisation, enrolmentSet)
     enrolmentSet match {
       case set if set == invalidEnrolmentSet => setInvalidAuthMocks(authMock)
-      case set if set == defaultEnrolmentSet => setAuthMocks(authMock)
-      case _ => // should it default to invalid or default to default?
+      case _ => setAuthMocks(authMock)
     }
   }
 
