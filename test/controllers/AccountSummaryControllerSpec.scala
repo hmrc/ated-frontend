@@ -106,8 +106,6 @@ class AccountSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
       when(mockSubscriptionDataService.getCorrespondenceAddress(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(correspondence))
       when(mockSubscriptionDataService.getOrganisationName(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(organisationName)))
       when(mockSubscriptionDataService.getSafeId(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("safeId")))
-      when(mockMandateFrontendConnector.getClientBannerPartial(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
-        .thenReturn(Future.successful(HtmlPartial.Success(Some("thepartial"), Html(""))))
       when(mockDetailsService.cacheClientReference(ArgumentMatchers.any())(ArgumentMatchers.any()))
         .thenReturn(Future.successful("XN1200000100001"))
       when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Html("")))
@@ -199,6 +197,8 @@ class AccountSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
 
       "show the account summary view" in new Setup {
 
+        when(mockMandateFrontendConnector.getClientBannerPartial(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+          .thenReturn(Future.successful(HtmlPartial.Success(Some("thepartial"), Html(""))))
         getWithAuthorisedUser(summaryReturnsModel(periodKey = periodKey2015), Some(address)) {
           result =>
             status(result) must be(OK)
@@ -214,6 +214,8 @@ class AccountSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
 
         when(mockAppConfig.urBannerToggle).thenReturn(true)
 
+        when(mockMandateFrontendConnector.getClientBannerPartial(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+          .thenReturn(Future.successful(HtmlPartial.Success(Some("thepartial"), Html(""))))
         getWithAuthorisedUser(data, Some(address)) {
           result =>
             status(result) must be(OK)
@@ -230,6 +232,8 @@ class AccountSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
 
       "show the create a return and appoint an agent link if there are no returns and no delegation" in new Setup {
         val data: SummaryReturnsModel = SummaryReturnsModel(None, Seq())
+        when(mockMandateFrontendConnector.getClientBannerPartial(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+          .thenReturn(Future.successful(HtmlPartial.Success(Some("thepartial"), Html(""))))
         getWithAuthorisedUser(data, None) {
           result =>
             status(result) must be(OK)
@@ -286,6 +290,29 @@ class AccountSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
             document.title() must be(TitleBuilder.buildTitle("Annual Tax on Enveloped Dwellings (ATED) summary"))
             document.getElementById("create-return") != null
             Option(document.getElementById("appoint-agent")) must be(None)
+        }
+      }
+
+      "with valid response from ACM" in new Setup {
+        val cancelHtml: String =
+        """<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
+         |<html>
+         |
+         |<head>
+         |  <title>Response from ACM</title>
+         |</head>
+         |
+         |<body>
+         |  <a id="client-banner-text-link" href="/testCancelACMLinkUri/testAgentId">Cancel</a>
+         |</body>
+         |
+         |</html>""".stripMargin
+        when(mockMandateFrontendConnector.getClientBannerPartial
+          (ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+          .thenReturn(Future.successful(HtmlPartial.Success(Some("CancelLinkData"), Html(cancelHtml))))
+        getWithAuthorisedUser(summaryReturnsModel(periodKey = periodKey2015), Some(address)) {
+          result =>
+            status(result) must be(OK)
         }
       }
     }

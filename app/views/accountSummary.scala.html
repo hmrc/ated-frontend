@@ -97,30 +97,34 @@
     } else {
         <h2 class="govuk-heading-l">@messages("ated.account-summary.balance-outstanding.heading")</h2>
         @if(otherReturns.atedBalance.getOrElse(BigDecimal(0)) > 0) {
-        <p class="govuk-body">@messages("ated.account-summary.balance-outstanding-part-one.text")</p>
-        <p class="govuk-body">@messages("ated.account-summary.balance-outstanding-part-two.text")</p>
+            <p class="govuk-body">@messages("ated.account-summary.balance-outstanding-part-one.text")</p>
+            <p class="govuk-body">@messages("ated.account-summary.balance-outstanding-part-two.text")</p>
 
-        <dl class="govuk-summary-list">
-            <div class="govuk-summary-list__row">
-                <dt class="govuk-summary-list__key">
-                @messages("ated.account-summary.balance-outstanding-total-due.text")
-                </dt>
-                <dd class="govuk-summary-list__actions">
-                @formattedPounds(otherReturns.atedBalance.getOrElse(BigDecimal(0)).abs)
-                </dd>
-            </div>
-        </dl>
-        @govukButton(Button(
-            href = Some("https://www.tax.service.gov.uk/pay/enter-annual-tax-enveloped-dwellings-payment-reference"),
-            content = Text(messages("ated.account-summary.pay-button.text")),
-            attributes = Map("id" -> "pay-now")
-        ))
+            <dl class="govuk-summary-list">
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                    @messages("ated.account-summary.balance-outstanding-total-due.text")
+                    </dt>
+                    <dd class="govuk-summary-list__actions">
+                    @formattedPounds(otherReturns.atedBalance.getOrElse(BigDecimal(0)).abs)
+                    </dd>
+                </div>
+            </dl>
 
-        <p class="govuk-body"><a class="govuk-link" href=@messages("https://www.gov.uk/guidance/pay-annual-tax-on-enveloped-dwellings")>@messages("ated.account-summary.other-ways-to-pay")</a></p>
-            } else {
-        <p class="govuk-body">@messages("ated.account-summary.no-payment-due.text")</p>
+            @govukButton(Button(
+                href = Some("https://www.tax.service.gov.uk/pay/enter-annual-tax-enveloped-dwellings-payment-reference"),
+                content = Text(messages("ated.account-summary.pay-button.text")),
+                attributes = Map("id" -> "pay-now")
+            ))
+
+            <p class="govuk-body">
+                <a id="other-ways-you-can-pay" class="govuk-link" href="https://www.gov.uk/guidance/pay-annual-tax-on-enveloped-dwellings">
+                @messages("ated.account-summary.other-ways-to-pay")</a>
+            </p>
+        } else {
+            <p class="govuk-body">@messages("ated.account-summary.no-payment-due.text")</p>
         }
-        }
+    }
 
     <br>
     <h2 class="govuk-heading-l">@messages("ated.account-summary.current-year-returns.heading")</h2>
@@ -159,6 +163,15 @@
             }
         }
 
+        @if(otherReturns.atedBalance.getOrElse(BigDecimal(0)) > 0) {
+            <div class="govuk-form-group">
+                <p class="govuk-body">
+                <a id = "create-return-1" class="govuk-link" href="@controllers.routes.PeriodSummaryController.createReturn(taxYearStartingYear, fromAccountSummary)">
+                    @messages("ated.account-summary.create-new-return", taxYearStartingYear.toString, (taxYearStartingYear+1).toString)
+                </a>
+                </p>
+            </div>
+        }else{
             <div class="govuk-form-group">
                 @govukButton(Button(
                     href = Some(controllers.routes.PeriodSummaryController.createReturn(taxYearStartingYear, fromAccountSummary).url),
@@ -166,6 +179,7 @@
                     attributes = Map("id" -> "create-return-1")
                 ))
             </div>
+        }
 
     <h2 class="govuk-heading-l">@messages("ated.account-summary.previous-year-returns.heading")</h2>
         <p class="govuk-body"><a id="previous-returns" class="govuk-link" href="@controllers.routes.PrevPeriodsSummaryController.view">@messages("ated.account-summary.previous-year-returns-link.text")</a></p>
@@ -179,7 +193,7 @@
             <dd class="govuk-summary-list__value govuk-!-width-one-half">
             @messages(organisationName.getOrElse(""))
             </dd>
-            <dd class="govuk-summary-list__actions">
+            <dd id ="change-company-details" class="govuk-summary-list__actions">
                 <a class="govuk-link" href="@controllers.subscriptionData.routes.RegisteredDetailsController.edit">@messages("ated.change")</a>
             </dd>
         </div>
@@ -211,7 +225,7 @@
                     }
 
                 </div>
-                <div class="govuk-summary-list__row">
+                <div id="" class="govuk-summary-list__row">
                     <dt class="govuk-summary-list__key">
                     @messages("ated.account-summary.ated-agent-email.text")
                     </dt>
@@ -249,8 +263,8 @@
             }
 
         } else {
-            <p class="govuk-body">@messages("ated.account-summary.ated-no-agent.text")</p>
-            <p class="govuk-body"><a class="govuk-link" href="@appConfig.clientApproveAgentMandate">@messages("ated.account-summary.appoint-agent.text")</a></p>
+            <p id="no-agent-info" class="govuk-body">@messages("ated.account-summary.ated-no-agent.text")</p>
+            <p id="no-agent-appoint-agent" class="govuk-body"><a class="govuk-link" href="@appConfig.clientApproveAgentMandate">@messages("ated.account-summary.appoint-agent.text")</a></p>
         }
     }
 
