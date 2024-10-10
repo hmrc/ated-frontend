@@ -31,7 +31,7 @@ import scala.concurrent.Future
 
 trait MockAuthUtil extends MockitoSugar with TestUtil {
 
-    lazy val userId = s"user-${UUID.randomUUID}"
+    lazy val userId = "testUserId"
     lazy val mockAuthConnector: PlayAuthConnector = mock[PlayAuthConnector]
     lazy val mockDelegationModel: DelegationModel = mock[DelegationModel]
     lazy val mockDelegationService: DelegationService = mock[DelegationService]
