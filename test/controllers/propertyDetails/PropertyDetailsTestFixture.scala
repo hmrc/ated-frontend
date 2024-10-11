@@ -72,13 +72,7 @@ class PropertyDetailsTestFixture extends PlaySpec with GuiceOneServerPerSuite wi
     mockIsFullTaxPeriodController
   )
 
-  def setupAuthForOrganisation(enrolmentSet: Set[Enrolment] = defaultEnrolmentSet) = {
-    val authMock = authResultDefault(AffinityGroup.Organisation, enrolmentSet)
-    enrolmentSet match {
-      case set if set == invalidEnrolmentSet => setInvalidAuthMocks(authMock)
-      case _ => setAuthMocks(authMock)
-    }
-  }
+
 
   def setupDataCacheConnectorExpectations(newValuation: Some[BigDecimal], hasPropertyBeenRevalued: Some[Boolean], dateOfRevaluationChange: Some[LocalDate]) = {
     when(mockDataCacheConnector.fetchAndGetFormData[HasBeenRevalued](eqs(HasPropertyBeenRevalued))(any(), any())).thenReturn(Future.successful(Some(HasBeenRevalued(hasPropertyBeenRevalued))))

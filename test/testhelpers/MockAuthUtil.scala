@@ -40,6 +40,13 @@ trait MockAuthUtil extends MockitoSugar with TestUtil {
   val organisationStandardRetrievals: StandardAuthRetrievals = StandardAuthRetrievals(defaultEnrolmentSet, Some(organisationAffinity), Some(delegationModel))
   val individualStandardRetrievals: StandardAuthRetrievals = StandardAuthRetrievals(defaultEnrolmentSet, Some(individualAffinity), Some(delegationModel))
 
+  def setupAuthForOrganisation(enrolmentSet: Set[Enrolment] = defaultEnrolmentSet) = {
+    val authMock = authResultDefault(AffinityGroup.Organisation, enrolmentSet)
+    enrolmentSet match {
+      case set if set == invalidEnrolmentSet => setInvalidAuthMocks(authMock)
+      case _ => setAuthMocks(authMock)
+    }
+  }
 
   def authResultDefault(affinityGroup: AffinityGroup, enrolments: Set[Enrolment]): Enrolments ~ Some[AffinityGroup] ~ Some[String] = {
      new ~(
