@@ -21,7 +21,6 @@ import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.AuthAction
 import models.{DateOfChange, HasBeenRevalued, PropertyDetailsNewValuation, PropertyDetailsRevalued}
-import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.{any, eq => eqs}
 import org.mockito.Mockito.{verify, when}
 import org.scalatestplus.play.PlaySpec
@@ -40,7 +39,7 @@ import views.html.propertyDetails.propertyDetailsDateOfRevalue
 import java.time.LocalDate
 import scala.concurrent.Future
 
-class PropertyDetailsTestFixture extends PlaySpec with GuiceOneServerPerSuite with MockAuthUtil {
+abstract class PropertyDetailsTestFixture extends PlaySpec with GuiceOneServerPerSuite with MockAuthUtil {
 
 
   implicit val mockAppConfig: ApplicationConfig = mock[ApplicationConfig]
@@ -101,7 +100,7 @@ class PropertyDetailsTestFixture extends PlaySpec with GuiceOneServerPerSuite wi
     when(mockDataCacheConnector.fetchAndGetFormData[Boolean](any())
       (any(), any())).thenReturn(Future.successful(None))
     when(mockBackLinkCacheConnector.fetchAndGetBackLink(any())(any())).thenReturn(Future.successful(None))
-    when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+    when(mockBackLinkCacheConnector.saveBackLink(any(), any())(any())).thenReturn(Future.successful(None))
 
   }
 
@@ -109,18 +108,18 @@ class PropertyDetailsTestFixture extends PlaySpec with GuiceOneServerPerSuite wi
     val propertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("z11 1zz")).copy(value = None)
     when(mockPropertyDetailsService.retrieveDraftPropertyDetails(any())(any(), any()))
       .thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propertyDetails)))
-    when(mockPropertyDetailsService.saveDraftPropertyDetailsRevalued(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(OK))
+    when(mockPropertyDetailsService.saveDraftPropertyDetailsRevalued(any(), any())(any(), any())).thenReturn(Future.successful(OK))
 
   }
 
   def verifySaveBackLinkIsCalled = {
-    verify(mockBackLinkCacheConnector).saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())
+    verify(mockBackLinkCacheConnector).saveBackLink(any(), any())(any())
   }
 
   def verifyDataCacheConnectorRetursHasBeenRevalued(revalued: String) = {
     verify(mockDataCacheConnector).fetchAndGetFormData[HasBeenRevalued](
-      ArgumentMatchers.eq(revalued)
-    )(ArgumentMatchers.any(), ArgumentMatchers.any())
+      eqs(revalued)
+    )(any(), any())
   }
 
   def verifyPropertyDetailsService(isPropertyRevalued: Option[Boolean], revaluedValue: Option[BigDecimal], revaluedDate: Option[LocalDate], partAcqDispDate: Option[LocalDate]) = {
@@ -130,7 +129,7 @@ class PropertyDetailsTestFixture extends PlaySpec with GuiceOneServerPerSuite wi
       revaluedDate = revaluedDate,
       partAcqDispDate = partAcqDispDate
     )
-    verify(mockPropertyDetailsService).saveDraftPropertyDetailsRevalued(any(), ArgumentMatchers.eq(expectedPropertyDetails))(any(), any())
+    verify(mockPropertyDetailsService).saveDraftPropertyDetailsRevalued(any(), eqs(expectedPropertyDetails))(any(), any())
   }
 
 }
