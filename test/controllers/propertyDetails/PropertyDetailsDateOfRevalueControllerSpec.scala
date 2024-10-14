@@ -17,21 +17,32 @@
 package controllers.propertyDetails
 
 import builders.SessionBuilder
-import org.mockito.Mockito.when
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.json.{JsValue, Json}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{contentAsString, defaultAwaitTimeout, redirectLocation, status}
 import utils.AtedConstants.HasPropertyBeenRevalued
+import views.html.propertyDetails.propertyDetailsDateOfRevalue
 
 import java.time.LocalDate
 
 class PropertyDetailsDateOfRevalueControllerSpec extends PropertyDetailsTestFixture {
+  val injectedViewInstance: propertyDetailsDateOfRevalue = app.injector.instanceOf[views.html.propertyDetails.propertyDetailsDateOfRevalue]
+
+  val testController: PropertyDetailsDateOfRevalueController = new PropertyDetailsDateOfRevalueController(
+    mockMcc,
+    mockAuthAction,
+    mockServiceInfoService,
+    injectedViewInstance,
+    mockPropertyDetailsService,
+    mockBackLinkCacheConnector,
+    mockDataCacheConnector,
+    mockIsFullTaxPeriodController
+  )
 
   "PropertyDetailsDateOfRevalueController.view" must {
     "redirect to the unauthorised page" when {
-      "user fails authentication" in {
-        setupAuthForOrganisation(invalidEnrolmentSet)
+      "user fails authentication" in new Setup(enrolmentSet = invalidEnrolmentSet) {
         val result = testController.view("1").apply(SessionBuilder.buildRequestWithSession(userId))
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get must include("ated/unauthorised")
@@ -39,9 +50,7 @@ class PropertyDetailsDateOfRevalueControllerSpec extends PropertyDetailsTestFixt
     }
 
     "render the date of revalue page" when {
-      "newRevaluedFeature flag is set to true" in {
-        setupAuthForOrganisation()
-        setupCommonMockExpectations(true)
+      "newRevaluedFeature flag is set to true" in new Setup {
         setupPropertyDetailServiceMockExpectations()
         val result = testController.view("1").apply(SessionBuilder.buildRequestWithSession(userId))
         status(result) mustBe OK
@@ -49,18 +58,14 @@ class PropertyDetailsDateOfRevalueControllerSpec extends PropertyDetailsTestFixt
     }
 
     "redirect to home page" when {
-      "newRevaluedFeature flag is set to false" in {
-        setupAuthForOrganisation()
-        when(mockAppConfig.newRevaluedFeature).thenReturn(false)
+      "newRevaluedFeature flag is set to false" in new Setup(isFeatureFlagEnabled = false) {
         val result = testController.view("1").apply(SessionBuilder.buildRequestWithSession(userId))
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get must include("ated/home")
       }
     }
 
-    "for page errors, return BAD_REQUEST" in {
-      setupAuthForOrganisation()
-      setupCommonMockExpectations(true)
+    "for page errors, return BAD_REQUEST" in new Setup {
       setupPropertyDetailServiceMockExpectations()
       val inputJson: JsValue = Json.obj()
       val result = testController.save("1", 2015, None).apply(SessionBuilder.updateRequestWithSession(FakeRequest().withJsonBody(inputJson), userId))
@@ -71,8 +76,7 @@ class PropertyDetailsDateOfRevalueControllerSpec extends PropertyDetailsTestFixt
 
   "PropertyDetailsDateOfRevalueController.save" must {
     "redirect to the unauthorised page" when {
-      "user fails authentication" in {
-        setupAuthForOrganisation(invalidEnrolmentSet)
+      "user fails authentication" in new Setup(enrolmentSet = invalidEnrolmentSet) {
         val result = testController.view("1").apply(SessionBuilder.buildRequestWithSession(userId))
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get must include("ated/unauthorised")
@@ -80,23 +84,16 @@ class PropertyDetailsDateOfRevalueControllerSpec extends PropertyDetailsTestFixt
     }
 
     "collect information from cache and save to database" when {
-      "newRevaluedFeature flag is set to true and save invoked for a valid period" in {
+      "newRevaluedFeature flag is set to true and save invoked for a valid period" in new Setup {
         val inputJson: JsValue = Json.obj(
-          "dateOfRevalue" -> Json.obj(
-            "day" -> 1,
-            "month" -> 4,
-            "year" -> 2020
-          )
+          "dateOfRevalue" -> Json.obj("day" -> 1, "month" -> 4, "year" -> 2020)
         )
-        setupAuthForOrganisation()
-        setupCommonMockExpectations(true)
         setupDataCacheConnectorExpectations(
           newValuation = Some(BigDecimal.valueOf(1000000)),
           hasPropertyBeenRevalued = Some(true),
           dateOfRevaluationChange = Some(LocalDate.of(2021, 6, 15))
         )
         setupPropertyDetailServiceMockExpectations()
-
 
         val result = testController.save("1", 2020, None).apply(SessionBuilder.updateRequestWithSession(FakeRequest().withJsonBody(inputJson), userId))
         status(result) mustBe SEE_OTHER
@@ -109,16 +106,11 @@ class PropertyDetailsDateOfRevalueControllerSpec extends PropertyDetailsTestFixt
     }
 
     "redirect to next page: full tax period" when {
-      "newRevaluedFeature flag is set to true and user enters valid date" in {
+      "newRevaluedFeature flag is set to true and user enters valid date" in new Setup {
         val inputJson: JsValue = Json.obj(
-          "dateOfRevalue" -> Json.obj(
-            "day" -> "1",
-            "month" -> "4",
-            "year" -> "2015"
-          )
+          "dateOfRevalue" -> Json.obj("day" -> "1", "month" -> "4", "year" -> "2015")
         )
-        setupAuthForOrganisation()
-        setupCommonMockExpectations(true)
+
         setupPropertyDetailServiceMockExpectations()
 
         val result = testController.save("1", 2015, None).
@@ -131,16 +123,10 @@ class PropertyDetailsDateOfRevalueControllerSpec extends PropertyDetailsTestFixt
     }
 
     "return BAD_REQUEST with error message for invalid date" when {
-      "user enters an invalid date (31st of February)" in {
+      "user enters an invalid date (31st of February)" in new Setup {
         val inputJson: JsValue = Json.obj(
-          "dateOfRevalue" -> Json.obj(
-            "day" -> "31",
-            "month" -> "2",
-            "year" -> "2024"
-          )
+          "dateOfRevalue" -> Json.obj("day" -> "31", "month" -> "2", "year" -> "2024")
         )
-        setupAuthForOrganisation()
-        setupCommonMockExpectations(true)
         setupPropertyDetailServiceMockExpectations()
         val result = testController.save("1", 2015, None)
           .apply(
@@ -152,16 +138,11 @@ class PropertyDetailsDateOfRevalueControllerSpec extends PropertyDetailsTestFixt
     }
 
     "return BAD_REQUEST with error message for missing date fields" when {
-      "user omits some date fields" in {
+      "user omits some date fields" in new Setup {
         val inputJson: JsValue = Json.obj(
-          "dateOfRevalue" -> Json.obj(
-            "day" -> "",
-            "month" -> "4",
-            "year" -> "2024"
-          )
+          "dateOfRevalue" -> Json.obj("day" -> "", "month" -> "4", "year" -> "2024")
         )
-        setupAuthForOrganisation()
-        setupCommonMockExpectations(true)
+
         val result = testController.save("1", 2015, None).apply(SessionBuilder.updateRequestWithSession(FakeRequest().withJsonBody(inputJson), userId))
         status(result) mustBe BAD_REQUEST
         contentAsString(result) must include("There is a problem")
@@ -170,9 +151,7 @@ class PropertyDetailsDateOfRevalueControllerSpec extends PropertyDetailsTestFixt
 
 
     "redirect to home page" when {
-      "newRevaluedFeature flag is set to false" in {
-        setupAuthForOrganisation()
-        when(mockAppConfig.newRevaluedFeature).thenReturn(false)
+      "newRevaluedFeature flag is set to false" in new Setup(isFeatureFlagEnabled = false) {
         val result = testController.view("1").apply(SessionBuilder.buildRequestWithSession(userId))
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get must include("ated/home")

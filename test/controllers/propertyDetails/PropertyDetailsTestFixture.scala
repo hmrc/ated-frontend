@@ -30,11 +30,10 @@ import play.api.i18n.{Lang, MessagesApi, MessagesImpl}
 import play.api.mvc.MessagesControllerComponents
 import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService}
 import testhelpers.MockAuthUtil
-import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolment}
+import uk.gov.hmrc.auth.core.Enrolment
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.AtedConstants.{DelegatedClientAtedRefNumber, FortyThousandValueDateOfChange, HasPropertyBeenRevalued, propertyDetailsNewValuationValue}
 import views.html.BtaNavigationLinks
-import views.html.propertyDetails.propertyDetailsDateOfRevalue
 
 import java.time.LocalDate
 import scala.concurrent.Future
@@ -54,32 +53,27 @@ abstract class PropertyDetailsTestFixture extends PlaySpec with GuiceOneServerPe
   val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
-  val injectedViewInstance: propertyDetailsDateOfRevalue = app.injector.instanceOf[views.html.propertyDetails.propertyDetailsDateOfRevalue]
+
+  val mockDateOfChangeController: PropertyDetailsDateOfChangeController = mock[PropertyDetailsDateOfChangeController]
+  val mockExitController: PropertyDetailsExitController = mock[PropertyDetailsExitController]
+
   val mockAuthAction: AuthAction = new AuthAction(
     mockAppConfig,
     mockDelegationService,
     mockAuthConnector
   )
-  val testController: PropertyDetailsDateOfRevalueController = new PropertyDetailsDateOfRevalueController(
-    mockMcc,
-    mockAuthAction,
-    mockServiceInfoService,
-    injectedViewInstance,
-    mockPropertyDetailsService,
-    mockBackLinkCacheConnector,
-    mockDataCacheConnector,
-    mockIsFullTaxPeriodController
-  )
+
+  case class Setup(isFeatureFlagEnabled:Boolean = true, enrolmentSet: Set[Enrolment] = defaultEnrolmentSet) {
+    setupAuthForOrganisation(enrolmentSet)
+    setupCommonMockExpectations(isFeatureFlagEnabled)
+  }
 
 
   def setupDataCacheConnectorExpectations(newValuation: Some[BigDecimal], hasPropertyBeenRevalued: Some[Boolean], dateOfRevaluationChange: Some[LocalDate]) = {
     when(mockDataCacheConnector.fetchAndGetFormData[HasBeenRevalued](eqs(HasPropertyBeenRevalued))(any(), any())).thenReturn(Future.successful(Some(HasBeenRevalued(hasPropertyBeenRevalued))))
-
-
     when(mockDataCacheConnector.fetchAndGetFormData[PropertyDetailsNewValuation](eqs(propertyDetailsNewValuationValue))
       (any(), any()))
       .thenReturn(Future.successful(Some(PropertyDetailsNewValuation(newValuation))))
-
     when(mockDataCacheConnector.fetchAndGetFormData[DateOfChange](eqs(FortyThousandValueDateOfChange))
       (any(), any()))
       .thenReturn(Future.successful(Some(DateOfChange(dateOfRevaluationChange))))
