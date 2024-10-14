@@ -16,7 +16,6 @@
 
 package testhelpers
 
-import java.util.UUID
 
 import models.{DelegationModel, StandardAuthRetrievals}
 import org.mockito.ArgumentMatchers
