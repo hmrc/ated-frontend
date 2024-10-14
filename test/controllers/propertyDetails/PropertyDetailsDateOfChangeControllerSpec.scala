@@ -20,7 +20,6 @@ import builders.SessionBuilder
 import play.api.libs.json.{JsValue, Json}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.auth.core.AffinityGroup
 import views.html.propertyDetails.propertyDetailsDateOfChange
 
 class PropertyDetailsDateOfChangeControllerSpec extends PropertyDetailsTestFixture {
@@ -98,7 +97,6 @@ class PropertyDetailsDateOfChangeControllerSpec extends PropertyDetailsTestFixtu
         val inputJson: JsValue = Json.obj(
           "dateOfChange" -> Json.obj("day" -> "31", "month" -> "2", "year" -> "2024")
         )
-        val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
         setupPropertyDetailServiceMockExpectations()
         val result = testController.save("1", 2015, None).apply(SessionBuilder.updateRequestWithSession(FakeRequest().withJsonBody(inputJson), userId))
         status(result) mustBe BAD_REQUEST
