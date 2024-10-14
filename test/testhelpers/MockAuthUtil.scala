@@ -16,7 +16,6 @@
 
 package testhelpers
 
-
 import models.{DelegationModel, StandardAuthRetrievals}
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
@@ -30,10 +29,10 @@ import scala.concurrent.Future
 
 trait MockAuthUtil extends MockitoSugar with TestUtil {
 
-    lazy val userId = "testUserId"
-    lazy val mockAuthConnector: PlayAuthConnector = mock[PlayAuthConnector]
-    lazy val mockDelegationModel: DelegationModel = mock[DelegationModel]
-    lazy val mockDelegationService: DelegationService = mock[DelegationService]
+  lazy val userId = "testUserId"
+  lazy val mockAuthConnector: PlayAuthConnector = mock[PlayAuthConnector]
+  lazy val mockDelegationModel: DelegationModel = mock[DelegationModel]
+  lazy val mockDelegationService: DelegationService = mock[DelegationService]
 
   val agentStandardRetrievals: StandardAuthRetrievals = StandardAuthRetrievals(agentEnrolmentSet, Some(agentAffinity), Some(delegationModel))
   val organisationStandardRetrievals: StandardAuthRetrievals = StandardAuthRetrievals(defaultEnrolmentSet, Some(organisationAffinity), Some(delegationModel))
@@ -48,28 +47,28 @@ trait MockAuthUtil extends MockitoSugar with TestUtil {
   }
 
   def authResultDefault(affinityGroup: AffinityGroup, enrolments: Set[Enrolment]): Enrolments ~ Some[AffinityGroup] ~ Some[String] = {
-     new ~(
-      new ~(
-          Enrolments(enrolments),
-          Some(affinityGroup)
-        ),
+    new~(
+      new~(
+        Enrolments(enrolments),
+        Some(affinityGroup)
+      ),
       Some(internalId)
     )
   }
 
   def setAuthMocks(
-                      authResult: Enrolments ~ Some[AffinityGroup] ~ Some[String]
-                    ): OngoingStubbing[Future[Enrolments ~ Some[AffinityGroup] ~ Some[String]]] = {
+                    authResult: Enrolments ~ Some[AffinityGroup] ~ Some[String]
+                  ): OngoingStubbing[Future[Enrolments ~ Some[AffinityGroup] ~ Some[String]]] = {
 
     when(mockDelegationService.delegationCall(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(Some(delegationModel)))
     when(mockAuthConnector.authorise[Enrolments ~ Some[AffinityGroup] ~ Some[String]]
-        (ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
-        .thenReturn(Future.successful(authResult))
+      (ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+      .thenReturn(Future.successful(authResult))
   }
 
   def noDelegationModelAuthMocks(
-                    authResult: Enrolments ~ Some[AffinityGroup] ~ Some[String]
-                  ): OngoingStubbing[Future[Enrolments ~ Some[AffinityGroup] ~ Some[String]]] = {
+                                  authResult: Enrolments ~ Some[AffinityGroup] ~ Some[String]
+                                ): OngoingStubbing[Future[Enrolments ~ Some[AffinityGroup] ~ Some[String]]] = {
     when(mockDelegationService.delegationCall(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
     when(mockAuthConnector.authorise[Enrolments ~ Some[AffinityGroup] ~ Some[String]]
       (ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
@@ -77,8 +76,8 @@ trait MockAuthUtil extends MockitoSugar with TestUtil {
   }
 
   def setInvalidAuthMocks(
-                    authResult: Enrolments ~ Some[AffinityGroup] ~ Some[String]
-                  ): OngoingStubbing[Future[Enrolments ~ Some[AffinityGroup] ~ Some[String]]] = {
+                           authResult: Enrolments ~ Some[AffinityGroup] ~ Some[String]
+                         ): OngoingStubbing[Future[Enrolments ~ Some[AffinityGroup] ~ Some[String]]] = {
 
     when(mockDelegationService.delegationCall(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(Some(delegationModel)))
     when(mockAuthConnector.authorise[Enrolments ~ Some[AffinityGroup] ~ Some[String]]
@@ -87,8 +86,8 @@ trait MockAuthUtil extends MockitoSugar with TestUtil {
   }
 
   def setForbiddenAuthMocks(
-                    authResult: Enrolments ~ Some[AffinityGroup] ~ Some[String]
-                  ): OngoingStubbing[Future[Enrolments ~ Some[AffinityGroup] ~ Some[String]]] = {
+                             authResult: Enrolments ~ Some[AffinityGroup] ~ Some[String]
+                           ): OngoingStubbing[Future[Enrolments ~ Some[AffinityGroup] ~ Some[String]]] = {
 
     when(mockDelegationService.delegationCall(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
     when(mockAuthConnector.authorise[Enrolments ~ Some[AffinityGroup] ~ Some[String]]
