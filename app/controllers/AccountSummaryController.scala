@@ -19,6 +19,8 @@ package controllers
 import config.ApplicationConfig
 import connectors.{AgentClientMandateFrontendConnector, DataCacheConnector}
 import controllers.auth.AuthAction
+import org.jsoup.Jsoup
+import org.jsoup.nodes.Element
 
 import javax.inject.{Inject, Singleton}
 import java.time.LocalDate
@@ -56,15 +58,19 @@ class AccountSummaryController @Inject()(mcc: MessagesControllerComponents,
         _ <- dataCacheConnector.clearCache()
         allReturns <- summaryReturnsService.getSummaryReturns
         currentYearReturns <- summaryReturnsService.generateCurrentTaxYearReturns(allReturns.returnsCurrentTaxYear)
-        _ <- detailsService.cacheClientReference(authContext.atedReferenceNumber)
+        atedReference <- detailsService.cacheClientReference(authContext.atedReferenceNumber)
         correspondenceAddress <- subscriptionDataService.getCorrespondenceAddress
         organisationName <- subscriptionDataService.getOrganisationName
         safeId <- subscriptionDataService.getSafeId
+        clientMandateDetails <- detailsService.getClientMandateDetails(safeId.getOrElse(throw new RuntimeException("Could not get safeId")), "ated")
         serviceInfoContent <- serviceInfoService.getPartial
         clientBannerPartial <- mandateFrontendConnector.getClientBannerPartial(safeId.getOrElse(
           throw new RuntimeException("Could not get safeId")), "ated"
         )
       } yield {
+        val cancelAgentElement: Element = Jsoup.parse(clientBannerPartial.successfulContentOrEmpty.toString()).getElementById("client-banner-text-link")
+        var cancelAgentUrl: String = ""
+        if (cancelAgentElement != null) cancelAgentUrl = cancelAgentElement.attr("href")
         Ok(template(
           returnsCurrentTaxYear = currentYearReturns._1,
           totalCurrentYearReturns = currentYearReturns._2,
@@ -72,8 +78,10 @@ class AccountSummaryController @Inject()(mcc: MessagesControllerComponents,
           allReturns,
           correspondenceAddress,
           organisationName,
+          atedReference,
+          clientMandateDetails,
           serviceInfoContent,
-          clientBannerPartial.successfulContentOrEmpty,
+          cancelAgentUrl,
           duringPeak,
           currentYear = currentDate.getYear,
           taxYearStartingYear = peakPeriodStartingYear,

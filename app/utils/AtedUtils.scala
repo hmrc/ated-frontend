@@ -17,11 +17,10 @@
 package utils
 
 import config.ApplicationConfig
-import models.{IsOwnedBefore2012, IsOwnedBefore2017, IsOwnedBefore2022, NotOwnedBeforePolicyYear, OwnedBeforePolicyYear, _}
+import models.{IsOwnedBefore2012, IsOwnedBefore2017, IsOwnedBefore2022, NotOwnedBeforePolicyYear, _}
 
 import java.time.LocalDate
 import play.api.mvc.{AnyContent, Request}
-import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import utils.AtedConstants._
 
 import scala.language.postfixOps

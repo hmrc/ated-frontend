@@ -15,7 +15,7 @@
  */
 
 import config.ApplicationConfig
-import forms.PropertyDetailsForms.{dateFirstOccupiedForm, propertyDetailsNewValuationForm}
+import forms.PropertyDetailsForms.propertyDetailsNewValuationForm
 import models.StandardAuthRetrievals
 import org.jsoup.Jsoup
 import org.scalatestplus.mockito.MockitoSugar

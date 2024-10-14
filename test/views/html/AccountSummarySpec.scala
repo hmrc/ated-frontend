@@ -17,7 +17,7 @@
 package views.html
 
 import config.ApplicationConfig
-import models.StandardAuthRetrievals
+import models.{ClientMandateDetails, StandardAuthRetrievals}
 import org.scalatest.Assertion
 import play.api.i18n.MessagesApi
 import play.api.test.Injecting
@@ -41,15 +41,17 @@ class AccountSummarySpec extends AtedViewSpec with MockAuthUtil with TestModels 
     summaryReturnsModel(periodKey = currentTaxYear),
     Some(address),
     Some(organisationName),
+    atedReference,
+    Some(clientMandateDetails),
     Html(""),
-    Html(""),
+    cancelAgentUrl,
     duringPeak = false,
     currentYear,
     currentTaxYear,
     true
   )
 
-  def row(rowNumber: Int) = s"#main-content > div > div.govuk-grid-column-two-thirds > dl > div:nth-child($rowNumber)"
+  def row(rowNumber: Int) = s"#current-tax-year-returns > div:nth-child($rowNumber)"
 
   def checkRowItem(rowNum: Int, col1: String, col2: String, col3: String, href: String): Assertion = {
     assert(doc.select(s"${row(rowNum)} > dt").text() === col1)
@@ -62,11 +64,11 @@ class AccountSummarySpec extends AtedViewSpec with MockAuthUtil with TestModels 
 
     "regardless of returns data" should {
       "have the correct title" in {
-        assert(doc.title() === "Your ATED summary - Submit and view your ATED returns - GOV.UK")
+        assert(doc.title() === "Annual Tax on Enveloped Dwellings (ATED) summary - Submit and view your ATED returns - GOV.UK")
       }
 
       "have the correct h1" in {
-        assert(doc.select("h1").text() contains "Your ATED summary")
+        assert(doc.select("h1").text() contains "Annual Tax on Enveloped Dwellings (ATED) summary")
       }
 
       "have the correct valuation date change banner" in {
@@ -77,7 +79,7 @@ class AccountSummarySpec extends AtedViewSpec with MockAuthUtil with TestModels 
       }
 
       "have the correct caption" in {
-        assert(doc.select(".govuk-caption-l").text() === s"You are logged in as:$organisationName")
+        assert(doc.select(".govuk-caption-xl").text() === s"You are logged in as:$organisationName")
       }
 
       "have the correct banner link" in {
@@ -85,19 +87,40 @@ class AccountSummarySpec extends AtedViewSpec with MockAuthUtil with TestModels 
       }
     }
 
+    "the user has ATED balance" should {
+
+      "have the correct heading" in {
+        assert(doc.select(".govuk-heading-l").first.text() === "Amount due")
+      }
+
+      "have the correct info text" in {
+        assert(doc.select(".govuk-body").get(2).text() contains
+          "You will need your payment reference number to pay. Your payment reference number is on your latest return.")
+        assert(doc.select(".govuk-body").get(3).text() contains
+          "There can be a 24 hour delay before you see any updates on your balance after you have paid.")
+      }
+
+      "have the pay now button" in {
+        assert(doc.select("#pay-now").text() === "Pay now")
+        assert(doc.select("#pay-now").attr("href")
+          === "https://www.tax.service.gov.uk/pay/enter-annual-tax-enveloped-dwellings-payment-reference")
+      }
+
+      "have the other ways of pay link" in {
+        assert(doc.select("#other-ways-you-can-pay").text() === "Other ways you can pay")
+        assert(doc.select("#other-ways-you-can-pay").attr("href") === "https://www.gov.uk/guidance/pay-annual-tax-on-enveloped-dwellings")
+      }
+    }
+
     "the user has property and relief returns for the current year" should {
 
       "have the correct heading" in {
-        assert(doc.select("#main-content > div > div.govuk-grid-column-two-thirds > h2").text() === "Current year returns")
+        assert(doc.select("#main-content > div > div.govuk-grid-column-two-thirds > h2:nth-of-type(2)").text() === "Current year ATED returns")
       }
 
       "show the returns" in {
         checkRowItem(1, "Change_Liability", "Draft", "View or change", "example/draft/route")
         checkRowItem(2, "19 Stone Row", "Submitted", "View or change", "example/non-draft/route")
-      }
-
-      "not show the View all returns link if there are less than 6 returns and no past returns" in {
-        assert(doc.select("#view-all-returns").size() === 0)
       }
 
       "show the Create a new return for current tax year button" in {
@@ -110,11 +133,11 @@ class AccountSummarySpec extends AtedViewSpec with MockAuthUtil with TestModels 
       }
 
       "show content to say how many returns are being displayed" in {
-        assert(doc.select(".govuk-hint").text === "Showing 2 of 2 returns")
+        assert(doc.select(".govuk-hint").text === "")
       }
     }
 
-    "more than 5 returns and no past returns" should {
+    "more than 5 returns" should {
 
       lazy val fiveReturns = currentYearReturnsForDisplay++currentYearReturnsForDisplay++Seq(currentYearReturnsForDisplay.head)
 
@@ -125,8 +148,10 @@ class AccountSummarySpec extends AtedViewSpec with MockAuthUtil with TestModels 
         summaryReturnsModel(periodKey = currentTaxYear, withPastReturns = true),
         Some(address),
         Some(organisationName),
+        atedReference,
+        Some(clientMandateDetails),
         Html(""),
-        Html(""),
+        cancelAgentUrl,
         duringPeak = false,
         currentYear,
         currentTaxYear,
@@ -144,8 +169,116 @@ class AccountSummarySpec extends AtedViewSpec with MockAuthUtil with TestModels 
 
     }
 
-    "less than 6 returns and there is at least 1 past return" should {
-      "show the view all returns link" in {
+    "less than 6 returns" should {
+
+      "show content to say how many returns are being displayed" in {
+        lazy val view = injectedViewInstance(
+          currentYearReturnsForDisplay,
+          totalCurrentYearReturns = 2,
+          hasPastReturns = true,
+          summaryReturnsModel(periodKey = currentTaxYear, withPastReturns = true),
+          Some(address),
+          Some(organisationName),
+          atedReference,
+          Some(clientMandateDetails),
+          Html(""),
+          cancelAgentUrl,
+          duringPeak = false,
+          currentYear,
+          currentTaxYear,
+          false
+        )
+        assert(doc(view).select(".govuk-hint").text === "")
+        assert(doc.select("#view-all-returns").size() === 0)
+      }
+    }
+
+    "there is no current year ATED returns" should {
+
+      "have the correct info text" in {
+        lazy val view = injectedViewInstance(
+          currentYearReturnsForDisplay.empty,
+          totalCurrentYearReturns = 0,
+          hasPastReturns = true,
+          summaryReturnsModel(periodKey = currentTaxYear, withPastReturns = true),
+          Some(address),
+          Some(organisationName),
+          atedReference,
+          Some(clientMandateDetails),
+          Html(""),
+          cancelAgentUrl,
+          duringPeak = false,
+          currentYear,
+          currentTaxYear,
+          false
+        )
+        assert(doc(view).select("#empty-current-year-returns").text === "You have no current year returns.")
+      }
+    }
+
+    "show the previous years ATED returns link" should {
+
+      "have the correct heading" in {
+        assert(doc.select(".govuk-heading-l").get(2).text() === "Previous years ATED returns")
+      }
+
+      "show the previous year returns link" in {
+        assert(doc.select("#previous-returns").text === "View or change ATED returns for previous chargeable periods")
+        assert(doc.select("#previous-returns").attr("href") === "/ated/prev-period-summary")
+      }
+    }
+
+    "Your ATED Details" should {
+      lazy val view = injectedViewInstance(
+        currentYearReturnsForDisplay.empty,
+        totalCurrentYearReturns = 3,
+        hasPastReturns = true,
+        summaryReturnsModel(periodKey = currentTaxYear, withPastReturns = true),
+        Some(address),
+        Some(organisationName),
+        atedReference,
+        Some(clientMandateDetails),
+        Html(""),
+        cancelAgentUrl,
+        duringPeak = false,
+        currentYear,
+        currentTaxYear,
+        false
+      )
+
+      "show the correct heading" in {
+        assert(doc.select(".govuk-heading-l").get(3).text() === "Your ATED details")
+      }
+
+      "show the correct organisation" in {
+        doc.getElementsByClass("govuk-summary-list__key govuk-!-width-one-half") must not be None
+        doc.getElementsByClass("govuk-summary-list__key govuk-!-width-one-half").size() mustEqual 4
+        doc.getElementsByClass("govuk-summary-list__key govuk-!-width-one-half").get(2).text() must be ("Company details")
+
+        doc.getElementsByClass("govuk-summary-list__value govuk-!-width-one-half") must not be None
+        doc.getElementsByClass("govuk-summary-list__value govuk-!-width-one-half").size() mustEqual 2
+        doc(view).getElementsByClass("govuk-summary-list__value govuk-!-width-one-half").get(0).text() must be (organisationName)
+      }
+
+      "show the change company details" in {
+        assert(doc.select("#change-company-details").text === "Change")
+        assert(doc.select("#change-company-details").attr("href") === "/ated/registered-details")
+      }
+
+      "show the ATED reference number" in{
+        doc(view).getElementsByClass("govuk-summary-list__key govuk-!-width-one-half").get(1).text() must be ("Reference number")
+        doc(view).getElementsByClass("govuk-summary-list__value govuk-!-width-one-half").get(1).text() must be (atedReference)
+      }
+
+    }
+
+    "Your ATED Agent" should {
+
+      "show the correct heading" in {
+        assert(doc.select(".govuk-heading-l").get(4).text() === "Your ATED agent")
+      }
+
+      "have Approved agent" in {
         val view = injectedViewInstance(
           currentYearReturnsForDisplay,
           totalCurrentYearReturns = 2,
@@ -153,21 +286,105 @@ class AccountSummarySpec extends AtedViewSpec with MockAuthUtil with TestModels 
           summaryReturnsModel(periodKey = currentTaxYear, withPastReturns = true),
           Some(address),
           Some(organisationName),
+          atedReference,
+          Some(ClientMandateDetails(
+            agentName = "name1",
+            changeAgentLink = "",
+            email = "aa@a.com",
+            changeEmailLink = "",
+            status = "Approved")),
           Html(""),
-          Html(""),
+          cancelAgentUrl,
           duringPeak = false,
           currentYear,
           currentTaxYear,
           false
         )
 
-        assert(doc(view).select("#view-all-returns").text === s"View all returns for $currentTaxYear to ${currentTaxYear + 1}")
-        assert(doc(view).select("#view-all-returns").attr("href") === s"/ated/period-summary/$currentTaxYear")
+        assert(doc(view).getElementsByClass("govuk-tag govuk-tag--light-blue") !== None)
+        assert(doc(view).getElementsByClass("govuk-tag govuk-tag--light-blue").text() === "Pending")
       }
 
-      "show content to say how many returns are being displayed" in {
-        assert(doc(view).select(".govuk-hint").text === "Showing 2 of 2 returns")
+      "have Cancelled agent" in {
+        val view = injectedViewInstance(
+          currentYearReturnsForDisplay,
+          totalCurrentYearReturns = 2,
+          hasPastReturns = true,
+          summaryReturnsModel(periodKey = currentTaxYear, withPastReturns = true),
+          Some(address),
+          Some(organisationName),
+          atedReference,
+          Some(ClientMandateDetails(
+            agentName = "name1",
+            changeAgentLink = "",
+            email = "aa@a.com",
+            changeEmailLink = "",
+            status = "Cancelled")),
+          Html(""),
+          cancelAgentUrl,
+          duringPeak = false,
+          currentYear,
+          currentTaxYear,
+          false
+        )
+
+        assert(doc(view).getElementsByClass("govuk-tag govuk-tag--red") !== None)
+        assert(doc(view).getElementsByClass("govuk-tag govuk-tag--red").text() === "Revoked")
+      }
+
+      "have Rejected agent" in {
+        val view = injectedViewInstance(
+          currentYearReturnsForDisplay,
+          totalCurrentYearReturns = 2,
+          hasPastReturns = true,
+          summaryReturnsModel(periodKey = currentTaxYear, withPastReturns = true),
+          Some(address),
+          Some(organisationName),
+          atedReference,
+          Some(ClientMandateDetails(
+            agentName = "name1",
+            changeAgentLink = "",
+            email = "aa@a.com",
+            changeEmailLink = "",
+            status = "Rejected")),
+          Html(""),
+          cancelAgentUrl,
+          duringPeak = false,
+          currentYear,
+          currentTaxYear,
+          false
+        )
+
+        assert(doc(view)getElementsByClass("govuk-tag govuk-tag--red") !== None)
+        assert(doc(view).getElementsByClass("govuk-tag govuk-tag--red").text() === "Rejected")
+      }
+
+      "have No agent details info" in {
+        val view = injectedViewInstance(
+          currentYearReturnsForDisplay,
+          totalCurrentYearReturns = 2,
+          hasPastReturns = true,
+          summaryReturnsModel(periodKey = currentTaxYear, withPastReturns = true),
+          Some(address),
+          Some(organisationName),
+          atedReference,
+          None,
+          Html(""),
+          cancelAgentUrl,
+          duringPeak = false,
+          currentYear,
+          currentTaxYear,
+          false
+        )
+
+        assert(doc(view).select("#no-agent-info").text() ===
+          "You can let an agent represent for ATED using an ATED1 form. However, this authority is limited to ATED and does not extend to other services.")
+
+        assert(doc(view).select("#no-agent-appoint-agent").text() === "Appoint an agent")
+        assert(doc(view).select("#no-agent-appoint-agent").attr("href") === "http://localhost:9959/mandate/client/email")
+
       }
     }
+
   }
 }
