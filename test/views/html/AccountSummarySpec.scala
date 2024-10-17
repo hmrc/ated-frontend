@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ import utils.TestModels
 class AccountSummarySpec extends AtedViewSpec with MockAuthUtil with TestModels with Injecting {
 
   implicit val mockAppConfig: ApplicationConfig = inject[ApplicationConfig]
- 
+
   implicit lazy val authContext: StandardAuthRetrievals = organisationStandardRetrievals
   implicit lazy val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
@@ -37,18 +37,14 @@ class AccountSummarySpec extends AtedViewSpec with MockAuthUtil with TestModels 
   val view: HtmlFormat.Appendable = injectedViewInstance(
     currentYearReturnsForDisplay,
     totalCurrentYearReturns = 2,
-    hasPastReturns = false,
     summaryReturnsModel(periodKey = currentTaxYear),
-    Some(address),
     Some(organisationName),
     atedReference,
     Some(clientMandateDetails),
     Html(""),
     cancelAgentUrl,
-    duringPeak = false,
-    currentYear,
     currentTaxYear,
-    true
+    fromAccountSummary = true
   )
 
   def row(rowNumber: Int) = s"#current-tax-year-returns > div:nth-child($rowNumber)"
@@ -144,18 +140,14 @@ class AccountSummarySpec extends AtedViewSpec with MockAuthUtil with TestModels 
       lazy val view = injectedViewInstance(
         fiveReturns,
         totalCurrentYearReturns = 6,
-        hasPastReturns = false,
         summaryReturnsModel(periodKey = currentTaxYear, withPastReturns = true),
-        Some(address),
         Some(organisationName),
         atedReference,
         Some(clientMandateDetails),
         Html(""),
         cancelAgentUrl,
-        duringPeak = false,
-        currentYear,
         currentTaxYear,
-        false
+        fromAccountSummary = false
       )
 
       "show the view all returns link" in {
@@ -175,18 +167,14 @@ class AccountSummarySpec extends AtedViewSpec with MockAuthUtil with TestModels 
         lazy val view = injectedViewInstance(
           currentYearReturnsForDisplay,
           totalCurrentYearReturns = 2,
-          hasPastReturns = true,
           summaryReturnsModel(periodKey = currentTaxYear, withPastReturns = true),
-          Some(address),
           Some(organisationName),
           atedReference,
           Some(clientMandateDetails),
           Html(""),
           cancelAgentUrl,
-          duringPeak = false,
-          currentYear,
           currentTaxYear,
-          false
+          fromAccountSummary = false
         )
         assert(doc(view).select(".govuk-hint").text === "")
         assert(doc.select("#view-all-returns").size() === 0)
@@ -199,18 +187,14 @@ class AccountSummarySpec extends AtedViewSpec with MockAuthUtil with TestModels 
         lazy val view = injectedViewInstance(
           currentYearReturnsForDisplay.empty,
           totalCurrentYearReturns = 0,
-          hasPastReturns = true,
           summaryReturnsModel(periodKey = currentTaxYear, withPastReturns = true),
-          Some(address),
           Some(organisationName),
           atedReference,
           Some(clientMandateDetails),
           Html(""),
           cancelAgentUrl,
-          duringPeak = false,
-          currentYear,
           currentTaxYear,
-          false
+          fromAccountSummary = false
         )
         assert(doc(view).select("#empty-current-year-returns").text === "You have no current year returns.")
       }
@@ -232,37 +216,33 @@ class AccountSummarySpec extends AtedViewSpec with MockAuthUtil with TestModels 
       lazy val view = injectedViewInstance(
         currentYearReturnsForDisplay.empty,
         totalCurrentYearReturns = 3,
-        hasPastReturns = true,
         summaryReturnsModel(periodKey = currentTaxYear, withPastReturns = true),
-        Some(address),
         Some(organisationName),
         atedReference,
         Some(clientMandateDetails),
         Html(""),
         cancelAgentUrl,
-        duringPeak = false,
-        currentYear,
         currentTaxYear,
-        false
+        fromAccountSummary = false
       )
 
       "show the correct heading" in {
-        assert(doc.select(".govuk-heading-l").get(3).text() === "Your ATED details")
+        assert(doc(view).select(".govuk-heading-l").get(3).text() === "Your ATED details")
       }
 
       "show the correct organisation" in {
-        doc.getElementsByClass("govuk-summary-list__key govuk-!-width-one-half") must not be None
-        doc.getElementsByClass("govuk-summary-list__key govuk-!-width-one-half").size() mustEqual 4
-        doc.getElementsByClass("govuk-summary-list__key govuk-!-width-one-half").get(2).text() must be ("Company details")
+        doc(view).getElementsByClass("govuk-summary-list__key govuk-!-width-one-half") must not be None
+        doc(view).getElementsByClass("govuk-summary-list__key govuk-!-width-one-half").size() mustEqual 2
+        doc(view).getElementsByClass("govuk-summary-list__key govuk-!-width-one-half").get(0).text() must be ("Company details")
 
-        doc.getElementsByClass("govuk-summary-list__value govuk-!-width-one-half") must not be None
-        doc.getElementsByClass("govuk-summary-list__value govuk-!-width-one-half").size() mustEqual 2
+        doc(view).getElementsByClass("govuk-summary-list__value govuk-!-width-one-half") must not be None
+        doc(view).getElementsByClass("govuk-summary-list__value govuk-!-width-one-half").size() mustEqual 2
         doc(view).getElementsByClass("govuk-summary-list__value govuk-!-width-one-half").get(0).text() must be (organisationName)
       }
 
       "show the change company details" in {
-        assert(doc.select("#change-company-details").text === "Change")
-        assert(doc.select("#change-company-details").attr("href") === "/ated/registered-details")
+        assert(doc(view).select("#change-company-details").text === "Change")
+        assert(doc(view).select("#change-company-details").attr("href") === "/ated/registered-details")
       }
 
       "show the ATED reference number" in{
@@ -282,9 +262,7 @@ class AccountSummarySpec extends AtedViewSpec with MockAuthUtil with TestModels 
         val view = injectedViewInstance(
           currentYearReturnsForDisplay,
           totalCurrentYearReturns = 2,
-          hasPastReturns = true,
           summaryReturnsModel(periodKey = currentTaxYear, withPastReturns = true),
-          Some(address),
           Some(organisationName),
           atedReference,
           Some(ClientMandateDetails(
@@ -295,10 +273,8 @@ class AccountSummarySpec extends AtedViewSpec with MockAuthUtil with TestModels 
             status = "Approved")),
           Html(""),
           cancelAgentUrl,
-          duringPeak = false,
-          currentYear,
           currentTaxYear,
-          false
+          fromAccountSummary = false
         )
 
         assert(doc(view).getElementsByClass("govuk-tag govuk-tag--light-blue") !== None)
@@ -309,9 +285,7 @@ class AccountSummarySpec extends AtedViewSpec with MockAuthUtil with TestModels 
         val view = injectedViewInstance(
           currentYearReturnsForDisplay,
           totalCurrentYearReturns = 2,
-          hasPastReturns = true,
           summaryReturnsModel(periodKey = currentTaxYear, withPastReturns = true),
-          Some(address),
           Some(organisationName),
           atedReference,
           Some(ClientMandateDetails(
@@ -322,10 +296,8 @@ class AccountSummarySpec extends AtedViewSpec with MockAuthUtil with TestModels 
             status = "Cancelled")),
           Html(""),
           cancelAgentUrl,
-          duringPeak = false,
-          currentYear,
           currentTaxYear,
-          false
+          fromAccountSummary = false
         )
 
         assert(doc(view).getElementsByClass("govuk-tag govuk-tag--red") !== None)
@@ -336,9 +308,7 @@ class AccountSummarySpec extends AtedViewSpec with MockAuthUtil with TestModels 
         val view = injectedViewInstance(
           currentYearReturnsForDisplay,
           totalCurrentYearReturns = 2,
-          hasPastReturns = true,
           summaryReturnsModel(periodKey = currentTaxYear, withPastReturns = true),
-          Some(address),
           Some(organisationName),
           atedReference,
           Some(ClientMandateDetails(
@@ -349,13 +319,11 @@ class AccountSummarySpec extends AtedViewSpec with MockAuthUtil with TestModels 
             status = "Rejected")),
           Html(""),
           cancelAgentUrl,
-          duringPeak = false,
-          currentYear,
           currentTaxYear,
-          false
+          fromAccountSummary = false
         )
 
-        assert(doc(view)getElementsByClass("govuk-tag govuk-tag--red") !== None)
+        assert(doc(view)getElementsByClass "govuk-tag govuk-tag--red" !== None)
         assert(doc(view).getElementsByClass("govuk-tag govuk-tag--red").text() === "Rejected")
       }
 
@@ -363,18 +331,14 @@ class AccountSummarySpec extends AtedViewSpec with MockAuthUtil with TestModels 
         val view = injectedViewInstance(
           currentYearReturnsForDisplay,
           totalCurrentYearReturns = 2,
-          hasPastReturns = true,
           summaryReturnsModel(periodKey = currentTaxYear, withPastReturns = true),
-          Some(address),
           Some(organisationName),
           atedReference,
           None,
           Html(""),
           cancelAgentUrl,
-          duringPeak = false,
-          currentYear,
           currentTaxYear,
-          false
+          fromAccountSummary = false
         )
 
         assert(doc(view).select("#no-agent-info").text() ===

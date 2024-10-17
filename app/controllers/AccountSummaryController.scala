@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,7 +59,6 @@ class AccountSummaryController @Inject()(mcc: MessagesControllerComponents,
         allReturns <- summaryReturnsService.getSummaryReturns
         currentYearReturns <- summaryReturnsService.generateCurrentTaxYearReturns(allReturns.returnsCurrentTaxYear)
         atedReference <- detailsService.cacheClientReference(authContext.atedReferenceNumber)
-        correspondenceAddress <- subscriptionDataService.getCorrespondenceAddress
         organisationName <- subscriptionDataService.getOrganisationName
         safeId <- subscriptionDataService.getSafeId
         clientMandateDetails <- detailsService.getClientMandateDetails(safeId.getOrElse(throw new RuntimeException("Could not get safeId")), "ated")
@@ -74,16 +73,12 @@ class AccountSummaryController @Inject()(mcc: MessagesControllerComponents,
         Ok(template(
           returnsCurrentTaxYear = currentYearReturns._1,
           totalCurrentYearReturns = currentYearReturns._2,
-          hasPastReturns = currentYearReturns._3,
           allReturns,
-          correspondenceAddress,
           organisationName,
           atedReference,
           clientMandateDetails,
           serviceInfoContent,
           cancelAgentUrl,
-          duringPeak,
-          currentYear = currentDate.getYear,
           taxYearStartingYear = peakPeriodStartingYear,
           fromAccountSummary = true)
         )
