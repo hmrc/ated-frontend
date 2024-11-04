@@ -193,7 +193,8 @@
             @messages(organisationName.getOrElse(""))
             </dd>
             <dd class="govuk-summary-list__actions">
-                <a id ="change-company-details"  class="govuk-link" href="@controllers.subscriptionData.routes.RegisteredDetailsController.edit">@messages("ated.change")</a>
+                <a id ="change-company-details"  class="govuk-link" href="@controllers.subscriptionData.routes.RegisteredDetailsController.edit">@messages("ated.change")<span class="govuk-visually-hidden"> <span>@messages("ated.account-summary.ated-details-company.text")</span></a>
+                
             </dd>
         </div>
         <div class="govuk-summary-list__row">
