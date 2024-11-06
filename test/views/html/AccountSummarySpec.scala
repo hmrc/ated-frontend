@@ -241,7 +241,7 @@ class AccountSummarySpec extends AtedViewSpec with MockAuthUtil with TestModels 
       }
 
       "show the change company details" in {
-        assert(doc(view).select("#change-company-details").text === "Change")
+        assert(doc(view).select("#change-company-details").html() === "Change<span class=\"govuk-visually-hidden\"> <span>Company details</span></span>")
         assert(doc(view).select("#change-company-details").attr("href") === "/ated/registered-details")
       }
 

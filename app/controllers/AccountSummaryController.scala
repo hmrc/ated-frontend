@@ -67,7 +67,7 @@ class AccountSummaryController @Inject()(mcc: MessagesControllerComponents,
           throw new RuntimeException("Could not get safeId")), "ated"
         )
       } yield {
-        val cancelAgentElement: Element = Jsoup.parse(clientBannerPartial.successfulContentOrEmpty.toString()).getElementById("client-banner-text-link")
+        val cancelAgentElement: Element = Jsoup.parse(clientBannerPartial.successfulContentOrEmpty.body).getElementById("client-banner-text-link")
         var cancelAgentUrl: String = ""
         if (cancelAgentElement != null) cancelAgentUrl = cancelAgentElement.attr("href")
         Ok(template(
