@@ -116,7 +116,7 @@ unauthorised.sa.p2 = If you are an overseas landlord or client you need to sign 
 
 ated.account-summary.agent-accessing-information.text = As an agent, you are accessing information about your client
 ated.account-summary.appoint-agent.text = Appoint an agent
-ated.account-summary.cancel-agent.text = Cancel an agent
+ated.account-summary.cancel-agent.text = Cancel agent
 ated.account-summary.current-year-returns.heading = Current year ATED returns
 ated.account-summary.current-year-returns-no-returns.text = You have no current year returns.
 ated.account-summary.showing = Showing {0} of {1} returns
