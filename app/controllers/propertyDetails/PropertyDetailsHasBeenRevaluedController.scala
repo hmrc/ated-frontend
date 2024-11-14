@@ -30,7 +30,7 @@ import utils.AtedUtils
 import views.html.propertyDetails.propertyDetailsHasBeenRevalued
 
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 class PropertyDetailsHasBeenRevaluedController @Inject()(mcc: MessagesControllerComponents,
                                                          authAction: AuthAction,
@@ -51,28 +51,26 @@ class PropertyDetailsHasBeenRevaluedController @Inject()(mcc: MessagesController
   def view(id: String): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
-        if (appConfig.newRevaluedFeature) {
-          serviceInfoService.getPartial.flatMap { serviceInfoContent =>
-            propertyDetailsCacheResponse(id) {
-              case PropertyDetailsCacheSuccessResponse(propertyDetails) => {
-                currentBackLink.flatMap { backLink =>
-                  dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
-                    dataCacheConnector.fetchAndGetFormData[HasBeenRevalued](HasPropertyBeenRevalued).map {
-                      cachedHasBeenRevalued =>
-                        val hasBeenRevalued = cachedHasBeenRevalued.flatMap(_.isPropertyRevalued)
-                        Ok(template(id,
-                          propertyDetails.periodKey,
-                          backLink,
-                          AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn),
-                          propertyDetailsHasBeenRevaluedForm.fill(HasBeenRevalued(hasBeenRevalued)),
-                          serviceInfoContent))
-                    }
+        serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+          propertyDetailsCacheResponse(id) {
+            case PropertyDetailsCacheSuccessResponse(propertyDetails) => {
+              currentBackLink.flatMap { backLink =>
+                dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
+                  dataCacheConnector.fetchAndGetFormData[HasBeenRevalued](HasPropertyBeenRevalued).map {
+                    cachedHasBeenRevalued =>
+                      val hasBeenRevalued = cachedHasBeenRevalued.flatMap(_.isPropertyRevalued)
+                      Ok(template(id,
+                        propertyDetails.periodKey,
+                        backLink,
+                        AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn),
+                        propertyDetailsHasBeenRevaluedForm.fill(HasBeenRevalued(hasBeenRevalued)),
+                        serviceInfoContent))
                   }
                 }
               }
             }
           }
-        } else Future.successful(Redirect(controllers.routes.HomeController.home()))
+        }
       }
     }
   }
@@ -82,32 +80,30 @@ class PropertyDetailsHasBeenRevaluedController @Inject()(mcc: MessagesController
     implicit request =>
       authAction.authorisedAction { implicit authContext =>
         ensureClientContext {
-          if (appConfig.newRevaluedFeature) {
-            serviceInfoService.getPartial.flatMap { serviceInfoContent =>
-              propertyDetailsHasBeenRevaluedForm.bindFromRequest().fold(
-                formWithErrors => {
-                  currentBackLink.map(backLink => BadRequest(template(id, periodKey, backLink, mode, formWithErrors, serviceInfoContent)))
-                },
-                hasBeenRevalued => {
-                  if (hasBeenRevalued.isPropertyRevalued.getOrElse(false)) {
-                    dataCacheConnector.saveFormData[HasBeenRevalued](HasPropertyBeenRevalued, hasBeenRevalued)
-                    redirectWithBackLink(
-                      dateOfChangeController.controllerId,
-                      controllers.propertyDetails.routes.PropertyDetailsDateOfChangeController.view(id),
-                      Some(controllers.propertyDetails.routes.PropertyDetailsHasBeenRevaluedController.view(id).url)
-                    )
-                  } else {
-                    dataCacheConnector.saveFormData[HasBeenRevalued](HasPropertyBeenRevalued, hasBeenRevalued)
-                    redirectWithBackLink(
-                      exitController.controllerId,
-                      controllers.propertyDetails.routes.PropertyDetailsExitController.view(),
-                      Some(controllers.propertyDetails.routes.PropertyDetailsHasBeenRevaluedController.view(id).url)
-                    )
-                  }
+          serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+            propertyDetailsHasBeenRevaluedForm.bindFromRequest().fold(
+              formWithErrors => {
+                currentBackLink.map(backLink => BadRequest(template(id, periodKey, backLink, mode, formWithErrors, serviceInfoContent)))
+              },
+              hasBeenRevalued => {
+                if (hasBeenRevalued.isPropertyRevalued.getOrElse(false)) {
+                  dataCacheConnector.saveFormData[HasBeenRevalued](HasPropertyBeenRevalued, hasBeenRevalued)
+                  redirectWithBackLink(
+                    dateOfChangeController.controllerId,
+                    controllers.propertyDetails.routes.PropertyDetailsDateOfChangeController.view(id),
+                    Some(controllers.propertyDetails.routes.PropertyDetailsHasBeenRevaluedController.view(id).url)
+                  )
+                } else {
+                  dataCacheConnector.saveFormData[HasBeenRevalued](HasPropertyBeenRevalued, hasBeenRevalued)
+                  redirectWithBackLink(
+                    exitController.controllerId,
+                    controllers.propertyDetails.routes.PropertyDetailsExitController.view(),
+                    Some(controllers.propertyDetails.routes.PropertyDetailsHasBeenRevaluedController.view(id).url)
+                  )
                 }
-              )
-            }
-          } else Future.successful(Redirect(controllers.routes.HomeController.home()))
+              }
+            )
+          }
         }
       }
   }

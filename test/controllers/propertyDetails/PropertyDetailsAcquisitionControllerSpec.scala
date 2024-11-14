@@ -54,7 +54,6 @@ class PropertyDetailsAcquisitionControllerSpec extends PlaySpec with GuiceOneSer
   val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
   val mockBackLinkCacheConnector: BackLinkCacheConnector = mock[BackLinkCacheConnector]
   val mockIsFullTaxPeriodController: IsFullTaxPeriodController = mock[IsFullTaxPeriodController]
-  val mockPropertyDetailsRevaluedController: PropertyDetailsRevaluedController = mock[PropertyDetailsRevaluedController]
     val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
@@ -74,7 +73,6 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
       mockMcc,
       mockAuthAction,
       mockIsFullTaxPeriodController,
-      mockPropertyDetailsRevaluedController,
       mockHasBeenRevaluedController,
       mockServiceInfoService,
       mockPropertyDetailsService,
