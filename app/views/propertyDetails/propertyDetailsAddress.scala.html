@@ -88,34 +88,39 @@
         @govukInput(Input(
             label = Label(
               content = Text(messages("ated.addressProperty.line_1"))
-            )
+            ),
+            autocomplete = Some("address-line1")
         ).withFormField(propertyDetailsForm("line_1")))
 
         @govukInput(Input(
             label = Label(
               content = Text(messages("ated.addressProperty.line_2"))
-            )
+            ),
+            autocomplete = Some("address-line2")
         ).withFormField(propertyDetailsForm("line_2")))
 
         @govukInput(Input(
             label = Label(
               content = Text(messages("ated.addressProperty.line_3"))
             ),
-            classes = "govuk-!-width-two-thirds"
+            classes = "govuk-!-width-two-thirds",
+            autocomplete = Some("address-line3")
         ).withFormField(propertyDetailsForm("line_3")))
 
         @govukInput(Input(
             label = Label(
               content = Text(messages("ated.addressProperty.line_4"))
             ),
-        classes = "govuk-!-width-two-thirds"
+        classes = "govuk-!-width-two-thirds",
+        autocomplete = Some("address-level2")
         ).withFormField(propertyDetailsForm("line_4")))
 
         @govukInput(Input(
             label = Label(
               content = Text(messages("ated.addressProperty.postcode"))
             ),
-            classes = "govuk-input--width-10"
+            classes = "govuk-input--width-10",
+            autocomplete = Some("postal-code")
         ).withFormField(propertyDetailsForm("postcode")))
 
         @if(!fromConfirmAddressPage) {

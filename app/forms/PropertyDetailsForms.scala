@@ -120,7 +120,7 @@ object PropertyDetailsForms {
 
   val propertyDetailsNewValuationForm: Form[PropertyDetailsNewValuation] = Form(
     mapping(
-      "revaluedValue" -> valueValidation.verifying(revaluedValueConstraint)
+      "revaluedValue" -> valueValidation.verifying(revaluedValueConstraint())
     )(PropertyDetailsNewValuation.apply)(PropertyDetailsNewValuation.unapply)
   )
 

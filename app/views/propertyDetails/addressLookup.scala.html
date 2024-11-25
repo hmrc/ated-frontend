@@ -71,7 +71,8 @@
         @govukInput(Input(
             label = Label(
                 content = Text(messages("ated.address-lookup.house-name"))
-            )
+            ),
+            autocomplete = Some("address-line1")
             ).withFormField(searchForm("houseName")
         ))
 
@@ -79,7 +80,8 @@
             label = Label(
                 content = Text(messages("ated.address-lookup.postcode"))
             ),
-            classes = "govuk-input--width-10"
+            classes = "govuk-input--width-10",
+            autocomplete = Some("postal-code")
         ).withFormField(searchForm("postcode")
         ))
 
