@@ -70,10 +70,14 @@
   @formHelper(action = controllers.subscriptionData.routes.CorrespondenceAddressController.submit) {
 
       @input(Input(inputType = "hidden").withFormField(correspondenceAddressForm("addressType")))
-      @input(Input(label = Label(content = Text(messages("ated.addressLine1")))).withFormField(correspondenceAddressForm("addressLine1")))
-      @input(Input(label = Label(content = Text(messages("ated.addressLine2")))).withFormField(correspondenceAddressForm("addressLine2")))
-      @input(Input(label = Label(content = Text(messages("ated.addressLine3"))), classes = "govuk-!-width-two-thirds").withFormField(correspondenceAddressForm("addressLine3")))
-      @input(Input(label = Label(content = Text(messages("ated.addressLine4"))), classes = "govuk-!-width-two-thirds").withFormField(correspondenceAddressForm("addressLine4")))
+      @input(Input(label = Label(content = Text(messages("ated.addressLine1"))),
+                   autocomplete = Some("address-line1")).withFormField(correspondenceAddressForm("addressLine1")))
+      @input(Input(label = Label(content = Text(messages("ated.addressLine2"))),
+                   autocomplete = Some("address-line2")).withFormField(correspondenceAddressForm("addressLine2")))
+      @input(Input(label = Label(content = Text(messages("ated.addressLine3"))),
+                   autocomplete = Some("address-line3"), classes = "govuk-!-width-two-thirds").withFormField(correspondenceAddressForm("addressLine3")))
+      @input(Input(label = Label(content = Text(messages("ated.addressLine4"))),
+                   autocomplete = Some("address-line4"), classes = "govuk-!-width-two-thirds").withFormField(correspondenceAddressForm("addressLine4")))
       @select(Select(
           label = Label(content = Text(messages("ated.country"))),
           items = Seq(SelectItem(Some(""), "Select a country")) ++ listOfIsoCode.map {
@@ -82,7 +86,8 @@
                   text = country)
           }
       ).withFormField(correspondenceAddressForm("countryCode")))
-      @input(Input(label = Label(content = Text(messages("ated.postcode"))), classes = "govuk-input--width-10").withFormField(correspondenceAddressForm("postalCode")))
+      @input(Input(label = Label(content = Text(messages("ated.postcode"))),
+      autocomplete = Some("postal-code"), classes = "govuk-input--width-10").withFormField(correspondenceAddressForm("postalCode")))
 
     @button(Button(content = Text(messages("ated.save-changes"))))
 
