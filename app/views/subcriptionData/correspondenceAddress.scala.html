@@ -77,7 +77,7 @@
       @input(Input(label = Label(content = Text(messages("ated.addressLine3"))),
                    autocomplete = Some("address-line3"), classes = "govuk-!-width-two-thirds").withFormField(correspondenceAddressForm("addressLine3")))
       @input(Input(label = Label(content = Text(messages("ated.addressLine4"))),
-                   autocomplete = Some("address-line4"), classes = "govuk-!-width-two-thirds").withFormField(correspondenceAddressForm("addressLine4")))
+                   autocomplete = Some("address-level2"), classes = "govuk-!-width-two-thirds").withFormField(correspondenceAddressForm("addressLine4")))
       @select(Select(
           label = Label(content = Text(messages("ated.country"))),
           items = Seq(SelectItem(Some(""), "Select a country")) ++ listOfIsoCode.map {
