@@ -62,7 +62,6 @@ class ApplicationConfig @Inject()(val conf: ServicesConfig,
   lazy val clientApproveAgentMandate: String = conf.getString("microservice.services.agent-client-mandate-frontend.atedClientApproveAgentUri")
   lazy val agentRedirectedToMandate: String = conf.getString("microservice.services.agent-client-mandate-frontend.atedAgentJourneyStartUri")
   lazy val atedPeakStartDay: String = conf.getString(key = "atedPeakStartDay")
-  lazy val newRevaluedFeature: Boolean = conf.getBoolean(key = "revaluedNewJourney")
 
   lazy val val2022Date: Boolean = conf.getBoolean("feature.valuation2022DateActive")
 

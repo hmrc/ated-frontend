@@ -289,8 +289,6 @@ object PropertyDetailsForms {
     def isValid(value: String): Boolean = Try(value.toLong).isSuccess
   }
 
-  //scalastyle:off cyclomatic.complexity
-
   def validatePropertyDetailsTaxAvoidance(f: Form[PropertyDetailsTaxAvoidance]): Form[PropertyDetailsTaxAvoidance] = {
     if (!f.hasErrors) {
       val formErrors = PropertyDetailsFormsValidation.validateAvoidanceSchemeRefNo(f.get.isTaxAvoidance,

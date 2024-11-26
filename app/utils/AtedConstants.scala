@@ -19,9 +19,7 @@ package utils
 object AtedConstants {
 
   val IdentifierArn: String = "arn"
-  val IdentifierUtr: String = "utr"
   val IdentifierSafeId: String = "safeid"
-  val LoggedInUser: String = "loggedInUser"
   val SubmitReturnsResponseFormId: String = "submit-returns-response-Id"
   val AlreadySubmittedReturnsResponseFormId: String = "already-submitted-returns-response-Id"
   val SubmitEditedLiabilityReturnsResponseFormId: String = "submit-edited-liability-returns-response-Id"
@@ -42,7 +40,6 @@ object AtedConstants {
   val NewBuildCouncilRegisteredDateKnown: String = "date-council-registered-known"
 
   val NewBuildCouncilRegisteredDate: String = "date-council-registered"
-  val PeriodKey: String = "2015"
   val PeriodStartMonth: String = "4"
 
   val PeriodStartDay: String = "1"
@@ -65,7 +62,6 @@ object AtedConstants {
   val TypeDisposeLiabilityDraft: String = "Dispose_Liability"
   val Further: String = "F"
   val Amend: String = "A"
-
   val Change: String = "C"
   val SelectedPreviousReturn: String = "selected-previous-return"
 

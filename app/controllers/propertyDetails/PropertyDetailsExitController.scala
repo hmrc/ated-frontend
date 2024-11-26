@@ -33,25 +33,17 @@ class PropertyDetailsExitController @Inject()(mcc: MessagesControllerComponents,
                                               val backLinkCacheConnector: BackLinkCacheConnector,
                                               template: views.html.propertyDetails.propertyDetailsExit)
                                              (implicit val appConfig: ApplicationConfig)
-extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper {
+  extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper {
 
   implicit val ec: ExecutionContext = mcc.executionContext
   val controllerId: String = "PropertyDetailsExitController"
 
   def view(): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
-
       ensureClientContext {
-        currentBackLink.flatMap { backLink =>
-                if (appConfig.newRevaluedFeature) {
-                  Future.successful(Ok(template(backLink)))
-                }else {
-                  Future.successful(Redirect(controllers.routes.HomeController.home()))
-                }  
-        }
-        
+        currentBackLink.flatMap { backLink => Future.successful(Ok(template(backLink)))}
+      }
     }
   }
-}
 }
 
