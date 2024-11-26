@@ -76,7 +76,7 @@ class ReliefsSentSpec extends AnyFeatureSpec with GuiceOneAppPerSuite with Mocki
 
       Then("There will be a link to print confirmation")
       val link = document.select("#print")
-      assert(link.text === "Print confirmation")
+      assert(link.text === "Print confirmation (opens in new tab)")
       assert(link.attr("href").contains("#print"))
 
       Then("The first h2 should be correct")
