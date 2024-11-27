@@ -156,7 +156,7 @@ class DisposeLiabilitySummaryControllerSpec extends PlaySpec with GuiceOneServer
             document.getElementById("address-line-2").text() must be("line2")
             document.getElementsByClass("govuk-summary-list__key").text() must include("Date disposed property")
             document.getElementsByClass("govuk-summary-list__value").text() must include("2 April 2015")
-            document.getElementById("print-friendly-edit-liability-link").text() must be("Print this return")
+            document.getElementById("print-friendly-edit-liability-link").text() must be("Print this return (opens in new tab)")
             document.getElementById("saved-returns-link").text() must be("Save as draft")
             document.getElementsByClass("govuk-back-link").text must be("Back")
             document.getElementsByClass("govuk-back-link").attr("href") must include("http://backlink")
