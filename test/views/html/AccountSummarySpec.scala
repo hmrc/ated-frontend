@@ -233,11 +233,11 @@ class AccountSummarySpec extends AtedViewSpec with MockAuthUtil with TestModels 
       "show the correct organisation" in {
         doc(view).getElementsByClass("govuk-summary-list__key govuk-!-width-one-half") must not be None
         doc(view).getElementsByClass("govuk-summary-list__key govuk-!-width-one-half").size() mustEqual 2
-        doc(view).getElementsByClass("govuk-summary-list__key govuk-!-width-one-half").get(0).text() must be ("Company details")
+        doc(view).select("#company-details-label").text() must be ("Company details")
 
         doc(view).getElementsByClass("govuk-summary-list__value govuk-!-width-one-half") must not be None
         doc(view).getElementsByClass("govuk-summary-list__value govuk-!-width-one-half").size() mustEqual 2
-        doc(view).getElementsByClass("govuk-summary-list__value govuk-!-width-one-half").get(0).text() must be (organisationName)
+        doc(view).select("#company-details").text() must be (organisationName)
       }
 
       "show the change company details" in {
@@ -246,8 +246,8 @@ class AccountSummarySpec extends AtedViewSpec with MockAuthUtil with TestModels 
       }
 
       "show the ATED reference number" in{
-        doc(view).getElementsByClass("govuk-summary-list__key govuk-!-width-one-half").get(1).text() must be ("Reference number")
-        doc(view).getElementsByClass("govuk-summary-list__value govuk-!-width-one-half").get(1).text() must be (atedReference)
+        doc(view).select("#reference-number-label").text() must be ("ATED reference number")
+        doc(view).select("#reference-number").text() must be (atedReference)
       }
 
     }

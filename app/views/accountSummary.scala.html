@@ -186,10 +186,10 @@
 
     <dl class="govuk-summary-list">
         <div class="govuk-summary-list__row">
-            <dt class="govuk-summary-list__key govuk-!-width-one-half">
+            <dt id="company-details-label" class="govuk-summary-list__key govuk-!-width-one-half">
             @messages("ated.account-summary.ated-details-company.text")
             </dt>
-            <dd class="govuk-summary-list__value govuk-!-width-one-half">
+            <dd id="company-details" class="govuk-summary-list__value govuk-!-width-one-half">
             @messages(organisationName.getOrElse(""))
             </dd>
             <dd class="govuk-summary-list__actions">
@@ -198,10 +198,10 @@
             </dd>
         </div>
         <div class="govuk-summary-list__row">
-            <dt class="govuk-summary-list__key govuk-!-width-one-half">
+            <dt id="reference-number-label" class="govuk-summary-list__key govuk-!-width-one-half">
             @messages("ated.account-summary.ated-details-reference.text")
             </dt>
-            <dd class="govuk-summary-list__value govuk-!-width-one-half">
+            <dd id="reference-number" class="govuk-summary-list__value govuk-!-width-one-half">
                 @messages(atedReference)
             </dd>
         </div>
@@ -212,26 +212,26 @@
         @if(agentDetails.isDefined) {
             <dl class="govuk-summary-list">
                 <div class="govuk-summary-list__row">
-                    <dt class="govuk-summary-list__key">
+                    <dt id="agent-name-label" class="govuk-summary-list__key">
                     @messages("ated.account-summary.ated-agent-name.text")
                     </dt>
-                    <dd class="govuk-summary-list__value">
+                    <dd id="agent-name" class="govuk-summary-list__value">
                     @messages(printNotProvidedIfEmpty(agentDetails.get.agentName))
                     </dd>
                 </div>
-                <div class="govuk-summary-list__row">
-                    <dt class="govuk-summary-list__key">
+                <div  class="govuk-summary-list__row">
+                    <dt id="agent-email-label" class="govuk-summary-list__key">
                     @messages("ated.account-summary.ated-agent-email.text")
                     </dt>
-                    <dd class="govuk-summary-list__value">
+                    <dd id="agent-email" class="govuk-summary-list__value">
                     @messages(printNotProvidedIfEmpty(agentDetails.get.email))
                     </dd>
                 </div>
                 <div class="govuk-summary-list__row">
-                    <dt class="govuk-summary-list__key">
+                    <dt id="agent-status-label" class="govuk-summary-list__key">
                     @messages("ated.account-summary.ated-agent-status.text")
                     </dt>
-                    <dd class="govuk-summary-list__value">
+                    <dd id="agent-status" class="govuk-summary-list__value">
                         @if(agentDetails.get.status == "Active") {
                             <strong class="govuk-tag govuk-tag--green">Confirmed</strong>
                         }
