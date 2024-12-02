@@ -104,14 +104,6 @@ object PropertyDetailsForms {
     )(HasBeenRevalued.apply)(HasBeenRevalued.unapply)
   )
 
-  val propertyDetailsRevaluedForm: Form[PropertyDetailsRevalued] = Form(
-    mapping(
-      "isPropertyRevalued" -> optional(boolean).verifying("ated.property-details-value.isPropertyRevalued.error.non-selected", x => x.isDefined),
-      "revaluedValue" -> valueValidation,
-      "revaluedDate" -> DateTupleCustomError("ated.error.date.invalid").dateTupleOptional(),
-      "partAcqDispDate" -> DateTupleCustomError("ated.error.date.invalid").dateTupleOptional()
-    )(PropertyDetailsRevalued.apply)(PropertyDetailsRevalued.unapply))
-
   val propertyDetailsDateOfChangeForm: Form[DateOfChange] = Form (
     mapping(
       "dateOfChange" -> DateTupleCustomError("ated.error.date.invalid").dateTupleOptional()
@@ -295,16 +287,6 @@ object PropertyDetailsForms {
 
   object PropertyValueField {
     def isValid(value: String): Boolean = Try(value.toLong).isSuccess
-  }
-
-  //scalastyle:off cyclomatic.complexity
-  def validatePropertyDetailsRevalued(periodKey: Int, f: Form[PropertyDetailsRevalued]): Form[PropertyDetailsRevalued] = {
-    if (!f.hasErrors) {
-      val formErrors = (PropertyDetailsFormsValidation.checkPartAcqDispDate(periodKey, f.get.isPropertyRevalued, f.get.partAcqDispDate)
-        ++ PropertyDetailsFormsValidation.checkRevaluedDate(periodKey, f.get.isPropertyRevalued, f.get.revaluedDate)
-        ).flatten
-      addErrorsToForm(f, formErrors)
-    } else f
   }
 
   def validatePropertyDetailsTaxAvoidance(f: Form[PropertyDetailsTaxAvoidance]): Form[PropertyDetailsTaxAvoidance] = {
@@ -514,29 +496,5 @@ object PropertyDetailsForms {
 
     y(form, formErrors)
   }
-
-  //scalastyle:off cyclomatic.complexity
-  def validatePropertyDetailsRevaluedForm(periodKey : Int, f: Form[PropertyDetailsRevalued], dateFields : Seq[(String, String)] ): Form[PropertyDetailsRevalued] = {
-    if (!f.hasErrors) {
-      val formErrors =
-        if (f.get.isPropertyRevalued.contains(true)) {
-          dateFields.map { x =>
-            DateTupleCustomError.validateDateFields(f.data.get(s"${x._1}.day"), f.data.get(s"${x._1}.month"), f.data.get(s"${x._1}.year"),
-              Seq((x._1, x._2)))
-          }
-        } else {
-          Seq()
-        }
-      val validationValueErrors = validateValue(f.get.isPropertyRevalued.contains(true), "revaluedValue", f.get.revaluedValue, f)
-      if (f.get.isPropertyRevalued.contains(true)) {
-        validatePropertyDetailsRevalued(periodKey, addErrorsToForm(f, formErrors(0) ++ validationValueErrors.flatten ++ formErrors(1)))
-      } else {
-        validatePropertyDetailsRevalued(periodKey, addErrorsToForm(f, validationValueErrors.flatten))
-      }
-    } else {
-      f
-    }
-  }
-
 
 }

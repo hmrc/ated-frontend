@@ -45,7 +45,8 @@
     <div class="govuk-form-group">
         @govukButton(Button(
           href = Some("/ated/account-summary"),
-          content = Text(messages("ated.property_details_exit.back_button"))
+          content = Text(messages("ated.property_details_exit.back_button")),
+          attributes = Map("id" -> "submit")
         ))
     </div>
 

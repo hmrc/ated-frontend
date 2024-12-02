@@ -47,21 +47,9 @@ class PropertyDetailsExitControllerSpec extends PropertyDetailsTestFixture {
     }
 
     "render the Exit page" when {
-      "newRevaluedFeature flag is set to true" in {
-        setupAuthForOrganisation()
-        setupCommonMockExpectations(true)
+      "user is authenticated" in new Setup{
         val result = testController.view().apply(SessionBuilder.buildRequestWithSession(userId))
         status(result) mustBe OK
-      }
-    }
-
-    "redirect to home page" when {
-      "newRevaluedFeature flag is set to false" in {
-        setupAuthForOrganisation()
-        setupCommonMockExpectations(false)
-        val result = testController.view().apply(SessionBuilder.buildRequestWithSession(userId))
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result).get must include("ated/home")
       }
     }
   }

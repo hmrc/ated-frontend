@@ -48,18 +48,10 @@ class PropertyDetailsHasBeenRevaluedControllerSpec extends PropertyDetailsTestFi
     }
 
     "render the has been revalued page" when {
-      "newRevaluedFeature flag is set to true" in new Setup {
+      "user is authenticated" in new Setup {
         setupPropertyDetailServiceMockExpectations()
         val result = testController.view("1").apply(SessionBuilder.buildRequestWithSession(userId))
         status(result) mustBe OK
-      }
-    }
-
-    "redirect to home page" when {
-      "newRevaluedFeature flag is set to false" in new Setup(isFeatureFlagEnabled = false) {
-        val result = testController.view("1").apply(SessionBuilder.buildRequestWithSession(userId))
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result).get must include("ated/home")
       }
     }
 
@@ -82,7 +74,7 @@ class PropertyDetailsHasBeenRevaluedControllerSpec extends PropertyDetailsTestFi
     }
 
     "redirect to next page: date-of-change" when {
-      "newRevaluedFeature flag is set to true and user clicks yes" in new Setup {
+      "user clicks yes" in new Setup {
         val inputJson: JsValue = Json.toJson(HasBeenRevalued(Some(true)))
         setupPropertyDetailServiceMockExpectations()
         val result = testController.save("1", 2015, None).apply(SessionBuilder.updateRequestWithSession(FakeRequest().withJsonBody(inputJson), userId))
@@ -92,20 +84,12 @@ class PropertyDetailsHasBeenRevaluedControllerSpec extends PropertyDetailsTestFi
     }
 
     "render the exit page" when {
-      "newRevaluedFeature flag is set to true and user clicks no" in new Setup {
+      "user clicks no" in new Setup {
         val inputJson: JsValue = Json.toJson(HasBeenRevalued(Some(false)))
         setupPropertyDetailServiceMockExpectations()
         val result = testController.save("1", 2015, None).apply(SessionBuilder.updateRequestWithSession(FakeRequest().withJsonBody(inputJson), userId))
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get must include("ated/liability/create/cannot-submit-return")
-      }
-    }
-
-    "redirect to home page" when {
-      "newRevaluedFeature flag is set to false" in new Setup(isFeatureFlagEnabled = false) {
-        val result = testController.view("1").apply(SessionBuilder.buildRequestWithSession(userId))
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result).get must include("ated/home")
       }
     }
   }

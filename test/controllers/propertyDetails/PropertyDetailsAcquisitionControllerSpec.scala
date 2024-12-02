@@ -54,7 +54,6 @@ class PropertyDetailsAcquisitionControllerSpec extends PlaySpec with GuiceOneSer
   val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
   val mockBackLinkCacheConnector: BackLinkCacheConnector = mock[BackLinkCacheConnector]
   val mockIsFullTaxPeriodController: IsFullTaxPeriodController = mock[IsFullTaxPeriodController]
-  val mockPropertyDetailsRevaluedController: PropertyDetailsRevaluedController = mock[PropertyDetailsRevaluedController]
     val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
@@ -74,7 +73,6 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
       mockMcc,
       mockAuthAction,
       mockIsFullTaxPeriodController,
-      mockPropertyDetailsRevaluedController,
       mockHasBeenRevaluedController,
       mockServiceInfoService,
       mockPropertyDetailsService,
@@ -250,12 +248,12 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
           }
         }
 
-        "When the acquisition is true forward to the Revalued Page" in new Setup {
+        "When the acquisition is true forward to the Has Been Revalued Page" in new Setup {
           when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
           submitWithAuthorisedUser(Json.toJson(PropertyDetailsAcquisition(Some(true)))) {
             result =>
               status(result) must be(SEE_OTHER)
-              redirectLocation(result).get must include("/liability/create/revalued/view")
+              redirectLocation(result).get must include("/liability/create/has-been-revalued/view/")
           }
         }
         "When the acquisition is false forward to the Owned Before Page" in new Setup {

@@ -30,7 +30,7 @@ import utils.AtedConstants.{SelectedPreviousReturn, propertyDetailsNewValuationV
 import utils.AtedUtils
 
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 class PropertyDetailsNewValuationController @Inject()(mcc: MessagesControllerComponents,
                                                       authAction: AuthAction,
@@ -50,29 +50,26 @@ class PropertyDetailsNewValuationController @Inject()(mcc: MessagesControllerCom
   def view(id: String): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
-        if (appConfig.newRevaluedFeature) {
-          serviceInfoService.getPartial.flatMap { serviceInfoContent =>
-            propertyDetailsCacheResponse(id) {
-              case PropertyDetailsCacheSuccessResponse(propertyDetails) => {
-                currentBackLink.flatMap { backLink =>
-                  dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
-                    dataCacheConnector.fetchAndGetFormData[PropertyDetailsNewValuation](propertyDetailsNewValuationValue).map { cachedNewValuation =>
-                      val newValuation = cachedNewValuation.flatMap(_.revaluedValue)
-                      Ok(template(id,
-                        propertyDetails.periodKey,
-                        AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn),
-                        propertyDetailsNewValuationForm.fill(PropertyDetailsNewValuation(newValuation)),
-                        backLink,
-                        serviceInfoContent
-                      ))
-                    }
+
+        serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+          propertyDetailsCacheResponse(id) {
+            case PropertyDetailsCacheSuccessResponse(propertyDetails) => {
+              currentBackLink.flatMap { backLink =>
+                dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
+                  dataCacheConnector.fetchAndGetFormData[PropertyDetailsNewValuation](propertyDetailsNewValuationValue).map { cachedNewValuation =>
+                    val newValuation = cachedNewValuation.flatMap(_.revaluedValue)
+                    Ok(template(id,
+                      propertyDetails.periodKey,
+                      AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn),
+                      propertyDetailsNewValuationForm.fill(PropertyDetailsNewValuation(newValuation)),
+                      backLink,
+                      serviceInfoContent
+                    ))
                   }
                 }
               }
             }
           }
-        } else {
-          Future.successful(Redirect(controllers.routes.HomeController.home()))
         }
       }
     }
@@ -81,30 +78,21 @@ class PropertyDetailsNewValuationController @Inject()(mcc: MessagesControllerCom
   def save(id: String, periodKey: Int, mode: Option[String]): Action[AnyContent] = Action.async { implicit request => {
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
-        if (appConfig.newRevaluedFeature) {
-          serviceInfoService.getPartial.flatMap { serviceInfoContent =>
-
-            propertyDetailsNewValuationForm.bindFromRequest().fold(
-              formWithErrors => {
-                currentBackLink.map(backLink => BadRequest(template(id,
-                  periodKey,
-                  mode,
-                  formWithErrors,
-                  backLink,
-                  serviceInfoContent
-                )))
-              },
-              revaluedValue => {
-                dataCacheConnector.saveFormData[PropertyDetailsNewValuation](propertyDetailsNewValuationValue, revaluedValue)
-                redirectWithBackLink(
-                  propertyDetailsDateOfRevalueController.controllerId,
-                  controllers.propertyDetails.routes.PropertyDetailsDateOfRevalueController.view(id),
-                  Some(controllers.propertyDetails.routes.PropertyDetailsNewValuationController.view(id).url)
-                )
-              }
-            )
-          }
-        } else Future.successful(Redirect(controllers.routes.HomeController.home()))
+        serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+          propertyDetailsNewValuationForm.bindFromRequest().fold(
+            formWithErrors => {
+              currentBackLink.map(backLink => BadRequest(template(id, periodKey, mode, formWithErrors, backLink, serviceInfoContent)))
+            },
+            revaluedValue => {
+              dataCacheConnector.saveFormData[PropertyDetailsNewValuation](propertyDetailsNewValuationValue, revaluedValue)
+              redirectWithBackLink(
+                propertyDetailsDateOfRevalueController.controllerId,
+                controllers.propertyDetails.routes.PropertyDetailsDateOfRevalueController.view(id),
+                Some(controllers.propertyDetails.routes.PropertyDetailsNewValuationController.view(id).url)
+              )
+            }
+          )
+        }
       }
     }
   }

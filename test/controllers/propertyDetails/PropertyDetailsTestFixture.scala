@@ -63,9 +63,9 @@ abstract class PropertyDetailsTestFixture extends PlaySpec with GuiceOneServerPe
     mockAuthConnector
   )
 
-  case class Setup(isFeatureFlagEnabled:Boolean = true, enrolmentSet: Set[Enrolment] = defaultEnrolmentSet) {
+  case class Setup(enrolmentSet: Set[Enrolment] = defaultEnrolmentSet) {
     setupAuthForOrganisation(enrolmentSet)
-    setupCommonMockExpectations(isFeatureFlagEnabled)
+    setupCommonMockExpectations()
   }
 
 
@@ -79,16 +79,14 @@ abstract class PropertyDetailsTestFixture extends PlaySpec with GuiceOneServerPe
       .thenReturn(Future.successful(Some(DateOfChange(dateOfRevaluationChange))))
   }
 
-  def setupCommonMockExpectations(isFeatureFlagEnabled: Boolean) = {
+  def setupCommonMockExpectations() = {
     val customBtaNavigationLinks = btaNavigationLinksView()(messages, mockAppConfig)
-    when(mockAppConfig.newRevaluedFeature).thenReturn(isFeatureFlagEnabled)
     when(mockServiceInfoService.getPartial(any(), any(), any())).thenReturn(Future.successful(customBtaNavigationLinks))
     when(mockDataCacheConnector.fetchAtedRefData[String](eqs(DelegatedClientAtedRefNumber))(any(), any())).thenReturn(Future.successful(Some("XN1200000100001")))
     when(mockDataCacheConnector.fetchAndGetFormData[Boolean](any())
       (any(), any())).thenReturn(Future.successful(None))
     when(mockBackLinkCacheConnector.fetchAndGetBackLink(any())(any())).thenReturn(Future.successful(None))
     when(mockBackLinkCacheConnector.saveBackLink(any(), any())(any())).thenReturn(Future.successful(None))
-
   }
 
   def setupPropertyDetailServiceMockExpectations() = {

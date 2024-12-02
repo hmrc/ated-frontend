@@ -78,30 +78,6 @@ object PropertyDetailsFormsValidation {
       validateDate(periodKey, f, "newBuildRegisterDate", mustBeInChargeablePeriod = true, isMandatory = true)
   }
 
-  def checkRevaluedDate(periodKey: Int, isPropertyRevalued: Option[Boolean], revaluedDate: Option[LocalDate]): Seq[Option[FormError]] = {
-    if (isPropertyRevalued.contains(true)) {
-      if (revaluedDate.isEmpty) {
-        Seq(Some(FormError("revaluedDate", "ated.property-details-value.revaluedDate.error.empty")))
-      } else if (revaluedDate.isDefined && revaluedDate.exists(_.isAfter(LocalDate.now()))) {
-        Seq(Some(FormError("revaluedDate", "ated.property-details-value.revaluedDate.error.in-future")))
-      } else if (revaluedDate.isDefined && revaluedDate.exists(a => PeriodUtils.isPeriodTooLate(periodKey, Some(a)))) {
-        Seq(Some(FormError("revaluedDate", "ated.property-details-value.revaluedDate.error.too-late")))
-      } else Seq(None)
-    } else Seq(None)
-  }
-
-  def checkPartAcqDispDate(periodKey: Int, isPropertyRevalued: Option[Boolean], partAcqDispDate: Option[LocalDate]): Seq[Option[FormError]] = {
-    if (isPropertyRevalued.contains(true)) {
-      if (partAcqDispDate.isEmpty) {
-        Seq(Some(FormError("partAcqDispDate", "ated.property-details-value.partAcqDispDate.error.empty")))
-      } else if (partAcqDispDate.isDefined && partAcqDispDate.exists(_.isAfter(LocalDate.now()))) {
-        Seq(Some(FormError("partAcqDispDate", "ated.property-details-value.partAcqDispDate.error.in-future")))
-      } else if (partAcqDispDate.isDefined && partAcqDispDate.exists(a => PeriodUtils.isPeriodTooLate(periodKey, Some(a)))) {
-        Seq(Some(FormError("partAcqDispDate", "ated.property-details-value.partAcqDispDate.error.too-late")))
-      } else Seq(None)
-    } else Seq(None)
-  }
-
   def checkDate (periodKey: Int, isPropertyRevalued: Option[Boolean], date: Option[LocalDate], field: String): Seq[Option[FormError]] = {
     if (isPropertyRevalued.contains(true)) {
       if (date.isEmpty) {

@@ -33,7 +33,6 @@ import scala.concurrent.{ExecutionContext, Future}
 class PropertyDetailsAcquisitionController @Inject()(mcc: MessagesControllerComponents,
                                                      authAction: AuthAction,
                                                      isFullTaxPeriodController: IsFullTaxPeriodController,
-                                                     propertyDetailsRevaluedController: PropertyDetailsRevaluedController,
                                                      propertyDetailsHasBeenRevaluedController: PropertyDetailsHasBeenRevaluedController,
                                                      serviceInfoService: ServiceInfoService,
                                                      val propertyDetailsService: PropertyDetailsService,
@@ -107,20 +106,11 @@ class PropertyDetailsAcquisitionController @Inject()(mcc: MessagesControllerComp
                 _ <- propertyDetailsService.saveDraftPropertyDetailsAcquisition(id, anAcquisition)
                 result <-
                   if (anAcquisition) {
-                    if (appConfig.newRevaluedFeature) {
-                      redirectWithBackLink(
-                        propertyDetailsHasBeenRevaluedController.controllerId,
-                        controllers.propertyDetails.routes.PropertyDetailsHasBeenRevaluedController.view(id),
-                        backLink
-                      )
-                    } else {
-                      redirectWithBackLink(
-                        propertyDetailsRevaluedController.controllerId,
-                        controllers.propertyDetails.routes.PropertyDetailsRevaluedController.view(id),
-                        backLink
-                      )
-                    }
-
+                    redirectWithBackLink(
+                      propertyDetailsHasBeenRevaluedController.controllerId,
+                      controllers.propertyDetails.routes.PropertyDetailsHasBeenRevaluedController.view(id),
+                      backLink
+                    )
                   } else {
                     redirectWithBackLink(
                       isFullTaxPeriodController.controllerId,

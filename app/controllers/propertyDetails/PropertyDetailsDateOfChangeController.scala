@@ -30,7 +30,7 @@ import utils.AtedConstants.{FortyThousandValueDateOfChange, SelectedPreviousRetu
 import utils.AtedUtils
 
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 class PropertyDetailsDateOfChangeController @Inject()(mcc: MessagesControllerComponents,
                                                       authAction: AuthAction,
@@ -50,27 +50,24 @@ class PropertyDetailsDateOfChangeController @Inject()(mcc: MessagesControllerCom
   def view(id: String): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
-        if (appConfig.newRevaluedFeature) {
-          serviceInfoService.getPartial.flatMap { serviceInfoContent =>
-            propertyDetailsCacheResponse(id) {
-              case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
-                currentBackLink.flatMap { backlink =>
-                  dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
-                    dataCacheConnector.fetchAndGetFormData[DateOfChange](FortyThousandValueDateOfChange).map { cachedDateOfChange =>
-                      val dateOfChange = cachedDateOfChange.flatMap(_.dateOfChange)
-
-                      Ok(template(id,
-                        propertyDetails.periodKey,
-                        propertyDetailsDateOfChangeForm.fill(DateOfChange(dateOfChange)),
-                        AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn),
-                        serviceInfoContent,
-                        backlink))
-                    }
+        serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+          propertyDetailsCacheResponse(id) {
+            case PropertyDetailsCacheSuccessResponse(propertyDetails) => {}
+              currentBackLink.flatMap { backlink =>
+                dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
+                  dataCacheConnector.fetchAndGetFormData[DateOfChange](FortyThousandValueDateOfChange).map { cachedDateOfChange =>
+                    val dateOfChange = cachedDateOfChange.flatMap(_.dateOfChange)
+                    Ok(template(id,
+                      propertyDetails.periodKey,
+                      propertyDetailsDateOfChangeForm.fill(DateOfChange(dateOfChange)),
+                      AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn),
+                      serviceInfoContent,
+                      backlink))
                   }
                 }
-            }
+              }
           }
-        } else Future.successful(Redirect(controllers.routes.HomeController.home()))
+        }
       }
     }
   }
@@ -83,23 +80,21 @@ class PropertyDetailsDateOfChangeController @Inject()(mcc: MessagesControllerCom
   def save(id: String, periodKey: Int, mode: Option[String]): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
-        if (appConfig.newRevaluedFeature) {
-          serviceInfoService.getPartial.flatMap { serviceInfoContent =>
-            validateDateOfChange(periodKey, propertyDetailsDateOfChangeForm.bindFromRequest(), dateFields).fold(
-              formWithError => {
-                currentBackLink.map(backLink => (BadRequest(template(id, periodKey, formWithError, mode, serviceInfoContent, backLink))))
-              },
-              dateOfChange => {
-                dataCacheConnector.saveFormData[DateOfChange](FortyThousandValueDateOfChange, dateOfChange)
-                redirectWithBackLink(
-                  newValuationController.controllerId,
-                  controllers.propertyDetails.routes.PropertyDetailsNewValuationController.view(id),
-                  Some(controllers.propertyDetails.routes.PropertyDetailsDateOfChangeController.view(id).url)
-                )
-              }
-            )
-          }
-        } else Future.successful(Redirect(controllers.routes.HomeController.home()))
+        serviceInfoService.getPartial.flatMap { serviceInfoContent =>
+          validateDateOfChange(periodKey, propertyDetailsDateOfChangeForm.bindFromRequest(), dateFields).fold(
+            formWithError => {
+              currentBackLink.map(backLink => BadRequest(template(id, periodKey, formWithError, mode, serviceInfoContent, backLink)))
+            },
+            dateOfChange => {
+              dataCacheConnector.saveFormData[DateOfChange](FortyThousandValueDateOfChange, dateOfChange)
+              redirectWithBackLink(
+                newValuationController.controllerId,
+                controllers.propertyDetails.routes.PropertyDetailsNewValuationController.view(id),
+                Some(controllers.propertyDetails.routes.PropertyDetailsDateOfChangeController.view(id).url)
+              )
+            }
+          )
+        }
       }
     }
   }
