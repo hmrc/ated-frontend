@@ -90,7 +90,7 @@ class propertyDetailsHasBeenRevaluedSpec extends PlaySpec with GuiceOneAppPerSui
       "render an error summary with the correct error message" in {
         assert(doc.getElementsByClass("govuk-error-summary").size() == 1)
         assert(doc.select("h2.govuk-error-summary__title").text() == "There is a problem")
-        assert(doc.select("ul.govuk-error-summary__list a").text() == "Select yes if the property has been revalued since the £40,000 or more change")
+        assert(doc.select("ul.govuk-error-summary__list a").text() == "Select yes if the property has been revalued since the change of £40,000 or more")
       }
 
       "apply an error class to the form group apply error styling" in {
@@ -98,7 +98,7 @@ class propertyDetailsHasBeenRevaluedSpec extends PlaySpec with GuiceOneAppPerSui
       }
 
       "render an error message at the input field" in {
-        assert(doc.getElementById("isPropertyRevalued-error").text() == "Error: Select yes if the property has been revalued since the £40,000 or more change")
+        assert(doc.getElementById("isPropertyRevalued-error").text() == "Error: Select yes if the property has been revalued since the change of £40,000 or more")
       }
     }
   }

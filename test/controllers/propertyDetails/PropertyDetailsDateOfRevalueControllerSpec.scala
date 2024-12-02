@@ -50,18 +50,10 @@ class PropertyDetailsDateOfRevalueControllerSpec extends PropertyDetailsTestFixt
     }
 
     "render the date of revalue page" when {
-      "newRevaluedFeature flag is set to true" in new Setup {
+      "user is authenticated" in new Setup {
         setupPropertyDetailServiceMockExpectations()
         val result = testController.view("1").apply(SessionBuilder.buildRequestWithSession(userId))
         status(result) mustBe OK
-      }
-    }
-
-    "redirect to home page" when {
-      "newRevaluedFeature flag is set to false" in new Setup(isFeatureFlagEnabled = false) {
-        val result = testController.view("1").apply(SessionBuilder.buildRequestWithSession(userId))
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result).get must include("ated/home")
       }
     }
 
@@ -84,7 +76,7 @@ class PropertyDetailsDateOfRevalueControllerSpec extends PropertyDetailsTestFixt
     }
 
     "collect information from cache and save to database" when {
-      "newRevaluedFeature flag is set to true and save invoked for a valid period" in new Setup {
+      "save invoked for a valid period" in new Setup {
         val inputJson: JsValue = Json.obj(
           "dateOfRevalue" -> Json.obj("day" -> 1, "month" -> 4, "year" -> 2020)
         )
@@ -106,7 +98,7 @@ class PropertyDetailsDateOfRevalueControllerSpec extends PropertyDetailsTestFixt
     }
 
     "redirect to next page: full tax period" when {
-      "newRevaluedFeature flag is set to true and user enters valid date" in new Setup {
+      "user enters valid date" in new Setup {
         val inputJson: JsValue = Json.obj(
           "dateOfRevalue" -> Json.obj("day" -> "1", "month" -> "4", "year" -> "2015")
         )
@@ -148,18 +140,7 @@ class PropertyDetailsDateOfRevalueControllerSpec extends PropertyDetailsTestFixt
         contentAsString(result) must include("There is a problem")
       }
     }
-
-
-    "redirect to home page" when {
-      "newRevaluedFeature flag is set to false" in new Setup(isFeatureFlagEnabled = false) {
-        val result = testController.view("1").apply(SessionBuilder.buildRequestWithSession(userId))
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result).get must include("ated/home")
-      }
-    }
   }
-
-
 }
 
 

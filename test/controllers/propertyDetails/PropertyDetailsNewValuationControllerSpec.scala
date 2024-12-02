@@ -51,18 +51,10 @@ class PropertyDetailsNewValuationControllerSpec extends PropertyDetailsTestFixtu
     }
 
     "render the new valuation page" when {
-      "newRevaluedFeature flag is set to true" in new Setup {
+      "user is authenticated" in new Setup {
         setupPropertyDetailServiceMockExpectations()
         val result = testController.view("1").apply(SessionBuilder.buildRequestWithSession(userId))
         status(result) mustBe OK
-      }
-    }
-
-    "redirect to home page" when {
-      "newRevaluedFeature flag is set to false" in new Setup(isFeatureFlagEnabled = false) {
-        val result = testController.view("1").apply(SessionBuilder.buildRequestWithSession(userId))
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result).get must include("ated/home")
       }
     }
 
@@ -84,20 +76,12 @@ class PropertyDetailsNewValuationControllerSpec extends PropertyDetailsTestFixtu
     }
 
     "redirect to next page: date-of-revalue" when {
-      "newRevaluedFeature flag is set to true and user inputs valid value" in new Setup {
+      "user inputs valid value" in new Setup {
         val inputJson: JsValue = Json.toJson(PropertyDetailsNewValuation(Some(12345678)))
         setupPropertyDetailServiceMockExpectations()
         val result = testController.save("1", 2015, None).apply(SessionBuilder.updateRequestWithSession(FakeRequest().withJsonBody(inputJson), userId))
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get must include("/ated/liability/create/date-of-revalue/view/1")
-      }
-    }
-
-    "redirect to home page" when {
-      "newRevaluedFeature flag is set to false" in new Setup(isFeatureFlagEnabled = false) {
-        val result = testController.view("1").apply(SessionBuilder.buildRequestWithSession(userId))
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result).get must include("ated/home")
       }
     }
   }

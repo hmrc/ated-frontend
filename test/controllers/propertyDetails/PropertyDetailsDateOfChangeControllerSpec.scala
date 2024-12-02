@@ -47,18 +47,10 @@ class PropertyDetailsDateOfChangeControllerSpec extends PropertyDetailsTestFixtu
     }
 
     "render the date of change page" when {
-      "newRevaluedFeature flag is set to true" in new Setup {
+      "user is authenticated" in new Setup {
         setupPropertyDetailServiceMockExpectations()
         val result = testController.view("1").apply(SessionBuilder.buildRequestWithSession(userId))
         status(result) mustBe OK
-      }
-    }
-
-    "redirect to home page" when {
-      "newRevaluedFeature flag is set to false" in new Setup(isFeatureFlagEnabled = false) {
-        val result = testController.view("1").apply(SessionBuilder.buildRequestWithSession(userId))
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result).get must include("ated/home")
       }
     }
 
@@ -81,7 +73,7 @@ class PropertyDetailsDateOfChangeControllerSpec extends PropertyDetailsTestFixtu
     }
 
     "redirect to next page: new-valuation" when {
-      "newRevaluedFeature flag is set to true and user enters valid date" in new Setup {
+      "user enters valid date" in new Setup {
         val inputJson: JsValue = Json.obj(
           "dateOfChange" -> Json.obj("day" -> "1", "month" -> "4", "year" -> "2015")
         )
@@ -113,14 +105,6 @@ class PropertyDetailsDateOfChangeControllerSpec extends PropertyDetailsTestFixtu
         val result = testController.save("1", 2015, None).apply(SessionBuilder.updateRequestWithSession(FakeRequest().withJsonBody(inputJson), userId))
         status(result) mustBe BAD_REQUEST
         contentAsString(result) must include("There is a problem")
-      }
-    }
-
-    "redirect to home page" when {
-      "newRevaluedFeature flag is set to false" in new Setup(isFeatureFlagEnabled = false) {
-        val result = testController.view("1").apply(SessionBuilder.buildRequestWithSession(userId))
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result).get must include("ated/home")
       }
     }
   }

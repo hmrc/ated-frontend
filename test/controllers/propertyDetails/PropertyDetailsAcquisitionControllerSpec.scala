@@ -248,12 +248,12 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
           }
         }
 
-        "When the acquisition is true forward to the Revalued Page" in new Setup {
+        "When the acquisition is true forward to the Has Been Revalued Page" in new Setup {
           when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
           submitWithAuthorisedUser(Json.toJson(PropertyDetailsAcquisition(Some(true)))) {
             result =>
               status(result) must be(SEE_OTHER)
-              redirectLocation(result).get must include("/liability/create/revalued/view")
+              redirectLocation(result).get must include("/liability/create/has-been-revalued/view/")
           }
         }
         "When the acquisition is false forward to the Owned Before Page" in new Setup {
