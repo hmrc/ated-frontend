@@ -47,9 +47,7 @@ class PropertyDetailsExitControllerSpec extends PropertyDetailsTestFixture {
     }
 
     "render the Exit page" when {
-      "user is authenticated" in {
-        setupAuthForOrganisation()
-        setupCommonMockExpectations()
+      "user is authenticated" in new Setup{
         val result = testController.view().apply(SessionBuilder.buildRequestWithSession(userId))
         status(result) mustBe OK
       }
