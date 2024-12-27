@@ -731,6 +731,13 @@ ated.property-details-period.taxAvoidancePromoterReference.error.empty = Enter a
 ated.property-details-period.taxAvoidancePromoterReference.error.wrong-length = The promoter reference number should be 8 numbers
 ated.property-details-period.taxAvoidancePromoterReference.error.numbers = The promoter reference number can only contain numbers
 
+ated.property-details-period.propertyDetailsReference.title = Enter your avoidance scheme details
+ated.property-details-period.propertyDetailsReference.header = Enter your avoidance scheme details
+ated.property-details-period.propertyDetailsReference.ref_hint = You can find your 8-digit avoidance reference number(SRN) on the AGG6 form fromyour scheme provider. For example, 12345678
+ated.property-details-period.propertyDetailsReference.promoter.hint = You can find your 8-digit promoter reference number(PRN) on the AGG6 form fromyour scheme provider. For example, 12345678
+
+
+
 ated.property-details-period.supportingInfo.title = Do you have any supporting information to add? (optional)
 ated.property-details-period.supportingInfo.header = Do you have any supporting information to add? (optional)
 ated.property-details-period.supportingInfo = Supporting information (optional)
