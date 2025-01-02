@@ -31,7 +31,7 @@ class PropertyDetailsTaxAvoidanceReferenceSpec extends AtedViewSpec with Mockito
 
   val injectedViewInstance: propertyDetailsTaxAvoidanceReferences = app.injector.instanceOf[views.html.propertyDetails.propertyDetailsTaxAvoidanceReferences]
 
-  private val form = PropertyDetailsForms.propertyDetailsTaxAvoidanceForm
+  private val form = PropertyDetailsForms.propertyDetailsTaxAvoidanceReferenceForm
     .withError("isTaxAvoidance", "ated.property-details-period.isTaxAvoidance.error-field-name")
 
   override def view: Html = injectedViewInstance("", 0, form, None, Html(""), Some("backLink"))
@@ -66,8 +66,8 @@ class PropertyDetailsTaxAvoidanceReferenceSpec extends AtedViewSpec with Mockito
       doc.getElementsByClass("govuk-button").text mustBe "Save and continue"
     }
     
-    "check page errors for tax avoidance yes" in {
-      val eform = Form(form.mapping, Map("isTaxAvoidance" -> "true"),
+    "check page errors for empty values" in {
+      val eform = Form(form.mapping, Map("taxAvoidanceScheme" -> "", "taxAvoidancePromoterReference" -> ""),
         Seq(FormError("taxAvoidanceScheme", messages("ated.property-details-period.taxAvoidanceScheme.error.empty")),
           FormError("taxAvoidancePromoterReference", messages("ated.property-details-period.taxAvoidancePromoterReference.error.empty")))
         , form.value)
@@ -81,6 +81,22 @@ class PropertyDetailsTaxAvoidanceReferenceSpec extends AtedViewSpec with Mockito
       errorDoc.getElementById("taxAvoidancePromoterReference-error").text() mustBe ("Error: " + messages("ated.property-details-period.taxAvoidancePromoterReference.error.empty"))
       errorDoc.select("#main-content > div > div > div > div > div > ul > li:nth-child(2) > a").text() mustBe messages("ated.property-details-period.taxAvoidancePromoterReference.error.empty")
     }
+
+  "check page errors for invalid values" in {
+    val eform = Form(form.mapping, Map("taxAvoidanceScheme" -> "test", "taxAvoidancePromoterReference" -> "test"),
+      Seq(FormError("taxAvoidanceScheme", messages("ated.property-details-period.taxAvoidanceScheme.error.wrong-length")),
+        FormError("taxAvoidancePromoterReference", messages("ated.property-details-period.taxAvoidancePromoterReference.error.wrong-length")))
+      , form.value)
+
+    def view: Html = injectedViewInstance("", 0, eform, None, Html(""), Some("backLink"))
+
+    val errorDoc = doc(view)
+
+    errorDoc.getElementById("taxAvoidanceScheme-error").text() mustBe ("Error: " + messages("ated.property-details-period.taxAvoidanceScheme.error.wrong-length"))
+    errorDoc.select("#main-content > div > div > div > div > div > ul > li:nth-child(1) > a").text() mustBe messages("ated.property-details-period.taxAvoidanceScheme.error.wrong-length")
+    errorDoc.getElementById("taxAvoidancePromoterReference-error").text() mustBe ("Error: " + messages("ated.property-details-period.taxAvoidancePromoterReference.error.wrong-length"))
+    errorDoc.select("#main-content > div > div > div > div > div > ul > li:nth-child(2) > a").text() mustBe messages("ated.property-details-period.taxAvoidancePromoterReference.error.wrong-length")
+  }
 
   }
 }

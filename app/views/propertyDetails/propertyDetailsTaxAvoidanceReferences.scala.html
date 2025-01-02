@@ -32,7 +32,7 @@
       govukBackLink : GovukBackLink,
       formHelper: FormWithCSRF)
 
-@(id: String, periodKey: Int, propertyDetailsForm: Form[PropertyDetailsTaxAvoidance], mode: Option[String], serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
+@(id: String, periodKey: Int, propertyDetailsForm: Form[PropertyDetailsTaxAvoidanceReferences], mode: Option[String], serviceInfoContent: Html = HtmlFormat.empty, backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
 @backLinkHtml = {
     @if(backLink.isDefined) {
@@ -63,7 +63,7 @@
    </header>
 
    
-@formHelper(action=controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceController.save(id, periodKey, mode)) {
+@formHelper(action=controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceReferencesController.save(id, periodKey, mode)) {
   
   @govukInput(Input(
         label = Label(

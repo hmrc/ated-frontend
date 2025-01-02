@@ -247,6 +247,13 @@ object PropertyDetailsForms {
     )(PropertyDetailsTaxAvoidance.apply)(PropertyDetailsTaxAvoidance.unapply)
   )
 
+  val propertyDetailsTaxAvoidanceReferenceForm: Form[PropertyDetailsTaxAvoidanceReferences] = Form(
+     mapping(
+       "taxAvoidanceScheme" -> optional(text),
+       "taxAvoidancePromoterReference" -> optional(text)
+     )(PropertyDetailsTaxAvoidanceReferences.apply)(PropertyDetailsTaxAvoidanceReferences.unapply))
+   
+
   val propertyDetailsSupportingInfoForm: Form[PropertyDetailsSupportingInfo] = Form(
     mapping(
       "supportingInfo" -> text
@@ -297,6 +304,15 @@ object PropertyDetailsForms {
       addErrorsToForm(f, formErrors)
     } else f
   }
+
+  def validatePropertyDetailsTaxAvoidanceReference(f: Form[PropertyDetailsTaxAvoidanceReferences]): Form[PropertyDetailsTaxAvoidanceReferences] = {
+     if (!f.hasErrors) {
+       val formErrors = PropertyDetailsFormsValidation.validateAvoidanceSchemeRefNoNew(
+         f.get.taxAvoidanceScheme,
+         f.get.taxAvoidancePromoterReference).flatten
+       addErrorsToForm(f, formErrors)
+     } else f
+   }
 
   def validatePropertyDetailsOwnedBefore(f: Form[PropertyDetailsOwnedBefore]): Form[PropertyDetailsOwnedBefore] = {
     if (!f.hasErrors) {

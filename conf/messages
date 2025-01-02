@@ -724,12 +724,16 @@ ated.property-details-period.isTaxAvoidance = Is an avoidance scheme being used?
 ated.property-details-period.isTaxAvoidance.error-field-name = Select yes if a tax avoidance scheme is being used
 ated.property-details-period.taxAvoidanceScheme = Avoidance scheme reference number
 ated.property-details-period.taxAvoidanceScheme.error.empty = Enter a valid avoidance scheme reference number
-ated.property-details-period.taxAvoidanceScheme.error.wrong-length = The avoidance scheme reference number should be 8 numbers
+ated.property-details-period.taxAvoidanceScheme.error.wrong-length = Your avoidance scheme reference number must be 8-digits
 ated.property-details-period.taxAvoidanceScheme.error.numbers = The avoidance scheme reference number can only contain numbers
 ated.property-details-period.taxAvoidancePromoterReference = Promoter reference number
 ated.property-details-period.taxAvoidancePromoterReference.error.empty = Enter a valid promoter reference number
-ated.property-details-period.taxAvoidancePromoterReference.error.wrong-length = The promoter reference number should be 8 numbers
+ated.property-details-period.taxAvoidancePromoterReference.error.wrong-length = Your promoter reference number must be 8-digits
 ated.property-details-period.taxAvoidancePromoterReference.error.numbers = The promoter reference number can only contain numbers
+
+
+ated.property-details-period.taxAvoidanceScheme.error.empty = You must provide your avoidance scheme reference number
+ated.property-details-period.taxAvoidancePromoterReference.error.empty = You must provide your promoter reference number
 
 ated.property-details-period.propertyDetailsReference.title = Enter your avoidance scheme details
 ated.property-details-period.propertyDetailsReference.header = Enter your avoidance scheme details

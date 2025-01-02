@@ -268,6 +268,14 @@ object PropertyDetailsTaxAvoidance {
   implicit val formats: OFormat[PropertyDetailsTaxAvoidance] = Json.format[PropertyDetailsTaxAvoidance]
 }
 
+case class PropertyDetailsTaxAvoidanceReferences(
+                                       taxAvoidanceScheme: Option[String] = None,
+                                       taxAvoidancePromoterReference: Option[String] = None)
+
+object PropertyDetailsTaxAvoidanceReferences {
+  implicit val formats: OFormat[PropertyDetailsTaxAvoidanceReferences] = Json.format[PropertyDetailsTaxAvoidanceReferences]
+}
+
 case class PropertyDetailsSupportingInfo(supportingInfo: String)
 
 
