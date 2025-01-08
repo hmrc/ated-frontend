@@ -11,3 +11,8 @@
 
 # Add all the application routes to the prod.routes file
 ->         /                          prod.Routes
+
+GET      /ated/test-only/liability/create/tax-avoidance-reference/edit-summary/:propertyKey             controllers.test.PropertyDetailsTaxAvoidanceReferencesController.editFromSummary(propertyKey: String)
+GET      /ated/test-only/liability/create/tax-avoidance-reference/view/:propertyKey                     controllers.test.PropertyDetailsTaxAvoidanceReferencesController.view(propertyKey: String)
+POST     /ated/test-only/liability/create/tax-avoidance-reference/save/:propertyKey/period/:periodKey   controllers.test.PropertyDetailsTaxAvoidanceReferencesController.save(propertyKey: String, periodKey: Int, mode: Option[String] ?=None)
+

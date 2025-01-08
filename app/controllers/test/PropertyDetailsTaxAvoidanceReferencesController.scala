@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-package controllers.propertyDetails
+package controllers.test
 
 import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.{AuthAction, ClientHelper}
+import controllers.propertyDetails.{PropertyDetailsHelpers, PropertyDetailsSupportingInfoController}
 import forms.PropertyDetailsForms
 import forms.PropertyDetailsForms._
+
 import javax.inject.Inject
 import models._
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -29,6 +31,7 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants.SelectedPreviousReturn
 import utils.AtedUtils
 import uk.gov.hmrc.play.bootstrap.controller.WithUnsafeDefaultFormBinding
+
 import scala.concurrent.{ExecutionContext, Future}
 
 class PropertyDetailsTaxAvoidanceReferencesController @Inject()(mcc: MessagesControllerComponents,
@@ -110,7 +113,7 @@ class PropertyDetailsTaxAvoidanceReferencesController @Inject()(mcc: MessagesCon
                   redirectWithBackLink(
                     propertyDetailsSupportingInfoController.controllerId,
                     controllers.propertyDetails.routes.PropertyDetailsSupportingInfoController.view(id),
-                    Some(controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceReferencesController.view(id).url)
+                    Some(controllers.test.routes.PropertyDetailsTaxAvoidanceReferencesController.view(id).url)
                   )
               } yield result
             }
