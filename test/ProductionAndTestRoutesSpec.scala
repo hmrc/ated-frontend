@@ -17,43 +17,58 @@
 import org.scalatestplus.play.PlaySpec
 
 import scala.io.Source
+import scala.util.Using
 
 class ProductionAndTestRoutesSpec extends PlaySpec {
 
   "Production routes" should {
     "not use any test routes in production" in {
-      val routesFileContents = Source.fromFile("conf/app.routes").getLines().toList
-      val testOnlyRoutes = routesFileContents.filter(_.contains("test-only"))
 
-      withClue(s"The following test-only routes were found in production: ${testOnlyRoutes.mkString(", ")}. Move any test routes to testOnlyDoNotUseInAppConf.routes") {
-        testOnlyRoutes mustBe empty
+      val prodRouteFileContents = Using.resource(Source.fromFile("conf/app.routes")) { source => source.getLines().map(_.trim.toLowerCase()).toList }
+
+      val testRoutesInProdRoutes = prodRouteFileContents.filter(_.contains("test-only"))
+
+      withClue(s"The following test-only routes were found in production: ${testRoutesInProdRoutes.mkString(", ")}. Move any test routes to testOnlyDoNotUseInAppConf.routes") {
+        testRoutesInProdRoutes mustBe empty
       }
     }
 
-    "Test routes" should {
-      "only used routes prefixed with /test-only/" in {
-        val testRoutesFileContents = Source.fromFile("conf/testOnlyDoNotUseInAppConf.routes").getLines().toList
+    "not have any overlapping routes with test routes" in {
+      val prodRouteFileContents = Using.resource(Source.fromFile("conf/app.routes")) { source => source.getLines().map(_.trim.toLowerCase()).filter(_.nonEmpty).toSet }
+      val testRouteFileContents = Using.resource(Source.fromFile("conf/testOnlyDoNotUseInAppConf.routes")) { source => source.getLines().map(_.trim.toLowerCase()).filter(_.nonEmpty).toSet }
 
-        val invalidTestRoutes = testRoutesFileContents.filter(line =>
-          line.trim.nonEmpty &&
-            !line.startsWith("#") &&
-            !line.startsWith("->") &&
-            !line.contains("/test-only/")
-        )
 
-        withClue(s"The following routes in testOnlyDoNotUseInAppConf.routes are not prefixed with '/test-only/': ${invalidTestRoutes.mkString(", ")}. Ensure all routes are prefixed appropriately.") {
-          invalidTestRoutes mustBe empty
-        }
+      val overlap = prodRouteFileContents.intersect(testRouteFileContents)
+      withClue(s"Overlapping routes between production and test: ${overlap.mkString(", ")}") {
+        overlap mustBe empty
       }
     }
+  }
 
-    "Application conf file" should {
-      "not have any mention of test routes" in {
-        val applicationConfFileContents = Source.fromFile("conf/application.conf").getLines().toList
-        val testOnlyRoutes = applicationConfFileContents.filter(_.contains("testOnlyDoNotUseInAppConf.routes"))
-        withClue(s"The following test-only routes were found in application conf file: ${testOnlyRoutes.mkString(", ")}. There should be no test routes present here.") {
-          testOnlyRoutes mustBe empty
-        }
+  "Test routes" should {
+    "only used routes prefixed with /test-only/" in {
+      val testRouteFileContents = Using.resource(Source.fromFile("conf/testOnlyDoNotUseInAppConf.routes")) { source => source.getLines().map(_.trim.toLowerCase()).toList }
+
+      val invalidTestRoutes = testRouteFileContents.filter(line =>
+        line.nonEmpty &&
+          !line.startsWith("#") &&
+          !line.startsWith("->") &&
+          !line.contains("/test-only/")
+      )
+
+      withClue(s"The following routes in testOnlyDoNotUseInAppConf.routes are not prefixed with '/test-only/': ${invalidTestRoutes.mkString(", ")}. Ensure all routes are prefixed appropriately.") {
+        invalidTestRoutes mustBe empty
+      }
+    }
+  }
+
+  "Application conf file" should {
+    "not have any mention of test routes" in {
+      val applicationConfFileContents = Using.resource(Source.fromFile("conf/application.conf")) { source => source.getLines().map(_.trim.toLowerCase()).toList }
+      val testOnlyRoutesInAppConf = applicationConfFileContents.filter(_.contains("testonlydonotuseinappconf.routes"))
+
+      withClue(s"The following test-only routes were found in application conf file: ${testOnlyRoutesInAppConf.mkString(", ")}. There should be no test routes present here.") {
+        testOnlyRoutesInAppConf mustBe empty
       }
     }
   }
