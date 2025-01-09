@@ -53,6 +53,29 @@ object PropertyDetailsFormsValidation {
     }
   }
 
+  //scalastyle:off line.size.limit
+   def validateAvoidanceSchemeRefNoNew(avoidanceSchemeNo: Option[String], promoterReference: Option[String]): Seq[Option[FormError]] = {
+     def validateAvoidanceScheme(avoidanceSchemeNo: Option[String]): Seq[Option[FormError]] = {
+       avoidanceSchemeNo.getOrElse("") match {
+         case a if a.isEmpty => Seq(Some(FormError("taxAvoidanceScheme", "ated.property-details-period.taxAvoidanceScheme.error.empty")))
+         case a if a.length != 8 => Seq(Some(FormError("taxAvoidanceScheme", "ated.property-details-period.taxAvoidanceScheme.error.wrong-length")))
+         case a if Try(a.toInt).isFailure => Seq(Some(FormError("taxAvoidanceScheme", "ated.property-details-period.taxAvoidanceScheme.error.numbers")))
+         case _ => Seq(None)
+       }
+     }
+
+     def validatePromoterReference(promoterReference: Option[String]): Seq[Option[FormError]] = {
+       promoterReference.getOrElse("") match {
+         case a if a.isEmpty => Seq(Some(FormError("taxAvoidancePromoterReference", "ated.property-details-period.taxAvoidancePromoterReference.error.empty")))
+         case a if a.length != 8 => Seq(Some(FormError("taxAvoidancePromoterReference", "ated.property-details-period.taxAvoidancePromoterReference.error.wrong-length")))
+         case a if Try(a.toInt).isFailure => Seq(Some(FormError("taxAvoidancePromoterReference", "ated.property-details-period.taxAvoidancePromoterReference.error.numbers")))
+         case _ => Seq(None)
+       }
+     }
+
+     validateAvoidanceScheme(avoidanceSchemeNo) ++ validatePromoterReference(promoterReference)
+   }
+
   def validateBuildDate(periodKey: Int, f: Form[_], isNewBuild: Option[Boolean]): Seq[Option[FormError]] = {
     if (isNewBuild == Some(true))
       validateDate(periodKey, f, "newBuildDate", mustBeInChargeablePeriod = true, isMandatory = true) ++

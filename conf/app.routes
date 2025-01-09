@@ -207,6 +207,7 @@ GET      /liability/create/tax-avoidance/edit-summary/:propertyKey             c
 GET      /liability/create/tax-avoidance/view/:propertyKey                     controllers.propertyDetails.PropertyDetailsTaxAvoidanceController.view(propertyKey: String)
 POST     /liability/create/tax-avoidance/save/:propertyKey/period/:periodKey   controllers.propertyDetails.PropertyDetailsTaxAvoidanceController.save(propertyKey: String, periodKey: Int, mode: Option[String] ?=None)
 
+
 GET      /liability/create/supporting-info/edit-summary/:propertyKey            controllers.propertyDetails.PropertyDetailsSupportingInfoController.editFromSummary(propertyKey: String)
 GET      /liability/create/supporting-info/view/:propertyKey                    controllers.propertyDetails.PropertyDetailsSupportingInfoController.view(propertyKey: String)
 POST     /liability/create/supporting-info/save/:propertyKey/period/:periodKey  controllers.propertyDetails.PropertyDetailsSupportingInfoController.save(propertyKey: String, periodKey: Int, mode: Option[String] ?=None)
