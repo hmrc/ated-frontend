@@ -720,8 +720,13 @@ ated.property-details-period.dispose.return-type = Disposed of property
 
 ated.property-details-period.isTaxAvoidance.title = Is a tax avoidance scheme being used?
 ated.property-details-period.isTaxAvoidance.header = Is a tax avoidance scheme being used?
+
+ated.property-details-period.isTaxAvoidanceScheme.title = Is an avoidance scheme being used?
+ated.property-details-period.isTaxAvoidanceScheme.header = Is an avoidance scheme being used?
+
 ated.property-details-period.isTaxAvoidance = Is an avoidance scheme being used?
 ated.property-details-period.isTaxAvoidance.error-field-name = Select yes if a tax avoidance scheme is being used
+ated.property-details-period.isTaxAvoidanceScheme.error-field-name = You must select either Yes or No
 ated.property-details-period.taxAvoidanceScheme = Avoidance scheme reference number
 ated.property-details-period.taxAvoidanceScheme.error.empty = Enter a valid avoidance scheme reference number
 ated.property-details-period.taxAvoidanceScheme.error.wrong-length = Your avoidance scheme reference number must be 8-digits
