@@ -97,7 +97,7 @@ class PropertyDetailsTaxAvoidanceSchemeController @Inject()(mcc: MessagesControl
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
-          PropertyDetailsForms.validatePropertyDetailsTaxAvoidanceScheme(propertyDetailsTaxAvoidanceSchemeForm.bindFromRequest()).fold(
+          propertyDetailsTaxAvoidanceSchemeForm.bindFromRequest().fold(
             formWithError =>
               currentBackLink.map(backLink => BadRequest(template(id, periodKey, formWithError, mode, serviceInfoContent, backLink))),
             propertyDetails => {

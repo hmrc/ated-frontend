@@ -311,13 +311,13 @@ object PropertyDetailsForms {
     } else f
   }
 
-  def validatePropertyDetailsTaxAvoidanceScheme(f: Form[PropertyDetailsTaxAvoidanceScheme]): Form[PropertyDetailsTaxAvoidanceScheme] = {
-   /*if (!f.hasErrors) {
+ /* def validatePropertyDetailsTaxAvoidanceScheme(f: Form[PropertyDetailsTaxAvoidanceScheme]): Form[PropertyDetailsTaxAvoidanceScheme] = {
+   if (!f.hasErrors) {
       val formErrors = PropertyDetailsFormsValidation.validateAvoidanceSchemeRefNo(f.get.isTaxAvoidance).flatten
       addErrorsToForm(f, formErrors)
-    } else f*/
-    f
-  }
+    } else f
+
+  }*/
 
 
   def validatePropertyDetailsTaxAvoidanceReference(f: Form[PropertyDetailsTaxAvoidanceReferences]): Form[PropertyDetailsTaxAvoidanceReferences] = {
