@@ -132,7 +132,7 @@ class PropertyDetailsTaxAvoidanceReferencesControllerSpec extends PlaySpec with 
       val userId = s"user-${UUID.randomUUID}"
       when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
         (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-      when(mockPropertyDetailsService.saveDraftPropertyDetailsTaxAvoidance(ArgumentMatchers.eq("1"), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).
+      when(mockPropertyDetailsService.saveDraftPropertyDetailsTaxAvoidanceReferences(ArgumentMatchers.eq("1"), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).
         thenReturn(Future.successful(OK))
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
@@ -177,6 +177,68 @@ class PropertyDetailsTaxAvoidanceReferencesControllerSpec extends PlaySpec with 
 
               document.getElementById("taxAvoidanceScheme").attr("value") must be("")
               document.getElementsByClass("govuk-button").text() must be("Save and continue")
+          }
+        }
+      }
+    }
+
+    "editFromSummary" must {
+
+      "Authorised users" must {
+
+        "show the chargeable property details value view with no data" in new Setup {
+          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode")).copy(period = None)
+
+          editFromSummary(propertyDetails) {
+            result =>
+              status(result) must be(OK)
+              val document = Jsoup.parse(contentAsString(result))
+              document.title() must be(TitleBuilder.buildTitle("Enter your avoidance scheme details"))
+
+              document.getElementsByClass("govuk-back-link").text must be("Back")
+              document.getElementsByClass("govuk-back-link").attr("href") must include("/ated/liability/create/summary")
+          }
+        }
+
+        "show the chargeable property details value view with no data with a propertyDetails period" in new Setup {
+          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+
+          editFromSummary(propertyDetails) {
+            result =>
+              status(result) must be(OK)
+              val document = Jsoup.parse(contentAsString(result))
+              document.title() must be(TitleBuilder.buildTitle("Enter your avoidance scheme details"))
+
+              document.getElementsByClass("govuk-back-link").text must be("Back")
+              document.getElementsByClass("govuk-back-link").attr("href") must include("/ated/liability/create/summary")
+          }
+        }
+      }
+    }
+
+
+    "save" must {
+      "unauthorised users" must {
+
+        "be redirected to the login page" in new Setup {
+          saveWithUnAuthorisedUser { result =>
+            status(result) must be(SEE_OTHER)
+            redirectLocation(result).get must include("/ated/unauthorised")
+          }
+        }
+      }
+
+      "Authorised users" must {
+        "for data, return OK" in new Setup {
+          val taxAvoidance: PropertyDetailsTaxAvoidanceReferences = PropertyDetailsTaxAvoidanceReferences(Some("12345678"), Some("12345678"))
+
+          when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
+            .thenReturn(Future.successful(None))
+
+          submitWithAuthorisedUser(Json.toJson(taxAvoidance)) {
+            result =>
+              status(result) must be(SEE_OTHER)
+              redirectLocation(result).get must include("/liability/create/supporting-info/view")
           }
         }
       }
