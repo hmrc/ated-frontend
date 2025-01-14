@@ -29,7 +29,7 @@ import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.i18n.{Lang, MessagesApi, MessagesImpl}
-import play.api.libs.json.JsValue
+import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -39,7 +39,6 @@ import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.{AtedConstants, PeriodUtils}
 import views.html.BtaNavigationLinks
-
 
 import java.util.UUID
 import scala.concurrent.Future
@@ -130,6 +129,7 @@ class PropertyDetailsTaxAvoidanceSchemeControllerSpec extends PlaySpec with Guic
     def submitWithAuthorisedUser(inputJson: JsValue)(test: Future[Result] => Any): Unit = {
       val periodKey: Int = 2015
       val userId = s"user-${UUID.randomUUID}"
+      when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(btaNavigationLinksView()(messages,mockAppConfig)))
       when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
         (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
       when(mockPropertyDetailsService.saveDraftPropertyDetailsTaxAvoidanceScheme(ArgumentMatchers.eq("1"), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).
@@ -172,6 +172,33 @@ class PropertyDetailsTaxAvoidanceSchemeControllerSpec extends PlaySpec with Guic
           saveWithUnAuthorisedUser { result =>
             status(result) must be(SEE_OTHER)
             redirectLocation(result).get must include("/ated/unauthorised")
+          }
+        }
+      }
+
+      "Authorised users" must {
+        "for invalid data, return BAD_REQUEST" in new Setup {
+          val badTaxAvoidance: JsValue = Json.parse("""{"foo":"bar"}""")
+
+          when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any()))
+            .thenReturn(Future.successful(Some("")))
+
+          submitWithAuthorisedUser(badTaxAvoidance) {
+            result =>
+              status(result) must be(BAD_REQUEST)
+          }
+        }
+
+        "for valid data, return OK" in new Setup {
+          val taxAvoidance: PropertyDetailsTaxAvoidanceScheme = PropertyDetailsTaxAvoidanceScheme(Some(false))
+
+          when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
+            .thenReturn(Future.successful(None))
+
+          submitWithAuthorisedUser(Json.toJson(taxAvoidance)) {
+            result =>
+              status(result) must be(SEE_OTHER)
+              redirectLocation(result).get must include("/liability/create/supporting-info/view")
           }
         }
       }
