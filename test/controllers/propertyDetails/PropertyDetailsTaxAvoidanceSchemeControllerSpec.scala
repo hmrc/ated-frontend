@@ -16,12 +16,13 @@
 
 package controllers.propertyDetails
 
-import builders.SessionBuilder
+import builders.{PropertyDetailsBuilder, SessionBuilder, TitleBuilder}
 import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.AuthAction
 import controllers.test.PropertyDetailsTaxAvoidanceSchemeController
 import models._
+import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
@@ -203,6 +204,43 @@ class PropertyDetailsTaxAvoidanceSchemeControllerSpec extends PlaySpec with Guic
         }
       }
 
+    }
+
+    "editFromSummary" must {
+
+      "Authorised users" must {
+
+        "show the chargeable property details value view with no data" in new Setup {
+          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode")).copy(period = None)
+          when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+            .thenReturn(Future.successful(btaNavigationLinksView()(messages,mockAppConfig)))
+          when(mockDataCacheConnector.fetchAndGetFormData[Boolean](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+            .thenReturn(Future.successful(Some(true)))
+          editFromSummary(propertyDetails) {
+            result =>
+              status(result) must be(OK)
+              val document = Jsoup.parse(contentAsString(result))
+              document.title() must be(TitleBuilder.buildTitle("Is an avoidance scheme being used?"))
+
+              document.getElementsByClass("govuk-back-link").text must be("Back")
+              document.getElementsByClass("govuk-back-link").attr("href") must include("/ated/liability/create/summary")
+          }
+        }
+
+        "show the chargeable property details value view with no data with a propertyDetails period" in new Setup {
+          val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+
+          editFromSummary(propertyDetails) {
+            result =>
+              status(result) must be(OK)
+              val document = Jsoup.parse(contentAsString(result))
+              document.title() must be(TitleBuilder.buildTitle("Is an avoidance scheme being used?"))
+
+              document.getElementsByClass("govuk-back-link").text must be("Back")
+              document.getElementsByClass("govuk-back-link").attr("href") must include("/ated/liability/create/summary")
+          }
+        }
+      }
     }
   }
 }
