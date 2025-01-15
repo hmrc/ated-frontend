@@ -354,9 +354,26 @@ backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages
 
 <h2 id="avoidance-scheme-header" class="govuk-heading-m">@messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.header")</h2>
   @propertyDetails.period match {
-    case Some(p) if(p.taxAvoidanceScheme.isDefined && p.taxAvoidancePromoterReference.isDefined) => {
+    case Some(p) if(p.isTaxAvoidance == Some(true) && p.taxAvoidanceScheme.isDefined && p.taxAvoidancePromoterReference.isDefined) => {
       @govukSummaryList(SummaryList(
         rows = Seq(
+         SummaryListRow(
+            key = Key(
+              content = Text(messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.header"))
+            ),
+            value = Value(
+              content = Text(messages("ated.property-details-period.yes"))
+            ),
+            actions = Some(Actions(
+              items = Seq(
+                ActionItem(
+                  href = controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceSchemeController.editFromSummary(propertyDetails.id).url,
+                  content = Text(messages("ated.change")),
+                  visuallyHiddenText = Some(messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.header"))
+                )
+              )
+            ))
+          ),
           SummaryListRow(
             key = Key(
               content = Text(messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.label"))
@@ -367,7 +384,7 @@ backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages
             actions = Some(Actions(
               items = Seq(
                 ActionItem(
-                  href = controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceController.editFromSummary(propertyDetails.id).url,
+                  href = controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceReferencesController.editFromSummary(propertyDetails.id).url,
                   content = Text(messages("ated.change")),
                   visuallyHiddenText = Some(messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.label"))
                 )
@@ -384,7 +401,7 @@ backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages
             actions = Some(Actions(
               items = Seq(
                 ActionItem(
-                  href = controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceController.editFromSummary(propertyDetails.id).url,
+                  href = controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceReferencesController.editFromSummary(propertyDetails.id).url,
                   content = Text(messages("ated.change")),
                   visuallyHiddenText = Some(messages("ated.property-details-summary.table.property-ated-details.promoter-reference.label"))
                 )
@@ -395,7 +412,7 @@ backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages
         attributes = Map("id" -> "avoidance-scheme")
       ))
   }
-    case Some(p) if(p.isTaxAvoidance.isDefined) => {
+    case Some(p) if(p.isTaxAvoidance.isDefined && p.isTaxAvoidance == Some(false)) => {
       @govukSummaryList(SummaryList(
         rows = Seq(
           SummaryListRow(
@@ -408,7 +425,7 @@ backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages
             actions = Some(Actions(
               items = Seq(
                 ActionItem(
-                  href = controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceController.editFromSummary(propertyDetails.id).url,
+                  href = controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceSchemeController.editFromSummary(propertyDetails.id).url,
                   content = Text(messages("ated.change")),
                   visuallyHiddenText = Some(messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.header"))
                 )
@@ -432,7 +449,7 @@ backLink: Option[String])(implicit authContext: StandardAuthRetrievals, messages
             actions = Some(Actions(
               items = Seq(
                 ActionItem(
-                  href = controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceController.editFromSummary(propertyDetails.id).url,
+                  href = controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceSchemeController.editFromSummary(propertyDetails.id).url,
                   content = Text(messages("ated.change")),
                   visuallyHiddenText = Some(messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.header"))
                 )

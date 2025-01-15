@@ -203,9 +203,13 @@ GET      /liability/create/full-tax-period/edit-summary/:propertyKey           c
 GET      /liability/create/full-tax-period/view/:propertyKey                   controllers.propertyDetails.IsFullTaxPeriodController.view(propertyKey: String)
 POST     /liability/create/full-tax-period/save/:propertyKey/period/:periodKey controllers.propertyDetails.IsFullTaxPeriodController.save(propertyKey: String, periodKey: Int)
 
-GET      /liability/create/tax-avoidance/edit-summary/:propertyKey             controllers.propertyDetails.PropertyDetailsTaxAvoidanceController.editFromSummary(propertyKey: String)
-GET      /liability/create/tax-avoidance/view/:propertyKey                     controllers.propertyDetails.PropertyDetailsTaxAvoidanceController.view(propertyKey: String)
-POST     /liability/create/tax-avoidance/save/:propertyKey/period/:periodKey   controllers.propertyDetails.PropertyDetailsTaxAvoidanceController.save(propertyKey: String, periodKey: Int, mode: Option[String] ?=None)
+GET      /liability/create/tax-avoidance-reference/edit-summary/:propertyKey             controllers.propertyDetails.PropertyDetailsTaxAvoidanceReferencesController.editFromSummary(propertyKey: String)
+GET      /liability/create/tax-avoidance-reference/view/:propertyKey                     controllers.propertyDetails.PropertyDetailsTaxAvoidanceReferencesController.view(propertyKey: String)
+POST     /liability/create/tax-avoidance-reference/save/:propertyKey/period/:periodKey   controllers.propertyDetails.PropertyDetailsTaxAvoidanceReferencesController.save(propertyKey: String, periodKey: Int, mode: Option[String] ?=None)
+
+GET      /liability/create/tax-avoidance/edit-summary/:propertyKey             controllers.propertyDetails.PropertyDetailsTaxAvoidanceSchemeController.editFromSummary(propertyKey: String)
+GET      /liability/create/tax-avoidance/view/:propertyKey                     controllers.propertyDetails.PropertyDetailsTaxAvoidanceSchemeController.view(propertyKey: String)
+POST     /liability/create/tax-avoidance/save/:propertyKey/period/:periodKey   controllers.propertyDetails.PropertyDetailsTaxAvoidanceSchemeController.save(propertyKey: String, periodKey: Int, mode: Option[String] ?=None)
 
 
 GET      /liability/create/supporting-info/edit-summary/:propertyKey            controllers.propertyDetails.PropertyDetailsSupportingInfoController.editFromSummary(propertyKey: String)

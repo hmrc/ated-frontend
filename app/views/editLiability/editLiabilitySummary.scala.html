@@ -412,7 +412,7 @@
               @messages("ated.property-details-summary.field-blank")
             </dd>
             <dd class="govuk-summary-list__actions">
-              <a class="govuk-link" id="edit-avoidance-details-not-provided-action" href="@controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceController.editFromSummary(changeLiability.id)">
+              <a class="govuk-link" id="edit-avoidance-details-not-provided-action" href="@controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceSchemeController.editFromSummary(changeLiability.id)">
                 @messages("ated.change")<span class="govuk-visually-hidden">@messages("ated.property-details-summary.table.property-ated-details.avoidance-details")</span>
               </a>
             </dd>
@@ -420,8 +420,21 @@
         </dl>
       }
       case Some(p) if (p.taxAvoidanceScheme.isDefined && p.taxAvoidancePromoterReference.isDefined) => {
-
         <dl class="govuk-summary-list">
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key" id="avoidance-scheme-label">
+              @messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.header")
+            </dt>
+            <dd class="govuk-summary-list__value" id="avoidance-scheme-value">
+              @messages("ated.property-details-period.yes")
+            </dd>
+            <dd class="govuk-summary-list__actions">
+              <a class="govuk-link" id="edit-avoidance-scheme" href="@controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceSchemeController.editFromSummary(changeLiability.id)">
+                @messages("ated.change")<span class="govuk-visually-hidden">@messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.label")</span>
+              </a>
+            </dd>
+          </div>
+
           <div class="govuk-summary-list__row">
             <dt class="govuk-summary-list__key" id="avoidance-scheme-label">
               @messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.label")
@@ -430,7 +443,7 @@
               @p.taxAvoidanceScheme.getOrElse("")
             </dd>
             <dd class="govuk-summary-list__actions">
-              <a class="govuk-link" id="edit-avoidance-scheme" href="@controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceController.editFromSummary(changeLiability.id)">
+              <a class="govuk-link" id="edit-avoidance-scheme" href="@controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceReferencesController.editFromSummary(changeLiability.id)">
                 @messages("ated.change")<span class="govuk-visually-hidden">@messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.label")</span>
               </a>
             </dd>
@@ -444,7 +457,7 @@
               @p.taxAvoidancePromoterReference.getOrElse("")
             </dd>
             <dd class="govuk-summary-list__actions">
-              <a class="govuk-link" id="edit-promoter-scheme" href="@controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceController.editFromSummary(changeLiability.id)">
+              <a class="govuk-link" id="edit-promoter-scheme" href="@controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceReferencesController.editFromSummary(changeLiability.id)">
                 @messages("ated.change")<span class="govuk-visually-hidden">@messages("ated.property-details-summary.table.property-ated-details.promoter-reference.label")</span>
               </a>
             </dd>
@@ -462,7 +475,7 @@
               @incomplete
             </dd>
             <dd class="govuk-summary-list__actions">
-              <a class="govuk-link" id="avoidance-details-incomplete-action" href="@controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceController.editFromSummary(changeLiability.id)">
+              <a class="govuk-link" id="avoidance-details-incomplete-action" href="@controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceSchemeController.editFromSummary(changeLiability.id)">
                 @messages("ated.change")<span class="govuk-visually-hidden">@messages("ated.property-details-summary.table.property-ated-details.avoidance-details")</span>
               </a>
             </dd>

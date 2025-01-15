@@ -32,7 +32,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class PeriodsInAndOutReliefController @Inject()(mcc: MessagesControllerComponents,
                                                 authAction: AuthAction,
-                                                propertyDetailsTaxAvoidanceController: PropertyDetailsTaxAvoidanceController,
+                                                propertyDetailsTaxAvoidanceController: PropertyDetailsTaxAvoidanceSchemeController,
                                                 serviceInfoService: ServiceInfoService,
                                                 val propertyDetailsService: PropertyDetailsService,
                                                 val dataCacheConnector: DataCacheConnector,
@@ -93,7 +93,7 @@ class PeriodsInAndOutReliefController @Inject()(mcc: MessagesControllerComponent
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext(redirectWithBackLink(
         propertyDetailsTaxAvoidanceController.controllerId,
-        controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceController.view(id),
+        controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceSchemeController.view(id),
         Some(controllers.propertyDetails.routes.PeriodsInAndOutReliefController.view(id).url)
       ))
     }

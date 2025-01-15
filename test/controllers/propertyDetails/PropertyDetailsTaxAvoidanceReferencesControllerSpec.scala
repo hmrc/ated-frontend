@@ -17,11 +17,11 @@
 package controllers.test
 
 import java.util.UUID
-
 import builders.{PropertyDetailsBuilder, SessionBuilder, TitleBuilder}
 import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.AuthAction
+import controllers.propertyDetails.PropertyDetailsTaxAvoidanceReferencesController
 import models._
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers

@@ -17,12 +17,11 @@
 package controllers.editLiability
 
 import java.util.UUID
-
 import builders.{PropertyDetailsBuilder, SessionBuilder}
 import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.AuthAction
-import controllers.propertyDetails.{IsFullTaxPeriodController, PropertyDetailsOwnedBeforeController, PropertyDetailsTaxAvoidanceController}
+import controllers.propertyDetails.{IsFullTaxPeriodController, PropertyDetailsOwnedBeforeController, PropertyDetailsTaxAvoidanceSchemeController}
 import models.{HasValueChanged, PropertyDetails}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
@@ -56,7 +55,7 @@ class EditLiabilityHasValueChangedControllerSpec extends PlaySpec with GuiceOneS
   val mockPropertyDetailsService: PropertyDetailsService = mock[PropertyDetailsService]
   val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
   val mockBackLinkCacheConnector: BackLinkCacheConnector = mock[BackLinkCacheConnector]
-  val mockPropertyDetailsTaxAvoidanceController: PropertyDetailsTaxAvoidanceController = mock[PropertyDetailsTaxAvoidanceController]
+  val mockPropertyDetailsTaxAvoidanceController: PropertyDetailsTaxAvoidanceSchemeController = mock[PropertyDetailsTaxAvoidanceSchemeController]
     val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]

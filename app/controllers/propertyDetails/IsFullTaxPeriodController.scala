@@ -20,6 +20,7 @@ import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms._
+
 import javax.inject.Inject
 import models._
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -28,12 +29,13 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants._
 import utils.{AtedUtils, PeriodUtils}
 import uk.gov.hmrc.play.bootstrap.controller.WithUnsafeDefaultFormBinding
+
 import scala.concurrent.{ExecutionContext, Future}
 
 class IsFullTaxPeriodController @Inject()(mcc: MessagesControllerComponents,
                                           authAction: AuthAction,
                                           propertyDetailsInReliefController: PropertyDetailsInReliefController,
-                                          propertyDetailsTaxAvoidanceController : PropertyDetailsTaxAvoidanceController,
+                                          propertyDetailsTaxAvoidanceSchemeController : PropertyDetailsTaxAvoidanceSchemeController,
                                           serviceInfoService: ServiceInfoService,
                                           val propertyDetailsService: PropertyDetailsService,
                                           val dataCacheConnector: DataCacheConnector,
@@ -109,8 +111,8 @@ class IsFullTaxPeriodController @Inject()(mcc: MessagesControllerComponents,
                     Some(PeriodUtils.periodEndDate(periodKey)))))
                   propertyDetailsService.saveDraftIsFullTaxPeriod(id, isFullTaxPeriod).flatMap(_ =>
                     redirectWithBackLink(
-                      propertyDetailsTaxAvoidanceController.controllerId,
-                      controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceController.view(id),
+                      propertyDetailsTaxAvoidanceSchemeController.controllerId,
+                      controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceSchemeController.view(id),
                       Some(routes.IsFullTaxPeriodController.view(id).url))
                   )
                 case _ =>
