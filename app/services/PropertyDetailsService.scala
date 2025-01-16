@@ -375,21 +375,6 @@ class PropertyDetailsService @Inject()(propertyDetailsConnector: PropertyDetails
     }
   }
 
-  def saveDraftPropertyDetailsTaxAvoidance(id: String, propertyDetails: PropertyDetailsTaxAvoidance)
-                                          (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[Int] = {
-    for {
-      propertyDetailsResponse <- propertyDetailsConnector.saveDraftPropertyDetailsTaxAvoidance(id, propertyDetails)
-    } yield {
-      propertyDetailsResponse.status match {
-        case OK => OK
-        case status =>
-          logger.warn(s"[PropertyDetailsService][saveDraftPropertyDetailsTaxAvoidance] Invalid status when saving Property Details" +
-            s" - status: $status , response.body : ${propertyDetailsResponse.body}")
-          throw new InternalServerException(s"[PropertyDetailsService][saveDraftPropertyDetailsTaxAvoidance] Invalid status when saving Property Details :$status")
-      }
-    }
-  }
-
   def saveDraftPropertyDetailsTaxAvoidanceScheme(id: String, propertyDetails: PropertyDetailsTaxAvoidanceScheme)
                                           (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[Int] = {
     for {

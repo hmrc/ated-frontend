@@ -109,29 +109,56 @@ class PropertyDetailsServiceSpec_Periods extends PlaySpec with GuiceOneServerPer
       }
     }
 
-    "Save property Details TaxAvoidance" must {
+    "Save property Details TaxAvoidance reference" must {
       val propertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
-      val propValue = new PropertyDetailsTaxAvoidance()
+      val propValue = new PropertyDetailsTaxAvoidanceReferences()
 
 
       "save the value and return the response from the connector" in new Setup {
         val successResponse: JsValue = Json.toJson(propertyDetails)
-        when(mockPropertyDetailsConnector.saveDraftPropertyDetailsTaxAvoidance(ArgumentMatchers.eq("1"), ArgumentMatchers.any())
+        when(mockPropertyDetailsConnector.saveDraftPropertyDetailsTaxAvoidanceReferences(ArgumentMatchers.eq("1"), ArgumentMatchers.any())
         (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))
 
-        val result: Future[Int] = testPropertyDetailsService.saveDraftPropertyDetailsTaxAvoidance("1", propValue)
+        val result: Future[Int] = testPropertyDetailsService.saveDraftPropertyDetailsTaxAvoidanceReferences("1", propValue)
         await(result) must be(OK)
 
       }
 
       "save and throw an Exception if it fails" in new Setup {
         val successResponse: JsValue = Json.toJson(propValue)
-        when(mockPropertyDetailsConnector.saveDraftPropertyDetailsTaxAvoidance(ArgumentMatchers.eq("1"), ArgumentMatchers.any())
+        when(mockPropertyDetailsConnector.saveDraftPropertyDetailsTaxAvoidanceReferences(ArgumentMatchers.eq("1"), ArgumentMatchers.any())
         (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, successResponse.toString)))
 
-        val result: Future[Int] = testPropertyDetailsService.saveDraftPropertyDetailsTaxAvoidance("1", propValue)
+        val result: Future[Int] = testPropertyDetailsService.saveDraftPropertyDetailsTaxAvoidanceReferences("1", propValue)
         val thrown: InternalServerException = the[InternalServerException] thrownBy await(result)
         thrown.getMessage must be(s"[PropertyDetailsService][saveDraftPropertyDetailsTaxAvoidance] Invalid status when saving Property Details :$BAD_REQUEST")
+
+      }
+    }
+
+    "Save property Details TaxAvoidance scheme" must {
+      val propertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
+      val propValue = new PropertyDetailsTaxAvoidanceScheme()
+
+
+      "save the value and return the response from the connector" in new Setup {
+        val successResponse: JsValue = Json.toJson(propertyDetails)
+        when(mockPropertyDetailsConnector.saveDraftPropertyDetailsTaxAvoidanceScheme(ArgumentMatchers.eq("1"), ArgumentMatchers.any())
+        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))
+
+        val result: Future[Int] = testPropertyDetailsService.saveDraftPropertyDetailsTaxAvoidanceScheme("1", propValue)
+        await(result) must be(OK)
+
+      }
+
+      "save and throw an Exception if it fails" in new Setup {
+        val successResponse: JsValue = Json.toJson(propValue)
+        when(mockPropertyDetailsConnector.saveDraftPropertyDetailsTaxAvoidanceScheme(ArgumentMatchers.eq("1"), ArgumentMatchers.any())
+        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, successResponse.toString)))
+
+        val result: Future[Int] = testPropertyDetailsService.saveDraftPropertyDetailsTaxAvoidanceScheme("1", propValue)
+        val thrown: InternalServerException = the[InternalServerException] thrownBy await(result)
+        thrown.getMessage must be(s"[PropertyDetailsService][saveDraftPropertyDetailsTaxAvoidanceScheme] Invalid status when saving Property Details :$BAD_REQUEST")
 
       }
     }

@@ -372,14 +372,14 @@ class PropertyDetailsConnectorSpec extends PlaySpec with GuiceOneAppPerSuite wit
       }
     }
 
-    "save property details TaxAvoidance" must {
-      val propertyDetails = new PropertyDetailsTaxAvoidance()
+    "save property details TaxAvoidance Scheme" must {
+      val propertyDetails = new PropertyDetailsTaxAvoidanceScheme()
 
       "for successful save, return PropertyDetails title for a user" in new Setup {
         val successResponse: JsValue = Json.toJson(propertyDetails)
         when(requestBuilderExecute[HttpResponse]).thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))
 
-        val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailsTaxAvoidance("1", propertyDetails)
+        val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailsTaxAvoidanceScheme("1", propertyDetails)
         val response: HttpResponse = await(result)
         response.status must be(OK)
       }
@@ -387,7 +387,28 @@ class PropertyDetailsConnectorSpec extends PlaySpec with GuiceOneAppPerSuite wit
       "for an unsuccessful save, return an empty object" in new Setup {
         when(requestBuilderExecute[HttpResponse]).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, "")))
 
-        val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailsTaxAvoidance("1", propertyDetails)
+        val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailsTaxAvoidanceScheme("1", propertyDetails)
+        val response: HttpResponse = await(result)
+        response.status must be(BAD_REQUEST)
+      }
+    }
+
+    "save property details TaxAvoidance reference" must {
+      val propertyDetails = new PropertyDetailsTaxAvoidanceReferences()
+
+      "for successful save, return PropertyDetails title for a user" in new Setup {
+        val successResponse: JsValue = Json.toJson(propertyDetails)
+        when(requestBuilderExecute[HttpResponse]).thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))
+
+        val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailsTaxAvoidanceReferences("1", propertyDetails)
+        val response: HttpResponse = await(result)
+        response.status must be(OK)
+      }
+
+      "for an unsuccessful save, return an empty object" in new Setup {
+        when(requestBuilderExecute[HttpResponse]).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, "")))
+
+        val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailsTaxAvoidanceReferences("1", propertyDetails)
         val response: HttpResponse = await(result)
         response.status must be(BAD_REQUEST)
       }

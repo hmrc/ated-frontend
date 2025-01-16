@@ -222,14 +222,6 @@ class PropertyDetailsConnector @Inject()(appConfig: ApplicationConfig,
     http.post(url"$postUrl").withBody(jsonData).execute[HttpResponse]
   }
 
-  def saveDraftPropertyDetailsTaxAvoidance(id: String, propertyDetails: PropertyDetailsTaxAvoidance)
-                                         (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[HttpResponse] = {
-    val authLink = authContext.atedReferenceNumber
-    val postUrl = s"$serviceURL$authLink/$saveDraftPropertyDetailsTaxAvoidanceURI/$id"
-    val jsonData = Json.toJson(propertyDetails)
-    http.post(url"$postUrl").withBody(jsonData).execute[HttpResponse]
-  }
-
   def saveDraftPropertyDetailsTaxAvoidanceScheme(id: String, propertyDetails: PropertyDetailsTaxAvoidanceScheme)
                                           (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[HttpResponse] = {
     val authLink = authContext.atedReferenceNumber
