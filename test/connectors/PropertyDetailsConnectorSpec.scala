@@ -20,6 +20,7 @@ import java.util.UUID
 import builders.PropertyDetailsBuilder
 import config.ApplicationConfig
 import models._
+
 import java.time.LocalDate
 import org.mockito.Mockito._
 import org.scalatestplus.mockito.MockitoSugar
@@ -31,6 +32,7 @@ import play.api.test.Injecting
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.http.SessionId
 
+import java.net.URL
 import scala.concurrent.{ExecutionContext, Future}
 
 class PropertyDetailsConnectorSpec extends PlaySpec with GuiceOneAppPerSuite with MockitoSugar with Injecting {
@@ -41,8 +43,24 @@ class PropertyDetailsConnectorSpec extends PlaySpec with GuiceOneAppPerSuite wit
     implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
 
     lazy val periodKey = 2015
+    lazy val id = "1"
+    lazy val atedRefNumber = "AtedRefNumber"
+    lazy val serviceURL = mockAppConfig.conf.baseUrl("ated") + "/ated/"
 
     val testPropertyDetailsConnector: PropertyDetailsConnector = new PropertyDetailsConnector(mockAppConfig, mockHttpClient)
+    when(authContext.atedReferenceNumber).thenReturn(atedRefNumber)
+
+    def postUrlFor(path: String) :String = {
+      s"$serviceURL$atedRefNumber/$path/$id"
+    }
+
+    def mockSuccessResponse(): Unit = {
+      when(requestBuilderExecute[HttpResponse]).thenReturn(Future.successful(HttpResponse(OK, "Success")))
+    }
+
+    def mockBadResponse(): Unit = {
+      when(requestBuilderExecute[HttpResponse]).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, "Bad request")))
+    }
   }
 
   "PropertyDetailsConnector" must {
@@ -375,20 +393,24 @@ class PropertyDetailsConnectorSpec extends PlaySpec with GuiceOneAppPerSuite wit
     "save property details TaxAvoidance Scheme" must {
       val propertyDetails = new PropertyDetailsTaxAvoidanceScheme()
 
-      "for successful save, return PropertyDetails title for a user" in new Setup {
-        val successResponse: JsValue = Json.toJson(propertyDetails)
-        when(requestBuilderExecute[HttpResponse]).thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))
-
+      "for successful save, return sucess response and verify the calling url is correct" in new Setup {
+        mockSuccessResponse()
         val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailsTaxAvoidanceScheme("1", propertyDetails)
+        verify(mockHttpClient, times(1)).post(new URL(postUrlFor("property-details/tax-avoidance")))(hc)
+
         val response: HttpResponse = await(result)
+        verifyNoMoreInteractions(mockHttpClient)
         response.status must be(OK)
       }
 
-      "for an unsuccessful save, return an empty object" in new Setup {
-        when(requestBuilderExecute[HttpResponse]).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, "")))
+      "for an unsuccessful save, return badrequest and verify the calling url is correct" in new Setup {
+        mockBadResponse()
 
         val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailsTaxAvoidanceScheme("1", propertyDetails)
+        verify(mockHttpClient, times(1)).post(new URL(postUrlFor("property-details/tax-avoidance")))(hc)
+
         val response: HttpResponse = await(result)
+        verifyNoMoreInteractions(mockHttpClient)
         response.status must be(BAD_REQUEST)
       }
     }
@@ -396,20 +418,24 @@ class PropertyDetailsConnectorSpec extends PlaySpec with GuiceOneAppPerSuite wit
     "save property details TaxAvoidance reference" must {
       val propertyDetails = new PropertyDetailsTaxAvoidanceReferences()
 
-      "for successful save, return PropertyDetails title for a user" in new Setup {
-        val successResponse: JsValue = Json.toJson(propertyDetails)
-        when(requestBuilderExecute[HttpResponse]).thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))
-
+      "for successful save, return sucess response and verify the calling url is correct" in new Setup {
+        mockSuccessResponse()
         val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailsTaxAvoidanceReferences("1", propertyDetails)
+        verify(mockHttpClient, times(1)).post(new URL(postUrlFor("property-details/tax-avoidance")))(hc)
+
         val response: HttpResponse = await(result)
+        verifyNoMoreInteractions(mockHttpClient)
         response.status must be(OK)
       }
 
-      "for an unsuccessful save, return an empty object" in new Setup {
-        when(requestBuilderExecute[HttpResponse]).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, "")))
+      "for an unsuccessful save, return badrequest and verify the calling url is correct" in new Setup {
+        mockBadResponse()
 
         val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailsTaxAvoidanceReferences("1", propertyDetails)
+        verify(mockHttpClient, times(1)).post(new URL(postUrlFor("property-details/tax-avoidance")))(hc)
+
         val response: HttpResponse = await(result)
+        verifyNoMoreInteractions(mockHttpClient)
         response.status must be(BAD_REQUEST)
       }
     }
