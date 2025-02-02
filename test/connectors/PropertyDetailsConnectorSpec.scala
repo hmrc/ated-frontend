@@ -16,448 +16,237 @@
 
 package connectors
 
-import java.util.UUID
 import builders.PropertyDetailsBuilder
 import config.ApplicationConfig
 import models._
 
 import java.time.LocalDate
 import org.mockito.Mockito._
-import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
-import play.api.libs.json.{JsValue, Json}
-import play.api.test.Helpers._
 import play.api.test.Injecting
 import uk.gov.hmrc.http._
-import uk.gov.hmrc.http.SessionId
 
 import java.net.URL
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
-class PropertyDetailsConnectorSpec extends PlaySpec with GuiceOneAppPerSuite with MockitoSugar with Injecting {
-  class Setup extends ConnectorTest {
+class PropertyDetailsConnectorSpec extends PlaySpec with GuiceOneAppPerSuite with Injecting {
+
+  class Setup extends ConnectorTest with PropertyDetailsConnectorTestConstants {
     implicit val ec: ExecutionContext = inject[ExecutionContext]
     implicit val authContext: StandardAuthRetrievals = mock[StandardAuthRetrievals]
-    implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
-    implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
+    implicit val hc: HeaderCarrier = HeaderCarrier()
+    implicit val mockAppConfig: ApplicationConfig = inject[ApplicationConfig]
 
     lazy val periodKey = 2015
     lazy val id = "1"
     lazy val atedRefNumber = "AtedRefNumber"
     lazy val serviceURL = mockAppConfig.conf.baseUrl("ated") + "/ated/"
 
+    lazy val drafts = "drafts"
+    lazy val period = "period"
+
     val testPropertyDetailsConnector: PropertyDetailsConnector = new PropertyDetailsConnector(mockAppConfig, mockHttpClient)
     when(authContext.atedReferenceNumber).thenReturn(atedRefNumber)
+
+    def createUrlFor(path: String) :String = {
+      s"$serviceURL$atedRefNumber/$path/$periodKey"
+    }
+
+    def getUrlFor(path: String) :String = {
+      s"$serviceURL$atedRefNumber/$path/$id"
+    }
+
+    def postUrlFor(path: String, periodKey: Int) :String = {
+      s"$serviceURL$atedRefNumber/$path/$periodKey"
+    }
 
     def postUrlFor(path: String) :String = {
       s"$serviceURL$atedRefNumber/$path/$id"
     }
 
-    def mockSuccessResponse(): Unit = {
-      when(requestBuilderExecute[HttpResponse]).thenReturn(Future.successful(HttpResponse(OK, "Success")))
-    }
-
-    def mockBadResponse(): Unit = {
-      when(requestBuilderExecute[HttpResponse]).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, "Bad request")))
+    def deleteDraftUrlFor(path: String) :String = {
+      s"$serviceURL$atedRefNumber/$path/drafts/$id"
     }
   }
 
   "PropertyDetailsConnector" must {
 
     "create draft property details" must {
-      "for successful save, return new the id for the property details" in new Setup {
-        private val propertyDetails: PropertyDetailsAddress = PropertyDetailsBuilder.getPropertyDetailsAddress(Some("testPostCode"))
+      val propertyDetails: PropertyDetailsAddress = PropertyDetailsBuilder.getPropertyDetailsAddress(Some("testPostCode"))
 
-        val successResponse: JsValue = Json.toJson(propertyDetails)
-
-        when(requestBuilderExecute[HttpResponse]).thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))
-
-        val result: Future[HttpResponse] = testPropertyDetailsConnector.createDraftPropertyDetails(periodKey, propertyDetails)
-        val response: HttpResponse = await(result)
-        response.status must be(OK)
-      }
-
-      "for an unsuccessful save, return an empty object" in new Setup {
-        val propertyDetails: PropertyDetailsAddress = PropertyDetailsBuilder.getPropertyDetailsAddress(Some("testPostCode"))
-
-        when(requestBuilderExecute[HttpResponse]).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, "")))
-        val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailsAddressRef("1", propertyDetails)
-        val response: HttpResponse = await(result)
-        response.status must be(BAD_REQUEST)
+      "call correct url and http method to save createDraftPropertyDetails" in new Setup {
+        testPropertyDetailsConnector.createDraftPropertyDetails(periodKey, propertyDetails)
+        verify(mockHttpClient, times(1)).post(new URL(createUrlFor(createDraftPropertyDetailsURI)))(hc)
+        verifyNoMoreInteractions(mockHttpClient)
       }
     }
 
     "save property details address ref" must {
-      "for successful save, return PropertyDetails address ref for a user" in new Setup {
-        val propertyDetails: PropertyDetailsAddress = PropertyDetailsBuilder.getPropertyDetailsAddress(Some("testPostCode"))
+      val propertyDetails: PropertyDetailsAddress = PropertyDetailsBuilder.getPropertyDetailsAddress(Some("testPostCode"))
 
-        val successResponse: JsValue = Json.toJson(propertyDetails)
-
-        when(requestBuilderExecute[HttpResponse]).thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))
-
-        val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailsAddressRef("1", propertyDetails)
-        val response: HttpResponse = await(result)
-        response.status must be(OK)
-      }
-
-      "for an unsuccessful save, return an empty object" in new Setup {
-        val propertyDetails: PropertyDetailsAddress = PropertyDetailsBuilder.getPropertyDetailsAddress(Some("testPostCode"))
-
-        when(requestBuilderExecute[HttpResponse]).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, "")))
-        val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailsAddressRef("1", propertyDetails)
-        val response: HttpResponse = await(result)
-        response.status must be(BAD_REQUEST)
+      "call correct url and http method to save saveDraftPropertyDetailsAddressRef" in new Setup {
+        testPropertyDetailsConnector.saveDraftPropertyDetailsAddressRef(id, propertyDetails)
+        verify(mockHttpClient, times(1)).post(new URL(postUrlFor(saveDraftPropertyDetailsAddressRefURI)))(hc)
+        verifyNoMoreInteractions(mockHttpClient)
       }
     }
 
     "save property details Has Value Changed" must {
-      "for successful save, return PropertyDetails Has Value Changed for a user" in new Setup {
-        val propertyDetails: PropertyDetailsTitle = PropertyDetailsTitle("")
 
-        val successResponse: JsValue = Json.toJson(propertyDetails)
-
-        when(requestBuilderExecute[HttpResponse]).thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))
-
-        val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftHasValueChanged("1", propertyDetails = true)
-        val response: HttpResponse = await(result)
-        response.status must be(OK)
-      }
-
-      "for an unsuccessful save, return an empty object" in new Setup {
-        when(requestBuilderExecute[HttpResponse]).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, "")))
-
-        val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftHasValueChanged("1", propertyDetails = true)
-        val response: HttpResponse = await(result)
-        response.status must be(BAD_REQUEST)
+      "call correct url and http method to save saveDraftHasValueChanged" in new Setup {
+        testPropertyDetailsConnector.saveDraftHasValueChanged(id, propertyDetails = true)
+        verify(mockHttpClient, times(1)).post(new URL(postUrlFor(saveDraftPropertyHasValueChangedURI)))(hc)
+        verifyNoMoreInteractions(mockHttpClient)
       }
     }
 
     "save property details title" must {
-      "for successful save, return PropertyDetails title for a user" in new Setup {
-        val propertyDetails: PropertyDetailsTitle = PropertyDetailsTitle("")
+      val propertyDetails: PropertyDetailsTitle = PropertyDetailsTitle("")
 
-        val successResponse: JsValue = Json.toJson(propertyDetails)
-
-        when(requestBuilderExecute[HttpResponse]).thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))
-
-        val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailsTitle("1", propertyDetails)
-        val response: HttpResponse = await(result)
-        response.status must be(OK)
-      }
-
-      "for an unsuccessful save, return an empty object" in new Setup {
-        val propertyDetails: PropertyDetailsTitle = PropertyDetailsTitle("")
-
-        when(requestBuilderExecute[HttpResponse]).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, "")))
-
-        val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailsTitle("1", propertyDetails)
-        val response: HttpResponse = await(result)
-        response.status must be(BAD_REQUEST)
+      "call correct url and http method to save saveDraftPropertyDetailsTitle" in new Setup {
+        testPropertyDetailsConnector.saveDraftPropertyDetailsTitle(id, propertyDetails)
+        verify(mockHttpClient, times(1)).post(new URL(postUrlFor(saveDraftPropertyDetailsTitleURI)))(hc)
+        verifyNoMoreInteractions(mockHttpClient)
       }
     }
 
     "save property details Acquisition" must {
-      "for successful save, return PropertyDetails Acquisition for a user" in new Setup {
-        val successResponse: JsValue = Json.toJson(true)
 
-        when(requestBuilderExecute[HttpResponse]).thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))
-
-        val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailsAcquisition("1", overLimit = true)
-        val response: HttpResponse = await(result)
-        response.status must be(OK)
-      }
-
-      "for an unsuccessful save, return an empty object" in new Setup {
-        when(requestBuilderExecute[HttpResponse]).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, "")))
-
-        val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailsAcquisition("1", overLimit = true)
-        val response: HttpResponse = await(result)
-        response.status must be(BAD_REQUEST)
+      "call correct url and http method to save saveDraftPropertyDetailsAcquisition" in new Setup {
+        testPropertyDetailsConnector.saveDraftPropertyDetailsAcquisition(id, overLimit = true)
+        verify(mockHttpClient, times(1)).post(new URL(postUrlFor(saveDraftPropertyDetailsAcquisitionURI)))(hc)
+        verifyNoMoreInteractions(mockHttpClient)
       }
     }
 
     "save property details Revalued" must {
       val propertyDetails = new PropertyDetailsRevalued()
 
-      "for successful save, return PropertyDetails Revalued for a user" in new Setup {
-        val successResponse: JsValue = Json.toJson(propertyDetails)
-
-        when(requestBuilderExecute[HttpResponse]).thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))
-
-        val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailsRevalued("1", propertyDetails)
-        val response: HttpResponse = await(result)
-        response.status must be(OK)
-      }
-
-      "for an unsuccessful save, return an empty object" in new Setup {
-        when(requestBuilderExecute[HttpResponse]).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, "")))
-
-        val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailsRevalued("1", propertyDetails)
-        val response: HttpResponse = await(result)
-        response.status must be(BAD_REQUEST)
+      "call correct url and http method to save saveDraftPropertyDetailsRevalued" in new Setup {
+        testPropertyDetailsConnector.saveDraftPropertyDetailsRevalued(id, propertyDetails)
+        verify(mockHttpClient, times(1)).post(new URL(postUrlFor(saveDraftPropertyDetailsRevaluedURI)))(hc)
+        verifyNoMoreInteractions(mockHttpClient)
       }
     }
 
     "save property details OwnedBefore" must {
-      "for successful save, return PropertyDetails title for a user" in new Setup {
-        val propertyDetails = new PropertyDetailsOwnedBefore()
+      val propertyDetails = new PropertyDetailsOwnedBefore()
 
-        val successResponse: JsValue = Json.toJson(propertyDetails)
-
-        when(requestBuilderExecute[HttpResponse]).thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))
-
-        val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailsOwnedBefore("1", propertyDetails)
-        val response: HttpResponse = await(result)
-        response.status must be(OK)
-      }
-
-      "for an unsuccessful save, return an empty object" in new Setup {
-        val propertyDetails = new PropertyDetailsOwnedBefore()
-
-        when(requestBuilderExecute[HttpResponse]).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, "")))
-
-        val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailsOwnedBefore("1", propertyDetails)
-        val response: HttpResponse = await(result)
-        response.status must be(BAD_REQUEST)
+      "call correct url and http method to save saveDraftPropertyDetailsOwnedBefore" in new Setup {
+        testPropertyDetailsConnector.saveDraftPropertyDetailsOwnedBefore(id, propertyDetails)
+        verify(mockHttpClient, times(1)).post(new URL(postUrlFor(saveDraftPropertyDetailsOwnedBeforeURI)))(hc)
+        verifyNoMoreInteractions(mockHttpClient)
       }
     }
 
     "save property details ProfessionallyValued" must {
       val propertyDetails = new PropertyDetailsProfessionallyValued()
 
-      "for successful save, return PropertyDetails title for a user" in new Setup {
-        val successResponse: JsValue = Json.toJson(propertyDetails)
-        when(requestBuilderExecute[HttpResponse]).thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))
-
-        val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailsProfessionallyValued("1", propertyDetails)
-        val response: HttpResponse = await(result)
-        response.status must be(OK)
-      }
-
-      "for an unsuccessful save, return an empty object" in new Setup {
-        when(requestBuilderExecute[HttpResponse]).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, "")))
-
-        val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailsProfessionallyValued("1", propertyDetails)
-        val response: HttpResponse = await(result)
-        response.status must be(BAD_REQUEST)
+      "call correct url and http method to save saveDraftPropertyDetailsProfessionallyValued" in new Setup {
+        testPropertyDetailsConnector.saveDraftPropertyDetailsProfessionallyValued(id, propertyDetails)
+        verify(mockHttpClient, times(1)).post(new URL(postUrlFor(saveDraftPropertyDetailsValuedURI)))(hc)
+        verifyNoMoreInteractions(mockHttpClient)
       }
     }
 
     "save property details NewBuild" must {
       val propertyDetailsIsNewBuild = new PropertyDetailsNewBuild()
 
-      "return an OK response for a successful save" in new Setup {
-        val successResponse: JsValue = Json.toJson(propertyDetailsIsNewBuild)
-        when(requestBuilderExecute[HttpResponse]).thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))
-
-        val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailsNewBuild("1", propertyDetailsIsNewBuild)
-        val response: HttpResponse = await(result)
-        response.status must be(OK)
-      }
-
-      "return a BAD_REQUEST for an unsuccessful save" in new Setup {
-        when(requestBuilderExecute[HttpResponse]).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, "")))
-
-        val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailsNewBuild("1", propertyDetailsIsNewBuild)
-        val response: HttpResponse = await(result)
-        response.status must be(BAD_REQUEST)
+      "call correct url and http method to save saveDraftPropertyDetailsNewBuild" in new Setup {
+        testPropertyDetailsConnector.saveDraftPropertyDetailsNewBuild(id, propertyDetailsIsNewBuild)
+        verify(mockHttpClient, times(1)).post(new URL(postUrlFor(saveDraftPropertyDetailsNewBuildURI)))(hc)
+        verifyNoMoreInteractions(mockHttpClient)
       }
     }
 
     "save property details new build dates" must {
       val testPropertyDetailsNewBuildDates = new PropertyDetailsNewBuildDates(None, None)
-      "return an OK response for a successful save" in new Setup {
-        val successResponse: JsValue = Json.toJson(testPropertyDetailsNewBuildDates)
-        when(requestBuilderExecute[HttpResponse]).thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))
 
-        val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailNewBuildDates("1", testPropertyDetailsNewBuildDates)
-        val response: HttpResponse = await(result)
-        response.status must be(OK)
-      }
-
-      "return a BAD_REQUEST for an unsuccessful save" in new Setup {
-        when(requestBuilderExecute[HttpResponse]).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, "")))
-
-        val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailNewBuildDates("1", testPropertyDetailsNewBuildDates)
-        val response: HttpResponse = await(result)
-        response.status must be(BAD_REQUEST)
+      "call correct url and http method to save saveDraftPropertyDetailNewBuildDates" in new Setup {
+        testPropertyDetailsConnector.saveDraftPropertyDetailNewBuildDates(id, testPropertyDetailsNewBuildDates)
+        verify(mockHttpClient, times(1)).post(new URL(postUrlFor(saveDraftPropertyDetailsNewBuildDatesURI)))(hc)
+        verifyNoMoreInteractions(mockHttpClient)
       }
     }
 
     "save property details when acquired dates" must {
       val testPropertyDetailsWhenAcquiredDates = new PropertyDetailsWhenAcquiredDates(None)
 
-      "return an OK response for a successful save" in new Setup {
-        val successResponse: JsValue = Json.toJson(testPropertyDetailsWhenAcquiredDates)
-        when(requestBuilderExecute[HttpResponse]).thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))
-
-        val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailsWhenAcquiredDates("1", testPropertyDetailsWhenAcquiredDates)
-        val response: HttpResponse = await(result)
-        response.status must be(OK)
-      }
-
-      "return a BAD_REQUEST for an unsuccessful save" in new Setup {
-        when(requestBuilderExecute[HttpResponse]).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, "")))
-
-        val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailsWhenAcquiredDates("1", testPropertyDetailsWhenAcquiredDates)
-        val response: HttpResponse = await(result)
-        response.status must be(BAD_REQUEST)
+      "call correct url and http method to save saveDraftPropertyDetailsWhenAcquiredDates" in new Setup {
+        testPropertyDetailsConnector.saveDraftPropertyDetailsWhenAcquiredDates(id, testPropertyDetailsWhenAcquiredDates)
+        verify(mockHttpClient, times(1)).post(new URL(postUrlFor(saveDraftPropertyDetailsWhenAcquiredDatesURI)))(hc)
+        verifyNoMoreInteractions(mockHttpClient)
       }
     }
 
     "save property details new build value" must {
       val testPropertyDetailsNewBuildValue = new PropertyDetailsNewBuildValue(None)
 
-      "return an OK response for a successful save" in new Setup {
-        val successResponse: JsValue = Json.toJson(testPropertyDetailsNewBuildValue)
-        when(requestBuilderExecute[HttpResponse]).thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))
-
-        val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailsNewBuildValue("1", testPropertyDetailsNewBuildValue)
-        val response: HttpResponse = await(result)
-        response.status must be(OK)
-      }
-
-      "return a BAD_REQUEST for an unsuccessful save" in new Setup {
-        when(requestBuilderExecute[HttpResponse]).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, "")))
-
-        val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailsNewBuildValue("1", testPropertyDetailsNewBuildValue)
-        val response: HttpResponse = await(result)
-        response.status must be(BAD_REQUEST)
+      "call correct url and http method to save saveDraftPropertyDetailsNewBuildValue" in new Setup {
+        testPropertyDetailsConnector.saveDraftPropertyDetailsNewBuildValue(id, testPropertyDetailsNewBuildValue)
+        verify(mockHttpClient, times(1)).post(new URL(postUrlFor(saveDraftPropertyDetailsNewBuildValueURI)))(hc)
+        verifyNoMoreInteractions(mockHttpClient)
       }
     }
 
     "save property details value acquired" must {
       val testPropertyDetailsValueAcquired = new PropertyDetailsValueOnAcquisition(None)
 
-      "return an OK response for a successful save" in new Setup {
-        val successResponse: JsValue = Json.toJson(testPropertyDetailsValueAcquired)
-        when(requestBuilderExecute[HttpResponse]).thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))
-
-        val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailsValueAcquired("1", testPropertyDetailsValueAcquired)
-        val response: HttpResponse = await(result)
-        response.status must be(OK)
-      }
-
-      "return a BAD_REQUEST for an unsuccessful save" in new Setup {
-        when(requestBuilderExecute[HttpResponse]).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, "")))
-
-        val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailsValueAcquired("1", testPropertyDetailsValueAcquired)
-        val response: HttpResponse = await(result)
-        response.status must be(BAD_REQUEST)
+      "call correct url and http method to save saveDraftPropertyDetailsValueAcquired" in new Setup {
+        testPropertyDetailsConnector.saveDraftPropertyDetailsValueAcquired(id, testPropertyDetailsValueAcquired)
+        verify(mockHttpClient, times(1)).post(new URL(postUrlFor(saveDraftPropertyDetailsValueOnAcquisitionURI)))(hc)
+        verifyNoMoreInteractions(mockHttpClient)
       }
     }
 
     "save property details IsFullTaxPeriod" must {
       val propertyDetails = new IsFullTaxPeriod(false, None)
 
-      "for successful save, return PropertyDetails title for a user" in new Setup {
-        val successResponse: JsValue = Json.toJson(propertyDetails)
-        when(requestBuilderExecute[HttpResponse]).thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))
-
-        val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftIsFullTaxPeriod("1", propertyDetails)
-        val response: HttpResponse = await(result)
-        response.status must be(OK)
-      }
-
-      "for an unsuccessful save, return an empty object" in new Setup {
-        when(requestBuilderExecute[HttpResponse]).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, "")))
-
-        val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftIsFullTaxPeriod("1", propertyDetails)
-        val response: HttpResponse = await(result)
-        response.status must be(BAD_REQUEST)
+      "call correct url and http method to save saveDraftIsFullTaxPeriod" in new Setup {
+        testPropertyDetailsConnector.saveDraftIsFullTaxPeriod(id, propertyDetails)
+        verify(mockHttpClient, times(1)).post(new URL(postUrlFor(saveDraftPropertyDetailsFullTaxPeriodURI)))(hc)
+        verifyNoMoreInteractions(mockHttpClient)
       }
     }
 
     "save property details IsInRelief" must {
       val propertyDetails = new PropertyDetailsInRelief()
 
-      "for successful save, return PropertyDetails title for a user" in new Setup {
-        val successResponse: JsValue = Json.toJson(propertyDetails)
-        when(requestBuilderExecute[HttpResponse]).thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))
-
-        val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailsInRelief("1", propertyDetails)
-        val response: HttpResponse = await(result)
-        response.status must be(OK)
-      }
-
-      "for an unsuccessful save, return an empty object" in new Setup {
-        when(requestBuilderExecute[HttpResponse]).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, "")))
-
-        val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailsInRelief("1", propertyDetails)
-        val response: HttpResponse = await(result)
-        response.status must be(BAD_REQUEST)
+      "call correct url and http method to save saveDraftPropertyDetailsInRelief" in new Setup {
+        testPropertyDetailsConnector.saveDraftPropertyDetailsInRelief(id, propertyDetails)
+        verify(mockHttpClient, times(1)).post(new URL(postUrlFor(saveDraftPropertyDetailsInReliefURI)))(hc)
+        verifyNoMoreInteractions(mockHttpClient)
       }
     }
 
     "save property details TaxAvoidance Scheme" must {
       val propertyDetails = new PropertyDetailsTaxAvoidanceScheme()
 
-      "for successful save, return sucess response and verify the calling url is correct" in new Setup {
-        mockSuccessResponse()
-        val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailsTaxAvoidanceScheme("1", propertyDetails)
-        verify(mockHttpClient, times(1)).post(new URL(postUrlFor("property-details/tax-avoidance")))(hc)
-
-        val response: HttpResponse = await(result)
+      "call correct url and http method to save saveDraftPropertyDetailsTaxAvoidanceScheme" in new Setup {
+        testPropertyDetailsConnector.saveDraftPropertyDetailsTaxAvoidanceScheme(id, propertyDetails)
+        verify(mockHttpClient, times(1)).post(new URL(postUrlFor(saveDraftPropertyDetailsTaxAvoidanceURI)))(hc)
         verifyNoMoreInteractions(mockHttpClient)
-        response.status must be(OK)
-      }
-
-      "for an unsuccessful save, return badrequest and verify the calling url is correct" in new Setup {
-        mockBadResponse()
-
-        val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailsTaxAvoidanceScheme("1", propertyDetails)
-        verify(mockHttpClient, times(1)).post(new URL(postUrlFor("property-details/tax-avoidance")))(hc)
-
-        val response: HttpResponse = await(result)
-        verifyNoMoreInteractions(mockHttpClient)
-        response.status must be(BAD_REQUEST)
       }
     }
 
     "save property details TaxAvoidance reference" must {
       val propertyDetails = new PropertyDetailsTaxAvoidanceReferences()
 
-      "for successful save, return sucess response and verify the calling url is correct" in new Setup {
-        mockSuccessResponse()
-        val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailsTaxAvoidanceReferences("1", propertyDetails)
-        verify(mockHttpClient, times(1)).post(new URL(postUrlFor("property-details/tax-avoidance")))(hc)
-
-        val response: HttpResponse = await(result)
+      "call correct url and http method to save - saveDraftPropertyDetailsTaxAvoidanceReferences" in new Setup {
+        testPropertyDetailsConnector.saveDraftPropertyDetailsTaxAvoidanceReferences(id, propertyDetails)
+        verify(mockHttpClient, times(1)).post(new URL(postUrlFor(saveDraftPropertyDetailsTaxAvoidanceURI)))(hc)
         verifyNoMoreInteractions(mockHttpClient)
-        response.status must be(OK)
-      }
-
-      "for an unsuccessful save, return badrequest and verify the calling url is correct" in new Setup {
-        mockBadResponse()
-
-        val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailsTaxAvoidanceReferences("1", propertyDetails)
-        verify(mockHttpClient, times(1)).post(new URL(postUrlFor("property-details/tax-avoidance")))(hc)
-
-        val response: HttpResponse = await(result)
-        verifyNoMoreInteractions(mockHttpClient)
-        response.status must be(BAD_REQUEST)
       }
     }
 
     "save property details DatesLiable" must {
       val propertyDetails = new PropertyDetailsDatesLiable(Some(LocalDate.parse("1970-01-01")), Some(LocalDate.parse("1970-01-01")))
 
-      "for successful save, return PropertyDetails title for a user" in new Setup {
-        val successResponse: JsValue = Json.toJson(propertyDetails)
-        when(requestBuilderExecute[HttpResponse]).thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))
-
-        val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailsDatesLiable("1", propertyDetails)
-        val response: HttpResponse = await(result)
-        response.status must be(OK)
-      }
-
-      "for an unsuccessful save, return an empty object" in new Setup {
-        when(requestBuilderExecute[HttpResponse]).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, "")))
-
-        val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailsDatesLiable("1", propertyDetails)
-        val response: HttpResponse = await(result)
-        response.status must be(BAD_REQUEST)
+      "call correct url and http method to save - saveDraftPropertyDetailsDatesLiable" in new Setup {
+        testPropertyDetailsConnector.saveDraftPropertyDetailsDatesLiable(id, propertyDetails)
+        verify(mockHttpClient, times(1)).post(new URL(postUrlFor(saveDraftPropertyDetailsDatesLiableURI)))(hc)
+        verifyNoMoreInteractions(mockHttpClient)
       }
     }
 
@@ -466,21 +255,10 @@ class PropertyDetailsConnectorSpec extends PlaySpec with GuiceOneAppPerSuite wit
         Some(LocalDate.parse("2999-02-03")), Some(LocalDate.parse("2999-03-04"))
       )
 
-      "for successful add, return PropertyDetails title for a user" in new Setup {
-        val successResponse: JsValue = Json.toJson(propertyDetails)
-        when(requestBuilderExecute[HttpResponse]).thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))
-
-        val result: Future[HttpResponse] = testPropertyDetailsConnector.addDraftPropertyDetailsDatesLiable("1", propertyDetails)
-        val response: HttpResponse = await(result)
-        response.status must be(OK)
-      }
-
-      "for an unsuccessful add, return an empty object" in new Setup {
-        when(requestBuilderExecute[HttpResponse]).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, "")))
-
-        val result: Future[HttpResponse] = testPropertyDetailsConnector.addDraftPropertyDetailsDatesLiable("1", propertyDetails)
-        val response: HttpResponse = await(result)
-        response.status must be(BAD_REQUEST)
+      "call correct url and http method to add - addDraftPropertyDetailsDatesLiable" in new Setup {
+        testPropertyDetailsConnector.addDraftPropertyDetailsDatesLiable(id, propertyDetails)
+        verify(mockHttpClient, times(1)).post(new URL(postUrlFor(addDraftPropertyDetailsDatesLiableURI)))(hc)
+        verifyNoMoreInteractions(mockHttpClient)
       }
     }
 
@@ -489,21 +267,10 @@ class PropertyDetailsConnectorSpec extends PlaySpec with GuiceOneAppPerSuite wit
         Some(LocalDate.parse("2999-02-03")), Some(LocalDate.parse("2999-03-04"))
       )
 
-      "for successful delete, return PropertyDetails title for a user" in new Setup {
-        val successResponse: JsValue = Json.toJson(propertyDetails)
-        when(requestBuilderExecute[HttpResponse]).thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))
-
-        val result: Future[HttpResponse] = testPropertyDetailsConnector.deleteDraftPropertyDetailsPeriod("1", propertyDetails.startDate.get)
-        val response: HttpResponse = await(result)
-        response.status must be(OK)
-      }
-
-      "for an unsuccessful delete, return an empty object" in new Setup {
-        when(requestBuilderExecute[HttpResponse]).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, "")))
-
-        val result: Future[HttpResponse] = testPropertyDetailsConnector.deleteDraftPropertyDetailsPeriod("1", propertyDetails.startDate.get)
-        val response: HttpResponse = await(result)
-        response.status must be(BAD_REQUEST)
+      "call correct url and http method to delete - deleteDraftPropertyDetailsPeriod" in new Setup {
+        testPropertyDetailsConnector.deleteDraftPropertyDetailsPeriod(id, propertyDetails.startDate.get)
+        verify(mockHttpClient, times(1)).post(new URL(postUrlFor(deleteDraftPropertyDetailsPeriodURI)))(hc)
+        verifyNoMoreInteractions(mockHttpClient)
       }
     }
 
@@ -512,120 +279,66 @@ class PropertyDetailsConnectorSpec extends PlaySpec with GuiceOneAppPerSuite wit
         Some(LocalDate.parse("2999-02-03")), Some(LocalDate.parse("2999-03-04"))
       )
 
-      "for successful add, return PropertyDetails title for a user" in new Setup {
-        val successResponse: JsValue = Json.toJson(propertyDetails)
-        when(requestBuilderExecute[HttpResponse]).thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))
-
-        val result: Future[HttpResponse] = testPropertyDetailsConnector.addDraftPropertyDetailsDatesInRelief("1", propertyDetails)
-        val response: HttpResponse = await(result)
-        response.status must be(OK)
-      }
-
-      "for an unsuccessful add, return an empty object" in new Setup {
-        when(requestBuilderExecute[HttpResponse]).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, "")))
-
-        val result: Future[HttpResponse] = testPropertyDetailsConnector.addDraftPropertyDetailsDatesInRelief("1", propertyDetails)
-        val response: HttpResponse = await(result)
-        response.status must be(BAD_REQUEST)
+      "call correct url and http method to add - addDraftPropertyDetailsDatesInRelief" in new Setup {
+        testPropertyDetailsConnector.addDraftPropertyDetailsDatesInRelief(id, propertyDetails)
+        verify(mockHttpClient, times(1)).post(new URL(postUrlFor(addDraftPropertyDetailsDatesInReliefURI)))(hc)
+        verifyNoMoreInteractions(mockHttpClient)
       }
     }
-
 
     "save property details SupportingInfo" must {
       val propertyDetails = new PropertyDetailsSupportingInfo("")
 
-      "for successful save, return PropertyDetails title for a user" in new Setup {
-        val successResponse: JsValue = Json.toJson(propertyDetails)
-        when(requestBuilderExecute[HttpResponse]).thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))
-
-        val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailsSupportingInfo("1", propertyDetails)
-        val response: HttpResponse = await(result)
-        response.status must be(OK)
-      }
-
-      "for an unsuccessful save, return an empty object" in new Setup {
-        when(requestBuilderExecute[HttpResponse]).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, "")))
-
-        val result: Future[HttpResponse] = testPropertyDetailsConnector.saveDraftPropertyDetailsSupportingInfo("1", propertyDetails)
-        val response: HttpResponse = await(result)
-        response.status must be(BAD_REQUEST)
+      "call correct url and http method to save - saveDraftPropertyDetailsSupportingInfo" in new Setup {
+        testPropertyDetailsConnector.saveDraftPropertyDetailsSupportingInfo(id, propertyDetails)
+        verify(mockHttpClient, times(1)).post(new URL(postUrlFor(saveDraftPropertyDetailsSupportingInfoURI)))(hc)
+        verifyNoMoreInteractions(mockHttpClient)
       }
     }
 
     "Calculate property details" must {
-      "return PropertyDetails for a user when we have some" in new Setup {
-        val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("testPostCode"))
-        val successResponse: JsValue = Json.toJson(propertyDetails)
-        when(requestBuilderExecute[HttpResponse]).thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))
 
-        val result: Future[HttpResponse] = testPropertyDetailsConnector.calculateDraftPropertyDetails("1")
-        val response: HttpResponse = await(result)
-        response.status must be(OK)
+      "call correct url and http method to get details - calculateDraftPropertyDetails" in new Setup {
+        testPropertyDetailsConnector.calculateDraftPropertyDetails(id)
+        verify(mockHttpClient, times(1)).get(new URL(getUrlFor(calculateDraftPropertyDetailsURI)))(hc)
+        verifyNoMoreInteractions(mockHttpClient)
       }
     }
 
     "Calculate changed Liability" must {
-      "return PropertyDetails for a user when we have some" in new Setup {
-        val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("testPostCode"))
-        val successResponse: JsValue = Json.toJson(propertyDetails)
 
-        when(requestBuilderExecute[HttpResponse]).thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))
-
-        val result: Future[HttpResponse] = testPropertyDetailsConnector.calculateDraftChangeLiability("1")
-        val response: HttpResponse = await(result)
-        response.status must be(OK)
+      "call correct url and http method to get details - calculateDraftChangeLiability" in new Setup {
+        testPropertyDetailsConnector.calculateDraftChangeLiability(id)
+        verify(mockHttpClient, times(1)).get(new URL(getUrlFor(calculateDraftChangeLiabilityURI)))(hc)
+        verifyNoMoreInteractions(mockHttpClient)
       }
     }
 
     "Retrieve property details" must {
-      "return PropertyDetails for a user when we have some" in new Setup {
-        val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("testPostCode"))
-        val successResponse: JsValue = Json.toJson(propertyDetails)
 
-        when(requestBuilderExecute[HttpResponse]).thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))
-
-        val result: Future[HttpResponse] = testPropertyDetailsConnector.retrieveDraftPropertyDetails("1")
-        val response: HttpResponse = await(result)
-        response.status must be(OK)
+      "call correct url and http method to get details - retrieveDraftPropertyDetails" in new Setup {
+        testPropertyDetailsConnector.retrieveDraftPropertyDetails(id)
+        verify(mockHttpClient, times(1)).get(new URL(getUrlFor(retrieveDraftPropertyDetailsURI)))(hc)
+        verifyNoMoreInteractions(mockHttpClient)
       }
     }
 
     "submit property details" must {
-      "for successful submit, return submit response" in new Setup {
-        val successResponse: JsValue = Json.toJson(PropertyDetailsBuilder.getPropertyDetails("1", Some("testPostCode")))
-        when(requestBuilderExecute[HttpResponse]).thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))
 
-        val result: Future[HttpResponse] = testPropertyDetailsConnector.submitDraftPropertyDetails("1")
-        val response: HttpResponse = await(result)
-        response.status must be(OK)
-      }
-
-      "for an unsuccessful submit, return an empty object" in new Setup {
-        when(requestBuilderExecute[HttpResponse]).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, "")))
-
-        val result: Future[HttpResponse] = testPropertyDetailsConnector.submitDraftPropertyDetails("1")
-        val response: HttpResponse = await(result)
-        response.status must be(BAD_REQUEST)
+      "call correct url and http method to submit draft property details - submitDraftPropertyDetails" in new Setup {
+        testPropertyDetailsConnector.submitDraftPropertyDetails(id)
+        verify(mockHttpClient, times(1)).post(new URL(postUrlFor(submitDraftPropertyDetailsURI)))(hc)
+        verifyNoMoreInteractions(mockHttpClient)
       }
     }
 
     "delete draft chargeable return" must {
-      "for successful submit, return submit response" in new Setup {
-        val successResponse: JsValue = Json.toJson(Seq(PropertyDetailsBuilder.getPropertyDetails("1", Some("testPostCode"))))
-        when(requestBuilderExecute[HttpResponse]).thenReturn(Future.successful(HttpResponse(OK, successResponse.toString)))
-        val result: Future[HttpResponse] = testPropertyDetailsConnector.deleteDraftChargeable("ABC12345")
-        val response: HttpResponse = await(result)
-        response.status must be(OK)
-      }
 
-      "for an inavlid id, return an empty object" in new Setup {
-        when(requestBuilderExecute[HttpResponse]).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, "")))
-        val result: Future[HttpResponse] = testPropertyDetailsConnector.deleteDraftChargeable("XYZ123456")
-        val response: HttpResponse = await(result)
-        response.status must be(BAD_REQUEST)
+      "call correct url and http method to delete draft chargeable return - deleteDraftChargeable" in new Setup {
+        testPropertyDetailsConnector.deleteDraftChargeable(id)
+        verify(mockHttpClient, times(1)).delete(new URL(deleteDraftUrlFor(deletePropertyDetailsURI)))(hc)
+        verifyNoMoreInteractions(mockHttpClient)
       }
     }
-
   }
 }
-
