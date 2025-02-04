@@ -20,7 +20,6 @@ import builders.{PropertyDetailsBuilder, SessionBuilder, TitleBuilder}
 import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.AuthAction
-import controllers.test.PropertyDetailsTaxAvoidanceSchemeController
 import models._
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
@@ -55,6 +54,7 @@ class PropertyDetailsTaxAvoidanceSchemeControllerSpec extends PlaySpec with Guic
   val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
   val mockBackLinkCacheConnector: BackLinkCacheConnector = mock[BackLinkCacheConnector]
   val mockSubscriptionDataService: SubscriptionDataService = mock[SubscriptionDataService]
+  val mockPropertyDetailsTaxAvoidanceReferencesController: PropertyDetailsTaxAvoidanceReferencesController = mock[PropertyDetailsTaxAvoidanceReferencesController]
   val mockPropertyDetailsSupportingInfoController: PropertyDetailsSupportingInfoController = mock[PropertyDetailsSupportingInfoController]
   val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
@@ -74,6 +74,7 @@ class PropertyDetailsTaxAvoidanceSchemeControllerSpec extends PlaySpec with Guic
     val testPropertyDetailsTaxAvoidanceSchemeController: PropertyDetailsTaxAvoidanceSchemeController = new PropertyDetailsTaxAvoidanceSchemeController(
       mockMcc,
       mockAuthAction,
+      mockPropertyDetailsTaxAvoidanceReferencesController,
       mockPropertyDetailsSupportingInfoController,
       mockServiceInfoService,
       mockPropertyDetailsService,

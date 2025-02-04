@@ -16,7 +16,7 @@
 
 package forms
 
-import forms.PropertyDetailsForms.{propertyDetailsTaxAvoidanceForm, validatePropertyDetailsTaxAvoidance}
+import forms.PropertyDetailsForms.{propertyDetailsTaxAvoidanceReferenceForm, propertyDetailsTaxAvoidanceSchemeForm, validatePropertyDetailsTaxAvoidanceReference}
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.i18n.{Messages, MessagesApi}
@@ -27,14 +27,14 @@ class PropertyDetailsTaxAvoidanceSpec  extends PlaySpec with GuiceOneServerPerSu
   implicit lazy val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
   implicit lazy val messages: Messages = messagesApi.preferred(FakeRequest())
 
-  "PropertyDetailsTaxAvoidanceForm" must {
+  "PropertyDetailsTaxAvoidanceForms" must {
     "throw error" when {
-      "form is empty" in {
-        val form = propertyDetailsTaxAvoidanceForm.bind(Map.empty[String, String])
+      "avoidance scheme form is empty" in {
+        val form = propertyDetailsTaxAvoidanceSchemeForm.bind(Map.empty[String, String])
         form.fold(
           hasErrors => {
             hasErrors.errors.length mustBe 1
-            hasErrors.errors.head.message mustBe "ated.property-details-period.isTaxAvoidance.error-field-name"
+            hasErrors.errors.head.message mustBe "ated.property-details-period.isTaxAvoidanceScheme.error-field-name"
           },
           _ => {
             fail("There is a problem")
@@ -42,10 +42,11 @@ class PropertyDetailsTaxAvoidanceSpec  extends PlaySpec with GuiceOneServerPerSu
         )
       }
 
-      "taxAvoidance is selected as 'Yes' and fields are empty" in {
-        val input: Map[String, String] = Map("isTaxAvoidance" -> "true")
-        val form = propertyDetailsTaxAvoidanceForm.bind(input)
-        validatePropertyDetailsTaxAvoidance(form).fold(
+      "taxAvoidanceReference is fields are empty" in {
+        val input: Map[String, String] = Map("taxAvoidanceScheme" -> "",
+          "taxAvoidancePromoterReference" -> "")
+        val form = propertyDetailsTaxAvoidanceReferenceForm.bind(input)
+        validatePropertyDetailsTaxAvoidanceReference(form).fold(
           hasErrors => {
             hasErrors.errors.length mustBe 2
             hasErrors.errors.head.message mustBe "ated.property-details-period.taxAvoidanceScheme.error.empty"
@@ -57,12 +58,12 @@ class PropertyDetailsTaxAvoidanceSpec  extends PlaySpec with GuiceOneServerPerSu
         )
       }
 
-      "taxAvoidance is selected as 'Yes' and fields have invalid data less then 8" in {
-        val input: Map[String, String] = Map("isTaxAvoidance" -> "true",
+      "taxAvoidanceReference fields have invalid data less then 8" in {
+       val input: Map[String, String] = Map(
           "taxAvoidanceScheme" -> "12345",
           "taxAvoidancePromoterReference" -> "1239")
-        val form = propertyDetailsTaxAvoidanceForm.bind(input)
-        validatePropertyDetailsTaxAvoidance(form).fold(
+        val form = propertyDetailsTaxAvoidanceReferenceForm.bind(input)
+        validatePropertyDetailsTaxAvoidanceReference(form).fold(
           hasErrors => {
             hasErrors.errors.length mustBe 2
             hasErrors.errors.head.message mustBe "ated.property-details-period.taxAvoidanceScheme.error.wrong-length"
@@ -74,12 +75,12 @@ class PropertyDetailsTaxAvoidanceSpec  extends PlaySpec with GuiceOneServerPerSu
         )
       }
 
-      "taxAvoidance is selected as 'Yes' and fields have invalid data greater then 8" in {
-        val input: Map[String, String] = Map("isTaxAvoidance" -> "true",
+      "taxAvoidanceReference fields have invalid data greater then 8" in {
+        val input: Map[String, String] = Map(
           "taxAvoidanceScheme" -> "123456789",
           "taxAvoidancePromoterReference" -> "123456789")
-        val form = propertyDetailsTaxAvoidanceForm.bind(input)
-        validatePropertyDetailsTaxAvoidance(form).fold(
+        val form = propertyDetailsTaxAvoidanceReferenceForm.bind(input)
+        validatePropertyDetailsTaxAvoidanceReference(form).fold(
           hasErrors => {
             hasErrors.errors.length mustBe 2
             hasErrors.errors.head.message mustBe "ated.property-details-period.taxAvoidanceScheme.error.wrong-length"
@@ -91,14 +92,13 @@ class PropertyDetailsTaxAvoidanceSpec  extends PlaySpec with GuiceOneServerPerSu
         )
       }
 
+      "taxAvoidanceReference fields have have some random string as input" in {
+        val input: Map[String, String] = Map(
+          "taxAvoidanceScheme" -> "abcdfgrt",
+          "taxAvoidancePromoterReference" -> "abcdfgrt")
 
-      "taxAvoidance is selected as 'Yes' and fields have some random string as input" in {
-        val input: Map[String, String] = Map("isTaxAvoidance" -> "true",
-          "taxAvoidanceScheme" -> "asdfghto",
-          "taxAvoidancePromoterReference" -> "asdfghtk")
-
-        val form = propertyDetailsTaxAvoidanceForm.bind(input)
-        validatePropertyDetailsTaxAvoidance(form).fold(
+        val form = propertyDetailsTaxAvoidanceReferenceForm.bind(input)
+        validatePropertyDetailsTaxAvoidanceReference(form).fold(
           hasErrors => {
             hasErrors.errors.length mustBe 2
             hasErrors.errors.head.message mustBe "ated.property-details-period.taxAvoidanceScheme.error.numbers"

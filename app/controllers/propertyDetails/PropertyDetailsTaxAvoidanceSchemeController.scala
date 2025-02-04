@@ -14,26 +14,26 @@
  * limitations under the License.
  */
 
-package controllers.test
+package controllers.propertyDetails
 
 import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.{AuthAction, ClientHelper}
-import controllers.propertyDetails.{PropertyDetailsHelpers, PropertyDetailsSupportingInfoController}
-import forms.PropertyDetailsForms
 import forms.PropertyDetailsForms._
-import javax.inject.Inject
 import models._
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService}
+import uk.gov.hmrc.play.bootstrap.controller.WithUnsafeDefaultFormBinding
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants.SelectedPreviousReturn
 import utils.AtedUtils
-import uk.gov.hmrc.play.bootstrap.controller.WithUnsafeDefaultFormBinding
+
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class PropertyDetailsTaxAvoidanceSchemeController @Inject()(mcc: MessagesControllerComponents,
                                                       authAction: AuthAction,
+                                                      propertyDetailsTaxAvoidanceReferencesController: PropertyDetailsTaxAvoidanceReferencesController,
                                                       propertyDetailsSupportingInfoController: PropertyDetailsSupportingInfoController,
                                                       serviceInfoService: ServiceInfoService,
                                                       val propertyDetailsService: PropertyDetailsService,
@@ -100,16 +100,23 @@ class PropertyDetailsTaxAvoidanceSchemeController @Inject()(mcc: MessagesControl
           propertyDetailsTaxAvoidanceSchemeForm.bindFromRequest().fold(
             formWithError =>
               currentBackLink.map(backLink => BadRequest(template(id, periodKey, formWithError, mode, serviceInfoContent, backLink))),
-            propertyDetails => {
-              for {
-                _ <- propertyDetailsService.saveDraftPropertyDetailsTaxAvoidanceScheme(id, propertyDetails)
-                result <-
-                  redirectWithBackLink(
-                    propertyDetailsSupportingInfoController.controllerId,
-                    controllers.propertyDetails.routes.PropertyDetailsSupportingInfoController.view(id),
-                    Some(controllers.test.routes.PropertyDetailsTaxAvoidanceSchemeController.view(id).url)
-                  )
-              } yield result
+              propertyDetails => {
+                propertyDetails.isTaxAvoidance match {
+                 case Some(true) =>
+                   propertyDetailsService.saveDraftPropertyDetailsTaxAvoidanceScheme(id, propertyDetails).flatMap(_ =>
+                     redirectWithBackLink(
+                       propertyDetailsTaxAvoidanceReferencesController.controllerId,
+                       controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceReferencesController.view(id),
+                       Some(controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceSchemeController.view(id).url))
+                   )
+                 case _ =>
+                   propertyDetailsService.saveDraftPropertyDetailsTaxAvoidanceScheme(id, propertyDetails).flatMap(_ =>
+                     redirectWithBackLink(
+                       propertyDetailsSupportingInfoController.controllerId,
+                       controllers.propertyDetails.routes.PropertyDetailsSupportingInfoController.view(id),
+                       Some(controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceSchemeController.view(id).url))
+                   )
+                }
             }
           )
         }

@@ -21,29 +21,30 @@ import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms
 import forms.PropertyDetailsForms._
-import javax.inject.Inject
 import models._
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService}
+import uk.gov.hmrc.play.bootstrap.controller.WithUnsafeDefaultFormBinding
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedConstants.SelectedPreviousReturn
 import utils.AtedUtils
-import uk.gov.hmrc.play.bootstrap.controller.WithUnsafeDefaultFormBinding
+
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class PropertyDetailsTaxAvoidanceController @Inject()(mcc: MessagesControllerComponents,
+class PropertyDetailsTaxAvoidanceReferencesController @Inject()(mcc: MessagesControllerComponents,
                                                       authAction: AuthAction,
                                                       propertyDetailsSupportingInfoController: PropertyDetailsSupportingInfoController,
                                                       serviceInfoService: ServiceInfoService,
                                                       val propertyDetailsService: PropertyDetailsService,
                                                       val dataCacheConnector: DataCacheConnector,
                                                       val backLinkCacheConnector: BackLinkCacheConnector,
-                                                      template: views.html.propertyDetails.propertyDetailsTaxAvoidance)
+                                                      template: views.html.propertyDetails.propertyDetailsTaxAvoidanceReferences)
                                                      (implicit val appConfig: ApplicationConfig)
   extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with WithUnsafeDefaultFormBinding {
 
   implicit val ec: ExecutionContext = mcc.executionContext
-  val controllerId: String = "PropertyDetailsTaxAvoidanceController"
+  val controllerId: String = "PropertyDetailsTaxAvoidanceReferencesController"
 
   def view(id: String): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
@@ -51,14 +52,14 @@ class PropertyDetailsTaxAvoidanceController @Inject()(mcc: MessagesControllerCom
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
           propertyDetailsCacheResponse(id) {
             case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
-              val displayData = PropertyDetailsTaxAvoidance(propertyDetails.period.flatMap(_.isTaxAvoidance),
+              val displayData = PropertyDetailsTaxAvoidanceReferences(
                 propertyDetails.period.flatMap(_.taxAvoidanceScheme),
                 propertyDetails.period.flatMap(_.taxAvoidancePromoterReference))
               currentBackLink.flatMap(backLink =>
                 dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).map { isPrevReturn =>
                   Ok(template(id,
                     propertyDetails.periodKey,
-                    propertyDetailsTaxAvoidanceForm.fill(displayData),
+                    propertyDetailsTaxAvoidanceReferenceForm.fill(displayData),
                     AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn),
                     serviceInfoContent,
                     backLink))
@@ -77,14 +78,14 @@ class PropertyDetailsTaxAvoidanceController @Inject()(mcc: MessagesControllerCom
           propertyDetailsCacheResponse(id) {
             case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
               dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
-                val displayData = PropertyDetailsTaxAvoidance(propertyDetails.period.flatMap(_.isTaxAvoidance),
+                val displayData = PropertyDetailsTaxAvoidanceReferences(
                   propertyDetails.period.flatMap(_.taxAvoidanceScheme),
                   propertyDetails.period.flatMap(_.taxAvoidancePromoterReference))
 
                 val mode = AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn)
                 Future.successful(Ok(template(id,
                   propertyDetails.periodKey,
-                  propertyDetailsTaxAvoidanceForm.fill(displayData),
+                  propertyDetailsTaxAvoidanceReferenceForm.fill(displayData),
                   mode,
                   serviceInfoContent,
                   AtedUtils.getSummaryBackLink(id, None))
@@ -100,17 +101,17 @@ class PropertyDetailsTaxAvoidanceController @Inject()(mcc: MessagesControllerCom
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
-          PropertyDetailsForms.validatePropertyDetailsTaxAvoidance(propertyDetailsTaxAvoidanceForm.bindFromRequest()).fold(
+          PropertyDetailsForms.validatePropertyDetailsTaxAvoidanceReference(propertyDetailsTaxAvoidanceReferenceForm.bindFromRequest()).fold(
             formWithError =>
               currentBackLink.map(backLink => BadRequest(template(id, periodKey, formWithError, mode, serviceInfoContent, backLink))),
             propertyDetails => {
               for {
-                _ <- propertyDetailsService.saveDraftPropertyDetailsTaxAvoidance(id, propertyDetails)
+                _ <- propertyDetailsService.saveDraftPropertyDetailsTaxAvoidanceReferences(id, propertyDetails)
                 result <-
                   redirectWithBackLink(
                     propertyDetailsSupportingInfoController.controllerId,
                     controllers.propertyDetails.routes.PropertyDetailsSupportingInfoController.view(id),
-                    Some(controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceController.view(id).url)
+                    Some(controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceReferencesController.view(id).url)
                   )
               } yield result
             }

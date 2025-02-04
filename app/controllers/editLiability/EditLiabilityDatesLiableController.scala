@@ -19,7 +19,7 @@ package controllers.editLiability
 import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.{AuthAction, ClientHelper}
-import controllers.propertyDetails.{PropertyDetailsHelpers, PropertyDetailsTaxAvoidanceController}
+import controllers.propertyDetails.{PropertyDetailsHelpers, PropertyDetailsTaxAvoidanceSchemeController}
 import forms.PropertyDetailsForms
 import forms.PropertyDetailsForms._
 
@@ -35,7 +35,7 @@ import scala.concurrent.ExecutionContext
 
 class EditLiabilityDatesLiableController @Inject()(mcc: MessagesControllerComponents,
                                                    authAction: AuthAction,
-                                                   propertyDetailsTaxAvoidanceController: PropertyDetailsTaxAvoidanceController,
+                                                   propertyDetailsTaxAvoidanceSchemeController: PropertyDetailsTaxAvoidanceSchemeController,
                                                    serviceInfoService: ServiceInfoService,
                                                    val propertyDetailsService: PropertyDetailsService,
                                                    val dataCacheConnector: DataCacheConnector,
@@ -90,8 +90,8 @@ class EditLiabilityDatesLiableController @Inject()(mcc: MessagesControllerCompon
                 _ <- propertyDetailsService.saveDraftPropertyDetailsDatesLiable(formBundleNo, propertyDetails)
                 result <-
                   redirectWithBackLink(
-                    propertyDetailsTaxAvoidanceController.controllerId,
-                    controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceController.view(formBundleNo),
+                    propertyDetailsTaxAvoidanceSchemeController.controllerId,
+                    controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceSchemeController.view(formBundleNo),
                     Some(controllers.editLiability.routes.EditLiabilityDatesLiableController.view(formBundleNo).url)
                   )
               } yield result

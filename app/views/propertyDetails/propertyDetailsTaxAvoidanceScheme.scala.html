@@ -75,7 +75,7 @@
         content = HtmlContent(paragraphContent)
     ))
 
-@formHelper(action=controllers.test.routes.PropertyDetailsTaxAvoidanceSchemeController.save(id, periodKey, mode)) {
+@formHelper(action=controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceSchemeController.save(id, periodKey, mode)) {
   
   @govukRadios(Radios(
     fieldset = Some(Fieldset(

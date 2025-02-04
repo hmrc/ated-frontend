@@ -34,7 +34,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class PeriodDatesLiableController @Inject()(mcc: MessagesControllerComponents,
                                             authAction: AuthAction,
-                                            propertyDetailsTaxAvoidanceController: PropertyDetailsTaxAvoidanceController,
+                                            propertyDetailsTaxAvoidanceSchemeController: PropertyDetailsTaxAvoidanceSchemeController,
                                             serviceInfoService: ServiceInfoService,
                                             val propertyDetailsService: PropertyDetailsService,
                                             val dataCacheConnector: DataCacheConnector,
@@ -113,8 +113,8 @@ class PeriodDatesLiableController @Inject()(mcc: MessagesControllerComponents,
                     for {
                       _ <- propertyDetailsService.saveDraftPropertyDetailsDatesLiable(id, propertyDetails)
                       result <- ensureClientContext(redirectWithBackLink(
-                        propertyDetailsTaxAvoidanceController.controllerId,
-                        controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceController.view(id),
+                        propertyDetailsTaxAvoidanceSchemeController.controllerId,
+                        controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceSchemeController.view(id),
                         Some(controllers.propertyDetails.routes.PeriodDatesLiableController.view(id).url)
                       ))
                     } yield {
