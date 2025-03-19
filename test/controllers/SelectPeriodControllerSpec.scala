@@ -17,6 +17,7 @@
 package controllers
 
 import builders.{SessionBuilder, TitleBuilder}
+import com.sun.org.apache.xalan.internal.lib.ExsltDatetime.year
 import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.AuthAction
@@ -38,7 +39,8 @@ import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.{AtedConstants, PeriodUtils}
 import views.html.{BtaNavigationLinks, selectPeriod}
-import java.time.LocalDate
+
+import java.time.{LocalDate, Month}
 import java.util.UUID
 import scala.concurrent.Future
 
@@ -214,7 +216,7 @@ class SelectPeriodControllerSpec extends PlaySpec with GuiceOneAppPerSuite with 
 
       "submit" must {
         "for authorised user" must {
-
+          //TODO this test relies on local date
           "with invalid form, return BadRequest" in new Setup {
             val peakStartYear: Int = PeriodUtils.calculatePeakStartYear()
             val inputJson: JsValue = Json.parse( """{"returnType": ""}""")
@@ -225,9 +227,9 @@ class SelectPeriodControllerSpec extends PlaySpec with GuiceOneAppPerSuite with 
 
                 doc.getElementsByClass("govuk-error-summary__list").html() must include("Select an option for type of return")
                 doc.getElementsByClass("govuk-error-message").html() must include("Select an option for type of return")
-                doc.getElementsByAttributeValue("for", "period-8").text() must be("2016 to 2017")
-                doc.getElementsByAttributeValue("for", "period-7").text() must be("2017 to 2018")
-                doc.getElementsByAttributeValue("for", "period-6").text() must be("2018 to 2019")
+                doc.getElementsByAttributeValue("for", "period-8").text() must be("2017 to 2018")
+                doc.getElementsByAttributeValue("for", "period-7").text() must be("2018 to 2019")
+                doc.getElementsByAttributeValue("for", "period-6").text() must be("2019 to 2020")
                 assert(doc.getElementById(s"period-${peakStartYear}_field") === null)
             }
           }
