@@ -29,7 +29,8 @@ trait TestModels {
   val formBundleNo1: String = "123456789012"
   val formBundleNo2: String = "123456789013"
   val formBundleNo3: String = "876547696786"
-
+  val atedReference: String = "XN1200000100001"
+  val cancelAgentUrl: String = ""
   val currentYear: Int = LocalDate.now().getYear
   lazy val currentTaxYear: Int = PeriodUtils.calculatePeakStartYear(LocalDate.now())
 
@@ -42,6 +43,14 @@ trait TestModels {
         faxNumber = Some("0223344556677"))),
       addressDetails = AddressDetails(AddressTypeCorrespondence, "addrLine1", "addrLine2", None, None, None, "GB"))}
 
+  val clientMandateDetails: ClientMandateDetails = {
+    ClientMandateDetails(
+      agentName = "name1",
+      changeAgentLink = "",
+      email = "aa@a.com",
+      changeEmailLink = "",
+      status = "Active")
+  }
   def draftReturns1(periodKey: Int) = DraftReturns(periodKey, "1", "desc", Some(BigDecimal(100.00)), TypeChangeLiabilityDraft)
   def draftReturns2(periodKey: Int) = DraftReturns(periodKey, "", "some relief", None, TypeReliefDraft)
   def draftReturns2SocialHousing(periodKey: Int) = DraftReturns(periodKey, "", if (periodKey >= 2020) "Provider of social housing or housing co-operative" else "Social housing", None, TypeReliefDraft)

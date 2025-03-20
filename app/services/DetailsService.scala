@@ -126,7 +126,8 @@ class DetailsService @Inject()(atedConnector: AtedConnector,
     }
   }
 
-  def getClientMandateDetails(clientId: String, service: String)(implicit authContext: StandardAuthRetrievals, request: Request[_]): Future[Option[ClientMandateDetails]] = {
+  def getClientMandateDetails(clientId: String, service: String)
+                             (implicit authContext: StandardAuthRetrievals, request: Request[_]): Future[Option[ClientMandateDetails]] = {
     if (authContext.isAgent) {
       Future.successful(None)
     } else {

@@ -89,7 +89,8 @@ class DetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite with Mocki
       | "agentName": "agent name",
       | "changeAgentLink": "changeUrl",
       | "email": "email@address",
-      | "changeEmailLink": "changeEmailUrl"
+      | "changeEmailLink": "changeEmailUrl",
+      | "status": ""
       | }
     """.stripMargin
   )

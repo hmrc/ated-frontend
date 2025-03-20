@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,8 @@ package controllers
 import config.ApplicationConfig
 import connectors.{AgentClientMandateFrontendConnector, DataCacheConnector}
 import controllers.auth.AuthAction
+import org.jsoup.Jsoup
+import org.jsoup.nodes.Element
 
 import javax.inject.{Inject, Singleton}
 import java.time.LocalDate
@@ -56,26 +58,27 @@ class AccountSummaryController @Inject()(mcc: MessagesControllerComponents,
         _ <- dataCacheConnector.clearCache()
         allReturns <- summaryReturnsService.getSummaryReturns
         currentYearReturns <- summaryReturnsService.generateCurrentTaxYearReturns(allReturns.returnsCurrentTaxYear)
-        _ <- detailsService.cacheClientReference(authContext.atedReferenceNumber)
-        correspondenceAddress <- subscriptionDataService.getCorrespondenceAddress
+        atedReference <- detailsService.cacheClientReference(authContext.atedReferenceNumber)
         organisationName <- subscriptionDataService.getOrganisationName
         safeId <- subscriptionDataService.getSafeId
+        clientMandateDetails <- detailsService.getClientMandateDetails(safeId.getOrElse(throw new RuntimeException("Could not get safeId")), "ated")
         serviceInfoContent <- serviceInfoService.getPartial
         clientBannerPartial <- mandateFrontendConnector.getClientBannerPartial(safeId.getOrElse(
           throw new RuntimeException("Could not get safeId")), "ated"
         )
       } yield {
+        val cancelAgentElement: Element = Jsoup.parse(clientBannerPartial.successfulContentOrEmpty.body).getElementById("client-banner-text-link")
+        var cancelAgentUrl: String = ""
+        if (cancelAgentElement != null) cancelAgentUrl = cancelAgentElement.attr("href")
         Ok(template(
           returnsCurrentTaxYear = currentYearReturns._1,
           totalCurrentYearReturns = currentYearReturns._2,
-          hasPastReturns = currentYearReturns._3,
           allReturns,
-          correspondenceAddress,
           organisationName,
+          atedReference,
+          clientMandateDetails,
           serviceInfoContent,
-          clientBannerPartial.successfulContentOrEmpty,
-          duringPeak,
-          currentYear = currentDate.getYear,
+          cancelAgentUrl,
           taxYearStartingYear = peakPeriodStartingYear,
           fromAccountSummary = true)
         )

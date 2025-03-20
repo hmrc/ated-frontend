@@ -10,6 +10,7 @@ import uk.gov.hmrc.versioning.SbtGitVersioning.autoImport.majorVersion
 val appName = "ated-frontend"
 
 ThisBuild / majorVersion := 3
+
 ThisBuild / scalaVersion := "2.13.16"
 
 lazy val appDependencies: Seq[ModuleID] = AppDependencies()
