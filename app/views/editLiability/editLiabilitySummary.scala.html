@@ -401,6 +401,73 @@
     <h2 id="avoidance-scheme-header" class="govuk-heading-m govuk-!-padding-bottom-4">@messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.header")</h2>
 
     @changeLiability.period match {
+
+      case Some(p) if (p.isTaxAvoidance.isDefined && p.isTaxAvoidance.get == false) => {
+
+        <dl class="govuk-summary-list">
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key" id="is-avoidance-scheme-label">
+              @messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.header")
+            </dt>
+            <dd class="govuk-summary-list__value" id="is-avoidance-scheme-value">
+              @messages("ated.property-details-period.no")
+            </dd>
+            <dd class="govuk-summary-list__actions">
+              <a class="govuk-link" id="edit-avoidance-scheme" href="@controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceSchemeController.editFromSummary(changeLiability.id)">
+                @messages("ated.change")<span class="govuk-visually-hidden">@messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.label")</span>
+              </a>
+            </dd>
+          </div>
+        </dl>
+      }
+
+    case Some(p) if (p.isTaxAvoidance.isDefined && p.isTaxAvoidance.get == true && p.taxAvoidanceScheme.isDefined && p.taxAvoidancePromoterReference.isDefined) => {
+
+      <dl class="govuk-summary-list">
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key" id="is-avoidance-scheme-label">
+            @messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.header")
+          </dt>
+          <dd class="govuk-summary-list__value" id="is-avoidance-scheme-value">
+            @messages("ated.property-details-period.yes")
+          </dd>
+          <dd class="govuk-summary-list__actions">
+            <a class="govuk-link" id="edit-avoidance-scheme" href="@controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceSchemeController.editFromSummary(changeLiability.id)">
+              @messages("ated.change")<span class="govuk-visually-hidden">@messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.label")</span>
+            </a>
+          </dd>
+        </div>
+
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key" id="avoidance-scheme-label">
+            @messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.label")
+          </dt>
+          <dd class="govuk-summary-list__value" id="avoidance-scheme-value">
+            @p.taxAvoidanceScheme.getOrElse("")
+          </dd>
+          <dd class="govuk-summary-list__actions">
+            <a class="govuk-link" id="edit-avoidance-scheme-promotor" href="@controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceReferencesController.editFromSummary(changeLiability.id)">
+              @messages("ated.change")<span class="govuk-visually-hidden">@messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.label")</span>
+            </a>
+          </dd>
+        </div>
+
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key" id="promoter-reference-label">
+            @messages("ated.property-details-summary.table.property-ated-details.promoter-reference.label")
+          </dt>
+          <dd class="govuk-summary-list__value" id="promoter-scheme-value">
+            @p.taxAvoidancePromoterReference.getOrElse("")
+          </dd>
+          <dd class="govuk-summary-list__actions">
+            <a class="govuk-link" id="edit-promoter-scheme" href="@controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceReferencesController.editFromSummary(changeLiability.id)">
+              @messages("ated.change")<span class="govuk-visually-hidden">@messages("ated.property-details-summary.table.property-ated-details.promoter-reference.label")</span>
+            </a>
+          </dd>
+        </div>
+    </dl>
+    }
+
       case Some(p) if (p.taxAvoidanceScheme.isEmpty && p.taxAvoidancePromoterReference.isEmpty) => {
 
         <dl class="govuk-summary-list">
@@ -419,51 +486,7 @@
           </div>
         </dl>
       }
-      case Some(p) if (p.taxAvoidanceScheme.isDefined && p.taxAvoidancePromoterReference.isDefined) => {
-        <dl class="govuk-summary-list">
-          <div class="govuk-summary-list__row">
-            <dt class="govuk-summary-list__key" id="is-avoidance-scheme-label">
-              @messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.header")
-            </dt>
-            <dd class="govuk-summary-list__value" id="is-avoidance-scheme-value">
-              @messages("ated.property-details-period.yes")
-            </dd>
-            <dd class="govuk-summary-list__actions">
-              <a class="govuk-link" id="edit-avoidance-scheme" href="@controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceSchemeController.editFromSummary(changeLiability.id)">
-                @messages("ated.change")<span class="govuk-visually-hidden">@messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.label")</span>
-              </a>
-            </dd>
-          </div>
 
-          <div class="govuk-summary-list__row">
-            <dt class="govuk-summary-list__key" id="avoidance-scheme-label">
-              @messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.label")
-            </dt>
-            <dd class="govuk-summary-list__value" id="avoidance-scheme-value">
-              @p.taxAvoidanceScheme.getOrElse("")
-            </dd>
-            <dd class="govuk-summary-list__actions">
-              <a class="govuk-link" id="edit-avoidance-scheme-promotor" href="@controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceReferencesController.editFromSummary(changeLiability.id)">
-                @messages("ated.change")<span class="govuk-visually-hidden">@messages("ated.property-details-summary.table.property-ated-details.avoidance-scheme.label")</span>
-              </a>
-            </dd>
-          </div>
-
-          <div class="govuk-summary-list__row">
-            <dt class="govuk-summary-list__key" id="promoter-reference-label">
-              @messages("ated.property-details-summary.table.property-ated-details.promoter-reference.label")
-            </dt>
-            <dd class="govuk-summary-list__value" id="promoter-scheme-value">
-              @p.taxAvoidancePromoterReference.getOrElse("")
-            </dd>
-            <dd class="govuk-summary-list__actions">
-              <a class="govuk-link" id="edit-promoter-scheme" href="@controllers.propertyDetails.routes.PropertyDetailsTaxAvoidanceReferencesController.editFromSummary(changeLiability.id)">
-                @messages("ated.change")<span class="govuk-visually-hidden">@messages("ated.property-details-summary.table.property-ated-details.promoter-reference.label")</span>
-              </a>
-            </dd>
-          </div>
-        </dl>
-      }
       case _ => {
 
         <dl class="govuk-summary-list">
