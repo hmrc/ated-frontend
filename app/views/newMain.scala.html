@@ -25,6 +25,7 @@
     pageScripts: Option[Html] = None,
     sideBar: Option[Html] = None,
     banner: Html = HtmlFormat.empty,
+    useAttorneyBanner: Boolean = true,
     back: Option[Html] = None
 )(mainContent: Html)(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
@@ -35,5 +36,6 @@
     isUserResearchBannerVisible = showUrBanner.getOrElse(false),
     sideBar = sideBar,
     banner = banner,
+    useAttorneyBanner = useAttorneyBanner,
     beforeContent = back
     )(mainContent)
