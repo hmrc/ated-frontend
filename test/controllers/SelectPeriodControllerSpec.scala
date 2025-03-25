@@ -17,6 +17,7 @@
 package controllers
 
 import builders.{SessionBuilder, TitleBuilder}
+import com.sun.org.apache.xalan.internal.lib.ExsltDatetime.year
 import config.ApplicationConfig
 import connectors.{BackLinkCacheConnector, DataCacheConnector}
 import controllers.auth.AuthAction
@@ -38,7 +39,8 @@ import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.{AtedConstants, PeriodUtils}
 import views.html.{BtaNavigationLinks, selectPeriod}
-import java.time.LocalDate
+
+import java.time.{LocalDate, Month}
 import java.util.UUID
 import scala.concurrent.Future
 
@@ -214,7 +216,7 @@ class SelectPeriodControllerSpec extends PlaySpec with GuiceOneAppPerSuite with 
 
       "submit" must {
         "for authorised user" must {
-
+          //TODO this test relies on local date
           "with invalid form, return BadRequest" in new Setup {
             val peakStartYear: Int = PeriodUtils.calculatePeakStartYear()
             val inputJson: JsValue = Json.parse( """{"returnType": ""}""")
