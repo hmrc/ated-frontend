@@ -48,9 +48,7 @@
     }
 }
 
-@newMain(title = titleBuilder(messages("ated.property-details-period.change-dates-liable.title"),Some(propertyDetailsForm)), serviceInfoContent = serviceInfoContent) {
-
-    @backLinkHtml
+@newMain(title = titleBuilder(messages("ated.property-details-period.change-dates-liable.title"),Some(propertyDetailsForm)), serviceInfoContent = serviceInfoContent, back = Some(backLinkHtml)) {
 
     @if(propertyDetailsForm.errors.nonEmpty) {
         @govukErrorSummary(ErrorSummary().withFormErrorsAsText(propertyDetailsForm, mapping = Map("startDate" -> "startDate.day", "endDate" -> "endDate.day")))

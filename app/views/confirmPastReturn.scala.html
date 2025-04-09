@@ -44,9 +44,8 @@
     }
 }
 
-@newMain(title = titleBuilder(messages("ated.confirm-past-return-question.header", (periodKey-1).toString, periodKey.toString), Some(confirmExistingReturn)), serviceInfoContent = serviceInfoContent) {
+@newMain(title = titleBuilder(messages("ated.confirm-past-return-question.header", (periodKey-1).toString, periodKey.toString), Some(confirmExistingReturn)), serviceInfoContent = serviceInfoContent, back = Some(backLinkHtml)) {
 
-    @backLinkHtml
 
     @if(confirmExistingReturn.errors.nonEmpty) {
         @govukErrorSummary(ErrorSummary().withFormErrorsAsText(confirmExistingReturn))

@@ -39,9 +39,7 @@
     }
 }
 
-@newMain(title = titleBuilder(messages("ated.edit-liability.title"), Some(editLiabilityReturnTypeForm)), serviceInfoContent = serviceInfoContent) {
-
-    @backLinkHtml
+@newMain(title = titleBuilder(messages("ated.edit-liability.title"), Some(editLiabilityReturnTypeForm)), serviceInfoContent = serviceInfoContent, back = Some(backLinkHtml)) {
 
     @if(editLiabilityReturnTypeForm.hasErrors) {
         @govukErrorSummary(ErrorSummary().withFormErrorsAsText(editLiabilityReturnTypeForm))

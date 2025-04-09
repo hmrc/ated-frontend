@@ -100,9 +100,7 @@
 }
 
 @newMain(title = titleBuilder(messages("ated.avoidance-schemes.title"), Some(taxAvoidanceForm)),
-          serviceInfoContent = serviceInfoContent) {
-
-    @backLinkHtml
+          serviceInfoContent = serviceInfoContent, back = Some(backLinkHtml)) {
 
 
     @if(taxAvoidanceForm.errors.nonEmpty) {
