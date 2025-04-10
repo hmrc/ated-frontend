@@ -99,7 +99,7 @@ Feature("The user can view an edit liability type page") {
       assert(document.getElementById("reportDisposeLink").text() === "Dispose of the property")
 
       Then("The back link is correct")
-      assert(document.getElementsByClass("govuk-back-link").text === "Back")
+      assert(document.select(".govuk-width-container > a.govuk-back-link").text === "Back")
       assert(document.getElementsByClass("govuk-back-link").attr("href") === "http://backLink")
     }
 

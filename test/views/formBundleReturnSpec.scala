@@ -106,7 +106,7 @@ class formBundleReturnSpec extends AnyFeatureSpec with GuiceOneServerPerSuite wi
       Then("The the fields should be correct")
       assert(document.getElementById("th-view-return-property") === null)
 
-      assert(document.getElementsByClass("govuk-back-link").text === "Back")
+      assert(document.select(".govuk-width-container > a.govuk-back-link").text === "Back")
     }
     Scenario("View the Form Bundle when we have a Form Bundle with a single period") {
 
@@ -175,7 +175,7 @@ class formBundleReturnSpec extends AnyFeatureSpec with GuiceOneServerPerSuite wi
 
       assert(document.getElementById("submit") === null)
 
-      assert(document.getElementsByClass("govuk-back-link").text === "Back")
+      assert(document.select(".govuk-width-container > a.govuk-back-link").text === "Back")
       assert(document.getElementsByClass("govuk-back-link").attr("href") === "http://backLink")
     }
 

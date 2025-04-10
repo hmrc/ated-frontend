@@ -68,7 +68,7 @@ class ReliefDeclarationSpec extends AnyFeatureSpec with GuiceOneAppPerSuite with
       assert(document.getElementsByClass("govuk-button").text() === "Agree and submit returns")
 
       Then("The back link is correct")
-      assert(document.getElementsByClass("govuk-back-link").text === "Back")
+      assert(document.select(".govuk-width-container > a.govuk-back-link").text === "Back")
     }
   }
 
@@ -104,7 +104,7 @@ class ReliefDeclarationSpec extends AnyFeatureSpec with GuiceOneAppPerSuite with
       assert(document.getElementsByClass("govuk-button").text() === "Agree and submit returns")
 
       Then("The back link is correct")
-      assert(document.getElementsByClass("govuk-back-link").text === "Back")
+      assert(document.select(".govuk-width-container > a.govuk-back-link").text === "Back")
       assert(document.getElementsByClass("govuk-back-link").attr("href") === "http://backLink")
     }
   }
