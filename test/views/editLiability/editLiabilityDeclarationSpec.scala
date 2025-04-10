@@ -64,7 +64,7 @@ class editLiabilityDeclarationSpec extends AnyFeatureSpec with GuiceOneAppPerSui
       assert(document.getElementById("submit").text() === "Agree and submit amended return")
 
       Then("The back link is correct")
-      assert(document.getElementsByClass("govuk-back-link").text === "Back")
+      assert(document.select(".govuk-width-container > a.govuk-back-link").text === "Back")
       assert(document.getElementsByClass("govuk-back-link").attr("href") === "http://backLink")
     }
   }

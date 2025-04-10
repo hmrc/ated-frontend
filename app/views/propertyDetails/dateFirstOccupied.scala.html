@@ -44,9 +44,7 @@
 }
 
 @newMain(title = titleBuilder(messages("ated.property-details.first-occupied-date.title"), Some(propertyDetailsForm)),
-    serviceInfoContent = serviceInfoContent) {
-
-    @backLinkHtml
+    serviceInfoContent = serviceInfoContent, back = Some(backLinkHtml)) {
 
     @if(propertyDetailsForm.errors.nonEmpty) {
         @govukErrorSummary(ErrorSummary().withFormErrorsAsText(propertyDetailsForm, mapping = Map("dateFirstOccupied" -> "dateFirstOccupied.day")))

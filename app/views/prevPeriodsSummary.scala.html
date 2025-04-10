@@ -46,10 +46,9 @@
 @newMain(
     title = titleBuilder(messages("ated.prev-period-summary.title")),
     serviceInfoContent = serviceInfoContent,
+    back = Some(backLinkHtml),
     sideBar = Some(_accountSummary_sideBar(summaryReturnsWithDrafts.atedBalance, correspondence, organisationName, clientBanner))
     ) {
-
-    @backLinkHtml
 
     @if(summaryReturnsWithDrafts.returnsOtherTaxYears.isEmpty) {
 

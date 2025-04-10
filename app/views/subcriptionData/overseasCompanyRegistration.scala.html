@@ -44,9 +44,7 @@
     }
 }
 
-@newMain(title = titleBuilder(messages("ated.non-uk-reg.title"), Some(overseasCompanyRegistrationForm)), serviceInfoContent = serviceInfoContent, pageScripts = Some(pageScripts)) {
-
-    @backLinkHtml
+@newMain(title = titleBuilder(messages("ated.non-uk-reg.title"), Some(overseasCompanyRegistrationForm)), serviceInfoContent = serviceInfoContent, pageScripts = Some(pageScripts), back = Some(backLinkHtml)) {
 
     @if(overseasCompanyRegistrationForm.hasErrors) {
         @errorSummary(ErrorSummary().withFormErrorsAsText(overseasCompanyRegistrationForm))

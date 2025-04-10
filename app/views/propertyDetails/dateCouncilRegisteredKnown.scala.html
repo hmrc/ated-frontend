@@ -43,9 +43,8 @@
 
 @newMain(title = titleBuilder(messages("ated.property-details.council-registered-known.title"), Some(dateCouncilRegisteredKnownForm)),
           pageScripts = None,
-          serviceInfoContent = serviceInfoContent) {
+          serviceInfoContent = serviceInfoContent, back = Some(backLinkHtml)) {
 
-    @backLinkHtml
 
     @if(dateCouncilRegisteredKnownForm.errors.nonEmpty) {
       @govukErrorSummary(ErrorSummary().withFormErrorsAsText(dateCouncilRegisteredKnownForm))

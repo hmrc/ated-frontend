@@ -69,7 +69,7 @@ class confirmAddressSpec extends AnyFeatureSpec with GuiceOneAppPerSuite with Mo
       assert(document.getElementsByClass("govuk-button").text() === "Confirm and continue")
 
       Then("The back link is correct")
-      assert(document.getElementsByClass("govuk-back-link").text === "Back")
+      assert(document.select(".govuk-width-container > a.govuk-back-link").text === "Back")
       assert(document.getElementsByClass("govuk-back-link").attr("href") === "http://backLink")
     }
   }

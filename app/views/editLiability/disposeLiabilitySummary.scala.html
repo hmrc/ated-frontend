@@ -89,9 +89,8 @@
 }
 
 @newMain(title = titleBuilder(messages("ated.property-details-summary.title")),
-  serviceInfoContent = serviceInfoContent) {
+  serviceInfoContent = serviceInfoContent, back = Some(backLinkHtml)) {
 
-  @backLinkHtml
 
   <header>
     <h2 class="govuk-caption-xl hmrc-caption-xl">

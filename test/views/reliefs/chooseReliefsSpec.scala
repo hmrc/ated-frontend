@@ -120,7 +120,7 @@ class chooseReliefsSpec extends AnyFeatureSpec with GuiceOneAppPerSuite with Moc
       assert(document.select("#conditional-rentalBusiness > div > fieldset > legend").text() === "When did the Rental business start?")
 
       Then("The back link is correct")
-      assert(document.getElementsByClass("govuk-back-link").text === "Back")
+      assert(document.select(".govuk-width-container > a.govuk-back-link").text === "Back")
     }
 
     Scenario("show the reliefs we have previously chosen") {
@@ -155,7 +155,7 @@ class chooseReliefsSpec extends AnyFeatureSpec with GuiceOneAppPerSuite with Moc
       assert(document.getElementById("submit").text() === "Save and continue")
 
       Then("The back link is correct")
-      assert(document.getElementsByClass("govuk-back-link").text === "Back")
+      assert(document.select(".govuk-width-container > a.govuk-back-link").text === "Back")
       assert(document.getElementsByClass("govuk-back-link").attr("href") === "http://backLink")
 
     }

@@ -78,7 +78,7 @@ class changeReliefReturnSpec extends AnyFeatureSpec with GuiceOneAppPerSuite wit
 
 
       Then("The back link is correct")
-      assert(document.getElementsByClass("govuk-back-link").text === "Back")
+      assert(document.select(".govuk-width-container > a.govuk-back-link").text === "Back")
     }
   }
 }

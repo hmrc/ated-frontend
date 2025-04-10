@@ -245,9 +245,7 @@
 }
 
 @newMain(title = titleBuilder(messages("ated.choose-reliefs.title"), Some(amendedForm)),
-        serviceInfoContent = serviceInfoContent) {
-
-    @backLinkHtml
+        serviceInfoContent = serviceInfoContent, back = Some(backLinkHtml)) {
 
     @if(amendedForm.errors.nonEmpty) {
       @govukErrorSummary(ErrorSummary().withFormErrorsAsText(amendedForm,

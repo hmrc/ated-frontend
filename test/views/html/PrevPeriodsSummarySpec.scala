@@ -80,7 +80,7 @@ class PrevPeriodsSummarySpec extends PlaySpec with MockAuthUtil with GuiceOneApp
       }
 
       "have the correct backlink" in {
-        assert(document.getElementsByClass("govuk-back-link").text === "Back")
+        assert(document.select(".govuk-width-container > a.govuk-back-link").text === "Back")
         assert(document.getElementsByClass("govuk-back-link").attr("href") === "http://backLink")
       }
     }

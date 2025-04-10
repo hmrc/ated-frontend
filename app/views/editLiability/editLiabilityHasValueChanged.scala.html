@@ -50,9 +50,7 @@
     }
 }
 
-@newMain(title = titleBuilder(messages("ated.property-details-value.title"), Some(liabilityValueDetailsForm)), serviceInfoContent = serviceInfoContent) {
-
-    @backLinkHtml
+@newMain(title = titleBuilder(messages("ated.property-details-value.title"), Some(liabilityValueDetailsForm)), serviceInfoContent = serviceInfoContent, back = Some(backLinkHtml)) {
 
     @if(liabilityValueDetailsForm.hasErrors) {
         @govukErrorSummary(ErrorSummary().withFormErrorsAsText(liabilityValueDetailsForm))

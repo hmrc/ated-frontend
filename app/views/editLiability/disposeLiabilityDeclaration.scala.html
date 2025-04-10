@@ -43,9 +43,7 @@
     }
 }
 
-@newMain(title = titleBuilder(messages("ated.edit-liability.declaration.header.amend")), serviceInfoContent = serviceInfoContent) {
-
-    @backLinkHtml
+@newMain(title = titleBuilder(messages("ated.edit-liability.declaration.header.amend")), serviceInfoContent = serviceInfoContent, back = Some(backLinkHtml)) {
 
     <header>
         <h2 class="govuk-caption-xl hmrc-caption-xl">

@@ -45,8 +45,7 @@ radios: GovukRadios, input: GovukInput, details: GovukDetails, button: GovukButt
     </p>
 }
 
-@newMain(title = titleBuilder(messages("ated.contact-details-edit-email.header"), Some(editContactDetailsEmailForm)), serviceInfoContent = serviceInfoContent) {
-    @backLinkHtml
+@newMain(title = titleBuilder(messages("ated.contact-details-edit-email.header"), Some(editContactDetailsEmailForm)), serviceInfoContent = serviceInfoContent, back = Some(backLinkHtml)) {
 
     @if(editContactDetailsEmailForm.hasErrors) {
         @errorSummary(ErrorSummary().withFormErrorsAsText(editContactDetailsEmailForm))

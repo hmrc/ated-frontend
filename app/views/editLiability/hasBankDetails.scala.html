@@ -48,9 +48,7 @@
 }
 
 @newMain(title = titleBuilder(messages("ated.bank-details.has-bank-details.title"), Some(bankDetailsForm)),
-    serviceInfoContent = serviceInfoContent) {
-
-    @backLinkHtml
+    serviceInfoContent = serviceInfoContent, back = Some(backLinkHtml)) {
 
     @if(bankDetailsForm.hasErrors) {
         @govukErrorSummary(ErrorSummary().withFormErrorsAsText(bankDetailsForm))

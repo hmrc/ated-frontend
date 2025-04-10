@@ -44,9 +44,7 @@
     }
 }
 
-@newMain(title = titleBuilder(messages("ated.registered-details.title"), Some(registeredDetailsForm)), serviceInfoContent = serviceInfoContent, pageScripts = Some(pageScripts)) {
-
-    @backLinkHtml
+@newMain(title = titleBuilder(messages("ated.registered-details.title"), Some(registeredDetailsForm)), serviceInfoContent = serviceInfoContent, pageScripts = Some(pageScripts), back = Some(backLinkHtml)) {
 
     @if(registeredDetailsForm.hasErrors) {
         @errorSummary(ErrorSummary().withFormErrorsAsText(registeredDetailsForm))

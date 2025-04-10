@@ -34,7 +34,7 @@ trait GovukTestHelpers extends GivenWhenThen with AnyFeatureSpecLike with GuiceO
 
   def checkBackLink(document: Document) = {
     Then("The back link is correct")
-    assert(document.getElementsByClass("govuk-back-link").text === "Back")
+    assert(document.select(".govuk-width-container > a.govuk-back-link").text === "Back")
     assert(document.getElementsByClass("govuk-back-link").attr("href") === "http://backLink")
   }
 

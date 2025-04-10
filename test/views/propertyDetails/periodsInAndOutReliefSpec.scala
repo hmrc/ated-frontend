@@ -79,7 +79,7 @@ class periodsInAndOutReliefSpec extends AnyFeatureSpecLike with GuiceOneAppPerSu
       assert(document.getElementById("submit").text() === "Save and continue")
 
       Then("The back link is correct")
-      assert(document.getElementsByClass("govuk-back-link").text === "Back")
+      assert(document.select(".govuk-width-container > a.govuk-back-link").text === "Back")
     }
 
     Scenario("return a populated table if we have periods") {
@@ -125,7 +125,7 @@ class periodsInAndOutReliefSpec extends AnyFeatureSpecLike with GuiceOneAppPerSu
       assert(document.getElementById("submit").text() === "Save and continue")
 
       Then("The back link is correct")
-      assert(document.getElementsByClass("govuk-back-link").text === "Back")
+      assert(document.select(".govuk-width-container > a.govuk-back-link").text === "Back")
       assert(document.getElementsByClass("govuk-back-link").attr("href") === "http://backLink")
     }
   }

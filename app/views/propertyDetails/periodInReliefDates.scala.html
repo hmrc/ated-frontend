@@ -46,9 +46,7 @@
 }
 
 @newMain(title = titleBuilder(messages("ated.property-details-period.datesInRelief.title"), Some(propertyDetailsForm)),
-          serviceInfoContent = serviceInfoContent) {
-
-    @backLinkHtml
+          serviceInfoContent = serviceInfoContent, back = Some(backLinkHtml)) {
 
     @if(propertyDetailsForm.errors.nonEmpty) {
         @govukErrorSummary(ErrorSummary().withFormErrorsAsText(propertyDetailsForm, mapping = Map("startDate" -> "startDate.day", "endDate" -> "endDate.day")))

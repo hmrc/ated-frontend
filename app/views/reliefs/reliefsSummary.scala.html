@@ -57,13 +57,11 @@
     }
 }
 
-@newMain(title = titleBuilder(messages("ated.relief-summary.title")), serviceInfoContent = serviceInfoContent) {
+@newMain(title = titleBuilder(messages("ated.relief-summary.title")), serviceInfoContent = serviceInfoContent, back = Some(backLinkHtml)) {
 
   <div class="showPrint">
       @hmrcBanner(Banner())
   </div>
-
-  @backLinkHtml
 
   <p id="reliefs-print-ated-ref" class="govuk-body showPrint govuk-!-margin-top-5">@messages("ated.refNo", authContext.atedReferenceNumber)</p>
 

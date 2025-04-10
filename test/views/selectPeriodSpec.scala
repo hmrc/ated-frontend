@@ -74,7 +74,7 @@ class selectPeriodSpec extends AnyFeatureSpec with GuiceOneServerPerSuite with M
 
       assert(document.getElementById("submit").text() === "Continue")
 
-      assert(document.getElementsByClass("govuk-back-link").text === "Back")
+      assert(document.select(".govuk-width-container > a.govuk-back-link").text === "Back")
       assert(document.getElementsByClass("govuk-back-link").attr("href") === "http://backLink")
     }
   }

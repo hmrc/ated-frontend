@@ -35,9 +35,7 @@
     }
 }
 
-@newMain(title = titleBuilder(messages("ated.property-details.no-start-date.title"), None), serviceInfoContent = serviceInfoContent) {
-
-  @backLinkHtml
+@newMain(title = titleBuilder(messages("ated.property-details.no-start-date.title"), None), serviceInfoContent = serviceInfoContent, back = Some(backLinkHtml)) {
 
     <header>
         <h2 class="govuk-caption-xl hmrc-caption-xl">

@@ -51,9 +51,7 @@
     }
 }
 
-@newMain(title = titleBuilder(messages("ated.correspondence-address.title"), Some(correspondenceAddressForm)), serviceInfoContent = serviceInfoContent, pageScripts= Some(script)) {
-
-    @backLinkHtml
+@newMain(title = titleBuilder(messages("ated.correspondence-address.title"), Some(correspondenceAddressForm)), serviceInfoContent = serviceInfoContent, pageScripts= Some(script), back = Some(backLinkHtml)) {
 
     @if(correspondenceAddressForm.hasErrors) {
         @govukErrorSummary(ErrorSummary().withFormErrorsAsText(correspondenceAddressForm))

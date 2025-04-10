@@ -32,15 +32,15 @@
 
 @(id: String, periodKey: Int, mode: Option[String], form: Form[PropertyDetailsNewValuation], backLink: Option[String], serviceInfoContent:Html = HtmlFormat.empty)(implicit authContext: StandardAuthRetrievals, messages: Messages, request: Request[AnyContent], appConfig: ApplicationConfig)
 
-
-@newMain(title = titleBuilder(messages("ated.property_details_new_valuation.title"), Some(form)),  serviceInfoContent = serviceInfoContent){
-
-@if(backLink.isDefined) {
-    @govukBackLink(BackLink(
+@backLinkHtml = {
+    @if(backLink.isDefined) {
+        @govukBackLink(BackLink(
         href = backLink.get,
         content = Text("Back")
-    ))
+        ))
+    }
 }
+@newMain(title = titleBuilder(messages("ated.property_details_new_valuation.title"), Some(form)),  serviceInfoContent = serviceInfoContent, back = Some(backLinkHtml)){
 
 @if(form.hasErrors) {
   @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))

@@ -46,9 +46,7 @@
     }
 }
 
-@newMain(title = titleBuilder(messages("ated.property-details-value.isValuedByAgent.title"), Some(propertyDetailsForm)), serviceInfoContent = serviceInfoContent) {
-
-  @backLinkHtml
+@newMain(title = titleBuilder(messages("ated.property-details-value.isValuedByAgent.title"), Some(propertyDetailsForm)), serviceInfoContent = serviceInfoContent, back = Some(backLinkHtml)) {
 
   @if(propertyDetailsForm.errors.nonEmpty) {
     @govukErrorSummary(ErrorSummary().withFormErrorsAsText(propertyDetailsForm))

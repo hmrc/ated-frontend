@@ -40,8 +40,7 @@
 }
 
 @newMain(title = titleBuilder(messages("ated.view-relief-return.title")),
-          serviceInfoContent = serviceInfoContent) {
-    @backLinkHtml
+          serviceInfoContent = serviceInfoContent, back = Some(backLinkHtml)) {
 
     <header>
         <h2 class="govuk-caption-xl hmrc-caption-xl">
