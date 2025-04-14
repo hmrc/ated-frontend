@@ -47,6 +47,10 @@
     showUrBanner = Some(true),
     useAttorneyBanner = false
 ) {
+    @govukNotificationBanner(NotificationBanner(
+        content = HtmlContent(html)
+    ))
+
     <header>
         <h1 class="govuk-heading-xl govuk-!-margin-bottom-5">
             <span class="govuk-caption-xl"><span class="govuk-visually-hidden">@messages("ated.screen-reader.section-name")</span>@organisationName.getOrElse("")</span>
@@ -54,16 +58,12 @@
         </h1>
     </header>
 
-        @govukNotificationBanner(NotificationBanner(
-            content = HtmlContent(html)
-        ))
-
-        @if(authContext.isAgent) {
+    @if(authContext.isAgent) {
         <div class="govuk-inset-text govuk-!-margin-top-0">
             <p id="agent-info-text">@messages("ated.account-summary.agent-accessing-information.text")&nbsp;<b>@organisationName.getOrElse("")</b>.
                 <a id="agent-change-client" class="govuk-link" href="@appConfig.agentSummary">@messages("ated.change-client-link")</a></p>
         </div>
-        }
+    }
 
 
     <p class="govuk-body">@messages("ated.account-summary.peak-guidance-part-one.text", (taxYearStartingYear + 1).toString, (taxYearStartingYear + 2).toString)
@@ -242,7 +242,7 @@
                             <strong class="govuk-tag govuk-tag--light-blue">Pending</strong>
                         }
                         @if(agentDetails.get.status == "Cancelled") {
-                            <strong class="govuk-tag govuk-tag--red">Revoked</strong>
+                            <strong class="govuk-tag govuk-tag--orange">Revoked</strong>
                         }
                         @if(agentDetails.get.status == "Rejected") {
                             <strong class="govuk-tag govuk-tag--red">Rejected</strong>
