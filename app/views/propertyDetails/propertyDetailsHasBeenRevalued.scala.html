@@ -40,15 +40,16 @@
         request: Request[AnyContent],
         appConfig: ApplicationConfig
 )
+@backLinkHtml = {
+    @if(backLink.isDefined) {
+        @govukBackLink(BackLink(
+        href = backLink.get,
+        content = Text("Back")
+        ))
+    }
+}
 
-@newMain(titleBuilder(messages("ated.property-details-value.hasBeenRevalued.title"), Some(propertyDetailsHasBeenRevaluedForm)), serviceInfoContent = serviceInfoContent) {
-
- @if(backLink.isDefined) {
-  @govukBackLink(BackLink(
-   href = backLink.get,
-   content = Text("Back")
-  ))
- }
+@newMain(titleBuilder(messages("ated.property-details-value.hasBeenRevalued.title"), Some(propertyDetailsHasBeenRevaluedForm)), serviceInfoContent = serviceInfoContent, back = Some(backLinkHtml)) {
 
  @if(propertyDetailsHasBeenRevaluedForm.hasErrors) {
   @govukErrorSummary(ErrorSummary().withFormErrorsAsText(propertyDetailsHasBeenRevaluedForm))

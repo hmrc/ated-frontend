@@ -52,9 +52,7 @@
 
 @newMain(title = titleBuilder(messages("ated.property-details-value.isNewBuild.title"), Some(propertyDetailsForm)),
           pageScripts = None,
-          serviceInfoContent = serviceInfoContent) {
-
-    @backLinkHtml
+          serviceInfoContent = serviceInfoContent, back = Some(backLinkHtml)) {
 
     @if(propertyDetailsForm.errors.nonEmpty) {
       @govukErrorSummary(ErrorSummary().withFormErrorsAsText(propertyDetailsForm))

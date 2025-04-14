@@ -48,9 +48,7 @@
 }
 
 @newMain(title = titleBuilder(messages("ated.address-lookup.title"), Some(searchForm)),
-          serviceInfoContent = serviceInfoContent) {
-
-  @backLinkHtml
+          serviceInfoContent = serviceInfoContent, back = Some(backLinkHtml)) {
 
   @if(searchForm.hasErrors) {
         @govukErrorSummary(ErrorSummary().withFormErrorsAsText(searchForm))

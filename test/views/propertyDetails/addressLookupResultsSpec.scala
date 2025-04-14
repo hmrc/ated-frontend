@@ -82,7 +82,7 @@ Feature("The user can search for an address via the post code") {
       assert(document.getElementById("govuk-button") === null)
 
       Then("The back link is correct")
-      assert(document.getElementsByClass("govuk-back-link").text === "Back")
+      assert(document.select(".govuk-width-container > a.govuk-back-link").text === "Back")
     }
 
     Scenario("user is editing a chargeable return for an existing property") {
@@ -131,7 +131,7 @@ Feature("The user can search for an address via the post code") {
       assert(document.getElementsByClass("govuk-button").text() === "Save and continue")
 
       Then("The back link is correct")
-      assert(document.getElementsByClass("govuk-back-link").text === "Back")
+      assert(document.select(".govuk-width-container > a.govuk-back-link").text === "Back")
       assert(document.getElementsByClass("govuk-back-link").attr("href") === "http://backLink")
     }
   }

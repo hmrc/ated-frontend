@@ -31,9 +31,7 @@
     }
 }
 
-@newMain(title = titleBuilder(messages("ated.contact-details.title"), Some(editContactDetailsForm)), serviceInfoContent = serviceInfoContent) {
-
-    @backLinkHtml
+@newMain(title = titleBuilder(messages("ated.contact-details.title"), Some(editContactDetailsForm)), serviceInfoContent = serviceInfoContent, back = Some(backLinkHtml)) {
 
     @if(editContactDetailsForm.hasErrors) {
         @govukErrorSummary(ErrorSummary().withFormErrorsAsText(editContactDetailsForm))
