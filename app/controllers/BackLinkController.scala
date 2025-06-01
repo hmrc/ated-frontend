@@ -44,16 +44,15 @@ trait BackLinkController {
   def clearBackLinks(pageIds: List[String] = Nil)(implicit hc: HeaderCarrier): Future[List[Option[String]]] = {
     pageIds match {
       case Nil => Future.successful(Nil)
-      case _ => backLinkCacheConnector.clearBackLinks(pageIds)
+      case _   => backLinkCacheConnector.clearBackLinks(pageIds)
     }
   }
 
-  def forwardBackLinkToNextPage(nextPageId: String, redirectCall: Call)
-                               (implicit hc: HeaderCarrier): Future[Result] = {
+  def forwardBackLinkToNextPage(nextPageId: String, redirectCall: Call)(implicit hc: HeaderCarrier): Future[Result] = {
     for {
       currentBackLink <- currentBackLink
-      _ <- setBackLink(nextPageId, currentBackLink)
-    } yield{
+      _               <- setBackLink(nextPageId, currentBackLink)
+    } yield {
       Redirect(redirectCall)
     }
   }
@@ -63,7 +62,7 @@ trait BackLinkController {
     for {
       _ <- setBackLink(nextPageId, backCall)
       _ <- clearBackLinks(pageIds)
-    } yield{
+    } yield {
       Redirect(redirectCall)
     }
   }
@@ -73,11 +72,12 @@ trait BackLinkController {
     for {
       oldBackLink <- getBackLink(nextPageId)
       _ <- oldBackLink match {
-          case Some(_) => Future.successful(oldBackLink)
-          case None => setBackLink(nextPageId, backCall)
-        }
-    } yield{
+        case Some(_) => Future.successful(oldBackLink)
+        case None    => setBackLink(nextPageId, backCall)
+      }
+    } yield {
       Redirect(redirectCall)
     }
   }
+
 }

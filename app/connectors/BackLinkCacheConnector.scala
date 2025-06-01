@@ -16,45 +16,36 @@
 
 package connectors
 
-import config.ApplicationConfig
-
-import javax.inject.Inject
 import models.BackLinkModel
+import repositories.SessionCacheRepository
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.http.cache.client.SessionCache
-import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.mongo.cache.DataKey
+
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
-class BackLinkCacheConnector @Inject()(val http: HttpClientV2,
-                                       appConfig: ApplicationConfig)
-                                      (implicit ec: ExecutionContext)extends SessionCache {
-
-  val baseUri: String = appConfig.baseUri
-  val defaultSource: String = appConfig.defaultSource
-  val domain: String = appConfig.domain
+@Singleton
+class BackLinkCacheConnector @Inject()(
+    sessionCache: SessionCacheRepository
+)(implicit ec: ExecutionContext) {
 
   val sourceId: String = "ATED_Back_Link"
 
-  private def getKey(pageId: String) = {
-    s"$sourceId:$pageId"
-  }
+  def dataKey(pageId: String): DataKey[BackLinkModel] = DataKey[BackLinkModel](s"${sourceId}_$pageId")
+
   def fetchAndGetBackLink(pageId: String)(implicit hc: HeaderCarrier): Future[Option[String]] = {
-    fetchAndGetEntry[BackLinkModel](getKey(pageId)).map(_.flatMap(_.backLink))
+    sessionCache.getFromSession[BackLinkModel](dataKey(pageId)).map(_.flatMap(_.backLink))
   }
 
   def saveBackLink(pageId: String, returnUrl: Option[String])(implicit hc: HeaderCarrier): Future[Option[String]] = {
-    cache[BackLinkModel](getKey(pageId), BackLinkModel(returnUrl)).map(_ => returnUrl)
+    sessionCache.putSession(dataKey(pageId), BackLinkModel(returnUrl)).map(_ => returnUrl)
   }
 
-  def clearBackLinks(pageIds: List[String] = Nil)(implicit hc: HeaderCarrier): Future[List[Option[String]]] = {
+  def clearBackLinks(pageIds: List[String] = Nil)(implicit hc: HeaderCarrier): Future[List[Option[String]]] =
     if (pageIds.nonEmpty) {
-      Future.sequence(pageIds.map { pageId =>
-        saveBackLink(pageId, None)
-      })
+      Future.sequence(pageIds.map(pageId => saveBackLink(pageId, None)))
     } else {
       Future.successful(Nil)
     }
-  }
 
-  def httpClientV2: HttpClientV2 = http
 }
