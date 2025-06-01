@@ -25,7 +25,7 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class BackLinkCacheConnector @Inject()(
+class BackLinkCacheService @Inject()(
     sessionCache: SessionCacheRepository
 )(implicit ec: ExecutionContext) {
 

@@ -17,7 +17,7 @@
 package controllers.editLiability
 
 import config.ApplicationConfig
-import connectors.{BackLinkCacheConnector, DataCacheConnector}
+import connectors.{BackLinkCacheService, DataCacheConnector}
 import controllers.auth.{AuthAction, ClientHelper}
 import controllers.propertyDetails.{PropertyDetailsHelpers, PropertyDetailsTaxAvoidanceSchemeController}
 import forms.PropertyDetailsForms
@@ -39,7 +39,7 @@ class EditLiabilityDatesLiableController @Inject()(mcc: MessagesControllerCompon
                                                    serviceInfoService: ServiceInfoService,
                                                    val propertyDetailsService: PropertyDetailsService,
                                                    val dataCacheConnector: DataCacheConnector,
-                                                   val backLinkCacheConnector: BackLinkCacheConnector,
+                                                   val backLinkCacheConnector: BackLinkCacheService,
                                                    template: views.html.editLiability.editLiabilityDatesLiable)
                                                   (implicit val appConfig: ApplicationConfig)
 

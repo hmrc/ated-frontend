@@ -17,7 +17,7 @@
 package controllers.propertyDetails
 
 import config.ApplicationConfig
-import connectors.{BackLinkCacheConnector, DataCacheConnector}
+import connectors.{BackLinkCacheService, DataCacheConnector}
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms
 import forms.PropertyDetailsForms._
@@ -33,13 +33,13 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class PropertyDetailsTaxAvoidanceReferencesController @Inject()(mcc: MessagesControllerComponents,
-                                                      authAction: AuthAction,
-                                                      propertyDetailsSupportingInfoController: PropertyDetailsSupportingInfoController,
-                                                      serviceInfoService: ServiceInfoService,
-                                                      val propertyDetailsService: PropertyDetailsService,
-                                                      val dataCacheConnector: DataCacheConnector,
-                                                      val backLinkCacheConnector: BackLinkCacheConnector,
-                                                      template: views.html.propertyDetails.propertyDetailsTaxAvoidanceReferences)
+                                                                authAction: AuthAction,
+                                                                propertyDetailsSupportingInfoController: PropertyDetailsSupportingInfoController,
+                                                                serviceInfoService: ServiceInfoService,
+                                                                val propertyDetailsService: PropertyDetailsService,
+                                                                val dataCacheConnector: DataCacheConnector,
+                                                                val backLinkCacheConnector: BackLinkCacheService,
+                                                                template: views.html.propertyDetails.propertyDetailsTaxAvoidanceReferences)
                                                      (implicit val appConfig: ApplicationConfig)
   extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with WithUnsafeDefaultFormBinding {
 

@@ -19,7 +19,7 @@ package controllers.propertyDetails
 import java.util.UUID
 import builders._
 import config.ApplicationConfig
-import connectors.{BackLinkCacheConnector, DataCacheConnector}
+import connectors.{BackLinkCacheService, DataCacheConnector}
 import controllers.auth.AuthAction
 import controllers.editLiability.EditLiabilitySummaryController
 import models._
@@ -54,7 +54,7 @@ class PropertyDetailsSupportingInfoControllerSpec extends PlaySpec with GuiceOne
   val mockMcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
   val mockPropertyDetailsService: PropertyDetailsService = mock[PropertyDetailsService]
   val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
-  val mockBackLinkCacheConnector: BackLinkCacheConnector = mock[BackLinkCacheConnector]
+  val mockBackLinkCacheConnector: BackLinkCacheService = mock[BackLinkCacheService]
   val mockEditLiabilitySummaryController: EditLiabilitySummaryController = mock[EditLiabilitySummaryController]
   val mockPropertyDetailsSummaryController: PropertyDetailsSummaryController = mock[PropertyDetailsSummaryController]
   val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]

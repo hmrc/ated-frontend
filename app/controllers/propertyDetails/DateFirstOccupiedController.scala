@@ -17,7 +17,7 @@
 package controllers.propertyDetails
 
 import config.ApplicationConfig
-import connectors.{BackLinkCacheConnector, DataCacheConnector}
+import connectors.{BackLinkCacheService, DataCacheConnector}
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms
 import forms.PropertyDetailsForms._
@@ -36,12 +36,12 @@ import play.api.i18n.{Messages, MessagesImpl}
 
 @Singleton
 class DateFirstOccupiedController @Inject()(mcc: MessagesControllerComponents,
-                                                       authAction: AuthAction,
-                                                       serviceInfoService: ServiceInfoService,
-                                                       val propertyDetailsService: PropertyDetailsService,
-                                                       val dataCacheConnector: DataCacheConnector,
-                                                       val backLinkCacheConnector: BackLinkCacheConnector,
-                                                       template: views.html.propertyDetails.dateFirstOccupied)
+                                            authAction: AuthAction,
+                                            serviceInfoService: ServiceInfoService,
+                                            val propertyDetailsService: PropertyDetailsService,
+                                            val dataCacheConnector: DataCacheConnector,
+                                            val backLinkCacheConnector: BackLinkCacheService,
+                                            template: views.html.propertyDetails.dateFirstOccupied)
                                                       (implicit val appConfig: ApplicationConfig)
 
   extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with WithUnsafeDefaultFormBinding {

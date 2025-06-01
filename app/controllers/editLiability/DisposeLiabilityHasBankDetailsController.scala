@@ -17,7 +17,7 @@
 package controllers.editLiability
 
 import config.ApplicationConfig
-import connectors.{BackLinkCacheConnector, DataCacheConnector}
+import connectors.{BackLinkCacheService, DataCacheConnector}
 import controllers.BackLinkController
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.BankDetailForms.hasBankDetailsForm
@@ -37,7 +37,7 @@ class DisposeLiabilityHasBankDetailsController @Inject()(mcc: MessagesController
                                                          disposeLiabilitySummaryController: DisposeLiabilitySummaryController,
                                                          serviceInfoService: ServiceInfoService,
                                                          val dataCacheConnector: DataCacheConnector,
-                                                         val backLinkCacheConnector: BackLinkCacheConnector,
+                                                         val backLinkCacheConnector: BackLinkCacheService,
                                                          template: views.html.editLiability.disposeLiabilityHasBankDetails)
                                                         (implicit val appConfig: ApplicationConfig)
 

@@ -18,7 +18,7 @@ package controllers.propertyDetails
 
 import builders.PropertyDetailsBuilder
 import config.ApplicationConfig
-import connectors.{BackLinkCacheConnector, DataCacheConnector}
+import connectors.{BackLinkCacheService, DataCacheConnector}
 import controllers.auth.AuthAction
 import models.{DateOfChange, HasBeenRevalued, PropertyDetailsNewValuation, PropertyDetailsRevalued}
 import org.mockito.ArgumentMatchers.{any, eq => eqs}
@@ -46,7 +46,7 @@ abstract class PropertyDetailsTestFixture extends PlaySpec with GuiceOneServerPe
   val mockMcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
   val mockPropertyDetailsService: PropertyDetailsService = mock[PropertyDetailsService]
   val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
-  val mockBackLinkCacheConnector: BackLinkCacheConnector = mock[BackLinkCacheConnector]
+  val mockBackLinkCacheConnector: BackLinkCacheService = mock[BackLinkCacheService]
   val mockNewValuationController: PropertyDetailsNewValuationController = mock[PropertyDetailsNewValuationController]
   val mockIsFullTaxPeriodController: IsFullTaxPeriodController = mock[IsFullTaxPeriodController]
   lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)

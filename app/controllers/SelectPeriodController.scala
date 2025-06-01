@@ -17,7 +17,7 @@
 package controllers
 
 import config.ApplicationConfig
-import connectors.{BackLinkCacheConnector, DataCacheConnector}
+import connectors.{BackLinkCacheService, DataCacheConnector}
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.AtedForms._
 import javax.inject.Inject
@@ -34,7 +34,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class SelectPeriodController @Inject()(mcc: MessagesControllerComponents,
                                        authAction: AuthAction,
                                        serviceInfoService: ServiceInfoService,
-                                       val backLinkCacheConnector: BackLinkCacheConnector,
+                                       val backLinkCacheConnector: BackLinkCacheService,
                                        val dataCacheConnector: DataCacheConnector,
                                        template: views.html.selectPeriod)
                                       (implicit val appConfig: ApplicationConfig)

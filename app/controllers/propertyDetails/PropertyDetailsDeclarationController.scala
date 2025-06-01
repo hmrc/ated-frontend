@@ -17,7 +17,7 @@
 package controllers.propertyDetails
 
 import config.ApplicationConfig
-import connectors.{BackLinkCacheConnector, DataCacheConnector}
+import connectors.{BackLinkCacheService, DataCacheConnector}
 import controllers.auth.{AuthAction, ClientHelper}
 import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -31,7 +31,7 @@ class PropertyDetailsDeclarationController @Inject()(mcc: MessagesControllerComp
                                                      serviceInfoService: ServiceInfoService,
                                                      val propertyDetailsService: PropertyDetailsService,
                                                      val dataCacheConnector: DataCacheConnector,
-                                                     val backLinkCacheConnector: BackLinkCacheConnector,
+                                                     val backLinkCacheConnector: BackLinkCacheService,
                                                      template: views.html.propertyDetails.propertyDetailsDeclaration,
                                                      templateError: views.html.global_error)
                                                     (implicit val appConfig: ApplicationConfig)

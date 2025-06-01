@@ -17,7 +17,7 @@
 package controllers.editLiability
 
 import config.ApplicationConfig
-import connectors.{BackLinkCacheConnector, DataCacheConnector}
+import connectors.{BackLinkCacheService, DataCacheConnector}
 import controllers.BackLinkController
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.AtedForms.{disposeLiabilityForm, validateForm}
@@ -38,7 +38,7 @@ class DisposePropertyController @Inject()(mcc: MessagesControllerComponents,
                                           disposeLiabilityHasBankDetailsController: DisposeLiabilityHasBankDetailsController,
                                           serviceInfoService: ServiceInfoService,
                                           val dataCacheConnector: DataCacheConnector,
-                                          val backLinkCacheConnector: BackLinkCacheConnector,
+                                          val backLinkCacheConnector: BackLinkCacheService,
                                           template: views.html.editLiability.dataOfDisposal)
                                          (implicit val appConfig: ApplicationConfig)
   extends FrontendController(mcc) with BackLinkController with ClientHelper with WithUnsafeDefaultFormBinding {

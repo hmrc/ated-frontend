@@ -17,7 +17,7 @@
 package controllers
 
 import config.ApplicationConfig
-import connectors.{BackLinkCacheConnector, DataCacheConnector}
+import connectors.{BackLinkCacheService, DataCacheConnector}
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.AtedForms.returnTypeForm
 import javax.inject.Inject
@@ -34,7 +34,7 @@ class ReturnTypeController @Inject()(mcc: MessagesControllerComponents,
                                      summaryReturnService: SummaryReturnsService,
                                      serviceInfoService: ServiceInfoService,
                                      val dataCacheConnector: DataCacheConnector,
-                                     val backLinkCacheConnector: BackLinkCacheConnector,
+                                     val backLinkCacheConnector: BackLinkCacheService,
                                      template: views.html.returnType)
                                     (implicit val appConfig: ApplicationConfig)
 

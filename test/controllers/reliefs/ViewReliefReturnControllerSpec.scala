@@ -19,7 +19,7 @@ package controllers.reliefs
 import java.util.UUID
 import builders.SessionBuilder
 import config.ApplicationConfig
-import connectors.{BackLinkCacheConnector, DataCacheConnector}
+import connectors.{BackLinkCacheService, DataCacheConnector}
 import controllers.auth.AuthAction
 import models.SubmittedReliefReturns
 import java.time.LocalDate
@@ -49,7 +49,7 @@ class ViewReliefReturnControllerSpec extends PlaySpec with GuiceOneServerPerSuit
   val mockMcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
   val mockReliefsService: ReliefsService = mock[ReliefsService]
   val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
-  val mockBackLinkCacheConnector: BackLinkCacheConnector = mock[BackLinkCacheConnector]
+  val mockBackLinkCacheConnector: BackLinkCacheService = mock[BackLinkCacheService]
   val mockSubscriptionDataService: SubscriptionDataService = mock[SubscriptionDataService]
   val mockReliefDeclarationController: ReliefDeclarationController = mock[ReliefDeclarationController]
   val mockChangeReliefReturnController: ChangeReliefReturnController = mock[ChangeReliefReturnController]

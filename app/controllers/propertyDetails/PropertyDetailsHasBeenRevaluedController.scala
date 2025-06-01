@@ -17,7 +17,7 @@
 package controllers.propertyDetails
 
 import config.ApplicationConfig
-import connectors.{BackLinkCacheConnector, DataCacheConnector}
+import connectors.{BackLinkCacheService, DataCacheConnector}
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms.propertyDetailsHasBeenRevaluedForm
 import models.HasBeenRevalued
@@ -37,7 +37,7 @@ class PropertyDetailsHasBeenRevaluedController @Inject()(mcc: MessagesController
                                                          template: propertyDetailsHasBeenRevalued,
                                                          serviceInfoService: ServiceInfoService,
                                                          val propertyDetailsService: PropertyDetailsService,
-                                                         val backLinkCacheConnector: BackLinkCacheConnector,
+                                                         val backLinkCacheConnector: BackLinkCacheService,
                                                          val dataCacheConnector: DataCacheConnector,
                                                          dateOfChangeController: PropertyDetailsDateOfChangeController,
                                                          exitController: PropertyDetailsExitController

@@ -18,7 +18,7 @@ package controllers.propertyDetails
 
 
 import config.ApplicationConfig
-import connectors.{BackLinkCacheConnector, DataCacheConnector}
+import connectors.{BackLinkCacheService, DataCacheConnector}
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms.propertyDetailsNewValuationForm
 import models.PropertyDetailsNewValuation
@@ -35,7 +35,7 @@ import scala.concurrent.ExecutionContext
 class PropertyDetailsNewValuationController @Inject()(mcc: MessagesControllerComponents,
                                                       authAction: AuthAction,
                                                       serviceInfoService: ServiceInfoService,
-                                                      val backLinkCacheConnector: BackLinkCacheConnector,
+                                                      val backLinkCacheConnector: BackLinkCacheService,
                                                       val dataCacheConnector: DataCacheConnector,
                                                       val propertyDetailsService: PropertyDetailsService,
                                                       propertyDetailsDateOfRevalueController: PropertyDetailsDateOfRevalueController,

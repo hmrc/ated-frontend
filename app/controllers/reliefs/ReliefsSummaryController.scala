@@ -17,7 +17,7 @@
 package controllers.reliefs
 
 import config.ApplicationConfig
-import connectors.{BackLinkCacheConnector, DataCacheConnector}
+import connectors.{BackLinkCacheService, DataCacheConnector}
 import controllers.BackLinkController
 import controllers.auth.{AuthAction, ClientHelper}
 import javax.inject.Inject
@@ -37,7 +37,7 @@ class ReliefsSummaryController @Inject()(mcc: MessagesControllerComponents,
                                          serviceInfoService: ServiceInfoService,
                                          val reliefsService: ReliefsService,
                                          val dataCacheConnector: DataCacheConnector,
-                                         val backLinkCacheConnector: BackLinkCacheConnector,
+                                         val backLinkCacheConnector: BackLinkCacheService,
                                          template: views.html.reliefs.reliefsSummary,
                                          val templateInvalidPeriodKey: views.html.reliefs.invalidPeriodKey)
                                         (implicit val appConfig: ApplicationConfig)

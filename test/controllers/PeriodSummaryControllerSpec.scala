@@ -18,7 +18,7 @@ package controllers
 
 import builders.SessionBuilder
 import config.ApplicationConfig
-import connectors.BackLinkCacheConnector
+import connectors.BackLinkCacheService
 import controllers.auth.AuthAction
 import controllers.editLiability.DisposePropertyController
 import controllers.propertyDetails.{AddressLookupController, PropertyDetailsSummaryController}
@@ -50,7 +50,7 @@ class PeriodSummaryControllerSpec extends PlaySpec with GuiceOneServerPerSuite w
   val mockMcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
   val mockSummaryReturnsService: SummaryReturnsService = mock[SummaryReturnsService]
   val mockSubscriptionDataService: SubscriptionDataService = mock[SubscriptionDataService]
-  val mockBackLinkCacheConnector: BackLinkCacheConnector = mock[BackLinkCacheConnector]
+  val mockBackLinkCacheConnector: BackLinkCacheService = mock[BackLinkCacheService]
   val mockReturnTypeController: ReturnTypeController = mock[ReturnTypeController]
   val mockReliefsSummaryController: ReliefsSummaryController = mock[ReliefsSummaryController]
   val mockPropertyDetailsSummaryController: PropertyDetailsSummaryController = mock[PropertyDetailsSummaryController]

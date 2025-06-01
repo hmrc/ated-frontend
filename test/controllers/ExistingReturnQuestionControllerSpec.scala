@@ -35,7 +35,7 @@ package controllers
 import java.util.UUID
 import builders.{SessionBuilder, TitleBuilder}
 import config.ApplicationConfig
-import connectors.{AgentClientMandateFrontendConnector, BackLinkCacheConnector, DataCacheConnector}
+import connectors.{AgentClientMandateFrontendConnector, BackLinkCacheService, DataCacheConnector}
 import controllers.auth.AuthAction
 import models.ReturnType
 import org.jsoup.Jsoup
@@ -76,7 +76,7 @@ class ExistingReturnQuestionControllerSpec extends PlaySpec with GuiceOneServerP
   val mockDetailsService: DetailsService = mock[DetailsService]
   val mockPropertyDetailsService: PropertyDetailsService = mock[PropertyDetailsService]
   val mockReliefsService: ReliefsService = mock[ReliefsService]
-  val mockBackLinkCacheConnector: BackLinkCacheConnector = mock[BackLinkCacheConnector]
+  val mockBackLinkCacheConnector: BackLinkCacheService = mock[BackLinkCacheService]
   val confirmAddressUrl: String = "http://localhost:9916/ated/liability/confirm-address/view/2017/123456789026?mode=editSubmitted"
 
 

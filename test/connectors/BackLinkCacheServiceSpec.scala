@@ -34,7 +34,7 @@ import uk.gov.hmrc.mongo.cache.DataKey
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class BackLinkCacheConnectorSpec extends PlaySpec with GuiceOneAppPerSuite with MockitoSugar with Injecting {
+class BackLinkCacheServiceSpec extends PlaySpec with GuiceOneAppPerSuite with MockitoSugar with Injecting {
 
   implicit val hc: HeaderCarrier                   = HeaderCarrier(sessionId = Some(SessionId("test")))
   implicit val ec: ExecutionContext                = inject[ExecutionContext]
@@ -44,7 +44,7 @@ class BackLinkCacheConnectorSpec extends PlaySpec with GuiceOneAppPerSuite with 
 
   class Setup extends ConnectorTest {
 
-    val testBackLinkCacheConnector: BackLinkCacheConnector = new BackLinkCacheConnector(
+    val testBackLinkCacheConnector: BackLinkCacheService = new BackLinkCacheService(
       mockSessionCacheRepo
     )
 

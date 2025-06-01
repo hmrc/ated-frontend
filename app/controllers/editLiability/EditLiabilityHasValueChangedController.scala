@@ -17,7 +17,7 @@
 package controllers.editLiability
 
 import config.ApplicationConfig
-import connectors.{BackLinkCacheConnector, DataCacheConnector}
+import connectors.{BackLinkCacheService, DataCacheConnector}
 import controllers.auth.{AuthAction, ClientHelper}
 import controllers.propertyDetails._
 import forms.PropertyDetailsForms.hasValueChangedForm
@@ -38,7 +38,7 @@ class EditLiabilityHasValueChangedController @Inject()(mcc: MessagesControllerCo
                                                        serviceInfoService: ServiceInfoService,
                                                        val propertyDetailsService: PropertyDetailsService,
                                                        val dataCacheConnector: DataCacheConnector,
-                                                       val backLinkCacheConnector: BackLinkCacheConnector,
+                                                       val backLinkCacheConnector: BackLinkCacheService,
                                                        template: views.html.editLiability.editLiabilityHasValueChanged)
                                                       (implicit val appConfig: ApplicationConfig)
   extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with WithUnsafeDefaultFormBinding {

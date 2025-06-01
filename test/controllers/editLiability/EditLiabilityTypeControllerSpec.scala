@@ -20,7 +20,7 @@ import java.util.UUID
 
 import builders.SessionBuilder
 import config.ApplicationConfig
-import connectors.{BackLinkCacheConnector, DataCacheConnector}
+import connectors.{BackLinkCacheService, DataCacheConnector}
 import controllers.auth.AuthAction
 import controllers.propertyDetails.{AddressLookupController, PropertyDetailsAddressController}
 import org.jsoup.Jsoup
@@ -54,7 +54,7 @@ class EditLiabilityTypeControllerSpec extends PlaySpec with GuiceOneServerPerSui
   val mockPropertyDetailsAddressController: PropertyDetailsAddressController = mock[PropertyDetailsAddressController]
   val mockAddressLookupController: AddressLookupController = mock[AddressLookupController]
   val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
-  val mockBackLinkCacheConnector: BackLinkCacheConnector = mock[BackLinkCacheConnector]
+  val mockBackLinkCacheConnector: BackLinkCacheService = mock[BackLinkCacheService]
   val mockDisposePropertyController: DisposePropertyController = mock[DisposePropertyController]
   val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
   val fakeDisposePropertyRequest: FakeRequest[AnyContentAsJson] = FakeRequest().withJsonBody(Json.parse("""{"editLiabilityType":"DP"}"""))

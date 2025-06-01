@@ -17,7 +17,7 @@
 package controllers.propertyDetails
 
 import config.ApplicationConfig
-import connectors.{BackLinkCacheConnector, DataCacheConnector}
+import connectors.{BackLinkCacheService, DataCacheConnector}
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms._
 import models._
@@ -32,14 +32,14 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class PropertyDetailsTaxAvoidanceSchemeController @Inject()(mcc: MessagesControllerComponents,
-                                                      authAction: AuthAction,
-                                                      propertyDetailsTaxAvoidanceReferencesController: PropertyDetailsTaxAvoidanceReferencesController,
-                                                      propertyDetailsSupportingInfoController: PropertyDetailsSupportingInfoController,
-                                                      serviceInfoService: ServiceInfoService,
-                                                      val propertyDetailsService: PropertyDetailsService,
-                                                      val dataCacheConnector: DataCacheConnector,
-                                                      val backLinkCacheConnector: BackLinkCacheConnector,
-                                                      template: views.html.propertyDetails.propertyDetailsTaxAvoidanceScheme)
+                                                            authAction: AuthAction,
+                                                            propertyDetailsTaxAvoidanceReferencesController: PropertyDetailsTaxAvoidanceReferencesController,
+                                                            propertyDetailsSupportingInfoController: PropertyDetailsSupportingInfoController,
+                                                            serviceInfoService: ServiceInfoService,
+                                                            val propertyDetailsService: PropertyDetailsService,
+                                                            val dataCacheConnector: DataCacheConnector,
+                                                            val backLinkCacheConnector: BackLinkCacheService,
+                                                            template: views.html.propertyDetails.propertyDetailsTaxAvoidanceScheme)
                                                      (implicit val appConfig: ApplicationConfig)
   extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with WithUnsafeDefaultFormBinding {
 

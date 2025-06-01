@@ -20,7 +20,7 @@ import java.util.UUID
 
 import builders._
 import config.ApplicationConfig
-import connectors.{BackLinkCacheConnector, DataCacheConnector}
+import connectors.{BackLinkCacheService, DataCacheConnector}
 import controllers.auth.AuthAction
 import models.DisposeLiabilityReturn
 import org.jsoup.Jsoup
@@ -52,7 +52,7 @@ class DisposeLiabilitySummaryControllerSpec extends PlaySpec with GuiceOneServer
   val mockSubscriptionDataService: SubscriptionDataService = mock[SubscriptionDataService]
   val mockDisposeLiabilityReturnService: DisposeLiabilityReturnService = mock[DisposeLiabilityReturnService]
   val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
-  val mockBackLinkCacheConnector: BackLinkCacheConnector = mock[BackLinkCacheConnector]
+  val mockBackLinkCacheConnector: BackLinkCacheService = mock[BackLinkCacheService]
   val mockDisposeLiabilityDeclarationController: DisposeLiabilityDeclarationController = mock[DisposeLiabilityDeclarationController]
   val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
   lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)

@@ -19,7 +19,7 @@ package controllers.reliefs
 import java.util.UUID
 import builders.SessionBuilder
 import config.ApplicationConfig
-import connectors.{BackLinkCacheConnector, DataCacheConnector}
+import connectors.{BackLinkCacheService, DataCacheConnector}
 import controllers.auth.AuthAction
 import controllers.propertyDetails.AddressLookupController
 import org.jsoup.Jsoup
@@ -52,7 +52,7 @@ class ChangeReliefReturnControllerSpec extends PlaySpec with GuiceOneServerPerSu
   val mockChooseReliefsController: ChooseReliefsController = mock[ChooseReliefsController]
   val mockReliefsService: ReliefsService = mock[ReliefsService]
   val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
-  val mockBackLinkCacheConnector: BackLinkCacheConnector = mock[BackLinkCacheConnector]
+  val mockBackLinkCacheConnector: BackLinkCacheService = mock[BackLinkCacheService]
   val mockAddressLookupController: AddressLookupController = mock[AddressLookupController]
   val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
   lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)

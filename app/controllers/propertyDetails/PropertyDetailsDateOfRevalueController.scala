@@ -17,7 +17,7 @@
 package controllers.propertyDetails
 
 import config.ApplicationConfig
-import connectors.{BackLinkCacheConnector, DataCacheConnector}
+import connectors.{BackLinkCacheService, DataCacheConnector}
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms._
 import models._
@@ -37,7 +37,7 @@ class PropertyDetailsDateOfRevalueController @Inject()(mcc: MessagesControllerCo
                                                        serviceInfoService: ServiceInfoService,
                                                        template: views.html.propertyDetails.propertyDetailsDateOfRevalue,
                                                        val propertyDetailsService: PropertyDetailsService,
-                                                       val backLinkCacheConnector: BackLinkCacheConnector,
+                                                       val backLinkCacheConnector: BackLinkCacheService,
                                                        val dataCacheConnector: DataCacheConnector,
                                                        isFullTaxPeriodController: IsFullTaxPeriodController)
                                                       (implicit val appConfig: ApplicationConfig)

@@ -20,7 +20,7 @@ import java.util.UUID
 
 import builders.{SessionBuilder, TitleBuilder}
 import config.ApplicationConfig
-import connectors.{BackLinkCacheConnector, DataCacheConnector}
+import connectors.{BackLinkCacheService, DataCacheConnector}
 import controllers.auth.AuthAction
 import controllers.propertyDetails.{AddressLookupController, PropertyDetailsAddressController}
 import controllers.reliefs.ChooseReliefsController
@@ -52,7 +52,7 @@ class ReturnTypeControllerSpec extends PlaySpec with GuiceOneServerPerSuite with
   implicit lazy val hc: HeaderCarrier = HeaderCarrier()
   implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
   val mockMcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
-  val mockBackLinkCacheConnector: BackLinkCacheConnector = mock[BackLinkCacheConnector]
+  val mockBackLinkCacheConnector: BackLinkCacheService = mock[BackLinkCacheService]
   val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
   val mockSummaryReturnsService: SummaryReturnsService = mock[SummaryReturnsService]
   val mockAddressLookupController: AddressLookupController = mock[AddressLookupController]

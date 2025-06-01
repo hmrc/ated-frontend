@@ -17,7 +17,7 @@
 package controllers.propertyDetails
 
 import config.ApplicationConfig
-import connectors.{BackLinkCacheConnector, DataCacheConnector}
+import connectors.{BackLinkCacheService, DataCacheConnector}
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms._
 import javax.inject.Inject
@@ -37,7 +37,7 @@ class PropertyDetailsNewBuildController @Inject()(mcc: MessagesControllerCompone
                                                   serviceInfoService: ServiceInfoService,
                                                   val propertyDetailsService: PropertyDetailsService,
                                                   val dataCacheConnector: DataCacheConnector,
-                                                  val backLinkCacheConnector: BackLinkCacheConnector,
+                                                  val backLinkCacheConnector: BackLinkCacheService,
                                                   template: views.html.propertyDetails.propertyDetailsNewBuild)
                                                  (implicit val appConfig: ApplicationConfig)
 

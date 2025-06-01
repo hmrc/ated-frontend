@@ -17,7 +17,7 @@
 package controllers.propertyDetails
 
 import config.ApplicationConfig
-import connectors.{BackLinkCacheConnector, DataCacheConnector}
+import connectors.{BackLinkCacheService, DataCacheConnector}
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms
 import forms.PropertyDetailsForms._
@@ -39,7 +39,7 @@ class PropertyDetailsOwnedBeforeController @Inject()(mcc: MessagesControllerComp
                                                      serviceInfoService: ServiceInfoService,
                                                      val propertyDetailsService: PropertyDetailsService,
                                                      val dataCacheConnector: DataCacheConnector,
-                                                     val backLinkCacheConnector: BackLinkCacheConnector,
+                                                     val backLinkCacheConnector: BackLinkCacheService,
                                                      template: views.html.propertyDetails.propertyDetailsOwnedBefore)
                                                     (implicit val appConfig: ApplicationConfig)
 

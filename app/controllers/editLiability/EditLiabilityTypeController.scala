@@ -17,7 +17,7 @@
 package controllers.editLiability
 
 import config.ApplicationConfig
-import connectors.{BackLinkCacheConnector, DataCacheConnector}
+import connectors.{BackLinkCacheService, DataCacheConnector}
 import controllers.BackLinkController
 import controllers.auth.{AuthAction, ClientHelper}
 import controllers.propertyDetails.{AddressLookupController, PropertyDetailsAddressController}
@@ -38,7 +38,7 @@ class EditLiabilityTypeController @Inject()(mcc: MessagesControllerComponents,
                                             disposePropertyController: DisposePropertyController,
                                             serviceInfoService: ServiceInfoService,
                                             val dataCacheConnector: DataCacheConnector,
-                                            val backLinkCacheConnector: BackLinkCacheConnector,
+                                            val backLinkCacheConnector: BackLinkCacheService,
                                             template: views.html.editLiability.editLiability)
                                            (implicit val appConfig: ApplicationConfig)
 

@@ -17,7 +17,7 @@
 package controllers.propertyDetails
 
 import config.ApplicationConfig
-import connectors.{BackLinkCacheConnector, DataCacheConnector}
+import connectors.{BackLinkCacheService, DataCacheConnector}
 import controllers.auth.{AuthAction, ClientHelper}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService, ServiceInfoService}
@@ -37,7 +37,7 @@ class PropertyDetailsDateOfChangeController @Inject()(mcc: MessagesControllerCom
                                                       serviceInfoService: ServiceInfoService,
                                                       template: views.html.propertyDetails.propertyDetailsDateOfChange,
                                                       val propertyDetailsService: PropertyDetailsService,
-                                                      val backLinkCacheConnector: BackLinkCacheConnector,
+                                                      val backLinkCacheConnector: BackLinkCacheService,
                                                       val dataCacheConnector: DataCacheConnector,
                                                       newValuationController: PropertyDetailsNewValuationController)
                                                      (implicit val appConfig: ApplicationConfig)

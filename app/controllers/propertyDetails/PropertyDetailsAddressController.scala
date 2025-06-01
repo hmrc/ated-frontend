@@ -18,7 +18,7 @@ package controllers.propertyDetails
 
 import audit.Auditable
 import config.ApplicationConfig
-import connectors.{BackLinkCacheConnector, DataCacheConnector}
+import connectors.{BackLinkCacheService, DataCacheConnector}
 import controllers.ControllerIds
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms._
@@ -42,7 +42,7 @@ class PropertyDetailsAddressController @Inject()(mcc: MessagesControllerComponen
                                                  serviceInfoService: ServiceInfoService,
                                                  val propertyDetailsService: PropertyDetailsService,
                                                  val dataCacheConnector: DataCacheConnector,
-                                                 val backLinkCacheConnector: BackLinkCacheConnector,
+                                                 val backLinkCacheConnector: BackLinkCacheService,
                                                  template: views.html.propertyDetails.propertyDetailsAddress)
                                                 (implicit val appConfig: ApplicationConfig)
 

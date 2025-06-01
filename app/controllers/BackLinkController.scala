@@ -16,7 +16,7 @@
 
 package controllers
 
-import connectors.BackLinkCacheConnector
+import connectors.BackLinkCacheService
 import play.api.mvc.Results.Redirect
 import play.api.mvc.{Call, Result}
 import uk.gov.hmrc.http.HeaderCarrier
@@ -27,7 +27,7 @@ trait BackLinkController {
 
   implicit val ec: ExecutionContext
   val controllerId: String
-  val backLinkCacheConnector: BackLinkCacheConnector
+  val backLinkCacheConnector: BackLinkCacheService
 
   def setBackLink(pageId: String, returnUrl: Option[String])(implicit hc: HeaderCarrier): Future[Option[String]] = {
     backLinkCacheConnector.saveBackLink(pageId, returnUrl)

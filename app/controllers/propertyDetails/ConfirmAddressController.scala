@@ -17,7 +17,7 @@
 package controllers.propertyDetails
 
 import config.ApplicationConfig
-import connectors.{BackLinkCacheConnector, DataCacheConnector}
+import connectors.{BackLinkCacheService, DataCacheConnector}
 import controllers.ControllerIds
 import controllers.auth.{AuthAction, ClientHelper}
 import javax.inject.Inject
@@ -34,7 +34,7 @@ class ConfirmAddressController @Inject()(mcc: MessagesControllerComponents,
                                          authAction: AuthAction,
                                          changeLiabilityReturnService: ChangeLiabilityReturnService,
                                          serviceInfoService: ServiceInfoService,
-                                         val backLinkCacheConnector: BackLinkCacheConnector,
+                                         val backLinkCacheConnector: BackLinkCacheService,
                                          val propertyDetailsService: PropertyDetailsService,
                                          val dataCacheConnector: DataCacheConnector,
                                          template: views.html.propertyDetails.confirmAddress,

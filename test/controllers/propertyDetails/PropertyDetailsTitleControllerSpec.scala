@@ -20,7 +20,7 @@ import java.util.UUID
 
 import builders.{PropertyDetailsBuilder, SessionBuilder, TitleBuilder}
 import config.ApplicationConfig
-import connectors.{BackLinkCacheConnector, DataCacheConnector}
+import connectors.{BackLinkCacheService, DataCacheConnector}
 import controllers.auth.AuthAction
 import controllers.editLiability.EditLiabilityHasValueChangedController
 import models._
@@ -53,7 +53,7 @@ class PropertyDetailsTitleControllerSpec extends PlaySpec with GuiceOneServerPer
   val mockMcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
   val mockPropertyDetailsService: PropertyDetailsService = mock[PropertyDetailsService]
   val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
-  val mockBackLinkCacheConnector: BackLinkCacheConnector = mock[BackLinkCacheConnector]
+  val mockBackLinkCacheConnector: BackLinkCacheService = mock[BackLinkCacheService]
   val mockEditLiabilityHasValueChangedController: EditLiabilityHasValueChangedController = mock[EditLiabilityHasValueChangedController]
   val mockPropertyDetailsOwnedBeforeController: PropertyDetailsOwnedBeforeController = mock[PropertyDetailsOwnedBeforeController]
     val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]

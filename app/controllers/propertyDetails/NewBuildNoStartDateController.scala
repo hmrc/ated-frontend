@@ -17,7 +17,7 @@
 package controllers.propertyDetails
 
 import config.ApplicationConfig
-import connectors.{BackLinkCacheConnector, DataCacheConnector}
+import connectors.{BackLinkCacheService, DataCacheConnector}
 import controllers.auth.{AuthAction, ClientHelper}
 import javax.inject.{Inject, Singleton}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -34,7 +34,7 @@ class NewBuildNoStartDateController @Inject()(mcc: MessagesControllerComponents,
                                               serviceInfoService: ServiceInfoService,
                                               val propertyDetailsService: PropertyDetailsService,
                                               val dataCacheConnector: DataCacheConnector,
-                                              val backLinkCacheConnector: BackLinkCacheConnector,
+                                              val backLinkCacheConnector: BackLinkCacheService,
                                               view: views.html.propertyDetails.newBuildNoStartDate)
                                              (implicit val appConfig: ApplicationConfig)
 

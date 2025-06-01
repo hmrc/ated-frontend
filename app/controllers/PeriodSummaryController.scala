@@ -17,7 +17,7 @@
 package controllers
 
 import config.ApplicationConfig
-import connectors.BackLinkCacheConnector
+import connectors.BackLinkCacheService
 import controllers.auth.AuthAction
 import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -32,7 +32,7 @@ class PeriodSummaryController @Inject()(mcc: MessagesControllerComponents,
                                         summaryReturnsService: SummaryReturnsService,
                                         subscriptionDataService: SubscriptionDataService,
                                         serviceInfoService: ServiceInfoService,
-                                        val backLinkCacheConnector: BackLinkCacheConnector,
+                                        val backLinkCacheConnector: BackLinkCacheService,
                                         template: views.html.periodSummary)
                                        (implicit val appConfig: ApplicationConfig)
 

@@ -17,7 +17,7 @@
 package controllers.propertyDetails
 
 import config.ApplicationConfig
-import connectors.{BackLinkCacheConnector, DataCacheConnector}
+import connectors.{BackLinkCacheService, DataCacheConnector}
 import controllers.auth.{AuthAction, ClientHelper}
 import forms.PropertyDetailsForms._
 import javax.inject.{Singleton, Inject}
@@ -32,12 +32,12 @@ import scala.concurrent.ExecutionContext
 
 @Singleton
 class DateFirstOccupiedKnownController @Inject()(mcc: MessagesControllerComponents,
-                                                  authAction: AuthAction,
-                                                  serviceInfoService: ServiceInfoService,
-                                                  val propertyDetailsService: PropertyDetailsService,
-                                                  val dataCacheConnector: DataCacheConnector,
-                                                  val backLinkCacheConnector: BackLinkCacheConnector,
-                                                  view: views.html.propertyDetails.dateFirstOccupiedKnown)
+                                                 authAction: AuthAction,
+                                                 serviceInfoService: ServiceInfoService,
+                                                 val propertyDetailsService: PropertyDetailsService,
+                                                 val dataCacheConnector: DataCacheConnector,
+                                                 val backLinkCacheConnector: BackLinkCacheService,
+                                                 view: views.html.propertyDetails.dateFirstOccupiedKnown)
                                                  (implicit val appConfig: ApplicationConfig)
 
   extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with WithUnsafeDefaultFormBinding {

@@ -17,7 +17,7 @@
 package controllers.propertyDetails
 
 import config.ApplicationConfig
-import connectors.{BackLinkCacheConnector, DataCacheConnector}
+import connectors.{BackLinkCacheService, DataCacheConnector}
 import controllers.auth.{AuthAction, ClientHelper}
 import controllers.editLiability.EditLiabilityDatesLiableController
 import forms.PropertyDetailsForms._
@@ -39,7 +39,7 @@ class PropertyDetailsInReliefController @Inject()(mcc: MessagesControllerCompone
                                                   serviceInfoService: ServiceInfoService,
                                                   val propertyDetailsService: PropertyDetailsService,
                                                   val dataCacheConnector: DataCacheConnector,
-                                                  val backLinkCacheConnector: BackLinkCacheConnector,
+                                                  val backLinkCacheConnector: BackLinkCacheService,
                                                   template: views.html.propertyDetails.propertyDetailsInRelief)
                                                  (implicit val appConfig: ApplicationConfig)
 

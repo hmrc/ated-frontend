@@ -20,7 +20,7 @@ import java.util.UUID
 
 import builders._
 import config.ApplicationConfig
-import connectors.{BackLinkCacheConnector, DataCacheConnector}
+import connectors.{BackLinkCacheService, DataCacheConnector}
 import controllers.auth.AuthAction
 import controllers.editLiability.EditLiabilityDatesLiableController
 import models._
@@ -53,7 +53,7 @@ class PropertyDetailsInReliefControllerSpec extends PlaySpec with GuiceOneServer
   val mockMcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
   val mockPropertyDetailsService: PropertyDetailsService = mock[PropertyDetailsService]
   val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
-  val mockBackLinkCacheConnector: BackLinkCacheConnector = mock[BackLinkCacheConnector]
+  val mockBackLinkCacheConnector: BackLinkCacheService = mock[BackLinkCacheService]
   val mockPeriodsInAndOutReliefController: PeriodsInAndOutReliefController = mock[PeriodsInAndOutReliefController]
   val mockPeriodDatesLiableController: PeriodDatesLiableController = mock[PeriodDatesLiableController]
   val mockEditLiabilityDatesLiableController: EditLiabilityDatesLiableController = mock[EditLiabilityDatesLiableController]

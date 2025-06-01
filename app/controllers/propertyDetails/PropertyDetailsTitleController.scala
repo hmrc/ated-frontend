@@ -17,7 +17,7 @@
 package controllers.propertyDetails
 
 import config.ApplicationConfig
-import connectors.{BackLinkCacheConnector, DataCacheConnector}
+import connectors.{BackLinkCacheService, DataCacheConnector}
 import controllers.ControllerIds
 import controllers.auth.{AuthAction, ClientHelper}
 import controllers.editLiability.EditLiabilityHasValueChangedController
@@ -39,7 +39,7 @@ class PropertyDetailsTitleController @Inject()(mcc: MessagesControllerComponents
                                                serviceInfoService: ServiceInfoService,
                                                val propertyDetailsService: PropertyDetailsService,
                                                val dataCacheConnector: DataCacheConnector,
-                                               val backLinkCacheConnector: BackLinkCacheConnector,
+                                               val backLinkCacheConnector: BackLinkCacheService,
                                                template: views.html.propertyDetails.propertyDetailsTitle)
                                               (implicit val appConfig: ApplicationConfig)
   extends FrontendController(mcc) with PropertyDetailsHelpers with ClientHelper with ControllerIds with WithUnsafeDefaultFormBinding {
