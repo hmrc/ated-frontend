@@ -17,7 +17,6 @@
 package controllers
 
 import builders.{SessionBuilder, TitleBuilder}
-import com.sun.org.apache.xalan.internal.lib.ExsltDatetime.year
 import config.ApplicationConfig
 import connectors.{BackLinkCacheService, DataCacheConnector}
 import controllers.auth.AuthAction
@@ -40,7 +39,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import utils.{AtedConstants, PeriodUtils}
 import views.html.{BtaNavigationLinks, selectPeriod}
 
-import java.time.{LocalDate, Month}
+import java.time.LocalDate
 import java.util.UUID
 import scala.concurrent.Future
 

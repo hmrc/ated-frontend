@@ -17,6 +17,7 @@
 package repositories
 
 import org.scalatestplus.play.PlaySpec
+import org.testcontainers.mongodb.MongoDBAtlasLocalContainer
 import play.api.libs.json.{Json, OFormat}
 import play.api.test.Injecting
 import uk.gov.hmrc.http.{HeaderCarrier, SessionId}
@@ -27,6 +28,12 @@ import utils.BaseSpec
 import scala.util.{Failure, Success, Try}
 
 class SessionCacheRepositorySpec extends PlaySpec with BaseSpec with Injecting {
+
+  val testCon = new MongoDBAtlasLocalContainer(
+    "mongodb/mongodb-atlas-local:7.0.9"
+  )
+
+  testCon.start()
 
   val repository = new SessionCacheRepository(
     timestampSupport = new CurrentTimestampSupport()
