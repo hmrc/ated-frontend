@@ -73,7 +73,7 @@ class avoidanceSchemesSpec extends AnyFeatureSpec with GuiceOneAppPerSuite
       assert(document.getElementById("relief-summary-scheme-promoter-text").text() === "Promoter reference number")
 
       Then("The back link is correct")
-      assert(document.getElementsByClass("govuk-back-link").text === "Back")
+      assert(document.select(".govuk-width-container > a.govuk-back-link").text === "Back")
     }
   }
 }

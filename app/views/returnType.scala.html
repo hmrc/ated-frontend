@@ -32,9 +32,7 @@
 }
 
 @newMain(title = titleBuilder(messages("ated.return-type.title"), Some(returnTypeForm)),
-    serviceInfoContent = serviceInfoContent) {
-
-  @backLinkHtml
+    serviceInfoContent = serviceInfoContent, back = Some(backLinkHtml)) {
 
   @if(returnTypeForm.errors.nonEmpty) {
       @govukErrorSummary(ErrorSummary().withFormErrorsAsText(returnTypeForm))

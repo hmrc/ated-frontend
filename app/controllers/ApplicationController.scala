@@ -48,7 +48,7 @@ class ApplicationController @Inject()(mcc: MessagesControllerComponents,
   }
 
   def logout: Action[AnyContent] = Action {
-    Redirect(appConfig.serviceSignOut).withNewSession
+    Redirect(appConfig.serviceSignOut)
   }
 
   def keepAlive: Action[AnyContent] = Action.async { implicit request =>
@@ -58,7 +58,7 @@ class ApplicationController @Inject()(mcc: MessagesControllerComponents,
   }
 
   def redirectToGuidance: Action[AnyContent] = Action {
-    Redirect(appConfig.signOutRedirect).withNewSession
+    Redirect(appConfig.signOutRedirect)
   }
 
   def redirectToSignIn: Action[AnyContent] = Action {

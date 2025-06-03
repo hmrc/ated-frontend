@@ -57,9 +57,7 @@
     }
 }
 
-@newMain(title = titleBuilder(pageTitle, Some(propertyDetailsForm)), serviceInfoContent = serviceInfoContent) {
-
-    @backLinkHtml
+@newMain(title = titleBuilder(pageTitle, Some(propertyDetailsForm)), serviceInfoContent = serviceInfoContent, back = Some(backLinkHtml)) {
 
     @if(propertyDetailsForm.errors.nonEmpty) {
         @govukErrorSummary(ErrorSummary().withFormErrorsAsText(propertyDetailsForm))

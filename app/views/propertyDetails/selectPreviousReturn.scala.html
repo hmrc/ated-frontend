@@ -52,9 +52,7 @@
 }
 
 @newMain(title = titleBuilder(messages("ated.select-past-return.title"), Some(addressResultsForm)),
-          serviceInfoContent = serviceInfoContent) {
-
-    @backLinkHtml
+          serviceInfoContent = serviceInfoContent, back = Some(backLinkHtml)) {
 
     @if(prevReturns.isEmpty) {
         <header>

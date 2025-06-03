@@ -46,9 +46,7 @@
 }
 
 @newMain(title = titleBuilder(messages("ated.property-details-value.newBuildValue.title",date.getDayOfMonth().toString, intToMonth(date.getMonthValue()), date.getYear().toString), Some(propertyDetailsForm)),
-serviceInfoContent = serviceInfoContent) {
-
-    @backLinkHtml
+serviceInfoContent = serviceInfoContent, back = Some(backLinkHtml)) {
 
     @if(propertyDetailsForm.errors.nonEmpty) {
         @govukErrorSummary(ErrorSummary().withFormErrorsAsText(propertyDetailsForm))

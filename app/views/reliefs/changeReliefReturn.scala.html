@@ -62,9 +62,8 @@
     </div>
 }
 
-@newMain(title = titleBuilder(messages("ated.change-relief-return.title"), Some(editReliefForm)), serviceInfoContent = serviceInfoContent) {
+@newMain(title = titleBuilder(messages("ated.change-relief-return.title"), Some(editReliefForm)), serviceInfoContent = serviceInfoContent, back = Some(backLinkHtml)) {
 
-    @backLinkHtml
 
     @if(editReliefForm.errors.nonEmpty) {
         @govukErrorSummary(ErrorSummary().withFormErrorsAsText(editReliefForm))

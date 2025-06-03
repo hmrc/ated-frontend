@@ -63,9 +63,7 @@
 }
 
 @newMain(title = titleBuilder(messages("ated.choose-reliefs.avoidance-title"), Some(isTaxAvoidanceForm)),
-         serviceInfoContent = serviceInfoContent) {
-
-    @backLinkHtml
+         serviceInfoContent = serviceInfoContent, back = Some(backLinkHtml)) {
 
     @if(isTaxAvoidanceForm.errors.nonEmpty) {
         @govukErrorSummary(ErrorSummary(

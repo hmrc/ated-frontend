@@ -43,9 +43,7 @@
 
 @newMain(title = titleBuilder(messages("ated.property-details.first-occupied-known.title"), Some(dateFirstOccupiedKnownForm)),
           pageScripts = None,
-          serviceInfoContent = serviceInfoContent) {
-
-    @backLinkHtml
+          serviceInfoContent = serviceInfoContent, back = Some(backLinkHtml)) {
 
     @if(dateFirstOccupiedKnownForm.errors.nonEmpty) {
       @govukErrorSummary(ErrorSummary().withFormErrorsAsText(dateFirstOccupiedKnownForm))

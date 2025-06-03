@@ -39,9 +39,7 @@
     </script>
 }
 
-@newMain(title = titleBuilder(messages("ated.reliefs.error.title"))) {
-
- @backLinkHtml
+@newMain(title = titleBuilder(messages("ated.reliefs.error.title")), back = Some(backLinkHtml)) {
 
  <div class="govuk-form-group">
    <h1 class="govuk-heading-xl govuk-!-margin-bottom-10" id="relief-error-title">@messages("ated.reliefs.error.wrong-period.header")</h1>
