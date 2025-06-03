@@ -11,7 +11,6 @@ object AppDependencies {
     "uk.gov.hmrc"       %% "play-partials-play-30"       % "10.0.0",
     "uk.gov.hmrc"       %% "domain-play-30"              % "10.0.0",
     "uk.gov.hmrc"       %% "play-frontend-hmrc-play-30"  % "12.0.0",
-    "uk.gov.hmrc"       %% "http-caching-client-play-30" % "12.1.0",
     "uk.gov.hmrc.mongo" %% "hmrc-mongo-play-30"          % "2.6.0"
   )
 
