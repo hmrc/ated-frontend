@@ -53,7 +53,7 @@ class PropertyDetailsNewBuildController @Inject()(mcc: MessagesControllerCompone
           propertyDetailsCacheResponse(id) {
             case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
               currentBackLink.flatMap { backLink =>
-                dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
+                dataCacheConnector.fetchAndGetData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
                   val displayData = PropertyDetailsNewBuild(propertyDetails.value.flatMap(_.isNewBuild)
                   )
                   Future.successful(Ok(template(id,

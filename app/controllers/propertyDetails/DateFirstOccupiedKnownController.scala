@@ -52,8 +52,8 @@ class DateFirstOccupiedKnownController @Inject()(mcc: MessagesControllerComponen
           propertyDetailsCacheResponse(id) {
             case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
             currentBackLink.flatMap { backLink =>
-              dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
-                dataCacheConnector.fetchAndGetFormData[DateFirstOccupiedKnown](NewBuildFirstOccupiedDateKnown).map { firstOccupied =>
+              dataCacheConnector.fetchAndGetData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
+                dataCacheConnector.fetchAndGetData[DateFirstOccupiedKnown](NewBuildFirstOccupiedDateKnown).map { firstOccupied =>
                   val firstOccupiedDateKnown: Option[Boolean] = propertyDetails.value.flatMap(_.isBuildDateKnown)
                   val displayData = firstOccupied.getOrElse(DateFirstOccupiedKnown(firstOccupiedDateKnown))
 

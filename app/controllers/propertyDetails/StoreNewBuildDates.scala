@@ -34,8 +34,8 @@ trait StoreNewBuildDates extends Logging {
   def storeNewBuildDatesFromCache(id: String)
                                  (implicit hc: uk.gov.hmrc.http.HeaderCarrier, authContext: models.StandardAuthRetrievals): Future[Int] = {
 
-    dataCacheConnector.fetchAndGetFormData[DateFirstOccupied](NewBuildFirstOccupiedDate).flatMap{ firstOccupied =>
-      dataCacheConnector.fetchAndGetFormData[DateCouncilRegistered](NewBuildCouncilRegisteredDate).flatMap{ councilRegistered =>
+    dataCacheConnector.fetchAndGetData[DateFirstOccupied](NewBuildFirstOccupiedDate).flatMap{ firstOccupied =>
+      dataCacheConnector.fetchAndGetData[DateCouncilRegistered](NewBuildCouncilRegisteredDate).flatMap{ councilRegistered =>
         logger.info(s"Storing new build dates, firstOccupied: $firstOccupied, councilRegistered: $councilRegistered")
         propertyDetailsService.saveDraftPropertyDetailsNewBuildDates(
           id,

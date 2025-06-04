@@ -44,7 +44,7 @@ class ChargeableReturnConfirmationController @Inject()(mcc: MessagesControllerCo
   def confirmation : Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       serviceInfoService.getPartial.flatMap { serviceInfoContent =>
-        dataCacheConnector.fetchAndGetFormData[SubmitReturnsResponse](SubmitReturnsResponseFormId) map {
+        dataCacheConnector.fetchAndGetData[SubmitReturnsResponse](SubmitReturnsResponseFormId) map {
           case Some(submitResponse) =>
             Ok(template(submitResponse, serviceInfoContent))
           case None =>
@@ -58,7 +58,7 @@ class ChargeableReturnConfirmationController @Inject()(mcc: MessagesControllerCo
   def viewPrintFriendlyChargeableConfirmation : Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       for {
-        submitedResponse <- dataCacheConnector.fetchAndGetFormData[SubmitReturnsResponse](SubmitReturnsResponseFormId)
+        submitedResponse <- dataCacheConnector.fetchAndGetData[SubmitReturnsResponse](SubmitReturnsResponseFormId)
         organisationName <- subscriptionDataService.getOrganisationName
       } yield {
         Ok(views.html.propertyDetails.chargeableConfirmationPrintFriendly(submitedResponse, organisationName))

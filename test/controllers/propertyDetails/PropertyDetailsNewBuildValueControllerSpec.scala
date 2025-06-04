@@ -46,21 +46,24 @@ import scala.concurrent.Future
 class PropertyDetailsNewBuildValueControllerSpec extends PlaySpec with GuiceOneServerPerSuite with BeforeAndAfterEach with MockAuthUtil {
 
   implicit val mockAppConfig: ApplicationConfig = mock[ApplicationConfig]
-  implicit lazy val hc: HeaderCarrier = HeaderCarrier()
+  implicit lazy val hc: HeaderCarrier           = HeaderCarrier()
 
-  val mockMcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
+  val mockMcc: MessagesControllerComponents              = app.injector.instanceOf[MessagesControllerComponents]
   val mockPropertyDetailsService: PropertyDetailsService = mock[PropertyDetailsService]
-  val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
-  val mockBackLinkCacheConnector: BackLinkCacheService = mock[BackLinkCacheService]
-  val mockPropertyDetailsProfessionallyValuedController: PropertyDetailsProfessionallyValuedController = mock[PropertyDetailsProfessionallyValuedController]
-    val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
+  val mockDataCacheConnector: DataCacheConnector         = mock[DataCacheConnector]
+  val mockBackLinkCacheConnector: BackLinkCacheService   = mock[BackLinkCacheService]
+
+  val mockPropertyDetailsProfessionallyValuedController: PropertyDetailsProfessionallyValuedController =
+    mock[PropertyDetailsProfessionallyValuedController]
+
+  val messagesApi: MessagesApi                   = app.injector.instanceOf[MessagesApi]
+  lazy implicit val messages: MessagesImpl       = MessagesImpl(Lang("en-GB"), messagesApi)
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
-  val injectedViewInstance = app.injector.instanceOf[views.html.propertyDetails.propertyDetailsNewBuildValue]
+  val injectedViewInstance                       = app.injector.instanceOf[views.html.propertyDetails.propertyDetailsNewBuildValue]
 
   val periodKey: Int = 2016
-  val testDate = LocalDate.parse("2020-02-02")
+  val testDate       = LocalDate.parse("2020-02-02")
 
   class Setup {
 
@@ -82,7 +85,7 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
     )
 
     def getWithUnAuthorisedUser(test: Future[Result] => Any): Unit = {
-      val userId = s"user-${UUID.randomUUID}"
+      val userId   = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
       setInvalidAuthMocks(authMock)
       val result = testPropertyDetailsNewBuildValueController.view("1").apply(SessionBuilder.buildRequestWithSession(userId))
@@ -90,51 +93,61 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
     }
 
     def getDataWithAuthorisedUser(id: String, propertyDetails: PropertyDetails)(test: Future[Result] => Any): Unit = {
-      val userId = s"user-${UUID.randomUUID}"
+      val userId   = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
-     when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Html("")))
-      when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
-        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-      when(mockDataCacheConnector.fetchAndGetFormData[Boolean](ArgumentMatchers.any())
-        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
+      when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(Html("")))
+
+      when(mockDataCacheConnector.fetchAndGetData[Boolean](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(None))
       when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+      when(
+        mockDataCacheConnector
+          .fetchAndGetData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))(ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(Some("XN1200000100001")))
       when(mockPropertyDetailsService.retrieveDraftPropertyDetails(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propertyDetails)))
       val result = testPropertyDetailsNewBuildValueController.view(id).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
 
-
     def saveWithUnAuthorisedUser(test: Future[Result] => Any): Unit = {
-      val userId = s"user-${UUID.randomUUID}"
+      val userId   = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
       setInvalidAuthMocks(authMock)
-      val result = testPropertyDetailsNewBuildValueController.save("1", periodKey, None, testDate)
+      val result = testPropertyDetailsNewBuildValueController
+        .save("1", periodKey, None, testDate)
         .apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
 
     def submitWithAuthorisedUser(formBody: List[(String, String)])(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
-      when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
-        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-      when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(),ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
-      when(mockPropertyDetailsService.saveDraftPropertyDetailsNewBuildValue(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).
-        thenReturn(Future.successful(OK))
-     when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Html("")))
+      when(
+        mockDataCacheConnector
+          .fetchAndGetData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))(ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(Some("XN1200000100001")))
+      when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
+        .thenReturn(Future.successful(None))
+      when(
+        mockPropertyDetailsService
+          .saveDraftPropertyDetailsNewBuildValue(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(OK))
+      when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(Html("")))
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
-      val result = testPropertyDetailsNewBuildValueController.save("1", periodKey, None, testDate)
+      val result = testPropertyDetailsNewBuildValueController
+        .save("1", periodKey, None, testDate)
         .apply(SessionBuilder.updateRequestFormWithSession(FakeRequest().withFormUrlEncodedBody(formBody: _*), userId))
 
       test(result)
     }
+
   }
 
-
-  override def beforeEach(): Unit = {
-  }
+  override def beforeEach(): Unit = {}
 
   "PropertyDetailsNewBuildValueController" must {
     "propertyDetails" must {
@@ -155,9 +168,8 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
       "Authorised users" must {
         "show the chargeable property details view if we id and data" in new Setup {
           val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
-          getDataWithAuthorisedUser("1", propertyDetails) {
-            result =>
-              status(result) must be(OK)
+          getDataWithAuthorisedUser("1", propertyDetails) { result =>
+            status(result) must be(OK)
           }
         }
       }
@@ -176,9 +188,8 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
       "received a BAD REQUEST when they enter an invalid money value" in new Setup {
         val formBody = List(("newBuildValue", "AA"))
         when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
-        submitWithAuthorisedUser(formBody) {
-          result =>
-            status(result) must be(BAD_REQUEST)
+        submitWithAuthorisedUser(formBody) { result =>
+          status(result) must be(BAD_REQUEST)
         }
       }
     }
@@ -186,11 +197,11 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
     "be redirected to the property details professionally valued page" in new Setup {
       val formBody = List(("newBuildValue", "100000"))
       when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
-      submitWithAuthorisedUser(formBody) {
-        result =>
-          status(result) must be(SEE_OTHER)
-          redirectLocation(result).get must include("/liability/create/valued/view")
+      submitWithAuthorisedUser(formBody) { result =>
+        status(result) must be(SEE_OTHER)
+        redirectLocation(result).get must include("/liability/create/valued/view")
       }
     }
   }
+
 }

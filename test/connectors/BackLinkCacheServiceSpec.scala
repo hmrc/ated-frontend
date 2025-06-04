@@ -24,11 +24,8 @@ import org.mockito.Mockito._
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
-import play.api.libs.json.Json
-import play.api.libs.json.OFormat.oFormatFromReadsAndOWrites
 import play.api.test.Injecting
 import repositories.SessionCacheRepository
-import uk.gov.hmrc.http.cache.client.{CacheMap, SessionCache}
 import uk.gov.hmrc.http.{HeaderCarrier, SessionId}
 import uk.gov.hmrc.mongo.cache.DataKey
 
@@ -38,19 +35,18 @@ class BackLinkCacheServiceSpec extends PlaySpec with GuiceOneAppPerSuite with Mo
 
   implicit val hc: HeaderCarrier                   = HeaderCarrier(sessionId = Some(SessionId("test")))
   implicit val ec: ExecutionContext                = inject[ExecutionContext]
-  val mockSessionCache: SessionCache               = mock[SessionCache]
   val mockAppConfig: ApplicationConfig             = app.injector.instanceOf[ApplicationConfig]
   val mockSessionCacheRepo: SessionCacheRepository = mock[SessionCacheRepository]
 
   class Setup extends ConnectorTest {
 
-    val testBackLinkCacheConnector: BackLinkCacheService = new BackLinkCacheService(
+    val testBackLinkCacheService: BackLinkCacheService = new BackLinkCacheService(
       mockSessionCacheRepo
     )
 
   }
 
-  "BackLinkCacheConnector" must {
+  "BackLinkCacheService" must {
 
     "fetchAndGetBackLink" must {
 
@@ -62,10 +58,7 @@ class BackLinkCacheServiceSpec extends PlaySpec with GuiceOneAppPerSuite with Mo
             .getFromSession[BackLinkModel](DataKey(any))(ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(backLink))
 
-        when(requestBuilderExecute[CacheMap]).thenReturn(
-          Future.successful(CacheMap("test", Map("ATED_Back_Link:testPageId" -> Json.toJson(BackLinkModel(Some("testBackLink")))))))
-
-        val result: Future[Option[String]] = testBackLinkCacheConnector.fetchAndGetBackLink("testPageId")
+        val result: Future[Option[String]] = testBackLinkCacheService.fetchAndGetBackLink("testPageId")
         await(result) must be(backLink.get.backLink)
       }
     }
@@ -80,10 +73,7 @@ class BackLinkCacheServiceSpec extends PlaySpec with GuiceOneAppPerSuite with Mo
             .putSession[BackLinkModel](DataKey(any), BackLinkModel(any()))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(backLink))
 
-        when(requestBuilderExecute[CacheMap]).thenReturn(
-          Future.successful(CacheMap("test", Map("ATED_Back_Link:testPageId" -> Json.toJson(BackLinkModel(Some("testBackLink")))))))
-
-        val result: Future[Option[String]] = testBackLinkCacheConnector.saveBackLink("testPageId", backLink.backLink)
+        val result: Future[Option[String]] = testBackLinkCacheService.saveBackLink("testPageId", backLink.backLink)
         await(result) must be(backLink.backLink)
       }
     }
@@ -98,13 +88,13 @@ class BackLinkCacheServiceSpec extends PlaySpec with GuiceOneAppPerSuite with Mo
             .putSession[BackLinkModel](DataKey(any), BackLinkModel(any()))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(backLink))
 
-        val result: Future[List[Option[String]]] = testBackLinkCacheConnector.clearBackLinks(List("testPageId", "testPageId2"))
+        val result: Future[List[Option[String]]] = testBackLinkCacheService.clearBackLinks(List("testPageId", "testPageId2"))
         await(result) must be(List(None, None))
 
       }
 
       "clear the back link details when we have none" in new Setup {
-        val result: Future[List[Option[String]]] = testBackLinkCacheConnector.clearBackLinks(Nil)
+        val result: Future[List[Option[String]]] = testBackLinkCacheService.clearBackLinks(Nil)
         await(result) must be(Nil)
 
       }

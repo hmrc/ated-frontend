@@ -101,7 +101,7 @@ class ChooseReliefsControllerSpec extends PlaySpec with GuiceOneServerPerSuite w
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
       when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(btaNavigationLinksView()(messages,mockAppConfig)))
-      when(mockDataCacheConnector.fetchAtedRefData[String](eqTo(AtedConstants.DelegatedClientAtedRefNumber))
+      when(mockDataCacheConnector.fetchAndGetData[String](eqTo(AtedConstants.DelegatedClientAtedRefNumber))
         (any(), any())).thenReturn(Future.successful(Some("XN1200000100001")))
       when(mockBackLinkCacheConnector.fetchAndGetBackLink(any())(any())).thenReturn(Future.successful(None))
       when(mockBackLinkCacheConnector.saveBackLink(any(), any())(any())).thenReturn(Future.successful(None))
@@ -115,7 +115,7 @@ class ChooseReliefsControllerSpec extends PlaySpec with GuiceOneServerPerSuite w
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
-      when(mockDataCacheConnector.fetchAtedRefData[String](eqTo(AtedConstants.DelegatedClientAtedRefNumber))
+      when(mockDataCacheConnector.fetchAndGetData[String](eqTo(AtedConstants.DelegatedClientAtedRefNumber))
         (any(), any())).thenReturn(Future.successful(Some("XN1200000100001")))
       when(mockReliefsService.retrieveDraftReliefs(any(), any())(any(), any())).thenReturn(Future.successful(reliefs))
       val result = testChooseReliefsController.editFromSummary(periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
@@ -127,7 +127,7 @@ class ChooseReliefsControllerSpec extends PlaySpec with GuiceOneServerPerSuite w
       val userId = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
       setForbiddenAuthMocks(authMock)
-      when(mockDataCacheConnector.fetchAtedRefData[String](eqTo(AtedConstants.DelegatedClientAtedRefNumber))
+      when(mockDataCacheConnector.fetchAndGetData[String](eqTo(AtedConstants.DelegatedClientAtedRefNumber))
         (any(), any())).thenReturn(Future.successful(Some("XN1200000100001")))
       when(mockReliefsService.retrieveDraftReliefs(any(), any())(any(), any())).thenReturn(Future.successful(reliefs))
       val result = testChooseReliefsController.editFromSummary(periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
@@ -140,7 +140,7 @@ class ChooseReliefsControllerSpec extends PlaySpec with GuiceOneServerPerSuite w
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
       when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(btaNavigationLinksView()(messages,mockAppConfig)))
-      when(mockDataCacheConnector.fetchAtedRefData[String](eqTo(AtedConstants.DelegatedClientAtedRefNumber))
+      when(mockDataCacheConnector.fetchAndGetData[String](eqTo(AtedConstants.DelegatedClientAtedRefNumber))
         (any(), any())).thenReturn(Future.successful(Some("XN1200000100001")))
       when(mockBackLinkCacheConnector.fetchAndGetBackLink(any())(any())).thenReturn(Future.successful(None))
       when(mockBackLinkCacheConnector.saveBackLink(any(), any())(any())).thenReturn(Future.successful(None))
@@ -161,7 +161,7 @@ class ChooseReliefsControllerSpec extends PlaySpec with GuiceOneServerPerSuite w
 
     def submitWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded], inputJson: JsValue)(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
-      when(mockDataCacheConnector.fetchAtedRefData[String](eqTo(AtedConstants.DelegatedClientAtedRefNumber))
+      when(mockDataCacheConnector.fetchAndGetData[String](eqTo(AtedConstants.DelegatedClientAtedRefNumber))
         (any(), any())).thenReturn(Future.successful(Some("XN1200000100001")))
       when(mockReliefsService.saveDraftReliefs(any(), any(), any())(any(), any()))
         .thenReturn(Future.successful(Some(testReliefs)))
@@ -176,7 +176,7 @@ class ChooseReliefsControllerSpec extends PlaySpec with GuiceOneServerPerSuite w
 
     def submitFormBodyWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
-      when(mockDataCacheConnector.fetchAtedRefData[String](eqTo(AtedConstants.DelegatedClientAtedRefNumber))
+      when(mockDataCacheConnector.fetchAndGetData[String](eqTo(AtedConstants.DelegatedClientAtedRefNumber))
         (any(), any())).thenReturn(Future.successful(Some("XN1200000100001")))
       when(mockReliefsService.saveDraftReliefs(any(), any(), any())(any(), any()))
         .thenReturn(Future.successful(Some(testReliefs)))
@@ -190,7 +190,7 @@ class ChooseReliefsControllerSpec extends PlaySpec with GuiceOneServerPerSuite w
 
     def forbiddenSubmitUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
-      when(mockDataCacheConnector.fetchAtedRefData[String](eqTo(AtedConstants.DelegatedClientAtedRefNumber))
+      when(mockDataCacheConnector.fetchAndGetData[String](eqTo(AtedConstants.DelegatedClientAtedRefNumber))
         (any(), any())).thenReturn(Future.successful(Some("XN1200000100001")))
       when(mockReliefsService.saveDraftReliefs(any(), any(), any())(any(), any()))
         .thenReturn(Future.successful(Some(testReliefs)))

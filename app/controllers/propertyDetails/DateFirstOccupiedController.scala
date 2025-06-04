@@ -59,8 +59,8 @@ class DateFirstOccupiedController @Inject()(mcc: MessagesControllerComponents,
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
           propertyDetailsCacheResponse(id) {
             case PropertyDetailsCacheSuccessResponse(propertyDetails) => currentBackLink.flatMap { backLink =>
-              dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
-                dataCacheConnector.fetchAndGetFormData[DateFirstOccupied](NewBuildFirstOccupiedDate).map { dateFirstOccupied =>
+              dataCacheConnector.fetchAndGetData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
+                dataCacheConnector.fetchAndGetData[DateFirstOccupied](NewBuildFirstOccupiedDate).map { dateFirstOccupied =>
                   val dfo: Option[LocalDate] = dateFirstOccupied.map(_.dateFirstOccupied).getOrElse(propertyDetails.value.flatMap(_.newBuildDate))
                   Ok(template(id,
                     propertyDetails.periodKey,

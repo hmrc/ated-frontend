@@ -20,7 +20,8 @@ import builders.PropertyDetailsBuilder
 import config.ApplicationConfig
 import connectors.{BackLinkCacheService, DataCacheConnector}
 import controllers.auth.AuthAction
-import models.{DateOfChange, HasBeenRevalued, PropertyDetailsNewValuation, PropertyDetailsRevalued}
+import models.{DateOfChange, DateOfRevalue, HasBeenRevalued, PropertyDetailsNewValuation, PropertyDetailsRevalued}
+import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.{any, eq => eqs}
 import org.mockito.Mockito.{verify, when}
 import org.scalatestplus.play.PlaySpec
@@ -32,7 +33,7 @@ import services.{PropertyDetailsCacheSuccessResponse, PropertyDetailsService, Se
 import testhelpers.MockAuthUtil
 import uk.gov.hmrc.auth.core.Enrolment
 import uk.gov.hmrc.http.HeaderCarrier
-import utils.AtedConstants.{DelegatedClientAtedRefNumber, FortyThousandValueDateOfChange, HasPropertyBeenRevalued, propertyDetailsNewValuationValue}
+import utils.AtedConstants.{DateOfRevalueConstant, DelegatedClientAtedRefNumber, FortyThousandValueDateOfChange, HasPropertyBeenRevalued, SelectedPreviousReturn, propertyDetailsNewValuationValue}
 import views.html.BtaNavigationLinks
 
 import java.time.LocalDate
@@ -40,22 +41,21 @@ import scala.concurrent.Future
 
 abstract class PropertyDetailsTestFixture extends PlaySpec with GuiceOneServerPerSuite with MockAuthUtil {
 
-
-  implicit val mockAppConfig: ApplicationConfig = mock[ApplicationConfig]
-  implicit lazy val hc: HeaderCarrier = HeaderCarrier()
-  val mockMcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
-  val mockPropertyDetailsService: PropertyDetailsService = mock[PropertyDetailsService]
-  val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
-  val mockBackLinkCacheConnector: BackLinkCacheService = mock[BackLinkCacheService]
+  implicit val mockAppConfig: ApplicationConfig                         = mock[ApplicationConfig]
+  implicit lazy val hc: HeaderCarrier                                   = HeaderCarrier()
+  val mockMcc: MessagesControllerComponents                             = app.injector.instanceOf[MessagesControllerComponents]
+  val mockPropertyDetailsService: PropertyDetailsService                = mock[PropertyDetailsService]
+  val mockDataCacheConnector: DataCacheConnector                        = mock[DataCacheConnector]
+  val mockBackLinkCacheConnector: BackLinkCacheService                  = mock[BackLinkCacheService]
   val mockNewValuationController: PropertyDetailsNewValuationController = mock[PropertyDetailsNewValuationController]
-  val mockIsFullTaxPeriodController: IsFullTaxPeriodController = mock[IsFullTaxPeriodController]
-  lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
-  val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-  val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
-  val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
+  val mockIsFullTaxPeriodController: IsFullTaxPeriodController          = mock[IsFullTaxPeriodController]
+  lazy implicit val messages: MessagesImpl                              = MessagesImpl(Lang("en-GB"), messagesApi)
+  val messagesApi: MessagesApi                                          = app.injector.instanceOf[MessagesApi]
+  val btaNavigationLinksView: BtaNavigationLinks                        = app.injector.instanceOf[BtaNavigationLinks]
+  val mockServiceInfoService: ServiceInfoService                        = mock[ServiceInfoService]
 
   val mockDateOfChangeController: PropertyDetailsDateOfChangeController = mock[PropertyDetailsDateOfChangeController]
-  val mockExitController: PropertyDetailsExitController = mock[PropertyDetailsExitController]
+  val mockExitController: PropertyDetailsExitController                 = mock[PropertyDetailsExitController]
 
   val mockAuthAction: AuthAction = new AuthAction(
     mockAppConfig,
@@ -68,23 +68,43 @@ abstract class PropertyDetailsTestFixture extends PlaySpec with GuiceOneServerPe
     setupCommonMockExpectations()
   }
 
-
-  def setupDataCacheConnectorExpectations(newValuation: Some[BigDecimal], hasPropertyBeenRevalued: Some[Boolean], dateOfRevaluationChange: Some[LocalDate]) = {
-    when(mockDataCacheConnector.fetchAndGetFormData[HasBeenRevalued](eqs(HasPropertyBeenRevalued))(any(), any())).thenReturn(Future.successful(Some(HasBeenRevalued(hasPropertyBeenRevalued))))
-    when(mockDataCacheConnector.fetchAndGetFormData[PropertyDetailsNewValuation](eqs(propertyDetailsNewValuationValue))
-      (any(), any()))
+  def setupDataCacheConnectorExpectations(newValuation: Some[BigDecimal],
+                                          hasPropertyBeenRevalued: Some[Boolean],
+                                          dateOfRevaluationChange: Some[LocalDate]) = {
+    when(mockDataCacheConnector.fetchAndGetData[PropertyDetailsNewValuation](eqs(propertyDetailsNewValuationValue))(any(), any()))
       .thenReturn(Future.successful(Some(PropertyDetailsNewValuation(newValuation))))
-    when(mockDataCacheConnector.fetchAndGetFormData[DateOfChange](eqs(FortyThousandValueDateOfChange))
-      (any(), any()))
+    when(mockDataCacheConnector.fetchAndGetData[DateOfChange](eqs(FortyThousandValueDateOfChange))(any(), any()))
       .thenReturn(Future.successful(Some(DateOfChange(dateOfRevaluationChange))))
+
+    when(mockDataCacheConnector.fetchAndGetData[HasBeenRevalued](eqs(HasPropertyBeenRevalued))(any(), any()))
+      .thenReturn(Future.successful(Some(HasBeenRevalued(hasPropertyBeenRevalued))))
+
+    when(mockDataCacheConnector.fetchAndGetData[HasBeenRevalued](eqs(HasPropertyBeenRevalued))(any(), any()))
+      .thenReturn(Future.successful(Some(HasBeenRevalued(hasPropertyBeenRevalued))))
   }
 
   def setupCommonMockExpectations() = {
     val customBtaNavigationLinks = btaNavigationLinksView()(messages, mockAppConfig)
     when(mockServiceInfoService.getPartial(any(), any(), any())).thenReturn(Future.successful(customBtaNavigationLinks))
-    when(mockDataCacheConnector.fetchAtedRefData[String](eqs(DelegatedClientAtedRefNumber))(any(), any())).thenReturn(Future.successful(Some("XN1200000100001")))
-    when(mockDataCacheConnector.fetchAndGetFormData[Boolean](any())
-      (any(), any())).thenReturn(Future.successful(None))
+
+    when(mockDataCacheConnector.fetchAndGetData[String](eqs(DelegatedClientAtedRefNumber))(any(), any()))
+      .thenReturn(Future.successful(Some("XN1200000100001")))
+
+    when(mockDataCacheConnector.fetchAndGetData[Boolean](ArgumentMatchers.eq(SelectedPreviousReturn))(ArgumentMatchers.any(), ArgumentMatchers.any()))
+      .thenReturn(Future.successful(Some(true)))
+
+    when(mockDataCacheConnector.fetchAndGetData[PropertyDetailsNewValuation](eqs(propertyDetailsNewValuationValue))(ArgumentMatchers.any(), ArgumentMatchers.any()))
+      .thenReturn(Future.successful(Some(PropertyDetailsNewValuation(Some(BigDecimal(1))))))
+
+    when(mockDataCacheConnector.fetchAndGetData[DateOfRevalue](eqs(DateOfRevalueConstant))(any(), any()))
+      .thenReturn(Future.successful(Some(DateOfRevalue(Some(LocalDate.now())))))
+
+    when(mockDataCacheConnector.fetchAndGetData[HasBeenRevalued](eqs(HasPropertyBeenRevalued))(any(), any()))
+      .thenReturn(Future.successful(Some(HasBeenRevalued(Some(true)))))
+
+    when(mockDataCacheConnector.fetchAndGetData[DateOfChange](eqs(FortyThousandValueDateOfChange))(any(), any()))
+      .thenReturn(Future.successful(Some(DateOfChange(Some(LocalDate.now())))))
+
     when(mockBackLinkCacheConnector.fetchAndGetBackLink(any())(any())).thenReturn(Future.successful(None))
     when(mockBackLinkCacheConnector.saveBackLink(any(), any())(any())).thenReturn(Future.successful(None))
   }
@@ -102,12 +122,15 @@ abstract class PropertyDetailsTestFixture extends PlaySpec with GuiceOneServerPe
   }
 
   def verifyDataCacheConnectorRetursHasBeenRevalued(revalued: String) = {
-    verify(mockDataCacheConnector).fetchAndGetFormData[HasBeenRevalued](
+    verify(mockDataCacheConnector).fetchAndGetData[HasBeenRevalued](
       eqs(revalued)
     )(any(), any())
   }
 
-  def verifyPropertyDetailsService(isPropertyRevalued: Option[Boolean], revaluedValue: Option[BigDecimal], revaluedDate: Option[LocalDate], partAcqDispDate: Option[LocalDate]) = {
+  def verifyPropertyDetailsService(isPropertyRevalued: Option[Boolean],
+                                   revaluedValue: Option[BigDecimal],
+                                   revaluedDate: Option[LocalDate],
+                                   partAcqDispDate: Option[LocalDate]) = {
     val expectedPropertyDetails = PropertyDetailsRevalued(
       isPropertyRevalued = isPropertyRevalued,
       revaluedValue = revaluedValue,

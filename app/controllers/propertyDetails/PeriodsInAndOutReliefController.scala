@@ -52,7 +52,7 @@ class PeriodsInAndOutReliefController @Inject()(mcc: MessagesControllerComponent
           propertyDetailsCacheResponse(id) {
             case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
               currentBackLink.flatMap { backLink =>
-                dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
+                dataCacheConnector.fetchAndGetData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
                   Future.successful(Ok(template(id, propertyDetails.periodKey,
                     periodsInAndOutReliefForm,
                     PeriodUtils.getDisplayPeriods(propertyDetails.period, propertyDetails.periodKey),

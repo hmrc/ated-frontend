@@ -44,16 +44,16 @@ import models.DateFirstOccupiedKnown
 
 class DateFirstOccupiedKnownControllerSpec extends PlaySpec with GuiceOneServerPerSuite with BeforeAndAfterEach with MockitoSugar with MockAuthUtil {
 
-  implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
-  implicit lazy val hc: HeaderCarrier = HeaderCarrier()
-  val mockMcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
-  val mockBackLinkCacheConnector: BackLinkCacheService = mock[BackLinkCacheService]
+  implicit val mockAppConfig: ApplicationConfig          = app.injector.instanceOf[ApplicationConfig]
+  implicit lazy val hc: HeaderCarrier                    = HeaderCarrier()
+  val mockMcc: MessagesControllerComponents              = app.injector.instanceOf[MessagesControllerComponents]
+  val mockBackLinkCacheConnector: BackLinkCacheService   = mock[BackLinkCacheService]
   val mockPropertyDetailsService: PropertyDetailsService = mock[PropertyDetailsService]
-  val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
-  val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-  lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
-  val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
-  val injectedViewInstance: dateFirstOccupiedKnown = app.injector.instanceOf[views.html.propertyDetails.dateFirstOccupiedKnown]
+  val mockDataCacheConnector: DataCacheConnector         = mock[DataCacheConnector]
+  val messagesApi: MessagesApi                           = app.injector.instanceOf[MessagesApi]
+  lazy implicit val messages: MessagesImpl               = MessagesImpl(Lang("en-GB"), messagesApi)
+  val mockServiceInfoService: ServiceInfoService         = mock[ServiceInfoService]
+  val injectedViewInstance: dateFirstOccupiedKnown       = app.injector.instanceOf[views.html.propertyDetails.dateFirstOccupiedKnown]
 
   class Setup {
 
@@ -76,7 +76,7 @@ class DateFirstOccupiedKnownControllerSpec extends PlaySpec with GuiceOneServerP
     val periodKey: Int = 2015
 
     def getWithUnAuthorisedUser(test: Future[Result] => Any): Any = {
-      val userId = s"user-${UUID.randomUUID}"
+      val userId   = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
       setInvalidAuthMocks(authMock)
       val result = dateFirstOccupiedKnownController.view("1").apply(SessionBuilder.buildRequestWithSession(userId))
@@ -84,25 +84,34 @@ class DateFirstOccupiedKnownControllerSpec extends PlaySpec with GuiceOneServerP
     }
 
     def getWithAuthorisedUser(test: Future[Result] => Any): Any = {
-      val userId = s"user-${UUID.randomUUID}"
+      val userId   = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       noDelegationModelAuthMocks(authMock)
       when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(HtmlFormat.empty))
-      when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
-        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-      when(mockDataCacheConnector.fetchAndGetFormData[DateFirstOccupiedKnown](ArgumentMatchers.eq(AtedConstants.NewBuildFirstOccupiedDateKnown))
-        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(DateFirstOccupiedKnown(None))))
-      when(mockDataCacheConnector.fetchAndGetFormData[Boolean](ArgumentMatchers.any())
-        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
-
-      when(mockPropertyDetailsService.retrieveDraftPropertyDetails(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())) thenReturn {
+      when(
+        mockDataCacheConnector
+          .fetchAndGetData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))(ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(Some("XN1200000100001")))
+      when(
+        mockDataCacheConnector.fetchAndGetData[DateFirstOccupiedKnown](ArgumentMatchers.eq(AtedConstants.NewBuildFirstOccupiedDateKnown))(
+          ArgumentMatchers.any(),
+          ArgumentMatchers.any())).thenReturn(Future.successful(Some(DateFirstOccupiedKnown(None))))
+      when(mockDataCacheConnector.fetchAndGetData[Boolean](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(None))
+      when(
+        mockDataCacheConnector
+          .fetchAndGetData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))(ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(Some("XN1200000100001")))
+      when(
+        mockPropertyDetailsService.retrieveDraftPropertyDetails(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())) thenReturn {
         Future.successful(PropertyDetailsCacheSuccessResponse(PropertyDetailsBuilder.getPropertyDetails("1")))
       }
       when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
       val result = dateFirstOccupiedKnownController.view("1").apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
+
   }
 
   "DateFirstOccupiedKnownController" must {
@@ -127,15 +136,15 @@ class DateFirstOccupiedKnownControllerSpec extends PlaySpec with GuiceOneServerP
       "Authorised users" must {
 
         "show Do you know when the property was first occupied? question page" in new Setup {
-          getWithAuthorisedUser {
-            result =>
-              status(result) must be(OK)
-              val document = Jsoup.parse(contentAsString(result))
-              document.title() must be(TitleBuilder.buildTitle("Do you know when the property was first occupied?"))
+          getWithAuthorisedUser { result =>
+            status(result) must be(OK)
+            val document = Jsoup.parse(contentAsString(result))
+            document.title() must be(TitleBuilder.buildTitle("Do you know when the property was first occupied?"))
           }
         }
       }
 
     }
   }
+
 }

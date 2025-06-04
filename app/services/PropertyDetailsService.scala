@@ -448,7 +448,7 @@ class PropertyDetailsService @Inject()(propertyDetailsConnector: PropertyDetails
   def addDraftPropertyDetailsDatesInRelief(id: String, propertyDetails: PropertyDetailsDatesInRelief)
                                           (implicit authContext: StandardAuthRetrievals, headerCarrier: HeaderCarrier): Future[Int] = {
     for {
-      chosenRelief <- dataCacheConnector.fetchAndGetFormData[PeriodChooseRelief](CHOSEN_RELIEF_ID)
+      chosenRelief <- dataCacheConnector.fetchAndGetData[PeriodChooseRelief](CHOSEN_RELIEF_ID)
       propertyDetailsResponse <- propertyDetailsConnector.addDraftPropertyDetailsDatesInRelief(id, propertyDetails.copy(description = chosenRelief.map(_.reliefDescription)))
     } yield {
       propertyDetailsResponse.status match {

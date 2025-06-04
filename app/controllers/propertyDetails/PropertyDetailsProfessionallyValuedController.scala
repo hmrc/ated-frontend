@@ -53,7 +53,7 @@ class PropertyDetailsProfessionallyValuedController @Inject()(mcc: MessagesContr
           propertyDetailsCacheResponse(id) {
             case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
               currentBackLink.flatMap { backLink =>
-                dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).map { isPrevReturn =>
+                dataCacheConnector.fetchAndGetData[Boolean](SelectedPreviousReturn).map { isPrevReturn =>
                   val displayData = PropertyDetailsProfessionallyValued(propertyDetails.value.flatMap(_.isValuedByAgent))
                   Ok(template(id,
                     propertyDetails.periodKey,
@@ -75,7 +75,7 @@ class PropertyDetailsProfessionallyValuedController @Inject()(mcc: MessagesContr
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
           propertyDetailsCacheResponse(id) {
             case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
-              dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).map { isPrevReturn =>
+              dataCacheConnector.fetchAndGetData[Boolean](SelectedPreviousReturn).map { isPrevReturn =>
                 val displayData = PropertyDetailsProfessionallyValued(propertyDetails.value.flatMap(_.isValuedByAgent))
                 Ok(template(id,
                   propertyDetails.periodKey,

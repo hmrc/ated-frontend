@@ -54,7 +54,7 @@ class PropertyDetailsTitleController @Inject()(mcc: MessagesControllerComponents
           propertyDetailsCacheResponse(id) {
             case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
               currentBackLink.flatMap { backLink =>
-                dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).map { isPrevReturn =>
+                dataCacheConnector.fetchAndGetData[Boolean](SelectedPreviousReturn).map { isPrevReturn =>
                   val displayData = propertyDetails.title.getOrElse(new PropertyDetailsTitle(""))
                   Ok(template(id, propertyDetails.periodKey, propertyDetailsTitleForm.fill(displayData),
                     AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn), serviceInfoContent,
@@ -73,7 +73,7 @@ class PropertyDetailsTitleController @Inject()(mcc: MessagesControllerComponents
       serviceInfoService.getPartial.flatMap { serviceInfoContent =>
         propertyDetailsCacheResponse(id) {
           case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
-            dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
+            dataCacheConnector.fetchAndGetData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
               val mode = AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn)
               Future.successful(
                 Ok(template(

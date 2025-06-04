@@ -18,31 +18,33 @@ package connectors
 
 import config.ApplicationConfig
 import models.{ReturnType, StandardAuthRetrievals}
+import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
-import play.api.libs.json.{JsString, JsValue, Json}
 import play.api.test.Injecting
-import uk.gov.hmrc.http.cache.client.{CacheMap, SessionCache}
-import uk.gov.hmrc.http.SessionId
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
+import repositories.SessionCacheRepository
+import uk.gov.hmrc.http.{HeaderCarrier, SessionId}
+import uk.gov.hmrc.mongo.cache.DataKey
 
 import scala.concurrent.{ExecutionContext, Future}
 
 class DataCacheConnectorSpec extends PlaySpec with GuiceOneAppPerSuite with MockitoSugar with Injecting {
 
-  implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId("test")))
-  implicit val ec: ExecutionContext = inject[ExecutionContext]
-  val mockSessionCache: SessionCache = mock[SessionCache]
-  val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
+  implicit val hc: HeaderCarrier                   = HeaderCarrier(sessionId = Some(SessionId("test")))
+  implicit val ec: ExecutionContext                = inject[ExecutionContext]
+  val mockAppConfig: ApplicationConfig             = app.injector.instanceOf[ApplicationConfig]
+  val mockSessionCacheRepo: SessionCacheRepository = mock[SessionCacheRepository]
   implicit val authContext: StandardAuthRetrievals = mock[StandardAuthRetrievals]
 
   class Setup extends ConnectorTest {
+
     val testDataCacheConnector: DataCacheConnector = new DataCacheConnector(
-      mockHttpClient,
-      mockAppConfig
+      mockSessionCacheRepo
     )
+
   }
 
   val returnType = ReturnType(Some("CR"))
@@ -51,8 +53,10 @@ class DataCacheConnectorSpec extends PlaySpec with GuiceOneAppPerSuite with Mock
 
     "saveFormData" must {
       "save form data in keystore" in new Setup {
-        val returnedCacheMap = CacheMap("form-id", Map("test" -> Json.toJson(returnType)))
-        when(requestBuilderExecute[CacheMap]).thenReturn(Future.successful(returnedCacheMap))
+        when(
+          mockSessionCacheRepo
+            .putSession[ReturnType](DataKey(any), ReturnType(any()))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+          .thenReturn(Future.successful(returnType))
 
         await(testDataCacheConnector.saveFormData[ReturnType]("form-id", returnType)) must be(returnType)
 
@@ -63,17 +67,21 @@ class DataCacheConnectorSpec extends PlaySpec with GuiceOneAppPerSuite with Mock
 
     "fetchAndGetFormData" must {
       "fetch data from Keystore" in new Setup {
-        when(requestBuilderExecute[CacheMap]).thenReturn(Future.successful(CacheMap("test", Map("form-id" -> Json.toJson(returnType)))))
+        when(
+          mockSessionCacheRepo
+            .getFromSession[ReturnType](DataKey(any))(ArgumentMatchers.any(), ArgumentMatchers.any()))
+          .thenReturn(Future.successful(Some(returnType)))
 
-        await(testDataCacheConnector.fetchAndGetFormData[ReturnType]("form-id")) must be(Some(returnType))
+        await(testDataCacheConnector.fetchAndGetData[ReturnType]("form-id")) must be(Some(returnType))
       }
     }
 
     "clear the data" must {
       "clear data from Keystore" in new Setup {
-        val successResponse: JsValue = Json.parse("""{"processingDate": "2001-12-17T09:30:47Z"}""")
-
-        when(requestBuilderExecute[HttpResponse]).thenReturn(Future.successful(HttpResponse(200, successResponse.toString)))
+        when(
+          mockSessionCacheRepo
+            .deleteFromSession(ArgumentMatchers.any()))
+          .thenReturn(Future.successful(()))
 
         val result: Future[Unit] = testDataCacheConnector.clearCache()
         await(result) must be(())
@@ -82,11 +90,15 @@ class DataCacheConnectorSpec extends PlaySpec with GuiceOneAppPerSuite with Mock
 
     "fetchAtedRefData" must {
       "fetch data from Keystore" in new Setup {
-        when(requestBuilderExecute[CacheMap]).thenReturn(Future.successful(CacheMap("test", Map("form-id" -> JsString("XN1200000100001")))))
+        when(
+          mockSessionCacheRepo
+            .getFromSession[String](DataKey(any))(ArgumentMatchers.any(), ArgumentMatchers.any()))
+          .thenReturn(Future.successful(Some("XN1200000100001")))
 
-        val result: Future[Option[String]] = testDataCacheConnector.fetchAtedRefData[String]("form-id")
+        val result: Future[Option[String]] = testDataCacheConnector.fetchAndGetData[String]("form-id")
         await(result) must be(Some("XN1200000100001"))
       }
     }
   }
+
 }

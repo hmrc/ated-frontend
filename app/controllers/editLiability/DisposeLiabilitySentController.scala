@@ -43,7 +43,7 @@ class DisposeLiabilitySentController @Inject()(mcc: MessagesControllerComponents
   def view(oldFormBundleNo: String): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       serviceInfoService.getPartial.flatMap { serviceInfoContent =>
-        dataCacheConnector.fetchAndGetFormData[EditLiabilityReturnsResponseModel](SubmitEditedLiabilityReturnsResponseFormId) map {
+        dataCacheConnector.fetchAndGetData[EditLiabilityReturnsResponseModel](SubmitEditedLiabilityReturnsResponseFormId) map {
           case Some(submitResponse) =>
             submitResponse.liabilityReturnResponse.find(_.oldFormBundleNumber == oldFormBundleNo) match {
               case Some(r) => Ok(template(oldFormBundleNo, serviceInfoContent, r.amountDueOrRefund, r.liabilityAmount, r.paymentReference))
@@ -59,7 +59,7 @@ class DisposeLiabilitySentController @Inject()(mcc: MessagesControllerComponents
   def viewPrintFriendlyDisposeLiabilitySent(oldFormBundleNo: String): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       for {
-        submittedResponse <- dataCacheConnector.fetchAndGetFormData[EditLiabilityReturnsResponseModel](SubmitEditedLiabilityReturnsResponseFormId)
+        submittedResponse <- dataCacheConnector.fetchAndGetData[EditLiabilityReturnsResponseModel](SubmitEditedLiabilityReturnsResponseFormId)
         organisationName <- subscriptionDataService.getOrganisationName
       } yield {
         val x = submittedResponse.get.liabilityReturnResponse.find(_.oldFormBundleNumber == oldFormBundleNo)

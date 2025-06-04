@@ -45,7 +45,7 @@ class SummaryReturnsService @Inject()(atedConnector: AtedConnector, dataCacheCon
     }
 
     for {
-      cachedReturns <- dataCacheConnector.fetchAndGetFormData[SummaryReturnsModel](RetrieveReturnsResponseId)
+      cachedReturns <- dataCacheConnector.fetchAndGetData[SummaryReturnsModel](RetrieveReturnsResponseId)
       summaryReturns: SummaryReturnsModel <- {
         cachedReturns match {
           case Some(x) => atedConnector.getPartialSummaryReturns map {
@@ -179,7 +179,7 @@ class SummaryReturnsService @Inject()(atedConnector: AtedConnector, dataCacheCon
   }
 
   def retrieveCachedPreviousReturnAddressList(implicit hc: HeaderCarrier): Future[Option[Seq[PreviousReturns]]] = {
-    dataCacheConnector.fetchAndGetFormData[Seq[PreviousReturns]](PreviousReturnsDetailsList)
+    dataCacheConnector.fetchAndGetData[Seq[PreviousReturns]](PreviousReturnsDetailsList)
   }
 
   def generateCurrentTaxYearReturns(returns: Seq[PeriodSummaryReturns]): Future[(Seq[AccountSummaryRowModel], Int, Boolean)] = {

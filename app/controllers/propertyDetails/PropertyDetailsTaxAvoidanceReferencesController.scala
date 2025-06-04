@@ -56,7 +56,7 @@ class PropertyDetailsTaxAvoidanceReferencesController @Inject()(mcc: MessagesCon
                 propertyDetails.period.flatMap(_.taxAvoidanceScheme),
                 propertyDetails.period.flatMap(_.taxAvoidancePromoterReference))
               currentBackLink.flatMap(backLink =>
-                dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).map { isPrevReturn =>
+                dataCacheConnector.fetchAndGetData[Boolean](SelectedPreviousReturn).map { isPrevReturn =>
                   Ok(template(id,
                     propertyDetails.periodKey,
                     propertyDetailsTaxAvoidanceReferenceForm.fill(displayData),
@@ -77,7 +77,7 @@ class PropertyDetailsTaxAvoidanceReferencesController @Inject()(mcc: MessagesCon
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
           propertyDetailsCacheResponse(id) {
             case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
-              dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
+              dataCacheConnector.fetchAndGetData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
                 val displayData = PropertyDetailsTaxAvoidanceReferences(
                   propertyDetails.period.flatMap(_.taxAvoidanceScheme),
                   propertyDetails.period.flatMap(_.taxAvoidancePromoterReference))

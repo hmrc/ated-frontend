@@ -55,8 +55,8 @@ class PropertyDetailsNewValuationController @Inject()(mcc: MessagesControllerCom
           propertyDetailsCacheResponse(id) {
             case PropertyDetailsCacheSuccessResponse(propertyDetails) => {
               currentBackLink.flatMap { backLink =>
-                dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
-                  dataCacheConnector.fetchAndGetFormData[PropertyDetailsNewValuation](propertyDetailsNewValuationValue).map { cachedNewValuation =>
+                dataCacheConnector.fetchAndGetData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
+                  dataCacheConnector.fetchAndGetData[PropertyDetailsNewValuation](propertyDetailsNewValuationValue).map { cachedNewValuation =>
                     val newValuation = cachedNewValuation.flatMap(_.revaluedValue)
                     Ok(template(id,
                       propertyDetails.periodKey,

@@ -68,7 +68,7 @@ class SubscriptionDataServiceSpec extends PlaySpec with MockitoSugar with Before
         val successResponse: SubscriptionData = SubscriptionData("", "", address = Nil, emailConsent = Some(true))
         val successData: CachedData = CachedData(successResponse)
 
-        when(mockDataCacheConnector.fetchAndGetFormData[CachedData](eqTo(RetrieveSubscriptionDataId))(any(), any()))
+        when(mockDataCacheConnector.fetchAndGetData[CachedData](eqTo(RetrieveSubscriptionDataId))(any(), any()))
           .thenReturn(Future.successful(None))
 
         when(mockSubscriptionDataAdapterService.retrieveSubscriptionData(any(), any()))
@@ -100,7 +100,7 @@ class SubscriptionDataServiceSpec extends PlaySpec with MockitoSugar with Before
         val successResponse: SubscriptionData = SubscriptionData("", "", address = Nil, emailConsent = Some(true))
         val successData: CachedData = CachedData(successResponse)
 
-        when(mockDataCacheConnector.fetchAndGetFormData[CachedData](eqTo(RetrieveSubscriptionDataId))(any(), any()))
+        when(mockDataCacheConnector.fetchAndGetData[CachedData](eqTo(RetrieveSubscriptionDataId))(any(), any()))
           .thenReturn(Future.successful(Some(successData)))
 
         val addressDetails: AddressDetails = AddressDetails(addressType = "", addressLine1 = "", addressLine2 = "", countryCode = "GB")
@@ -124,7 +124,7 @@ class SubscriptionDataServiceSpec extends PlaySpec with MockitoSugar with Before
         val successResponse: SubscriptionData = SubscriptionData("", "", address = Nil, emailConsent = Some(true))
         val successData: CachedData = CachedData(successResponse)
 
-        when(mockDataCacheConnector.fetchAndGetFormData[CachedData](eqTo(RetrieveSubscriptionDataId))(any(), any()))
+        when(mockDataCacheConnector.fetchAndGetData[CachedData](eqTo(RetrieveSubscriptionDataId))(any(), any()))
           .thenReturn(Future.successful(None))
 
         val successSubscriptionData: SubscriptionData =
@@ -160,7 +160,7 @@ class SubscriptionDataServiceSpec extends PlaySpec with MockitoSugar with Before
         val successResponse: SubscriptionData = SubscriptionData("", "", address = Nil, emailConsent = Some(true))
         val successData: CachedData = CachedData(successResponse)
 
-        when(mockDataCacheConnector.fetchAndGetFormData[CachedData](eqTo(RetrieveSubscriptionDataId))(any(), any()))
+        when(mockDataCacheConnector.fetchAndGetData[CachedData](eqTo(RetrieveSubscriptionDataId))(any(), any()))
           .thenReturn(Future.successful(None))
 
         val addressDetails: AddressDetails = AddressDetails(addressType = "", addressLine1 = "", addressLine2 = "", countryCode = "GB")
@@ -196,7 +196,7 @@ class SubscriptionDataServiceSpec extends PlaySpec with MockitoSugar with Before
         val successResponse: SubscriptionData = SubscriptionData("", "", address = Nil, emailConsent = Some(true))
         val successData: CachedData = CachedData(successResponse)
 
-        when(mockDataCacheConnector.fetchAndGetFormData[CachedData](eqTo(RetrieveSubscriptionDataId))
+        when(mockDataCacheConnector.fetchAndGetData[CachedData](eqTo(RetrieveSubscriptionDataId))
           (any(), any())).thenReturn(Future.successful(None))
 
         val successSubscriptionData: SubscriptionData =
@@ -232,7 +232,7 @@ class SubscriptionDataServiceSpec extends PlaySpec with MockitoSugar with Before
 
       "return None we have no data to update" in new Setup {
 
-        when(mockDataCacheConnector.fetchAndGetFormData[CachedData](eqTo(RetrieveSubscriptionDataId))(any(), any()))
+        when(mockDataCacheConnector.fetchAndGetData[CachedData](eqTo(RetrieveSubscriptionDataId))(any(), any()))
           .thenReturn(Future.successful(Some(cacheDataResponse)))
 
         when(mockDataCacheConnector.clearCache()(any()))
@@ -251,7 +251,7 @@ class SubscriptionDataServiceSpec extends PlaySpec with MockitoSugar with Before
 
       "save the data and clear the cache if it was successful" in new Setup {
 
-        when(mockDataCacheConnector.fetchAndGetFormData[CachedData](eqTo(RetrieveSubscriptionDataId))(any(), any()))
+        when(mockDataCacheConnector.fetchAndGetData[CachedData](eqTo(RetrieveSubscriptionDataId))(any(), any()))
           .thenReturn(Future.successful(Some(cacheDataResponse)))
 
         val updateRequest: UpdateSubscriptionDataRequest = UpdateSubscriptionDataRequest(emailConsent = true, ChangeIndicators(), Nil)
@@ -282,7 +282,7 @@ class SubscriptionDataServiceSpec extends PlaySpec with MockitoSugar with Before
         registrationDetails = Some(RegistrationBuilder.getEtmpRegistrationForOrganisation("testName")))
 
       "save the data when we have no cached data" in new Setup {
-        when(mockDataCacheConnector.fetchAndGetFormData[CachedData](eqTo(RetrieveSubscriptionDataId))(any(), any()))
+        when(mockDataCacheConnector.fetchAndGetData[CachedData](eqTo(RetrieveSubscriptionDataId))(any(), any()))
           .thenReturn(Future.successful(None))
 
         when(mockDetailsService.updateOrganisationRegisteredDetails(any(), any())(any(), any()))
@@ -300,7 +300,7 @@ class SubscriptionDataServiceSpec extends PlaySpec with MockitoSugar with Before
       "save the data when we have no registered detailsl" in new Setup {
         val cachedOrgNoRegistered: CachedData = CachedData(SubscriptionData("XA0001234567899", "BusinessName", address = List(), emailConsent = Some(true)))
 
-        when(mockDataCacheConnector.fetchAndGetFormData[CachedData](eqTo(RetrieveSubscriptionDataId))(any(), any()))
+        when(mockDataCacheConnector.fetchAndGetData[CachedData](eqTo(RetrieveSubscriptionDataId))(any(), any()))
           .thenReturn(Future.successful(Some(cachedOrgNoRegistered)))
 
         when(mockDetailsService.updateOrganisationRegisteredDetails(any(), any())(any(), any()))
@@ -317,7 +317,7 @@ class SubscriptionDataServiceSpec extends PlaySpec with MockitoSugar with Before
       }
 
       "save the data don't clear the cache if it was not successful" in new Setup {
-        when(mockDataCacheConnector.fetchAndGetFormData[CachedData](eqTo(RetrieveSubscriptionDataId))(any(), any()))
+        when(mockDataCacheConnector.fetchAndGetData[CachedData](eqTo(RetrieveSubscriptionDataId))(any(), any()))
           .thenReturn(Future.successful(Some(cachedOrgResponse)))
 
         when(mockDetailsService.updateOrganisationRegisteredDetails(any(), any())(any(), any()))
@@ -334,7 +334,7 @@ class SubscriptionDataServiceSpec extends PlaySpec with MockitoSugar with Before
       }
 
       "save the data and clear the cache if it was successful" in new Setup {
-        when(mockDataCacheConnector.fetchAndGetFormData[CachedData](eqTo(RetrieveSubscriptionDataId))
+        when(mockDataCacheConnector.fetchAndGetData[CachedData](eqTo(RetrieveSubscriptionDataId))
           (any(), any())).thenReturn(Future.successful(Some(cachedOrgResponse)))
 
         val updateDataResponse: UpdateRegistrationDetailsRequest = RegistrationBuilder.getEtmpRegistrationUpdateRequest("testResonse")
@@ -355,7 +355,7 @@ class SubscriptionDataServiceSpec extends PlaySpec with MockitoSugar with Before
       val cachedOrgNoRegistered = CachedData(SubscriptionData("XA0001234567899", "BusinessName", address = List(), emailConsent = Some(true)))
 
       "not update when can't retrieve data" in new Setup {
-        when(mockDataCacheConnector.fetchAndGetFormData[CachedData](eqTo(RetrieveSubscriptionDataId))(any(), any()))
+        when(mockDataCacheConnector.fetchAndGetData[CachedData](eqTo(RetrieveSubscriptionDataId))(any(), any()))
           .thenReturn(Future.successful(Some(cachedOrgNoRegistered)))
 
         val updateDataResponse: UpdateRegistrationDetailsRequest = RegistrationBuilder.getEtmpRegistrationUpdateRequest("testResonse")
@@ -380,7 +380,7 @@ class SubscriptionDataServiceSpec extends PlaySpec with MockitoSugar with Before
         registrationDetails = Some(RegistrationBuilder.getEtmpRegistrationForOrganisation("testName")))
 
       "save the data when we have no cached data" in new Setup {
-        when(mockDataCacheConnector.fetchAndGetFormData[CachedData](eqTo(RetrieveSubscriptionDataId))(any(), any()))
+        when(mockDataCacheConnector.fetchAndGetData[CachedData](eqTo(RetrieveSubscriptionDataId))(any(), any()))
           .thenReturn(Future.successful(Some(cachedOrgResponse)))
 
         val updateDataResponse: UpdateRegistrationDetailsRequest = RegistrationBuilder.getEtmpRegistrationUpdateRequest("testResonse")
@@ -413,7 +413,7 @@ class SubscriptionDataServiceSpec extends PlaySpec with MockitoSugar with Before
       val cacheDataResponse = CachedData(SubscriptionData("XA0001234567899", "BusinessName", address = List(), emailConsent = Some(true)), Some(etmpRegDetails))
 
       "retrieve cached data and return organisation name" in new Setup {
-        when(mockDataCacheConnector.fetchAndGetFormData[CachedData](eqTo(RetrieveSubscriptionDataId))(any(), any()))
+        when(mockDataCacheConnector.fetchAndGetData[CachedData](eqTo(RetrieveSubscriptionDataId))(any(), any()))
           .thenReturn(Future.successful(Some(cacheDataResponse)))
 
         when(mockSubscriptionDataAdapterService.getOrganisationName(any()))
@@ -431,7 +431,7 @@ class SubscriptionDataServiceSpec extends PlaySpec with MockitoSugar with Before
       val cacheDataResponse = CachedData(SubscriptionData("XA0001234567899", "BusinessName", address = List(), emailConsent = Some(true)))
 
       "retrieve cached data and return safe id" in new Setup {
-        when(mockDataCacheConnector.fetchAndGetFormData[CachedData](eqTo(RetrieveSubscriptionDataId))(any(), any()))
+        when(mockDataCacheConnector.fetchAndGetData[CachedData](eqTo(RetrieveSubscriptionDataId))(any(), any()))
           .thenReturn(Future.successful(Some(cacheDataResponse)))
 
         when(mockSubscriptionDataAdapterService.getSafeId(any()))
@@ -447,7 +447,7 @@ class SubscriptionDataServiceSpec extends PlaySpec with MockitoSugar with Before
     "getOverseasCompanyRegistration" must {
       implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
       "returns info from cache" in new Setup {
-        when(mockDataCacheConnector.fetchAndGetFormData[CachedData](any())
+        when(mockDataCacheConnector.fetchAndGetData[CachedData](any())
           (any(), any())).thenReturn(Future.successful(None))
 
         val successSubscriptionData: SubscriptionData = SubscriptionData("", "",
@@ -470,7 +470,7 @@ class SubscriptionDataServiceSpec extends PlaySpec with MockitoSugar with Before
         implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
         val cacheDataResponse: CachedData = CachedData(SubscriptionData("XA0001234567899", "BusinessName", address = List(), emailConsent = Some(true)))
 
-        when(mockDataCacheConnector.fetchAndGetFormData[CachedData](eqTo(RetrieveSubscriptionDataId))(any(), any()))
+        when(mockDataCacheConnector.fetchAndGetData[CachedData](eqTo(RetrieveSubscriptionDataId))(any(), any()))
           .thenReturn(Future.successful(Some(cacheDataResponse)))
 
         val response: Future[Boolean] = testSubscriptionDataService.getEmailConsent
@@ -479,7 +479,7 @@ class SubscriptionDataServiceSpec extends PlaySpec with MockitoSugar with Before
 
       "return false, if no cached data is found" in new Setup {
         implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
-        when(mockDataCacheConnector.fetchAndGetFormData[CachedData](eqTo(RetrieveSubscriptionDataId))(any(), any()))
+        when(mockDataCacheConnector.fetchAndGetData[CachedData](eqTo(RetrieveSubscriptionDataId))(any(), any()))
           .thenReturn(Future.successful(None))
 
         val successSubscriptionData: Option[SubscriptionData] = None
@@ -499,7 +499,7 @@ class SubscriptionDataServiceSpec extends PlaySpec with MockitoSugar with Before
       "return None, if no cached data is found" in new Setup {
         implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
 
-        when(mockDataCacheConnector.fetchAndGetFormData[CachedData](eqTo(RetrieveSubscriptionDataId))
+        when(mockDataCacheConnector.fetchAndGetData[CachedData](eqTo(RetrieveSubscriptionDataId))
           (any(), any())).thenReturn(Future.successful(None))
 
         val successSubscriptionData: Option[SubscriptionData] = None
@@ -521,7 +521,7 @@ class SubscriptionDataServiceSpec extends PlaySpec with MockitoSugar with Before
         implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
         val cacheDataResponse: CachedData = CachedData(SubscriptionData("XA0001234567899", "BusinessName", address = List(), emailConsent = Some(true)))
 
-        when(mockDataCacheConnector.fetchAndGetFormData[CachedData](eqTo(RetrieveSubscriptionDataId))(any(), any()))
+        when(mockDataCacheConnector.fetchAndGetData[CachedData](eqTo(RetrieveSubscriptionDataId))(any(), any()))
           .thenReturn(Future.successful(Some(cacheDataResponse)))
 
         when(mockSubscriptionDataAdapterService.getCorrespondenceAddress(any()))
@@ -537,7 +537,7 @@ class SubscriptionDataServiceSpec extends PlaySpec with MockitoSugar with Before
 
         val cacheDataResponse: CachedData = CachedData(SubscriptionData("XA0001234567899", "BusinessName", address = List(), emailConsent = Some(true)))
 
-        when(mockDataCacheConnector.fetchAndGetFormData[CachedData](eqTo(RetrieveSubscriptionDataId))(any(), any()))
+        when(mockDataCacheConnector.fetchAndGetData[CachedData](eqTo(RetrieveSubscriptionDataId))(any(), any()))
           .thenReturn(Future.successful(Some(cacheDataResponse)))
 
         val successAddress: Option[Address] =
@@ -559,7 +559,7 @@ class SubscriptionDataServiceSpec extends PlaySpec with MockitoSugar with Before
       val cacheDataResponse = CachedData(SubscriptionData("XA0001234567899", "BusinessName", address = List(), emailConsent = Some(true)))
 
       "return None we have no data to edit" in new Setup {
-        when(mockDataCacheConnector.fetchAndGetFormData[CachedData](eqTo(RetrieveSubscriptionDataId))(any(), any()))
+        when(mockDataCacheConnector.fetchAndGetData[CachedData](eqTo(RetrieveSubscriptionDataId))(any(), any()))
           .thenReturn(Future.successful(Some(cacheDataResponse)))
 
         when(mockDataCacheConnector.clearCache()(any()))
@@ -578,7 +578,7 @@ class SubscriptionDataServiceSpec extends PlaySpec with MockitoSugar with Before
       }
 
       "save the data and clear the cache if it was successful" in new Setup {
-        when(mockDataCacheConnector.fetchAndGetFormData[CachedData](eqTo(RetrieveSubscriptionDataId))(any(), any()))
+        when(mockDataCacheConnector.fetchAndGetData[CachedData](eqTo(RetrieveSubscriptionDataId))(any(), any()))
           .thenReturn(Future.successful(Some(cacheDataResponse)))
 
         val updateRequest: UpdateSubscriptionDataRequest = UpdateSubscriptionDataRequest(emailConsent = true, ChangeIndicators(), Nil)
@@ -609,7 +609,7 @@ class SubscriptionDataServiceSpec extends PlaySpec with MockitoSugar with Before
       val cacheDataResponse = CachedData(SubscriptionData("XA0001234567899", "BusinessName", address = List(), emailConsent = Some(true)))
 
       "return None we have no data to edit" in new Setup {
-        when(mockDataCacheConnector.fetchAndGetFormData[CachedData](eqTo(RetrieveSubscriptionDataId))(any(), any()))
+        when(mockDataCacheConnector.fetchAndGetData[CachedData](eqTo(RetrieveSubscriptionDataId))(any(), any()))
           .thenReturn(Future.successful(Some(cacheDataResponse)))
 
         when(mockDataCacheConnector.clearCache()(any()))
@@ -628,7 +628,7 @@ class SubscriptionDataServiceSpec extends PlaySpec with MockitoSugar with Before
       }
 
       "save the data and clear the cache if it was successful" in new Setup {
-        when(mockDataCacheConnector.fetchAndGetFormData[CachedData](eqTo(RetrieveSubscriptionDataId))(any(), any()))
+        when(mockDataCacheConnector.fetchAndGetData[CachedData](eqTo(RetrieveSubscriptionDataId))(any(), any()))
           .thenReturn(Future.successful(Some(cacheDataResponse)))
 
         val updateRequest: UpdateSubscriptionDataRequest = UpdateSubscriptionDataRequest(emailConsent = true, ChangeIndicators(), Nil)

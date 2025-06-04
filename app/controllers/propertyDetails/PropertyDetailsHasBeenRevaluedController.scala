@@ -55,8 +55,8 @@ class PropertyDetailsHasBeenRevaluedController @Inject()(mcc: MessagesController
           propertyDetailsCacheResponse(id) {
             case PropertyDetailsCacheSuccessResponse(propertyDetails) => {
               currentBackLink.flatMap { backLink =>
-                dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
-                  dataCacheConnector.fetchAndGetFormData[HasBeenRevalued](HasPropertyBeenRevalued).map {
+                dataCacheConnector.fetchAndGetData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
+                  dataCacheConnector.fetchAndGetData[HasBeenRevalued](HasPropertyBeenRevalued).map {
                     cachedHasBeenRevalued =>
                       val hasBeenRevalued = cachedHasBeenRevalued.flatMap(_.isPropertyRevalued)
                       Ok(template(id,

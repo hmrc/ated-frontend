@@ -48,7 +48,7 @@ class ReturnTypeController @Inject()(mcc: MessagesControllerComponents,
       ensureClientContext {
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
           currentBackLink.flatMap(backLink =>
-            dataCacheConnector.fetchAndGetFormData[ReturnType](RetrieveReturnTypeFormId) map {
+            dataCacheConnector.fetchAndGetData[ReturnType](RetrieveReturnTypeFormId) map {
               case Some(data) => Ok(template(periodKey, returnTypeForm.fill(data), serviceInfoContent, backLink))
               case _ => Ok(template(periodKey, returnTypeForm, serviceInfoContent, backLink))
             }

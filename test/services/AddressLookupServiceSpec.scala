@@ -241,7 +241,7 @@ class AddressLookupServiceSpec extends PlaySpec with GuiceOneServerPerSuite with
       val addressLookup = AddressLookup("testPostCode", None)
       val addressSearchResults = AddressSearchResults(addressLookup, List(addressLookupRecord) )
 
-      when(mockDataCacheConnector.fetchAndGetFormData[AddressSearchResults](ArgumentMatchers.any())
+      when(mockDataCacheConnector.fetchAndGetData[AddressSearchResults](ArgumentMatchers.any())
         (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(addressSearchResults)))
 
       val result: Option[AddressSearchResults] = await(testAddressLookupService.retrieveCachedSearchResults())

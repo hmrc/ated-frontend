@@ -78,7 +78,7 @@ class AddressLookupService @Inject()(addressLookupConnector: AddressLookupConnec
   }
 
   def retrieveCachedSearchResults()(implicit hc: HeaderCarrier): Future[Option[AddressSearchResults]] = {
-    dataCacheConnector.fetchAndGetFormData[AddressSearchResults](ADDRESS_LOOKUP_SEARCH_RESULTS)
+    dataCacheConnector.fetchAndGetData[AddressSearchResults](ADDRESS_LOOKUP_SEARCH_RESULTS)
   }
 
   private def storeSearchResults(searchResults: AddressSearchResults)(implicit headerCarrier: HeaderCarrier): Future[AddressSearchResults] = {

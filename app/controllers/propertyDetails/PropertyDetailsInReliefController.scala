@@ -57,7 +57,7 @@ class PropertyDetailsInReliefController @Inject()(mcc: MessagesControllerCompone
             case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
               val filledForm = periodsInAndOutReliefForm.fill(PropertyDetailsInRelief(propertyDetails.period.flatMap(_.isInRelief)))
               currentBackLink.flatMap(backLink =>
-                dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).map { isPrevReturn =>
+                dataCacheConnector.fetchAndGetData[Boolean](SelectedPreviousReturn).map { isPrevReturn =>
                   Ok(template(id, propertyDetails.periodKey, filledForm,
                     AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn), serviceInfoContent, backLink)
                   )

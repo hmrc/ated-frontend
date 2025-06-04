@@ -55,7 +55,7 @@ class PropertyDetailsNewBuildValueController @Inject()(mcc: MessagesControllerCo
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
           propertyDetailsCacheResponse(id) {
             case PropertyDetailsCacheSuccessResponse(propertyDetails) => currentBackLink.flatMap { backLink =>
-              dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).map { isPrevReturn =>
+              dataCacheConnector.fetchAndGetData[Boolean](SelectedPreviousReturn).map { isPrevReturn =>
                 val displayData = PropertyDetailsNewBuildValue(propertyDetails.value.flatMap(_.newBuildValue))
 
                 val newBuildDate = propertyDetails.value.flatMap(_.newBuildDate).getOrElse(LocalDate.now())

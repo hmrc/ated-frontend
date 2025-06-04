@@ -57,8 +57,8 @@ class PropertyDetailsDateOfRevalueController @Inject()(mcc: MessagesControllerCo
           propertyDetailsCacheResponse(id) {
             case PropertyDetailsCacheSuccessResponse(propertyDetails) => {
               currentBackLink.flatMap { backLink =>
-                dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
-                  dataCacheConnector.fetchAndGetFormData[DateOfRevalue](DateOfRevalueConstant).map { cachedDateOfRevalue =>
+                dataCacheConnector.fetchAndGetData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
+                  dataCacheConnector.fetchAndGetData[DateOfRevalue](DateOfRevalueConstant).map { cachedDateOfRevalue =>
                     val dateOfRevalue = cachedDateOfRevalue.flatMap(_.dateOfRevalue)
                     Ok(template(id,
                       propertyDetails.periodKey,
@@ -87,9 +87,9 @@ class PropertyDetailsDateOfRevalueController @Inject()(mcc: MessagesControllerCo
             dateOfRevalue => {
               dataCacheConnector.saveFormData[DateOfRevalue](DateOfRevalueConstant, dateOfRevalue)
               val propertyDetailsFuture: Future[PropertyDetailsRevalued] = for {
-                hasPropertyBeenRevalued <- dataCacheConnector.fetchAndGetFormData[HasBeenRevalued](HasPropertyBeenRevalued)
-                revaluedValue <- dataCacheConnector.fetchAndGetFormData[PropertyDetailsNewValuation](propertyDetailsNewValuationValue)
-                dateOfChange <- dataCacheConnector.fetchAndGetFormData[DateOfChange](FortyThousandValueDateOfChange)
+                hasPropertyBeenRevalued <- dataCacheConnector.fetchAndGetData[HasBeenRevalued](HasPropertyBeenRevalued)
+                revaluedValue <- dataCacheConnector.fetchAndGetData[PropertyDetailsNewValuation](propertyDetailsNewValuationValue)
+                dateOfChange <- dataCacheConnector.fetchAndGetData[DateOfChange](FortyThousandValueDateOfChange)
               } yield {
                 PropertyDetailsRevalued(
                   isPropertyRevalued = hasPropertyBeenRevalued.flatMap(_.isPropertyRevalued),

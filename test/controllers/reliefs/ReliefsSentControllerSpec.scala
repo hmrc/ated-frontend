@@ -92,7 +92,7 @@ class ReliefsSentControllerSpec extends PlaySpec with GuiceOneServerPerSuite wit
       when(mockReliefsService.retrieveDraftReliefs(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
       val reliefReturnResponse = ReliefReturnResponse(reliefDescription = "Farmhouses",formBundleNumber = "form-bundle-123")
       val submitReturnsResponse = SubmitReturnsResponse(processingDate = ZonedDateTime.now().toString, reliefReturnResponse = Some(Seq(reliefReturnResponse)), None)
-      when(mockDataCacheConnector.fetchAndGetFormData[SubmitReturnsResponse](ArgumentMatchers.eq(SubmitReturnsResponseFormId))
+      when(mockDataCacheConnector.fetchAndGetData[SubmitReturnsResponse](ArgumentMatchers.eq(SubmitReturnsResponseFormId))
         (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(submitReturnsResponse)))
       val result = testReliefsSentController.view(periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
 
@@ -105,7 +105,7 @@ class ReliefsSentControllerSpec extends PlaySpec with GuiceOneServerPerSuite wit
       setAuthMocks(authMock)
       when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(btaNavigationLinksView()(messages,mockAppConfig)))
       when(mockReliefsService.retrieveDraftReliefs(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
-      when(mockDataCacheConnector.fetchAndGetFormData[SubmitReturnsResponse](ArgumentMatchers.eq(SubmitReturnsResponseFormId))
+      when(mockDataCacheConnector.fetchAndGetData[SubmitReturnsResponse](ArgumentMatchers.eq(SubmitReturnsResponseFormId))
         (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
       val result = testReliefsSentController.view(periodKey).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)

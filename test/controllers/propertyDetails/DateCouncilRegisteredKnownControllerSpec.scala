@@ -17,7 +17,6 @@
 package controllers.propertyDetails
 
 import java.util.UUID
-
 import builders.{PropertyDetailsBuilder, SessionBuilder, TitleBuilder}
 import config.ApplicationConfig
 import connectors.{BackLinkCacheService, DataCacheConnector}
@@ -39,21 +38,28 @@ import uk.gov.hmrc.http.HeaderCarrier
 import utils.AtedConstants
 import views.html.propertyDetails.dateCouncilRegisteredKnown
 import play.twirl.api.HtmlFormat
+
 import scala.concurrent.Future
 import models.DateCouncilRegisteredKnown
+import utils.AtedConstants.NewBuildCouncilRegisteredDateKnown
 
-class DateCouncilRegisteredKnownControllerSpec extends PlaySpec with GuiceOneServerPerSuite with BeforeAndAfterEach with MockitoSugar with MockAuthUtil {
+class DateCouncilRegisteredKnownControllerSpec
+    extends PlaySpec
+    with GuiceOneServerPerSuite
+    with BeforeAndAfterEach
+    with MockitoSugar
+    with MockAuthUtil {
 
-  implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
-  implicit lazy val hc: HeaderCarrier = HeaderCarrier()
-  val mockMcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
-  val mockBackLinkCacheConnector: BackLinkCacheService = mock[BackLinkCacheService]
+  implicit val mockAppConfig: ApplicationConfig          = app.injector.instanceOf[ApplicationConfig]
+  implicit lazy val hc: HeaderCarrier                    = HeaderCarrier()
+  val mockMcc: MessagesControllerComponents              = app.injector.instanceOf[MessagesControllerComponents]
+  val mockBackLinkCacheConnector: BackLinkCacheService   = mock[BackLinkCacheService]
   val mockPropertyDetailsService: PropertyDetailsService = mock[PropertyDetailsService]
-  val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
-  val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-  lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
-  val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
-  val injectedViewInstance: dateCouncilRegisteredKnown = app.injector.instanceOf[views.html.propertyDetails.dateCouncilRegisteredKnown]
+  val mockDataCacheConnector: DataCacheConnector         = mock[DataCacheConnector]
+  val messagesApi: MessagesApi                           = app.injector.instanceOf[MessagesApi]
+  lazy implicit val messages: MessagesImpl               = MessagesImpl(Lang("en-GB"), messagesApi)
+  val mockServiceInfoService: ServiceInfoService         = mock[ServiceInfoService]
+  val injectedViewInstance: dateCouncilRegisteredKnown   = app.injector.instanceOf[views.html.propertyDetails.dateCouncilRegisteredKnown]
 
   class Setup {
 
@@ -76,7 +82,7 @@ class DateCouncilRegisteredKnownControllerSpec extends PlaySpec with GuiceOneSer
     val periodKey: Int = 2015
 
     def getWithUnAuthorisedUser(test: Future[Result] => Any): Any = {
-      val userId = s"user-${UUID.randomUUID}"
+      val userId   = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
       setInvalidAuthMocks(authMock)
       val result = dateCouncilRegisteredKnownController.view("1").apply(SessionBuilder.buildRequestWithSession(userId))
@@ -84,25 +90,37 @@ class DateCouncilRegisteredKnownControllerSpec extends PlaySpec with GuiceOneSer
     }
 
     def getWithAuthorisedUser(test: Future[Result] => Any): Any = {
-      val userId = s"user-${UUID.randomUUID}"
+      val userId   = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       noDelegationModelAuthMocks(authMock)
+
       when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(HtmlFormat.empty))
-      when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
-        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-      when(mockDataCacheConnector.fetchAndGetFormData[DateCouncilRegisteredKnown](ArgumentMatchers.eq(AtedConstants.NewBuildCouncilRegisteredDateKnown))
-        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(DateCouncilRegisteredKnown(None))))
-      when(mockDataCacheConnector.fetchAndGetFormData[Boolean](ArgumentMatchers.any())
-        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
 
-      when(mockPropertyDetailsService.retrieveDraftPropertyDetails(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())) thenReturn {
+      when(mockDataCacheConnector.fetchAndGetData[Boolean](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(Some(true)))
+
+      when(
+        mockDataCacheConnector.fetchAndGetData[DateCouncilRegisteredKnown](ArgumentMatchers.eq(NewBuildCouncilRegisteredDateKnown))(
+          ArgumentMatchers.any(),
+          ArgumentMatchers.any())).thenReturn(Future.successful(Some(DateCouncilRegisteredKnown(Some(true)))))
+
+      when(
+        mockDataCacheConnector
+          .fetchAndGetData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))(ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(Some("XN1200000100001")))
+
+      when(
+        mockPropertyDetailsService.retrieveDraftPropertyDetails(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())) thenReturn {
         Future.successful(PropertyDetailsCacheSuccessResponse(PropertyDetailsBuilder.getPropertyDetails("1")))
       }
+
       when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+
       val result = dateCouncilRegisteredKnownController.view("1").apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
+
   }
 
   "DateCouncilRegisteredKnownController" must {
@@ -127,15 +145,15 @@ class DateCouncilRegisteredKnownControllerSpec extends PlaySpec with GuiceOneSer
       "Authorised users" must {
 
         "show Do you know when the local council registered the property for council tax? page" in new Setup {
-          getWithAuthorisedUser {
-            result =>
-              status(result) must be(OK)
-              val document = Jsoup.parse(contentAsString(result))
-              document.title() must be(TitleBuilder.buildTitle("Do you know when the local council registered the property for council tax?"))
+          getWithAuthorisedUser { result =>
+            status(result) must be(OK)
+            val document = Jsoup.parse(contentAsString(result))
+            document.title() must be(TitleBuilder.buildTitle("Do you know when the local council registered the property for council tax?"))
           }
         }
       }
 
     }
   }
+
 }

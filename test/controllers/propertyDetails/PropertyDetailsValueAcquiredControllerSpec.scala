@@ -17,12 +17,12 @@
 package controllers.propertyDetails
 
 import java.util.UUID
-
 import builders.{PropertyDetailsBuilder, SessionBuilder}
 import config.ApplicationConfig
 import connectors.{BackLinkCacheService, DataCacheConnector}
 import controllers.auth.AuthAction
 import models._
+
 import java.time.LocalDate
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
@@ -39,27 +39,31 @@ import testhelpers.MockAuthUtil
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.AtedConstants
+import utils.AtedConstants.SelectedPreviousReturn
 import views.html.BtaNavigationLinks
 
 import scala.concurrent.Future
 
 class PropertyDetailsValueAcquiredControllerSpec extends PlaySpec with GuiceOneServerPerSuite with BeforeAndAfterEach with MockAuthUtil {
   implicit val mockAppConfig: ApplicationConfig = mock[ApplicationConfig]
-  implicit lazy val hc: HeaderCarrier = HeaderCarrier()
+  implicit lazy val hc: HeaderCarrier           = HeaderCarrier()
 
-  val mockMcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
+  val mockMcc: MessagesControllerComponents              = app.injector.instanceOf[MessagesControllerComponents]
   val mockPropertyDetailsService: PropertyDetailsService = mock[PropertyDetailsService]
-  val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
-  val mockBackLinkCacheConnector: BackLinkCacheService = mock[BackLinkCacheService]
-  val mockPropertyDetailsProfessionallyValuedController: PropertyDetailsProfessionallyValuedController = mock[PropertyDetailsProfessionallyValuedController]
-    val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
+  val mockDataCacheConnector: DataCacheConnector         = mock[DataCacheConnector]
+  val mockBackLinkCacheConnector: BackLinkCacheService   = mock[BackLinkCacheService]
+
+  val mockPropertyDetailsProfessionallyValuedController: PropertyDetailsProfessionallyValuedController =
+    mock[PropertyDetailsProfessionallyValuedController]
+
+  val messagesApi: MessagesApi                   = app.injector.instanceOf[MessagesApi]
+  lazy implicit val messages: MessagesImpl       = MessagesImpl(Lang("en-GB"), messagesApi)
   val btaNavigationLinksView: BtaNavigationLinks = app.injector.instanceOf[BtaNavigationLinks]
   val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
-  val injectedViewInstance = app.injector.instanceOf[views.html.propertyDetails.propertyDetailsValueAcquired]
-  val periodKey: Int = 2016
-  val testDate = LocalDate.parse("2020-02-02")
-  val id = "1"
+  val injectedViewInstance                       = app.injector.instanceOf[views.html.propertyDetails.propertyDetailsValueAcquired]
+  val periodKey: Int                             = 2016
+  val testDate                                   = LocalDate.parse("2020-02-02")
+  val id                                         = "1"
 
   class Setup {
 
@@ -81,58 +85,75 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
     )
 
     def getWithUnAuthorisedUser(test: Future[Result] => Any): Unit = {
-      val userId = s"user-${UUID.randomUUID}"
+      val userId   = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
       setInvalidAuthMocks(authMock)
-      when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Html("")))
+      when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(Html("")))
       val result = testPropertyDetailsValueAcquiredController.view(id).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
 
     def getDataWithAuthorisedUser(id: String, propertyDetails: PropertyDetails)(test: Future[Result] => Any): Unit = {
-      val userId = s"user-${UUID.randomUUID}"
+      val userId   = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
-      when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Html("")))
-      when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
-        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-      when(mockDataCacheConnector.fetchAndGetFormData[Boolean](ArgumentMatchers.any())
-        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
+
+      when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(Html("")))
+
+      when(
+        mockDataCacheConnector
+          .fetchAndGetData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))(ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(Some("XN1200000100001")))
+
+      when(
+        mockDataCacheConnector.fetchAndGetData[Boolean](ArgumentMatchers.eq(SelectedPreviousReturn))(ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(Some(true)))
+
       when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+
       when(mockPropertyDetailsService.retrieveDraftPropertyDetails(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(PropertyDetailsCacheSuccessResponse(propertyDetails)))
+
       val result = testPropertyDetailsValueAcquiredController.view(id).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
 
-
     def saveWithUnAuthorisedUser(test: Future[Result] => Any): Unit = {
-      val userId = s"user-${UUID.randomUUID}"
+      val userId   = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
       setInvalidAuthMocks(authMock)
-      val result = testPropertyDetailsValueAcquiredController.save(id, periodKey, None, testDate)
+      val result = testPropertyDetailsValueAcquiredController
+        .save(id, periodKey, None, testDate)
         .apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
 
     def submitWithAuthorisedUser(formBody: List[(String, String)])(test: Future[Result] => Any): Unit = {
       val userId = s"user-${UUID.randomUUID}"
-      when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
-        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-      when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(),ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
-      when(mockPropertyDetailsService.saveDraftPropertyDetailsValueAcquired(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).
-        thenReturn(Future.successful(OK))
+      when(
+        mockDataCacheConnector
+          .fetchAndGetData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))(ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(Some("XN1200000100001")))
+      when(mockBackLinkCacheConnector.saveBackLink(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
+        .thenReturn(Future.successful(None))
+      when(
+        mockPropertyDetailsService
+          .saveDraftPropertyDetailsValueAcquired(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(OK))
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       setAuthMocks(authMock)
-      val result = testPropertyDetailsValueAcquiredController.save("1", periodKey, None, testDate)
+      val result = testPropertyDetailsValueAcquiredController
+        .save("1", periodKey, None, testDate)
         .apply(SessionBuilder.updateRequestFormWithSession(FakeRequest().withFormUrlEncodedBody(formBody: _*), userId))
 
       test(result)
     }
+
   }
 
-  override def beforeEach(): Unit = {
-  }
+  override def beforeEach(): Unit = {}
 
   "PropertyDetailsValueAcquiredController" must {
     "propertyDetails" must {
@@ -152,9 +173,8 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
       "Authorised users" must {
         "show the value on acquisition view page when called" in new Setup {
           val propertyDetails: PropertyDetails = PropertyDetailsBuilder.getPropertyDetails("1", Some("postCode"))
-          getDataWithAuthorisedUser("1", propertyDetails) {
-            result =>
-              status(result) must be(OK)
+          getDataWithAuthorisedUser("1", propertyDetails) { result =>
+            status(result) must be(OK)
           }
         }
       }
@@ -173,21 +193,20 @@ lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesA
       "receive a BAD REQUEST when they enter an invalid money value" in new Setup {
         val formBody = List(("acquiredValue", "NotMoney"))
         when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
-        submitWithAuthorisedUser(formBody) {
-          result =>
-            status(result) must be(BAD_REQUEST)
+        submitWithAuthorisedUser(formBody) { result =>
+          status(result) must be(BAD_REQUEST)
         }
       }
     }
 
     "be redirected to the professionally valued page" in new Setup {
-      val formBody = List(("acquiredValue","1000000"))
+      val formBody = List(("acquiredValue", "1000000"))
       when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
-      submitWithAuthorisedUser(formBody) {
-        result =>
-          status(result) must be(SEE_OTHER)
-          redirectLocation(result).get must include("/liability/create/valued/view")
+      submitWithAuthorisedUser(formBody) { result =>
+        status(result) must be(SEE_OTHER)
+        redirectLocation(result).get must include("/liability/create/valued/view")
       }
     }
   }
+
 }

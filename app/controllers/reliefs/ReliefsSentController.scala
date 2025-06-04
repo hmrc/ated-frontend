@@ -43,7 +43,7 @@ class ReliefsSentController @Inject()(mcc : MessagesControllerComponents,
   def view(periodKey: Int): Action[AnyContent] = Action.async { implicit request =>
     authAction.authorisedAction { implicit authContext =>
       serviceInfoService.getPartial.flatMap { serviceInfoContent =>
-        dataCacheConnector.fetchAndGetFormData[SubmitReturnsResponse](SubmitReturnsResponseFormId) map {
+        dataCacheConnector.fetchAndGetData[SubmitReturnsResponse](SubmitReturnsResponseFormId) map {
           case Some(submitResponse) =>
             Ok(template(periodKey, serviceInfoContent, submitResponse))
           case None =>

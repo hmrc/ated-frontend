@@ -53,7 +53,7 @@ class SelectPeriodController @Inject()(mcc: MessagesControllerComponents,
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
           val peakStartYear = PeriodUtils.calculatePeakStartYear(currentDate)
           val periods = PeriodUtils.getPeriods(peakStartYear)
-          dataCacheConnector.fetchAndGetFormData[SelectPeriod](RetrieveSelectPeriodFormId) map {
+          dataCacheConnector.fetchAndGetData[SelectPeriod](RetrieveSelectPeriodFormId) map {
             case Some(data) => Ok(template(selectPeriodForm.fill(data), periods, serviceInfoContent, getBackLink()))
             case _ => Ok(template(selectPeriodForm, periods, serviceInfoContent, getBackLink()))
           }

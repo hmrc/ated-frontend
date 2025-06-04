@@ -50,7 +50,7 @@ class EarliestStartDateInUseController @Inject()(mcc: MessagesControllerComponen
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
           propertyDetailsCacheResponse(id) {
             case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
-              dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
+              dataCacheConnector.fetchAndGetData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
                 val newBuildDate: LocalDate = propertyDetails.value.flatMap(_.newBuildDate).getOrElse(LocalDate.now())
                 val localRegDate: LocalDate = propertyDetails.value.flatMap(_.localAuthRegDate).getOrElse(LocalDate.now())
                 val dynamicDate = AtedUtils.getEarliestDate(newBuildDate, localRegDate)

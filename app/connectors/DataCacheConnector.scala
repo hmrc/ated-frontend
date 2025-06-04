@@ -16,35 +16,25 @@
 
 package connectors
 
-import config.ApplicationConfig
+import play.api.libs.json.Format
+import repositories.SessionCacheRepository
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.mongo.cache.DataKey
 
 import javax.inject.Inject
-import play.api.libs.json.Format
-import uk.gov.hmrc.http.cache.client.SessionCache
-import uk.gov.hmrc.http.client.HttpClientV2
-import uk.gov.hmrc.http.HeaderCarrier
 import scala.concurrent.{ExecutionContext, Future}
 
-class DataCacheConnector @Inject()(val http: HttpClientV2,
-                                   appConfig: ApplicationConfig)
-                                  (implicit ec: ExecutionContext) extends SessionCache {
+class DataCacheConnector @Inject() (sessionCache: SessionCacheRepository)(implicit ec: ExecutionContext) {
 
-  val baseUri: String = appConfig.baseUri
-  val defaultSource: String = appConfig.defaultSource
-  val domain: String = appConfig.domain
+  def dataKey[T](formId: String): DataKey[T] = DataKey[T](s"$formId")
 
-  def saveFormData[T](formId: String, data: T)(implicit hc: HeaderCarrier, formats: Format[T]): Future[T] = {
-    cache[T](formId, data) map { _ => data }
-  }
+  def saveFormData[T](formId: String, data: T)(implicit hc: HeaderCarrier, formats: Format[T]): Future[T] =
+    sessionCache.putSession(dataKey(formId), data).map(_ => data)
 
-  def fetchAndGetFormData[T](formId: String)(implicit hc: HeaderCarrier, formats: Format[T]): Future[Option[T]] = {
-    fetchAndGetEntry[T](key = formId)
-  }
+  def fetchAndGetData[T](formId: String)(implicit hc: HeaderCarrier, formats: Format[T]): Future[Option[T]] =
+    sessionCache.getFromSession[T](dataKey(formId))
 
-  def fetchAtedRefData[T](formId: String)(implicit hc: HeaderCarrier, formats: Format[T]): Future[Option[T]] = {
-    fetchAndGetEntry[T](key = formId)
-  }
+  def clearCache()(implicit hc: HeaderCarrier): Future[Unit] =
+    sessionCache.deleteFromSession
 
-  def clearCache()(implicit hc: HeaderCarrier): Future[Unit] = remove()
-  def httpClientV2: HttpClientV2 = http
 }

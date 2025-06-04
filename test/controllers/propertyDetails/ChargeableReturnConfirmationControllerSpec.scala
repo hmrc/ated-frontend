@@ -84,7 +84,7 @@ class Setup {
     val submitReturnsResponse = SubmitReturnsResponse(processingDate = ZonedDateTime.now().toString, None, liabilityReturnResponse =
       Some(Seq(liabilityReturnResponse)))
     when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(btaNavigationLinksView()(messages,mockAppConfig)))
-    when(mockDataCacheConnector.fetchAndGetFormData[SubmitReturnsResponse](ArgumentMatchers.eq(SubmitReturnsResponseFormId))
+    when(mockDataCacheConnector.fetchAndGetData[SubmitReturnsResponse](ArgumentMatchers.eq(SubmitReturnsResponseFormId))
       (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(submitReturnsResponse)))
 
     val result = testChargeableReturnConfirmationController.confirmation.apply(SessionBuilder.buildRequestWithSession(userId))
@@ -95,7 +95,7 @@ class Setup {
     val userId = s"user-${UUID.randomUUID}"
     val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
     setAuthMocks(authMock)
-    when(mockDataCacheConnector.fetchAndGetFormData[SubmitReturnsResponse](ArgumentMatchers.eq(SubmitReturnsResponseFormId))
+    when(mockDataCacheConnector.fetchAndGetData[SubmitReturnsResponse](ArgumentMatchers.eq(SubmitReturnsResponseFormId))
       (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
 
     val result = testChargeableReturnConfirmationController.confirmation.apply(SessionBuilder.buildRequestWithSession(userId))
@@ -123,7 +123,7 @@ class Setup {
       liabilityAmount = BigDecimal("123"), paymentReference = Some("Payment-123"), formBundleNumber = "form-bundle-123")
     val submitReturnsResponse = SubmitReturnsResponse(processingDate = ZonedDateTime.now().toString, None, liabilityReturnResponse =
       Some(Seq(liabilityReturnResponse)))
-    when(mockDataCacheConnector.fetchAndGetFormData[SubmitReturnsResponse](ArgumentMatchers.eq(SubmitReturnsResponseFormId))
+    when(mockDataCacheConnector.fetchAndGetData[SubmitReturnsResponse](ArgumentMatchers.eq(SubmitReturnsResponseFormId))
       (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(submitReturnsResponse)))
     when(mockSubscriptionDataService.getOrganisationName(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(organisationName)))
 

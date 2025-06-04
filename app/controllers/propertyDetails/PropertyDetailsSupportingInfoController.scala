@@ -60,7 +60,7 @@ class PropertyDetailsSupportingInfoController @Inject()(mcc: MessagesControllerC
                 case _ => propertyDetailsSupportingInfoForm
               }
               currentBackLink.flatMap(backLink =>
-                dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).map { isPrevReturn =>
+                dataCacheConnector.fetchAndGetData[Boolean](SelectedPreviousReturn).map { isPrevReturn =>
                   Ok(template(id, propertyDetails.periodKey, filledForm,
                     AtedUtils.getEditSubmittedMode(propertyDetails, isPrevReturn), serviceInfoContent, backLink))
                 }
@@ -77,7 +77,7 @@ class PropertyDetailsSupportingInfoController @Inject()(mcc: MessagesControllerC
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
           propertyDetailsCacheResponse(id) {
             case PropertyDetailsCacheSuccessResponse(propertyDetails) =>
-              dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
+              dataCacheConnector.fetchAndGetData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
                 val filledForm = propertyDetails.period.flatMap(_.supportingInfo) match {
                   case Some(info) => propertyDetailsSupportingInfoForm.fill(PropertyDetailsSupportingInfo(info))
                   case _ => propertyDetailsSupportingInfoForm
@@ -106,7 +106,7 @@ class PropertyDetailsSupportingInfoController @Inject()(mcc: MessagesControllerC
                 propertyDetails => {
                   val backLink = Some(controllers.propertyDetails.routes.PropertyDetailsSupportingInfoController.view(id).url)
                   for {
-                    cachedData <- dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn)
+                    cachedData <- dataCacheConnector.fetchAndGetData[Boolean](SelectedPreviousReturn)
                     _ <- propertyDetailsService.validateCalculateDraftPropertyDetails(id, AtedUtils.isEditSubmittedMode(mode) && cachedData.isEmpty)
                     _ <- propertyDetailsService.saveDraftPropertyDetailsSupportingInfo(id, propertyDetails)
                     result <-

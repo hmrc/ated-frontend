@@ -54,7 +54,7 @@ class PropertyDetailsValueAcquiredController @Inject()(mcc: MessagesControllerCo
         serviceInfoService.getPartial.flatMap { serviceInfoContent =>
           propertyDetailsCacheResponse(id) {
             case PropertyDetailsCacheSuccessResponse(propertyDetails) => currentBackLink.flatMap { backLink =>
-              dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
+              dataCacheConnector.fetchAndGetData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
                 val displayData = PropertyDetailsValueOnAcquisition(propertyDetails.value.flatMap(_.notNewBuildValue))
                 val dynamicDate = PropertyDetailsWhenAcquiredDates(propertyDetails.value.flatMap(_.notNewBuildDate)).acquiredDate.getOrElse(LocalDate.now())
                 Future.successful(Ok(template(id,

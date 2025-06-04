@@ -43,16 +43,16 @@ import scala.concurrent.Future
 
 class NewBuildNoStartDateControllerSpec extends PlaySpec with GuiceOneServerPerSuite with BeforeAndAfterEach with MockitoSugar with MockAuthUtil {
 
-  implicit val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
-  implicit lazy val hc: HeaderCarrier = HeaderCarrier()
-  val mockMcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
-  val mockBackLinkCacheConnector: BackLinkCacheService = mock[BackLinkCacheService]
+  implicit val mockAppConfig: ApplicationConfig          = app.injector.instanceOf[ApplicationConfig]
+  implicit lazy val hc: HeaderCarrier                    = HeaderCarrier()
+  val mockMcc: MessagesControllerComponents              = app.injector.instanceOf[MessagesControllerComponents]
+  val mockBackLinkCacheConnector: BackLinkCacheService   = mock[BackLinkCacheService]
   val mockPropertyDetailsService: PropertyDetailsService = mock[PropertyDetailsService]
-  val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
-  val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-  lazy implicit val messages: MessagesImpl = MessagesImpl(Lang("en-GB"), messagesApi)
-  val mockServiceInfoService: ServiceInfoService = mock[ServiceInfoService]
-  val injectedViewInstance: newBuildNoStartDate = app.injector.instanceOf[views.html.propertyDetails.newBuildNoStartDate]
+  val mockDataCacheConnector: DataCacheConnector         = mock[DataCacheConnector]
+  val messagesApi: MessagesApi                           = app.injector.instanceOf[MessagesApi]
+  lazy implicit val messages: MessagesImpl               = MessagesImpl(Lang("en-GB"), messagesApi)
+  val mockServiceInfoService: ServiceInfoService         = mock[ServiceInfoService]
+  val injectedViewInstance: newBuildNoStartDate          = app.injector.instanceOf[views.html.propertyDetails.newBuildNoStartDate]
 
   class Setup {
 
@@ -75,7 +75,7 @@ class NewBuildNoStartDateControllerSpec extends PlaySpec with GuiceOneServerPerS
     val periodKey: Int = 2015
 
     def getWithUnAuthorisedUser(test: Future[Result] => Any): Any = {
-      val userId = s"user-${UUID.randomUUID}"
+      val userId   = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, invalidEnrolmentSet)
       setInvalidAuthMocks(authMock)
       val result = noStartDateController.view("1").apply(SessionBuilder.buildRequestWithSession(userId))
@@ -83,22 +83,27 @@ class NewBuildNoStartDateControllerSpec extends PlaySpec with GuiceOneServerPerS
     }
 
     def getWithAuthorisedUser(test: Future[Result] => Any): Any = {
-      val userId = s"user-${UUID.randomUUID}"
+      val userId   = s"user-${UUID.randomUUID}"
       val authMock = authResultDefault(AffinityGroup.Organisation, defaultEnrolmentSet)
       noDelegationModelAuthMocks(authMock)
       when(mockServiceInfoService.getPartial(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(HtmlFormat.empty))
-      when(mockDataCacheConnector.fetchAtedRefData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))
-        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some("XN1200000100001")))
-      when(mockPropertyDetailsService.retrieveDraftPropertyDetails(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())) thenReturn {
+
+      when(
+        mockPropertyDetailsService.retrieveDraftPropertyDetails(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())) thenReturn {
         Future.successful(PropertyDetailsCacheSuccessResponse(PropertyDetailsBuilder.getPropertyDetails("1")))
       }
-      when(mockDataCacheConnector.fetchAndGetFormData[Boolean](ArgumentMatchers.any())
-        (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
+      when(mockDataCacheConnector.fetchAndGetData[Boolean](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(None))
       when(mockBackLinkCacheConnector.fetchAndGetBackLink(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(None))
+      when(
+        mockDataCacheConnector
+          .fetchAndGetData[String](ArgumentMatchers.eq(AtedConstants.DelegatedClientAtedRefNumber))(ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(Some("XN1200000100001")))
       val result = noStartDateController.view("1").apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
+
   }
 
   "NewBuildNoStartDateController" must {
@@ -123,15 +128,15 @@ class NewBuildNoStartDateControllerSpec extends PlaySpec with GuiceOneServerPerS
       "Authorised users" must {
 
         "show correct no start date provided explanation" in new Setup {
-          getWithAuthorisedUser {
-            result =>
-              status(result) must be(OK)
-              val document = Jsoup.parse(contentAsString(result))
-              document.title() must be(TitleBuilder.buildTitle("No start date was provided"))
+          getWithAuthorisedUser { result =>
+            status(result) must be(OK)
+            val document = Jsoup.parse(contentAsString(result))
+            document.title() must be(TitleBuilder.buildTitle("No start date was provided"))
           }
         }
       }
 
     }
   }
+
 }

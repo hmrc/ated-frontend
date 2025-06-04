@@ -58,8 +58,8 @@ class PropertyDetailsAddressController @Inject()(mcc: MessagesControllerComponen
     authAction.authorisedAction { implicit authContext =>
       ensureClientContext {
         for {
-          answer <- dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn)
-          periodKey <- dataCacheConnector.fetchAndGetFormData[SelectPeriod](RetrieveSelectPeriodFormId)
+          answer <- dataCacheConnector.fetchAndGetData[Boolean](SelectedPreviousReturn)
+          periodKey <- dataCacheConnector.fetchAndGetData[SelectPeriod](RetrieveSelectPeriodFormId)
           changeLiabilityReturnOpt <- changeLiabilityReturnService.retrieveSubmittedLiabilityReturnAndCache(oldFormBundleNo, answer, periodKey)
           serviceInfoContent <- serviceInfoService.getPartial
           backLink <- currentBackLink

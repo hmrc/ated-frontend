@@ -52,4 +52,7 @@ class SessionCacheRepository @Inject() (
   def getFromSession[T: Reads](dataKey: DataKey[T])(implicit hc: HeaderCarrier): Future[Option[T]] =
     cacheRepo.get[T](hc)(dataKey)
 
+  def deleteFromSession(implicit hc: HeaderCarrier): Future[Unit] =
+    cacheRepo.deleteEntity(hc)
+
 }

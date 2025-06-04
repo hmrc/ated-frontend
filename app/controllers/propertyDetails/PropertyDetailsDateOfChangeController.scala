@@ -54,8 +54,8 @@ class PropertyDetailsDateOfChangeController @Inject()(mcc: MessagesControllerCom
           propertyDetailsCacheResponse(id) {
             case PropertyDetailsCacheSuccessResponse(propertyDetails) => {}
               currentBackLink.flatMap { backlink =>
-                dataCacheConnector.fetchAndGetFormData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
-                  dataCacheConnector.fetchAndGetFormData[DateOfChange](FortyThousandValueDateOfChange).map { cachedDateOfChange =>
+                dataCacheConnector.fetchAndGetData[Boolean](SelectedPreviousReturn).flatMap { isPrevReturn =>
+                  dataCacheConnector.fetchAndGetData[DateOfChange](FortyThousandValueDateOfChange).map { cachedDateOfChange =>
                     val dateOfChange = cachedDateOfChange.flatMap(_.dateOfChange)
                     Ok(template(id,
                       propertyDetails.periodKey,
